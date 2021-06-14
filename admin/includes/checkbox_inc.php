@@ -67,7 +67,7 @@ function plausiCheckBox(array $post, array $languages): array
 }
 
 /**
- * @param array $post
+ * @param array $post - pre-filtered post data
  * @param LanguageModel[] $languages
  * @return CheckBox
  */
@@ -75,7 +75,7 @@ function speicherCheckBox(array $post, array $languages): CheckBox
 {
     if (isset($post['kCheckBox']) && (int)$post['kCheckBox'] > 0) {
         $checkBox = new CheckBox((int)$post['kCheckBox']);
-        $checkBox->deleteCheckBox([(int)$post['kCheckBox']]);
+        $checkBox->delete([(int)$post['kCheckBox']]);
     } else {
         $checkBox = new CheckBox();
     }

@@ -68,10 +68,10 @@
     {block name='productdetails-tabs-content'}
         {if useDescription || $useDownloads || $useDescriptionWithMediaGroup || $useVotes || $useQuestionOnItem || $usePriceFlow
         || $useAvailabilityNotification || $useMediaGroup || !empty($separatedTabs)}
+            {opcMountPoint id='opc_before_tabs' inContainer=false}
             {if $tabanzeige && !$isMobile}
                 {block name='productdetails-tabs-tabs'}
-                    {opcMountPoint id='opc_before_tabs' inContainer=false}
-                    {container class="mb-7"}
+                    {container}
                         <nav class="tab-navigation">
                         {tabs id="product-tabs"}
                         {if $useDescription}
@@ -81,10 +81,10 @@
                                         {block name='tab-description-media-types'}
                                             {opcMountPoint id='opc_before_desc'}
                                             <div class="desc">
-                                                {$Artikel->cBeschreibung}
+                                                <p>{$Artikel->cBeschreibung}</p>
                                                 {if $useDescriptionWithMediaGroup}
                                                     {foreach $Artikel->getMediaTypes() as $mediaType}
-                                                        <div class="h3 mt-3">{$mediaType->name}</div>
+                                                        <div class="h3">{$mediaType->name}</div>
                                                         <div class="media">
                                                             {include file='productdetails/mediafile.tpl'}
                                                         </div>
@@ -106,7 +106,9 @@
                         {if $useDownloads}
                             {block name='productdetails-tabs-tab-downloads'}
                                 {tab title="{lang section="productDownloads" key="downloadSection"}" active=$setActiveClass.downloads id="downloads"}
+                                    {opcMountPoint id='opc_before_download'}
                                     {include file='productdetails/download.tpl'}
+                                    {opcMountPoint id='opc_after_download'}
                                 {/tab}
                             {/block}
                         {/if}
@@ -114,8 +116,10 @@
                         {if !empty($separatedTabs)}
                             {block name='productdetails-tabs-tab-separated-tabs'}
                                 {foreach $separatedTabs as $separatedTab}
-                                    {tab title=$separatedTab.name active=$setActiveClass.separatedTabs && $separatedTab@first id="{$separatedTab.id}"}
+                                    {tab title=$separatedTab.name active=$setActiveClass.separatedTabs && $separatedTab@first id="{$separatedTab.name|@seofy}"}
+                                        {opcMountPoint id='opc_before_separated_'|cat:$separatedTab.id}
                                         {$separatedTab.content}
+                                        {opcMountPoint id='opc_after_separated_'|cat:$separatedTab.id}
                                     {/tab}
                                 {/foreach}
                             {/block}
@@ -124,7 +128,9 @@
                         {if $useVotes}
                             {block name='productdetails-tabs-tab-votes'}
                                 {tab title="{lang key='Votes'}" active=$setActiveClass.votes id="votes"}
+                                    {opcMountPoint id='opc_before_tab_votes'}
                                     {include file='productdetails/reviews.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}
+                                    {opcMountPoint id='opc_after_tab_votes'}
                                 {/tab}
                             {/block}
                         {/if}
@@ -132,7 +138,9 @@
                         {if $useQuestionOnItem}
                             {block name='productdetails-tabs-tab-question-on-item'}
                                 {tab title="{lang key="productQuestion" section="productDetails"}" active=$setActiveClass.questionOnItem id="questionOnItem"}
+                                    {opcMountPoint id='opc_before_tab_question'}
                                     {include file='productdetails/question_on_item.tpl' position="tab"}
+                                    {opcMountPoint id='opc_after_tab_question'}
                                 {/tab}
                             {/block}
                         {/if}
@@ -140,15 +148,19 @@
                         {if $usePriceFlow}
                             {block name='productdetails-tabs-tab-price-flow'}
                                 {tab title="{lang key='priceFlow' section='productDetails'}" active=$setActiveClass.priceFlow id="priceFlow"}
+                                    {opcMountPoint id='opc_before_tab_price_history'}
                                     {include file='productdetails/price_history.tpl'}
+                                    {opcMountPoint id='opc_after_tab_price_history'}
                                 {/tab}
                             {/block}
                         {/if}
 
                         {if $useAvailabilityNotification}
                             {block name='productdetails-tabs-tab-availability-notification'}
-                                {tab title="{lang key='notifyMeWhenProductAvailableAgain'}" active=$setActiveClass.availabilityNotification id="tab-availabilityNotification"}
+                                {tab title="{lang key='notifyMeWhenProductAvailableAgain'}" active=$setActiveClass.availabilityNotification id="availabilityNotification"}
+                                    {opcMountPoint id='opc_before_tab_availability'}
                                     {include file='productdetails/availability_notification_form.tpl' position='tab' tplscope='artikeldetails'}
+                                    {opcMountPoint id='opc_after_tab_availability'}
                                 {/tab}
                             {/block}
                         {/if}
@@ -169,13 +181,12 @@
                 {/block}
             {else}
                 {block name='productdetails-tabs-no-tabs'}
-                    {container class="mb-7"}
+                    {container}
                         <div class="accordion" id="tabAccordion">
                             {if $useDescription}
                                 {block name='productdetails-tabs-description'}
-                                    {card no-body=true class="mb-3"}
+                                    {card no-body=true}
                                         {cardheader id="tab-description-head"
-                                            class="h6 mb-0"
                                             data=["toggle" => "collapse",
                                                 "target"=>"#tab-description"
                                             ]
@@ -185,7 +196,7 @@
                                         }
                                             {lang key='description' section='productDetails'}
                                         {/cardheader}
-                                        {collapse id="tab-description" class="mb-5" visible=$setActiveClass.description
+                                        {collapse id="tab-description" visible=$setActiveClass.description
                                             data=["parent"=>"#tabAccordion"]
                                             aria=["labelledby"=>"tab-description-head"]
                                         }
@@ -226,9 +237,8 @@
 
                             {if $useDownloads}
                                 {block name='productdetails-tabs-downloads'}
-                                    {card no-body=true class="mb-3"}
+                                    {card no-body=true}
                                         {cardheader id="tab-downloads-head"
-                                            class="h6 mb-0"
                                             data=["toggle" => "collapse",
                                                 "target"=>"#tab-downloads"
                                             ]
@@ -238,13 +248,15 @@
                                         }
                                             {lang section='productDownloads' key='downloadSection'}
                                         {/cardheader}
-                                        {collapse id="tab-downloads" class="mb-5" visible=$setActiveClass.downloads
+                                        {collapse id="tab-downloads" visible=$setActiveClass.downloads
                                             data=["parent"=>"#tabAccordion"]
                                             aria=["labelledby"=>"tab-downloads-head"]
                                         }
                                             {cardbody}
                                                 {block name='productdetails-tabs-include-download'}
+                                                    {opcMountPoint id='opc_before_download'}
                                                     {include file='productdetails/download.tpl'}
+                                                    {opcMountPoint id='opc_after_download'}
                                                 {/block}
                                             {/cardbody}
                                         {/collapse}
@@ -255,24 +267,26 @@
                             {if !empty($separatedTabs)}
                                 {block name='productdetails-tabs-separated-tabs'}
                                     {foreach $separatedTabs as $separatedTab}
-                                        {card no-body=true class="mb-3"}
-                                            {cardheader id="tab-{$separatedTab.id}-head"
-                                                class="h6 mb-0"
+                                        {$separatedTabId = $separatedTab.name|@seofy}
+                                        {card no-body=true}
+                                            {cardheader id="tab-{$separatedTabId}-head"
                                                 data=["toggle" => "collapse",
-                                                    "target"=>"#tab-{$separatedTab.id}"
+                                                    "target"=>"#tab-{$separatedTabId}"
                                                 ]
                                                 aria=["expanded" => "{if $setActiveClass.separatedTabs && $separatedTab@first}true{else}false{/if}",
-                                                    "controls" => "tab-{$separatedTab.id}"
+                                                    "controls" => "tab-{$separatedTabId}"
                                                 ]
                                             }
                                                 {$separatedTab.name}
                                             {/cardheader}
-                                            {collapse id="tab-{$separatedTab.id}" class="mb-5" visible=($setActiveClass.separatedTabs && $separatedTab@first)
+                                            {collapse id="tab-{$separatedTabId}" visible=($setActiveClass.separatedTabs && $separatedTab@first)
                                                 data=["parent"=>"#tabAccordion"]
-                                                aria=["labelledby"=>"tab-{$separatedTab.id}-head"]
+                                                aria=["labelledby"=>"tab-{$separatedTabId}-head"]
                                             }
                                                 {cardbody}
+                                                    {opcMountPoint id='opc_before_separated_'|cat:$separatedTab.id}
                                                     {$separatedTab.content}
+                                                    {opcMountPoint id='opc_after_separated_'|cat:$separatedTab.id}
                                                 {/cardbody}
                                             {/collapse}
                                         {/card}
@@ -282,9 +296,8 @@
 
                             {if $useVotes}
                                 {block name='productdetails-tabs-votes'}
-                                    {card no-body=true class="mb-3"}
+                                    {card no-body=true }
                                         {cardheader id="tab-votes-head"
-                                            class="h6 mb-0"
                                             data=["toggle" => "collapse",
                                                 "target"=>"#tab-votes"
                                             ]
@@ -294,13 +307,15 @@
                                         }
                                             {lang key='Votes'}
                                         {/cardheader}
-                                        {collapse id="tab-votes" class="mb-5" visible=$setActiveClass.votes
+                                        {collapse id="tab-votes" visible=$setActiveClass.votes
                                             data=["parent"=>"#tabAccordion"]
                                             aria=["labelledby"=>"tab-votes-head"]
                                         }
                                             {cardbody}
                                                 {block name='productdetails-tabs-include-reviews'}
+                                                    {opcMountPoint id='opc_before_tab_votes'}
                                                     {include file='productdetails/reviews.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}
+                                                    {opcMountPoint id='opc_after_tab_votes'}
                                                 {/block}
                                             {/cardbody}
                                         {/collapse}
@@ -310,25 +325,26 @@
 
                             {if $useQuestionOnItem}
                                 {block name='productdetails-tabs-question-on-item'}
-                                    {card no-body=true class="mb-3"}
+                                    {card no-body=true}
                                         {cardheader id="tab-question-head"
-                                            class="h6 mb-0"
                                             data=["toggle" => "collapse",
-                                                "target"=>"#tab-question"
+                                                "target"=>"#tab-questionOnItem"
                                             ]
                                             aria=["expanded" => "{if $setActiveClass.questionOnItem}true{else}false{/if}",
-                                                "controls" => "tab-question"
+                                                "controls" => "tab-questionOnItem"
                                             ]
                                         }
                                             {lang key='productQuestion' section='productDetails'}
                                         {/cardheader}
-                                        {collapse id="tab-question" class="mb-5" visible=$setActiveClass.questionOnItem
+                                        {collapse id="tab-questionOnItem" visible=$setActiveClass.questionOnItem
                                             data=["parent"=>"#tabAccordion"]
                                             aria=["labelledby"=>"tab-question-head"]
                                         }
                                             {cardbody}
                                                 {block name='productdetails-tabs-include-question-on-item'}
+                                                    {opcMountPoint id='opc_before_tab_question'}
                                                     {include file='productdetails/question_on_item.tpl' position="tab"}
+                                                    {opcMountPoint id='opc_after_tab_question'}
                                                 {/block}
                                             {/cardbody}
                                         {/collapse}
@@ -338,9 +354,8 @@
 
                             {if $usePriceFlow}
                                 {block name='productdetails-tabs-price-flow'}
-                                    {card no-body=true class="mb-3"}
+                                    {card no-body=true}
                                         {cardheader id="tab-priceFlow-head"
-                                            class="h6 mb-0"
                                             data=["toggle" => "collapse",
                                                 "target"=>"#tab-priceFlow"
                                             ]
@@ -350,13 +365,15 @@
                                         }
                                             {lang key='priceFlow' section='productDetails'}
                                         {/cardheader}
-                                        {collapse id="tab-priceFlow" class="mb-5" visible=$setActiveClass.priceFlow
+                                        {collapse id="tab-priceFlow" visible=$setActiveClass.priceFlow
                                             data=["parent"=>"#tabAccordion"]
                                             aria=["labelledby"=>"tab-priceFlow-head"]
                                         }
                                             {cardbody}
                                                 {block name='productdetails-tabs-include-price-history'}
+                                                    {opcMountPoint id='opc_before_tab_price_history'}
                                                     {include file='productdetails/price_history.tpl'}
+                                                    {opcMountPoint id='opc_after_tab_price_history'}
                                                 {/block}
                                             {/cardbody}
                                         {/collapse}
@@ -366,9 +383,8 @@
 
                             {if $useAvailabilityNotification}
                                 {block name='productdetails-tabs-availability-notification'}
-                                    {card no-body=true class="mb-3"}
+                                    {card no-body=true}
                                         {cardheader id="tab-availabilityNotification-head"
-                                            class="h6 mb-0"
                                             data=["toggle" => "collapse",
                                                 "target"=>"#tab-availabilityNotification"
                                             ]
@@ -378,13 +394,15 @@
                                         }
                                         {lang key='notifyMeWhenProductAvailableAgain'}
                                         {/cardheader}
-                                        {collapse id="tab-availabilityNotification" class="mb-5" visible=$setActiveClass.availabilityNotification
+                                        {collapse id="tab-availabilityNotification" visible=$setActiveClass.availabilityNotification
                                             data=["parent"=>"#tabAccordion"]
                                             aria=["labelledby"=>"tab-availabilityNotification-head"]
                                         }
                                             {cardbody}
                                                 {block name='productdetails-tabs-include-availability-notification-form'}
+                                                    {opcMountPoint id='opc_before_tab_availability'}
                                                     {include file='productdetails/availability_notification_form.tpl' position='tab' tplscope='artikeldetails'}
+                                                    {opcMountPoint id='opc_after_tab_availability'}
                                                 {/block}
                                             {/cardbody}
                                         {/collapse}
@@ -396,9 +414,8 @@
                                 {block name='productdetails-tabs-media-gorup'}
                                     {foreach $Artikel->getMediaTypes() as $mediaType}
                                         {$cMedienTypId = $mediaType->name|@seofy}
-                                        {card no-body=true class="mb-3"}
+                                        {card no-body=true}
                                             {cardheader id="tab-{$cMedienTypId}-head"
-                                                class="h6 mb-0"
                                                 data=["toggle" => "collapse",
                                                     "target"=>"#tab-{$cMedienTypId}"
                                                 ]
@@ -408,7 +425,7 @@
                                             }
                                                 {$mediaType->name}
                                             {/cardheader}
-                                            {collapse id="tab-{$cMedienTypId}" class="mb-5" visible=($setActiveClass.mediaGroup && $mediaType@first)
+                                            {collapse id="tab-{$cMedienTypId}" visible=($setActiveClass.mediaGroup && $mediaType@first)
                                                 data=["parent"=>"#tabAccordion"]
                                                 aria=["labelledby"=>"tab-{$cMedienTypId}-head"]
                                             }

@@ -17,6 +17,9 @@ class Migration_20160913123000 extends Migration implements IMigration
     protected $author      = 'aj';
     protected $description = 'Create admin favorite table';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("
@@ -31,6 +34,9 @@ class Migration_20160913123000 extends Migration implements IMigration
         ");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('DROP TABLE `tadminfavs`');

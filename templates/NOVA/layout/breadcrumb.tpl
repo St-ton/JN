@@ -2,15 +2,15 @@
     {strip}
     {has_boxes position='left' assign='hasLeftBox'}
     {if !empty($Brotnavi) && !$bExclusive && !$bAjaxRequest && $nSeitenTyp !== $smarty.const.PAGE_STARTSEITE && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG && $nSeitenTyp !== $smarty.const.PAGE_BESTELLSTATUS}
-        {row class="breadcrumb-wrapper no-gutters align-items-center"}
+        {row no-gutters=true class="breadcrumb-wrapper"}
             {col cols="auto"}
-                {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="http://schema.org/BreadcrumbList" class="p-0 py-2 mb-0"}
+                {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="http://schema.org/BreadcrumbList"}
                     {block name='layout-breadcrumb-sm-back'}
                         {$parent = $Brotnavi[($Brotnavi|count - 2)|max:0]}
                         {if $parent !== null}
-                            {breadcrumbitem class="d-flex d-md-none breadcrumb-arrow"
+                            {breadcrumbitem class="breadcrumb-arrow"
                                 href=$parent->getURLFull()
-                                title=$parent->getName()|escape:'html'
+                                title={sanitizeTitle title=$parent->getName()}
                             }
                                 <span itemprop="name">{$parent->getName()}</span>
                             {/breadcrumbitem}
@@ -20,10 +20,10 @@
                         {foreach $Brotnavi as $oItem}
                             {if $oItem@first}
                                 {block name='layout-breadcrumb-first-item'}
-                                    {breadcrumbitem class="first d-none d-md-flex pl-0"
+                                    {breadcrumbitem class="first"
                                         router-tag-itemprop="url"
                                         href=$oItem->getURLFull()
-                                        title=$oItem->getName()|escape:'html'
+                                        title={sanitizeTitle title=$oItem->getName()}
                                         itemprop="itemListElement"
                                         itemscope=true
                                         itemtype="http://schema.org/ListItem"
@@ -35,10 +35,10 @@
                                 {/block}
                             {elseif $oItem@last}
                                 {block name='layout-breadcrumb-last-item'}
-                                    {breadcrumbitem class="last d-none d-md-flex active"
+                                    {breadcrumbitem class="last active"
                                         router-tag-itemprop="url"
-                                        href="{if $oItem->getHasChild() === true}{$oItem->getURLFull()}{/if}"
-                                        title=$oItem->getName()|escape:'html'
+                                        href="{$oItem->getURLFull()}"
+                                        title={sanitizeTitle title=$oItem->getName()}
                                         itemprop="itemListElement"
                                         itemscope=true
                                         itemtype="http://schema.org/ListItem"
@@ -57,9 +57,8 @@
                             {else}
                                 {block name='layout-breadcrumb-item'}
                                     {breadcrumbitem router-tag-itemprop="url"
-                                        class="d-none d-md-flex"
                                         href=$oItem->getURLFull()
-                                        title=$oItem->getName()|escape:'html'
+                                        title={sanitizeTitle title=$oItem->getName()}
                                         itemprop="itemListElement"
                                         itemscope=true
                                         itemtype="http://schema.org/ListItem"
@@ -74,22 +73,22 @@
                     {/block}
                 {/breadcrumb}
             {/col}
-            {col class='d-md-block d-none'}
+            {col class='navigation-arrows'}
             {if !empty($NavigationBlaettern)}
                 {block name='layout-header-product-pagination'}
                     {if isset($NavigationBlaettern->naechsterArtikel->kArtikel)}
-                        {button variant="link" class="float-right"
+                        {button variant="link"
                             href=$NavigationBlaettern->naechsterArtikel->cURLFull
-                            title=$NavigationBlaettern->naechsterArtikel->cName
+                            title={sanitizeTitle title=$NavigationBlaettern->naechsterArtikel->cName}
                             aria=["label"=>"{lang section='productDetails' key='nextProduct'}: {$NavigationBlaettern->naechsterArtikel->cName}"]
                         }
                             <span class="fa fa-chevron-right"></span>
                         {/button}
                     {/if}
                     {if isset($NavigationBlaettern->vorherigerArtikel->kArtikel)}
-                        {button variant="link" class="float-right"
+                        {button variant="link"
                             href=$NavigationBlaettern->vorherigerArtikel->cURLFull
-                            title=$NavigationBlaettern->vorherigerArtikel->cName
+                            title={sanitizeTitle title=$NavigationBlaettern->vorherigerArtikel->cName}
                             aria=["label"=>"{lang section='productDetails' key='previousProduct'}: {$NavigationBlaettern->vorherigerArtikel->cName}"]
                         }
                             <span class="fa fa-chevron-left"></span>

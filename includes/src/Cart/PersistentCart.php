@@ -4,7 +4,7 @@ namespace JTL\Cart;
 
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\DB\ReturnType;
+use JTL\DB\DbInterface;
 use JTL\Extensions\Config\ItemLocalization;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Tax;
@@ -181,17 +181,16 @@ class PersistentCart
      */
     public function entfernePos(int $id): self
     {
-        $customer = Shop::Container()->getDB()->queryPrepared(
+        $customer = Shop::Container()->getDB()->getSingleObject(
             'SELECT twarenkorbpers.kKunde
                 FROM twarenkorbpers
                 JOIN twarenkorbperspos 
                     ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
                 WHERE twarenkorbperspos.kWarenkorbPersPos = :kwpp',
-            ['kwpp' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['kwpp' => $id]
         );
         // Prüfen ob der eingeloggte Kunde auch der Besitzer der zu löschenden WarenkorbPersPos ist
-        if (!isset($customer->kKunde) || (int)$customer->kKunde === Frontend::getCustomer()->getID()) {
+        if ($customer === null || (int)$customer->kKunde !== Frontend::getCustomer()->getID()) {
             return $this;
         }
         // Alle Eigenschaften löschen
@@ -199,7 +198,7 @@ class PersistentCart
         // Die Position mit ID $id löschen
         Shop::Container()->getDB()->delete('twarenkorbperspos', 'kWarenkorbPersPos', $id);
         // WarenkorbPers Position aus der Session löschen
-        $source = $_SESSION['WarenkorbPers'];
+        $source = $_SESSION['WarenkorbPers'] ?? [];
         if (GeneralObject::hasCount('oWarenkorbPersPos_arr', $source)) {
             foreach ($source->oWarenkorbPersPos_arr as $i => $item) {
                 if ((int)$item->kWarenkorbPersPos === $id) {
@@ -342,10 +341,10 @@ class PersistentCart
      */
     public function ueberpruefePositionen(bool $forceDelete = false): string
     {
-        $productNames = [];
-        $productIDs   = [];
-        $msg          = '';
-        $db           = Shop::Container()->getDB();
+        $productNames   = [];
+        $productPersIDs = [];
+        $msg            = '';
+        $db             = Shop::Container()->getDB();
         foreach ($this->oWarenkorbPersPos_arr as $item) {
             // Hat die Position einen Artikel
             if ($item->kArtikel > 0) {
@@ -413,17 +412,18 @@ class PersistentCart
                                 }
                             }
                         }
-                        $productIDs[] = (int)$productExists->kArtikel;
+                        $productPersIDs[] = (int)$item->kWarenkorbPersPos;
                     }
                 }
                 // Konfigitem ohne Artikelbezug?
             } elseif ($item->kArtikel === 0 && !empty($item->kKonfigitem)) {
-                $productIDs[] = (int)$item->kArtikel;
+                $productPersIDs[] = (int)$item->kWarenkorbPersPos;
             }
         }
         if ($forceDelete) {
+            $productPersIDs = $this->checkForOrphanedConfigItems($productPersIDs, $db);
             foreach ($this->oWarenkorbPersPos_arr as $i => $item) {
-                if (!\in_array((int)$item->kArtikel, $productIDs, true)) {
+                if (!\in_array((int)$item->kWarenkorbPersPos, $productPersIDs, true)) {
                     $this->entfernePos($item->kWarenkorbPersPos);
                     unset($this->oWarenkorbPersPos_arr[$i]);
                 }
@@ -476,13 +476,13 @@ class PersistentCart
     }
 
     /**
-     * @param int    $productID
-     * @param float  $amount
-     * @param array  $attributeValues
-     * @param bool   $unique
-     * @param int    $configItemID
-     * @param int    $type
-     * @param string $responsibility
+     * @param int         $productID
+     * @param float       $amount
+     * @param array       $attributeValues
+     * @param bool|string $unique
+     * @param int         $configItemID
+     * @param int         $type
+     * @param string      $responsibility
      */
     public static function addToCheck(
         int $productID,
@@ -563,5 +563,62 @@ class PersistentCart
                 $responsibility
             );
         }
+    }
+
+    /**
+     * @param array $ids
+     * @param DbInterface $db
+     * @return array
+     */
+    private function checkForOrphanedConfigItems(array $ids, DbInterface $db): array
+    {
+        foreach ($this->oWarenkorbPersPos_arr as $item) {
+            if ((int)$item->kKonfigitem === 0) {
+                continue;
+            }
+
+            $mainKonfigProduct = \array_values(
+                \array_filter($this->oWarenkorbPersPos_arr, static function ($persItem) use ($item) {
+                    return $persItem->kWarenkorbPers === $item->kWarenkorbPers
+                        && $persItem->cUnique === $item->cUnique
+                        && (int)$persItem->kKonfigitem === 0;
+                })
+            );
+
+            //if main product not found, remove the child id
+            if (\count($mainKonfigProduct) === 0) {
+                $ids = \array_values(
+                    \array_filter($ids, static function ($id) use ($item) {
+                        return (int)$id !== (int)$item->kWarenkorbPersPos;
+                    })
+                );
+                continue;
+            }
+            $configItem = $db->getSingleObject(
+                'SELECT * FROM tkonfigitem WHERE kKonfigitem = :konfigItemId ',
+                ['konfigItemId' => (int)$item->kKonfigitem]
+            );
+
+            $checkParentsExistence = $db->getObjects(
+                'SELECT * FROM tartikelkonfiggruppe 
+                    WHERE kArtikel = :parentID
+                    AND kKonfiggruppe = :configItemGroupId',
+                [
+                    'parentID'          => $mainKonfigProduct[0]->kArtikel,
+                    'configItemGroupId' => $configItem->kKonfiggruppe ?? 0,
+                ]
+            );
+
+            if (\count($checkParentsExistence) === 0) {
+                $ids = \array_values(
+                    \array_filter($ids, static function ($id) use ($item, $mainKonfigProduct) {
+                        return (int)$id !== (int)$item->kWarenkorbPersPos
+                            && (int)$id !== $mainKonfigProduct[0]->kWarenkorbPersPos;
+                    })
+                );
+            }
+        }
+
+        return $ids;
     }
 }

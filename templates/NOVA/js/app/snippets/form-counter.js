@@ -38,7 +38,7 @@ const updateCount = function(increase = false) {
 window.initNumberInput = function () {
 	$(`[${Data.up}]`).on('click', proxy(updateCount, true));
 	$(`[${Data.down}]`).on('click', proxy(updateCount));
-	$(`.${Classes.counter} .form-control`).on('keyup blur', function() {
+	$(`.${Classes.counter} .form-control`).on('blur', function() {
 		let min = parseInt(this.min);
 		let max = parseInt(this.max);
 		let value = parseInt(this.value);
@@ -47,5 +47,3 @@ window.initNumberInput = function () {
 		if(value > max) this.value = max;
 	})
 };
-
-initNumberInput();

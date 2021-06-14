@@ -9,7 +9,6 @@ use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Eigenschaft;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Versandart;
-use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Config\ItemLocalization;
 use JTL\Extensions\Download\Download;
@@ -17,6 +16,7 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -71,7 +71,7 @@ class Cart
     public $Waehrung;
 
     /**
-     * @var Versandart
+     * @var Versandart|null
      */
     public $oFavourableShipping;
 
@@ -196,7 +196,9 @@ class Cart
             $newAmount  = \floor(
                 ($depProduct->fLagerbestand - $depAmount) / $depProduct->fPackeinheit / $dependent->stockFactor
             );
-
+            if ($depProduct->fAbnahmeintervall > 0) {
+                $newAmount -= \fmod($newAmount, $depProduct->fAbnahmeintervall);
+            }
             if ($newAmount < $amount) {
                 $amount = $newAmount;
             }
@@ -278,9 +280,8 @@ class Cart
     }
 
     /**
-     * fuegt eine neue Position hinzu
      * @param int         $productID
-     * @param int         $qty   Anzahl des Artikel fuer die neue Position
+     * @param int|float   $qty
      * @param array       $attributeValues
      * @param int         $type
      * @param string|bool $unique
@@ -304,8 +305,8 @@ class Cart
         //schaue, ob es nicht schon Positionen mit diesem Artikel gibt
         foreach ($this->PositionenArr as $i => $item) {
             if (!(isset($item->Artikel->kArtikel)
-                && $item->Artikel->kArtikel == $productID
-                && $item->nPosTyp == $type
+                && (int)$item->Artikel->kArtikel === $productID
+                && (int)$item->nPosTyp === $type
                 && !$item->cUnique)
             ) {
                 continue;
@@ -332,7 +333,7 @@ class Cart
                         }
                     }
                 }
-                if (!$isNew && !$unique) {
+                if (!$isNew) {
                     //erhoehe Anzahl dieser Position
                     $item->nZeitLetzteAenderung = \time();
                     $item->nAnzahl             += $qty;
@@ -623,8 +624,8 @@ class Cart
      * erstellt eine Spezialposition im Warenkorb
      *
      * @param string|array $name
-     * @param string       $qty
-     * @param string       $price
+     * @param string|int   $qty
+     * @param float|string $price
      * @param int          $taxClassID
      * @param int          $type
      * @param bool         $delSamePosType
@@ -788,34 +789,32 @@ class Cart
             return 3;
         }
         $mbw = Frontend::getCustomerGroup()->getAttribute(\KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
-        if ($mbw > 0 && $this->gibGesamtsummeWaren(true, false) < $mbw) {
+        if ($mbw > 0 && $this->gibGesamtsummeWarenOhne([\C_WARENKORBPOS_TYP_GUTSCHEIN], true) < $mbw) {
             return 9;
         }
         if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true)
             && $this->config['kaufabwicklung']['bestellabschluss_spamschutz_nutzen'] === 'Y'
             && ($ip = Request::getRealIP())
         ) {
-            $cnt = Shop::Container()->getDB()->executeQueryPrepared(
-                'SELECT COUNT(*) AS anz
+            $cnt = (int)Shop::Container()->getDB()->getSingleObject(
+                'SELECT COUNT(*) AS cnt
                     FROM tbestellung
                     WHERE cIP = :ip
                         AND dErstellt > NOW() - INTERVAL 1 DAY',
-                ['ip' => $ip],
-                ReturnType::SINGLE_OBJECT
-            );
-            if ($cnt->anz > 0) {
-                $min                = 2 ** $cnt->anz;
-                $min                = \min([$min, 1440]);
-                $bestellungMoeglich = Shop::Container()->getDB()->executeQueryPrepared(
+                ['ip' => $ip]
+            )->cnt;
+            if ($cnt > 0) {
+                $min = 2 ** $cnt;
+                $min = \min([$min, 1440]);
+                $ok  = Shop::Container()->getDB()->getSingleObject(
                     'SELECT dErstellt+INTERVAL ' . $min . ' MINUTE < NOW() AS moeglich
                         FROM tbestellung
                         WHERE cIP = :ip
                             AND dErstellt > NOW()-INTERVAL 1 DAY
                         ORDER BY kBestellung DESC',
-                    ['ip' => $ip],
-                    ReturnType::SINGLE_OBJECT
+                    ['ip' => $ip]
                 );
-                if (!$bestellungMoeglich->moeglich) {
+                if ($ok === null || !$ok->moeglich) {
                     return 8;
                 }
             }
@@ -893,12 +892,12 @@ class Cart
 
     /**
      * gibt Gesamtanzahl eines bestimmten Artikels im Warenkorb zurueck
-     * @param int $productID
-     * @param int $excludePos
-     * @param bool $countParentProducts
+     * @param int|null $productID
+     * @param int      $excludePos
+     * @param bool     $countParentProducts
      * @return int|float
      */
-    public function gibAnzahlEinesArtikels(int $productID, int $excludePos = -1, bool $countParentProducts = false)
+    public function gibAnzahlEinesArtikels(?int $productID, int $excludePos = -1, bool $countParentProducts = false)
     {
         if (!$productID) {
             return 0;
@@ -925,6 +924,7 @@ class Cart
     public function setzePositionsPreise(): self
     {
         $defaultOptions               = Artikel::getDefaultOptions();
+        $configOptions                = Artikel::getDefaultConfigOptions();
         $defaultOptions->nStueckliste = 1;
         $this->oFavourableShipping    = null;
 
@@ -932,7 +932,10 @@ class Cart
             if ($item->kArtikel > 0 && $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 $oldItem = clone $item;
                 $product = new Artikel();
-                if (!$product->fuelleArtikel($item->kArtikel, $defaultOptions)) {
+                if (!$product->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
+                    ? $defaultOptions
+                    : $configOptions)
+                ) {
                     continue;
                 }
                 // Baue Variationspreise im Warenkorb neu, aber nur wenn es ein gültiger Artikel ist
@@ -1024,7 +1027,7 @@ class Cart
      * @param bool   $name
      * @return $this
      */
-    public function setzeKonfig(&$item, bool $prices = true, bool $name = true): self
+    public function setzeKonfig($item, bool $prices = true, bool $name = true): self
     {
         // Falls Konfigitem gesetzt Preise + Name ueberschreiben
         if ((int)$item->kKonfigitem <= 0 || !\class_exists('Konfigitem')) {
@@ -1405,14 +1408,13 @@ class Cart
                 foreach ($item->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
                     if ($oWarenkorbPosEigenschaft->kEigenschaftWert > 0 && $item->nAnzahl > 0) {
                         //schaue in DB, ob Lagerbestand ausreichend
-                        $stock = Shop::Container()->getDB()->query(
+                        $stock = Shop::Container()->getDB()->getSingleObject(
                             'SELECT kEigenschaftWert, fLagerbestand >= ' . $item->nAnzahl .
                             ' AS bAusreichend, fLagerbestand
                                 FROM teigenschaftwert
-                                WHERE kEigenschaftWert = ' . (int)$oWarenkorbPosEigenschaft->kEigenschaftWert,
-                            ReturnType::SINGLE_OBJECT
+                                WHERE kEigenschaftWert = ' . (int)$oWarenkorbPosEigenschaft->kEigenschaftWert
                         );
-                        if (isset($stock->kEigenschaftWert) && $stock->kEigenschaftWert > 0 && !$stock->bAusreichend) {
+                        if ($stock !== null && $stock->kEigenschaftWert > 0 && !$stock->bAusreichend) {
                             if ($stock->fLagerbestand > 0) {
                                 $item->nAnzahl = $stock->fLagerbestand;
                             } else {
@@ -1426,13 +1428,11 @@ class Cart
                 // Position ohne Variationen bzw. Variationen ohne eigenen Lagerbestand
                 // schaue in DB, ob Lagerbestand ausreichend
                 $depProducts = $item->Artikel->getAllDependentProducts(true);
-                $depStock    = Shop::Container()->getDB()->query(
+                $depStock    = Shop::Container()->getDB()->getObjects(
                     'SELECT kArtikel, fLagerbestand
                         FROM tartikel
-                        WHERE kArtikel IN (' . \implode(', ', \array_keys($depProducts)) . ')',
-                    ReturnType::ARRAY_OF_OBJECTS
+                        WHERE kArtikel IN (' . \implode(', ', \array_keys($depProducts)) . ')'
                 );
-
                 foreach ($depStock as $productStock) {
                     $productID = (int)$productStock->kArtikel;
 
@@ -1679,8 +1679,8 @@ class Cart
             && (int)$_SESSION['Kupon']->nGanzenWKRabattieren === 0
             && $_SESSION['Kupon']->cKuponTyp === Kupon::TYPE_STANDARD
         ) {
-            //we have a coupon in the current session but none in the cart.
-            //this happens with coupons tied to special articles that are no longer valid.
+            // we have a coupon in the current session but none in the cart.
+            // this happens with coupons tied to special products that are no longer valid.
             unset($_SESSION['Kupon']);
         }
 
@@ -1864,7 +1864,7 @@ class Cart
         });
 
         $this->oFavourableShipping = null;
-        if (empty($shippingMethods)) {
+        if (\count($shippingMethods) === 0) {
             return null;
         }
         //use previously determined shippingfree shipping method
@@ -1889,7 +1889,7 @@ class Cart
         }
 
         // cheapest shipping except shippings that offer cash payment
-        $shipping = Shop::Container()->getDB()->queryPrepared(
+        $shipping = Shop::Container()->getDB()->getSingleObject(
             "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
                 FROM tversandart va
                 LEFT JOIN tversandartstaffel vas
@@ -1907,7 +1907,9 @@ class Cart
                     va.kVersandberechnung = 1 
                     OR ( va.kVersandberechnung = 4 AND vas.fBis > 0 AND :itemCount <= vas.fBis)
                     OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND :totalWeight <= vas.fBis )
-                    OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND :maxPrices <= vas.fBis )
+                    OR ( va.kVersandberechnung = 3 
+                        AND vas.fBis = (SELECT MIN(fBis) FROM tversandartstaffel WHERE fBis > :maxPrices)
+                        )
                     )
                 AND va.kVersandart IN (' . \implode(', ', $shippingMethods) . ')
                 ORDER BY minPrice, nSort ASC LIMIT 1',
@@ -1917,11 +1919,9 @@ class Cart
                 'totalWeight' => $totalWeight,
                 'maxPrices'   => $maxPrices,
                 'scl'         => '^([0-9 -]* )?' . $shippingClasses
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-
-        if (isset($shipping->kVersandart)) {
+        if ($shipping !== null && $shipping->kVersandart > 0) {
             $method = new Versandart((int)$shipping->kVersandart);
             $method->setCountryCode($countryCode);
 
@@ -1954,11 +1954,21 @@ class Cart
      */
     public function setFavourableShippingString(int $possibleShippingMethods): void
     {
-        if ($this->oFavourableShipping === null && empty(Frontend::get('Versandart'))) {
-            $this->favourableShippingString = \sprintf(
-                Shop::Lang()->get('shippingInformation', 'basket'),
-                Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL()
-            );
+        if (!empty(Frontend::get('Versandart'))) {
+            $this->favourableShippingString = '';
+            return;
+        }
+        if ($this->oFavourableShipping === null) {
+            try {
+                $this->favourableShippingString = \sprintf(
+                    Shop::Lang()->get('shippingInformation', 'basket'),
+                    Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL()
+                );
+            } catch (SpecialPageNotFoundException $e) {
+                $this->favourableShippingString = '';
+                Shop::Container()->getLogService()->error($e->getMessage());
+            }
+
             return;
         }
         $isMerchant    = Frontend::getCustomerGroup()->getIsMerchant();
@@ -1972,20 +1982,25 @@ class Cart
                 Shop::Lang()->get('vat', 'productDetails')
             );
         }
-        if ($possibleShippingMethods === 1) {
-            $this->favourableShippingString = \sprintf(
-                Shop::Lang()->get('shippingInformationSpecificSingle', 'basket'),
-                Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL(),
-                $shippingCosts,
-                $this->oFavourableShipping->country->getName()
-            );
-        } else {
-            $this->favourableShippingString = \sprintf(
-                Shop::Lang()->get('shippingInformationSpecific', 'basket'),
-                Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL(),
-                $shippingCosts,
-                $this->oFavourableShipping->country->getName()
-            );
+        try {
+            if ($possibleShippingMethods === 1) {
+                $this->favourableShippingString = \sprintf(
+                    Shop::Lang()->get('shippingInformationSpecificSingle', 'basket'),
+                    Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL(),
+                    $shippingCosts,
+                    $this->oFavourableShipping->country->getName()
+                );
+            } else {
+                $this->favourableShippingString = \sprintf(
+                    Shop::Lang()->get('shippingInformationSpecific', 'basket'),
+                    Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_VERSAND)->getURL(),
+                    $shippingCosts,
+                    $this->oFavourableShipping->country->getName()
+                );
+            }
+        } catch (SpecialPageNotFoundException $e) {
+            $this->favourableShippingString = '';
+            Shop::Container()->getLogService()->error($e->getMessage());
         }
     }
 

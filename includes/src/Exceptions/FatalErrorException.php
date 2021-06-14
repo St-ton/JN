@@ -37,7 +37,7 @@ class FatalErrorException extends \ErrorException
         if ($trace !== null) {
             if (!$traceArgs) {
                 foreach ($trace as &$frame) {
-                    unset($frame['args'], $frame['this'], $frame);
+                    unset($frame['args'], $frame['this']);
                 }
                 unset($frame);
             }
@@ -83,8 +83,7 @@ class FatalErrorException extends \ErrorException
     }
 
     /**
-     * @param $trace
-     * @throws \ReflectionException
+     * @param array $trace
      */
     protected function setTrace($trace)
     {

@@ -1,7 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
+use JTL\Filesystem\Filesystem;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -25,22 +25,31 @@ use JTL\Plugin\State;
 use JTL\Shop;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
+use League\Flysystem\MountManager;
+use League\Flysystem\UnableToDeleteDirectory;
+use League\Flysystem\UnableToDeleteFile;
 use function Functional\first;
 use function Functional\group;
 use function Functional\select;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
-$oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+/** @global \JTL\Backend\AdminAccount $oAccount */
+$oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
+
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 
+Shop::Container()->getGetText()->loadAdminLocale('pages/plugin');
+
 $errorCount      = 0;
+$plugin          = null;
 $pluginUploaded  = false;
 $reload          = false;
 $notice          = '';
 $errorMsg        = '';
+$pluginNotFound  = false;
 $step            = 'pluginverwaltung_uebersicht';
 $db              = Shop::Container()->getDB();
 $cache           = Shop::Container()->getCache();
@@ -54,6 +63,7 @@ $updater         = new Updater($db, $installer);
 $extractor       = new Extractor($parser);
 $stateChanger    = new StateChanger($db, $cache, $legacyValidator, $pluginValidator);
 $minify          = new MinifyService();
+$response        = null;
 if (isset($_SESSION['plugin_msg'])) {
     $notice = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);
@@ -70,7 +80,7 @@ $pluginsDisabled    = $pluginsInstalled->filter(static function (ListingItem $e)
     return $e->getState() === State::DISABLED;
 });
 $pluginsProblematic = $pluginsInstalled->filter(static function (ListingItem $e) {
-    return \in_array(
+    return in_array(
         $e->getState(),
         [State::ERRONEOUS, State::UPDATE_FAILED, State::LICENSE_KEY_MISSING,
             State::LICENSE_KEY_INVALID, State::ESX_LICENSE_EXPIRED, State::ESX_SUBSCRIPTION_EXPIRED],
@@ -93,7 +103,7 @@ if ($pluginUploaded === true) {
         ->assign('pluginsProblematic', $pluginsProblematic)
         ->assign('pluginsAvailable', $pluginsAvailable)
         ->assign('pluginsErroneous', $pluginsErroneous)
-        ->assign('shopVersion', Version::parse(\APPLICATION_VERSION));
+        ->assign('shopVersion', Version::parse(APPLICATION_VERSION));
 
     $html                  = new stdClass();
     $html->available       = $smarty->fetch('tpl_inc/pluginverwaltung_uebersicht_verfuegbar.tpl');
@@ -111,7 +121,11 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $pluginID = Request::postInt('lizenzkey');
         $step     = 'pluginverwaltung_lizenzkey';
         $loader   = Helper::getLoaderByPluginID($pluginID, $db, $cache);
-        $plugin   = $loader->init($pluginID, true);
+        try {
+            $plugin = $loader->init($pluginID, true);
+        } catch (InvalidArgumentException $e) {
+            $pluginNotFound = true;
+        }
         $smarty->assign('oPlugin', $plugin)
             ->assign('kPlugin', $pluginID);
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
@@ -151,6 +165,10 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $deleteFiles = Request::postInt('delete-files', 1) === 1;
         foreach ($pluginIDs as $pluginID) {
             if (isset($_POST['aktivieren'])) {
+                if (SAFE_MODE) {
+                    $errorMsg = __('Safe mode enabled.') . ' - ' . __('activate');
+                    break;
+                }
                 $res = $stateChanger->activate($pluginID);
                 switch ($res) {
                     case InstallCode::OK:
@@ -166,13 +184,16 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                     case InstallCode::NO_PLUGIN_FOUND:
                         $errorMsg = __('errorPluginNotFound');
                         break;
+                    case InstallCode::DIR_DOES_NOT_EXIST:
+                        $errorMsg = __('errorPluginNotFoundFilesystem');
+                        break;
                     default:
                         break;
                 }
 
                 if ($res > 3) {
                     $mapper   = new ValidationMapper();
-                    $errorMsg = $mapper->map($res, null);
+                    $errorMsg = $mapper->map($res);
                 }
             } elseif (isset($_POST['deaktivieren'])) {
                 $res = $stateChanger->deactivate($pluginID);
@@ -259,8 +280,10 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
     } elseif (Request::verifyGPCDataInt('sprachvariablen') === 1) { // Sprachvariablen editieren
         $step = 'pluginverwaltung_sprachvariablen';
     } elseif (isset($_POST['installieren'])) {
-        $dirs = $_POST['cVerzeichnis'];
-        if (is_array($dirs)) {
+        $dirs = $_POST['cVerzeichnis'] ?? [];
+        if (SAFE_MODE) {
+            $errorMsg = __('Safe mode enabled.') . ' - ' . __('pluginBtnInstall');
+        } elseif (is_array($dirs)) {
             foreach ($dirs as $dir) {
                 $installer->setDir(basename($dir));
                 $res = $installer->prepare();
@@ -273,7 +296,32 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 }
             }
         }
-        $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LICENSES, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
+    } elseif (Request::postInt('delete') === 1) {
+        $dirs    = Request::postVar('cVerzeichnis', []);
+        $res     = count($dirs) > 0;
+        $manager = new MountManager([
+            'plgn' => Shop::Container()->get(Filesystem::class)
+        ]);
+        foreach ($dirs as $dir) {
+            $dir  = basename($dir);
+            $test = $_POST['ext'][$dir] ?? -1;
+            if ($test === -1) {
+                continue;
+            }
+            $dirName = (int)$test === 1
+                ? (PLUGIN_DIR . $dir)
+                : (PFAD_PLUGIN . $dir);
+            try {
+                $manager->deleteDirectory('plgn://' . $dirName);
+            } catch (UnableToDeleteFile | UnableToDeleteDirectory $exception) {
+                $res = false;
+            }
+        }
+        if ($res === true) {
+            $_SESSION['plugin_msg'] = __('successPluginDelete');
+        } else {
+            $_SESSION['plugin_msg'] = __('errorPluginDeleteAtLeastOne');
+        }
     } else {
         $errorMsg = __('errorAtLeastOnePlugin');
     }
@@ -305,12 +353,12 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 $errorMsg = __('errorLangVarNotFound');
             }
         } else { // Editieren
-            $original = $db->query(
+            $original = $db->getObjects(
                 'SELECT * FROM tpluginsprachvariable
                     JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariable.kPluginSprachvariable = tpluginsprachvariablesprache.kPluginSprachvariable
-                    WHERE tpluginsprachvariable.kPlugin = ' . $pluginID,
-                ReturnType::ARRAY_OF_OBJECTS
+                    WHERE tpluginsprachvariable.kPlugin = :pid',
+                ['pid' => $pluginID]
             );
             $original = group($original, static function ($e) {
                 return (int)$e->kPluginSprachvariable;
@@ -346,6 +394,13 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                     if (isset($match->cName) && $match->cName === $customLang->cName) {
                         continue;
                     }
+                    if ($match === null) {
+                        $pluginLang                        = new stdClass();
+                        $pluginLang->kPluginSprachvariable = $kPluginSprachvariable;
+                        $pluginLang->cISO                  = $iso;
+                        $pluginLang->cName                 = '';
+                        $db->insert('tpluginsprachvariablesprache', $pluginLang);
+                    }
 
                     $db->insert('tpluginsprachvariablecustomsprache', $customLang);
                 }
@@ -361,15 +416,15 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
 if ($step === 'pluginverwaltung_uebersicht') {
     foreach ($pluginsAvailable as $available) {
         /** @var ListingItem $available */
-        $szFolder = $available->getPath() . '/';
-        $files    = [
+        $baseDir = $available->getPath() . '/';
+        $files   = [
             'license.md',
             'License.md',
             'LICENSE.md'
         ];
         foreach ($files as $file) {
-            if (file_exists($szFolder . $file)) {
-                $vLicenseFiles[$available->getDir()] = $szFolder . $file;
+            if (file_exists($baseDir . $file)) {
+                $vLicenseFiles[$available->getDir()] = $baseDir . $file;
                 break;
             }
         }
@@ -381,34 +436,37 @@ if ($step === 'pluginverwaltung_uebersicht') {
     $pluginID = Request::verifyGPCDataInt('kPlugin');
     $loader   = Helper::getLoaderByPluginID($pluginID, $db);
 
-    $smarty->assign('pluginLanguages', Shop::Lang()->gibInstallierteSprachen())
-        ->assign('plugin', $loader->init($pluginID))
-        ->assign('kPlugin', $pluginID);
+    try {
+        $smarty->assign('pluginLanguages', Shop::Lang()->gibInstallierteSprachen())
+            ->assign('plugin', $loader->init($pluginID))
+            ->assign('kPlugin', $pluginID);
+    } catch (InvalidArgumentException $e) {
+        $pluginNotFound = true;
+    }
 }
 
 if ($reload === true) {
     $_SESSION['plugin_msg'] = $notice;
-    header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'pluginverwaltung.php', true, 303);
+    header('Location: ' . Shop::getAdminURL() . '/pluginverwaltung.php', true, 303);
     exit();
 }
 
-
 $alert = Shop::Container()->getAlertService();
 if (SAFE_MODE) {
-    $alert->addAlert(Alert::TYPE_WARNING, __('Safe mode enabled.'), 'warnSafeMode');
+    $alert->addAlert(Alert::TYPE_WARNING, __('Safe mode restrictions.'), 'warnSafeMode', ['dismissable' => false]);
 }
-
 $alert->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorPlugin');
 $alert->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');
 
 $smarty->assign('hinweis64', base64_encode($notice))
     ->assign('step', $step)
     ->assign('mapper', new StateMapper())
+    ->assign('pluginNotFound', $pluginNotFound)
     ->assign('pluginsAvailable', $pluginsAvailable)
     ->assign('pluginsErroneous', $pluginsErroneous)
     ->assign('pluginsInstalled', $pluginsInstalled)
     ->assign('pluginsProblematic', $pluginsProblematic)
     ->assign('pluginsDisabled', $pluginsDisabled)
     ->assign('allPluginItems', $pluginsAll)
-    ->assign('shopVersion', Version::parse(\APPLICATION_VERSION))
+    ->assign('shopVersion', Version::parse(APPLICATION_VERSION))
     ->display('pluginverwaltung.tpl');

@@ -4,20 +4,13 @@ namespace JTL\License;
 
 use Exception;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
-use InvalidArgumentException;
 use JTL\Alert\Alert;
 use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\License\Exception\ApiResultCodeException;
-use JTL\License\Exception\ChecksumValidationException;
-use JTL\License\Exception\DownloadValidationException;
-use JTL\License\Exception\FilePermissionException;
 use JTL\License\Installer\Helper;
 use JTL\License\Struct\ExsLicense;
 use JTL\Mapper\PluginValidation;
@@ -34,6 +27,8 @@ use stdClass;
 class Admin
 {
     public const ACTION_EXTEND = 'extendLicense';
+
+    public const ACTION_UPGRADE = 'upgradeLicense';
 
     public const ACTION_SET_BINDING = 'setbinding';
 
@@ -89,6 +84,7 @@ class Admin
      */
     private $validActions = [
         self::ACTION_EXTEND,
+        self::ACTION_UPGRADE,
         self::ACTION_SET_BINDING,
         self::ACTION_CLEAR_BINDING,
         self::ACTION_RECHECK,
@@ -131,7 +127,7 @@ class Admin
         $valid  = Form::validateToken();
         if ($valid) {
             if ($action === self::ACTION_SAVE_TOKEN) {
-                $this->saveToken($smarty);
+                $this->saveToken();
                 $action = null;
             }
             if ($action === self::ACTION_ENTER_TOKEN) {
@@ -154,8 +150,8 @@ class Admin
                 $this->auth->revoke();
                 $action = null;
             }
-            if ($action === self::ACTION_EXTEND) {
-                $this->extend($smarty);
+            if ($action === self::ACTION_EXTEND || $action === self::ACTION_UPGRADE) {
+                $this->extendUpgrade($smarty, $action);
             }
         }
         if ($action === null || !\in_array($action, $this->validActions, true) || !$valid) {
@@ -195,7 +191,7 @@ class Admin
             $download  = $helper->getDownload($itemID);
             $result    = $action === self::ACTION_UPDATE
                 ? $installer->update($exsID, $download, $response)
-                : $installer->install($itemID, $download, $response, true);
+                : $installer->install($itemID, $download, $response);
             if ($result === InstallCode::DUPLICATE_PLUGIN_ID && $action !== self::ACTION_UPDATE) {
                 $download = $helper->getDownload($itemID);
                 $result   = $installer->forceUpdate($download, $response);
@@ -212,14 +208,7 @@ class Admin
                     ->assign('mappedErrorMessage', $mappedErrorMsg)
                     ->assign('resultCode', $result);
             }
-        } catch (ClientException
-        | ConnectException
-        | FilePermissionException
-        | ApiResultCodeException
-        | DownloadValidationException
-        | ChecksumValidationException
-        | InvalidArgumentException $e
-        ) {
+        } catch (Exception $e) {
             $response->status = 'FAILED';
             $msg              = $e->getMessage();
             if (\strpos($msg, 'response:') !== false) {
@@ -255,7 +244,13 @@ class Admin
                 : $this->manager->clearBinding(Request::postVar('url'));
         } catch (ClientException | GuzzleException $e) {
             $response->error = $e->getMessage();
-            $smarty->assign('bindErrorMessage', $e->getMessage());
+            if ($e->getResponse()->getStatusCode() === 400) {
+                $body = \json_decode((string)$e->getResponse()->getBody());
+                if (isset($body->code, $body->message) && $body->code === 422) {
+                    $response->error = $body->message;
+                }
+            }
+            $smarty->assign('bindErrorMessage', $response->error);
         }
         $this->getLicenses(true);
         $this->getList($smarty);
@@ -267,16 +262,17 @@ class Admin
 
     /**
      * @param JTLSmarty $smarty
+     * @param string    $action
      * @throws \SmartyException
      */
-    private function extend(JTLSmarty $smarty): void
+    private function extendUpgrade(JTLSmarty $smarty, string $action): void
     {
         $responseData     = null;
         $apiResponse      = '';
         $response         = new AjaxResponse();
-        $response->action = 'extendLicense';
+        $response->action = $action;
         try {
-            $apiResponse  = $this->manager->extend(
+            $apiResponse  = $this->manager->extendUpgrade(
                 Request::postVar('url'),
                 Request::postVar('exsid'),
                 Request::postVar('key')
@@ -288,7 +284,11 @@ class Admin
         }
         if (isset($responseData->state)) {
             if ($responseData->state === self::STATE_APPROVED) {
-                $smarty->assign('extendSuccessMessage', 'Successfully extended.');
+                if ($action === self::ACTION_EXTEND) {
+                    $smarty->assign('extendSuccessMessage', 'Successfully extended.');
+                } elseif ($action === self::ACTION_UPGRADE) {
+                    $smarty->assign('extendSuccessMessage', 'Successfully executed.');
+                }
             } elseif ($responseData->state === self::STATE_FAILED && isset($responseData->failure_reason)) {
                 $smarty->assign('extendErrorMessage', $responseData->failure_reason);
             } elseif ($responseData->state === self::STATE_CREATED
@@ -297,9 +297,9 @@ class Admin
             ) {
                 foreach ($responseData->links as $link) {
                     if (isset($link->rel) && $link->rel === 'redirect_url') {
-                        \http_response_code(301);
-                        \header('Location: ' . $link->href);
-                        exit();
+                        $response->redirect = $link->href;
+                        $response->status   = 'OK';
+                        $this->sendResponse($response);
                     }
                 }
             }
@@ -320,10 +320,7 @@ class Admin
             ->assign('hasAuth', false);
     }
 
-    /**
-     * @param JTLSmarty $smarty
-     */
-    private function saveToken(JTLSmarty $smarty): void
+    private function saveToken(): void
     {
         $code  = \trim(Request::postVar('code', ''));
         $token = \trim(Request::postVar('token', ''));
@@ -368,7 +365,7 @@ class Admin
         try {
             $this->manager->update($force, $this->getInstalledExtensionPostData());
             $this->checker->handleExpiredLicenses($this->manager);
-        } catch (RequestException | Exception | ClientException $e) {
+        } catch (Exception $e) {
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_ERROR,
                 __('errorFetchLicenseAPI') . '' . $e->getMessage(),

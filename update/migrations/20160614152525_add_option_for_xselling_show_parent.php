@@ -16,12 +16,15 @@ class Migration_20160614152525 extends Migration implements IMigration
 {
     protected $author = 'fp';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setConfig(
             'artikeldetails_xselling_kauf_parent',
             'N',
-            \CONF_ARTIKELDETAILS,
+            CONF_ARTIKELDETAILS,
             'Immer Vaterartikel anzeigen',
             'selectbox',
             230,
@@ -36,6 +39,9 @@ class Migration_20160614152525 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('artikeldetails_xselling_kauf_parent');

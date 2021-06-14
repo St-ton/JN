@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Boxes\Items\AbstractBox;
-use JTL\DB\ReturnType;
 use JTL\Filter\Metadata;
 use JTL\Filter\NavigationURLs;
 use JTL\Filter\Pagination\Info;
@@ -288,7 +287,7 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
 function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return updateNaviFilter($NaviFilter)->getSearchQuery()->editSearchCache($kSpracheExt);
+    return updateNaviFilter($NaviFilter)->getSearchQuery()->editSearchCache((int)$kSpracheExt);
 }
 
 /**
@@ -421,8 +420,8 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $languageID = 0, $bCanon
 }
 
 /**
- * @param object       $oPreis
- * @param object|array $priceRangeFilter
+ * @param object            $oPreis
+ * @param object|array|null $priceRangeFilter
  * @return string
  * @deprecated since 5.0.0
  */
@@ -446,7 +445,7 @@ function berechneMaxMinStep($fMax, $fMin)
 }
 
 /**
- * @return null|string
+ * @return string
  * @deprecated since 5.0.0
  */
 function gibBrotNaviName()
@@ -603,7 +602,7 @@ function gibErweiterteDarstellung($conf, $NaviFilter, $nDarstellung = 0)
 
 /**
  * @deprecated since 5.0.0
- * @param object productFilter
+ * @param object $NaviFilter
  * @param bool   $seo
  * @param object $pages
  * @param int    $maxPages
@@ -962,7 +961,7 @@ function gibArtikelKeysExtendedJTLSearch()
 function baueArtikelAnzahl($filterSQL, &$oSuchergebnisse, $productsPerPage = 20, $limit = 20)
 {
     trigger_error(__FUNCTION__ . ' is deprecated and will do nothing.', E_USER_DEPRECATED);
-    $qty = Shop::Container()->getDB()->query(
+    $qty = Shop::Container()->getDB()->getSingleObject(
         'SELECT COUNT(*) AS nGesamtAnzahl
             FROM(
                 SELECT tartikel.kArtikel
@@ -988,8 +987,7 @@ function baueArtikelAnzahl($filterSQL, &$oSuchergebnisse, $productsPerPage = 20,
                 ($filterSQL->oPreisspannenFilterSQL->cWhere ?? '') .
                 ' GROUP BY tartikel.kArtikel ' .
                 ($filterSQL->oMerkmalFilterSQL->cHaving ?? '') .
-                ') AS tAnzahl',
-        ReturnType::SINGLE_OBJECT
+                ') AS tAnzahl'
     );
     executeHook(HOOK_FILTER_INC_BAUEARTIKELANZAHL, [
         'oAnzahl'          => &$qty,

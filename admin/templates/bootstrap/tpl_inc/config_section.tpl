@@ -19,7 +19,7 @@
                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$configItem->cWertName}">
                             {$configItem->cName}:
                         </label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $configItem->cInputTyp === 'number'}config-type-number{/if}">
                             {if $configItem->cInputTyp === 'selectbox'}
                                 <select name="{$configItem->cWertName}" id="{$configItem->cWertName}" class="custom-select combo">
                                     {foreach $configItem->ConfWerte as $wert}
@@ -82,9 +82,7 @@
                                 <span id="EinstellungAjax_{$configItem->cWertName}"></span>
                             {/if}
                         </div>
-                        {if $configItem->cBeschreibung}
-                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$configItem->cBeschreibung cID=$configItem->kEinstellungenConf}</div>
-                        {/if}
+                        {include file='snippets/einstellungen_icons.tpl' cnf=$configItem}
                     </div>
                 {elseif $showNonConf|default:false}
                     <div class="subheading1 mt-6">

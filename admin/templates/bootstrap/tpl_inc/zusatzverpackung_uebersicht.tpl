@@ -87,3 +87,4 @@
         </div>
     </div>
 </form>
+{include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}

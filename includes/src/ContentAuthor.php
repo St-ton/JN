@@ -2,7 +2,7 @@
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
+use stdClass;
 
 /**
  * Class ContentAuthor
@@ -27,12 +27,11 @@ class ContentAuthor
             }
         }
         if ($authorID > 0) {
-            return Shop::Container()->getDB()->query(
-                "INSERT INTO tcontentauthor (cRealm, kAdminlogin, kContentId)
-                    VALUES('" . $realm . "', " . $authorID . ', ' . $contentID . ')
-                    ON DUPLICATE KEY UPDATE
-                        kAdminlogin = ' . $authorID,
-                ReturnType::DEFAULT
+            return Shop::Container()->getDB()->queryPrepared(
+                'INSERT INTO tcontentauthor (cRealm, kAdminlogin, kContentId)
+                    VALUES (:realm, :aid, :cid)
+                    ON DUPLICATE KEY UPDATE kAdminlogin = :aid',
+                ['realm' => $realm, 'aid' => $authorID, 'cid' => $contentID]
             );
         }
 
@@ -43,7 +42,7 @@ class ContentAuthor
      * @param string $realm
      * @param int    $contentID
      */
-    public function clearAuthor($realm, int $contentID): void
+    public function clearAuthor(string $realm, int $contentID): void
     {
         Shop::Container()->getDB()->delete('tcontentauthor', ['cRealm', 'kContentId'], [$realm, $contentID]);
     }
@@ -60,7 +59,7 @@ class ContentAuthor
             ? ' AND tadminlogin.bAktiv = 1
                 AND COALESCE(tadminlogin.dGueltigBis, NOW()) >= NOW()'
             : '';
-        $author = Shop::Container()->getDB()->queryPrepared(
+        $author = Shop::Container()->getDB()->getSingleObject(
             'SELECT tcontentauthor.kContentAuthor, tcontentauthor.cRealm, 
                 tcontentauthor.kAdminlogin, tcontentauthor.kContentId,
                 tadminlogin.cName, tadminlogin.cMail
@@ -69,16 +68,15 @@ class ContentAuthor
                     ON tadminlogin.kAdminlogin = tcontentauthor.kAdminlogin
                 WHERE tcontentauthor.cRealm = :realm
                     AND tcontentauthor.kContentId = :contentid' . $filter,
-            ['realm' => $realm, 'contentid' => $contentID],
-            ReturnType::SINGLE_OBJECT
+            ['realm' => $realm, 'contentid' => $contentID]
         );
-        if (isset($author->kAdminlogin) && (int)$author->kAdminlogin > 0) {
-            $attribs                = Shop::Container()->getDB()->query(
+        if ($author !== null && (int)$author->kAdminlogin > 0) {
+            $attribs                = Shop::Container()->getDB()->getObjects(
                 'SELECT tadminloginattribut.kAttribut, tadminloginattribut.cName, 
                     tadminloginattribut.cAttribValue, tadminloginattribut.cAttribText
                     FROM tadminloginattribut
-                    WHERE tadminloginattribut.kAdminlogin = ' . (int)$author->kAdminlogin,
-                ReturnType::ARRAY_OF_OBJECTS
+                    WHERE tadminloginattribut.kAdminlogin = :aid',
+                ['aid' => (int)$author->kAdminlogin]
             );
             $author->extAttribs     = [];
             $author->kContentId     = (int)$author->kContentId;
@@ -95,7 +93,7 @@ class ContentAuthor
 
     /**
      * @param array|null $adminRights
-     * @return array
+     * @return stdClass[]
      */
     public function getPossibleAuthors(array $adminRights = null): array
     {
@@ -110,13 +108,11 @@ class ContentAuthor
                         ))";
         }
 
-        return Shop::Container()->getDB()->query(
+        return Shop::Container()->getDB()->getObjects(
             'SELECT tadminlogin.kAdminlogin, tadminlogin.cLogin, tadminlogin.cName, tadminlogin.cMail 
                 FROM tadminlogin
                 WHERE tadminlogin.bAktiv = 1
-                    AND COALESCE(tadminlogin.dGueltigBis, NOW()) >= NOW()
-                    AND tadminlogin.kAdminlogin > 1' . $filter,
-            ReturnType::ARRAY_OF_OBJECTS
+                    AND COALESCE(tadminlogin.dGueltigBis, NOW()) >= NOW()' . $filter
         );
     }
 }

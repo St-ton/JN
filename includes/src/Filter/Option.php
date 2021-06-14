@@ -9,18 +9,18 @@ use JTL\Media\MultiSizeImage;
  *
  * @package JTL\Filter
  *
- * @property $kHersteller
- * @property $nAnzahlTagging
- * @property $kKategorie
- * @property $nVon
- * @property $cVonLocalized
- * @property $nBis
- * @property $cBisLocalized
- * @property $nAnzahlArtikel
- * @property $nStern
- * @property $kKey
- * @property $cSuche
- * @property $kSuchanfrage
+ * @property int $kHersteller
+ * @property int $nAnzahlTagging
+ * @property int $kKategorie
+ * @property int $nVon
+ * @property string $cVonLocalized
+ * @property int $nBis
+ * @property string $cBisLocalized
+ * @property int $nAnzahlArtikel
+ * @property int $nStern
+ * @property int $kKey
+ * @property string $cSuche
+ * @property int $kSuchanfrage
  */
 class Option extends AbstractFilter
 {
@@ -78,7 +78,7 @@ class Option extends AbstractFilter
 
     /**
      * Option constructor.
-     * @param null $productFilter
+     * @param ProductFilter|null $productFilter
      */
     public function __construct($productFilter = null)
     {
@@ -97,13 +97,13 @@ class Option extends AbstractFilter
     }
 
     /**
-     * @param bool $isActive
+     * @param bool $active
      * @return $this
      */
-    public function setIsActive(bool $isActive): FilterInterface
+    public function setIsActive(bool $active): FilterInterface
     {
-        $this->isActive = $isActive;
-        $this->nAktiv   = (int)$isActive;
+        $this->isActive = $active;
+        $this->nAktiv   = (int)$active;
 
         return $this;
     }
@@ -155,7 +155,7 @@ class Option extends AbstractFilter
     }
 
     /**
-     * @param string $url
+     * @param string|null $url
      * @return $this
      */
     public function setURL($url): FilterInterface

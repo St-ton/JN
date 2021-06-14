@@ -1,12 +1,12 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Plugin\Admin\InputType;
 use JTL\Plugin\Admin\Installation\MigrationManager;
+use JTL\Plugin\Admin\Markdown;
 use JTL\Plugin\Data\Config;
 use JTL\Plugin\Helper;
 use JTL\Plugin\Helper as PluginHelper;
@@ -15,9 +15,10 @@ use \JTL\Plugin\State;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plugin_inc.php';
 
 $notice          = '';
@@ -41,15 +42,14 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
             $hasError = true;
         } else {
             $plgnConf = isset($_POST['kPluginAdminMenu'])
-                ? $db->queryPrepared(
+                ? $db->getObjects(
                     "SELECT *
                         FROM tplugineinstellungenconf
                         WHERE kPluginAdminMenu != 0
                             AND kPlugin = :plgn
                             AND cConf != 'N'
                             AND kPluginAdminMenu = :kpm",
-                    ['plgn' => $pluginID, 'kpm' => Request::postInt('kPluginAdminMenu')],
-                    ReturnType::ARRAY_OF_OBJECTS
+                    ['plgn' => $pluginID, 'kpm' => Request::postInt('kPluginAdminMenu')]
                 )
                 : [];
             foreach ($plgnConf as $current) {
@@ -94,7 +94,12 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
         }
         $loader = Helper::getLoaderByPluginID($pluginID, $db, $cache);
         if ($loader !== null) {
-            $plugin = $loader->init($pluginID, $invalidateCache);
+            try {
+                $plugin = $loader->init($pluginID, $invalidateCache);
+            } catch (InvalidArgumentException $e) {
+                $pluginNotFound = true;
+            }
+
             if ($plugin !== null && $plugin->isBootstrap()) {
                 Helper::updatePluginInstance($plugin);
             }
@@ -141,8 +146,9 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
         }
         foreach ($plugin->getAdminMenu()->getItems() as $menu) {
             if ($menu->isMarkdown === true) {
-                $parseDown  = new Parsedown();
-                $content    = $parseDown->text(Text::convertUTF8(file_get_contents($menu->file)));
+                $markdown = new Markdown();
+                $markdown->setImagePrefixURL($plugin->getPaths()->getBaseURL());
+                $content    = $markdown->text(Text::convertUTF8(file_get_contents($menu->file)));
                 $menu->html = $smarty->assign('content', $content)->fetch($menu->tpl);
             } elseif ($menu->configurable === false) {
                 if (SAFE_MODE) {
@@ -191,7 +197,7 @@ if ($plugin !== null && $plugin->getState() === State::DISABLED) {
 
 $smarty->assign('oPlugin', $plugin)
     ->assign('step', $step)
-    ->assign('pluginNotFound', $pluginNotFound)
+    ->assign('pluginNotFound', $pluginNotFound || $plugin === null)
     ->assign('hasDifferentVersions', false)
     ->assign('currentDatabaseVersion', 0)
     ->assign('currentFileVersion', 0)

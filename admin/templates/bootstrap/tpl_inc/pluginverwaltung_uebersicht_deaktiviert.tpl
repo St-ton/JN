@@ -1,4 +1,4 @@
-<div id="deaktiviert" class="tab-pane fade {if isset($cTab) && $cTab === 'deaktiviert'} active show{/if}">
+<div id="deaktiviert" class="tab-pane fade {if $cTab === 'deaktiviert'} active show{/if}">
     {if $pluginsDisabled->count() > 0}
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php" id="disbled-plugins">
             {$jtl_token}
@@ -30,6 +30,14 @@
                                         <input class="custom-control-input" type="checkbox" name="kPlugin[]" id="plugin-check-{$plugin->getID()}" value="{$plugin->getID()}" />
                                         <label class="custom-control-label" for="plugin-check-{$plugin->getID()}"></label>
                                     </div>
+                                    {if $plugin->isShop5Compatible() === false}
+                                        <span title="{__('dangerPluginNotCompatibleShop5')}" class="label text-warning" data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-exclamation-triangle"></span>
+                                                <span class="fas fa-exclamation-triangle"></span>
+                                            </span>
+                                        </span>
+                                    {/if}
                                 </td>
                                 <td>
                                     <label for="plugin-check-{$plugin->getID()}">{$plugin->getName()}</label>

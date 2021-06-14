@@ -251,6 +251,9 @@ msgstr "Lax"
 msgid "global_cookie_samesite_value(Strict)"
 msgstr "Strict"
 
+msgid "global_cookie_samesite_value(None)"
+msgstr "None"
+
 msgid "email_methode_value(mail)"
 msgstr "PHP mail()"
 
@@ -309,10 +312,10 @@ msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_value(U)"
-msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind"
+msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind."
 
 msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_value(I)"
-msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind"
+msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind."
 
 msgid "artikeluebersicht_hersteller_anzeigen_value(Y)"
 msgstr "Ja, als Text"
@@ -507,10 +510,10 @@ msgid "artikeldetails_lieferantenbestand_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "artikeldetails_lieferantenbestand_anzeigen_value(U)"
-msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind"
+msgstr "Ja, wenn Artikel ausverkauft und Überverkäufe möglich sind."
 
 msgid "artikeldetails_lieferantenbestand_anzeigen_value(I)"
-msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind"
+msgstr "Ja, wenn Artikel ausverkauft und keine Überverkäufe möglich sind."
 
 msgid "artikeldetails_kurzbeschreibung_anzeigen_value(Y)"
 msgstr "Ja"
@@ -632,17 +635,11 @@ msgstr "Nein"
 msgid "isbn_display_value(N)"
 msgstr "Nein"
 
-msgid "artikeldetails_variationskombikind_bildvorschau_value(Y)"
-msgstr "Ja"
-
 msgid "adr_hazard_display_value(N)"
 msgstr "Nein"
 
 msgid "isbn_display_value(D)"
 msgstr "Ja, auf der Artikeldetailseite"
-
-msgid "artikeldetails_variationskombikind_bildvorschau_value(N)"
-msgstr "Nein"
 
 msgid "adr_hazard_display_value(D)"
 msgstr "Ja, auf der Artikeldetailseite"
@@ -786,7 +783,7 @@ msgid "artikeldetails_vergleichsliste_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "mediendatei_anzeigen_value(YM)"
-msgstr "Ja, als neue Registerkarten pro Mediengruppe"
+msgstr "Ja, als neue Registerkarte / Tab pro Mediengruppe"
 
 msgid "mediendatei_anzeigen_value(YA)"
 msgstr "Ja, unter der Artikelbeschreibung"
@@ -1073,6 +1070,24 @@ msgstr "Ja, erforderliche Angabe"
 msgid "lieferadresse_abfragen_standardland_value(N)"
 msgstr "Nein"
 
+msgid "lieferadresse_abfragen_firma_value(O)"
+msgstr "Ja, optionale Angabe"
+
+msgid "lieferadresse_abfragen_firma_value(Y)"
+msgstr "Ja, erforderliche Angabe"
+
+msgid "lieferadresse_abfragen_firma_value(N)"
+msgstr "Nein"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(O)"
+msgstr "Ja, optionale Angabe"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(Y)"
+msgstr "Ja, erforderliche Angabe"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(N)"
+msgstr "Nein"
+
 msgid "shop_ustid_bzstpruefung_value(Y)"
 msgstr "Ja"
 
@@ -1119,6 +1134,12 @@ msgid "warenkorb_warenkorb2pers_merge_value(Y)"
 msgstr "Ja"
 
 msgid "warenkorb_warenkorb2pers_merge_value(N)"
+msgstr "Nein"
+
+msgid "warenkorb_gesamtgewicht_anzeigen_value(Y)"
+msgstr "Ja"
+
+msgid "warenkorb_gesamtgewicht_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "warenkorb_warenkorb2pers_merge_value(P)"
@@ -1299,7 +1320,7 @@ msgid "bilder_dateiformat_value(PNG)"
 msgstr "PNG"
 
 msgid "bilder_dateiformat_value(AUTO)"
-msgstr "Auto (zusätzlich .webp anlegen)"
+msgstr "Automatisch, zusätzlich .webp anlegen"
 
 msgid "container_verwenden_value(N)"
 msgstr "Nein"
@@ -1405,6 +1426,12 @@ msgstr "Mit Komma maskieren"
 
 msgid "exportformate_semikolon_value( )"
 msgstr "Mit Leerzeichen maskieren"
+
+msgid "exportformate_line_ending_value(LF)"
+msgstr "LF"
+
+msgid "exportformate_line_ending_value(CRLF)"
+msgstr "CRLF"
 
 msgid "kontakt_abfragen_anrede_value(Y)"
 msgstr "Ja, erforderliche Angabe"
@@ -1517,6 +1544,12 @@ msgstr "Ja"
 msgid "preisverlauf_anzeigen_value(N)"
 msgstr "Nein"
 
+msgid "vergleichsliste_anzeigen_value(Y)"
+msgstr "Ja"
+
+msgid "vergleichsliste_anzeigen_value(N)"
+msgstr "Nein"
+
 msgid "vergleichsliste_target_value(parent)"
 msgstr "Im selben Fenster"
 
@@ -1530,6 +1563,12 @@ msgid "bewertung_anzeigen_value(Y)"
 msgstr "Ja"
 
 msgid "bewertung_anzeigen_value(N)"
+msgstr "Nein"
+
+msgid "bewertung_alle_sprachen_value(Y)"
+msgstr "Ja"
+
+msgid "bewertung_alle_sprachen_value(N)"
 msgstr "Nein"
 
 msgid "bewertung_freischalten_value(Y)"
@@ -1726,6 +1765,15 @@ msgstr "Ja, im Content-Bereich und der Navigationsbox"
 
 msgid "merkmalfilter_verwenden_value(N)"
 msgstr "Nein"
+
+msgid "merkmalfilter_trefferanzahl_anzeigen_value(N)"
+msgstr "Trefferanzahl nie anzeigen"
+
+msgid "merkmalfilter_trefferanzahl_anzeigen_value(E)"
+msgstr "Trefferanzahl nur bei Einfachauswahl anzeigen"
+
+msgid "merkmalfilter_trefferanzahl_anzeigen_value(Y)"
+msgstr "Trefferanzahl auch bei möglicher Mehrfachauswahl anzeigen (performancelastig)"
 
 msgid "merkmal_anzeigen_als_value(T)"
 msgstr "Text"
@@ -2394,13 +2442,22 @@ msgid "bewertung_sortierung_value(3)"
 msgstr "Bewertung absteigend"
 
 msgid "bewertung_sortierung_value(4)"
-msgstr "Hilfreich aufsteigend"
+msgstr "Hilfreichste zuerst"
 
 msgid "bewertung_sortierung_value(5)"
-msgstr "Hilfreich absteigend"
+msgstr "Am wenigsten hilfreiche zuerst"
 
 msgid "direct_advertising_value(N)"
 msgstr "Nein"
 
 msgid "direct_advertising_value(Y)"
 msgstr "Ja"
+
+msgid "consent_manager_show_banner_value(1)"
+msgstr "Beim ersten Seitenaufruf (1)"
+
+msgid "consent_manager_show_banner_value(2)"
+msgstr "Beim zweiten Seitenaufruf (2)"
+
+msgid "consent_manager_show_banner_value(3)"
+msgstr "Beim dritten Seitenaufruf (3)"

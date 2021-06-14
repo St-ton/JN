@@ -24,17 +24,17 @@ function lang_warenkorb_warenkorbEnthaeltXArtikel(Cart $cart): string
 
         return $ret;
     }
-    $nArtikel = $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]);
-    $nArtikel = str_replace('.', ',', $nArtikel);
-    if ($nArtikel === 1) {
-        return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' .
-            $nArtikel . ' ' . Shop::Lang()->get('product');
+    $count       = $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]);
+    $countString = str_replace('.', ',', (string)$count);
+    if ($count === 1) {
+        return Shop::Lang()->get('yourbasketcontains', 'checkout')
+            . ' ' . $countString . ' ' . Shop::Lang()->get('product');
     }
-    if ($nArtikel > 1) {
-        return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' .
-            $nArtikel . ' ' . Shop::Lang()->get('products');
+    if ($count > 1) {
+        return Shop::Lang()->get('yourbasketcontains', 'checkout')
+            . ' ' . $countString . ' ' . Shop::Lang()->get('products');
     }
-    if ($nArtikel === 0) {
+    if ($count === 0) {
         return Shop::Lang()->get('emptybasket', 'checkout');
     }
 
@@ -88,25 +88,25 @@ function lang_warenkorb_Artikelanzahl($count)
 }
 
 /**
- * @param int $laenge
+ * @param int $length
  * @return string
  */
-function lang_passwortlaenge($laenge)
+function lang_passwortlaenge($length)
 {
-    return $laenge . ' ' . Shop::Lang()->get('min', 'characters') . '!';
+    return $length . ' ' . Shop::Lang()->get('min', 'characters') . '!';
 }
 
 /**
- * @param int  $ust
- * @param bool $netto
+ * @param int|string $ust
+ * @param bool       $net
  * @return string
  */
-function lang_steuerposition($ust, $netto)
+function lang_steuerposition($ust, $net)
 {
     if ($ust == (int)$ust) {
         $ust = (int)$ust;
     }
-    return $netto
+    return $net
         ? Shop::Lang()->get('plus', 'productDetails') . ' ' . $ust . '% ' . Shop::Lang()->get('vat', 'productDetails')
         : Shop::Lang()->get('incl', 'productDetails') . ' ' . $ust . '% ' . Shop::Lang()->get('vat', 'productDetails');
 }

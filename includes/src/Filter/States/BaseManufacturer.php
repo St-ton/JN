@@ -3,7 +3,6 @@
 namespace JTL\Filter\States;
 
 use JTL\Catalog\Hersteller;
-use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Items\Manufacturer;
@@ -64,14 +63,13 @@ class BaseManufacturer extends AbstractFilter
             if (!\is_array($val)) {
                 $val = [$val];
             }
-            $seoData = $this->productFilter->getDB()->query(
+            $seoData = $this->productFilter->getDB()->getObjects(
                 "SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
                     JOIN thersteller
                         ON thersteller.kHersteller = tseo.kKey
                     WHERE cKey = 'kHersteller' 
-                        AND kKey IN (" . \implode(', ', $val) . ')',
-                ReturnType::ARRAY_OF_OBJECTS
+                        AND kKey IN (" . \implode(', ', $val) . ')'
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
@@ -136,10 +134,9 @@ class BaseManufacturer extends AbstractFilter
     }
 
     /**
-     * @param null $data
-     * @return Option[]
+     * @inheritDoc
      */
-    public function getOptions($data = null): array
+    public function getOptions($mixed = null): array
     {
         if ($this->options !== null) {
             return $this->options;
@@ -177,7 +174,7 @@ class BaseManufacturer extends AbstractFilter
 
             return $this->options;
         }
-        $manufacturers    = $this->productFilter->getDB()->query(
+        $manufacturers    = $this->productFilter->getDB()->getObjects(
             'SELECT tseo.cSeo,
                 ssMerkmal.kHersteller,
                 ssMerkmal.cName,
@@ -190,8 +187,7 @@ class BaseManufacturer extends AbstractFilter
                         AND tseo.cKey = 'kHersteller'
                         AND tseo.kSprache = " . $this->getLanguageID() . '
                     GROUP BY ssMerkmal.kHersteller
-                    ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName',
-            ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName'
         );
         $additionalFilter = new Manufacturer($this->productFilter);
         foreach ($manufacturers as $manufacturer) {

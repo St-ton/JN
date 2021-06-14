@@ -306,8 +306,7 @@
   border-bottom: 2px solid transparent;
   border-radius: 0;
   padding: 14px 2px 12px;
-  margin: 0 14px;
-  margin-right: 8px;
+  margin: 0 0 0 17px;
   color: #BDBDBD;
   background-color: inherit;
 }
@@ -517,6 +516,8 @@
 }
 #opc #opcSidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-info .opc-draft-actions .opc-dropdown .opc-dropdown-menu {
   width: auto;
+  overflow-x: auto;
+  max-height: 150px;
 }
 #opc #opcSidebar #opc-sidebar-footer {
   position: absolute;

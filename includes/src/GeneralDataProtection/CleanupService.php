@@ -2,8 +2,6 @@
 
 namespace JTL\GeneralDataProtection;
 
-use JTL\DB\ReturnType;
-
 /**
  * Class CleanupService
  * @package JTL\GeneralDataProtection
@@ -111,8 +109,7 @@ class CleanupService extends Method implements MethodInterface
                 $this->db->query(
                     'DELETE ' . $from . '
                         FROM ' . $table . $join . "
-                        WHERE DATE_SUB('" . $cObjectNow . "', INTERVAL " . $cInterval . ' DAY) >= ' . $dateCol,
-                    ReturnType::DEFAULT
+                        WHERE DATE_SUB('" . $cObjectNow . "', INTERVAL " . $cInterval . ' DAY) >= ' . $dateCol
                 );
             } else {
                 $dateCol = $dateField;
@@ -121,8 +118,7 @@ class CleanupService extends Method implements MethodInterface
                 }
                 $this->db->query(
                     'DELETE FROM ' . $table . "
-                        WHERE DATE_SUB('" . $cObjectNow . "', INTERVAL " . $cInterval . ' DAY) >= ' . $dateCol,
-                    ReturnType::DEFAULT
+                        WHERE DATE_SUB('" . $cObjectNow . "', INTERVAL " . $cInterval . ' DAY) >= ' . $dateCol
                 );
             }
         }

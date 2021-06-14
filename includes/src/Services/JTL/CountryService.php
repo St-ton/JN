@@ -6,8 +6,6 @@ use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Country\Country;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
-use JTL\Shop;
 
 /**
  * Class CountryService
@@ -47,22 +45,23 @@ class CountryService implements CountryServiceInterface
     {
         $cacheID = 'serviceCountryList';
         if (($countries = $this->cache->get($cacheID)) !== false) {
-            $this->countryList = $countries;
+            $this->countryList = $countries->sortBy(static function (Country $country) {
+                return $country->getName();
+            });
 
             return;
         }
-        $countries = $this->db->query('SELECT * FROM tland', ReturnType::ARRAY_OF_OBJECTS);
-        foreach ($countries as $country) {
+        foreach ($this->db->getObjects('SELECT * FROM tland') as $country) {
             $countryTMP = new Country($country->cISO);
             $countryTMP->setEU((int)$country->nEU)
-                       ->setContinent($country->cKontinent)
-                       ->setNameDE($country->cDeutsch)
-                       ->setNameEN($country->cEnglisch);
+                ->setContinent($country->cKontinent)
+                ->setNameDE($country->cDeutsch)
+                ->setNameEN($country->cEnglisch);
 
-            $this->getCountryList()->push($countryTMP);
+            $this->countryList->push($countryTMP);
         }
 
-        $this->countryList = $this->getCountryList()->sortBy(static function (Country $country) {
+        $this->countryList = $this->countryList->sortBy(static function (Country $country) {
             return $country->getName();
         });
 
@@ -78,13 +77,13 @@ class CountryService implements CountryServiceInterface
     }
 
     /**
-     * @param string $ISO
+     * @param string $iso
      * @return Country
      */
-    public function getCountry(string $ISO): ?Country
+    public function getCountry(string $iso): ?Country
     {
-        return $this->getCountryList()->first(static function (Country $country) use ($ISO) {
-            return $country->getISO() === \strtoupper($ISO);
+        return $this->getCountryList()->first(static function (Country $country) use ($iso) {
+            return $country->getISO() === \strtoupper($iso);
         });
     }
 
@@ -114,7 +113,7 @@ class CountryService implements CountryServiceInterface
         $name  = \strtolower($countryName);
         $match = $this->getCountryList()->first(static function (Country $country) use ($name) {
             foreach ($country->getNames() as $tmpName) {
-                if (\strtolower($tmpName) === $name) {
+                if (\strtolower($tmpName) === $name || $name === \strtolower($country->getNameDE())) {
                     return true;
                 }
             }
@@ -126,8 +125,8 @@ class CountryService implements CountryServiceInterface
     }
 
     /**
-     * @param bool $getEU - get all countries in EU and all countries in Europe not in EU
-     * @param array|null $selectedCountries
+     * @param bool  $getEU - get all countries in EU and all countries in Europe not in EU
+     * @param array $selectedCountries
      * @return array
      */
     public function getCountriesGroupedByContinent(bool $getEU = false, array $selectedCountries = []): array
@@ -165,7 +164,7 @@ class CountryService implements CountryServiceInterface
             ];
         }
         \usort($continents, static function ($a, $b) {
-            return $a->sort > $b->sort;
+            return $a->sort <=> $b->sort;
         });
 
         return $continents;

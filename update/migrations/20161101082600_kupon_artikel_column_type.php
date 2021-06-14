@@ -16,11 +16,17 @@ class Migration_20161101082600 extends Migration implements IMigration
 {
     protected $author = 'dr';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE tkupon MODIFY cArtikel MEDIUMTEXT NOT NULL');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE tkupon MODIFY cArtikel TEXT NOT NULL');

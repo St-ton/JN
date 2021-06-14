@@ -12,13 +12,13 @@ msgid "validFolderPermissionsTitle"
 msgstr "File system"
 
 msgid "validFolderPermissionsMessage"
-msgstr "Some directories are not writable."
+msgstr "Some directories are not writeable."
 
 msgid "hasInstallDirTitle"
 msgstr "System"
 
 msgid "hasInstallDirMessage"
-msgstr "Please delete the installation directory \"/install\" in the root directory of your JTL-Shop."
+msgstr "Please delete the installation directory \"/install/\" in the root directory of your online shop."
 
 msgid "validDatabaseStructTitle"
 msgstr "Database structure"
@@ -57,10 +57,10 @@ msgid "hasNewPluginVersionsMessage"
 msgstr "There are new plug-in versions available."
 
 msgid "hasLicenseExpirationsTitle"
-msgstr "Licenses/Subscriptions"
+msgstr "Licences/Subscriptions"
 
 msgid "hasLicenseExpirationsMessage"
-msgstr "At least one subscription will expire soon or is already expired."
+msgstr "At least one subscription will expire shortly."
 
 msgid "hasFullTextIndexErrorTitle"
 msgstr "Full-text search"
@@ -102,9 +102,21 @@ msgstr "One or more link groups do not use unique template names: %s"
 msgid "getExportFormatErrorCountTitle"
 msgstr "Error in export template"
 
+msgid "getExportFormatUncheckedCountTitle"
+msgstr "Unchecked export template"
+
 #placeholder: number of affected export formats
 msgid "getExportFormatErrorCountMessage"
 msgstr "%d export template(s) contain(s) syntax errors."
+
+msgid "Missing special pages"
+msgstr "Missing special pages"
+
+msgid "%d special pages are missing."
+msgstr "%d special pages are missing."
+
+msgid "getExportFormatUncheckedCountMessage"
+msgstr "%d export template(s) are without syntax check."
 
 msgid "getEmailTemplateSyntaxErrorCountTitle"
 msgstr "Error in email template"
@@ -113,17 +125,27 @@ msgstr "Error in email template"
 msgid "getEmailTemplateSyntaxErrorCountMessage"
 msgstr "%d email template(s) contain(s) syntax errors."
 
+#placeholder: number of affected email templates
+msgid "getEmailTemplateSyntaxUncheckedCountMessage"
+msgstr "%d email template(s) are without syntax check."
+
+msgid "getEmailTemplateSyntaxUncheckedCountTitle"
+msgstr "Unchecked email template"
+
 msgid "duplicateSpecialLinkTitle"
 msgstr "Special page created multiple times"
 
 msgid "duplicateSpecialLinkDesc"
 msgstr "At least one special page was created several times for the same customer group(s)."
 
-msgid "Safe mode enabled."
-msgstr "Safe mode active. Some functions might not be available."
-
 msgid "ustIdMiasCheckTitle"
-msgstr "VAT-ID Check"
+msgstr "VAT ID check"
 
 msgid "ustIdMiasCheckMessage"
-msgstr "If you want to use the european VAT tax check through the EU MIAS system, please install the PHP module \"php_soap\"."
+msgstr "If you want to use the European VAT check by the EU VAT Information Exchange System, please install the PHP module \"php_soap\"."
+
+msgid "Missing translations"
+msgstr "Missing translations"
+
+msgid "%d pages are not translated in all available languages."
+msgstr "%d pages are not translated in all available languages."

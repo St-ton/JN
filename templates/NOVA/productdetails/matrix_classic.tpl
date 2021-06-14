@@ -84,7 +84,7 @@
                                                 <div>
                                                     {link href=$child->cSeo title="{lang key='configure'} {$oVariationWert0->cName}-{$oVariationWert1->cName}" class="btn btn-primary configurepos"}
                                                         <i class="fa fa-cogs"></i>
-                                                        <span class="d-none d-sm-inline-block pl-2">{lang key='configure'}</span>
+                                                        <span>{lang key='configure'}</span>
                                                     {/link}
                                                 </div>
                                                 {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
@@ -121,12 +121,12 @@
                                                         type="text"
                                                         aria=["label"=>"{lang key='quantity'} {$oVariationWert0->cName}-{$oVariationWert1->cName}"]
                                                         value="{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->fAnzahl)}{$smarty.session.variBoxAnzahl_arr[$cVariBox]->fAnzahl|replace_delim}{/if}"
-                                                        class="text-right"}
+                                                        class="text-right-util"}
                                                     {if $Artikel->nIstVater == 1}
                                                         {if isset($child->Preise->cVKLocalized[$NettoPreise]) && $child->Preise->cVKLocalized[$NettoPreise] > 0}
                                                             {inputgroupaddon append=true}
                                                                 {inputgrouptext}
-                                                                    &times; {$child->Preise->cVKLocalized[$NettoPreise]}{if !empty($child->Preise->cPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$child->Preise->cPreisVPEWertInklAufpreis[$NettoPreise]})</small>{/if}
+                                                                    &times; {$child->Preise->cVKLocalized[$NettoPreise]}&nbsp;<span class="footnote-reference">*</span>{if !empty($child->Preise->cPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$child->Preise->cPreisVPEWertInklAufpreis[$NettoPreise]})</small>{/if}
                                                                 {/inputgrouptext}
                                                             {/inputgroupaddon}
                                                         {elseif isset($child->Preise->cVKLocalized[$NettoPreise])
@@ -134,7 +134,7 @@
                                                             {assign var=cVariBox value=$oVariationWert1->kEigenschaft|cat:':'|cat:$oVariationWert1->kEigenschaftWert|cat:'_'|cat:$oVariationWert0->kEigenschaft|cat:':'|cat:$oVariationWert0->kEigenschaftWert}
                                                             {inputgroupaddon append=true}
                                                                 {inputgrouptext}
-                                                                    &times; {$child->Preise->cVKLocalized[$NettoPreise]}{if !empty($child->Preise->cPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$child->Preise->cPreisVPEWertInklAufpreis[$NettoPreise]})</small>{/if}
+                                                                    &times; {$child->Preise->cVKLocalized[$NettoPreise]}&nbsp;<span class="footnote-reference">*</span>{if !empty($child->Preise->cPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$child->Preise->cPreisVPEWertInklAufpreis[$NettoPreise]})</small>{/if}
                                                                 {/inputgrouptext}
                                                             {/inputgroupaddon}
                                                         {/if}
@@ -154,7 +154,7 @@
                                                         {math equation='x+y' x=$ovw0 y=$ovw1 assign='fAufpreis'}
                                                         {inputgroupaddon append=true}
                                                             {inputgrouptext}
-                                                                {gibPreisStringLocalizedSmarty bAufpreise=true fAufpreisNetto=$fAufpreis fVKNetto=$Artikel->Preise->fVKNetto kSteuerklasse=$Artikel->kSteuerklasse nNettoPreise=$NettoPreise fVPEWert=$Artikel->fVPEWert cVPEEinheit=$Artikel->cVPEEinheit FunktionsAttribute=$Artikel->FunktionsAttribute}
+                                                                {gibPreisStringLocalizedSmarty bAufpreise=true fAufpreisNetto=$fAufpreis fVKNetto=$Artikel->Preise->fVKNetto kSteuerklasse=$Artikel->kSteuerklasse nNettoPreise=$NettoPreise fVPEWert=$Artikel->fVPEWert cVPEEinheit=$Artikel->cVPEEinheit FunktionsAttribute=$Artikel->FunktionsAttribute}&nbsp;<span class="footnote-reference">*</span>
                                                             {/inputgrouptext}
                                                         {/inputgroupaddon}
                                                     {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 2
@@ -173,7 +173,7 @@
                                                         {math equation='x+y' x=$ovw0 y=$ovw1 assign='fAufpreis'}
                                                         {inputgroupaddon append=true}
                                                             {inputgrouptext}
-                                                                &times; {gibPreisStringLocalizedSmarty bAufpreise=false fAufpreisNetto=$fAufpreis fVKNetto=$Artikel->Preise->fVKNetto kSteuerklasse=$Artikel->kSteuerklasse nNettoPreise=$NettoPreise fVPEWert=$Artikel->fVPEWert cVPEEinheit=$Artikel->cVPEEinheit FunktionsAttribute=$Artikel->FunktionsAttribute}
+                                                                &times; {gibPreisStringLocalizedSmarty bAufpreise=false fAufpreisNetto=$fAufpreis fVKNetto=$Artikel->Preise->fVKNetto kSteuerklasse=$Artikel->kSteuerklasse nNettoPreise=$NettoPreise fVPEWert=$Artikel->fVPEWert cVPEEinheit=$Artikel->cVPEEinheit FunktionsAttribute=$Artikel->FunktionsAttribute}&nbsp;<span class="footnote-reference">*</span>
                                                             {/inputgrouptext}
                                                         {/inputgroupaddon}
                                                     {/if}
@@ -235,7 +235,7 @@
                                     || (!isset($oVariationWertHead->nNichtLieferbar)
                                         || $oVariationWertHead->nNichtLieferbar != 1)}
                                     {assign var=cVariBox value=$oVariationWertHead->kEigenschaft|cat:':'|cat:$oVariationWertHead->kEigenschaftWert}
-                                    <td class="text-center">
+                                    <td class="text-center-util">
                                         {if $Artikel->oVariBoxMatrixBild_arr|@count > 0}
                                             {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                                 {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
@@ -259,7 +259,7 @@
                                     {if isset($Artikel->oVariationKombiKinderAssoc_arr[$cVariBox])}
                                         {assign var=child value=$Artikel->oVariationKombiKinderAssoc_arr[$cVariBox]}
                                     {/if}
-                                    <td class="text-center">
+                                    <td class="text-center-util">
                                         {if $Einstellungen.global.global_erscheinende_kaeuflich === 'N'
                                             && isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                             <small>
@@ -287,7 +287,7 @@
                                                 && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
                                             {link href=$child->cSeo title="{lang key='configure'} {$oVariationWertHead->cName}" class="btn btn-primary configurepos"}
                                                 <i class="fa fa-cogs"></i>
-                                                <span class="d-none d-sm-inline-block pl-2">{lang key='configure'}</span>
+                                                <span>{lang key='configure'}</span>
                                             {/link}
                                             {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                                 <small>
@@ -316,7 +316,7 @@
                                             </div>
                                         {else}
                                             {inputgroup class="{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->bError) && $smarty.session.variBoxAnzahl_arr[$cVariBox]->bError}has-error{/if}"}
-                                                {input class="text-right{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->bError) && $smarty.session.variBoxAnzahl_arr[$cVariBox]->bError} bg-danger{/if}"
+                                                {input class="text-right-util{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->bError) && $smarty.session.variBoxAnzahl_arr[$cVariBox]->bError} bg-danger{/if}"
                                                     placeholder="0"
                                                     name="variBoxAnzahl[_{$oVariationWertHead->kEigenschaft}:{$oVariationWertHead->kEigenschaftWert}]"
                                                     aria=["label"=>"{lang key='quantity'} {$oVariationWertHead->cName}"]
@@ -325,7 +325,7 @@
                                                 {if $Artikel->nVariationAnzahl == 1 && ($Artikel->kVaterArtikel > 0 || $Artikel->nIstVater == 1)}
                                                     {assign var=kEigenschaftWert value=$oVariationWertHead->kEigenschaftWert}
                                                     {inputgroupaddon append=true}
-                                                        {inputgrouptext}&times; {$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->cVKLocalized[$NettoPreise]}{if isset($Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]) && !empty($Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]}){/if}</small>{/inputgrouptext}
+                                                        {inputgrouptext}&times; {$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->cVKLocalized[$NettoPreise]}&nbsp;<span class="footnote-reference">*</span>{if isset($Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]) && !empty($Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]}){/if}</small>{/inputgrouptext}
                                                     {/inputgroupaddon}
                                                 {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 1 && $oVariationWertHead->fAufpreisNetto != 0}
                                                     {inputgroupaddon append=true}
@@ -333,7 +333,7 @@
                                                     {/inputgroupaddon}
                                                 {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 2 && $oVariationWertHead->fAufpreisNetto != 0}
                                                     {inputgroupaddon append=true}
-                                                        {inputgrouptext}&times; {$oVariationWertHead->cPreisInklAufpreis[$NettoPreise]}{if !empty($oVariationWertHead->cPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$oVariationWertHead->cPreisVPEWertInklAufpreis[$NettoPreise]})</small>{/if}{/inputgrouptext}
+                                                        {inputgrouptext}&times; {$oVariationWertHead->cPreisInklAufpreis[$NettoPreise]}&nbsp;<span class="footnote-reference">*</span>{if !empty($oVariationWertHead->cPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$oVariationWertHead->cPreisVPEWertInklAufpreis[$NettoPreise]})</small>{/if}{/inputgrouptext}
                                                     {/inputgroupaddon}
                                                 {/if}
                                             {/inputgroup}
@@ -388,7 +388,7 @@
                                     {assign var=child value=$Artikel->oVariationKombiKinderAssoc_arr[$cVariBox]}
                                 {/if}
                                 <tr>
-                                    <td class="text-center">
+                                    <td class="text-center-util">
                                         {if $Artikel->oVariBoxMatrixBild_arr|@count > 0}
                                             {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                                 {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
@@ -420,7 +420,7 @@
                                                 && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
                                             {link href=$child->cSeo title="{lang key='configure'} {$oVariationWertHead->cName}" class="btn btn-primary configurepos"}
                                                 <i class="fa fa-cogs"></i>
-                                                <span class="d-none d-sm-inline-block pl-2">{lang key='configure'}</span>
+                                                <span>{lang key='configure'}</span>
                                             {/link}
                                             {if isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                                 <div>
@@ -454,7 +454,7 @@
                                         {else}
                                             {inputgroup class="{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->bError) && $smarty.session.variBoxAnzahl_arr[$cVariBox]->bError}has-error{/if}"}
                                                 {input
-                                                    class="text-right" placeholder="0"
+                                                    class="text-right-util" placeholder="0"
                                                     name="variBoxAnzahl[_{$oVariationWertHead->kEigenschaft}:{$oVariationWertHead->kEigenschaftWert}]"
                                                     aria=["label"=>"{lang key='quantity'} {$oVariationWertHead->cName}"]
                                                     type="text"
@@ -463,19 +463,19 @@
                                                     {assign var=kEigenschaftWert value=$oVariationWertHead->kEigenschaftWert}
                                                     {inputgroupaddon append=true}
                                                         {inputgrouptext}
-                                                            &times; {$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->cVKLocalized[$NettoPreise]}{if isset($Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]) && !empty($Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]})</small>{/if}
+                                                            &times; {$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->cVKLocalized[$NettoPreise]}&nbsp;<span class="footnote-reference">*</span>{if isset($Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]) && !empty($Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]})</small>{/if}
                                                         {/inputgrouptext}
                                                     {/inputgroupaddon}
                                                 {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 1 && $oVariationWertHead->fAufpreisNetto!=0}
                                                     {inputgroupaddon append=true}
                                                         {inputgrouptext}
-                                                            {$oVariationWertHead->cAufpreisLocalized[$NettoPreise]}{if !empty($oVariationWertHead->cPreisVPEWertAufpreis[$NettoPreise])} <small>({$oVariationWertHead->cPreisVPEWertAufpreis[$NettoPreise]})</small>{/if}
+                                                            {$oVariationWertHead->cAufpreisLocalized[$NettoPreise]}&nbsp;<span class="footnote-reference">*</span>{if !empty($oVariationWertHead->cPreisVPEWertAufpreis[$NettoPreise])} <small>({$oVariationWertHead->cPreisVPEWertAufpreis[$NettoPreise]})</small>{/if}
                                                         {/inputgrouptext}
                                                     {/inputgroupaddon}
                                                 {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 2 && $oVariationWertHead->fAufpreisNetto!=0}
                                                     {inputgroupaddon append=true}
                                                         {inputgrouptext}
-                                                            &times; {$oVariationWertHead->cPreisInklAufpreis[$NettoPreise]}{if !empty($oVariationWertHead->cPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$oVariationWertHead->cPreisVPEWertInklAufpreis[$NettoPreise]})</small>{/if}
+                                                            &times; {$oVariationWertHead->cPreisInklAufpreis[$NettoPreise]}&nbsp;<span class="footnote-reference">*</span>{if !empty($oVariationWertHead->cPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$oVariationWertHead->cPreisVPEWertInklAufpreis[$NettoPreise]})</small>{/if}
                                                         {/inputgrouptext}
                                                     {/inputgroupaddon}
                                                 {/if}
@@ -487,7 +487,7 @@
                                                     </small>
                                                 </div>
                                             {/if}
-                                            <div class="delivery-status ml-3">
+                                            <div class="delivery-status">
                                                 <small>
                                                     {if $Artikel->nIstVater == 1}
                                                         {if isset($child->nErscheinendesProdukt) && !$child->nErscheinendesProdukt}
@@ -528,6 +528,20 @@
     {/block}
     {block name='productdetails-matrix-classic-submit'}
         {input type="hidden" name="variBox" value="1"}
-        {button name="inWarenkorb" type="submit" value="{lang key='addToCart'}" variant="primary" class="float-right"}{lang key='addToCart'}{/button}
+        {row class="product-matrix-submit"}
+            {col cols=12 md=4 lg=3}
+                {button name="inWarenkorb"
+                    type="submit"
+                    value="{lang key='addToCart'}"
+                    variant="primary"
+                    block=true}
+                    <span class="btn-basket-check">
+                        <span>
+                            {lang key='addToCart'}
+                        </span> <i class="fas fa-shopping-cart"></i>
+                    </span>
+                {/button}
+            {/col}
+        {/row}
     {/block}
 {/block}

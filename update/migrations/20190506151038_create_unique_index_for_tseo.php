@@ -28,6 +28,9 @@ class Migration_20190506151038 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Create unique index for tseo';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -47,6 +50,9 @@ class Migration_20190506151038 extends Migration implements IMigration
         $this->execute('CREATE UNIQUE INDEX cKey ON tseo(cKey, kKey, kSprache)');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         if ($this->fetchOne("SHOW INDEX FROM tseo WHERE KEY_NAME = 'cKey'")) {

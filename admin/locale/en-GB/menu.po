@@ -35,7 +35,7 @@ msgid "Shop logo"
 msgstr "Logo"
 
 msgid "Item badges"
-msgstr "Item stickers"
+msgstr "Item badges"
 
 # Top Menu
 msgid "Contents"
@@ -73,7 +73,7 @@ msgid "Terms / Withdrawal"
 msgstr "Terms/Withdrawal"
 
 msgid "Blog posts"
-msgstr "Blog postings"
+msgstr "Blog posts"
 
 msgid "Footer / Boxes"
 msgstr "Footers/Boxes"
@@ -102,26 +102,11 @@ msgstr "Check boxes"
 msgid "Email"
 msgstr "Email"
 
-# Menu Items
-msgid "Email settings"
-msgstr "Email settings"
-
 msgid "Reports"
 msgstr "Reports"
 
 msgid "Blacklist"
 msgstr "Blacklist"
-
-msgid "E-mail log"
-msgstr "Email log"
-
-# Top Menu
-msgid "Purchases"
-msgstr "Checkout"
-
-# Mid Menu
-msgid "Shopping cart"
-msgstr "Basket"
 
 # Menu Items
 msgid "Checkout"
@@ -133,9 +118,6 @@ msgstr "Baskets"
 msgid "Free gifts"
 msgstr "Free gifts"
 
-# Just incase you want to add a translation for partners:
-#   msgid "Trusted Shops"
-#   msgstr "Trusted Shops"
 # Mid Menu
 msgid "Payments"
 msgstr "Payments"
@@ -144,12 +126,6 @@ msgstr "Payments"
 msgid "Payment methods"
 msgstr "Payment methods"
 
-# Just incase you want to add a translation for partners:
-#   msgid "Amazon Payments"
-#   msgstr "Amazon Pay"
-#
-#   msgid "Skrill"
-#   msgstr "Skrill"
 # Mid Menu
 msgid "Shipments"
 msgstr "Shipments"
@@ -164,9 +140,6 @@ msgstr "Additional packaging"
 msgid "Marketing"
 msgstr "Marketing"
 
-msgid "Customer loyalty"
-msgstr "Customer loyalty"
-
 msgid "Coupons"
 msgstr "Coupons"
 
@@ -178,10 +151,6 @@ msgstr "Comparison list"
 
 msgid "Newsletter"
 msgstr "Newsletter"
-
-# Mid Menu
-msgid "Publicity"
-msgstr "Advertisement"
 
 # Menu Items
 msgid "Banners"
@@ -308,7 +277,7 @@ msgstr "Reset"
 
 # Mid Menu
 msgid "Search"
-msgstr "Search"
+msgstr "Search & item lists"
 
 msgid "Item overview"
 msgstr "Item overview"
@@ -316,8 +285,8 @@ msgstr "Item overview"
 msgid "Search queries"
 msgstr "Search queries"
 
-msgid "Search query activation"
-msgstr "Activate search queries"
+msgid "Cron"
+msgstr "Cron"
 
 # Top Menu
 msgid "Plug-ins"
@@ -326,10 +295,6 @@ msgstr "Plug-ins"
 # Mid Menu
 msgid "Overview"
 msgstr "Overview"
-
-# Menu Items
-msgid "Plug-in marketplace"
-msgstr "Plug-in marketplace"
 
 msgid "Plug-in manager"
 msgstr "Plug-in manager"
@@ -340,14 +305,6 @@ msgstr "My purchases"
 msgid "Plug-in profiler"
 msgstr "Plug-in profiler"
 
-# Mid Menu
-# This is redundant, but could be used in the future.
-#   msgid "Plugins"
-#   msgstr "Plug-ins"
-#
-#
-# Right Top Menu
-
 msgid "Dashboard"
 msgstr "Dashboard"
 
@@ -356,9 +313,6 @@ msgstr "Help"
 
 msgid "System check"
 msgstr "System check"
-
-msgid "Rating system"
-msgstr "Review system"
 
 msgid "Consent manager"
 msgstr "Consent manager"
@@ -400,8 +354,8 @@ msgstr "File system"
 msgid "Some directories are not writeable."
 msgstr "Some directories are not writeable."
 
-msgid "Please delete the installation directory \"/install\" in the root directory."
-msgstr "Please delete the installation directory \"/install\" in the root directory of your JTL-Shop."
+msgid "Please delete the installation directory '/install' in the root directory."
+msgstr "Please delete the installation directory '/install/' in the root directory of your JTL-Shop."
 
 msgid "Database"
 msgstr "Database"
@@ -419,7 +373,7 @@ msgid "You have activated a non-standard template!"
 msgstr "No standard template enabled."
 
 msgid "The profiler is active. This can cause strong power loss in the shop."
-msgstr "The plug-in profiler is active. This can lead to severe performance issues."
+msgstr "The plug-in profiler is enabled. This can lead to severe performance issues."
 
 msgid "New plugin versions are available."
 msgstr "There are new plug-in versions available."
@@ -436,13 +390,13 @@ msgstr "No full-text index available."
 msgid "E-mail template broken"
 msgstr "Defective email template"
 
-msgid "The E-mail template \"Passwort vergessen\"/\"Forgotten password\" is outdated. The variable $neues_passwort is not available anymore. Please replace this with $passwordResetLink or reset the template."
+msgid "The E-mail template 'Passwort vergessen'/'Forgotten password' is outdated. The variable $neues_passwort is not available anymore. Please replace this with $passwordResetLink or reset the template."
 msgstr "The email template \"Forgot password\" is outdated. The variable $neues_passwort is no longer available. Please replace it by $passwordResetLink or reset the template."
 
 msgid "Insecure SMTP connection"
 msgstr "Unsafe SMTP connection"
 
-msgid "You have selected SMTP as mail-method, but no encryption method has been chosen. We recommend you urgently to adjust your mail settings. You can find these options at \"System > E-Mails > Emaileinstellungen > SMTP Security\""
+msgid "You have selected SMTP as mail-method, but no encryption method has been chosen. We recommend you urgently to adjust your mail settings. You can find these options at 'System > E-Mails > Emaileinstellungen > SMTP Security'"
 msgstr "You chose SMTP but did not select an SMTP security method. We urgently recommend adapting your email settings. You will find the option here: Administration > Emails > Server."
 
 msgid "User management"
@@ -488,7 +442,7 @@ msgid "Set up"
 msgstr "Set up"
 
 msgid "Email templates"
-msgstr "Template"
+msgstr "Templates"
 
 msgid "Global"
 msgstr "Global"

@@ -18,9 +18,9 @@ class Migration_20200515082600 extends Migration implements IMigration
      */
     public function up()
     {
-        $mediafilesPath = \PFAD_MEDIAFILES;
+        $mediafilesPath = PFAD_MEDIAFILES;
 
-        $rows = $this->__execute(
+        $this->__execute(
             "UPDATE tslide
                 SET cBild = CONCAT('$mediafilesPath', cBild),
                     cThumbnail = CONCAT('$mediafilesPath', 'Bilder/.tmb/', substring_index(cBild, '/', -1))
@@ -28,9 +28,9 @@ class Migration_20200515082600 extends Migration implements IMigration
             ReturnType::DEFAULT
         );
 
-        $shopPath = \parse_url(Shop::getURL() . '/', \PHP_URL_PATH);
+        $shopPath = parse_url(Shop::getURL() . '/', PHP_URL_PATH);
 
-        $rows = $this->__execute(
+        $this->__execute(
             "UPDATE tslide
                 SET cBild = TRIM(LEADING '$shopPath' FROM cBild)
                 WHERE cBild LIKE '$shopPath%'",

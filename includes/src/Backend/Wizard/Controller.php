@@ -3,8 +3,8 @@
 namespace JTL\Backend\Wizard;
 
 use Illuminate\Support\Collection;
-use JTL\Backend\Wizard\Steps\ErrorCode;
 use JTL\Backend\Wizard\Steps\Error;
+use JTL\Backend\Wizard\Steps\ErrorCode;
 use JTL\Backend\Wizard\Steps\Step;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
@@ -110,7 +110,8 @@ final class Controller
         /** @var Step $step*/
         foreach ($this->getSteps() as $step) {
             foreach ($step->getQuestions() as $question) {
-                if (isset($post['question-' . $question->getID()])) {
+                $idx = 'question-' . $question->getID();
+                if (isset($post[$idx])) {
                     /** @var QuestionInterface $question */
                     $question->answerFromPost($post);
                     if (($errorCode = $question->validate()) !== ErrorCode::OK) {

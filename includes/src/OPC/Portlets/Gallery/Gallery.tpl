@@ -10,7 +10,12 @@
     </div>
 {elseif $galleryStyle === 'columns'}
     <div class="opc-Gallery-columns {$instance->getStyleClasses()}"
-         id="{$instance->getUid()}" style="{$instance->getStyleString()}">
+         id="{$instance->getUid()}" style="{$instance->getStyleString()}"
+         data-colcade="columns: .opc-Gallery-column, items: .opc-Gallery-btn">
+        <div class="opc-Gallery-column opc-Gallery-column-1"></div>
+        <div class="opc-Gallery-column opc-Gallery-column-2"></div>
+        <div class="opc-Gallery-column opc-Gallery-column-3"></div>
+        <div class="opc-Gallery-column opc-Gallery-column-4"></div>
         {foreach $images as $key => $image}
             {$imgAttribs = $instance->getImageAttributes($image.url, $image.alt, '')}
             <a {if $isPreview === false}
@@ -26,12 +31,21 @@
                        sizes=$imgAttribs.srcsizes
                        src=$imgAttribs.src
                        alt=$imgAttribs.alt|escape:'html'
-                       title=$imgAttribs.title}
+                       title=$imgAttribs.title
+                       webp=true}
                 {if $image.action === 'lightbox'}
                     <i class="opc-Gallery-zoom fa fa-search fa-2x"></i>
                 {/if}
             </a>
         {/foreach}
+        {if $isPreview}
+            {inline_script}<script>
+                $('#{$instance->getUid()}').colcade({
+                    columns: '.opc-Gallery-column',
+                    items: '.opc-Gallery-btn'
+                })
+            </script>{/inline_script}
+        {/if}
     </div>
 {else}
     {if $inContainer === false}
@@ -39,7 +53,7 @@
     {/if}
     {row
         id=$instance->getUid()
-        class='opc-Gallery opc-Gallery-'|cat:$galleryStyle
+        class='opc-Gallery opc-Gallery-'|cat:$galleryStyle|cat:' '|cat:$instance->getStyleClasses()
         style=$instance->getStyleString()
     }
         {$xsSum = 0}
@@ -106,7 +120,8 @@
                            sizes=$imgAttribs.srcsizes
                            src=$imgAttribs.src
                            alt=$imgAttribs.alt|escape:'html'
-                           title=$imgAttribs.title}
+                           title=$imgAttribs.title
+                           webp=true}
                     {if $image.action === 'lightbox'}
                         <i class="opc-Gallery-zoom fa fa-search fa-2x"></i>
                     {/if}

@@ -4,7 +4,6 @@ namespace JTL\Checkout;
 
 use Illuminate\Support\Collection;
 use JTL\Country\Country;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
@@ -240,8 +239,7 @@ class Versandart
                     ON tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
                 LEFT JOIN tversandzuschlagsprache 
                     ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                WHERE tversandzuschlag.kVersandart = ' . $id,
-            ReturnType::DEFAULT
+                WHERE tversandzuschlag.kVersandart = ' . $id
         );
 
         return true;
@@ -285,7 +283,7 @@ class Versandart
      * @param int    $value
      * @return array
      */
-    private static function getShippingSection($table, $key, int $value): array
+    private static function getShippingSection(string $table, string $key, int $value): array
     {
         if ($value > 0 && \mb_strlen($table) > 0 && \mb_strlen($key) > 0) {
             $Objs = Shop::Container()->getDB()->selectAll($table, $key, $value);
@@ -302,7 +300,7 @@ class Versandart
      * @param array       $objects
      * @param string      $table
      * @param string      $key
-     * @param mixed       $value
+     * @param int         $value
      * @param null|string $unsetKey
      */
     private static function cloneShippingSection(array $objects, $table, $key, int $value, $unsetKey = null): void
@@ -360,39 +358,38 @@ class Versandart
             return;
         }
 
-        $this->setShippingSurcharges(Shop::Container()->getDB()->queryPrepared(
+        $this->setShippingSurcharges(Shop::Container()->getDB()->getCollection(
             'SELECT kVersandzuschlag
                 FROM tversandzuschlag
                 WHERE kVersandart = :kVersandart
                 ORDER BY kVersandzuschlag DESC',
-            ['kVersandart' => $this->kVersandart],
-            ReturnType::COLLECTION
+            ['kVersandart' => $this->kVersandart]
         )->map(static function ($surcharge) {
-            return new ShippingSurcharge($surcharge->kVersandzuschlag);
+            return new ShippingSurcharge((int)$surcharge->kVersandzuschlag);
         }));
 
         $cache->set($cacheID, $this->getShippingSurcharges(), [\CACHING_GROUP_OBJECT]);
     }
 
     /**
-     * @param string $ISO
+     * @param string $iso
      * @return Collection
      */
-    public function getShippingSurchargesForCountry(string $ISO): Collection
+    public function getShippingSurchargesForCountry(string $iso): Collection
     {
-        return $this->getShippingSurcharges()->filter(static function (ShippingSurcharge $surcharge) use ($ISO) {
-            return $surcharge->getISO() === $ISO;
+        return $this->getShippingSurcharges()->filter(static function (ShippingSurcharge $surcharge) use ($iso) {
+            return $surcharge->getISO() === $iso;
         });
     }
 
     /**
      * @param string $zip
-     * @param string $ISO
+     * @param string $iso
      * @return ShippingSurcharge|null
      */
-    public function getShippingSurchargeForZip(string $zip, string $ISO): ?ShippingSurcharge
+    public function getShippingSurchargeForZip(string $zip, string $iso): ?ShippingSurcharge
     {
-        return $this->getShippingSurchargesForCountry($ISO)
+        return $this->getShippingSurchargesForCountry($iso)
             ->first(static function (ShippingSurcharge $surcharge) use ($zip) {
                 return $surcharge->hasZIPCode($zip);
             });

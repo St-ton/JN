@@ -45,37 +45,37 @@ msgid "crawlerSettings"
 msgstr "Settings"
 
 msgid "crawlerOverviewTitle"
-msgstr "Crawler Overview"
+msgstr "Excluded crawlers"
 
 msgid "deleteCrawlerModalTitle"
 msgstr "Delete crawler"
 
 msgid "newCrawler"
-msgstr "Add new crawler"
+msgstr "Adding a new crawler"
 
 msgid "createCrawler"
 msgstr "Add crawler"
 
 msgid "editCrawler"
-msgstr "Edit crawler"
+msgstr "Editing a crawler"
 
 msgid "crawlerUserAgent"
-msgstr "Crawler name (useragent)"
+msgstr "Crawler name (user agent)"
 
 msgid "crawlerDescription"
 msgstr "Crawler description"
 
 msgid "crawlerListUserAgent"
-msgstr "Useragent"
+msgstr "Name (user agent)"
 
 msgid "crawlerListDescription"
 msgstr "Description"
 
 msgid "missingCrawlerFields"
-msgstr "Please complete all mandatory fields"
+msgstr "Please complete all mandatory fields."
 
 msgid "crawlerUserAgentHint"
-msgstr "Hier legen Sie fest, welcher Webcrawler </br> vom Besucherzähler ausgeschlossen werden soll."
+msgstr "Specify which crawlers are excluded from the visitor counter."
 
 msgid "crawlerDescriptionHint"
-msgstr "Hier legen Sie eine genauere Beschreibung für den Webcrawler fest."
+msgstr "Enter a clear description of the crawler."

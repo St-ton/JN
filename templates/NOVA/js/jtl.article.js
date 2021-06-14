@@ -79,9 +79,13 @@
         },
 
         getCurrent: function($item) {
-            var $current = $item.hasClass('variation') ? $item : $item.closest('.variation');
-            if ($current.tagName === 'SELECT') {
+            var $current = $item.hasClass('variation') || ($item.length === 1 && $item[0].tagName === 'SELECT')
+                ? $item
+                : $item.closest('.variation');
+            if ($current.length === 1 && $current[0].tagName === 'SELECT') {
                 $current = $item.find('option:selected');
+            } else if ($current.length === 0) {
+                $current = $item.next('.variation');
             }
 
             return $current;
@@ -103,6 +107,8 @@
             // this.registerImageSwitch($wrapper);
             //this.registerArticleOverlay($wrapper);
             this.registerFinish($wrapper);
+            window.initNumberInput();
+            this.initAbnahmeIntervallError();
         },
 
         registerAccordion: function() {
@@ -141,27 +147,37 @@
 
             function toggleFullscreen(fullscreen = false)
             {
-                let $imgWrapper = $('#image_wrapper');
-                if (fullscreen && $imgWrapper.hasClass('fullscreen')){
+                let $imgWrapper = $('#image_wrapper'),
+                    $gallery    = $('#gallery');
+                if (!$gallery.hasClass('slick-initialized') || (fullscreen && $imgWrapper.hasClass('fullscreen'))){
                     return;
                 }
 
                 let maxHeight       = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
                     otherElemHeight = 0,
                     current         = ($('#gallery .slick-current').data('slick-index')),
-                    $galleryImages  = $('#gallery img, #gallery picture source');
+                    $galleryImages  = $('#gallery img, #gallery picture source'),
+                    hidePreview     = maxHeight < 700,
+                    previewHeight   = $('#gallery_preview_wrapper').length > 0 && !hidePreview ? 170 : 30,
+                    $previewBar     = $('.product-detail-image-preview-bar');
 
                 if (fullscreen) {
                     $imgWrapper.addClass('fullscreen');
                     let $galleryTopbar = $('#image_wrapper .product-detail-image-topbar');
 
-                    otherElemHeight = $galleryTopbar.outerHeight() + parseInt($galleryTopbar.css('marginBottom')) + 230;
+                    otherElemHeight = $galleryTopbar.outerHeight()
+                        + 2*parseInt($imgWrapper.css('paddingTop'))
+                        + previewHeight;
 
                     $galleryImages.removeAttr('sizes');
                     lazySizes.autoSizer.updateElem($galleryImages);
 
+                    if (hidePreview) {
+                        $previewBar.addClass('d-none');
+                    }
+
                     $galleryImages.css('max-height', maxHeight-otherElemHeight);
-                    $('#gallery').css('max-height', maxHeight-otherElemHeight);
+                    $gallery.css('max-height', maxHeight-otherElemHeight);
 
                     $('body').off('click.toggleFullscreen').on('click.toggleFullscreen', function (event) {
                         if (!($(event.target).hasClass('product-image') || $(event.target).hasClass('slick-arrow'))) {
@@ -172,9 +188,11 @@
                 } else {
                     $imgWrapper.removeClass('fullscreen');
                     $galleryImages.css('max-height', '100%');
+                    $gallery.css('max-height', '100%');
+                    $previewBar.removeClass('d-none');
                 }
 
-                $('#gallery').slick('slickSetOption','initialSlide', current, true);
+                $gallery.slick('slickSetOption','initialSlide', current, true);
                 $('#gallery_preview').slick('slickGoTo', current, true);
 
                 //fix firefox height bug
@@ -198,7 +216,7 @@
                 addClickListener();
 
                 $(document).on('keyup', e => {
-                    if (e.key === "Escape") {
+                    if (e.key === "Escape" && $('#image_wrapper').hasClass('fullscreen')) {
                         toggleFullscreen();
                         addClickListener();
                     }
@@ -227,12 +245,15 @@
                 config.on('change', function() {
                     that.configurator();
                 })
-                    .keypress(function (e) {
-                        if (e.which === 13) {
+                    .on('keypress', function (e) {
+                        if (e.key === 'Enter') {
                             return false;
                         }
                     });
-                that.configurator(true);
+                // timeout fixes problem with loading order of bootstrap dropdowns
+                setTimeout(function(){
+                    that.configurator(true);
+                },0);
             }
         },
 
@@ -330,31 +351,38 @@
         },
 
         registerHoverVariations: function ($wrapper) {
+            let delay=300, setTimeoutConst;
             $('.variations label.variation', $wrapper)
                 .on('mouseenter', function (e) {
-                    let mainImageHeight = $('.js-gallery-images').innerHeight();
-                        $('.variation-image-preview.vt' + $(this).data('value')).addClass('show d-md-block')
-                        .css('top', $(this).offset().top - $(this).closest('#content').position().top - mainImageHeight/2 -12);
+                    setTimeoutConst = setTimeout(function () {
+                        let mainImageHeight = $('.js-gallery-images').innerHeight();
+                        $('.variation-image-preview.vt' + $(e.currentTarget).data('value')).addClass('show d-md-block')
+                            .css('top', $(e.currentTarget).offset().top - $(e.currentTarget).closest('#content').position().top - mainImageHeight / 2 - 12);
+                    }, delay)
                 })
                 .on('mouseleave', function (e) {
+                    clearTimeout(setTimeoutConst);
                     $('.variation-image-preview.vt' + $(this).data('value')).removeClass('show d-md-block');
                 });
 
             $('.variations .selectpicker')
                 .on('show.bs.select', function () {
                     $(this).parent().find('li .variation')
-                        .on('mouseenter', function () {
-                            let mainImageHeight = $('.js-gallery-images').innerHeight();
-                            $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))
-                                .addClass('show d-md-block')
-                                .css('top', $(this).offset().top - $(this).closest('#content').position().top - mainImageHeight/2 -12);
+                        .on('mouseenter', function (e) {
+                            setTimeoutConst = setTimeout(function () {
+                                let mainImageHeight = $('.js-gallery-images').innerHeight();
+                                $('.variation-image-preview.vt' + $(e.currentTarget).find('span[data-value]').data("value"))
+                                    .addClass('show d-md-block')
+                                    .css('top', $(e.currentTarget).offset().top - $(e.currentTarget).closest('#content').position().top - mainImageHeight / 2 - 12);
+                            }, delay)
                         })
                         .on('mouseleave', function () {
+                            clearTimeout(setTimeoutConst);
                             $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))
                                 .removeClass('show d-md-block');
                     });
                 })
-                .on('hide.bs.select', function () {
+                .on('hide.bs.select', function () { 
                     $(this).parent().find('li .variation').off('mouseenter mouseleave');
                     $('.variation-image-preview').removeClass('show');
                 });
@@ -754,6 +782,7 @@
                 let $action = $('button[data-product-id-cl="' + data.productID + '"]')
                 $action.removeClass("on-list");
                 $action.next().removeClass("press");
+                $('.comparelist [data-product-id-cl="' + data.productID + '"]').remove();
             }
 
             for (var ind in data.cBoxContainer) {
@@ -990,6 +1019,8 @@
                         enableQuantity,
                         nNetto,
                         quantityInput;
+                    $('.js-start-configuration').prop('disabled', !data.response.variationsSelected);
+                    $('.js-choose-variations-wrapper').toggleClass('d-none', data.response.variationsSelected);
                     $('.js-cfg-group').each(function (i, item) {
                         let iconChecked     = $(this).find('.js-group-checked'),
                             badgeInfoDanger = 'alert-info';
@@ -1063,15 +1094,17 @@
                 }, 200);
             });
             $('#cfg-accordion .js-cfg-group-collapse').on('shown.bs.collapse', function () {
-                $(this).prev()[0].scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+                if (!$(this).find('select').is(":focus")) {
+                    $(this).prev()[0].scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
             });
             $('.js-cfg-next').on('click', function () {
                 $('button[data-target="' +  $(this).data('target') + '"]')
                     .prop('disabled', false)
-                    .closest('.js-cfg-group').addClass('visited');
+                    .closest('.js-cfg-group').addClass('visited').tooltip('disable');
                 that.configurator();
             });
             $('#cfg-tab-summary-finish').on('click', function () {
@@ -1210,7 +1243,12 @@
 
         setArticleContent: function(id, variation, url, variations, wrapper) {
             var $wrapper  = this.getWrapper(wrapper),
-                listStyle = $('#ed_list.active').length > 0 ? 'list' : 'gallery';
+                listStyle = $('#product-list-type').val();
+
+                if (listStyle === 'undefined') {
+                    listStyle = $('#ed_list.active').length > 0 ? 'list' : 'gallery';
+                }
+
                 $.evo.extended().startSpinner($wrapper);
 
             if (this.modalShown) {
@@ -1238,8 +1276,6 @@
                         history.pushState({a: id, a2: variation, url: url, variations: variations}, "", url);
                     }
                     $.evo.extended().stopSpinner();
-
-                    window.initNumberInput();
                 }, function () {
                     $.evo.error('Error loading ' + url);
                     $.evo.extended().stopSpinner();
@@ -1263,19 +1299,7 @@
                         $.evo.article().variationSetVal(item.key, item.value, wrapper);
                     });
 
-                    if (!$wrapper.hasClass('productbox-hover')) {
-                        $.evo.extended().autoheight();
-                    }
                     $.evo.extended().stopSpinner();
-
-                    window.initNumberInput();
-
-                    $(wrapper + ' .list-gallery:not(.slick-initialized)').slick({
-                        lazyLoad: 'ondemand',
-                        infinite: false,
-                        dots:     false,
-                        arrows:   true
-                    });
                 }, function () {
                     $.evo.error('Error loading ' + url);
                     $.evo.extended().stopSpinner();
@@ -1292,13 +1316,12 @@
         },
 
         variationDisableAll: function(wrapper) {
-            var $wrapper = this.getWrapper(wrapper);
+            let $wrapper = this.getWrapper(wrapper);
 
             $('.swatches-selected', $wrapper).text('');
             $('[data-value].variation', $wrapper).each(function(i, item) {
                 $(item)
-                    .removeClass('active')
-                    .removeClass('loading')
+                    .removeClass('active loading')
                     .addClass('not-available');
                 $.evo.article()
                     .removeStockInfo($(item));
@@ -1315,7 +1338,7 @@
             var $wrapper = this.getWrapper(wrapper),
                 $item    = $('[data-value="' + value + '"].variation', $wrapper);
 
-            $item.removeClass('not-available');
+            $item.removeClass('not-available swatches-sold-out swatches-not-in-stock');
         },
 
         variationActive: function(key, value, def, wrapper) {
@@ -1365,8 +1388,8 @@
             }
         },
 
-        variationInfo: function(value, status, note) {
-            var $item = $('[data-value="' + value + '"].variation'),
+        variationInfo: function(value, status, note, notExists) {
+            let $item = $('[data-value="' + value + '"].variation'),
                 type = $item.attr('data-type'),
                 text,
                 content,
@@ -1414,6 +1437,11 @@
                         trigger: 'hover',
                         container: 'body'
                     });
+                    if (notExists) {
+                        $item.addClass('swatches-not-in-stock');
+                    } else {
+                        $item.addClass('swatches-sold-out');
+                    }
                     break;
             }
         },
@@ -1516,6 +1544,23 @@
                     $(this).detach()
                 });
             }, 0);
+        },
+
+        initAbnahmeIntervallError: function() {
+            let $intervallNotice = $('#intervall-notice');
+            if ($intervallNotice.length > 0) {
+                $('#quantity').on('change', function () {
+                    let $step   = $(this).attr('step'),
+                        diff    = Math.abs(($(this).val() % $step) - $step),
+                        epsilon = 0.00000001;
+                    if (diff < epsilon || diff + epsilon > $step) {
+                        $('#intervall-notice-danger').remove();
+                    } else {
+                        $('#quantity-grp').after('<div id="intervall-notice-danger" class="alert alert-danger mt-2">'
+                            + $intervallNotice.html() + '</div>');
+                    }
+                });
+            }
         }
     };
 

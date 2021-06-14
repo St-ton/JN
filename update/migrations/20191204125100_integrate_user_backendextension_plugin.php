@@ -23,6 +23,9 @@ class Migration_20191204125100 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Integrate user backendextension plugin in shop core';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $db              = $this->getDB();
@@ -51,6 +54,9 @@ class Migration_20191204125100 extends Migration implements IMigration
         $this->execute("DELETE FROM `tadminloginattribut` WHERE cName = 'useGPlus' OR cName = 'useGravatarEmail'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
 

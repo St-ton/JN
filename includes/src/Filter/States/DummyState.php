@@ -41,7 +41,7 @@ class DummyState extends AbstractFilter
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getValue()
     {
@@ -59,7 +59,7 @@ class DummyState extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function init($id): FilterInterface
+    public function init($value): FilterInterface
     {
         return $this;
     }

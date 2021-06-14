@@ -3,7 +3,6 @@
 namespace JTL\Catalog\Product;
 
 use JTL\Catalog\Currency;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -198,13 +197,12 @@ class Preise
         $this->kKundengruppe = $customerGroupID;
         $this->kKunde        = $customerID;
 
-        $prices = $db->query(
+        $prices = $db->getObjects(
             'SELECT *
                 FROM tpreis AS p
                 JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
                 WHERE p.kArtikel = ' . $productID . ' ' . $customerFilter . '
-                ORDER BY d.nAnzahlAb',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY d.nAnzahlAb'
         );
         if (\count($prices) > 0) {
             if ($taxClassID === 0) {
@@ -244,7 +242,7 @@ class Preise
                 // Standardpreis
                 if ($price->nAnzahlAb < 1) {
                     $this->fVKNetto = $this->getRecalculatedNetPrice($price->fVKNetto, $defaultTax, $currentTax);
-                    $specialPrice   = $db->queryPrepared(
+                    $specialPrice   = $db->getSingleObject(
                         "SELECT tsonderpreise.fNettoPreis, tartikelsonderpreis.dEnde AS dEnde_en,
                             DATE_FORMAT(tartikelsonderpreis.dEnde, '%d.%m.%Y') AS dEnde_de
                             FROM tsonderpreise
@@ -262,11 +260,10 @@ class Preise
                         [
                             'productID'     => $productID,
                             'customerGroup' => $customerGroupID,
-                        ],
-                        ReturnType::SINGLE_OBJECT
+                        ]
                     );
 
-                    if (isset($specialPrice->fNettoPreis)) {
+                    if ($specialPrice !== null && isset($specialPrice->fNettoPreis)) {
                         $specialPrice->fNettoPreis = $this->getRecalculatedNetPrice(
                             $specialPrice->fNettoPreis,
                             $defaultTax,
@@ -320,9 +317,9 @@ class Preise
      * This is necessary for having consistent gross prices in case of
      * threshold delivery (Tax rate != default tax rate).
      *
-     * @param double $netPrice      the product net price
-     * @param double $defaultTax    the default tax factor of the product e.g. 19 for 19% vat
-     * @param double $conversionTax the taxFactor of the delivery country / delivery threshold
+     * @param float|string $netPrice      the product net price
+     * @param float|string $defaultTax    the default tax factor of the product e.g. 19 for 19% vat
+     * @param float|string $conversionTax the taxFactor of the delivery country / delivery threshold
      * @return double - calculated net price based on a rounded(!!!) DEFAULT gross price.
      */
     private function getRecalculatedNetPrice($netPrice, $defaultTax, $conversionTax)
@@ -350,11 +347,11 @@ class Preise
         }
         $cacheID = 'custprice_' . $customerID;
         if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $data = Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->getSingleObject(
                 'SELECT COUNT(kPreis) AS nAnzahl 
                     FROM tpreis
-                    WHERE kKunde = ' . $customerID,
-                ReturnType::SINGLE_OBJECT
+                    WHERE kKunde = :cid',
+                ['cid' => $customerID]
             );
             if (\is_object($data)) {
                 $cacheTags = [\CACHING_GROUP_ARTICLE];
@@ -362,7 +359,7 @@ class Preise
             }
         }
 
-        return \is_object($data) && $data->nAnzahl > 0;
+        return $data !== null && $data->nAnzahl > 0;
     }
 
     /**
@@ -477,7 +474,7 @@ class Preise
      */
     public function insertInDB(): int
     {
-        \trigger_error(__FUNCTION__ . ' is deprecated.', \ E_USER_DEPRECATED);
+        \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
 
         return 0;
     }
@@ -562,10 +559,10 @@ class Preise
     }
 
     /**
-     * @param float       $price
-     * @param object|null $currency
-     * @param bool        $html
-     * @param int         $decimals
+     * @param float|string $price
+     * @param mixed        $currency
+     * @param bool         $html
+     * @param int          $decimals
      * @return string
      * @former self::getLocalizedPriceString()
      */

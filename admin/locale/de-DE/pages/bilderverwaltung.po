@@ -6,7 +6,7 @@ msgid "bilderverwaltung"
 msgstr "Bilder"
 
 msgid "bilderverwaltungURL"
-msgstr "https://jtl-url.de/sbk4m"
+msgstr "https://jtl-url.de/201a8"
 
 msgid "bilderverwaltungDesc"
 msgstr "Hier sehen Sie eine Übersicht zu den aktuell bereits generierten Bildern und ggf. aufgetretenen Fehlern. Bilder werden in den verschiedenen verfügbaren Größen in JTL-Shop erst dann generiert, wenn diese zum ersten Mal im Frontend aufgerufen werden. Dies kann vereinzelt zu längeren Ladezeiten führen. Über „Generieren“ können Sie alle noch nicht erzeugten Bilder automatisch erstellen lassen. Über „Cache leeren“ können Sie alle erzeugten Bilder löschen. „Cache leeren“ löscht die aus den Originalbildern erzeugten Größen. „Aufräumen“ löscht die fehlerhaften Originalbilder."
@@ -39,7 +39,10 @@ msgid "articlePic"
 msgstr "Artikelbild"
 
 msgid "corruptedPicsNote"
-msgstr "Fehlerhafte Bilder sind Bilder, die zwar einen Eintrag in der Datenbank haben, allerdings nicht als Datei auf dem Server vorhanden sind. Es werden maximal 50 Ergebnisse angezeigt."
+msgstr "Fehlerhafte Bilder sind Bilder, die zwar einen Eintrag in der Datenbank haben, allerdings nicht als Datei auf dem Server vorhanden sind. Es werden maximal %d Ergebnisse angezeigt."
+
+msgid "Too many corrupted images"
+msgstr "Zu viele fehlerhafte Bilder."
 
 msgid "successCacheReset"
 msgstr "Cache wurde erfolgreich zurückgesetzt."
@@ -60,7 +63,7 @@ msgid "successImageGenerate"
 msgstr "Bilder wurden erfolgreich generiert."
 
 msgid "errorImageGenerate"
-msgstr "Fehler beim Generieren der Bilder"
+msgstr "Bilder konnten nicht generiert werden."
 
 msgid "pendingImageDelete"
 msgstr "Bilder werden gelöscht…"

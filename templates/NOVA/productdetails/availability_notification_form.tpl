@@ -13,7 +13,7 @@
     {block name='productdetails-availability-notification-form-form'}
         {form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}{$ShopURL}/{/if}"
             method="post" id="article_availability{$Artikel->kArtikel}"
-            class="jtl-validate"
+            class="jtl-validate availability-notification-form"
             slide=true}
             {block name='productdetails-availability-notification-form-fieldset-contact'}
                 <fieldset>
@@ -55,7 +55,7 @@
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
                                         "email", "article_availability{$Artikel->kArtikel}_email", "email",
-                                        {$Benachrichtigung->cNachname|default:null}, {lang key='email' section='account data'},
+                                        {$Benachrichtigung->cMail|default:null}, {lang key='email' section='account data'},
                                         true, $fehlendeAngaben_benachrichtigung.email|default:null, "email"
                                     ]
                                 }

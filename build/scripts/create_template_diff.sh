@@ -22,17 +22,19 @@ create_tpl_diff()
             TPL_TYPE="mail";
         fi
 
-        echo "Create ${TPL_TYPE} tpl diff";
+        echo "] create: ${TPL_TYPE} tpl diff";
 
         DIFF_FILE_NAME=${BASE_PATH}/${TPL_TYPE}-${DIFF_START_TAG}-to-${DIFF_END_TAG}-tpl.diff;
         DIFF_CLEAN_FILE_NAME=${BASE_PATH}/${TPL_TYPE}-${DIFF_START_TAG}-to-${DIFF_END_TAG}-tplclean.diff;
 
+        git pull >/dev/null 2>&1;
         git diff --ignore-all-space --ignore-blank-lines --minimal --unified=2 ${DIFF_START_TAG} ${DIFF_END_TAG} -- ${DIFF_PATH} > ${DIFF_FILE_NAME};
         filterdiff --exclude='*.css' --exclude='*.txt' --exclude='*.ttf' --exclude='*.md' ${DIFF_FILE_NAME} > ${DIFF_CLEAN_FILE_NAME};
 
         mv -u ${DIFF_CLEAN_FILE_NAME} ${DIFF_FILE_NAME};
+        chmod g+w ${DIFF_FILE_NAME};
 
-        echo "  ${TPL_TYPE}-${DIFF_START_TAG}-to-${DIFF_END_TAG}-tpl.diff";
+        echo "] diff filename: ${TPL_TYPE}-${DIFF_START_TAG}-to-${DIFF_END_TAG}-tpl.diff";
     fi
 }
 

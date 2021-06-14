@@ -38,7 +38,7 @@
             <icon name="sync" spin></icon> {{ $t('verifyWritePermissions') }}
         </b-alert>
         <b-alert variant="danger" show v-if="networkError !== false">
-            <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} {{ networkError }}
+            <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} <div v-html="networkError"></div>
         </b-alert>
         <continue :disableBack="false" :disable="!checkedDirectories || networkError !== false || directoriesStatus === 0"></continue>
     </div>
@@ -49,11 +49,6 @@ import axios from 'axios';
 export default {
     name:  'directorycheck',
     data() {
-        let directories        = [],
-            directoriesStatus  = 0,
-            networkError       = false,
-            collapseIsVisible  = false,
-            checkedDirectories = false;
         const messages = {
             de: {
                 ok:                     'Alles OK.',
@@ -82,11 +77,11 @@ export default {
         this.$i18n.add('de', messages.de);
         this.check();
         return {
-            directories,
-            directoriesStatus,
-            checkedDirectories,
-            networkError,
-            collapseIsVisible
+            directories:        [],
+            directoriesStatus:  0,
+            checkedDirectories: false,
+            networkError:       false,
+            collapseIsVisible:  false
         };
     },
     methods: {
@@ -99,6 +94,11 @@ export default {
         check() {
             axios.get(this.$getApiUrl('dircheck'))
                 .then(response => {
+                    if (!response.data.testresults) {
+                        this.networkError = response.data;
+                        return;
+                    }
+                    this.networkError = false;
                     this.directories = [];
                     Object.keys(response.data.testresults).forEach((dir, idx) => {
                         this.directories.push({

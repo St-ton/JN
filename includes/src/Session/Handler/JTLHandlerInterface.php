@@ -25,7 +25,7 @@ interface JTLHandlerInterface extends \SessionHandlerInterface
 
     /**
      * @param string $key
-     * @param null $default
+     * @param mixed  $default
      * @return mixed
      */
     public function get($key, $default = null);

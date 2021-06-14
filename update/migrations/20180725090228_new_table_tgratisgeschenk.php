@@ -17,6 +17,9 @@ class Migration_20180725090228 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'New table tgratisgeschenk';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -31,6 +34,9 @@ class Migration_20180725090228 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('DROP TABLE `tgratisgeschenk`');

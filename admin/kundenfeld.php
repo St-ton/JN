@@ -9,20 +9,16 @@ use JTL\PlausiKundenfeld;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('ORDER_CUSTOMERFIELDS_VIEW', true, true);
-
-/** @global \JTL\Smarty\JTLSmarty $smarty */
-$cf          = CustomerFields::getInstance((int)$_SESSION['kSprache']);
+setzeSprache();
+$languageID  = (int)$_SESSION['editLanguageID'];
+$cf          = CustomerFields::getInstance($languageID);
 $step        = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
-
-setzeSprache();
-
 $smarty->assign('cTab', $step ?? null);
-if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
-}
 
 if (Request::postInt('einstellungen') > 0) {
     $alertHelper->addAlert(
@@ -75,7 +71,7 @@ if (Request::postInt('einstellungen') > 0) {
     } else { // Speichern
         $customerField = (object)[
             'kKundenfeld' => (int)($_POST['kKundenfeld'] ?? 0),
-            'kSprache'    => (int)$_SESSION['kSprache'],
+            'kSprache'    => $languageID,
             'cName'       => Text::htmlspecialchars(
                 Text::filterXSS($_POST['cName']),
                 ENT_COMPAT | ENT_HTML401

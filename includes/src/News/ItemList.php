@@ -4,7 +4,6 @@ namespace JTL\News;
 
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use function Functional\group;
 use function Functional\map;
 
@@ -18,11 +17,6 @@ final class ItemList implements ItemListInterface
      * @var DbInterface
      */
     private $db;
-
-    /**
-     * @var int[]
-     */
-    private $itemIDs;
 
     /**
      * @var Collection
@@ -44,12 +38,12 @@ final class ItemList implements ItemListInterface
      */
     public function createItems(array $itemIDs, bool $activeOnly = true): Collection
     {
-        $this->itemIDs = \array_map('\intval', $itemIDs);
-        if (\count($this->itemIDs) === 0) {
+        $itemIDs = \array_map('\intval', $itemIDs);
+        if (\count($itemIDs) === 0) {
             return $this->items;
         }
-        $itemList      = \implode(',', $this->itemIDs);
-        $itemLanguages = $this->db->query(
+        $itemList      = \implode(',', $itemIDs);
+        $itemLanguages = $this->db->getObjects(
             'SELECT tnewssprache.languageID,
             tnewssprache.languageCode,
             tnews.cKundengruppe, 
@@ -71,10 +65,10 @@ final class ItemList implements ItemListInterface
                 JOIN tseo 
                     ON tseo.cKey = \'kNews\'
                     AND tseo.kKey = tnews.kNews
+                    AND tseo.kSprache = tnewssprache.languageID
                 WHERE tnews.kNews IN (' . $itemList  . ')
                 GROUP BY tnews.kNews, tnewssprache.languageID
-                ORDER BY FIELD(tnews.kNews, ' . $itemList . ')',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY FIELD(tnews.kNews, ' . $itemList . ')'
         );
         $items         = map(group($itemLanguages, static function ($e) {
             return (int)$e->kNews;

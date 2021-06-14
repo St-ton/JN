@@ -81,6 +81,9 @@
                         </div>
                     </div>
                 </form>
+                {if $nTotalLogCount !== 0}
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}
+                {/if}
             </div>
         </div>
         <div role="tabpanel" class="tab-pane fade{if $cTab === 'config'} active show{/if}" id="config">

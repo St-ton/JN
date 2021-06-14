@@ -12,6 +12,7 @@ use JTL\Catalog\Product\MerkmalWert;
 use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
 use JTL\Checkout\Bestellung;
+use JTL\Checkout\Versandart;
 use JTL\Customer\Customer;
 use JTL\Emailvorlage;
 use JTL\Firma;
@@ -1707,7 +1708,8 @@ define('HOOK_BACKEND_FUNCTIONS_GRAVATAR', 227);
 
 /**
  * @param Cart - oWarenkorb
- *@since 4.06
+ * @param Bestellung - oBestellung
+ * @since 4.06
  * @file includes/bestellabschluss_inc.php
  */
 define('HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB', 228);
@@ -1946,9 +1948,20 @@ define('HOOK_LINKGROUPS_LOADED_PRE_CACHE', 306);
 
 /**
  * @since 5.0.0
+ * @file includes/src/Helpers/ShippingMethod.php
+ * @param float price
+ * @param Versandart|object shippingMethod
+ * @param string iso
+ * @param Artikel|stdClass additionalProduct
+ * @param Artikel|null product
+ */
+define('HOOK_CALCULATESHIPPINGFEES', 307);
+
+/**
+ * @since 5.0.0
  * @file includes/src/Cart/Cart.php
  * @param int productID
- * @param \JTL\Cart\CartItem[] positionItems
+ * @param CartItem[] positionItems
  * @param float qty
  */
 define('HOOK_WARENKORB_ERSTELLE_SPEZIAL_POS', 310);

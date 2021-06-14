@@ -18,19 +18,19 @@ class Migration_20180823154832 extends Migration implements IMigration
     protected $author      = 'msc';
     protected $description = 'Change database version to semantic versioning';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
-        $this->getDB()->query(
-            'ALTER TABLE `tversion` CHANGE `nVersion` `nVersion` varchar(20) NOT NULL',
-            ReturnType::DEFAULT
-        );
+        $this->getDB()->query('ALTER TABLE `tversion` CHANGE `nVersion` `nVersion` varchar(20) NOT NULL');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
-        $this->getDB()->query(
-            'ALTER TABLE `tversion` CHANGE `nVersion` `nVersion` int(10) DEFAULT NULL',
-            ReturnType::DEFAULT
-        );
+        $this->getDB()->query('ALTER TABLE `tversion` CHANGE `nVersion` `nVersion` int(10) DEFAULT NULL');
     }
 }

@@ -18,24 +18,17 @@ class Migration_20180827091116 extends Migration implements IMigration
     protected $author      = 'msc';
     protected $description = 'Update admin bootstrap template in database';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
-        $this->getDB()->query(
-            "UPDATE `ttemplate` SET
-            `cTemplate` = 'bootstrap',
-            `eTyp` = 3,
-            `parent` = NULL,
-            `name` = 'bootstrap',
-            `author` = 'JTL-Software-GmbH',
-            `url` = 'https://www.jtl-software.de',
-            `version` = '1.0.0',
-            `preview` = 'preview.png'
-            WHERE `cTemplate` = 'bootstrap' AND `eTyp` = 'admin'
-            LIMIT 1;",
-            ReturnType::DEFAULT
-        );
+        // Moved to Migration_20180801124135
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

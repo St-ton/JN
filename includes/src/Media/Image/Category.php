@@ -3,7 +3,6 @@
 namespace JTL\Media\Image;
 
 use Generator;
-use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use PDO;
@@ -20,8 +19,11 @@ class Category extends AbstractImage
     /**
      * @var string
      */
-    public const REGEX = '/^media\/image\/(?P<type>category)'
-    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_]+)'
+    public const REGEX = '/^media\/image'
+    . '\/(?P<type>category)'
+    . '\/(?P<id>\d+)'
+    . '\/(?P<size>xs|sm|md|lg|xl)'
+    . '\/(?P<name>[' . self::REGEX_ALLOWED_CHARS . ']+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
@@ -42,14 +44,17 @@ class Category extends AbstractImage
      */
     public function getImageNames(MediaImageRequest $req): array
     {
-        return $this->db->queryPrepared(
-            'SELECT pic.cPfad AS path, pic.kKategorie, pic.kKategorie AS id, cat.cName, cat.cSeo AS seoPath
+        return $this->db->getCollection(
+            'SELECT pic.cPfad AS path, pic.kKategorie, pic.kKategorie AS id, cat.cName,
+                atr.cWert AS customImgName, cat.cSeo AS seoPath
                 FROM tkategorie cat
                 JOIN tkategoriepict pic
                     ON cat.kKategorie = pic.kKategorie
+                LEFT JOIN tkategorieattribut atr
+                    ON cat.kKategorie = atr.kKategorie
+                    AND atr.cName = :atr
                 WHERE pic.kKategorie = :cid',
-            ['cid' => $req->getID()],
-            ReturnType::COLLECTION
+            ['cid' => $req->getID(), 'atr' => \KAT_ATTRIBUT_BILDNAME]
         )->map(static function ($item) {
             return self::getCustomName($item);
         })->toArray();
@@ -61,29 +66,32 @@ class Category extends AbstractImage
     public static function getCustomName($mixed): string
     {
         if (\is_string($mixed)) {
-            return \pathinfo($mixed)['filename'];
-        }
-        if (isset($mixed->currentImagePath)) {
-            return \pathinfo($mixed->currentImagePath)['filename'];
-        }
-        switch (Image::getSettings()['naming'][Image::TYPE_CATEGORY]) {
-            case 2:
-                $result = $mixed->path ?? $mixed->cBildpfad ?? null;
-                if ($result !== null) {
-                    return \pathinfo($result)['filename'];
-                }
-                break;
-            case 1:
-                $result = \method_exists($mixed, 'getURL')
-                    ? $mixed->getURL()
-                    : ($mixed->originalSeo ?? $mixed->seoPath ?? $mixed->cName ?? null);
-                break;
-            case 0:
-            default:
-                $result = \method_exists($mixed, 'getID')
-                    ? $mixed->getID()
-                    : ($mixed->id ?? $mixed->kKategorie ?? null);
-                break;
+            $result = \pathinfo($mixed)['filename'];
+        } elseif (isset($mixed->customImgName)) {
+            $result = $mixed->customImgName;
+        } elseif (isset($mixed->currentImagePath)) {
+            $result = \pathinfo($mixed->currentImagePath)['filename'];
+        } else {
+            switch (Image::getSettings()['naming'][Image::TYPE_CATEGORY]) {
+                case 2:
+                    /** @var string|null $result */
+                    $result = $mixed->path ?? $mixed->cBildpfad ?? null;
+                    if ($result !== null) {
+                        $result = \pathinfo($result)['filename'];
+                    }
+                    break;
+                case 1:
+                    $result = \method_exists($mixed, 'getURL')
+                        ? $mixed->getURL()
+                        : ($mixed->originalSeo ?? $mixed->seoPath ?? $mixed->cName ?? null);
+                    break;
+                case 0:
+                default:
+                    $result = \method_exists($mixed, 'getID')
+                        ? $mixed->getID()
+                        : ($mixed->id ?? $mixed->kKategorie ?? null);
+                    break;
+            }
         }
 
         return empty($result) ? 'image' : Image::getCleanFilename((string)$result);
@@ -94,12 +102,11 @@ class Category extends AbstractImage
      */
     public function getPathByID($id, int $number = null): ?string
     {
-        return $this->db->queryPrepared(
+        return $this->db->getSingleObject(
             'SELECT cPfad AS path
                 FROM tkategoriepict
                 WHERE kKategorie = :cid LIMIT 1',
-            ['cid' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['cid' => $id]
         )->path ?? null;
     }
 
@@ -116,12 +123,17 @@ class Category extends AbstractImage
      */
     public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = $this->db->query(
-            'SELECT pic.cPfad AS path, pic.kKategorie, pic.kKategorie AS id, cat.cName, cat.cSeo AS seoPath
+        $images = $this->db->getPDOStatement(
+            'SELECT pic.cPfad AS path, pic.kKategorie, pic.kKategorie AS id, cat.cName, 
+                atr.cWert AS customImgName, cat.cSeo AS seoPath
                 FROM tkategorie cat
                 JOIN tkategoriepict pic
-                    ON cat.kKategorie = pic.kKategorie' . self::getLimitStatement($offset, $limit),
-            ReturnType::QUERYSINGLE
+                    ON cat.kKategorie = pic.kKategorie
+                LEFT JOIN tkategorieattribut atr
+                    ON cat.kKategorie = atr.kKategorie
+                    AND atr.cName = :atr'
+            . self::getLimitStatement($offset, $limit),
+            ['atr' => \KAT_ATTRIBUT_BILDNAME]
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([
@@ -141,12 +153,11 @@ class Category extends AbstractImage
      */
     public function getTotalImageCount(): int
     {
-        return (int)$this->db->query(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(tkategoriepict.kKategorie) AS cnt
                 FROM tkategoriepict
                 INNER JOIN tkategorie
-                    ON tkategorie.kKategorie = tkategoriepict.kKategorie',
-            ReturnType::SINGLE_OBJECT
+                    ON tkategorie.kKategorie = tkategoriepict.kKategorie'
         )->cnt;
     }
 

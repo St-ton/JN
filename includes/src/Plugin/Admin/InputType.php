@@ -12,6 +12,20 @@ class InputType extends Enum
 {
     public const SELECT = 'selectbox';
 
+    public const COLOR = 'color';
+
+    public const RANGE = 'range';
+
+    public const MONTH = 'month';
+
+    public const WEEK = 'week';
+
+    public const TEL = 'tel';
+
+    public const TIME = 'time';
+
+    public const URL = 'url';
+
     public const COLORPICKER = 'colorpicker';
 
     public const PASSWORD = 'password';

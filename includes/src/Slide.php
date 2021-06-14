@@ -2,7 +2,6 @@
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use stdClass;
 
@@ -88,12 +87,12 @@ class Slide
     }
 
     /**
-     * @param string $type
+     * @param string $value
      * @return string|null
      */
-    private function getMapping(string $type): ?string
+    private function getMapping(string $value): ?string
     {
-        return self::$mapping[$type] ?? null;
+        return self::$mapping[$value] ?? null;
     }
 
     /**
@@ -185,7 +184,10 @@ class Slide
             } else {
                 $this->setThumbnail(\STORAGE_OPC . '.tmb/' . \basename($this->getThumbnail()));
             }
-            $this->setImage(\STORAGE_OPC . \basename($this->getImage()));
+            $path = \parse_url(\Shop::getURL() . '/', \PHP_URL_PATH);
+            if (Text::startsWith($this->image, $path)) {
+                $this->image = \ltrim(\substr($this->image, \mb_strlen($path)), '/');
+            }
         }
 
         return $this->id === null || $this->id === 0
@@ -207,6 +209,7 @@ class Slide
         $slide->cBild   = $this->getImage();
         $slide->nSort   = $this->getSort();
         $slide->cLink   = $this->getLink();
+        $slide->cText   = $this->getText();
 
         return Shop::Container()->getDB()->update('tslide', 'kSlide', $this->getID(), $slide);
     }
@@ -224,15 +227,14 @@ class Slide
             }
             unset($slide->cBildAbsolut, $slide->cThumbnailAbsolut, $slide->kSlide);
             if ($this->sort === null) {
-                $oSort        = Shop::Container()->getDB()->queryPrepared(
+                $sort         = Shop::Container()->getDB()->getSingleObject(
                     'SELECT nSort
                         FROM tslide
                         WHERE kSlider = :sliderID
                         ORDER BY nSort DESC LIMIT 1',
-                    ['sliderID' => $this->sliderID],
-                    ReturnType::SINGLE_OBJECT
+                    ['sliderID' => $this->sliderID]
                 );
-                $slide->nSort = (!\is_object($oSort) || (int)$oSort->nSort === 0) ? 1 : ($oSort->nSort + 1);
+                $slide->nSort = ($sort === null || (int)$sort->nSort === 0) ? 1 : ($sort->nSort + 1);
             }
             $id = Shop::Container()->getDB()->insert('tslide', $slide);
             if ($id > 0) {

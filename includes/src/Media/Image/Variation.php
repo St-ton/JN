@@ -3,7 +3,6 @@
 namespace JTL\Media\Image;
 
 use Generator;
-use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use PDO;
@@ -20,8 +19,11 @@ class Variation extends AbstractImage
     /**
      * @var string
      */
-    public const REGEX = '/^media\/image\/(?P<type>variation)'
-    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_]+)'
+    public const REGEX = '/^media\/image'
+    . '\/(?P<type>variation)'
+    . '\/(?P<id>\d+)'
+    . '\/(?P<size>xs|sm|md|lg|xl)'
+    . '\/(?P<name>[' . self::REGEX_ALLOWED_CHARS . ']+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
@@ -42,14 +44,13 @@ class Variation extends AbstractImage
      */
     public function getImageNames(MediaImageRequest $req): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getCollection(
             'SELECT p.kEigenschaftWert, p.kEigenschaftWertPict, p.cPfad AS path, t.cName
                 FROM teigenschaftwertpict p
                 JOIN teigenschaftwert t
                     ON p.kEigenschaftWert = t.kEigenschaftWert
                 WHERE p.kEigenschaftWert = :vid',
-            ['vid' => $req->getID()],
-            ReturnType::COLLECTION
+            ['vid' => $req->getID()]
         )->each(static function ($item, $key) use ($req) {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath($item->path);
@@ -64,12 +65,12 @@ class Variation extends AbstractImage
     public static function getCustomName($mixed): string
     {
         if (isset($mixed->cPfad)) {
-            return \pathinfo($mixed->cPfad)['filename'];
+            $result = \pathinfo($mixed->cPfad)['filename'];
+        } elseif (isset($mixed->path)) {
+            $result = \pathinfo($mixed->path)['filename'];
+        } else {
+            $result = $mixed->cName;
         }
-        if (isset($mixed->path)) {
-            return \pathinfo($mixed->path)['filename'];
-        }
-        $result = $mixed->cName;
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }
@@ -79,13 +80,12 @@ class Variation extends AbstractImage
      */
     public function getPathByID($id, int $number = null): ?string
     {
-        return $this->db->queryPrepared(
+        return $this->db->getSingleObject(
             'SELECT cPfad AS path
                 FROM teigenschaftwertpict
                 WHERE kEigenschaftWert = :vid
                 LIMIT 1',
-            ['vid' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['vid' => $id]
         )->path ?? null;
     }
 
@@ -102,12 +102,11 @@ class Variation extends AbstractImage
      */
     public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = $this->db->query(
+        $images = $this->db->getPDOStatement(
             'SELECT p.kEigenschaftWert AS id, p.kEigenschaftWertPict, p.cPfad AS path, t.cName
                 FROM teigenschaftwertpict p
                 JOIN teigenschaftwert t
-                    ON p.kEigenschaftWert = t.kEigenschaftWert' . self::getLimitStatement($offset, $limit),
-            ReturnType::QUERYSINGLE
+                    ON p.kEigenschaftWert = t.kEigenschaftWert' . self::getLimitStatement($offset, $limit)
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([
@@ -127,12 +126,11 @@ class Variation extends AbstractImage
      */
     public function getTotalImageCount(): int
     {
-        return (int)$this->db->query(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(kEigenschaftWertPict) AS cnt
                 FROM teigenschaftwertpict
                 WHERE cPfad IS NOT NULL
-                    AND cPfad != \'\'',
-            ReturnType::SINGLE_OBJECT
+                    AND cPfad != \'\''
         )->cnt;
     }
 }

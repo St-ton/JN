@@ -63,4 +63,12 @@ class TemplateInstaller implements InstallerInterface
     {
         return $this->update($itemID, $zip, $response);
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function forceUpdate(string $zip, AjaxResponse $response): int
+    {
+        return $this->install('', $zip, $response);
+    }
 }

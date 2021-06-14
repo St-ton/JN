@@ -4,7 +4,7 @@
         || $Einstellungen.kunden.lieferadresse_abfragen_email !== 'N'
         || $Einstellungen.kunden.lieferadresse_abfragen_mobil !== 'N'
     }
-        <fieldset>
+        <fieldset class="customer-shipping-contact">
             {formrow}
                 {$name = 'shipping_address'}
                 {col cols=12}

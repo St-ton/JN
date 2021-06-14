@@ -187,7 +187,7 @@ function addValidationListener() {
             $(event.target).closest('.form-group').find('div.form-error-msg').remove();
             $(event.target).closest('.form-group')
                 .addClass('has-error')
-                .append('<div class="form-error-msg text-danger w-100">' + sanitizeOutput(event.target.validationMessage) + '</div>');
+                .append('<div class="form-error-msg w-100">' + sanitizeOutput(event.target.validationMessage) + '</div>');
 
             if (!$body.data('doScrolling')) {
                 var $firstError = $(event.target).closest('.form-group.has-error');
@@ -254,7 +254,7 @@ function checkInputError(event)
     if (event.target.validity.valid) {
         $target.closest('.form-group').removeClass('has-error');
     } else {
-        $target.closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger">' + sanitizeOutput(event.target.validationMessage) + '</div>');
+        $target.closest('.form-group').addClass('has-error').append('<div class="form-error-msg">' + sanitizeOutput(event.target.validationMessage) + '</div>');
     }
 }
 
@@ -316,10 +316,11 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.footnote-vat a, .versand, .popup', function(e) {
-        var url = e.currentTarget.href;
+        let url     = e.currentTarget.href,
+            classes = $(this).data('modal-classes') || '';
         url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
         eModal.ajax({
-            size: 'xl',
+            size: 'xl ' + classes,
             url: url,
             title: typeof e.currentTarget.title !== 'undefined' ? e.currentTarget.title : '',
             keyboard: true,
@@ -380,7 +381,7 @@ $(document).ready(function () {
                 $(this).closest('form').find('.form-clear').removeClass('d-none');
             }
         });
-        $('.form-clear').on('click', function() {
+        $('.search-wrapper .form-clear').on('click', function() {
             $searchInput.typeahead('val', '');
             $(this).addClass('d-none');
         });

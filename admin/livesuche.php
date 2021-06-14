@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
@@ -10,18 +9,23 @@ use JTL\Pagination\Pagination;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
-
-$oAccount->permission('MODULE_LIVESEARCH_VIEW', true, true);
+/** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
-setzeSprache();
+$oAccount->permission('MODULE_LIVESEARCH_VIEW', true, true);
 
-$settingsIDs = [423, 425, 422, 437, 438];
+setzeSprache();
+$languageID  = (int)$_SESSION['editLanguageID'];
+$settingsIDs = [
+    'livesuche_max_ip_count',
+    'sonstiges_livesuche_all_top_count',
+    'sonstiges_livesuche_all_last_count',
+    'boxen_livesuche_count',
+    'boxen_livesuche_anzeigen'
+];
 $db          = Shop::Container()->getDB();
 $alertHelper = Shop::Container()->getAlertService();
-if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
-}
+
 $cLivesucheSQL         = new stdClass();
 $cLivesucheSQL->cWhere = '';
 $cLivesucheSQL->cOrder = ' tsuchanfrage.nAnzahlGesuche DESC ';
@@ -38,7 +42,7 @@ if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,
-        saveAdminSettings($settingsIDs, $_POST),
+        saveAdminSettings($settingsIDs, $_POST, [CACHING_GROUP_OPTION], true),
         'saveSettings'
     );
     $smarty->assign('tab', 'einstellungen');
@@ -89,7 +93,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
         $searchQueries = $db->selectAll(
             'tsuchanfrage',
             'kSprache',
-            (int)$_SESSION['kSprache'],
+            $languageID,
             '*',
             'nAnzahlGesuche DESC'
         );
@@ -110,29 +114,27 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
             $db->query(
                 "DELETE FROM tseo
                     WHERE cKey = 'kSuchanfrage'
-                        AND kKey" . $whereIn,
-                ReturnType::AFFECTED_ROWS
+                        AND kKey" . $whereIn
             );
             // Deaktivierte Suchanfragen in tsuchanfrage updaten
             $db->query(
                 "UPDATE tsuchanfrage
                     SET cSeo = ''
-                    WHERE kSuchanfrage" . $whereIn,
-                ReturnType::AFFECTED_ROWS
+                    WHERE kSuchanfrage" . $whereIn
             );
             foreach (Request::verifyGPDataIntegerArray('nAktiv') as $active) {
                 $query = $db->select('tsuchanfrage', 'kSuchanfrage', $active);
                 $db->delete(
                     'tseo',
                     ['cKey', 'kKey', 'kSprache'],
-                    ['kSuchanfrage', $active, (int)$_SESSION['kSprache']]
+                    ['kSuchanfrage', $active, $languageID]
                 );
                 // Aktivierte Suchanfragen in tseo eintragen
                 $ins           = new stdClass();
                 $ins->cSeo     = Seo::checkSeo(Seo::getSeo($query->cSuche));
                 $ins->cKey     = 'kSuchanfrage';
                 $ins->kKey     = $active;
-                $ins->kSprache = $_SESSION['kSprache'];
+                $ins->kSprache = $languageID;
                 $db->insert('tseo', $ins);
                 // Aktivierte Suchanfragen in tsuchanfrage updaten
                 $upd         = new stdClass();
@@ -141,6 +143,8 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                 $db->update('tsuchanfrage', 'kSuchanfrage', $active, $upd);
             }
         }
+        $succesMapMessage = '';
+        $errorMapMessage  = '';
         foreach ($searchQueries as $sucheanfrage) {
             $index = 'mapping_' . $sucheanfrage->kSuchanfrage;
             if (!isset($_POST[$index])
@@ -150,7 +154,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                 if (!empty($_POST[$index])) {
                     $mappingExists           = 1;
                     $mapping                 = new stdClass();
-                    $mapping->kSprache       = $_SESSION['kSprache'];
+                    $mapping->kSprache       = $languageID;
                     $mapping->cSuche         = $sucheanfrage->cSuche;
                     $mapping->cSucheNeu      = $_POST[$index];
                     $mapping->nAnzahlGesuche = $sucheanfrage->nAnzahlGesuche;
@@ -168,10 +172,9 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                                     AND cSuche = :src',
                             [
                                 'cnt' => $sucheanfrage->nAnzahlGesuche,
-                                'lid' => (int)$_SESSION['kSprache'],
+                                'lid' => $languageID,
                                 'src' => $_POST[$index]
-                            ],
-                            ReturnType::DEFAULT
+                            ]
                         );
                         $db->delete(
                             'tsuchanfrage',
@@ -195,7 +198,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                     }
                 }
             } else {
-                $errorMapMessage .= sprintf(__('errorSearchMapSelf'), $_POST[$index]);
+                $errorMapMessage .= sprintf(__('errorSearchMapSelf'), Text::filterXSS($_POST[$index]));
             }
         }
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, $succesMapMessage ?? '', 'successSearchMap');
@@ -216,7 +219,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                             $oSuchanfrageNeu = $db->select('tsuchanfrage', 'cSuche', $mapping);
                             if (isset($oSuchanfrageNeu->kSuchanfrage) && $oSuchanfrageNeu->kSuchanfrage > 0) {
                                 $queryMapping                 = new stdClass();
-                                $queryMapping->kSprache       = $_SESSION['kSprache'];
+                                $queryMapping->kSprache       = $languageID;
                                 $queryMapping->cSuche         = $query->cSuche;
                                 $queryMapping->cSucheNeu      = $mapping;
                                 $queryMapping->nAnzahlGesuche = $query->nAnzahlGesuche;
@@ -233,10 +236,9 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                                                 AND kSuchanfrage = :sid',
                                         [
                                             'cnt' => $query->nAnzahlGesuche,
-                                            'lid' => (int)$_SESSION['kSprache'],
+                                            'lid' => $languageID,
                                             'sid' => $oSuchanfrageNeu->kSuchanfrage
-                                        ],
-                                        ReturnType::DEFAULT
+                                        ]
                                     );
                                     $db->delete(
                                         'tsuchanfrage',
@@ -251,8 +253,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                                         [
                                             'kid' => (int)$oSuchanfrageNeu->kSuchanfrage,
                                             'sid' => (int)$query->kSuchanfrage
-                                        ],
-                                        ReturnType::DEFAULT
+                                        ]
                                     );
 
                                     $alertHelper->addAlert(
@@ -327,7 +328,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
         $failedQueries = $db->selectAll(
             'tsuchanfrageerfolglos',
             'kSprache',
-            (int)$_SESSION['kSprache'],
+            $languageID,
             '*',
             'nAnzahlGesuche DESC'
         );
@@ -338,7 +339,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                     mb_convert_case($_POST[$idx], MB_CASE_LOWER)
                 ) {
                     $mapping                 = new stdClass();
-                    $mapping->kSprache       = $_SESSION['kSprache'];
+                    $mapping->kSprache       = $languageID;
                     $mapping->cSuche         = $failedQuery->cSuche;
                     $mapping->cSucheNeu      = $_POST[$idx];
                     $mapping->nAnzahlGesuche = $failedQuery->nAnzahlGesuche;
@@ -359,7 +360,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                         $oSearchMappingNextTMP = $db->select(
                             'tsuchanfragemapping',
                             'kSprache',
-                            $_SESSION['kSprache'],
+                            $languageID,
                             'cSuche',
                             $sSearchMappingTMP
                         );
@@ -455,12 +456,12 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
     $blacklist = explode(';', $blacklist);
     $count     = count($blacklist);
 
-    $db->delete('tsuchanfrageblacklist', 'kSprache', (int)$_SESSION['kSprache']);
+    $db->delete('tsuchanfrageblacklist', 'kSprache', $languageID);
     for ($i = 0; $i < $count; $i++) {
         if (!empty($blacklist[$i])) {
             $ins           = new stdClass();
             $ins->cSuche   = $blacklist[$i];
-            $ins->kSprache = (int)$_SESSION['kSprache'];
+            $ins->kSprache = $languageID;
             $db->insert('tsuchanfrageblacklist', $ins);
         }
     }
@@ -501,23 +502,23 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
     $smarty->assign('tab', 'mapping');
 }
 
-$queryCount        = (int)$db->query(
+$queryCount        = (int)$db->getSingleObject(
     'SELECT COUNT(*) AS cnt
         FROM tsuchanfrage
-        WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $cLivesucheSQL->cWhere,
-    ReturnType::SINGLE_OBJECT
+        WHERE kSprache = :lid' . $cLivesucheSQL->cWhere,
+    ['lid' => $languageID]
 )->cnt;
-$failedQueryCount  = (int)$db->query(
+$failedQueryCount  = (int)$db->getSingleObject(
     'SELECT COUNT(*) AS cnt
         FROM tsuchanfrageerfolglos
-        WHERE kSprache = ' . (int)$_SESSION['kSprache'],
-    ReturnType::SINGLE_OBJECT
+        WHERE kSprache = :lid',
+    ['lid' => $languageID]
 )->cnt;
-$mappingCount      = (int)$db->query(
+$mappingCount      = (int)$db->getSingleObject(
     'SELECT COUNT(*) AS cnt
         FROM tsuchanfragemapping
-        WHERE kSprache = ' . (int)$_SESSION['kSprache'],
-    ReturnType::SINGLE_OBJECT
+        WHERE kSprache = :lid',
+    ['lid' => $languageID]
 )->cnt;
 $paginationQueries = (new Pagination('suchanfragen'))
     ->setItemCount($queryCount)
@@ -529,48 +530,50 @@ $paginationMapping = (new Pagination('mapping'))
     ->setItemCount($mappingCount)
     ->assemble();
 
-$searchQueries = $db->query(
+$searchQueries = $db->getObjects(
     "SELECT tsuchanfrage.*, tseo.cSeo AS tcSeo
         FROM tsuchanfrage
-        LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
+        LEFT JOIN tseo 
+            ON tseo.cKey = 'kSuchanfrage'
             AND tseo.kKey = tsuchanfrage.kSuchanfrage
-            AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . '
-        WHERE tsuchanfrage.kSprache = ' . (int)$_SESSION['kSprache'] . '
-            ' . $cLivesucheSQL->cWhere . '
+            AND tseo.kSprache = :lid
+        WHERE tsuchanfrage.kSprache = :lid
+            " . $cLivesucheSQL->cWhere . '
         GROUP BY tsuchanfrage.kSuchanfrage
         ORDER BY ' . $cLivesucheSQL->cOrder . '
         LIMIT ' . $paginationQueries->getLimitSQL(),
-    ReturnType::ARRAY_OF_OBJECTS
+    ['lid' => $languageID]
 );
-
-if (isset($searchQueries->tcSeo) && mb_strlen($searchQueries->tcSeo) > 0) {
-    $searchQueries->cSeo = $searchQueries->tcSeo;
+foreach ($searchQueries as $item) {
+    if (isset($item->tcSeo) && mb_strlen($item->tcSeo) > 0) {
+        $item->cSeo = $item->tcSeo;
+    }
+    unset($item->tcSeo);
 }
-unset($searchQueries->tcSeo);
 
-$failedQueries  = $db->query(
+$failedQueries  = $db->getObjects(
     'SELECT *
         FROM tsuchanfrageerfolglos
-        WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
+        WHERE kSprache = :lid
         ORDER BY nAnzahlGesuche DESC
         LIMIT ' . $paginationFailed->getLimitSQL(),
-    ReturnType::ARRAY_OF_OBJECTS
+    ['lid' => $languageID]
 );
-$queryBlacklist = $db->query(
+$queryBlacklist = $db->getObjects(
     'SELECT *
         FROM tsuchanfrageblacklist
-        WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
+        WHERE kSprache = :lid
         ORDER BY kSuchanfrageBlacklist',
-    ReturnType::ARRAY_OF_OBJECTS
+    ['lid' => $languageID]
 );
-$queryMapping   = $db->query(
+$queryMapping   = $db->getObjects(
     'SELECT *
         FROM tsuchanfragemapping
-        WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
+        WHERE kSprache = :lid
         LIMIT ' . $paginationMapping->getLimitSQL(),
-    ReturnType::ARRAY_OF_OBJECTS
+    ['lid' => $languageID]
 );
-$smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
+$smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs, true))
     ->assign('Suchanfragen', $searchQueries)
     ->assign('Suchanfragenerfolglos', $failedQueries)
     ->assign('Suchanfragenblacklist', $queryBlacklist)

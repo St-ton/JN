@@ -16,11 +16,17 @@ class Migration_20170123095104 extends Migration implements IMigration
 {
     protected $author = 'msc';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('DELETE FROM `tzahlungsartsprache` WHERE `kZahlungsart` = 0');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         // Not necessary

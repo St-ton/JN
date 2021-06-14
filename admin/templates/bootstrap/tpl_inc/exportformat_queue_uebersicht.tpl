@@ -4,19 +4,19 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || empty($cTab) || $cTab === 'aktiv'} active{/if}" data-toggle="tab" role="tab" href="#aktiv">
+                    <a class="nav-link {if $cTab === '' || empty($cTab) || $cTab === 'aktiv'} active{/if}" data-toggle="tab" role="tab" href="#aktiv">
                         {__('exportformatQueue')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'fertig'} active{/if}" data-toggle="tab" role="tab" href="#fertig">
+                    <a class="nav-link {if $cTab === 'fertig'} active{/if}" data-toggle="tab" role="tab" href="#fertig">
                         {__('exportformatTodaysWork')}
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="aktiv" class="tab-pane fade{if !isset($cTab) || empty($cTab) || $cTab === 'aktiv'} active show{/if}">
+            <div id="aktiv" class="tab-pane fade{if $cTab === '' || $cTab === 'aktiv'} active show{/if}">
                 <form method="post" action="exportformat_queue.php">
                     {$jtl_token}
                     <div>
@@ -55,7 +55,7 @@
                                                 {$oExportformatCron->oJobQueue->tasksExecuted|default:0}/{$oExportformatCron->nAnzahlArtikel->nAnzahl}
                                             </td>
                                             <td class="text-center">{if $oExportformatCron->dLetzterStart_de === '00.00.0000 00:00'}-{else}{$oExportformatCron->dLetzterStart_de}{/if}</td>
-                                            <td class="text-center">{if $oExportformatCron->dNaechsterStart_de === null}sofort{else}{$oExportformatCron->dNaechsterStart_de}{/if}</td>
+                                            <td class="text-center">{if $oExportformatCron->dNaechsterStart_de === null}{__('immediately')}{else}{$oExportformatCron->dNaechsterStart_de}{/if}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="exportformat_queue.php?action=editieren&kCron={$oExportformatCron->cronID}&token={$smarty.session.jtl_token}"
@@ -124,7 +124,7 @@
                     </div>
                 </form>
             </div>
-            <div id="fertig" class="tab-pane fade{if isset($cTab) && $cTab === 'fertig'} active show{/if}">
+            <div id="fertig" class="tab-pane fade{if $cTab === 'fertig'} active show{/if}">
                 <div class="toolbar">
                     <form method="post" action="exportformat_queue.php">
                         {$jtl_token}

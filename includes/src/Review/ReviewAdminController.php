@@ -6,7 +6,6 @@ use Exception;
 use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -23,6 +22,8 @@ use function Functional\map;
  */
 final class ReviewAdminController extends BaseController
 {
+    private $languageID;
+
     /**
      * ReviewAdminController constructor.
      * @param DbInterface                $db
@@ -41,6 +42,7 @@ final class ReviewAdminController extends BaseController
         $this->config       = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_BEWERTUNG]);
         $this->cache        = $cache;
         $this->alertService = $alertService;
+        $this->languageID   = (int)$_SESSION['editLanguageID'];
     }
 
     /**
@@ -144,7 +146,7 @@ final class ReviewAdminController extends BaseController
             );
         }
         if (isset($data['cArtNr'])) {
-            $filtered = $this->db->queryPrepared(
+            $filtered = $this->db->getObjects(
                 "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
                     FROM tbewertung
                     LEFT JOIN tartikel 
@@ -152,8 +154,7 @@ final class ReviewAdminController extends BaseController
                     WHERE tbewertung.kSprache = :lang
                         AND (tartikel.cArtNr LIKE :cartnr OR tartikel.cName LIKE :cartnr)
                     ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC",
-                ['lang' => (int)$_SESSION['kSprache'], 'cartnr' => '%' . $data['cArtNr'] . '%'],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['lang' => $this->languageID, 'cartnr' => '%' . $data['cArtNr'] . '%']
             );
             $this->smarty->assign('cArtNr', Text::filterXSS($data['cArtNr']))
                 ->assign('filteredReviews', $filtered);
@@ -187,27 +188,25 @@ final class ReviewAdminController extends BaseController
             $e->nSterne         = (int)$e->nSterne;
             $e->nAktiv          = (int)$e->nAktiv;
         };
-        $inactiveReviews    = $this->db->query(
+        $inactiveReviews    = $this->db->getCollection(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
             LEFT JOIN tartikel 
                 ON tbewertung.kArtikel = tartikel.kArtikel
-            WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . '
+            WHERE tbewertung.kSprache = " . $this->languageID . '
                 AND tbewertung.nAktiv = 0
             ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC
-            LIMIT ' . $inactivePagination->getLimitSQL(),
-            ReturnType::COLLECTION
+            LIMIT ' . $inactivePagination->getLimitSQL()
         )->each($sanitize)->toArray();
-        $activeReviews      = $this->db->query(
+        $activeReviews      = $this->db->getCollection(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
             LEFT JOIN tartikel 
                 ON tbewertung.kArtikel = tartikel.kArtikel
-            WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . '
+            WHERE tbewertung.kSprache = " . $this->languageID . '
                 AND tbewertung.nAktiv = 1
             ORDER BY tbewertung.dDatum DESC
-            LIMIT ' . $activePagination->getLimitSQL(),
-            ReturnType::COLLECTION
+            LIMIT ' . $activePagination->getLimitSQL()
         )->each($sanitize)->toArray();
 
         $this->smarty->assign('oPagiInaktiv', $inactivePagination)
@@ -222,12 +221,12 @@ final class ReviewAdminController extends BaseController
      */
     private function getInactivePagination(): Pagination
     {
-        $totalCount = (int)$this->db->query(
+        $totalCount = (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS nAnzahl
-            FROM tbewertung
-            WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
-                AND nAktiv = 0',
-            ReturnType::SINGLE_OBJECT
+                FROM tbewertung
+                WHERE kSprache = :lid
+                    AND nAktiv = 0',
+            ['lid' => $this->languageID]
         )->nAnzahl;
 
         return (new Pagination('inactive'))
@@ -240,12 +239,12 @@ final class ReviewAdminController extends BaseController
      */
     private function getActivePagination(): Pagination
     {
-        $activeCount = (int)$this->db->query(
+        $activeCount = (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS nAnzahl
-            FROM tbewertung
-            WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
-                AND nAktiv = 1',
-            ReturnType::SINGLE_OBJECT
+                FROM tbewertung
+                WHERE kSprache = :lid
+                    AND nAktiv = 1',
+            ['lid' => $this->languageID]
         )->nAnzahl;
 
         return (new Pagination('active'))

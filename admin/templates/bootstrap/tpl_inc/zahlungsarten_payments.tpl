@@ -89,4 +89,6 @@
             </div>
         </div>
     </form>
+    {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['a'=>'payments',
+    'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$oZahlungsart->kZahlungsart] isBottom=true}
 </div>

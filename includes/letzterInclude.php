@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Campaign;
 use JTL\Cart\Cart;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
@@ -9,7 +10,6 @@ use JTL\Catalog\NavigationEntry;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Wishlist\Wishlist;
-use JTL\DB\ReturnType;
 use JTL\ExtensionPoint;
 use JTL\Filter\Metadata;
 use JTL\Filter\SearchResults;
@@ -20,7 +20,6 @@ use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Link\Link;
 use JTL\Minify\MinifyService;
 use JTL\Session\Frontend;
@@ -94,7 +93,7 @@ $filters = $NaviFilter->getAvailableContentFilters();
 foreach ($filters as $key => $filter) {
     if ($filter->getClassName() === 'JTL\Filter\Items\Availability') {
         unset($filters[$key]);
-        \array_unshift($filters, $filter);
+        array_unshift($filters, $filter);
         break;
     }
 }
@@ -125,6 +124,7 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('session_id', session_id())
     ->assign('lang', Shop::getLanguageCode())
     ->assign('ShopURL', $shopURL)
+    ->assign('ShopHomeURL', Shop::getHomeURL())
     ->assign('imageBaseURL', Shop::getImageBaseURL())
     ->assign('ShopURLSSL', Shop::getURL(true))
     ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant())
@@ -193,6 +193,10 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('isNova', ($conf['template']['general']['is_nova'] ?? 'N') === 'Y')
     ->assign('isAjax', Request::isAjaxRequest());
 
+if ($smarty->getTemplateVars('Link') === null) {
+    $smarty->assign('Link', $link ?? new Link(Shop::Container()->getDB()));
+}
+
 $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());
 $nav->setProductFilter($NaviFilter);
@@ -226,10 +230,7 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
 $visitorCount = $conf['global']['global_zaehler_anzeigen'] === 'Y'
-    ? (int)Shop::Container()->getDB()->query(
-        'SELECT nZaehler FROM tbesucherzaehler',
-        ReturnType::SINGLE_OBJECT
-    )->nZaehler
+    ? (int)Shop::Container()->getDB()->getSingleObject('SELECT nZaehler FROM tbesucherzaehler')->nZaehler
     : 0;
 $debugbar->getTimer()->stopMeasure('init');
 
@@ -238,15 +239,15 @@ $debugbar->getTimer()->stopMeasure('init');
 $alertHelper = Shop::Container()->getAlertService();
 if (isset($cFehler)) {
     $alertHelper->addAlert(Alert::TYPE_ERROR, $cFehler, 'miscFehler');
-    trigger_error('global $cFehler is deprecated.', \E_USER_DEPRECATED);
+    trigger_error('global $cFehler is deprecated.', E_USER_DEPRECATED);
 }
 if (isset($cHinweis)) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, $cHinweis, 'miscCHinweis');
-    trigger_error('global $cHinweis is deprecated.', \E_USER_DEPRECATED);
+    trigger_error('global $cHinweis is deprecated.', E_USER_DEPRECATED);
 }
 if (isset($hinweis)) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, $hinweis, 'miscHinweis');
-    trigger_error('global $hinweis is deprecated.', \E_USER_DEPRECATED);
+    trigger_error('global $hinweis is deprecated.', E_USER_DEPRECATED);
 }
 $tplService->save();
 $smarty->assign('bCookieErlaubt', isset($_COOKIE[Frontend::getSessionName()]))

@@ -26,11 +26,6 @@ class LegacyPluginLoader extends AbstractLoader
     protected $plugin;
 
     /**
-     * @var string
-     */
-    private $basePath = \PFAD_ROOT . \PFAD_PLUGIN;
-
-    /**
      * PluginLoader constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
@@ -68,7 +63,7 @@ class LegacyPluginLoader extends AbstractLoader
         $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID;
         if ($invalidateCache === true) {
             $this->cache->flush('hook_list');
-            $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
+            $this->cache->flushTags([\CACHING_GROUP_CORE, \CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
         } elseif (($plugin = $this->loadFromCache()) !== null) {
             $this->plugin = $plugin;
 
@@ -85,7 +80,7 @@ class LegacyPluginLoader extends AbstractLoader
     /**
      * @inheritDoc
      */
-    protected function loadLicense($data): License
+    protected function loadLicense(stdClass $data): License
     {
         $license = new License();
         $license->setClass($data->cLizenzKlasse ?? '');
@@ -101,8 +96,7 @@ class LegacyPluginLoader extends AbstractLoader
     public function saveToCache(PluginInterface $plugin): bool
     {
         return $this->cacheID !== null
-            ? $this->cache->set($this->cacheID, $plugin, [\CACHING_GROUP_PLUGIN, $plugin->getCache()->getGroup()])
-            : false;
+            && $this->cache->set($this->cacheID, $plugin, [\CACHING_GROUP_PLUGIN, $plugin->getCache()->getGroup()]);
     }
 
     /**
@@ -116,7 +110,7 @@ class LegacyPluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    public function loadFromObject($obj, string $currentLanguageCode): PluginInterface
+    public function loadFromObject(stdClass $obj, string $currentLanguageCode): PluginInterface
     {
         $currentLanguageCode = $currentLanguageCode
             ?? Shop::getLanguageCode()
@@ -124,6 +118,9 @@ class LegacyPluginLoader extends AbstractLoader
 
         Shop::Container()->getGetText();
 
+        if ($this->plugin === null) {
+            $this->plugin = new LegacyPlugin();
+        }
         $this->plugin->setID((int)$obj->kPlugin);
         $this->plugin->setPluginID($obj->cPluginID);
         $this->plugin->setState((int)$obj->nStatus);
@@ -136,8 +133,6 @@ class LegacyPluginLoader extends AbstractLoader
         $this->plugin->setLinks(new Links());
 
         $this->plugin->setCache($this->loadCacheData($this->plugin));
-
-        $this->basePath = \PFAD_ROOT . \PFAD_PLUGIN;
 
         $this->plugin->setPaths($this->loadPaths($obj->cVerzeichnis));
         $this->plugin->oPluginHook_arr = $this->loadHooks((int)$obj->kPlugin);
@@ -188,6 +183,7 @@ class LegacyPluginLoader extends AbstractLoader
         $paths->setBasePath($basePath);
         $paths->setVersionedPath($basePath . $versioned);
         $paths->setFrontendPath($basePath . $versioned . \PFAD_PLUGIN_FRONTEND);
+        $paths->setBaseURL($baseURL);
         $paths->setFrontendURL($baseURL . $versioned . \PFAD_PLUGIN_FRONTEND);
         $paths->setAdminPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU);
         $paths->setAdminURL($baseURL . $versioned . \PFAD_PLUGIN_ADMINMENU);

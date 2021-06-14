@@ -10,6 +10,7 @@
         alt=$imgAttribs.alt|escape:'html'|truncate:60
         title=$imgAttribs.title
         fluid=true
+        webp=true
     }
     {if !$isPreview}
         {foreach $instance->getProperty('zones') as $zone}
@@ -44,7 +45,8 @@
                             src=$product->cVorschaubildURL
                             alt=$product->cName|escape:'html'|truncate:60
                             style='display: block; margin-left: auto; margin-right: auto'
-                            fluid=true}
+                            fluid=true
+                            webp=true}
                         {include file='productdetails/price.tpl' Artikel=$product tplscope="box"}
                     {/if}
                     {if $desc|@strlen > 0}

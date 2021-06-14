@@ -60,7 +60,7 @@ msgid "hasLicenseExpirationsTitle"
 msgstr "Lizenzen/Subscriptions"
 
 msgid "hasLicenseExpirationsMessage"
-msgstr "Mindestens eine Subscription läuft in Kürze ab oder ist bereits abgelaufen."
+msgstr "Mindestens eine Subscription läuft in Kürze ab."
 
 msgid "hasFullTextIndexErrorTitle"
 msgstr "Volltextsuche"
@@ -102,9 +102,21 @@ msgstr "Eine oder mehrere Linkgruppen nutzen keine eindeutigen Template-Namen: %
 msgid "getExportFormatErrorCountTitle"
 msgstr "Fehler in Exportvorlage"
 
+msgid "getExportFormatUncheckedCountTitle"
+msgstr "Ungeprüfte Exportvorlage"
+
 #placeholder: number of affected export formats
 msgid "getExportFormatErrorCountMessage"
 msgstr "In %d Exportvorlage(n) sind Syntax-Fehler vorhanden."
+
+msgid "Missing special pages"
+msgstr "Fehlende Spezialseiten"
+
+msgid "%d special pages are missing."
+msgstr "%d Spezialseiten fehlen."
+
+msgid "getExportFormatUncheckedCountMessage"
+msgstr "%d Exportvorlage(n) sind ohne Syntax-Prüfung."
 
 msgid "getEmailTemplateSyntaxErrorCountTitle"
 msgstr "Fehler in E-Mail-Vorlage"
@@ -113,17 +125,27 @@ msgstr "Fehler in E-Mail-Vorlage"
 msgid "getEmailTemplateSyntaxErrorCountMessage"
 msgstr "In %d E-Mail-Vorlage(n) sind Syntax-Fehler vorhanden."
 
+#placeholder: number of affected email templates
+msgid "getEmailTemplateSyntaxUncheckedCountMessage"
+msgstr "%d E-Mail-Vorlage(n) sind ohne Syntax-Prüfung."
+
+msgid "getEmailTemplateSyntaxUncheckedCountTitle"
+msgstr "Ungeprüfte E-Mail-Vorlage"
+
 msgid "duplicateSpecialLinkTitle"
 msgstr "Spezialseite mehrmals angelegt"
 
 msgid "duplicateSpecialLinkDesc"
 msgstr "Mindestens eine Spezialseite wurde mehrmals für die gleiche(n) Kundengruppe(n) angelegt."
 
-msgid "Safe mode enabled."
-msgstr "Abgesicherter Modus aktiv. Gewisse Funktionalitäten stehen nicht zur Verfügung."
-
 msgid "ustIdMiasCheckTitle"
-msgstr "Ust-ID Prüfung"
+msgstr "Prüfung der USt.-IdNr."
 
 msgid "ustIdMiasCheckMessage"
 msgstr "Wenn Sie die europaweite Umsatzsteuerprüfung durch das MIAS-System der EU verwenden wollen, installieren Sie bitte das PHP-Modul 'php_soap'."
+
+msgid "Missing translations"
+msgstr "Fehlende Übersetzungen"
+
+msgid "%d pages are not translated in all available languages."
+msgstr "%d Seiten sind nicht in alle verfügbaren Sprachen übersetzt."

@@ -1,6 +1,6 @@
 {block name='page-newsletter-archive'}
     {opcMountPoint id='opc_before_newsletter' inContainer=false}
-    {container}
+    {container fluid=$Link->getIsFluid() class="page-newsletter-archive"}
         {block name='page-newsletter-archive-toptags'}
             <div id="toptags" class="h2">{lang key='newsletterhistory'}</div>
         {/block}

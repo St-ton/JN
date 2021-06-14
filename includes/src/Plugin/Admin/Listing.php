@@ -7,7 +7,6 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Plugin\Admin\Validation\ValidatorInterface;
 use JTL\Plugin\InstallCode;
 use JTL\Plugin\LegacyPluginLoader;
@@ -80,13 +79,12 @@ final class Listing
     {
         $items = new Collection();
         try {
-            $all = $this->db->selectAll('tplugin', [], [], 'kPlugin, bExtension', 'cName, cAutor, nPrio');
+            $all = $this->db->selectAll('tplugin', [], [], '*', 'cName, cAutor, nPrio');
         } catch (InvalidArgumentException $e) {
-            $all = $this->db->query(
-                'SELECT kPlugin, 0 AS bExtension
+            $all = $this->db->getObjects(
+                'SELECT *, 0 AS bExtension
                     FROM tplugin
-                    ORDER BY cName, cAutor, nPrio',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY cName, cAutor, nPrio'
             );
         }
         $data         = map(
@@ -100,11 +98,12 @@ final class Listing
         );
         $legacyLoader = new LegacyPluginLoader($this->db, $this->cache);
         $pluginLoader = new PluginLoader($this->db, $this->cache);
+        $langCode     = Shop::getLanguageCode();
         foreach ($data as $dataItem) {
             $item           = new ListingItem();
             $plugin         = (int)$dataItem->bExtension === 1
-                ? $pluginLoader->init($dataItem->kPlugin, true)
-                : $legacyLoader->init($dataItem->kPlugin, true);
+                ? $pluginLoader->loadFromObject($dataItem, $langCode)
+                : $legacyLoader->loadFromObject($dataItem, $langCode);
             $currentVersion = $plugin->getCurrentVersion();
             if ($currentVersion->greaterThan($plugin->getMeta()->getSemVer())) {
                 $plugin->getMeta()->setUpdateAvailable($currentVersion);
@@ -125,12 +124,20 @@ final class Listing
      */
     public function getAll(Collection $installed): Collection
     {
+        if ($this->items->count() > 0) {
+            return $this->items;
+        }
         $parser = new XMLParser();
         $this->parsePluginsDir($parser, self::PLUGINS_DIR, $installed);
         $this->parsePluginsDir($parser, self::LEGACY_PLUGINS_DIR, $installed);
         $this->sort();
 
         return $this->items;
+    }
+
+    public function reset(): void
+    {
+        $this->items = new Collection();
     }
 
     /**
@@ -224,6 +231,7 @@ final class Listing
             if ($plugin !== null) {
                 $plugin->setMinShopVersion($item->getMinShopVersion());
                 $plugin->setMaxShopVersion($item->getMaxShopVersion());
+                $item = $plugin;
             }
             if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $plugin !== null) {
                 $item->setInstalled(true);
@@ -235,7 +243,7 @@ final class Listing
                 $item->setIsShop4Compatible($code === InstallCode::OK);
             }
 
-            $this->items[] = $item;
+            $this->items->add($item);
         }
 
         return $this->items;

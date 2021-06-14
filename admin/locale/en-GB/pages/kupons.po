@@ -12,10 +12,10 @@ msgid "couponsDesc"
 msgstr "Here you create new coupons and manage already existing ones."
 
 msgid "emptySetMessage1"
-msgstr "Currently no"
+msgstr "No"
 
 msgid "emptySetMessage2"
-msgstr "exist."
+msgstr "have been created yet."
 
 msgid "validityPeriod"
 msgstr "Validity period"
@@ -57,7 +57,7 @@ msgid "usesPerCustomer"
 msgstr "Maximum number of claims possible per customer"
 
 msgid "productRestrictions"
-msgstr "Limit to SKUs"
+msgstr "Limited to SKUs"
 
 msgid "restrictionToCustomerGroup"
 msgstr "Limited to customer groups:"
@@ -89,11 +89,20 @@ msgstr "Coupon type"
 msgid "standardCoupon"
 msgstr "Standard coupon"
 
+msgid "standardCouponCreate"
+msgstr "Create standard coupon"
+
 msgid "shippingCoupon"
 msgstr "Free shipping coupon"
 
+msgid "shippingCouponCreate"
+msgstr "Create free shipping coupon"
+
 msgid "newCustomerCoupon"
 msgstr "New customer coupon/Welcome coupon"
+
+msgid "newCustomerCouponCreate"
+msgstr "Create new customer coupon/Welcome coupon"
 
 msgid "additionalShippingCosts"
 msgstr "Valid for COD charges"
@@ -111,10 +120,10 @@ msgid "shippingCountriesHint"
 msgstr "Enter the ISO codes of the countries for which the coupon is valid separated by a semicolon."
 
 msgid "wholeWKDiscount"
-msgstr "Apply discount to total product value"
+msgstr "Apply discount to total order value"
 
 msgid "wholeWKDiscountHint"
-msgstr "The setting \"Apply discount to total product value\" only works with discounts in percent. If the setting is set to \"Yes\", the discount is applied to the total product value.<br/>If this setting is set to \"No\", the discount will be detracted separately from each valid line item."
+msgstr "The setting \"Apply discount to total order value\" only works with discounts in percent. If the setting is set to \"Yes\", the discount is applied to the total order value.<br/>If this setting is set to \"No\", the discount will be detracted only from each valid line item, the validity of each item refers to the restrictions set further down."
 
 msgid "gross"
 msgstr "Gross"
@@ -156,7 +165,7 @@ msgid "validUntilHelp"
 msgstr "Specify until when the coupon is valid. If you leave the field empty, the coupon either has unlimited validity or the setting \"Validity period (days)\" will be used."
 
 msgid "periodOfValidityHelp"
-msgstr "Enter the number of days that the coupon will be valid. This option can be used alternatively to the option \"Valid until\". If both fields remain empty, the coupon has unlimited validity."
+msgstr "Specify how many seconds the coupon will be valid. This option can be used alternatively to the option \"Valid until\". If both fields remain empty, the coupon has unlimited validity."
 
 msgid "errorImportCSV"
 msgstr "Could not completely import CSV file."

@@ -16,6 +16,9 @@ class Migration_20160630121500 extends Migration implements IMigration
 {
     protected $author = 'fm';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -28,6 +31,9 @@ class Migration_20160630121500 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("DELETE FROM `tadminmenu` WHERE `nSort`=315 AND cRecht='PLUGIN_ADMIN_VIEW'");

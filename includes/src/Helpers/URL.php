@@ -5,6 +5,7 @@ namespace JTL\Helpers;
 use JTL\Catalog\Category\MenuItem;
 use JTL\Language\LanguageHelper;
 use JTL\Link\LinkInterface;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\News\Item;
 use JTL\Shop;
 
@@ -352,9 +353,14 @@ class URL
                         : $prefix . '?q=' . $obj->kSuchspecial . $lang;
 
                 case \URLART_NEWSLETTER:
-                    $prefix = $full === false
-                        ? ''
-                        : Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_NEWSLETTER)->getURL();
+                    try {
+                        $prefix = $full === false
+                            ? ''
+                            : Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_NEWSLETTER)->getURL();
+                    } catch (SpecialPageNotFoundException $e) {
+                        $prefix = '';
+                        Shop::Container()->getLogService()->error($e->getMessage());
+                    }
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
                         : $prefix . '?show=' . $obj->kNewsletterHistory;

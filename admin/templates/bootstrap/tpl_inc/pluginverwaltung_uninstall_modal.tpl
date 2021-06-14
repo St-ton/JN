@@ -8,23 +8,28 @@
                 </button>
             </div>
             <div class="modal-body">
-                <label for="delete-files-{$context}">{__('deletePluginFilesQuestion')}</label>
-                <input type="checkbox" id="delete-files-{$context}" name="delete-files">
+                <p>{__('deletePluginDataInfo')}</p>
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" name="delete-data" type="checkbox" id="delete-data-{$context}" checked>
+                    <label class="custom-control-label" for="delete-data-{$context}">{__('deletePluginDataQuestion')}</label>
+                    {getHelpDesc cDesc=__('deletePluginDataQuestionDesc')}
+                </div>
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" name="delete-files" type="checkbox" id="delete-files-{$context}">
+                    <label class="custom-control-label" for="delete-files-{$context}">{__('deletePluginFilesQuestion')}</label>
+                    {getHelpDesc cDesc=__('deletePluginFilesQuestionDesc')}
+                </div>
             </div>
             <div class="modal-footer">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto submit">
-                        <button type="button" class="btn btn-danger btn-bock" name="yes" data-dismiss="modal">
-                            <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataYes')}
-                        </button>
-                    </div> <div class="col-sm-6 col-xl-auto submit">
-                        <button type="button" class="btn btn-outline-primary" name="no" data-dismiss="modal">
-                            <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataNo')}
+                        <button type="button" class="delete-plugindata-yes btn btn-danger btn-bock">
+                            <i class="fa fa-trash-alt"></i>&nbsp;{__('deletePluginDataYes')}
                         </button>
                     </div>
                     <div class="col-sm-6 col-xl-auto submit">
                         <button type="button" class="btn btn-primary" name="cancel" data-dismiss="modal">
-                            <i class="fal fa-check text-success"></i>&nbsp;{__('cancel')}
+                            {__('cancelWithIcon')}
                         </button>
                     </div>
                 </div>
@@ -39,25 +44,28 @@
             disModal.modal('show');
             return false;
         });
-        disModal.on('hide.bs.modal', function(event) {
-            if (document.activeElement.name === 'yes' || document.activeElement.name === 'no') {
-                var data = $('{$selector}').serialize();
-                data += '&deinstallieren=1&delete-data=';
-                if (document.activeElement.name === 'yes') {
-                    data += '1';
-                } else {
-                    data += '0';
-                }
-                data += '&delete-files=';
-                if (document.getElementById('delete-files-{$context}').checked) {
-                    data += '1'
-                } else {
-                    data += '0'
-                }
-                simpleAjaxCall('pluginverwaltung.php', data, function () {
-                    location.reload();
-                });
-            }
+        $('#uninstall-{$context}-modal .delete-plugindata-yes').on('click', function (event) {
+            disModal.modal('hide');
+            uninstall($('#delete-data-{$context}').is(':checked'));
         });
+        function uninstall(deleteData) {
+            var data = $('{$selector}').serialize();
+            data += '&deinstallieren=1&delete-data=';
+            if (deleteData === true) {
+                data += '1';
+            } else {
+                data += '0';
+            }
+            data += '&delete-files=';
+            if (document.getElementById('delete-files-{$context}').checked) {
+                data += '1'
+            } else {
+                data += '0'
+            }
+            simpleAjaxCall('pluginverwaltung.php', data, function () {
+                location.reload();
+            });
+            return false;
+        }
     });
 </script>

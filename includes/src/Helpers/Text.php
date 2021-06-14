@@ -600,12 +600,16 @@ class Text
      * without idn_to_ascii (PECL) this will fail with umlaut domains
      * @param string $input
      * @param bool   $validate
+     * @param bool   $setHTTP
      * @return string|false - a filtered string or false if invalid
      */
-    public static function filterURL($input, bool $validate = true)
+    public static function filterURL($input, bool $validate = true, bool $setHTTP = false)
     {
         if (\mb_detect_encoding($input) !== 'UTF-8' || !self::is_utf8($input)) {
             $input = self::convertUTF8($input);
+        }
+        if ($setHTTP) {
+            $input = \mb_strpos($input, 'http') !== 0 ? 'http://' . $input : $input;
         }
         $input     = \idn_to_ascii($input, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46);
         $sanitized = \filter_var($input, \FILTER_SANITIZE_URL);
@@ -667,9 +671,9 @@ class Text
         if (!\preg_match('/^\d{1,2}\.\d{1,2}\.(\d{4})$/', $data)) {
             return 2;
         }
-        [$tag, $monat, $jahr] = \explode('.', $data);
+        [$day, $month, $year] = \explode('.', $data);
 
-        return !\checkdate($monat, $tag, $jahr) ? 3 : 0;
+        return !\checkdate((int)$month, (int)$day, (int)$year) ? 3 : 0;
     }
 
     /**
@@ -697,7 +701,7 @@ class Text
      * @param bool                $copy   false if objects should be changed, true if they should be cloned first
      * @return string|array|object converted data
      */
-    public static function utf8_convert_recursive($data, $encode = true, $copy = false)
+    public static function utf8_convert_recursive($data, bool $encode = true, bool $copy = false)
     {
         if (\is_string($data)) {
             $isUtf8 = \mb_detect_encoding($data, 'UTF-8', true) !== false;
@@ -757,7 +761,7 @@ class Text
      * @param string $string
      * @return string
      */
-    public static function removeNumerousWhitespaces($string): string
+    public static function removeNumerousWhitespaces(string $string): string
     {
         while (\mb_strpos($string, '  ')) {
             $string = \str_replace('  ', ' ', $string);

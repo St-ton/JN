@@ -10,7 +10,6 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
 
@@ -47,15 +46,6 @@ class Order extends CartHelper
         // positive discount
         $cartInfo->discount[self::NET]   *= -1;
         $cartInfo->discount[self::GROSS] *= -1;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function calculateTotal(stdClass $cartInfo): void
-    {
-        $cartInfo->total[self::NET]   = (float)$this->order->fGesamtsummeNetto;
-        $cartInfo->total[self::GROSS] = (float)$this->order->fGesamtsumme;
     }
 
     /**
@@ -123,7 +113,7 @@ class Order extends CartHelper
      */
     public function getLanguage(): string
     {
-        return Shop::Lang()->getIsoFromLangID($this->order->kSprache);
+        return Shop::Lang()->getIsoFromLangID($this->order->kSprache)->cISO;
     }
 
     /**
@@ -149,17 +139,16 @@ class Order extends CartHelper
      */
     public static function getLastOrderRefIDs(int $customerID): ?object
     {
-        $order = Shop::Container()->getDB()->queryPrepared(
+        $order = Shop::Container()->getDB()->getSingleObject(
             'SELECT kBestellung, kWarenkorb, kLieferadresse, kRechnungsadresse, kZahlungsart, kVersandart
                 FROM tbestellung
                 WHERE kKunde = :customerID
                 ORDER BY dErstellt DESC
                 LIMIT 1',
-            ['customerID' => $customerID],
-            ReturnType::SINGLE_OBJECT
+            ['customerID' => $customerID]
         );
 
-        return \is_object($order)
+        return $order !== null
             ? (object)[
                 'kBestellung'       => (int)$order->kBestellung,
                 'kWarenkorb'        => (int)$order->kWarenkorb,

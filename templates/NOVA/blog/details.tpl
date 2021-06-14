@@ -3,7 +3,7 @@
         {include file='snippets/extension.tpl'}
     {/block}
 
-    {container}
+    {container fluid=$Link->getIsFluid() class="blog-details"}
     {if !empty($cNewsErr)}
         {block name='blog-details-alert'}
             {alert variant="danger"}{lang key='newsRestricted' section='news'}{/alert}
@@ -14,13 +14,13 @@
                 <meta itemprop="mainEntityOfPage" content="{$newsItem->getURL()}">
                 {block name='blog-details-heading'}
                     {opcMountPoint id='opc_before_heading'}
-                    <h1 itemprop="headline" class="text-center">
+                    <h1 itemprop="headline">
                         {$newsItem->getTitle()}
                     </h1>
                 {/block}
 
                 {block name='blog-details-author'}
-                    <div class="author-meta text-muted text-center font-size-sm">
+                    <div class="author-meta">
                         {if empty($newsItem->getDateValidFrom())}
                             {assign var=dDate value=$newsItem->getDateCreated()->format('Y-m-d H:i:s')}
                         {else}
@@ -44,7 +44,7 @@
 
                         {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
                             {block name='blog-details-sub-news'}
-                                <span class="news-categorylist mb-4">
+                                <span class="news-categorylist">
                                     {if $newsItem->getAuthor() === null}/{/if}
                                     {foreach $oNewsKategorie_arr as $oNewsKategorie}
                                         {link itemprop="articleSection"
@@ -61,7 +61,7 @@
 
                         {block name='blog-details-comments-link'}
                             {if $Einstellungen.news.news_kommentare_nutzen === 'Y'}
-                            {link class="text-decoration-none text-nowrap" href="#comments" title="{lang key='readComments' section='news'}"}
+                            {link class="text-decoration-none-util text-nowrap-util" href="#comments" title="{lang key='readComments' section='news'}"}
                                 /
                                 <span class="fas fa-comments"></span>
                                 <span class="sr-only">
@@ -80,25 +80,20 @@
 
                 {if $newsItem->getPreviewImage() !== ''}
                     {block name='blog-details-image'}
-                        {image webp=true lazy=true fluid=true
-                            src=$newsItem->getImage(\JTL\Media\Image::SIZE_MD)
-                            srcset="{$newsItem->getImage(\JTL\Media\Image::SIZE_XS)} 300w,
-                                {$newsItem->getImage(\JTL\Media\Image::SIZE_SM)} 600w,
-                                {$newsItem->getImage(\JTL\Media\Image::SIZE_MD)} 1200w,
-                                {$newsItem->getImage(\JTL\Media\Image::SIZE_LG)} 1800w"
-                            sizes="auto"
-                            alt="{$newsItem->getTitle()|escape:'quotes'} - {$newsItem->getMetaTitle()|escape:'quotes'}"
+                        {include file='snippets/image.tpl'
+                            item=$newsItem
+                            square=false
                             center=true
-                            class="my-5"
-                        }
+                            class="blog-details-image"
+                            alt="{$newsItem->getTitle()|escape:'quotes'} - {$newsItem->getMetaTitle()|escape:'quotes'}"}
                         <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}">
                     {/block}
                 {/if}
 
                 {block name='blog-details-article-content'}
                     {opcMountPoint id='opc_before_content'}
-                    {row itemprop="articleBody" class="mb-4"}
-                        {col cols=12 class="blog-content"}
+                    {row itemprop="articleBody" class="blog-details-content"}
+                        {col cols=12}
                             {$newsItem->getContent()}
                         {/col}
                     {/row}
@@ -108,7 +103,9 @@
                     {block name='blog-details-article-comments'}
                         {if $userCanComment === true}
                             {block name='blog-details-form-comment'}
-                                <hr class="my-6">
+                                {block name='blog-details-form-comment-hr-top'}
+                                    <hr class="blog-details-hr">
+                                {/block}
                                 {row}
                                     {col cols=12}
                                         {block name='blog-details-form-comment-heading'}
@@ -132,19 +129,19 @@
                                                         label-for="comment-text"
                                                         label-class="commentForm"
                                                     }
-                                                        {if $Einstellungen.news.news_kommentare_freischalten === 'Y'}
-                                                            <small class="form-text text-muted">{lang key='commentWillBeValidated' section='news'}</small>
-                                                        {/if}
-                                                        {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
                                                         {if $nPlausiValue_arr.cKommentar > 0}
-                                                            <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                                            <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                                                 {lang key='fillOut' section='global'}
                                                             </div>
                                                         {/if}
+                                                        {if $Einstellungen.news.news_kommentare_freischalten === 'Y'}
+                                                            <small class="form-text text-muted-util">{lang key='commentWillBeValidated' section='news'}</small>
+                                                        {/if}
+                                                        {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
                                                     {/formgroup}
                                                     {row}
-                                                        {col md=4 xl=3 class='ml-auto'}
-                                                            {button block=true variant="primary" name="speichern" type="submit" class="float-right"}
+                                                        {col md=4 xl=3 class='blog-details-save'}
+                                                            {button block=true variant="primary" name="speichern" type="submit"}
                                                                 {lang key='newsCommentSave' section='news'}
                                                             {/button}
                                                         {/col}
@@ -169,9 +166,11 @@
                                     {assign var=articleURL value='news.php'}
                                     {assign var=cParam_arr value=['kNews'=>$newsItem->getID(),'n'=>$newsItem->getID()]}
                                 {/if}
-                                <hr class="my-6">
+                                {block name='blog-details-form-comment-hr-middle'}
+                                    <hr class="blog-details-hr">
+                                {/block}
                                 <div id="comments">
-                                    {row class="align-items-center mb-3"}
+                                    {row class="blog-comments-header"}
                                         {col cols="auto"}
                                             {block name='blog-details-comments-content-heading'}
                                                 <div class="h2 section-heading">{lang key='newsComments' section='news'}
@@ -181,26 +180,26 @@
                                                 </div>
                                             {/block}
                                         {/col}
-                                        {col cols="12" md=6 class="ml-auto"}
+                                        {col cols="12" md=6 class="ml-auto-util"}
                                             {block name='blog-details-include-pagination'}
                                                 {include file='snippets/pagination.tpl' oPagination=$oPagiComments cThisUrl=$articleURL cParam_arr=$cParam_arr}
                                             {/block}
                                         {/col}
                                     {/row}
                                     {block name='blog-details-comments'}
-                                        {listgroup class="list-group-flush p-3 bg-info"}
+                                        {listgroup class="blog-details-comments-list list-group-flush"}
                                             {foreach $comments as $comment}
-                                                {listgroupitem class="bg-info m-0 border-top-0" itemprop="comment"}
+                                                {listgroupitem class="blog-details-comments-list-item" itemprop="comment"}
                                                     <p>
                                                         {$comment->getName()}, {$comment->getDateCreated()->format('d.m.y H:i')}
                                                     </p>
                                                     {$comment->getText()}
                                                      {foreach $comment->getChildComments() as $childComment}
-                                                        <div class="review-reply mt-3 ml-3">
+                                                        <div class="review-reply">
                                                             <span class="subheadline">{lang key='commentReply' section='news'}:</span>
                                                             <blockquote>
                                                                 {$childComment->getText()}
-                                                                <div class="mt-3 blockquote-footer">{$childComment->getName()}, {$childComment->getDateCreated()->format('d.m.y H:i')}</div>
+                                                                <div class="blockquote-footer">{$childComment->getName()}, {$childComment->getDateCreated()->format('d.m.y H:i')}</div>
                                                             </blockquote>
                                                         </div>
                                                      {/foreach}
@@ -215,14 +214,16 @@
                 {/if}
             </article>
             {if $oNews_arr|count > 0}
-            <hr class="my-6">
+            {block name='blog-details-form-comment-hr-bottom'}
+                <hr class="blog-details-hr">
+            {/block}
             {block name='blog-details-latest-news'}
                 <div class="h2">{lang key='news' section='news'}</div>
                 <div itemprop="about"
                     itemscope=true
                     itemtype="http://schema.org/Blog"
-                    class="carousel carousel-arrows-inside mx-0 slick-lazy slick-type-half"
-                    data-slick-type="slider-half">
+                    class="carousel carousel-arrows-inside mx-0 slick-lazy slick-type-three {if $oNews_arr|count < 3}slider-no-preview{/if}"
+                    data-slick-type="slider-three">
                     {include file='snippets/slider_items.tpl' items=$oNews_arr type='news'}
                 </div>
             {/block}

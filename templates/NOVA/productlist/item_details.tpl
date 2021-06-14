@@ -1,5 +1,5 @@
 {block name='productlist-item-details'}
-    {formrow tag='dl' class="text-nowrap {if $small|default:false === true}formrow-small{/if}"}
+    {formrow tag='dl' class="productlist-item-detail text-nowrap-util {if $small|default:false === true}formrow-small{/if}"}
     {block name='productlist-item-details-product-number'}
         {col tag='dt' cols=6}{lang key='productNo'}:{/col}
         {col tag='dd' cols=6}{$Artikel->cArtNr}{/col}
@@ -8,7 +8,7 @@
         {block name='productlist-item-details-variations'}
             {col tag='dt' cols=6}{lang key='variationsIn' section='productOverview'}:{/col}
             {col tag='dd' cols=6}
-                <ul class="list-unstyled mb-0">
+                <ul class="variations-list list-unstyled">
                     {foreach $Artikel->Variationen as $variation}
                         <li>{$variation->cName}<li>
                         {if $variation@index === 3 && !$variation@last}
@@ -43,14 +43,14 @@
             {col tag='dt' cols=6}{lang key='manufacturer' section='productDetails'}:{/col}
             {col tag='dd' cols=6 itemprop='manufacturer' itemscope=true itemtype='http://schema.org/Organization'}
                 {link href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
-                    class="text-decoration-none"
+                    class="text-decoration-none-util"
                     itemprop="url"
                     target="{if !empty($Artikel->cHerstellerHomepage)}_blank{else}_self{/if}"}
                     {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
                         || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B')
                         && !empty($Artikel->cHerstellerBildKlein)
                     }
-                        {image webp=true lazy=true fluid-grow=true
+                        {image webp=true lazy=true fluid=true
                             src=$Artikel->cHerstellerBildURLKlein
                             srcset="{$Artikel->cHerstellerBildURLKlein} {$Einstellungen.bilder.bilder_hersteller_mini_breite}w,
                                     {$Artikel->cHerstellerBildURLNormal} {$Einstellungen.bilder.bilder_hersteller_normal_breite}w"

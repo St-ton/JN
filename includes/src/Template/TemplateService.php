@@ -6,6 +6,7 @@ use Exception;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\License\Manager;
+use JTL\License\Struct\ExpiredExsLicense;
 use SimpleXMLElement;
 
 /**
@@ -25,7 +26,7 @@ class TemplateService implements TemplateServiceInterface
     private $cache;
 
     /**
-     * @var Model
+     * @var Model|null
      */
     private $activeTemplate;
 
@@ -98,7 +99,10 @@ class TemplateService implements TemplateServiceInterface
         $parentXML = ($tplXML === null || empty($tplXML->Parent)) ? null : $reader->getXML((string)$tplXML->Parent);
         $dir       = $template->getTemplate();
         if ($dir === null || $tplXML === null) {
-            return new Model($this->db);
+            $model = new Model($this->db);
+            $model->setName($template->cTemplate ?? 'undefined');
+
+            return $model;
         }
         $template = $this->mergeWithXML(
             $dir,
@@ -106,8 +110,13 @@ class TemplateService implements TemplateServiceInterface
             $parentXML
         );
         if ($withLicense === true) {
-            $manager = new Manager($this->db, $this->cache);
-            $template->setExsLicense($manager->getLicenseByItemID($template->getTemplate()));
+            $manager    = new Manager($this->db, $this->cache);
+            $exsLicense = $manager->getLicenseByItemID($template->getTemplate());
+            if ($exsLicense === null && $template->getExsID() !== null) {
+                $exsLicense = new ExpiredExsLicense();
+                $exsLicense->initFromTemplateData($template);
+            }
+            $template->setExsLicense($exsLicense);
         }
         $template->setBoxLayout($this->getBoxLayout($tplXML, $parentXML));
         $template->setResources(new Resources($this->db, $tplXML, $parentXML));
@@ -177,7 +186,7 @@ class TemplateService implements TemplateServiceInterface
     private function getBoxLayout(SimpleXMLElement $tplXML, ?SimpleXMLElement $parentXML = null): array
     {
         $items = [];
-        foreach ([$tplXML, $parentXML] as $xml) {
+        foreach ([$parentXML, $tplXML] as $xml) {
             if ($xml === null || !isset($xml->Boxes) || \count($xml->Boxes) !== 1) {
                 continue;
             }
@@ -191,6 +200,9 @@ class TemplateService implements TemplateServiceInterface
         return $items;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function reset(): void
     {
         $this->activeTemplate = null;

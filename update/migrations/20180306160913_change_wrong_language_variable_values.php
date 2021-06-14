@@ -16,12 +16,18 @@ class Migration_20180306160913 extends Migration implements IMigration
 {
     protected $author = 'cr';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'uploadInvalidFormat', 'Die Datei entspricht nicht dem geforderten Format');
         $this->setLocalization('ger', 'global', 'paginationOrderUsefulness', 'Hilfreich');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setLocalization('ger', 'global', 'uploadInvalidFormat', 'Die Datei entspricht nicht dem geforderte Format');

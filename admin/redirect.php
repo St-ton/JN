@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Pagination\DataType;
@@ -20,16 +19,27 @@ $oAccount->permission('REDIRECT_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
-handleCsvImportAction('redirects', 'tredirect');
+$alertHelper  = Shop::Container()->getAlertService();
+$errors       = [];
+$importResult = handleCsvImportAction('redirects', 'tredirect', [], null, 2, $errors);
 
-$redirects   = $_POST['redirects'] ?? [];
-$alertHelper = Shop::Container()->getAlertService();
+if ($importResult > 0) {
+    $alertHelper->addAlert(
+        Alert::TYPE_ERROR,
+        __('errorImport') . '<br><br>' . implode('<br>', $errors),
+        'errorImport'
+    );
+} elseif ($importResult === 0) {
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImport'), 'successImport');
+}
+
+$redirects = $_POST['redirects'] ?? [];
 
 if (Form::validateToken()) {
     switch (Request::verifyGPDataString('action')) {
         case 'save':
             foreach ($redirects as $id => $item) {
-                $redirect = new Redirect($id);
+                $redirect = new Redirect((int)$id);
                 if ($redirect->kRedirect > 0 && $redirect->cToUrl !== $item['cToUrl']) {
                     if (Redirect::checkAvailability($item['cToUrl'])) {
                         $redirect->cToUrl     = $item['cToUrl'];
@@ -48,7 +58,7 @@ if (Form::validateToken()) {
         case 'delete':
             foreach ($redirects as $id => $item) {
                 if (isset($item['enabled']) && (int)$item['enabled'] === 1) {
-                    Redirect::deleteRedirect($id);
+                    Redirect::deleteRedirect((int)$id);
                 }
             }
             break;
@@ -68,25 +78,6 @@ if (Form::validateToken()) {
                     ->assign('cTab', 'new_redirect')
                     ->assign('cFromUrl', Request::verifyGPDataString('cFromUrl'))
                     ->assign('cToUrl', Request::verifyGPDataString('cToUrl'));
-            }
-            break;
-        case 'csvimport':
-            $redirect = new Redirect();
-            if (is_uploaded_file($_FILES['cFile']['tmp_name'])) {
-                $file = PFAD_ROOT . PFAD_EXPORT . md5($_FILES['cFile']['name'] . time());
-                if (move_uploaded_file($_FILES['cFile']['tmp_name'], $file)) {
-                    $errors = $redirect->doImport($file);
-                    if (count($errors) === 0) {
-                        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImport'), 'successImport');
-                    } else {
-                        @unlink($file);
-                        $alertHelper->addAlert(
-                            Alert::TYPE_ERROR,
-                            __('errorImport') . '<br><br>' . implode('<br>', $errors),
-                            'errorImport'
-                        );
-                    }
-                }
             }
             break;
         default:
@@ -131,13 +122,12 @@ handleCsvExportAction(
         $order = $pagination->getOrderSQL();
 
         for ($i = 0; $i < $redirectCount; $i += 1000) {
-            $oRedirectIter = $db->query(
+            $oRedirectIter = $db->getPDOStatement(
                 'SELECT cFromUrl, cToUrl
                     FROM tredirect' .
                     ($where !== '' ? ' WHERE ' . $where : '') .
                     ($order !== '' ? ' ORDER BY ' . $order : '') .
-                    ' LIMIT ' . $i . ', 1000',
-                ReturnType::QUERYSINGLE
+                    ' LIMIT ' . $i . ', 1000'
             );
 
             foreach ($oRedirectIter as $oRedirect) {

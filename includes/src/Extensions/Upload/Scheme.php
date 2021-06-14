@@ -2,7 +2,6 @@
 
 namespace JTL\Extensions\Upload;
 
-use JTL\DB\ReturnType;
 use JTL\Nice;
 use JTL\Shop;
 use stdClass;
@@ -78,7 +77,7 @@ final class Scheme
      */
     private function loadFromDB(int $id): void
     {
-        $upload = Shop::Container()->getDB()->queryPrepared(
+        $upload = Shop::Container()->getDB()->getSingleObject(
             'SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
                 tuploadschema.cDateiTyp, tuploadschema.nPflicht, tuploadschemasprache.cName, 
                 tuploadschemasprache.cBeschreibung
@@ -90,11 +89,10 @@ final class Scheme
             [
                 'lid' => Shop::getLanguageID(),
                 'uid' => $id
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
-        if (isset($upload->kUploadSchema) && (int)$upload->kUploadSchema > 0) {
+        if ($upload !== null && (int)$upload->kUploadSchema > 0) {
             self::copyMembers($upload, $this);
         }
     }
@@ -143,7 +141,7 @@ final class Scheme
             ? ' AND kCustomID = ' . $kCustomID
             : '';
 
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             'SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
                 tuploadschema.cDateiTyp, tuploadschema.nPflicht, 
                 IFNULL(tuploadschemasprache.cName,tuploadschema.cName ) cName,
@@ -153,15 +151,14 @@ final class Scheme
                     ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
                     AND tuploadschemasprache.kSprache = :lid
                 WHERE nTyp = :tpe' . $sql,
-            ['tpe' => $type, 'lid' => Shop::getLanguageID()],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['tpe' => $type, 'lid' => Shop::getLanguageID()]
         );
     }
 
     /**
-     * @param object      $objFrom
+     * @param mixed       $objFrom
      * @param object|null $objTo
-     * @return null|object
+     * @return stdClass
      */
     private static function copyMembers($objFrom, &$objTo = null)
     {

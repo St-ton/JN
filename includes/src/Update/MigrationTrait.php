@@ -26,13 +26,13 @@ trait MigrationTrait
      * @return mixed
      * @throws InvalidArgumentException
      */
-    protected function __execute($query, $return)
+    protected function __execute(string $query, int $return)
     {
         if (\JTL_CHARSET === 'iso-8859-1') {
             $query = Text::utf8_convert_recursive($query, false);
         }
 
-        return $this->getDB()->executeQuery($query, $return);
+        return $this->getDB()->query($query, $return);
     }
 
     /**
@@ -55,7 +55,7 @@ trait MigrationTrait
      * @param string $query
      * @return int
      */
-    public function execute($query)
+    public function execute(string $query)
     {
         return $this->__execute($query, ReturnType::AFFECTED_ROWS);
     }
@@ -64,7 +64,7 @@ trait MigrationTrait
      * @param string $query
      * @return \stdClass|bool
      */
-    public function fetchOne($query)
+    public function fetchOne(string $query)
     {
         return $this->__execute($query, ReturnType::SINGLE_OBJECT);
     }
@@ -73,7 +73,7 @@ trait MigrationTrait
      * @param string $query
      * @return array
      */
-    public function fetchAll($query)
+    public function fetchAll(string $query)
     {
         return $this->__execute($query, ReturnType::ARRAY_OF_OBJECTS);
     }
@@ -82,7 +82,7 @@ trait MigrationTrait
      * @param string $query
      * @return array
      */
-    public function fetchArray($query)
+    public function fetchArray(string $query)
     {
         return $this->__execute($query, ReturnType::ARRAY_OF_ASSOC_ARRAYS);
     }

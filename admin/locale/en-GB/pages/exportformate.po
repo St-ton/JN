@@ -99,10 +99,19 @@ msgid "availableFormats"
 msgstr "Existing export formats"
 
 msgid "exportAll"
-msgstr "Exporting all"
+msgstr "Export all"
 
 msgid "sureDeleteFormat"
 msgstr "Delete export format?"
 
 msgid "useCache"
-msgstr "Use cache?"
+msgstr "Use cache"
+
+msgid "Check syntax"
+msgstr "Check sytnax of export format"
+
+msgid "Syntax check fail"
+msgstr "Export format syntax check failed"
+
+msgid "File %s not found."
+msgstr "File %s not found."

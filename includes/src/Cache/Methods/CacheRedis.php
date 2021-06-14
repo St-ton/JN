@@ -31,7 +31,7 @@ class CacheRedis implements ICachingMethod
     /**
      * @param array $options
      */
-    public function __construct($options)
+    public function __construct(array $options)
     {
         $res             = false;
         $this->journalID = 'redis_journal';
@@ -65,46 +65,44 @@ class CacheRedis implements ICachingMethod
     {
         $redis   = new Redis();
         $connect = $persist === false ? 'connect' : 'pconnect';
-        if ($host !== null) {
+        if ($host === null) {
+            return false;
+        }
+        try {
+            $res = ($port !== null && $host[0] !== '/')
+                ? $redis->$connect($host, (int)$port, \REDIS_CONNECT_TIMEOUT)
+                : $redis->$connect($host); // for connecting to socket
+        } catch (RedisException $e) {
+            $this->setError($e->getMessage());
+            $res = false;
+        }
+        if ($pass !== null && $pass !== '') {
             try {
-                $res = ($port !== null && $host[0] !== '/')
-                    ? $redis->$connect($host, (int)$port, \REDIS_CONNECT_TIMEOUT)
-                    : $redis->$connect($host); // for connecting to socket
+                $res = $redis->auth($pass);
             } catch (RedisException $e) {
                 $this->setError($e->getMessage());
                 $res = false;
             }
-            if ($pass !== null && $pass !== '') {
-                try {
-                    $res = $redis->auth($pass);
-                } catch (RedisException $e) {
-                    $this->setError($e->getMessage());
-                    $res = false;
-                }
-            }
-            if ($database !== null && $database !== '') {
-                try {
-                    $res = $redis->select((int)$database);
-                } catch (RedisException $e) {
-                    $this->setError($e->getMessage());
-                    $res = false;
-                }
-            }
-            if ($res === false) {
-                return false;
-            }
-            $this->setError('');
-            // set custom prefix
-            $redis->setOption(Redis::OPT_PREFIX, $this->options['prefix']);
-            // set php serializer for objects and arrays
-            $redis->setOption(Redis::OPT_SERIALIZER, (string)Redis::SERIALIZER_PHP);
-
-            $this->redis = $redis;
-
-            return true;
         }
+        if ($database !== null && $database !== '') {
+            try {
+                $res = $redis->select($database);
+            } catch (RedisException $e) {
+                $this->setError($e->getMessage());
+                $res = false;
+            }
+        }
+        if ($res === false) {
+            return false;
+        }
+        $this->setError('');
+        // set custom prefix
+        $redis->setOption(Redis::OPT_PREFIX, $this->options['prefix']);
+        // set php serializer for objects and arrays
+        $redis->setOption(Redis::OPT_SERIALIZER, (string)Redis::SERIALIZER_PHP);
+        $this->redis = $redis;
 
-        return false;
+        return true;
     }
 
     /**
@@ -120,7 +118,7 @@ class CacheRedis implements ICachingMethod
                 $this->redis->expire($cacheID, $exp);
             }
 
-            return $res;
+            return \is_bool($res) ? $res : false;
         } catch (RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
 
@@ -240,15 +238,7 @@ class CacheRedis implements ICachingMethod
      */
     public function flushTags($tags): int
     {
-        $keys = \array_unique($this->getKeysByTag($tags));
-        if (!\is_array($tags)) {
-            $tags = [$tags];
-        }
-        foreach ($tags as $tag) {
-            $keys[] = self::_keyFromTagName($tag);
-        }
-
-        return $this->flush($keys) ? \count($tags) : 0;
+        return $this->flush(\array_unique($this->getKeysByTag($tags))) ? \count($tags) : 0;
     }
 
     /**
@@ -288,9 +278,9 @@ class CacheRedis implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function keyExists($cacheID): bool
+    public function keyExists($key): bool
     {
-        return (bool)$this->redis->exists($cacheID);
+        return (bool)$this->redis->exists($key);
     }
 
     /**

@@ -12,7 +12,7 @@
             {/if}
             <form method="post" action="kupons.php">
                 {$jtl_token}
-                <input type="hidden" name="cKuponTyp" id="cKuponTyp" value="{$cKuponTyp}">
+                <input type="hidden" name="cKuponTyp" id="cKuponTyp_{$cKuponTyp}" value="{$cKuponTyp}">
                 {if $oKupon_arr|@count > 0}
                     <div class="table-responsive">
                         <table class="list table table-align-top">
@@ -114,7 +114,7 @@
                     <div class="alert alert-info" role="alert">{__('noFilterResults')}</div>
                 {else}
                     <div class="alert alert-info" role="alert">
-                        {__('emptySetMessage1')} {$cKuponTypName}s {__('emptySetMessage2')}
+                        {__('emptySetMessage1')} {__($cKuponTypName)} {__('emptySetMessage2')}
                     </div>
                 {/if}
                 <div class="card-footer save-wrapper">
@@ -136,17 +136,20 @@
                             </div>
                         {/if}
                         <div class="{if !$oKupon_arr|@count > 0}ml-auto{/if} col-sm-6 col-xl-auto">
-                            {include file='tpl_inc/csv_import_btn.tpl' importerId="kupon"}
+                            {include file='tpl_inc/csv_import_btn.tpl' importerId="kupon_{$cKuponTyp}" importerType="kupon"}
                         </div>
                         <div class="col-sm-6 col-xl-auto">
                             <a href="kupons.php?kKupon=0&cKuponTyp={$cKuponTyp}&token={$smarty.session.jtl_token}"
                                class="btn btn-primary btn-block" title="{__('modify')}">
-                                <i class="fa fa-share"></i> {$cKuponTypName} {__('create')}
+                                <i class="fa fa-share"></i> {__($cKuponTypName|cat:'Create')}
                             </a>
                         </div>
                     </div>
                 </div>
             </form>
+            {if $oKupon_arr|@count > 0}
+                {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['tab'=>$cKuponTyp] isBottom=true}
+            {/if}
         </div>
     </div>
 {/function}
@@ -175,7 +178,7 @@
         <div class="tab-content">
             {kupons_uebersicht_tab
                 cKuponTyp=$couponTypes.standard
-                cKuponTypName=__('standardCoupon')
+                cKuponTypName='standardCoupon'
                 oKupon_arr=$oKuponStandard_arr
                 nKuponCount=$nKuponStandardCount
                 pagination=$oPaginationStandard
@@ -183,7 +186,7 @@
             }
             {kupons_uebersicht_tab
                 cKuponTyp=$couponTypes.shipping
-                cKuponTypName=__('shippingCoupon')
+                cKuponTypName='shippingCoupon'
                 oKupon_arr=$oKuponVersandkupon_arr
                 nKuponCount=$nKuponVersandCount
                 pagination=$oPaginationVersandkupon
@@ -191,7 +194,7 @@
             }
             {kupons_uebersicht_tab
                 cKuponTyp=$couponTypes.newCustomer
-                cKuponTypName=__('newCustomerCoupon')
+                cKuponTypName='newCustomerCoupon'
                 oKupon_arr=$oKuponNeukundenkupon_arr
                 nKuponCount=$nKuponNeukundenCount
                 pagination=$oPaginationNeukundenkupon

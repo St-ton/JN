@@ -17,6 +17,9 @@ class Migration_20191218103000 extends Migration implements IMigration
     protected $author = 'mh';
     protected $description = 'Add lang var for filter';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'filterCancel', 'Abbrechen');
@@ -26,6 +29,9 @@ class Migration_20191218103000 extends Migration implements IMigration
 
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('filterCancel');

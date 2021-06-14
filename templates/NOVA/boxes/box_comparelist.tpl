@@ -1,8 +1,9 @@
 {block name='boxes-box-comparelist'}
+    {if $Einstellungen.vergleichsliste.vergleichsliste_anzeigen === 'Y'}
     {assign var=maxItems value=$oBox->getItemCount()}
     {assign var=itemCount value=count($oBox->getProducts())}
     {if $itemCount > 0}
-        {card class="box box-compare mb-md-4" id="sidebox{$oBox->getID()}"}
+        <div class="box box-compare box-normal" id="sidebox{$oBox->getID()}">
             {block name='boxes-box-comparelist-content'}
                 {block name='boxes-box-comparelist-toggle-title'}
                     {link id="crd-hdr-{$oBox->getID()}"
@@ -10,13 +11,13 @@
                         data=["toggle"=>"collapse"]
                         role="button"
                         aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
-                        class="text-decoration-none font-weight-bold mb-2 d-md-none dropdown-toggle"}
+                        class="box-normal-link dropdown-toggle"}
                         {lang key='compare'}
                     {/link}
                 {/block}
                 {block name='boxes-box-comparelist-title'}
-                    <div class="productlist-filter-headline align-items-center d-none d-md-flex">
-                        <i class='fas fa-list mr-2'></i>
+                    <div class="productlist-filter-headline align-items-center-util d-none d-md-flex">
+                        <i class='fas fa-list icon-mr-2'></i>
                         {lang key='compare'}
                     </div>
                 {/block}
@@ -35,19 +36,13 @@
                                             {break}
                                         {/if}
                                         <tr>
-                                        <td class="w-100" data-id={$product->kArtikel}>
+                                        <td class="w-100-util" data-id={$product->kArtikel}>
                                             {block name='boxes-box-comparelist-dropdown-products-image-title'}
-                                                {formrow class="align-items-center"}
+                                                {formrow class="align-items-center-util"}
                                                     {col class="col-auto"}
                                                         {block name='boxes-box-comparelist-dropdown-products-image'}
                                                             {link href=$product->cURLFull}
-                                                                {image fluid=true webp=true lazy=true
-                                                                    src=$product->Bilder[0]->cURLMini
-                                                                    srcset="{$product->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                        {$product->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                        {$product->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                                    sizes="45px"
-                                                                    alt=$product->cName|strip_tags|escape:'html'}
+                                                                {include file='snippets/image.tpl' item=$product square=false srcSize='xs' sizes='45px'}
                                                             {/link}
                                                         {/block}
                                                     {/col}
@@ -59,9 +54,9 @@
                                                 {/formrow}
                                             {/block}
                                         </td>
-                                        <td class="text-right text-nowrap">
+                                        <td class="box-delete-button">
                                             {block name='boxes-box-comparelist-dropdown-products-remove'}
-                                                {link href=$product->cURLDEL class="remove float-right"
+                                                {link href=$product->cURLDEL class="remove"
                                                     title="{lang section="comparelist" key="removeFromCompareList"}"
                                                     data=["name"=>"Vergleichsliste.remove",
                                                     "toggle"=>"product-actions",
@@ -77,11 +72,12 @@
                         {/block}
                         {if $itemCount > 1}
                             {block name='boxes-box-comparelist-link'}
-                                <hr class="mt-0 mb-3">
+                                <hr class="hr-no-top">
                                 {link
                                     class="btn btn-outline-primary btn-sm btn-block{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}"
                                     href="{get_static_route id='vergleichsliste.php'}"
                                     target="{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'blank'}_blank{else}_self{/if}"
+                                    data=["modal-classes"=>"modal-fullwidth"]
                                 }
                                    {lang key='gotToCompare'}
                                 {/link}
@@ -91,12 +87,13 @@
                 {/block}
             {/block}
             {block name='boxes-box-comparelist-hr-end'}
-                <hr class="my-3 d-flex d-md-none">
+                <hr class="box-normal-hr">
             {/block}
-        {/card}
+        </div>
     {else}
         {block name='blog-preview-no-items'}
             <section class="d-none box-compare" id="sidebox{$oBox->getID()}"></section>
         {/block}
+    {/if}
     {/if}
 {/block}

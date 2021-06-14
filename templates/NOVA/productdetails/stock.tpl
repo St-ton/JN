@@ -1,8 +1,8 @@
 {block name='productdetails-stock'}
     {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
     <div class="delivery-status">
-    {block name='productdetails-stock-delivery-status'}
-        <ul class="list-unstyled mb-0">
+    {block name='productdetails-stock-stock-info'}
+        <ul class="list-unstyled">
             {if !isset($shippingTime)}
                 {block name='productdetails-stock-shipping-time'}
                     <li>
@@ -45,14 +45,16 @@
             {block name='productdetails-stock-estimated-delivery'}
                 {if $Artikel->cEstimatedDelivery}
                     <li>
-                        <div class="estimated-delivery cursor-pointer"
-                             data-toggle="popover"
-                             data-placement="top"
-                             data-content="{lang|sprintf:$Firma->country->getName():$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='productDetails'}">
+                        <div class="estimated-delivery"
+                            {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}
+                                data-toggle="popover"
+                                data-placement="top"
+                                data-content="{if $Firma->country !== null}{lang|sprintf:$Firma->country->getName():$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='productDetails'}{/if}"
+                            {/if}>
                             {if !isset($shippingTime)}{lang key='shippingTime'}:{/if}
-                            <span class="a{$Artikel->Lageranzeige->nStatus} text-nowrap">
+                            <span class="a{$Artikel->Lageranzeige->nStatus}">
                                 {$Artikel->cEstimatedDelivery}
-                                <span class="text-decoration-underline">({lang key='shippingInfoIcon' section='productDetails'})</span>
+                                <span class="estimated-delivery-info">({lang key='shippingInfoIcon' section='productDetails'})</span>
                             </span>
                         </div>
                     </li>

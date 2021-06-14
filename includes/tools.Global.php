@@ -93,7 +93,7 @@ function cryptPasswort($cPasswort, $cHashPasswort = null)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 
-    $cSalt   = sha1(uniqid(mt_rand(), true));
+    $cSalt   = sha1(uniqid((string)mt_rand(), true));
     $nLaenge = mb_strlen($cSalt);
     $nLaenge = max($nLaenge >> 3, ($nLaenge >> 2) - mb_strlen($cPasswort));
     $cSalt   = $cHashPasswort
@@ -147,7 +147,7 @@ function gibUID(int $length = 40, string $seed = '')
         }
         $uid = cryptPasswort($uid . $salt);
     } else {
-        $uid = cryptPasswort(md5(M_PI . $salt . md5(time() - mt_rand())));
+        $uid = cryptPasswort(md5(M_PI . $salt . md5((string)(time() - mt_rand()))));
     }
     // Anzahl Stellen beachten
     return $length > 0 ? mb_substr($uid, 0, $length) : $uid;
@@ -751,10 +751,10 @@ function pruefeKampagnenParameter()
 }
 
 /**
- * @param int $definitionID
- * @param int $key
- * @param float $value
- * @param string $customData
+ * @param int         $definitionID
+ * @param int         $key
+ * @param float       $value
+ * @param string|null $customData
  * @return int
  * @deprecated since 5.0.0
  */
@@ -941,8 +941,8 @@ function guessCsvDelimiter($filename)
 }
 
 /**
- * @param array $hookInfos
- * @param bool  $forceExit
+ * @param array|null $hookInfos
+ * @param bool       $forceExit
  * @return array
  * @deprecated since 5.0.0
  */
@@ -971,9 +971,9 @@ function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
 }
 
 /**
- * @param string $metaProposal the proposed meta text value.
- * @param string $metaSuffix append suffix to meta value that wont be shortened
- * @param int $maxLength $metaProposal will be truncated to $maxlength - mb_strlen($metaSuffix) characters
+ * @param string      $metaProposal the proposed meta text value.
+ * @param string|null $metaSuffix append suffix to meta value that wont be shortened
+ * @param int|null    $maxLength $metaProposal will be truncated to $maxlength - mb_strlen($metaSuffix) characters
  * @return string truncated meta value with optional suffix (always appended if set),
  * @deprecated since 5.0.0
  */
@@ -1035,11 +1035,11 @@ function doMainwordRedirect($NaviFilter, $count, $seo = false)
 /**
  * Converts price into given currency
  *
- * @param float  $price
- * @param string $iso - EUR / USD
- * @param int    $id - kWaehrung
- * @param bool   $useRounding
- * @param int    $precision
+ * @param float       $price
+ * @param string|null $iso - EUR / USD
+ * @param int|null    $id - kWaehrung
+ * @param bool        $useRounding
+ * @param int         $precision
  * @return float|bool
  * @deprecated since 5.0.0
  */
@@ -1128,7 +1128,7 @@ function gibUst(int $kSteuerklasse)
 }
 
 /**
- * @param string $countryCode
+ * @param string|null $countryCode
  * @deprecated since 5.0.0
  */
 function setzeSteuersaetze($countryCode = null)
@@ -1138,10 +1138,10 @@ function setzeSteuersaetze($countryCode = null)
 }
 
 /**
- * @param array  $items
- * @param int    $net
- * @param int    $htmlCurrency
- * @param mixed int|object $oWaehrung
+ * @param array      $items
+ * @param int        $net
+ * @param int        $htmlCurrency
+ * @param int|object $currency
  * @return array
  * @deprecated since 5.0.0
  */
@@ -1151,7 +1151,7 @@ function gibAlteSteuerpositionen($items, $net = -1, $htmlCurrency = 1, $currency
         __FUNCTION__ . ' is deprecated. Use ' . Tax::class . '::getOldTaxPositions() instead.',
         E_USER_DEPRECATED
     );
-    return Tax::getOldTaxItems($items, $net, $htmlCurrency, $currency);
+    return Tax::getOldTaxItems($items, $net, (bool)$htmlCurrency, $currency);
 }
 
 /**
@@ -1546,7 +1546,7 @@ function fuegeEinInWarenkorb(
  * @param array $variations
  * @param int   $kEigenschaft
  * @param int   $kEigenschaftWert
- * @return bool|object
+ * @return bool
  * @deprecated since 5.0.0
  */
 function findeVariation($variations, $kEigenschaft, $kEigenschaftWert)
@@ -2006,11 +2006,11 @@ function baueGewicht(array $products, int $weightAcc = 2, int $shippingWeightAcc
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     foreach ($products as $product) {
         if ($product->fGewicht > 0) {
-            $product->Versandgewicht    = str_replace('.', ',', round($product->fGewicht, $shippingWeightAcc));
+            $product->Versandgewicht    = str_replace('.', ',', (string)round($product->fGewicht, $shippingWeightAcc));
             $product->Versandgewicht_en = round($product->fGewicht, $shippingWeightAcc);
         }
         if ($product->fArtikelgewicht > 0) {
-            $product->Artikelgewicht    = str_replace('.', ',', round($product->fArtikelgewicht, $weightAcc));
+            $product->Artikelgewicht    = str_replace('.', ',', (string)round($product->fArtikelgewicht, $weightAcc));
             $product->Artikelgewicht_en = round($product->fArtikelgewicht, $weightAcc);
         }
     }
@@ -2060,7 +2060,7 @@ function gibToken(bool $old = false)
         }
     }
 
-    return sha1(md5(microtime(true)) . (rand(0, 5000000000) * 1000));
+    return sha1(md5((string)microtime(true)) . (random_int(0, 5000000000) * 1000));
 }
 
 /**
@@ -2078,7 +2078,7 @@ function gibTokenName(bool $old = false)
         }
     }
 
-    return mb_substr(sha1(md5(microtime(true)) . (rand(0, 1000000000) * 1000)), 0, 4);
+    return mb_substr(sha1(md5((string)microtime(true)) . (random_int(0, 1000000000) * 1000)), 0, 4);
 }
 
 /**
@@ -2453,4 +2453,16 @@ function extFremdeParameter($seo)
         E_USER_DEPRECATED
     );
     return Request::extractExternalParams($seo);
+}
+
+/**
+ * @param string $cSQL
+ * @param object $cSuchSQL
+ * @param bool   $checkLanguage
+ * @return array
+ * @deprecated since 5.0.0
+ */
+function gibTagFreischalten($cSQL, $cSuchSQL, $checkLanguage = true)
+{
+    return [];
 }

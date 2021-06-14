@@ -92,3 +92,10 @@
 
 	@return $string;
 }
+
+@function header-height($breakpoint) {
+	@if $breakpoint == lg {
+		@return $navbar-image-height-lg + 2 * $navbar-padding-y-lg;
+	}
+	@return $navbar-image-height + 2 * $navbar-padding-y;
+}

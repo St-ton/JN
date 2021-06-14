@@ -3,7 +3,6 @@
 namespace JTL;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use stdClass;
 use function Functional\first;
 
@@ -46,7 +45,7 @@ class Slider implements IExtensionPoint
     private $theme = '';
 
     /**
-     * @var int
+     * @var bool
      */
     private $isActive = false;
 
@@ -145,22 +144,22 @@ class Slider implements IExtensionPoint
     }
 
     /**
-     * @param string $type
+     * @param string $value
      * @return string|null
      */
-    private function getMapping(string $type): ?string
+    private function getMapping(string $value): ?string
     {
-        return self::$mapping[$type] ?? null;
+        return self::$mapping[$value] ?? null;
     }
 
     /**
-     * @param int $kSlider
+     * @param int $id
      * @return $this
      */
-    public function init($kSlider)
+    public function init($id)
     {
-        $loaded = $this->load($kSlider);
-        if ($kSlider > 0 && $loaded === true) {
+        $loaded = $this->load($id);
+        if ($id > 0 && $loaded === true) {
             Shop::Smarty()->assign('oSlider', $this);
         }
 
@@ -184,27 +183,27 @@ class Slider implements IExtensionPoint
     }
 
     /**
-     * @param int  $kSlider
+     * @param int  $int
      * @param bool $active
      * @return bool
      */
-    public function load(int $kSlider = 0, $active = true): bool
+    public function load(int $int = 0, $active = true): bool
     {
-        if ($kSlider <= 0 && $this->id <= 0) {
+        if ($int <= 0 && $this->id <= 0) {
             return false;
         }
         $activeSQL = $active ? ' AND bAktiv = 1 ' : '';
-        if ($kSlider === 0) {
-            $kSlider = $this->id;
+        if ($int === 0) {
+            $int = $this->id;
         }
-        $data  = $this->db->queryPrepared(
-            'SELECT *, tslider.kSlider AS id FROM tslider
+        $data  = $this->db->getObjects(
+            'SELECT *, tslider.kSlider AS id 
+                FROM tslider
                 LEFT JOIN tslide
                     ON tslider.kSlider = tslide.kSlider
-                WHERE tslider.kSlider = :kslider' . $activeSQL .
+                WHERE tslider.kSlider = :sliderID' . $activeSQL .
             ' ORDER BY tslide.nSort',
-            ['kslider' => $kSlider],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['sliderID' => $int]
         );
         $first = first($data);
         if ($first !== null) {

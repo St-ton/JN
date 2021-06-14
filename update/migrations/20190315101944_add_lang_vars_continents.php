@@ -17,6 +17,9 @@ class Migration_20190315101944 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Add lang vars continents';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'Europa', 'Europa');
@@ -35,6 +38,9 @@ class Migration_20190315101944 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'Antarktis', 'Antarctica');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeLocalization('Europa');

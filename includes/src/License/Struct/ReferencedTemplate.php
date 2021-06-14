@@ -16,20 +16,34 @@ use stdClass;
 class ReferencedTemplate extends ReferencedItem
 {
     /**
-     * ReferencedTemplate constructor.
      * @inheritDoc
      * @throws \Exception
      */
-    public function __construct(DbInterface $db, stdClass $license, ?Release $release)
+    public function initByExsID(DbInterface $db, stdClass $license, Releases $releases): void
     {
         $exsid = $license->exsid;
         $data  = $db->select('ttemplate', 'eTyp', 'standard');
         if ($data !== null && $data->exsID === $exsid) {
-            $releaseVersion   = $release === null ? Version::parse('0.0.0') : $release->getVersion();
+            $available        = $releases->getAvailable();
+            $latest           = $releases->getLatest();
             $installedVersion = Version::parse($data->version);
+            $availableVersion = $available === null ? Version::parse('0.0.0') : $available->getVersion();
+            $latestVersion    = $latest === null ? $availableVersion : $latest->getVersion();
+            $this->setMaxInstallableVersion($installedVersion);
+            $this->setHasUpdate(false);
+            $this->setCanBeUpdated(false);
+            if ($availableVersion->greaterThan($installedVersion)) {
+                $this->setMaxInstallableVersion($availableVersion);
+                $this->setHasUpdate(true);
+                $this->setCanBeUpdated(true);
+            } elseif ($latestVersion->greaterThan($availableVersion)
+                && $latestVersion->greaterThan($installedVersion)
+            ) {
+                $this->setMaxInstallableVersion($latestVersion);
+                $this->setHasUpdate(true);
+                $this->setCanBeUpdated(false);
+            }
             $this->setID($data->cTemplate);
-            $this->setMaxInstallableVersion($releaseVersion);
-            $this->setHasUpdate($installedVersion->smallerThan($releaseVersion));
             $this->setInstalled(true);
             $this->setInstalledVersion($installedVersion);
             $this->setActive(true);
@@ -39,10 +53,25 @@ class ReferencedTemplate extends ReferencedItem
             foreach ($lstng->getAll() as $template) {
                 /** @var ListingItem $template */
                 if ($template->getExsID() === $exsid) {
+                    $available        = $releases->getAvailable();
+                    $latest           = $releases->getLatest() ?? $available;
                     $installedVersion = Version::parse($template->getVersion());
+                    $availableVersion = $available === null ? Version::parse('0.0.0') : $available->getVersion();
+                    $latestVersion    = $latest === null ? $availableVersion : $latest->getVersion();
+                    $this->setMaxInstallableVersion($installedVersion);
+                    $this->setHasUpdate(false);
+                    $this->setCanBeUpdated(false);
+                    if ($availableVersion->greaterThan($installedVersion)) {
+                        $this->setMaxInstallableVersion($availableVersion);
+                        $this->setHasUpdate(true);
+                        $this->setCanBeUpdated(true);
+                    } elseif ($latestVersion->greaterThan($availableVersion)) {
+                        $this->setMaxInstallableVersion($latestVersion);
+                        $this->setHasUpdate(true);
+                        $this->setCanBeUpdated(false);
+                    }
                     $this->setID($template->getPath());
-                    $this->setMaxInstallableVersion($release->getVersion());
-                    $this->setHasUpdate($installedVersion->smallerThan($release->getVersion()));
+                    $this->setHasUpdate($installedVersion->smallerThan($availableVersion));
                     $this->setInstalled(true);
                     $this->setInstalledVersion($installedVersion);
                     $this->setActive(false);

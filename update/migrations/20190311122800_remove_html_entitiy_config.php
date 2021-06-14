@@ -17,17 +17,23 @@ class Migration_20190311122800 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'remove global html entity config';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeConfig('global_artikelname_htmlentities');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setConfig(
             'global_artikelname_htmlentities',
             'N',
-            \CONF_GLOBAL,
+            CONF_GLOBAL,
             'HTML-Code Umwandlung bei Artikelnamen',
             'selectbox',
             280,

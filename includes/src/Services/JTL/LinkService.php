@@ -11,6 +11,7 @@ use JTL\Link\LinkGroupInterface;
 use JTL\Link\LinkGroupList;
 use JTL\Link\LinkGroupListInterface;
 use JTL\Link\LinkInterface;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Shop;
 use stdClass;
 use function Functional\first;
@@ -193,10 +194,10 @@ final class LinkService implements LinkServiceInterface
         if ($parentLinkID <= 0) {
             return false;
         }
+        /** @var LinkGroupInterface $linkGroup */
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
-            /** @var LinkGroupInterface $linkGroup */
+            /** @var LinkInterface $link */
             foreach ($linkGroup->getLinks() as $link) {
-                /** @var LinkInterface $link */
                 if ($link->getID() === $linkID && $link->getParent() === $parentLinkID) {
                     return true;
                 }
@@ -223,11 +224,13 @@ final class LinkService implements LinkServiceInterface
     {
         $lg = $this->getLinkGroupByName('specialpages');
 
-        return $lg !== null
-            ? $lg->getLinks()->first(static function (LinkInterface $l) use ($linkType) {
-                return $l->getLinkType() === $linkType;
-            })
-            : null;
+        if ($lg === null || ($lt = $lg->getLinks()->first(static function (LinkInterface $l) use ($linkType) {
+            return $l->getLinkType() === $linkType;
+        })) === null) {
+            throw new SpecialPageNotFoundException($linkType);
+        }
+
+        return $lt;
     }
 
     /**
@@ -235,7 +238,12 @@ final class LinkService implements LinkServiceInterface
      */
     public function getSpecialPageID(int $linkType, bool $fallback = true)
     {
-        $link = $this->getSpecialPage($linkType);
+        try {
+            $link = $this->getSpecialPage($linkType);
+        } catch (SpecialPageNotFoundException $e) {
+            Shop::Container()->getLogService()->warning($e->getMessage());
+            $link = null;
+        }
         if ($link !== null) {
             return $link->getID();
         }
@@ -386,7 +394,6 @@ final class LinkService implements LinkServiceInterface
      */
     public function buildSpecialPageMeta(int $type): stdClass
     {
-        $first           = null;
         $meta            = new stdClass();
         $meta->cTitle    = '';
         $meta->cDesc     = '';
@@ -422,10 +429,10 @@ final class LinkService implements LinkServiceInterface
     public function activate(int $pageType): LinkGroupCollection
     {
         $linkGroups = $this->linkGroupList->getLinkGroups();
+        /** @var LinkGroupInterface $linkGroup */
         foreach ($linkGroups as $linkGroup) {
-            /** @var LinkGroupInterface $linkGroup */
+            /** @var LinkInterface $link */
             foreach ($linkGroup->getLinks() as $link) {
-                /** @var LinkInterface $link */
                 $link->setIsActive(false);
                 $linkType = $link->getLinkType();
                 $linkID   = $link->getID();

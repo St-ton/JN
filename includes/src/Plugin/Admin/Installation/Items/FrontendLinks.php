@@ -2,7 +2,6 @@
 
 namespace JTL\Plugin\Admin\Installation\Items;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\InstallCode;
@@ -95,12 +94,12 @@ class FrontendLinks extends AbstractItem
                     }
                     if (($allLanguages[$linkLang->cISOSprache]->kSprache ?? 0) > 0) {
                         $or = isset($oldLink->kLink) ? (' OR kKey = ' . (int)$oldLink->kLink) : '';
-                        $this->db->query(
+                        $this->db->queryPrepared(
                             "DELETE FROM tseo
                                 WHERE cKey = 'kLink'
                                     AND (kKey = " . $linkID . $or . ')
-                                    AND kSprache = ' . (int)$allLanguages[$linkLang->cISOSprache]->kSprache,
-                            ReturnType::DEFAULT
+                                    AND kSprache = :lid',
+                            ['lid' => (int)$allLanguages[$linkLang->cISOSprache]->kSprache]
                         );
                         $seo           = new stdClass();
                         $seo->cSeo     = Seo::checkSeo(Seo::getSeo($localized['Seo']));
@@ -184,9 +183,9 @@ class FrontendLinks extends AbstractItem
         $link->kPlugin            = $pluginID;
         $link->cName              = $links['Name'];
         $link->nLinkart           = \LINKTYP_PLUGIN;
-        $link->cSichtbarNachLogin = $links['VisibleAfterLogin'];
-        $link->cDruckButton       = $links['PrintButton'];
-        $link->cNoFollow          = $links['NoFollow'] ?? null;
+        $link->cSichtbarNachLogin = $links['VisibleAfterLogin'] ?? 'N';
+        $link->cDruckButton       = $links['PrintButton'] ?? 'N';
+        $link->cNoFollow          = $links['NoFollow'] ?? 'N';
         $link->nSort              = \LINKTYP_PLUGIN;
         $link->bSSL               = (int)($links['SSL'] ?? 0);
 

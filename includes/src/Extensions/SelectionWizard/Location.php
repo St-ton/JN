@@ -4,7 +4,6 @@ namespace JTL\Extensions\SelectionWizard;
 
 use JTL\Catalog\Category\Kategorie;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 use stdClass;
@@ -108,7 +107,7 @@ class Location
                     $this->getLanguage($this->kAuswahlAssistentGruppe)
                 );
 
-                $this->cOrt = $category->cName . '(Kategorie)';
+                $this->cOrt = $category->cName . ' (' . __('category') . ')';
                 break;
 
             case \AUSWAHLASSISTENT_ORT_LINK:
@@ -128,7 +127,7 @@ class Location
                     false,
                     'cName'
                 );
-                $this->cOrt = isset($link->cName) ? ($link->cName . '(CMS)') : null;
+                $this->cOrt = isset($link->cName) ? ($link->cName . ' (CMS)') : null;
                 break;
 
             case \AUSWAHLASSISTENT_ORT_STARTSEITE:
@@ -143,15 +142,12 @@ class Location
      */
     private function getLanguage(int $groupID): int
     {
-        $group = $this->db->queryPrepared(
+        return (int)($this->db->getSingleObject(
             'SELECT kSprache
                 FROM tauswahlassistentgruppe
                 WHERE kAuswahlAssistentGruppe = :groupID',
-            ['groupID' => $groupID],
-            ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)($group->kSprache ?? 0);
+            ['groupID' => $groupID]
+        )->kSprache ?? 0);
     }
 
     /**
@@ -166,7 +162,8 @@ class Location
         }
         if (isset($params['cKategorie']) && \mb_strlen($params['cKategorie']) > 0) {
             foreach (\explode(';', $params['cKategorie']) as $key) {
-                if ((int)$key > 0 && \mb_strlen($key) > 0) {
+                $key = (int)$key;
+                if ($key > 0 && \mb_strlen((string)$key) > 0) {
                     $ins                          = new stdClass();
                     $ins->kAuswahlAssistentGruppe = $groupID;
                     $ins->cKey                    = \AUSWAHLASSISTENT_ORT_KATEGORIE;
@@ -178,7 +175,8 @@ class Location
         }
         if (GeneralObject::hasCount('kLink_arr', $params)) {
             foreach ($params['kLink_arr'] as $key) {
-                if ((int)$key > 0) {
+                $key = (int)$key;
+                if ($key > 0) {
                     $ins                          = new stdClass();
                     $ins->kAuswahlAssistentGruppe = $groupID;
                     $ins->cKey                    = \AUSWAHLASSISTENT_ORT_LINK;
@@ -232,30 +230,29 @@ class Location
             && (!isset($params['kLink_arr'])
                 || !\is_array($params['kLink_arr'])
                 || \count($params['kLink_arr']) === 0)
-            && $params['nStartseite'] == 0
+            && (int)$params['nStartseite'] === 0
         ) {
             $checks['cOrt'] = 1;
         }
+        $langID  = (int)($params['kSprache'] ?? 0);
+        $groupID = (int)($params['kAuswahlAssistentGruppe'] ?? 0);
         // Ort Kategorie
         if (isset($params['cKategorie']) && \mb_strlen($params['cKategorie']) > 0) {
             $categories = \explode(';', $params['cKategorie']);
-            if (!\is_array($categories) || \count($categories) === 0) {
+            if (\count($categories) === 0) {
                 $checks['cKategorie'] = 1;
             }
             if (!\is_numeric($categories[0])) {
                 $checks['cKategorie'] = 2;
             }
             foreach ($categories as $key) {
-                if ((int)$key > 0 && \mb_strlen($key) > 0) {
+                $key = (int)$key;
+                if ($key > 0) {
                     if ($update) {
-                        if ($this->isCategoryTaken(
-                            $key,
-                            $params['kSprache'],
-                            $params['kAuswahlAssistentGruppe']
-                        )) {
+                        if ($this->isCategoryTaken($key, $langID, $groupID)) {
                             $checks['cKategorie'] = 3;
                         }
-                    } elseif ($this->isCategoryTaken($key, $params['kSprache'])) {
+                    } elseif ($this->isCategoryTaken($key, $langID)) {
                         $checks['cKategorie'] = 3;
                     }
                 }
@@ -264,18 +261,15 @@ class Location
         // Ort Spezialseite
         if (GeneralObject::hasCount('kLink_arr', $params)) {
             foreach ($params['kLink_arr'] as $key) {
-                if ((int)$key <= 0) {
+                $key = (int)$key;
+                if ($key <= 0) {
                     continue;
                 }
                 if ($update) {
-                    if ($this->isLinkTaken(
-                        $key,
-                        $params['kSprache'],
-                        $params['kAuswahlAssistentGruppe']
-                    )) {
+                    if ($this->isLinkTaken($key, $langID, $groupID)) {
                         $checks['kLink_arr'] = 1;
                     }
-                } elseif ($this->isLinkTaken($key, $params['kSprache'])) {
+                } elseif ($this->isLinkTaken($key, $langID)) {
                     $checks['kLink_arr'] = 1;
                 }
             }
@@ -283,13 +277,10 @@ class Location
         // Ort Startseite
         if (isset($params['nStartseite']) && (int)$params['nStartseite'] === 1) {
             if ($update) {
-                if ($this->isStartPageTaken(
-                    $params['kSprache'],
-                    $params['kAuswahlAssistentGruppe']
-                )) {
+                if ($this->isStartPageTaken($langID, $groupID)) {
                     $checks['nStartseite'] = 1;
                 }
-            } elseif ($this->isStartPageTaken($params['kSprache'])) {
+            } elseif ($this->isStartPageTaken($langID)) {
                 $checks['nStartseite'] = 1;
             }
         }
@@ -311,7 +302,7 @@ class Location
         $locationSQL = $groupID > 0
             ? ' AND o.kAuswahlAssistentGruppe != ' . $groupID
             : '';
-        $item        = $this->db->queryPrepared(
+        $item        = $this->db->getSingleObject(
             'SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort AS o
                 JOIN tauswahlassistentgruppe AS g
@@ -323,11 +314,10 @@ class Location
                 'keyID'  => \AUSWAHLASSISTENT_ORT_KATEGORIE,
                 'catID'  => $categoryID,
                 'langID' => $languageID
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
-        return isset($item->kAuswahlAssistentOrt) && $item->kAuswahlAssistentOrt > 0;
+        return ($item->kAuswahlAssistentOrt ?? 0) > 0;
     }
 
     /**
@@ -344,7 +334,7 @@ class Location
         $condSQL = $groupID > 0
             ? ' AND o.kAuswahlAssistentGruppe != ' . $groupID
             : '';
-        $data    = $this->db->queryPrepared(
+        $data    = $this->db->getSingleObject(
             'SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort AS o
                 JOIN tauswahlassistentgruppe AS g
@@ -356,11 +346,10 @@ class Location
                 'langID' => $languageID,
                 'keyID'  => \AUSWAHLASSISTENT_ORT_LINK,
                 'linkID' => $linkID
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
-        return isset($data->kAuswahlAssistentOrt) && $data->kAuswahlAssistentOrt > 0;
+        return ($data->kAuswahlAssistentOrt ?? 0) > 0;
     }
 
     /**
@@ -376,7 +365,7 @@ class Location
         $locationSQL = $groupID > 0
             ? ' AND o.kAuswahlAssistentGruppe != ' . $groupID
             : '';
-        $item        = $this->db->queryPrepared(
+        $item        = $this->db->getSingleObject(
             'SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort AS o
                 JOIN tauswahlassistentgruppe AS g
@@ -384,11 +373,10 @@ class Location
                     AND g.kSprache = :langID
                 WHERE o.cKey = :keyID' . $locationSQL . '
                     AND o.kKey = 1',
-            ['langID' => $languageID, 'keyID' => \AUSWAHLASSISTENT_ORT_STARTSEITE],
-            ReturnType::SINGLE_OBJECT
+            ['langID' => $languageID, 'keyID' => \AUSWAHLASSISTENT_ORT_STARTSEITE]
         );
 
-        return isset($item->kAuswahlAssistentOrt) && $item->kAuswahlAssistentOrt > 0;
+        return ($item->kAuswahlAssistentOrt ?? 0) > 0;
     }
 
     /**
@@ -398,9 +386,9 @@ class Location
      * @param bool   $backend
      * @return Location|null
      */
-    public function getLocation($keyName, int $id, int $languageID, bool $backend = false): ?self
+    public function getLocation(string $keyName, int $id, int $languageID, bool $backend = false): ?self
     {
-        $item = $this->db->executeQueryPrepared(
+        $item = $this->db->getSingleObject(
             'SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort AS o
                 JOIN tauswahlassistentgruppe AS g
@@ -412,11 +400,10 @@ class Location
                 'langID' => $languageID,
                 'keyID'  => $keyName,
                 'kkey'   => $id
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
-        return isset($item->kAuswahlAssistentOrt) && $item->kAuswahlAssistentOrt > 0
+        return $item !== null && $item->kAuswahlAssistentOrt > 0
             ? new self((int)$item->kAuswahlAssistentOrt, 0, $backend)
             : null;
     }

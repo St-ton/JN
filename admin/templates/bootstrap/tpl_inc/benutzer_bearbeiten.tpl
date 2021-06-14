@@ -1,7 +1,7 @@
 <script type="text/javascript">
 {literal}
 $(document).ready(function() {
-    $('#tmp_check').bind('click', function() {
+    $('#tmp_check').on('change', function() {
         if ($(this).is(':checked')) {
             $('#tmp_date').show();
         } else {
@@ -9,9 +9,20 @@ $(document).ready(function() {
         }
     });
     $('#dGueltigBis').datetimepicker({
-        showSecond: true,
-        timeFormat: 'hh:mm:ss',
-        dateFormat: 'dd.mm.yy'
+        locale: '{/literal}{$language|mb_substr:0:2}{literal}',
+        format: 'DD.MM.YYYY HH:mm:ss',
+        useCurrent: false,
+        icons: {
+            time: 'far fa-clock',
+            date: 'far fa-calendar',
+            up: 'fas fa-chevron-up',
+            down: 'fas fa-chevron-down',
+            previous: 'fas fa-chevron-left',
+            next: 'fas fa-chevron-right',
+            today: 'far fa-calendar-check',
+            clear: 'fas fa-trash',
+            close: 'fas fa-times',
+        },
     });
 
     /** bring the 2FA-canvas in a defined position depending on the state of the 2FA */
@@ -45,6 +56,22 @@ $(document).ready(function() {
         $('.iso_wrapper').hide();
         $('#isoVita_' + iso).show();
     });
+
+    $('#kAdminlogingruppe').on('change', function(){
+        checkAdminSelected();
+    });
+    function checkAdminSelected()
+    {
+        let $tmpDate = $('#tmp-date-wrapper');
+        if ($('#kAdminlogingruppe').val() === '1') {
+            $tmpDate.hide();
+            $('#tmp_check').prop('checked', false);
+            $('#tmp_date').hide();
+        } else {
+            $tmpDate.show();
+        }
+    }
+    checkAdminSelected();
 });
 </script>
 <style>
@@ -83,7 +110,7 @@ $(document).ready(function() {
 </style>
 {/literal}
 
-{assign var=cTitel value=__('benutzerNeu')}
+{assign var=cTitel value=__('newUserTitle')}
 {if isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin > 0}
     {assign var=cTitel value=__('benutzerBearbeiten')}
 {/if}
@@ -171,15 +198,13 @@ $(document).ready(function() {
                             </div>
                         </div>
                     </div>
-
-                    {if isset($oAccount->kAdminlogingruppe) && $oAccount->kAdminlogingruppe > 1}
-                        <div class="item">
+                    <div id="tmp-date-wrapper" style="display: none;">
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="tmp_check">{__('temporaryAccess')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                     <span class="input-group-checkbox-wrap">
                                         <div class="custom-control custom-checkbox">
-                                            <input class="custom-control-input" class="" type="checkbox" id="tmp_check" name="dGueltigBisAktiv" value="1"{if (isset($oAccount->dGueltigBis) && $oAccount->dGueltigBis !== null)} checked="checked"{/if} />
+                                            <input class="custom-control-input" class="" type="checkbox" id="tmp_check" name="dGueltigBisAktiv" value="1"{if isset($oAccount->dGueltigBis)} checked="checked"{/if} />
                                             <label class="custom-control-label" for="tmp_check"></label>
                                         </div>
                                     </span>
@@ -187,15 +212,21 @@ $(document).ready(function() {
                             </div>
                         </div>
 
-                        <div class="item"{if !$oAccount->dGueltigBis || $oAccount->dGueltigBis == null} style="display: none;"{/if} id="tmp_date">
+                        <div class="item" {if empty($oAccount->dGueltigBis)}style="display: none;"{/if} id="tmp_date">
                             <div class="form-group form-row align-items-center{if !empty($cError_arr.dGueltigBis)} form-error{/if}">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="dGueltigBis">{__('tillInclusive')}</label>
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="dGueltigBis">{__('tillInclusive')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input class="form-control" type="text" name="dGueltigBis" value="{if $oAccount->dGueltigBis}{$oAccount->dGueltigBis|date_format:'%d.%m.%Y %H:%M:%S'}{/if}" id="dGueltigBis" />
+                                    <input class="form-control datetimepicker-inpu"
+                                           type="text"
+                                           name="dGueltigBis"
+                                           value="{if !empty($oAccount->dGueltigBis)}{$oAccount->dGueltigBis|date_format:'%d.%m.%Y %H:%M:%S'}{/if}"
+                                           id="dGueltigBis"
+                                           data-target="#dGueltigBis"
+                                           data-toggle="datetimepicker"/>
                                 </div>
                             </div>
                         </div>
-                    {/if}
+                    </div>
                 </div>
             </div>
             <div class="card">
@@ -354,8 +385,6 @@ $(document).ready(function() {
             {else}
                 <input type="hidden" name="kAdminlogingruppe" value="1" />
             {/if}
-
-            {if isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin > 1}
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{__('personalInformation')}</div>
@@ -432,7 +461,6 @@ $(document).ready(function() {
                     {/if}
                 </div>
             </div>
-            {/if}
         </div>
         <div class="card-footer save-wrapper">
             <div class="row">

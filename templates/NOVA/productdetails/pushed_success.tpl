@@ -1,5 +1,5 @@
 {block name='productdetails-pushed-success'}
-    <div id="pushed-success" {if $card}role="alert" class="card shadow-sm alert alert-dismissable p-0 mb-5"{/if}>
+    <div id="pushed-success" {if $card}role="alert" class="card alert alert-dismissable"{/if}>
         {if isset($zuletztInWarenkorbGelegterArtikel)}
             {assign var=pushedArtikel value=$zuletztInWarenkorbGelegterArtikel}
         {else}
@@ -8,7 +8,7 @@
         {assign var=showXSellingCart value=isset($Xselling->Kauf) && count($Xselling->Kauf->Artikel) > 0}
         {if $card}
             {block name='productdetails-pushed-success-cart-note-heading'}
-                <div class="text-center card-header alert-success">
+                <div class="card-header alert-success">
                     {if isset($cartNote)}
                         {$cartNote}
                     {/if}
@@ -19,7 +19,7 @@
 
         {row}
             {block name='productdetails-pushed-success-product-cell'}
-                {col cols=12 md="{if $showXSellingCart}6{else}12{/if}" class="mb-3"}
+                {col cols=12 md="{if $showXSellingCart}6{else}12{/if}"}
                     {block name='productdetails-pushed-success-product-cell-content'}
                         <div class="productbox-inner{if isset($class)} {$class}{/if}">
                             {row}
@@ -28,19 +28,13 @@
                                         <div class="productbox-title subheadline">{$pushedArtikel->cName}</div>
                                     {/block}
                                 {/col}
-                                {col cols=4}
+                                {col cols=12 md=4 class="pushed-success-image-wrapper"}
                                     {block name='productdetails-pushed-success-product-cell-image'}
-                                        {counter assign=imgcounter print=0}
-                                        {image lazy=true webp=true
-                                            src=$pushedArtikel->getImage(\JTL\Media\Image::SIZE_XS)
-                                            srcset="{$pushedArtikel->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                {$pushedArtikel->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                {$pushedArtikel->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                            alt="{if isset($pushedArtikel->Bilder[0]->cAltAttribut)}{$pushedArtikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}{else}{$pushedArtikel->cName}{/if}"
-                                            id="image{$pushedArtikel->kArtikel}_{$imgcounter}"
-                                            sizes="auto"
-                                            class="image mb-3" fluid=true
-                                        }
+                                        {include file='snippets/image.tpl'
+                                            item=$pushedArtikel
+                                            square=false
+                                            class='image'
+                                            srcSize='sm'}
                                     {/block}
                                 {/col}
                                 {col}
@@ -55,7 +49,7 @@
                                                         <dd class="col-6">{$pushedArtikel->cHersteller}</dd>
                                                     {/if}
                                                     {if !empty($pushedArtikel->oMerkmale_arr)}
-                                                        <dt class="col-6">{lang key='variationsIn' section='productOverview'}:</dt>
+                                                        <dt class="col-6">{lang key='characteristics' section='comparelist'}:</dt>
                                                         <dd class="col-6 attr-characteristic">
                                                             {block name='productdetails-pushed-success-characteristics'}
                                                                 {foreach $pushedArtikel->oMerkmale_arr as $oMerkmal}
@@ -95,10 +89,10 @@
                         </div>
                     {/block}
                     {block name='productdetails-pushed-success-product-cell-links'}
-                        {row}
+                        {row class="pushed-success-buttons"}
                             {col cols=12 md=6}
                                 {link href=$pushedArtikel->cURLFull
-                                    class="btn btn-outline-primary btn-block mb-3"
+                                    class="btn btn-outline-primary btn-block continue-shopping"
                                     data=["dismiss"=>"{if !$card}modal{else}alert{/if}"]
                                     aria=["label"=>"Close"]}
                                     <i class="fa fa-arrow-circle-right"></i> {lang key='continueShopping' section='checkout'}
@@ -116,7 +110,7 @@
             {/block}
             {block name='productdetails-pushed-success-x-sell'}
                 {if $showXSellingCart}
-                    {col cols=6 class="d-none d-md-block border-left"}
+                    {col cols=6 class="x-selling"}
                         {row}
                             {col cols=12}
                                 {block name='productdetails-pushed-success-x-sell-heading'}

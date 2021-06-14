@@ -1,14 +1,16 @@
 <?php
 
-/** @global \JTL\Smarty\JTLSmarty $smarty */
-
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+/** @global \JTL\Backend\AdminAccount $oAccount */
+
 $oAccount->permission('FILESYSTEM_VIEW', true, true);
 
 use JTL\Alert\Alert;
 use JTL\Filesystem\AdapterFactory;
 use JTL\Filesystem\Filesystem;
 use JTL\Helpers\Form;
+use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Shopsetting;
 
@@ -18,32 +20,33 @@ $alertHelper  = Shop::Container()->getAlertService();
 Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 if (!empty($_POST) && Form::validateToken()) {
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSectionSettings(CONF_FS, $_POST), 'saveSettings');
+    $postData = Text::filterXSS($_POST);
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSectionSettings(CONF_FS, $postData), 'saveSettings');
     $shopSettings->reset();
 
-    if (isset($_POST['test'])) {
+    if (isset($postData['test'])) {
         try {
             $config  = Shop::getSettings([CONF_FS])['fs'];
             $factory = new AdapterFactory($config);
             $factory->setFtpConfig([
-                'ftp_host'     => $_POST['ftp_hostname'],
-                'ftp_port'     => (int)($_POST['ftp_port'] ?? 21),
-                'ftp_username' => $_POST['ftp_user'],
-                'ftp_password' => $_POST['ftp_pass'],
-                'ftp_ssl'      => (int)$_POST['ftp_ssl'] === 1,
-                'ftp_root'     => $_POST['ftp_path']
+                'ftp_host'     => $postData['ftp_hostname'],
+                'ftp_port'     => (int)($postData['ftp_port'] ?? 21),
+                'ftp_username' => $postData['ftp_user'],
+                'ftp_password' => $postData['ftp_pass'],
+                'ftp_ssl'      => (int)$postData['ftp_ssl'] === 1,
+                'ftp_root'     => $postData['ftp_path']
             ]);
             $factory->setSftpConfig([
-                'sftp_host'     => $_POST['sftp_hostname'],
-                'sftp_port'     => (int)($_POST['sftp_port'] ?? 22),
-                'sftp_username' => $_POST['sftp_user'],
-                'sftp_password' => $_POST['sftp_pass'],
-                'sftp_privkey'  => $_POST['sftp_privkey'],
-                'sftp_root'     => $_POST['sftp_path']
+                'sftp_host'     => $postData['sftp_hostname'],
+                'sftp_port'     => (int)($postData['sftp_port'] ?? 22),
+                'sftp_username' => $postData['sftp_user'],
+                'sftp_password' => $postData['sftp_pass'],
+                'sftp_privkey'  => $postData['sftp_privkey'],
+                'sftp_root'     => $postData['sftp_path']
             ]);
-            $factory->setAdapter($_POST['fs_adapter']);
+            $factory->setAdapter($postData['fs_adapter']);
             $fs         = new Filesystem($factory->getAdapter());
-            $isShopRoot = $fs->has('includes/config.JTL-Shop.ini.php');
+            $isShopRoot = $fs->fileExists('includes/config.JTL-Shop.ini.php');
             if ($isShopRoot) {
                 $alertHelper->addAlert(Alert::TYPE_INFO, __('fsValidConnection'), 'fsValidConnection');
             } else {

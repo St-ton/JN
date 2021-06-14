@@ -4,7 +4,6 @@ namespace JTL\News;
 
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\CMS;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -49,11 +48,6 @@ class Controller
      * @var string
      */
     private $noticeMsg = '';
-
-    /**
-     * @var int
-     */
-    private $currentNewsType;
 
     /**
      * Controller constructor.
@@ -101,13 +95,13 @@ class Controller
         if ($this->config['news']['news_benutzen'] !== 'Y') {
             return ViewType::NEWS_DISABLED;
         }
-        $this->currentNewsType = ViewType::NEWS_OVERVIEW;
+        $currentNewsType = ViewType::NEWS_OVERVIEW;
         if ($params['kNews'] > 0) {
-            $this->currentNewsType = ViewType::NEWS_DETAIL;
+            $currentNewsType = ViewType::NEWS_DETAIL;
         } elseif ($params['kNewsKategorie'] > 0) {
-            $this->currentNewsType = ViewType::NEWS_CATEGORY;
+            $currentNewsType = ViewType::NEWS_CATEGORY;
         } elseif ($params['kNewsMonatsUebersicht'] > 0) {
-            $this->currentNewsType = ViewType::NEWS_MONTH_OVERVIEW;
+            $currentNewsType = ViewType::NEWS_MONTH_OVERVIEW;
             if (($data = $this->getMonthOverview($params['kNewsMonatsUebersicht'])) !== null) {
                 $_SESSION['NewsNaviFilter']->cDatum   = (int)$data->nMonat . '-' . (int)$data->nJahr;
                 $_SESSION['NewsNaviFilter']->nNewsKat = -1;
@@ -122,7 +116,7 @@ class Controller
                          'captcha'    => 0
                      ]);
 
-        return $this->currentNewsType;
+        return $currentNewsType;
     }
 
     /**
@@ -131,7 +125,7 @@ class Controller
      */
     private function getMonthOverview(int $id): ?stdClass
     {
-        return $this->db->queryPrepared(
+        return $this->db->getSingleObject(
             "SELECT tnewsmonatsuebersicht.*, tseo.cSeo
                 FROM tnewsmonatsuebersicht
                 LEFT JOIN tseo 
@@ -142,8 +136,7 @@ class Controller
             [
                 'nmi' => $id,
                 'lid' => Shop::getLanguageID()
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
     }
 
@@ -173,10 +166,7 @@ class Controller
                 $pagination->getItemsPerPage()
             );
         }
-        if (!$newsItem->isVisible()) {
-            $this->smarty->assign('cNewsErr', true)
-                ->assign('newsItem', $newsItem);
-        } else {
+        if ($newsItem->isVisible()) {
             $conf = Shop::getConfig([\CONF_NEWS]);
             $this->smarty->assign('oNewsKommentar_arr', $comments)
                 ->assign('comments', $comments)
@@ -189,6 +179,9 @@ class Controller
                 ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y'
                     ? CMS::getHomeNews($conf)
                     : []);
+        } else {
+            $this->smarty->assign('cNewsErr', true)
+                ->assign('newsItem', $newsItem);
         }
     }
 
@@ -256,14 +249,13 @@ class Controller
     public function getAllNewsCategories(bool $activeOnly = false): Collection
     {
         $itemList = new CategoryList($this->db);
-        $ids      = map($this->db->query(
+        $ids      = map($this->db->getObjects(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node INNER JOIN tnewskategorie AS parent
                 WHERE node.lvl > 0 
                     AND parent.lvl > 0 ' . ($activeOnly ? ' AND node.nAktiv = 1 ' : '') .
             ' GROUP BY node.kNewsKategorie
-                ORDER BY node.lft, node.nSort ASC',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY node.lft, node.nSort ASC'
         ), static function ($e) {
             return (int)$e->id;
         });
@@ -342,16 +334,15 @@ class Controller
             $checks['cKommentar'] = 2;
         }
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && $newsID > 0) {
-            $oNewsKommentar = Shop::Container()->getDB()->queryPrepared(
+            $commentCount = Shop::Container()->getDB()->getSingleObject(
                 'SELECT COUNT(*) AS nAnzahl
                     FROM tnewskommentar
                     WHERE kNews = :nid
                         AND kKunde = :cid',
-                ['nid' => $newsID, 'cid' => Frontend::getCustomer()->getID()],
-                ReturnType::SINGLE_OBJECT
+                ['nid' => $newsID, 'cid' => Frontend::getCustomer()->getID()]
             );
 
-            if ((int)$oNewsKommentar->nAnzahl > (int)$config['news']['news_kommentare_anzahlprobesucher']
+            if ((int)($commentCount->nAnzahl ?? 0) > (int)$config['news']['news_kommentare_anzahlprobesucher']
                 && (int)$config['news']['news_kommentare_anzahlprobesucher'] !== 0
             ) {
                 $checks['nAnzahl'] = 1;
@@ -469,7 +460,7 @@ class Controller
      */
     private function getNewsDates($sql): array
     {
-        $dateData = $this->db->query(
+        $dateData = $this->db->getObjects(
             'SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
                 FROM tnews 
                 JOIN tnewskategorienews 
@@ -483,14 +474,13 @@ class Controller
             "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     AND tnewssprache.languageID = " . Shop::getLanguageID() . '
                 GROUP BY nJahr, nMonat
-                ORDER BY dGueltigVon DESC',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY dGueltigVon DESC'
         );
         $dates    = [];
         foreach ($dateData as $date) {
             $item        = new stdClass();
             $item->cWert = $date->nMonat . '-' . $date->nJahr;
-            $item->cName = self::mapDateName((string)$date->nMonat, (int)$date->nJahr, Shop::getLanguageCode());
+            $item->cName = self::mapDateName((int)$date->nMonat, (int)$date->nJahr, Shop::getLanguageCode());
             $dates[]     = $item;
         }
 
@@ -498,44 +488,46 @@ class Controller
     }
 
     /**
-     * @param string $month
-     * @param string $year
+     * @param string|int $month
+     * @param string|int $year
      * @param string $langCode
      * @return string
      */
-    public static function mapDateName($month, $year, $langCode): string
+    public static function mapDateName($month, $year, string $langCode): string
     {
+        $month = (int)$month;
+        $year  = (int)$year;
+        $name  = '';
         // @todo: i18n!
-        $name = '';
         if ($langCode === 'ger') {
             switch ($month) {
-                case '01':
+                case 1:
                     return Shop::Lang()->get('january', 'news') . ',' . $year;
-                case '02':
+                case 2:
                     return Shop::Lang()->get('february', 'news') . ' ' . $year;
-                case '03':
+                case 3:
                     return Shop::Lang()->get('march', 'news') . ' ' . $year;
-                case '04':
+                case 4:
                     return Shop::Lang()->get('april', 'news') . ' ' . $year;
-                case '05':
+                case 5:
                     return Shop::Lang()->get('may', 'news') . ' ' . $year;
-                case '06':
+                case 6:
                     return Shop::Lang()->get('june', 'news') . ' ' . $year;
-                case '07':
+                case 7:
                     return Shop::Lang()->get('july', 'news') . ' ' . $year;
-                case '08':
+                case 8:
                     return Shop::Lang()->get('august', 'news') . ' ' . $year;
-                case '09':
+                case 9:
                     return Shop::Lang()->get('september', 'news') . ' ' . $year;
-                case '10':
+                case 10:
                     return Shop::Lang()->get('october', 'news') . ' ' . $year;
-                case '11':
+                case 11:
                     return Shop::Lang()->get('november', 'news') . ' ' . $year;
-                case '12':
+                case 12:
                     return Shop::Lang()->get('december', 'news') . ' ' . $year;
             }
         } else {
-            $name .= \date('F', \mktime(0, 0, 0, (int)$month, 1, $year)) . ', ' . $year;
+            $name .= \date('F', \mktime(0, 0, 0, $month, 1, $year)) . ', ' . $year;
         }
 
         return $name;
@@ -561,7 +553,7 @@ class Controller
         );
 
         return \count($newsCategories) > 0
-            ? $this->db->query(
+            ? $this->db->getObjects(
                 'SELECT tnewskategorie.kNewsKategorie, t.languageID AS kSprache, t.name AS cName,
                 t.description AS cBeschreibung, t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription,
                 tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
@@ -575,13 +567,13 @@ class Controller
                     LEFT JOIN tseo 
                         ON tseo.cKey = \'kNewsKategorie\'
                         AND tseo.kKey = tnewskategorie.kNewsKategorie
-                        AND tseo.kSprache = ' . $langID . '
-                    WHERE t.languageID = ' . $langID . '
+                        AND tseo.kSprache = :lid
+                    WHERE t.languageID = :lid
                         AND tnewskategorienews.kNewsKategorie IN (' . \implode(',', $newsCategories) . ')
                         AND tnewskategorie.nAktiv = 1
                     GROUP BY tnewskategorie.kNewsKategorie
                     ORDER BY tnewskategorie.nSort DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                ['lid' => $langID]
             )
             : [];
     }

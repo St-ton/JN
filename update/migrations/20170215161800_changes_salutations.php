@@ -17,6 +17,9 @@ class Migration_20170215161800 extends Migration implements IMigration
     protected $author      = 'ms';
     protected $description = 'changes female salutation to ms and adds general salutation';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('eng', 'global', 'salutationW', 'Ms');
@@ -25,6 +28,9 @@ class Migration_20170215161800 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'salutationGeneral', 'Ms/Mr');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setLocalization('eng', 'global', 'salutationW', 'Mrs');

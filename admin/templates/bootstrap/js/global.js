@@ -187,7 +187,7 @@ function ajaxCall(url, params, callback) {
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            if (typeof callback === 'function') {
+            if (typeof callback === 'function' && jqXHR.responseJSON) {
                 callback(jqXHR.responseJSON, jqXHR);
             }
         }
@@ -369,7 +369,7 @@ function reloadFavs() {
 
 function switchCouponTooltipVisibility() {
     $('#cWertTyp').on('change', function() {
-        if($(this).val() === 'prozent') {
+        if ($(this).val() === 'prozent') {
             $('#fWertTooltip').parent().hide();
         } else {
             $('#fWertTooltip').parent().show();
@@ -552,6 +552,8 @@ $(document).ready(function () {
 
     checkSingleSettingCard();
     onChangeFormSubmit();
+    getSettingListeners();
+    deleteConfirmation();
 });
 
 $(window).on('load', () => {
@@ -592,7 +594,7 @@ function hideBackdrop() {
  */
 function ioCall(name, args = [], success = ()=>{}, error = ()=>{}, context = {}, disableSpinner = false)
 {
-    if(JTL_TOKEN === null) {
+    if (JTL_TOKEN === null) {
         throw 'Error: IO call not possible. JTL_TOKEN was not set on this page.';
     }
 
@@ -613,7 +615,7 @@ function ioCall(name, args = [], success = ()=>{}, error = ()=>{}, context = {},
         },
         success: function (data, textStatus, jqXHR) {
             if (data) {
-                if(data.domAssigns) {
+                if (data.domAssigns) {
                     data.domAssigns.forEach(item => {
                         let $item = $('#' + item.target);
 
@@ -622,36 +624,32 @@ function ioCall(name, args = [], success = ()=>{}, error = ()=>{}, context = {},
                         }
                     });
                 }
-
-                if(data.debugLogLines) {
+                if (data.debugLogLines) {
                     data.debugLogLines.forEach(line => {
-                        if(line[1]) {
+                        if (line[1]) {
                             console.groupCollapsed(...line[0]);
-                        }
-                        else if(line[2]) {
+                        } else if (line[2]) {
                             console.groupEnd();
-                        }
-                        else {
+                        } else {
                             console.log(...line[0]);
                         }
                     });
                 }
-
-                if(data.varAssigns) {
+                if (data.varAssigns) {
                     data.varAssigns.forEach(assign => {
                         context[assign.name] = assign.value;
                     });
                 }
-
-                if(data.windowLocationHref) {
+                if (data.windowLocationHref) {
                     window.location.href = data.windowLocationHref;
                 }
             }
-
             success(data, context);
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            error(jqXHR.responseJSON);
+            if (jqXHR.responseJSON) {
+                error(jqXHR.responseJSON);
+            }
         }
     }).always(function () {
         if (disableSpinner === false) {
@@ -668,7 +666,7 @@ function ioCall(name, args = [], success = ()=>{}, error = ()=>{}, context = {},
  */
 function ioDownload(name, args)
 {
-    if(JTL_TOKEN === null) {
+    if (JTL_TOKEN === null) {
         throw 'Error: IO download not possible. JTL_TOKEN was not set on this page.';
     }
 
@@ -754,7 +752,7 @@ function enableTypeahead(selector, funcName, display, suggestion, onSelect, spin
             {
                 limit: 50,
                 source: function (query, syncResults, asyncResults) {
-                    if(pendingRequest !== null) {
+                    if (pendingRequest !== null) {
                         pendingRequest.abort();
                     }
                     pendingRequest = ioCall(funcName, [query, 100], function (data) {
@@ -852,4 +850,66 @@ function startSpinner()
 function stopSpinner()
 {
     $('body').find('.ajax-spinner').remove();
+}
+
+function getSettingListeners()
+{
+    $('.setting-changelog').on('click', function (e) {
+        e.preventDefault();
+        let $self = $(this);
+        ioCall('getSettingLog', [$(this).data('setting-name')], function (data) {
+            $('#modal-footer').modal('show');
+            $('#modal-footer .modal-body').html(data);
+            $('#modal-footer .modal-title').html(
+                $self.data('name') + ' | ' + $self.data('setting-name') + ' | ' + $self.data('id'));
+        });
+    });
+}
+
+/**
+ * open a delete modal to confirm deletion
+ *
+ * 3 types of delete buttons:
+ * 1. By href: .delete-confirm - needs a href tag
+ * 2. By form: .delete-confirm - needs type="submit"
+ * 3. By io: .delete-confirm - needs .delete-confirm-io and confirm event is triggered by .trigger('delete.io');
+ *
+ * modal title can be changed by: data-modal-title
+ * modal body can be changed by: data-modal-body
+ */
+function deleteConfirmation()
+{
+    $('.delete-confirm').on('click', function (e) {
+        e.preventDefault();
+        let href           = $(this).attr('href'),
+            $self          = $(this),
+            $confirmButton = $('#modal-footer-delete-confirm-yes'),
+            $modal         = $('#modal-footer-delete-confirm'),
+            title          = $self.data('modal-title') || $('#modal-footer-delete-confirm-default-title').html(),
+            body           = $self.data('modal-body') || '',
+            submit         = $self.data('modal-submit') || $('#modal-footer-delete-confirm-default-submit').html();
+
+        if (href !== undefined && href !== '') {
+            $confirmButton.off().on('click', function () {
+                window.location = href;
+            });
+        } else if ($(this).attr('type') === 'submit' || $(this).hasClass('btn-submit')) {
+            $confirmButton.off().on('click', function () {
+                let $form = $self.closest('form');
+                $form.append(
+                    '<input type="hidden" name="' + $self.attr('name') + '" value="' + $self.attr('value') + '" />'
+                );
+                $form.submit();
+            });
+        } else if ($self.hasClass('delete-confirm-io')) {
+            $confirmButton.off().on('click', function () {
+                $self.trigger('delete.io');
+                $modal.modal('hide');
+            });
+        }
+        $('#modal-footer-delete-confirm .modal-title').html(title);
+        $('#modal-footer-delete-confirm .modal-body').html(body);
+        $confirmButton.html(submit);
+        $modal.modal('show');
+    });
 }

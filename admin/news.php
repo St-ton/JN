@@ -3,10 +3,10 @@
 use JTL\Alert\Alert;
 use JTL\ContentAuthor;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\News\Admin\Controller;
 use JTL\News\Category;
@@ -16,8 +16,10 @@ use JTL\Pagination\Pagination;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
-$oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);
+/** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+
+$oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 
 $uploadDir      = PFAD_ROOT . PFAD_NEWSBILDER;
@@ -28,17 +30,13 @@ $author         = ContentAuthor::getInstance();
 $controller     = new Controller($db, $smarty, Shop::Container()->getCache());
 $newsCategory   = new Category($db);
 $languages      = LanguageHelper::getAllLanguages();
-$defaultLang    = LanguageHelper::getDefaultLanguage();
 $adminID        = (int)$_SESSION['AdminAccount']->kAdminlogin;
 $adminName      = $db->select('tadminlogin', 'kAdminlogin', $adminID)->cName;
 
-$_SESSION['kSprache'] = $defaultLang->kSprache;
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $backTab = Request::verifyGPDataString('tab');
-    $smarty->assign('cTab', $backTab)
-           ->assign('files', []);
+    $smarty->assign('files', []);
 
-    switch ($backTab) {
+    switch (Request::verifyGPDataString('tab')) {
         case 'inaktiv':
             if (Request::verifyGPCDataInt('s1') > 1) {
                 $smarty->assign('cBackPage', 'tab=inaktiv&s1=' . Request::verifyGPCDataInt('s1'))
@@ -63,7 +61,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
     if (Request::postInt('einstellungen') > 0) {
         $controller->setMsg(saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]));
         if (count($languages) > 0) {
-            $db->query('TRUNCATE tnewsmonatspraefix', ReturnType::AFFECTED_ROWS);
+            $db->query('TRUNCATE tnewsmonatspraefix');
             foreach ($languages as $lang) {
                 $monthPrefix           = new stdClass();
                 $monthPrefix->kSprache = $lang->getId();
@@ -124,10 +122,10 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
                 $controller->setStep('news_kommentar_editieren');
                 $controller->setErrorMsg(__('errorCheckInput'));
                 $comment                 = new stdClass();
-                $comment->kNewsKommentar = $_POST['kNewsKommentar'];
-                $comment->kNews          = $_POST['kNews'];
-                $comment->cName          = $_POST['cName'];
-                $comment->cKommentar     = $_POST['cKommentar'];
+                $comment->kNewsKommentar = (int)$_POST['kNewsKommentar'];
+                $comment->kNews          = (int)$_POST['kNews'];
+                $comment->cName          = Text::filterXSS($_POST['cName']);
+                $comment->cKommentar     = Text::filterXSS($_POST['cKommentar']);
                 $smarty->assign('oNewsKommentar', $comment);
             }
         } else {
@@ -143,11 +141,11 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
         $controller->setStep('news_kommentar_antwort_editieren');
         $comment         = new Comment($db);
         $parentCommentID = Request::verifyGPCDataInt('parentCommentID');
-        if (empty($comment->loadByParentCommentID($parentCommentID))) {
+        if ($comment->loadByParentCommentID($parentCommentID) === null) {
             $comment->setID(0);
             $comment->setNewsID(Request::verifyGPCDataInt('kNews'));
             $comment->setCustomerID(0);
-            $comment->setIsActive(1);
+            $comment->setIsActive(true);
             $comment->setName($adminName);
             $comment->setMail('');
             $comment->setText('');
@@ -319,5 +317,4 @@ Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $controller->g
 $smarty->assign('customerGroups', CustomerGroup::getGroups())
        ->assign('step', $controller->getStep())
        ->assign('nMaxFileSize', $maxFileSize)
-       ->assign('kSprache', (int)$_SESSION['kSprache'])
        ->display('news.tpl');

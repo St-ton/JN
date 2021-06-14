@@ -19,8 +19,7 @@ class Migration_20191120110800 extends Migration implements IMigration
     protected $description = 'Reworked frontend texts';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -810,7 +809,7 @@ class Migration_20191120110800 extends Migration implements IMigration
         $this->setLocalization('eng', 'checkout', 'bic', 'BIC/SWIFT');
         $this->setLocalization('eng', 'checkout', 'cancellationPolicyNotice', 'I have read and agree with the <a href="%s" %s>Withdrawal</a>.');
         $this->setLocalization('eng', 'checkout', 'cashOnDeliveryDesc', 'We will ship your order immediately.');
-        $this->setLocalization('eng', 'checkout', 'cashOnDeliveryFee', 'Please note the additional cash on delivery charge of EUR 2.00 which will be charged by the postman.');
+        $this->setLocalization('eng', 'checkout', 'cashOnDeliveryFee', 'Please note the additional cash on delivery charge of EUR 2.00 which will be charged by the postman.');
         $this->setLocalization('eng', 'checkout', 'checkOrderDetails', 'Please check the data. You can correct individual details by clicking on the respective order step.');
         $this->setLocalization('eng', 'checkout', 'checkPLZCity', 'Please check your postal code and city.');
         $this->setLocalization('eng', 'checkout', 'currentCoupon', 'Already claimed coupon: ');
@@ -1268,7 +1267,7 @@ class Migration_20191120110800 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function down()
     {

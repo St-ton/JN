@@ -20,8 +20,7 @@ class Migration_20200415125300 extends Migration implements IMigration
     protected $description = 'Add availability filter';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -45,8 +44,7 @@ class Migration_20200415125300 extends Migration implements IMigration
             'UPDATE `tboxen`
               SET kBoxvorlage = :oldBoxID
               WHERE kBoxvorlage = 103',
-            ['oldBoxID' => $oldBoxID],
-            ReturnType::DEFAULT
+            ['oldBoxID' => $oldBoxID]
         );
         $this->getDB()->delete('tboxvorlage', 'kBoxvorlage', 103);
 
@@ -70,7 +68,7 @@ class Migration_20200415125300 extends Migration implements IMigration
         $this->setConfig(
             'allgemein_availabilityfilter_benutzen',
             'Y',
-            \CONF_NAVIGATIONSFILTER,
+            CONF_NAVIGATIONSFILTER,
             'Verfügbarkeitsfilter benutzen',
             'selectbox',
             117,
@@ -87,7 +85,7 @@ class Migration_20200415125300 extends Migration implements IMigration
         $this->setConfig(
             'configgroup_110_availability_filter',
             'Verfügbarkeitsfilter',
-            \CONF_NAVIGATIONSFILTER,
+            CONF_NAVIGATIONSFILTER,
             'Verfügbarkeitsfilter',
             null,
             115,
@@ -99,8 +97,7 @@ class Migration_20200415125300 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {

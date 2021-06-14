@@ -3,7 +3,6 @@
 namespace JTL\Backend;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Request;
@@ -18,22 +17,34 @@ class AuthToken
 {
     private const AUTH_SERVER = 'https://oauth2.api.jtl-software.com/link';
 
-    /** @var self */
+    /**
+     * @var AuthToken
+     */
     private static $instance;
 
-    /** @var string */
+    /**
+     * @var string|null
+     */
     private $authCode;
 
-    /** @var string */
+    /**
+     * @var string|null
+     */
     private $token;
 
-    /** @var string */
+    /**
+     * @var string|null
+     */
     private $hash;
 
-    /** @var string */
+    /**
+     * @var string|null
+     */
     private $verified;
 
-    /** @var DbInterface */
+    /**
+     * @var DbInterface
+     */
     private $db;
 
     /**
@@ -66,14 +77,13 @@ class AuthToken
         $this->hash     = null;
         $this->verified = null;
 
-        $token = $this->db->query(
+        $token = $this->db->getSingleObject(
             'SELECT tstoreauth.auth_code, tstoreauth.access_token,
                 tadminlogin.cPass AS hash, tstoreauth.verified
                 FROM tstoreauth
                 INNER JOIN tadminlogin 
                     ON tadminlogin.kAdminlogin = tstoreauth.owner
-                LIMIT 1',
-            ReturnType::SINGLE_OBJECT
+                LIMIT 1'
         );
         if ($token) {
             $this->authCode = $token->auth_code;
@@ -115,8 +125,7 @@ class AuthToken
                 'token'    => $this->getCrypto()->encrypt($token),
                 'verified' => \sha1($token),
                 'authCode' => $authCode,
-            ],
-            ReturnType::DEFAULT
+            ]
         );
         $this->load();
     }
@@ -158,7 +167,7 @@ class AuthToken
             return;
         }
 
-        $this->db->query('TRUNCATE TABLE tstoreauth', ReturnType::DEFAULT);
+        $this->db->query('TRUNCATE TABLE tstoreauth');
         $this->load();
     }
 
@@ -185,13 +194,11 @@ class AuthToken
                 [
                     'owner'    => $owner,
                     'authCode' => $authCode,
-                ],
-                ReturnType::DEFAULT
+                ]
             );
             $this->db->queryPrepared(
                 'DELETE FROM tstoreauth WHERE owner != :owner',
-                ['owner' => $owner],
-                ReturnType::DEFAULT
+                ['owner' => $owner]
             );
             $this->load();
         }
@@ -216,13 +223,12 @@ class AuthToken
     }
 
     /**
-     * @return void
+     *
      */
     public function responseToken(): void
     {
         $authCode = (string)Request::postVar('code');
         $token    = (string)Request::postVar('token');
-        $logger   = null;
         try {
             $logger = Shop::Container()->getLogService();
         } catch (ServiceNotFoundException | CircularReferenceException $e) {
@@ -230,7 +236,9 @@ class AuthToken
         }
 
         if ($authCode === null || $authCode !== $this->authCode) {
-            $logger !== null && $logger->addError('Call responseToken with invalid authcode!');
+            if ($logger !== null) {
+                $logger->error('Call responseToken with invalid authcode!');
+            }
             \http_response_code(404);
             exit;
         }

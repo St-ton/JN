@@ -7,9 +7,10 @@ use JTL\Helpers\GeneralObject;
 use JTL\Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('EMAILHISTORY_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step        = 'uebersicht';
 $history     = new Emailhistory();
 $action      = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : '';
@@ -17,7 +18,7 @@ $alertHelper = Shop::Container()->getAlertService();
 
 if ($action === 'delete') {
     if (isset($_POST['remove_all'])) {
-        if ($history->deleteAll() !== true) {
+        if ($history->deleteAll() === 0) {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorHistoryDelete'), 'errorHistoryDelete');
         }
     } elseif (GeneralObject::hasCount('kEmailhistory', $_POST)) {

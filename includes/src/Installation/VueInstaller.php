@@ -4,7 +4,6 @@ namespace JTL\Installation;
 
 use Exception;
 use JTL\DB\NiceDB;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\InvalidEntityNameException;
 use jtl\Wizard\Question;
 use jtl\Wizard\ShopWizard;
@@ -107,7 +106,7 @@ class VueInstaller
     private function executeWizard(): self
     {
         if ($this->initNiceDB($this->post['db'])) {
-            $step   = isset($this->post['stepId']) ? (int)$this->post['stepId'] : 0;
+            $step   = (int)($this->post['stepId'] ?? 0);
             $wizard = new ShopWizard($step);
             if (isset($this->post['action']) && $this->post['action'] === 'setData') {
                 foreach ($wizard->getQuestions() as $idx => $question) {
@@ -204,7 +203,7 @@ class VueInstaller
     private function doInstall(): self
     {
         if ($this->initNiceDB($this->post['db'])) {
-            $this->db->query('SET FOREIGN_KEY_CHECKS=0', ReturnType::DEFAULT);
+            $this->db->query('SET FOREIGN_KEY_CHECKS=0');
             $schema = \PFAD_ROOT . 'install/initial_schema.sql';
             if (!\file_exists($schema)) {
                 $this->responseMessage[] = 'File does not exists: ' . $schema;
@@ -214,16 +213,16 @@ class VueInstaller
             $blowfishKey = $this->getUID(30);
             $this->writeConfigFile($this->post['db'], $blowfishKey);
             $this->payload['secretKey'] = $blowfishKey;
-            $this->db->query('SET FOREIGN_KEY_CHECKS=1', ReturnType::DEFAULT);
+            $this->db->query('SET FOREIGN_KEY_CHECKS=1');
         }
 
-        if (!$this->cli) {
-            $this->sendResponse();
-        } else {
+        if ($this->cli) {
             $this->payload['error'] = !$this->responseStatus;
             $this->payload['msg']   = $this->responseStatus === true && empty($this->responseMessage)
                 ? 'executeSuccess'
                 : $this->responseMessage;
+        } else {
+            $this->sendResponse();
         }
 
         return $this;
@@ -239,10 +238,10 @@ class VueInstaller
             $demoData->run();
             $this->responseStatus = true;
         }
-        if (!$this->cli) {
-            $this->sendResponse();
-        } else {
+        if ($this->cli) {
             $this->payload['error'] = !$this->responseStatus;
+        } else {
+            $this->sendResponse();
         }
 
         return $this;
@@ -268,7 +267,7 @@ class VueInstaller
         }
         $config = "<?php
 define('PFAD_ROOT', '" . $rootPath . "');
-define('URL_SHOP', '" . \substr(URL_SHOP, 0, \strlen(URL_SHOP) - 1) . "');" .
+define('URL_SHOP', '" . \substr(URL_SHOP, 0, -1) . "');" .
             $socket . "
 define('DB_HOST','" . $credentials['host'] . "');
 define('DB_NAME','" . \addcslashes($credentials['name'], "'") . "');
@@ -311,13 +310,13 @@ ini_set('display_errors', 0);" . "\n";
         foreach ($content as $i => $line) {
             $tsl = \trim($line);
             if ($line !== ''
-                && \substr($tsl, 0, 2) !== '/*'
-                && \substr($tsl, 0, 2) !== '--'
-                && \substr($tsl, 0, 1) !== '#'
+                && \strpos($tsl, '/*') !== 0
+                && \strpos($tsl, '--') !== 0
+                && \strpos($tsl, '#') !== 0
             ) {
                 $query .= $line;
                 if (\preg_match('/;\s*$/', $line)) {
-                    $result = $this->db->executeQuery($query, ReturnType::QUERYSINGLE);
+                    $result = $this->db->getPDOStatement($query);
                     if (!$result) {
                         $this->responseStatus    = false;
                         $this->responseMessage[] = $this->db->getErrorMessage() .
@@ -393,7 +392,7 @@ ini_set('display_errors', 0);" . "\n";
                     $res->error = true;
                     $res->msg   = 'cannotConnect';
                 }
-                $obj = $db->executeQuery("SHOW TABLES LIKE 'tsynclogin'", 1);
+                $obj = $db->query("SHOW TABLES LIKE 'tsynclogin'", 1);
                 if ($obj !== false) {
                     $res->error = true;
                     $res->msg   = 'shopExists';
@@ -457,37 +456,34 @@ ini_set('display_errors', 0);" . "\n";
     /**
      * @param int    $length
      * @param string $seed
-     * @return bool|string
+     * @return string
      */
     private function getUID(int $length = 40, string $seed = ''): string
     {
         $uid      = '';
         $salt     = '';
         $saltBase = 'aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789';
-        // Gen SALT
         for ($j = 0; $j < 30; $j++) {
-            $salt .= \substr($saltBase, \mt_rand(0, \strlen($saltBase) - 1), 1);
+            $salt .= \substr($saltBase, \random_int(0, \strlen($saltBase) - 1), 1);
         }
         $salt = \md5($salt);
         \mt_srand();
-        // Wurde ein String übergeben?
         if (\strlen($seed) > 0) {
-            // Hat der String Elemente?
             [$strings] = \explode(';', $seed);
             if (\is_array($strings) && \count($strings) > 0) {
                 foreach ($strings as $string) {
-                    $uid .= \md5($string . \md5(\PFAD_ROOT . (\time() - \mt_rand())));
+                    $uid .= \md5($string . \md5(\PFAD_ROOT . (\time() - \random_int(0, \mt_getrandmax()))));
                 }
 
                 $uid = \md5($uid . $salt);
             } else {
                 $sl = \strlen($seed);
                 for ($i = 0; $i < $sl; $i++) {
-                    $nPos = \mt_rand(0, \strlen($seed) - 1);
+                    $idx = \random_int(0, \strlen($seed) - 1);
                     if (((int)\date('w') % 2) <= \strlen($seed)) {
-                        $nPos = (int)\date('w') % 2;
+                        $idx = (int)\date('w') % 2;
                     }
-                    $uid .= \md5(\substr($seed, $nPos, 1) . $salt . \md5(\PFAD_ROOT . (\microtime(true) - \mt_rand())));
+                    $uid .= \md5(\substr($seed, $idx, 1) . $salt . \md5(\PFAD_ROOT . (\microtime(true) - \mt_rand())));
                 }
             }
             $uid = $this->cryptPasswort($uid . $salt);
@@ -506,7 +502,7 @@ ini_set('display_errors', 0);" . "\n";
     private function cryptPasswort(string $pass, $hashPass = null)
     {
         $passLen = \strlen($pass);
-        $salt    = \sha1(\uniqid((string)\mt_rand(), true));
+        $salt    = \sha1(\uniqid((string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX), true));
         $length  = \strlen($salt);
         $length  = \max($length >> 3, ($length >> 2) - $passLen);
         $salt    = $hashPass

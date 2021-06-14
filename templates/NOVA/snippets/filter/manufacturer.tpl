@@ -1,8 +1,12 @@
 {block name='snippets-filter-manufacturer'}
     {$limit = $Einstellungen.template.productlist.filter_max_options}
     {$collapseInit = false}
+    <div class="filter-search-wrapper">
+    {block name='snippets-filter-manufacturer-include-search-in-items'}
+        {include file='snippets/filter/search_in_items.tpl' itemCount=count($filter->getOptions()) name=$filter->getFrontendName()}
+    {/block}
     {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'B'}
-        <ul class="nav">
+        <ul class="nav nav-filter-has-image">
     {/if}
     {foreach $filter->getOptions() as $filterOption}
         {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
@@ -23,14 +27,16 @@
                 title="{$filterOption->getName()}: {$filterOption->getCount()}"
                 data=$tooltip
                 class="filter-item {if $filterOption->isActive()}active{/if}"
+                rel="nofollow"
             }
-                <div class="align-items-center d-flex">
+                <div class="box-link-wrapper">
                     {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als == 'B'}
                         {block name='snippets-filter-manufacturer-item-image'}
                             {image lazy=true webo=true
                                 src=$filterOption->getData('cBildpfadKlein')
                                 class="vmiddle filter-img"
                             }
+                            <span class="d-none filter-item-value">{$filterOption->getName()}</span>
                         {/block}
                     {elseif $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'BT'}
                         {block name='snippets-filter-manufacturer-item-image-text'}
@@ -38,14 +44,14 @@
                                 src=$filterOption->getData('cBildpfadKlein')
                                 class="vmiddle filter-img"
                             }
-                            <span class="word-break">{$filterOption->getName()}</span>
-                            {badge variant="outline-secondary" class="ml-auto"}{$filterOption->getCount()}{/badge}
+                            <span class="word-break filter-item-value">{$filterOption->getName()}</span>
+                            {badge variant="outline-secondary"}{$filterOption->getCount()}{/badge}
                         {/block}
                     {elseif $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'T'}
                         {block name='snippets-filter-manufacturer-item-text'}
-                            <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted mr-2"></i>
-                            <span class="word-break">{$filterOption->getName()}</span>
-                            {badge variant="outline-secondary" class="ml-auto"}{$filterOption->getCount()}{/badge}
+                            <i class="far fa-{if $filterIsActive === true}check-{/if}square snippets-filter-item-icon-right"></i>
+                            <span class="word-break filter-item-value">{$filterOption->getName()}</span>
+                            {badge variant="outline-secondary"}{$filterOption->getCount()}{/badge}
                         {/block}
                     {/if}
                 </div>
@@ -56,11 +62,10 @@
         {block name='snippets-filter-manufacturer-more-bottom'}
                 </ul>
             </div>
-            <div class="w-100">
+            <div class="snippets-filter-show-all">
                 {button
                     variant="link"
                     role="button"
-                    class="p-0 ml-auto mt-1"
                     data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]}
                     {lang key='showAll'}
                 {/button}
@@ -70,4 +75,5 @@
     {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'B'}
         </ul>
     {/if}
+    </div>
 {/block}

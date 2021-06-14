@@ -4,7 +4,6 @@ namespace JTL\Filter\Items;
 
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Preise;
-use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
@@ -166,15 +165,15 @@ class PriceRange extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function init($id): FilterInterface
+    public function init($value): FilterInterface
     {
-        if (empty($id)) {
-            $id = '0_0';
+        if (empty($value)) {
+            $value = '0_0';
         }
-        [$start, $end]     = \explode('_', $id);
+        [$start, $end]     = \explode('_', $value);
         $this->offsetStart = (float)$start;
         $this->offsetEnd   = (float)$end;
-        $this->setValue($id === '0_0' ? 0 : ($this->offsetStart . '_' . $this->offsetEnd));
+        $this->setValue($value === '0_0' ? 0 : ($this->offsetStart . '_' . $this->offsetEnd));
         $this->offsetStartLocalized = Preise::getLocalizedPriceWithoutFactor($this->offsetStart);
         $this->offsetEndLocalized   = Preise::getLocalizedPriceWithoutFactor($this->offsetEnd);
         $this->setName(\html_entity_decode($this->offsetStartLocalized . ' - ' . $this->offsetEndLocalized));
@@ -422,12 +421,11 @@ class PriceRange extends AbstractFilter
 
             return $this->options;
         }
-        $minMax = $this->productFilter->getDB()->query(
+        $minMax = $this->productFilter->getDB()->getSingleObject(
             'SELECT MAX(ssMerkmal.fMax) AS fMax, MIN(ssMerkmal.fMin) AS fMin 
-                    FROM (' . $baseQuery . ' ) AS ssMerkmal',
-            ReturnType::SINGLE_OBJECT
+                FROM (' . $baseQuery . ' ) AS ssMerkmal'
         );
-        if (isset($minMax->fMax) && $minMax->fMax > 0) {
+        if ($minMax !== null && $minMax->fMax > 0) {
             $selectSQL             = [];
             $steps                 = $this->calculateSteps(
                 $minMax->fMax * $factor,
@@ -444,13 +442,12 @@ class PriceRange extends AbstractFilter
             $sql->setGroupBy(['tartikel.kArtikel']);
 
             $baseQuery        = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-            $dbRes            = $this->productFilter->getDB()->query(
+            $dbRes            = $this->productFilter->getDB()->getSingleObject(
                 'SELECT ' . \implode(',', $selectSQL) . ' FROM (' .
-                $baseQuery . ' ) AS ssMerkmal',
-                ReturnType::SINGLE_OBJECT
+                $baseQuery . ' ) AS ssMerkmal'
             );
             $priceRanges      = [];
-            $priceRangeCounts = \is_object($dbRes)
+            $priceRangeCounts = $dbRes !== null
                 ? \get_object_vars($dbRes)
                 : [];
             for ($i = 0; $i < $steps->nAnzahlSpannen; ++$i) {
@@ -509,10 +506,7 @@ class PriceRange extends AbstractFilter
         $currency  = Frontend::getCurrency();
         $options   = [];
         $selectSQL = [];
-        $ranges    = $this->productFilter->getDB()->query(
-            'SELECT * FROM tpreisspannenfilter',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $ranges    = $this->productFilter->getDB()->getObjects('SELECT * FROM tpreisspannenfilter');
         if (\count($ranges) === 0) {
             return $options;
         }
@@ -541,13 +535,12 @@ class PriceRange extends AbstractFilter
 
             return $this->options;
         }
-        $dbRes = $this->productFilter->getDB()->query(
-            'SELECT ' . \implode(',', $selectSQL) . ' FROM (' . $baseQuery . ' ) AS ssMerkmal',
-            ReturnType::SINGLE_OBJECT
+        $dbRes = $this->productFilter->getDB()->getSingleObject(
+            'SELECT ' . \implode(',', $selectSQL) . ' FROM (' . $baseQuery . ' ) AS ssMerkmal'
         );
 
         $additionalFilter = new self($this->productFilter);
-        $priceRangeCounts = $dbRes !== false ? \get_object_vars($dbRes) : [];
+        $priceRangeCounts = $dbRes !== null ? \get_object_vars($dbRes) : [];
         $priceRanges      = [];
         $count            = \count($priceRangeCounts);
         for ($i = 0; $i < $count; ++$i) {
@@ -582,12 +575,12 @@ class PriceRange extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function getOptions($data = null): array
+    public function getOptions($mixed = null): array
     {
         if ($this->options !== null) {
             return $this->options;
         }
-        $productCount = $data;
+        $productCount = $mixed;
         // Prüfe, ob es nur einen Artikel in der Artikelübersicht gibt
         // falls ja und es ist noch kein Preisspannenfilter gesetzt, dürfen keine Preisspannenfilter angezeigt werden
         if (($productCount === 1 && !$this->isInitialized())

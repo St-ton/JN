@@ -11,7 +11,9 @@
 			overflow-x: hidden;
 			max-height: none;
 			@include media-breakpoint-down(md) {
-				padding-right: 50px;
+				&:not(.slider-no-preview) {
+					padding-right: 50px;
+				}
 			}
 			> div {
 				width: 100%;
@@ -35,13 +37,19 @@
 		}
 		&.slick-type-box {
 			.product-wrapper {
-				@include media-breakpoint-down(lg) { width: calc(100%/2); min-width: calc(100%/2);}
-				@include media-breakpoint-up(lg) { width: 100%; min-width: 100%;}
+				width: 100%; min-width: 100%;
 			}
 		}
 		&.slick-type-half {
 			.product-wrapper {
 				@include media-breakpoint-down(xl) { width: calc(100%/2); ; min-width: calc(100%/2); }
+				@include media-breakpoint-up(xl) { width: calc(100%/3); min-width: calc(100%/3);}
+			}
+		}
+		&.slick-type-three {
+			.product-wrapper {
+				@include media-breakpoint-down(sm) { width: 100%; min-width: 100%;}
+				@include media-breakpoint-up(md) { width: calc(100%/2); min-width: calc(100%/2);}
 				@include media-breakpoint-up(xl) { width: calc(100%/3); min-width: calc(100%/3);}
 			}
 		}
@@ -160,10 +168,13 @@
 .slick-type-product ,
 .slick-type-half ,
 .slick-type-news ,
+.slick-type-three ,
 .slick-type-box {
-	.slick-list {
-		@include media-breakpoint-down(md) {
-			padding-right: 50px;
+	&:not(.slider-no-preview) {
+		.slick-list {
+			@include media-breakpoint-down(md) {
+				padding-right: 50px;
+			}
 		}
 	}
 }

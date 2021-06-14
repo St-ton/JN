@@ -11,6 +11,9 @@ class Migration_20200204112200 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Remove global meta keywords';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('DROP TABLE texcludekeywords');

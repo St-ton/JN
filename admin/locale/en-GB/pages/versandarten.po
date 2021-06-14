@@ -14,6 +14,9 @@ msgstr "Click on the respective destination country to enter surcharges (e.g. fo
 msgid "createShippingMethod"
 msgstr "Create shipping method"
 
+msgid "createShippingMethodTitle"
+msgstr "Creating a shipping method"
+
 msgid "createShippingMethodDesc"
 msgstr "Create a new shipping method for JTL-Shop. You can later map it to one of the shipping methods in JTL-Wawi."
 
@@ -45,7 +48,7 @@ msgid "taxshippingcosts"
 msgstr "Taxes for shipping costs and threshold for free shipping"
 
 msgid "taxshippingcostsDesc"
-msgstr "Specify whether the shipping costs are indicated as a fixed gross price. If the option \"Gross (fixed shipping costs)\" is selected, customers always pay the same shipping costs since different VAT rates do not affect the total costs of shipping. This also means that the threshold for free shipping refers to the gross basket value.<br>If the option \"Net (automatic VAT addition)\" is selected, the respective VAT rate charged for the current basket is added to the net shipping costs. This may lead to varying shipping costs due to different VAT rates. This also means that the threshold for free shipping refers to the net basket value."
+msgstr "Specify whether the shipping costs are indicated as a fixed gross price. If the option \"Gross (fixed shipping costs)\" is selected, customers always pay the same shipping costs since different VAT rates do not affect the total costs of shipping. This also means that the threshold for free shipping refers to the gross basket value.<br><br/>If the option \"Net (automatic VAT addition)\" is selected, the respective VAT rate charged for the current basket is added to the net shipping costs. This may lead to varying shipping costs due to different VAT rates. This also means that the threshold for free shipping refers to the net basket value."
 
 msgid "net"
 msgstr "Net (automatic VAT addition)"
@@ -63,19 +66,16 @@ msgid "excludeShippingProposal"
 msgstr "Ignore when calculating the cheapest shipping costs"
 
 msgid "excludeShippingProposalDesc"
-msgstr "Specify whether this shipping method is to be ignored when calculating the cheapest shipping costs.<br>Irrespective of what is specified in this setting, the shipping method will be listed during the ordering process and in the shipping cost determination of the basket when the other criteria are met."
-
-msgid "tax"
-msgstr "VAT"
+msgstr "Specify whether this shipping method is to be ignored when calculating the cheapest shipping costs.<br><br/>Irrespective of what is specified in this setting, the shipping method will be listed during the ordering process and in the shipping cost determination of the basket when the other criteria are met."
 
 msgid "sortnr"
 msgstr "Sort number"
 
 msgid "minLiefertage"
-msgstr "Shipping days min."
+msgstr "Min. DeliveryDays"
 
 msgid "maxLiefertage"
-msgstr "Shipping days max."
+msgstr "Max. DeliveryDays"
 
 msgid "acceptedPaymentMethods"
 msgstr "Accepted payment methods"
@@ -85,6 +85,9 @@ msgstr "Save shipping method"
 
 msgid "modifyedShippingType"
 msgstr "Save changes"
+
+msgid "modifyedShippingTypeTitle"
+msgstr "Change shipping method \"%s\""
 
 msgid "shippingTypeName"
 msgstr "Shipping method"
@@ -133,6 +136,9 @@ msgstr "Add"
 
 msgid "freeShipping"
 msgstr "Free shipping from"
+
+msgid "freeShippingBasketValue"
+msgstr "Free shipping after last scale"
 
 msgid "maxCosts"
 msgstr "Capping"
@@ -278,9 +284,6 @@ msgstr "Please select at least one acceptable payment method."
 msgid "errorShippingMethodPriceMissing"
 msgstr "Please enter at least one price."
 
-msgid "errorShippingFreeMax"
-msgstr "The free shipping threshold may only amount to %s max."
-
 msgid "sendShippingNotification"
 msgstr "Send shipping confirmation"
 
@@ -328,4 +331,4 @@ msgid "countriesSelected"
 msgstr "selected"
 
 msgid "acceptedPaymentMethodsDesc"
-msgstr "Enter a negative value to grant a discount"
+msgstr "Enter a negative value to grant a discount."

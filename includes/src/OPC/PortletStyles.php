@@ -26,9 +26,9 @@ trait PortletStyles
 
     /**
      * @param bool $preview
-     * @return array|string[]
+     * @return array
      */
-    final public function getCssFiles($preview = false)
+    final public function getCssFiles($preview = false): array
     {
         $list = [];
         $file = $this->getCssFile($preview);
@@ -83,28 +83,36 @@ trait PortletStyles
                 'width'   => 34,
                 'desc'    => __('cssNumericDesc'),
             ],
-            'box-styles'  => [
-                'type'    => InputType::BOX_STYLES,
+            'box-styles'       => [
+                'type' => InputType::BOX_STYLES,
+            ],
+            'custom-class'     => [
+                'type'        => InputType::TEXT,
+                'label'       => __('Custom css class'),
+                'default'     => '',
+                'width'       => 100,
+                'placeholder' => __('CustomCssClassPlaceholder'),
+                'desc'        => __('CustomCssClassDesc'),
             ],
             'hidden-xs'        => [
-                'type'       => InputType::CHECKBOX,
-                'label'      => __('Hidden on XS'),
-                'width'      => 25,
+                'type'  => InputType::CHECKBOX,
+                'label' => __('Hidden on XS'),
+                'width' => 25,
             ],
             'hidden-sm'        => [
-                'type'       => InputType::CHECKBOX,
-                'label'      => __('Hidden on SM'),
-                'width'      => 25,
+                'type'  => InputType::CHECKBOX,
+                'label' => __('Hidden on SM'),
+                'width' => 25,
             ],
             'hidden-md'        => [
-                'type'       => InputType::CHECKBOX,
-                'label'      => __('Hidden on MD'),
-                'width'      => 25,
+                'type'  => InputType::CHECKBOX,
+                'label' => __('Hidden on MD'),
+                'width' => 25,
             ],
             'hidden-lg'        => [
-                'type'       => InputType::CHECKBOX,
-                'label'      => __('Hidden on LG'),
-                'width'      => 25,
+                'type'  => InputType::CHECKBOX,
+                'label' => __('Hidden on LG'),
+                'width' => 25,
             ],
         ];
     }

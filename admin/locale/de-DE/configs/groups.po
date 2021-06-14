@@ -30,7 +30,7 @@ msgid "configgroup_1_admin_area"
 msgstr "Admin-Bereich"
 
 msgid "configgroup_1_cookies"
-msgstr "Cookie-Einstellungen"
+msgstr "Cookie-Einstellungen <br><span class=\"text-danger\">Durch falsche Cookie-Einstellungen sperren Sie sich ggf. aus dem Backend aus! Ändern Sie diese nur, wenn Sie genau wissen, was Sie tun.</span>"
 
 msgid "configgroup_2_general"
 msgstr "Allgemein"
@@ -124,6 +124,9 @@ msgstr "Vergleichsliste"
 
 msgid "configgroup_8_box_top_rated"
 msgstr "Box: Top bewertet"
+
+msgid "configgroup_8_box_manufacturers"
+msgstr "Box: Hersteller"
 
 msgid "configgroup_9_image_settings"
 msgstr "Bildeinstellungen"
@@ -235,3 +238,18 @@ msgstr "Allgemein"
 
 msgid "configgroup_110_manufacturer_filter"
 msgstr "Herstellerfilter"
+
+msgid "configgroup_129_consentmanager"
+msgstr "Consent-Manager"
+
+msgid "configgroup_124_cache"
+msgstr "Cache"
+
+msgid "configgroup_128_cron"
+msgstr "Cron"
+
+msgid "configgroup_121_selectionwizard"
+msgstr "Auswahlassistent"
+
+msgid "configgroup_127_filesystem"
+msgstr "Dateisystem"

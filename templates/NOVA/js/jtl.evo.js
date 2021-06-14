@@ -26,7 +26,7 @@
                 let mainNode = $(this);
                 mainNode.removeClass('slick-lazy');
                 if (!mainNode.hasClass('slick-initialized')) {
-                    mainNode.find('.product-wrapper').removeClass('m-auto ml-auto mr-auto');
+                    mainNode.find('.product-wrapper').removeClass('mx-auto ml-auto-util mr-auto');
                     self.initSlick(mainNode, mainNode.data('slick-type'));
                 }
             });
@@ -54,10 +54,22 @@
                         && Math.abs(startX - e.changedTouches[0].pageX) > 80
                     ) {
                         mainNode.removeClass('slick-lazy');
-                        mainNode.find('.product-wrapper').removeClass('m-auto ml-auto mr-auto');
+                        mainNode.find('.product-wrapper').removeClass('mx-auto ml-auto-util mr-auto');
                         self.initSlick(mainNode, mainNode.data('slick-type'));
-                        if(mainNode.slick('getSlick').slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
-                            mainNode.slick('slickGoTo', 1);
+                        let slickOptions = mainNode.slick('getSlick');
+                        if(slickOptions.slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
+                            let goTo;
+                            $.each(slickOptions.originalSettings.responsive, function (key, value) {
+                                if (value.breakpoint === slickOptions.activeBreakpoint
+                                    && value.settings.slidesToShow !== undefined
+                                ) {
+                                    goTo = value.settings.slidesToShow;
+                                }
+                            });
+                            if (goTo === undefined) {
+                                goTo = slickOptions.originalSettings.slidesToScroll
+                            }
+                            mainNode.slick('slickGoTo', goTo || 2);
                         }
                     }
                 }, supportsPassive ? { passive: true } : false);
@@ -69,16 +81,13 @@
                 'box-slider' : {
                     arrows:         false,
                     lazyLoad:       'ondemand',
-                    slidesToShow:   2,
-                    swipeToSlide:   true,
-                    slidesToScroll: 2,
+                    slidesToShow:   1,
+                    slidesToScroll: 1,
                     mobileFirst:    true,
                     responsive: [
                         {
                             breakpoint: 992,
                             settings: {
-                                slidesToShow: 1,
-                                slidesToScroll: 1,
                                 arrows: true,
                             }
                         }
@@ -87,14 +96,38 @@
                 'slider-half' : {
                     arrows:       true,
                     lazyLoad:     'ondemand',
-                    swipeToSlide: true,
                     mobileFirst:    true,
                     slidesToShow: 2,
+                    slidesToScroll: 2,
                     responsive:   [
                         {
                             breakpoint: 1300,
                             settings: {
                                 slidesToShow: 3,
+                                slidesToScroll: 3,
+                            }
+                        }
+                    ]
+                },
+                'slider-three' : {
+                    arrows:       true,
+                    lazyLoad:     'ondemand',
+                    mobileFirst:    true,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    responsive:   [
+                        {
+                            breakpoint: 768,
+                            settings: {
+                                slidesToShow: 2,
+                                slidesToScroll: 2,
+                            }
+                        },
+                        {
+                            breakpoint: 1300,
+                            settings: {
+                                slidesToShow: 3,
+                                slidesToScroll: 3,
                             }
                         }
                     ]
@@ -105,14 +138,13 @@
                     lazyLoad:       'ondemand',
                     slidesToShow:   2,
                     slidesToScroll: 2,
-                    swipeToSlide:   true,
                     mobileFirst:    true,
                     responsive:     [
                         {
                             breakpoint: 768,
                             settings: {
                                 slidesToShow: 3,
-                                slidesToScroll: 1
+                                slidesToScroll: 3
                             }
                         },
                         {
@@ -120,7 +152,7 @@
                             settings: {
                                 slidesToShow:5,
                                 arrows: true,
-                                slidesToScroll: 1
+                                slidesToScroll: 5
                             }
                         },
                         {
@@ -128,7 +160,7 @@
                             settings: {
                                 slidesToShow:7,
                                 arrows: true,
-                                slidesToScroll: 1
+                                slidesToScroll: 7
                             }
                         }
                     ]
@@ -138,7 +170,6 @@
                     slidesToShow:   1,
                     slidesToScroll: 1,
                     arrows:         false,
-                    swipeToSlide:   true,
                     infinite:       false,
                     lazyLoad:       'ondemand',
                     mobileFirst:    true,
@@ -146,13 +177,15 @@
                         {
                             breakpoint: 768,
                             settings: {
-                                slidesToShow: 2
+                                slidesToShow: 2,
+                                slidesToScroll: 2,
                             }
                         },
                         {
                             breakpoint: 992,
                             settings: {
                                 slidesToShow:3,
+                                slidesToScroll: 3,
                                 arrows: true
                             }
                         },
@@ -160,6 +193,7 @@
                             breakpoint: 1300,
                             settings: {
                                 slidesToShow:5,
+                                slidesToScroll: 5,
                                 arrows: true
                             }
                         }
@@ -169,12 +203,12 @@
                     slidesToShow:   3,
                     slidesToScroll: 3,
                     infinite: false,
-                    swipeToSlide:   true,
                     responsive: [
                         {
                             breakpoint: 768,
                             settings: {
-                                slidesToShow: 2
+                                slidesToShow: 2,
+                                slidesToScroll: 2,
                             }
                         }
                     ]
@@ -183,8 +217,7 @@
                     lazyLoad: 'ondemand',
                     infinite: true,
                     dots:     false,
-                    swipeToSlide:   true,
-                    arrows:   false,
+                    arrows:   true,
                     speed: 500,
                     fade: true,
                     cssEase: 'linear',
@@ -204,20 +237,21 @@
                     slidesToScroll: 1,
                     asNavFor:       '#gallery',
                     dots:           false,
-                    swipeToSlide:   true,
                     arrows:         true,
                     focusOnSelect:  true,
                     responsive:     [
                         {
                             breakpoint: 768,
                             settings:   {
-                                slidesToShow: 4
+                                slidesToShow: 4,
+                                slidesToScroll: 1,
                             }
                         },
                         {
                             breakpoint: 576,
                             settings: {
-                                slidesToShow: 3
+                                slidesToShow: 3,
+                                slidesToScroll: 1,
                             }
                         }
                     ]
@@ -661,7 +695,7 @@
             }
         },
 
-        addInactivityCheck: function(wrapper) {
+        addInactivityCheck: function(wrapper, timeoutMS = 500, stopEnter = false) {
             var timeoutID,
                 that = this,
                 currentBox;
@@ -669,16 +703,23 @@
             setup();
 
             function setup() {
-                $(wrapper + ' .form-counter input').on('change',resetTimer);
-                $(wrapper + ' .choose_quantity input').on('change',resetTimer);
-                $(wrapper + ' .form-counter .btn-decrement, ' + wrapper + ' .form-counter .btn-increment').on('click',resetTimer);
-                $(wrapper + ' .form-counter .btn-decrement, ' + wrapper + ' .form-counter .btn-increment').on('touchstart',resetTimer,{passive: true});
-                $(wrapper + ' .form-counter .btn-decrement, ' + wrapper + ' .form-counter .btn-increment').on('keydown',resetTimer);
+                $(wrapper + ' .form-counter input, ' + wrapper + ' .choose_quantity input').on('change',resetTimer);
+                $(wrapper + ' .form-counter .btn-decrement, ' + wrapper + ' .form-counter .btn-increment')
+                    .on('click keydown',resetTimer)
+                    .on('touchstart',resetTimer,{passive: true});
+                if (stopEnter) {
+                    $(wrapper + ' input.quantity').on('keypress', function (e) {
+                        if (e.key === 'Enter') {
+                            return false;
+                        } else {
+                            resetTimer(e);
+                        }
+                    });
+                }
             }
 
             function startTimer() {
-                // wait 0.5 seconds before calling goInactive
-                timeoutID = window.setTimeout(goInactive, 500);
+                timeoutID = window.setTimeout(goInactive, timeoutMS);
             }
 
             function resetTimer(e) {
@@ -820,14 +861,14 @@
         },
 
         initFilters: function (href) {
-            let $wrapper = $('.js-collapse-filter'),
-                self=this;
+            let $wrapper = $('.js-collapse-filter');
             $.evo.extended().startSpinner($wrapper);
 
             $.ajax(href, {data: {'useMobileFilters':1}})
                 .done(function(data) {
                     $wrapper.html(data);
-                    self.initPriceSlider($wrapper, false);
+                    $.evo.initPriceSlider($wrapper, false);
+                    $.evo.initItemSearch('filter');
                 })
                 .always(function() {
                     $.evo.extended().stopSpinner();
@@ -911,9 +952,12 @@
         initWishlist: function() {
             let wlFormID = '#wl-items-form';
             if ($(wlFormID).length) {
-                $.evo.extended().addInactivityCheck(wlFormID);
+                $.evo.extended().addInactivityCheck(wlFormID, 300, true);
                 $('.js-update-wl').on('change', function () {
                     $.evo.extended().updateWishlistItem($(this).closest('.productbox-inner'));
+                });
+                $('.product-list').children().each(function() {
+                    $(this).css('height', $(this).height());
                 });
             }
         },
@@ -922,6 +966,57 @@
             $('.pagination-wrapper select').on('change', function () {
                 this.form.submit();
             });
+        },
+
+        initItemSearch: function(context) {
+            let searchWrapper  = '.' + context + '-search-wrapper',
+                searchInput    = '.' + context + '-search',
+                itemValue      = '.' + context + '-item-value',
+                item           = '.' + context + '-item',
+                clear          = '.form-clear',
+                inputSelected  = 'input-group-selected',
+                $searchWrapper = $(searchWrapper);
+
+            if ($searchWrapper.length === 0) {
+                return;
+            }
+            $searchWrapper.each((i, itemWrapper) => {
+                $(itemWrapper).find(searchInput).on('input', function () {
+                    filterSearch($(itemWrapper));
+                }).on('keydown', e => {
+                    if (e.key === 'Escape') {
+                        e.stopPropagation();
+                    }
+                });
+            });
+            $(searchWrapper + ' ' + clear).on('click', function() {
+                $(this).prev().val('');
+                $(this).addClass('d-none');
+                filterSearch($(this).closest(searchWrapper));
+            });
+            $(searchInput).on('focusin', function() {
+                $(this).closest(searchWrapper).addClass(inputSelected);
+            }).on('focusout', function() {
+                $(this).closest(searchWrapper).removeClass(inputSelected);
+            });
+
+            function filterSearch (itemWrapper) {
+                let searchTerm = itemWrapper.find(searchInput).val().toLowerCase();
+                itemWrapper.find(itemValue).each((i, itemTMP) => {
+                    itemTMP = $(itemTMP);
+                    let text = itemTMP.text().toLowerCase();
+                    if (text.indexOf(searchTerm) === -1) {
+                        itemTMP.closest(item).hide();
+                    } else {
+                        itemTMP.closest(item).show();
+                    }
+                    if (searchTerm.length === 0) {
+                        itemWrapper.find(clear).addClass('d-none');
+                    } else {
+                        itemWrapper.find(clear).removeClass('d-none');
+                    }
+                });
+            }
         },
 
         /**
@@ -954,6 +1049,7 @@
             this.initWishlist();
             this.initPaginationEvents();
             this.initFilterEvents();
+            this.initItemSearch('filter');
         }
     };
 

@@ -7,6 +7,7 @@ use JTL\Shop;
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty
  * @global \JTL\Backend\AdminAccount $oAccount
+ * @global string                    $currentTemplateDir
  */
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -23,6 +24,8 @@ if (Form::validateToken()) {
     if ($mediafilesType === 'video') {
         $mediafilesSubdir = PFAD_MEDIA_VIDEO;
     }
+
+    $mediafilesBaseUrlPath = parse_url(URL_SHOP . '/' . $mediafilesSubdir, PHP_URL_PATH);
 
     if (!empty($elfinderCommand)) {
         // Documentation for connector options:
@@ -60,10 +63,7 @@ if (Form::validateToken()) {
                     // path to files (REQUIRED)
                     'path'          => PFAD_ROOT . $mediafilesSubdir,
                     // URL to files (REQUIRED)
-                    'URL'           => parse_url(
-                        URL_SHOP . '/' . $mediafilesSubdir,
-                        PHP_URL_PATH
-                    ),
+                    'URL'           => $mediafilesBaseUrlPath,
                     // to make hash same to Linux one on windows too
                     'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                     // All Mimetypes not allowed to upload
@@ -94,7 +94,8 @@ if (Form::validateToken()) {
                ->assign('mediafilesSubdir', $mediafilesSubdir)
                ->assign('isCKEditor', $isCKEditor)
                ->assign('CKEditorFuncNum', $CKEditorFuncNum)
-               ->assign('templateUrl', Shop::getURL() . '/' . PFAD_ADMIN . $currentTemplateDir)
+               ->assign('templateUrl', Shop::getAdminURL() . '/' . $currentTemplateDir)
+               ->assign('mediafilesBaseUrlPath', $mediafilesBaseUrlPath)
                ->display('elfinder.tpl');
     }
 }

@@ -173,7 +173,7 @@ abstract class AbstractBox implements BoxInterface
     protected $isActive = true;
 
     /**
-     * @var Artikel[]
+     * @var ArtikelListe|Artikel[]
      */
     protected $products;
 
@@ -289,13 +289,13 @@ abstract class AbstractBox implements BoxInterface
             $this->filter[$pageType] = false;
         }
         foreach ($boxData as $box) {
-            $pageIDs            = \array_map('\intval', \explode(',', $box->pageIDs));
+            $pageIDs            = \array_map('\intval', \explode(',', $box->pageIDs ?? ''));
             $sort               = \array_map('\intval', \explode(',', $box->sortBypageIDs ?? ''));
             $this->sortByPageID = \array_combine($pageIDs, $sort);
             if (!empty($box->cFilter)) {
                 $this->filter[(int)$box->kSeite] = \array_map('\intval', \explode(',', $box->cFilter));
             } else {
-                $pageVisibilities = \array_map('\intval', \explode(',', $box->pageVisibilities));
+                $pageVisibilities = \array_map('\intval', \explode(',', $box->pageVisibilities ?? ''));
                 $filter           = \array_combine($pageIDs, $pageVisibilities);
                 foreach ($filter as $pageID => $visibility) {
                     $this->filter[$pageID] = (bool)$visibility;
@@ -304,6 +304,9 @@ abstract class AbstractBox implements BoxInterface
             if (!empty($box->kSprache)) {
                 if (!\is_array($this->content)) {
                     $this->content = [];
+                }
+                if (!\is_array($this->title)) {
+                    $this->title = [];
                 }
                 $this->content[(int)$box->kSprache] = $box->cInhalt;
                 $this->title[(int)$box->kSprache]   = $box->cTitel;
@@ -318,6 +321,7 @@ abstract class AbstractBox implements BoxInterface
             // may be overridden in concrete classes' __construct
             $this->setShow($this->isActive());
         }
+        $this->init();
     }
 
     /**
@@ -880,5 +884,12 @@ abstract class AbstractBox implements BoxInterface
         $res['config'] = '*truncated*';
 
         return $res;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function init(): void
+    {
     }
 }

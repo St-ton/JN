@@ -51,10 +51,13 @@ msgid "cg_filter_description"
 msgstr "Contains filter data"
 
 msgid "cg_status_description"
-msgstr "Contains status data for notifications"
+msgstr "Contains status for notifications"
+
+msgid "cg_opc_description"
+msgstr "Contains OPC data"
 
 msgid "cg_article_nicename"
-msgstr "Item"
+msgstr "Items"
 
 msgid "cg_category_nicename"
 msgstr "Categories"
@@ -87,13 +90,16 @@ msgid "cg_attribute_nicename"
 msgstr "Attributes"
 
 msgid "cg_manufacturer_nicename"
-msgstr "Manufacturer"
+msgstr "Manufacturers"
 
 msgid "cg_filter_nicename"
-msgstr "Item filters"
+msgstr "Item filter"
 
 msgid "cg_status_nicename"
 msgstr "Status"
+
+msgid "cg_opc_nicename"
+msgstr "OPC"
 
 msgid "entries"
 msgstr "Entries"

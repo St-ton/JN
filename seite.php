@@ -34,12 +34,11 @@ if ($link === null || !$link->isVisible()) {
     $link->setRedirectCode(301);
 }
 $requestURL = URL::buildURL($link, URLART_SEITE);
-if ($link->getLinkType() === LINKTYP_STARTSEITE) {
-    $cCanonicalURL = Shop::getURL() . '/';
-} elseif (mb_strpos($requestURL, '.php') === false) {
-    $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
+if (mb_strpos($requestURL, '.php') === false) {
+    $cCanonicalURL = $link->getURL();
 }
 if ($link->getLinkType() === LINKTYP_STARTSEITE) {
+    $cCanonicalURL = Shop::getHomeURL();
     if ($link->getRedirectCode() > 0) {
         header('Location: ' . $cCanonicalURL, true, $link->getRedirectCode());
         exit();
@@ -54,23 +53,26 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         Shop::getLanguageID(),
         Frontend::getCustomerGroup()->getID()
     ));
-} elseif (\in_array($link->getLinkType(), [LINKTYP_WRB, LINKTYP_WRB_FORMULAR, LINKTYP_DATENSCHUTZ], true)) {
+} elseif (in_array($link->getLinkType(), [LINKTYP_WRB, LINKTYP_WRB_FORMULAR, LINKTYP_DATENSCHUTZ], true)) {
     $smarty->assign('WRB', Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguageID(),
         Frontend::getCustomerGroup()->getID()
     ));
 } elseif ($link->getLinkType() === LINKTYP_VERSAND) {
-    if (isset($_POST['land'], $_POST['plz']) && !ShippingMethod::getShippingCosts($_POST['land'], $_POST['plz'])) {
+    $error = '';
+    if (isset($_POST['land'], $_POST['plz'])
+        && !ShippingMethod::getShippingCosts($_POST['land'], $_POST['plz'], $error)
+    ) {
         $alertHelper->addAlert(
             Alert::TYPE_ERROR,
             Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'),
             'missingParamShippingDetermination'
         );
     }
-    $smarty->assign(
-        'laender',
-        ShippingMethod::getPossibleShippingCountries(Frontend::getCustomerGroup()->getID())
-    );
+    if ($error !== '') {
+        $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'shippingCostError');
+    }
+    $smarty->assign('laender', ShippingMethod::getPossibleShippingCountries(Frontend::getCustomerGroup()->getID()));
 } elseif ($link->getLinkType() === LINKTYP_LIVESUCHE) {
     $liveSearchTop  = CMS::getLiveSearchTop($conf);
     $liveSearchLast = CMS::getLiveSearchLast($conf);

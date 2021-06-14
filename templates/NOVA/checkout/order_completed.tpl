@@ -4,7 +4,7 @@
     {/block}
     {block name='checkout-order-completed-content'}
         {block name='checkout-order-completed-heading'}
-            {container}
+            {container fluid=$Link->getIsFluid()}
                 {if isset($smarty.session.Zahlungsart->nWaehrendBestellung) && $smarty.session.Zahlungsart->nWaehrendBestellung == 1}
                     <h2>{lang key='orderCompletedPre' section='checkout'}</h2>
                 {elseif $Bestellung->Zahlungsart->cModulId !== 'za_kreditkarte_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_lastschrift_jtl'}
@@ -16,7 +16,7 @@
             {include file='snippets/extension.tpl'}
         {/block}
         {block name='checkout-order-completed-main'}
-            {container}
+            {container fluid=$Link->getIsFluid()}
                 <div class="order-completed">
                     {block name='checkout-order-completed-include-inc-paymentmodules'}
                         {include file='checkout/inc_paymentmodules.tpl'}

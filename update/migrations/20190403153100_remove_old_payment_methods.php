@@ -16,6 +16,9 @@ class Migration_20190403153100 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'remove old payment methods';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $methods = $this->getDB()->query(
@@ -75,6 +78,9 @@ class Migration_20190403153100 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

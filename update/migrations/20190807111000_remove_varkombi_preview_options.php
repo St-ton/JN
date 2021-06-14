@@ -17,6 +17,9 @@ class Migration_20190807111000 extends Migration implements IMigration
     protected $author = 'fm';
     protected $description = 'Remove varkombi preview options';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeConfig('artikeluebersicht_varikombi_anzahl');
@@ -24,12 +27,15 @@ class Migration_20190807111000 extends Migration implements IMigration
         $this->removeConfig('artikeldetails_varikombi_vorschautext');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setConfig(
             'artikeluebersicht_varikombi_anzahl',
             '0',
-            \CONF_ARTIKELUEBERSICHT,
+            CONF_ARTIKELUEBERSICHT,
             'Anzahl Vorschaubilder bei Variationskombis',
             'number',
             280,
@@ -43,7 +49,7 @@ class Migration_20190807111000 extends Migration implements IMigration
         $this->setConfig(
             'artikeldetails_varikombi_anzahl',
             '0',
-            \CONF_ARTIKELDETAILS,
+            CONF_ARTIKELDETAILS,
             'Anzahl Vorschaubilder bei Variationskombis',
             'number',
             470,
@@ -57,7 +63,7 @@ class Migration_20190807111000 extends Migration implements IMigration
         $this->setConfig(
             'artikeldetails_varikombi_vorschautext',
             'N',
-            \CONF_ARTIKELDETAILS,
+            CONF_ARTIKELDETAILS,
             'Beschriftung der Variantenvorschau',
             'selectbox',
             480,

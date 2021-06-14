@@ -1,6 +1,10 @@
 {block name='snippets-consent-manager'}
 <div id="consent-manager" class="d-none">
-	{$privacyURL = $oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
+	{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ])}
+		{$privacyURL = $oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}
+	{else}
+		{$privacyURL = ''}
+	{/if}
 	{block name='snippets-consent-manager-banner'}
 		<div id="consent-banner">
 			{block name='snippets-consent-manager-banner-icon'}
@@ -122,7 +126,7 @@
 							<label class="consent-label consent-label-secondary" for="consent-all-2"><span>{lang key='selectAll' section='consent'}</span></label>
 						</div>
 						<div class="consent-accept">
-							<button type="button" class="consent-btn consent-btn-tertiary consent-btn-block consent-btn-primary consent-btn-sm" data-toggle="consent-close">
+							<button type="button" id="consent-accept-banner-btn-close" class="consent-btn consent-btn-tertiary consent-btn-block consent-btn-primary consent-btn-sm" data-toggle="consent-close">
 								{lang key='apply' section='consent'}
 							</button>
 						</div>

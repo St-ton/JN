@@ -12,19 +12,19 @@
             <nav class="tavs-nav">
                 <ul class="nav nav-tabs" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link {if !isset($cTab) || $cTab === 'uebersicht'} active{/if}" data-toggle="tab" role="tab" href="#overview">
+                        <a class="nav-link {if $cTab === '' || $cTab === 'uebersicht'} active{/if}" data-toggle="tab" role="tab" href="#overview">
                             {__('aaOverview')}
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {if isset($cTab) && $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#config">
+                        <a class="nav-link {if $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#config">
                             {__('settings')}
                         </a>
                     </li>
                 </ul>
             </nav>
             <div class="tab-content">
-                <div id="overview" class="tab-pane fade{if !isset($cTab) || $cTab === 'uebersicht'} active show{/if}">
+                <div id="overview" class="tab-pane fade{if $cTab === '' || $cTab === 'uebersicht'} active show{/if}">
                     <form name="uebersichtForm" method="post" action="auswahlassistent.php">
                         {$jtl_token}
                         <input type="hidden" name="tab" value="uebersicht" />
@@ -52,7 +52,7 @@
                                                             <label class="custom-control-label" for="group-{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"></label>
                                                         </div>
                                                     </td>
-                                                    <td>
+                                                    <td class="text-center">
                                                         {if !$oAuswahlAssistentGruppe->nAktiv}
                                                             <i class="fal fa-times text-danger"></i>
                                                         {else}
@@ -121,8 +121,9 @@
                                                                             <td class="text-center">
                                                                                 <div class="btn-group">
                                                                                     <a href="auswahlassistent.php?a=delQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}"
-                                                                                       class="btn btn-link px-2 remove"
+                                                                                       class="btn btn-link px-2 remove delete-confirm"
                                                                                        data-toggle="tooltip"
+                                                                                       data-modal-body="{$oAuswahlAssistentFrage->cFrage}"
                                                                                        title="{__('delete')}">
                                                                                         <span class="icon-hover">
                                                                                             <span class="fal fa-trash-alt"></span>
@@ -192,7 +193,7 @@
                     </form>
                 </div>
                 <!-- #overview -->
-                <div id="config" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
+                <div id="config" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
                     {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings'
                              action='auswahlassistent.php' buttonCaption=__('saveWithIcon') tab='einstellungen' title=__('settings')}
                 </div>

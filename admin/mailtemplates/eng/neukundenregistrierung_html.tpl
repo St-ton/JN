@@ -29,7 +29,7 @@ Please review your account details:<br>
 							{if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}<br>{/if}
 							{$Kunde->cPLZ} {$Kunde->cOrt}<br>
 							{if $Kunde->cBundesland}{$Kunde->cBundesland}<br>{/if}
-							<font style="text-transform: uppercase;">{$Kunde->cLand}</font>
+							<font style="text-transform: uppercase;">{$Kunde->angezeigtesLand}</font>
 						</font>
 					</td>
 				</tr>

@@ -31,6 +31,11 @@ abstract class AbstractImage implements IMedia
     public const REGEX = '';
 
     /**
+     * @var string
+     */
+    public const REGEX_ALLOWED_CHARS = 'a-zA-Z0-9 äööüÄÖÜß\$\-\_\.\+\!\*\\\'\(\)\,';
+
+    /**
      * @var array
      */
     protected static $imageExtensions = ['jpg', 'jpeg', 'webp', 'gif', 'png', 'bmp'];
@@ -78,7 +83,7 @@ abstract class AbstractImage implements IMedia
                 throw new Exception('No such image id: ' . (int)$mediaReq->id);
             }
 
-            $imgPath      = '';
+            $imgPath      = null;
             $matchFound   = false;
             $allowedFiles = [];
             foreach ($allowedNames as $allowedName) {
@@ -93,10 +98,10 @@ abstract class AbstractImage implements IMedia
                 }
             }
             if ($matchFound === false) {
-                \header('Location: ' . Shop::getURL() . '/' . $allowedFiles[0], true, 301);
+                \header('Location: ' . Shop::getImageBaseURL() . $allowedFiles[0], true, 301);
                 exit;
             }
-            if (!\is_file(\PFAD_ROOT . $imgPath)) {
+            if ($imgPath === null || !\is_file(\PFAD_ROOT . $imgPath)) {
                 Image::render($mediaReq, true);
             }
         } catch (Exception $e) {
@@ -116,8 +121,7 @@ abstract class AbstractImage implements IMedia
     {
         $req   = static::getRequest($type, $id, $mixed, $size, $number, $source);
         $thumb = $req->getThumb($size);
-        $raw   = $req->getRaw();
-        if (!\file_exists(\PFAD_ROOT . $thumb) && ($raw === null || !\file_exists($raw))) {
+        if (!\file_exists(\PFAD_ROOT . $thumb) && (($raw = $req->getRaw()) === null || !\file_exists($raw))) {
             $thumb = \BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
 
@@ -215,29 +219,37 @@ abstract class AbstractImage implements IMedia
      */
     public function getStats(bool $filesize = false): StatsItem
     {
-        $result = new StatsItem();
-        foreach ($this->getAllImages() as $image) {
-            if ($image === null) {
-                continue;
-            }
-            $raw = $image->getRaw();
-            $result->addItem();
-            if ($raw !== null && \file_exists($raw)) {
-                foreach (Image::getAllSizes() as $size) {
-                    $thumb = $image->getThumb($size, true);
-                    if (!\file_exists($thumb)) {
-                        continue;
-                    }
-                    $result->addGeneratedItem($size);
-                    if ($filesize === true) {
-                        $bytes = \filesize($thumb);
-                        $result->addGeneratedSizeItem($size, $bytes);
-                    }
+        $result      = new StatsItem();
+        $totalImages = $this->getTotalImageCount();
+        $offset      = 0;
+        do {
+            foreach ($this->getAllImages($offset, \MAX_IMAGES_PER_STEP) as $image) {
+                if ($image === null) {
+                    continue;
                 }
-            } else {
-                $result->addCorrupted();
+                $raw = $image->getRaw();
+                $result->addItem();
+                if ($raw !== null && \file_exists($raw)) {
+                    foreach (Image::getAllSizes() as $size) {
+                        $thumb = $image->getThumb($size, true);
+                        if (!\file_exists($thumb)) {
+                            continue;
+                        }
+                        $result->addGeneratedItem($size);
+                        if ($filesize === true) {
+                            $bytes = \filesize($thumb);
+                            if ($bytes === false) {
+                                $bytes = 0;
+                            }
+                            $result->addGeneratedSizeItem($size, $bytes);
+                        }
+                    }
+                } else {
+                    $result->addCorrupted();
+                }
             }
-        }
+            $offset += \MAX_IMAGES_PER_STEP;
+        } while ($offset < $totalImages);
 
         return $result;
     }
@@ -249,14 +261,14 @@ abstract class AbstractImage implements IMedia
      */
     protected static function getLimitStatement(int $offset = null, int $limit = null): string
     {
-        $limitStmt = '';
-        if ($limit !== null) {
-            $limitStmt = ' LIMIT ';
-            if ($offset !== null) {
-                $limitStmt .= $offset . ', ';
-            }
-            $limitStmt .= $limit;
+        if ($limit === null) {
+            return '';
         }
+        $limitStmt = ' LIMIT ';
+        if ($offset !== null) {
+            $limitStmt .= $offset . ', ';
+        }
+        $limitStmt .= $limit;
 
         return $limitStmt;
     }
@@ -302,7 +314,6 @@ abstract class AbstractImage implements IMedia
     public function cacheImage(MediaImageRequest $req, bool $overwrite = false): array
     {
         $result     = [];
-        $rawImage   = null;
         $rawPath    = $req->getRaw();
         $extensions = [$req->getExt() === 'auto' ? 'jpg' : $req->getExt()];
         if (Image::hasWebPSupport()) {
@@ -326,7 +337,7 @@ abstract class AbstractImage implements IMedia
                     $res->cached = \is_file($thumbPath);
                     if ($res->cached === false) {
                         $renderStart = \microtime(true);
-                        if ($rawImage === null && $rawPath !== null && !\is_file($rawPath)) {
+                        if ($rawPath !== null && !\is_file($rawPath)) {
                             throw new Exception(\sprintf('Image source "%s" does not exist', $rawPath));
                         }
                         Image::render($req);
@@ -339,7 +350,6 @@ abstract class AbstractImage implements IMedia
                 $result[$size] = $res;
             }
         }
-        unset($rawImage);
 
         return $result;
     }
@@ -374,6 +384,7 @@ abstract class AbstractImage implements IMedia
                 $res  = $res && $loop;
             }
             foreach ($directories as $directory) {
+                /** @var string $directory */
                 if ($directory !== $baseDir) {
                     $loop = \rmdir($directory);
                     $res  = $res && $loop;

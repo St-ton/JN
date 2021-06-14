@@ -142,3 +142,57 @@ msgstr "Artikel in Warenkorb"
 
 msgid "Angeschaute Newsletter"
 msgstr "Gelesene Newsletter"
+
+msgid "kampagneParamDesc"
+msgstr "Kampagnen werden durch einen von Ihnen bestimmten URL-Parameter initiiert und werden im Anschluss in der Session gehalten, um Folgeaktionen (z. B. Käufe) auszuwerten. Bsp.: rv, http://demoshop.jtl-software.de/?rv=5"
+
+msgid "kampagneValueTypeDesc"
+msgstr "Wählen Sie hier, ob der Kampagnenwert ein fester Wert oder ein dynamischer Wert sein soll."
+
+msgid "kampagneValueStaticDesc"
+msgstr "Geben Sie hier den Kampagnenwert ein, wenn Sie vorher „Fester Wert“ ausgewählt haben. Bsp.: 5, http://demoshop.jtl-software.de/?rv=5"
+
+msgid "detailHeadIP"
+msgstr "IP-Adresse"
+
+msgid "detailHeadReferer"
+msgstr "Referer"
+
+msgid "detailHeadBrowser"
+msgstr "Browser"
+
+msgid "detailHeadAgent"
+msgstr "Suchmaschine"
+
+msgid "detailHeadDate"
+msgstr "Datum"
+
+msgid "detailHeadDateHit"
+msgstr "Vorgangsdatum"
+
+msgid "detailHeadCustomer"
+msgstr "Registrierter Kunde"
+
+msgid "detailHeadRegisterDate"
+msgstr "Anmeldedatum"
+
+msgid "detailHeadCreatedAt"
+msgstr "Erstellt am"
+
+msgid "detailHeadSentWawi"
+msgstr "Abgeholt durch JTL-Wawi"
+
+msgid "detailHeadProductLastUpdated"
+msgstr "Artikel zuletzt aktualisiert"
+
+msgid "detailHeadNewsletterDateOpened"
+msgstr "Newsletter geöffnet am"
+
+msgid "Verfügbarkeits-Benachrichtigungen"
+msgstr "Verfügbarkeits-Benachrichtigungen"
+
+msgid "Öffentl. Wunschzettel"
+msgstr "Öffentl. Wunschzettel"
+
+msgid "Google Suche"
+msgstr "Google Suche"

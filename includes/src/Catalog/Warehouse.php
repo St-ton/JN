@@ -5,7 +5,6 @@ namespace JTL\Catalog;
 use DateTime;
 use Exception;
 use JTL\Catalog\Product\Artikel;
-use JTL\DB\ReturnType;
 use JTL\MainModel;
 use JTL\Shop;
 use stdClass;
@@ -309,7 +308,7 @@ class Warehouse extends MainModel
     }
 
     /**
-     * @return string|null
+     * @return string
      */
     public function getBeschreibung(): string
     {
@@ -444,29 +443,28 @@ class Warehouse extends MainModel
     /**
      * @param int         $id
      * @param null|object $data
-     * @param int|null    $config
+     * @param int|null    $option
      */
-    public function load($id, $data = null, $config = null): void
+    public function load($id, $data = null, $option = null): void
     {
         if ($id !== null) {
             $id = (int)$id;
             if ($id > 0) {
                 $select = '';
                 $join   = '';
-                if ($config !== null && (int)$config > 0) {
-                    $config = (int)$config;
+                if ($option !== null && (int)$option > 0) {
+                    $option = (int)$option;
                     $select = ', IF (twarenlagersprache.cName IS NOT NULL, 
                     twarenlagersprache.cName, twarenlager.cName) AS cName';
                     $join   = ' LEFT JOIN twarenlagersprache 
                                     ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
-                                    AND twarenlagersprache.kSprache = ' . $config;
+                                    AND twarenlagersprache.kSprache = ' . $option;
                 }
 
-                $data = Shop::Container()->getDB()->query(
+                $data = Shop::Container()->getDB()->getSingleObject(
                     'SELECT twarenlager.* ' . $select . '
                          FROM twarenlager' . $join . '
-                         WHERE twarenlager.kWarenlager = ' . $id,
-                    ReturnType::SINGLE_OBJECT
+                         WHERE twarenlager.kWarenlager = ' . $id
                 );
             }
         }
@@ -526,7 +524,7 @@ class Warehouse extends MainModel
             $sql .= \implode(', ', $set);
             $sql .= ' WHERE kWarenlager = ' . $this->kWarenlager;
 
-            return $db->query($sql, ReturnType::AFFECTED_ROWS);
+            return $db->getAffectedRows($sql);
         }
         throw new Exception('ERROR: Object has no members!');
     }
@@ -536,14 +534,13 @@ class Warehouse extends MainModel
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getAffectedRows(
             'DELETE twarenlager, twarenlagersprache
                 FROM twarenlager
                 LEFT JOIN twarenlagersprache 
                     ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
                 WHERE twarenlager.kWarenlager = :lid',
-            ['lid' => (int)$this->kWarenlager],
-            ReturnType::AFFECTED_ROWS
+            ['lid' => (int)$this->kWarenlager]
         );
     }
 
@@ -576,12 +573,7 @@ class Warehouse extends MainModel
     {
         $warehouses = [];
         $sql        = $activeOnly ? ' WHERE nAktiv = 1' : '';
-        $data       = Shop::Container()->getDB()->query(
-            'SELECT *
-               FROM twarenlager' . $sql,
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($data as $item) {
+        foreach (Shop::Container()->getDB()->getObjects('SELECT * FROM twarenlager' . $sql) as $item) {
             $warehouse = new self(null, $item);
             if ($loadLanguages) {
                 $warehouse->loadLanguages();
@@ -608,14 +600,13 @@ class Warehouse extends MainModel
         $warehouses = [];
         if ($productID > 0) {
             $sql  = $active ? ' AND twarenlager.nAktiv = 1' : '';
-            $data = Shop::Container()->getDB()->queryPrepared(
+            $data = Shop::Container()->getDB()->getObjects(
                 'SELECT tartikelwarenlager.*
                     FROM tartikelwarenlager
                     JOIN twarenlager 
                         ON twarenlager.kWarenlager = tartikelwarenlager.kWarenlager' . $sql . '
-                    WHERE tartikelwarenlager.kArtikel = :articleID',
-                ['articleID' => $productID],
-                ReturnType::ARRAY_OF_OBJECTS
+                    WHERE tartikelwarenlager.kArtikel = :productID',
+                ['productID' => $productID]
             );
             foreach ($data as $item) {
                 $warehouse               = new self($item->kWarenlager, null, $langID);
@@ -678,11 +669,8 @@ class Warehouse extends MainModel
                 $this->oLageranzeige->nStatus   = 0;
                 $this->oLageranzeige->AmpelText = $config['attribut_ampeltext_rot'];
             }
-            if ($config['cLagerBeachten'] !== 'Y'
-                || $stock >= (int)$conf['global']['artikel_lagerampel_gruen']
-                || ($config['cLagerBeachten'] === 'Y'
-                    && $config['cLagerKleinerNull'] === 'Y'
-                    && $conf['global']['artikel_ampel_lagernull_gruen'] === 'Y')
+            if ($stock >= (int)$conf['global']['artikel_lagerampel_gruen']
+                || ($config['cLagerKleinerNull'] === 'Y' && $conf['global']['artikel_ampel_lagernull_gruen'] === 'Y')
             ) {
                 $this->oLageranzeige->nStatus   = 2;
                 $this->oLageranzeige->AmpelText = $config['attribut_ampeltext_gruen'];

@@ -11,19 +11,19 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || $cTab === 'uebersicht'} active{/if}" data-toggle="tab" role="tab" href="#uebersicht">
+                    <a class="nav-link {if $cTab === '' || $cTab === 'uebersicht'} active{/if}" data-toggle="tab" role="tab" href="#uebersicht">
                         {__('kampagneOverview')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'globalestats'} active{/if}" data-toggle="tab" role="tab" href="#globalestats">
+                    <a class="nav-link {if $cTab === 'globalestats'} active{/if}" data-toggle="tab" role="tab" href="#globalestats">
                         {__('kampagneGlobalStats')}
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="uebersicht" class="tab-pane fade {if !isset($cTab) || $cTab === 'uebersicht'} active show{/if}">
+            <div id="uebersicht" class="tab-pane fade {if $cTab === '' || $cTab === 'uebersicht'} active show{/if}">
                 <div>
                     <div class="subheading1">{__('kampagneIntern')}</div>
                     <hr class="mb-3">
@@ -45,7 +45,7 @@
                                     {if isset($oKampagne->kKampagne) && $oKampagne->kKampagne < 1000}
                                         <tr>
                                             <td>
-                                                <strong><a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">{$oKampagne->cName}</a></strong>
+                                                <strong><a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">{$oKampagne->getName()}</a></strong>
                                             </td>
                                             <td>{$oKampagne->cParameter}</td>
                                             <td>
@@ -178,7 +178,7 @@
                     </form>
                 </div>
             </div>
-            <div id="globalestats" class="tab-pane fade {if isset($cTab) && $cTab === 'globalestats'} active show{/if}">
+            <div id="globalestats" class="tab-pane fade {if $cTab === 'globalestats'} active show{/if}">
                 <div>
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-3 col-lg-1 col-form-label text-sm-right" for="nAnsicht">{__('kampagneView')}:</label>
@@ -216,7 +216,7 @@
                                 {if $kKampagne !== 'Gesamt'}
                                     <tr>
                                         <td>
-                                            <a href="kampagne.php?detail=1&kKampagne={$oKampagne_arr[$kKampagne]->kKampagne}&cZeitParam={$cZeitraumParam}&token={$smarty.session.jtl_token}">{$oKampagne_arr[$kKampagne]->cName}</a>
+                                            <a href="kampagne.php?detail=1&kKampagne={$oKampagne_arr[$kKampagne]->kKampagne}&cZeitParam={$cZeitraumParam}&token={$smarty.session.jtl_token}">{$oKampagne_arr[$kKampagne]->getName()}</a>
                                         </td>
                                         {foreach name='kampagnendefs' from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef}
                                             <td>

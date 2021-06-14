@@ -69,9 +69,7 @@ class TemplateValidator implements ValidatorInterface
     }
 
     /**
-     * @param string $path
-     * @param array  $xml
-     * @return int
+     * @inheritdoc
      */
     public function validate(string $path, array $xml): int
     {
@@ -113,7 +111,7 @@ class TemplateValidator implements ValidatorInterface
         $parent = $node['Parent'] ?? null;
         if ($parent !== null) {
             $parent = \basename($parent);
-            if (!\file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/template.xml')) {
+            if (!\file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/' . \TEMPLATE_XML)) {
                 return self::RES_PARENT_NOT_FOUND;
             }
         }

@@ -21,6 +21,9 @@ class Migration_20180522105000 extends Migration implements IMigration
 {
     protected $author = 'fm';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE `tlinkgruppe` CHANGE COLUMN `kLinkgruppe` `kLinkgruppe` INT UNSIGNED NOT NULL AUTO_INCREMENT, ENGINE=InnoDB;');
@@ -133,20 +136,17 @@ class Migration_20180522105000 extends Migration implements IMigration
             $oldIDs[$oldParent] = $newID;
             $this->getDB()->queryPrepared(
                 'UPDATE tlink SET kVaterLink = :parent WHERE kVaterLink = :oldParent',
-                ['parent' => $newID, 'oldParent' => $oldParent],
-                ReturnType::DEFAULT
+                ['parent' => $newID, 'oldParent' => $oldParent]
             );
             $this->getDB()->queryPrepared(
                 'UPDATE tlinksprache SET kLink = :newID WHERE kLink = :oldID',
-                ['newID' => $newID, 'oldID' => $oldParent],
-                ReturnType::DEFAULT
+                ['newID' => $newID, 'oldID' => $oldParent]
             );
         }
         foreach ($oldIDs as $oldID => $newID) {
             $this->getDB()->queryPrepared(
                 'UPDATE tlink SET kVaterLink = :parent WHERE kVaterLink = :oldParent',
-                ['parent' => $newID, 'oldParent' => $oldID],
-                ReturnType::DEFAULT
+                ['parent' => $newID, 'oldParent' => $oldID]
             );
         }
         $this->execute('INSERT INTO tlinkgroupassociations (`linkID`, `linkGroupID`) 
@@ -175,6 +175,9 @@ class Migration_20180522105000 extends Migration implements IMigration
             ADD PRIMARY KEY (`kLink`)');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE `tlink` ADD COLUMN `kLinkgruppe` TINYINT(3) UNSIGNED NOT NULL;');

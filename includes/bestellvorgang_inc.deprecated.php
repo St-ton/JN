@@ -6,7 +6,6 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Zahlungsart;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerFields;
-use JTL\DB\ReturnType;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Language\LanguageHelper;
@@ -178,13 +177,12 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0): void
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     global $step;
-    $smarty    = Shop::Smarty();
-    $conf      = Shop::getSettings([CONF_KUNDEN]);
-    $herkunfte = Shop::Container()->getDB()->query(
+    $smarty  = Shop::Smarty();
+    $conf    = Shop::getSettings([CONF_KUNDEN]);
+    $origins = Shop::Container()->getDB()->getObjects(
         'SELECT *
             FROM tkundenherkunft
-            ORDER BY nSort',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY nSort'
     );
     if ($nUnreg) {
         $smarty->assign('step', 'formular');
@@ -198,7 +196,7 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0): void
         Frontend::getCustomer()->getCustomerAttributes()->assign(getKundenattribute($_POST));
     }
     $smarty->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
-        ->assign('herkunfte', $herkunfte)
+        ->assign('herkunfte', $origins)
         ->assign('Kunde', Frontend::getCustomer())
         ->assign(
             'laender',
@@ -220,9 +218,9 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0): void
 }
 
 /**
- * @param array $missingData
- * @param int   $nUnreg
- * @param array $post
+ * @param array      $missingData
+ * @param int        $nUnreg
+ * @param array|null $post
  * @deprecated since 5.0.0
  */
 function setzeFehlerSmartyRechnungsadresse($missingData, $nUnreg = 0, $post = null): void
@@ -231,11 +229,10 @@ function setzeFehlerSmartyRechnungsadresse($missingData, $nUnreg = 0, $post = nu
     $conf   = Shop::getSettings([CONF_KUNDEN]);
     $smarty = Shop::Smarty();
     setzeFehlendeAngaben($missingData);
-    $origins = Shop::Container()->getDB()->query(
+    $origins = Shop::Container()->getDB()->getObjects(
         'SELECT *
             FROM tkundenherkunft
-            ORDER BY nSort',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY nSort'
     );
     $smarty->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $origins)
@@ -303,7 +300,7 @@ function plausiLieferadresse(array $post): array
     if ($_SESSION['Lieferadresse'] && $_SESSION['Versandart']) {
         $delVersand = (mb_stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false);
         //ist die plz im zuschlagsbereich?
-        $plzData = Shop::Container()->getDB()->executeQueryPrepared(
+        $plzData = Shop::Container()->getDB()->getSingleObject(
             'SELECT kVersandzuschlagPlz
                 FROM tversandzuschlagplz, tversandzuschlag
                 WHERE tversandzuschlag.kVersandart = :id
@@ -314,10 +311,9 @@ function plausiLieferadresse(array $post): array
             [
                 'id'  => (int)$_SESSION['Versandart']->kVersandart,
                 'plz' => $_SESSION['Lieferadresse']->cPLZ
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-        if (isset($plzData->kVersandzuschlagPlz) && $plzData->kVersandzuschlagPlz) {
+        if ($plzData !== null && $plzData->kVersandzuschlagPlz) {
             $delVersand = true;
         }
         if ($delVersand) {
@@ -352,14 +348,13 @@ function setzeSessionLieferadresse(array $post): void
         $_SESSION['Lieferadresse'] = getLieferdaten($post);
     } elseif ($kLieferadresse > 0) {
         // vorhandene lieferadresse
-        $address = Shop::Container()->getDB()->query(
+        $address = Shop::Container()->getDB()->getSingleObject(
             'SELECT kLieferadresse
                 FROM tlieferadresse
                 WHERE kKunde = ' . Frontend::getCustomer()->getID() . '
-                AND kLieferadresse = ' . (int)$post['kLieferadresse'],
-            ReturnType::SINGLE_OBJECT
+                AND kLieferadresse = ' . (int)$post['kLieferadresse']
         );
-        if ($address->kLieferadresse > 0) {
+        if ($address !== null && $address->kLieferadresse > 0) {
             $_SESSION['Lieferadresse'] = new Lieferadresse($address->kLieferadresse);
         }
     } elseif ($kLieferadresse === 0) { //lieferadresse gleich rechnungsadresse
@@ -749,7 +744,7 @@ function kuponAnnehmen($coupon)
  */
 function getKundenattributeNichtEditierbar(): array
 {
-    \trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return (new CustomerFields())->getNonEditableFields();
 }
 
@@ -759,7 +754,7 @@ function getKundenattributeNichtEditierbar(): array
  */
 function getNonEditableCustomerFields(): array
 {
-    \trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return (new CustomerFields())->getNonEditableFields();
 }
 
@@ -796,7 +791,7 @@ function plausiZahlungsartZusatz($paymentMethod, array $post)
 }
 
 /**
- * @param array $post
+ * @param array|null $post
  * @return array
  * @deprecated since 5.0.0
  */

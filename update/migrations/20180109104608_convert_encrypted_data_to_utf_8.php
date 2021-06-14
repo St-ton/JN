@@ -37,6 +37,9 @@ class Migration_20180109104608 extends Migration implements IMigration
         'tkundenkontodaten' => ['kKundenKontodaten', 'cBankName', 'nKonto', 'cBLZ', 'cIBAN', 'cBIC', 'cInhaber'],
     ];
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $cryptoService = Shop::Container()->getCryptoService();
@@ -64,6 +67,9 @@ class Migration_20180109104608 extends Migration implements IMigration
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $cryptoService = Shop::Container()->getCryptoService();

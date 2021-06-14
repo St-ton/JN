@@ -21,7 +21,10 @@ msgid "presentationSlider"
 msgstr "Slider with names and prices"
 
 msgid "presentationBoxSlider"
-msgstr "Single product slider with names and prices"
+msgstr "Single-product slider with name and price"
 
 msgid "itemFilter"
-msgstr "Item filters"
+msgstr "Item filter"
+
+msgid "maxProducts"
+msgstr "Limit number of products"

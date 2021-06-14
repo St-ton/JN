@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('agbwrb') cDokuURL=__('agbwrbURL')}
-<div id="content" class="row">
-    <div class="{if $recommendations->getRecommendations()->isNotEmpty()}col-md-7{else}col-lg-9 col-xl-7{/if}">
+<div id="content" class="row mr-0">
+    <div class="{if $recommendations->getRecommendations()->isNotEmpty()}col-md-7{else}col-lg-9 col-xl-7{/if} pr-0 pr-md-4">
         <div class="card">
             <div class="card-body">
                 {include file='tpl_inc/language_switcher.tpl'}
@@ -45,7 +45,7 @@
         </div>
     </div>
     {if $recommendations->getRecommendations()->isNotEmpty()}
-        <div class="col-md-5">
+        <div class="col-md-5 pr-0 pr-md-4">
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
@@ -58,12 +58,13 @@
                             <tbody>
                             {foreach $recommendations->getRecommendations() as $recommendation}
                                 <tr>
-                                    <td><img src="{$recommendation->getPreviewImage()}" width="160" height="160" alt="{$recommendation->getTitle()}" loading="lazy"></td>
+                                    <td><img src="{$recommendation->getPreviewImage()}" style="max-width: 120px;" alt="{$recommendation->getTitle()}" loading="lazy"></td>
                                     <td>
-                                        <p>{$recommendation->getTeaser()}</p>
+                                        <p class="mb-1">{$recommendation->getTeaser()}</p>
                                         <a href="premiumplugin.php?scope={$recommendations->getScope()}&id={$recommendation->getId()}"
                                            class="btn btn-primary">
                                             {__('getToKnowMore')}
+                                            <span class="fal fa-long-arrow-right ml-1"></span>
                                         </a>
                                     </td>
                                 </tr>

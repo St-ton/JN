@@ -4,76 +4,85 @@
                    :lead="$t('leadMsg')"
                    :content="$t('contentMsg')">
         </jumbotron>
-        <div class="row">
-            <div class="col">
-                <div class="form-group">
-                    <b-input-group size="md" :prepend="$t('hostPrep')">
-                        <b-form-input size="35" required v-model="db.host" type="text" :placeholder="$t('dbhost')"
-                                      :state="db.host.length ? true : false"></b-form-input>
-                        <b-input-group-append is-text>
-                            <icon name="home"></icon>
-                        </b-input-group-append>
-                    </b-input-group>
+        <form>
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <b-input-group size="md" :prepend="$t('hostPrep')">
+                            <b-form-input size="35" required v-model="db.host" type="text" :placeholder="$t('dbhost')"
+                                          :state="db.host.length ? true : false"></b-form-input>
+                            <b-input-group-append is-text>
+                                <icon name="home"></icon>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </div>
+                    <div class="form-group">
+                        <b-input-group size="md" :prepend="$t('socketPrep')">
+                            <b-form-input size="35" v-model="db.socket" type="text"
+                                          autocomplete="off"
+                                          :placeholder="$t('socketPlaceholder')"></b-form-input>
+                            <b-input-group-append is-text>
+                                <icon name="exchange-alt"></icon>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </div>
+                    <div class="form-group">
+                        <b-input-group size="md" :prepend="$t('userNamePrep')">
+                            <b-form-input size="35" required v-model="db.user" type="text"
+                                          :placeholder="$t('userNamePlaceholder')"
+                                          autocomplete="off"
+                                          :state="db.user.length > 0"></b-form-input>
+                            <b-input-group-append is-text>
+                                <icon name="user"></icon>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </div>
+                    <div class="form-group">
+                        <b-input-group size="md" :prepend="$t('passwordPrep')">
+                            <b-form-input size="35" required v-model="db.pass" type="password"
+                                          :placeholder="$t('passwordPlaceholder')"
+                                          autocomplete="new-password"
+                                          :state="db.pass.length > 0"></b-form-input>
+                            <b-input-group-append is-text>
+                                <icon name="lock"></icon>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </div>
+                    <div class="form-group">
+                        <b-input-group size="md" :prepend="$t('dbNamePrep')">
+                            <b-form-input size="35" required v-model="db.name" type="text"
+                                          :placeholder="$t('dbNamePlaceholder')"
+                                          autocomplete="off"
+                                          :state="db.name.length > 0"></b-form-input>
+                            <b-input-group-append is-text>
+                                <icon name="database"></icon>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </div>
+                    <div class="form-group mb-0">
+                        <b-input-group size="md">
+                            <b-form-checkbox v-model="installDemoData">{{ $t('installDemoData') }}</b-form-checkbox>
+                        </b-input-group>
+                    </div>
+                    <hr>
+                    <b-btn
+                        :class="{'pulse-button': db.name.length && db.pass.length && db.user.length && db.host.length && error !== false}"
+                        size="sm" variant="primary" @click="checkCredentials(db)">
+                        <icon name="sync"></icon>
+                        {{ $t('verify')}}
+                    </b-btn>
                 </div>
-                <div class="form-group">
-                    <b-input-group size="md" :prepend="$t('socketPrep')">
-                        <b-form-input size="35" v-model="db.socket" type="text"
-                                      :placeholder="$t('socketPlaceholder')"></b-form-input>
-                        <b-input-group-append is-text>
-                            <icon name="exchange-alt"></icon>
-                        </b-input-group-append>
-                    </b-input-group>
-                </div>
-                <div class="form-group">
-                    <b-input-group size="md" :prepend="$t('userNamePrep')">
-                        <b-form-input size="35" required v-model="db.user" type="text"
-                                      :placeholder="$t('userNamePlaceholder')"
-                                      :state="db.user.length > 0"></b-form-input>
-                        <b-input-group-append is-text>
-                            <icon name="user"></icon>
-                        </b-input-group-append>
-                    </b-input-group>
-                </div>
-                <div class="form-group">
-                    <b-input-group size="md" :prepend="$t('passwordPrep')">
-                        <b-form-input size="35" required v-model="db.pass" type="password"
-                                      :placeholder="$t('passwordPlaceholder')"
-                                      :state="db.pass.length > 0"></b-form-input>
-                        <b-input-group-append is-text>
-                            <icon name="lock"></icon>
-                        </b-input-group-append>
-                    </b-input-group>
-                </div>
-                <div class="form-group">
-                    <b-input-group size="md" :prepend="$t('dbNamePrep')">
-                        <b-form-input size="35" required v-model="db.name" type="text"
-                                      :placeholder="$t('dbNamePlaceholder')"
-                                      :state="db.name.length > 0"></b-form-input>
-                        <b-input-group-append is-text>
-                            <icon name="database"></icon>
-                        </b-input-group-append>
-                    </b-input-group>
-                </div>
-                <div class="form-group mb-0">
-                    <b-input-group size="md">
-                        <b-form-checkbox v-model="installDemoData">{{ $t('installDemoData') }}</b-form-checkbox>
-                    </b-input-group>
-                </div>
-                <hr>
-                <b-btn
-                    :class="{'pulse-button': db.name.length && db.pass.length && db.user.length && db.host.length && error !== false}"
-                    size="sm" variant="primary" @click="checkCredentials(db)">
-                    <icon name="sync"></icon>
-                    {{ $t('verify')}}
-                </b-btn>
             </div>
-        </div>
+        </form>
         <div class="result mt-3" v-if="error !== null">
             <b-alert :variant="error ? 'danger' : 'success'" show>
                 <icon :name="error ? 'exclamation-triangle' : 'check'"></icon>
                 {{ $t(msg) }}
             </b-alert>
         </div>
+        <b-alert class="result mt-3" variant="danger" show v-if="networkError !== false">
+            <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} <div v-html="networkError"></div>
+        </b-alert>
         <continue :disableBack="false" :disable="error !== false"></continue>
     </div>
 </template>
@@ -85,8 +94,6 @@ import qs from 'qs';
 export default {
     name:    'databaseparameters',
     data() {
-        let msg = null,
-            error = null;
         const messages = {
             de: {
                 hostPrep:            'Host',
@@ -161,14 +168,20 @@ export default {
                 name:   ''
             },
             installDemoData: false,
-            error,
-            msg
+            error:           null,
+            msg:             null,
+            networkError:    false
         };
     },
     methods: {
         checkCredentials(db) {
             axios.post(this.$getApiUrl('credentialscheck'), qs.stringify(db))
                 .then(response => {
+                    if (!response.data.msg) {
+                        this.networkError = response.data;
+                        return;
+                    }
+                    this.networkError = false;
                     this.msg = response.data.msg;
                     this.error = response.data.error;
                     this.$store.commit('setDBCredentials', db);

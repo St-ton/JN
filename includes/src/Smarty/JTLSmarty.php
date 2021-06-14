@@ -92,8 +92,11 @@ class JTLSmarty extends SmartyBC
     {
         $parent = null;
         if ($this->context !== ContextType::BACKEND) {
-            $container  = Shop::Container();
-            $model      = $container->getTemplateService()->getActiveTemplate();
+            $container = Shop::Container();
+            $model     = $container->getTemplateService()->getActiveTemplate();
+            if ($model->getTemplate() === null) {
+                throw new RuntimeException('Cannot load template ' . ($model->getName() ?? ''));
+            }
             $tplDir     = $model->getDir();
             $parent     = $model->getParent();
             $compileDir = \PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/';
@@ -128,7 +131,7 @@ class JTLSmarty extends SmartyBC
             if (!\is_dir($compileDir) && !\mkdir($compileDir) && !\is_dir($compileDir)) {
                 throw new RuntimeException(\sprintf('Directory "%s" could not be created', $compileDir));
             }
-            $this->setCaching(false)
+            $this->setCaching(\Smarty::CACHING_OFF)
                 ->setDebugging(\SMARTY_DEBUG_CONSOLE)
                 ->setTemplateDir([$this->context => \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir])
                 ->setCompileDir($compileDir)
@@ -141,7 +144,7 @@ class JTLSmarty extends SmartyBC
     }
 
     /**
-     * @param null $parent
+     * @param string|null $parent
      * @throws \SmartyException
      */
     private function init($parent = null): void
@@ -186,8 +189,7 @@ class JTLSmarty extends SmartyBC
         $config = $config ?? Shop::getSettings([\CONF_CACHING]);
 
         return $this->setCaching(self::CACHING_OFF)
-            ->setCompileCheck(!(isset($config['caching']['compile_check'])
-                && $config['caching']['compile_check'] === 'N'));
+            ->setCompileCheck((int)(($config['caching']['compile_check'] ?? 'Y') === 'Y'));
     }
 
     /**
@@ -226,24 +228,17 @@ class JTLSmarty extends SmartyBC
             $tplOutput = $doc->htmlOuter();
         }
 
-        return isset($this->config['template']['general']['minify_html'])
-        && $this->config['template']['general']['minify_html'] === 'Y'
+        return ($this->config['template']['general']['minify_html'] ?? 'N') === 'Y'
             ? $this->minifyHTML(
                 $tplOutput,
-                isset($this->config['template']['general']['minify_html_css'])
-                && $this->config['template']['general']['minify_html_css'] === 'Y',
-                isset($this->config['template']['general']['minify_html_js'])
-                && $this->config['template']['general']['minify_html_js'] === 'Y'
+                ($this->config['template']['general']['minify_html_css'] ?? 'N') === 'Y',
+                ($this->config['template']['general']['minify_html_js'] ?? 'N') === 'Y'
             )
             : $tplOutput;
     }
 
     /**
-     * @param null|string $template
-     * @param null|string $cacheID
-     * @param null|string $compileID
-     * @param null        $parent
-     * @return bool
+     * @inheritDoc
      */
     public function isCached($template = null, $cacheID = null, $compileID = null, $parent = null): bool
     {
@@ -256,7 +251,7 @@ class JTLSmarty extends SmartyBC
      */
     public function setCaching($mode): self
     {
-        $this->caching = $mode;
+        $this->caching = (int)$mode;
 
         return $this;
     }
@@ -358,25 +353,17 @@ class JTLSmarty extends SmartyBC
     }
 
     /**
-     * displays a Smarty template
-     *
-     * @param string $template the resource handle of the template file or template object
-     * @param mixed  $cacheID cache id to be used with this template
-     * @param mixed  $compileID compile id to be used with this template
-     * @param object $parent next higher level of Smarty variables
-     * @throws \SmartyException
+     * @inheritDoc
      */
     public function display($template = null, $cacheID = null, $compileID = null, $parent = null)
     {
         if ($this->context === ContextType::FRONTEND) {
             $this->registerFilter('output', [$this, 'outputFilter']);
         }
-        $res = parent::display($this->getResourceName($template), $cacheID, $compileID, $parent);
+        parent::display($this->getResourceName($template), $cacheID, $compileID, $parent);
         if ($this->context === ContextType::BACKEND) {
             require \PFAD_ROOT . \PFAD_INCLUDES . 'profiler_inc.php';
         }
-
-        return $res;
     }
 
     /**
@@ -468,7 +455,7 @@ class JTLSmarty extends SmartyBC
     }
 
     /**
-     * @param bool $check
+     * @param int $check
      * @return $this
      */
     public function setCompileCheck($check): self

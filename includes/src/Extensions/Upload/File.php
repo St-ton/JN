@@ -2,7 +2,6 @@
 
 namespace JTL\Extensions\Upload;
 
-use JTL\DB\ReturnType;
 use JTL\Nice;
 use JTL\Shop;
 use stdClass;
@@ -90,15 +89,14 @@ class File
      */
     public function validateOwner(int $customerID): bool
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getSingleObject(
             'SELECT tbestellung.kKunde
                 FROM tuploaddatei 
                 JOIN tbestellung
                 ON tbestellung.kBestellung = tuploaddatei.kCustomID
                 WHERE tuploaddatei.kCustomID = :ulid AND tbestellung.kKunde = :cid',
-            ['ulid' => $this->kCustomID ?? 0, 'cid' => $customerID],
-            ReturnType::SINGLE_OBJECT
-        ) !== false;
+            ['ulid' => $this->kCustomID ?? 0, 'cid' => $customerID]
+        ) !== null;
     }
 
     /**
@@ -194,9 +192,7 @@ class File
     public static function send_file_to_browser(string $filename, string $mimetype, string $downloadName): void
     {
         $browser   = 'other';
-        $userAgent = !empty($_SERVER['HTTP_USER_AGENT'])
-            ? $_SERVER['HTTP_USER_AGENT']
-            : '';
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
         if (\preg_match('/Opera\/([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {
             $browser = 'opera';
         } elseif (\preg_match('/MSIE ([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {

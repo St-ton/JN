@@ -108,7 +108,7 @@
             <icon name="sync" spin></icon> {{ $t('validateServerRequirements') }}
         </b-alert>
         <b-alert variant="danger" show v-if="networkError !== false">
-            <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} {{ networkError }}
+            <icon name="exclamation-triangle"></icon> {{ $t('networkError') }} <div v-html="networkError"></div>
         </b-alert>
         <continue :disableBack="false" :disable="!checkedServer || serverStatus === 2 || modulesStatus === 2 || networkError !== false"></continue>
     </div>
@@ -175,28 +175,18 @@ export default {
         };
         this.$i18n.add('en', messages.en);
         this.$i18n.add('de', messages.de);
-        let phpConfig         = [],
-            phpModules        = [],
-            programs          = [],
-            configStatus      = 0,
-            modulesStatus     = 0,
-            programsStatus    = 0,
-            serverStatus      = 0,
-            collapseIsVisible = false,
-            checkedServer     = false,
-            networkError      = false;
         this.check();
         return {
-            phpConfig,
-            serverStatus,
-            phpModules,
-            programs,
-            configStatus,
-            modulesStatus,
-            programsStatus,
-            checkedServer,
-            collapseIsVisible,
-            networkError
+            phpConfig:         [],
+            phpModules:        [],
+            programs:          [],
+            serverStatus:      0,
+            configStatus:      0,
+            modulesStatus:     0,
+            programsStatus:    0,
+            checkedServer:     false,
+            collapseIsVisible: false,
+            networkError:      false
         };
     },
     methods: {
@@ -209,6 +199,10 @@ export default {
         check() {
             axios.get(this.$getApiUrl('systemcheck'))
                 .then(response => {
+                    if (!response.data.testresults) {
+                        this.networkError = response.data;
+                        return;
+                    }
                     this.phpModules = response.data.testresults.php_modules.map(this.$addClasses);
                     this.programs = response.data.testresults.programs.map(this.$addClasses);
                     this.phpConfig = response.data.testresults.php_config.map(this.$addClasses);

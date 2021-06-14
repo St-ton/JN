@@ -5,7 +5,6 @@ namespace JTL\Link;
 use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Session\Frontend;
 use function Functional\group;
 
@@ -110,7 +109,7 @@ final class LinkGroupList implements LinkGroupListInterface
      */
     private function loadUnassignedGroups(): LinkGroupInterface
     {
-        $unassigned = $this->db->query(
+        $unassigned = $this->db->getObjects(
             "SELECT tlink.*, tlinksprache.cISOSprache, 
                 tlink.cName AS displayName, 
                 tlinksprache.cName AS localizedName, 
@@ -135,16 +134,16 @@ final class LinkGroupList implements LinkGroupListInterface
                         AND tseo.kKey = tlink.kLink
                         AND tseo.kSprache = tsprache.kSprache
                     WHERE tlink.kLink NOT IN (SELECT linkID FROM tlinkgroupassociations)
-                    GROUP BY tlink.kLink, tsprache.kSprache",
-            ReturnType::ARRAY_OF_OBJECTS
+                    GROUP BY tlink.kLink, tsprache.kSprache"
         );
         $grouped    = group($unassigned, static function ($e) {
             return $e->kLink;
         });
         $lg         = new LinkGroup($this->db);
         $lg->setID(-1);
-        $lg->setNames(['unassigned']);
+        $lg->setNames(['unassigned', 'unassigned']);
         $lg->setTemplate('unassigned');
+        $lg->setGroupName('unassigned');
         $links = new Collection();
         foreach ($grouped as $linkID => $linkData) {
             $link = new Link($this->db);
@@ -178,15 +177,15 @@ final class LinkGroupList implements LinkGroupListInterface
     private function loadDefaultGroups(): array
     {
         $groups         = [];
-        $groupLanguages = $this->db->query(
-            'SELECT loc.*, g.cTemplatename AS template, g.cName AS groupName, IFNULL(tsprache.kSprache, 0) AS kSprache 
+        $groupLanguages = $this->db->getObjects(
+            'SELECT g.*, l.cName AS localizedName, l.cISOSprache, g.cTemplatename AS template,
+                g.cName AS groupName, IFNULL(tsprache.kSprache, 0) AS kSprache 
                 FROM tlinkgruppe AS g
-                LEFT JOIN tlinkgruppesprache AS loc
-                    ON g.kLinkgruppe = loc.kLinkgruppe
+                LEFT JOIN tlinkgruppesprache AS l
+                    ON g.kLinkgruppe = l.kLinkgruppe
                 LEFT JOIN tsprache 
-                    ON tsprache.cISO = loc.cISOSprache
-                WHERE g.kLinkgruppe > 0 AND loc.kLinkgruppe > 0',
-            ReturnType::ARRAY_OF_OBJECTS
+                    ON tsprache.cISO = l.cISOSprache
+                WHERE g.kLinkgruppe > 0 AND l.kLinkgruppe > 0'
         );
         $grouped        = group($groupLanguages, static function ($e) {
             return $e->kLinkgruppe;
@@ -206,7 +205,7 @@ final class LinkGroupList implements LinkGroupListInterface
      */
     private function loadSpecialPages(): LinkGroupInterface
     {
-        $specialPages = $this->db->query(
+        $specialPages = $this->db->getObjects(
             "SELECT tlink.*, tlinksprache.cISOSprache, 
                 tlink.cName AS displayName, 
                 tlinksprache.cName AS localizedName, 
@@ -236,16 +235,16 @@ final class LinkGroupList implements LinkGroupListInterface
                         ON tspezialseite.nLinkart = tlink.nLinkart
                     WHERE tlink.kLink = tlinksprache.kLink
                         AND tlink.nLinkart >= 5
-                    GROUP BY tlink.kLink, tseo.kSprache",
-            ReturnType::ARRAY_OF_OBJECTS
+                    GROUP BY tlink.kLink, tseo.kSprache"
         );
         $grouped      = group($specialPages, static function ($e) {
             return $e->kLink;
         });
         $lg           = new LinkGroup($this->db);
         $lg->setID(998);
-        $lg->setNames(['specialpages']);
+        $lg->setNames(['specialpages', 'specialpages']);
         $lg->setTemplate('specialpages');
+        $lg->setGroupName('specialpages');
         $links = new Collection();
         foreach ($grouped as $linkID => $linkData) {
             $link = new Link($this->db);
@@ -278,7 +277,7 @@ final class LinkGroupList implements LinkGroupListInterface
      */
     private function loadStaticRoutes(): LinkGroupInterface
     {
-        $staticRoutes = $this->db->query(
+        $staticRoutes = $this->db->getObjects(
             "SELECT tspezialseite.kSpezialseite, tspezialseite.cName AS baseName, tspezialseite.cDateiname, 
                 tspezialseite.nLinkart, tlink.kLink, tlink.cName AS displayName, tlink.reference,
                 tlinksprache.cName AS localizedName, tlinksprache.cTitle AS localizedTitle,
@@ -303,16 +302,16 @@ final class LinkGroupList implements LinkGroupListInterface
                     AND tseo.kSprache = tsprache.kSprache
                 WHERE cDateiname IS NOT NULL 
                     AND cDateiname != ''
-                GROUP BY tlink.kLink, tsprache.kSprache",
-            ReturnType::ARRAY_OF_OBJECTS
+                GROUP BY tlink.kLink, tsprache.kSprache"
         );
         $grouped      = group($staticRoutes, static function ($e) {
             return $e->kLink;
         });
         $lg           = new LinkGroup($this->db);
         $lg->setID(999);
-        $lg->setNames(['staticroutes']);
+        $lg->setNames(['staticroutes', 'staticroutes']);
         $lg->setTemplate('staticroutes');
+        $lg->setGroupName('staticroutes');
         $links = new Collection();
         foreach ($grouped as $linkID => $linkData) {
             $link = new Link($this->db);
@@ -335,7 +334,7 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @inheritdoc
      */
-    public function setLinkGroups(Collection $linkGroups): void
+    public function setLinkGroups(LinkGroupCollection $linkGroups): void
     {
         $this->linkGroups = $linkGroups;
     }

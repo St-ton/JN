@@ -46,9 +46,9 @@ Your billing address:
 {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}
 {/if}{$Kunde->cPLZ} {$Kunde->cOrt}
 {if $Kunde->cBundesland}{$Kunde->cBundesland}
-{/if}{$Kunde->cLand}
-{if $Kunde->cTel}Phone: {$Kunde->cTel}
-{/if}{if $Kunde->cMobil}Mobile: {$Kunde->cMobil}
+{/if}{$Kunde->angezeigtesLand}
+{if $Kunde->cTel}Phone: {$Kunde->cTel|substr:0:2}****{$Kunde->cTel|substr:-4}
+{/if}{if $Kunde->cMobil}Mobile: {$Kunde->cMobil|substr:0:2}****{$Kunde->cMobil|substr:-4}
 {/if}{if $Kunde->cFax}Fax: {$Kunde->cFax}
 {/if}
 Email address: {$Kunde->cMail}
@@ -64,9 +64,9 @@ Email address: {$Kunde->cMail}
     {if $Bestellung->Lieferadresse->cAdressZusatz}{$Bestellung->Lieferadresse->cAdressZusatz}
     {/if}{$Bestellung->Lieferadresse->cPLZ} {$Bestellung->Lieferadresse->cOrt}
     {if $Bestellung->Lieferadresse->cBundesland}{$Bestellung->Lieferadresse->cBundesland}
-    {/if}{$Bestellung->Lieferadresse->cLand}
-    {if $Bestellung->Lieferadresse->cTel}Phone: {$Bestellung->Lieferadresse->cTel}
-    {/if}{if $Bestellung->Lieferadresse->cMobil}Mobile: {$Bestellung->Lieferadresse->cMobil}
+    {/if}{$Bestellung->Lieferadresse->angezeigtesLand}
+    {if $Bestellung->Lieferadresse->cTel}Phone: {$Bestellung->Lieferadresse->cTel|substr:0:2}****{$Bestellung->Lieferadresse->cTel|substr:-4}
+    {/if}{if $Bestellung->Lieferadresse->cMobil}Mobile: {$Bestellung->Lieferadresse->cMobil|substr:0:2}****{$Bestellung->Lieferadresse->cMobil|substr:-4}
 {/if}{if $Bestellung->Lieferadresse->cFax}Fax: {$Bestellung->Lieferadresse->cFax}
 {/if}{if $Bestellung->Lieferadresse->cMail}Email address: {$Bestellung->Lieferadresse->cMail}
 {/if}

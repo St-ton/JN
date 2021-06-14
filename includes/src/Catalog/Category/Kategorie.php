@@ -4,7 +4,6 @@ namespace JTL\Catalog\Category;
 
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Category;
 use JTL\Helpers\Request;
 use JTL\Helpers\URL;
@@ -217,24 +216,28 @@ class Kategorie
             $catSQL->cJOIN   = ' JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie';
             $catSQL->cWHERE  = ' AND tkategoriesprache.kSprache = ' . $languageID;
         }
-        $item = $db->query(
+        $item = $db->getSingleObject(
             'SELECT tkategorie.kKategorie, ' . $catSQL->cSELECT . ' tkategorie.kOberKategorie, 
                 tkategorie.nSort, tkategorie.dLetzteAktualisierung,
-                tkategorie.cName, tkategorie.cBeschreibung, tseo.cSeo, tkategoriepict.cPfad, tkategoriepict.cType
+                tkategorie.cName, tkategorie.cBeschreibung, tseo.cSeo, tkategoriepict.cPfad, tkategoriepict.cType,
+                atr.cWert AS customImgName
                 FROM tkategorie
                 ' . $catSQL->cJOIN . '
                 LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie
-                    AND tkategoriesichtbarkeit.kKundengruppe = ' . $customerGroupID . "
-                LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
-                    AND tseo.kKey = " . $id . '
-                    AND tseo.kSprache = ' . $languageID . '
-                LEFT JOIN tkategoriepict ON tkategoriepict.kKategorie = tkategorie.kKategorie
-                WHERE tkategorie.kKategorie = ' . $id . '
-                    ' . $catSQL->cWHERE . '
+                    AND tkategoriesichtbarkeit.kKundengruppe = :cgid
+                LEFT JOIN tseo ON tseo.cKey = \'kKategorie\'
+                    AND tseo.kKey = :kid
+                    AND tseo.kSprache = :lid
+                LEFT JOIN tkategoriepict 
+                    ON tkategoriepict.kKategorie = tkategorie.kKategorie
+                LEFT JOIN tkategorieattribut atr
+                    ON atr.kKategorie = tkategorie.kKategorie
+                    AND atr.cName = \'bildname\' 
+                WHERE tkategorie.kKategorie = :kid ' . $catSQL->cWHERE . '
                     AND tkategoriesichtbarkeit.kKategorie IS NULL',
-            ReturnType::SINGLE_OBJECT
+            ['lid' => $languageID, 'kid' => $id, 'cgid' => $customerGroupID]
         );
-        if ($item === null || $item === false) {
+        if ($item === null) {
             if (!$recall && !$defaultLangActive) {
                 if (\EXPERIMENTAL_MULTILANG_SHOP === true) {
                     $defaultLangID = LanguageHelper::getDefaultLanguage()->kSprache;
@@ -289,7 +292,7 @@ class Kategorie
         if (!empty($item->cSeo) || \EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return;
         }
-        $defaultLangID = (int)($tmpLang->kSprache ?? LanguageHelper::getDefaultLanguage()->kSprache);
+        $defaultLangID = LanguageHelper::getDefaultLanguage()->kSprache;
         if ($languageID !== $defaultLangID) {
             $seo = $db->select(
                 'tseo',
@@ -334,19 +337,21 @@ class Kategorie
     {
         $this->categoryFunctionAttributes = [];
         $this->categoryAttributes         = [];
-        $attributes                       = $db->query(
+        $attributes                       = $db->getObjects(
             'SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
                     COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
                     tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
                 FROM tkategorieattribut
                 LEFT JOIN tkategorieattributsprache 
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                    AND tkategorieattributsprache.kSprache = ' . $languageID . '
-                WHERE kKategorie = ' . (int)$this->kKategorie . '
+                    AND tkategorieattributsprache.kSprache = :lid
+                WHERE kKategorie = :cid
                 ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort',
-            ReturnType::ARRAY_OF_OBJECTS
+            ['lid' => $languageID, 'cid' => (int)$this->kKategorie]
         );
         foreach ($attributes as $attribute) {
+            $attribute->nSort                 = (int)$attribute->nSort;
+            $attribute->bIstFunktionsAttribut = (int)$attribute->bIstFunktionsAttribut;
             // Aus Kompatibilitätsgründen findet hier KEINE Trennung
             // zwischen Funktions- und lokalisierten Attributen statt
             if ($attribute->cName === 'meta_title') {
@@ -489,15 +494,15 @@ class Kategorie
         if ($this->kOberKategorie !== null) {
             return $this->kOberKategorie > 0 ? (int)$this->kOberKategorie : false;
         }
-        $data = Shop::Container()->getDB()->query(
+        $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT kOberKategorie
                 FROM tkategorie
                 WHERE kOberKategorie > 0
-                    AND kKategorie = ' . (int)$this->kKategorie,
-            ReturnType::SINGLE_OBJECT
+                    AND kKategorie = :cid',
+            ['cid' => (int)$this->kKategorie]
         );
 
-        return isset($data->kOberKategorie) ? (int)$data->kOberKategorie : false;
+        return $data !== null ? (int)$data->kOberKategorie : false;
     }
 
     /**
@@ -524,10 +529,7 @@ class Kategorie
         if (!Shop::has('checkCategoryVisibility')) {
             Shop::set(
                 'checkCategoryVisibility',
-                Shop::Container()->getDB()->query(
-                    'SELECT kKategorie FROM tkategoriesichtbarkeit',
-                    ReturnType::AFFECTED_ROWS
-                ) > 0
+                Shop::Container()->getDB()->getAffectedRows('SELECT kKategorie FROM tkategoriesichtbarkeit') > 0
             );
         }
         if (!Shop::get('checkCategoryVisibility')) {
@@ -638,5 +640,17 @@ class Kategorie
     public function getShortName(): ?string
     {
         return $this->cKurzbezeichnung;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImageAlt(): string
+    {
+        if (isset($this->categoryAttributes['img_alt'])) {
+            return $this->categoryAttributes['img_alt']->cWert;
+        }
+
+        return '';
     }
 }

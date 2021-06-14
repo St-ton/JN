@@ -13,12 +13,11 @@ use stdClass;
 interface ReferencedItemInterface
 {
     /**
-     * ReferencedItemInterface constructor.
-     * @param DbInterface  $db
-     * @param stdClass     $license
-     * @param Release|null $release
+     * @param DbInterface $db
+     * @param stdClass    $license
+     * @param Releases    $releases
      */
-    public function __construct(DbInterface $db, stdClass $license, ?Release $release);
+    public function initByExsID(DbInterface $db, stdClass $license, Releases $releases): void;
 
     /**
      * @return string

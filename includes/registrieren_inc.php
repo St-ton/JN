@@ -1,15 +1,14 @@
 <?php
 
+use JTL\Campaign;
 use JTL\CheckBox;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerAttributes;
 use JTL\Customer\CustomerFields;
 use JTL\Customer\DataHistory;
-use JTL\DB\ReturnType;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -187,11 +186,10 @@ function gibFormularDaten(int $nCheckout = 0)
     /** @var Customer $Kunde */
     global $Kunde;
 
-    $herkunfte = Shop::Container()->getDB()->query(
+    $herkunfte = Shop::Container()->getDB()->getObjects(
         'SELECT * 
             FROM tkundenherkunft 
-            ORDER BY nSort',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY nSort'
     );
 
     Shop::Smarty()->assign('herkunfte', $herkunfte)
@@ -222,6 +220,6 @@ function gibKunde()
 {
     global $Kunde, $titel;
 
-    $Kunde = $_SESSION['Kunde'];
+    $Kunde = Frontend::getCustomer();
     $titel = Shop::Lang()->get('editData', 'login');
 }

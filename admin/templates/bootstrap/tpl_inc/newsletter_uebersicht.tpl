@@ -9,49 +9,49 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || $cTab === 'inaktiveabonnenten'} active{/if}" data-toggle="tab" role="tab" href="#inaktiveabonnenten">
+                    <a class="nav-link {if $cTab === '' || $cTab === 'inaktiveabonnenten'} active{/if}" data-toggle="tab" role="tab" href="#inaktiveabonnenten">
                         {__('newsletterSubscripterNotActive')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'alleabonnenten'} active{/if}" data-toggle="tab" role="tab" href="#alleabonnenten">
+                    <a class="nav-link {if $cTab === 'alleabonnenten'} active{/if}" data-toggle="tab" role="tab" href="#alleabonnenten">
                         {__('newsletterAllSubscriber')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'neuerabonnenten'} active{/if}" data-toggle="tab" role="tab" href="#neuerabonnenten">
+                    <a class="nav-link {if $cTab === 'neuerabonnenten'} active{/if}" data-toggle="tab" role="tab" href="#neuerabonnenten">
                         {__('newsletterNewSubscriber')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'newsletterqueue'} active{/if}" data-toggle="tab" role="tab" href="#newsletterqueue">
+                    <a class="nav-link {if $cTab === 'newsletterqueue'} active{/if}" data-toggle="tab" role="tab" href="#newsletterqueue">
                         {__('newsletterqueue')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'newslettervorlagen'} active{/if}" data-toggle="tab" role="tab" href="#newslettervorlagen">
+                    <a class="nav-link {if $cTab === 'newslettervorlagen'} active{/if}" data-toggle="tab" role="tab" href="#newslettervorlagen">
                         {__('newsletterdraft')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'newslettervorlagenstd'} active{/if}" data-toggle="tab" role="tab" href="#newslettervorlagenstd">
+                    <a class="nav-link {if $cTab === 'newslettervorlagenstd'} active{/if}" data-toggle="tab" role="tab" href="#newslettervorlagenstd">
                         {__('newsletterdraftStd')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'newsletterhistory'} active{/if}" data-toggle="tab" role="tab" href="#newsletterhistory">
+                    <a class="nav-link {if $cTab === 'newsletterhistory'} active{/if}" data-toggle="tab" role="tab" href="#newsletterhistory">
                         {__('newsletterhistory')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
+                    <a class="nav-link {if $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
                         {__('settings')}
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="inaktiveabonnenten" class="tab-pane fade{if !isset($cTab) || $cTab === 'inaktiveabonnenten'} active show{/if}">
+            <div id="inaktiveabonnenten" class="tab-pane fade{if $cTab === '' || $cTab === 'inaktiveabonnenten'} active show{/if}">
                 {if isset($oNewsletterEmpfaenger_arr) && $oNewsletterEmpfaenger_arr|@count > 0}
                     <div class="search-toolbar mb-3">
                         <form name="suche" method="post" action="newsletter.php">
@@ -139,12 +139,13 @@
                                 </div>
                             </div>
                         </form>
+                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiveAbos cAnchor='inaktiveabonnenten' isBottom=true}
                     </div>
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="alleabonnenten" class="tab-pane fade{if isset($cTab) && $cTab === 'alleabonnenten'} active show{/if}">
+            <div id="alleabonnenten" class="tab-pane fade{if $cTab === 'alleabonnenten'} active show{/if}">
                 {if isset($oAbonnenten_arr) && $oAbonnenten_arr|@count > 0}
                     <div class="search-toolbar mb-3">
                         <form name="suche" method="post" action="newsletter.php">
@@ -232,6 +233,7 @@
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiAlleAbos cAnchor='alleabonnenten' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     {if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}
@@ -247,7 +249,7 @@
                     {/if}
                 {/if}
             </div>
-            <div id="neuerabonnenten" class="tab-pane fade{if isset($cTab) && $cTab === 'neuerabonnenten'} active show{/if}">
+            <div id="neuerabonnenten" class="tab-pane fade{if $cTab === 'neuerabonnenten'} active show{/if}">
                 <form method="post" action="newsletter.php">
                     {$jtl_token}
                     <input type="hidden" name="newsletterabonnent_neu" value="1">
@@ -300,7 +302,7 @@
                     </div>
                 </form>
             </div>
-            <div id="newsletterqueue" class="tab-pane fade{if isset($cTab) && $cTab === 'newsletterqueue'} active show{/if}">
+            <div id="newsletterqueue" class="tab-pane fade{if $cTab === 'newsletterqueue'} active show{/if}">
                 {if isset($oNewsletterQueue_arr) && $oNewsletterQueue_arr|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarteschlange cAnchor='newsletterqueue'}
                     <form method="post" action="newsletter.php">
@@ -365,16 +367,16 @@
                                             </button>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarteschlange cAnchor='newsletterqueue' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="newslettervorlagen" class="tab-pane fade{if isset($cTab) && $cTab === 'newslettervorlagen'} active show{/if}">
+            <div id="newslettervorlagen" class="tab-pane fade{if $cTab === 'newslettervorlagen'} active show{/if}">
                 {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiVorlagen cAnchor='newslettervorlagen'}
                     <form method="post" action="newsletter.php">
@@ -487,6 +489,7 @@
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiVorlagen cAnchor='newslettervorlagen' isBottom=true}
                 {else}
                     <form method="post" action="newsletter.php">
                         {$jtl_token}
@@ -502,7 +505,7 @@
                     </form>
                 {/if}
             </div>
-            <div id="newslettervorlagenstd" class="tab-pane fade{if isset($cTab) && $cTab === 'newslettervorlagenstd'} active show{/if}">
+            <div id="newslettervorlagenstd" class="tab-pane fade{if $cTab === 'newslettervorlagenstd'} active show{/if}">
                 {if isset($oNewslettervorlageStd_arr) && $oNewslettervorlageStd_arr|@count > 0}
                     <form method="post" action="newsletter.php">
                         {$jtl_token}
@@ -551,7 +554,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="newsletterhistory" class="tab-pane fade{if isset($cTab) && $cTab === 'newsletterhistory'} active show{/if}">
+            <div id="newsletterhistory" class="tab-pane fade{if $cTab === 'newsletterhistory'} active show{/if}">
                 {if isset($oNewsletterHistory_arr) && $oNewsletterHistory_arr|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiHistory cAnchor='newsletterhistory'}
                     <form method="post" action="newsletter.php">
@@ -611,11 +614,12 @@
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiHistory cAnchor='newsletterhistory' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
+            <div id="einstellungen" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='newsletter.php' buttonCaption=__('saveWithIcon') title=__('settings') tab='einstellungen'}
             </div>
         </div>

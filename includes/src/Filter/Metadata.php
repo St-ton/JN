@@ -8,7 +8,6 @@ use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Category\MenuItem;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\MerkmalWert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Category;
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
@@ -282,10 +281,9 @@ class Metadata implements MetadataInterface
     public static function getGlobalMetaData(): array
     {
         return Shop::Container()->getCache()->get('jtl_glob_meta', static function ($cache, $id, &$content, &$tags) {
-            $globalTmp = Shop::Container()->getDB()->query(
+            $globalTmp = Shop::Container()->getDB()->getObjects(
                 'SELECT cName, kSprache, cWertName 
-                    FROM tglobalemetaangaben ORDER BY kSprache',
-                ReturnType::ARRAY_OF_OBJECTS
+                    FROM tglobalemetaangaben ORDER BY kSprache'
             );
             $content   = map(group($globalTmp, static function ($g) {
                 return (int)$g->kSprache;
@@ -310,22 +308,22 @@ class Metadata implements MetadataInterface
         if ($category !== null && $this->productFilter->hasCategory()) {
             $this->category = $category;
             if ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'Y') {
-                $this->name = $this->category->getName();
+                $this->setName($this->category->getName() ?? '');
             } elseif ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'BT') {
-                $this->name     = $this->category->getName();
-                $this->imageURL = $this->category->getImage();
+                $this->setName($this->category->getName() ?? '');
+                $this->setImageURL($this->category->getImage());
             } elseif ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'B') {
-                $this->imageURL = $category->getImage();
+                $this->setImageURL($category->getImage());
             }
         } elseif ($this->productFilter->hasManufacturer()) {
             $this->manufacturer = new Hersteller($this->productFilter->getManufacturer()->getValue());
             if ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'Y') {
-                $this->name = $this->manufacturer->getName();
+                $this->setName($this->manufacturer->getName() ?? '');
             } elseif ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'BT') {
-                $this->name     = $this->manufacturer->getName();
-                $this->imageURL = $this->manufacturer->getImage();
+                $this->setName($this->manufacturer->getName() ?? '');
+                $this->setImageURL($this->manufacturer->getImage());
             } elseif ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'B') {
-                $this->imageURL = $this->manufacturer->getImage();
+                $this->setImageURL($this->manufacturer->getImage());
             }
             if ($this->manufacturer !== null) {
                 $this->setMetaTitle($this->manufacturer->cMetaTitle)
@@ -409,9 +407,9 @@ class Metadata implements MetadataInterface
             }
 
             if (\mb_strlen($catDescription) > 1) {
-                $catDescription   = \str_replace('"', '', $catDescription);
-                $catDescription   = Text::htmlentitydecode($catDescription, \ENT_NOQUOTES);
-                $cMetaDescription = !empty($globalMeta[$languageID]->Meta_Description_Praefix)
+                $catDescription  = \str_replace('"', '', $catDescription);
+                $catDescription  = Text::htmlentitydecode($catDescription, \ENT_NOQUOTES);
+                $metaDescription = !empty($globalMeta[$languageID]->Meta_Description_Praefix)
                     ? \trim(
                         \strip_tags($globalMeta[$languageID]->Meta_Description_Praefix) .
                         ' ' .
@@ -423,15 +421,15 @@ class Metadata implements MetadataInterface
                     && $searchResults->getOffsetEnd() > 0
                     && $searchResults->getPages()->getCurrentPage() > 1
                 ) {
-                    $cMetaDescription .= ', ' . Shop::Lang()->get('products') . ' ' .
+                    $metaDescription .= ', ' . Shop::Lang()->get('products') . ' ' .
                         $searchResults->getOffsetStart() . ' - ' . $searchResults->getOffsetEnd();
                 }
 
-                return self::prepareMeta($cMetaDescription, null, $maxLength);
+                return self::prepareMeta($metaDescription, null, $maxLength);
             }
         }
         // Keine eingestellten Metas vorhanden => generiere Standard Metas
-        $cMetaDescription = '';
+        $metaDescription = '';
         if (\is_array($products) && \count($products) > 0) {
             \shuffle($products);
             $maxIdx      = \min(12, \count($products));
@@ -444,7 +442,7 @@ class Metadata implements MetadataInterface
             $productName = \str_replace('"', '', $productName);
             $productName = Text::htmlentitydecode($productName, \ENT_NOQUOTES);
 
-            $cMetaDescription = !empty($globalMeta[$languageID]->Meta_Description_Praefix)
+            $metaDescription = !empty($globalMeta[$languageID]->Meta_Description_Praefix)
                 ? $this->getMetaStart($searchResults) .
                 ': ' .
                 $globalMeta[$languageID]->Meta_Description_Praefix .
@@ -455,12 +453,12 @@ class Metadata implements MetadataInterface
                 && $searchResults->getOffsetEnd() > 0
                 && $searchResults->getPages()->getCurrentPage() > 1
             ) {
-                $cMetaDescription .= ', ' . Shop::Lang()->get('products') . ' ' .
+                $metaDescription .= ', ' . Shop::Lang()->get('products') . ' ' .
                     $searchResults->getOffsetStart() . ' - ' . $searchResults->getOffsetEnd();
             }
         }
 
-        return self::prepareMeta(\strip_tags($cMetaDescription), null, $maxLength);
+        return self::prepareMeta(\strip_tags($metaDescription), null, $maxLength);
     }
 
     /**

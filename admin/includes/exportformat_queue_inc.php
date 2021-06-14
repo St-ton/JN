@@ -2,9 +2,11 @@
 
 use JTL\Alert\Alert;
 use JTL\Catalog\Currency;
+use JTL\Cron\Checker;
+use JTL\Cron\JobFactory;
 use JTL\Cron\LegacyCron;
+use JTL\Cron\Queue;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Exportformat;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -17,7 +19,7 @@ use JTL\Smarty\JTLSmarty;
 function holeExportformatCron(): array
 {
     $db      = Shop::Container()->getDB();
-    $exports = $db->query(
+    $exports = $db->getObjects(
         "SELECT texportformat.*, tcron.cronID, tcron.frequency, tcron.startDate, 
             DATE_FORMAT(tcron.startDate, '%d.%m.%Y %H:%i') AS dStart_de, tcron.lastStart, 
             DATE_FORMAT(tcron.lastStart, '%d.%m.%Y %H:%i') AS dLetzterStart_de,
@@ -27,8 +29,7 @@ function holeExportformatCron(): array
             JOIN tcron 
                 ON tcron.jobType = 'exportformat'
                 AND tcron.foreignKeyID = texportformat.kExportformat
-            ORDER BY tcron.startDate DESC",
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY tcron.startDate DESC"
     );
     foreach ($exports as $export) {
         $export->cAlleXStdToDays = rechneUmAlleXStunden((int)$export->frequency);
@@ -43,12 +44,11 @@ function holeExportformatCron(): array
             'kKundengruppe',
             (int)$export->kKundengruppe
         );
-        $export->oJobQueue       = $db->queryPrepared(
+        $export->oJobQueue       = $db->getSingleObject(
             "SELECT *, DATE_FORMAT(lastStart, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
                 FROM tjobqueue 
                 WHERE cronID = :id",
-            ['id' => (int)$export->cronID],
-            ReturnType::SINGLE_OBJECT
+            ['id' => (int)$export->cronID]
         );
         $exportFormat            = new Exportformat($export->kExportformat, $db);
         $export->nAnzahlArtikel  = (object)[
@@ -66,13 +66,13 @@ function holeExportformatCron(): array
 function holeCron(int $cronID)
 {
     if ($cronID > 0) {
-        $cron = Shop::Container()->getDB()->query(
+        $cron = Shop::Container()->getDB()->getSingleObject(
             "SELECT *, DATE_FORMAT(tcron.startDate, '%d.%m.%Y %H:%i') AS dStart_de
                 FROM tcron
-                WHERE cronID = " . $cronID,
-            ReturnType::SINGLE_OBJECT
+                WHERE cronID = :cid",
+            ['cid' => $cronID]
         );
-        if (!empty($cron->cronID) && $cron->cronID > 0) {
+        if ($cron !== null && $cron->cronID > 0) {
             $cron->cronID       = (int)$cron->cronID;
             $cron->frequency    = (int)$cron->frequency;
             $cron->foreignKeyID = (int)($cron->foreignKeyID ?? 0);
@@ -157,8 +157,7 @@ function erstelleExportformatCron(int $exportID, $start, int $freq, int $cronID 
                 LEFT JOIN tjobqueue 
                     ON tjobqueue.cronID = tcron.cronID
                 WHERE tcron.cronID = :id',
-            ['id' => $cronID],
-            ReturnType::DEFAULT
+            ['id' => $cronID]
         );
         $cron = new LegacyCron(
             $cronID,
@@ -169,7 +168,7 @@ function erstelleExportformatCron(int $exportID, $start, int $freq, int $cronID 
             'texportformat',
             'kExportformat',
             baueENGDate($start),
-            baueENGDate($start, 1)
+            baueENGDate($start, true)
         );
         $cron->speicherInDB();
 
@@ -195,7 +194,7 @@ function erstelleExportformatCron(int $exportID, $start, int $freq, int $cronID 
         'texportformat',
         'kExportformat',
         baueENGDate($start),
-        baueENGDate($start, 1)
+        baueENGDate($start, true)
     );
     $cron->speicherInDB();
 
@@ -263,7 +262,7 @@ function holeExportformatQueueBearbeitet(int $hours = 24)
         }
     }
     $languages = Shop::Lang()->getAllLanguages(1);
-    $queues    = Shop::Container()->getDB()->queryPrepared(
+    $queues    = Shop::Container()->getDB()->getObjects(
         "SELECT texportformat.cName, texportformat.cDateiname, texportformatqueuebearbeitet.*, 
             DATE_FORMAT(texportformatqueuebearbeitet.dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_DE, 
             tsprache.cNameDeutsch AS cNameSprache, tkundengruppe.cName AS cNameKundengruppe, 
@@ -280,8 +279,7 @@ function holeExportformatQueueBearbeitet(int $hours = 24)
                 ON twaehrung.kWaehrung = texportformat.kWaehrung
             WHERE DATE_SUB(NOW(), INTERVAL :hrs HOUR) < texportformatqueuebearbeitet.dZuletztGelaufen
             ORDER BY texportformatqueuebearbeitet.dZuletztGelaufen DESC",
-        ['lid' => $languageID, 'hrs' => $hours],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['lid' => $languageID, 'hrs' => $hours]
     );
     foreach ($queues as $exportFormat) {
         $exportFormat->name = $languages[$languageID]->getLocalizedName();
@@ -348,28 +346,21 @@ function exportformatQueueActionLoeschen(array &$messages): string
  */
 function exportformatQueueActionTriggern(array &$messages): string
 {
-    global $bCronManuell, $oCron_arr, $oJobQueue_arr;
+    global $bCronManuell;
     $bCronManuell = true;
 
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'cron_inc.php';
-
-    if (is_array($oCron_arr) && is_array($oJobQueue_arr)) {
-        $cronCount = count($oCron_arr);
-        $jobCount  = count($oJobQueue_arr);
-
-        if ($cronCount === 0 && $jobCount === 0) {
-            $messages['error'] .= __('errorCronStart') . '<br />';
-        } elseif ($cronCount === 1) {
-            $messages['notice'] .= __('successCronStart') . '<br />';
-        } elseif ($cronCount > 1) {
-            $messages['notice'] .= sprintf(__('successCronsStart'), $cronCount) . '<br />';
-        }
-
-        if ($jobCount === 1) {
-            $messages['notice'] .= __('successQueueDone') . '<br />';
-        } elseif ($jobCount > 1) {
-            $messages['notice'] .= sprintf(__('successQueuseDone'), $jobCount) . '<br />';
-        }
+    $logger = Shop::Container()->getLogService();
+    $db     = Shop::Container()->getDB();
+    $runner = new Queue($db, $logger, new JobFactory($db, $logger, Shop::Container()->getCache()));
+    $res    = $runner->run(new Checker($db, $logger));
+    if ($res === -1) {
+        $messages['error'] .= __('errorCronLocked') . '<br />';
+    } elseif ($res === 0) {
+        $messages['error'] .= __('errorCronStart') . '<br />';
+    } elseif ($res === 1) {
+        $messages['notice'] .= __('successCronStart') . '<br />';
+    } elseif ($res > 1) {
+        $messages['notice'] .= sprintf(__('successCronsStart'), $res) . '<br />';
     }
 
     return 'triggern';
@@ -445,7 +436,7 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
  * @param string     $tab
  * @param array|null $messages
  */
-function exportformatQueueRedirect($tab = '', array &$messages = null): void
+function exportformatQueueRedirect($tab = '', array $messages = null): void
 {
     if (isset($messages['notice']) && !empty($messages['notice'])) {
         $_SESSION['exportformatQueue.notice'] = $messages['notice'];
@@ -516,6 +507,5 @@ function exportformatQueueFinalize($step, JTLSmarty $smarty, array &$messages): 
     Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $messages['notice'], 'expoFormatNote');
 
     $smarty->assign('step', $step)
-           ->assign('cTab', Request::verifyGPDataString('tab'))
            ->display('exportformat_queue.tpl');
 }

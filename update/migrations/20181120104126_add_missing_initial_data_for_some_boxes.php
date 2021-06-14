@@ -17,6 +17,9 @@ class Migration_20181120104126 extends Migration implements IMigration
     protected $author = 'mh';
     protected $description = 'Add missing initial data for some boxes';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $missingBoxes = [36, 38, 40, 21, 42];
@@ -27,6 +30,9 @@ class Migration_20181120104126 extends Migration implements IMigration
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

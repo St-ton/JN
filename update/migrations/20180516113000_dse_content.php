@@ -16,6 +16,9 @@ class Migration_20180516113000 extends Migration implements IMigration
 {
     protected $author = 'fm';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -39,6 +42,9 @@ class Migration_20180516113000 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'dse', 'Data privacy policy');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->dropColumn('ttext', 'cDSEContentText');

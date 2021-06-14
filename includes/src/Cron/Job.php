@@ -3,7 +3,6 @@
 namespace JTL\Cron;
 
 use DateTime;
-use JTL\Cache\ICachingMethod;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use Psr\Log\LoggerInterface;
@@ -111,7 +110,7 @@ abstract class Job implements JobInterface
     protected $hydrator;
 
     /**
-     * @var ICachingMethod
+     * @var JTLCacheInterface
      */
     protected $cache;
 
@@ -395,9 +394,9 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setTableName(?string $tableName): void
+    public function setTableName(?string $table): void
     {
-        $this->tableName = $tableName;
+        $this->tableName = $table;
     }
 
     /**

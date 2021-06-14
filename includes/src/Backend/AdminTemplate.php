@@ -67,7 +67,7 @@ class AdminTemplate
     }
 
     /**
-     * @return $this
+     * @return AdminTemplate
      */
     public static function getInstance(): self
     {
@@ -100,7 +100,7 @@ class AdminTemplate
      */
     public function init(): self
     {
-        $cacheID = 'current_template__admin';
+        $cacheID = 'crnt_tpl_adm';
         if (($template = Shop::Container()->getCache()->get($cacheID)) !== false) {
             self::$cTemplate = $template->cTemplate;
         } else {
@@ -130,7 +130,7 @@ class AdminTemplate
         $dir       = $this->getDir();
         $folders   = [];
         $folders[] = $dir;
-        $cacheID   = 'template_minify_data_adm_' . $dir . (($absolute === true) ? '_a' : '');
+        $cacheID   = 'tpl_mnfy_dta_adm_' . $dir . (($absolute === true) ? '_a' : '');
         if (($tplGroups = Shop::Container()->getCache()->get($cacheID)) === false) {
             $tplGroups = [
                 'admin_css' => [],

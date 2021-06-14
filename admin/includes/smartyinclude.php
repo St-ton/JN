@@ -3,10 +3,11 @@
 use Illuminate\Support\Collection;
 use JTL\Backend\AdminTemplate;
 use JTL\Backend\Notification;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\License\Checker;
 use JTL\License\Manager;
 use JTL\License\Mapper;
 use JTL\Plugin\Admin\StateChanger;
@@ -17,12 +18,16 @@ use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\Updater;
 
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global array $adminMenu */
+
 require_once __DIR__ . '/admin_menu.php';
 
 $smarty             = JTLSmarty::getInstance(false, ContextType::BACKEND);
 $template           = AdminTemplate::getInstance();
 $config             = Shop::getSettings([CONF_GLOBAL]);
 $shopURL            = Shop::getURL();
+$adminURL           = Shop::getAdminURL();
 $db                 = Shop::Container()->getDB();
 $currentTemplateDir = $smarty->getTemplateUrlPath();
 $updates            = new Collection();
@@ -39,14 +44,15 @@ $currentThirdLevel  = 0;
 $mainGroups         = [];
 $rootKey            = 0;
 $expired            = collect([]);
+$gettext            = Shop::Container()->getGetText();
 if (!$hasPendingUpdates) {
-    $jtlSearch                    = $db->query(
+    $cache                        = Shop::Container()->getCache();
+    $jtlSearch                    = $db->getSingleObject(
         "SELECT kPlugin, cName
             FROM tplugin
-            WHERE cPluginID = 'jtl_search'",
-        ReturnType::SINGLE_OBJECT
+            WHERE cPluginID = 'jtl_search'"
     );
-    $curScriptFileNameWithRequest = basename($_SERVER['REQUEST_URI']);
+    $curScriptFileNameWithRequest = basename($_SERVER['REQUEST_URI'] ?? 'index.php');
     foreach ($adminMenu as $rootName => $rootEntry) {
         $rootKey   = (string)$rootKey;
         $mainGroup = (object)[
@@ -67,29 +73,28 @@ if (!$hasPendingUpdates) {
             ];
 
             if ($secondEntry === 'DYNAMIC_PLUGINS') {
-                if (!$oAccount->permission('PLUGIN_ADMIN_VIEW')) {
+                if (!$oAccount->permission('PLUGIN_ADMIN_VIEW') || SAFE_MODE === true) {
                     continue;
                 }
-                $pluginLinks = $db->queryPrepared(
+                $pluginLinks = $db->getObjects(
                     'SELECT DISTINCT p.kPlugin, p.cName, p.nPrio
                         FROM tplugin AS p INNER JOIN tpluginadminmenu AS pam
                             ON p.kPlugin = pam.kPlugin
                         WHERE p.nStatus = :state
                         ORDER BY p.nPrio, p.cName',
-                    ['state' => State::ACTIVATED],
-                    ReturnType::ARRAY_OF_OBJECTS
+                    ['state' => State::ACTIVATED]
                 );
 
                 foreach ($pluginLinks as $pluginLink) {
                     $pluginID = (int)$pluginLink->kPlugin;
-                    Shop::Container()->getGetText()->loadPluginLocale(
+                    $gettext->loadPluginLocale(
                         'base',
                         PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
                     );
 
                     $link = (object)[
                         'cLinkname' => __($pluginLink->cName),
-                        'cURL'      => $shopURL . '/' . PFAD_ADMIN . 'plugin.php?kPlugin=' . $pluginID,
+                        'cURL'      => $adminURL . '/plugin.php?kPlugin=' . $pluginID,
                         'cRecht'    => 'PLUGIN_ADMIN_VIEW',
                         'key'       => $rootKey . $secondKey . $pluginID,
                     ];
@@ -124,8 +129,7 @@ if (!$hasPendingUpdates) {
                         if ($thirdEntry === 'DYNAMIC_JTL_SEARCH' && ($jtlSearch->kPlugin ?? 0) > 0) {
                             $link = (object)[
                                 'cLinkname' => 'JTL Search',
-                                'cURL'      => $shopURL . '/' . PFAD_ADMIN
-                                    . 'plugin.php?kPlugin=' . $jtlSearch->kPlugin,
+                                'cURL'      => $adminURL . '/plugin.php?kPlugin=' . $jtlSearch->kPlugin,
                                 'cRecht'    => 'PLUGIN_ADMIN_VIEW',
                                 'key'       => $rootKey . $secondKey . $thirdKey,
                             ];
@@ -180,16 +184,17 @@ if (!$hasPendingUpdates) {
         $_SESSION['licensenoticeaccepted'] = 0;
     }
     if (Request::postVar('action') === 'disable-expired-plugins' && Form::validateToken()) {
-        $sc = new StateChanger($db, Shop::Container()->getCache());
+        $sc = new StateChanger($db, $cache);
         foreach ($_POST['pluginID'] as $pluginID) {
             $sc->deactivate((int)$pluginID);
         }
     }
-    $mapper                = new Mapper(new Manager($db, Shop::Container()->getCache()));
-    $updates               = $mapper->getCollection()->getUpdateableItems();
+    $mapper                = new Mapper(new Manager($db, $cache));
+    $checker               = new Checker(Shop::Container()->getBackendLogService(), $db, $cache);
+    $updates               = $checker->getUpdates($mapper);
     $licenseNoticeAccepted = (int)($_SESSION['licensenoticeaccepted'] ?? -1);
-    if ($licenseNoticeAccepted === -1) {
-        $expired = $mapper->getCollection()->getActiveExpired();
+    if ($licenseNoticeAccepted === -1 && SAFE_MODE === false) {
+        $expired = $checker->getLicenseViolations($mapper);
     } else {
         $licenseNoticeAccepted++;
     }
@@ -198,25 +203,20 @@ if (!$hasPendingUpdates) {
     }
     $_SESSION['licensenoticeaccepted'] = $licenseNoticeAccepted;
 }
-if (empty($template->version)) {
-    $adminTplVersion = '1.0.0';
-} else {
-    $adminTplVersion = $template->version;
-}
-$langTag = $_SESSION['AdminAccount']->language ?? Shop::Container()->getGetText()->getLanguage();
 
+$langTag = $_SESSION['AdminAccount']->language ?? $gettext->getLanguage();
 $smarty->assign('URL_SHOP', $shopURL)
     ->assign('expiredLicenses', $expired)
     ->assign('jtl_token', Form::getTokenInput())
     ->assign('shopURL', $shopURL)
-    ->assign('adminURL', Shop::getAdminURL())
-    ->assign('adminTplVersion', $adminTplVersion)
+    ->assign('adminURL', $adminURL)
+    ->assign('adminTplVersion', empty($template->version) ? '1.0.0' : $template->version)
     ->assign('PFAD_ADMIN', PFAD_ADMIN)
     ->assign('JTL_CHARSET', JTL_CHARSET)
     ->assign('session_name', session_name())
     ->assign('session_id', session_id())
     ->assign('currentTemplateDir', $currentTemplateDir)
-    ->assign('templateBaseURL', $shopURL . '/' . \PFAD_ADMIN . $currentTemplateDir)
+    ->assign('templateBaseURL', $adminURL . '/' . $currentTemplateDir)
     ->assign('lang', 'german')
     ->assign('admin_css', $resourcePaths['css'])
     ->assign('admin_js', $resourcePaths['js'])
@@ -226,7 +226,7 @@ $smarty->assign('URL_SHOP', $shopURL)
     ->assign('Einstellungen', $config)
     ->assign('oLinkOberGruppe_arr', $mainGroups)
     ->assign('currentMenuPath', [$currentToplevel, $currentSecondLevel, $currentThirdLevel])
-    ->assign('notifications', Notification::getInstance())
+    ->assign('notifications', Notification::getInstance($db))
     ->assign('licenseItemUpdates', $updates)
     ->assign('alertList', Shop::Container()->getAlertService())
     ->assign('favorites', $oAccount->favorites())
@@ -235,11 +235,12 @@ $smarty->assign('URL_SHOP', $shopURL)
     ->assign('sprachen', LanguageHelper::getInstance()->gibInstallierteSprachen())
     ->assign('availableLanguages', LanguageHelper::getInstance()->gibInstallierteSprachen())
     ->assign('languageName', Locale::getDisplayLanguage($langTag, $langTag))
-    ->assign('languages', Shop::Container()->getGetText()->getAdminLanguages())
+    ->assign('languages', $gettext->getAdminLanguages())
     ->assign('faviconAdminURL', Shop::getFaviconURL(true))
+    ->assign('cTab', Text::filterXSS(Request::verifyGPDataString('tab')))
     ->assign(
         'wizardDone',
         (($conf['global']['global_wizard_done'] ?? 'Y') === 'Y'
-            || \strpos($_SERVER['SCRIPT_NAME'], 'wizard.php') === false)
+            || strpos($_SERVER['SCRIPT_NAME'], 'wizard.php') === false)
         && !Request::getVar('fromWizard')
     );

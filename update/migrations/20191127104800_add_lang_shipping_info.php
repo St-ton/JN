@@ -19,8 +19,7 @@ class Migration_20191127104800 extends Migration implements IMigration
     protected $description = 'Add lang shipping info';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -41,7 +40,7 @@ class Migration_20191127104800 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function down()
     {

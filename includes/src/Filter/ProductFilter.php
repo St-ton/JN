@@ -7,7 +7,6 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Filter\Items\Availability;
 use JTL\Filter\Items\Category;
 use JTL\Filter\Items\Characteristic;
@@ -226,7 +225,7 @@ class ProductFilter
     private $cache;
 
     /**
-     * @var Config
+     * @var ConfigInterface
      */
     private $filterConfig;
 
@@ -287,10 +286,10 @@ class ProductFilter
     }
 
     /**
-     * @param bool $showChildProducts
+     * @param int $showChildProducts
      * @return ProductFilter
      */
-    public function setShowChildProducts(bool $showChildProducts): self
+    public function setShowChildProducts(int $showChildProducts): self
     {
         $this->showChildProducts = $showChildProducts;
 
@@ -637,9 +636,10 @@ class ProductFilter
 
     /**
      * @param array $params
+     * @param bool  $validate
      * @return $this
      */
-    public function initStates(array $params): self
+    public function initStates(array $params, bool $validate = true): self
     {
         $params = \array_merge($this->getParamsPrototype(), $params);
         if ($params['kKategorie'] > 0) {
@@ -760,6 +760,7 @@ class ProductFilter
             if (empty($params['cSuche'])) {
                 $this->bExtendedJTLSearch = false;
             }
+            $this->nSeite = \max(1, Request::verifyGPCDataInt('seite'));
             \executeHook(\HOOK_NAVI_SUCHE, [
                 'bExtendedJTLSearch'         => &$this->bExtendedJTLSearch,
                 'oExtendedJTLSearchResponse' => &$this->oExtendedJTLSearchResponse,
@@ -788,8 +789,8 @@ class ProductFilter
                             || Request::verifyGPDataString($filterParam) !== ''))
                 ) {
                     $filterValue = \is_array($_GET[$filterParam])
-                        ? \array_map([$this->db, 'realEscape'], $_GET[$filterParam])
-                        : $this->db->realEscape($_GET[$filterParam]);
+                        ? \array_map([$this->db, 'escape'], $_GET[$filterParam])
+                        : $this->db->escape($_GET[$filterParam]);
                     $this->addActiveFilter($filter, $filterValue);
                     $params[$filterParam] = $filterValue;
                 }
@@ -808,7 +809,7 @@ class ProductFilter
         ]);
         $this->params = $params;
 
-        return $this->validate();
+        return $validate === true ? $this->validate() : $this;
     }
 
     /**
@@ -820,13 +821,12 @@ class ProductFilter
         if (\count($values) === 0) {
             return $this;
         }
-        $characteristics = $this->db->query(
+        $characteristics = $this->db->getObjects(
             'SELECT tmerkmalwert.kMerkmal, tmerkmalwert.kMerkmalWert, tmerkmal.nMehrfachauswahl
                 FROM tmerkmalwert
                 JOIN tmerkmal 
                     ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
-                WHERE kMerkmalWert IN (' . \implode(',', \array_map('\intval', $values)) . ')',
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE kMerkmalWert IN (' . \implode(',', \array_map('\intval', $values)) . ')'
         );
         foreach ($characteristics as $characteristic) {
             $characteristic->kMerkmal         = (int)$characteristic->kMerkmal;
@@ -856,7 +856,6 @@ class ProductFilter
      */
     public function registerFilterByClassName(string $filterName): FilterInterface
     {
-        $filter = null;
         if (\class_exists($filterName)) {
             /** @var FilterInterface $filter */
             $filter          = new $filterName($this);
@@ -1590,14 +1589,10 @@ class ProductFilter
         $sql->setOrderBy($sorting->getOrderBy());
         $sql->setLimit('');
         $sql->setGroupBy(['tartikel.kArtikel']);
-        $qry         = $this->getFilterSQL()->getBaseQuery($sql, 'listing');
-        $productKeys = \collect(\array_map(
-            static function ($e) {
+        $productKeys       = $this->db->getCollection($this->getFilterSQL()->getBaseQuery($sql, 'listing'))
+            ->map(static function ($e) {
                 return (int)$e->kArtikel;
-            },
-            $this->db->query($qry, ReturnType::ARRAY_OF_OBJECTS)
-        ));
-
+            });
         $orderData         = new stdClass();
         $orderData->cJoin  = $sorting->getJoin()->getSQL();
         $orderData->cOrder = $sorting->getOrderBy();
@@ -1662,7 +1657,7 @@ class ProductFilter
         if ($this->searchResults === null) {
             $productList         = new Collection();
             $productKeys         = $this->getProductKeys();
-            $productCount        = \count($productKeys);
+            $productCount        = $productKeys->count();
             $this->searchResults = (new SearchResults())
                 ->setProductCount($productCount)
                 ->setProductKeys($productKeys);
@@ -1804,14 +1799,14 @@ class ProductFilter
         if (!empty($stateCondition)) {
             $conditions[] = $stateCondition;
         }
-        /** @var FilterInterface $filter */
         foreach ($this->getActiveFilters(true, $ignore) as $type => $active) {
+            /** @var FilterInterface[] $active */
             if ($type !== 'misc' && $type !== 'custom' && \count($active) > 1) {
                 $orFilters = select($active, static function (FilterInterface $f) {
                     return $f->getType() === Type::OR;
                 });
-                /** @var AbstractFilter $filter */
                 foreach ($active as $filter) {
+                    /** @var AbstractFilter $filter */
                     // the built-in filter behave quite strangely and have to be combined this way
                     $joins[] = $filter->getSQLJoin();
                     if (!\in_array($filter, $orFilters, true)) {
@@ -2092,9 +2087,7 @@ class ProductFilter
             return $result->isInitialized();
         }
 
-        return \is_array($result)
-            ? \count($result) > 0
-            : false;
+        return \is_array($result) && \count($result) > 0;
     }
 
     /**

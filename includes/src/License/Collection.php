@@ -12,14 +12,15 @@ use JTL\License\Struct\License;
 class Collection extends \Illuminate\Support\Collection
 {
     /**
-     * @return $this
+     * @return Collection
      */
     public function getActive(): self
     {
         return $this->getBound();
     }
+
     /**
-     * @return $this
+     * @return Collection
      */
     public function getBound(): self
     {
@@ -29,7 +30,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getUnbound(): self
     {
@@ -44,9 +45,21 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getForItemID(string $itemID): ?ExsLicense
     {
-        return $this->filter(static function (ExsLicense $e) use ($itemID) {
+        $matches = $this->getBound()->filter(static function (ExsLicense $e) use ($itemID) {
             return $e->getID() === $itemID;
-        })->first();
+        })->sort(static function (ExsLicense $e) {
+            return $e->getLicense()->getType() === License::TYPE_PROD ? -1 : 1;
+        });
+        if ($matches->count() > 1) {
+            foreach ($matches as $exs) {
+                $license = $exs->getLicense();
+                if ($license->isExpired() === false && $license->getSubscription()->isExpired() === false) {
+                    return $exs;
+                }
+            }
+        }
+
+        return $matches->first();
     }
 
     /**
@@ -55,9 +68,22 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getForExsID(string $exsID): ?ExsLicense
     {
-        return $this->filter(static function (ExsLicense $e) use ($exsID) {
+        $matches = $this->getBound()->filter(static function (ExsLicense $e) use ($exsID) {
             return $e->getExsID() === $exsID;
-        })->first();
+        })->sort(static function (ExsLicense $e) {
+            return $e->getLicense()->getType() === License::TYPE_PROD ? -1 : 1;
+        });
+        if ($matches->count() > 1) {
+            // when there are multiple bound exs licenses, try to choose one that isn't expired yet
+            foreach ($matches as $exs) {
+                $license = $exs->getLicense();
+                if ($license->isExpired() === false && $license->getSubscription()->isExpired() === false) {
+                    return $exs;
+                }
+            }
+        }
+
+        return $matches->first();
     }
 
     /**
@@ -72,7 +98,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getActiveExpired(): self
     {
@@ -84,7 +110,17 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
+     */
+    public function getDedupedActiveExpired(): self
+    {
+        return $this->getActiveExpired()->filter(function (ExsLicense $e) {
+            return $e === $this->getForExsID($e->getExsID());
+        });
+    }
+
+    /**
+     * @return Collection
      */
     public function getBoundExpired(): self
     {
@@ -97,7 +133,17 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
+     */
+    public function getLicenseViolations(): self
+    {
+        return $this->getDedupedActiveExpired()->filter(static function (ExsLicense $e) {
+            return !$e->canBeUsed();
+        });
+    }
+
+    /**
+     * @return Collection
      */
     public function getExpiredActiveTests(): self
     {
@@ -105,7 +151,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getExpiredBoundTests(): self
     {
@@ -115,7 +161,17 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
+     */
+    public function getDedupedExpiredBoundTests(): self
+    {
+        return $this->getExpiredBoundTests()->filter(function (ExsLicense $e) {
+            return $e === $this->getForExsID($e->getExsID());
+        });
+    }
+
+    /**
+     * @return Collection
      */
     public function getPlugins(): self
     {
@@ -125,7 +181,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getTemplates(): self
     {
@@ -135,7 +191,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getPortlets(): self
     {
@@ -145,7 +201,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getInstalled(): self
     {
@@ -155,7 +211,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getUpdateableItems(): self
     {
@@ -165,7 +221,7 @@ class Collection extends \Illuminate\Support\Collection
     }
 
     /**
-     * @return $this
+     * @return Collection
      */
     public function getExpired(): self
     {
@@ -176,7 +232,7 @@ class Collection extends \Illuminate\Support\Collection
 
     /**
      * @param int $days
-     * @return $this
+     * @return Collection
      */
     public function getAboutToBeExpired(int $days = 28): self
     {

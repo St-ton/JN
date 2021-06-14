@@ -25,13 +25,13 @@
         || $anzeige === 'genau'}
         {block name='snippets-stock-status-exact'}
             <span class="status status-{$currentProduct->Lageranzeige->nStatus}">
-                <span class="fas fa-truck mr-2"></span>{$currentProduct->Lageranzeige->cLagerhinweis[$anzeige]}
+                <span class="fas fa-truck status-icon"></span>{$currentProduct->Lageranzeige->cLagerhinweis[$anzeige]}
             </span>
         {/block}
     {elseif $anzeige === 'ampel'}
         {block name='snippets-stock-status-traffic-light'}
             <span class="status status-{$currentProduct->Lageranzeige->nStatus}">
-                <span class="fas fa-truck mr-2"></span>{$currentProduct->Lageranzeige->AmpelText}
+                <span class="fas fa-truck status-icon"></span>{$currentProduct->Lageranzeige->AmpelText}
             </span>
         {/block}
     {/if}

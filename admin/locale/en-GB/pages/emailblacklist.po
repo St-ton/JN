@@ -15,7 +15,10 @@ msgid "emailblacklistEmail"
 msgstr "Email addresses"
 
 msgid "emailblacklistSeperator"
-msgstr "(Email addresses separated by ;)"
+msgstr "(Email addresses separated by semicolon)"
+
+msgid "emailblacklistPlaceholder"
+msgstr "test@testmail.com;test2@testmail.com"
 
 msgid "emailblacklistEmailSingle"
 msgstr "Email address"

@@ -9,29 +9,29 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || $cTab === 'freischalten'} active{/if}" data-toggle="tab" role="tab" href="#freischalten">
+                    <a class="nav-link {if $cTab === '' || $cTab === 'freischalten'} active{/if}" data-toggle="tab" role="tab" href="#freischalten">
                         {__('ratingsInaktive')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'letzten50'} active{/if}" data-toggle="tab" role="tab" href="#letzten50">
+                    <a class="nav-link {if $cTab === 'letzten50'} active{/if}" data-toggle="tab" role="tab" href="#letzten50">
                         {__('ratingLast50')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'artikelbewertung'} active{/if}" data-toggle="tab" role="tab" href="#artikelbewertung">
+                    <a class="nav-link {if $cTab === 'artikelbewertung'} active{/if}" data-toggle="tab" role="tab" href="#artikelbewertung">
                         {__('ratingForProduct')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
+                    <a class="nav-link {if $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
                         {__('settings')}
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="freischalten" class="tab-pane fade {if !isset($cTab) || $cTab === 'freischalten'} active show{/if}">
+            <div id="freischalten" class="tab-pane fade {if $cTab === '' || $cTab === 'freischalten'} active show{/if}">
                 {if $inactiveReviews|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiv cAnchor='freischalten'}
                     <form method="post" action="bewertung.php">
@@ -112,11 +112,12 @@
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiv cAnchor='freischalten' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="letzten50" class="tab-pane fade {if isset($cTab) && $cTab === 'letzten50'} active show{/if}">
+            <div id="letzten50" class="tab-pane fade {if $cTab === 'letzten50'} active show{/if}">
                 {if $activeReviews|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='letzten50'}
                     <form name="letzten50" method="post" action="bewertung.php">
@@ -152,7 +153,7 @@
                                             <td>
                                                 <label for="l50-{$review->kBewertung}">{$review->ArtikelName}</label>
                                             </td>
-                                            <td>{$review->cName}.</td>
+                                            <td>{$review->cName}</td>
                                             <td>
                                                 <strong>{$review->cTitel}</strong><br>
                                                 {$review->cText}
@@ -168,9 +169,10 @@
                                             <td class="text-center">
                                                 {if !empty($review->cAntwort)}
                                                     <a href="bewertung.php?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-link px-2"
+                                                       class="btn btn-link px-2 delete-confirm"
                                                        title="{__('removeReply')}"
-                                                       data-toggle="tooltip">
+                                                       data-toggle="tooltip"
+                                                       data-modal-body="{__('removeReply')} | {$review->ArtikelName}">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-trash-alt"></span>
                                                             <span class="fas fa-trash-alt"></span>
@@ -217,11 +219,12 @@
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='letzten50' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="artikelbewertung" class="tab-pane fade {if isset($cTab) && $cTab === 'artikelbewertung'} active show{/if}">
+            <div id="artikelbewertung" class="tab-pane fade {if $cTab === 'artikelbewertung'} active show{/if}">
                 <form name="artikelbewertung" method="post" action="bewertung.php">
                     <div class="mb-3">
                         {$jtl_token}
@@ -313,7 +316,7 @@
                     {/if}
                 </form>
             </div>
-            <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
+            <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
                 <form name="einstellen" method="post" action="bewertung.php">
                     {$jtl_token}
                     <input type="hidden" name="einstellungen" value="1" />
@@ -328,7 +331,7 @@
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">
                                             {$oConfig->cName}{if $oConfig->cWertName|strpos:'_guthaben'} <span id="EinstellungAjax_{$oConfig->cWertName}"></span>:{else}:{/if}
                                         </label>
-                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $oConfig->cInputTyp === 'number'}config-type-number{/if}">
                                             {if $oConfig->cInputTyp === 'selectbox'}
                                                 <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="custom-select combo">
                                                     {foreach $oConfig->ConfWerte as $wert}
@@ -364,9 +367,7 @@
                                                 <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}"  value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1"{if $oConfig->cWertName|strpos:"_guthaben"} onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$oConfig->cWertName}', this);"{/if} />
                                             {/if}
                                         </div>
-                                        {if $oConfig->cBeschreibung}
-                                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->kEinstellungenConf}</div>
-                                        {/if}
+                                        {include file='snippets/einstellungen_icons.tpl' cnf=$oConfig}
                                     </div>
                                 {else}
                                     {if $oConfig->cBeschreibung}

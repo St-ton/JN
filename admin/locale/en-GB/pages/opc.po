@@ -6,8 +6,7 @@ msgid "opcNotInstalled"
 msgstr "Could not properly install the OnPage Composer update. Please update the migrations."
 
 msgid "dbUpdateNeeded"
-msgstr "A datebase update of your JTL-Shop is required to use the OnPage Composer.<br><br>"
-"Please execute the update in the <a href=\"%s/admin/dbupdater.php\" target=\"_blank\">Admin Backend</a>!"
+msgstr "You need to update the database of JTL-Shop to use the OnPage&nbsp;Composer.<br><br>Please perform the update in the <a href=\"%s/admin/dbupdater.php\" target=\"_blank\">Admin back end</a>!"
 
 # OPC GUI
 
@@ -30,7 +29,7 @@ msgid "Portlets"
 msgstr "Portlets"
 
 msgid "Blueprints"
-msgstr "Templates"
+msgstr "Blueprints"
 
 msgid "Revisions"
 msgstr "Versions"
@@ -39,7 +38,7 @@ msgid "Page structure"
 msgstr "Page structure"
 
 msgid "Import blueprint"
-msgstr "Import template"
+msgstr "Import blueprints"
 
 msgid "Unsaved revision"
 msgstr "Unsaved version"
@@ -57,13 +56,13 @@ msgid "editPortletPostfix"
 msgstr " "
 
 msgid "Save this Portlet as a blueprint"
-msgstr "Save portlet as template"
+msgstr "Save portlet as blueprint"
 
 msgid "Blueprint name"
-msgstr "Template name"
+msgstr "Blueprint name"
 
 msgid "Delete Blueprint?"
-msgstr "Delete template?"
+msgstr "Delete blueprint?"
 
 # Config Tabs
 
@@ -102,20 +101,29 @@ msgstr "Border colour"
 msgid "Border radius"
 msgstr "Border rounding"
 
+msgid "Custom css class"
+msgstr "Custom class names"
+
+msgid "CustomCssClassDesc"
+msgstr "List one or more class names, separated by white spaces, that should be appended to the Portlets \"class\" attribute."
+
+msgid "CustomCssClassPlaceholder"
+msgstr "first-custom-class second-custom-class"
+
 msgid "Hidden on XS"
-msgstr "Hidden on XS"
+msgstr "Hide portlet for XS"
 
 msgid "Hidden on SM"
-msgstr "Hidden on SM"
+msgstr "Hide portlet for SM"
 
 msgid "Hidden on MD"
-msgstr "Hidden on MD"
+msgstr "Hide portlet for MD"
 
 msgid "Hidden on LG"
-msgstr "Hidden on LG"
+msgstr "Hide portlet for LG"
 
 msgid "cssNumericDesc"
-msgstr "Enter the desired value without spaces and use a decimal point as separator (e.g. 5px, 0.5em, 50%)."
+msgstr "Enter the desired value without spaces and with a decimal point as a decimal separator."
 
 # Animations tab
 
@@ -153,7 +161,7 @@ msgid "toggleNavigation"
 msgstr "Toggle navigation"
 
 msgid "noteInfoInGuide"
-msgstr "Aside from the guided tours listed below, you can also find a lot of information in the <a href=\"https://guide.jtl-software.com\" target=\"_blank\"><i class=\"fa fa-external-link\"></i> JTL-Guide</a>."
+msgstr "Aside from the guided tours listed below, you can also find a lot of information in the JTL-Guide."
 
 msgid "generalIntroduction"
 msgstr "General introduction"
@@ -168,7 +176,7 @@ msgid "noteMovementOnPage"
 msgstr "Would you like to have more moving elements on your pages?"
 
 msgid "noteSaveAsTemplate"
-msgstr "You have created a great view that you would like to use more often?<br/> Why don’t you save it as a template so that you can easily use it again and again?"
+msgstr "You have created a great view that you would like to use more often?<br> Why don’t you save it as a blueprint so that you can easily use it again and again?"
 
 msgid "settingsMore"
 msgstr "Settings (advanced)"
@@ -204,7 +212,7 @@ msgid "copySelect"
 msgstr "Copy selection"
 
 msgid "saveTemplate"
-msgstr "Save selection as template"
+msgstr "Save selection as blueprint"
 
 msgid "goUp"
 msgstr "Select next higher level"
@@ -213,7 +221,7 @@ msgid "deleteSelect"
 msgstr "Delete selection [Del]"
 
 msgid "templateTitle"
-msgstr "Template name"
+msgstr "Blueprint name"
 
 msgid "availableFilters"
 msgstr "Available filters"
@@ -249,7 +257,7 @@ msgid "zoneDelete"
 msgstr "Delete section"
 
 msgid "templateDeleteSure"
-msgstr "Delete selected template?"
+msgstr "Delete selected blueprint?"
 
 msgid "publishNot"
 msgstr "Do not publish"
@@ -288,7 +296,7 @@ msgid "publicTill"
 msgstr "until"
 
 msgid "plannedFrom"
-msgstr "public from"
+msgstr "scheduled from"
 
 msgid "noPublicationPlanned"
 msgstr "no publication scheduled"
@@ -303,7 +311,7 @@ msgid "editPage"
 msgstr "Edit page"
 
 msgid "opcNotSupportedPage"
-msgstr "Unfortunately, you cannot edit this page with the OnPage Composer!"
+msgstr "Unfortunately, this page cannot be edited with the OnPage Composer!"
 
 msgid "newDraft"
 msgstr "New draft"
@@ -386,7 +394,6 @@ msgstr "Desktop (MD)"
 msgid "desktopLG"
 msgstr "Large desktop (LG)"
 
-
 msgid "active"
 msgstr "active"
 
@@ -411,6 +418,9 @@ msgstr "Planned from"
 msgid "notScheduled"
 msgstr "Unpublished"
 
+msgid "now"
+msgstr "Now"
+
 msgid "expiredOn"
 msgstr "Expired on"
 
@@ -420,19 +430,19 @@ msgstr "Insert portlet here"
 # Messages
 
 msgid "opcImportSuccess"
-msgstr "The draft was imported successfully. "
+msgstr "The draft was imported successfully."
 
 msgid "opcImportUnmappedS"
 msgstr "One section could not be displayed. Its ID is not present on the current page."
 
 msgid "opcImportUnmappedP"
-msgstr "%s sections could not be displayed. Their Ids are not present on the current page."
+msgstr "%s sections could not be displayed. Their IDs are not present on the current page."
 
 msgid "opcImportSuccessTitle"
-msgstr "Successful import"
+msgstr "Import completed successfully."
 
 msgid "btnTitleCopyArea"
-msgstr "Add content to visible section"
+msgstr "Add content to visible area"
 
 msgid "offscreenAreasDivider"
 msgstr "Sections not displayed"
@@ -453,7 +463,7 @@ msgid "Back"
 msgstr "Back"
 
 msgid "Done"
-msgstr "Done"
+msgstr "All done!"
 
 # MISC
 

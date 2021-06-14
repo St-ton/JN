@@ -1,5 +1,5 @@
 {block name='boxes-box-login'}
-    {card id="sidebox{$oBox->getID()}" class="box box-login mb-4"}
+    <div id="sidebox{$oBox->getID()}" class="box box-login box-normal">
         {block name='boxes-box-login-content'}
             {block name='boxes-box-login-title'}
                 <div class="productlist-filter-headline">
@@ -8,7 +8,8 @@
             {/block}
             {if empty($smarty.session.Kunde->kKunde)}
                 {block name='boxes-box-login-form'}
-                    {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form box_login jtl-validate" slide=true}
+                    <div class="box-content-wrapper">
+                    {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form jtl-validate" slide=true}
                         {block name='boxes-box-login-form-data'}
                             {input type="hidden" name="login" value="1"}
                             {include file='snippets/form_group_simple.tpl'
@@ -25,7 +26,7 @@
                         {/block}
                         {if isset($showLoginCaptcha) && $showLoginCaptcha}
                             {block name='boxes-box-login-form-captcha'}
-                                {formgroup class="text-center"}
+                                {formgroup class="simple-captcha-wrapper"}
                                     {captchaMarkup getBody=true}
                                 {/formgroup}
                             {/block}
@@ -45,7 +46,7 @@
                             {/formgroup}
                         {/block}
                         {block name='boxes-box-login-form-links'}
-                            {link class="resetpw px-0 d-block mb-2" href="{get_static_route id='pass.php' secure=true}"}
+                            {link class="resetpw box-login-resetpw" href="{get_static_route id='pass.php' secure=true}"}
                                 {lang key='forgotPassword'}
                             {/link}
                             {lang key='newHere'}
@@ -54,9 +55,11 @@
                             {/link}
                         {/block}
                     {/form}
+                    </div>
                 {/block}
             {else}
                 {block name='boxes-box-login-actions'}
+                    <div class="box-content-wrapper">
                     {link href="{get_static_route id='jtl.php'}" class="btn btn-outline-primary btn-block btn-sm btn-account"}
                         {lang key='myAccount'}
                     {/link}
@@ -65,8 +68,12 @@
                     }
                         {lang key='logOut'}
                     {/link}
+                    </div>
                 {/block}
             {/if}
+            {block name='boxes-box-login-hr-end'}
+                <hr class="box-normal-hr">
+            {/block}
         {/block}
-    {/card}
+    </div>
 {/block}

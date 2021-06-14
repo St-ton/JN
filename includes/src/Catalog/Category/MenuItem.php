@@ -96,6 +96,16 @@ class MenuItem
     private $productCount = -1;
 
     /**
+     * @var string|null
+     */
+    public $customImgName;
+
+    /**
+     * @var bool
+     */
+    public $orphaned = false;
+
+    /**
      * @return int
      */
     public function getID(): int
@@ -244,6 +254,15 @@ class MenuItem
     }
 
     /**
+     * @param string $name
+     * @return mixed|null
+     */
+    public function getFunctionalAttribute(string $name)
+    {
+        return $this->functionalAttributes[$name] ?? null;
+    }
+
+    /**
      * @param array $functionalAttributes
      */
     public function setFunctionalAttributes(array $functionalAttributes): void
@@ -324,14 +343,30 @@ class MenuItem
     }
 
     /**
+     * @return bool
+     */
+    public function isOrphaned(): bool
+    {
+        return $this->orphaned;
+    }
+
+    /**
+     * @param bool $orphaned
+     */
+    public function setOrphaned(bool $orphaned): void
+    {
+        $this->orphaned = $orphaned;
+    }
+
+    /**
      * MenuItem constructor.
      * @param stdClass $data
      */
-    public function __construct($data)
+    public function __construct(stdClass $data)
     {
         $this->setImageType(Image::TYPE_CATEGORY);
-        $this->setID($data->kKategorie);
-        $this->setParentID($data->kOberKategorie);
+        $this->setID((int)$data->kKategorie);
+        $this->setParentID((int)$data->kOberKategorie);
         if (empty($data->cName_spr)) {
             $this->setName($data->cName);
         } else {
@@ -342,10 +377,15 @@ class MenuItem
         } else {
             $this->setDescription($data->cBeschreibung_spr);
         }
-
+        if (isset($data->customImgName)) {
+            $this->customImgName = $data->customImgName;
+        }
         $this->setURL($data->cSeo ?? '');
         $this->setImageURL($data->cPfad ?? '');
         $this->generateAllImageSizes(true, 1, $data->cPfad ?? null);
-        $this->setProductCount($data->cnt);
+        $this->setProductCount((int)$data->cnt);
+        $this->setFunctionalAttributes($data->functionAttributes[$this->getID()] ?? []);
+        $this->setAttributes($data->localizedAttributes[$this->getID()] ?? []);
+        $this->setShortName($this->getAttribute(\ART_ATTRIBUT_SHORTNAME)->cWert ?? $this->getName());
     }
 }

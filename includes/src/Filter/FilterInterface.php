@@ -11,7 +11,7 @@ interface FilterInterface
     /**
      * initialize an active filter
      *
-     * @param int|array $value - the current filter value(s)
+     * @param int|string|array|null $value - the current filter value(s)
      * @return $this
      */
     public function init($value): FilterInterface;
@@ -57,7 +57,7 @@ interface FilterInterface
 
     /**
      * @param ProductFilter $productFilter
-     * @return mixed
+     * @return FilterInterface
      */
     public function setProductFilter(ProductFilter $productFilter): FilterInterface;
 
@@ -71,7 +71,7 @@ interface FilterInterface
     /**
      * get an active filter's current filter value(s)
      *
-     * @return int|string|array
+     * @return int|string|array|null
      */
     public function getValue();
 
@@ -209,7 +209,7 @@ interface FilterInterface
     public function getUrlParamSEO(): string;
 
     /**
-     * @param string $param
+     * @param string|null $param
      * @return $this
      */
     public function setUrlParamSEO($param): FilterInterface;
@@ -267,10 +267,10 @@ interface FilterInterface
     /**
      * set the filter's class name
      *
-     * @param string $name
+     * @param string $className
      * @return $this
      */
-    public function setClassName($name): FilterInterface;
+    public function setClassName($className): FilterInterface;
 
     /**
      * get the filter's nice name without namespace
@@ -338,7 +338,7 @@ interface FilterInterface
     public function setUnsetFilterURL($url): FilterInterface;
 
     /**
-     * @param string|null
+     * @param string|null $idx
      * @return string
      */
     public function getUnsetFilterURL($idx = null): ?string;

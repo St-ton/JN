@@ -8,10 +8,10 @@
     {block name='comparelist-index-content'}
         {block name='comparelist-index-heading'}
             {opcMountPoint id='opc_before_heading' inContainer=false}
-            {container}
+            {container fluid=$Link->getIsFluid()}
                 <h1 class="h2">{lang key='compare' section='global'}</h1>
                 {if !$isAjax}
-                    <hr class="mt-0 mb-3">
+                    <hr class="hr-no-top">
                 {/if}
             {/container}
         {/block}
@@ -22,8 +22,8 @@
         {if $oVergleichsliste->oArtikel_arr|@count > 0}
             {block name='comparelist-index-filter'}
                 {opcMountPoint id='opc_before_filter' inContainer=false}
-                {container}
-                    <div id="filter-checkboxes" class="mb-4">
+                {container fluid=$Link->getIsFluid()}
+                    <div id="filter-checkboxes">
                         {block name='comparelist-index-filter-buttons'}
                             {row}
                                 {col}
@@ -46,11 +46,11 @@
                             {/row}
                         {/block}
                         {block name='comparelist-index-filter-items'}
-                            {collapse id="collapse-checkboxes" visible=false class="pt-3"}
+                            {collapse id="collapse-checkboxes" visible=false class="comparelist-checkboxes"}
                                 {row}
                                     {foreach $prioRows as $row}
                                         {if $row['key'] !== 'Merkmale' && $row['key'] !== 'Variationen'}
-                                            {col cols=6 md=4 lg=3 xl=2 class="my-2"}
+                                            {col cols=6 md=4 lg=3 xl=2 class="comparelist-checkbox-wrapper"}
                                                 {checkbox checked=true data=['id' => $row['key']] class='comparelist-checkbox'}
                                                     <div class="text-truncate">{$row['name']}</div>
                                                 {/checkbox}
@@ -58,7 +58,7 @@
                                         {/if}
                                         {if $row['key'] === 'Merkmale'}
                                             {foreach $oMerkmale_arr as $oMerkmale}
-                                                {col cols=6 md=4 lg=3 xl=2 class="my-2"}
+                                                {col cols=6 md=4 lg=3 xl=2 class="comparelist-checkbox-wrapper"}
                                                     {checkbox checked=true data=['id' => "attr-{$oMerkmale->cName}"] class='comparelist-checkbox'}
                                                         <div class="text-truncate">{$oMerkmale->cName}</div>
                                                     {/checkbox}
@@ -67,7 +67,7 @@
                                         {/if}
                                         {if $row['key'] === 'Variationen'}
                                             {foreach $oVariationen_arr as $oVariationen}
-                                                {col cols=6 md=4 lg=3 xl=2 class="my-2"}
+                                                {col cols=6 md=4 lg=3 xl=2 class="comparelist-checkbox-wrapper"}
                                                     {checkbox checked=true data=['id' => "vari-{$oVariationen->cName}"] class='comparelist-checkbox'}
                                                         <div class="text-truncate">{$oVariationen->cName}</div>
                                                     {/checkbox}
@@ -82,21 +82,36 @@
                 {/container}
             {/block}
             {block name='comparelist-index-products'}
-                {container}
+                {container fluid=$Link->getIsFluid()}
+                    {block name='comparelist-index-products-header-label'}
+                        {button size="sm" variant="outline-secondary" id="switch-label"}
+                            <span class="comparelist-label d-none">{lang key='showLabels' section='comparelist'}</span>
+                            <span class="comparelist-label">{lang key='hideLabels' section='comparelist'}</span>
+                        {/button}
+                    {/block}
+                    {block name='comparelist-index-products-header-label'}
+                        {button class="comparelist-delete-all"
+                            href="{get_static_route id='vergleichsliste.php'}?delete=all"
+                            size="sm"
+                            variant="outline-secondary"
+                            id="delete-all"}
+                            {lang key='comparelistDeleteAll' section='comparelist'}
+                        {/button}
+                    {/block}
                     <div class="comparelist table-responsive">
                         <table class="table table-bordered table-hover">
                             <thead>
                             {block name='comparelist-index-products-header'}
                                 <tr>
-                                    <th class="sticky-top">&nbsp;</th>
+                                    <th class="sticky-top comparelist-label">&nbsp;</th>
                                     {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
-                                        <th class="text-center sticky-top min-w pb-0">
+                                        <th class="comparelist-item sticky-top min-w" data-product-id-cl="{$oArtikel->kArtikel}">
                                             <div class="stretched">
                                                 <div>
                                                     {block name='comparelist-index-products-header-delete'}
                                                         <div class="delete-link-times">
                                                             {link href=$oArtikel->cURLDEL
-                                                                class="text-decoration-none"
+                                                                class="text-decoration-none-util"
                                                                 title="{lang key='removeFromCompareList' section='comparelist'}"
                                                                 aria=["label"=>"{lang key='removeFromCompareList' section='comparelist'}"]
                                                                 data=["toggle"=>"tooltip"]}
@@ -106,16 +121,7 @@
                                                     {/block}
                                                     {block name='comparelist-index-products-header-image'}
                                                         {link href=$oArtikel->cURLFull}
-                                                            {image fluid=true webp=true lazy=true
-                                                                alt=$oArtikel->cName
-                                                                src=$oArtikel->cVorschaubild
-                                                                srcset="{$oArtikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                     {$oArtikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                     {$oArtikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                                     {$oArtikel->Bilder[0]->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                                sizes="200px"
-                                                                class="my-2"
-                                                            }
+                                                            {include file='snippets/image.tpl' item=$oArtikel srcSize='xs' square=false class='comparelist-item-image' sizes='200px'}
                                                         {/link}
                                                     {/block}
                                                 </div>
@@ -149,16 +155,14 @@
                                 {if $row['key'] !== 'Merkmale' && $row['key'] !== 'Variationen'}
                                     <tr class="comparelist-row" data-id="row-{$row['key']}">
                                     {block name='comparelist-index-products-row-name'}
-                                        <td>
-                                            <div class="text-truncate">
-                                                {$row['name']}
-                                            </div>
+                                        <td class="comparelist-label">
+                                            {$row['name']|truncate:20}
                                         </td>
                                     {/block}
                                     {block name='comparelist-index-products'}
                                         {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
                                             {if $row['key'] === 'verfuegbarkeit'}
-                                                <td>
+                                                <td data-product-id-cl="{$oArtikel->kArtikel}">
                                                     {block name='comparelist-index-products-row-abailability'}
                                                         {block name='comparelist-index-products-includes-stock-availability'}
                                                             {include file='productdetails/stock.tpl' Artikel=$oArtikel availability=true}
@@ -174,13 +178,13 @@
                                                     {/block}
                                                 </td>
                                             {elseif $row['key'] === 'lieferzeit'}
-                                                <td>
+                                                <td data-product-id-cl="{$oArtikel->kArtikel}">
                                                     {block name='comparelist-index-products-includes-stock-shipping-time'}
                                                         {include file='productdetails/stock.tpl' Artikel=$oArtikel shippingTime=true}
                                                     {/block}
                                                 </td>
                                             {elseif $oArtikel->$row['key'] !== ''}
-                                                <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px">
+                                                <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
                                                     {if $row['key'] === 'fArtikelgewicht' || $row['key'] === 'fGewicht'}
                                                         {block name='comparelist-index-products-row-weight'}
                                                             {$oArtikel->$row['key']} {lang key='weightUnit' section='comparelist'}
@@ -199,7 +203,7 @@
                                                                     {/collapse}
                                                                 </div>
                                                                 {block name='comparelist-index-products-row-description-more'}
-                                                                    {button class='pl-0' variant='link' data=['toggle' => 'collapse', 'target' => "#read-more-{$oArtikel->kArtikel}-"|cat:$row['key']]}
+                                                                    {button class='comparelist-item-more' variant='link' data=['toggle' => 'collapse', 'target' => "#read-more-{$oArtikel->kArtikel}-"|cat:$row['key']]}
                                                                         {lang key='more'}
                                                                     {/button}
                                                                 {/block}
@@ -213,24 +217,21 @@
                                                 </td>
                                             {else}
                                                 {block name='comparelist-index-products-row-none'}
-                                                    <td>--</td>
+                                                    <td data-product-id-cl="{$oArtikel->kArtikel}">--</td>
                                                 {/block}
                                             {/if}
                                         {/foreach}
                                     {/block}
                                     </tr>
-                                {/if}
-                                {if $row['key'] === 'Merkmale'}
+                                {elseif $row['key'] === 'Merkmale'}
                                     {block name='comparelist-index-characteristics'}
                                         {foreach $oMerkmale_arr as $oMerkmale}
                                             <tr class="comparelist-row" data-id="row-attr-{$oMerkmale->cName}">
-                                                <td>
-                                                    <div class="text-truncate">
-                                                        {$oMerkmale->cName}
-                                                    </div>
+                                                <td class="comparelist-label">
+                                                    {$oMerkmale->cName|truncate:20}
                                                 </td>
                                                 {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
-                                                    <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px">
+                                                    <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
                                                         {if count($oArtikel->oMerkmale_arr) > 0}
                                                             {foreach $oArtikel->oMerkmale_arr as $oMerkmaleArtikel}
                                                                 {if $oMerkmale->cName == $oMerkmaleArtikel->cName}
@@ -247,20 +248,17 @@
                                             </tr>
                                         {/foreach}
                                     {/block}
-                                {/if}
-                                {if $row['key'] === 'Variationen'}
+                                {elseif $row['key'] === 'Variationen'}
                                     {block name='comparelist-index-variations'}
                                         {foreach $oVariationen_arr as $oVariationen}
                                             <tr class="comparelist-row" data-id="row-vari-{$oVariationen->cName}">
                                                 {block name='comparelist-index-variation-name'}
-                                                    <td>
-                                                        <div class="text-truncate">
-                                                            {$oVariationen->cName}
-                                                        </div>
+                                                    <td class="comparelist-label">
+                                                        {$oVariationen->cName|truncate:20}
                                                     </td>
                                                 {/block}
                                                 {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
-                                                    <td>
+                                                    <td data-product-id-cl="{$oArtikel->kArtikel}">
                                                         {if isset($oArtikel->oVariationenNurKind_arr) && $oArtikel->oVariationenNurKind_arr|@count > 0}
                                                             {foreach $oArtikel->oVariationenNurKind_arr as $oVariationenArtikel}
                                                                 {if $oVariationen->cName == $oVariationenArtikel->cName}
@@ -304,7 +302,7 @@
             {/block}
         {else}
             {block name='comparelist-index-empty'}
-                {container}
+                {container fluid=$Link->getIsFluid()}
                     {lang key='compareListNoItems'}
                 {/container}
             {/block}
@@ -342,16 +340,19 @@
         {block name='comparelist-index-script-check'}
             {inline_script}<script>
                 $(document).ready(function () {
-                    $('.comparelist-checkbox').change(function () {
+                    $('.comparelist-checkbox').on('change', function () {
                         $('[data-id="row-' + $(this).data('id') + '"]').toggleClass('d-none');
                     });
-                    $('#check-all').click(function () {
+                    $('#check-all').on('click', function () {
                         $('.comparelist-checkbox').prop('checked', true);
                         $('.comparelist-row').removeClass('d-none');
                     });
-                    $('#check-none').click(function () {
+                    $('#check-none').on('click', function () {
                         $('.comparelist-checkbox').prop('checked', false);
                         $('.comparelist-row').addClass('d-none');
+                    });
+                    $('#switch-label').on('click', function () {
+                        $('.comparelist-label').toggleClass('d-none');
                     });
                 });
             </script>{/inline_script}

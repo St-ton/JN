@@ -14,5 +14,5 @@ $oAccount->permission('DISPLAY_IMAGES_VIEW', true, true);
 $manager = new Manager(Shop::Container()->getDB(), Shop::Container()->getGetText());
 
 $smarty->assign('items', $manager->getItems())
-    ->assign('corruptedImagesByType', $manager->getCorruptedImages(Image::TYPE_PRODUCT, 50))
+    ->assign('corruptedImagesByType', $manager->getCorruptedImages(Image::TYPE_PRODUCT, MAX_CORRUPTED_IMAGES))
     ->display('bilderverwaltung.tpl');

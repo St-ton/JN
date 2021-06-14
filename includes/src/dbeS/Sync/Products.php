@@ -926,7 +926,20 @@ final class Products extends AbstractSync
         }
         foreach ($xml['del_artikel']['kArtikel'] as $productID) {
             $productID = (int)$productID;
-            $parent    = Product::getParent($productID);
+            if ((int)($this->db->selectSingleRow(
+                'tartikel',
+                'kArtikel',
+                $productID,
+                null,
+                null,
+                null,
+                null,
+                false,
+                'kArtikel'
+            )->kArtikel ?? 0) === 0) {
+                continue;
+            }
+            $parent = Product::getParent($productID);
             $this->db->queryPrepared(
                 'DELETE teigenschaftkombiwert
                     FROM teigenschaftkombiwert

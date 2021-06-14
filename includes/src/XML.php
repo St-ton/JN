@@ -8,6 +8,9 @@ namespace JTL;
  */
 class XML
 {
+    /**
+     * @var string|null
+     */
     private static $lastParseError;
 
     /**

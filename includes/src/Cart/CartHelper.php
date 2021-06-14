@@ -838,6 +838,12 @@ class CartHelper
         ) {
             $redirectParam[] = \R_UNVERKAEUFLICH;
         }
+        if (isset($product->FunktionsAttribute[\FKT_ATTRIBUT_VOUCHER_FLEX])) {
+            $price = (float)Request::postVar(\FKT_ATTRIBUT_VOUCHER_FLEX . 'Value');
+            if ($price <= 0) {
+                $redirectParam[] = \R_UNVERKAEUFLICH;
+            }
+        }
         // Preis auf Anfrage
         // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen
         // wenn 'Preis auf Anfrage' eingestellt ist

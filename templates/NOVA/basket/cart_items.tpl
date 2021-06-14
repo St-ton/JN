@@ -235,7 +235,7 @@
                         {block name='basket-cart-items-price-single'}
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
                                 {col cols=$cols xl=2 class="cart-items-single-price"}
-                                {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL && !$oPosition->istKonfigVater()}
+                                {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL && (!$oPosition->istKonfigVater() || $oPosition->oKonfig_arr|count === 0)}
                                     <strong class="cart-items-price-text">
                                         {lang key="pricePerUnit" section="productDetails"}:
                                     </strong>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}

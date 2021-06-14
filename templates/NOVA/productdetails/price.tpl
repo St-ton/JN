@@ -19,7 +19,7 @@
                                         <span class="fas fa-minus"></span>
                                     {/button}
                                 {/inputgroupprepend}
-                                {input type="number" value="{if isset($voucherPrice)}{$voucherPrice}{else}1{/if}" name="{$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX}Value" required=true}
+                                {input type="number" min="1" value="{if isset($voucherPrice)}{$voucherPrice}{else}1{/if}" name="{$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX}Value" required=true}
                                 {inputgroupappend}
                                     {inputgrouptext class="form-control"}
                                         {$smarty.session.Waehrung->getName()}

@@ -272,6 +272,25 @@ class ListingItem implements JsonSerializable
     }
 
     /**
+     * @param ListingItem $item
+     */
+    public function mergeWith(ListingItem $item): void
+    {
+        $this->setOptionsCount($item->getOptionsCount());
+        $this->setDateInstalled($item->getDateInstalled());
+        $this->setID($item->getID());
+        $this->setState($item->getState());
+        $this->setIsShop5Compatible($item->isShop5Compatible());
+        $this->setIsShop4Compatible($item->isShop4Compatible());
+        $this->setLangVarCount($item->getLangVarCount());
+        $this->setReadmeMD($item->getReadmeMD());
+        $this->setLicenseMD($item->getLicenseMD());
+        $this->setLinkCount($item->getLinkCount());
+        $this->setLicenseKey($item->getLicenseKey());
+        $this->setHasLicenseCheck($item->hasLicenseCheck());
+    }
+
+    /**
      * @return bool
      */
     public function isShop4Compatible(): bool

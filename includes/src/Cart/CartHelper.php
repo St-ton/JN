@@ -1408,7 +1408,7 @@ class CartHelper
         $product = new Artikel();
         $options = $options ?? Artikel::getDefaultOptions();
         $product->fuelleArtikel($productID, $options);
-        if ($product->FunktionsAttribute[\FKT_ATTRIBUT_VOUCHER_FLEX]) {
+        if (isset($product->FunktionsAttribute[\FKT_ATTRIBUT_VOUCHER_FLEX])) {
             $price = (float)Request::postVar(\FKT_ATTRIBUT_VOUCHER_FLEX . 'Value');
             if ($price > 0) {
                 $product->Preise->fVKNetto = Tax::getNet($price, $product->Preise->fUst, 4);

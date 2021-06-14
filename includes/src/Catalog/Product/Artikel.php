@@ -1180,7 +1180,7 @@ class Artikel
             : $this->kArtikel;
         $this->Preise->rabbatierePreise($this->getDiscount($customerGroupID, $productID));
         $price = $this->Preise->fVKNetto;
-        if ($this->FunktionsAttribute[\FKT_ATTRIBUT_VOUCHER_FLEX]) {
+        if (isset($this->FunktionsAttribute[\FKT_ATTRIBUT_VOUCHER_FLEX])) {
             $customCalculated = (float)Frontend::get(
                 'customCalculated_' . $unique,
                 Request::postVar(\FKT_ATTRIBUT_VOUCHER_FLEX . 'Value')

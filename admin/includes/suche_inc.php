@@ -134,15 +134,14 @@ function getPlugins(string $query): Collection
     if (mb_strlen($query) <= 2) {
         return new Collection();
     }
-    $db               = Shop::Container()->getDB();
-    $cache            = Shop::Container()->getCache();
-    $parser           = new XMLParser();
-    $legacyValidator  = new LegacyPluginValidator($db, $parser);
-    $pluginValidator  = new PluginValidator($db, $parser);
-    $listing          = new Listing($db, $cache, $legacyValidator, $pluginValidator);
-    $pluginsInstalled = $listing->getInstalled();
+    $db              = Shop::Container()->getDB();
+    $cache           = Shop::Container()->getCache();
+    $parser          = new XMLParser();
+    $legacyValidator = new LegacyPluginValidator($db, $parser);
+    $pluginValidator = new PluginValidator($db, $parser);
+    $listing         = new Listing($db, $cache, $legacyValidator, $pluginValidator);
 
-    return $pluginsInstalled->filter(static function (ListingItem $e) use ($query) {
+    return $listing->getInstalled()->filter(static function (ListingItem $e) use ($query) {
         if (stripos($e->getName(), $query) !== false) {
             $e->setName(highlightSearchTerm($e->getName(), $query));
             return true;

@@ -6,37 +6,6 @@
                 {block name='productdetails-price-out-of-stock'}
                     <span class="price_label price_out_of_stock">{lang key='productOutOfStock' section='productDetails'}</span>
                 {/block}
-            {elseif $Artikel->Preise->fVKNetto == 0 && $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX] && $tplscope === 'detail'}
-                {block name='productdetails-price-is-editable'}
-                    {row}
-                        {col cols=12 sm=6}
-                           {inputgroup class="form-counter"}
-                                {inputgroupprepend}
-                                    {button variant=""
-                                        class="btn-decrement"
-                                        data=["count-down"=>""]
-                                        aria=["label"=>{lang key='decreaseQuantity' section='aria'}]}
-                                        <span class="fas fa-minus"></span>
-                                    {/button}
-                                {/inputgroupprepend}
-                                {input type="number" min="1" value="{if isset($voucherPrice)}{$voucherPrice}{else}1{/if}" name="{$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX}Value" required=true}
-                                {inputgroupappend}
-                                    {inputgrouptext class="form-control"}
-                                        {$smarty.session.Waehrung->getName()}
-                                    {/inputgrouptext}
-                                    {button variant=""
-                                        data=["count-up"=>""]
-                                        aria=["label"=>{lang key='increaseQuantity' section='aria'}]}
-                                        <span class="fas fa-plus"></span>
-                                    {/button}
-                                {/inputgroupappend}
-                            {/inputgroup}
-                        {/col}
-                    {/row}
-                    {if isset($kEditKonfig)}
-                        <input type="hidden" name="kEditKonfig" value="{$kEditKonfig}"/>
-                    {/if}
-                {/block}
             {elseif $Artikel->Preise->fVKNetto == 0 && $Artikel->bHasKonfig}
                 {block name='productdetails-price-as-configured'}
                     <span class="price_label price_as_configured">{lang key='priceAsConfigured' section='productDetails'}</span> <span class="price"></span>

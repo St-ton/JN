@@ -115,12 +115,9 @@ final class Listing
             /** @var ListingItem $available */
             foreach ($this->items as $available) {
                 if ($available->getPath() === $item->getPath()) {
+                    $available->mergeWith($item);
                     $available->setAvailable(true);
                     $available->setInstalled(true);
-                    $available->setDateInstalled($item->getDateInstalled());
-                    $available->setState($item->getState());
-                    $available->setID($item->getID());
-                    $available->setIsShop5Compatible($item->isShop5Compatible());
                     if ($currentVersion->greaterThan($plugin->getMeta()->getSemVer())) {
                         $available->setUpdateAvailable($currentVersion);
                         $available->setVersion($item->getVersion());

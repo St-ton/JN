@@ -8,7 +8,6 @@ use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
 use JTL\Session\Frontend;
-use JTL\Shop;
 use stdClass;
 
 /**

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\ProcessingHandler;
 
@@ -23,7 +23,7 @@ class NiceDBHandler extends AbstractProcessingHandler
      * @param int         $level
      * @param bool        $bubble
      */
-    public function __construct(DbInterface $db, $level = Logger::DEBUG, $bubble = true)
+    public function __construct(DbInterface $db, int $level = Logger::DEBUG, bool $bubble = true)
     {
         $this->db = $db;
         parent::__construct($level, $bubble);

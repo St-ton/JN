@@ -356,20 +356,20 @@ class VariationValue
             $this->cAufpreisLocalized[1] = Preise::getLocalizedPriceString($surcharge, $currency);
             // Wenn der Artikel ein VarikombiKind ist, nutze den Varkombi-Elternartikel und rechne den Aufpreis hinzu
             if ($product->kVaterArtikel > 0) {
-                $customer             = Frontend::getCustomer();
-                $parentProductPrice   = new Preise(
+                $customer           = Frontend::getCustomer();
+                $parentProductPrice = new Preise(
                     $customer->getGroupID() ?? Frontend::getCustomerGroup()->getID(),
                     $product->kVaterArtikel,
                     $customer->getID() ?? 0
                 );
                 //Wenn nur übergeordnete Varkombiaufpreise gesetzt sind (keine Kundengruppenaufpreise)
                 if ($parentProductPrice->fVKNetto <= 0) {
-                    $parentProductPrice      = (new Artikel())
+                    $parentProductPrice = (new Artikel())
                         ->fuelleArtikel($product->kVaterArtikel, Artikel::getDetailOptions())->Preise;
                 }
 
-                $VariationVKNetto     = $surcharge + $parentProductPrice->fVKNetto;
-                $varKombiSurcharges   = 0;
+                $VariationVKNetto   = $surcharge + $parentProductPrice->fVKNetto;
+                $varKombiSurcharges = 0;
 
                 foreach ($variations as $variation) {
                     if ((int)$variation->kEigenschaft === $this->kEigenschaft &&

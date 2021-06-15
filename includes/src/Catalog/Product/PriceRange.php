@@ -222,7 +222,6 @@ class PriceRange
                 INNER JOIN tartikelkonfiggruppe ON tartikelkonfiggruppe.kArtikel = tartikel.kArtikel
                 INNER JOIN tkonfiggruppe ON tkonfiggruppe.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
                 INNER JOIN tkonfigitem ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
-                INNER JOIN tartikel tkonfigartikel ON tkonfigartikel.kArtikel = tkonfigitem.kArtikel
                 LEFT JOIN tkonfigitempreis ON tkonfigitempreis.kKonfigitem = tkonfigitem.kKonfigitem
                     AND tkonfigitempreis.kKundengruppe = :customerGroup
                 WHERE tartikel.kArtikel = :productID

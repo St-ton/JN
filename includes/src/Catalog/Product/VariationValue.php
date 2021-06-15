@@ -7,6 +7,8 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
+use JTL\Session\Frontend;
+use JTL\Shop;
 use stdClass;
 
 /**
@@ -354,10 +356,20 @@ class VariationValue
             $this->cAufpreisLocalized[1] = Preise::getLocalizedPriceString($surcharge, $currency);
             // Wenn der Artikel ein VarikombiKind ist, nutze den Varkombi-Elternartikel und rechne den Aufpreis hinzu
             if ($product->kVaterArtikel > 0) {
-                $parentProduct      = (new Artikel())
-                    ->fuelleArtikel($product->kVaterArtikel, Artikel::getDetailOptions());
-                $VariationVKNetto   = $surcharge + $parentProduct->Preise->fVKNetto;
-                $varKombiSurcharges = 0;
+                $customer             = Frontend::getCustomer();
+                $parentProductPrice   = new Preise(
+                    $customer->getGroupID() ?? Frontend::getCustomerGroup()->getID(),
+                    $product->kVaterArtikel,
+                    $customer->getID() ?? 0
+                );
+                //Wenn nur übergeordnete Varkombiaufpreise gesetzt sind (keine Kundengruppenaufpreise)
+                if ($parentProductPrice->fVKNetto <= 0) {
+                    $parentProductPrice      = (new Artikel())
+                        ->fuelleArtikel($product->kVaterArtikel, Artikel::getDetailOptions())->Preise;
+                }
+
+                $VariationVKNetto     = $surcharge + $parentProductPrice->fVKNetto;
+                $varKombiSurcharges   = 0;
 
                 foreach ($variations as $variation) {
                     if ((int)$variation->kEigenschaft === $this->kEigenschaft &&
@@ -369,10 +381,10 @@ class VariationValue
                         $varKombiSurcharges += $variation->fAufpreisNetto;
                     }
                 }
-                $VariationVKNetto = $varKombiSurcharges > 0 ?
-                    $surcharge + $parentProduct->Preise->fVKNetto + $varKombiSurcharges :
-                    $VariationVKNetto;
 
+                $VariationVKNetto            = $varKombiSurcharges > 0 ?
+                    $surcharge + $parentProductPrice->fVKNetto + $varKombiSurcharges :
+                    $VariationVKNetto;
                 $this->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
                     Tax::getGross($VariationVKNetto, $taxRate),
                     $currency

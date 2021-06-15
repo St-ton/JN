@@ -36,7 +36,7 @@ $yiq-text-light:                    $gray-lighter !default;
 
 $bg-typeahead-fix:                  $white !important  !default;
 
-$theme-colors				: ();
+$theme-colors				: () !default;
 $theme-colors: map-merge((
         'gray'			: $gray,
         'gray-light'	: $gray-lighter,
@@ -307,7 +307,7 @@ $ribbon-color-8:                    #fff !default;
 $ribbon-bg-9:                       #b9006f !default;
 $ribbon-color-9:                    #fff !default;
 
-$ribbon-colors				: ();
+$ribbon-colors				: () !default;
 $ribbon-colors: map-merge((
         '1' : $ribbon-color-1,
         '2' : $ribbon-color-2,
@@ -320,7 +320,7 @@ $ribbon-colors: map-merge((
         '9' : $ribbon-color-9
 ), $ribbon-colors);
 
-$ribbon-bg-colors				: ();
+$ribbon-bg-colors				: () !default;
 $ribbon-bg-colors: map-merge((
         '1' : $ribbon-bg-1,
         '2' : $ribbon-bg-2,

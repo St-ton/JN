@@ -52,7 +52,9 @@
         </Section>
         <Section Name="Megamenu" Key="megamenu">
             <Setting Description="Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)" Key="show_categories" Type="select" Value="Y">
-                <Option Value="Y">Aktiv</Option>
+                <Option Value="Y">Auf Desktop und mobilen Geräten</Option>
+                <Option Value="mobile">Nur mobil</Option>
+                <Option Value="desktop">Nur Desktop</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
             <Setting Description="Kategoriebilder für erste Unterkategorie" Key="show_category_images" Type="select" Value="N">

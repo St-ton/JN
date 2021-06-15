@@ -4,6 +4,7 @@ namespace JTL\dbeS\Sync;
 
 use JTL\dbeS\Starter;
 use SimpleXMLElement;
+use stdClass;
 
 /**
  * Class ImageCheck
@@ -82,9 +83,9 @@ final class ImageCheck extends AbstractSync
 
     /**
      * @param SimpleXMLElement $xml
-     * @return object
+     * @return stdClass
      */
-    private function getObject(SimpleXMLElement $xml)
+    private function getObject(SimpleXMLElement $xml): stdClass
     {
         $cloudURL = (string)$xml->attributes()->cloudURL;
         $check    = (object)[

@@ -101,7 +101,7 @@ class Controller
     public function deleteCrawler(array $ids): bool
     {
         $where_in = '(' . \implode(',', \array_map('\intval', $ids)) . ')';
-        $this->db->executeQuery(
+        $this->db->query(
             'DELETE FROM tbesucherbot 
                 WHERE kBesucherBot IN ' . $where_in . ' '
         );

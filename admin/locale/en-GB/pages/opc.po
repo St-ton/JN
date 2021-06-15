@@ -418,6 +418,9 @@ msgstr "Planned from"
 msgid "notScheduled"
 msgstr "Unpublished"
 
+msgid "now"
+msgstr "Now"
+
 msgid "expiredOn"
 msgstr "Expired on"
 

@@ -7,10 +7,11 @@ use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Services\JTL\AlertServiceInterface;
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use Shop;
 use function Functional\every;
 use function Functional\map;
 
@@ -76,15 +77,21 @@ class GenericAdmin
 
     public function handle(): void
     {
-        $this->item   = new $this->modelClass($this->db);
-        $this->step   = $_SESSION['step'] ?? 'overview';
-        $valid        = Form::validateToken();
-        $action       = Request::postVar('action') ?? Request::getVar('action');
-        $itemID       = $_SESSION['modelid'] ?? Request::postInt('id', null) ?? Request::getInt('id', null);
-        $continue     = $_SESSION['continue'] ?? Request::postInt('save-model-continue') === 1;
-        $save         = $valid && ($continue || Request::postInt('save-model') === 1);
-        $cancel       = Request::postInt('go-back') === 1;
-        $delete       = $valid && Request::postInt('model-delete') === 1 && \count(Request::postVar('mid')) > 0;
+        $this->item = new $this->modelClass($this->db);
+        $this->step = $_SESSION['step'] ?? 'overview';
+        $valid      = Form::validateToken();
+        $action     = Request::postVar('action') ?? Request::getVar('action');
+        $itemID     = $_SESSION['modelid'] ?? Request::postInt('id', null) ?? Request::getInt('id', null);
+        $continue   = $_SESSION['continue'] ?? Request::postInt('save-model-continue') === 1;
+        $save       = $valid && ($continue || Request::postInt('save-model') === 1);
+        $modelIDs   = Request::postVar('mid', []);
+        $cancel     = Request::postInt('go-back') === 1;
+        if (\count($modelIDs) === 0 && Request::postInt('id', null) > 0) {
+            $modelIDs = [Request::postInt('id')];
+        }
+        $delete       = $valid && Request::postInt('model-delete') === 1 && \count($modelIDs) > 0;
+        $disable      = $valid && Request::postInt('model-disable') === 1 && \count($modelIDs) > 0;
+        $enable       = $valid && Request::postInt('model-enable') === 1 && \count($modelIDs) > 0;
         $saveSettings = Request::postVar('a') === 'saveSettings';
         if ($cancel) {
             $this->modelPRG();
@@ -103,9 +110,13 @@ class GenericAdmin
         if ($save === true && $cancel === false) {
             $this->save($itemID, $continue);
         } elseif ($delete === true) {
-            $this->update($continue);
+            $this->update($continue, $modelIDs);
         } elseif ($saveSettings === true) {
             $this->saveSettings();
+        } elseif ($disable === true) {
+            $this->disable($modelIDs);
+        } elseif ($enable === true) {
+            $this->enable($modelIDs);
         }
         $this->setMessages();
     }
@@ -116,7 +127,7 @@ class GenericAdmin
      */
     protected function save(int $itemID, bool $continue): void
     {
-        if ($this->updateFromPost($this->item, $_POST) === true) {
+        if ($this->updateFromPost($this->item, Text::filterXSS($_POST)) === true) {
             $_SESSION['modelid']         = $itemID;
             $_SESSION['modelSuccessMsg'] = \sprintf(__('successSave'));
             $_SESSION['step']            = $continue ? 'detail' : 'overview';
@@ -128,11 +139,12 @@ class GenericAdmin
     }
 
     /**
-     * @param bool $continue
+     * @param bool  $continue
+     * @param array $modelIDs
      */
-    protected function update(bool $continue): void
+    protected function update(bool $continue, array $modelIDs): void
     {
-        if ($this->deleteFromPost(Request::postVar('mid')) === true) {
+        if ($this->deleteFromPost($modelIDs) === true) {
             $_SESSION['modelSuccessMsg'] = \sprintf(__('successDelete'));
             $_SESSION['step']            = $continue ? 'detail' : 'overview';
         } else {
@@ -159,6 +171,47 @@ class GenericAdmin
             );
             unset($_SESSION['modelErrorMsg']);
         }
+    }
+
+    /**
+     * @param array $ids
+     */
+    protected function enable(array $ids): void
+    {
+        if ($this->setState($ids, 1)) {
+            $_SESSION['modelSuccessMsg'] = \sprintf(__('successSave'));
+        }
+    }
+
+    /**
+     * @param array $ids
+     */
+    protected function disable(array $ids): void
+    {
+        if ($this->setState($ids, 0)) {
+            $_SESSION['modelSuccessMsg'] = \sprintf(__('successSave'));
+        }
+    }
+
+    /**
+     * @param array $ids
+     * @param int   $state
+     */
+    protected function setState(array $ids, int $state): bool
+    {
+        return every(map($ids, function ($id) use ($state) {
+            try {
+                /** @var DataModelInterface $model */
+                $model = $this->modelClass::load(['id' => (int)$id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
+                $model->setAttribValue('active', $state);
+
+                return $model->save(['active']);
+            } catch (Exception $e) {
+                return false;
+            }
+        }), function (bool $e) {
+            return $e === true;
+        });
     }
 
     /**
@@ -229,12 +282,10 @@ class GenericAdmin
      */
     public function deleteFromPost(array $ids): bool
     {
-        $self = $this;
-
-        return every(map($ids, static function ($id) use ($self) {
+        return every(map($ids, function ($id) {
             try {
                 /** @var DataModelInterface $model */
-                $model = $self->modelClass::load(['id' => (int)$id], $self->db, DataModelInterface::ON_NOTEXISTS_FAIL);
+                $model = $this->modelClass::load(['id' => (int)$id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
             } catch (Exception $e) {
                 return false;
             }

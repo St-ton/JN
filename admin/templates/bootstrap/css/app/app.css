@@ -13717,6 +13717,14 @@ body {
   }
 }
 
+.first-ml-auto > div:first-child {
+  margin-left: auto;
+}
+
+.second-ml-auto > div:nth-child(2) {
+  margin-left: auto;
+}
+
 #content_wrapper {
   padding-top: 0.5rem;
 }

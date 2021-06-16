@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div class="card-footer save-wrapper">
-                <div class="row">
+                <div class="row first-ml-auto">
                     {if $cancel === true}
                         <div class="col-sm-6 col-xl-auto">
                             <button type="submit" name="go-back" value="1" class="btn btn-outline-primary btn-block" id="go-back">

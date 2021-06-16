@@ -87,21 +87,33 @@ class CartHelper
         if ($orderId <= 0) {
             return;
         }
-        $payed     = Shop::Container()->getDB()->getSingleObject(
-            'SELECT SUM(fBetrag) AS incomming
+        $payments = Shop::Container()->getDB()->getObjects(
+            'SELECT cZahlungsanbieter, fBetrag
                 FROM tzahlungseingang
                 WHERE kBestellung = :orderId',
             [
                 'orderId' => $orderId
             ]
         );
-        $incomming = $payed === null ? 0.0 : (float)$payed->incomming;
-        if ($incomming === 0.0) {
-            return;
-        }
+        foreach ($payments as $payed) {
+            $incomming = (float)$payed->fBetrag;
+            if ($incomming === 0.0) {
+                continue;
+            }
 
-        $cartInfo->discount[self::NET]   += $incomming;
-        $cartInfo->discount[self::GROSS] += $incomming;
+            $cartInfo->total[self::NET]     -= $incomming;
+            $cartInfo->total[self::GROSS]   -= $incomming;
+            $cartInfo->article[self::NET]   -= $incomming;
+            $cartInfo->article[self::GROSS] -= $incomming;
+            $cartInfo->items[]               = (object)[
+                'name'     => \html_entity_decode($payed->cZahlungsanbieter),
+                'quantity' => 1,
+                'amount'   => [
+                    self::NET   => -$incomming,
+                    self::GROSS => -$incomming
+                ]
+            ];
+        }
     }
 
     /**

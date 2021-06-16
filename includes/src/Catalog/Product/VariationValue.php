@@ -381,9 +381,10 @@ class VariationValue
                     }
                 }
 
-                $VariationVKNetto            = $varKombiSurcharges > 0 ?
+                $VariationVKNetto = $varKombiSurcharges > 0 ?
                     $surcharge + $parentProductPrice->fVKNetto + $varKombiSurcharges :
                     $VariationVKNetto;
+
                 $this->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
                     Tax::getGross($VariationVKNetto, $taxRate),
                     $currency

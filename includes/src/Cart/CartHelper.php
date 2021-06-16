@@ -80,6 +80,32 @@ class CartHelper
 
     /**
      * @param stdClass $cartInfo
+     * @param int      $orderId
+     */
+    protected function calculatePayment(stdClass $cartInfo, int $orderId): void
+    {
+        if ($orderId <= 0) {
+            return;
+        }
+        $payed     = Shop::Container()->getDB()->getSingleObject(
+            'SELECT SUM(fBetrag) AS incomming
+                FROM tzahlungseingang
+                WHERE kBestellung = :orderId',
+            [
+                'orderId' => $orderId
+            ]
+        );
+        $incomming = $payed === null ? 0.0 : (float)$payed->incomming;
+        if ($incomming === 0.0) {
+            return;
+        }
+
+        $cartInfo->discount[self::NET]   += $incomming;
+        $cartInfo->discount[self::GROSS] += $incomming;
+    }
+
+    /**
+     * @param stdClass $cartInfo
      */
     protected function calculateTotal(stdClass $cartInfo): void
     {
@@ -192,6 +218,7 @@ class CartHelper
         }
 
         $this->calculateCredit($info);
+        $this->calculatePayment($info, $this->getIdentifier());
         $this->calculateTotal($info);
 
         $formatter = static function ($prop) use ($decimals) {

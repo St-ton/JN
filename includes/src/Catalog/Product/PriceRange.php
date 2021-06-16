@@ -146,7 +146,10 @@ class PriceRange
                                 AND iPrice.kKundengruppe = 0
                                 AND iPrice.kArtikel = tartikel.kArtikel
                         )))
-                  AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) = :productID
+                  AND (
+                    (tartikel.kVaterartikel = 0 AND tartikel.kArtikel = :productID)
+                        OR tartikel.kVaterartikel = :productID
+                  )
             ) baseprice
             LEFT JOIN (
                       SELECT variations.kArtikel,

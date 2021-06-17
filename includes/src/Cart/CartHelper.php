@@ -15,6 +15,7 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
+use JTL\DB\ReturnType;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Extensions\Config\Configurator;
@@ -87,14 +88,18 @@ class CartHelper
         if ($orderId <= 0) {
             return;
         }
-        $payments = Shop::Container()->getDB()->getObjects(
+        $payments = Shop::Container()->getDB()->queryPrepared(
             'SELECT cZahlungsanbieter, fBetrag
                 FROM tzahlungseingang
                 WHERE kBestellung = :orderId',
             [
                 'orderId' => $orderId
-            ]
+            ],
+            ReturnType::ARRAY_OF_OBJECTS
         );
+        if (!$payments) {
+            return;
+        }
         foreach ($payments as $payed) {
             $incomming = (float)$payed->fBetrag;
             if ($incomming === 0.0) {

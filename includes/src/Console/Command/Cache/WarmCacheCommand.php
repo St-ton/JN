@@ -68,8 +68,8 @@ class WarmCacheCommand extends Command
         $this->setName('cache:warm')
             ->setDescription('Warm object cache')
             ->addOption('details', 'd', InputOption::VALUE_OPTIONAL, 'Warm product details', true)
-            ->addOption('list', 'l', InputOption::VALUE_OPTIONAL, 'Warum product lists', true)
-            ->addOption('linkgroups', 'lg', InputOption::VALUE_OPTIONAL, 'Warum link groups', false)
+            ->addOption('list', 'l', InputOption::VALUE_OPTIONAL, 'Warm product lists', true)
+            ->addOption('linkgroups', 'lg', InputOption::VALUE_OPTIONAL, 'Warm link groups', false)
             ->addOption('categories', 'c', InputOption::VALUE_OPTIONAL, 'Warm categories', false)
             ->addOption('manufacturers', 'm', InputOption::VALUE_OPTIONAL, 'Warm manufacturers', false)
             ->addOption('preflush', 'p', InputOption::VALUE_OPTIONAL, 'Flush cache before run', false);

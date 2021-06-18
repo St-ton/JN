@@ -613,7 +613,7 @@
                 $form.find('fieldset, button[type="submit"]')
                     .attr('disabled', true);
 
-                var url = 'bestellvorgang.php?kVersandart=' + id;
+                var url = $('#jtl-io-path').data('path') + '/bestellvorgang.php?kVersandart=' + id;
                 $.evo.loadContent(url, function() {
                     $.evo.checkout();
                 }, null, true);

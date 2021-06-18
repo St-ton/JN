@@ -358,7 +358,7 @@ $(document).ready(function () {
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
             queryTokenizer: Bloodhound.tokenizers.whitespace,
             remote:         {
-                url:      'io.php?io={"name":"suggestions", "params":["%QUERY"]}',
+                url:      $.evo.io().options.ioUrl + '?io={"name":"suggestions", "params":["%QUERY"]}',
                 wildcard: '%QUERY'
             }
         });
@@ -396,19 +396,19 @@ $(document).ready(function () {
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote:         {
-            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}',
+            url:      $.evo.io().options.ioUrl + '?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}',
             wildcard: '%QUERY'
         },
         dataType: "json"
     });
     $('.city_input').on('focusin', function () {
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
+        citySuggestion.remote.url = $.evo.io().options.ioUrl + '?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
     $('.postcode_input').on('change', function () {
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).val() + '"]}';
+        citySuggestion.remote.url = $.evo.io().options.ioUrl + '?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).val() + '"]}';
     });
     $('.country_input').on('change', function () {
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
+        citySuggestion.remote.url = $.evo.io().options.ioUrl + '?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
 
     $('.city_input').typeahead(

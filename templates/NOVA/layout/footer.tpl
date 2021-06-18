@@ -91,9 +91,11 @@
                         {if isset($footerBoxes) && count($footerBoxes) > 0}
                             {row id='footer-boxes'}
                                 {foreach $footerBoxes as $box}
-                                    {col cols=12 sm=6 md=4 lg=3}
-                                        {$box->getRenderedContent()}
-                                    {/col}
+                                    {if $box->isActive() && !empty($box->getRenderedContent())}
+                                        {col cols=12 sm=6 md=4 lg=3}
+                                            {$box->getRenderedContent()}
+                                        {/col}
+                                    {/if}
                                 {/foreach}
                             {/row}
                         {/if}

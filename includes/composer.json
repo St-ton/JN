@@ -28,10 +28,10 @@
         "symfony/var-dumper": "^5.1",
         "symfony/process": "^5.1",
         "jtlshop/shop5-systemcheck": "^2.0.1",
-        "jtlshop/sccbs3": "dev-master",
-        "jtlshop/scc": "dev-master",
-        "jtlshop/phpquery": "dev-master",
-        "jtlshop/xtea": "dev-master",
+        "jtlshop/sccbs3": "1.0.1",
+        "jtlshop/scc": "1.0.1",
+        "jtlshop/phpquery": "1.0.1",
+        "jtlshop/xtea": "1.0.1",
         "smarty/smarty": "~3.1",
         "jdorn/sql-formatter": "^1.2",
         "phpmyadmin/sql-parser": "^5.4.2",
@@ -45,7 +45,6 @@
         "monolog/monolog": "^2.1",
         "myclabs/php-enum": "^1.7",
         "jtlshop/semver": "~0.0.7",
-        "jtlshop/wizard": "dev-master",
         "studio-42/elfinder": "^2.1",
         "maximebf/debugbar": "^1.16",
         "gettext/gettext": "^5.5.4",
@@ -107,10 +106,6 @@
         {
             "type": "vcs",
             "url": "https://gitlab.com/jtl-software/jtl-shop/tools/xtea.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/wizard.git"
         },
         {
             "type": "vcs",

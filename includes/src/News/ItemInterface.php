@@ -291,6 +291,11 @@ interface ItemInterface
     public function getPreviewImage(int $idx = null): string;
 
     /**
+     * @return string
+     */
+    public function getPreviewImageBaseName(): string;
+
+    /**
      * @return string[]
      */
     public function getPreviewImages(): array;

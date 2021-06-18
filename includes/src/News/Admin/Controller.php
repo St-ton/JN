@@ -818,7 +818,7 @@ final class Controller
                 continue;
             }
             \unlink($fileinfo->getPathname());
-            if ($imageName === 'preview') {
+            if ($imageName === 'preview' || \mb_strpos($imageName, '_preview') !== false) {
                 $upd                = new stdClass();
                 $upd->cPreviewImage = '';
                 if (\mb_strpos($uploadDir, \PFAD_NEWSKATEGORIEBILDER) !== false) {

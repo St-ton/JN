@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dd8c0606c5dd1e61fe7b2ffe04e7dba6",
+    "content-hash": "94e4e69087a2790603761bda828f4f60",
     "packages": [
         {
             "name": "chamilo/pclzip",
@@ -1371,16 +1371,16 @@
         },
         {
             "name": "jtlshop/shop5-systemcheck",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jtl-software/jtl-shop/tools/shop5-systemcheck.git",
-                "reference": "929eab04947036b0054b6dfe563bd37524c70d27"
+                "reference": "5062b697029c253c9073303f603a58c13f43f047"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fshop5-systemcheck/repository/archive.zip?sha=929eab04947036b0054b6dfe563bd37524c70d27",
-                "reference": "929eab04947036b0054b6dfe563bd37524c70d27",
+                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fshop5-systemcheck/repository/archive.zip?sha=5062b697029c253c9073303f603a58c13f43f047",
+                "reference": "5062b697029c253c9073303f603a58c13f43f047",
                 "shasum": ""
             },
             "require": {
@@ -1409,7 +1409,7 @@
                 "jtl",
                 "jtl-shop"
             ],
-            "time": "2021-06-08T15:22:54+00:00"
+            "time": "2021-06-18T11:07:15+00:00"
         },
         {
             "name": "jtlshop/xtea",
@@ -7931,5 +7931,5 @@
         "ext-fileinfo": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.0.0"
 }

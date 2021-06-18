@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "countryManager"
-msgstr "Country manager"
+msgstr "Country administration"
 
 msgid "countryManagerURL"
 msgstr ""
 
 msgid "countryManagerDesc"
-msgstr "Hier können sie alle Länder verwalten. Der \"Name\" der Länder wird mit dem ISO-Code, automatisch, mithilfe einer PHP-Funktion, in der entsprechenden Sprache (Frontend sowie Backend) generiert und ist daher nicht änderbar."
+msgstr "Here you can manage all countries used in JTL-Shop independently of JTL-Wawi. The names of the countries are automatically generated in the respective language for front and back end using the ISO code. Therefore, the names cannot be changed. The fields \"German\" and \"English\" should be named like the respective countries in JTL-Wawi."
 
 msgid "ISO"
 msgstr "ISO"
@@ -18,43 +18,46 @@ msgid "Name"
 msgstr "Name"
 
 msgid "DBcDeutsch"
-msgstr "Deutsch"
+msgstr "German"
 
 msgid "DBcEnglisch"
-msgstr "Englisch"
+msgstr "English"
 
 msgid "isEU"
 msgstr "EU"
 
 msgid "Continent"
-msgstr "Kontinent"
+msgstr "Continent"
 
 msgid "isShippingAvailable"
-msgstr "In Versandart vorhanden"
+msgstr "Selectable as destination country"
+
+msgid "isShippingAvailableDesc"
+msgstr "Automatically set true when a country is selectable in at least one shipping method."
 
 msgid "isPermitRegistration"
-msgstr "Für Registrierung erlaubt"
+msgstr "Selectable as billing country"
 
 msgid "isRequireStateDefinition"
-msgstr "Staat als Pflichtfeld"
+msgstr "Federal state is mandatory"
 
 msgid "updateCountry"
-msgstr "Land bearbeiten"
+msgstr "Edit country"
 
 msgid "addCountry"
-msgstr "Land hinzufügen"
+msgstr "Add country"
 
 msgid "errorCountryIsoExists"
-msgstr "Ein Land mit dem Iso-Code: \"%s\" existiert bereits."
+msgstr "A country with ISO code \"%s\" already exists."
 
 msgid "confirmDeleteCountry"
-msgstr "Das Land - %s - mit Iso-Code - %s - wirklich löschen? "
+msgstr "Really delete country \"%s\" with ISO code \"%s\"? "
 
 msgid "successCountryAdd"
-msgstr "Land mit Iso-Code \"%s\" erfolgreich hinzugefügt."
+msgstr "Country with ISO code \"%s\" added successfully."
 
 msgid "successCountryDelete"
-msgstr "Land mit Iso-Code \"%s\" erfolgreich gelöscht."
+msgstr "Country with ISO code \"%s\" deleted successfully."
 
 msgid "successCountryUpdate"
-msgstr "Land mit Iso-Code \"%s\" erfolgreich aktualisiert."
+msgstr "Country with ISO code \"%s\" updated successfully."

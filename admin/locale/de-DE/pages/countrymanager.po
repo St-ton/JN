@@ -9,7 +9,7 @@ msgid "countryManagerURL"
 msgstr ""
 
 msgid "countryManagerDesc"
-msgstr "Hier können sie alle Länder verwalten. Der \"Name\" der Länder wird mit dem ISO-Code, automatisch, mithilfe einer PHP-Funktion, in der entsprechenden Sprache (Frontend sowie Backend) generiert und ist daher nicht änderbar."
+msgstr "Hier können Sie die in JTL-Shop genutzten Länder unabhängig von JTL-Wawi verwalten. Der Name der Länder wird für Frontend und Backend automatisch über den ISO-Code in der entsprechenden Sprache generiert und ist daher nicht änderbar. Die Felder „Deutsch“ und „Englisch“ sollten mit den entsprechenden Namen in JTL-Wawi übereinstimmen."
 
 msgid "ISO"
 msgstr "ISO"
@@ -30,13 +30,16 @@ msgid "Continent"
 msgstr "Kontinent"
 
 msgid "isShippingAvailable"
-msgstr "In Versandart vorhanden"
+msgstr "Als Lieferland wählbar"
+
+msgid "isShippingAvailableDesc"
+msgstr "Wird automatisch gesetzt sobald ein Land in mindestens einer Versandart vorhanden ist."
 
 msgid "isPermitRegistration"
-msgstr "Für Registrierung erlaubt"
+msgstr "Als Rechnungsland wählbar"
 
 msgid "isRequireStateDefinition"
-msgstr "Staat als Pflichtfeld"
+msgstr "Bundesland als Pflichtfeld"
 
 msgid "updateCountry"
 msgstr "Land bearbeiten"
@@ -45,16 +48,16 @@ msgid "addCountry"
 msgstr "Land hinzufügen"
 
 msgid "errorCountryIsoExists"
-msgstr "Ein Land mit dem Iso-Code: \"%s\" existiert bereits."
+msgstr "Ein Land mit ISO-Code „%s“ existiert bereits."
 
 msgid "confirmDeleteCountry"
-msgstr "Das Land - %s - mit Iso-Code - %s - wirklich löschen? "
+msgstr "Möchten Sie Land „%s“ mit ISO-Code „%s“ wirklich löschen? "
 
 msgid "successCountryAdd"
-msgstr "Land mit Iso-Code \"%s\" erfolgreich hinzugefügt."
+msgstr "Land mit ISO-Code „%s“ wurde erfolgreich hinzugefügt."
 
 msgid "successCountryDelete"
-msgstr "Land mit Iso-Code \"%s\" erfolgreich gelöscht."
+msgstr "Land mit ISO-Code „%s“ wurde erfolgreich gelöscht."
 
 msgid "successCountryUpdate"
-msgstr "Land mit Iso-Code \"%s\" erfolgreich aktualisiert."
+msgstr "Land mit ISO-Code „%s“ wurde erfolgreich aktualisiert."

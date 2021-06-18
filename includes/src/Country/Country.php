@@ -102,20 +102,21 @@ class Country
     {
         $db          = Shop::Container()->getDB();
         $countryData = $db->select('tland', 'cISO', $this->getISO());
-        if ($countryData !== null) {
-            $this->setContinent($countryData->cKontinent)
-                 ->setEU($countryData->nEU)
-                 ->setNameDE($countryData->cDeutsch)
-                 ->setNameEN($countryData->cEnglisch)
-                 ->setPermitRegistration($countryData->bPermitRegistration === '1')
-                 ->setRequireStateDefinition($countryData->bRequireStateDefinition === '1')
-                 ->setShippingAvailable($db->getSingleObject(
-                     'SELECT COUNT(*) AS cnt 
-                        FROM tversandart
-                        WHERE cLaender LIKE :iso',
-                     ['iso' => '%' . $this->getISO() . '%']
-                 )->cnt > 0);
+        if ($countryData === null) {
+            return;
         }
+        $this->setContinent($countryData->cKontinent)
+             ->setEU($countryData->nEU)
+             ->setNameDE($countryData->cDeutsch)
+             ->setNameEN($countryData->cEnglisch)
+             ->setPermitRegistration($countryData->bPermitRegistration === '1')
+             ->setRequireStateDefinition($countryData->bRequireStateDefinition === '1')
+             ->setShippingAvailable($db->getSingleObject(
+                 'SELECT COUNT(*) AS cnt 
+                    FROM tversandart
+                    WHERE cLaender LIKE :iso',
+                 ['iso' => '%' . $this->getISO() . '%']
+             )->cnt > 0);
     }
 
     /**

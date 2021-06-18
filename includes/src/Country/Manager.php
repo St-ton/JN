@@ -132,27 +132,28 @@ class Manager
             );
             return 'overview';
         }
-        if ($iso !== '' && Request::postInt('save') === 1) {
-            $country                          = new \stdClass();
-            $country->cISO                    = $iso;
-            $country->cDeutsch                = $postData['cDeutsch'];
-            $country->cEnglisch               = $postData['cEnglisch'];
-            $country->nEU                     = $postData['nEU'];
-            $country->cKontinent              = $postData['cKontinent'];
-            $country->bPermitRegistration     = $postData['bPermitRegistration'];
-            $country->bRequireStateDefinition = $postData['bRequireStateDefinition'];
-
-            $this->db->insert('tland', $country);
-            $this->cache->flush(CountryService::CACHE_ID);
-            $this->alertService->addAlert(
-                Alert::TYPE_SUCCESS,
-                \sprintf(__('successCountryAdd'), $iso),
-                'successCountryAdd',
-                ['saveInSession' => true]
-            );
-
-            $this->refreshPage();
+        if ($iso === '' || Request::postInt('save') !== 1) {
+            return 'add';
         }
+        $country                          = new \stdClass();
+        $country->cISO                    = $iso;
+        $country->cDeutsch                = $postData['cDeutsch'];
+        $country->cEnglisch               = $postData['cEnglisch'];
+        $country->nEU                     = $postData['nEU'];
+        $country->cKontinent              = $postData['cKontinent'];
+        $country->bPermitRegistration     = $postData['bPermitRegistration'];
+        $country->bRequireStateDefinition = $postData['bRequireStateDefinition'];
+
+        $this->db->insert('tland', $country);
+        $this->cache->flush(CountryService::CACHE_ID);
+        $this->alertService->addAlert(
+            Alert::TYPE_SUCCESS,
+            \sprintf(__('successCountryAdd'), $iso),
+            'successCountryAdd',
+            ['saveInSession' => true]
+        );
+
+        $this->refreshPage();
 
         return 'add';
     }
@@ -184,31 +185,32 @@ class Manager
      */
     private function updateCountry(array $postData): string
     {
-        if (Request::postInt('save') === 1) {
-            $country                          = new \stdClass();
-            $country->cDeutsch                = $postData['cDeutsch'];
-            $country->cEnglisch               = $postData['cEnglisch'];
-            $country->nEU                     = $postData['nEU'];
-            $country->cKontinent              = $postData['cKontinent'];
-            $country->bPermitRegistration     = $postData['bPermitRegistration'];
-            $country->bRequireStateDefinition = $postData['bRequireStateDefinition'];
-
-            $this->db->update(
-                'tland',
-                'cISO',
-                $postData['cISO'],
-                $country
-            );
-            $this->cache->flush(CountryService::CACHE_ID);
-            $this->alertService->addAlert(
-                Alert::TYPE_SUCCESS,
-                \sprintf(__('successCountryUpdate'), $postData['cISO']),
-                'successCountryUpdate',
-                ['saveInSession' => true]
-            );
-
-            $this->refreshPage();
+        if (Request::postInt('save') !== 1) {
+            return 'update';
         }
+        $country                          = new \stdClass();
+        $country->cDeutsch                = $postData['cDeutsch'];
+        $country->cEnglisch               = $postData['cEnglisch'];
+        $country->nEU                     = $postData['nEU'];
+        $country->cKontinent              = $postData['cKontinent'];
+        $country->bPermitRegistration     = $postData['bPermitRegistration'];
+        $country->bRequireStateDefinition = $postData['bRequireStateDefinition'];
+
+        $this->db->update(
+            'tland',
+            'cISO',
+            $postData['cISO'],
+            $country
+        );
+        $this->cache->flush(CountryService::CACHE_ID);
+        $this->alertService->addAlert(
+            Alert::TYPE_SUCCESS,
+            \sprintf(__('successCountryUpdate'), $postData['cISO']),
+            'successCountryUpdate',
+            ['saveInSession' => true]
+        );
+
+        $this->refreshPage();
 
         return 'update';
     }

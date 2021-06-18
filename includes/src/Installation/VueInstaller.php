@@ -5,8 +5,6 @@ namespace JTL\Installation;
 use Exception;
 use JTL\DB\NiceDB;
 use JTL\Exceptions\InvalidEntityNameException;
-use jtl\Wizard\Question;
-use jtl\Wizard\ShopWizard;
 use stdClass;
 use Systemcheck\Environment;
 use Systemcheck\Platform\Filesystem;
@@ -90,48 +88,11 @@ class VueInstaller
             case 'installdemodata':
                 $this->installDemoData();
                 break;
-            case 'wizard':
-                $this->executeWizard();
-                break;
             default:
                 break;
         }
 
         return $this->output();
-    }
-
-    /**
-     * @return $this
-     */
-    private function executeWizard(): self
-    {
-        if ($this->initNiceDB($this->post['db'])) {
-            $step   = (int)($this->post['stepId'] ?? 0);
-            $wizard = new ShopWizard($step);
-            if (isset($this->post['action']) && $this->post['action'] === 'setData') {
-                foreach ($wizard->getQuestions() as $idx => $question) {
-                    $questionId = $question->getID();
-                    if ($question->getType() === Question::TYPE_BOOL) {
-                        $wizard->answerQuestionByID(
-                            $questionId,
-                            isset($this->post['data'][$questionId]) && $this->post['data'][$questionId] === 'true'
-                        );
-                    } elseif (isset($this->post['data'][$questionId])) {
-                        $wizard->answerQuestionByID($questionId, $this->post['data'][$questionId]);
-                    }
-                }
-                $wizard->getStep()->finishStep(false);
-            }
-            if ($step > 0) {
-                $this->payload['questions'] = $wizard->getFilteredQuestions();
-            } else {
-                $this->payload['isSynced'] = $wizard->getStep()->isSync();
-                $this->payload['step']     = $wizard->getStep();
-            }
-        }
-        $this->sendResponse();
-
-        return $this;
     }
 
     /**

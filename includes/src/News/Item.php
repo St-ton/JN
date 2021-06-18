@@ -762,6 +762,16 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
+    public function getPreviewImageBaseName(): string
+    {
+        \preg_match('/\/(.[^\/]*?)\./s', $this->getPreviewImage(), $matches);
+
+        return $matches[1] ?? 'preview';
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getPreviewImages(): array
     {
         return $this->previewImages;

@@ -9,6 +9,11 @@ namespace JTL;
 class XML
 {
     /**
+     * @var string|null
+     */
+    private static $lastParseError;
+
+    /**
      * @var resource
      */
     public $parser;
@@ -51,6 +56,7 @@ class XML
         \xml_set_object($this->parser, $this);
         \xml_set_element_handler($this->parser, 'open', 'close');
         \xml_set_character_data_handler($this->parser, 'data');
+        $this->checkError();
     }
 
     /**
@@ -73,6 +79,7 @@ class XML
     {
         $parser = new self($encoding);
         $data   = $parser->parse($xml);
+        $parser->checkError();
         $parser->destruct();
 
         return $data;
@@ -175,5 +182,28 @@ class XML
     private function countNumericItems(&$array): int
     {
         return \is_array($array) ? \count(\array_filter(\array_keys($array), '\is_numeric')) : 0;
+    }
+
+    /**
+     * @return void
+     */
+    private function checkError(): void
+    {
+        $errCode = \xml_get_error_code($this->parser);
+        if ($errCode !== \XML_ERROR_NONE) {
+            $lineNumber           = \xml_get_current_line_number($this->parser);
+            self::$lastParseError = \xml_error_string($errCode)
+                . ($lineNumber !== false ? '- on line: ' . $lineNumber : '');
+        } else {
+            self::$lastParseError = '';
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public static function getLastParseError(): string
+    {
+        return self::$lastParseError ?? '';
     }
 }

@@ -351,6 +351,7 @@ class Admin
     {
         $data = $this->manager->getLicenseData();
         $smarty->assign('hasAuth', $this->auth->isValid())
+            ->assign('tokenOwner', $data->owner ?? null)
             ->assign('lastUpdate', $data->timestamp ?? null);
     }
 

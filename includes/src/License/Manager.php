@@ -240,6 +240,7 @@ class Manager
                 'verify'  => true
             ]
         );
+
         return \json_decode($res->getBody()->getContents());
     }
 

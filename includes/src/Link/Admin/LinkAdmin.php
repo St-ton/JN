@@ -746,6 +746,6 @@ final class LinkAdmin
      */
     private function specialChars(string $text): string
     {
-        return \htmlspecialchars($text, \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
+        return \htmlspecialchars($text, \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET, false);
     }
 }

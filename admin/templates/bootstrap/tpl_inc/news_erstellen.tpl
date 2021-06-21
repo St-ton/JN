@@ -3,7 +3,7 @@
 </style>
 {include file='tpl_inc/seite_header.tpl' cTitel=__('news') cBeschreibung=__('newsDesc')}
 <div id="content">
-    <form name="news" method="post" action="news.php" enctype="multipart/form-data">
+    <form name="news" method="post" action="news.php" enctype="multipart/form-data" class="hide-fileinput-remove">
         {$jtl_token}
         <input type="hidden" name="news" value="1" />
         <input type="hidden" name="news_speichern" value="1" />
@@ -140,7 +140,7 @@
                                     fileMaxSize={$nMaxFileSize}
                                     fileInitialPreview="[
                                             {if !empty($oNews->getPreviewImage())}
-                                            '<img src=\"{$shopURL}/{$oNews->getPreviewImage()}\" class=\"preview-image\"/>',
+                                            '<img src=\"{$shopURL}/{$oNews->getPreviewImage()}\" class=\"preview-image\"/><a class=\"d-block\" href=\"news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$oNews->getPreviewImageBaseName()}&token={$smarty.session.jtl_token}\" title=\"{__('delete')}\"><i class=\"fas fa-trash-alt\"></i></a>',
                                             {/if}
                                         ]"
                                     fileInitialPreviewConfig="[

@@ -101,20 +101,26 @@ class ImageCleanupCommand extends Command
         if (!\is_string($backup)) {
             $backup = null;
         }
+        $backupPath = $backup !== null ? $this->sanitizeBackupPath($backup) : null;
         foreach ($this->getCollectors() as $collector) {
+            $collector->setBackup($backupPath);
             if ($simulate === true) {
                 foreach ($collector->simulate() as $file) {
                     ++$deleted;
                     $io->writeln('Would delete file ' . $file);
                 }
             } else {
-                foreach ($collector->collect($backup) as $file) {
-                    ++$deleted;
-                    $io->writeln('Deleted file ' . $file);
-                    foreach ($collector->getErrors() as $error) {
-                        $io->warning($error);
-                        ++$errors;
+                $collector->collect();
+                $deletedFiles = $collector->getDeletedFiles();
+                $deleted      = \count($deletedFiles);
+                if ($io->isVerbose()) {
+                    foreach ($deletedFiles as $file) {
+                        $io->writeln('Deleted file ' . $file);
                     }
+                }
+                foreach ($collector->getErrors() as $error) {
+                    $io->warning($error);
+                    ++$errors;
                 }
             }
         }
@@ -128,5 +134,14 @@ class ImageCleanupCommand extends Command
         }
 
         return 0;
+    }
+
+    /**
+     * @param string|null $backupPath
+     * @return string|null
+     */
+    protected function sanitizeBackupPath(?string $backupPath): ?string
+    {
+        return $backupPath === null ? null : \rtrim($backupPath, '/') . '/';
     }
 }

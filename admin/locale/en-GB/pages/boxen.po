@@ -272,3 +272,6 @@ msgstr "Plug-in"
 
 msgid "warningNovaSidebar"
 msgstr "The NOVA template only supports boxes in the left side bar for the page type \"Item overview\". Please use a personalised template if you also want to display boxes in the left side bar on other pages."
+
+msgid "notAllowedForPage"
+msgstr "Cannot display the box on the selected page."

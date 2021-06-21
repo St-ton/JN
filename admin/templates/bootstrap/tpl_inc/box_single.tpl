@@ -1,4 +1,5 @@
-<tr class="{if isset($borderTop)}tr-divider-top {elseif isset($borderBottom) && $borderBottom}tr-divider-bottom{/if}">
+<tr class="{if isset($borderTop)}tr-divider-top {elseif isset($borderBottom) && $borderBottom}tr-divider-bottom{/if} {if $disabled}text-muted{/if}"
+    {if $disabled}data-toggle="tooltip" title="{__('notAllowedForPage')}"{/if}>
     {assign var=isActive value=$oBox->getFilter($nPage) === true || is_array($oBox->getFilter($nPage))}
     {if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}
         <td class="{if !$isActive} inactive text-muted{/if}">
@@ -24,6 +25,7 @@
                    name="aktiv[]"
                    id="box-id-{$oBox->getID()}"
                    data-box-id="{$oBox->getID()}"
+                   {if $disabled}disabled{/if}
                    {if ($nPage !== 0 && $oBox->isVisibleOnPage($nPage)) || ($nPage === 0 && \Functional\true($oBox->getFilter()))}checked="checked"{/if} value="{$oBox->getID()}">
             <label class="custom-control-label" for="box-id-{$oBox->getID()}"></label>
         </div>
@@ -53,14 +55,14 @@
     <td>
         <div class="input-group form-counter min-w-sm">
             <div class="input-group-prepend">
-                <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                <button type="button" class="btn btn-outline-secondary border-0" data-count-down {if $disabled}disabled{/if}>
                     <span class="fas fa-minus"></span>
                 </button>
             </div>
             <input class="form-control text-right" type="number" name="sort[]" value="{$oBox->getSort($nPage)}"
-                   autocomplete="off" id="{$oBox->getSort($nPage)}">
+                   autocomplete="off" id="{$oBox->getSort($nPage)}" {if $disabled}disabled{/if}>
             <div class="input-group-append">
-                <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                <button type="button" class="btn btn-outline-secondary border-0" data-count-up {if $disabled}disabled{/if}>
                     <span class="fas fa-plus"></span>
                 </button>
             </div>
@@ -70,7 +72,7 @@
         <div class="btn-group">
             <a href="boxen.php?action=del&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
                title="{__('remove')}"
-               class="btn btn-link px-2 delete-confirm"
+               class="btn btn-link px-2 delete-confirm {if $disabled}disabled{/if}"
                data-modal-body="{__('confirmDeleteBox')|sprintf:"{if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}Container #{$oBox->getID()}{else}{$oBox->getTitle()}{/if}"}"
                data-toggle="tooltip">
                 <span class="icon-hover">
@@ -81,7 +83,7 @@
             <a href="boxen.php?action=edit_mode&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
                title="{__('edit')}"
                data-toggle="tooltip"
-               class="btn btn-link px-2{if empty($oBox->getType()) || ($oBox->getType() !== \JTL\Boxes\Type::TEXT && $oBox->getType() !== \JTL\Boxes\Type::LINK && $oBox->getType() !== \JTL\Boxes\Type::CATBOX)} disabled{/if}">
+               class="btn btn-link px-2{if $disabled || empty($oBox->getType()) || ($oBox->getType() !== \JTL\Boxes\Type::TEXT && $oBox->getType() !== \JTL\Boxes\Type::LINK && $oBox->getType() !== \JTL\Boxes\Type::CATBOX)} disabled{/if}">
                 <span class="icon-hover">
                     <span class="fal fa-edit"></span>
                     <span class="fas fa-edit"></span>

@@ -352,7 +352,7 @@ class BoxService implements BoxServiceInterface
             $boxData = $this->db->getObjects(
                 'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, 
                        tboxen.cTitel, tboxen.ePosition, tboxensichtbar.kSeite, tboxensichtbar.nSort, 
-                       tboxensichtbar.cFilter, tboxvorlage.eTyp, 
+                       tboxensichtbar.cFilter, tboxvorlage.eTyp, tboxvorlage.cVerfuegbar,
                        tboxvorlage.cName, tboxvorlage.cTemplate, tplugin.nStatus AS pluginStatus,
                        GROUP_CONCAT(tboxensichtbar.nSort) AS sortBypageIDs,
                        GROUP_CONCAT(tboxensichtbar.kSeite) AS pageIDs,

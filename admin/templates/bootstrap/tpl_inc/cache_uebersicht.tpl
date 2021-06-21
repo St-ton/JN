@@ -486,11 +486,7 @@
                                                 <input class="form-control" type="text" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
                                             {/if}
                                         </div>
-                                        {if $setting->cBeschreibung}
-                                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                                                {getHelpDesc cDesc=$setting->cBeschreibung}
-                                            </div>
-                                        {/if}
+                                        {include file='snippets/einstellungen_icons.tpl' cnf=$setting}
                                     </div>
                                 {/if}
                             {/foreach}
@@ -533,11 +529,7 @@
                                                     <input class="form-control" type="text" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
                                                 {/if}
                                             </div>
-                                            {if $setting->cBeschreibung}
-                                                <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                                                    {getHelpDesc cDesc=$setting->cBeschreibung}
-                                                </div>
-                                            {/if}
+                                            {include file='snippets/einstellungen_icons.tpl' cnf=$setting}
                                         </div>
                                     {/if}
                                 {/foreach}

@@ -35,10 +35,10 @@ if (Form::validateToken()) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
         $smarty->assign('cTab', 'config');
     } elseif (Request::verifyGPDataString('action') === 'delselected') {
-        if (isset($_REQUEST['selected'])) {
+        if (isset($_POST['selected'])) {
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
-                Jtllog::deleteIDs($_REQUEST['selected']) . __('successEntriesDelete'),
+                Jtllog::deleteIDs($_POST['selected']) . __('successEntriesDelete'),
                 'successEntriesDelete'
             );
         }

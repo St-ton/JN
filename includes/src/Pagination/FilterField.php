@@ -29,7 +29,7 @@ abstract class FilterField
     protected $titleLong = '';
 
     /**
-     * @var string
+     * @var string|array
      */
     protected $column = '';
 
@@ -50,7 +50,7 @@ abstract class FilterField
      * @param string       $type
      * @param string|array $title - either title-string for this field or a pair of short title and long title
      * @param string|array $column
-     * @param string       $defaultValue
+     * @param string|int   $defaultValue
      */
     public function __construct($filter, string $type, $title, $column, $defaultValue = '')
     {

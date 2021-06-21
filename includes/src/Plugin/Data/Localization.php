@@ -93,7 +93,7 @@ class Localization
     }
 
     /**
-     * compatability dummy
+     * compatibility dummy
      */
     public function setTranslations(): void
     {

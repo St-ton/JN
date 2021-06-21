@@ -313,11 +313,10 @@ final class Upload
         $pathInfo = \pathinfo($name);
 
         return \is_array($pathInfo)
-            ? \in_array(
+            && \in_array(
                 $pathInfo['extension'],
                 ['gif', 'png', 'jpg', 'jpeg', 'bmp', 'jpe'],
                 true
-            )
-            : false;
+            );
     }
 }

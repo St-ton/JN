@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Checkout\Kupon;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -32,34 +31,38 @@ $errors      = [];
 $res         = handleCsvImportAction('kupon', static function ($obj, &$importDeleteDone, $importType = 2) {
     $db          = Shop::Container()->getDB();
     $couponNames = [];
-    $cols        = Shop::Container()->getDB()->queryPrepared(
+    $cols        = $db->getCollection(
         'SELECT `column_name` AS name
             FROM information_schema.columns 
             WHERE `table_schema` = :sma
                 AND `table_name` = :tn',
-        ['sma' => DB_NAME, 'tn' => 'tkupon'],
-        ReturnType::COLLECTION
-    )->map(function ($e) {
+        ['sma' => DB_NAME, 'tn' => 'tkupon']
+    )->map(static function ($e) {
         return $e->name;
     })->toArray();
 
     foreach (get_object_vars($obj) as $key => $val) {
         if (mb_strpos($key, 'cName_') === 0) {
-            $couponNames[mb_substr($key, 6)] = $val;
+            $couponNames[mb_substr($key, 6)] = Text::filterXSS($val);
             unset($obj->$key);
         }
         if (!in_array($key, $cols, true)) {
             unset($obj->$key);
         }
     }
-    if (!isset($obj->cCode) || !isset($obj->nGanzenWKRabattieren) || !isset($obj->cKunden) || !isset($obj->cKategorien)
-        || !isset($obj->cHersteller) || !isset($obj->cArtikel)
-    ) {
+    if (!isset(
+        $obj->cCode,
+        $obj->nGanzenWKRabattieren,
+        $obj->cKunden,
+        $obj->cKategorien,
+        $obj->cHersteller,
+        $obj->cArtikel
+    )) {
         return false;
     }
     if ($importType === 0 && $importDeleteDone === false) {
-        $db->query('TRUNCATE TABLE tkupon', ReturnType::AFFECTED_ROWS);
-        $db->query('TRUNCATE TABLE tkuponsprache', ReturnType::AFFECTED_ROWS);
+        $db->query('TRUNCATE TABLE tkupon');
+        $db->query('TRUNCATE TABLE tkuponsprache');
         $importDeleteDone = true;
     }
 
@@ -68,7 +71,9 @@ $res         = handleCsvImportAction('kupon', static function ($obj, &$importDel
     }
 
     unset($obj->dLastUse);
-    $couponID = $db->insert('tkupon', $obj);
+    $obj->cCode = Text::filterXSS($obj->cCode);
+    $obj->cName = Text::filterXSS($obj->cName);
+    $couponID   = $db->insert('tkupon', $obj);
     if ($couponID === 0) {
         return false;
     }
@@ -156,10 +161,7 @@ if ($action === 'bearbeiten') {
     }
 }
 if ($action === 'bearbeiten') {
-    $taxClasses    = Shop::Container()->getDB()->query(
-        'SELECT kSteuerklasse, cName FROM tsteuerklasse',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    $taxClasses    = Shop::Container()->getDB()->getObjects('SELECT kSteuerklasse, cName FROM tsteuerklasse');
     $manufacturers = getManufacturers($coupon->cHersteller);
     $categories    = getCategories($coupon->cKategorien);
     $customerIDs   = array_filter(
@@ -175,7 +177,7 @@ if ($action === 'bearbeiten') {
         foreach ($languages as $language) {
             $postVarName                = 'cName_' . $language->getIso();
             $names[$language->getIso()] = Request::postVar($postVarName, '') !== ''
-                ? $_POST[$postVarName]
+                ? Text::filterXSS($_POST[$postVarName])
                 : $coupon->cName;
         }
     }

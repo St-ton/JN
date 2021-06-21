@@ -5,7 +5,6 @@ namespace JTL\Mail\Admin;
 use InvalidArgumentException;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
@@ -13,8 +12,8 @@ use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
-use JTL\Mail\Template\TemplateInterface;
 use PHPMailer\PHPMailer\Exception;
+use Shop;
 use stdClass;
 
 /**
@@ -190,9 +189,16 @@ final class Controller
                         if (!\mb_strrpos($files['cPDFS_' . $langID]['name'][$i], ';')
                             && !\mb_strrpos($post['cPDFNames_' . $langID][$i], ';')
                         ) {
-                            $cPlugin = $model->getPluginID() > 0 ? '_' . $model->getPluginID() : '';
-                            $target  = self::UPLOAD_DIR . $model->getID() .
-                                '_' . $langID . '_' . ($i + 1) . $cPlugin . '.pdf';
+                            $finfo  = \finfo_open(\FILEINFO_MIME_TYPE);
+                            $mime   = \finfo_file($finfo, $files['cPDFS_' . $langID]['tmp_name'][$i]);
+                            $plugin = $model->getPluginID() > 0 ? '_' . $model->getPluginID() : '';
+                            $target = self::UPLOAD_DIR . $model->getID() .
+                                '_' . $langID . '_' . ($i + 1) . $plugin . '.pdf';
+                            if (!\in_array($mime, ['application/pdf', 'application/x-pdf'], true)) {
+                                $this->addErrorMessage(__('errorFileSave'));
+
+                                return self::ERROR_UPLOAD_FILE_SAVE;
+                            }
                             if (!\move_uploaded_file($files['cPDFS_' . $langID]['tmp_name'][$i], $target)) {
                                 $this->addErrorMessage(__('errorFileSave'));
 
@@ -201,7 +207,7 @@ final class Controller
                             $filenames[$langID][] = $post['cPDFNames_' . $langID][$i];
                             $pdfFiles[$langID][]  = $model->getID()
                                 . '_' . $langID
-                                . '_' . ($i + 1) . $cPlugin . '.pdf';
+                                . '_' . ($i + 1) . $plugin . '.pdf';
                         } else {
                             $this->addErrorMessage(__('errorFileNameMissing'));
 
@@ -317,16 +323,14 @@ final class Controller
         $this->db->queryPrepared(
             'DELETE FROM temailvorlagesprache
                 WHERE kEmailvorlage = :tid',
-            ['tid' => $templateID],
-            ReturnType::DEFAULT
+            ['tid' => $templateID]
         );
         $this->db->queryPrepared(
             'INSERT INTO temailvorlagesprache
                 SELECT *
                 FROM temailvorlagespracheoriginal
                 WHERE temailvorlagespracheoriginal.kEmailvorlage = :tid',
-            ['tid' => $templateID],
-            ReturnType::DEFAULT
+            ['tid' => $templateID]
         );
         $data = $this->db->select(
             'temailvorlage',
@@ -392,7 +396,7 @@ final class Controller
     }
 
     /**
-     * @return TemplateInterface[]
+     * @return Model[]
      */
     public function getAllTemplates(): array
     {

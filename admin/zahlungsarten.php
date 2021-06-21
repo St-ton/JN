@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Checkout\Zahlungsart;
 use JTL\Checkout\ZahlungsLog;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\PaymentMethod;
 use JTL\Helpers\Request;
@@ -31,6 +30,7 @@ $defaultCurrency = $db->select('twaehrung', 'cStandard', 'Y');
 $step            = 'uebersicht';
 $alertHelper     = Shop::Container()->getAlertService();
 $recommendations = new Manager($alertHelper, Manager::SCOPE_BACKEND_PAYMENT_PROVIDER);
+$filteredPost    = Text::filterXSS($_POST);
 if (Request::verifyGPCDataInt('checkNutzbar') === 1) {
     PaymentMethod::checkPaymentMethodAvailability();
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPaymentMethodCheck'), 'successPaymentMethodCheck');
@@ -62,7 +62,6 @@ if ($action !== 'logreset' && Request::verifyGPCDataInt('kZahlungsart') > 0 && F
         $step = 'delete';
     }
 }
-
 if (Request::postInt('einstellungen_bearbeiten') === 1
     && Request::postInt('kZahlungsart') > 0
     && Form::validateToken()
@@ -76,9 +75,9 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
     $nMailSenden       = Request::postInt('nMailSenden');
     $nMailSendenStorno = Request::postInt('nMailSendenStorno');
     $nMailBits         = 0;
-    if (is_array($_POST['kKundengruppe'])) {
-        $cKundengruppen = Text::createSSK($_POST['kKundengruppe']);
-        if (in_array(0, $_POST['kKundengruppe'])) {
+    if (is_array($filteredPost['kKundengruppe'])) {
+        $cKundengruppen = Text::createSSK($filteredPost['kKundengruppe']);
+        if (in_array(0, $filteredPost['kKundengruppe'])) {
             unset($cKundengruppen);
         }
     }
@@ -92,33 +91,33 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
         $cKundengruppen = '';
     }
 
-    $nWaehrendBestellung = Request::postInt('nWaehrendBestellung', $paymentMethod->nWaehrendBestellung);
+    $duringCheckout = Request::postInt('nWaehrendBestellung', $paymentMethod->nWaehrendBestellung);
 
     $upd                      = new stdClass();
     $upd->cKundengruppen      = $cKundengruppen;
     $upd->nSort               = Request::postInt('nSort');
     $upd->nMailSenden         = $nMailBits;
-    $upd->cBild               = $_POST['cBild'];
-    $upd->nWaehrendBestellung = $nWaehrendBestellung;
+    $upd->cBild               = $filteredPost['cBild'];
+    $upd->nWaehrendBestellung = $duringCheckout;
     $db->update('tzahlungsart', 'kZahlungsart', (int)$paymentMethod->kZahlungsart, $upd);
     // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
     if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
         $kPlugin     = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
-        $Conf        = $db->query(
+        $conf        = $db->getObjects(
             "SELECT *
                 FROM tplugineinstellungenconf
-                WHERE cWertName LIKE '" . $paymentMethod->cModulId . "\_%'
+                WHERE cWertName LIKE :mid 
                 AND cConf = 'Y' ORDER BY nSort",
-            ReturnType::ARRAY_OF_OBJECTS
+            ['mid' => $paymentMethod->cModulId . '\_%']
         );
-        $configCount = count($Conf);
+        $configCount = count($conf);
         for ($i = 0; $i < $configCount; $i++) {
             $aktWert          = new stdClass();
             $aktWert->kPlugin = $kPlugin;
-            $aktWert->cName   = $Conf[$i]->cWertName;
-            $aktWert->cWert   = $_POST[$Conf[$i]->cWertName];
+            $aktWert->cName   = $conf[$i]->cWertName;
+            $aktWert->cWert   = $filteredPost[$conf[$i]->cWertName];
 
-            switch ($Conf[$i]->cInputTyp) {
+            switch ($conf[$i]->cInputTyp) {
                 case 'kommazahl':
                     $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
                     break;
@@ -133,27 +132,27 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
             $db->delete(
                 'tplugineinstellungen',
                 ['kPlugin', 'cName'],
-                [$kPlugin, $Conf[$i]->cWertName]
+                [$kPlugin, $conf[$i]->cWertName]
             );
             $db->insert('tplugineinstellungen', $aktWert);
         }
     } else {
-        $Conf        = $db->selectAll(
+        $conf        = $db->selectAll(
             'teinstellungenconf',
             ['cModulId', 'cConf'],
             [$paymentMethod->cModulId, 'Y'],
             '*',
             'nSort'
         );
-        $configCount = count($Conf);
+        $configCount = count($conf);
         for ($i = 0; $i < $configCount; ++$i) {
             $aktWert                        = new stdClass();
-            $aktWert->cWert                 = $_POST[$Conf[$i]->cWertName];
-            $aktWert->cName                 = $Conf[$i]->cWertName;
+            $aktWert->cWert                 = $filteredPost[$conf[$i]->cWertName];
+            $aktWert->cName                 = $conf[$i]->cWertName;
             $aktWert->kEinstellungenSektion = CONF_ZAHLUNGSARTEN;
             $aktWert->cModulId              = $paymentMethod->cModulId;
 
-            switch ($Conf[$i]->cInputTyp) {
+            switch ($conf[$i]->cInputTyp) {
                 case 'kommazahl':
                     $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
                     break;
@@ -168,27 +167,24 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
             $db->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
-                [CONF_ZAHLUNGSARTEN, $Conf[$i]->cWertName]
+                [CONF_ZAHLUNGSARTEN, $conf[$i]->cWertName]
             );
             $db->insert('teinstellungen', $aktWert);
-            Shop::Container()->getGetText()->localizeConfig($Conf[$i]);
+            Shop::Container()->getGetText()->localizeConfig($conf[$i]);
         }
     }
-
-    if (!isset($localized)) {
-        $localized = new stdClass();
-    }
+    $localized               = new stdClass();
     $localized->kZahlungsart = Request::postInt('kZahlungsart');
     foreach (LanguageHelper::getAllLanguages() as $lang) {
         $langCode               = $lang->getCode();
         $localized->cISOSprache = $langCode;
         $localized->cName       = $paymentMethod->cName;
-        if ($_POST['cName_' . $langCode]) {
-            $localized->cName = $_POST['cName_' . $langCode];
+        if ($filteredPost['cName_' . $langCode]) {
+            $localized->cName = $filteredPost['cName_' . $langCode];
         }
-        $localized->cGebuehrname     = $_POST['cGebuehrname_' . $langCode];
-        $localized->cHinweisText     = $_POST['cHinweisText_' . $langCode];
-        $localized->cHinweisTextShop = $_POST['cHinweisTextShop_' . $langCode];
+        $localized->cGebuehrname     = $filteredPost['cGebuehrname_' . $langCode];
+        $localized->cHinweisText     = $filteredPost['cHinweisText_' . $langCode];
+        $localized->cHinweisTextShop = $filteredPost['cHinweisTextShop_' . $langCode];
 
         $db->delete(
             'tzahlungsartsprache',
@@ -209,80 +205,80 @@ if ($step === 'einstellen') {
         $step = 'uebersicht';
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPaymentMethodNotFound'), 'errorNotFound');
     } else {
+        $paymentMethod->cName = Text::filterXSS($paymentMethod->cName);
         PaymentMethod::activatePaymentMethod($paymentMethod);
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
         if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
-            $Conf        = $db->query(
-                "SELECT *
+            $conf        = $db->getObjects(
+                'SELECT *
                     FROM tplugineinstellungenconf
-                    WHERE cWertName LIKE '" . $paymentMethod->cModulId . "\_%'
-                    ORDER BY nSort",
-                ReturnType::ARRAY_OF_OBJECTS
+                    WHERE cWertName LIKE :vl
+                    ORDER BY nSort',
+                ['vl' => $paymentMethod->cModulId . '\_%']
             );
-            $configCount = count($Conf);
+            $configCount = count($conf);
             for ($i = 0; $i < $configCount; ++$i) {
-                if ($Conf[$i]->cInputTyp === 'selectbox') {
-                    $Conf[$i]->ConfWerte = $db->selectAll(
+                if ($conf[$i]->cInputTyp === 'selectbox') {
+                    $conf[$i]->ConfWerte = $db->selectAll(
                         'tplugineinstellungenconfwerte',
                         'kPluginEinstellungenConf',
-                        (int)$Conf[$i]->kPluginEinstellungenConf,
+                        (int)$conf[$i]->kPluginEinstellungenConf,
                         '*',
                         'nSort'
                     );
-                    foreach (array_keys($Conf[$i]->ConfWerte) as $confKey) {
-                        $Conf[$i]->ConfWerte[$confKey]->cName = __($Conf[$i]->ConfWerte[$confKey]->cName);
+                    foreach (array_keys($conf[$i]->ConfWerte) as $confKey) {
+                        $conf[$i]->ConfWerte[$confKey]->cName = __($conf[$i]->ConfWerte[$confKey]->cName);
                     }
                 }
                 $setValue                = $db->select(
                     'tplugineinstellungen',
                     'kPlugin',
-                    (int)$Conf[$i]->kPlugin,
+                    (int)$conf[$i]->kPlugin,
                     'cName',
-                    $Conf[$i]->cWertName
+                    $conf[$i]->cWertName
                 );
-                $Conf[$i]->gesetzterWert = $setValue->cWert;
-                $Conf[$i]->cName         = __($Conf[$i]->cName);
-                $Conf[$i]->cBeschreibung = __($Conf[$i]->cBeschreibung);
+                $conf[$i]->gesetzterWert = $setValue->cWert;
+                $conf[$i]->cName         = __($conf[$i]->cName);
+                $conf[$i]->cBeschreibung = __($conf[$i]->cBeschreibung);
             }
         } else {
-            $Conf        = $db->selectAll(
+            $conf        = $db->selectAll(
                 'teinstellungenconf',
                 'cModulId',
                 $paymentMethod->cModulId,
                 '*',
                 'nSort'
             );
-            $configCount = count($Conf);
+            $configCount = count($conf);
             for ($i = 0; $i < $configCount; ++$i) {
-                if ($Conf[$i]->cInputTyp === 'selectbox') {
-                    $Conf[$i]->ConfWerte = $db->selectAll(
+                if ($conf[$i]->cInputTyp === 'selectbox') {
+                    $conf[$i]->ConfWerte = $db->selectAll(
                         'teinstellungenconfwerte',
                         'kEinstellungenConf',
-                        (int)$Conf[$i]->kEinstellungenConf,
+                        (int)$conf[$i]->kEinstellungenConf,
                         '*',
                         'nSort'
                     );
-                    Shop::Container()->getGetText()->localizeConfigValues($Conf[$i], $Conf[$i]->ConfWerte);
+                    Shop::Container()->getGetText()->localizeConfigValues($conf[$i], $conf[$i]->ConfWerte);
                 }
                 $setValue                = $db->select(
                     'teinstellungen',
                     'kEinstellungenSektion',
                     CONF_ZAHLUNGSARTEN,
                     'cName',
-                    $Conf[$i]->cWertName
+                    $conf[$i]->cWertName
                 );
-                $Conf[$i]->gesetzterWert = $setValue->cWert ?? null;
-                Shop::Container()->getGetText()->localizeConfig($Conf[$i]);
+                $conf[$i]->gesetzterWert = $setValue->cWert ?? null;
+                Shop::Container()->getGetText()->localizeConfig($conf[$i]);
             }
         }
 
-        $customerGroups = $db->query(
+        $customerGroups = $db->getObjects(
             'SELECT *
                 FROM tkundengruppe
-                ORDER BY cName',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY cName'
         );
-        $smarty->assign('Conf', $Conf)
+        $smarty->assign('Conf', $conf)
                ->assign('zahlungsart', $paymentMethod)
                ->assign('kundengruppen', $customerGroups)
                ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($paymentMethod))
@@ -317,19 +313,14 @@ if ($step === 'einstellen') {
                ->assign('paginationPaymentLog', $paginationPaymentLog);
     }
 } elseif ($step === 'payments') {
-    if (isset($_POST['action'], $_POST['kEingang_arr'])
-        && $_POST['action'] === 'paymentwawireset'
+    if (isset($filteredPost['action'], $filteredPost['kEingang_arr'])
+        && $filteredPost['action'] === 'paymentwawireset'
         && Form::validateToken()
     ) {
-        $incomingIDs = $_POST['kEingang_arr'];
-        array_walk($incomingIDs, static function (&$i) {
-            $i = (int)$i;
-        });
         $db->query(
             "UPDATE tzahlungseingang
                 SET cAbgeholt = 'N'
-                WHERE kZahlungseingang IN (" . implode(',', $incomingIDs) . ')',
-            ReturnType::QUERYSINGLE
+                WHERE kZahlungseingang IN (" . implode(',', array_map('\intval', $filteredPost['kEingang_arr'])) . ')'
         );
     }
 
@@ -344,7 +335,7 @@ if ($step === 'einstellen') {
     $filter->assemble();
 
     $method        = $db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
-    $incoming      = $db->query(
+    $incoming      = $db->getObjects(
         'SELECT ze.*, b.kZahlungsart, b.cBestellNr, k.kKunde, k.cVorname, k.cNachname, k.cMail
             FROM tzahlungseingang AS ze
                 JOIN tbestellung AS b
@@ -353,8 +344,7 @@ if ($step === 'einstellen') {
                     ON b.kKunde = k.kKunde
             WHERE b.kZahlungsart = ' . $paymentMethodID . ' ' .
         ($filter->getWhereSQL() !== '' ? 'AND ' . $filter->getWhereSQL() : '') . '
-            ORDER BY dZeit DESC',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY dZeit DESC'
     );
     $pagination    = (new Pagination('payments' . $paymentMethodID))
         ->setItemArray($incoming)
@@ -428,13 +418,12 @@ if ($step === 'uebersicht') {
                 );
             }
         }
-        $method->nEingangAnzahl = (int)$db->executeQueryPrepared(
+        $method->nEingangAnzahl = (int)$db->getSingleObject(
             'SELECT COUNT(*) AS `cnt`
                 FROM `tzahlungseingang` AS ze
                     JOIN `tbestellung` AS b ON ze.`kBestellung` = b.`kBestellung`
                 WHERE b.`kZahlungsart` = :kzahlungsart',
-            ['kzahlungsart' => $method->kZahlungsart],
-            ReturnType::SINGLE_OBJECT
+            ['kzahlungsart' => $method->kZahlungsart]
         )->cnt;
         $method->nLogCount      = ZahlungsLog::count($method->cModulId);
         $method->nErrorLogCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR);

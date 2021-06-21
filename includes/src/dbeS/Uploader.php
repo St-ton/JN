@@ -41,7 +41,7 @@ class Uploader extends NetSyncHandler
                                 $paths['filename'],
                                 '/',
                                 $ext,
-                                \date_format(\date_create($upload->dErstellt), 'U'),
+                                (int)\date_format(\date_create($upload->dErstellt), 'U'),
                                 $upload->nBytes
                             );
                         }

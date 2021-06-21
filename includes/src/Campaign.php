@@ -2,7 +2,6 @@
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use stdClass;
@@ -70,14 +69,14 @@ class Campaign
      */
     public function loadFromDB(int $id): self
     {
-        $campaign = Shop::Container()->getDB()->query(
+        $campaign = Shop::Container()->getDB()->getSingleObject(
             "SELECT tkampagne.*, DATE_FORMAT(tkampagne.dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
                 FROM tkampagne
-                WHERE tkampagne.kKampagne = " . $id,
-            ReturnType::SINGLE_OBJECT
+                WHERE tkampagne.kKampagne = :cid",
+            ['cid' => $id]
         );
 
-        if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
+        if ($campaign !== null && $campaign->kKampagne > 0) {
             foreach (\array_keys(\get_object_vars($campaign)) as $member) {
                 $this->$member = $campaign->$member;
             }
@@ -92,11 +91,11 @@ class Campaign
     public function insertInDB(): int
     {
         $obj             = new stdClass();
-        $obj->cName      = $this->cName;
-        $obj->cParameter = $this->cParameter;
-        $obj->cWert      = $this->cWert;
-        $obj->nDynamisch = $this->nDynamisch;
-        $obj->nAktiv     = $this->nAktiv;
+        $obj->cName      = Text::filterXSS($this->cName);
+        $obj->cParameter = Text::filterXSS($this->cParameter);
+        $obj->cWert      = Text::filterXSS($this->cWert);
+        $obj->nDynamisch = (int)$this->nDynamisch;
+        $obj->nAktiv     = (int)$this->nAktiv;
         $obj->dErstellt  = $this->dErstellt;
         $this->kKampagne = Shop::Container()->getDB()->insert('tkampagne', $obj);
         if (\mb_convert_case($this->dErstellt, MB_CASE_LOWER) === 'now()') {
@@ -113,13 +112,13 @@ class Campaign
     public function updateInDB(): int
     {
         $obj             = new stdClass();
-        $obj->cName      = $this->cName;
-        $obj->cParameter = $this->cParameter;
-        $obj->cWert      = $this->cWert;
-        $obj->nDynamisch = $this->nDynamisch;
-        $obj->nAktiv     = $this->nAktiv;
+        $obj->cName      = Text::filterXSS($this->cName);
+        $obj->cParameter = Text::filterXSS($this->cParameter);
+        $obj->cWert      = Text::filterXSS($this->cWert);
+        $obj->nDynamisch = (int)$this->nDynamisch;
+        $obj->nAktiv     = (int)$this->nAktiv;
         $obj->dErstellt  = $this->dErstellt;
-        $obj->kKampagne  = $this->kKampagne;
+        $obj->kKampagne  = (int)$this->kKampagne;
 
         $res = Shop::Container()->getDB()->update('tkampagne', 'kKampagne', $obj->kKampagne, $obj);
         if (\mb_convert_case($this->dErstellt, MB_CASE_LOWER) === 'now()') {
@@ -138,20 +137,20 @@ class Campaign
         if ($this->kKampagne <= 0) {
             return false;
         }
-        Shop::Container()->getDB()->query(
+        Shop::Container()->getDB()->queryPrepared(
             'DELETE tkampagne, tkampagnevorgang
                 FROM tkampagne
                 LEFT JOIN tkampagnevorgang 
                     ON tkampagnevorgang.kKampagne = tkampagne.kKampagne
-                WHERE tkampagne.kKampagne = ' . (int)$this->kKampagne,
-            ReturnType::AFFECTED_ROWS
+                WHERE tkampagne.kKampagne = :cid',
+            ['cid' => (int)$this->kKampagne]
         );
 
         return true;
     }
 
     /**
-     * @return array|mixed
+     * @return array
      */
     public static function getAvailable(): array
     {
@@ -301,5 +300,15 @@ class Campaign
         }
 
         return 0;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->cParameter === 'jtl'
+            ? __($this->cName)
+            : $this->cName;
     }
 }

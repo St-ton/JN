@@ -2,7 +2,6 @@
 
 namespace JTL\Customer;
 
-use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 use stdClass;
@@ -67,17 +66,14 @@ class CustomerAttribute
     public static function load(int $id): self
     {
         $instance = new self();
-        $instance->setRecord(Shop::Container()->getDB()->queryPrepared(
+        $instance->setRecord(Shop::Container()->getDB()->getSingleObject(
             'SELECT tkundenattribut.kKundenAttribut, tkundenattribut.kKunde, tkundenattribut.kKundenfeld,
                    tkundenfeld.cName, tkundenfeld.cWawi, tkundenattribut.cWert, tkundenfeld.nSort,
                    IF(COALESCE(tkundenattribut.cWert, \'\') = \'\', 1, tkundenfeld.nEditierbar) nEditierbar
                 FROM tkundenattribut
                 INNER JOIN tkundenfeld ON tkundenfeld.kKundenfeld = tkundenattribut.kKundenfeld
                 WHERE tkundenattribut.kKundenAttribut = :id',
-            [
-                'id' => $id,
-            ],
-            ReturnType::SINGLE_OBJECT
+            ['id' => $id]
         ));
 
         return $instance;
@@ -245,7 +241,7 @@ class CustomerAttribute
      */
     public function setEditable($editable): void
     {
-        $this->editable = $editable ? true : false;
+        $this->editable = (bool)$editable;
     }
 
     /**

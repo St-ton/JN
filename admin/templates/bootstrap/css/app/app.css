@@ -13177,6 +13177,10 @@ table.sortable thead {
   cursor: pointer;
 }
 
+tfoot {
+  border-top: 2px solid #bdbdbd;
+}
+
 .tooltip-inner {
   background-color: #435a6b;
   color: #f5f7fa;
@@ -13705,6 +13709,20 @@ body {
   .config-type-number {
     max-width: 300px;
   }
+}
+
+@media (max-width: 991.98px) {
+  #available-widgets {
+    right: 0;
+  }
+}
+
+.first-ml-auto > div:first-child {
+  margin-left: auto;
+}
+
+.second-ml-auto > div:nth-child(2) {
+  margin-left: auto;
 }
 
 #content_wrapper {
@@ -14307,6 +14325,16 @@ body {
     margin-left: auto;
     padding-left: 1rem;
   }
+}
+
+.backend-search-section .icon-wrapper {
+  margin-right: 0.5rem;
+}
+.backend-search-section .icon-wrapper svg {
+  background-color: #3098d6;
+  border-radius: 10rem;
+  padding: 1px 3px;
+  vertical-align: sub;
 }
 
 h1, .h1 {

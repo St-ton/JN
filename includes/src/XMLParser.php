@@ -11,10 +11,10 @@ use JTL\Helpers\Text;
 class XMLParser
 {
     /**
-     * @param $fileName
+     * @param string $fileName
      * @return array
      */
-    public function parse($fileName): array
+    public function parse(string $fileName): array
     {
         $xml = \file_get_contents($fileName);
 
@@ -29,7 +29,7 @@ class XMLParser
      * @param string $encoding
      * @return array|null
      */
-    public function unserializeXML(&$xml, $encoding = 'UTF-8'): ?array
+    public function unserializeXML(&$xml, string $encoding = 'UTF-8'): ?array
     {
         $parser = new XML($encoding);
         $data   = $parser->parse($xml);

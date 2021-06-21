@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 
-{if 'DASHBOARD_VIEW'|permission}
+{if count($oActiveWidget_arr) > 0 || count($oAvailableWidget_arr) > 0}
     <script type="text/javascript">
 
     function addWidget(kWidget) {
@@ -16,7 +16,7 @@
     });
     </script>
 
-    <div id="content">
+    <div id="content" class="dashboard-wrapper">
         <div class="row p-2">
             <div class="col">
                 <h1 class="content-header-headline">{__('dashboard')}</h1>

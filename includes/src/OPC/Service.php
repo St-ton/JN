@@ -4,7 +4,6 @@ namespace JTL\OPC;
 
 use Exception;
 use JTL\Backend\AdminIO;
-use JTL\DB\DbInterface;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
 use JTL\Filter\Items\Characteristic;
@@ -46,7 +45,6 @@ class Service
     public function __construct(DB $db)
     {
         $this->db = $db;
-
         Shop::Container()->getGetText()
             ->setLanguage(Shop::getCurAdminLangTag())
             ->loadAdminLocale('pages/opc');
@@ -91,6 +89,9 @@ class Service
             'Cancel',
             'opcPageLocked',
             'dbUpdateNeeded',
+            'indefinitePeriodOfTime',
+            'notScheduled',
+            'now',
         ];
 
         foreach ([13, 14, 7] as $i => $stepcount) {
@@ -236,7 +237,7 @@ class Service
      * @param array  $data
      * @throws Exception
      */
-    public function saveBlueprint($name, $data): void
+    public function saveBlueprint(string $name, array $data): void
     {
         $blueprint = (new Blueprint())->deserialize(['name' => $name, 'content' => $data]);
         $this->db->saveBlueprint($blueprint);
@@ -272,7 +273,7 @@ class Service
      * @return PortletInstance
      * @throws Exception
      */
-    public function getPortletInstance($data): PortletInstance
+    public function getPortletInstance(array $data): PortletInstance
     {
         if ($data['class'] === 'MissingPortlet') {
             return $this->createPortletInstance($data['missingClass'])
@@ -288,19 +289,19 @@ class Service
      * @return string
      * @throws Exception
      */
-    public function getPortletPreviewHtml($data): string
+    public function getPortletPreviewHtml(array $data): string
     {
         return $this->getPortletInstance($data)->getPreviewHtml();
     }
 
     /**
-     * @param string $portletClass
-     * @param string $missingClass
-     * @param array  $props
+     * @param string      $portletClass
+     * @param string|null $missingClass
+     * @param array       $props
      * @return string
      * @throws Exception
      */
-    public function getConfigPanelHtml($portletClass, $missingClass, $props): string
+    public function getConfigPanelHtml(string $portletClass, ?string $missingClass, array $props): string
     {
         return $this->getPortletInstance([
             'class'        => $portletClass,

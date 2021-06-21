@@ -14,6 +14,7 @@
         {else}
             {$grid   = '6'}
             {$gridmd = '4'}
+            {$gridxl = '3'}
             {$eqHeightClasses = 'row-eq-height row-eq-img-height'}
         {/if}
         {if $inContainer === false}
@@ -25,7 +26,7 @@
             itemtype="http://schema.org/ItemList"
             style="{$instance->getStyleString()}"}
             {foreach $productlist as $Artikel}
-                {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}"
+                {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" xl="{if isset($gridxl)}{$gridxl}{/if}"
                      class="product-wrapper {if !($style === 'list' && $Artikel@last)}mb-4{/if}"
                      itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
                     {if $style === 'list'}

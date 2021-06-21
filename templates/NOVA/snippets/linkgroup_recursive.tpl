@@ -1,6 +1,7 @@
 {block name='snippets-linkgroup-recursive'}
     {if isset($linkgroupIdentifier) && (!isset($i) || isset($limit) && $i < $limit)}
         {strip}
+            {$layout = $layout|default:'dropdown'}
             {if !isset($i)}
                 {assign var=i value=0}
             {/if}
@@ -23,6 +24,7 @@
                 {get_navigation linkgroupIdentifier=$linkgroupIdentifier assign='links'}
             {/if}
             {if !empty($links)}
+                {if $layout === 'dropdown'}
                 {block name='snippets-linkgroup-recursive-list'}
                     {foreach $links as $li}
                         {assign var=hasItems value=$li->getChildLinks()->count() > 0 && (($i+1) < $limit)}
@@ -65,6 +67,64 @@
                         {/if}
                     {/foreach}
                 {/block}
+                {else}
+                    {block name='snippets-linkgroup-recursive-mega'}
+                        {block name='snippets-linkgroup-mega-recursive-main-link'}
+                            {link href=$mainLink->getURL()
+                                nofollow=$mainLink->getNoFollow()
+                                class="d-lg-block {if $firstChild}submenu-headline submenu-headline-toplevel{/if} {$subCategory} {if $mainLink->getChildLinks()->count() > 0}nav-link dropdown-toggle{/if}"
+                                aria=["expanded"=>"false"]}
+                                <span class="text-truncate d-block">
+                                    {$mainLink->getName()}
+                                </span>
+                            {/link}
+                        {/block}
+                        {if $mainLink->getChildLinks()->count() > 0 && $Einstellungen.template.megamenu.show_subcategories !== 'N'}
+                            {block name='snippets-linkgroup-recursive-mega-child-content'}
+                                <div class="categories-recursive-dropdown dropdown-menu">
+                                    {nav}
+                                    {block name='snippets-linkgroup-recursive-mega-child-header'}
+                                        <li class="nav-item d-lg-none">
+                                            {link href=$mainLink->getURL() nofollow=true}
+                                                <strong class="nav-mobile-heading">
+                                                    {lang key='menuShow' printf=$mainLink->getName()}
+                                                </strong>
+                                            {/link}
+                                        </li>
+                                    {/block}
+                                    {block name='snippets-linkgroup-recursive-mega-child-links'}
+                                        {foreach $mainLink->getChildLinks() as $link}
+                                            {if $link->getChildLinks()->count() > 0}
+                                                {block name='snippets-linkgroup-recursive-mega-child-link-child'}
+                                                    <li class="nav-item dropdown">
+                                                        {include file='snippets/linkgroup_recursive.tpl'
+                                                            linkgroupIdentifier='mega'
+                                                            limit=100
+                                                            tplscope='megamenu'
+                                                            layout='list'
+                                                            mainLink=$link
+                                                            firstChild=false
+                                                            subCategory=$subCategory + 1}
+                                                    </li>
+                                                {/block}
+                                            {else}
+                                                {block name='snippets-linkgroup-recursive-mega-child-link-no-child'}
+                                                    {navitem href=$link->getURL()
+                                                        nofollow=$link->getNoFollow()}
+                                                        <span class="text-truncate d-block">
+                                                            {$link->getName()}
+                                                        </span>
+                                                    {/navitem}
+                                                {/block}
+                                            {/if}
+                                        {/foreach}
+                                    {/block}
+                                    {/nav}
+                                </div>
+                            {/block}
+                        {/if}
+                    {/block}
+                {/if}
             {/if}
         {/strip}
     {/if}

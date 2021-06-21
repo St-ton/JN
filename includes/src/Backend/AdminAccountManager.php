@@ -6,11 +6,11 @@ use DateTime;
 use Exception;
 use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\Media\Image;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -71,36 +71,34 @@ class AdminAccountManager
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getAdminList(): array
     {
-        return $this->db->query(
+        return $this->db->getObjects(
             'SELECT * FROM tadminlogin
                 LEFT JOIN tadminlogingruppe
                     ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe
-                ORDER BY kAdminlogin',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY kAdminlogin'
         );
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getAdminGroups(): array
     {
-        return $this->db->query(
+        return $this->db->getObjects(
             'SELECT tadminlogingruppe.*, COUNT(tadminlogin.kAdminlogingruppe) AS nCount
                 FROM tadminlogingruppe
                 LEFT JOIN tadminlogin
                     ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe
-                GROUP BY tadminlogingruppe.kAdminlogingruppe',
-            ReturnType::ARRAY_OF_OBJECTS
+                GROUP BY tadminlogingruppe.kAdminlogingruppe'
         );
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getAdminDefPermissions(): array
     {
@@ -118,10 +116,10 @@ class AdminAccountManager
                     continue;
                 }
                 if (\is_object($secondEntry)) {
-                    if (!isset($perms[$secondEntry->permissions])) {
-                        $perms[$secondEntry->permissions] = (object)['name' => $secondName];
-                    } else {
+                    if (isset($perms[$secondEntry->permissions])) {
                         $perms[$secondEntry->permissions]->name = $secondName;
+                    } else {
+                        $perms[$secondEntry->permissions] = (object)['name' => $secondName];
                     }
 
                     $permMainTMP[] = (object)[
@@ -135,10 +133,10 @@ class AdminAccountManager
                         if (!empty($thirdEntry->excludeFromAccessView)) {
                             continue;
                         }
-                        if (!isset($perms[$thirdEntry->permissions])) {
-                            $perms[$thirdEntry->permissions] = (object)['name' => $thirdName];
-                        } else {
+                        if (isset($perms[$thirdEntry->permissions])) {
                             $perms[$thirdEntry->permissions]->name = $thirdName;
+                        } else {
+                            $perms[$thirdEntry->permissions] = (object)['name' => $thirdName];
                         }
                         $permSecondTMP[] = $perms[$thirdEntry->permissions];
                         unset($perms[$thirdEntry->permissions]);
@@ -262,7 +260,6 @@ class AdminAccountManager
 
         $handledKeys = [];
         foreach ($extAttribs as $key => $value) {
-            $key      = Text::filterXSS($key);
             $longText = null;
             if (\is_array($value) && count($value) > 0) {
                 $shortText = Text::filterXSS($value[0]);
@@ -283,19 +280,18 @@ class AdminAccountManager
                     'loginName'  => $key,
                     'attribVal'  => $shortText,
                     'attribText' => $longText ?? null
-                ],
-                ReturnType::DEFAULT
+                ]
             ) === 0) {
                 $this->addError(\sprintf(__('errorKeyChange'), $key));
             }
             $handledKeys[] = $key;
         }
         // nicht (mehr) vorhandene Attribute löschen
-        $this->db->query(
-            'DELETE FROM tadminloginattribut
-            WHERE kAdminlogin = ' . (int)$account->kAdminlogin . "
-                AND cName NOT IN ('" . \implode("', '", $handledKeys) . "')",
-            ReturnType::DEFAULT
+        $this->db->queryPrepared(
+            "DELETE FROM tadminloginattribut
+                WHERE kAdminlogin = :aid
+                    AND cName NOT IN ('" . \implode("', '", $handledKeys) . "')",
+            ['aid' => (int)$account->kAdminlogin]
         );
 
         $adminAccount = Shop::Container()->getAdminAccount();
@@ -363,23 +359,28 @@ class AdminAccountManager
      */
     public function uploadAvatarImage(array $tmpFile, string $attribName)
     {
-        $imgType = \array_search($tmpFile['type'][$attribName], [
+        $file    = [
+            'type'     => $tmpFile['type'][$attribName],
+            'tmp_name' => $tmpFile['tmp_name'][$attribName],
+            'error'    => $tmpFile['error'][$attribName],
+            'name'     => $tmpFile['name'][$attribName]
+        ];
+        $imgType = \array_search($file['type'], [
             \IMAGETYPE_JPEG => \image_type_to_mime_type(\IMAGETYPE_JPEG),
             \IMAGETYPE_PNG  => \image_type_to_mime_type(\IMAGETYPE_PNG),
             \IMAGETYPE_BMP  => \image_type_to_mime_type(\IMAGETYPE_BMP),
             \IMAGETYPE_GIF  => \image_type_to_mime_type(\IMAGETYPE_GIF),
         ], true);
-
-        if ($imgType !== false) {
-            $imagePath = \PFAD_MEDIA_IMAGE . 'avatare/';
-            $imageName = \time() . '_' .\pathinfo($tmpFile['name'][$attribName], \PATHINFO_FILENAME)
-                . \image_type_to_extension($imgType);
-            if (\is_dir(\PFAD_ROOT . $imagePath)
-                || (\mkdir(\PFAD_ROOT . $imagePath, 0755) && \is_dir(\PFAD_ROOT . $imagePath))
-            ) {
-                if (\move_uploaded_file($tmpFile['tmp_name'][$attribName], \PFAD_ROOT . $imagePath . $imageName)) {
-                    return '/' . $imagePath . $imageName;
-                }
+        if ($imgType === false || !Image::isImageUpload($file)) {
+            return false;
+        }
+        $imagePath = \PFAD_MEDIA_IMAGE . 'avatare/';
+        $uploadDir = \PFAD_ROOT . $imagePath;
+        $imageName = \time() . '_' . \pathinfo($file['name'], \PATHINFO_FILENAME)
+            . \image_type_to_extension($imgType);
+        if (\is_dir($uploadDir) || (\mkdir($uploadDir, 0755) && \is_dir($uploadDir))) {
+            if (\move_uploaded_file($file['tmp_name'], \PFAD_ROOT . $imagePath . $imageName)) {
+                return '/' . $imagePath . $imageName;
             }
         }
 
@@ -387,15 +388,15 @@ class AdminAccountManager
     }
 
     /**
-     * @param stdClass $oAccount
+     * @param stdClass $account
      * @return bool
      */
-    public function deleteAttributes(stdClass $oAccount): bool
+    public function deleteAttributes(stdClass $account): bool
     {
         return $this->db->delete(
             'tadminloginattribut',
             'kAdminlogin',
-            (int)$oAccount->kAdminlogin
+            (int)$account->kAdminlogin
         ) >= 0;
     }
 
@@ -541,12 +542,11 @@ class AdminAccountManager
             }
             if ($tmpAcc->kAdminlogin > 0) {
                 $oldAcc     = $this->getAdminLogin($tmpAcc->kAdminlogin);
-                $groupCount = (int)$this->db->query(
-                    'SELECT COUNT(*) AS nCount
+                $groupCount = (int)$this->db->getSingleObject(
+                    'SELECT COUNT(*) AS cnt
                         FROM tadminlogin
-                        WHERE kAdminlogingruppe = 1',
-                    ReturnType::SINGLE_OBJECT
-                )->nCount;
+                        WHERE kAdminlogingruppe = 1'
+                )->cnt;
                 if ($oldAcc !== null
                     && (int)$oldAcc->kAdminlogingruppe === \ADMINGROUP
                     && (int)$tmpAcc->kAdminlogingruppe !== \ADMINGROUP
@@ -666,12 +666,11 @@ class AdminAccountManager
             'content'  => &$extContent
         ]);
 
-        $groupCount = (int)$this->db->query(
-            'SELECT COUNT(*) AS nCount
+        $groupCount = (int)$this->db->getSingleObject(
+            'SELECT COUNT(*) AS cnt
                 FROM tadminlogin
-                WHERE kAdminlogingruppe = 1',
-            ReturnType::SINGLE_OBJECT
-        )->nCount;
+                WHERE kAdminlogingruppe = 1'
+        )->cnt;
         $this->smarty->assign('oAccount', $account)
             ->assign('nAdminCount', $groupCount)
             ->assign('extContent', $extContent);
@@ -685,17 +684,13 @@ class AdminAccountManager
     public function actionAccountDelete(): string
     {
         $adminID    = Request::postInt('id');
-        $groupCount = (int)$this->db->query(
-            'SELECT COUNT(*) AS nCount
+        $groupCount = (int)$this->db->getSingleObject(
+            'SELECT COUNT(*) AS cnt
                 FROM tadminlogin
-                WHERE kAdminlogingruppe = 1',
-            ReturnType::SINGLE_OBJECT
-        )->nCount;
+                WHERE kAdminlogingruppe = 1'
+        )->cnt;
         $account    = $this->db->select('tadminlogin', 'kAdminlogin', $adminID);
-
-        if (isset($account->kAdminlogin)
-            && (int)$account->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin
-        ) {
+        if ($account !== null && (int)$account->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
             $this->addError(__('errorSelfDelete'));
         } elseif (\is_object($account)) {
             if ((int)$account->kAdminlogingruppe === \ADMINGROUP && $groupCount <= 1) {
@@ -821,14 +816,13 @@ class AdminAccountManager
     public function actionGroupDelete(): string
     {
         $groupID = Request::postInt('id');
-        $data    = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS member_count
+        $count   = (int)$this->db->getSingleObject(
+            'SELECT COUNT(*) AS cnt
                 FROM tadminlogin
                 WHERE kAdminlogingruppe = :gid',
-            ['gid' => $groupID],
-            ReturnType::SINGLE_OBJECT
-        );
-        if ((int)$data->member_count !== 0) {
+            ['gid' => $groupID]
+        )->cnt;
+        if ($count !== 0) {
             $this->addError(__('errorGroupDeleteCustomer'));
 
             return 'group_redirect';

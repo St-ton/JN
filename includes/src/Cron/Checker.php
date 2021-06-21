@@ -3,7 +3,6 @@
 namespace JTL\Cron;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -81,7 +80,7 @@ class Checker
      */
     public function check(): array
     {
-        $jobs = $this->db->query(
+        $jobs = $this->db->getObjects(
             "SELECT tcron.*
                 FROM tcron
                 LEFT JOIN tjobqueue 
@@ -93,8 +92,7 @@ class Checker
                         )
                     )
                     AND tcron.startDate < NOW()
-                    AND tjobqueue.jobQueueID IS NULL",
-            ReturnType::ARRAY_OF_OBJECTS
+                    AND tjobqueue.jobQueueID IS NULL"
         );
         $this->logger->debug(\sprintf('Found %d new cron jobs.', \count($jobs)));
 

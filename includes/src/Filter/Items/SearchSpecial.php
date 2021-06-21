@@ -2,7 +2,6 @@
 
 namespace JTL\Filter\Items;
 
-use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
@@ -86,13 +85,12 @@ class SearchSpecial extends AbstractFilter
             if (!\is_array($val)) {
                 $val = [$val];
             }
-            $seoData = $this->productFilter->getDB()->query(
+            $seoData = $this->productFilter->getDB()->getObjects(
                 "SELECT tseo.cSeo, tseo.kSprache
                     FROM tseo
                     WHERE cKey = 'suchspecial' 
                         AND kKey IN (" . \implode(', ', $val) . ')
-                    ORDER BY kSprache',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY kSprache'
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
@@ -397,7 +395,7 @@ class SearchSpecial extends AbstractFilter
                     break;
             }
             $qry    = $this->productFilter->getFilterSQL()->getBaseQuery($state);
-            $qryRes = $this->productFilter->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS);
+            $qryRes = $this->productFilter->getDB()->getObjects($qry);
             if (($count = \count($qryRes)) > 0) {
                 if ($baseValue === $i) {
                     continue;

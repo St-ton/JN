@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Extensions\SelectionWizard\Group;
 use JTL\Extensions\SelectionWizard\Question;
 use JTL\Extensions\SelectionWizard\Wizard;
@@ -19,6 +18,7 @@ $step        = '';
 $nice        = Nice::getInstance();
 $tab         = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
+$postData    = Text::filterXSS($_POST);
 
 Shop::Container()->getGetText()->loadConfigLocales();
 setzeSprache();
@@ -31,14 +31,14 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
         $tab = Request::verifyGPDataString('tab');
     }
-    if (isset($_POST['a']) && $csrfOK) {
-        if ($_POST['a'] === 'newGrp') {
+    if (isset($postData['a']) && $csrfOK) {
+        if ($postData['a'] === 'newGrp') {
             $step = 'edit-group';
-        } elseif ($_POST['a'] === 'newQuest') {
+        } elseif ($postData['a'] === 'newQuest') {
             $step = 'edit-question';
-        } elseif ($_POST['a'] === 'addQuest') {
+        } elseif ($postData['a'] === 'addQuest') {
             $question->cFrage                  = htmlspecialchars(
-                $_POST['cFrage'],
+                $postData['cFrage'],
                 ENT_COMPAT | ENT_HTML401,
                 JTL_CHARSET
             );
@@ -60,9 +60,9 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $tab = 'uebersicht';
             } elseif (is_array($checks) && count($checks) > 0) {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
-                $smarty->assign('cPost_arr', Text::filterXSS($_POST))
+                $smarty->assign('cPost_arr', $postData)
                     ->assign('cPlausi_arr', $checks)
-                    ->assign('kAuswahlAssistentFrage', (int)($_POST['kAuswahlAssistentFrage'] ?? 0));
+                    ->assign('kAuswahlAssistentFrage', (int)($postData['kAuswahlAssistentFrage'] ?? 0));
             }
         }
     } elseif ($csrfOK && Request::getVar('a') === 'delQuest' && Request::getInt('q') > 0) {
@@ -76,23 +76,23 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $smarty->assign('oFrage', new Question(Request::getInt('q'), false));
     }
 
-    if (isset($_POST['a']) && $csrfOK) {
-        if ($_POST['a'] === 'addGrp') {
+    if (isset($postData['a']) && $csrfOK) {
+        if ($postData['a'] === 'addGrp') {
             $group->kSprache      = $languageID;
             $group->cName         = htmlspecialchars(
-                $_POST['cName'],
+                $postData['cName'],
                 ENT_COMPAT | ENT_HTML401,
                 JTL_CHARSET
             );
-            $group->cBeschreibung = $_POST['cBeschreibung'];
+            $group->cBeschreibung = $postData['cBeschreibung'];
             $group->nAktiv        = Request::postInt('nAktiv');
 
             $checks = [];
             if (Request::postInt('kAuswahlAssistentGruppe') > 0) {
                 $group->kAuswahlAssistentGruppe = Request::postInt('kAuswahlAssistentGruppe');
-                $checks                         = $group->updateGroup($_POST);
+                $checks                         = $group->updateGroup($postData);
             } else {
-                $checks = $group->saveGroup($_POST);
+                $checks = $group->saveGroup($postData);
             }
             if ((!is_array($checks) && $checks) || count($checks) === 0) {
                 $step = 'uebersicht';
@@ -101,21 +101,21 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             } elseif (is_array($checks) && count($checks) > 0) {
                 $step = 'edit-group';
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
-                $smarty->assign('cPost_arr', Text::filterXSS($_POST))
+                $smarty->assign('cPost_arr', $postData)
                     ->assign('cPlausi_arr', $checks)
                     ->assign('kAuswahlAssistentGruppe', Request::postInt('kAuswahlAssistentGruppe'));
             }
-        } elseif ($_POST['a'] === 'delGrp') {
-            if ($group->deleteGroup($_POST['kAuswahlAssistentGruppe_arr'] ?? [])) {
+        } elseif ($postData['a'] === 'delGrp') {
+            if ($group->deleteGroup($postData['kAuswahlAssistentGruppe_arr'] ?? [])) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successGroupDeleted'), 'successGroupDeleted');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorGroupDeleted'), 'errorGroupDeleted');
             }
-        } elseif ($_POST['a'] === 'saveSettings') {
+        } elseif ($postData['a'] === 'saveSettings') {
             $step = 'uebersicht';
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
-                saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $_POST),
+                saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $postData),
                 'saveSettings'
             );
         }
@@ -139,12 +139,11 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $join   = ' JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                             AND tmerkmalsprache.kSprache = ' . $languageID;
         }
-        $attributes = Shop::Container()->getDB()->query(
+        $attributes = Shop::Container()->getDB()->getObjects(
             'SELECT ' . $select . '
                 FROM tmerkmal
                 ' . $join . '
-                ORDER BY tmerkmal.nSort',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY tmerkmal.nSort'
         );
         $smarty->assign('oMerkmal_arr', $attributes)
             ->assign(

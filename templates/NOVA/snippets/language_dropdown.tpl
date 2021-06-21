@@ -5,21 +5,21 @@
         right=true
         text="
             {foreach $smarty.session.Sprachen as $language}
-                {if $language->kSprache == $smarty.session.kSprache}
+                {if $language->getId() == $smarty.session.kSprache}
                     {block name='snippets-language-dropdown-text'}
-                        {$language->iso639|upper}
+                        {$language->getIso639()|upper}
                     {/block}
                 {/if}
             {/foreach}"
         }
             {foreach $smarty.session.Sprachen as $language}
                 {block name='snippets-language-dropdown-item'}
-                    {dropdownitem href="{$language->cURL}"
+                    {dropdownitem href="{$language->getUrl()}"
                         class="link-lang"
-                        data=["iso"=>$language->cISO]
+                        data=["iso"=>$language->getIso()]
                         rel="nofollow"
-                        active=($language->kSprache == $smarty.session.kSprache)}
-                        {$language->iso639|upper}
+                        active=($language->getId() == $smarty.session.kSprache)}
+                        {$language->getIso639()|upper}
                     {/dropdownitem}
                 {/block}
             {/foreach}

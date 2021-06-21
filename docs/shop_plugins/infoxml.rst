@@ -1302,7 +1302,7 @@ und für *Englisch* entsprechend so (``en-US/base.po``):
 In unserem Beispiel haben wir absichtlich den String "*Vielleicht*" weder aufgeführt, noch übersetzt. |br|
 Dies soll verdeutlichen, dass "*Veilleicht*" in allen Sprachen *unverändert* ausgegeben wird.
 
-Anschließend müssen Sie die .po-Dateien nur noch z. B. mit `Poedit <https://poedit.net/PoEdit>`_ zur ``base.mo``
+Anschließend müssen Sie die .po-Dateien nur noch z. B. mit `Poedit <https://poedit.net/>`_ zur ``base.mo``
 kompilieren.
 
 .. note:
@@ -1693,6 +1693,60 @@ Sprachvariablen können auf ihren Ursprungswert zurückgesetzt werden. |br|
 Bei einem Pluginupdate oder beim Deaktivieren eines Plugins bleiben die Sprachvariablen erhalten, die durch den
 Betreiber des Onlineshops angepasst wurden. Erst bei einer Deinstallation des Plugins werden die Sprachvariablen
 endgültig gelöscht.
+
+Nutzung im Plugin
+"""""""""""""""""
+
+Es sei folgendes Beispiel-XML gegeben:
+
+.. code-block:: xml
+    <jtlshopplugin>
+        ...
+        <PluginID>jtl_example_plugin</PluginID>
+    </jtlshopplugin>
+    <Install>
+        <Locales>
+            <Variable>
+                <Name>lang_var_one</Name>
+                <VariableLocalized iso="GER">Ich bin variabel!</VariableLocalized>
+                <VariableLocalized iso="ENG">I'm variable!</VariableLocalized>
+                <Description>Eine Beispiel-Variable.</Description>
+            </Variable>
+            <Variable>
+                <Name>lang_var_two</Name>
+                <Description>Eine Beispiel-Variable mit Platzhalter.</Description>
+                <VariableLocalized iso="GER">Hallo, mein Name ist %s.</VariableLocalized>
+                <VariableLocalized iso="ENG">Hello, my name is %s.</VariableLocalized>
+            </Variable>
+        </Locales>
+        ...
+    </Install>
+
+Der Wert der Sprachvariablen kann via PHP auf folgende Weise ausgegeben werden:
+
+JTL-Shop 4.x
+""""""""""""
+
+.. code-block:: php
+    $test1 = $oPlugin->oPluginSprachvariableAssoc_arr['lang_var_one']; // hat Wert "Ich bin variabel!"
+    $test2 = sprintf($oPlugin->oPluginSprachvariableAssoc_arr['lang_var_two'], "Peter"); // hat Wert "Hallo, mein Name ist Peter."
+
+JTL-Shop 5.x
+""""""""""""
+
+.. code-block:: php
+    // z.B. innerhalb der Bootstrap.php in der Boot-Methode:
+    $plugin = $this->getPlugin();
+    $test1  = $plugin->getLocalization()->getTranslation('lang_var_one');
+    $test2  = \sprintf($plugin->getLocalization()->getTranslation('lang_var_two'), 'Peter');
+
+
+Ab Shop 5.1.0 können Sprachvariablen direkt innerhalb von Templatedateien genutzt werden.
+Nutzen Sie dafür die Syntax ``{lang key='variablen-name' section='meine-plugin-id'}`` - im Beispiel also
+
+.. code-block:: php
+    {lang var='lang_var_one' section='jtl_example_plugin'}
+    {lang key='lang_var_two' section='jtl_example_plugin' printf='Peter'}
 
 
 .. _label_infoxml_email:

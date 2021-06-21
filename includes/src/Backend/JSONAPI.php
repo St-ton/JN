@@ -2,7 +2,6 @@
 
 namespace JTL\Backend;
 
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
@@ -215,17 +214,16 @@ class JSONAPI
      */
     private function validateTableName(string $table): bool
     {
-        $res = Shop::Container()->getDB()->queryPrepared(
+        $res = Shop::Container()->getDB()->getSingleObject(
             "SELECT `table_name` 
                 FROM information_schema.tables 
                 WHERE `table_type` = 'base table'
                     AND `table_schema` = :sma
                     AND `table_name` = :tn",
-            ['sma' => DB_NAME, 'tn' => $table],
-            ReturnType::SINGLE_OBJECT
+            ['sma' => DB_NAME, 'tn' => $table]
         );
 
-        return $res !== false && $res->table_name === $table;
+        return $res !== null && $res->table_name === $table;
     }
 
     /**
@@ -239,13 +237,12 @@ class JSONAPI
         if (isset($tableRows[$table])) {
             $rows = $tableRows[$table];
         } else {
-            $res  = Shop::Container()->getDB()->queryPrepared(
+            $res  = Shop::Container()->getDB()->getObjects(
                 'SELECT `column_name` 
                     FROM information_schema.columns 
                     WHERE `table_schema` = :sma
                         AND `table_name` = :tn',
-                ['sma' => DB_NAME, 'tn' => $table],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['sma' => DB_NAME, 'tn' => $table]
             );
             $rows = [];
             foreach ($res as $item) {
@@ -318,11 +315,7 @@ class JSONAPI
             }
 
             $result = $this->validateColumnNames($table, $colsToCheck)
-                ? $db->queryPrepared(
-                    $qry,
-                    ['val' => '%' . $searchFor . '%'],
-                    ReturnType::ARRAY_OF_OBJECTS
-                )
+                ? $db->getObjects($qry, ['val' => '%' . $searchFor . '%'])
                 : [];
         } elseif (\is_string($searchIn) && \is_array($searchFor)) {
             // key array select
@@ -337,19 +330,14 @@ class JSONAPI
                     WHERE ' . $searchIn . ' IN (' . \implode(',', \array_fill(0, $count - 1, '?')) . ')
                     ' . ($limit > 0 ? 'LIMIT ' . $limit : '');
             $result = $this->validateColumnNames($table, [$searchIn])
-                ? $db->queryPrepared(
-                    $qry,
-                    $bindValues,
-                    ReturnType::ARRAY_OF_OBJECTS
-                )
+                ? $db->getObjects($qry, $bindValues)
                 : [];
         } elseif ($searchIn === null && $searchFor === null) {
             // select all
-            $result = $db->query(
+            $result = $db->getObjects(
                 'SELECT ' . \implode(',', $columns) . '
                     FROM ' . $table . '
-                    ' . ($limit > 0 ? 'LIMIT ' . $limit : ''),
-                ReturnType::ARRAY_OF_OBJECTS
+                    ' . ($limit > 0 ? 'LIMIT ' . $limit : '')
             );
         } else {
             // invalid arguments

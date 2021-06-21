@@ -10,7 +10,6 @@ use JTL\Backend\Revision;
 use JTL\Cache\JTLCacheInterface;
 use JTL\ContentAuthor;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageModel;
@@ -119,7 +118,7 @@ final class Controller
             $newsItem->nAktiv        = $active;
             $newsItem->dErstellt     = (new DateTime())->format('Y-m-d H:i:s');
             $newsItem->dGueltigVon   = DateTime::createFromFormat('d.m.Y H:i', $dateValidFrom)->format('Y-m-d H:i:00');
-            if ($previewImage !== '') {
+            if ($previewImage !== '' && Image::isImageUpload($_FILES['previewImage'])) {
                 $newsItem->cPreviewImage = $previewImage;
             }
             if ($update === true) {
@@ -226,7 +225,7 @@ final class Controller
             }
             $dir = self::UPLOAD_DIR . $newsItemID;
             if (!\is_dir($dir) && !\mkdir(self::UPLOAD_DIR . $newsItemID) && !\is_dir($dir)) {
-                throw new Exception('Cannot create upload dir: ' . $dir);
+                throw new Exception(__('errorDirCreate') . $dir);
             }
 
             $oldImages = $this->getNewsImages($newsItemID, self::UPLOAD_DIR, false);
@@ -336,7 +335,7 @@ final class Controller
             $date    = DateTime::createFromFormat('Y-m-d H:i:s', $newsData->dGueltigVon);
             $month   = (int)$date->format('m');
             $year    = (int)$date->format('Y');
-            $newsIDs = $this->db->queryPrepared(
+            $newsIDs = $this->db->getObjects(
                 'SELECT kNews
                     FROM tnews
                     WHERE MONTH(dGueltigVon) = :mnth
@@ -344,8 +343,7 @@ final class Controller
                 [
                     'mnth' => $month,
                     'yr'   => $year
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                ]
             );
             if (\count($newsIDs) === 0) {
                 $this->db->queryPrepared(
@@ -361,8 +359,7 @@ final class Controller
                         'cky'  => 'kNewsMonatsUebersicht',
                         'mnth' => $month,
                         'yr'   => $year
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
             }
         }
@@ -395,13 +392,12 @@ final class Controller
      */
     private function getCategoryAndChildrenByID(int $categoryID): array
     {
-        return map($this->db->queryPrepared(
+        return map($this->db->getObjects(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node, tnewskategorie AS parent
                 WHERE node.lft BETWEEN parent.lft AND parent.rght
                     AND parent.kNewsKategorie = :cid',
-            ['cid' => $categoryID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['cid' => $categoryID]
         ), static function ($e) {
             return (int)$e->id;
         });
@@ -413,12 +409,11 @@ final class Controller
      */
     private function deactivateUnassociatedNewsItems(): int
     {
-        return $this->db->query(
+        return $this->db->getAffectedRows(
             'UPDATE tnews 
                 SET nAktiv = 0
                 WHERE kNews > 0 
-                    AND kNews NOT IN (SELECT kNews FROM tnewskategorienews)',
-            ReturnType::AFFECTED_ROWS
+                    AND kNews NOT IN (SELECT kNews FROM tnewskategorienews)'
         );
     }
 
@@ -535,7 +530,7 @@ final class Controller
             $error = true;
             $this->setErrorMsg(__('errorDirCreate') . $dir);
         }
-        if (isset($_FILES['previewImage']['name']) && \mb_strlen($_FILES['previewImage']['name']) > 0) {
+        if (isset($_FILES['previewImage']['name']) && Image::isImageUpload($_FILES['previewImage'])) {
             $this->updateNewsCategoryPreview($_FILES['previewImage'], $oldPreview, $categoryID);
         }
         $this->rebuildCategoryTree(0, 1);
@@ -614,14 +609,21 @@ final class Controller
         $counter    = $this->getLastImageNumber($newsItemID);
         $imageCount = \count($_FILES['Bilder']['name']) + $counter;
         for ($i = $counter; $i < $imageCount; ++$i) {
-            if (!empty($_FILES['Bilder']['size'][$i - $counter])
-                && $_FILES['Bilder']['error'][$i - $counter] === \UPLOAD_ERR_OK
-            ) {
+            if (!empty($_FILES['Bilder']['size'][$i - $counter])) {
+                $upload     = [
+                    'size'     => $_FILES['Bilder']['size'][$i - $counter],
+                    'error'    => $_FILES['Bilder']['error'][$i - $counter],
+                    'type'     => $_FILES['Bilder']['type'][$i - $counter],
+                    'name'     => $_FILES['Bilder']['name'][$i - $counter],
+                    'tmp_name' => $_FILES['Bilder']['tmp_name'][$i - $counter],
+                ];
                 $info       = \pathinfo($_FILES['Bilder']['name'][$i - $counter]);
                 $oldName    = $info['filename'];
                 $newName    = Image::getCleanFilename($oldName);
                 $uploadFile = self::UPLOAD_DIR . $newsItemID . '/' . $newName . '.' . $info['extension'];
-                \move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $counter], $uploadFile);
+                if (Image::isImageUpload($upload)) {
+                    \move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $counter], $uploadFile);
+                }
             }
         }
 
@@ -629,11 +631,11 @@ final class Controller
     }
 
     /**
-     * @param array $customerGroups
-     * @param array $categories
+     * @param array|null $customerGroups
+     * @param array|null $categories
      * @return array
      */
-    private function pruefeNewsPost($customerGroups, $categories): array
+    private function pruefeNewsPost(?array $customerGroups, ?array $categories): array
     {
         $validation = [];
         if (!\is_array($customerGroups) || \count($customerGroups) === 0) {
@@ -652,9 +654,8 @@ final class Controller
     public function getAllNews(): Collection
     {
         $itemList = new ItemList($this->db);
-        $ids      = map($this->db->query(
-            'SELECT kNews FROM tnews',
-            ReturnType::ARRAY_OF_OBJECTS
+        $ids      = map($this->db->getObjects(
+            'SELECT kNews FROM tnews'
         ), static function ($e) {
             return (int)$e->kNews;
         });
@@ -671,15 +672,14 @@ final class Controller
     public function getNonActivatedComments(): Collection
     {
         $itemList = new CommentList($this->db);
-        $ids      = map($this->db->query(
+        $ids      = map($this->db->getObjects(
             'SELECT tnewskommentar.kNewsKommentar AS id
                 FROM tnewskommentar
                 JOIN tnews 
                     ON tnews.kNews = tnewskommentar.kNews
                 JOIN tnewssprache t 
                     ON tnews.kNews = t.kNews
-                WHERE tnewskommentar.nAktiv = 0',
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE tnewskommentar.nAktiv = 0'
         ), static function ($e) {
             return (int)$e->id;
         });
@@ -695,15 +695,14 @@ final class Controller
     public function getAllNewsCategories(bool $showOnlyActive = false): Collection
     {
         $itemList = new CategoryList($this->db);
-        $ids      = map($this->db->query(
+        $ids      = map($this->db->getObjects(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node 
                 INNER JOIN tnewskategorie AS parent
                 WHERE node.lvl > 0 
                     AND parent.lvl > 0 ' . ($showOnlyActive ? ' AND node.nAktiv = 1 ' : '') .
             ' GROUP BY node.kNewsKategorie
-                ORDER BY node.lft, node.nSort ASC',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY node.lft, node.nSort ASC'
         ), static function ($e) {
             return (int)$e->id;
         });
@@ -819,13 +818,13 @@ final class Controller
                 continue;
             }
             \unlink($fileinfo->getPathname());
-            if ($imageName === 'preview') {
+            if ($imageName === 'preview' || \mb_strpos($imageName, '_preview') !== false) {
                 $upd                = new stdClass();
                 $upd->cPreviewImage = '';
-                if (\mb_strpos($uploadDir, \PFAD_NEWSKATEGORIEBILDER) === false) {
-                    $this->db->update('tnews', 'kNews', $id, $upd);
-                } else {
+                if (\mb_strpos($uploadDir, \PFAD_NEWSKATEGORIEBILDER) !== false) {
                     $this->db->update('tnewskategorie', 'kNewsKategorie', $id, $upd);
+                } else {
+                    $this->db->update('tnews', 'kNews', $id, $upd);
                 }
             }
 

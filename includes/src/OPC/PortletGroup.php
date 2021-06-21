@@ -23,13 +23,9 @@ class PortletGroup
      * @param string $name
      * @throws \Exception
      */
-    public function __construct($name)
+    public function __construct(string $name)
     {
-        if ($name === '') {
-            $this->name = 'No Group';
-        } else {
-            $this->name = $name;
-        }
+        $this->name = $name === '' ? 'No Group' : $name;
     }
 
     /**

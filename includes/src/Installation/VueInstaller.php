@@ -4,10 +4,7 @@ namespace JTL\Installation;
 
 use Exception;
 use JTL\DB\NiceDB;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\InvalidEntityNameException;
-use jtl\Wizard\Question;
-use jtl\Wizard\ShopWizard;
 use stdClass;
 use Systemcheck\Environment;
 use Systemcheck\Platform\Filesystem;
@@ -91,48 +88,11 @@ class VueInstaller
             case 'installdemodata':
                 $this->installDemoData();
                 break;
-            case 'wizard':
-                $this->executeWizard();
-                break;
             default:
                 break;
         }
 
         return $this->output();
-    }
-
-    /**
-     * @return $this
-     */
-    private function executeWizard(): self
-    {
-        if ($this->initNiceDB($this->post['db'])) {
-            $step   = (int)($this->post['stepId'] ?? 0);
-            $wizard = new ShopWizard($step);
-            if (isset($this->post['action']) && $this->post['action'] === 'setData') {
-                foreach ($wizard->getQuestions() as $idx => $question) {
-                    $questionId = $question->getID();
-                    if ($question->getType() === Question::TYPE_BOOL) {
-                        $wizard->answerQuestionByID(
-                            $questionId,
-                            isset($this->post['data'][$questionId]) && $this->post['data'][$questionId] === 'true'
-                        );
-                    } elseif (isset($this->post['data'][$questionId])) {
-                        $wizard->answerQuestionByID($questionId, $this->post['data'][$questionId]);
-                    }
-                }
-                $wizard->getStep()->finishStep(false);
-            }
-            if ($step > 0) {
-                $this->payload['questions'] = $wizard->getFilteredQuestions();
-            } else {
-                $this->payload['isSynced'] = $wizard->getStep()->isSync();
-                $this->payload['step']     = $wizard->getStep();
-            }
-        }
-        $this->sendResponse();
-
-        return $this;
     }
 
     /**
@@ -204,7 +164,7 @@ class VueInstaller
     private function doInstall(): self
     {
         if ($this->initNiceDB($this->post['db'])) {
-            $this->db->query('SET FOREIGN_KEY_CHECKS=0', ReturnType::DEFAULT);
+            $this->db->query('SET FOREIGN_KEY_CHECKS=0');
             $schema = \PFAD_ROOT . 'install/initial_schema.sql';
             if (!\file_exists($schema)) {
                 $this->responseMessage[] = 'File does not exists: ' . $schema;
@@ -214,7 +174,7 @@ class VueInstaller
             $blowfishKey = $this->getUID(30);
             $this->writeConfigFile($this->post['db'], $blowfishKey);
             $this->payload['secretKey'] = $blowfishKey;
-            $this->db->query('SET FOREIGN_KEY_CHECKS=1', ReturnType::DEFAULT);
+            $this->db->query('SET FOREIGN_KEY_CHECKS=1');
         }
 
         if ($this->cli) {
@@ -317,7 +277,7 @@ ini_set('display_errors', 0);" . "\n";
             ) {
                 $query .= $line;
                 if (\preg_match('/;\s*$/', $line)) {
-                    $result = $this->db->executeQuery($query, ReturnType::QUERYSINGLE);
+                    $result = $this->db->getPDOStatement($query);
                     if (!$result) {
                         $this->responseStatus    = false;
                         $this->responseMessage[] = $this->db->getErrorMessage() .
@@ -393,7 +353,7 @@ ini_set('display_errors', 0);" . "\n";
                     $res->error = true;
                     $res->msg   = 'cannotConnect';
                 }
-                $obj = $db->executeQuery("SHOW TABLES LIKE 'tsynclogin'", 1);
+                $obj = $db->query("SHOW TABLES LIKE 'tsynclogin'", 1);
                 if ($obj !== false) {
                     $res->error = true;
                     $res->msg   = 'shopExists';
@@ -457,7 +417,7 @@ ini_set('display_errors', 0);" . "\n";
     /**
      * @param int    $length
      * @param string $seed
-     * @return bool|string
+     * @return string
      */
     private function getUID(int $length = 40, string $seed = ''): string
     {

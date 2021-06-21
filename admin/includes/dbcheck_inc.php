@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Backend\DirManager;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Text;
@@ -49,11 +48,10 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
         $dbStructure =& $dbStruct['extended'];
 
         if (version_compare($mysqlVersion->innodb->version, '5.6', '>=')) {
-            $dbStatus = $db->queryPrepared(
+            $dbStatus = $db->getObjects(
                 'SHOW OPEN TABLES
                     WHERE `Database` LIKE :schema',
-                ['schema' => $database],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['schema' => $database]
             );
             if ($dbStatus) {
                 foreach ($dbStatus as $oStatus) {
@@ -74,7 +72,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
     }
 
     if ($dbStructure === false) {
-        $dbData = $db->queryPrepared(
+        $dbData = $db->getObjects(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
                     t.`DATA_LENGTH` + t.`INDEX_LENGTH` AS DATA_SIZE,
                     COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS,
@@ -91,8 +89,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
                     t.`DATA_LENGTH` + t.`INDEX_LENGTH`
                 ORDER BY t.`TABLE_NAME`",
-            ['schema' => $database],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['schema' => $database]
         );
 
         foreach ($dbData as $data) {
@@ -111,7 +108,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 $dbStructure[$table] = [];
             }
 
-            $columns = $db->queryPrepared(
+            $columns = $db->getObjects(
                 'SELECT `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_TYPE`, `CHARACTER_SET_NAME`, `COLLATION_NAME`
                     FROM information_schema.COLUMNS
                     WHERE `TABLE_SCHEMA` = :schema
@@ -120,8 +117,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 [
                     'schema' => $database,
                     'table'  => $table
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                ]
             );
             if ($columns !== false) {
                 foreach ($columns as $column) {
@@ -155,7 +151,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
 }
 
 /**
- * @return array
+ * @return array|mixed
  */
 function getDBFileStruct()
 {
@@ -271,7 +267,7 @@ function doDBMaintenance(string $action, array $tables)
     }
 
     return count($tables) > 0
-        ? Shop::Container()->getDB()->query($cmd . implode(', ', $tables), ReturnType::ARRAY_OF_OBJECTS)
+        ? Shop::Container()->getDB()->getObjects($cmd . implode(', ', $tables))
         : false;
 }
 
@@ -308,7 +304,7 @@ function determineEngineUpdate(array $dbStruct)
  * @param string[] $shopTables
  * @return string
  */
-function doEngineUpdateScript(string $fileName, array $shopTables)
+function doEngineUpdateScript(string $fileName, array $shopTables): string
 {
     $nl = "\r\n";
 
@@ -423,8 +419,12 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
  * @throws CircularReferenceException
  * @throws ServiceNotFoundException
  */
-function doMigrateToInnoDB_utf8(string $status = 'start', string $tableName = '', int $step = 1, array $exclude = [])
-{
+function doMigrateToInnoDB_utf8(
+    string $status = 'start',
+    string $tableName = '',
+    int $step = 1,
+    array $exclude = []
+): stdClass {
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbcheck');
 
     $mysqlVersion = DBMigrationHelper::getMySQLVersion();
@@ -440,7 +440,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $tableName = ''
             break;
         case 'start':
             $shopTables = array_keys(getDBFileStruct());
-            $table      = DBMigrationHelper::getNextTableNeedMigration($exclude);
+            $table      = DBMigrationHelper::getNextTableNeedMigration($db, $exclude);
             if ($table !== null && is_object($table)) {
                 if (!in_array($table->TABLE_NAME, $shopTables, true)) {
                     $exclude[] = $table->TABLE_NAME;
@@ -467,22 +467,18 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $tableName = ''
                     && $migration !== DBMigrationHelper::MIGRATE_NONE
                     && !in_array($table->TABLE_NAME, $exclude, true)
                 ) {
-                    if (!DBMigrationHelper::isTableInUse($tableName)) {
+                    if (!DBMigrationHelper::isTableInUse($db, $tableName)) {
                         if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
                             // If MySQL version is lower than 5.6 use alternative lock method
                             // and delete all fulltext indexes because these are not supported
-                            $db->executeQuery(
-                                DBMigrationHelper::sqlAddLockInfo($table),
-                                ReturnType::QUERYSINGLE
-                            );
+                            $db->query(DBMigrationHelper::sqlAddLockInfo($table));
                             $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($table->TABLE_NAME);
 
                             if ($fulltextIndizes) {
                                 foreach ($fulltextIndizes as $fulltextIndex) {
-                                    $db->executeQuery(
+                                    $db->query(
                                         'ALTER TABLE `' . $table->TABLE_NAME . '`
-                                            DROP KEY `' . $fulltextIndex->INDEX_NAME . '`',
-                                        ReturnType::QUERYSINGLE
+                                            DROP KEY `' . $fulltextIndex->INDEX_NAME . '`'
                                     );
                                 }
                             }
@@ -490,14 +486,11 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $tableName = ''
                         if (($migration & DBMigrationHelper::MIGRATE_TABLE) !== 0) {
                             $fkSQLs = DBMigrationHelper::sqlRecreateFKs($table->TABLE_NAME);
                             foreach ($fkSQLs->dropFK as $fkSQL) {
-                                $db->executeQuery($fkSQL, ReturnType::DEFAULT);
+                                $db->query($fkSQL);
                             }
-                            $migrate = $db->executeQuery(
-                                DBMigrationHelper::sqlMoveToInnoDB($table),
-                                ReturnType::DEFAULT
-                            );
+                            $migrate = $db->query(DBMigrationHelper::sqlMoveToInnoDB($table));
                             foreach ($fkSQLs->createFK as $fkSQL) {
-                                $db->executeQuery($fkSQL, ReturnType::DEFAULT);
+                                $db->query($fkSQL);
                             }
                         } else {
                             $migrate = true;
@@ -510,10 +503,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $tableName = ''
                             $result->status = 'failure';
                         }
                         if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                            $db->executeQuery(
-                                DBMigrationHelper::sqlClearLockInfo($table),
-                                ReturnType::QUERYSINGLE
-                            );
+                            $db->query(DBMigrationHelper::sqlClearLockInfo($table));
                         }
                     } else {
                         $result->status = 'in_use';
@@ -527,12 +517,12 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $tableName = ''
                 }
             } elseif (!empty($tableName) && $step === 2) {
                 // Migration Step 2...
-                if (!DBMigrationHelper::isTableInUse($tableName)) {
+                if (!DBMigrationHelper::isTableInUse($db, $tableName)) {
                     $table = DBMigrationHelper::getTable($tableName);
                     $sql   = DBMigrationHelper::sqlConvertUTF8($table);
 
                     if (!empty($sql)) {
-                        if ($db->executeQuery($sql, ReturnType::QUERYSINGLE)) {
+                        if ($db->query($sql)) {
                             // Get next table for migration...
                             $result = $doSingle
                                 ? doMigrateToInnoDB_utf8('stop')
@@ -580,11 +570,10 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $tableName = ''
             unset($_SESSION['oKategorie_arr_new']);
             // Reset Fulltext search if version is lower than 5.6
             if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                $db->executeQuery(
+                $db->query(
                     "UPDATE `teinstellungen` 
                         SET `cWert` = 'N' 
-                        WHERE `cName` = 'suche_fulltext'",
-                    ReturnType::QUERYSINGLE
+                        WHERE `cName` = 'suche_fulltext'"
                 );
             }
             $result->nextTable = '';

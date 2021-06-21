@@ -12,31 +12,23 @@ use JTL\Shop;
 require_once __DIR__ . '/../globalinclude.php';
 
 /**
- * output
- *
- * @param bool $bOk
- * @param int $responseCode
- * @param string $responseErrMsg
+ * @param bool   $ok
+ * @param int    $responseCode
+ * @param string $message
  */
-function retCode(bool $bOk, int $responseCode = 200, string $responseErrMsg = 'error')
+function retCode(bool $ok, int $responseCode = 200, string $message = 'error')
 {
     http_response_code($responseCode);
-    die(json_encode(['status' => $bOk ? 'ok' : $responseErrMsg]));
+    die(json_encode(['status' => $ok ? 'ok' : $message]));
 }
 
 $session = Frontend::getInstance();
-$conf    = Shop::getSettings([CONF_ARTIKELDETAILS]);
-$limit   = (int)$conf['artikeldetails']['upload_modul_limit'];
-
-
-if (!Form::validateToken()
-    || !Nice::getInstance()->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
+if (!Form::validateToken() || !Nice::getInstance()->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
     retCode(false, 403);
 }
-if (Form::reachedUploadLimitPerHour($limit)) {
+if (Form::reachedUploadLimitPerHour(Shop::getSettingValue(CONF_ARTIKELDETAILS, 'upload_modul_limit'))) {
     retCode(false, 403, 'reached_limit_per_hour');
 }
-
 $uploadProtect            = new stdClass();
 $uploadProtect->cIP       = Request::getRealIP();
 $uploadProtect->dErstellt = 'NOW()';
@@ -64,11 +56,11 @@ if (!empty($_FILES)) {
     $fileData          = isset($_FILES['Filedata']['tmp_name'])
         ? $_FILES['Filedata']
         : $_FILES['file_data'];
-    $sourceInfo        = pathinfo($fileData['name']);
+    $pathInfo          = pathinfo($fileData['name']);
     $mime              = mime_content_type($fileData['tmp_name']);
     $allowedExtensions = [];
 
-    foreach (Upload::gibArtikelUploads($_REQUEST['prodID']) as $scheme) {
+    foreach (Upload::gibArtikelUploads((int)$_REQUEST['prodID']) as $scheme) {
         if ((int)$scheme->kUploadSchema === (int)$_REQUEST['kUploadSchema']) {
             $allowedExtensions = $scheme->cDateiTyp_arr;
         }
@@ -77,9 +69,7 @@ if (!empty($_FILES)) {
     if (!isset($_REQUEST['uniquename'], $_REQUEST['cname'])) {
         retCode(false);
     }
-    if (empty($allowedExtensions)
-        || !in_array('*.' . strtolower($sourceInfo['extension']), $allowedExtensions, true)
-    ) {
+    if (empty($allowedExtensions) || !in_array('*.' . strtolower($pathInfo['extension']), $allowedExtensions, true)) {
         retCode(false, 400, 'extension_not_listed');
     }
     if (in_array($mime, $blacklist, true)) {
@@ -93,7 +83,7 @@ if (!empty($_FILES)) {
     $realPath   = str_replace('\\', '/', realpath($targetInfo['dirname']) . DS);
 
     // legitimate uploads do not have an extension for the destination file name - but for the originally uploaded file
-    if (!isset($sourceInfo['extension']) || isset($targetInfo['extension'])) {
+    if (!isset($pathInfo['extension']) || isset($targetInfo['extension'])) {
         retCode(false);
     }
     if (isset($fileData['error'], $fileData['name'])
@@ -113,10 +103,10 @@ if (!empty($_FILES)) {
                 . '_' . Seo::sanitizeSeoSlug(Seo::getFlatSeoPath($product->cName));
         }
         if (empty($_REQUEST['variation'])) {
-            $postName = '_' . $unique . '.' . $sourceInfo['extension'];
+            $postName = '_' . $unique . '.' . $pathInfo['extension'];
         } else {
             $postName = '_' . Seo::sanitizeSeoSlug(Seo::getFlatSeoPath($_REQUEST['variation']))
-                . '_' . $unique . '.' . $sourceInfo['extension'];
+                . '_' . $unique . '.' . $pathInfo['extension'];
         }
 
         $file->cName  = mb_substr($preName, 0, 200 - mb_strlen($postName)) . $postName;
@@ -157,12 +147,16 @@ if (!empty($_REQUEST['action'])) {
         case 'exists':
             $filePath = PFAD_UPLOADS . $_REQUEST['uniquename'];
             $info     = pathinfo($filePath);
+            $realPath = realpath($info['dirname']) . DS;
+            if ($realPath !== false && mb_strpos($realPath, PFAD_UPLOADS) !== 0) {
+                retCode(false, 403, 'forbidden');
+            }
             retCode(!isset($info['extension']) && file_exists(realpath($filePath)));
             break;
 
         case 'preview':
             $uploadFile = new File();
-            $customerID = (int)($_SESSION['Kunde']->kKunde ?? 0);
+            $customerID = $session::getCustomer()->getID();
             $filePath   = PFAD_ROOT . BILD_UPLOAD_ZUGRIFF_VERWEIGERT;
             $uploadID   = (int)Shop::Container()->getCryptoService()->decryptXTEA(rawurldecode($_REQUEST['secret']));
             if ($uploadID > 0 && $customerID > 0 && $uploadFile->loadFromDB($uploadID)) {

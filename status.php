@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Checkout\Bestellung;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -19,7 +18,7 @@ $uid        = Request::verifyGPDataString('uid');
 if (!empty($uid)) {
     $conf   = Shop::getSettings([CONF_KUNDEN]);
     $db     = Shop::Container()->getDB();
-    $status = $db->queryPrepared(
+    $status = $db->getSingleObject(
         'SELECT kBestellung, failedAttempts
             FROM tbestellstatus 
             WHERE dDatum >= DATE_SUB(NOW(), INTERVAL 30 DAY) 
@@ -29,8 +28,7 @@ if (!empty($uid)) {
             'uid'         => $uid,
             'maxAttempts' => (int)$conf['kunden']['kundenlogin_max_loginversuche'],
             'loggedIn'    => Frontend::getCustomer()->isLoggedIn() ? 1 : 0,
-        ],
-        ReturnType::SINGLE_OBJECT
+        ]
     );
     if (empty($status->kBestellung)) {
         Shop::Container()->getAlertService()->addAlert(
@@ -49,9 +47,7 @@ if (!empty($uid)) {
         if (isset($_POST['plz']) && $order->oRechnungsadresse->cPLZ === Text::filterXSS($_POST['plz'])) {
             $plzValid = true;
         } elseif (!empty($_POST['plz'])) {
-            $db->update('tbestellstatus', 'cUID', $uid, (object)[
-                'failedAttempts' => (int)$status->failedAttempts + 1,
-            ]);
+            $db->update('tbestellstatus', 'cUID', $uid, (object)['failedAttempts' => (int)$status->failedAttempts + 1]);
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_DANGER,
                 Shop::Lang()->get('incorrectLogin'),

@@ -94,7 +94,18 @@
                                         {foreach $item->getAttributes() as $attr}
                                             {$type = $attr->getDataType()}
                                             {if $attr->getInputConfig()->isHidden() === false && (strpos($type, "\\") === false || !class_exists($type))}
-                                                <td>{$item->getAttribValue($attr->getName())}</td>
+                                                <td>
+                                                    {$value = $item->getAttribValue($attr->getName())}
+                                                    {if $attr->getDataType() === 'tinyint' && count($attr->getInputConfig()->getAllowedValues()) === 2 && in_array($value, [0, 1], true)}
+                                                        {if $value === 0}
+                                                            <i class="far fa-times"></i>
+                                                        {else}
+                                                            <i class="far fa-check"></i>
+                                                        {/if}
+                                                    {else}
+                                                        {$value}
+                                                    {/if}
+                                                </td>
                                             {/if}
                                         {/foreach}
                                         {if $edit === true}
@@ -118,7 +129,7 @@
                             </table>
                         </div>
                         <div class="save-wrapper">
-                            <div class="row">
+                            <div class="row {if $select === true}second-ml-auto{else}first-ml-auto{/if}">
                                 {if $select === true}
                                     <div class="col-sm-6 col-xl-auto text-left">
                                         <div class="custom-control custom-checkbox">
@@ -128,29 +139,29 @@
                                     </div>
                                 {/if}
                                 {if $delete === true}
-                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <div class="col-sm-6 col-xl-auto">
                                         <button name="model-delete" type="submit" value="1" class="btn btn-danger btn-block">
                                             <i class="fas fa-trash-alt"></i> {__('delete')}
                                         </button>
                                     </div>
                                 {/if}
                                 {if $save === true}
-                                    <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="model-save" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                                    <div class="col-sm-6 col-xl-auto">
+                                        <button name="model-save" type="submit" value="1" class="btn btn-primary btn-block">
                                             <i class="fal fa-save"></i> {__('save')}
                                         </button>
                                     </div>
                                 {/if}
                                 {if $disable === true}
-                                    <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="model-disable" type="submit" value="{__('disable')}" class="btn btn-warning btn-block">
+                                    <div class="col-sm-6 col-xl-auto">
+                                        <button name="model-disable" type="submit" value="1" class="btn btn-warning btn-block">
                                             <i class="fa fa-close"></i> {__('disable')}
                                         </button>
                                     </div>
                                 {/if}
                                 {if $enable === true}
-                                    <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="model-enable" type="submit" value="{__('enable')}" class="btn btn-primary btn-block">
+                                    <div class="col-sm-6 col-xl-auto">
+                                        <button name="model-enable" type="submit" value="1" class="btn btn-primary btn-block">
                                             <i class="fa fa-check"></i> {__('enable')}
                                         </button>
                                     </div>

@@ -263,7 +263,8 @@
                                     <label for="vari-{$Variation->kEigenschaft}" class="sr-only">{$Variation->cName}</label>
                                     {input id="vari-{$Variation->kEigenschaft}" name='eigenschaftwert['|cat:$Variation->kEigenschaft|cat:']'
                                        value=$oEigenschaftWertEdit_arr[$Variation->kEigenschaft]->cEigenschaftWertNameLocalized|default:''
-                                       data=['key' => $Variation->kEigenschaft] required=$Variation->cTyp === 'PFLICHT-FREIFELD'}
+                                       data=['key' => $Variation->kEigenschaft] required=$Variation->cTyp === 'PFLICHT-FREIFELD'
+                                       maxlength=255}
                                 {/block}
                             {/if}
                         </dd>

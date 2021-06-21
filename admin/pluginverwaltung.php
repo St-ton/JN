@@ -1,7 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
+use JTL\Filesystem\Filesystem;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -25,9 +25,9 @@ use JTL\Plugin\State;
 use JTL\Shop;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\Filesystem;
 use League\Flysystem\MountManager;
+use League\Flysystem\UnableToDeleteDirectory;
+use League\Flysystem\UnableToDeleteFile;
 use function Functional\first;
 use function Functional\group;
 use function Functional\select;
@@ -63,6 +63,7 @@ $updater         = new Updater($db, $installer);
 $extractor       = new Extractor($parser);
 $stateChanger    = new StateChanger($db, $cache, $legacyValidator, $pluginValidator);
 $minify          = new MinifyService();
+$response        = null;
 if (isset($_SESSION['plugin_msg'])) {
     $notice = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);
@@ -73,29 +74,13 @@ if (!empty($_FILES['plugin-install-upload']) && Form::validateToken()) {
     $response       = $extractor->extractPlugin($_FILES['plugin-install-upload']['tmp_name']);
     $pluginUploaded = true;
 }
+$pluginsAll         = $listing->getAll();
 $pluginsInstalled   = $listing->getInstalled();
-$pluginsAll         = $listing->getAll($pluginsInstalled);
-$pluginsDisabled    = $pluginsInstalled->filter(static function (ListingItem $e) {
-    return $e->getState() === State::DISABLED;
-});
-$pluginsProblematic = $pluginsInstalled->filter(static function (ListingItem $e) {
-    return in_array(
-        $e->getState(),
-        [State::ERRONEOUS, State::UPDATE_FAILED, State::LICENSE_KEY_MISSING,
-            State::LICENSE_KEY_INVALID, State::ESX_LICENSE_EXPIRED, State::ESX_SUBSCRIPTION_EXPIRED],
-        true
-    );
-});
-$pluginsInstalled   = $pluginsInstalled->filter(static function (ListingItem $e) {
-    return $e->getState() === State::ACTIVATED;
-});
-$listing->checkLegacyToModernUpdates($pluginsInstalled, $pluginsAll);
-$pluginsAvailable = $pluginsAll->filter(static function (ListingItem $item) {
-    return $item->isAvailable() === true && $item->isInstalled() === false;
-});
-$pluginsErroneous = $pluginsAll->filter(static function (ListingItem $item) {
-    return $item->isHasError() === true && $item->isInstalled() === false;
-});
+$pluginsDisabled    = $listing->getDisabled();
+$pluginsProblematic = $listing->getProblematic();
+$pluginsInstalled   = $listing->getEnabled();
+$pluginsAvailable   = $listing->getAvailable();
+$pluginsErroneous   = $listing->getErroneous();
 if ($pluginUploaded === true) {
     $smarty->assign('pluginsDisabled', $pluginsDisabled)
         ->assign('pluginsInstalled', $pluginsInstalled)
@@ -126,7 +111,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             $pluginNotFound = true;
         }
         $smarty->assign('oPlugin', $plugin)
-               ->assign('kPlugin', $pluginID);
+            ->assign('kPlugin', $pluginID);
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
     } elseif (Request::postInt('lizenzkeyadd') === 1 && Request::postInt('kPlugin') > 0) {
         // Lizenzkey eingeben
@@ -192,7 +177,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
 
                 if ($res > 3) {
                     $mapper   = new ValidationMapper();
-                    $errorMsg = $mapper->map($res, null);
+                    $errorMsg = $mapper->map($res);
                 }
             } elseif (isset($_POST['deaktivieren'])) {
                 $res = $stateChanger->deactivate($pluginID);
@@ -298,8 +283,9 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
     } elseif (Request::postInt('delete') === 1) {
         $dirs    = Request::postVar('cVerzeichnis', []);
         $res     = count($dirs) > 0;
-        $manager = new MountManager(['root' => new Filesystem(new Local(PFAD_ROOT))]);
-        $manager->mountFilesystem('plgn', Shop::Container()->get(\JTL\Filesystem\Filesystem::class));
+        $manager = new MountManager([
+            'plgn' => Shop::Container()->get(Filesystem::class)
+        ]);
         foreach ($dirs as $dir) {
             $dir  = basename($dir);
             $test = $_POST['ext'][$dir] ?? -1;
@@ -309,7 +295,11 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             $dirName = (int)$test === 1
                 ? (PLUGIN_DIR . $dir)
                 : (PFAD_PLUGIN . $dir);
-            $res     = @$manager->deleteDir('plgn://' . $dirName) && $res;
+            try {
+                $manager->deleteDirectory('plgn://' . $dirName);
+            } catch (UnableToDeleteFile | UnableToDeleteDirectory $exception) {
+                $res = false;
+            }
         }
         if ($res === true) {
             $_SESSION['plugin_msg'] = __('successPluginDelete');
@@ -347,12 +337,12 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 $errorMsg = __('errorLangVarNotFound');
             }
         } else { // Editieren
-            $original = $db->query(
+            $original = $db->getObjects(
                 'SELECT * FROM tpluginsprachvariable
                     JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariable.kPluginSprachvariable = tpluginsprachvariablesprache.kPluginSprachvariable
-                    WHERE tpluginsprachvariable.kPlugin = ' . $pluginID,
-                ReturnType::ARRAY_OF_OBJECTS
+                    WHERE tpluginsprachvariable.kPlugin = :pid',
+                ['pid' => $pluginID]
             );
             $original = group($original, static function ($e) {
                 return (int)$e->kPluginSprachvariable;
@@ -432,8 +422,8 @@ if ($step === 'pluginverwaltung_uebersicht') {
 
     try {
         $smarty->assign('pluginLanguages', Shop::Lang()->gibInstallierteSprachen())
-               ->assign('plugin', $loader->init($pluginID))
-               ->assign('kPlugin', $pluginID);
+            ->assign('plugin', $loader->init($pluginID))
+            ->assign('kPlugin', $pluginID);
     } catch (InvalidArgumentException $e) {
         $pluginNotFound = true;
     }

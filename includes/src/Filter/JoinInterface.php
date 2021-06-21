@@ -15,7 +15,7 @@ interface JoinInterface
     public function setOrigin(string $origin): JoinInterface;
 
     /**
-     * @return string|null
+     * @return string
      */
     public function getOrigin(): string;
 
@@ -23,7 +23,7 @@ interface JoinInterface
      * @param string $type
      * @return $this
      */
-    public function setType($type): JoinInterface;
+    public function setType(string $type): JoinInterface;
 
     /**
      * @return string

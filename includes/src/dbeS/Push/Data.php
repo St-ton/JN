@@ -2,8 +2,6 @@
 
 namespace JTL\dbeS\Push;
 
-use JTL\DB\ReturnType;
-
 /**
  * Class Data
  * @package JTL\dbeS\Push
@@ -20,33 +18,30 @@ final class Data extends AbstractPush
     public function getData()
     {
         $xml     = [];
-        $current = $this->db->query(
+        $current = $this->db->getArrays(
             "SELECT *
-            FROM tverfuegbarkeitsbenachrichtigung
-            WHERE cAbgeholt = 'N'
-            LIMIT " . self::LIMIT_AVAILABILITY_MSGS,
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                FROM tverfuegbarkeitsbenachrichtigung
+                WHERE cAbgeholt = 'N'
+                LIMIT " . self::LIMIT_AVAILABILITY_MSGS
         );
         $count   = \count($current);
         if ($count > 0) {
             $xml['tverfuegbarkeitsbenachrichtigung attr']['anzahl'] = $count;
             for ($i = 0; $i < $xml['tverfuegbarkeitsbenachrichtigung attr']['anzahl']; $i++) {
                 $current[$i . ' attr'] = $this->buildAttributes($current[$i]);
-                $this->db->query(
+                $this->db->queryPrepared(
                     "UPDATE tverfuegbarkeitsbenachrichtigung
-                    SET cAbgeholt = 'Y'
-                    WHERE kVerfuegbarkeitsbenachrichtigung = " .
-                    (int)$current[$i . ' attr']['kVerfuegbarkeitsbenachrichtigung'],
-                    ReturnType::DEFAULT
+                        SET cAbgeholt = 'Y'
+                        WHERE kVerfuegbarkeitsbenachrichtigung = :mid",
+                    ['mid' => (int)$current[$i . ' attr']['kVerfuegbarkeitsbenachrichtigung']]
                 );
             }
             $xml['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'] = $current;
         }
-        $queueData = $this->db->query(
+        $queueData = $this->db->getArrays(
             'SELECT *
-            FROM tuploadqueue
-            LIMIT ' . self::LIMIT_UPLOADQUEUE,
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                FROM tuploadqueue
+                LIMIT ' . self::LIMIT_UPLOADQUEUE
         );
         $count     = \count($queueData);
         if ($count > 0) {

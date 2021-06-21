@@ -131,9 +131,9 @@ class Manager
         $startIndex = $index;
         $mapping    = ImageTypeToCollectorMapper::getMapping($type);
         /** @var CollectorInterface $instance */
-        $instance  = new $mapping($this->db, Shop::Container()->get(Filesystem::class));
-        $started   = \time();
-        $result    = (object)[
+        $instance = new $mapping($this->db, Shop::Container()->get(Filesystem::class));
+        $started  = \time();
+        $result   = (object)[
             'total'         => 0,
             'cleanupTime'   => 0,
             'nextIndex'     => 0,
@@ -144,19 +144,19 @@ class Manager
             // at the first run, check how many files actually exist in the storage dir
             $_SESSION['image_count']   = \iterator_count(new FilesystemIterator(
                 \PFAD_ROOT . $instance->getBaseDir(),
-                FilesystemIterator::SKIP_DOTS)
-            );
+                FilesystemIterator::SKIP_DOTS
+            ));
             $_SESSION['deletedImages'] = 0;
             $_SESSION['checkedImages'] = 0;
         }
-        $total                     = $_SESSION['image_count'];
-        $i                         = $instance->collect($index, \IMAGE_CLEANUP_LIMIT);
-        $deletes                   = $instance->getDeletedFiles();
-        $deletedInThisRun          = \count($deletes);
-        $checkedInThisRun          = $instance->getChecked();
+        $total                      = $_SESSION['image_count'];
+        $i                          = $instance->collect($index, \IMAGE_CLEANUP_LIMIT);
+        $deletes                    = $instance->getDeletedFiles();
+        $deletedInThisRun           = \count($deletes);
+        $checkedInThisRun           = $instance->getChecked();
         $_SESSION['deletedImages'] += $deletedInThisRun;
         $_SESSION['checkedImages'] += $checkedInThisRun;
-        $index                     = $i > 0 ? $i + 1 - $deletedInThisRun : $total;
+        $index                      = $i > 0 ? $i + 1 - $deletedInThisRun : $total;
         // avoid infinite recursion
         if ($index === $startIndex && $deletedInThisRun === 0) {
             $index = $total;
@@ -232,7 +232,7 @@ class Manager
         $images   = $instance->getImages(true, $index, \IMAGE_PRELOAD_LIMIT);
         $totalAll = $instance->getTotalImageCount();
         while (\count($images) === 0 && $index < $totalAll) {
-            $index  += 10;
+            $index += 10;
             $images = $instance->getImages(true, $index, \IMAGE_PRELOAD_LIMIT);
         }
         foreach ($images as $image) {

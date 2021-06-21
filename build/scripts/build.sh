@@ -349,7 +349,7 @@ build_add_files_to_patch_dir()
     rsync -rR includes/ext/ ${PATCH_DIR};
     rsync -rR templates/NOVA/checksums.csv ${PATCH_DIR};
 
-    if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then
+    if [[ -f "${PATCH_DIR}/includes/composer.lock" ]]; then
         mkdir "/tmp_composer-${PATCH_VERSION}";
         mkdir "/tmp_composer-${PATCH_VERSION}/includes";
         touch "/tmp_composer-${PATCH_VERSION}/includes/composer.json";

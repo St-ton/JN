@@ -33,7 +33,7 @@
                         || ($unregForm !== 1 && !empty($fehlendeAngaben))}show{else}hidden{/if}" aria-expanded="true"}
                             {block name='register-form-customer-account-password-first'}
                                 {col cols=12 md=6}
-                                    <div class="form-group register-form-account-password d-flex flex-column {if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}" role="group">
+                                    <div class="form-group register-form-account-password d-flex flex-column {if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich) || isset($fehlendeAngaben.pass_zu_lang)} has-error{/if}" role="group">
                                         {input type="password"
                                             placeholder=" "
                                             id="password"
@@ -51,6 +51,10 @@
                                             <div class="form-error-msg"><i class="fa fa-exclamation-triangle"></i>
                                                 {lang key='passwordTooShort' section='login' printf=$Einstellungen.kunden.kundenregistrierung_passwortlaenge}
                                             </div>
+                                        {elseif isset($fehlendeAngaben.pass_zu_lang)}
+                                            <div class="form-error-msg"><i class="fa fa-exclamation-triangle"></i>
+                                                {lang key='passwordTooLong' section='login'}
+                                            </div>
                                         {/if}
                                     </div>
                                     {block name='account-change-password-include-password-check'}
@@ -61,7 +65,7 @@
                             {block name='register-form-customer-account-password-repeat'}
                                 {col cols=12 md=6}
                                     {formgroup
-                                        class="register-form-account-password-repeat {if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}"
+                                        class="register-form-account-password-repeat {if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich) || isset($fehlendeAngaben.pass_zu_lang)} has-error{/if}"
                                         label="{lang key='passwordRepeat' section='account data'}"
                                         label-for="password2"
                                     }

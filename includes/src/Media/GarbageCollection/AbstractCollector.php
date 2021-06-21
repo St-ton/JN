@@ -3,10 +3,14 @@
 namespace JTL\Media\GarbageCollection;
 
 use DbInterface;
+use DirectoryIterator;
+use Exception;
+use Generator;
 use JTL\Filesystem\Filesystem;
-use League\Flysystem\DirectoryListing;
+use JTL\Media\GarbageCollection\Exception\BackupException;
+use JTL\Media\GarbageCollection\Exception\FileNotFoundException;
 use League\Flysystem\FilesystemException;
-use League\Flysystem\StorageAttributes;
+use LimitIterator;
 
 /**
  * Class AbstractCollector
@@ -35,74 +39,118 @@ abstract class AbstractCollector implements CollectorInterface
     protected $errors = [];
 
     /**
+     * @var array
+     */
+    protected $deletedFiles = [];
+
+    /**
+     * @var string|null
+     */
+    protected $backupPath;
+
+    /**
+     * @var int
+     */
+    protected $checked = 0;
+
+    /**
      * AbstractCollector constructor.
      * @inheritdoc
      */
     public function __construct(DbInterface $db, Filesystem $filesystem)
     {
-        $this->db = $db;
         $this->fs = $filesystem;
+        $this->db = $db;
     }
 
     /**
      * @inheritdoc
      */
-    public function collect(?string $backupPath = null): array
+    public function collect(int $index = 0, int $offset = -1): int
     {
-        $res        = [];
-        $backupPath = $this->sanitizeBackupPath($backupPath);
-        try {
-            foreach ($this->getFilesToDelete() as $path) {
-                if ($backupPath !== null) {
-                    $this->fs->copy($path, $backupPath . $path);
-                }
-                $this->fs->delete($path);
-                $res[] = $path;
+        $this->deletedFiles = [];
+        $this->checked      = 0;
+        $i                  = 0;
+        $path               = \PFAD_ROOT . $this->getBaseDir();
+        foreach (new LimitIterator(new DirectoryIterator($path), $index, $offset) as $i => $info) {
+            /** @var DirectoryIterator $info */
+            $fileName = $info->getFilename();
+            if ($info->isDot() || $info->isDir() || \strpos($fileName, '.git') === 0) {
+                continue;
             }
-        } catch (FilesystemException $exception) {
-            $this->errors[] = $exception->getMessage();
+            ++$this->checked;
+            if (!$this->fileIsUsed($fileName)) {
+                try {
+                    $this->createBackup($fileName);
+                    $this->delete($fileName);
+                    $this->deletedFiles[] = $fileName;
+                } catch (FilesystemException $exception) {
+                    $this->errors[] = $exception->getMessage();
+                } catch (BackupException | FileNotFoundException $exception) {
+                    $this->errors[] = $exception->getMessage();
+                    break;
+                }
+            }
         }
 
-        return $res;
+        return $i;
     }
 
     /**
-     * @param string|null $backupPath
-     * @return string|null
+     * @param string $path
+     * @throws FileNotFoundException
+     * @throws FilesystemException
      */
-    protected function sanitizeBackupPath(?string $backupPath): ?string
+    protected function delete(string $path): void
     {
-        return $backupPath === null ? null : \rtrim($backupPath, '/') . '/';
+        $source = $this->getBaseDir() . $path;
+        if (!$this->fs->fileExists($source)) {
+            throw new FileNotFoundException('Could not find file to delete: ' . $source);
+        }
+        $this->fs->delete($source);
+    }
+
+    /**
+     * @param string $path
+     * @throws BackupException
+     * @throws FileNotFoundException
+     * @throws FilesystemException
+     */
+    protected function createBackup(string $path): void
+    {
+        if ($this->fs === null || $this->backupPath === null) {
+            return;
+        }
+        $source = $this->getBaseDir() . $path;
+        if (!$this->fs->fileExists($source)) {
+            throw new FileNotFoundException('Could not find file to backup: ' . $source);
+        }
+        try {
+            $this->fs->copy($source, $this->backupPath . $source);
+        } catch (Exception $e) {
+            throw new BackupException($e->getMessage());
+        }
     }
 
     /**
      * @inheritdoc
      */
-    public function simulate(): DirectoryListing
+    public function simulate(): Generator
     {
-        return $this->getFilesToDelete();
+        foreach (new LimitIterator(new DirectoryIterator(\PFAD_ROOT . $this->getBaseDir())) as $info) {
+            /** @var DirectoryIterator $info */
+            $fileName = $info->getFilename();
+            if ($info->isDot() || $info->isDir() || \strpos($fileName, '.git') === 0) {
+                continue;
+            }
+            if (!$this->fileIsUsed($fileName)) {
+                yield $fileName;
+            }
+        }
     }
 
     /**
-     * @return DirectoryListing
-     * @throws FilesystemException
-     */
-    public function getFilesToDelete(): DirectoryListing
-    {
-        return $this->fs->listContents($this->baseDir)
-            ->filter(static function (StorageAttributes $attributes) {
-                return $attributes->isFile();
-            })
-            ->map(static function (StorageAttributes $attributes) {
-                return $attributes->path();
-            })
-            ->filter(function (string $path) {
-                return !$this->fileIsUsed(\basename($path));
-            });
-    }
-
-    /**
-     * @return DbInterface
+     * @inheritdoc
      */
     public function getDB(): DbInterface
     {
@@ -110,7 +158,7 @@ abstract class AbstractCollector implements CollectorInterface
     }
 
     /**
-     * @param DbInterface $db
+     * @inheritdoc
      */
     public function setDB(DbInterface $db): void
     {
@@ -118,23 +166,7 @@ abstract class AbstractCollector implements CollectorInterface
     }
 
     /**
-     * @return Filesystem
-     */
-    public function getFS(): Filesystem
-    {
-        return $this->fs;
-    }
-
-    /**
-     * @param Filesystem $fs
-     */
-    public function setFS(Filesystem $fs): void
-    {
-        $this->fs = $fs;
-    }
-
-    /**
-     * @return string
+     * @inheritdoc
      */
     public function getBaseDir(): string
     {
@@ -142,7 +174,7 @@ abstract class AbstractCollector implements CollectorInterface
     }
 
     /**
-     * @param string $baseDir
+     * @inheritdoc
      */
     public function setBaseDir(string $baseDir): void
     {
@@ -158,10 +190,50 @@ abstract class AbstractCollector implements CollectorInterface
     }
 
     /**
-     * @param array $errors
+     * @inheritdoc
      */
     public function setErrors(array $errors): void
     {
         $this->errors = $errors;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setBackup(?string $path): void
+    {
+        $this->backupPath = $path;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDeletedFiles(): array
+    {
+        return $this->deletedFiles;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setDeletedFiles(array $deletedFiles): void
+    {
+        $this->deletedFiles = $deletedFiles;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getChecked(): int
+    {
+        return $this->checked;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setChecked(int $checked): void
+    {
+        $this->checked = $checked;
     }
 }

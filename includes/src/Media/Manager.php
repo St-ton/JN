@@ -2,14 +2,16 @@
 
 namespace JTL\Media;
 
-use DirectoryIterator;
 use Exception;
 use FilesystemIterator;
 use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
+use JTL\Filesystem\Filesystem;
 use JTL\Helpers\URL;
 use JTL\IO\IOError;
 use JTL\L10n\GetText;
+use JTL\Media\GarbageCollection\CollectorInterface;
+use JTL\Media\GarbageCollection\ImageTypeToCollectorMapper;
 use JTL\Media\Image\Category;
 use JTL\Media\Image\Characteristic;
 use JTL\Media\Image\CharacteristicValue;
@@ -21,7 +23,6 @@ use JTL\Media\Image\Product;
 use JTL\Media\Image\StatsItem;
 use JTL\Media\Image\Variation;
 use JTL\Shop;
-use LimitIterator;
 use stdClass;
 
 /**
@@ -126,11 +127,11 @@ class Manager
      */
     public function cleanupStorage(string $type, int $index): stdClass
     {
+        // @todo: news!
         $startIndex = $index;
-        $class      = Media::getClass($type);
-        /** @var IMedia $instance */
-        $instance  = new $class($this->db);
-        $directory = \PFAD_ROOT . $instance::getStoragePath();
+        $mapping    = ImageTypeToCollectorMapper::getMapping($type);
+        /** @var CollectorInterface $instance */
+        $instance  = new $mapping($this->db, Shop::Container()->get(Filesystem::class));
         $started   = \time();
         $result    = (object)[
             'total'         => 0,
@@ -141,37 +142,27 @@ class Manager
         ];
         if ($index === 0) {
             // at the first run, check how many files actually exist in the storage dir
-            $storageIterator           = new FilesystemIterator($directory, FilesystemIterator::SKIP_DOTS);
-            $_SESSION['image_count']   = \iterator_count($storageIterator);
+            $_SESSION['image_count']   = \iterator_count(new FilesystemIterator(
+                \PFAD_ROOT . $instance->getBaseDir(),
+                FilesystemIterator::SKIP_DOTS)
+            );
             $_SESSION['deletedImages'] = 0;
             $_SESSION['checkedImages'] = 0;
         }
-        $total            = $_SESSION['image_count'];
-        $checkedInThisRun = 0;
-        $deletedInThisRun = 0;
-        $i                = 0;
-        foreach (new LimitIterator(new DirectoryIterator($directory), $index, \IMAGE_CLEANUP_LIMIT) as $i => $info) {
-            /** @var DirectoryIterator $info */
-            $fileName = $info->getFilename();
-            if ($info->isDot() || $info->isDir() || \strpos($fileName, '.git') === 0) {
-                continue;
-            }
-            ++$checkedInThisRun;
-            if (!$instance->imageIsUsed($fileName)) {
-                $result->deletes[] = $fileName;
-                \unlink($info->getRealPath());
-                ++$_SESSION['deletedImages'];
-                ++$deletedInThisRun;
-            }
-        }
-        // increment total number of checked files by the amount checked in this run
+        $total                     = $_SESSION['image_count'];
+        $i                         = $instance->collect($index, \IMAGE_CLEANUP_LIMIT);
+        $deletes                   = $instance->getDeletedFiles();
+        $deletedInThisRun          = \count($deletes);
+        $checkedInThisRun          = $instance->getChecked();
+        $_SESSION['deletedImages'] += $deletedInThisRun;
         $_SESSION['checkedImages'] += $checkedInThisRun;
-        $index                      = $i > 0 ? $i + 1 - $deletedInThisRun : $total;
+        $index                     = $i > 0 ? $i + 1 - $deletedInThisRun : $total;
         // avoid infinite recursion
         if ($index === $startIndex && $deletedInThisRun === 0) {
             $index = $total;
         }
         $result->total             = $total;
+        $result->deletes           = $deletes;
         $result->cleanupTime       = \time() - $started;
         $result->nextIndex         = $index;
         $result->checkedFiles      = $checkedInThisRun;
@@ -241,7 +232,7 @@ class Manager
         $images   = $instance->getImages(true, $index, \IMAGE_PRELOAD_LIMIT);
         $totalAll = $instance->getTotalImageCount();
         while (\count($images) === 0 && $index < $totalAll) {
-            $index += 10;
+            $index  += 10;
             $images = $instance->getImages(true, $index, \IMAGE_PRELOAD_LIMIT);
         }
         foreach ($images as $image) {

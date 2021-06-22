@@ -29,7 +29,7 @@
                    {if ($nPage !== 0 && $oBox->isVisibleOnPage($nPage)) || ($nPage === 0 && \Functional\true($oBox->getFilter()))}checked="checked"{/if} value="{$oBox->getID()}">
             <label class="custom-control-label" for="box-id-{$oBox->getID()}"></label>
         </div>
-        <input type="hidden" name="box[]" value="{$oBox->getID()}">
+        <input type="hidden" name="box[]" value="{$oBox->getID()}" {if $disabled}disabled{/if}>
         {*prevents overwriting specific visibility when indeterminate checkbox is set on 'all pages' view*}
         {if $nPage === 0 && !\Functional\true($oBox->getFilter()) && !\Functional\false($oBox->getFilter())}
             <input type="hidden" name="ignore[]" value="{$oBox->getID()}" id="boxIgnore{$oBox->getID()}">
@@ -101,12 +101,12 @@
                         {assign var=picker value='pagePicker'}
                     {/if}
                     {if !is_array($oBox->getFilter($nPage)) || \Functional\true($oBox->getFilter())}
-                        <input type="hidden" id="box-filter-{$oBox->getID()}" name="box-filter-{$oBox->getID()}" value="">
+                        <input type="hidden" id="box-filter-{$oBox->getID()}" name="box-filter-{$oBox->getID()}" value="" {if $disabled}disabled{/if}>
                     {else}
-                        <input type="hidden" id="box-filter-{$oBox->getID()}" name="box-filter-{$oBox->getID()}"
+                        <input type="hidden" id="box-filter-{$oBox->getID()}" name="box-filter-{$oBox->getID()}" {if $disabled}disabled{/if}
                                value="{foreach $oBox->getFilter($nPage) as $pageID}{if !empty($pageID)}{$pageID}{/if}{if !$pageID@last},{/if}{/foreach}">
                     {/if}
-                    <button type="button" class="btn btn-link px-2"
+                    <button type="button" class="btn btn-link px-2 {if $disabled}disabled{/if}"
                             onclick="openFilterPicker({$picker}, {$oBox->getID()})" data-toggle="tooltip">
                         <span class="icon-hover">
                             <span class="fal fa-filter"></span>

@@ -6,6 +6,7 @@ use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Country\Country;
 use JTL\DB\DbInterface;
+use JTL\Helpers\Text;
 
 /**
  * Class CountryService
@@ -45,9 +46,7 @@ class CountryService implements CountryServiceInterface
     {
         $cacheID = 'serviceCountryList';
         if (($countries = $this->cache->get($cacheID)) !== false) {
-            $this->countryList = $countries->sortBy(static function (Country $country) {
-                return $country->getName();
-            });
+            $this->countryList = $countries;
 
             return;
         }
@@ -62,7 +61,7 @@ class CountryService implements CountryServiceInterface
         }
 
         $this->countryList = $this->countryList->sortBy(static function (Country $country) {
-            return $country->getName();
+            return Text::replaceUmlauts($country->getName());
         });
 
         $this->cache->set($cacheID, $this->countryList, [\CACHING_GROUP_OBJECT]);

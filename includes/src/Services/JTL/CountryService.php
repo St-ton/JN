@@ -7,7 +7,6 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Country\Country;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Text;
-use JTL\Shop;
 
 /**
  * Class CountryService

@@ -95,6 +95,9 @@ final class FrontendLinks extends AbstractItem
             if (isset($link['NoFollow']) && !\in_array($link['NoFollow'], ['Y', 'N'], true)) {
                 return InstallCode::INVALID_FRONTEND_LINK_NO_FOLLOW;
             }
+            if (\mb_strlen($link['Identifier'] ?? '') > 255) {
+                return InstallCode::INVALID_LINK_IDENTIFIER;
+            }
             if (empty($link['LinkLanguage']) || !\is_array($link['LinkLanguage'])) {
                 return InstallCode::INVALID_FRONEND_LINK_ISO;
             }

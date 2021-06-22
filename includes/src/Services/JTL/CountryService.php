@@ -7,6 +7,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Country\Country;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Text;
+use JTL\Shop;
 
 /**
  * Class CountryService
@@ -46,7 +47,9 @@ class CountryService implements CountryServiceInterface
     {
         $cacheID = 'serviceCountryList';
         if (($countries = $this->cache->get($cacheID)) !== false) {
-            $this->countryList = $countries;
+            $this->countryList = $countries->sortBy(static function (Country $country) {
+                return Text::replaceUmlauts($country->getName());
+            });
 
             return;
         }

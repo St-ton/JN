@@ -127,7 +127,6 @@ class Manager
      */
     public function cleanupStorage(string $type, int $index): stdClass
     {
-        // @todo: news!
         $startIndex = $index;
         $mapping    = ImageTypeToCollectorMapper::getMapping($type);
         /** @var CollectorInterface $instance */

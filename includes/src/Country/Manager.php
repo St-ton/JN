@@ -103,6 +103,11 @@ class Manager
         switch ($action) {
             case 'add':
                 $action = $this->addCountry(Text::filterXSS($_POST));
+                $this->alertService->addAlert(
+                    Alert::TYPE_WARNING,
+                    __('warningCreateCountryInWawi'),
+                    'warningCreateCountryInWawi'
+                );
                 break;
             case 'delete':
                 $action = $this->deleteCountry();

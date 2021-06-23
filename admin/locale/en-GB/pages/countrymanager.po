@@ -64,3 +64,6 @@ msgstr "Country with ISO code \"%s\" updated successfully."
 
 msgid "errorIsoDoesNotExist"
 msgstr "A country with ISO code \"%s\" can not be found."
+
+msgid "warningCreateCountryInWawi"
+msgstr "You also need to create the same country in JTL-Wawi and set the corresponding tax zone: <a href=\"https://guide.jtl-software.de/jtl-wawi/global/laender-verwalten/\" target=\"_blank\">Manage countries</a>"

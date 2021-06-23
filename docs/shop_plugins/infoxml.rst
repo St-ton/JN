@@ -1380,6 +1380,7 @@ im Ordner ``template/`` befindet, im fest definierten Contentbereich des Onlines
             <Template>test_page.tpl</Template>
             <VisibleAfterLogin>N</VisibleAfterLogin>
             <PrintButton>N</PrintButton>
+            <Identifier>jtlTestUniqueIdentifier</Identifier><!-- seit Shop 5.1.0 -->
             <SSL>2</SSL>
             <LinkLanguage iso="GER">
                 <Seo>jtl-test-page</Seo>
@@ -1415,6 +1416,8 @@ Link:
 | ``<NoFollow>`` *           | NoFollow-Attribut in den HTML Code einfügen ([NY]{1,1}) |
 +----------------------------+---------------------------------------------------------+
 | ``<LinkLanguage>`` *       |                                                         |
++----------------------------+---------------------------------------------------------+
+| ``<Identifier>``           | Unveränderbare ID, seit 5.1.0 (``[a-zA-Z0-9 ]+``)       |
 +----------------------------+---------------------------------------------------------+
 | ``<SSL>``                  | 0 oder 1 für Standard, 2 für erzwungenes SSL            |
 +----------------------------+---------------------------------------------------------+

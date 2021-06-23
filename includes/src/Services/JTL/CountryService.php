@@ -9,6 +9,8 @@ use JTL\Country\Country;
 use JTL\Country\State;
 use JTL\DB\DbInterface;
 use JTL\Shop;
+use ReflectionClass;
+use ReflectionException;
 
 /**
  * Class CountryService
@@ -222,16 +224,14 @@ class CountryService implements CountryServiceInterface
 
     /**
      * @return array
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
     public function getContinents(): array
     {
         $continents = [];
         try {
-            $reflection = new \ReflectionClass(Continent::class);
+            $reflection = new ReflectionClass(Continent::class);
             $continents = $reflection->getConstants();
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
             Shop::Container()->getLogService()->notice($e->getMessage());
         }
 

@@ -245,7 +245,7 @@ class Manager
      */
     private function refreshPage(): void
     {
-        header('Refresh:0');
+        \header('Refresh:0');
         exit;
     }
 }

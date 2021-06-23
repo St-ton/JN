@@ -225,7 +225,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @var int
      */
-    protected $availableForPage;
+    protected $availableForPage = 0;
 
     /**
      * @inheritdoc

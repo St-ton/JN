@@ -9,6 +9,7 @@ use JTL\Checkout\Lieferschein;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Customer\Customer;
 use JTL\dbeS\Starter;
+use JTL\GeneralDataProtection\Journal;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -110,17 +111,22 @@ final class Orders extends AbstractSync
             if ($module) {
                 $module->cancelOrder($orderID, true);
             }
+            $customerId = (int)($this->db->getSingleObject(
+                'SELECT tbestellung.kKunde 
+                    FROM tbestellung
+                    INNER JOIN tkunde ON tbestellung.kKunde = tkunde.kKunde
+                    WHERE tbestellung.kBestellung = :oid
+                        AND tkunde.nRegistriert = 0',
+                ['oid' => $orderID]
+            )->kKunde ?? 0);
             $this->deleteOrder($orderID);
             // uploads (bestellungen)
             $this->db->delete('tuploadschema', ['kCustomID', 'nTyp'], [$orderID, 2]);
             $this->db->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$orderID, 2]);
-            // uploads (artikel der bestellung)
-            // @todo...
-            // wenn unreg kunde, dann kunden auch löschen
-            $this->db->getSingleObject(
-                'SELECT kKunde FROM tbestellung WHERE kBestellung = :oid',
-                ['oid' => $orderID]
-            );
+
+            if ($customerId > 0) {
+                (new Customer($customerId))->deleteAccount(Journal::ISSUER_TYPE_DBES, $orderID);
+            }
         }
     }
 

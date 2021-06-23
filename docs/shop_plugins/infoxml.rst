@@ -1380,6 +1380,7 @@ im Ordner ``template/`` befindet, im fest definierten Contentbereich des Onlines
             <Template>test_page.tpl</Template>
             <VisibleAfterLogin>N</VisibleAfterLogin>
             <PrintButton>N</PrintButton>
+            <Identifier>jtlTestUniqueIdentifier</Identifier><!-- seit Shop 5.1.0 -->
             <SSL>2</SSL>
             <LinkLanguage iso="GER">
                 <Seo>jtl-test-page</Seo>
@@ -1415,6 +1416,8 @@ Link:
 | ``<NoFollow>`` *           | NoFollow-Attribut in den HTML Code einfügen ([NY]{1,1}) |
 +----------------------------+---------------------------------------------------------+
 | ``<LinkLanguage>`` *       |                                                         |
++----------------------------+---------------------------------------------------------+
+| ``<Identifier>``           | Unveränderbare ID, seit 5.1.0 (``[a-zA-Z0-9 ]+``)       |
 +----------------------------+---------------------------------------------------------+
 | ``<SSL>``                  | 0 oder 1 für Standard, 2 für erzwungenes SSL            |
 +----------------------------+---------------------------------------------------------+
@@ -1693,6 +1696,60 @@ Sprachvariablen können auf ihren Ursprungswert zurückgesetzt werden. |br|
 Bei einem Pluginupdate oder beim Deaktivieren eines Plugins bleiben die Sprachvariablen erhalten, die durch den
 Betreiber des Onlineshops angepasst wurden. Erst bei einer Deinstallation des Plugins werden die Sprachvariablen
 endgültig gelöscht.
+
+Nutzung im Plugin
+"""""""""""""""""
+
+Es sei folgendes Beispiel-XML gegeben:
+
+.. code-block:: xml
+    <jtlshopplugin>
+        ...
+        <PluginID>jtl_example_plugin</PluginID>
+    </jtlshopplugin>
+    <Install>
+        <Locales>
+            <Variable>
+                <Name>lang_var_one</Name>
+                <VariableLocalized iso="GER">Ich bin variabel!</VariableLocalized>
+                <VariableLocalized iso="ENG">I'm variable!</VariableLocalized>
+                <Description>Eine Beispiel-Variable.</Description>
+            </Variable>
+            <Variable>
+                <Name>lang_var_two</Name>
+                <Description>Eine Beispiel-Variable mit Platzhalter.</Description>
+                <VariableLocalized iso="GER">Hallo, mein Name ist %s.</VariableLocalized>
+                <VariableLocalized iso="ENG">Hello, my name is %s.</VariableLocalized>
+            </Variable>
+        </Locales>
+        ...
+    </Install>
+
+Der Wert der Sprachvariablen kann via PHP auf folgende Weise ausgegeben werden:
+
+JTL-Shop 4.x
+""""""""""""
+
+.. code-block:: php
+    $test1 = $oPlugin->oPluginSprachvariableAssoc_arr['lang_var_one']; // hat Wert "Ich bin variabel!"
+    $test2 = sprintf($oPlugin->oPluginSprachvariableAssoc_arr['lang_var_two'], "Peter"); // hat Wert "Hallo, mein Name ist Peter."
+
+JTL-Shop 5.x
+""""""""""""
+
+.. code-block:: php
+    // z.B. innerhalb der Bootstrap.php in der Boot-Methode:
+    $plugin = $this->getPlugin();
+    $test1  = $plugin->getLocalization()->getTranslation('lang_var_one');
+    $test2  = \sprintf($plugin->getLocalization()->getTranslation('lang_var_two'), 'Peter');
+
+
+Ab Shop 5.1.0 können Sprachvariablen direkt innerhalb von Templatedateien genutzt werden.
+Nutzen Sie dafür die Syntax ``{lang key='variablen-name' section='meine-plugin-id'}`` - im Beispiel also
+
+.. code-block:: php
+    {lang var='lang_var_one' section='jtl_example_plugin'}
+    {lang key='lang_var_two' section='jtl_example_plugin' printf='Peter'}
 
 
 .. _label_infoxml_email:

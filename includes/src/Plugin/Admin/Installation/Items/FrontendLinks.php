@@ -53,7 +53,7 @@ class FrontendLinks extends AbstractItem
                 'tlinkgroupassociations',
                 (object)['linkGroupID' => $linkGroupID, 'linkID' => $linkID]
             );
-            $allLanguages    = LanguageHelper::getAllLanguages(2);
+            $allLanguages    = LanguageHelper::getAllLanguages(2, true);
             $linkLang        = new stdClass();
             $linkLang->kLink = $linkID;
             $bLinkStandard   = false;

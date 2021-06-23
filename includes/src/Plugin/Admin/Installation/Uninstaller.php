@@ -257,7 +257,7 @@ final class Uninstaller
             );
         }
         if (\count($links) === 2) {
-            $languages = LanguageHelper::getAllLanguages(2);
+            $languages = LanguageHelper::getAllLanguages(2, true);
             foreach ($this->db->selectAll('tlinksprache', 'kLink', $links[0]->kLink) as $item) {
                 $this->db->update(
                     'tlinksprache',

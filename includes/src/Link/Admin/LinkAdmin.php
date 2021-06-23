@@ -132,7 +132,7 @@ final class LinkAdmin
         }
         $localized              = new stdClass();
         $localized->kLinkgruppe = $groupID;
-        foreach (LanguageHelper::getAllLanguages() as $language) {
+        foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
             $localized->cISOSprache = $language->getIso();
             $localized->cName       = $linkGroup->cName;
             $idx                    = 'cName_' . $language->getIso();
@@ -570,7 +570,7 @@ final class LinkAdmin
         }
         $localized        = new stdClass();
         $localized->kLink = $kLink;
-        foreach (LanguageHelper::getAllLanguages() as $language) {
+        foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
             $code                   = $language->getIso();
             $localized->cISOSprache = $code;
             $localized->cName       = $link->cName;

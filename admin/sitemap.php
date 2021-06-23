@@ -28,7 +28,7 @@ $exporter     = new Export(
 );
 $exporter->generate(
     [CustomerGroup::getDefaultGroupID()],
-    LanguageHelper::getAllLanguages(),
+    LanguageHelper::getAllLanguages(0, true),
     $exportConfig->getFactories()
 );
 

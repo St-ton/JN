@@ -30,7 +30,7 @@ $shippingMethod  = null;
 $taxRateKeys     = array_keys($_SESSION['Steuersatz']);
 $alertHelper     = Shop::Container()->getAlertService();
 $countryHelper   = Shop::Container()->getCountryService();
-$languages       = LanguageHelper::getAllLanguages();
+$languages       = LanguageHelper::getAllLanguages(0, true);
 $getText         = Shop::Container()->getGetText();
 $postData        = Text::filterXSS($_POST);
 

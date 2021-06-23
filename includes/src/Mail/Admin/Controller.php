@@ -245,7 +245,7 @@ final class Controller
         if ($this->model === null) {
             throw new InvalidArgumentException('Cannot find model with ID ' . $templateID);
         }
-        $languages = LanguageHelper::getAllLanguages();
+        $languages = LanguageHelper::getAllLanguages(0, true);
         foreach ($languages as $lang) {
             $langID = $lang->getId();
             foreach ($this->model->getMapping() as $field => $method) {
@@ -294,7 +294,7 @@ final class Controller
             return self::ERROR_NO_TEMPLATE;
         }
         $res = true;
-        foreach (LanguageHelper::getAllLanguages() as $lang) {
+        foreach (LanguageHelper::getAllLanguages(0, true) as $lang) {
             $mail = new Mail();
             try {
                 $mail = $mail->createFromTemplate($template, null, $lang);
@@ -352,7 +352,7 @@ final class Controller
     private function resetFromFile(int $templateID, stdClass $data): int
     {
         $affected = 0;
-        foreach (LanguageHelper::getAllLanguages() as $lang) {
+        foreach (LanguageHelper::getAllLanguages(0, true) as $lang) {
             $base      = \PFAD_ROOT . \PFAD_EMAILVORLAGEN . $lang->getIso() . '/' . $data->cDateiname;
             $fileHtml  = $base . '_html.tpl';
             $filePlain = $base . '_plain.tpl';

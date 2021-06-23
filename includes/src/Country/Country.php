@@ -2,7 +2,6 @@
 
 namespace JTL\Country;
 
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageModel;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;

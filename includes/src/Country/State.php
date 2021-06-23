@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Country;
 
@@ -6,7 +6,7 @@ use JTL\MagicCompatibilityTrait;
 
 /**
  * Class State
- * @package JTL
+ * @package JTL\Country
  */
 class State
 {

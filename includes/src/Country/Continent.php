@@ -4,7 +4,7 @@ namespace JTL\Country;
 
 /**
  * Class Continent
- * @package JTL\Continent
+ * @package JTL\Country
  */
 class Continent
 {

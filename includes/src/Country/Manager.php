@@ -15,7 +15,7 @@ use JTL\Smarty\JTLSmarty;
 
 /**
  * Class Manager
- * @package JTL\Manager
+ * @package JTL\Country
  */
 class Manager
 {

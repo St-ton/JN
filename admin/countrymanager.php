@@ -6,6 +6,7 @@ use JTL\Shop;
 require_once __DIR__ . '/includes/admininclude.php';
 
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+/** @global \JTL\Backend\AdminAccount $oAccount */
 $oAccount->permission('COUNTRY_VIEW', true, true);
 
 $manager = new Manager(

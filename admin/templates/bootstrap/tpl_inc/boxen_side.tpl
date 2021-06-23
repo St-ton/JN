@@ -30,7 +30,11 @@
                             </thead>
                             <tbody>
                                 {foreach $oBox_arr as $oBox}
-                                    {include file="tpl_inc/box_single.tpl" oBox=$oBox nPage=$nPage position=$direction}
+                                    {include file="tpl_inc/box_single.tpl"
+                                        oBox=$oBox
+                                        nPage=$nPage
+                                        position=$direction
+                                        disabled=((int)$nPage !== 0 && $oBox->getAvailableForPage() !== 0 && $oBox->getAvailableForPage() !== (int)$nPage)}
                                 {/foreach}
                             </tbody>
                         </table>

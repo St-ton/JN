@@ -81,10 +81,10 @@ class PriceRange
             $customerID = Frontend::getCustomer()->kKunde ?? 0;
         }
 
-        $this->customerGroupID            = $customerGroupID;
-        $this->customerID                 = $customerID;
-        $this->discount                   = 0;
-        $this->productData                = Shop::Container()->getDB()->select(
+        $this->customerGroupID = $customerGroupID;
+        $this->customerID      = $customerID;
+        $this->discount        = 0;
+        $this->productData     = Shop::Container()->getDB()->selectSingleRow(
             'tartikel',
             'kArtikel',
             $productID,
@@ -95,10 +95,21 @@ class PriceRange
             false,
             'kArtikel, kSteuerklasse, fLagerbestand, fStandardpreisNetto fNettoPreis'
         );
-        $this->productData->kArtikel      = (int)$this->productData->kArtikel;
-        $this->productData->kSteuerklasse = (int)$this->productData->kSteuerklasse;
+        if ($this->productData !== null) {
+            $this->productData->kArtikel      = (int)$this->productData->kArtikel;
+            $this->productData->kSteuerklasse = (int)$this->productData->kSteuerklasse;
+            $this->productData->fLagerbestand = (float)$this->productData->fLagerbestand;
+            $this->productData->fNettoPreis   = (float)$this->productData->fNettoPreis;
 
-        $this->loadPriceRange();
+            $this->loadPriceRange();
+        } else {
+            $this->productData = (object)[
+                'kArtikel'            => 0,
+                'kSteuerklasse'       => 0,
+                'fLagerbestand'       => 0,
+                'fNettoPreis'         => 0.0,
+            ];
+        }
     }
 
     /**

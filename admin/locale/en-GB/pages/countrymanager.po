@@ -61,3 +61,6 @@ msgstr "Country with ISO code \"%s\" deleted successfully."
 
 msgid "successCountryUpdate"
 msgstr "Country with ISO code \"%s\" updated successfully."
+
+msgid "errorIsoDoesNotExist"
+msgstr "A country with ISO code \"%s\" can not be found."

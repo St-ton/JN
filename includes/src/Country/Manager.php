@@ -74,12 +74,12 @@ class Manager
     {
         switch ($step) {
             case 'add':
+                $this->smarty->assign('countryPost', Text::filterXSS($_POST));
                 break;
             case 'update':
-                $this->smarty->assign(
-                    'country',
-                    $this->countryService->getCountry(Request::verifyGPDataString('cISO'))
-                );
+                $this->smarty
+                    ->assign('countryPost', Text::filterXSS($_POST))
+                    ->assign('country', $this->countryService->getCountry(Request::verifyGPDataString('cISO')));
                 break;
             default:
                 break;
@@ -130,9 +130,9 @@ class Manager
                 \sprintf(__('errorCountryIsoExists'), $iso),
                 'errorCountryIsoExists'
             );
-            return 'overview';
+            return 'add';
         }
-        if ($iso === '' || Request::postInt('save') !== 1) {
+        if ($iso === '' || Request::postInt('save') !== 1 || !$this->checkIso($iso)) {
             return 'add';
         }
         $country                          = new \stdClass();
@@ -185,7 +185,7 @@ class Manager
      */
     private function updateCountry(array $postData): string
     {
-        if (Request::postInt('save') !== 1) {
+        if (Request::postInt('save') !== 1 || !$this->checkIso($postData['cISO'])) {
             return 'update';
         }
         $country                          = new \stdClass();
@@ -213,6 +213,26 @@ class Manager
         $this->refreshPage();
 
         return 'update';
+    }
+
+    /**
+     * @param string $iso
+     * @return bool
+     */
+    private function checkIso(string $iso): bool
+    {
+        $countryName = \locale_get_display_region('sl-Latn-' . $iso . '-nedis', 'en');
+        if ($countryName === '' || $countryName === $iso) {
+            $this->alertService->addAlert(
+                Alert::TYPE_ERROR,
+                \sprintf(__('errorIsoDoesNotExist'), $iso),
+                'errorIsoDoesNotExist'
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
     /**

@@ -776,6 +776,10 @@ class Text
      */
     public static function replaceUmlauts(string $text): string
     {
-        return \str_replace(['Ä','Ö','Ü','ä','ö','ü','ß'], ['AE','OE','UE','ae','oe','ue','ss'], $text);
+        return \str_replace(
+            ['Ä', 'Ö', 'Ü', 'ß', 'ä', 'ö', 'ü', 'æ'],
+            ['Ae', 'Oe', 'Ue', 'ss', 'ae', 'oe', 'ue', 'ae'],
+            $text
+        );
     }
 }

@@ -55,7 +55,7 @@ class TemplateInstaller implements InstallerInterface
         $active  = $service->getActiveTemplate(true);
         $service->reset();
         if ($active->getExsID() === $exsID) {
-            $service->setActiveTemplate($installResponse->getDirName());
+            $service->setActiveTemplate(\rtrim($installResponse->getDirName(), "/\ \n\r\t\v\0"));
         }
 
         return 1;

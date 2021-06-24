@@ -38,7 +38,7 @@ $postData        = Text::filterXSS($_POST);
 
 $missingShippingClassCombis = getMissingShippingClassCombi();
 $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis);
-Shop::dbg('AB9403' > 'AB9407');
+
 if (Form::validateToken()) {
     if (Request::postInt('neu') === 1 && Request::postInt('kVersandberechnung') > 0) {
         $step = 'neue Versandart';

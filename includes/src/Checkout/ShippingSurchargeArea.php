@@ -80,9 +80,9 @@ class ShippingSurchargeArea
     {
         $zipNumber = $this->getNumber($zip);
 
-        return $this->getLetters($zip) === $this->getLetters($this->getZIPFrom())
-            && $this->getNumber($this->getZIPFrom()) <= $zipNumber
-            && $this->getNumber($this->getZIPTo()) >= $zipNumber;
+        return $this->getLetters($zip) === $this->getLetters($this->ZIPFrom)
+            && $this->getNumber($this->ZIPFrom) <= $zipNumber
+            && $this->getNumber($this->ZIPTo) >= $zipNumber;
     }
 
     /**
@@ -90,7 +90,7 @@ class ShippingSurchargeArea
      */
     public function getArea(): string
     {
-        return $this->getZIPFrom() . ' - ' . $this->getZIPTo();
+        return $this->ZIPFrom . ' - ' . $this->ZIPTo;
     }
 
     /**

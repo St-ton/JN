@@ -48,7 +48,7 @@ class ShippingSurchargeArea
      */
     public function setZIPFrom(string $ZIPFrom): self
     {
-        $this->ZIPFrom = $ZIPFrom;
+        $this->ZIPFrom = \str_replace(' ', '', $ZIPFrom);
 
         return $this;
     }
@@ -67,7 +67,7 @@ class ShippingSurchargeArea
      */
     public function setZIPTo(string $ZIPTo): self
     {
-        $this->ZIPTo = $ZIPTo;
+        $this->ZIPTo = \str_replace(' ', '', $ZIPTo);
 
         return $this;
     }
@@ -101,7 +101,7 @@ class ShippingSurchargeArea
     {
         \preg_match('/[\d]+/', $zip, $number);
 
-        return (int)$number[0];
+        return (int)($number[0] ?? 0);
     }
 
     /**

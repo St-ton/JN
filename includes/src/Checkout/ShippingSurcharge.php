@@ -24,7 +24,8 @@ class ShippingSurcharge
         'cName'            => 'Title',
         'fZuschlag'        => 'Surcharge',
         'kVersandart'      => 'ShippingMethod',
-        'cPreisLocalized'  => 'PriceLocalized'
+        'cPreisLocalized'  => 'PriceLocalized',
+        'angezeigterName'  => 'Name'
     ];
 
     /**
@@ -167,6 +168,7 @@ class ShippingSurcharge
      */
     public function hasZIPCode(?string $zip): bool
     {
+        $zip = \str_replace(' ', '', $zip);
         if ($zip === null) {
             return false;
         }
@@ -327,7 +329,7 @@ class ShippingSurcharge
      */
     public function setZIPCode(string $ZIPCode): self
     {
-        $this->ZIPCodes[] = $ZIPCode;
+        $this->ZIPCodes[] = \str_replace(' ', '', $ZIPCode);
 
         return $this;
     }

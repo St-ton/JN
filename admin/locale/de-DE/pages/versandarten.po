@@ -332,3 +332,6 @@ msgstr "ausgewählt"
 
 msgid "acceptedPaymentMethodsDesc"
 msgstr "Geben Sie für einen Rabatt einen negativen Wert ein."
+
+msgid "errorZIPsDoNotMatch"
+msgstr "Die beiden eingegebenen Postleitzahlen passen nicht zusammen."

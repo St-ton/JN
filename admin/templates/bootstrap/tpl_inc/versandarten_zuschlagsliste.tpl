@@ -127,9 +127,9 @@
                     <div id="zip-area-container" class="form-row d-none">
                         <label class="" for="cPLZ">{__('zipRange')}:</label>
                         <div class="input-group">
-                            <input type="number" name="cPLZAb" class="form-control zipcode" />
+                            <input type="text" name="cPLZAb" class="form-control zipcode" />
                             <span class="input-group-addon">&ndash;</span>
-                            <input type="number" name="cPLZBis" class="form-control zipcode" />
+                            <input type="text" name="cPLZBis" class="form-control zipcode" />
                         </div>
                     </div>
                     <div class="row mt-3">

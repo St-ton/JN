@@ -332,3 +332,6 @@ msgstr "selected"
 
 msgid "acceptedPaymentMethodsDesc"
 msgstr "Enter a negative value to grant a discount."
+
+msgid "errorZIPsDoNotMatch"
+msgstr "The postal codes do not match."

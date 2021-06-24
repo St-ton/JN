@@ -176,6 +176,7 @@ class ShippingSurcharge
             }
         }
 
+        /** @var ShippingSurchargeArea $zipArea */
         foreach ($this->getZIPAreas() ?? [] as $zipArea) {
             if ($zipArea->isInArea($zip)) {
                 return true;

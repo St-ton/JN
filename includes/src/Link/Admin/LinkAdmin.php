@@ -594,8 +594,8 @@ final class LinkAdmin
             if (isset($post[$idx])) {
                 $localized->cMetaTitle = $this->specialChars($post[$idx]);
             }
-            $localized->cMetaKeywords    = $this->specialChars($post['cMetaKeywords_' . $code]);
-            $localized->cMetaDescription = $this->specialChars($post['cMetaDescription_' . $code]);
+            $localized->cMetaKeywords    = $this->specialChars($post['cMetaKeywords_' . $code] ?? '');
+            $localized->cMetaDescription = $this->specialChars($post['cMetaDescription_' . $code] ?? '');
             $this->db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $code]);
             $localized->cSeo = $link->nLinkart === \LINKTYP_EXTERNE_URL
                 ? $localized->cSeo

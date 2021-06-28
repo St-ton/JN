@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Backend\Settings\Manager;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Jtllog;
@@ -17,15 +18,20 @@ use Monolog\Logger;
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SYSTEMLOG_VIEW', true, true);
 
-$alertHelper = Shop::Container()->getAlertService();
-$minLogLevel = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
+$alertHelper    = Shop::Container()->getAlertService();
+$db             = Shop::Container()->getDB();
+$getText        = Shop::Container()->getGetText();
+$adminAccount   = Shop::Container()->getAdminAccount();
+$minLogLevel    = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
+$settingManager = new Manager($db, $smarty, $adminAccount, $getText, $alertHelper);
+
 if (Form::validateToken()) {
     if (Request::verifyGPDataString('action') === 'clearsyslog') {
         Jtllog::deleteAll();
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSystemLogReset'), 'successSystemLogReset');
     } elseif (Request::verifyGPDataString('action') === 'save') {
         $minLogLevel = (int)($_POST['minLogLevel'] ?? 0);
-        Shop::Container()->getDB()->update(
+        $db->update(
             'teinstellungen',
             'cName',
             'systemlog_flag',
@@ -83,6 +89,10 @@ foreach ($logData as $log) {
         );
     }
 }
+$settingLogsPagination = (new Pagination('settingsLog'))
+    ->setItemArray($settingManager->getAllSettingLogs())
+    ->assemble();
+
 $smarty->assign('oFilter', $filter)
        ->assign('pagination', $pagination)
        ->assign('oLog_arr', $logData)
@@ -91,4 +101,6 @@ $smarty->assign('oFilter', $filter)
        ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
        ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)
        ->assign('JTLLOG_LEVEL_DEBUG', JTLLOG_LEVEL_DEBUG)
+       ->assign('settingLogs', $settingLogsPagination->getPageItems())
+       ->assign('settingLogsPagination', $settingLogsPagination)
        ->display('systemlog.tpl');

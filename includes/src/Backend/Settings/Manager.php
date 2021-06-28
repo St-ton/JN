@@ -2,6 +2,7 @@
 
 namespace JTL\Backend\Settings;
 
+use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
 use JTL\Backend\AdminAccount;
 use JTL\DB\DbInterface;
@@ -263,5 +264,25 @@ class Manager
             ]
         );
         $this->addLog($settingName, $oldValue->cWert ?? '', $defaultValue->cWert);
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getAllSettingLogs(): Collection
+    {
+        $this->getText->loadConfigLocales();
+
+        return $this->db->getCollection(
+            'SELECT el.*, al.cName AS adminName , ec.cInputTyp as settingType
+                FROM teinstellungenlog AS el
+                LEFT JOIN tadminlogin AS al 
+                    USING (kAdminlogin)
+                LEFT JOIN teinstellungenconf AS ec
+                    ON ec.cWertName = el.cEinstellungenName
+                ORDER BY dDatum DESC'
+        )->map(static function ($item) {
+            return (new Log())->init($item);
+        });
     }
 }

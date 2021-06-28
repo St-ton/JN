@@ -1527,10 +1527,13 @@ class Cart
     }
 
     /**
-     * @return stdClass
+     * @return stdClass|null
      */
-    public function getLongestMinMaxDelivery(): stdClass
+    public function getLongestMinMaxDelivery(): ?stdClass
     {
+        if (!\is_array($this->PositionenArr) || \count($this->PositionenArr) === 0) {
+            return null;
+        }
         $result = (object)[
             'longestMin' => 0,
             'longestMax' => 0,
@@ -1566,12 +1569,9 @@ class Cart
      */
     public function getEstimatedDeliveryTime(): string
     {
-        if (!\is_array($this->PositionenArr) || \count($this->PositionenArr) === 0) {
-            return '';
-        }
         $longestMinMaxDeliveryDays = $this->getLongestMinMaxDelivery();
 
-        return ShippingMethod::getDeliverytimeEstimationText(
+        return $longestMinMaxDeliveryDays === null ? '' : ShippingMethod::getDeliverytimeEstimationText(
             $longestMinMaxDeliveryDays->longestMin,
             $longestMinMaxDeliveryDays->longestMax
         );
@@ -1803,7 +1803,9 @@ class Cart
     {
         $longestMinMaxDelivery = $cart->getLongestMinMaxDelivery();
         $checks                = [
-            'EstimatedDelivery' => $longestMinMaxDelivery->longestMin . ':' . $longestMinMaxDelivery->longestMax,
+            'EstimatedDelivery' => $longestMinMaxDelivery === null
+                ? ''
+                : $longestMinMaxDelivery->longestMin . ':' . $longestMinMaxDelivery->longestMax,
             'PositionenCount'   => \count($cart->PositionenArr ?? []),
             'PositionenArr'     => [],
         ];

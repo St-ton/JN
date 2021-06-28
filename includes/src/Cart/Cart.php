@@ -2,6 +2,7 @@
 
 namespace JTL\Cart;
 
+use Exception;
 use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
@@ -1526,6 +1527,41 @@ class Cart
     }
 
     /**
+     * @return stdClass
+     */
+    public function getLongestMinMaxDelivery(): stdClass
+    {
+        $result = (object)[
+            'longestMin' => 0,
+            'longestMax' => 0,
+        ];
+
+        foreach ($this->PositionenArr as $item) {
+            if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || !$item->Artikel instanceof Artikel) {
+                continue;
+            }
+            try {
+                $item->Artikel->getDeliveryTime($_SESSION['cLieferlandISO'], $item->nAnzahl);
+            } catch (Exception $e) {
+                continue;
+            }
+            CartItem::setEstimatedDelivery(
+                $item,
+                $item->Artikel->nMinDeliveryDays,
+                $item->Artikel->nMaxDeliveryDays
+            );
+            if (isset($item->Artikel->nMinDeliveryDays) && $item->Artikel->nMinDeliveryDays > $result->longestMin) {
+                $result->longestMin = $item->Artikel->nMinDeliveryDays;
+            }
+            if (isset($item->Artikel->nMaxDeliveryDays) && $item->Artikel->nMaxDeliveryDays > $result->longestMax) {
+                $result->longestMax = $item->Artikel->nMaxDeliveryDays;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * @return string
      */
     public function getEstimatedDeliveryTime(): string
@@ -1533,29 +1569,12 @@ class Cart
         if (!\is_array($this->PositionenArr) || \count($this->PositionenArr) === 0) {
             return '';
         }
-        $longestMinDeliveryDays = 0;
-        $longestMaxDeliveryDays = 0;
+        $longestMinMaxDeliveryDays = $this->getLongestMinMaxDelivery();
 
-        /** @var CartItem $item */
-        foreach ($this->PositionenArr as $item) {
-            if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || !$item->Artikel instanceof Artikel) {
-                continue;
-            }
-            $item->Artikel->getDeliveryTime($_SESSION['cLieferlandISO'], $item->nAnzahl);
-            CartItem::setEstimatedDelivery(
-                $item,
-                $item->Artikel->nMinDeliveryDays,
-                $item->Artikel->nMaxDeliveryDays
-            );
-            if (isset($item->Artikel->nMinDeliveryDays) && $item->Artikel->nMinDeliveryDays > $longestMinDeliveryDays) {
-                $longestMinDeliveryDays = $item->Artikel->nMinDeliveryDays;
-            }
-            if (isset($item->Artikel->nMaxDeliveryDays) && $item->Artikel->nMaxDeliveryDays > $longestMaxDeliveryDays) {
-                $longestMaxDeliveryDays = $item->Artikel->nMaxDeliveryDays;
-            }
-        }
-
-        return ShippingMethod::getDeliverytimeEstimationText($longestMinDeliveryDays, $longestMaxDeliveryDays);
+        return ShippingMethod::getDeliverytimeEstimationText(
+            $longestMinMaxDeliveryDays->longestMin,
+            $longestMinMaxDeliveryDays->longestMax
+        );
     }
 
     /**
@@ -1782,8 +1801,9 @@ class Cart
      */
     public static function getChecksum($cart): string
     {
-        $checks = [
-            'EstimatedDelivery' => $cart->cEstimatedDelivery ?? '',
+        $longestMinMaxDelivery = $cart->getLongestMinMaxDelivery();
+        $checks                = [
+            'EstimatedDelivery' => $longestMinMaxDelivery->longestMin . ':' . $longestMinMaxDelivery->longestMax,
             'PositionenCount'   => \count($cart->PositionenArr ?? []),
             'PositionenArr'     => [],
         ];

@@ -89,8 +89,12 @@ foreach ($logData as $log) {
         );
     }
 }
+$settingLogsFilter = new Filter('settingsLog');
+$settingLogsFilter->addDaterangefield(__('Zeitraum'), 'dDatum');
+$settingLogsFilter->assemble();
+
 $settingLogsPagination = (new Pagination('settingsLog'))
-    ->setItemArray($settingManager->getAllSettingLogs())
+    ->setItemCount($settingManager->getAllSettingLogsCount($settingLogsFilter->getWhereSQL()))
     ->assemble();
 
 $smarty->assign('oFilter', $filter)
@@ -101,6 +105,10 @@ $smarty->assign('oFilter', $filter)
        ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
        ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)
        ->assign('JTLLOG_LEVEL_DEBUG', JTLLOG_LEVEL_DEBUG)
-       ->assign('settingLogs', $settingLogsPagination->getPageItems())
+       ->assign('settingLogs', $settingManager->getAllSettingLogs(
+           $settingLogsFilter->getWhereSQL(),
+           $settingLogsPagination->getLimitSQL()
+       ))
        ->assign('settingLogsPagination', $settingLogsPagination)
+       ->assign('settingLogsFilter', $settingLogsFilter)
        ->display('systemlog.tpl');

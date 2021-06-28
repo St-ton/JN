@@ -92,6 +92,7 @@
             </div>
         </div>
         <div role="tabpanel" class="tab-pane fade{if $cTab === 'configlog'} active show{/if}" id="configlog">
+            {include file='tpl_inc/filtertools.tpl' oFilter=$settingLogsFilter cParam_arr=['tab' => 'configlog']}
             {include file='tpl_inc/pagination.tpl' pagination=$settingLogsPagination cParam_arr=['tab' => 'configlog']}
             <div class="table-responsive">
                 <table class="table table-striped table-condensed table-bordered table-hover table-sticky-header">

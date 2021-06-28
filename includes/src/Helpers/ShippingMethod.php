@@ -1185,7 +1185,7 @@ class ShippingMethod
         if ($product->isUsedForShippingCostCalculation($iso)) {
             $dep = " AND cNurAbhaengigeVersandart = 'N'";
         } elseif (($costs = self::gibArtikelabhaengigeVersandkosten($iso, $product, 1)) !== false) {
-                $productShipping = $costs->fKosten;
+            $productShipping = $costs->fKosten;
         }
         $methods = $db->getObjects(
             "SELECT *
@@ -1224,7 +1224,7 @@ class ShippingMethod
             }
         }
 
-        return $fee === 99999 ? -1 : $fee + $productShipping;
+        return $fee === 99999 ? -1 : ($fee + $productShipping);
     }
 
     /**

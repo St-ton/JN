@@ -90,7 +90,11 @@ foreach ($logData as $log) {
     }
 }
 $settingLogsFilter = new Filter('settingsLog');
-$settingLogsFilter->addDaterangefield(__('Zeitraum'), 'dDatum');
+$settingLogsFilter->addDaterangefield(
+    __('Zeitraum'),
+    'dDatum',
+    date_create()->modify('-1 month')->format('d.m.Y') . ' - ' . date('d.m.Y')
+);
 $settingLogsFilter->assemble();
 
 $settingLogsPagination = (new Pagination('settingsLog'))

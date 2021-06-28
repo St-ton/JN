@@ -369,4 +369,6 @@ class InstallCode extends Enum
     public const INVALID_CONSENT_VENDOR_ID = 418;
 
     public const INVALID_CONSENT_VENDOR_COMPANY = 419;
+
+    public const INVALID_LINK_IDENTIFIER = 420;
 }

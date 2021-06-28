@@ -59,6 +59,26 @@ class Country
     private $nameEN;
 
     /**
+     * @var bool
+     */
+    private $shippingAvailable = false;
+
+    /**
+     * @var bool
+     */
+    private $permitRegistration;
+
+    /**
+     * @var bool
+     */
+    private $requireStateDefinition;
+
+    /**
+     * @var array
+     */
+    private $states = [];
+
+    /**
      * Country constructor.
      * @param string $iso
      * @param bool   $initFromDB
@@ -79,13 +99,23 @@ class Country
      */
     private function initFromDB(): void
     {
-        $countryData = Shop::Container()->getDB()->select('tland', 'cISO', $this->getISO());
-        if ($countryData !== null) {
-            $this->setContinent($countryData->cKontinent)
-                 ->setEU($countryData->nEU)
-                 ->setNameDE($countryData->cDeutsch)
-                 ->setNameEN($countryData->cEnglisch);
+        $db          = Shop::Container()->getDB();
+        $countryData = $db->select('tland', 'cISO', $this->getISO());
+        if ($countryData === null) {
+            return;
         }
+        $this->setContinent($countryData->cKontinent)
+             ->setEU($countryData->nEU)
+             ->setNameDE($countryData->cDeutsch)
+             ->setNameEN($countryData->cEnglisch)
+             ->setPermitRegistration($countryData->bPermitRegistration === '1')
+             ->setRequireStateDefinition($countryData->bRequireStateDefinition === '1')
+             ->setShippingAvailable($db->getSingleObject(
+                 'SELECT COUNT(*) AS cnt 
+                    FROM tversandart
+                    WHERE cLaender LIKE :iso',
+                 ['iso' => '%' . $this->getISO() . '%']
+             )->cnt > 0);
     }
 
     /**
@@ -239,6 +269,82 @@ class Country
     public function setNameEN(string $nameEN): self
     {
         $this->nameEN = $nameEN;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isShippingAvailable(): bool
+    {
+        return $this->shippingAvailable;
+    }
+
+    /**
+     * @param bool $shippingAvailable
+     * @return Country
+     */
+    public function setShippingAvailable(bool $shippingAvailable): self
+    {
+        $this->shippingAvailable = $shippingAvailable;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPermitRegistration(): bool
+    {
+        return $this->permitRegistration;
+    }
+
+    /**
+     * @param bool $permitRegistration
+     * @return Country
+     */
+    public function setPermitRegistration(bool $permitRegistration): self
+    {
+        $this->permitRegistration = $permitRegistration;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRequireStateDefinition(): bool
+    {
+        return $this->requireStateDefinition;
+    }
+
+    /**
+     * @param bool $requireStateDefinition
+     * @return Country
+     */
+    public function setRequireStateDefinition(bool $requireStateDefinition): self
+    {
+        $this->requireStateDefinition = $requireStateDefinition;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getStates(): array
+    {
+        return $this->states;
+    }
+
+    /**
+     * @param array $states
+     * @return Country
+     */
+    public function setStates(array $states): self
+    {
+        $this->states = $states;
 
         return $this;
     }

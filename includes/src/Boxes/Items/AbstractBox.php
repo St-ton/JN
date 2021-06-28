@@ -223,6 +223,11 @@ abstract class AbstractBox implements BoxInterface
     protected $sortByPageID = [];
 
     /**
+     * @var int
+     */
+    protected $availableForPage = 0;
+
+    /**
      * @inheritdoc
      */
     public function __construct(array $config)
@@ -266,6 +271,7 @@ abstract class AbstractBox implements BoxInterface
         $this->setContainerID((int)$data->kContainer);
         $this->setSort((int)$data->nSort);
         $this->setIsActive(true);
+        $this->setAvailableForPage((int)($data->cVerfuegbar ?? 0));
         if ($this->products === null) {
             $this->products = new ArtikelListe();
         }
@@ -891,5 +897,21 @@ abstract class AbstractBox implements BoxInterface
      */
     public function init(): void
     {
+    }
+
+    /**
+     * @return int
+     */
+    public function getAvailableForPage(): int
+    {
+        return $this->availableForPage;
+    }
+
+    /**
+     * @param int $availableForPage
+     */
+    public function setAvailableForPage(int $availableForPage): void
+    {
+        $this->availableForPage = $availableForPage;
     }
 }

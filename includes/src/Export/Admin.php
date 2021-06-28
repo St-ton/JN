@@ -184,6 +184,7 @@ class Admin
                 ->assign('cPostVar_arr', Collection::make(Text::filterXSS($_POST))->map(static function ($e) {
                     return \is_string($e) ? Text::htmlentities($e) : $e;
                 })->all());
+            $this->view();
             $this->step = 'edit';
             $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');
         }

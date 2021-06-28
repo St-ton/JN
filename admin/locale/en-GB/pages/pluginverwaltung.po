@@ -770,6 +770,9 @@ msgstr "Invalid consent vendor ID."
 msgid "INVALID_CONSENT_VENDOR_COMPANY"
 msgstr "Invalid consent vendor company."
 
+msgid "INVALID_LINK_IDENTIFIER"
+msgstr "Invalid link identifier."
+
 msgid "Deaktiviert"
 msgstr "Disabled"
 

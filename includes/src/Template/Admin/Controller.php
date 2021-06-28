@@ -156,67 +156,6 @@ class Controller
         die($response->toJson());
     }
 
-    /**
-     * @param string $dir
-     * @param string $type
-     * @return bool
-     * @throws Exception
-     */
-    private function setActiveTemplate(string $dir, string $type = 'standard'): bool
-    {
-        $this->db->delete('ttemplate', 'eTyp', $type);
-        $this->db->delete('ttemplate', 'cTemplate', $dir);
-        $reader    = new XMLReader();
-        $tplConfig = $reader->getXML($dir);
-        if ($tplConfig !== null && !empty($tplConfig->Parent)) {
-            if (!\is_dir(\PFAD_ROOT . \PFAD_TEMPLATES . $tplConfig->Parent)) {
-                return false;
-            }
-            $parent       = (string)$tplConfig->Parent;
-            $parentConfig = $reader->getXML($parent);
-        } else {
-            $parentConfig = false;
-        }
-        $model = new Model($this->db);
-        if (isset($tplConfig->ExsID)) {
-            $model->setExsID((string)$tplConfig->ExsID);
-        }
-        $model->setCTemplate($dir);
-        $model->setType($type);
-        if (!empty($tplConfig->Parent)) {
-            $model->setParent((string)$tplConfig->Parent);
-        }
-        $model->setName((string)$tplConfig->Name);
-        $model->setAuthor((string)$tplConfig->Author);
-        $model->setUrl((string)$tplConfig->URL);
-        $model->setPreview((string)$tplConfig->Preview);
-        $version = empty($tplConfig->Version) && $parentConfig
-            ? (string)$parentConfig->Version
-            : (string)$tplConfig->Version;
-        $model->setVersion($version);
-        if (!empty($tplConfig->Framework)) {
-            $model->setFramework((string)$tplConfig->Framework);
-        }
-        $model->setBootstrap((int)\file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $dir . '/Bootstrap.php'));
-        $save = $model->save();
-        if ($save === true) {
-            if (!$dh = \opendir(\PFAD_ROOT . \PFAD_COMPILEDIR)) {
-                return false;
-            }
-            while (($obj = \readdir($dh)) !== false) {
-                if (\mb_strpos($obj, '.') === 0) {
-                    continue;
-                }
-                if (!\is_dir(\PFAD_ROOT . \PFAD_COMPILEDIR . $obj)) {
-                    \unlink(\PFAD_ROOT . \PFAD_COMPILEDIR . $obj);
-                }
-            }
-        }
-        $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
-
-        return $save;
-    }
-
     private function saveConfig(): void
     {
         $parentFolder = null;
@@ -251,7 +190,7 @@ class Controller
                 $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
             }
         }
-        $check = $this->setActiveTemplate($this->currentTemplateDir);
+        $check = Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir);
         if ($check) {
             $this->alertService->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
         } else {
@@ -336,7 +275,7 @@ class Controller
         if (($bootstrapper = BootChecker::bootstrap($this->getPreviousTemplate())) !== null) {
             $bootstrapper->disabled();
         }
-        if ($this->setActiveTemplate($this->currentTemplateDir)) {
+        if (Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir)) {
             if (($bootstrapper = BootChecker::bootstrap($this->currentTemplateDir)) !== null) {
                 $bootstrapper->enabled();
             }

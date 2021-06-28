@@ -272,3 +272,6 @@ msgstr "Plug-in"
 
 msgid "warningNovaSidebar"
 msgstr "If you want to use the left side bar on all pages in the NOVA template, you need to set the template setting \"Show left sidebar\" to \"On all pages\"."
+
+msgid "notAllowedForPage"
+msgstr "Cannot display the box on the selected page."

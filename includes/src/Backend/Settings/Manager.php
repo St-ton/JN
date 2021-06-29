@@ -2,6 +2,7 @@
 
 namespace JTL\Backend\Settings;
 
+use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
 use JTL\Backend\AdminAccount;
 use JTL\DB\DbInterface;
@@ -263,5 +264,42 @@ class Manager
             ]
         );
         $this->addLog($settingName, $oldValue->cWert ?? '', $defaultValue->cWert);
+    }
+
+    /**
+     * @param string $where
+     * @param string $limit
+     * @return Collection
+     */
+    public function getAllSettingLogs(string $where = '', string $limit = ''): Collection
+    {
+        $this->getText->loadConfigLocales();
+
+        return $this->db->getCollection(
+            'SELECT el.*, al.cName AS adminName , ec.cInputTyp as settingType
+                FROM teinstellungenlog AS el
+                LEFT JOIN tadminlogin AS al 
+                    USING (kAdminlogin)
+                LEFT JOIN teinstellungenconf AS ec
+                    ON ec.cWertName = el.cEinstellungenName' .
+                ($where !== '' ? ' WHERE ' . $where : '') .
+                ' ORDER BY dDatum DESC ' .
+                ($limit !== '' ? ' LIMIT ' . $limit : '')
+        )->map(static function ($item) {
+            return (new Log())->init($item);
+        });
+    }
+
+    /**
+     * @param string $where
+     * @return int
+     */
+    public function getAllSettingLogsCount(string $where = ''): int
+    {
+        return (int)$this->db->getSingleObject(
+            'SELECT COUNT(kEinstellungenLog) AS cnt
+                FROM teinstellungenlog' .
+                ($where !== '' ? ' WHERE ' . $where : '')
+        )->cnt;
     }
 }

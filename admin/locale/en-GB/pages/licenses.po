@@ -146,6 +146,9 @@ msgstr "Connect account"
 msgid "unlink"
 msgstr "Cancel connection"
 
+msgid "unlink from %s"
+msgstr "Cancel connection with %s"
+
 msgid "Validity"
 msgstr "Validity"
 

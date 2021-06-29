@@ -310,7 +310,7 @@ class Helper
      */
     public static function getIDByExsID(string $exsID): int
     {
-        (int)(Shop::Container()->getDB()->select('tplugin', 'exsID', $exsID)->kPlugin ?? 0);
+        return (int)(Shop::Container()->getDB()->select('tplugin', 'exsID', $exsID)->kPlugin ?? 0);
     }
 
     /**

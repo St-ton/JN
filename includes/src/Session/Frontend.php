@@ -211,7 +211,7 @@ class Frontend extends AbstractSession
             }
         }
         if (!isset($_SESSION['kSprache'])) {
-            $default = Text::convertISO6392ISO($this->getBrowserLanguage($allowed, $defaultLang));
+            $default = Text::convertISO6392ISO($defaultLang);
             foreach ($_SESSION['Sprachen'] as $lang) {
                 if ($lang->cISO === $default || (empty($default) && $lang->cShopStandard === 'Y')) {
                     $_SESSION['kSprache']    = $lang->kSprache;

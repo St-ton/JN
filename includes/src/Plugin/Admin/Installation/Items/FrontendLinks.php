@@ -18,8 +18,7 @@ class FrontendLinks extends AbstractItem
      */
     public function getNode(): array
     {
-        return isset($this->baseNode['Install'][0]['FrontendLink'][0]['Link'])
-        && \is_array($this->baseNode['Install'][0]['FrontendLink'][0]['Link'])
+        return \is_array($this->baseNode['Install'][0]['FrontendLink'][0]['Link'] ?? null)
             ? $this->baseNode['Install'][0]['FrontendLink'][0]['Link']
             : [];
     }
@@ -186,6 +185,7 @@ class FrontendLinks extends AbstractItem
         $link->cSichtbarNachLogin = $links['VisibleAfterLogin'] ?? 'N';
         $link->cDruckButton       = $links['PrintButton'] ?? 'N';
         $link->cNoFollow          = $links['NoFollow'] ?? 'N';
+        $link->cIdentifier        = $links['Identifier'] ?? '';
         $link->nSort              = \LINKTYP_PLUGIN;
         $link->bSSL               = (int)($links['SSL'] ?? 0);
 

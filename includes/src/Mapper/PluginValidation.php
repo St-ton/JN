@@ -554,6 +554,9 @@ class PluginValidation
             case InstallCode::INVALID_CONSENT_VENDOR_COMPANY:
                 $return = __('INVALID_CONSENT_VENDOR_COMPANY');
                 break;
+            case InstallCode::INVALID_LINK_IDENTIFIER:
+                $return = __('INVALID_LINK_IDENTIFIER');
+                break;
             default:
                 $return = __('unknownError');
                 break;

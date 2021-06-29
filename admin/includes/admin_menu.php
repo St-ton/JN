@@ -343,6 +343,10 @@ $adminMenu = [
                     'link'        => 'zusatzverpackung.php',
                     'permissions' => 'ORDER_PACKAGE_VIEW',
                 ],
+                __('Country manager') => (object)[
+                    'link'        => 'countrymanager.php',
+                    'permissions' => 'COUNTRY_VIEW',
+                ],
             ],
             __('Email')           => [
                 __('Server')          => (object)[

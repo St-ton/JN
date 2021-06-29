@@ -482,5 +482,8 @@ msgstr "Global"
 msgid "Availability notifications"
 msgstr "Verfügbarkeitsanfragen"
 
+msgid "Country manager"
+msgstr "Länderverwaltung"
+
 msgid "Set up"
 msgstr "Einrichten"

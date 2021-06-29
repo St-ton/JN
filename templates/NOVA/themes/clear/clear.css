@@ -25739,6 +25739,9 @@ header #burger-menu {
     margin-bottom: 0;
   }
 }
+.cart-items-body .cart-items-quantity .configurepos {
+  white-space: normal;
+}
 .cart-items-body .cart-items-price {
   margin-left: auto;
   white-space: nowrap;

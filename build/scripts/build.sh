@@ -27,19 +27,24 @@ build_create()
     git config diff.renames 0;
 
     echo "Create build info";
-#   create_version_string ${REPOSITORY_DIR} ${APPLICATION_VERSION} ${APPLICATION_BUILD_SHA};
 
-#   if [[ "$APPLICATION_VERSION"  == "master" ]]; then
-#       if [[ ! -z "${NEW_VERSION}" ]]; then
-#           export APPLICATION_VERSION_STR=${NEW_VERSION};
-#       fi
-#   else
-#       export APPLICATION_VERSION_STR=${APPLICATION_VERSION};
+	# extract version from defines_inc.php -> APPLICATION_VERSION
+	definesInc=`cat ${REPOSITORY_DIR}/includes/defines_inc.php`;
+	pattern=".*define\('APPLICATION_VERSION', '([0-9]\.[0-9].[0-9])(-(alpha|beta|rc)(\\.([0-9]{1,})))?'\);";
 
-    export APPLICATION_VERSION_STR=`cat ${REPOSITORY_DIR}/VERSION`;
-    sed -i "s/'APPLICATION_VERSION', '.*'/'APPLICATION_VERSION', '${APPLICATION_VERSION_STR}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
+	if [[ $definesInc =~ $pattern ]];then
+		if [[ ! -z "${BASH_REMATCH[2]}" ]]; then
+			  #if string contains prerelease versions like alpha|beta|rc
+			  export APPLICATION_VERSION_STR="${BASH_REMATCH[1]}${BASH_REMATCH[2]}";
+		else
+			  export APPLICATION_VERSION_STR="${BASH_REMATCH[1]}";
+		fi
+	else
+		echo "version extraction pattern did not found a match"
+	fi
+	
+	# insert git sha hash into defines_inc.php -> APPLICATION_BUILD_SHA
     sed -i "s/'APPLICATION_BUILD_SHA', '#DEV#'/'APPLICATION_BUILD_SHA', '${APPLICATION_BUILD_SHA}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
-    rm ${REPOSITORY_DIR}/VERSION
 
     echo "Executing composer";
     build_composer_execute;

@@ -211,20 +211,21 @@ class DataHistory extends MainModel
         $set     = [];
         $members = \array_keys(\get_object_vars($this));
         if (\is_array($members) && \count($members) > 0) {
+            $db = Shop::Container()->getDB();
             foreach ($members as $member) {
                 $method = 'get' . \mb_substr($member, 1);
                 if (\method_exists($this, $method)) {
                     $val    = $this->$method();
                     $mValue = $val === null
                         ? 'NULL'
-                        : ("'" . Shop::Container()->getDB()->escape($val) . "'");
+                        : ("'" . $db->escape($val) . "'");
                     $set[]  = "{$member} = {$mValue}";
                 }
             }
             $sql .= \implode(', ', $set);
             $sql .= ' WHERE kKundendatenHistory = ' . $this->getKundendatenHistory();
 
-            return Shop::Container()->getDB()->getAffectedRows($sql);
+            return $db->getAffectedRows($sql);
         }
         throw new Exception('ERROR: Object has no members!');
     }
@@ -278,10 +279,10 @@ class DataHistory extends MainModel
 
         $history = new self();
         $history->setKunde($old->kKunde)
-                ->setJsonAlt(\json_encode($old))
-                ->setJsonNeu(\json_encode($new))
-                ->setQuelle($source)
-                ->setErstellt('NOW()');
+            ->setJsonAlt(\json_encode($old))
+            ->setJsonNeu(\json_encode($new))
+            ->setQuelle($source)
+            ->setErstellt('NOW()');
 
         return $history->save() > 0;
     }

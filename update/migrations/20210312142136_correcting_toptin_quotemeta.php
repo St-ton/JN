@@ -6,7 +6,6 @@
  * @created Fri, 12 Mar 2021 14:21:36 +0100
  */
 
-use JTL\DB\ReturnType;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -35,11 +34,7 @@ class Migration_20210312142136 extends Migration implements IMigration
      */
     public function up(): void
     {
-        $optins = $this->getDB()->query(
-            'SELECT * FROM toptin',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($optins as $optin) {
+        foreach ($this->getDB()->getObjects('SELECT * FROM toptin') as $optin) {
             $optin->kOptinClass = $this->stripquotes($optin->kOptinClass);
             $optin->cRefData    = $this->stripquotes($optin->cRefData);
             $this->getDB()->queryPrepared(

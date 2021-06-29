@@ -119,11 +119,11 @@ class Import
             if ($row === 0) {
                 $fmt = $this->validate($data);
                 if ($fmt === -1) {
-                    $result[] = __('errorFormatNotFound');
+                    $result[] = \__('errorFormatNotFound');
                     break;
                 }
             } else {
-                $result[] = __('row') . ' ' . $row . ': ' . $this->processImport($fmt, $data);
+                $result[] = \__('row') . ' ' . $row . ': ' . $this->processImport($fmt, $data);
             }
             $row++;
         }
@@ -173,20 +173,20 @@ class Import
             }
         }
         if (Text::filterEmailAddress($customer->cMail) === false) {
-            return \sprintf(__('errorInvalidEmail'), $customer->cMail);
+            return \sprintf(\__('errorInvalidEmail'), $customer->cMail);
         }
         if ($this->getGeneratePasswords() === false
             && (!$customer->cPasswort || $customer->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e')
         ) {
-            return __('errorNoPassword');
+            return \__('errorNoPassword');
         }
         if (!$customer->cNachname) {
-            return __('errorNoSurname');
+            return \__('errorNoSurname');
         }
 
         $oldMail = $this->db->select('tkunde', 'cMail', $customer->cMail);
         if (isset($oldMail->kKunde) && $oldMail->kKunde > 0) {
-            return \sprintf(__('errorEmailDuplicate'), $customer->cMail);
+            return \sprintf(\__('errorEmailDuplicate'), $customer->cMail);
         }
         if ($customer->cAnrede === 'f' || \mb_convert_case($customer->cAnrede, MB_CASE_LOWER) === 'frau') {
             $customer->cAnrede = 'w';
@@ -217,10 +217,10 @@ class Import
         if ($customer->insertInDB()) {
             $this->notifyCustomer($customer, $tmp);
 
-            return __('successImportRecord') . $customer->cVorname . ' ' . $customer->cNachname;
+            return \__('successImportRecord') . $customer->cVorname . ' ' . $customer->cNachname;
         }
 
-        return __('errorImportRecord');
+        return \__('errorImportRecord');
     }
 
     protected function initDefaultCountry(): void

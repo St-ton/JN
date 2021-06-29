@@ -145,7 +145,7 @@ class Statistik
                     ) AS t
                     GROUP BY t.cReferer
                     ORDER BY nCount DESC',
-                ['directEntry' => __('directEntry')]
+                ['directEntry' => \__('directEntry')]
             );
         }
 

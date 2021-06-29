@@ -107,7 +107,7 @@ class Location
                     $this->getLanguage($this->kAuswahlAssistentGruppe)
                 );
 
-                $this->cOrt = $category->cName . ' (' . __('category') . ')';
+                $this->cOrt = $category->cName . ' (' . \__('category') . ')';
                 break;
 
             case \AUSWAHLASSISTENT_ORT_LINK:

@@ -102,7 +102,7 @@ class Service
         }
 
         foreach ($messageNames as $name) {
-            $messages[$name] = __($name);
+            $messages[$name] = \__($name);
         }
 
         return $messages;

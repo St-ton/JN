@@ -64,7 +64,7 @@ class Search extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setVisibility($this->getConfig('navigationsfilter')['suchtrefferfilter_nutzen'])
-             ->setFrontendName(Shop::isAdmin() ? __('filterSearch') : Shop::Lang()->get('searchFilter'))
+             ->setFrontendName(Shop::isAdmin() ? \__('filterSearch') : Shop::Lang()->get('searchFilter'))
              ->setUrlParam('sf');
     }
 

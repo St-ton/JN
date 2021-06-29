@@ -326,8 +326,7 @@ class LanguageHelper
                 'SELECT tsprache.*, tsprachiso.kSprachISO FROM tsprache 
                     LEFT JOIN tsprachiso
                         ON tsprache.cISO = tsprachiso.cISO
-                    ORDER BY tsprache.kSprache ASC',
-                []
+                    ORDER BY tsprache.kSprache ASC'
             );
             $tags    = [\CACHING_GROUP_LANGUAGE];
 

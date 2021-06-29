@@ -242,7 +242,7 @@ class Manager
         if ($defaultValue === null) {
             $this->alertService->addAlert(
                 Alert::TYPE_DANGER,
-                \sprintf(__('resetSettingDefaultValueNotFound'), $settingName),
+                \sprintf(\__('resetSettingDefaultValueNotFound'), $settingName),
                 'resetSettingDefaultValueNotFound'
             );
             return;

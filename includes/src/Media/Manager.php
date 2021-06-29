@@ -55,47 +55,47 @@ class Manager
     {
         return [
             Image::TYPE_PRODUCT              => (object)[
-                'name'  => __('product'),
+                'name'  => \__('product'),
                 'type'  => Image::TYPE_PRODUCT,
                 'stats' => (new Product($this->db))->getStats($filesize)
             ],
             Image::TYPE_CATEGORY             => (object)[
-                'name'  => __('category'),
+                'name'  => \__('category'),
                 'type'  => Image::TYPE_CATEGORY,
                 'stats' => (new Category($this->db))->getStats($filesize)
             ],
             Image::TYPE_MANUFACTURER         => (object)[
-                'name'  => __('manufacturer'),
+                'name'  => \__('manufacturer'),
                 'type'  => Image::TYPE_MANUFACTURER,
                 'stats' => (new Manufacturer($this->db))->getStats($filesize)
             ],
             Image::TYPE_CHARACTERISTIC       => (object)[
-                'name'  => __('characteristic'),
+                'name'  => \__('characteristic'),
                 'type'  => Image::TYPE_CHARACTERISTIC,
                 'stats' => (new Characteristic($this->db))->getStats($filesize)
             ],
             Image::TYPE_CHARACTERISTIC_VALUE => (object)[
-                'name'  => __('characteristic value'),
+                'name'  => \__('characteristic value'),
                 'type'  => Image::TYPE_CHARACTERISTIC_VALUE,
                 'stats' => (new CharacteristicValue($this->db))->getStats($filesize)
             ],
             Image::TYPE_VARIATION            => (object)[
-                'name'  => __('variation'),
+                'name'  => \__('variation'),
                 'type'  => Image::TYPE_VARIATION,
                 'stats' => (new Variation($this->db))->getStats($filesize)
             ],
             Image::TYPE_NEWS                 => (object)[
-                'name'  => __('news'),
+                'name'  => \__('news'),
                 'type'  => Image::TYPE_NEWS,
                 'stats' => (new News($this->db))->getStats($filesize)
             ],
             Image::TYPE_NEWSCATEGORY         => (object)[
-                'name'  => __('newscategory'),
+                'name'  => \__('newscategory'),
                 'type'  => Image::TYPE_NEWSCATEGORY,
                 'stats' => (new NewsCategory($this->db))->getStats($filesize)
             ],
             Image::TYPE_CONFIGGROUP          => (object)[
-                'name'  => __('configgroup'),
+                'name'  => \__('configgroup'),
                 'type'  => Image::TYPE_CONFIGGROUP,
                 'stats' => (new ConfigGroup($this->db))->getStats($filesize)
             ]
@@ -199,10 +199,10 @@ class Manager
             unset($_SESSION['image_count'], $_SESSION['renderedImages']);
             if ($isAjax === true) {
                 return $res === true
-                    ? ['msg' => __('successCacheReset'), 'ok' => true]
-                    : ['msg' => __('errorCacheReset'), 'ok' => false];
+                    ? ['msg' => \__('successCacheReset'), 'ok' => true]
+                    : ['msg' => \__('errorCacheReset'), 'ok' => false];
             }
-            Shop::Smarty()->assign('success', __('successCacheReset'));
+            Shop::Smarty()->assign('success', \__('successCacheReset'));
         }
 
         return [];
@@ -315,7 +315,7 @@ class Manager
                 if (\count($corruptedImages) >= $limit) {
                     Shop::Container()->getAlertService()->addAlert(
                         Alert::TYPE_ERROR,
-                        __('Too many corrupted images'),
+                        \__('Too many corrupted images'),
                         'too-many-corrupted-images'
                     );
                     break;

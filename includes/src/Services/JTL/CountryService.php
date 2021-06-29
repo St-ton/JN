@@ -164,14 +164,14 @@ class CountryService implements CountryServiceInterface
             }
             if ($getEU) {
                 if ($country->isEU()) {
-                    $continentsTMP[__('europeanUnion')][] = $country;
+                    $continentsTMP[\__('europeanUnion')][] = $country;
                     if ($countrySelected) {
-                        $continentsSelectedCountryTMP[__('europeanUnion')][] = $country;
+                        $continentsSelectedCountryTMP[\__('europeanUnion')][] = $country;
                     }
-                } elseif ($country->getContinent() === __('Europa')) {
-                    $continentsTMP[__('notEuropeanUnionEurope')][] = $country;
+                } elseif ($country->getContinent() === \__('Europa')) {
+                    $continentsTMP[\__('notEuropeanUnionEurope')][] = $country;
                     if ($countrySelected) {
-                        $continentsSelectedCountryTMP[__('notEuropeanUnionEurope')][] = $country;
+                        $continentsSelectedCountryTMP[\__('notEuropeanUnionEurope')][] = $country;
                     }
                 }
             }
@@ -199,23 +199,23 @@ class CountryService implements CountryServiceInterface
     public function getContinentSort(string $continent): int
     {
         switch ($continent) {
-            case __('Europa'):
+            case \__('Europa'):
                 return 1;
-            case __('europeanUnion'):
+            case \__('europeanUnion'):
                 return 2;
-            case __('notEuropeanUnionEurope'):
+            case \__('notEuropeanUnionEurope'):
                 return 3;
-            case __('Asien'):
+            case \__('Asien'):
                 return 4;
-            case __('Afrika'):
+            case \__('Afrika'):
                 return 5;
-            case __('Nordamerika'):
+            case \__('Nordamerika'):
                 return 6;
-            case __('Suedamerika'):
+            case \__('Suedamerika'):
                 return 7;
-            case __('Ozeanien'):
+            case \__('Ozeanien'):
                 return 8;
-            case __('Antarktis'):
+            case \__('Antarktis'):
                 return 9;
             default:
                 return 0;

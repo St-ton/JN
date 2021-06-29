@@ -178,7 +178,7 @@ class Country
      */
     public function getContinent(): string
     {
-        return isset($_SESSION['AdminAccount']) ? __($this->continent) : Shop::Lang()->get($this->continent);
+        return isset($_SESSION['AdminAccount']) ? \__($this->continent) : Shop::Lang()->get($this->continent);
     }
 
     /**

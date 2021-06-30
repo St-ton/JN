@@ -335,7 +335,7 @@ class AdminAccountManager
             $attribs['useAvatarUpload'] = '';
         }
 
-        foreach (LanguageHelper::getAllLanguages() as $language) {
+        foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
             $useVita_ISO = 'useVita_' . $language->cISO;
             if (!empty($attribs[$useVita_ISO])) {
                 $shortText = Text::filterXSS($attribs[$useVita_ISO]);

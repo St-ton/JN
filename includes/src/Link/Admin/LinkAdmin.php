@@ -132,7 +132,7 @@ final class LinkAdmin
         }
         $localized              = new stdClass();
         $localized->kLinkgruppe = $groupID;
-        foreach (LanguageHelper::getAllLanguages() as $language) {
+        foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
             $localized->cISOSprache = $language->getIso();
             $localized->cName       = $linkGroup->cName;
             $idx                    = 'cName_' . $language->getIso();
@@ -570,7 +570,7 @@ final class LinkAdmin
         }
         $localized        = new stdClass();
         $localized->kLink = $kLink;
-        foreach (LanguageHelper::getAllLanguages() as $language) {
+        foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
             $code                   = $language->getIso();
             $localized->cISOSprache = $code;
             $localized->cName       = $link->cName;
@@ -594,8 +594,8 @@ final class LinkAdmin
             if (isset($post[$idx])) {
                 $localized->cMetaTitle = $this->specialChars($post[$idx]);
             }
-            $localized->cMetaKeywords    = $this->specialChars($post['cMetaKeywords_' . $code]);
-            $localized->cMetaDescription = $this->specialChars($post['cMetaDescription_' . $code]);
+            $localized->cMetaKeywords    = $this->specialChars($post['cMetaKeywords_' . $code] ?? '');
+            $localized->cMetaDescription = $this->specialChars($post['cMetaDescription_' . $code] ?? '');
             $this->db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $code]);
             $localized->cSeo = $link->nLinkart === \LINKTYP_EXTERNE_URL
                 ? $localized->cSeo

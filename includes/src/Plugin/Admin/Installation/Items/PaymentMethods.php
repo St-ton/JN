@@ -90,7 +90,7 @@ class PaymentMethods extends AbstractItem
             $this->db->insert('tpluginzahlungsartklasse', $paymentClass);
 
             $iso          = '';
-            $allLanguages = LanguageHelper::getAllLanguages(2);
+            $allLanguages = LanguageHelper::getAllLanguages(2, true);
             $default      = false;
             $localized    = new stdClass();
             foreach ($data['MethodLanguage'] as $l => $loc) {

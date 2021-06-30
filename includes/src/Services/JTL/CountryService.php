@@ -8,6 +8,7 @@ use JTL\Country\Continent;
 use JTL\Country\Country;
 use JTL\Country\State;
 use JTL\DB\DbInterface;
+use JTL\Helpers\Text;
 use JTL\Shop;
 use ReflectionClass;
 use ReflectionException;
@@ -52,7 +53,7 @@ class CountryService implements CountryServiceInterface
     {
         if (($countries = $this->cache->get(self::CACHE_ID)) !== false) {
             $this->countryList = $countries->sortBy(static function (Country $country) {
-                return $country->getName();
+                return Text::replaceUmlauts($country->getName());
             });
 
             return;
@@ -84,7 +85,7 @@ class CountryService implements CountryServiceInterface
         }
 
         $this->countryList = $this->countryList->sortBy(static function (Country $country) {
-            return $country->getName();
+            return Text::replaceUmlauts($country->getName());
         });
 
         $this->cache->set(self::CACHE_ID, $this->countryList, [\CACHING_GROUP_OBJECT]);

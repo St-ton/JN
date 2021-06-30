@@ -19,8 +19,7 @@ class Migration_20180301133757 extends Migration implements IMigration
         'Create index for lft and rght in tkategorie';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritdoc
      */
     public function up()
     {

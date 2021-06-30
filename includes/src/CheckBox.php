@@ -181,7 +181,7 @@ class CheckBox
                 (int)$this->kCheckBoxFunktion
             );
             if (isset($func->kCheckBoxFunktion) && $func->kCheckBoxFunktion > 0) {
-                $func->cName             = __($func->cName);
+                $func->cName             = \__($func->cName);
                 $this->oCheckBoxFunktion = $func;
             } else {
                 $this->kCheckBoxFunktion = 0;
@@ -540,7 +540,7 @@ class CheckBox
                 ORDER BY cName'
         )->each(static function ($e) {
             $e->kCheckBoxFunktion = (int)$e->kCheckBoxFunktion;
-            $e->cName             = __($e->cName);
+            $e->cName             = \__($e->cName);
         })->all();
     }
 
@@ -691,13 +691,13 @@ class CheckBox
         Shop::Container()->getGetText()->loadAdminLocale('pages/checkbox');
 
         return [
-            \CHECKBOX_ORT_REGISTRIERUNG        => __('checkboxPositionRegistration'),
-            \CHECKBOX_ORT_BESTELLABSCHLUSS     => __('checkboxPositionOrderFinal'),
-            \CHECKBOX_ORT_NEWSLETTERANMELDUNG  => __('checkboxPositionNewsletterRegistration'),
-            \CHECKBOX_ORT_KUNDENDATENEDITIEREN => __('checkboxPositionEditCustomerData'),
-            \CHECKBOX_ORT_KONTAKT              => __('checkboxPositionContactForm'),
-            \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT    => __('checkboxPositionProductQuestion'),
-            \CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT => __('checkboxPositionAvailabilityNotification')
+            \CHECKBOX_ORT_REGISTRIERUNG        => \__('checkboxPositionRegistration'),
+            \CHECKBOX_ORT_BESTELLABSCHLUSS     => \__('checkboxPositionOrderFinal'),
+            \CHECKBOX_ORT_NEWSLETTERANMELDUNG  => \__('checkboxPositionNewsletterRegistration'),
+            \CHECKBOX_ORT_KUNDENDATENEDITIEREN => \__('checkboxPositionEditCustomerData'),
+            \CHECKBOX_ORT_KONTAKT              => \__('checkboxPositionContactForm'),
+            \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT    => \__('checkboxPositionProductQuestion'),
+            \CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT => \__('checkboxPositionAvailabilityNotification')
         ];
     }
 

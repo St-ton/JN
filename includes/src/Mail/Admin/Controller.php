@@ -13,7 +13,6 @@ use JTL\Mail\Mailer;
 use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
 use PHPMailer\PHPMailer\Exception;
-use Shop;
 use stdClass;
 
 /**
@@ -172,7 +171,7 @@ final class Controller
                         $filenames[$langID][] = $postIndex;
                         unset($postIndex);
                     } else {
-                        $this->addErrorMessage(\sprintf(__('errorFileName'), $postIndex));
+                        $this->addErrorMessage(\sprintf(\__('errorFileName'), $postIndex));
                         return self::ERROR_UPLOAD_FILE_NAME;
                     }
                 } else {
@@ -195,12 +194,12 @@ final class Controller
                             $target = self::UPLOAD_DIR . $model->getID() .
                                 '_' . $langID . '_' . ($i + 1) . $plugin . '.pdf';
                             if (!\in_array($mime, ['application/pdf', 'application/x-pdf'], true)) {
-                                $this->addErrorMessage(__('errorFileSave'));
+                                $this->addErrorMessage(\__('errorFileSave'));
 
                                 return self::ERROR_UPLOAD_FILE_SAVE;
                             }
                             if (!\move_uploaded_file($files['cPDFS_' . $langID]['tmp_name'][$i], $target)) {
-                                $this->addErrorMessage(__('errorFileSave'));
+                                $this->addErrorMessage(\__('errorFileSave'));
 
                                 return self::ERROR_UPLOAD_FILE_SAVE;
                             }
@@ -209,12 +208,12 @@ final class Controller
                                 . '_' . $langID
                                 . '_' . ($i + 1) . $plugin . '.pdf';
                         } else {
-                            $this->addErrorMessage(__('errorFileNameMissing'));
+                            $this->addErrorMessage(\__('errorFileNameMissing'));
 
                             return self::ERROR_UPLOAD_FILE_NAME_MISSING;
                         }
                     } else {
-                        $this->addErrorMessage(__('errorFileSizeType'));
+                        $this->addErrorMessage(\__('errorFileSizeType'));
                         return self::ERROR_UPLOAD_FILE_SIZE;
                     }
                 } elseif (isset($files['cPDFS_' . $langID]['name'][$i], $post['cPDFNames_' . $langID][$i])
@@ -222,7 +221,7 @@ final class Controller
                     && \mb_strlen($post['cPDFNames_' . $langID][$i]) === 0
                 ) {
                     $attachmentErrors[$langID][$i] = 1;
-                    $this->addErrorMessage(__('errorFileNameMissing'));
+                    $this->addErrorMessage(\__('errorFileNameMissing'));
                     return self::ERROR_UPLOAD_FILE_SIZE;
                 }
             }
@@ -279,7 +278,7 @@ final class Controller
     {
         $mailTpl = $this->getTemplateByID($templateID);
         if ($mailTpl === null) {
-            $this->addErrorMessage(__('errorTemplateMissing') . $templateID);
+            $this->addErrorMessage(\__('errorTemplateMissing') . $templateID);
 
             return self::ERROR_NO_TEMPLATE;
         }
@@ -289,7 +288,7 @@ final class Controller
         }
         $template = $this->factory->getTemplate($moduleID);
         if ($template === null) {
-            $this->addErrorMessage(__('errorTemplateMissing') . $moduleID);
+            $this->addErrorMessage(\__('errorTemplateMissing') . $moduleID);
 
             return self::ERROR_NO_TEMPLATE;
         }
@@ -299,7 +298,7 @@ final class Controller
             try {
                 $mail = $mail->createFromTemplate($template, null, $lang);
             } catch (InvalidArgumentException $e) {
-                $this->addErrorMessage(__('errorTemplateMissing') . $lang->getLocalizedName());
+                $this->addErrorMessage(\__('errorTemplateMissing') . $lang->getLocalizedName());
                 $res = self::ERROR_NO_TEMPLATE;
                 continue;
             }

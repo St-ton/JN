@@ -75,7 +75,7 @@ class PriceRange extends AbstractFilter
         $this->setIsCustom(false)
              ->setUrlParam('pf')
              ->setVisibility($this->getConfig('navigationsfilter')['preisspannenfilter_benutzen'])
-             ->setFrontendName(Shop::isAdmin() ? __('filterPriceRange') : Shop::Lang()->get('rangeOfPrices'));
+             ->setFrontendName(Shop::isAdmin() ? \__('filterPriceRange') : Shop::Lang()->get('rangeOfPrices'));
     }
 
     /**

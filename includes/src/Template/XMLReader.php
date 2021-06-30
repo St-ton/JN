@@ -71,8 +71,12 @@ class XMLReader
      * @param array            $ignored
      * @return stdClass[]
      */
-    protected function parseSections(SimpleXMLElement $xmlSections, array &$sections, array &$ignored, string $dir): array
-    {
+    protected function parseSections(
+        SimpleXMLElement $xmlSections,
+        array &$sections,
+        array &$ignored,
+        string $dir
+    ): array {
         foreach ($xmlSections as $xmlSection) {
             $section   = null;
             $sectionID = (string)$xmlSection->attributes()->Key;

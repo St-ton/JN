@@ -174,14 +174,14 @@ class Cart
         if ($excludePos !== null) {
             $tmpAmount = $this->getAllDependentAmount($onlyStockRelevant, $excludePos);
 
-            return $tmpAmount[$productID] ?? 0;
+            return $tmpAmount[$productID] ?? 0.0;
         }
 
         if (!isset($depAmount[$productID])) {
             $depAmount = $this->getAllDependentAmount($onlyStockRelevant);
         }
 
-        return $depAmount[$productID] ?? 0;
+        return $depAmount[$productID] ?? 0.0;
     }
 
     /**

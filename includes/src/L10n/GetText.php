@@ -298,14 +298,14 @@ class GetText
     public function localizeConfig(stdClass $config): void
     {
         if ($config->cConf === 'Y') {
-            $config->cName         = __($config->cWertName . '_name');
-            $config->cBeschreibung = __($config->cWertName . '_desc');
+            $config->cName         = \__($config->cWertName . '_name');
+            $config->cBeschreibung = \__($config->cWertName . '_desc');
 
             if ($config->cBeschreibung === $config->cWertName . '_desc') {
                 $config->cBeschreibung = '';
             }
         } elseif ($config->cConf === 'N') {
-            $config->cName = __($config->cWertName);
+            $config->cName = \__($config->cWertName);
         }
     }
 
@@ -325,7 +325,7 @@ class GetText
      */
     public function localizeConfigValue(stdClass $config, stdClass $value): void
     {
-        $value->cName = __($config->cWertName . '_value(' . $value->cWert . ')');
+        $value->cName = \__($config->cWertName . '_value(' . $value->cWert . ')');
     }
 
     /**
@@ -344,7 +344,7 @@ class GetText
      */
     public function localizeConfigSection(stdClass $section): void
     {
-        $section->cName = __('configsection_' . $section->kEinstellungenSektion);
+        $section->cName = \__('configsection_' . $section->kEinstellungenSektion);
     }
 
     /**

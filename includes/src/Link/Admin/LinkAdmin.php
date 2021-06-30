@@ -387,7 +387,7 @@ final class LinkAdmin
         $ref->kPlugin   = $link->getPluginID();
         $ref->nLinkart  = \LINKTYP_REFERENZ;
         $ref->reference = $link->getID();
-        $ref->cName     = __('Referenz') . ' ' . $link->getID();
+        $ref->cName     = \__('Referenz') . ' ' . $link->getID();
         $linkID         = $this->db->insert('tlink', $ref);
 
         $ins              = new stdClass();

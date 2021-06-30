@@ -98,33 +98,34 @@ class Group
             $activeSQL,
             ['groupID' => $groupID]
         );
-        if (isset($group->kAuswahlAssistentGruppe) && $group->kAuswahlAssistentGruppe > 0) {
-            $question = new Question();
-            foreach (\array_keys(\get_object_vars($group)) as $member) {
-                $this->$member = $group->$member;
-            }
-            $this->kAuswahlAssistentGruppe    = (int)$this->kAuswahlAssistentGruppe;
-            $this->kSprache                   = (int)$this->kSprache;
-            $this->nAktiv                     = (int)$this->nAktiv;
-            $this->oAuswahlAssistentFrage_arr = $question->getQuestions($groupID, $activeOnly);
-            $location                         = new Location(0, $groupID, $backend);
-            $this->oAuswahlAssistentOrt_arr   = $location->oOrt_arr;
-            foreach ($this->oAuswahlAssistentOrt_arr as $location) {
-                if ($location->cKey === \AUSWAHLASSISTENT_ORT_KATEGORIE) {
-                    $this->cKategorie .= $location->kKey . ';';
-                }
-                if ($location->cKey === \AUSWAHLASSISTENT_ORT_STARTSEITE) {
-                    $this->nStartseite = 1;
-                }
-            }
-            $language       = $this->db->getSingleObject(
-                'SELECT cNameDeutsch 
-                    FROM tsprache 
-                    WHERE kSprache = :langID',
-                ['langID' => (int)$this->kSprache]
-            );
-            $this->cSprache = $language->cNameDeutsch ?? '';
+        if ($group === null || $group->kAuswahlAssistentGruppe <= 0) {
+            return;
         }
+        $question = new Question();
+        foreach (\array_keys(\get_object_vars($group)) as $member) {
+            $this->$member = $group->$member;
+        }
+        $this->kAuswahlAssistentGruppe    = (int)$this->kAuswahlAssistentGruppe;
+        $this->kSprache                   = (int)$this->kSprache;
+        $this->nAktiv                     = (int)$this->nAktiv;
+        $this->oAuswahlAssistentFrage_arr = $question->getQuestions($groupID, $activeOnly);
+        $location                         = new Location(0, $groupID, $backend);
+        $this->oAuswahlAssistentOrt_arr   = $location->oOrt_arr;
+        foreach ($this->oAuswahlAssistentOrt_arr as $location) {
+            if ($location->cKey === \AUSWAHLASSISTENT_ORT_KATEGORIE) {
+                $this->cKategorie .= $location->kKey . ';';
+            }
+            if ($location->cKey === \AUSWAHLASSISTENT_ORT_STARTSEITE) {
+                $this->nStartseite = 1;
+            }
+        }
+        $language       = $this->db->getSingleObject(
+            'SELECT cNameDeutsch 
+                FROM tsprache 
+                WHERE kSprache = :langID',
+            ['langID' => (int)$this->kSprache]
+        );
+        $this->cSprache = $language->cNameDeutsch ?? '';
     }
 
     /**

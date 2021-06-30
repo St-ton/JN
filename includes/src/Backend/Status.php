@@ -8,7 +8,6 @@ use JTL\Checkout\ZahlungsLog;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Export\SyntaxChecker;
-use JTL\Exportformat;
 use JTL\License\Manager;
 use JTL\License\Mapper;
 use JTL\Mail\Template\Model as MailTplModel;

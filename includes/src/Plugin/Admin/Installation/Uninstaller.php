@@ -6,6 +6,8 @@ use Exception;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\Filesystem\Filesystem;
+use JTL\Filesystem\LocalFilesystem;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\Helper;
 use JTL\Plugin\InstallCode;
@@ -13,8 +15,6 @@ use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
-use League\Flysystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter as Local;
 use League\Flysystem\MountManager;
 use Throwable;
 
@@ -96,8 +96,8 @@ final class Uninstaller
             if ($deleteFiles === true) {
                 $dir     = $plugin->getPaths()->getBaseDir();
                 $manager = new MountManager([
-                    'root' => new Filesystem(new Local(\PFAD_ROOT)),
-                    'plgn' => Shop::Container()->get(\JTL\Filesystem\Filesystem::class)
+                    'root' => Shop::Container()->get(LocalFilesystem::class),
+                    'plgn' => Shop::Container()->get(Filesystem::class)
                 ]);
                 $dirName = (int)$data->bExtension === 1
                     ? (\PLUGIN_DIR . $dir)

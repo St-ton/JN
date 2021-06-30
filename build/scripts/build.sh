@@ -45,12 +45,13 @@ build_create()
 	
 	#if tag was created, check if defines_inc version matches the tag version, if not, abort.
     if [[ ${APPLICATION_VERSION} =~ ${VERSION_REGEX} ]]; then
-		if [[ "v${APPLICATION_VERSION_STR}" != ${APPLICATION_VERSION} ]];then
+		if [[ "v${APPLICATION_VERSION_STR}" != "${APPLICATION_VERSION}" ]]; then
 			echo "Tag creation aborted, please make sure the APPLICATION_VERSION (includes/defines_inc.php) and the tag version are the same (don't mind the leading 'v').";
 			echo "parsed APPLICATION_VERSION: v${APPLICATION_VERSION_STR}";
 			echo "tag version: ${APPLICATION_VERSION} ";
 			echo "\n\nPLEASE DELETE THE FAILED, LAST CREATED TAG BEFORE CREATING A NEW ONE!";
 			exit 1;
+		fi
     fi
 	
 	# insert git sha hash into defines_inc.php -> APPLICATION_BUILD_SHA

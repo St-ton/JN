@@ -2,6 +2,8 @@
 
 namespace JTL\Checkout;
 
+use DateTime;
+use Illuminate\Support\Collection;
 use JTL\Cart\CartHelper;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Category\Kategorie;
@@ -1135,5 +1137,32 @@ class Bestellung
                 'kampagneDef' => \KAMPAGNE_DEF_VERKAUF
             ]
         );
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getIncommingPayments(): Collection
+    {
+        if (($this->kBestellung ?? 0) === 0) {
+            return new Collection();
+        }
+
+        $result = Shop::Container()->getDB()->getCollection(
+            'SELECT kZahlungseingang, cZahlungsanbieter, fBetrag, cISO, dZeit
+                FROM tzahlungseingang
+                WHERE kBestellung = :orderId
+                ORDER BY cZahlungsanbieter, dZeit',
+            [
+                'orderId' => $this->kBestellung,
+            ]
+        )->map(static function ($item) {
+            $item->paymentLocalization = Preise::getLocalizedPriceString($item->fBetrag, $item->cISO) . ' ('
+                . (new DateTime($item->dZeit))->format('d.m.Y h:i:s') . ')';
+
+            return $item;
+        });
+
+        return $result->groupBy('cZahlungsanbieter');
     }
 }

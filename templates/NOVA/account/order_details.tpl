@@ -40,9 +40,9 @@
                                     {block name='account-order-details-payment'}
                                         {lang key='paymentOptions' section='global'}:
                                         <span class="order-details-data-item">
-                                            <ul class="list-unstyled">
-                                                <li>{$Bestellung->cZahlungsartName}</li>
-                                                <li>
+                                            <dl class="list-unstyled">
+                                                <dt>{$Bestellung->cZahlungsartName}</dt>
+                                                <dd>
                                                     {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO && $Bestellung->dBezahldatum_de !== '00.00.0000' && !empty($Bestellung->dBezahldatum_de)}
                                                         {lang key='payedOn' section='login'} {$Bestellung->dBezahldatum_de}
                                                     {else}
@@ -57,8 +57,14 @@
                                                             {lang key='notPayedYet' section='login'}
                                                         {/if}
                                                     {/if}
-                                                </li>
-                                            </ul>
+                                                </dd>
+                                                {foreach $incommingPayments as $paymentProvider => $incommingPayment}
+                                                    <dt>{$paymentProvider|htmlentities}</dt>
+                                                    {foreach $incommingPayment as $payment}
+                                                        <dd>{$payment->paymentLocalization}</dd>
+                                                    {/foreach}
+                                                {/foreach}
+                                            </dl>
                                         </span>
                                     {/block}
                                 </li>

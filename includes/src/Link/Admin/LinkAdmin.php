@@ -371,6 +371,9 @@ final class LinkAdmin
         if ($link->getID() === 0) {
             return self::ERROR_LINK_NOT_FOUND;
         }
+        if ($link->getReference() > 0) {
+            $linkID = $link->getReference();
+        }
         $targetLinkGroup = $this->db->select('tlinkgruppe', 'kLinkgruppe', $targetLinkGroupID);
         if (!isset($targetLinkGroup->kLinkgruppe) || $targetLinkGroup->kLinkgruppe <= 0) {
             return self::ERROR_LINK_GROUP_NOT_FOUND;
@@ -386,8 +389,8 @@ final class LinkAdmin
         $ref            = new stdClass();
         $ref->kPlugin   = $link->getPluginID();
         $ref->nLinkart  = \LINKTYP_REFERENZ;
-        $ref->reference = $link->getID();
-        $ref->cName     = \__('Referenz') . ' ' . $link->getID();
+        $ref->reference = $linkID;
+        $ref->cName     = \__('Referenz') . ' ' . $linkID;
         $linkID         = $this->db->insert('tlink', $ref);
 
         $ins              = new stdClass();

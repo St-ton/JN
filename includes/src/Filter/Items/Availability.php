@@ -31,7 +31,7 @@ class Availability extends AbstractFilter
             ->setUrlParam('availability')
             ->setInputType(InputType::BUTTON)
             ->setVisibility($this->getConfig('navigationsfilter')['allgemein_availabilityfilter_benutzen'])
-            ->setFrontendName(Shop::isAdmin() ? __('filterAvailability') : Shop::Lang()->get('filterAvailability'));
+            ->setFrontendName(Shop::isAdmin() ? \__('filterAvailability') : Shop::Lang()->get('filterAvailability'));
     }
 
     /**

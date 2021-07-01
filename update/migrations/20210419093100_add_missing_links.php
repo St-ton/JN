@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Link\Admin\LinkAdmin;
 use JTL\Update\IMigration;
@@ -19,28 +18,29 @@ class Migration_20210419093100 extends Migration implements IMigration
      */
     public function up()
     {
-        $linkGroup = $this->getDB()->query(
-            "SELECT kLinkgruppe FROM tlinkgruppe WHERE cTemplatename='hidden'",
-            ReturnType::SINGLE_OBJECT
+        $linkGroup = $this->getDB()->getSingleObject(
+            "SELECT kLinkgruppe 
+                FROM tlinkgruppe
+                WHERE cTemplatename = 'hidden'"
         );
-        if (empty($linkGroup)) {
+        if ($linkGroup === null) {
             return;
         }
 
-        $linkAdmin = new LinkAdmin(Shop::Container()->getDB(), Shop::Container()->getCache());
+        $linkAdmin = new LinkAdmin($this->getDB(), Shop::Container()->getCache());
 
         $link = [
-            'kLinkgruppe' => $linkGroup->kLinkgruppe,
-            'kLink' => 0,
-            'kPlugin' => 0,
-            'cName' => 'Hersteller',
-            'nLinkart' => 3,
-            'nSpezialseite' => \LINKTYP_HERSTELLER,
+            'kLinkgruppe'    => (int)$linkGroup->kLinkgruppe,
+            'kLink'          => 0,
+            'kPlugin'        => 0,
+            'cName'          => 'Hersteller',
+            'nLinkart'       => 3,
+            'nSpezialseite'  => \LINKTYP_HERSTELLER,
             'cKundengruppen' => ['-1'],
-            'bIsActive' => 1,
-            'bSSL' => 0,
-            'nSort' => '',
-            'cIdentifier' => ''
+            'bIsActive'      => 1,
+            'bSSL'           => 0,
+            'nSort'          => '',
+            'cIdentifier'    => ''
         ];
         foreach (LanguageHelper::getAllLanguages() as $language) {
             $code = $language->getIso();
@@ -69,6 +69,5 @@ class Migration_20210419093100 extends Migration implements IMigration
      */
     public function down()
     {
-
     }
 }

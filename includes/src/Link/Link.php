@@ -254,7 +254,8 @@ final class Link extends AbstractLink
     public function load(int $id): LinkInterface
     {
         $this->id = $id;
-        $link     = $this->db->getObjects(
+        $realID   = $this->getRealID($id);
+        $links    = $this->db->getObjects(
             "SELECT tlink.*, loc.cISOSprache, tlink.cName AS displayName,
                 loc.cName AS localizedName,  loc.cTitle AS localizedTitle,
                 loc.cContent AS content, loc.cMetaDescription AS metaDescription,
@@ -281,13 +282,18 @@ final class Link extends AbstractLink
                     AND tlink.kLink = pld.kLink
                 WHERE tlink.kLink = :lid
                 GROUP BY tseo.kSprache",
-            ['lid' => $this->getRealID($id)]
+            ['lid' => $realID]
         );
-        if (\count($link) === 0) {
+        if (\count($links) === 0) {
             throw new InvalidArgumentException('Provided link id ' . $this->id . ' not found.');
         }
+        if ($id !== $realID) {
+            foreach ($links as $link) {
+                $link->reference = $realID;
+            }
+        }
 
-        return $this->map($link);
+        return $this->map($links);
     }
 
     /**
@@ -1243,6 +1249,7 @@ final class Link extends AbstractLink
         $duplicateLinks = $group->getLinks()->filter(function (LinkInterface $link) {
             return ($link->getPluginID() === 0
                 && $link->getLinkType() === $this->getLinkType()
+                && $this->getReference() === 0
                 && $link->getID() !== $this->getID()
                 && (empty($this->getCustomerGroups())
                     || \in_array(-1, $this->getCustomerGroups(), true)

@@ -6,7 +6,6 @@
  * @created Thu, 23 Aug 2018 14:13:05 +0200
  */
 
-use JTL\DB\ReturnType;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 

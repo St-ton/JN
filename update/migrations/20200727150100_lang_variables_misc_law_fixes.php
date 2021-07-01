@@ -45,14 +45,14 @@ class Migration_20200727150100 extends Migration implements IMigration
             'ger',
             'productDetails',
             'shippingInformation',
-            "Die angegebenen Lieferzeiten gelten für den Versand innerhalb von %s. Die Lieferzeiten für den " .
+            'Die angegebenen Lieferzeiten gelten für den Versand innerhalb von %s. Die Lieferzeiten für den ' .
             "<a href=\'%s#othercountries\'>Versand ins Ausland</a> finden Sie in unseren <a href=\'%s\'>Versandinformationen</a>."
         );
         $this->setLocalization(
             'eng',
             'productDetails',
             'shippingInformation',
-            "The indicated delivery times refer to shipments within %s. For information on the delivery times " .
+            'The indicated delivery times refer to shipments within %s. For information on the delivery times ' .
             "for <a href=\'%s#othercountries\'>shipments to other countries</a>, please see the  <a href=\'%s\'>Shipping information</a>."
         );
     }
@@ -83,14 +83,14 @@ class Migration_20200727150100 extends Migration implements IMigration
             'ger',
             'productDetails',
             'shippingInformation',
-            "Die angegebenen Lieferzeiten gelten für den Versand innerhalb von %s. Die Lieferzeiten für den " .
+            'Die angegebenen Lieferzeiten gelten für den Versand innerhalb von %s. Die Lieferzeiten für den ' .
             "Versand ins Ausland finden Sie in unseren <a href=\'%s\'>Versandinformationen</a>."
         );
         $this->setLocalization(
             'eng',
             'productDetails',
             'shippingInformation',
-            "The indicated delivery times refer to shipments within %s. For information on the delivery times " .
+            'The indicated delivery times refer to shipments within %s. For information on the delivery times ' .
             "for shipments to other countries, please see the  <a href=\'%s\'>Shipping information</a>."
         );
     }

@@ -50,17 +50,16 @@ abstract class BaseController
      */
     public function updateAverage(int $productID, string $activate): bool
     {
-        $sql       = $activate === 'Y' ? ' AND nAktiv = 1' : '';
-        $countData = $this->db->getSingleObject(
+        $sql = $activate === 'Y' ? ' AND nAktiv = 1' : '';
+        $cnt = (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS nAnzahl
                 FROM tbewertung
                 WHERE kArtikel = :pid' . $sql,
             ['pid' => $productID]
-        );
-
-        if ((int)$countData->nAnzahl === 1) {
+        )->nAnzahl;
+        if ($cnt === 1) {
             $sql = '';
-        } elseif ((int)$countData->nAnzahl === 0) {
+        } elseif ($cnt === 0) {
             $this->db->delete('tartikelext', 'kArtikel', $productID);
 
             return false;

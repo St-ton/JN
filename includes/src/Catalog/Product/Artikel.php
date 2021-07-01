@@ -1614,7 +1614,7 @@ class Artikel
                     ON tartikel.kStueckliste = sub.kStueckliste',
             ['kArtikel' => $this->kArtikel]
         );
-        if (isset($main->kArtikel, $main->kStueckliste) && $main->kArtikel > 0 && $main->kStueckliste > 0) {
+        if ($main !== null && $main->kArtikel > 0 && $main->kStueckliste > 0) {
             $options                             = self::getDefaultOptions();
             $options->nKeineSichtbarkeitBeachten = 1;
             $options->nStueckliste               = 1;

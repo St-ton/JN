@@ -113,7 +113,7 @@
                             class="btn btn-link px-2{if $link->getPluginID() > 0} disabled{else} delete-confirm{/if}"
                             {if $link->getPluginID() === 0} data-modal-body="{__('sureDeleteLink')}"{/if}
                             title="{if $deleteCount > 1}{{__('dangerLinkWillGetDeleted')}|sprintf:{$deleteCount}}{else}{__('delete')}{/if}"
-                            {if $link->isSystem()} disabled{/if}
+                            {if $link->isSystem() && $link->getReference() === 0} disabled{/if}
                             data-toggle="tooltip">
                         <span class="icon-hover">
                             <span class="fal fa-trash-alt"></span>

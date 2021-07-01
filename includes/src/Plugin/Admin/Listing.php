@@ -230,14 +230,14 @@ final class Listing
                 $item->setIsLegacy(false);
                 $gettext->loadPluginItemLocale('base', $item);
                 $msgid = $item->getPluginID() . '_desc';
-                $desc  = __($msgid);
+                $desc  = \__($msgid);
                 if ($desc !== $msgid) {
                     $item->setDescription($desc);
                 } else {
-                    $item->setDescription(__($item->getDescription()));
+                    $item->setDescription(\__($item->getDescription()));
                 }
-                $item->setAuthor(__($item->getAuthor()));
-                $item->setName(__($item->getName()));
+                $item->setAuthor(\__($item->getAuthor()));
+                $item->setName(\__($item->getName()));
             }
             if ($code === InstallCode::OK_LEGACY || $code === InstallCode::OK) {
                 $item->setAvailable(true);

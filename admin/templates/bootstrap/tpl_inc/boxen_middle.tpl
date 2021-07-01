@@ -28,21 +28,24 @@
                             </thead>
                             <tbody>
                                 {foreach $oBox_arr as $oBox}
+                                    {$disabled = ((int)$nPage !== 0 && $oBox->getAvailableForPage() !== 0 && $oBox->getAvailableForPage() !== (int)$nPage)}
                                     {if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}
                                         {include file='tpl_inc/box_single.tpl'
                                             oBox=$oBox
                                             nPage=$nPage
                                             position=$direction
-                                            borderTop=true}
+                                            borderTop=true
+                                            disabled=$disabled}
                                         {foreach $oBox->getChildren() as $oContainerBox}
                                             {include file='tpl_inc/box_single.tpl'
                                                 oBox=$oContainerBox
                                                 nPage=$nPage
                                                 position=$direction
-                                                borderBottom=$oContainerBox@last}
+                                                borderBottom=$oContainerBox@last
+                                                disabled=$disabled}
                                         {/foreach}
                                     {else}
-                                        {include file='tpl_inc/box_single.tpl' oBox=$oBox nPage=$nPage position=$direction}
+                                        {include file='tpl_inc/box_single.tpl' oBox=$oBox nPage=$nPage position=$direction disabled=$disabled}
                                     {/if}
                                 {/foreach}
                             </tbody>

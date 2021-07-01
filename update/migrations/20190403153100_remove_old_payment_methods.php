@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @author fm
  * @created Wed, 03 Apr 2019 15:31:00 +0100
@@ -6,7 +6,6 @@
 
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
-use JTL\DB\ReturnType;
 
 /**
  * Class Migration_20190403153100
@@ -21,13 +20,12 @@ class Migration_20190403153100 extends Migration implements IMigration
      */
     public function up()
     {
-        $methods = $this->getDB()->query(
+        $methods = $this->getDB()->getObjects(
             "SELECT * 
                 FROM tzahlungsart 
                 WHERE cModulId LIKE 'za_billpay%_jtl' 
                     OR cModulId = 'za_sofortueberweisung_jtl'
-                    OR cModulId = 'za_wirecard_jtl'",
-            ReturnType::ARRAY_OF_OBJECTS
+                    OR cModulId = 'za_wirecard_jtl'"
         );
         foreach ($methods as $method) {
             $id = (int)$method->kZahlungsart;

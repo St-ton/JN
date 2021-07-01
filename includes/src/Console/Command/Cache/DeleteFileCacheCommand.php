@@ -3,8 +3,8 @@
 namespace JTL\Console\Command\Cache;
 
 use JTL\Console\Command\Command;
-use JTL\Filesystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter;
+use JTL\Filesystem\LocalFilesystem;
+use JTL\Shop;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
@@ -30,14 +30,14 @@ class DeleteFileCacheCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = $this->getIO();
-        $fs = new Filesystem(new LocalFilesystemAdapter(\PFAD_ROOT));
+        $fs = Shop::Container()->get(LocalFilesystem::class);
         try {
             $fs->deleteDirectory('/templates_c/filecache/');
             $io->success('File cache deleted.');
 
             return 0;
         } catch (Throwable $e) {
-            $io->warning('Nothing to delete.');
+            $io->warning('Could not delete: ' . $e->getMessage());
 
             return 1;
         }

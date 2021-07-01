@@ -2,7 +2,6 @@
 
 namespace JTL\Template\Admin;
 
-use Exception;
 use InvalidArgumentException;
 use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
@@ -17,7 +16,6 @@ use JTL\Smarty\JTLSmarty;
 use JTL\Template\Admin\Validation\TemplateValidator;
 use JTL\Template\BootChecker;
 use JTL\Template\Config;
-use JTL\Template\Model;
 use JTL\Template\XMLReader;
 use JTLShop\SemVer\Version;
 use stdClass;
@@ -128,7 +126,7 @@ class Controller
     {
         $response = new InstallationResponse();
         $response->setStatus(InstallationResponse::STATUS_FAILED);
-        $response->setError(__('errorCSRF'));
+        $response->setError(\__('errorCSRF'));
         die($response->toJson());
     }
 
@@ -154,67 +152,6 @@ class Controller
             ->fetch('tpl_inc/shoptemplate_overview.tpl');
         $response->setHtml($html);
         die($response->toJson());
-    }
-
-    /**
-     * @param string $dir
-     * @param string $type
-     * @return bool
-     * @throws Exception
-     */
-    private function setActiveTemplate(string $dir, string $type = 'standard'): bool
-    {
-        $this->db->delete('ttemplate', 'eTyp', $type);
-        $this->db->delete('ttemplate', 'cTemplate', $dir);
-        $reader    = new XMLReader();
-        $tplConfig = $reader->getXML($dir);
-        if ($tplConfig !== null && !empty($tplConfig->Parent)) {
-            if (!\is_dir(\PFAD_ROOT . \PFAD_TEMPLATES . $tplConfig->Parent)) {
-                return false;
-            }
-            $parent       = (string)$tplConfig->Parent;
-            $parentConfig = $reader->getXML($parent);
-        } else {
-            $parentConfig = false;
-        }
-        $model = new Model($this->db);
-        if (isset($tplConfig->ExsID)) {
-            $model->setExsID((string)$tplConfig->ExsID);
-        }
-        $model->setCTemplate($dir);
-        $model->setType($type);
-        if (!empty($tplConfig->Parent)) {
-            $model->setParent((string)$tplConfig->Parent);
-        }
-        $model->setName((string)$tplConfig->Name);
-        $model->setAuthor((string)$tplConfig->Author);
-        $model->setUrl((string)$tplConfig->URL);
-        $model->setPreview((string)$tplConfig->Preview);
-        $version = empty($tplConfig->Version) && $parentConfig
-            ? (string)$parentConfig->Version
-            : (string)$tplConfig->Version;
-        $model->setVersion($version);
-        if (!empty($tplConfig->Framework)) {
-            $model->setFramework((string)$tplConfig->Framework);
-        }
-        $model->setBootstrap((int)\file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $dir . '/Bootstrap.php'));
-        $save = $model->save();
-        if ($save === true) {
-            if (!$dh = \opendir(\PFAD_ROOT . \PFAD_COMPILEDIR)) {
-                return false;
-            }
-            while (($obj = \readdir($dh)) !== false) {
-                if (\mb_strpos($obj, '.') === 0) {
-                    continue;
-                }
-                if (!\is_dir(\PFAD_ROOT . \PFAD_COMPILEDIR . $obj)) {
-                    \unlink(\PFAD_ROOT . \PFAD_COMPILEDIR . $obj);
-                }
-            }
-        }
-        $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
-
-        return $save;
     }
 
     private function saveConfig(): void
@@ -251,11 +188,11 @@ class Controller
                 $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
             }
         }
-        $check = $this->setActiveTemplate($this->currentTemplateDir);
+        $check = Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir);
         if ($check) {
-            $this->alertService->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
+            $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successTemplateSave'), 'successTemplateSave');
         } else {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
+            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorTemplateSave'), 'errorTemplateSave');
         }
         if (Request::verifyGPCDataInt('activate') === 1) {
             $overlayHelper = new Overlay($this->db);
@@ -295,14 +232,14 @@ class Controller
                 if (!\is_writable($base)) {
                     $this->alertService->addAlert(
                         Alert::TYPE_ERROR,
-                        \sprintf(__('errorFileUpload'), $templatePath),
+                        \sprintf(\__('errorFileUpload'), $templatePath),
                         'errorFileUpload',
                         ['saveInSession' => true]
                     );
                 } elseif (!\move_uploaded_file($file['tmp_name'], $targetFile)) {
                     $this->alertService->addAlert(
                         Alert::TYPE_ERROR,
-                        __('errorFileUploadGeneral'),
+                        \__('errorFileUploadGeneral'),
                         'errorFileUploadGeneral',
                         ['saveInSession' => true]
                     );
@@ -336,13 +273,13 @@ class Controller
         if (($bootstrapper = BootChecker::bootstrap($this->getPreviousTemplate())) !== null) {
             $bootstrapper->disabled();
         }
-        if ($this->setActiveTemplate($this->currentTemplateDir)) {
+        if (Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir)) {
             if (($bootstrapper = BootChecker::bootstrap($this->currentTemplateDir)) !== null) {
                 $bootstrapper->enabled();
             }
-            $this->alertService->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
+            $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successTemplateSave'), 'successTemplateSave');
         } else {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
+            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorTemplateSave'), 'errorTemplateSave');
         }
         $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
         $this->cache->flushTags([\CACHING_GROUP_LICENSES]);

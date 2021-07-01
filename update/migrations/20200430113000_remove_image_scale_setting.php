@@ -6,7 +6,6 @@
  * @created Thu, 30 Apr 2020 12:30:00 +0100
  */
 
-use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 

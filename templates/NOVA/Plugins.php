@@ -775,6 +775,16 @@ class Plugins
     }
 
     /**
+     * @param array                         $params
+     * @param \Smarty_Internal_TemplateBase $smarty
+     * @return void
+     */
+    public function getCountry($params, $smarty): void
+    {
+        $smarty->assign($params['assign'], Shop::Container()->getCountryService()->getCountry($params['iso']));
+    }
+
+    /**
      * @param $params
      * @return string
      */

@@ -47,7 +47,7 @@ if (isset($_POST['erstellenShowButton'])) {
     $post       = Text::filterXSS($_POST);
     $step       = 'erstellen';
     $checkboxID = Request::verifyGPCDataInt('kCheckBox');
-    $languages  = LanguageHelper::getAllLanguages();
+    $languages  = LanguageHelper::getAllLanguages(0, true);
     $checks     = plausiCheckBox($post, $languages);
     if (count($checks) === 0) {
         $checkbox = speicherCheckBox($post, $languages);

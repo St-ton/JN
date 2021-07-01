@@ -26,6 +26,7 @@ use JTL\Events\Dispatcher;
 use JTL\Events\Event;
 use JTL\Filesystem\AdapterFactory;
 use JTL\Filesystem\Filesystem;
+use JTL\Filesystem\LocalFilesystem;
 use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\ProductFilter;
@@ -87,6 +88,9 @@ use JTL\Smarty\MailSmarty;
 use JTL\Template\TemplateService;
 use JTL\Template\TemplateServiceInterface;
 use JTLShop\SemVer\Version;
+use League\Flysystem\Config as FlysystemConfig;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\Visibility;
 use LinkHelper;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
@@ -2244,7 +2248,17 @@ final class Shop
         $container->singleton(Filesystem::class, static function () {
             $factory = new AdapterFactory(self::getConfig([\CONF_FS])['fs']);
 
-            return new Filesystem($factory->getAdapter());
+            return new Filesystem(
+                $factory->getAdapter(),
+                [FlysystemConfig::OPTION_DIRECTORY_VISIBILITY => Visibility::PUBLIC]
+            );
+        });
+
+        $container->singleton(LocalFilesystem::class, static function () {
+            return new Filesystem(
+                new LocalFilesystemAdapter(\PFAD_ROOT),
+                [FlysystemConfig::OPTION_DIRECTORY_VISIBILITY => Visibility::PUBLIC]
+            );
         });
 
         $container->bind(Mailer::class, static function (Container $container) {

@@ -17,21 +17,21 @@ class Divider extends Portlet
     {
         return [
             'title' => [
-                'label' => __('dividerTitle'),
-                'default' => __('Divider'),
+                'label' => \__('dividerTitle'),
+                'default' => \__('Divider'),
                 'width' => 50,
             ],
             'id' => [
-                'label' => __('dividerElmID'),
-                'desc'  => __('dividerIdDesc'),
+                'label' => \__('dividerElmID'),
+                'desc'  => \__('dividerIdDesc'),
                 'width' => 50,
             ],
             'moreLink' => [
-                'label' => __('dividerMoreLink'),
+                'label' => \__('dividerMoreLink'),
                 'width' => 50,
             ],
             'moreTitle' => [
-                'label' => __('dividerMoreTitle'),
+                'label' => \__('dividerMoreTitle'),
                 'width' => 50,
             ],
         ];
@@ -43,8 +43,8 @@ class Divider extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            __('Styles')    => 'styles',
-            __('Animation') => 'animations',
+            \__('Styles')    => 'styles',
+            \__('Animation') => 'animations',
         ];
     }
 }

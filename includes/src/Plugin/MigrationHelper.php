@@ -6,9 +6,8 @@ use DateTime;
 use DirectoryIterator;
 use Exception;
 use JTL\DB\DbInterface;
+use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
-use League\Flysystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter;
 use Throwable;
 
 /**
@@ -225,9 +224,9 @@ final class MigrationHelper
         $datetime      = new DateTime('NOW');
         $timestamp     = $datetime->format('YmdHis');
         $filePath      = 'Migration' . $timestamp;
-        $relPath       = 'plugins/' . $pluginDir . '/Migrations';
+        $relPath       = \PLUGIN_DIR . $pluginDir . '/Migrations';
         $migrationPath = $relPath . '/' . $filePath . '.php';
-        $fileSystem    = new Filesystem(new LocalFilesystemAdapter(\PFAD_ROOT));
+        $fileSystem    = Shop::Container()->get(LocalFilesystem::class);
         try {
             $fileSystem->createDirectory($relPath);
         } catch (Throwable $e) {

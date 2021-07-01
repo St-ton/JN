@@ -1980,3 +1980,13 @@ define('HOOK_IO_HANDLE_REQUEST_ADMIN', 311);
  * @param Collection items - collection of JTL\Consent\ConsentModel\ConsentModel
  */
 define('CONSENT_MANAGER_GET_ACTIVE_ITEMS', 320);
+
+/**
+ * @since 5.1.0
+ * @file Preise.php
+ * @param float|string netPrice
+ * @param float|string defaultTax
+ * @param float|string conversionTax
+ * @param float|string newNetPrice
+ */
+define('HOOK_RECALCULATED_NET_PRICE', 321);

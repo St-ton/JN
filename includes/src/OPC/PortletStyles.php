@@ -66,52 +66,52 @@ trait PortletStyles
     {
         return [
             'background-color' => [
-                'label'   => __('Background colour'),
+                'label'   => \__('Background colour'),
                 'type'    => InputType::COLOR,
                 'default' => '',
                 'width'   => 34,
             ],
             'color'            => [
                 'type'    => InputType::COLOR,
-                'label'   => __('Font colour'),
+                'label'   => \__('Font colour'),
                 'default' => '',
                 'width'   => 34,
             ],
             'font-size'        => [
-                'label'   => __('Font size'),
+                'label'   => \__('Font size'),
                 'default' => '',
                 'width'   => 34,
-                'desc'    => __('cssNumericDesc'),
+                'desc'    => \__('cssNumericDesc'),
             ],
             'box-styles'       => [
                 'type' => InputType::BOX_STYLES,
             ],
             'custom-class'     => [
                 'type'        => InputType::TEXT,
-                'label'       => __('Custom css class'),
+                'label'       => \__('Custom css class'),
                 'default'     => '',
                 'width'       => 100,
-                'placeholder' => __('CustomCssClassPlaceholder'),
-                'desc'        => __('CustomCssClassDesc'),
+                'placeholder' => \__('CustomCssClassPlaceholder'),
+                'desc'        => \__('CustomCssClassDesc'),
             ],
             'hidden-xs'        => [
                 'type'  => InputType::CHECKBOX,
-                'label' => __('Hidden on XS'),
+                'label' => \__('Hidden on XS'),
                 'width' => 25,
             ],
             'hidden-sm'        => [
                 'type'  => InputType::CHECKBOX,
-                'label' => __('Hidden on SM'),
+                'label' => \__('Hidden on SM'),
                 'width' => 25,
             ],
             'hidden-md'        => [
                 'type'  => InputType::CHECKBOX,
-                'label' => __('Hidden on MD'),
+                'label' => \__('Hidden on MD'),
                 'width' => 25,
             ],
             'hidden-lg'        => [
                 'type'  => InputType::CHECKBOX,
-                'label' => __('Hidden on LG'),
+                'label' => \__('Hidden on LG'),
                 'width' => 25,
             ],
         ];

@@ -3,11 +3,11 @@
 namespace JTL\Plugin\Admin\Installation;
 
 use InvalidArgumentException;
+use JTL\Filesystem\Filesystem;
+use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
 use JTL\XMLParser;
 use League\Flysystem\FileAttributes;
-use League\Flysystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\MountManager;
 use Throwable;
 use ZipArchive;
@@ -34,11 +34,6 @@ class Extractor
     private $parser;
 
     /**
-     * @var Filesystem
-     */
-    private $rootSystem;
-
-    /**
      * @var MountManager
      */
     private $manager;
@@ -50,10 +45,10 @@ class Extractor
     public function __construct(XMLParser $parser)
     {
         $this->parser   = $parser;
-        $jtlFS          = Shop::Container()->get(\JTL\Filesystem\Filesystem::class);
+        $jtlFS          = Shop::Container()->get(Filesystem::class);
         $this->response = new InstallationResponse();
         $this->manager  = new MountManager([
-            'root' => new Filesystem(new LocalFilesystemAdapter(\PFAD_ROOT)),
+            'root' => Shop::Container()->get(LocalFilesystem::class),
             'plgn' => $jtlFS,
             'tpl'  => $jtlFS
         ]);
@@ -133,7 +128,7 @@ class Extractor
         try {
             $this->manager->createDirectory('plgn://' . $base . $dirName);
         } catch (Throwable $e) {
-            $this->handlExtractionErrors(0, __('errorDirCreate') . $base . $dirName);
+            $this->handlExtractionErrors(0, \__('errorDirCreate') . $base . $dirName);
 
             return false;
         }
@@ -190,7 +185,7 @@ class Extractor
         try {
             $this->manager->createDirectory('tpl://' . $base . $dirName);
         } catch (Throwable $e) {
-            $this->handlExtractionErrors(0, __('errorDirCreate') . $base . $dirName);
+            $this->handlExtractionErrors(0, \__('errorDirCreate') . $base . $dirName);
 
             return false;
         }

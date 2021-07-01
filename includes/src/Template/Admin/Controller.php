@@ -2,7 +2,6 @@
 
 namespace JTL\Template\Admin;
 
-use Exception;
 use InvalidArgumentException;
 use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
@@ -17,7 +16,6 @@ use JTL\Smarty\JTLSmarty;
 use JTL\Template\Admin\Validation\TemplateValidator;
 use JTL\Template\BootChecker;
 use JTL\Template\Config;
-use JTL\Template\Model;
 use JTL\Template\XMLReader;
 use JTLShop\SemVer\Version;
 use stdClass;
@@ -128,7 +126,7 @@ class Controller
     {
         $response = new InstallationResponse();
         $response->setStatus(InstallationResponse::STATUS_FAILED);
-        $response->setError(__('errorCSRF'));
+        $response->setError(\__('errorCSRF'));
         die($response->toJson());
     }
 
@@ -192,9 +190,9 @@ class Controller
         }
         $check = Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir);
         if ($check) {
-            $this->alertService->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
+            $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successTemplateSave'), 'successTemplateSave');
         } else {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
+            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorTemplateSave'), 'errorTemplateSave');
         }
         if (Request::verifyGPCDataInt('activate') === 1) {
             $overlayHelper = new Overlay($this->db);
@@ -234,14 +232,14 @@ class Controller
                 if (!\is_writable($base)) {
                     $this->alertService->addAlert(
                         Alert::TYPE_ERROR,
-                        \sprintf(__('errorFileUpload'), $templatePath),
+                        \sprintf(\__('errorFileUpload'), $templatePath),
                         'errorFileUpload',
                         ['saveInSession' => true]
                     );
                 } elseif (!\move_uploaded_file($file['tmp_name'], $targetFile)) {
                     $this->alertService->addAlert(
                         Alert::TYPE_ERROR,
-                        __('errorFileUploadGeneral'),
+                        \__('errorFileUploadGeneral'),
                         'errorFileUploadGeneral',
                         ['saveInSession' => true]
                     );
@@ -279,9 +277,9 @@ class Controller
             if (($bootstrapper = BootChecker::bootstrap($this->currentTemplateDir)) !== null) {
                 $bootstrapper->enabled();
             }
-            $this->alertService->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
+            $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successTemplateSave'), 'successTemplateSave');
         } else {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
+            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorTemplateSave'), 'errorTemplateSave');
         }
         $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
         $this->cache->flushTags([\CACHING_GROUP_LICENSES]);

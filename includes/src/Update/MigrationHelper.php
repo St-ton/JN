@@ -4,11 +4,10 @@ namespace JTL\Update;
 
 use DateTime;
 use Exception;
+use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
-use League\Flysystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter;
 use Throwable;
 
 /**
@@ -247,8 +246,7 @@ class MigrationHelper
         );
         $relPath       = 'update/migrations';
         $migrationPath = $relPath . '/' . $filePath . '.php';
-        $fileSystem    = new Filesystem(new LocalFilesystemAdapter(\PFAD_ROOT));
-
+        $fileSystem    = Shop::Container()->get(LocalFilesystem::class);
         try {
             $fileSystem->createDirectory($relPath);
         } catch (Throwable $e) {

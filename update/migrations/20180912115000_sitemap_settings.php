@@ -18,8 +18,7 @@ class Migration_20180912115000 extends Migration implements IMigration
     protected $description = 'Sitemap settings';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritdoc
      */
     public function up()
     {
@@ -106,7 +105,7 @@ class Migration_20180912115000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

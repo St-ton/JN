@@ -21,7 +21,7 @@
                     <hr class="mb-n3">
                 </div>
                 <div class="table-responsive card-body">
-                    <table class="list table">
+                    <table class="list table min-w-lg">
                         <thead>
                         <tr>
                             <th class="text-left">{__('pluginName')}</th>
@@ -31,7 +31,7 @@
                         <tbody>
                         {foreach $plugin->getLocalization()->getLangVars() as $var}
                             <tr>
-                                <td><i>{$var->name}</i></td>
+                                <td style="max-width:150px"><i>{$var->name}</i></td>
                                 <td>{__($var->description)}</td>
                             </tr>
                             {foreach $pluginLanguages as $lang}
@@ -47,9 +47,9 @@
                                             {$value = ''}
                                         {/if}
                                         {if $var->type === 'textarea'}
-                                            <textarea id="lv-{$var->id}_{$cISOSprache}" class="form-control" style="width: 350px;" name="{$var->id}_{$cISOSprache}" type="{$var->type}">{$value}</textarea>
+                                            <textarea id="lv-{$var->id}_{$cISOSprache}" class="form-control" name="{$var->id}_{$cISOSprache}" type="{$var->type}">{$value}</textarea>
                                         {else}
-                                            <input id="lv-{$var->id}_{$cISOSprache}" class="form-control" style="width: 350px;" name="{$var->id}_{$cISOSprache}" type="{$var->type}" value="{$value}" />
+                                            <input id="lv-{$var->id}_{$cISOSprache}" class="form-control" name="{$var->id}_{$cISOSprache}" type="{$var->type}" value="{$value}" />
                                         {/if}
                                     </td>
                                 </tr>

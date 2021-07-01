@@ -25,7 +25,8 @@
                                        value=""
                                        required=true
                                        name="neuesPasswort1"
-                                       autocomplete="new-password"}
+                                       autocomplete="new-password"
+                                       maxlength="255"}
                                 <label for="newPassword" class="col-form-label">
                                     {lang key='newPassword' section='login'}
                                 </label>

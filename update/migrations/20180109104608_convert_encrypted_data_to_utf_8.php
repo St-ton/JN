@@ -20,6 +20,9 @@ class Migration_20180109104608 extends Migration implements IMigration
 
     protected $description = 'Convert encrypted data to utf-8';
 
+    /**
+     * @var string[][]
+     */
     protected $properties = [
         'tkunde'            => ['kKunde', 'cNachname', 'cFirma', 'cZusatz', 'cStrasse'],
         'tzahlungsinfo'     => [

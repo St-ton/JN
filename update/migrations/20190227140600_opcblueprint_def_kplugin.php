@@ -19,7 +19,7 @@ class Migration_20190227140600 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->execute("ALTER TABLE topcblueprint MODIFY kPlugin INT NOT NULL DEFAULT 0");
+        $this->execute('ALTER TABLE topcblueprint MODIFY kPlugin INT NOT NULL DEFAULT 0');
     }
 
     /**
@@ -27,6 +27,6 @@ class Migration_20190227140600 extends Migration implements IMigration
      */
     public function down()
     {
-        $this->execute("ALTER TABLE topcblueprint MODIFY kPlugin INT NOT NULL");
+        $this->execute('ALTER TABLE topcblueprint MODIFY kPlugin INT NOT NULL');
     }
 }

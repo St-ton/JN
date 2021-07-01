@@ -30,9 +30,9 @@ class Migration_20200420130000 extends Migration implements IMigration
             ReturnType::LAST_INSERTED_ID
         );
         $this->execute(
-            "INSERT INTO `tconsentlocalization` 
+            'INSERT INTO `tconsentlocalization` 
                 (`consentID`,`languageID`,`privacyPolicy`,`description`,`purpose`,`name`)
-             VALUES (" . $id . ",1,'https://policies.google.com/privacy?hl=de',
+             VALUES (' . $id . ",1,'https://policies.google.com/privacy?hl=de',
              'Um Inhalte von YouTube auf dieser Seite zu entsperren, ist Ihre Zustimmung zur Datenweitergabe und 
              Speicherung von Drittanbieter-Cookies des Anbieters YouTube (Google) erforderlich.\nDies erlaubt uns, 
              unser Angebot sowie das Nutzererlebnis für Sie zu verbessern und interessanter auszugestalten.\nOhne 
@@ -42,9 +42,9 @@ class Migration_20200420130000 extends Migration implements IMigration
              'YouTube')
          ");
         $this->execute(
-            "INSERT INTO `tconsentlocalization` 
+            'INSERT INTO `tconsentlocalization` 
                 (`consentID`,`languageID`,`privacyPolicy`,`description`,`purpose`,`name`) 
-                VALUES (" . $id . ",2,
+                VALUES (' . $id . ",2,
                 'https://google.com/privacy-policy','To view YouTube contents on this website, 
                 you need to consent to the transfer of data and storage of third-party cookies by 
                 YouTube (Google).\n\nThis allows us to improve your user experience and to make our 

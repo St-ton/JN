@@ -308,7 +308,7 @@ class Campaign
     public function getName(): string
     {
         return $this->cParameter === 'jtl'
-            ? __($this->cName)
+            ? \__($this->cName)
             : $this->cName;
     }
 }

@@ -196,11 +196,11 @@ class AdminAccount
             $mail   = new Mail();
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ADMINLOGIN_PASSWORT_VERGESSEN, $obj));
 
-            $this->alertService->addAlert(Alert::TYPE_SUCCESS, __('successEmailSend'), 'successEmailSend');
+            $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successEmailSend'), 'successEmailSend');
 
             return true;
         }
-        $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorEmailNotFound'), 'errorEmailNotFound');
+        $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorEmailNotFound'), 'errorEmailNotFound');
 
         return false;
     }

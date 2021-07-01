@@ -18,7 +18,7 @@ $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
 $step        = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
-$languages   = LanguageHelper::getAllLanguages();
+$languages   = LanguageHelper::getAllLanguages(0, true);
 if (Request::getInt('del') > 0 && Form::validateToken()) {
     $db->delete('tkontaktbetreff', 'kKontaktBetreff', Request::getInt('del'));
     $db->delete('tkontaktbetreffsprache', 'kKontaktBetreff', Request::getInt('del'));

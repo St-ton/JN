@@ -1,6 +1,6 @@
 {block name='snippets-banner'}
     {if isset($oImageMap)}
-        {container fluid=$isFluid}
+        {container fluid=$isFluid class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
             {opcMountPoint id='opc_before_banner'}
             <div class="banner snippets-banner">
                 {block name='snippets-banner-image'}

@@ -1,6 +1,6 @@
 {block name='snippets-slider'}
     {if isset($oSlider) && count($oSlider->getSlides()) > 0}
-        {container fluid=$isFluid}
+        {container fluid=$isFluid class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
             {opcMountPoint id='opc_before_slider'}
             <div class="slider-wrapper theme-{$oSlider->getTheme()}{if $oSlider->getControlNav()} control-nav{/if}{if $oSlider->getDirectionNav()} direction-nav{/if}{if $oSlider->getThumbnail()} thumbnail-nav{/if}">
                 <div id="slider-{$oSlider->getID()}" class="nivoSlider">

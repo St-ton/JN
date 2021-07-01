@@ -444,12 +444,13 @@
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
             <div id="content-wrapper"
-                 class="{if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}is-item-list container-fluid container-fluid-xl{/if}
+                 class="{if ($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}has-left-sidebar container-fluid container-fluid-xl{/if}
+                 {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}is-item-list{/if}
                         {if $isFluidBanner || $isFluidSlider} has-fluid{/if}">
         {/block}
 
         {block name='layout-header-breadcrumb'}
-            {container fluid=($smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp || (isset($Link) && $Link->getIsFluid())) class="breadcrumb-container"}
+            {container fluid=(($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp || (isset($Link) && $Link->getIsFluid())) class="breadcrumb-container"}
                 {include file='layout/breadcrumb.tpl'}
             {/container}
         {/block}
@@ -458,7 +459,7 @@
             <div id="content">
         {/block}
 
-        {if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
+        {if !$bExclusive && !empty($boxes.left|strip_tags|trim) && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}
             {block name='layout-header-content-productlist-starttags'}
                 <div class="row">
                     <div class="col-lg-8 col-xl-9 ml-auto-util order-lg-1">

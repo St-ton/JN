@@ -42,6 +42,7 @@
                                             name="pass"
                                             aria-autocomplete="none"
                                             autocomplete="new-password"
+                                            maxlength="255"
                                             disabled=($unregForm === 1)
                                         }
                                         <label for="password" class="col-form-label">
@@ -84,6 +85,7 @@
                                                 "custom-message"=>"{lang key='passwordsMustBeEqual' section='account data'}"]
                                             autocomplete="new-password"
                                             aria-autocomplete="none"
+                                            maxlength="255"
                                             disabled=($unregForm === 1)
                                             value=""
                                         }

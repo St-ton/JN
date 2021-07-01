@@ -412,7 +412,7 @@ class Customer
      * @return bool|stdClass
      * @throws Exception
      */
-    public function checkCredentials($user, $pass)
+    public function checkCredentials(string $user, string $pass)
     {
         $user            = \mb_substr($user, 0, 255);
         $pass            = \mb_substr($pass, 0, 255);
@@ -760,7 +760,6 @@ class Customer
      */
     public function updatePassword($password = null): self
     {
-        $password        = \mb_substr($password, 0, 255);
         $passwordService = Shop::Container()->getPasswordService();
         if ($password === null) {
             $clearTextPassword = $passwordService->generate(12);
@@ -779,7 +778,7 @@ class Customer
             $mail   = new Mail();
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PASSWORT_VERGESSEN, $obj));
         } else {
-            $this->cPasswort = $passwordService->hash($password);
+            $this->cPasswort = $passwordService->hash(\mb_substr($password, 0, 255));
 
             $upd                 = new stdClass();
             $upd->cPasswort      = $this->cPasswort;

@@ -4,8 +4,9 @@ namespace JTL\Console\Command\Cache;
 
 use JTL\Console\Command\Command;
 use JTL\Filesystem\Filesystem;
+use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
-use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\FileAttributes;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -24,7 +25,7 @@ class DeleteTemplateCacheCommand extends Command
     {
         $this->setName('cache:tpl:delete')
             ->setDescription('Delete template cache')
-            ->addOption('admin', 'a', InputOption::VALUE_NONE, 'Delete admin template cache');
+            ->addOption('admin', 'a', InputOption::VALUE_NONE, 'Also delete admin template cache');
     }
 
     /**
@@ -33,6 +34,7 @@ class DeleteTemplateCacheCommand extends Command
     private function deleteAdminTplCache(Filesystem $filesystem): void
     {
         foreach ($filesystem->listContents(\PFAD_ADMIN . \PFAD_COMPILEDIR) as $item) {
+            /** @var FileAttributes $item */
             if ($item->isDir()) {
                 try {
                     $filesystem->deleteDirectory($item->path());
@@ -54,7 +56,7 @@ class DeleteTemplateCacheCommand extends Command
     {
         $io             = $this->getIO();
         $adminTpl       = $this->getOption('admin');
-        $filesystem     = new Filesystem(new LocalFilesystemAdapter(\PFAD_ROOT));
+        $filesystem     = Shop::Container()->get(LocalFilesystem::class);
         $activeTemplate = Shop::Container()->getTemplateService()->getActiveTemplate(false);
         if ($adminTpl) {
             $this->deleteAdminTplCache($filesystem);
@@ -65,7 +67,7 @@ class DeleteTemplateCacheCommand extends Command
 
             return 0;
         } catch (Throwable $e) {
-            $io->warning('Nothing to delete.');
+            $io->warning('Could not delete: ' . $e->getMessage());
 
             return 1;
         }

@@ -2296,7 +2296,7 @@ class Artikel
             if (!$mayViewPrices) {
                 unset($value->fAufpreisNetto, $value->cAufpreisLocalized, $value->cPreisInklAufpreis);
             }
-            $value->addPrices($this, $taxRate, $currency, $mayViewPrices, $precision, $per, $variations);
+            $value->addPrices($this, $taxRate, $currency, $mayViewPrices, $precision, $per);
             $this->Variationen[$counter]->Werte[$i] = $value;
         }
         foreach ($this->Variationen as $i => $oVariation) {

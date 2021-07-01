@@ -8,6 +8,7 @@ use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
 use JTL\Session\Frontend;
+use JTL\Shop;
 use stdClass;
 
 /**
@@ -304,7 +305,6 @@ class VariationValue
      * @param bool|int  $mayViewPrices
      * @param int $precision
      * @param string $per
-     * @param array $variations
      */
     public function addPrices(
         Artikel $product,
@@ -312,8 +312,7 @@ class VariationValue
         Currency $currency,
         $mayViewPrices,
         int $precision,
-        string $per,
-        array $variations
+        string $per
     ): void {
         if ($mayViewPrices && isset($this->fVPEWert) && $this->fVPEWert > 0) {
             $base                           = $this->fAufpreisNetto / $this->fVPEWert;
@@ -353,38 +352,16 @@ class VariationValue
                 $currency
             );
             $this->cAufpreisLocalized[1] = Preise::getLocalizedPriceString($surcharge, $currency);
-            // Wenn der Artikel ein VarikombiKind ist, nutze den Varkombi-Elternartikel und rechne den Aufpreis hinzu
+            // Wenn der Artikel ein VarikombiKind ist
             if ($product->kVaterArtikel > 0) {
                 $customer           = Frontend::getCustomer();
-                $parentProductPrice = new Preise(
+                $variationBasePrice = new Preise(
                     $customer->getGroupID() ?? Frontend::getCustomerGroup()->getID(),
-                    $product->kVaterArtikel,
+                    (int)$this->oVariationsKombi->kArtikel,
                     $customer->getID() ?? 0
                 );
-                //Wenn nur übergeordnete Varkombiaufpreise gesetzt sind (keine Kundengruppenaufpreise)
-                if ($parentProductPrice->fVKNetto <= 0) {
-                    $parentProductPrice = (new Artikel())
-                        ->fuelleArtikel($product->kVaterArtikel, Artikel::getDetailOptions())->Preise;
-                }
 
-                $VariationVKNetto   = $surcharge + $parentProductPrice->fVKNetto;
-                $varKombiSurcharges = 0;
-
-                foreach ($variations as $variation) {
-                    if ((int)$variation->kEigenschaft === $this->kEigenschaft &&
-                        (int)$this->oVariationsKombi->kArtikel === $product->kArtikel) {
-                        $VariationVKNetto = $product->Preise->fVKNetto;
-                    }
-                    if ((int)$variation->tartikel_kArtikel === $product->kArtikel &&
-                        (int)$variation->kEigenschaft !== $this->kEigenschaft) {
-                        $varKombiSurcharges += $variation->fAufpreisNetto;
-                    }
-                }
-
-                $VariationVKNetto = $varKombiSurcharges > 0 ?
-                    $surcharge + $parentProductPrice->fVKNetto + $varKombiSurcharges :
-                    $VariationVKNetto;
-
+                $VariationVKNetto            = $variationBasePrice->oPriceRange->getProductData()->fNettoPreis;
                 $this->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
                     Tax::getGross($VariationVKNetto, $taxRate),
                     $currency

@@ -8,7 +8,6 @@ use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
 use JTL\Session\Frontend;
-use JTL\Shop;
 use stdClass;
 
 /**
@@ -352,7 +351,7 @@ class VariationValue
                 $currency
             );
             $this->cAufpreisLocalized[1] = Preise::getLocalizedPriceString($surcharge, $currency);
-            // Wenn der Artikel ein VarikombiKind ist
+            // Wenn der Artikel ein VarkombiKind ist
             if ($product->kVaterArtikel > 0) {
                 $customer           = Frontend::getCustomer();
                 $variationBasePrice = new Preise(

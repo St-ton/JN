@@ -1,0 +1,212 @@
+@import '../../base/sass/functions';
+
+@import 'variables';
+
+@import 'allstyles';
+
+header {
+  .dropdown-menu {
+    background-color: $white;
+    color: $black;
+    a {
+      color: $black;
+    }
+  }
+}
+
+#mainNavigation {
+  .dropdown-toggle::after, [data-toggle=collapse]:not(.navbar-toggler)::after{
+    content: initial !important;
+  }
+}
+
+#shop-nav .fas {
+  font-weight: 400;
+  &.fa-search {
+    background: $url-search;
+    width: 1em;
+    height: 1em;
+    filter: invert(100%);
+    ::before{
+      content: initial;
+    }
+  }
+}
+
+.btn {
+  font-weight: $font-weight-normal;
+}
+
+.btn-outline-secondary {
+  &:not(:disabled):not(.disabled):active,
+  &:not(:disabled):not(.disabled).active,
+  .show > &.dropdown-toggle { background-color: $gray-light; color: $gray-dark}
+}
+
+.theme-default .nivo-directionNav a {
+  height: 100%;
+  width: 80px;
+  background: transparent;
+  opacity: 1;
+  top: 0;
+  text-indent: initial;
+  &:hover {
+    background: $gray;
+  }
+  &.nivo-prevNav {
+    left: 0;
+    color: transparent;
+    &::after {
+      content: '\f053' !important;
+      font-family: "Font Awesome 5 Free" !important;
+      font-weight: 900;
+      color: $primary;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+  &.nivo-nextNav {
+    right: 0;
+    color: transparent;
+    &::after {
+      content: '\f054' !important;
+      font-family: "Font Awesome 5 Free" !important;
+      font-weight: 900;
+      color: $primary;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
+.carousel-arrows-inside {
+  margin: 0 50px;
+  .slick-arrow {
+    top: 30%;
+  }
+  .slick-prev {
+    transform: translate(-100%, -50%);
+    left: 0;
+  }
+  .slick-next {
+    transform: translate(100%, -50%);
+    right: 0;
+  }
+}
+
+.slick-arrow {
+  background-color: $gray-darker;
+  color: $white;
+  width: 50px;
+  height: 50px;
+  padding: map-get($spacers, 1); transform: translateY(-50%);
+  &::after { font-size: $h2-font-size; }
+  &:hover { background-color: $primary; color: $white; }
+  &:focus { outline: 0; }
+}
+
+.hr-sect {
+  flex-direction: column;
+
+  &::before {
+    content: initial;
+  }
+  &::after {
+    content: "";
+    margin: 10px 0 0 0;
+    width: 300px;
+  }
+}
+
+.blog-preview-author {
+  font-weight: bold;
+}
+
+.page-item { position: relative;
+  &.active { font-weight: $font-weight-bold;
+    .page-link {
+      &::after {
+        border-bottom: 4px solid $secondary;
+      }
+    }
+  }
+}
+
+.productbox-quick-actions .product-actions {
+  flex-direction: column;
+}
+.badge-circle, .badge-circle-1 {
+  border: 0;
+  opacity: 0;
+  color: $gray;
+  &:hover, &:focus {
+    background-color: $primary;
+    border-color: $primary;
+    color: $white;
+    opacity: 1;
+  }
+}
+.product-wrapper {
+  &:hover, &:focus {
+    .badge-circle, .badge-circle-1 {
+      opacity: 1;
+    }
+  }
+}
+
+.productbox-inner .productbox-title a {
+  color: $gray-medium;
+}
+
+.productbox-ribbon.ribbon {
+  top: map_get($spacers, 6);
+}
+
+.price_wrapper .price {
+  color: $black;
+}
+
+.productlist-page-nav-top{
+  border-color: $gray-medium;
+  margin-bottom: map_get($spacers, 2);
+}
+.productlist-page-nav-bottom {
+  border-color: $gray-medium;
+  margin-top: map_get($spacers, 2);
+}
+
+aside {
+  .nav-panel {
+    > .nav > .active > .nav-link {
+      border-bottom: $highlight-border-size solid $secondary;
+    }
+  }
+}
+
+.filter-item .badge {
+  word-break: keep-all;
+  min-width: 40px;
+  padding-bottom: map_get($spacers, 2);
+}
+
+#footer {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  &::before {
+    content: "";
+    margin: 0 0 3rem 0;
+    background: $hr-border-color;
+    height: 1px;
+    width: 70%;
+    align-self: center;
+  }
+  .newsletter-email-wrapper button[type=submit] {
+    background: $white;
+    color: $secondary;
+  }
+}

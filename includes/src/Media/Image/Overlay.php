@@ -2,11 +2,9 @@
 
 namespace JTL\Media\Image;
 
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
-use JTL\Template;
 use stdClass;
 
 /**
@@ -147,7 +145,7 @@ class Overlay
      * @param int         $type
      * @param int         $language
      * @param string|null $template
-     * @param bool|null   $setFallbackPath
+     * @param bool        $setFallbackPath
      * @return Overlay
      */
     public static function getInstance(
@@ -176,7 +174,7 @@ class Overlay
                 ->setTransparence((int)$overlay->nTransparenz)
                 ->setSize((int)$overlay->nGroesse)
                 ->setImageName($overlay->cBildPfad)
-                ->setName(isset($_SESSION['AdminAccount']) ? __($overlay->cSuchspecial) : $overlay->cSuchspecial);
+                ->setName(isset($_SESSION['AdminAccount']) ? \__($overlay->cSuchspecial) : $overlay->cSuchspecial);
 
             if ($setFallbackPath) {
                 $this->setFallbackPath($overlay->cTemplate);
@@ -203,7 +201,7 @@ class Overlay
      */
     private function getDataForLanguage(int $language): ?stdClass
     {
-        $overlay = Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getSingleObject(
             'SELECT ssos.*, sso.cSuchspecial
                  FROM tsuchspecialoverlaysprache ssos
                  LEFT JOIN tsuchspecialoverlay sso
@@ -218,11 +216,8 @@ class Overlay
                 'overlayID'       => $this->getType(),
                 'templateName'    => $this->getTemplateName(),
                 'defaultTemplate' => self::DEFAULT_TEMPLATE
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-
-        return $overlay === false ? null : $overlay;
     }
 
     /**
@@ -289,7 +284,7 @@ class Overlay
             'nMargin'      => 5
         ];
 
-        $check = $db->queryPrepared(
+        $check = $db->getSingleObject(
             'SELECT * FROM tsuchspecialoverlaysprache
               WHERE kSprache = :languageID
                 AND kSuchspecialOverlay = :overlayID
@@ -298,8 +293,7 @@ class Overlay
                 'languageID'   => $this->getLanguage(),
                 'overlayID'    => $this->getType(),
                 'templateName' => $this->getTemplateName()
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
         if ($check) {
             $db->update(
@@ -360,7 +354,8 @@ class Overlay
      */
     public function setTemplateName(string $template = null): self
     {
-        $this->templateName = $template ?: Template::getInstance()->getName();
+        $this->templateName = $template
+            ?: Shop::Container()->getTemplateService()->getActiveTemplate()->getName();
 
         return $this;
     }

@@ -30,10 +30,10 @@ msgid "errorFileType"
 msgstr "File type missing or not supported (only jpg/gif/png/bmp)."
 
 msgid "errorFileMove"
-msgstr "Could not move logo. Please review the write access of folder %s."
+msgstr "Could not move logo. Please review the write access of folder \"%s\"."
 
 msgid "yourLogo"
 msgstr "Your logo"
 
 msgid "errorLogoUpload"
-msgstr "Could not upload logo. Please update only files of the types jpeg, pjpeg, gif, png, bmp, x-png, or jpg. Check whether the file has a name and review the write access of folder %s."
+msgstr "Could not upload logo. Please only upload files of the type %s. Check whether the file has a name and check the write access of folder \"%s\"."

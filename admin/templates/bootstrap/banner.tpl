@@ -69,11 +69,15 @@
                     <div class="form-group form-row align-items-center file-input">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="oFile">{__('banner')} *:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <div class="custom-file">
-                                <input class="custom-file-input" id="oFile" type="file" name="oFile" />
-                                <label class="custom-file-label" for="oFile">
-                                    <span class="text-truncate">{__('fileSelect')}</span>
-                                </label>
+                            {include file='tpl_inc/fileupload.tpl'
+                                fileID='oFile'
+                                fileShowRemove=true
+                                fileInitialPreview="[
+                                        {if !empty($banner->cBildPfad)}
+                                        '<img src=\"{$banner->cBildPfad}\" class=\"mb-3\" />'
+                                        {/if}
+                                    ]"
+                            }
                             </div>
                         </div>
                     </div>
@@ -323,7 +327,7 @@
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         <a class="btn btn-outline-primary btn-block" href="banner.php">
-                            {__('goBack')}
+                            {__('cancelWithIcon')}
                         </a>
                     </div>
                     <div class="col-sm-6 col-xl-auto">
@@ -414,7 +418,7 @@
         <div class="row">
             <div class="ml-auto col-sm-6 col-xl-auto">
                 <a class="btn btn-outline-primary btn-block" href="banner.php" id="cancel">
-                    {__('goBack')}
+                    {__('cancelWithIcon')}
                 </a>
             </div>
             <div class="col-sm-6 col-xl-auto">
@@ -425,91 +429,99 @@
         </div>
     </div>
 {else}
-        <div id="settings">
-            <div class="card">
-                <div class="card-header">
-                    <div class="subheading1">{__('availableBanner')}</div>
-                    <hr class="mb-n3">
-                </div>
-                <div class="card-body">
-                    {include file='tpl_inc/pagination.tpl' pagination=$pagination}
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
+    <div id="settings">
+        <div class="card">
+            <div class="card-header">
+                <div class="subheading1">{__('availableBanner')}</div>
+                <hr class="mb-n3">
+            </div>
+            <div class="card-body">
+                {include file='tpl_inc/pagination.tpl' pagination=$pagination}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                        <tr>
+                            <th class="text-left" width="25%">{__('name')}</th>
+                            <th width="20%" class="text-center">{__('active')}</th>
+                            <th class="text-left" width="25%">{__('runTime')}</th>
+                            <th width="30%" class="text-center">{__('action')}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach $banners as $banner}
                             <tr>
-                                <th class="text-left" width="25%">{__('name')}</th>
-                                <th width="20%" class="text-center">{__('active')}</th>
-                                <th class="text-left" width="25%">{__('runTime')}</th>
-                                <th width="30%" class="text-center">{__('action')}</th>
+                                <td class="text-left">
+                                    {$banner->cTitel}
+                                </td>
+                                <td class="text-center">
+                                    {if (int)$banner->active === 1}
+                                        <i class="fal fa-check text-success"></i>
+                                    {else}
+                                        <i class="fal fa-times text-danger"></i>
+                                    {/if}
+                                </td>
+                                <td>
+                                    {if $banner->vDatum !== null}
+                                        {$banner->vDatum|date_format:'%d.%m.%Y'}
+                                    {/if} -
+                                    {if $banner->bDatum !== null}
+                                        {$banner->bDatum|date_format:'%d.%m.%Y'}
+                                    {/if}
+                                </td>
+                                <td class="text-center">
+                                    <form action="banner.php" method="post">
+                                        {$jtl_token}
+                                        <input type="hidden" name="id" value="{$banner->kImageMap}" />
+                                        <div class="btn-group">
+                                            <button class="btn btn-link px-2 delete-confirm"
+                                                    type="submit"
+                                                    name="action"
+                                                    value="delete"
+                                                    title="{__('delete')}"
+                                                    data-toggle="tooltip"
+                                                    data-modal-body="{$banner->cTitel}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-trash-alt"></span>
+                                                    <span class="fas fa-trash-alt"></span>
+                                                </span>
+                                            </button>
+                                            <button class="btn btn-link px-2" name="action" value="area" title="{__('actionLink')}" data-toggle="tooltip">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-link"></span>
+                                                    <span class="fas fa-link"></span>
+                                                </span>
+                                            </button>
+                                            <button class="btn btn-link px-2" name="action" value="edit" title="{__('edit')}" data-toggle="tooltip">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-edit"></span>
+                                                    <span class="fas fa-edit"></span>
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </td>
                             </tr>
-                            </thead>
-                            <tbody>
-                            {foreach $banners as $banner}
-                                <tr>
-                                    <td class="text-left">
-                                        {$banner->cTitel}
-                                    </td>
-                                    <td class="text-center">
-                                        {if (int)$banner->active === 1}
-                                            <i class="fal fa-check text-success"></i>
-                                        {else}
-                                            <i class="fal fa-times text-danger"></i>
-                                        {/if}
-                                    </td>
-                                    <td>
-                                        {if $banner->vDatum !== null}
-                                            {$banner->vDatum|date_format:'%d.%m.%Y'}
-                                        {/if} -
-                                        {if $banner->bDatum !== null}
-                                            {$banner->bDatum|date_format:'%d.%m.%Y'}
-                                        {/if}
-                                    </td>
-                                    <td class="text-center">
-                                        <form action="banner.php" method="post">
-                                            {$jtl_token}
-                                            <input type="hidden" name="id" value="{$banner->kImageMap}" />
-                                            <div class="btn-group">
-                                                <button class="btn btn-link px-2" name="action" value="delete" title="{__('delete')}" data-toggle="tooltip">
-                                                    <span class="icon-hover">
-                                                        <span class="fal fa-trash-alt"></span>
-                                                        <span class="fas fa-trash-alt"></span>
-                                                    </span>
-                                                </button>
-                                                <button class="btn btn-link px-2" name="action" value="area" title="{__('actionLink')}" data-toggle="tooltip">
-                                                    <span class="icon-hover">
-                                                        <span class="fal fa-link"></span>
-                                                        <span class="fas fa-link"></span>
-                                                    </span>
-                                                </button>
-                                                <button class="btn btn-link px-2" name="action" value="edit" title="{__('edit')}" data-toggle="tooltip">
-                                                    <span class="icon-hover">
-                                                        <span class="fal fa-edit"></span>
-                                                        <span class="fas fa-edit"></span>
-                                                    </span>
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </td>
-                                </tr>
-                            {/foreach}
-                            </tbody>
-                        </table>
-                    </div>
-                {if $banners|@count === 0}
-                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
-                {/if}
+                        {/foreach}
+                        </tbody>
+                    </table>
+
                 </div>
-                <div class="card-footer save-wrapper">
-                    <div class="row">
-                        <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a class="btn btn-primary btn-block" href="banner.php?action=new&token={$smarty.session.jtl_token}">
-                                <i class="fa fa-share"></i> {__('addBanner')}
-                            </a>
-                        </div>
+            {if $banners|@count === 0}
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
+            {/if}
+                {include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}
+            </div>
+            <div class="card-footer save-wrapper">
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a class="btn btn-primary btn-block" href="banner.php?action=new&token={$smarty.session.jtl_token}">
+                            <i class="fa fa-share"></i> {__('addBanner')}
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 {/if}
 </div>
 

@@ -15,15 +15,14 @@ class Migration_20180313133000 extends Migration implements IMigration
     protected $description = 'Add ISBN and ADR hazard config';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
         $this->setConfig(
             'isbn_display',
             'N',
-            \CONF_ARTIKELDETAILS,
+            CONF_ARTIKELDETAILS,
             'Artikel ISBN anzeigen',
             'selectbox',
             499,
@@ -40,7 +39,7 @@ class Migration_20180313133000 extends Migration implements IMigration
         $this->setConfig(
             'adr_hazard_display',
             'N',
-            \CONF_ARTIKELDETAILS,
+            CONF_ARTIKELDETAILS,
             'Gefahrentafel im Artikel anzeigen',
             'selectbox',
             499,
@@ -64,7 +63,7 @@ class Migration_20180313133000 extends Migration implements IMigration
     }
 
     /**
-     * @return bool|void
+     * @inheritDoc
      */
     public function down()
     {

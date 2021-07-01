@@ -7,6 +7,7 @@ use JTL\Boxes\Items\AbstractBox;
 use JTL\Filter\Pagination\Info;
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
+use stdClass;
 use function Functional\every;
 use function Functional\filter;
 use function Functional\invoke;
@@ -50,7 +51,7 @@ class SearchResults implements SearchResultsInterface
     private $offsetEnd = 0;
 
     /**
-     * @var \stdClass
+     * @var Info
      * @former Seitenzahlen
      */
     private $pages;
@@ -114,6 +115,11 @@ class SearchResults implements SearchResultsInterface
      * @former Suchspecialauswahl
      */
     private $searchSpecialFilterOptions = [];
+
+    /**
+     * @var Option[]
+     */
+    private $availabilityFilterOptions = [];
 
     /**
      * @var Option[]
@@ -195,9 +201,9 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getProductsCompat(): \stdClass
+    public function getProductsCompat(): stdClass
     {
-        $compat              = new \stdClass();
+        $compat              = new stdClass();
         $compat->elemente    = $this->getProducts();
         $compat->productKeys = $this->getProductKeys();
 
@@ -521,6 +527,24 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
+    public function getAvailabilityFilterOptions(): array
+    {
+        return $this->availabilityFilterOptions;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setAvailabilityFilterOptions($options): SearchResultsInterface
+    {
+        $this->availabilityFilterOptions = $options;
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getCustomFilterOptions(): array
     {
         return $this->customFilterOptions;
@@ -629,7 +653,7 @@ class SearchResults implements SearchResultsInterface
      * @param FilterInterface[] $activeFilters
      * @param FilterInterface[] $availableFilters
      */
-    private function autoActivateOptions($activeFilters, $availableFilters): void
+    private function autoActivateOptions(array $activeFilters, array $availableFilters): void
     {
         foreach ($activeFilters as $activeFilter) {
             $class        = $activeFilter->getClassName();
@@ -651,7 +675,7 @@ class SearchResults implements SearchResultsInterface
      * @param FilterInterface $filter
      * @param array           $values
      */
-    private function updateOptions(FilterInterface $filter, $values): void
+    private function updateOptions(FilterInterface $filter, array $values): void
     {
         invoke(filter($filter->getOptions(), static function (Option $e) use ($values) {
             return \in_array($e->getValue(), $values, true);
@@ -661,10 +685,10 @@ class SearchResults implements SearchResultsInterface
     /**
      * @param FilterInterface[] $filters
      * @param string            $class
-     * @param array             $activeValues
+     * @param Option|Option[]   $activeValues
      * @return array
      */
-    private function getActiveFiltersByClassName($filters, $class, $activeValues): array
+    private function getActiveFiltersByClassName(array $filters, string $class, $activeValues): array
     {
         return filter($filters, static function (FilterInterface $f) use ($class, $activeValues) {
             return $f->getClassName() === $class && $f->getActiveValues() === $activeValues;
@@ -679,6 +703,9 @@ class SearchResults implements SearchResultsInterface
         $currentCategory = null,
         $selectionWizard = false
     ): SearchResultsInterface {
+        if ($productFilter->isExtendedJTLSearch()) {
+            return $this;
+        }
         // @todo: make option
         $hideActiveOnly              = true;
         $manufacturerOptions         = $productFilter->getManufacturerFilter()->getOptions();
@@ -686,6 +713,7 @@ class SearchResults implements SearchResultsInterface
         $categoryOptions             = $productFilter->getCategoryFilter()->getOptions();
         $priceRangeOptions           = $productFilter->getPriceRangeFilter()->getOptions($this->getProductCount());
         $searchSpecialFilters        = $productFilter->getSearchSpecialFilter()->getOptions();
+        $availabilityOptions         = $productFilter->getAvailabilityFilter()->getOptions();
         $characteristicFilterOptions = $productFilter->getCharacteristicFilterCollection()->getOptions([
             'oAktuelleKategorie' => $currentCategory,
             'bForce'             => $selectionWizard === true
@@ -730,6 +758,7 @@ class SearchResults implements SearchResultsInterface
             ->setCategoryFilterOptions($categoryOptions)
             ->setSearchFilterOptions($searchFilterOptions)
             ->setSearchSpecialFilterOptions($searchSpecialFilters)
+            ->setAvailabilityFilterOptions($availabilityOptions)
             ->setCharacteristicFilterOptions($characteristicFilterOptions)
             ->setCustomFilterOptions($customFilterOptions)
             ->setSearchFilterJSON($json);
@@ -770,7 +799,6 @@ class SearchResults implements SearchResultsInterface
             $productFilter->getCharacteristicFilterCollection()->hide();
         } elseif ($hideActiveOnly === true) {
             foreach ($characteristicFilterOptions as $af) {
-                /** @var Option $af */
                 $options = $af->getOptions();
                 if (\is_array($options)
                     && $af->getVisibility() !== Visibility::SHOW_NEVER

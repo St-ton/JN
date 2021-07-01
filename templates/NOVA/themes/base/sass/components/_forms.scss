@@ -5,8 +5,8 @@
 .form-group:not(.exclude-from-label-slide):not(.checkbox) {
 	position: relative;
 
-	label { background: $white; position: absolute; cursor: text; top: 0; font-size: $input-font-size * .86; margin: 0; padding: 0 rem(5px); transform: translateY(-50%); transition: $transition-base; left: $input-padding-x; z-index: 10; line-height: 1.3; pointer-events: none; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; max-width: calc(100% - (2 * #{$input-padding-x}));
-		&:after { content: " "; display: block; position: absolute; background: $white; height: rem(2px); top: 45%; left: -3em; right: -3em; z-index: -1; }
+	label { display: block; background: $white; position: absolute; cursor: text; top: 0; font-size: $input-font-size * .86; margin: 0; padding: 0 rem(5px); transform: translateY(-50%); transition: $transition-base; left: $input-padding-x; z-index: 10; line-height: 1.3; pointer-events: none; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; max-width: calc(100% - (2 * #{$input-padding-x}));
+		&:after { content: " "; display: block; position: absolute; background: $white; height: rem(2px); top: 45%; z-index: -1; }
 	}
 
 	.form-control {
@@ -120,4 +120,55 @@ label[for="register-shipping_address-city"] {
 
 label {
 	display: block;
+}
+
+.form-control {
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
+
+.form-group.has-error{
+	.form-control {
+		border: 1px solid theme-color("danger");
+	}
+}
+
+.radio-w-100 {
+	.custom-control-inline {
+		display: block;
+		width: 100%;
+		padding-bottom: $spacer / 2;
+	}
+}
+
+.price-range-inputs {
+	.col:nth-child(2) {
+		margin-left: auto;
+	}
+	.input-group {
+		margin-bottom: map-get($spacers, 3);
+	}
+	.input-group-prepend {
+		height: 1.6rem;
+		.input-group-text {
+			border-left: 0;
+			font-weight: $font-weight-bold;
+			padding: $input-padding-y-sm $input-padding-x-sm;
+		}
+	}
+	input {
+		font-weight: $font-weight-bold;
+		height: 1.6rem;
+		padding: $input-padding-y-sm $input-padding-x-sm;
+	}
+}
+.price-range-slide {
+	margin-left: map-get($spacers, 2);
+	margin-right: map-get($spacers, 2);
+}
+
+.input-group-sm {
+	.input-group-prepend {
+		height: $input-height-sm;
+	}
 }

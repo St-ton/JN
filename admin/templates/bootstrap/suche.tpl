@@ -13,7 +13,7 @@
             <li class="has-icon" tabindex="-1">
                 <a class="dropdown-item" href="{$item->link}">
                     <span class="title">
-                        <span class="mr-2">{include file="img/icons/{$item->icon}.svg"}</span>
+                        <span class="icon-wrapper">{include file="img/icons/{$item->icon}.svg"}</span>
                         {$item->path}
                     </span>
                 </a>
@@ -34,7 +34,12 @@
                 <ul>
                     {foreach $setting->oEinstellung_arr as $s}
                         <li tabindex="-1">
-                            <a class="dropdown-item value" href="einstellungen.php?cSuche={$s->kEinstellungenConf}&einstellungen_suchen=1">
+                            <a class="dropdown-item value"
+                               href="
+                               {if $setting->specialSetting === false}einstellungen.php?cSuche={$s->kEinstellungenConf}&einstellungen_suchen=1
+                               {else}
+                               {$setting->cURL}{$setting->settingsAnchor}
+                               {/if}">
                                 <span class="title">{$s->cName}
                                     {*<small>{$s->cBeschreibung}</small>*}
                                 </span>
@@ -75,8 +80,23 @@
         {/foreach}
     </ul>
 {/if}
+{if $plugins->isNotEmpty()}
+    <div class="dropdown-divider dropdown-divider-light"></div>
+    <div class="dropdown-header"><a href="pluginverwaltung.php" class="value">{__('Plug-in manager')}</a></div>
+    <ul>
+        {foreach $plugins as $plugin}
+            <li>
+                <a href="plugin.php?kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}" class="dropdown-item value">
+                    <span class="title">
+                        {$plugin->getName()}
+                    </span>
+                </a>
+            </li>
+        {/foreach}
+    </ul>
+{/if}
 
-{if empty($adminMenuItems) && empty($settings) && empty($shippings) && empty($paymentMethods)}
+{if empty($adminMenuItems) && empty($settings) && empty($shippings) && empty($paymentMethods) && $plugins->isEmpty()}
     <span class="{if !$standalonePage}ml-3{/if}">{__('noSearchResult')}</span>
 {/if}
 {if $standalonePage}

@@ -48,29 +48,29 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || $cTab === 'inaktiv'} active{/if}" data-toggle="tab" role="tab" href="#inaktiv">
+                    <a class="nav-link {if $cTab === '' || $cTab === 'inaktiv'} active{/if}" data-toggle="tab" role="tab" href="#inaktiv">
                         {__('newsCommentActivate')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'aktiv'} active{/if}" data-toggle="tab" role="tab" href="#aktiv">
+                    <a class="nav-link {if $cTab === 'aktiv'} active{/if}" data-toggle="tab" role="tab" href="#aktiv">
                         {__('newsOverview')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'kategorien'} active{/if}" data-toggle="tab" role="tab" href="#kategorien">
+                    <a class="nav-link {if $cTab === 'kategorien'} active{/if}" data-toggle="tab" role="tab" href="#kategorien">
                         {__('newsCatOverview')}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
+                    <a class="nav-link {if $cTab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
                         {__('settings')}
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="inaktiv" class="tab-pane fade{if !isset($cTab) || $cTab === 'inaktiv'} active show{/if}">
+            <div id="inaktiv" class="tab-pane fade{if $cTab === '' || $cTab === 'inaktiv'} active show{/if}">
                 {if $comments && $comments|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiKommentar cAnchor='inaktiv'}
                     <form method="post" action="news.php">
@@ -133,6 +133,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            {include file='tpl_inc/pagination.tpl' pagination=$oPagiKommentar cAnchor='inaktiv' isBottom=true}
                             <div class="card-footer save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">
@@ -156,7 +157,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="aktiv" class="tab-pane fade{if isset($cTab) && $cTab === 'aktiv'} active show{/if}">
+            <div id="aktiv" class="tab-pane fade{if $cTab === 'aktiv'} active show{/if}">
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiNews cAnchor='aktiv'}
                 <form name="news" method="post" action="news.php">
                     {$jtl_token}
@@ -172,7 +173,6 @@
                                 <tr>
                                     <th class="check"></th>
                                     <th class="text-left">{__('headline')}</th>
-                                    {*<th class="text-left">{__('category')}</th>*}
                                     <th class="text-left">{__('customerGroup')}</th>
                                     <th class="text-center">{__('newsValidation')}</th>
                                     <th class="text-center">{__('active')}</th>
@@ -182,9 +182,9 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {if $oNews_arr|@count > 0 && $oNews_arr}
+                                {if $oNews_arr|@count > 0}
                                     {foreach $oNews_arr as $oNews}
-                                        <tr class="tab_bg{$oNews@iteration%2}">
+                                        <tr>
                                             <td class="check">
                                                 <div class="custom-control custom-checkbox">
                                                     <input class="custom-control-input" type="checkbox" name="kNews[]" value="{$oNews->getID()}" id="news-cb-{$oNews->getID()}" />
@@ -192,10 +192,9 @@
                                                 </div>
                                             </td>
                                             <td class="TD2"><label for="news-cb-{$oNews->getID()}">{$oNews->getTitle()}</label></td>
-                                            {*<td class="TD3">{$oNews->KategorieAusgabe}</td>*}
                                             <td class="TD4">
                                                 {foreach $oNews->getCustomerGroups() as $customerGroupID}
-                                                    {if $customerGroupID === -1}Alle{else}{Kundengruppe::getNameByID($customerGroupID)}{/if}{if !$customerGroupID@last},{/if}
+                                                    {if $customerGroupID === -1}{__('all')}{else}{Kundengruppe::getNameByID($customerGroupID)}{/if}{if !$customerGroupID@last},{/if}
                                                 {/foreach}
                                             </td>
                                             <td class="text-center">{$oNews->getDateValidFromLocalizedCompat()}</td>
@@ -247,6 +246,7 @@
                         <input type="hidden" name="news" value="1" />
                         <input type="hidden" name="erstellen" value="1" />
                         <input type="hidden" name="tab" value="aktiv" />
+                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiNews cAnchor='aktiv' isBottom=true}
                         <div class="card-footer save-wrapper">
                             <div class="row">
                                 <div class="col-sm-6 col-xl-auto text-left">
@@ -273,7 +273,7 @@
                 </div>
             </div>
             <!-- #inaktiv -->
-            <div id="kategorien" class="tab-pane fade{if isset($cTab) && $cTab === 'kategorien'} active show{/if}">
+            <div id="kategorien" class="tab-pane fade{if $cTab === 'kategorien'} active show{/if}">
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiKats cAnchor='kategorien'}
                 <form name="news" method="post" action="news.php">
                     {$jtl_token}
@@ -338,28 +338,18 @@
                                     </tr>
                                 {/if}
                                 </tbody>
-                                <tfoot>
-                                <tr>
-                                    <td class="check">
-                                        <div class="custom-control custom-checkbox">
-                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" />
-                                            <label class="custom-control-label" for="ALLMSGS3"></label>
-                                        </div>
-                                    </td>
-                                    <td colspan="5"><label for="ALLMSGS3">{__('globalSelectAll')}</label></td>
-                                </tr>
-                                </tfoot>
                             </table>
                         </div>
                         <input type="hidden" name="news" value="1" />
                         <input type="hidden" name="erstellen" value="1" />
                         <input type="hidden" name="tab" value="kategorien" />
+                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiKats cAnchor='kategorien' isBottom=true}
                         <div class="card-footer save-wrapper">
                             <div class="row">
                                 <div class="col-sm-6 col-xl-auto text-left">
                                     <div class="custom-control custom-checkbox">
-                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
-                                        <label class="custom-control-label" for="ALLMSGS2">{__('globalSelectAll')}</label>
+                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" />
+                                        <label class="custom-control-label" for="ALLMSGS3">{__('globalSelectAll')}</label>
                                     </div>
                                 </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">
@@ -378,7 +368,7 @@
                     </div>
                 </form>
             </div>
-            <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
+            <div id="einstellungen" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
                 <form name="einstellen" method="post" action="news.php">
                     {$jtl_token}
                     <input type="hidden" name="einstellungen" value="1" />
@@ -395,7 +385,7 @@
                                 {if $oConfig->cConf === 'Y'}
                                     <div class="form-group form-row align-items-center mb-5 mb-md-3">
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}:</label>
-                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $oConfig->cInputTyp === 'number'}config-type-number{/if}">
                                             {if $oConfig->cInputTyp === 'selectbox'}
                                                 <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="custom-select combo">
                                                     {foreach $oConfig->ConfWerte as $wert}
@@ -432,9 +422,7 @@
                                                 <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
                                             {/if}
                                         </div>
-                                        {if $oConfig->cBeschreibung}
-                                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->kEinstellungenConf}</div>
-                                        {/if}
+                                        {include file='snippets/einstellungen_icons.tpl' cnf=$oConfig}
                                     </div>
                                 {/if}
                             {/foreach}

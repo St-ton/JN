@@ -1,7 +1,7 @@
 {includeMailTemplate template=header type=plain}
 
 Hallo,
-schau dir doch mal meinen Wunschzettel an {$Firma->cName}.
+schau dir doch mal meinen Wunschzettel bei {$Firma->cName} an.
 
 {foreach $Wunschliste->CWunschlistePos_arr as $CWunschlistePos}
     *{$CWunschlistePos->cArtikelName}*

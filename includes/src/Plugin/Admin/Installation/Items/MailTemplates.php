@@ -55,7 +55,7 @@ class MailTemplates extends AbstractItem
                 return InstallCode::SQL_CANNOT_SAVE_EMAIL_TEMPLATE;
             }
             $iso                    = '';
-            $allLanguages           = LanguageHelper::getAllLanguages(2);
+            $allLanguages           = LanguageHelper::getAllLanguages(2, true);
             $fallbackLocalization   = null;
             $availableLocalizations = [];
             $addedLanguages         = [];
@@ -86,7 +86,7 @@ class MailTemplates extends AbstractItem
                     continue;
                 }
                 $addedLanguages[] = $localizedTpl->kSprache;
-                if (!isset($this->oldPlugin->kPlugin) || !$this->oldPlugin->kPlugin) {
+                if ($this->oldPlugin === null) { // @todo: this check does not seem to be sufficient
                     $this->db->insert('temailvorlagesprache', $localizedTpl);
                 }
                 $this->db->insert('temailvorlagespracheoriginal', $localizedTpl);

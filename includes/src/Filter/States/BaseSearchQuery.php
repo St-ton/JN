@@ -2,7 +2,6 @@
 
 namespace JTL\Filter\States;
 
-use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
@@ -14,6 +13,7 @@ use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use stdClass;
 use function Functional\filter;
 
 /**
@@ -47,7 +47,7 @@ class BaseSearchQuery extends AbstractFilter
     private $searchCacheID = 0;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $error;
 
@@ -60,8 +60,8 @@ class BaseSearchQuery extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('suche')
-             ->setUrlParamSEO(null);
+            ->setUrlParam('suche')
+            ->setUrlParamSEO(null);
     }
 
     /**
@@ -181,7 +181,7 @@ class BaseSearchQuery extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $seo = $this->productFilter->getDB()->executeQueryPrepared(
+        $seo = $this->productFilter->getDB()->getSingleObject(
             "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
                 FROM tseo
                 LEFT JOIN tsuchanfrage
@@ -189,16 +189,15 @@ class BaseSearchQuery extends AbstractFilter
                     AND tsuchanfrage.kSprache = tseo.kSprache
                 WHERE cKey = 'kSuchanfrage' 
                     AND kKey = :key",
-            ['key' => $this->getID()],
-            ReturnType::SINGLE_OBJECT
+            ['key' => $this->getID()]
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            if (isset($seo->kSprache) && $language->kSprache === (int)$seo->kSprache) {
+            if ($seo !== null && $language->kSprache === (int)$seo->kSprache) {
                 $this->cSeo[$language->kSprache] = $seo->cSeo;
             }
         }
-        if (!empty($seo->cSuche)) {
+        if ($seo !== null & !empty($seo->cSuche)) {
             $this->setName($seo->cSuche);
         }
 
@@ -263,10 +262,9 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param null $data
-     * @return Option[]
+     * @inheritDoc
      */
-    public function getOptions($data = null): array
+    public function getOptions($mixed = null): array
     {
         if ($this->options !== null) {
             return $this->options;
@@ -276,10 +274,9 @@ class BaseSearchQuery extends AbstractFilter
         if ($naviConf['suchtrefferfilter_nutzen'] === 'N') {
             return $options;
         }
-        $limit     = (isset($naviConf['suchtrefferfilter_anzahl'])
-            && ($n = (int)$naviConf['suchtrefferfilter_anzahl']) > 0)
-            ? ' LIMIT ' . $n
-            : '';
+        $max   = (int)($naviConf['suchtrefferfilter_anzahl'] ?? 0);
+        $limit = $max > 0 ? (' LIMIT ' . $max) : '';
+
         $sql = (new StateSQL())->from($this->productFilter->getCurrentStateData());
         $sql->setSelect(['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel']);
         $sql->setOrderBy(null);
@@ -307,18 +304,17 @@ class BaseSearchQuery extends AbstractFilter
         $sql->addCondition('tsuchanfrage.nAktiv = 1');
 
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $cacheID   = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQuery);
+        $cacheID   = $this->getCacheID($baseQuery);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 
             return $this->options;
         }
-        $searchFilters  = $this->productFilter->getDB()->query(
+        $searchFilters  = $this->productFilter->getDB()->getObjects(
             'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . ') AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
-                    ORDER BY ssMerkmal.cSuche' . $limit,
-            ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY ssMerkmal.cSuche' . $limit
         );
         $searchQueryIDs = [];
         if ($this->productFilter->hasSearch()) {
@@ -365,10 +361,10 @@ class BaseSearchQuery extends AbstractFilter
                 ->setCount((int)$searchFilter->nAnzahl);
             if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {
                 $fo->setClass(
-                    (string)\round(
+                    (string)(\round(
                         ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
                         $nPrioStep
-                    ) + 1
+                    ) + 1)
                 );
             }
             $options[] = $fo;
@@ -425,10 +421,9 @@ class BaseSearchQuery extends AbstractFilter
      */
     public function editSearchCache($langIDExt = 0): int
     {
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'suche_inc.php';
         // Mapping beachten
-        $cSuche = $this->getQueryMapping($this->getName() ?? '', $langIDExt);
-        $this->setName($cSuche);
+        $query = $this->getQueryMapping($this->getName() ?? '', $langIDExt);
+        $this->setName($query);
         $langID = $langIDExt > 0
             ? (int)$langIDExt
             : $this->getLanguageID();
@@ -439,12 +434,10 @@ class BaseSearchQuery extends AbstractFilter
                 LEFT JOIN tsuchcachetreffer 
                     ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
                 WHERE tsuchcache.dGueltigBis IS NOT NULL
-                    AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < NOW()',
-            ReturnType::AFFECTED_ROWS
+                    AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < NOW()'
         );
-
         // Suchcache checken, ob bereits vorhanden
-        $searchCache = $this->productFilter->getDB()->executeQueryPrepared(
+        $searchCache = $this->productFilter->getDB()->getSingleObject(
             'SELECT kSuchCache
                 FROM tsuchcache
                 WHERE kSprache = :lang
@@ -452,26 +445,24 @@ class BaseSearchQuery extends AbstractFilter
                     AND (dGueltigBis > NOW() OR dGueltigBis IS NULL)',
             [
                 'lang'   => $langID,
-                'search' => $cSuche
-            ],
-            ReturnType::SINGLE_OBJECT
+                'search' => $query
+            ]
         );
-
-        if (isset($searchCache->kSuchCache) && $searchCache->kSuchCache > 0) {
+        if ($searchCache !== null && $searchCache->kSuchCache > 0) {
             return (int)$searchCache->kSuchCache; // Gib gültigen Suchcache zurück
         }
         // wenn kein Suchcache vorhanden
-        $nMindestzeichen = ($min = (int)$this->getConfig('artikeluebersicht')['suche_min_zeichen']) > 0
+        $minChars = ($min = (int)$this->getConfig('artikeluebersicht')['suche_min_zeichen']) > 0
             ? $min
             : 3;
-        if (\mb_strlen($cSuche) < $nMindestzeichen) {
+        if (\mb_strlen($query) < $minChars) {
             require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
-            $this->error = \lang_suche_mindestanzahl($cSuche, $nMindestzeichen);
+            $this->error = \lang_suche_mindestanzahl($query, $minChars);
 
             return 0;
         }
         // Suchausdruck aufbereiten
-        $search = $this->prepareSearchQuery($cSuche);
+        $search = $this->prepareSearchQuery($query);
         $tmp    = $search;
         if (\count($search) === 0) {
             return 0;
@@ -479,14 +470,14 @@ class BaseSearchQuery extends AbstractFilter
         // Array mit nach Prio sort. Suchspalten holen
         $rows                   = self::getSearchRows($this->getConfig());
         $cols                   = $this->getSearchColumnClasses($rows);
-        $searchCache            = new \stdClass();
+        $searchCache            = new stdClass();
         $searchCache->kSprache  = $langID;
-        $searchCache->cSuche    = $cSuche;
+        $searchCache->cSuche    = $query;
         $searchCache->dErstellt = 'NOW()';
-        $kSuchCache             = $this->productFilter->getDB()->insert('tsuchcache', $searchCache);
+        $cacheID                = $this->productFilter->getDB()->insert('tsuchcache', $searchCache);
 
         if ($this->getConfig('artikeluebersicht')['suche_fulltext'] !== 'N' && $this->isFulltextIndexActive()) {
-            $searchCache->kSuchCache = $kSuchCache;
+            $searchCache->kSuchCache = $cacheID;
 
             return $this->editFullTextSearchCache(
                 $searchCache,
@@ -497,15 +488,15 @@ class BaseSearchQuery extends AbstractFilter
             );
         }
 
-        if ($kSuchCache <= 0) {
+        if ($cacheID <= 0) {
             return 0;
         }
 
         if ($this->getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
-            $sql = 'SELECT ' . $kSuchCache . ', IF(tartikel.kVaterArtikel > 0, 
+            $sql = 'SELECT ' . $cacheID . ', IF(tartikel.kVaterArtikel > 0, 
                         tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, ';
         } else {
-            $sql = 'SELECT ' . $kSuchCache . ', IF(kVaterArtikel > 0, 
+            $sql = 'SELECT ' . $cacheID . ', IF(kVaterArtikel > 0, 
                         kVaterArtikel, kArtikel) AS kArtikelTMP, ';
         }
         // Shop2 Suche - mehr als 3 Suchwörter *
@@ -838,11 +829,10 @@ class BaseSearchQuery extends AbstractFilter
             'INSERT INTO tsuchcachetreffer ' .
             $sql .
             ' GROUP BY kArtikelTMP
-                LIMIT ' . (int)$this->getConfig('artikeluebersicht')['suche_max_treffer'],
-            ReturnType::AFFECTED_ROWS
+                LIMIT ' . (int)$this->getConfig('artikeluebersicht')['suche_max_treffer']
         );
 
-        return $kSuchCache;
+        return $cacheID;
     }
 
     /**
@@ -880,77 +870,78 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param \stdClass $searchCache
-     * @param array     $searchCols
-     * @param array     $searchQueries
-     * @param int       $limit
-     * @param string    $fullText
+     * @param stdClass $searchCache
+     * @param array    $searchCols
+     * @param array    $searchQueries
+     * @param int      $limit
+     * @param string   $fullText
      * @return int
      * @former bearbeiteSuchCacheFulltext
      */
     private function editFullTextSearchCache(
-        $searchCache,
-        $searchCols,
-        $searchQueries,
+        stdClass $searchCache,
+        array $searchCols,
+        array $searchQueries,
         int $limit = 0,
-        $fullText = 'Y'
+        string $fullText = 'Y'
     ): int {
-        if ($searchCache->kSuchCache > 0) {
-            $productCols = \array_map(static function ($item) {
-                $items = \explode('.', $item, 2);
+        $searchCache->kSuchCache = (int)$searchCache->kSuchCache;
+        if ($searchCache->kSuchCache <= 0) {
+            return $searchCache->kSuchCache;
+        }
+        $productCols = \array_map(static function ($item) {
+            $items = \explode('.', $item, 2);
 
-                return 'tartikel.' . $items[1];
-            }, $searchCols);
+            return 'tartikel.' . $items[1];
+        }, $searchCols);
 
-            $langCols = \array_filter($searchCols, static function ($item) {
-                return \preg_match('/tartikelsprache\.(.*)/', $item) ? true : false;
-            });
+        $langCols = \array_filter($searchCols, static function ($item) {
+            return \preg_match('/tartikelsprache\.(.*)/', $item) ? true : false;
+        });
 
-            $score = 'MATCH (' . \implode(', ', $productCols) . ")
+        $score = 'MATCH (' . \implode(', ', $productCols) . ")
+                    AGAINST ('" . \implode(' ', $searchQueries) . "' IN NATURAL LANGUAGE MODE) ";
+        if ($fullText === 'B') {
+            $match = 'MATCH (' . \implode(', ', $productCols) . ")
+                    AGAINST ('" . \implode('* ', $searchQueries) . "*' IN BOOLEAN MODE) ";
+        } else {
+            $match = $score;
+        }
+
+        $sql = 'SELECT ' . $searchCache->kSuchCache . ' AS kSuchCache,
+                IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, '
+                . $score . ' AS score
+                FROM tartikel
+                WHERE ' . $match . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
+
+        if (Shop::getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
+            $score = 'MATCH (' . \implode(', ', $langCols) . ")
                         AGAINST ('" . \implode(' ', $searchQueries) . "' IN NATURAL LANGUAGE MODE)";
             if ($fullText === 'B') {
-                $match = 'MATCH (' . \implode(', ', $productCols) . ")
+                $score = 'MATCH (' . \implode(', ', $langCols) . ")
                         AGAINST ('" . \implode('* ', $searchQueries) . "*' IN BOOLEAN MODE)";
             } else {
                 $match = $score;
             }
-
-            $sql = "SELECT {$searchCache->kSuchCache} AS kSuchCache,
-                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
-                    $score AS score
-                    FROM tartikel
-                    WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
-
-            if (Shop::getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
-                $score = 'MATCH (' . \implode(', ', $langCols) . ")
-                            AGAINST ('" . \implode(' ', $searchQueries) . "' IN NATURAL LANGUAGE MODE)";
-                if ($fullText === 'B') {
-                    $score = 'MATCH (' . \implode(', ', $langCols) . ")
-                            AGAINST ('" . \implode('* ', $searchQueries) . "*' IN BOOLEAN MODE)";
-                } else {
-                    $match = $score;
-                }
-                $sql .= "UNION DISTINCT
-                SELECT {$searchCache->kSuchCache} AS kSuchCache,
-                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
-                    $score AS score
-                    FROM tartikel
-                    INNER JOIN tartikelsprache ON tartikelsprache.kArtikel = tartikel.kArtikel
-                    WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
-            }
-
-            $this->productFilter->getDB()->query(
-                "INSERT INTO tsuchcachetreffer
-                        SELECT kSuchCache, kArtikelTMP, ROUND(MAX(15 - score) * 10)
-                        FROM ($sql) AS i
-                        LEFT JOIN tartikelsichtbarkeit 
-                            ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
-                            AND tartikelsichtbarkeit.kKundengruppe = " . Frontend::getCustomerGroup()->getID() . '
-                        WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
-                        GROUP BY kSuchCache, kArtikelTMP' . ($limit > 0 ? ' LIMIT ' . $limit : ''),
-                ReturnType::AFFECTED_ROWS
-            );
+            $sql .= 'UNION DISTINCT
+            SELECT ' . $searchCache->kSuchCache . ' AS kSuchCache,
+                IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, '
+                . $score . ' AS score
+                FROM tartikel
+                INNER JOIN tartikelsprache ON tartikelsprache.kArtikel = tartikel.kArtikel
+                WHERE ' . $match . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
         }
+
+        $this->productFilter->getDB()->query(
+            'INSERT INTO tsuchcachetreffer
+                    SELECT kSuchCache, kArtikelTMP, ROUND(MAX(score) * -10)
+                    FROM ( ' . $sql . ' ) AS i
+                    LEFT JOIN tartikelsichtbarkeit 
+                        ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
+                        AND tartikelsichtbarkeit.kKundengruppe = ' . Frontend::getCustomerGroup()->getID() . '
+                    WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
+                    GROUP BY kSuchCache, kArtikelTMP' . ($limit > 0 ? ' LIMIT ' . $limit : '')
+        );
 
         return $searchCache->kSuchCache;
     }
@@ -998,11 +989,9 @@ class BaseSearchQuery extends AbstractFilter
      * @param array  $nonAllowed
      * @return bool
      */
-    public function checkColumnClasses($searchCols, $searchCol, $nonAllowed): bool
+    public function checkColumnClasses(array $searchCols, string $searchCol, array $nonAllowed): bool
     {
-        if (\is_array($searchCols)
-            && \is_array($nonAllowed)
-            && \count($searchCols) > 0
+        if (\count($searchCols) > 0
             && \mb_strlen($searchCol) > 0
             && \count($nonAllowed) > 0
         ) {
@@ -1028,16 +1017,14 @@ class BaseSearchQuery extends AbstractFilter
         static $active = null;
 
         if ($active === null) {
-            $active = $this->productFilter->getDB()->query(
+            $active = $this->productFilter->getDB()->getSingleObject(
                 "SHOW INDEX FROM tartikel 
-                    WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-                ReturnType::SINGLE_OBJECT
+                    WHERE KEY_NAME = 'idx_tartikel_fulltext'"
             )
-                && $this->productFilter->getDB()->query(
+                && $this->productFilter->getDB()->getSingleObject(
                     "SHOW INDEX 
                         FROM tartikelsprache 
-                        WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
-                    ReturnType::SINGLE_OBJECT
+                        WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'"
                 );
         }
 
@@ -1045,7 +1032,7 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param array $config
+     * @param array|null $config
      * @return array
      * @former gibSuchSpalten()
      */
@@ -1063,8 +1050,8 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @param array $exclude
-     * @param array $conf
+     * @param array      $exclude
+     * @param array|null $conf
      * @return string
      * @former gibMaxPrioSpalte()
      */

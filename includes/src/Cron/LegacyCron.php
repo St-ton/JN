@@ -63,16 +63,16 @@ class LegacyCron
     public $dLetzterStart;
 
     /**
-     * @param int    $cronID
-     * @param int    $key
-     * @param int    $frequency
-     * @param string $name
-     * @param string $jobType
-     * @param string $table
-     * @param string $keyName
-     * @param string $start
-     * @param string $startTime
-     * @param string $lastStart
+     * @param int         $cronID
+     * @param int         $key
+     * @param int         $frequency
+     * @param string      $name
+     * @param string      $jobType
+     * @param string      $table
+     * @param string      $keyName
+     * @param string|null $start
+     * @param string|null $startTime
+     * @param string|null $lastStart
      */
     public function __construct(
         int $cronID = 0,

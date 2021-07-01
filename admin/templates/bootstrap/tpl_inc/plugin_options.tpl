@@ -36,7 +36,7 @@
                     {/if}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$confItem->valueID}">{__($confItem->niceName)}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $confItem->inputType === JTL\Plugin\Admin\InputType::NUMBER || $confItem->inputType === 'zahl'}config-type-number{/if}">
                         {if $confItem->inputType === JTL\Plugin\Admin\InputType::SELECT}
                             <select id="{$confItem->valueID}"
                                     name="{$confItem->valueID}{if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC}[]{/if}"
@@ -54,27 +54,10 @@
                                 {/foreach}
                             </select>
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::COLORPICKER}
-                            <div id="{$confItem->valueID}" style="display:inline-block">
-                                <div style="background-color: {$confItem->value}" class="colorSelector"></div>
-                            </div>
-                            <input type="hidden" name="{$confItem->valueID}" class="{$confItem->valueID}_data" value="{$confItem->value}" />
-                            <script type="text/javascript">
-                                $('#{$confItem->valueID}').ColorPicker({ldelim}
-                                    color:    '{$confItem->value}',
-                                    onShow:   function (colpkr) {ldelim}
-                                        $(colpkr).fadeIn(500);
-                                        return false;
-                                    {rdelim},
-                                    onHide:   function (colpkr) {ldelim}
-                                        $(colpkr).fadeOut(500);
-                                        return false;
-                                    {rdelim},
-                                    onChange: function (hsb, hex, rgb) {ldelim}
-                                        $('#{$confItem->valueID} div').css('backgroundColor', '#' + hex);
-                                        $('.{$confItem->valueID}_data').val('#' + hex);
-                                    {rdelim}
-                                {rdelim});
-                            </script>
+                            {include file='snippets/colorpicker.tpl'
+                                cpID=$confItem->valueID
+                                cpName=$confItem->valueID
+                                cpValue=$confItem->value}
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::PASSWORD}
                             <input autocomplete="off" class="form-control" id="{$confItem->valueID}" name="{$confItem->valueID}" type="password" value="{$confItem->value}" />
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::TEXTAREA}
@@ -103,14 +86,25 @@
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::RADIO}
                             <div class="input-group-checkbox-wrap">
                             {foreach $confItem->options as $option}
-                                <input id="opt-{$option->id}-{$option@iteration}"
+                                <input id="opt-{$confItem->valueID}-{$option@iteration}"
                                        type="radio" name="{$confItem->valueID}[]"
-                                       value="{$option->value}"{if $confItem->value == $option->cWert} checked="checked"{/if} />
-                                <label for="opt-{$option->kPluginEinstellungenConf}-{$option@iteration}">
+                                       value="{$option->value}"{if $confItem->value == $option->value} checked="checked"{/if} />
+                                <label for="opt-{$confItem->valueID}-{$option@iteration}">
                                     {__($option->niceName)}
                                 </label> <br />
                             {/foreach}
                         </div>
+                        {elseif in_array($confItem->inputType, [JTL\Plugin\Admin\InputType::COLOR,
+                        JTL\Plugin\Admin\InputType::EMAIL,
+                        JTL\Plugin\Admin\InputType::RANGE,
+                        JTL\Plugin\Admin\InputType::DATE,
+                        JTL\Plugin\Admin\InputType::MONTH,
+                        JTL\Plugin\Admin\InputType::WEEK,
+                        JTL\Plugin\Admin\InputType::TEL,
+                        JTL\Plugin\Admin\InputType::TIME,
+                        JTL\Plugin\Admin\InputType::URL
+                        ], true)}
+                            <input class="form-control" id="{$confItem->valueID}" name="{$confItem->valueID}" type="{$confItem->inputType}" value="{$confItem->value|escape:'html'}" />
                         {else}
                             <input class="form-control" id="{$confItem->valueID}" name="{$confItem->valueID}" type="text" value="{$confItem->value|escape:'html'}" />
                         {/if}

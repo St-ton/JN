@@ -13,9 +13,9 @@ use JTL\Smarty\JTLSmarty;
 interface WidgetInterface
 {
     /**
-     * @param JTLSmarty       $smarty
-     * @param DbInterface     $db
-     * @param PluginInterface $plugin
+     * @param JTLSmarty|null       $smarty
+     * @param DbInterface|null     $db
+     * @param PluginInterface|null $plugin
      */
     public function __construct(JTLSmarty $smarty = null, DbInterface $db = null, $plugin = null);
 

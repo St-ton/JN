@@ -3,7 +3,7 @@
 namespace JTL\Filter\Items;
 
 use JTL\Catalog\Category\Kategorie;
-use JTL\DB\ReturnType;
+use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
@@ -32,7 +32,39 @@ class Category extends BaseCategory
              ->setUrlParam('kf')
              ->setUrlParamSEO(\SEP_KAT)
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_kategoriefilter_benutzen'])
-             ->setFrontendName(Shop::isAdmin() ? __('filterCategory') : Shop::Lang()->get('allCategories'));
+             ->setFrontendName(Shop::isAdmin() ? \__('filterCategory') : Shop::Lang()->get('allCategories'))
+             ->setType($this->getConfig('navigationsfilter')['category_filter_type'] === 'O'
+                ? Type::OR
+                : Type::AND);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setValue($value): FilterInterface
+    {
+        $this->value = \is_array($value) ? \array_map('\intval', $value) : $value;
+
+        return $this;
+    }
+
+    /**
+     * @param array|int|string $value
+     * @return $this
+     */
+    public function setValueCompat($value): FilterInterface
+    {
+        $this->value = $value;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getValueCompat()
+    {
+        return \is_array($this->value) ? $this->value[0] : $this->value;
     }
 
     /**
@@ -40,18 +72,24 @@ class Category extends BaseCategory
      */
     public function getSQLCondition(): string
     {
+        $value = $this->getValue();
+        if (!\is_array($value)) {
+            $value = [$value];
+        }
+        $values = ' IN (' . \implode(', ', $value)  . ')';
+
         if ($this->getIncludeSubCategories() === true) {
             return ' tkategorieartikel.kKategorie IN (
                         SELECT tchild.kKategorie FROM tkategorie AS tparent
                             JOIN tkategorie AS tchild
                                 ON tchild.lft BETWEEN tparent.lft AND tparent.rght
-                                WHERE tparent.kKategorie = ' . $this->getValue() . ')';
+                                WHERE tparent.kKategorie ' . $values . ')';
         }
 
         return $this->getConfig('navigationsfilter')['kategoriefilter_anzeigen_als'] === 'HF'
-            ? '(tkategorieartikelgesamt.kOberKategorie = ' . $this->getValue() .
-            ' OR tkategorieartikelgesamt.kKategorie = ' . $this->getValue() . ') '
-            : ' tkategorieartikel.kKategorie = ' . $this->getValue();
+            ? '(tkategorieartikelgesamt.kOberKategorie ' . $values .
+            ' OR tkategorieartikelgesamt.kKategorie ' . $values . ') '
+            : ' tkategorieartikel.kKategorie ' . $values;
     }
 
     /**
@@ -83,7 +121,7 @@ class Category extends BaseCategory
     /**
      * @inheritdoc
      */
-    public function getOptions($data = null): array
+    public function getOptions($mixed = null): array
     {
         if ($this->options !== null) {
             return $this->options;
@@ -148,9 +186,8 @@ class Category extends BaseCategory
         if (!Shop::has('checkCategoryVisibility')) {
             Shop::set(
                 'checkCategoryVisibility',
-                $this->productFilter->getDB()->query(
-                    'SELECT kKategorie FROM tkategoriesichtbarkeit',
-                    ReturnType::AFFECTED_ROWS
+                $this->productFilter->getDB()->getAffectedRows(
+                    'SELECT kKategorie FROM tkategoriesichtbarkeit'
                 ) > 0
             );
         }
@@ -165,7 +202,9 @@ class Category extends BaseCategory
             $sql->addCondition('tkategoriesichtbarkeit.kKategorie IS NULL');
         }
         $select = ['tkategorie.kKategorie', 'tkategorie.nSort'];
-        if (!LanguageHelper::isDefaultLanguageActive()) {
+        if (LanguageHelper::isDefaultLanguageActive()) {
+            $select[] = 'tkategorie.cName';
+        } else {
             $select[] = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
             $sql->addJoin((new Join())
                 ->setComment('join5 from ' . __METHOD__)
@@ -174,8 +213,6 @@ class Category extends BaseCategory
                 ->setOn('tkategoriesprache.kKategorie = tkategorie.kKategorie 
                             AND tkategoriesprache.kSprache = ' . $this->getLanguageID())
                 ->setOrigin(__CLASS__));
-        } else {
-            $select[] = 'tkategorie.cName';
         }
         $sql->setSelect($select);
         $sql->setOrderBy(null);
@@ -183,35 +220,37 @@ class Category extends BaseCategory
         $sql->setGroupBy(['tkategorie.kKategorie', 'tartikel.kArtikel']);
 
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-        $cacheID   = 'fltr_' . \str_replace('\\', '', __CLASS__) . \md5($baseQuery);
+        $cacheID   = $this->getCacheID($baseQuery);
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 
             return $this->options;
         }
-        $categories       = $this->productFilter->getDB()->executeQuery(
+        $categories         = $this->productFilter->getDB()->getObjects(
             'SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
                 ssMerkmal.nSort, COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . " ) AS ssMerkmal
                     LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
                         AND tseo.cKey = 'kKategorie'
-                        AND tseo.kSprache = " . $this->getLanguageID() . '
+                        AND tseo.kSprache = :lid
                     GROUP BY ssMerkmal.kKategorie
-                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName',
-            ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName",
+            ['lid' => $this->getLanguageID()]
         );
-        $langID           = $this->getLanguageID();
-        $customerGroupID  = $this->getCustomerGroupID();
-        $additionalFilter = new self($this->productFilter);
-        $helper           = CategoryHelper::getInstance($langID, $customerGroupID);
+        $langID             = $this->getLanguageID();
+        $customerGroupID    = $this->getCustomerGroupID();
+        $additionalFilter   = new self($this->productFilter);
+        $helper             = CategoryHelper::getInstance($langID, $customerGroupID);
+        $filterURLGenerator = $this->productFilter->getFilterURL();
         foreach ($categories as $category) {
             $category->kKategorie = (int)$category->kKategorie;
             if ($categoryFilterType === 'KP') { // category path
                 $category->cName = $helper->getPath(new Kategorie($category->kKategorie, $langID, $customerGroupID));
             }
             $options[] = (new Option())
+                ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $category->kKategorie))
                 ->setParam($this->getUrlParam())
-                ->setURL($this->productFilter->getFilterURL()->getURL(
+                ->setURL($filterURLGenerator->getURL(
                     $additionalFilter->init((int)$category->kKategorie)
                 ))
                 ->setType($this->getType())

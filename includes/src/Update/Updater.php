@@ -5,9 +5,11 @@ namespace JTL\Update;
 use Exception;
 use Ifsnop\Mysqldump\Mysqldump;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
+use JTL\Minify\MinifyService;
 use JTL\Network\JTLApi;
 use JTL\Shop;
+use JTL\Smarty\ContextType;
+use JTL\Smarty\JTLSmarty;
 use JTLShop\SemVer\Version;
 use JTLShop\SemVer\VersionCollection;
 use PDOException;
@@ -55,28 +57,18 @@ class Updater
         $dbVersionShort = (int)\sprintf('%d%02d', $dbVersion->getMajor(), $dbVersion->getMinor());
         // While updating from 3.xx to 4.xx provide a default admin-template row
         if ($dbVersionShort < 400) {
-            $count = (int)$this->db->query(
-                "SELECT * FROM `ttemplate` WHERE `eTyp` = 'admin'",
-                ReturnType::AFFECTED_ROWS
-            );
+            $count = $this->db->getAffectedRows("SELECT * FROM `ttemplate` WHERE `eTyp` = 'admin'");
             if ($count === 0) {
                 $this->db->query(
                     "ALTER TABLE `ttemplate` 
-                        CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL",
-                    ReturnType::AFFECTED_ROWS
+                        CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL"
                 );
-                $this->db->query(
-                    "INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')",
-                    ReturnType::AFFECTED_ROWS
-                );
+                $this->db->query("INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')");
             }
         }
 
         if ($dbVersionShort < 404) {
-            $this->db->query(
-                'ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL',
-                ReturnType::AFFECTED_ROWS
-            );
+            $this->db->query('ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL');
         }
 
         static::$isVerified = true;
@@ -95,7 +87,7 @@ class Updater
 
         if ($force || $pending === null) {
             $fileVersion = $this->getCurrentFileVersion();
-            $dbVersion = $this->getCurrentDatabaseVersion();
+            $dbVersion   = $this->getCurrentDatabaseVersion();
 
             if (Version::parse($fileVersion)->greaterThan($dbVersion)
                 || ($dbVersion->smallerThan(Version::parse('2.19'))
@@ -163,7 +155,7 @@ class Updater
      */
     public function getVersion(): stdClass
     {
-        $v = $this->db->query('SELECT * FROM tversion', ReturnType::SINGLE_OBJECT);
+        $v = $this->db->getSingleObject('SELECT * FROM tversion');
 
         if ($v === null) {
             throw new Exception('Unable to identify application version');
@@ -299,6 +291,15 @@ class Updater
             : Version::parse(\APPLICATION_VERSION);
     }
 
+    public function finalize(): void
+    {
+        $smarty = new JTLSmarty(true, ContextType::FRONTEND);
+        $smarty->clearCompiledTemplate();
+        Shop::Container()->getCache()->flushAll();
+        $ms = new MinifyService();
+        $ms->flushCache();
+    }
+
     /**
      * @return IMigration|Version
      * @throws Exception
@@ -331,7 +332,7 @@ class Updater
             $this->db->beginTransaction();
             foreach ($sqls as $i => $sql) {
                 $currentLine = $i;
-                $this->db->query($sql, ReturnType::AFFECTED_ROWS);
+                $this->db->query($sql);
             }
         } catch (PDOException $e) {
             $code  = (int)$e->errorInfo[1];
@@ -361,8 +362,7 @@ class Updater
                         'type'   => $code,
                         'err'    => $error
 
-                    ],
-                    ReturnType::AFFECTED_ROWS
+                    ]
                 );
 
                 throw $e;
@@ -412,10 +412,9 @@ class Updater
      * @param Version $targetVersion
      * @throws Exception
      */
-    protected function setVersion(Version $targetVersion): void
+    public function setVersion(Version $targetVersion): void
     {
-        $tVersionColumns = $this->db->executeQuery('SHOW COLUMNS FROM `tversion`', ReturnType::ARRAY_OF_OBJECTS);
-        foreach ($tVersionColumns as $column) {
+        foreach ($this->db->getObjects('SHOW COLUMNS FROM `tversion`') as $column) {
             if ($column->Field === 'nVersion') {
                 if ($column->Type !== 'varchar(20)') {
                     $newVersion = \sprintf('%d%02d', $targetVersion->getMajor(), $targetVersion->getMinor());
@@ -438,8 +437,7 @@ class Updater
                 nTyp = 1, 
                 cFehlerSQL = '', 
                 dAktualisiert = NOW()",
-            ['ver' => $newVersion],
-            ReturnType::AFFECTED_ROWS
+            ['ver' => $newVersion]
         );
     }
 
@@ -495,5 +493,28 @@ class Updater
         }
 
         return $directories;
+    }
+
+    /**
+     * @return bool
+     * @throws Exception
+     */
+    public function hasMinUpdateVersion(): bool
+    {
+        return !Version::parse(\JTL_MIN_SHOP_UPDATE_VERSION)->greaterThan($this->getCurrentDatabaseVersion());
+    }
+
+    /**
+     * @return string
+     */
+    public function getMinUpdateVersionError(): string
+    {
+        return \sprintf(
+            \__('errorMinShopVersionRequired'),
+            \APPLICATION_VERSION,
+            \JTL_MIN_SHOP_UPDATE_VERSION,
+            \APPLICATION_VERSION,
+            \__('dbupdaterURL')
+        );
     }
 }

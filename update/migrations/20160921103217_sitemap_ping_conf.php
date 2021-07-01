@@ -17,12 +17,15 @@ class Migration_20160921103217 extends Migration implements IMigration
     protected $author      = 'dr';
     protected $description = 'Add option to switch sitemap ping to Google and Bing on or off';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setConfig(
             'sitemap_google_ping',
             'N',
-            \CONF_SITEMAP,
+            CONF_SITEMAP,
             'Sitemap an Google und Bing &uuml;bermitteln nach Export',
             'selectbox',
             180,
@@ -38,6 +41,9 @@ class Migration_20160921103217 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('sitemap_google_ping');

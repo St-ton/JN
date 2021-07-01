@@ -3,7 +3,7 @@
 namespace JTL\Session\Handler;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
+use stdClass;
 
 /**
  * Class DB
@@ -38,19 +38,17 @@ class DB extends JTLDefault
     }
 
     /**
-     * @param string $savePath
-     * @param string $sessName
-     * @return bool
+     * @inheritDoc
      */
-    public function open($savePath, $sessName)
+    public function open($path, $name)
     {
-        $this->lifeTime = \get_cfg_var('session.gc_maxlifetime');
+        $this->lifeTime = (int)\get_cfg_var('session.gc_maxlifetime');
 
         return $this->db->isConnected();
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function close()
     {
@@ -58,52 +56,48 @@ class DB extends JTLDefault
     }
 
     /**
-     * @param string $sessID
-     * @return string
+     * @inheritDoc
      */
-    public function read($sessID)
+    public function read($id)
     {
-        $res = $this->db->queryPrepared(
+        $res = $this->db->getSingleObject(
             'SELECT cSessionData FROM ' . $this->tableName . '
                 WHERE cSessionId = :id
                 AND nSessionExpires > :time',
             [
-                'id'   => $sessID,
+                'id'   => $id,
                 'time' => \time()
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
         return $res->cSessionData ?? '';
     }
 
     /**
-     * @param string $sessID
-     * @param string $sessData
-     * @return bool
+     * @inheritDoc
      */
-    public function write($sessID, $sessData)
+    public function write($id, $data)
     {
         // set new session expiration
         $newExp = \time() + $this->lifeTime;
         // is a session with this id already in the database?
-        $res = $this->db->select($this->tableName, 'cSessionId', $sessID);
+        $res = $this->db->select($this->tableName, 'cSessionId', $id);
         // if yes,
         if (!empty($res)) {
             //...update session data
-            $update                  = new \stdClass();
+            $update                  = new stdClass();
             $update->nSessionExpires = $newExp;
-            $update->cSessionData    = $sessData;
+            $update->cSessionData    = $data;
             // if something happened, return true
-            if ($this->db->update($this->tableName, 'cSessionId', $sessID, $update) > 0) {
+            if ($this->db->update($this->tableName, 'cSessionId', $id, $update) > 0) {
                 return true;
             }
         } else {
             // if no session was found, create a new row
-            $session                  = new \stdClass();
-            $session->cSessionId      = $sessID;
+            $session                  = new stdClass();
+            $session->cSessionId      = $id;
             $session->nSessionExpires = $newExp;
-            $session->cSessionData    = $sessData;
+            $session->cSessionData    = $data;
 
             return $this->db->insert($this->tableName, $session) > 0;
         }
@@ -112,10 +106,7 @@ class DB extends JTLDefault
     }
 
     /**
-     * delete session data
-     *
-     * @param string $sessID
-     * @return bool
+     * @inheritDoc
      */
     public function destroy($sessID)
     {
@@ -124,17 +115,12 @@ class DB extends JTLDefault
     }
 
     /**
-     * delete old sessions
-     *
-     * @param int $sessMaxLifeTime
-     * @return int
+     * @inheritDoc
      */
-    public function gc($sessMaxLifeTime)
+    public function gc($max_lifetime)
     {
-        // return affected rows
-        return $this->db->query(
-            'DELETE FROM ' . $this->tableName . ' WHERE nSessionExpires < ' . \time(),
-            ReturnType::AFFECTED_ROWS
-        );
+        return $this->db->getAffectedRows(
+            'DELETE FROM ' . $this->tableName . ' WHERE nSessionExpires < ' . \time()
+        ) > 0;
     }
 }

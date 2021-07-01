@@ -2,9 +2,18 @@
     {$propid = $propname}
 {/if}
 <div class="form-group no-pb">
-    <label for="config-{$propid}">{$propdesc.label}</label>
+    <label for="config-{$propid}"
+            {if !empty($propdesc.desc)}
+                data-toggle="tooltip" title="{$propdesc.desc|default:''}"
+                data-placement="auto"
+            {/if}>
+        {$propdesc.label}
+        {if !empty($propdesc.desc)}
+            <i class="fas fa-info-circle fa-fw"></i>
+        {/if}
+    </label>
     <div class="input-group" id="config-{$propid}-group">
-        <input type="text" class="form-control colorpicker-input" name="{$propname}" value="{$propval}"
+        <input type="text" class="form-control colorpicker-input" name="{$propname}" value="{$propval|escape:'html'}"
                {if $required}required{/if} id="config-{$propid}" autocomplete="off"
                placeholder="{__('Default colour')}">
         <span class="input-group-append">
@@ -14,7 +23,8 @@
     <script>
         $('#config-{$propid}-group').colorpicker({
             format: '{$propdesc.colorFormat|default:'rgba'}',
-            fallbackColor: 'rgba(0,0,0,0)',
+            fallbackColor: 'rgba(0,0,0,1.0)',
+            autoInputFallback: false,
             extensions: [
                 {
                     name: 'swatches',

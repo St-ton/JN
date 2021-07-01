@@ -3,7 +3,6 @@
 namespace JTL\OPC\Portlets\Divider;
 
 use JTL\OPC\Portlet;
-use JTL\OPC\PortletInstance;
 
 /**
  * Class Divider
@@ -12,31 +11,28 @@ use JTL\OPC\PortletInstance;
 class Divider extends Portlet
 {
     /**
-     * @param PortletInstance $instance
-     * @return string
-     */
-    public function getPreviewHtml(PortletInstance $instance): string
-    {
-        return '<hr ' . $instance->getAttributeString(). ' ' . $instance->getDataAttributeString() . '>';
-    }
-
-    /**
-     * @param PortletInstance $instance
-     * @return string
-     */
-    public function getFinalHtml(PortletInstance $instance): string
-    {
-        return '<hr ' . $instance->getAttributeString(). '>';
-    }
-
-    /**
      * @return array
      */
     public function getPropertyDesc(): array
     {
         return [
+            'title' => [
+                'label' => \__('dividerTitle'),
+                'default' => \__('Divider'),
+                'width' => 50,
+            ],
             'id' => [
-                'label' => 'ID',
+                'label' => \__('dividerElmID'),
+                'desc'  => \__('dividerIdDesc'),
+                'width' => 50,
+            ],
+            'moreLink' => [
+                'label' => \__('dividerMoreLink'),
+                'width' => 50,
+            ],
+            'moreTitle' => [
+                'label' => \__('dividerMoreTitle'),
+                'width' => 50,
             ],
         ];
     }
@@ -47,8 +43,8 @@ class Divider extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            __('Styles')    => 'styles',
-            __('Animation') => 'animations',
+            \__('Styles')    => 'styles',
+            \__('Animation') => 'animations',
         ];
     }
 }

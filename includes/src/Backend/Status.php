@@ -1,20 +1,24 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
 use Exception;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Checkout\ZahlungsLog;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Helpers\Template as TemplateHelper;
+use JTL\Export\SyntaxChecker;
+use JTL\License\Manager;
+use JTL\License\Mapper;
+use JTL\Mail\Template\Model as MailTplModel;
+use JTL\Mail\Template\TemplateFactory;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\StatsItem;
+use JTL\Nice;
 use JTL\Plugin\Helper;
 use JTL\Plugin\State;
 use JTL\Profiler;
 use JTL\Shop;
-use JTL\SingletonTrait;
-use JTL\Template;
 use JTL\Update\Updater;
 use stdClass;
 use Systemcheck\Environment;
@@ -28,51 +32,84 @@ use function Functional\some;
  */
 class Status
 {
-    use SingletonTrait;
+    /**
+     * @var JTLCacheInterface
+     */
+    protected $cache;
 
     /**
-     * @var array
+     * @var DbInterface
      */
-    protected $cache = [];
+    protected $db;
+
+
+    private static $instance;
+
+    public const CACHE_ID_FOLDER_PERMISSIONS   = 'validFolderPermissions';
+    public const CACHE_ID_DATABASE_STRUCT      = 'validDatabaseStruct';
+    public const CACHE_ID_MODIFIED_FILE_STRUCT = 'validModifiedFileStruct';
+    public const CACHE_ID_ORPHANED_FILE_STRUCT = 'validOrphanedFilesStruct';
+    public const CACHE_ID_EMAIL_SYNTAX_CHECK   = 'validEMailSyntaxCheck';
+    public const CACHE_ID_EXPORT_SYNTAX_CHECK  = 'validExportSyntaxCheck';
 
     /**
-     * @param string $name
-     * @param mixed  $arguments
-     * @return mixed
+     * Status constructor.
+     * @param DbInterface $db
+     * @param JTLCacheInterface $cache
      */
-    public function __call($name, $arguments)
+    public function __construct(DbInterface $db, JTLCacheInterface $cache)
     {
-        if (!isset($this->cache[$name])) {
-            $this->cache[$name] = \call_user_func_array([&$this, $name], $arguments);
+        $this->db    = $db;
+        $this->cache = $cache;
+
+        self::$instance = $this;
+    }
+
+    /**
+     * @param DbInterface $db
+     * @param JTLCacheInterface|null $cache
+     * @param bool $flushCache
+     * @return Status
+     */
+    public static function getInstance(
+        DbInterface $db,
+        ?JTLCacheInterface $cache = null,
+        bool $flushCache = false
+    ): self {
+        $instance = static::$instance ?? new self($db, $cache ?? Shop::Container()->getCache());
+
+        if ($flushCache) {
+            $instance->cache->flushTags([\CACHING_GROUP_STATUS]);
         }
 
-        return $this->cache[$name];
+        return $instance;
     }
 
     /**
      * @return JTLCacheInterface
      */
-    protected function getObjectCache(): JTLCacheInterface
+    public function getObjectCache(): JTLCacheInterface
     {
-        return Shop::Container()->getCache()->setJtlCacheConfig(
-            Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING)
+        return $this->cache->setJtlCacheConfig(
+            $this->db->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING)
         );
     }
 
     /**
      * @return StatsItem
-     * @throws \Exception
+     * @throws Exception
      */
-    protected function getImageCache(): StatsItem
+    public function getImageCache(): StatsItem
     {
-        return Product::getStats();
+        return (new Product($this->db))->getStats();
     }
 
     /**
      * @return stdClass
      */
-    protected function getSystemLogInfo(): stdClass
+    public function getSystemLogInfo(): stdClass
     {
+        /** @var int $conf */
         $conf = Shop::getConfigValue(\CONF_GLOBAL, 'systemlog_flag');
 
         return (object)[
@@ -87,79 +124,124 @@ class Status
      *
      * @return bool  true='no errors', false='something is wrong'
      */
-    protected function validDatabaseStruct(): bool
+    public function validDatabaseStruct(): bool
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dbcheck_inc.php';
 
-        $current  = \getDBStruct(true);
-        $original = \getDBFileStruct();
+        if (($dbStruct = $this->cache->get(self::CACHE_ID_DATABASE_STRUCT)) === false) {
+            $dbStruct             = [];
+            $dbStruct['current']  = \getDBStruct(true);
+            $dbStruct['original'] = \getDBFileStruct();
 
-        return \is_array($current) && \is_array($original) && \count(\compareDBStruct($original, $current)) === 0;
+            $this->cache->set(
+                self::CACHE_ID_DATABASE_STRUCT,
+                $dbStruct,
+                [\CACHING_GROUP_STATUS]
+            );
+        }
+
+        return \is_array($dbStruct['current'])
+            && \is_array($dbStruct['original'])
+            && \count(\compareDBStruct($dbStruct['original'], $dbStruct['current'])) === 0;
     }
 
     /**
      * checks the shop-filesystem-structure against 'admin/includes/shopmd5files/[shop-version].csv'
      *
+     * @param string|null $hash
      * @return bool  true='no errors', false='something is wrong'
      */
-    protected function validModifiedFileStruct(): bool
+    public function validModifiedFileStruct(?string &$hash = null): bool
     {
-        $check   = new FileCheck();
-        $files   = [];
-        $stats   = 0;
-        $md5file = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5 . $check->getVersionString() . '.csv';
+        if (($validModifiedFileStruct = $this->cache->get(self::CACHE_ID_MODIFIED_FILE_STRUCT)) === false) {
+            $check   = new FileCheck();
+            $files   = [];
+            $stats   = 0;
+            $md5file = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5 . $check->getVersionString() . '.csv';
 
-        return $check->validateCsvFile($md5file, $files, $stats) === FileCheck::OK
-            ? $stats === 0
-            : false;
+            $validModifiedFileStruct = $check->validateCsvFile($md5file, $files, $stats) === FileCheck::OK
+                ? $stats
+                : 1;
+
+            $this->cache->set(
+                self::CACHE_ID_MODIFIED_FILE_STRUCT,
+                $validModifiedFileStruct,
+                [\CACHING_GROUP_STATUS]
+            );
+        }
+        $hash = \md5(($hash ?? 'validModifiedFileStruct') . '_' . $validModifiedFileStruct);
+
+        return $validModifiedFileStruct === 0;
     }
 
     /**
      * checks the shop-filesystem-structure against 'admin/includes/shopmd5files/deleted_files_[shop-version].csv'
      *
+     * @param string|null $hash
      * @return bool  true='no errors', false='something is wrong'
      */
-    protected function validOrphanedFilesStruct(): bool
+    public function validOrphanedFilesStruct(?string &$hash = null): bool
     {
-        $check             = new FileCheck();
-        $files             = [];
-        $stats             = 0;
-        $orphanedFilesFile = \PFAD_ROOT . \PFAD_ADMIN .
-            \PFAD_INCLUDES . \PFAD_SHOPMD5
-            . 'deleted_files_' . $check->getVersionString() . '.csv';
+        if (($validOrphanedFilesStruct = $this->cache->get(self::CACHE_ID_ORPHANED_FILE_STRUCT)) === false) {
+            $check             = new FileCheck();
+            $files             = [];
+            $stats             = 0;
+            $orphanedFilesFile = \PFAD_ROOT . \PFAD_ADMIN .
+                \PFAD_INCLUDES . \PFAD_SHOPMD5
+                . 'deleted_files_' . $check->getVersionString() . '.csv';
 
-        return $check->validateCsvFile($orphanedFilesFile, $files, $stats) === FileCheck::OK
-            ? $stats === 0
-            : false;
+            $validOrphanedFilesStruct = $check->validateCsvFile($orphanedFilesFile, $files, $stats) === FileCheck::OK
+                ? $stats
+                : 1;
+
+            $this->cache->set(
+                self::CACHE_ID_ORPHANED_FILE_STRUCT,
+                $validOrphanedFilesStruct,
+                [\CACHING_GROUP_STATUS]
+            );
+        }
+        $hash = \md5(($hash ?? 'validOrphanedFilesStruct') . '_' . $validOrphanedFilesStruct);
+
+        return $validOrphanedFilesStruct === 0;
     }
 
     /**
+     * @param string|null $hash
      * @return bool
      */
-    protected function validFolderPermissions(): bool
+    public function validFolderPermissions(?string &$hash = null): bool
     {
-        $permissionStat = (new Filesystem(\PFAD_ROOT))->getFolderStats();
+        if (($filesystemFolders = $this->cache->get(self::CACHE_ID_FOLDER_PERMISSIONS)) === false) {
+            $filesystem = new Filesystem(\PFAD_ROOT);
+            $filesystem->getFoldersChecked();
+            $filesystemFolders = $filesystem->getFolderStats();
+            $this->cache->set(
+                self::CACHE_ID_FOLDER_PERMISSIONS,
+                $filesystemFolders,
+                [\CACHING_GROUP_STATUS]
+            );
+        }
+        $hash = \md5(($hash ?? 'validFolderPermissions') . '_' . $filesystemFolders->nCountInValid);
 
-        return $permissionStat->nCountInValid === 0;
+        return $filesystemFolders->nCountInValid === 0;
     }
 
     /**
      * @return array
      */
-    protected function getPluginSharedHooks(): array
+    public function getPluginSharedHooks(): array
     {
         $sharedPlugins = [];
-        $sharedHookIds = Shop::Container()->getDB()->query(
+        $sharedHookIds = $this->db->getObjects(
             'SELECT nHook
                 FROM tpluginhook
                 GROUP BY nHook
-                HAVING COUNT(DISTINCT kPlugin) > 1',
-            ReturnType::ARRAY_OF_OBJECTS
+                HAVING COUNT(DISTINCT kPlugin) > 1'
         );
         foreach ($sharedHookIds as $hookData) {
             $hookID                 = (int)$hookData->nHook;
             $sharedPlugins[$hookID] = [];
-            $plugins                = Shop::Container()->getDB()->queryPrepared(
+            $plugins                = $this->db->getObjects(
                 'SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID
                     FROM tpluginhook
                     INNER JOIN tplugin
@@ -169,8 +251,7 @@ class Status
                 [
                     'hook'  => $hookID,
                     'state' => State::ACTIVATED
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                ]
             );
             foreach ($plugins as $plugin) {
                 $sharedPlugins[$hookID][$plugin->cPluginID] = $plugin;
@@ -182,17 +263,17 @@ class Status
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
-    protected function hasPendingUpdates(): bool
+    public function hasPendingUpdates(): bool
     {
-        return (new Updater(Shop::Container()->getDB()))->hasPendingUpdates();
+        return (new Updater($this->db))->hasPendingUpdates();
     }
 
     /**
      * @return bool
      */
-    protected function hasActiveProfiler(): bool
+    public function hasActiveProfiler(): bool
     {
         return Profiler::getIsActive() !== 0;
     }
@@ -200,7 +281,7 @@ class Status
     /**
      * @return bool
      */
-    protected function hasInstallDir(): bool
+    public function hasInstallDir(): bool
     {
         return \is_dir(\PFAD_ROOT . \PFAD_INSTALL);
     }
@@ -208,31 +289,37 @@ class Status
     /**
      * @return bool
      */
-    protected function hasDifferentTemplateVersion(): bool
+    public function hasDifferentTemplateVersion(): bool
     {
-        return Template::getInstance()->getVersion() !== \APPLICATION_VERSION;
+        try {
+            $template = Shop::Container()->getTemplateService()->getActiveTemplate();
+        } catch (Exception $e) {
+            return false;
+        }
+        return $template->getVersion() !== \APPLICATION_VERSION;
     }
 
     /**
      * @return bool
      */
-    protected function hasMobileTemplateIssue(): bool
+    public function hasMobileTemplateIssue(): bool
     {
-        $template = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
-        if ($template !== null && isset($template->cTemplate)) {
-            $tplData = TemplateHelper::getInstance()->getData($template->cTemplate);
-            if ($tplData !== false && $tplData->bResponsive) {
-                $mobileTpl = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'mobil');
-                if ($mobileTpl !== null) {
-                    $xmlFile = \PFAD_ROOT . \PFAD_TEMPLATES . $mobileTpl->cTemplate .
-                        \DIRECTORY_SEPARATOR . \TEMPLATE_XML;
-                    if (\file_exists($xmlFile)) {
-                        return true;
-                    }
-                    // Wenn ein Template aktiviert aber physisch nicht vorhanden ist,
-                    // ist der DB-Eintrag falsch und wird gelöscht
-                    Shop::Container()->getDB()->delete('ttemplate', 'eTyp', 'mobil');
+        try {
+            $template = Shop::Container()->getTemplateService()->getActiveTemplate();
+        } catch (Exception $e) {
+            return false;
+        }
+        if ($template->isResponsive()) {
+            $mobileTpl = $this->db->select('ttemplate', 'eTyp', 'mobil');
+            if ($mobileTpl !== null) {
+                $xmlFile = \PFAD_ROOT . \PFAD_TEMPLATES . $mobileTpl->cTemplate .
+                    \DIRECTORY_SEPARATOR . \TEMPLATE_XML;
+                if (\file_exists($xmlFile)) {
+                    return true;
                 }
+                // Wenn ein Template aktiviert aber physisch nicht vorhanden ist,
+                // ist der DB-Eintrag falsch und wird gelöscht
+                $this->db->delete('ttemplate', 'eTyp', 'mobil');
             }
         }
 
@@ -241,16 +328,18 @@ class Status
 
     /**
      * @return bool
+     * @throws Exception
      */
-    protected function hasStandardTemplateIssue(): bool
+    public function hasStandardTemplateIssue(): bool
     {
-        return Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard') === null;
+        return $this->db->select('ttemplate', 'eTyp', 'standard') === null
+            || Shop::Container()->getTemplateService()->getActiveTemplate()->getTemplate() === null;
     }
 
     /**
      * @return bool
      */
-    protected function hasValidEnvironment(): bool
+    public function hasValidEnvironment(): bool
     {
         $systemcheck = new Environment();
         $systemcheck->executeTestGroup('Shop5');
@@ -261,7 +350,7 @@ class Status
     /**
      * @return array
      */
-    protected function getEnvironmentTests(): array
+    public function getEnvironmentTests(): array
     {
         return (new Environment())->executeTestGroup('Shop5');
     }
@@ -269,7 +358,7 @@ class Status
     /**
      * @return Hosting
      */
-    protected function getPlatform(): Hosting
+    public function getPlatform(): Hosting
     {
         return new Hosting();
     }
@@ -277,10 +366,10 @@ class Status
     /**
      * @return array
      */
-    protected function getMySQLStats(): array
+    public function getMySQLStats(): array
     {
-        $stats = Shop::Container()->getDB()->stats();
-        $info  = Shop::Container()->getDB()->info();
+        $stats = $this->db->getServerStats();
+        $info  = $this->db->getServerInfo();
         $lines = \explode('  ', $stats);
         $lines = \array_map(static function ($v) {
             [$key, $value] = \explode(':', $v, 2);
@@ -294,10 +383,10 @@ class Status
     /**
      * @return array
      */
-    protected function getPaymentMethodsWithError(): array
+    public function getPaymentMethodsWithError(): array
     {
         $incorrectPaymentMethods = [];
-        $paymentMethods          = Shop::Container()->getDB()->selectAll(
+        $paymentMethods          = $this->db->selectAll(
             'tzahlungsart',
             'nActive',
             1,
@@ -318,14 +407,13 @@ class Status
      * @param bool $has
      * @return array|bool
      */
-    protected function getOrphanedCategories(bool $has = true)
+    public function getOrphanedCategories(bool $has = true)
     {
-        $categories = Shop::Container()->getDB()->query(
+        $categories = $this->db->getObjects(
             'SELECT kKategorie, cName
                 FROM tkategorie
                 WHERE kOberkategorie > 0
-                    AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)',
-            ReturnType::ARRAY_OF_OBJECTS
+                    AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)'
         );
 
         return $has === true
@@ -336,19 +424,19 @@ class Status
     /**
      * @return bool
      */
-    protected function hasFullTextIndexError(): bool
+    public function hasFullTextIndexError(): bool
     {
         $conf = Shop::getSettings([\CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
 
         return isset($conf['suche_fulltext'])
             && $conf['suche_fulltext'] !== 'N'
-            && (!Shop::Container()->getDB()->query(
+            && (!$this->db->query(
                 "SHOW INDEX
                     FROM tartikel
                     WHERE KEY_NAME = 'idx_tartikel_fulltext'",
                 ReturnType::SINGLE_OBJECT
             )
-                || !Shop::Container()->getDB()->query(
+                || !$this->db->query(
                     "SHOW INDEX
                     FROM tartikelsprache
                     WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
@@ -357,18 +445,33 @@ class Status
     }
 
     /**
+     * @param string|null $hash
      * @return bool
      */
-    protected function hasNewPluginVersions(): bool
+    public function hasLicenseExpirations(?string &$hash = null): bool
+    {
+        $manager = new Manager($this->db, $this->cache);
+        $mapper  = new Mapper($manager);
+
+        $toBeExpired  = $mapper->getCollection()->getAboutToBeExpired(28)->count();
+        $boundExpired = $mapper->getCollection()->getBoundExpired()->count();
+        $hash         = \md5(($hash ?? 'hasLicenseExpirations') . '_' . $toBeExpired . '_' . $boundExpired);
+
+        return $toBeExpired > 0 || $boundExpired > 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasNewPluginVersions(): bool
     {
         if (\SAFE_MODE === true) {
             return false;
         }
 
-        $data = Shop::Container()->getDB()->query(
+        $data = $this->db->getObjects(
             'SELECT `kPlugin`, `nVersion`, `bExtension`
-                FROM `tplugin`',
-            ReturnType::ARRAY_OF_OBJECTS
+                FROM `tplugin`'
         );
         if (!\is_array($data) || 1 > \count($data)) {
             return false; // there are no plugins installed
@@ -395,13 +498,12 @@ class Status
      */
     public function hasInvalidPasswordResetMailTemplate(): bool
     {
-        $translations = Shop::Container()->getDB()->query(
+        $translations = $this->db->getObjects(
             "SELECT lang.cContentText, lang.cContentHtml
                 FROM temailvorlagesprache lang
                 JOIN temailvorlage
                 ON lang.kEmailvorlage = temailvorlage.kEmailvorlage
-                WHERE temailvorlage.cName = 'Passwort vergessen'",
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE temailvorlage.cName = 'Passwort vergessen'"
         );
         foreach ($translations as $t) {
             $old = '{$neues_passwort}';
@@ -417,27 +519,28 @@ class Status
      * Checks, whether SMTP is configured for sending mails but no encryption method is chosen for E-Mail-Server
      * communication
      *
+     * @param string|null $hash
      * @return bool
      */
-    public function hasInsecureMailConfig(): bool
+    public function hasInsecureMailConfig(?string &$hash = null): bool
     {
         $conf = Shop::getConfig([\CONF_EMAILS])['emails'];
+        $hash = \md5(($hash ?? 'hasInsecureMailConfig') . '_' . $conf['email_methode']);
 
         return $conf['email_methode'] === 'smtp' && empty(\trim($conf['email_smtp_verschluesselung']));
     }
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
-    protected function needPasswordRehash2FA(): bool
+    public function needPasswordRehash2FA(): bool
     {
         $passwordService = Shop::Container()->getPasswordService();
-        $hashes          = Shop::Container()->getDB()->query(
+        $hashes          = $this->db->getObjects(
             'SELECT *
                 FROM tadmin2facodes
-                GROUP BY kAdminlogin',
-            ReturnType::ARRAY_OF_OBJECTS
+                GROUP BY kAdminlogin'
         );
 
         return some($hashes, static function ($hash) use ($passwordService) {
@@ -446,53 +549,89 @@ class Status
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getDuplicateLinkGroupTemplateNames(): array
     {
-        return Shop::Container()->getDB()->query(
+        return $this->db->getObjects(
             'SELECT * FROM tlinkgruppe
                 GROUP BY cTemplatename
-                HAVING COUNT(*) > 1',
-            ReturnType::ARRAY_OF_OBJECTS
+                HAVING COUNT(*) > 1'
         );
     }
 
     /**
+     * @param int         $type
+     * @param string|null $hash
      * @return int
      */
-    public function getExportFormatErrorCount(): int
+    public function getExportFormatErrorCount(int $type = SyntaxChecker::SYNTAX_FAIL, ?string &$hash = null): int
     {
-        if (!isset($_SESSION['exportSyntaxErrorCount'])) {
-            $_SESSION['exportSyntaxErrorCount'] = (int)Shop::Container()->getDB()->query(
-                'SELECT COUNT(*) AS cnt FROM texportformat WHERE nFehlerhaft = 1',
-                ReturnType::SINGLE_OBJECT
+        $cacheKey = self::CACHE_ID_EXPORT_SYNTAX_CHECK . $type;
+        if (($syntaxErrCnt = $this->cache->get($cacheKey)) === false) {
+            $syntaxErrCnt = (int)$this->db->getSingleObject(
+                'SELECT COUNT(*) AS cnt FROM texportformat WHERE nFehlerhaft = :type',
+                ['type' => $type]
             )->cnt;
+
+            $this->cache->set($cacheKey, $syntaxErrCnt, [\CACHING_GROUP_STATUS, self::CACHE_ID_EXPORT_SYNTAX_CHECK]);
         }
 
-        return $_SESSION['exportSyntaxErrorCount'];
+        $hash = \md5($hash . $syntaxErrCnt);
+
+        return $syntaxErrCnt;
     }
 
     /**
+     * @param int         $type
+     * @param string|null $hash
      * @return int
      */
-    public function getEmailTemplateSyntaxErrorCount(): int
+    public function getEmailTemplateSyntaxErrorCount(int $type = MailTplModel::SYNTAX_FAIL, ?string &$hash = null): int
     {
-        if (!isset($_SESSION['emailSyntaxErrorCount'])) {
-            $_SESSION['emailSyntaxErrorCount'] = (int)Shop::Container()->getDB()->query(
-                'SELECT COUNT(*) AS cnt FROM temailvorlage WHERE nFehlerhaft = 1',
-                ReturnType::SINGLE_OBJECT
-            )->cnt;
+        $cacheKey = self::CACHE_ID_EMAIL_SYNTAX_CHECK . $type;
+        if (($syntaxErrCnt = $this->cache->get($cacheKey)) === false) {
+            $syntaxErrCnt = 0;
+            $templates    = $this->db->getObjects(
+                'SELECT cModulId, kPlugin FROM temailvorlage WHERE nFehlerhaft = :type',
+                ['type' => $type]
+            );
+            $factory      = new TemplateFactory($this->db);
+            foreach ($templates as $template) {
+                $module = $template->cModulId;
+                if ($template->kPlugin > 0) {
+                    $module = 'kPlugin_' . $template->kPlugin . '_' . $template->cModulId;
+                }
+                $syntaxErrCnt += $factory->getTemplate($module) !== null ? 1 : 0;
+            }
+
+            $this->cache->set($cacheKey, $syntaxErrCnt, [\CACHING_GROUP_STATUS, self::CACHE_ID_EMAIL_SYNTAX_CHECK]);
         }
 
-        return $_SESSION['emailSyntaxErrorCount'];
+        $hash = \md5($hash . $syntaxErrCnt);
+
+        return $syntaxErrCnt;
     }
 
     /**
      * @return bool
      */
-    protected function hasExtensionSOAP(): bool
+    public function hasExtensionSOAP(): bool
     {
-        return extension_loaded('soap');
+        return \extension_loaded('soap');
+    }
+
+    /**
+     * @return array
+     */
+    public function getExtensions(): array
+    {
+        $nice       = Nice::getInstance();
+        $extensions = $nice->gibAlleMoeglichenModule();
+        foreach ($extensions as $extension) {
+            $extension->bActive = $nice->checkErweiterung($extension->kModulId);
+        }
+
+        return $extensions;
     }
 }

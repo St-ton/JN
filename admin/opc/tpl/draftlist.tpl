@@ -92,7 +92,7 @@
                         {/foreach}
                     </div>
                 </div>
-                <button type="button" onclick="deleteOpcDraft({$draft->getKey()})"
+                <button type="button" onclick="deleteOpcDraft({$draft->getKey()}, '{$draft->getName()}')"
                         data-toggle="tooltip" title="{__('delete')}"
                         data-placement="bottom" data-container="#opc">
                     <i class="fa fa-lg fa-fw fas fa-trash"></i>

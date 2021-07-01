@@ -47,14 +47,15 @@ let $window		= $(window)
 
 export default class NavScrollbar {
     constructor(element, config = {}) {
+        let self     = this;
         this.element = $(element)
-        this.config = $.extend(true, {}, Default, config)
+        this.config  = $.extend(true, {}, Default, config)
 
-        this._isDragging = false
-        this._start = 0
+        this._isDragging   = false
+        this._start        = 0
         this._startClientX = 0
-        this._distance = 0
-        this._itemWidth = 0
+        this._distance     = 0
+        this._itemWidth    = 0
 
         this.$scrollBarInner = this.element.find(`.${this.config.classes.scrollbarInner}`)
         this.$scrollBarItems = this.element.find(`.${this.config.classes.scrollbarItems}`)
@@ -65,8 +66,10 @@ export default class NavScrollbar {
         this.element.prepend(this.$scrollBarArrowLeft)
         this.element.append(this.$scrollBarArrowRight)
 
-        this.update()
-        this._bindEvents()
+        setTimeout(function () {
+            self.update();
+            self._bindEvents();
+        }, 100);
     }
 
     /* Public */

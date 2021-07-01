@@ -49,6 +49,38 @@ class DataAttribute
     public $dynamic = false;
 
     /**
+     * @var InputConfig
+     */
+    public $inputConfig;
+
+    /**
+     * DataAttribute constructor.
+     */
+    public function __construct()
+    {
+        $this->inputConfig = new InputConfig();
+    }
+
+    /**
+     * @return InputConfig
+     */
+    public function getInputConfig(): InputConfig
+    {
+        return $this->inputConfig;
+    }
+
+    /**
+     * @param InputConfig $inputConfig
+     * @return DataAttribute
+     */
+    public function setInputConfig(InputConfig $inputConfig): DataAttribute
+    {
+        $this->inputConfig = $inputConfig;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -200,13 +232,6 @@ class DataAttribute
     }
 
     /**
-     * DataAttribute constructor.
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * Creates a new DataAttribute instance
      *
      * @param string      $name - name of the attribute
@@ -214,7 +239,7 @@ class DataAttribute
      * @param null|mixed  $default - default value of the attribute
      * @param bool        $nullable - true if the attribute is nullable, false otherwise
      * @param bool        $isPrimaryKey - true if the attribute is the primary key, false otherwise
-     * @param string      $foreignKey
+     * @param string|null $foreignKey
      * @param string|null $foreignKeyChild
      * @param bool        $dynamic
      * @return self

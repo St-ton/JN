@@ -2,7 +2,6 @@
 
 namespace JTL\Plugin\Admin\Installation\Items;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\InstallCode;
@@ -19,8 +18,7 @@ class FrontendLinks extends AbstractItem
      */
     public function getNode(): array
     {
-        return isset($this->baseNode['Install'][0]['FrontendLink'][0]['Link'])
-        && \is_array($this->baseNode['Install'][0]['FrontendLink'][0]['Link'])
+        return \is_array($this->baseNode['Install'][0]['FrontendLink'][0]['Link'] ?? null)
             ? $this->baseNode['Install'][0]['FrontendLink'][0]['Link']
             : [];
     }
@@ -31,7 +29,7 @@ class FrontendLinks extends AbstractItem
     public function install(): int
     {
         $pluginID    = $this->plugin->kPlugin;
-        $oldPluginID = $this->oldPlugin->kPlugin ?? 0;
+        $oldPluginID = $this->oldPlugin === null ? 0 : $this->oldPlugin->getID();
         foreach ($this->getNode() as $i => $links) {
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
@@ -54,14 +52,26 @@ class FrontendLinks extends AbstractItem
                 'tlinkgroupassociations',
                 (object)['linkGroupID' => $linkGroupID, 'linkID' => $linkID]
             );
-            $allLanguages    = LanguageHelper::getAllLanguages(2);
+            $allLanguages    = LanguageHelper::getAllLanguages(2, true);
             $linkLang        = new stdClass();
             $linkLang->kLink = $linkID;
             $bLinkStandard   = false;
             $defaultLang     = new stdClass();
-            $oldLinkID       = $oldPluginID === 0
+            $oldLink         = $oldPluginID === 0
                 ? null
                 : $this->db->select('tlink', 'kPlugin', $oldPluginID, 'cName', $links['Name']);
+            if ($oldLink !== null) {
+                $oldLinkGroup   = $this->db->select('tlinkgroupassociations', 'linkID', (int)$oldLink->kLink);
+                $oldLinkGroupID = (int)($oldLinkGroup->linkGroupID ?? 0);
+                if ($oldLinkGroupID > 0) {
+                    $this->db->update(
+                        'tlinkgroupassociations',
+                        'linkID',
+                        $linkID,
+                        (object)['linkGroupID' => $oldLinkGroupID]
+                    );
+                }
+            }
             foreach ($links['LinkLanguage'] as $l => $localized) {
                 $l = (string)$l;
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
@@ -81,16 +91,14 @@ class FrontendLinks extends AbstractItem
                         $defaultLang   = $linkLang;
                         $bLinkStandard = true;
                     }
-                    if (isset($allLanguages[$linkLang->cISOSprache])
-                        && $allLanguages[$linkLang->cISOSprache]->kSprache > 0
-                    ) {
-                        $or = isset($oldLinkID->kLink) ? (' OR kKey = ' . (int)$oldLinkID->kLink) : '';
-                        $this->db->query(
+                    if (($allLanguages[$linkLang->cISOSprache]->kSprache ?? 0) > 0) {
+                        $or = isset($oldLink->kLink) ? (' OR kKey = ' . (int)$oldLink->kLink) : '';
+                        $this->db->queryPrepared(
                             "DELETE FROM tseo
                                 WHERE cKey = 'kLink'
                                     AND (kKey = " . $linkID . $or . ')
-                                    AND kSprache = ' . (int)$allLanguages[$linkLang->cISOSprache]->kSprache,
-                            ReturnType::DEFAULT
+                                    AND kSprache = :lid',
+                            ['lid' => (int)$allLanguages[$linkLang->cISOSprache]->kSprache]
                         );
                         $seo           = new stdClass();
                         $seo->cSeo     = Seo::checkSeo(Seo::getSeo($localized['Seo']));
@@ -156,7 +164,7 @@ class FrontendLinks extends AbstractItem
         $linkFile                      = new stdClass();
         $linkFile->kPlugin             = $pluginID;
         $linkFile->kLink               = $linkID;
-        $linkFile->cDatei              = $links['Filename'];
+        $linkFile->cDatei              = $links['Filename'] ?? '';
         $linkFile->cTemplate           = $links['Template'] ?? '_DBNULL_';
         $linkFile->cFullscreenTemplate = $links['FullscreenTemplate'] ?? '_DBNULL_';
 
@@ -174,9 +182,10 @@ class FrontendLinks extends AbstractItem
         $link->kPlugin            = $pluginID;
         $link->cName              = $links['Name'];
         $link->nLinkart           = \LINKTYP_PLUGIN;
-        $link->cSichtbarNachLogin = $links['VisibleAfterLogin'];
-        $link->cDruckButton       = $links['PrintButton'];
-        $link->cNoFollow          = $links['NoFollow'] ?? null;
+        $link->cSichtbarNachLogin = $links['VisibleAfterLogin'] ?? 'N';
+        $link->cDruckButton       = $links['PrintButton'] ?? 'N';
+        $link->cNoFollow          = $links['NoFollow'] ?? 'N';
+        $link->cIdentifier        = $links['Identifier'] ?? '';
         $link->nSort              = \LINKTYP_PLUGIN;
         $link->bSSL               = (int)($links['SSL'] ?? 0);
 

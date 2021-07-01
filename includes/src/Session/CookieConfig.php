@@ -73,8 +73,11 @@ class CookieConfig
         $this->httpOnly = $this->httpOnly || $config['global_cookie_httponly'] === 'Y';
         if (($config['global_cookie_samesite'] ?? '') !== 'S') {
             $this->sameSite = $config['global_cookie_samesite'] ?? 'S';
+            if ($this->sameSite === 'N') {
+                $this->sameSite = '';
+            }
         }
-        if ($config['global_cookie_domain'] !== '') {
+        if (($config['global_cookie_domain'] ?? '') !== '') {
             $this->domain = $this->experimentalMultiLangDomain($config['global_cookie_domain']);
         }
         if (\is_numeric($config['global_cookie_lifetime']) && (int)$config['global_cookie_lifetime'] > 0) {
@@ -89,23 +92,22 @@ class CookieConfig
 
     /**
      * @param string $domain
-     * @return mixed|string
+     * @return string
      */
-    private function experimentalMultiLangDomain(string $domain)
+    private function experimentalMultiLangDomain(string $domain): string
     {
-        if (!\defined('EXPERIMENTAL_MULTILANG_SHOP')) {
+        if (\EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return $domain;
         }
+        $host = $_SERVER['HTTP_HOST'] ?? ' ';
         foreach (LanguageHelper::getAllLanguages() as $language) {
-            $code = $language->cISO;
-            if (!\defined('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER))) {
+            $code = \mb_convert_case($language->getCode(), \MB_CASE_UPPER);
+            if (!\defined('URL_SHOP_' . $code)) {
                 continue;
             }
-            $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER));
-            if (\mb_strpos($shopLangURL, ($_SERVER['HTTP_HOST'] ?? ' ')) !== false
-                && \defined('COOKIE_DOMAIN_' . \mb_convert_case($code, \MB_CASE_UPPER))
-            ) {
-                return \constant('COOKIE_DOMAIN_' . \mb_convert_case($code, \MB_CASE_UPPER));
+            $localized = \constant('URL_SHOP_' . $code);
+            if (\mb_strpos($localized, $host) !== false && \defined('COOKIE_DOMAIN_' . $code)) {
+                return \constant('COOKIE_DOMAIN_' . $code);
             }
         }
 
@@ -117,19 +119,15 @@ class CookieConfig
      */
     public function getSessionConfigArray(): array
     {
-        $config = [
+        return [
             'use_cookies'     => '1',
             'cookie_domain'   => $this->getDomain(),
             'cookie_secure'   => $this->isSecure(),
             'cookie_lifetime' => $this->getLifetime(),
             'cookie_path'     => $this->getPath(),
-            'cookie_httponly' => $this->isHttpOnly()
+            'cookie_httponly' => $this->isHttpOnly(),
+            'cookie_samesite' => $this->getSameSite()
         ];
-        if (\PHP_VERSION_ID > 70300 && (($sameSite = $this->getSameSite()) !== 'N')) {
-            $config['cookie_samesite'] = $sameSite;
-        }
-
-        return $config;
     }
 
     /**

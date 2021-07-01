@@ -10,19 +10,21 @@
         <h1>{lang key='orderCompletedPre' section='checkout'}</h1>
     {/block}
     {block name='account-order-details-order-details-data'}
-        {card no-body=true class='mb-3'}
+        {card no-body=true class='order-details'}
             {cardheader}
             {block name='account-order-details-order-heading'}
-                {row class='align-items-center'}
-                    {col cols=12 lg=3 class='border-lg-right'}
-                        <span class="font-weight-bold font-size-lg">
-                            <span class="far fa-calendar mr-2"></span>{$Bestellung->dErstelldatum_de}
-                        </span>
-                    {/col}
+                {row class='align-items-center-util'}
+                    {block name='account-order-details-order-heading-date'}
+                        {col cols=12 lg=3 class='border-lg-right'}
+                            <div class="order-details-date">
+                                <span class="far fa-calendar"></span>{$Bestellung->dErstelldatum_de}
+                            </div>
+                        {/col}
+                    {/block}
                     {col cols=6 lg='auto'}
                         {lang key='yourOrderId' section='checkout'}: {$Bestellung->cBestellNr}
                     {/col}
-                    {col cols=6 lg='auto' class='text-right text-lg-left'}
+                    {col cols=6 lg='auto' class='order-details-status'}
                         {lang key='orderStatus' section='login'}: {$Bestellung->Status}
                     {/col}
                 {/row}
@@ -33,35 +35,11 @@
                 {block name='account-order-details-order-body'}
                     {row}
                         {col cols=12 lg=3 class='border-lg-right'}
-                            {block name='account-order-details-total'}
-                                <span class="subheadline">{lang key='orderOverview' section='account data'}</span>
-                                <ul class="list-unstyled mt-lg-5 border-bottom pb-3 pb-lg-5">
-                                    <li class="mb-2">
-                                        {lang key='subtotal' section='account data'}: <span class="float-right text-nowrap">{$Bestellung->WarensummeLocalized[1]}</span>
-                                    </li>
-                                    {if $Bestellung->GuthabenNutzen == 1}
-                                    <li class="mb-2">
-                                        {lang key='useCredit' section='account data'}: <span class="float-right text-nowrap">{$Bestellung->GutscheinLocalized}</span>
-                                    </li>
-                                    {/if}
-                                    <li class="font-weight-bold mb-2">
-                                        {lang key='totalSum' section='global'} {if $NettoPreise} {lang key='gross' section='global'}{/if}:
-                                        <span class="float-right text-nowrap">{$Bestellung->WarensummeLocalized[0]}</span>
-                                    </li>
-                                    {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N'}
-                                        {foreach $Bestellung->Steuerpositionen as $taxPosition}
-                                            <li class="text-muted font-size-sm">
-                                                {$taxPosition->cName} <span class="float-right text-nowrap">{$taxPosition->cPreisLocalized}</span>
-                                            </li>
-                                        {/foreach}
-                                    {/if}
-                                </ul>
-                            {/block}
-                            <ul class="list-unstyled mt-lg-5">
-                                <li class="mb-4">
+                            <ul class="list-unstyled order-details-data">
+                                <li>
                                     {block name='account-order-details-payment'}
                                         {lang key='paymentOptions' section='global'}:
-                                        <span class="text-muted d-block font-size-sm">
+                                        <span class="order-details-data-item">
                                             <ul class="list-unstyled">
                                                 <li>{$Bestellung->cZahlungsartName}</li>
                                                 <li>
@@ -74,7 +52,7 @@
                                                         && $Bestellung->Zahlungsart->cModulId !== 'za_rechnung_jtl'
                                                         && $Bestellung->Zahlungsart->cModulId !== 'za_barzahlung_jtl')
                                                         && (isset($Bestellung->Zahlungsart->bPayAgain) && $Bestellung->Zahlungsart->bPayAgain))}
-                                                            {link href="bestellab_again.php?kBestellung={$Bestellung->kBestellung}"}{lang key='payNow' section='global'}{/link}
+                                                            {link href="{get_static_route id='bestellab_again.php'}?kBestellung={$Bestellung->kBestellung}"}{lang key='payNow' section='global'}{/link}
                                                         {else}
                                                             {lang key='notPayedYet' section='login'}
                                                         {/if}
@@ -84,10 +62,10 @@
                                         </span>
                                     {/block}
                                 </li>
-                                <li class="mb-4">
+                                <li>
                                     {block name='account-order-details-shipping'}
                                         {lang key='shippingOptions' section='global'}:
-                                        <span class="text-muted d-block font-size-sm">
+                                        <span class="order-details-data-item">
                                             <ul class="list-unstyled">
                                                 <li>{$Bestellung->cVersandartName}</li>
                                                 {if $Bestellung->cStatus == BESTELLUNG_STATUS_VERSANDT}
@@ -106,20 +84,20 @@
                                         </span>
                                     {/block}
                                 </li>
-                                <li class="mb-4">
+                                <li>
                                     {block name='account-order-details-billing-address'}
                                         {lang key='billingAdress' section='checkout'}:
-                                        <span class="text-muted d-block font-size-sm">
+                                        <span class="order-details-data-item">
                                             {block name='account-order-details-include-inc-billing-address'}
                                                 {include file='checkout/inc_billing_address.tpl' orderDetail=true}
                                             {/block}
                                         </span>
                                     {/block}
                                 </li>
-                                <li class="mb-4">
+                                <li>
                                     {block name='account-order-details-shipping-address'}
                                         {lang key='shippingAdress' section='checkout'}:
-                                        <span class="text-muted d-block font-size-sm">
+                                        <span class="order-details-data-item">
                                             {if !empty($Lieferadresse->kLieferadresse)}
                                                 {block name='account-order-details-include-inc-delivery-address'}
                                                     {include file='checkout/inc_delivery_address.tpl' orderDetail=true}
@@ -144,7 +122,7 @@
                     {/block}
                 {/cardbody}
             {else}
-                {cardbody}
+                {cardbody class="order-details-request-plz"}
                     {block name='account-order-details-request-plz'}
                         {row}
                             {col cols=12 md=6}
@@ -167,7 +145,7 @@
                                         }
                                     {/formgroup}
                                     {row}
-                                        {col class='ml-auto col-md-auto'}
+                                        {col class='ml-auto-util col-md-auto'}
                                             {button type='submit' value='1' block=true variant='primary' class='mb-3'}
                                                 {lang key='view' section='global'}
                                             {/button}
@@ -208,7 +186,7 @@
                                 <tr>
                                     <th>{lang key='shippingOrder' section='order'}</th>
                                     <th>{lang key='shippedOn' section='login'}</th>
-                                    <th class="text-right">{lang key='packageTracking' section='order'}</th>
+                                    <th class="text-right-util">{lang key='packageTracking' section='order'}</th>
                                 </tr>
                             {/block}
                         </thead>
@@ -218,7 +196,7 @@
                                     <tr>
                                         <td>{link data=["toggle"=>"modal", "target"=>"#shipping-order-{$oLieferschein->getLieferschein()}"] id=$oLieferschein->getLieferschein() href="#" title=$oLieferschein->getLieferscheinNr()}{$oLieferschein->getLieferscheinNr()}{/link}</td>
                                         <td>{$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}</td>
-                                        <td class="text-right">
+                                        <td class="text-right-util">
                                             {foreach $oLieferschein->oVersand_arr as $oVersand}
                                                 {if $oVersand->getIdentCode()}
                                                     <p>{link href=$oVersand->getLogistikVarUrl() target="_blank" class="shipment" title=$oVersand->getIdentCode()}{lang key='packageTracking' section='order'}{/link}</p>
@@ -237,21 +215,21 @@
                     {block name='account-order-details-delivery-note-popup'}
                         {modal id="shipping-order-{$oLieferschein->getLieferschein()}"
                             title=(($Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT) ? {lang key='partialShipped' section='order'} : {lang key='shipped' section='order'})
-                            class="fade"
+                            class="fade shipping-order-modal"
                             size="lg"}
                             {block name='account-order-details-delivery-note-popup-heading'}
-                                <div class="mb-3">
+                                <div class="shipping-order-modal-mb">
                                     <strong>{lang key='shippingOrder' section='order'}</strong>: {$oLieferschein->getLieferscheinNr()}<br />
                                     <strong>{lang key='shippedOn' section='login'}</strong>: {$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}<br />
                                 </div>
                             {/block}
                             {if $oLieferschein->getHinweis()|@count_characters > 0}
                                 {block name='account-order-details-delivery-note-popup-alert'}
-                                    {alert variant="info" class="mb-3"}{$oLieferschein->getHinweis()}{/alert}
+                                    {alert variant="info" class="shipping-order-modal-mb"}{$oLieferschein->getHinweis()}{/alert}
                                 {/block}
                             {/if}
                             {block name='account-order-details-delivery-note-popup-tracking'}
-                                <div class="mb-3">
+                                <div class="shipping-order-modal-mb">
                                     {foreach $oLieferschein->oVersand_arr as $oVersand}
                                         {if $oVersand->getIdentCode()}
                                             <p>
@@ -282,7 +260,7 @@
                                             <td>{$oLieferscheinpos->oPosition->cArtNr}</td>
                                             <td>
                                                 {$oLieferscheinpos->oPosition->cName}
-                                                <ul class="list-unstyled text-muted small">
+                                                <ul class="list-unstyled text-muted-util small">
                                                     {if !empty($oLieferscheinpos->oPosition->cHinweis)}
                                                         <li class="text-info notice">{$oLieferscheinpos->oPosition->cHinweis}</li>
                                                     {/if}
@@ -331,9 +309,9 @@
             {/if}
         {/block}
         {block name='account-order-details-actions'}
-            {row}
+            {row class="btn-row"}
                 {col md=3 cols=12}
-                    {link class="btn btn-outline-primary btn-block mt-3" href="{get_static_route id='jtl.php'}?bestellungen=1"}
+                    {link class="btn btn-outline-primary btn-block" href="{get_static_route id='jtl.php'}?bestellungen=1"}
                         {lang key='back'}
                     {/link}
                 {/col}

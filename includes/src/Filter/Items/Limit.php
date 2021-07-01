@@ -6,6 +6,7 @@ use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
+use JTL\Helpers\Request;
 use JTL\Shop;
 
 /**
@@ -28,22 +29,33 @@ class Limit extends AbstractFilter
     }
 
     /**
-     * @inheritdoc
+     * @return int
      */
     public function getProductsPerPageLimit(): int
     {
+        $extendedView = Request::getVar('ed');
         if ($this->productFilter->getProductLimit() !== 0) {
             $limit = $this->productFilter->getProductLimit();
-        } elseif (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] !== 0) {
+        } elseif (isset($_SESSION['ArtikelProSeite'])
+            && $_SESSION['ArtikelProSeite'] !== 0
+            && !$extendedView
+        ) {
             $limit = $_SESSION['ArtikelProSeite'];
         } elseif (isset($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel)
             && $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel !== 0
+            && !$extendedView
         ) {
             $limit = $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
         } else {
-            $limit = ($max = $this->getConfig('artikeluebersicht')['artikeluebersicht_artikelproseite']) !== 0
-                ? $max
-                : 20;
+            $type = 'artikeluebersicht_anzahl_darstellung' .
+                ($extendedView
+                    ?? $this->getConfig('artikeluebersicht')['artikeluebersicht_erw_darstellung_stdansicht']);
+
+            if (($limit = $this->getConfig('artikeluebersicht')[$type]) === 0) {
+                $limit = ($max = $this->getConfig('artikeluebersicht')['artikeluebersicht_artikelproseite']) !== 0
+                    ? $max
+                    : 20;
+            }
         }
 
         return \min((int)$limit, \ARTICLES_PER_PAGE_HARD_LIMIT);
@@ -68,7 +80,7 @@ class Limit extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function getOptions($data = null): array
+    public function getOptions($mixed = null): array
     {
         if ($this->options !== null) {
             return $this->options;

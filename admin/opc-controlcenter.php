@@ -16,12 +16,10 @@ $oAccount->permission('OPC_VIEW', true, true);
 
 $action      = Request::verifyGPDataString('action');
 $alertHelper = Shop::Container()->getAlertService();
-
-$opc       = Shop::Container()->getOPC();
-$opcPage   = Shop::Container()->getOPCPageService();
-$opcPageDB = Shop::Container()->getOPCPageDB();
-
-$pagesPagi = (new Pagination('pages'))
+$opc         = Shop::Container()->getOPC();
+$opcPage     = Shop::Container()->getOPCPageService();
+$opcPageDB   = Shop::Container()->getOPCPageDB();
+$pagesPagi   = (new Pagination('pages'))
     ->setItemCount($opcPageDB->getPageCount())
     ->assemble();
 
@@ -37,8 +35,7 @@ if (Form::validateToken()) {
     }
 }
 
-$smarty
-    ->assign('opc', $opc)
+$smarty->assign('opc', $opc)
     ->assign('opcPageDB', $opcPageDB)
     ->assign('pagesPagi', $pagesPagi)
     ->display('opc-controlcenter.tpl');

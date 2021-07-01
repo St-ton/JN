@@ -3,6 +3,7 @@
 namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\Plugin\InstallCode;
+use stdClass;
 
 /**
  * Class Templates
@@ -28,7 +29,7 @@ class Templates extends AbstractItem
             if (\mb_strlen($hits[0]) !== \mb_strlen($template)) {
                 continue;
             }
-            $plgnTpl            = new \stdClass();
+            $plgnTpl            = new stdClass();
             $plgnTpl->kPlugin   = $this->plugin->kPlugin;
             $plgnTpl->cTemplate = $template;
             if (!$this->db->insert('tplugintemplate', $plgnTpl)) {

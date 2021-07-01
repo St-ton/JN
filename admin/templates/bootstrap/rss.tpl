@@ -2,7 +2,11 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('rssSettings') cBeschreibung=__('rssDescription') cDokuURL=__('rssURL')}
 <div id="content">
     {if !$alertError}
-        <a href="rss.php?f=1&token={$smarty.session.jtl_token}"><span class="btn btn-primary" style="margin-bottom: 15px;">{__('xmlCreate')}</span></a>
+        <div class="card">
+            <div class="card-body">
+                <a href="rss.php?f=1&token={$smarty.session.jtl_token}"><span class="btn btn-primary" style="margin-bottom: 15px;">{__('xmlCreate')}</span></a>
+            </div>
+        </div>
     {/if}
     <div class="card">
         <div class="card-body">

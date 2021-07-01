@@ -148,7 +148,7 @@ z. B. via
 
 .. code-block:: php
 
-    $isShopFour = version_compare(APPLICATION_VERSION, 400, '>='):
+    $isShopFour = version_compare(APPLICATION_VERSION, 400, '>=');
 
 zu überprüfen.
 
@@ -212,8 +212,9 @@ zugegriffen, sondern via *Dependency Injection Container*. Ein Beispiel sehen Si
        public function __constructor()
        {
            $dbHandler = Shop::Container()->getDB();
-           $dbHandler->select(...);
+           $dbHandler->select(/*...*/);
        }
+   }
 
 Selektieren einzelner Zeilen
 """"""""""""""""""""""""""""
@@ -319,7 +320,7 @@ Aktualisieren von Zeilen
 
     $obj      = new stdClass();
     $obj->id  = (int) $_POST['new_id'];
-    $obj->foo = $_POST['foo']
+    $obj->foo = $_POST['foo'];
     $obj->bar = 'test';
     Shop::DB()->update('my_table', 'id', (int) $_POST['id'], $obj);
 

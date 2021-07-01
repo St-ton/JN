@@ -141,7 +141,7 @@ msgid "errorAtLeastOneNewsComment"
 msgstr "Bitte markieren Sie mindestens einen Blogkommentar."
 
 msgid "goOnEdit"
-msgstr " und weiter bearbeiten"
+msgstr " und weiterbearbeiten"
 
 msgid "mainCategory"
 msgstr "Hauptkategorie"
@@ -157,3 +157,24 @@ msgstr "Blogkategorie wurde erfolgreich eingetragen."
 
 msgid "successNewsCommentDelete"
 msgstr "Markierte Kommentare wurden erfolgreich gelöscht."
+
+msgid "commentReply"
+msgstr "Antwort"
+
+msgid "answerComment"
+msgstr "Auf Kommentar antworten"
+
+msgid "newsCommentAnswerEdit"
+msgstr "Antwort bearbeiten"
+
+msgid "displayedName"
+msgstr "Angezeigter Name"
+
+msgid "selectAuthor"
+msgstr "Autor auswählen"
+
+msgid "authorNotAvailable"
+msgstr "Nicht verfügbar"
+
+msgid "noNewsAuthor"
+msgstr "Kein Autor vorhanden. Kein Autor vorhanden. Falls Sie für den Beitrag einen verantwortlichen Autor angeben wollen, erstellen Sie bitte zuerst einen entsprechenden Benutzer mit Zugriffsrechten für den Blog."

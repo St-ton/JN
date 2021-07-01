@@ -18,13 +18,14 @@ use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\MailSmarty;
 use function Functional\filter;
-use function Functional\first;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global JTLSmarty $smarty */
 
 $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
+Shop::Container()->getCache()->flushTags([Status::CACHE_ID_EMAIL_SYNTAX_CHECK]);
 
-/** @global JTLSmarty $smarty */
 $mailTemplate        = null;
 $hasError            = false;
 $continue            = true;
@@ -47,7 +48,7 @@ $mail                = new Mail();
 $factory             = new TemplateFactory($db);
 $controller          = new Controller($db, $mailer, $factory);
 if ($pluginID > 0) {
-    $settingsTableName = 'tpluginemailvorlageeinstellungen';
+    $settingsTableName = $pluginSettingsTable;
 }
 if (isset($_GET['err'])) {
     $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplate'), 'errorTemplate');
@@ -118,14 +119,7 @@ if ($emailTemplateID > 0 && Request::verifyGPCDataInt('Aendern') === 1 && Form::
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateEdit'), 'successTemplateEdit');
             $step     = 'uebersicht';
             $continue = (bool)Request::verifyGPCDataInt('continue');
-        } elseif ($res === $controller::ERROR_SMARTY) {
-            $mailTemplate = $controller->getModel();
-            $step         = 'prebearbeiten';
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
-                __('errorTemplate') . '<br />' . first($controller->getErrorMessages()),
-                'errorTemplate'
-            );
+            $doCheck  = $emailTemplateID;
         } else {
             $mailTemplate = $controller->getModel();
             foreach ($controller->getErrorMessages() as $i => $msg) {
@@ -145,8 +139,8 @@ if ((($emailTemplateID > 0 && $continue === true)
 ) {
     $uploadDir = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
     if (isset($_GET['kS'], $_GET['token'])
-        && Request::getVar('a') === 'pdfloeschen'
         && $_GET['token'] === $_SESSION['jtl_token']
+        && Request::getVar('a') === 'pdfloeschen'
     ) {
         $languageID = Request::verifyGPCDataInt('kS');
         $controller->deleteAttachments($emailTemplateID, $languageID);
@@ -154,13 +148,13 @@ if ((($emailTemplateID > 0 && $continue === true)
     }
 
     $step        = 'bearbeiten';
-    $config      = $db->selectAll($pluginSettingsTable, 'kEmailvorlage', $emailTemplateID);
+    $config      = $db->selectAll($settingsTableName, 'kEmailvorlage', $emailTemplateID);
     $configAssoc = [];
     foreach ($config as $item) {
         $configAssoc[$item->cKey] = $item->cValue;
     }
     $mailTemplate = $mailTemplate ?? $controller->getTemplateByID($emailTemplateID);
-    $smarty->assign('availableLanguages', LanguageHelper::getAllLanguages())
+    $smarty->assign('availableLanguages', LanguageHelper::getAllLanguages(0, true))
            ->assign('mailConfig', $configAssoc)
            ->assign('cUploadVerzeichnis', $uploadDir);
 }
@@ -176,6 +170,7 @@ if ($step === 'uebersicht') {
 }
 $smarty->assign('kPlugin', $pluginID)
        ->assign('mailTemplate', $mailTemplate)
+       ->assign('checkTemplate', $doCheck ?? 0)
        ->assign('cFehlerAnhang_arr', $attachmentErrors)
        ->assign('step', $step)
        ->assign('Einstellungen', $conf)
@@ -187,11 +182,11 @@ $smarty->assign('kPlugin', $pluginID)
  * @param string $key
  * @param string $value
  */
-function saveEmailSetting($settingsTable, $emailTemplateID, $key, $value)
+function saveEmailSetting(string $settingsTable, int $emailTemplateID, string $key, string $value)
 {
-    if ((int)$emailTemplateID > 0 && mb_strlen($settingsTable) > 0 && mb_strlen($key) > 0 && mb_strlen($value) > 0) {
+    if ($emailTemplateID > 0 && mb_strlen($settingsTable) > 0 && mb_strlen($key) > 0 && mb_strlen($value) > 0) {
         $conf                = new stdClass();
-        $conf->kEmailvorlage = (int)$emailTemplateID;
+        $conf->kEmailvorlage = $emailTemplateID;
         $conf->cKey          = $key;
         $conf->cValue        = $value;
 

@@ -5,6 +5,7 @@ namespace JTL\Boxes\Items;
 use JTL\Catalog\Product\Preise;
 use JTL\Helpers\Text;
 use JTL\Session\Frontend;
+use JTL\Shop;
 
 /**
  * Class Wishlist
@@ -29,42 +30,25 @@ final class Wishlist extends AbstractBox
         $this->setShow(true);
         if (!empty(Frontend::getWishList()->kWunschliste)) {
             $this->setWishListID(Frontend::getWishList()->kWunschliste);
-            $wishlistItems    = Frontend::getWishList()->CWunschlistePos_arr;
-            $validPostVars    = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'show', 'suche'];
-            $additionalParams = '';
-            $postMembers      = \array_keys($_REQUEST);
+            $requestURI       = $_SERVER['REQUEST_URI'] ?? $_SERVER['SCRIPT_NAME'] ?? '';
+            $additionalParams = [];
+            $parsed           = \parse_url($requestURI);
+            $shopURL          = Shop::getURL() . ($parsed['path'] ?? '/') . '?';
+            if (isset($parsed['query'])) {
+                \parse_str($parsed['query'], $additionalParams);
+            }
+            $wishlistItems = Frontend::getWishList()->CWunschlistePos_arr;
+            $validPostVars = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'qf', 'show', 'suche'];
+            $postMembers   = \array_keys($_REQUEST);
             foreach ($postMembers as $postMember) {
                 if ((int)$_REQUEST[$postMember] > 0 && \in_array($postMember, $validPostVars, true)) {
-                    $additionalParams .= '&' . $postMember . '=' . $_REQUEST[$postMember];
+                    $additionalParams[$postMember] = (int)$_REQUEST[$postMember];
                 }
             }
             $additionalParams = Text::filterXSS($additionalParams);
             foreach ($wishlistItems as $wishlistItem) {
-                $cRequestURI  = $_SERVER['REQUEST_URI'] ?? $_SERVER['SCRIPT_NAME'];
-                $nPosAnd      = \mb_strrpos($cRequestURI, '&');
-                $nPosQuest    = \mb_strrpos($cRequestURI, '?');
-                $nPosWD       = \mb_strpos($cRequestURI, 'wlplo=');
-                $cDeleteParam = '?wlplo='; // z.b. index.php
-                if ($nPosWD) {
-                    $cRequestURI = \mb_substr($cRequestURI, 0, $nPosWD);
-                }
-                if ($nPosAnd === \mb_strlen($cRequestURI) - 1) {
-                    // z.b. index.php?a=4&
-                    $cDeleteParam = 'wlplo=';
-                } elseif ($nPosAnd) {
-                    // z.b. index.php?a=4&b=2
-                    $cDeleteParam = '&wlplo=';
-                } elseif ($nPosQuest) {
-                    // z.b. index.php?a=4
-                    $cDeleteParam = '&wlplo=';
-                } elseif ($nPosQuest === \mb_strlen($cRequestURI) - 1) {
-                    // z.b. index.php?
-                    $cDeleteParam = 'wlplo=';
-                }
-                $wishlistItem->cURL = $cRequestURI .
-                    $cDeleteParam .
-                    $wishlistItem->kWunschlistePos .
-                    $additionalParams;
+                $additionalParams['wlplo'] = $wishlistItem->kWunschlistePos;
+                $wishlistItem->cURL        = $shopURL . \http_build_query($additionalParams);
                 if (Frontend::getCustomerGroup()->isMerchant()) {
                     $price = isset($wishlistItem->Artikel->Preise->fVKNetto)
                         ? (int)$wishlistItem->fAnzahl * $wishlistItem->Artikel->Preise->fVKNetto

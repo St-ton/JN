@@ -1,16 +1,25 @@
 {block name='page-manufacturers'}
-    {opcMountPoint id='opc_before_manufacturers'}
+    {opcMountPoint id='opc_before_manufacturers' inContainer=false}
     {block name='page-manufacturers-content'}
-        {container}
-            <div class="card-columns manufacturers-columns">
+        {container fluid=$Link->getIsFluid() class="page-manufacturers"}
+            {row}
                 {foreach $oHersteller_arr as $mft}
-                    {link href=$mft->cURL title=$mft->cMetaTitle}
-                        {card class="text-center p-2 mb-5 border-0" img-src=$mft->getImage(\JTL\Media\Image::SIZE_MD) img-alt=$mft->getName()}
+                    {col xl=3 md=4 sm=6}
+                        {link href=$mft->cURL title=$mft->cMetaTitle}
+                                <div class="square square-image manufacturer-image-wrapper">
+                                    <div class="inner">
+                                        {if !empty($mft->getImage(\JTL\Media\Image::SIZE_MD))}
+                                            {image fluid=true lazy=true webp=true
+                                            src=$mft->getImage(\JTL\Media\Image::SIZE_MD)
+                                            alt=$mft->getName()|escape:'html'}
+                                        {/if}
+                                    </div>
+                                </div>
                             {$mft->getName()}
-                        {/card}
-                    {/link}
+                        {/link}
+                    {/col}
                 {/foreach}
-            </div>
+            {/row}
         {/container}
     {/block}
 {/block}

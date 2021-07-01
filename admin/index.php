@@ -2,13 +2,13 @@
 
 use JTL\Alert\Alert;
 use JTL\Backend\AdminLoginStatus;
+use JTL\Backend\Status;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Profiler;
 use JTL\Session\Backend;
 use JTL\Shop;
-use JTL\Template;
 use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
 
@@ -17,6 +17,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
 $db          = Shop::Container()->getDB();
 $alertHelper = Shop::Container()->getAlertService();
+$cache       = Shop::Container()->getCache();
 $oUpdater    = new Updater($db);
 if (Request::postInt('adminlogin') === 1) {
     $csrfOK = true;
@@ -43,11 +44,8 @@ if (Request::postInt('adminlogin') === 1) {
 
             case AdminLoginStatus::ERROR_USER_NOT_FOUND:
             case AdminLoginStatus::ERROR_INVALID_PASSWORD:
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorWrongPasswordUser'), 'errorWrongPasswordUser');
-                if (isset($_SESSION['AdminAccount']->TwoFA_expired)
-                    && $_SESSION['AdminAccount']->TwoFA_expired === true
-                ) {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTwoFactorExpired'), 'errorTwoFactorExpired');
+                if (empty(Request::verifyGPDataString('TwoFA_code'))) {
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorWrongPasswordUser'), 'errorWrongPasswordUser');
                 }
                 break;
 
@@ -76,22 +74,17 @@ if (Request::postInt('adminlogin') === 1) {
                 break;
 
             case AdminLoginStatus::LOGIN_OK:
+                Status::getInstance($db, $cache, true);
                 Backend::getInstance()->reHash();
                 $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
-                if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {
-                    header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'dbupdater.php');
-                    exit;
-                }
-                if (isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0) {
-                    redirectToURI($_REQUEST['uri']);
-                }
-                header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'index.php');
-                exit;
+                redirectLogin($oAccount, $oUpdater);
 
                 break;
         }
-    } elseif ($csrfOK !== true) {
+    } elseif (isset($_COOKIE['eSIdAdm'])) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCSRF'), 'errorCSRF');
+    } else {
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCookieSettings'), 'errorCookieSettings');
     }
 }
 $type          = '';
@@ -129,8 +122,8 @@ $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('pw_updated', Request::getVar('pw_updated') === 'true')
        ->assign('alertError', $alertHelper->alertTypeExists(Alert::TYPE_ERROR))
        ->assign('alertList', $alertHelper)
-       ->assign('updateMessage', $updateMessage ?? null);
-
+       ->assign('updateMessage', $updateMessage ?? null)
+       ->assign('plgSafeMode', $GLOBALS['plgSafeMode'] ?? false);
 
 /**
  * opens the dashboard
@@ -145,15 +138,15 @@ function openDashboard()
         redirectToURI($_REQUEST['uri']);
     }
     $_SESSION['loginIsValid'] = true;
+
     if ($oAccount->permission('DASHBOARD_VIEW')) {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 
         $smarty->assign('bDashboard', true)
-               ->assign('bUpdateError', (Request::postInt('shopupdate') === 1 ? '1' : false))
-               ->assign('bTemplateDiffers', Template::getInstance()->getVersion() !== APPLICATION_VERSION)
-               ->assign('oActiveWidget_arr', getWidgets())
-               ->assign('oAvailableWidget_arr', getWidgets(false))
-               ->assign('bInstallExists', is_dir(PFAD_ROOT . 'install'));
+            ->assign('bUpdateError', (Request::postInt('shopupdate') === 1 ? '1' : false))
+            ->assign('oActiveWidget_arr', getWidgets())
+            ->assign('oAvailableWidget_arr', getWidgets(false))
+            ->assign('bInstallExists', is_dir(PFAD_ROOT . 'install'));
     }
     $smarty->display('dashboard.tpl');
     exit();
@@ -162,11 +155,40 @@ function openDashboard()
 /**
  * redirects to a given (base64-encoded) URI
  * (prevents code duplication)
- * @param string $szURI
+ * @param string $uri
  */
-function redirectToURI($szURI)
+function redirectToURI($uri)
 {
-    header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . base64_decode($szURI));
+    header('Location: ' . Shop::getAdminURL(true) . '/' . base64_decode($uri));
+    exit;
+}
+
+/**
+ * @param AdminAccount $oAccount
+ * @param Updater      $oUpdater
+ * @return void
+ * @throws Exception
+ */
+function redirectLogin(AdminAccount $oAccount, Updater $oUpdater)
+{
+    unset($_SESSION['frontendUpToDate']);
+    $conf     = Shop::getSettings([CONF_GLOBAL]);
+    $safeMode = isset($GLOBALS['plgSafeMode'])
+        ? '?safemode=' . ($GLOBALS['plgSafeMode'] ? 'on' : 'off')
+        : '';
+    if (($conf['global']['global_wizard_done'] ?? 'Y') === 'N') {
+        header('Location: ' . Shop::getAdminURL(true) . '/wizard.php' . $safeMode);
+        exit;
+    }
+    if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {
+        header('Location: ' . Shop::getAdminURL(true) . '/dbupdater.php' . $safeMode);
+        exit;
+    }
+    if (isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0) {
+        redirectToURI($_REQUEST['uri']);
+    }
+
+    header('Location: ' . Shop::getAdminURL(true) . '/index.php' . $safeMode);
     exit;
 }
 
@@ -183,7 +205,14 @@ if ($oAccount->getIsAuthenticated()) {
                 $_SESSION['AdminAccount']->TwoFA_expired = false;
                 $_SESSION['AdminAccount']->TwoFA_valid   = true;
                 $_SESSION['loginIsValid']                = true;
-                openDashboard();
+                redirectLogin($oAccount, $oUpdater);
+            } else {
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    __('errorTwoFactorFaultyExpired'),
+                    'errorTwoFactorFaultyExpired'
+                );
+                $smarty->assign('alertError', true);
             }
         } else {
             $_SESSION['AdminAccount']->TwoFA_expired = true;

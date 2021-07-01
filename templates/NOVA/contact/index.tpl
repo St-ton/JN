@@ -6,8 +6,8 @@
     {block name='contact-index-content'}
         {if !empty($Spezialcontent->titel)}
             {block name='contact-index-heading'}
-                {opcMountPoint id='opc_before_heading'}
-                {container}
+                {opcMountPoint id='opc_before_heading' inContainer=false}
+                {container fluid=$Link->getIsFluid()}
                     <div class="title h2">
                         {$Spezialcontent->titel}
                     </div>
@@ -19,7 +19,7 @@
             {include file='snippets/extension.tpl'}
         {/block}
         {if isset($step)}
-            {container}
+            {container fluid=$Link->getIsFluid()}
                 {opcMountPoint id='opc_before_form'}
                 {if !empty($Spezialcontent->oben)}
                     {block name='contact-index-custom-content-top'}
@@ -37,14 +37,14 @@
                     {/block}
                 {/if}
                 {block name='contact-index-form'}
-                    {form name="contact" action="{get_static_route id='kontakt.php'}" method="post" class="jtl-validate" slide=true}
+                    {form name="contact" action="{get_static_route id='kontakt.php'}" method="post" class="contact-form jtl-validate" slide=true}
                         {block name='contact-index-form-content'}
                             {block name='contact-index-fieldset-contact'}
                             <fieldset>
-                                {row class="{if !empty($Spezialcontent->oben)}mt-5{/if}"}
+                                {row class="{if !empty($Spezialcontent->oben)}is-top{/if}"}
                                      {col cols=12 lg=4}
                                         {block name='contact-index-legend-contact'}
-                                            <legend class="border-0 h3">{lang key='contact'}</legend>
+                                            <legend class="h3">{lang key='contact'}</legend>
                                         {/block}
                                     {/col}
                                     {col cols=12 lg=8}
@@ -168,14 +168,14 @@
                             </fieldset>
                             {/block}
                             {block name='contact-index-hr'}
-                                <hr class="mb-5">
+                                <hr class="contact-form-hr">
                             {/block}
                             {block name='contact-index-fieldset-message'}
                             <fieldset>
                                 {row}
                                     {col cols=12 lg=4}
                                         {block name='contact-index-legend-message'}
-                                            <legend class="border-0 h3">{lang key='message' section='contact'}</legend>
+                                            <legend class="h3">{lang key='message' section='contact'}</legend>
                                         {/block}
                                     {/col}
                                     {col cols=12 lg=8}
@@ -193,17 +193,17 @@
                                                             label="{lang key='subject' section='contact'}"
                                                             label-for="subject"
                                                         }
+                                                            {if !empty($fehlendeAngaben.subject)}
+                                                                <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
+                                                                    {lang key='fillOut'}
+                                                                </div>
+                                                            {/if}
                                                             {select name="subject" id="subject" class='custom-select' required=true}
                                                                 <option value="" selected disabled>{lang key='subject' section='contact'}</option>
                                                                 {foreach $betreffs as $betreff}
                                                                     <option value="{$betreff->kKontaktBetreff}" {if $Vorgaben->kKontaktBetreff == $betreff->kKontaktBetreff}selected{/if}>{$betreff->AngezeigterName}</option>
                                                                 {/foreach}
                                                             {/select}
-                                                            {if !empty($fehlendeAngaben.subject)}
-                                                                <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
-                                                                    {lang key='fillOut'}
-                                                                </div>
-                                                            {/if}
                                                         {/formgroup}
                                                     {/col}
                                                 {/row}
@@ -217,12 +217,12 @@
                                                         label="{lang key='message' section='contact'}"
                                                         label-for="message"
                                                     }
-                                                        {textarea name="nachricht" rows="10" id="message" required=true placeholder=" "}{if isset($Vorgaben->cNachricht)}{$Vorgaben->cNachricht}{/if}{/textarea}
                                                         {if !empty($fehlendeAngaben.nachricht)}
-                                                            <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                                            <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                                                 {lang key='fillOut'}
                                                             </div>
                                                         {/if}
+                                                        {textarea name="nachricht" rows="10" id="message" required=true placeholder=" "}{if isset($Vorgaben->cNachricht)}{$Vorgaben->cNachricht}{/if}{/textarea}
                                                     {/formgroup}
                                                 {/col}
                                             {/row}
@@ -246,16 +246,26 @@
                             {opcMountPoint id='opc_before_submit'}
                             {block name='contact-index-form-submit'}
                                 {row}
-                                    {col cols=12 lg=4}{/col}
-                                    {col cols=12 lg=8}
-                                        {row}
-                                            {col md=4 xl=3 class='ml-auto'}
-                                            {input type='hidden' name='kontakt' value='1'}
-                                                {button type='submit' variant='primary' class='btn-block'}
-                                                    {lang key='sendMessage' section='contact'}
-                                                {/button}
-                                            {/col}
-                                        {/row}
+                                    {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ])}
+                                    {col cols=12 class="contact-form-privacy"}
+                                        {block name='contact-index-form-submit-privacy'}
+                                            {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL() class="popup"}
+                                                {lang key='privacyNotice'}
+                                            {/link}
+                                        {/block}
+                                    {/col}
+                                    {/if}
+                                    {col cols=12 lg=8 offset-lg=4}
+                                        {block name='contact-index-form-submit-button'}
+                                            {row}
+                                                {col md=4 xl=3 class='ml-auto-util'}
+                                                {input type='hidden' name='kontakt' value='1'}
+                                                    {button type='submit' variant='primary' class='btn-block'}
+                                                        {lang key='sendMessage' section='contact'}
+                                                    {/button}
+                                                {/col}
+                                            {/row}
+                                        {/block}
                                     {/col}
                                 {/row}
                             {/block}

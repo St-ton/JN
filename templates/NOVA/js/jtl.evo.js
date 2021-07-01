@@ -8,7 +8,10 @@
     var EvoClass = function() {};
 
     EvoClass.prototype = {
-        options: { captcha: {} },
+        options: {
+            captcha: {},
+            scrollSearch: '.smoothscroll-top-search'
+        },
 
         constructor: EvoClass,
 
@@ -18,55 +21,58 @@
             self.initSlick($('.evo-slider-half:not(.slick-initialized)'), 'slider-half');
             self.initSlick($('.evo-slider:not(.slick-initialized)'), 'product-slider');
             self.initSlick($('.news-slider:not(.slick-initialized)'), 'news-slider');
-            self.initSlick($('.evo-box-vertical:not(.slick-initialized)'), 'box-vertical')
-                .on('afterChange', function () {
-                    var heights = [];
-                    $('.evo-box-vertical:not(.eq-height) .product-wrapper').each(function (i, element) {
-                        var $element       = $(element);
-                        var elementHeight;
-                        // Should we include the elements padding in it's height?
-                        var includePadding = ($element.css('box-sizing') === 'border-box')
-                            || ($element.css('-moz-box-sizing') === 'border-box');
-
-                        if (includePadding) {
-                            elementHeight = $element.innerHeight();
-                        } else {
-                            elementHeight = $element.height();
-                        }
-
-                        heights.push(elementHeight);
-                    });
-                    $('.evo-box-vertical.evo-box-vertical:not(.eq-height) .product-wrapper')
-                        .css('height', Math.max.apply(window, heights) + 'px');
-                    $('.evo-box-vertical.evo-box-vertical:not(.eq-height)')
-                        .addClass('eq-height');
-            });
 
             $('.slick-lazy').on('mouseenter', function (e) {
                 let mainNode = $(this);
                 mainNode.removeClass('slick-lazy');
                 if (!mainNode.hasClass('slick-initialized')) {
+                    mainNode.find('.product-wrapper').removeClass('mx-auto ml-auto-util mr-auto');
                     self.initSlick(mainNode, mainNode.data('slick-type'));
                 }
             });
 
             document.querySelectorAll('.slick-lazy').forEach(function(slickItem) {
                 let startX;
+                let supportsPassive = false;
+                try {
+                    let opts = Object.defineProperty({}, 'passive', {
+                        get: function() {
+                            supportsPassive = true;
+                        }
+                    });
+                    window.addEventListener("testPassive", null, opts);
+                    window.removeEventListener("testPassive", null, opts);
+                } catch (e) {}
+
                 slickItem.addEventListener('touchstart', function (e) {
                     startX = e.changedTouches[0].pageX;
-                });
+
+                },supportsPassive ? { passive: true } : false);
                 slickItem.addEventListener('touchmove', function (e) {
                     let mainNode = $(this);
                     if (!mainNode.hasClass('slick-initialized')
                         && Math.abs(startX - e.changedTouches[0].pageX) > 80
                     ) {
                         mainNode.removeClass('slick-lazy');
+                        mainNode.find('.product-wrapper').removeClass('mx-auto ml-auto-util mr-auto');
                         self.initSlick(mainNode, mainNode.data('slick-type'));
-                        if(mainNode.slick('getSlick').slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
-                            mainNode.slick('slickGoTo', 1);
+                        let slickOptions = mainNode.slick('getSlick');
+                        if(slickOptions.slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
+                            let goTo;
+                            $.each(slickOptions.originalSettings.responsive, function (key, value) {
+                                if (value.breakpoint === slickOptions.activeBreakpoint
+                                    && value.settings.slidesToShow !== undefined
+                                ) {
+                                    goTo = value.settings.slidesToShow;
+                                }
+                            });
+                            if (goTo === undefined) {
+                                goTo = slickOptions.originalSettings.slidesToScroll
+                            }
+                            mainNode.slick('slickGoTo', goTo || 2);
                         }
                     }
-                });
+                }, supportsPassive ? { passive: true } : false);
             });
         },
 
@@ -75,16 +81,13 @@
                 'box-slider' : {
                     arrows:         false,
                     lazyLoad:       'ondemand',
-                    slidesToShow:   2,
-                    swipeToSlide:   true,
-                    slidesToScroll: 2,
+                    slidesToShow:   1,
+                    slidesToScroll: 1,
                     mobileFirst:    true,
                     responsive: [
                         {
                             breakpoint: 992,
                             settings: {
-                                slidesToShow: 1,
-                                slidesToScroll: 1,
                                 arrows: true,
                             }
                         }
@@ -93,30 +96,41 @@
                 'slider-half' : {
                     arrows:       true,
                     lazyLoad:     'ondemand',
-                    swipeToSlide: true,
                     mobileFirst:    true,
                     slidesToShow: 2,
+                    slidesToScroll: 2,
                     responsive:   [
                         {
                             breakpoint: 1300,
                             settings: {
                                 slidesToShow: 3,
+                                slidesToScroll: 3,
                             }
                         }
                     ]
                 },
-                'box-vertical' : {
-                    arrows:          true,
-                    vertical:        true,
-                    adaptiveHeight:  true,
-                    swipeToSlide:    true,
-                    verticalSwiping: true,
-                    prevArrow:       '<button class="slick-up" aria-label="Previous" type="button">' +
-                    '<i class="fa fa-chevron-up"></i></button>',
-                    nextArrow:       '<button class="slick-down" aria-label="Next" type="button">' +
-                    '<i class="fa fa-chevron-down"></i></button>',
-                    lazyLoad:        'progressive',
-                    slidesToShow:    1
+                'slider-three' : {
+                    arrows:       true,
+                    lazyLoad:     'ondemand',
+                    mobileFirst:    true,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    responsive:   [
+                        {
+                            breakpoint: 768,
+                            settings: {
+                                slidesToShow: 2,
+                                slidesToScroll: 2,
+                            }
+                        },
+                        {
+                            breakpoint: 1300,
+                            settings: {
+                                slidesToShow: 3,
+                                slidesToScroll: 3,
+                            }
+                        }
+                    ]
                 },
                 'product-slider' : {
                     rows:           0,
@@ -124,14 +138,13 @@
                     lazyLoad:       'ondemand',
                     slidesToShow:   2,
                     slidesToScroll: 2,
-                    swipeToSlide:   true,
                     mobileFirst:    true,
                     responsive:     [
                         {
                             breakpoint: 768,
                             settings: {
                                 slidesToShow: 3,
-                                slidesToScroll: 1
+                                slidesToScroll: 3
                             }
                         },
                         {
@@ -139,7 +152,7 @@
                             settings: {
                                 slidesToShow:5,
                                 arrows: true,
-                                slidesToScroll: 1
+                                slidesToScroll: 5
                             }
                         },
                         {
@@ -147,7 +160,7 @@
                             settings: {
                                 slidesToShow:7,
                                 arrows: true,
-                                slidesToScroll: 1
+                                slidesToScroll: 7
                             }
                         }
                     ]
@@ -157,7 +170,6 @@
                     slidesToShow:   1,
                     slidesToScroll: 1,
                     arrows:         false,
-                    swipeToSlide:   true,
                     infinite:       false,
                     lazyLoad:       'ondemand',
                     mobileFirst:    true,
@@ -165,20 +177,23 @@
                         {
                             breakpoint: 768,
                             settings: {
-                                slidesToShow: 2
+                                slidesToShow: 2,
+                                slidesToScroll: 2,
                             }
                         },
                         {
                             breakpoint: 992,
                             settings: {
                                 slidesToShow:3,
+                                slidesToScroll: 3,
                                 arrows: true
                             }
                         },
                         {
                             breakpoint: 1300,
                             settings: {
-                                slidesToShow:4,
+                                slidesToShow:5,
+                                slidesToScroll: 5,
                                 arrows: true
                             }
                         }
@@ -188,12 +203,12 @@
                     slidesToShow:   3,
                     slidesToScroll: 3,
                     infinite: false,
-                    swipeToSlide:   true,
                     responsive: [
                         {
                             breakpoint: 768,
                             settings: {
-                                slidesToShow: 2
+                                slidesToShow: 2,
+                                slidesToScroll: 2,
                             }
                         }
                     ]
@@ -202,8 +217,7 @@
                     lazyLoad: 'ondemand',
                     infinite: true,
                     dots:     false,
-                    swipeToSlide:   true,
-                    arrows:   false,
+                    arrows:   true,
                     speed: 500,
                     fade: true,
                     cssEase: 'linear',
@@ -223,20 +237,21 @@
                     slidesToScroll: 1,
                     asNavFor:       '#gallery',
                     dots:           false,
-                    swipeToSlide:   true,
                     arrows:         true,
                     focusOnSelect:  true,
                     responsive:     [
                         {
                             breakpoint: 768,
                             settings:   {
-                                slidesToShow: 4
+                                slidesToShow: 4,
+                                slidesToScroll: 1,
                             }
                         },
                         {
                             breakpoint: 576,
                             settings: {
-                                slidesToShow: 3
+                                slidesToShow: 3,
+                                slidesToScroll: 1,
                             }
                         }
                     ]
@@ -483,12 +498,12 @@
             });
         },
 
-        initScrollEvents: function() {
-            //mobile search
+        initScrollSearchEvent: function() {
+            this.destroyScrollSearchEvent();
             let lastScroll       = 0,
-                $scrollTopSearch = $('.smoothscroll-top-search');
+                $scrollTopSearch = $(this.options.scrollSearch);
             if ($scrollTopSearch.length) {
-                $(document).on('scroll', function () {
+                $(document).on('scroll.search', function () {
                     let newScroll = $(this).scrollTop();
                     if (newScroll < lastScroll) {
                         if ($(window).scrollTop() > 100) {
@@ -502,6 +517,15 @@
                     lastScroll = newScroll;
                 });
             }
+        },
+
+        destroyScrollSearchEvent: function() {
+            $(this.options.scrollSearch).addClass('d-none');
+            $(document).off('scroll.search');
+        },
+
+        initScrollEvents: function() {
+            this.initScrollSearchEvent();
 
             //scroll top button
             let toTopbuttonVisible     = false,
@@ -589,7 +613,7 @@
                 $form.find('fieldset, button[type="submit"]')
                     .attr('disabled', true);
 
-                var url = 'bestellvorgang.php?kVersandart=' + id;
+                var url = $('#jtl-io-path').data('path') + '/bestellvorgang.php?kVersandart=' + id;
                 $.evo.loadContent(url, function() {
                     $.evo.checkout();
                 }, null, true);
@@ -649,38 +673,15 @@
             });
         },
 
-        spinner: function(target) {
-            var opts = {
-              lines: 12             // The number of lines to draw
-            , length: 7             // The length of each line
-            , width: 5              // The line thickness
-            , radius: 10            // The radius of the inner circle
-            , scale: 2.0            // Scales overall size of the spinner
-            , corners: 1            // Roundness (0..1)
-            , color: '#000'         // #rgb or #rrggbb
-            , opacity: 1/4          // Opacity of the lines
-            , rotate: 0             // Rotation offset
-            , direction: 1          // 1: clockwise, -1: counterclockwise
-            , speed: 1              // Rounds per second
-            , trail: 100            // Afterglow percentage
-            , fps: 20               // Frames per second when using setTimeout()
-            , zIndex: 2e9           // Use a high z-index by default
-            , className: 'spinner'  // CSS class to assign to the element
-            , top: '50%'            // center vertically
-            , left: '50%'           // center horizontally
-            , shadow: false         // Whether to render a shadow
-            , hwaccel: false        // Whether to use hardware acceleration (might be buggy)
-            , position: 'absolute'  // Element positioning
-            };
-
-            if (typeof target === 'undefined') {
-                target = document.getElementsByClassName('product-offer')[0];
+        startSpinner: function (target) {
+            target = target || $('body');
+            if ($('.jtl-spinner').length === 0) {
+                target.append('<div class="jtl-spinner"><i class="fa fa-spinner fa-pulse"></i></div>');
             }
-            if ((typeof target !== 'undefined' && target.id === 'result-wrapper') || $(target).hasClass('product-offer')) {
-                opts.position = 'fixed';
-            }
+        },
 
-            return new Spinner(opts).spin(target);
+        stopSpinner: function () {
+            $('.jtl-spinner').remove();
         },
 
         trigger: function(event, args) {
@@ -694,7 +695,7 @@
             }
         },
 
-        addInactivityCheck: function(wrapper) {
+        addInactivityCheck: function(wrapper, timeoutMS = 500, stopEnter = false) {
             var timeoutID,
                 that = this,
                 currentBox;
@@ -702,16 +703,23 @@
             setup();
 
             function setup() {
-                $(wrapper + ' .form-counter input').on('change',resetTimer);
-                $(wrapper + ' .choose_quantity input').on('change',resetTimer);
-                $(wrapper + ' .form-counter .btn-decrement, ' + wrapper + ' .form-counter .btn-increment').on('click',resetTimer);
-                $(wrapper + ' .form-counter .btn-decrement, ' + wrapper + ' .form-counter .btn-increment').on('touchstart',resetTimer,{passive: true});
-                $(wrapper + ' .form-counter .btn-decrement, ' + wrapper + ' .form-counter .btn-increment').on('keydown',resetTimer);
+                $(wrapper + ' .form-counter input, ' + wrapper + ' .choose_quantity input').on('change',resetTimer);
+                $(wrapper + ' .form-counter .btn-decrement, ' + wrapper + ' .form-counter .btn-increment')
+                    .on('click keydown',resetTimer)
+                    .on('touchstart',resetTimer,{passive: true});
+                if (stopEnter) {
+                    $(wrapper + ' input.quantity').on('keypress', function (e) {
+                        if (e.key === 'Enter') {
+                            return false;
+                        } else {
+                            resetTimer(e);
+                        }
+                    });
+                }
             }
 
             function startTimer() {
-                // wait 0.5 seconds before calling goInactive
-                timeoutID = window.setTimeout(goInactive, 500);
+                timeoutID = window.setTimeout(goInactive, timeoutMS);
             }
 
             function resetTimer(e) {
@@ -736,10 +744,8 @@
         },
 
         updateWishlistItem: function($wrapper) {
-            let formID   = 'wl-items-form',
-                $spinner = $.evo.extended().spinner($wrapper.get(0));
-
-            $wrapper.addClass('loading');
+            let formID   = 'wl-items-form';
+            $.evo.extended().startSpinner($wrapper);
             $.evo.io().call(
                 'updateWishlistItem',
                 [
@@ -747,14 +753,9 @@
                     $.evo.io().getFormValues(formID)
                 ],
                 $(this) , function(error, data) {
-                    $spinner.stop();
+                    $.evo.extended().stopSpinner();
                     $wrapper.removeClass('loading');
                 });
-        },
-
-        setCompareListHeight: function() {
-            var h = parseInt($('.comparelist .equal-height').outerHeight());
-            $('.comparelist .equal-height').height(h);
         },
 
         fixStickyElements: function() {
@@ -829,18 +830,28 @@
                     'min': parseInt(priceRangeMin),
                     'max': parseInt(priceRangeMax)
                 },
-                step: 1
+                step: 1,
+                format: {
+                    to: function (value) {
+                        return parseInt(value);
+                    },
+                    from: function (value) {
+                        return parseInt(value);
+                    }
+                }
             });
             $priceSlider.noUiSlider.on('change', function (values, handle) {
-                $priceRangeFrom.val(values[0]);
-                $priceRangeTo.val(values[1]);
                 setTimeout(function(){
                     $.evo.redirectToNewPriceRange(values[0] + '_' + values[1], redirect, $wrapper);
                 },0);
             });
-            $('.price-range-input').change(function () {
-                let prFrom = $priceRangeFrom.val(),
-                    prTo = $priceRangeTo.val();
+            $priceSlider.noUiSlider.on('update', function (values, handle) {
+                $priceRangeFrom.val(values[0]);
+                $priceRangeTo.val(values[1]);
+            });
+            $('.price-range-input').on('change', function () {
+                let prFrom = parseInt($priceRangeFrom.val()),
+                    prTo = parseInt($priceRangeTo.val());
                 $.evo.redirectToNewPriceRange(
                     (prFrom > 0 ? prFrom : priceRangeMin) + '_' + (prTo > 0 ? prTo : priceRangeMax),
                     redirect,
@@ -850,20 +861,18 @@
         },
 
         initFilters: function (href) {
-            let $wrapper = $('.js-collapse-filter'),
-                $spinner = $.evo.extended().spinner($wrapper.get(0))
-                self=this;
+            let $wrapper = $('.js-collapse-filter');
+            $.evo.extended().startSpinner($wrapper);
 
-            $wrapper.addClass('loading');
             $.ajax(href, {data: {'useMobileFilters':1}})
-            .done(function(data) {
-                $wrapper.html(data);
-                self.initPriceSlider($wrapper, false);
-            })
-            .always(function() {
-                $spinner.stop();
-                $wrapper.removeClass('loading');
-            });
+                .done(function(data) {
+                    $wrapper.html(data);
+                    $.evo.initPriceSlider($wrapper, false);
+                    $.evo.initItemSearch('filter');
+                })
+                .always(function() {
+                    $.evo.extended().stopSpinner();
+                });
         },
 
         initFilterEvents: function() {
@@ -943,9 +952,12 @@
         initWishlist: function() {
             let wlFormID = '#wl-items-form';
             if ($(wlFormID).length) {
-                $.evo.extended().addInactivityCheck(wlFormID);
+                $.evo.extended().addInactivityCheck(wlFormID, 300, true);
                 $('.js-update-wl').on('change', function () {
                     $.evo.extended().updateWishlistItem($(this).closest('.productbox-inner'));
+                });
+                $('.product-list').children().each(function() {
+                    $(this).css('height', $(this).height());
                 });
             }
         },
@@ -954,6 +966,57 @@
             $('.pagination-wrapper select').on('change', function () {
                 this.form.submit();
             });
+        },
+
+        initItemSearch: function(context) {
+            let searchWrapper  = '.' + context + '-search-wrapper',
+                searchInput    = '.' + context + '-search',
+                itemValue      = '.' + context + '-item-value',
+                item           = '.' + context + '-item',
+                clear          = '.form-clear',
+                inputSelected  = 'input-group-selected',
+                $searchWrapper = $(searchWrapper);
+
+            if ($searchWrapper.length === 0) {
+                return;
+            }
+            $searchWrapper.each((i, itemWrapper) => {
+                $(itemWrapper).find(searchInput).on('input', function () {
+                    filterSearch($(itemWrapper));
+                }).on('keydown', e => {
+                    if (e.key === 'Escape') {
+                        e.stopPropagation();
+                    }
+                });
+            });
+            $(searchWrapper + ' ' + clear).on('click', function() {
+                $(this).prev().val('');
+                $(this).addClass('d-none');
+                filterSearch($(this).closest(searchWrapper));
+            });
+            $(searchInput).on('focusin', function() {
+                $(this).closest(searchWrapper).addClass(inputSelected);
+            }).on('focusout', function() {
+                $(this).closest(searchWrapper).removeClass(inputSelected);
+            });
+
+            function filterSearch (itemWrapper) {
+                let searchTerm = itemWrapper.find(searchInput).val().toLowerCase();
+                itemWrapper.find(itemValue).each((i, itemTMP) => {
+                    itemTMP = $(itemTMP);
+                    let text = itemTMP.text().toLowerCase();
+                    if (text.indexOf(searchTerm) === -1) {
+                        itemTMP.closest(item).hide();
+                    } else {
+                        itemTMP.closest(item).show();
+                    }
+                    if (searchTerm.length === 0) {
+                        itemWrapper.find(clear).addClass('d-none');
+                    } else {
+                        itemWrapper.find(clear).removeClass('d-none');
+                    }
+                });
+            }
         },
 
         /**
@@ -977,7 +1040,6 @@
             if ($('body').data('page') == 3) {
                 this.addInactivityCheck('#cart-form');
             }
-            this.setCompareListHeight();
             this.fixStickyElements();
             this.setWishlistVisibilitySwitches();
             this.initEModals();
@@ -987,19 +1049,13 @@
             this.initWishlist();
             this.initPaginationEvents();
             this.initFilterEvents();
+            this.initItemSearch('filter');
         }
     };
 
-    var ie = /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
-    if (ie && parseInt(ie) <= 9) {
-        $(document).ready(function () {
-            $.evo.register();
-        });
-    } else {
-        $(window).on('load', function () {
-            $.evo.register();
-        });
-    }
+    $(document).ready(function () {
+        $.evo.register();
+    });
 
     // PLUGIN DEFINITION
     // =================

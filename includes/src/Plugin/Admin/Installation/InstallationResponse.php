@@ -22,7 +22,7 @@ class InstallationResponse
     /**
      * @var string|null
      */
-    private $error;
+    private $errorMessage;
 
     /**
      * @var string|null
@@ -55,6 +55,11 @@ class InstallationResponse
     private $html;
 
     /**
+     * @var string|null
+     */
+    private $license;
+
+    /**
      * @return string
      */
     public function getStatus(): string
@@ -78,16 +83,16 @@ class InstallationResponse
      */
     public function getError(): ?string
     {
-        return $this->error;
+        return $this->errorMessage;
     }
 
     /**
-     * @param string|null $error
+     * @param string|null $errorMessage
      * @return InstallationResponse
      */
-    public function setError(?string $error): InstallationResponse
+    public function setError(?string $errorMessage): InstallationResponse
     {
-        $this->error = $error;
+        $this->errorMessage = $errorMessage;
 
         return $this;
     }
@@ -237,6 +242,22 @@ class InstallationResponse
         $this->html = $html;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLicense(): ?string
+    {
+        return $this->license;
+    }
+
+    /**
+     * @param string|null $license
+     */
+    public function setLicense(?string $license): void
+    {
+        $this->license = $license;
     }
 
     /**

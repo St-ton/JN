@@ -21,7 +21,7 @@ class MediaImageRequest
     public $id;
 
     /**
-     * @var string|string
+     * @var string
      */
     public $name;
 
@@ -278,8 +278,8 @@ class MediaImageRequest
     }
 
     /**
-     * @param string|MediaImageSize $size
-     * @param bool                  $absolute
+     * @param string|MediaImageSize|null $size
+     * @param bool                       $absolute
      * @return string
      */
     public function getThumb($size = null, bool $absolute = false): string
@@ -334,9 +334,10 @@ class MediaImageRequest
         if (($path = $this->cachedPath()) !== null) {
             return $path;
         }
-        $instance = Media::getClass($this->getType());
+        $class = Media::getClass($this->getType());
         /** @var IMedia $instance */
-        $path = $instance::getPathByID($this->getID(), $this->getNumber());
+        $instance = new $class(Shop::Container()->getDB());
+        $path     = $instance->getPathByID($this->getID(), $this->getNumber());
         $this->cachedPath($path);
 
         return $path;

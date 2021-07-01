@@ -27,6 +27,9 @@ class Widgets extends AbstractItem
      */
     public function install(): int
     {
+        $oldWidgets = $this->oldPlugin !== null
+            ? $this->oldPlugin->getWidgets()->getWidgets()->keyBy('cClass')->toArray()
+            : [];
         foreach ($this->getNode() as $i => $widgetData) {
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits);
@@ -39,15 +42,23 @@ class Widgets extends AbstractItem
             $widget->cClass       = $this->plugin->bExtension === 1 // @todo
                 ? $widgetData['Class']
                 : $widgetData['Class'] . '_' . $this->plugin->cPluginID;
-            $widget->eContainer   = $widgetData['Container'];
             $widget->cDescription = $widgetData['Description'];
             if (\is_array($widget->cDescription)) {
                 //@todo: when description is empty, this becomes an array with indices [0] => '' and [0 attr] => ''
                 $widget->cDescription = $widget->cDescription[0];
             }
-            $widget->nPos      = $widgetData['Pos'];
-            $widget->bExpanded = $widgetData['Expanded'];
-            $widget->bActive   = $widgetData['Active'];
+            if (isset($oldWidgets[$widget->cClass])) {
+                $oldWidget          = $oldWidgets[$widget->cClass];
+                $widget->eContainer = $oldWidget->eContainer;
+                $widget->nPos       = $oldWidget->nPos;
+                $widget->bExpanded  = $oldWidget->bExpanded;
+                $widget->bActive    = $oldWidget->bActive;
+            } else {
+                $widget->eContainer = $widgetData['Container'];
+                $widget->nPos       = $widgetData['Pos'];
+                $widget->bExpanded  = $widgetData['Expanded'];
+                $widget->bActive    = $widgetData['Active'];
+            }
             if (!$this->db->insert('tadminwidgets', $widget)) {
                 return InstallCode::SQL_CANNOT_SAVE_WIDGET;
             }

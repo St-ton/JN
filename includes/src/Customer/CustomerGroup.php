@@ -2,7 +2,6 @@
 
 namespace JTL\Customer;
 
-use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 use stdClass;
@@ -245,7 +244,7 @@ class CustomerGroup
      */
     public function setName(string $name): self
     {
-        $this->name = Shop::Container()->getDB()->escape($name);
+        $this->name = $name;
 
         return $this;
     }
@@ -299,7 +298,7 @@ class CustomerGroup
      */
     public function setDefault($default): self
     {
-        $this->default = Shop::Container()->getDB()->escape($default);
+        $this->default = $default;
 
         return $this;
     }
@@ -310,7 +309,7 @@ class CustomerGroup
      */
     public function setShopLogin($cShopLogin): self
     {
-        $this->cShopLogin = Shop::Container()->getDB()->escape($cShopLogin);
+        $this->cShopLogin = $cShopLogin;
 
         return $this;
     }
@@ -488,19 +487,13 @@ class CustomerGroup
      */
     public static function getGroups(): array
     {
-        $groups = [];
-        $items  = Shop::Container()->getDB()->query(
-            'SELECT kKundengruppe 
-                FROM tkundengruppe',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($items as $item) {
-            if (isset($item->kKundengruppe) && $item->kKundengruppe > 0) {
-                $groups[] = new self((int)$item->kKundengruppe);
-            }
-        }
-
-        return $groups;
+        return Shop::Container()->getDB()->getCollection(
+            'SELECT kKundengruppe AS id
+                FROM tkundengruppe
+                WHERE kKundengruppe > 0'
+        )->map(static function ($e) {
+            return (int)$e->id;
+        })->mapInto(self::class)->toArray();
     }
 
     /**

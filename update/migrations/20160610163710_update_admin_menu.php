@@ -16,6 +16,9 @@ class Migration_20160610163710 extends Migration implements IMigration
 {
     protected $author = 'aj';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $sql = <<<SQL
@@ -27,6 +30,9 @@ SQL;
         $this->execute($sql);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $sql = <<<SQL

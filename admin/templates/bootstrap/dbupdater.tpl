@@ -18,9 +18,11 @@
         </div>
     </div>
     <div>
-        <div id="update-status">
-            {include file='tpl_inc/dbupdater_status.tpl'}
-        </div>
+        {if $hasMinUpdateVersion}
+            <div id="update-status">
+                {include file='tpl_inc/dbupdater_status.tpl'}
+            </div>
+        {/if}
     </div>
 </div>
 

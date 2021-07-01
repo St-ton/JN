@@ -1,5 +1,14 @@
 <div class="row-layout-controls">
-    <label for="config-{$propname}">{$propdesc.label}</label>
+    <label for="config-{$propname}"
+            {if !empty($propdesc.desc)}
+                data-toggle="tooltip" title="{$propdesc.desc|default:''}"
+                data-placement="auto"
+            {/if}>
+        {$propdesc.label}
+        {if !empty($propdesc.desc)}
+            <i class="fas fa-info-circle fa-fw"></i>
+        {/if}
+    </label>
     <div class="row">
         <div class="col-4">
             <div class="select-wrapper">
@@ -19,19 +28,19 @@
         </div>
         <div class="col-2">
             <input type="text" class="form-control" id="config-{$propname}-xs" placeholder="XS"
-                   name="{$propname}[xs]" value="{$propval.xs}">
+                   name="{$propname}[xs]" value="{$propval.xs|escape:'html'}">
         </div>
         <div class="col-2">
             <input type="text" class="form-control" id="config-{$propname}-sm" placeholder="SM"
-                   name="{$propname}[sm]" value="{$propval.sm}">
+                   name="{$propname}[sm]" value="{$propval.sm|escape:'html'}">
         </div>
         <div class="col-2">
             <input type="text" class="form-control" id="config-{$propname}-md" placeholder="MD"
-                   name="{$propname}[md]" value="{$propval.md}">
+                   name="{$propname}[md]" value="{$propval.md|escape:'html'}">
         </div>
         <div class="col-2">
             <input type="text" class="form-control" id="config-{$propname}-lg" placeholder="LG"
-                   name="{$propname}[lg]" value="{$propval.lg}">
+                   name="{$propname}[lg]" value="{$propval.lg|escape:'html'}">
         </div>
     </div>
 </div>

@@ -4,7 +4,6 @@ namespace JTL\Boxes\Items;
 
 use JTL\Filter\Visibility;
 use JTL\Shop;
-use JTL\Template;
 
 /**
  * Class FilterPricerange
@@ -18,14 +17,15 @@ final class FilterPricerange extends AbstractBox
      */
     public function __construct(array $config)
     {
-        $templateSettings = Template::getInstance()->getConfig();
         parent::__construct($config);
-        $filter        = Shop::getProductFilter()->getPriceRangeFilter();
-        $searchResults = Shop::getProductFilter()->getSearchResults();
-        $show          = ($templateSettings['sidebar_settings']['always_show_price_range'] ?? 'N' === 'Y')
+        $pf            = Shop::getProductFilter();
+        $filter        = $pf->getPriceRangeFilter();
+        $searchResults = $pf->getSearchResults();
+        $tplConfig     = (($config['template']['productlist']['always_show_price_range'] ?? 'N') === 'Y');
+        $show          = ($tplConfig && $pf->isExtendedJTLSearch() === false)
             || ($filter->getVisibility() !== Visibility::SHOW_NEVER
-            && $filter->getVisibility() !== Visibility::SHOW_CONTENT
-            && (!empty($searchResults->getPriceRangeFilterOptions()) || $filter->isInitialized()));
+                && $filter->getVisibility() !== Visibility::SHOW_CONTENT
+                && (!empty($searchResults->getPriceRangeFilterOptions()) || $filter->isInitialized()));
         $this->setShow($show);
         $this->setTitle($filter->getFrontendName());
         $this->setItems($filter);

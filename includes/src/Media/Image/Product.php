@@ -5,7 +5,6 @@ namespace JTL\Media\Image;
 use Generator;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use JTL\Shop;
@@ -23,19 +22,26 @@ class Product extends AbstractImage
     /**
      * @var string
      */
-    protected $regEx = \MEDIAIMAGE_REGEX;
+    public const REGEX = '/^media\/image'
+    . '\/(?P<type>product)'
+    . '\/(?P<id>\d+)'
+    . '\/(?P<size>xs|sm|md|lg|xl|os)'
+    . '\/(?P<name>[' . self::REGEX_ALLOWED_CHARS . ']+)'
+    . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
      * @inheritdoc
      */
-    public static function getImageNames(MediaImageRequest $req): array
+    public function getImageNames(MediaImageRequest $req): array
     {
-        return Shop::Container()->getDB()->queryPrepared(
-            'SELECT kArtikel, cName, cSeo, cSeo AS originalSeo, cArtNr, cBarcode
-                FROM tartikel
-                WHERE kArtikel = :pid',
-            ['pid' => $req->getID()],
-            ReturnType::COLLECTION
+        return $this->db->getCollection(
+            'SELECT A.kArtikel, A.cName, A.cSeo, A.cSeo AS originalSeo, A.cArtNr, A.cBarcode, B.cWert AS customImgName
+                FROM tartikel A
+                LEFT JOIN tartikelattribut B 
+                    ON A.kArtikel = B.kArtikel
+                    AND B.cName = :atr
+                WHERE A.kArtikel = :pid',
+            ['pid' => $req->getID(), 'atr' => 'bildname']
         )->map(static function ($item) {
             return self::getCustomName($item);
         })->toArray();
@@ -44,21 +50,20 @@ class Product extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getTotalImageCount(): int
+    public function getTotalImageCount(): int
     {
-        return (int)Shop::Container()->getDB()->query(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(tartikelpict.kArtikel) AS cnt
                 FROM tartikelpict
                 INNER JOIN tartikel
-                    ON tartikelpict.kArtikel = tartikel.kArtikel',
-            ReturnType::SINGLE_OBJECT
+                    ON tartikelpict.kArtikel = tartikel.kArtikel'
         )->cnt;
     }
 
     /**
      * @inheritdoc
      */
-    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    public function getAllImages(int $offset = null, int $limit = null): Generator
     {
         $cols = '';
         switch (Image::getSettings()['naming'][Image::TYPE_PRODUCT]) {
@@ -78,12 +83,15 @@ class Product extends AbstractImage
             default:
                 break;
         }
-        $images = Shop::Container()->getDB()->query(
-            'SELECT tartikelpict.cPfad AS path, tartikelpict.nNr AS number, tartikelpict.kArtikel ' . $cols . '
-                FROM tartikelpict
+        $images = $this->db->getPDOStatement(
+            'SELECT B.cWert AS customImgName, P.cPfad AS path, P.nNr AS number, P.kArtikel ' . $cols . '
+                FROM tartikelpict P
                 INNER JOIN tartikel
-                  ON tartikelpict.kArtikel = tartikel.kArtikel' . self::getLimitStatement($offset, $limit),
-            ReturnType::QUERYSINGLE
+                    ON P.kArtikel = tartikel.kArtikel
+                LEFT JOIN tartikelattribut B 
+                    ON tartikel.kArtikel = B.kArtikel
+                    AND B.cName = \'bildname\''
+            . self::getLimitStatement($offset, $limit)
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([
@@ -104,6 +112,9 @@ class Product extends AbstractImage
      */
     public static function getCustomName($mixed): string
     {
+        if (!empty($mixed->customImgName)) { // set by FKT_ATTRIBUT_BILDNAME
+            return Image::getCleanFilename($mixed->customImgName);
+        }
         switch (Image::getSettings()['naming'][Image::TYPE_PRODUCT]) {
             case 0:
                 $result = (string)$mixed->kArtikel;
@@ -131,17 +142,16 @@ class Product extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getPathByID($id, int $number = null): ?string
+    public function getPathByID($id, int $number = null): ?string
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->getSingleObject(
             'SELECT cPfad AS path
                 FROM tartikelpict
                 WHERE kArtikel = :pid
                     AND nNr = :no
                 ORDER BY nNr
                 LIMIT 1',
-            ['pid' => $id, 'no' => $number],
-            ReturnType::SINGLE_OBJECT
+            ['pid' => $id, 'no' => $number]
         )->path ?? null;
     }
 
@@ -154,20 +164,20 @@ class Product extends AbstractImage
     }
 
     /**
-     * @param string $type
-     * @param int    $id
+     * @param int              $id
+     * @param DbInterface|null $db
      * @return int|null
      */
-    public static function getPrimaryNumber(string $type, int $id): ?int
+    public static function getPrimaryNumber(int $id, DbInterface $db = null): ?int
     {
-        $prepared = self::getImageStmt($type, $id);
+        $prepared = self::getImageStmt(Image::TYPE_PRODUCT, $id);
         if ($prepared !== null) {
-            $primary = Shop::Container()->getDB()->queryPrepared(
+            $db      = $db ?? Shop::Container()->getDB();
+            $primary = $db->getSingleObject(
                 $prepared->stmt,
-                $prepared->bind,
-                ReturnType::SINGLE_OBJECT
+                $prepared->bind
             );
-            if (\is_object($primary)) {
+            if ($primary !== null) {
                 return \max(1, (int)$primary->number);
             }
         }
@@ -195,8 +205,8 @@ class Product extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function imageIsUsed(DbInterface $db, string $path): bool
+    public function imageIsUsed(string $path): bool
     {
-        return $db->select('tartikelpict', 'cPfad', $path) !== null;
+        return $this->db->select('tartikelpict', 'cPfad', $path) !== null;
     }
 }

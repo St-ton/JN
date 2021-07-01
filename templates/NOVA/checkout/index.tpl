@@ -8,7 +8,7 @@
     {block name='checkout-index-content'}
 
         <div id="result-wrapper" data-wrapper="true">
-            {container id="checkout"}
+            {container fluid=$Link->getIsFluid() id="checkout"}
                 {block name='checkout-index-include-inc-steps'}
                     {include file='checkout/inc_steps.tpl'}
                 {/block}
@@ -42,7 +42,7 @@
                             };
                             eModal.confirm(options).then(
                                 function() {
-                                    window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1"
+                                    window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1&token={$smarty.session.jtl_token}"
                                 }
                             );
                         });

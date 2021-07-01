@@ -5,7 +5,7 @@
             {foreach $filter->getOptions() as $filterOption}
                 {if $limit != -1 && $filterOption@iteration > $limit && !$collapseInit}
                     {block name='snippets-filter-genericFilterItem-more-top'}
-                        <div class="collapse {if $filter->isActive()} show{/if}" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false">
+                        <div class="collapse {if $filter->isActive()} show{/if}" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false" role="button">
                             {$collapseInit = true}
                     {/block}
                 {/if}
@@ -13,20 +13,20 @@
                 {block name='snippets-filter-genericFilterItem-nav-main'}
                     {link class="filter-item {if $filterIsActive === true}active{/if}"
                         href="{if $filterOption->isActive()}{$filter->getUnsetFilterURL($filterOption->getValue())}{else}{$filterOption->getURL()}{/if}"
-                        nofollow=true}
-                        <div class="align-items-center d-flex">
+                        rel="nofollow"}
+                        <div class="box-link-wrapper">
                             {if $filter->getIcon() !== null}
-                                <i class="fa {$filter->getIcon()} mr-2"></i>
+                                <i class="fa {$filter->getIcon()} snippets-filter-item-icon-right"></i>
                             {else}
-                                <i class="far fa-{if $filterIsActive === true}check-{/if}square text-muted mr-2"></i>
+                                <i class="far fa-{if $filterIsActive === true}check-{/if}square snippets-filter-item-icon-right"></i>
                             {/if}
                             {if $filter->getNiceName() === 'Rating'}
                                 {block name='snippets-filter-genericFilterItem-include-rating-nav'}
-                                    <span class="mr-2">{include file='productdetails/rating.tpl' stars=$filterOption->getValue()}</span>
+                                    <span class="snippets-filter-item-icon-right">{include file='productdetails/rating.tpl' stars=$filterOption->getValue()}</span>
                                 {/block}
                             {/if}
                             <span class="word-break">{$filterOption->getName()}</span>
-                            <span class="badge badge-outline-secondary ml-auto">{$filterOption->getCount()}</span>
+                            {badge variant="outline-secondary"}{$filterOption->getCount()}{/badge}
                         </div>
                     {/link}
                 {/block}
@@ -34,10 +34,9 @@
             {if $limit != -1 && $filter->getOptions()|count > $limit}
                 {block name='snippets-filter-genericFilterItem-more-bottom'}
                     </div>
-                    <div class="w-100">
+                    <div class="snippets-filter-show-all">
                         {button variant="link"
                             role="button"
-                            class="p-0 ml-auto mt-1"
                             data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]}
                             {lang key='showAll'}
                         {/button}

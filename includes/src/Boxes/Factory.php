@@ -11,6 +11,7 @@ use JTL\Boxes\Items\Container;
 use JTL\Boxes\Items\DirectPurchase;
 use JTL\Boxes\Items\Extension;
 use JTL\Boxes\Items\FilterAttribute;
+use JTL\Boxes\Items\FilterAvailability;
 use JTL\Boxes\Items\FilterCategory;
 use JTL\Boxes\Items\FilterItem;
 use JTL\Boxes\Items\FilterManufacturer;
@@ -112,6 +113,8 @@ class Factory implements FactoryInterface
                 return new FilterSearch($this->config);
             case \BOX_FILTER_SUCHSPECIAL:
                 return new FilterItem($this->config);
+            case \BOX_FILTER_AVAILABILITY:
+                return new FilterAvailability($this->config);
             case \BOX_TOP_BEWERTET:
                 return new TopRatedProducts($this->config);
             case \BOX_SUCHWOLKE:

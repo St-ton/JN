@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * new category structure
  *
@@ -6,7 +6,6 @@
  * @created Mo, 11 Apr 2016 09:31:13 +0100
  */
 
-use JTL\DB\ReturnType;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -24,21 +23,20 @@ class Migration_20160411093113 extends Migration implements IMigration
      * @param int $left
      * @return int
      */
-    private function rebuildCategoryTree($parent_id, $left): int
+    private function rebuildCategoryTree(int $parent_id, int $left): int
     {
-        $left = (int)$left;
         // the right value of this node is the left value + 1
         $right = $left + 1;
         // get all children of this node
-        $result = $this->getDB()->query(
+        $result = $this->getDB()->getObjects(
             'SELECT kKategorie 
                 FROM tkategorie 
-                WHERE kOberKategorie = ' . (int)$parent_id . ' 
+                WHERE kOberKategorie = :pid 
                 ORDER BY nSort, cName',
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $parent_id]
         );
-        foreach ($result as $_res) {
-            $right = $this->rebuildCategoryTree($_res->kKategorie, $right);
+        foreach ($result as $res) {
+            $right = $this->rebuildCategoryTree((int)$res->kKategorie, $right);
         }
         // we've got the left value, and now that we've processed the children of this node we also know the right value
         $this->execute(
@@ -51,11 +49,17 @@ class Migration_20160411093113 extends Migration implements IMigration
         return $right + 1;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->rebuildCategoryTree(0, 1);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('UPDATE `tkategorie` SET `lft` = 0, `rght` = 0;');

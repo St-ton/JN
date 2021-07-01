@@ -17,7 +17,6 @@ use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Download\Download;
 use JTL\Extensions\Upload\File;
@@ -29,13 +28,13 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Pagination\Pagination;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
 use function Functional\some;
@@ -143,8 +142,15 @@ class AccountController
                 ['showInAlertListTemplate' => false]
             );
         }
+        try {
+            $link = $this->linkService->getSpecialPage(\LINKTYP_LOGIN);
+        } catch (SpecialPageNotFoundException $e) {
+            Shop::Container()->getLogService()->error($e->getMessage());
+            $link = null;
+        }
         $this->smarty->assign('alertNote', $alertNote)
-            ->assign('step', $step);
+                     ->assign('step', $step)
+                     ->assign('Link', $link);
     }
 
     /**
@@ -212,10 +218,6 @@ class AccountController
                 'wls'
             );
         }
-        if ($this->config['kundenwerbenkunden']['kwk_nutzen'] === 'Y' && Request::verifyGPCDataInt('KwK') === 1) {
-            $step = 'kunden_werben_kunden';
-            $this->checkPromotion($_POST);
-        }
         if ($valid && Request::postInt('wlh') > 0) {
             $step = 'mein Konto';
             $name = Text::htmlentities(Text::filterXSS($_POST['cWunschlisteName']));
@@ -281,22 +283,20 @@ class AccountController
             $this->getCustomerFields();
         }
         if ($step === 'bewertungen') {
-            $ratings = $this->db->queryPrepared(
+            $ratings = $this->db->getObjects(
                 'SELECT tbewertung.kBewertung, fGuthabenBonus, nAktiv, kArtikel, cTitel, cText, 
                   tbewertung.dDatum, nSterne, cAntwort, dAntwortDatum
                   FROM tbewertung 
                   LEFT JOIN tbewertungguthabenbonus 
                       ON tbewertung.kBewertung = tbewertungguthabenbonus.kBewertung
                   WHERE tbewertung.kKunde = :customer',
-                ['customer' => $customerID],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['customer' => $customerID]
             );
         }
         $_SESSION['Kunde']->cGuthabenLocalized = Preise::getLocalizedPriceString($_SESSION['Kunde']->fGuthaben);
         $this->smarty->assign('Kunde', $_SESSION['Kunde'])
             ->assign('customerAttributes', $_SESSION['Kunde']->getCustomerAttributes())
             ->assign('bewertungen', $ratings)
-            ->assign('Link', $this->linkService->getSpecialPage(\LINKTYP_LOGIN))
             ->assign('BESTELLUNG_STATUS_BEZAHLT', \BESTELLUNG_STATUS_BEZAHLT)
             ->assign('BESTELLUNG_STATUS_VERSANDT', \BESTELLUNG_STATUS_VERSANDT)
             ->assign('BESTELLUNG_STATUS_OFFEN', \BESTELLUNG_STATUS_OFFEN)
@@ -386,19 +386,21 @@ class AccountController
         $session = Frontend::getInstance();
         $session->setCustomer($customer);
         Wishlist::persistInSession();
-        $persCartLoaded = $this->config['global']['warenkorbpers_nutzen'] === 'Y'
+        $persCartLoaded = $this->config['kaufabwicklung']['warenkorbpers_nutzen'] === 'Y'
             && $this->loadPersistentCart($customer);
         $this->pruefeWarenkorbArtikelSichtbarkeit($customer->getGroupID());
         \executeHook(\HOOK_JTL_PAGE_REDIRECT);
         CartHelper::checkAdditions();
         $this->checkURLRedirect();
-        if (!$persCartLoaded && $this->config['global']['warenkorbpers_nutzen'] === 'Y') {
+        if (!$persCartLoaded && $this->config['kaufabwicklung']['warenkorbpers_nutzen'] === 'Y') {
             if ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y') {
                 $this->setzeWarenkorbPersInWarenkorb($customer->getID());
             } elseif ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P') {
                 $persCart = new PersistentCart($customer->getID());
                 if (\count($persCart->oWarenkorbPersPos_arr) > 0) {
                     $this->smarty->assign('nWarenkorb2PersMerge', 1);
+                } else {
+                    $this->setzeWarenkorbPersInWarenkorb($customer->getID());
                 }
             }
         }
@@ -472,7 +474,7 @@ class AccountController
     }
 
     /**
-     * @param array $coupons
+     * @param Kupon[] $coupons
      */
     private function checkCoupons(array $coupons): void
     {
@@ -527,7 +529,7 @@ class AccountController
             // Gratisgeschenk in Warenkorb legen
             if ((int)$item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $productID = (int)$item->kArtikel;
-                $present   = $this->db->queryPrepared(
+                $present   = $this->db->getSingleObject(
                     'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
                         tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                         FROM tartikelattribut
@@ -540,10 +542,9 @@ class AccountController
                         'pid' => $productID,
                         'atr' => \FKT_ATTRIBUT_GRATISGESCHENK,
                         'sum' => $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
-                    ],
-                    ReturnType::SINGLE_OBJECT
+                    ]
                 );
-                if ((isset($present->kArtikel) && $present->kArtikel > 0)
+                if ($present !== null && $present->kArtikel > 0
                     && ($present->fLagerbestand > 0
                         || $present->cLagerKleinerNull === 'Y'
                         || $present->cLagerBeachten === 'N')
@@ -603,26 +604,25 @@ class AccountController
             if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || !empty($item->cUnique)) {
                 continue;
             }
-            $visibility = $this->db->queryPrepared(
+            $visibility = $this->db->getSingleObject(
                 'SELECT kArtikel
-                FROM tartikelsichtbarkeit
-                WHERE kArtikel = :pid
-                    AND kKundengruppe = :cgid',
-                ['pid' => (int)$item->kArtikel, 'cgid' => $customerGroupID],
-                ReturnType::SINGLE_OBJECT
+                    FROM tartikelsichtbarkeit
+                    WHERE kArtikel = :pid
+                        AND kKundengruppe = :cgid',
+                ['pid' => (int)$item->kArtikel, 'cgid' => $customerGroupID]
             );
-            if (isset($visibility->kArtikel) && $visibility->kArtikel > 0 && (int)$item->kKonfigitem === 0) {
+            if ($visibility !== null && $visibility->kArtikel > 0 && (int)$item->kKonfigitem === 0) {
                 unset($cart->PositionenArr[$i]);
             }
-            $price = $this->db->queryPrepared(
+            $price = $this->db->getSingleObject(
                 'SELECT tpreisdetail.fVKNetto
-                FROM tpreis
-                INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
-                    AND tpreisdetail.nAnzahlAb = 0
-                WHERE tpreis.kArtikel = :productID
-                    AND tpreis.kKundengruppe = :customerGroup',
-                ['productID' => (int)$item->kArtikel, 'customerGroup' => $customerGroupID],
-                ReturnType::SINGLE_OBJECT
+                    FROM tpreis
+                    INNER JOIN tpreisdetail 
+                        ON tpreisdetail.kPreis = tpreis.kPreis
+                        AND tpreisdetail.nAnzahlAb = 0
+                    WHERE tpreis.kArtikel = :productID
+                        AND tpreis.kKundengruppe = :customerGroup',
+                ['productID' => (int)$item->kArtikel, 'customerGroup' => $customerGroupID]
             );
             if (!isset($price->fVKNetto)) {
                 unset($cart->PositionenArr[$i]);
@@ -643,24 +643,23 @@ class AccountController
         foreach ($cart->PositionenArr as $item) {
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $productID = (int)$item->kArtikel;
-                $present   = $this->db->queryPrepared(
+                $present   = $this->db->getSingleObject(
                     'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                        tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
-                    FROM tartikelattribut
-                    JOIN tartikel 
-                        ON tartikel.kArtikel = tartikelattribut.kArtikel
-                    WHERE tartikelattribut.kArtikel = :pid
-                        AND tartikelattribut.cName = :atr
-                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= :sum',
+                        FROM tartikelattribut
+                        JOIN tartikel 
+                            ON tartikel.kArtikel = tartikelattribut.kArtikel
+                        WHERE tartikelattribut.kArtikel = :pid
+                            AND tartikelattribut.cName = :atr
+                            AND CAST(tartikelattribut.cWert AS DECIMAL) <= :sum',
                     [
                         'pid' => $productID,
                         'atr' => \FKT_ATTRIBUT_GRATISGESCHENK,
                         'sum' => $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
-                    ],
-                    ReturnType::SINGLE_OBJECT
+                    ]
                 );
-                if (isset($present->kArtikel) && $present->kArtikel > 0) {
-                    PersistentCart::addToCheck($productID, 1, [], null, 0, \C_WARENKORBPOS_TYP_GRATISGESCHENK);
+                if ($present !== null && $present->kArtikel > 0) {
+                    PersistentCart::addToCheck($productID, 1, [], false, 0, \C_WARENKORBPOS_TYP_GRATISGESCHENK);
                 }
             } else {
                 PersistentCart::addToCheck(
@@ -681,23 +680,22 @@ class AccountController
         foreach ($persCart->oWarenkorbPersPos_arr as $item) {
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $productID = (int)$item->kArtikel;
-                $present   = $this->db->queryPrepared(
+                $present   = $this->db->getSingleObject(
                     'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                        tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
-                    FROM tartikelattribut
-                    JOIN tartikel 
-                        ON tartikel.kArtikel = tartikelattribut.kArtikel
-                    WHERE tartikelattribut.kArtikel = :pid
-                        AND tartikelattribut.cName = :atr
-                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= :sum',
+                        FROM tartikelattribut
+                        JOIN tartikel 
+                            ON tartikel.kArtikel = tartikelattribut.kArtikel
+                        WHERE tartikelattribut.kArtikel = :pid
+                            AND tartikelattribut.cName = :atr
+                            AND CAST(tartikelattribut.cWert AS DECIMAL) <= :sum',
                     [
                         'pid' => $productID,
                         'atr' => \FKT_ATTRIBUT_GRATISGESCHENK,
                         'sum' => $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
-                    ],
-                    ReturnType::SINGLE_OBJECT
+                    ]
                 );
-                if (isset($present->kArtikel) && $present->kArtikel > 0) {
+                if ($present !== null && $present->kArtikel > 0) {
                     if ($present->fLagerbestand <= 0
                         && $present->cLagerKleinerNull === 'N'
                         && $present->cLagerBeachten === 'Y'
@@ -710,8 +708,9 @@ class AccountController
                 }
             } else {
                 $tmpProduct = new Artikel();
-                $tmpProduct->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
-
+                $tmpProduct->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
+                    ? Artikel::getDefaultOptions()
+                    : Artikel::getDefaultConfigOptions());
                 if ((int)$tmpProduct->kArtikel > 0 && \count(CartHelper::addToCartCheck(
                     $tmpProduct,
                     $item->fAnzahl,
@@ -784,7 +783,8 @@ class AccountController
                 $tmp->Wert               = 1;
                 $redir->oParameter_arr[] = $tmp;
                 $redir->nRedirect        = \R_LOGIN_BEWERTUNG;
-                $redir->cURL             = 'bewertung.php?a=' . Request::verifyGPCDataInt('a') . '&bfa=1';
+                $redir->cURL             = 'bewertung.php?a=' . Request::verifyGPCDataInt('a') . '&bfa=1&token=' .
+                    $_SESSION['jtl_token'];
                 $redir->cName            = Shop::Lang()->get('review', 'redirect');
                 break;
             case \R_LOGIN_TAG:
@@ -852,49 +852,6 @@ class AccountController
 
         \header('Location: ' . $this->linkService->getStaticRoute('jtl.php') . '?loggedout=1', true, 303);
         exit();
-    }
-
-    /**
-     * @param array $data
-     */
-    private function checkPromotion(array $data): void
-    {
-        if (Request::verifyGPCDataInt('kunde_werben') !== 1) {
-            return;
-        }
-        if (SimpleMail::checkBlacklist($data['cEmail'])) {
-            $this->alertService->addAlert(
-                Alert::TYPE_ERROR,
-                Shop::Lang()->get('kwkEmailblocked', 'errorMessages') . '<br />',
-                'kwkEmailblocked'
-            );
-        } elseif (Referral::checkInputData($data)) {
-            if (Referral::saveToDB($data, $this->config)) {
-                $this->alertService->addAlert(
-                    Alert::TYPE_NOTE,
-                    \sprintf(
-                        Shop::Lang()->get('kwkAdd', 'messages') . '<br />',
-                        Text::filterXSS($data['cEmail'])
-                    ),
-                    'kwkAdd'
-                );
-            } else {
-                $this->alertService->addAlert(
-                    Alert::TYPE_ERROR,
-                    \sprintf(
-                        Shop::Lang()->get('kwkAlreadyreg', 'errorMessages') . '<br />',
-                        Text::filterXSS($data['cEmail'])
-                    ),
-                    'kwkAlreadyreg'
-                );
-            }
-        } else {
-            $this->alertService->addAlert(
-                Alert::TYPE_ERROR,
-                Shop::Lang()->get('kwkWrongdata', 'errorMessages') . '<br />',
-                'kwkWrongdata'
-            );
-        }
     }
 
     /**

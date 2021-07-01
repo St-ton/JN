@@ -3,7 +3,6 @@
 namespace JTL;
 
 use Exception;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use PHPMailer\PHPMailer\PHPMailer;
 use stdClass;
@@ -92,9 +91,9 @@ class SimpleMail
     private $cSMTPHost;
 
     /**
-     * SMTP Auth nutzen 0/1
+     * SMTP Auth nutzen '0'/'1'
      *
-     * @var int
+     * @var string
      */
     private $cSMTPAuth;
 
@@ -300,7 +299,7 @@ class SimpleMail
                 $mailer->Host          = $this->cSMTPHost;
                 $mailer->Port          = $this->cSMTPPort;
                 $mailer->SMTPKeepAlive = true;
-                $mailer->SMTPAuth      = $this->cSMTPAuth;
+                $mailer->SMTPAuth      = (int)$this->cSMTPAuth === 1;
                 $mailer->Username      = $this->cSMTPUser;
                 $mailer->Password      = $this->cSMTPPass;
                 break;
@@ -479,7 +478,7 @@ class SimpleMail
      * Prüft ob eine die angegebende Email in temailblacklist vorhanden ist
      * Gibt true zurück, falls Email geblockt, ansonsten false
      *
-     * @param string $mail
+     * @param string|null $mail
      * @return bool
      */
     public static function checkBlacklist(?string $mail): bool
@@ -492,11 +491,7 @@ class SimpleMail
         if ($conf['emailblacklist']['blacklist_benutzen'] !== 'Y') {
             return false;
         }
-        $blacklist = Shop::Container()->getDB()->query(
-            'SELECT cEmail FROM temailblacklist',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($blacklist as $item) {
+        foreach (Shop::Container()->getDB()->getObjects('SELECT cEmail FROM temailblacklist') as $item) {
             if (\mb_strpos($item->cEmail, '*') !== false) {
                 \preg_match('/' . \str_replace('*', '[a-z0-9\-\_\.\@\+]*', $item->cEmail) . '/', $mail, $hits);
                 // Blocked

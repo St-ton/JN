@@ -20,7 +20,13 @@ final class Upload
      */
     public static function checkLicense(): bool
     {
-        return Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS);
+        static $license;
+
+        if ($license === null) {
+            $license = Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS);
+        }
+
+        return $license;
     }
 
     /**
@@ -30,6 +36,10 @@ final class Upload
      */
     public static function gibArtikelUploads(int $productID, $attributes = false): array
     {
+        if (!self::checkLicense()) {
+            return [];
+        }
+
         $scheme  = new Scheme();
         $uploads = $scheme->fetchAll($productID, \UPLOAD_TYP_WARENKORBPOS);
         foreach ($uploads as $upload) {
@@ -55,6 +65,10 @@ final class Upload
      */
     public static function deleteArtikelUploads(int $productID): int
     {
+        if (!self::checkLicense()) {
+            return 0;
+        }
+
         $count = 0;
         foreach (self::gibArtikelUploads($productID) as $upload) {
             unset($_SESSION['Uploader'][$upload->cUnique]);
@@ -72,6 +86,10 @@ final class Upload
      */
     public static function gibWarenkorbUploads(Cart $cart): array
     {
+        if (!self::checkLicense()) {
+            return [];
+        }
+
         $uploads = [];
         foreach ($cart->PositionenArr as $item) {
             if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || empty($item->Artikel->kArtikel)) {
@@ -106,7 +124,7 @@ final class Upload
      */
     public static function gibBestellungUploads(int $orderID): array
     {
-        return File::fetchAll($orderID, \UPLOAD_TYP_BESTELLUNG);
+        return self::checkLicense() ? File::fetchAll($orderID, \UPLOAD_TYP_BESTELLUNG) : [];
     }
 
     /**
@@ -115,6 +133,10 @@ final class Upload
      */
     public static function pruefeWarenkorbUploads(Cart $cart): bool
     {
+        if (!self::checkLicense()) {
+            return true;
+        }
+
         foreach (self::gibWarenkorbUploads($cart) as $scheme) {
             foreach ($scheme->oUpload_arr as $upload) {
                 if ($upload->nPflicht && !$upload->bVorhanden) {
@@ -142,20 +164,22 @@ final class Upload
      */
     public static function speicherUploadDateien(Cart $cart, int $orderID): void
     {
-        foreach (self::gibWarenkorbUploads($cart) as $scheme) {
-            foreach ($scheme->oUpload_arr as $upload) {
-                $info = $_SESSION['Uploader'][$upload->cUnique] ?? null;
-                if ($info !== null && \is_object($info)) {
-                    self::setzeUploadQueue($orderID, $upload->kCustomID);
-                    self::setzeUploadDatei(
-                        $orderID,
-                        \UPLOAD_TYP_BESTELLUNG,
-                        $info->cName,
-                        $upload->cUnique,
-                        $info->nBytes
-                    );
+        if (self::checkLicense()) {
+            foreach (self::gibWarenkorbUploads($cart) as $scheme) {
+                foreach ($scheme->oUpload_arr as $upload) {
+                    $info = $_SESSION['Uploader'][$upload->cUnique] ?? null;
+                    if ($info !== null && \is_object($info)) {
+                        self::setzeUploadQueue($orderID, $upload->kCustomID);
+                        self::setzeUploadDatei(
+                            $orderID,
+                            \UPLOAD_TYP_BESTELLUNG,
+                            $info->cName,
+                            $upload->cUnique,
+                            $info->nBytes
+                        );
+                    }
+                    unset($_SESSION['Uploader'][$upload->cUnique]);
                 }
-                unset($_SESSION['Uploader'][$upload->cUnique]);
             }
         }
         \session_regenerate_id();
@@ -171,6 +195,10 @@ final class Upload
      */
     public static function setzeUploadDatei(int $kCustomID, int $type, $name, $path, int $bytes): void
     {
+        if (!self::checkLicense()) {
+            return;
+        }
+
         $file            = new stdClass();
         $file->kCustomID = $kCustomID;
         $file->nTyp      = $type;
@@ -188,6 +216,10 @@ final class Upload
      */
     public static function setzeUploadQueue(int $orderID, int $productID): void
     {
+        if (!self::checkLicense()) {
+            return;
+        }
+
         $queue              = new stdClass();
         $queue->kBestellung = $orderID;
         $queue->kArtikel    = $productID;
@@ -281,11 +313,10 @@ final class Upload
         $pathInfo = \pathinfo($name);
 
         return \is_array($pathInfo)
-            ? \in_array(
+            && \in_array(
                 $pathInfo['extension'],
                 ['gif', 'png', 'jpg', 'jpeg', 'bmp', 'jpe'],
                 true
-            )
-            : false;
+            );
     }
 }

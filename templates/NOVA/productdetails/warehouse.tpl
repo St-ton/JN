@@ -9,10 +9,10 @@
             || $Artikel->fLagerbestand > 0
             || $Artikel->fZulauf > 0)}
         {block name='productdetails-warehouse-detail-link'}
-            {row class="product-stock-info row no-gutters py-3 px-lg-3 border-bottom align-items-end"}
+            {row no-gutters=true class="product-stock-info row"}
                 {col}
-                    {button variant="link" class="p-0 text-decoration-underline" data=["toggle"=>"modal", "target"=>"#warehouseAvailability"]}
-                        <span class="fas fa-map-marker-alt mr-2"></span>{lang key='warehouseAvailability'}
+                    {button class="product-stock-info-button" variant="link" data=["toggle"=>"modal", "target"=>"#warehouseAvailability"]}
+                        <span class="fas fa-map-marker-alt icon-mr-2"></span>{lang key='warehouseAvailability'}
                     {/button}
                 {/col}
             {/row}
@@ -25,37 +25,43 @@
                 class="fade"}
                 {block name='productdetails-warehouse-modal-content'}
                     {block name='productdetails-warehouse-modal-content-header'}
-                        {row}
+                        {row class="warehouse-row"}
                             {col}
-                                <span class="font-weight-bold">{lang key='warehouse'}</span>
+                                <strong>{lang key='warehouse'}</strong>
                             {/col}
-                            {col class="ml-auto text-right"}
-                                <span class="ml-auto font-weight-bold">{lang key='status'}</span>
+                            {col class="warehouse-right"}
+                                <strong>{lang key='status'}</strong>
                             {/col}
                         {/row}
                         <hr>
                     {/block}
                     {block name='productdetails-warehouse-modal-content-items'}
                         {foreach $Artikel->oWarenlager_arr as $oWarenlager}
-                            {row}
+                            {row class="warehouse-row"}
                                 {col}
-                                    <span class="font-weight-bold">{$oWarenlager->getName()}</span>
+                                    <strong>{$oWarenlager->getName()}</strong>
                                 {/col}
-                                {col class="ml-auto text-right"}
-                                    <span class="ml-auto">
+                                {col class="warehouse-right"}
+                                    <span class="signal_image">
                                          {if $anzeige !== 'nichts'
-                                         && $Artikel->cLagerBeachten === 'Y'
+                                         && $oWarenlager->getBackorderString($Artikel) !== ''
                                          && ($Artikel->cLagerKleinerNull === 'N'
-                                         || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')
-                                         && $oWarenlager->getStock() <= 0
-                                         && $oWarenlager->getBackorder() > 0
-                                         && $oWarenlager->getBackorderDate() !== null}
-                                             {assign var=cZulauf value=$oWarenlager->getBackorder()|cat:':::'|cat:$oWarenlager->getBackorderDateDE()}
-                                             <span class="signal_image status-1"><span>{lang key='productInflowing' section='productDetails' printf=$cZulauf}</span></span>
+                                            || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
+                                             <span class="status-1">{$oWarenlager->getBackorderString($Artikel)}</span>
+                                        {elseif $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N'
+                                             && $Artikel->cLagerBeachten === 'Y'
+                                             && $Artikel->fLagerbestand <= 0
+                                             && $Artikel->fLieferantenlagerbestand > 0
+                                             && $Artikel->fLieferzeit > 0
+                                             && ($Artikel->cLagerKleinerNull === 'N'
+                                                 && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'I'
+                                                 || $Artikel->cLagerKleinerNull === 'Y'
+                                                 && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
+                                             <span class="status-1">{lang key='supplierStockNotice' printf=$Artikel->fLieferzeit}</span>
                                         {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
-                                            <span class="signal_image status-{$oWarenlager->oLageranzeige->nStatus}">{$oWarenlager->oLageranzeige->cLagerhinweis[$anzeige]}</span>
+                                            <span class="status-{$oWarenlager->oLageranzeige->nStatus}">{$oWarenlager->oLageranzeige->cLagerhinweis[$anzeige]}</span>
                                         {elseif $anzeige === 'ampel'}
-                                            <span><span class="signal_image status-{$oWarenlager->oLageranzeige->nStatus}">{$oWarenlager->oLageranzeige->AmpelText}</span></span>
+                                            <span class="status-{$oWarenlager->oLageranzeige->nStatus}">{$oWarenlager->oLageranzeige->AmpelText}</span>
                                          {/if}
                                     </span>
                                 {/col}

@@ -3,7 +3,6 @@
 namespace JTL\News;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 
 /**
@@ -66,6 +65,21 @@ class Comment implements CommentInterface
     private $text;
 
     /**
+     * @var int
+     */
+    private $isAdmin;
+
+    /**
+     * @var int
+     */
+    private $parentCommentID;
+
+    /**
+     * @var array
+     */
+    private $childComments = [];
+
+    /**
      * @var \DateTime
      */
     private $dateCreated;
@@ -90,18 +104,33 @@ class Comment implements CommentInterface
     public function load(int $id): CommentInterface
     {
         $this->id = $id;
-        $comment  = $this->db->queryPrepared(
+        $comment  = $this->db->getObjects(
             'SELECT * 
                 FROM tnewskommentar
                 WHERE kNewsKommentar = :cid',
-            ['cid' => $this->id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['cid' => $this->id]
         );
         if (\count($comment) === 0) {
             throw new \InvalidArgumentException('Provided link id ' . $this->id . ' not found.');
         }
 
         return $this->map($comment);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function loadByParentCommentID(int $parentID): ?CommentInterface
+    {
+        $this->id = $parentID;
+        $comment  = $this->db->getObjects(
+            'SELECT *
+                FROM tnewskommentar
+                WHERE parentCommentID = :cid',
+            ['cid' => $this->id]
+        );
+
+        return \count($comment) > 0 ? $this->map($comment) : null;
     }
 
     /**
@@ -117,6 +146,8 @@ class Comment implements CommentInterface
             $this->setName($comment->cName);
             $this->setMail($comment->cEmail);
             $this->setText($comment->cKommentar);
+            $this->setIsAdmin((int)$comment->isAdmin);
+            $this->setParentCommentID((int)$comment->parentCommentID);
             $this->setDateCreated($comment->dErstellt);
         }
 
@@ -300,5 +331,61 @@ class Comment implements CommentInterface
         $res['db'] = '*truncated*';
 
         return $res;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getIsAdmin(): int
+    {
+        return $this->isAdmin;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setIsAdmin(int $isAdmin): void
+    {
+        $this->isAdmin = $isAdmin;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getParentCommentID(): int
+    {
+        return $this->parentCommentID;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setParentCommentID(int $parentCommentID): void
+    {
+        $this->parentCommentID = $parentCommentID;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getChildComments(): array
+    {
+        return $this->childComments;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setChildComments(array $childComments): void
+    {
+        $this->childComments = $childComments;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setChildComment(object $childComment): void
+    {
+        $this->childComments[] = $childComment;
     }
 }

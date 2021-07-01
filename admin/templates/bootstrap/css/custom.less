@@ -824,7 +824,7 @@ body {
 
 .widget-head .options {
     float: right;
-    display: none;
+    visibility: hidden;
     padding: 0;
 }
 
@@ -837,11 +837,11 @@ body {
 }
 
 .widget-head:hover .options,.widget-head:hover .collapse,.widget-head:hover .remove {
-    display: inline;
+    visibility: visible;
 }
 
 .column_wrapper .widget .widget-head p {
-    display: none;
+    visibility: hidden;
 }
 
 .column_wrapper .widget:hover .widget-head p {
@@ -1678,10 +1678,6 @@ span.success {
 }
 
 /* Widgets */
-#widget-Clock .widget-head {
-    display: none;
-}
-
 .clock {
     text-align: center;
 }
@@ -2362,14 +2358,21 @@ pre#debug b {
     color: #E04000;
 }
 
-.content-header .actions {
-    opacity: 0.25;
-    transition: opacity 300ms ease-in-out;
-    -webkit-transition: opacity 300ms ease-in-out;
-}
-
-.content-header:hover .actions {
-    opacity: 1;
+.content-header {
+    margin-top: 0;
+    .actions {
+        opacity: 0.25;
+        transition: opacity 300ms ease-in-out;
+        -webkit-transition: opacity 300ms ease-in-out;
+    }
+    &:hover .actions {
+        opacity: 1;
+    }
+    .description {
+        a {
+            text-decoration: underline;
+        }
+    }
 }
 
 .dropdown.avatar > a {
@@ -2565,7 +2568,11 @@ h2 .btn-group {
 
 .panel-danger {
     background-color: #C82E29;
-    color: #ffffff;
+    color: #ffffff !important;
+
+    a, table, .btn-link {
+        color: #fff;
+    }
 }
 
 .border-right {
@@ -2890,10 +2897,6 @@ h2 .btn-group {
     margin-bottom: 10px;
 }
 
-div.markdown {
-    padding: 0px 10px;
-}
-
 div.markdown ul li {
     list-style: disc outside none;
 }
@@ -2908,10 +2911,6 @@ div.markdown p {
 
 div.markdown blockquote {
     font-size: inherit;
-}
-
-div.markdown-wrapper {
-    padding: 5px 40px 30px;
 }
 
 div.markdown pre {
@@ -2966,9 +2965,6 @@ div.markdown thead tr td {
 }
 
 //override in app.css
-.content-header {
-    margin-top: 0;
-}
 .kv-upload-progress {
     margin-bottom: 1rem;
 }
@@ -3044,6 +3040,11 @@ div.markdown thead tr td {
         border: 2px solid transparent;
     }
 }
+.hide-fileinput-remove {
+    .fileinput-remove {
+        display: none;
+    }
+}
 #articlePicker-result-list .list-group-item {
   padding: 0.5rem;
 }
@@ -3097,12 +3098,19 @@ div.markdown thead tr td {
 .has-notify-icon {
     position: relative;
     span:nth-child(2) {
-        transform: scale(0.5);
+        transform: scale(0.4);
         position: absolute;
-        top: -4px;
-        right: -5px;
+        top: -16px;
+        right: -25px;
+        color: #fff;
+    }
+    &.stack-refresh {
+        span:nth-child(2) {
+            right: -29px;
+        }
     }
 }
+
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;

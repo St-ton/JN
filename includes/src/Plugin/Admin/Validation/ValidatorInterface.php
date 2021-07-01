@@ -26,11 +26,11 @@ interface ValidatorInterface
     public function validateByPath(string $path, bool $forUpdate = false): int;
 
     /**
-     * @param int  $kPlugin
+     * @param int  $pluginID
      * @param bool $forUpdate
      * @return int
      */
-    public function validateByPluginID(int $kPlugin, bool $forUpdate = false): int;
+    public function validateByPluginID(int $pluginID, bool $forUpdate = false): int;
 
     /**
      * @param array $xml

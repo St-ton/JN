@@ -16,8 +16,7 @@ class Migration_20180907143600 extends Migration implements IMigration
     protected $description = 'update cUnique fields';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -26,8 +25,7 @@ class Migration_20180907143600 extends Migration implements IMigration
     }
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {

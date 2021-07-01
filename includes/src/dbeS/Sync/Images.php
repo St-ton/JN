@@ -2,7 +2,6 @@
 
 namespace JTL\dbeS\Sync;
 
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Media\Image;
 use JTL\Media\Image\Category;
@@ -45,7 +44,7 @@ final class Images extends AbstractSync
     {
         $this->brandingConfig = $this->initBrandingConfig();
         $this->config         = Shop::getSettings([\CONF_BILDER])['bilder'];
-        $this->db->query('START TRANSACTION', ReturnType::DEFAULT);
+        $this->db->query('START TRANSACTION');
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             switch (\pathinfo($file)['basename']) {
@@ -72,7 +71,7 @@ final class Images extends AbstractSync
                     break;
             }
         }
-        $this->db->query('COMMIT', ReturnType::DEFAULT);
+        $this->db->query('COMMIT');
 
         return null;
     }
@@ -84,10 +83,7 @@ final class Images extends AbstractSync
     {
         return map(
             reindex(
-                $this->db->query(
-                    'SELECT * FROM tbranding',
-                    ReturnType::ARRAY_OF_OBJECTS
-                ),
+                $this->db->getObjects('SELECT * FROM tbranding'),
                 static function ($e) {
                     return $e->cBildKategorie;
                 }
@@ -456,13 +452,13 @@ final class Images extends AbstractSync
                 ? $image->cPfad
                 : $image->cPfad . '.' . $extension;
         }
-        $propValue = $this->db->query(
+        $propValue = $this->db->getSingleObject(
             'SELECT kEigenschaftWert, cArtNr, cName, kEigenschaft
                 FROM teigenschaftwert
-                WHERE kEigenschaftWert = ' . (int)$image->kEigenschaftWert,
-            ReturnType::SINGLE_OBJECT
+                WHERE kEigenschaftWert = :aid',
+            ['aid' => (int)$image->kEigenschaftWert]
         );
-        if ($propValue === false) {
+        if ($propValue === null) {
             $this->logger->warning(
                 'Eigenschaftswertbild fuer nicht existierenden Eigenschaftswert ' . (int)$image->kEigenschaftWert
             );
@@ -478,7 +474,7 @@ final class Images extends AbstractSync
                     break;
 
                 case 2:
-                    $product = $this->db->queryPrepared(
+                    $product = $this->db->getSingleObject(
                         "SELECT tartikel.cArtNr, tartikel.cBarcode, tartikel.cName, tseo.cSeo
                             FROM teigenschaftwert, teigenschaft, tartikel
                             JOIN tseo
@@ -490,10 +486,9 @@ final class Images extends AbstractSync
                                 AND tsprache.cShopStandard = 'Y'
                                 AND teigenschaft.kArtikel = tartikel.kArtikel
                                 AND teigenschaftwert.kEigenschaftWert = :cid",
-                        ['cid' => (int)$image->kEigenschaftWert],
-                        ReturnType::SINGLE_OBJECT
+                        ['cid' => (int)$image->kEigenschaftWert]
                     );
-                    if (!empty($product->cArtNr) && !empty($propValue->cArtNr)) {
+                    if ($product !== null && !empty($product->cArtNr) && !empty($propValue->cArtNr)) {
                         $imageName = $this->convertUmlauts($product->cArtNr) .
                             '_' .
                             $this->convertUmlauts($propValue->cArtNr);
@@ -501,7 +496,7 @@ final class Images extends AbstractSync
                     break;
 
                 case 3:
-                    $product = $this->db->queryPrepared(
+                    $product = $this->db->getSingleObject(
                         "SELECT tartikel.cArtNr, tartikel.cBarcode, tartikel.cName, tseo.cSeo
                             FROM teigenschaftwert, teigenschaft, tartikel
                             JOIN tseo
@@ -513,15 +508,15 @@ final class Images extends AbstractSync
                                 AND tsprache.cShopStandard = 'Y'
                                 AND teigenschaft.kArtikel = tartikel.kArtikel
                                 AND teigenschaftwert.kEigenschaftWert = :cid",
-                        ['cid' => $image->kEigenschaftWert],
-                        ReturnType::SINGLE_OBJECT
+                        ['cid' => $image->kEigenschaftWert]
                     );
 
-                    $attribute = $this->db->query(
-                        'SELECT cName FROM teigenschaft WHERE kEigenschaft = ' . $propValue->kEigenschaft,
-                        ReturnType::SINGLE_OBJECT
+                    $attribute = $this->db->getSingleObject(
+                        'SELECT cName FROM teigenschaft WHERE kEigenschaft = :aid',
+                        ['aid' => $propValue->kEigenschaft]
                     );
-                    if ((!empty($product->cSeo) || !empty($product->cName))
+                    if ($attribute !== null
+                        && (!empty($product->cSeo) || !empty($product->cName))
                         && !empty($attribute->cName)
                         && !empty($propValue->cName)
                     ) {
@@ -543,27 +538,17 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param object $image
-     * @param string $ext
+     * @param stdClass $image
+     * @param string   $ext
      * @return string
      */
-    private function getCategoryImageName($image, string $ext): string
+    private function getCategoryImageName(stdClass $image, string $ext): string
     {
         $imageName = $image->cPfad;
         if (empty($image->kKategorie) || !$this->config['bilder_kategorie_namen']) {
             return $this->getNewFilename((\pathinfo($imageName)['filename']) . '.' . $ext);
         }
-        $attr = $this->db->select(
-            'tkategorieattribut',
-            'kKategorie',
-            (int)$image->kKategorie,
-            'cName',
-            \KAT_ATTRIBUT_BILDNAME
-        );
-        if (!empty($attr->cWert)) {
-            return $attr->cWert . '.' . $ext;
-        }
-        $data = $this->db->queryPrepared(
+        $data = $this->db->getSingleObject(
             "SELECT tseo.cSeo, tkategorie.cName
                 FROM tkategorie
                 JOIN tseo
@@ -573,10 +558,9 @@ final class Images extends AbstractSync
                     ON tsprache.kSprache = tseo.kSprache
                 WHERE tkategorie.kKategorie = :cid
                     AND tsprache.cShopStandard = 'Y'",
-            ['cid' => (int)$image->kKategorie],
-            ReturnType::SINGLE_OBJECT
+            ['cid' => (int)$image->kKategorie]
         );
-        if (!empty($data->cName) && (int)$this->config['bilder_kategorie_namen'] === 1) {
+        if ($data !== null && !empty($data->cName) && (int)$this->config['bilder_kategorie_namen'] === 1) {
             $imageName = $this->removeSpecialChars($data->cSeo ?: $this->convertUmlauts($data->cName)) . '.' . $ext;
         } else {
             $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
@@ -586,20 +570,19 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param object $image
-     * @param string $ext
+     * @param stdClass $image
+     * @param string   $ext
      * @return string
      */
-    private function getManufacturerImageName($image, string $ext): string
+    private function getManufacturerImageName(stdClass $image, string $ext): string
     {
-        $data = $this->db->queryPrepared(
+        $data = $this->db->getSingleObject(
             'SELECT cName, cSeo
                 FROM thersteller
                 WHERE kHersteller = :mid',
-            ['mid' => $image->kHersteller],
-            ReturnType::SINGLE_OBJECT
+            ['mid' => $image->kHersteller]
         );
-        if (!empty($data->cSeo) && (int)$this->config['bilder_hersteller_namen'] === 1) {
+        if ($data !== null && !empty($data->cSeo) && (int)$this->config['bilder_hersteller_namen'] === 1) {
             $imageName = $this->removeSpecialChars($data->cSeo ?: $this->convertUmlauts($data->cName)) . '.' . $ext;
         } else {
             $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
@@ -609,27 +592,26 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param object $image
-     * @param string $ext
+     * @param stdClass $image
+     * @param string   $ext
      * @return string
      */
-    private function getCharacteristicValueImageName($image, string $ext): string
+    private function getCharacteristicValueImageName(stdClass$image, string $ext): string
     {
         $conf = (int)$this->config['bilder_merkmalwert_namen'];
         if ($conf === 2) {
             $imageName = $image->cPfad . '.' . $ext;
         } else {
-            $data = $this->db->queryPrepared(
+            $data = $this->db->getSingleObject(
                 'SELECT tmerkmalwertsprache.cSeo, tmerkmalwertsprache.cWert
                     FROM tmerkmalwertsprache
                     JOIN tsprache
                         ON tsprache.kSprache = tmerkmalwertsprache.kSprache
                     WHERE kMerkmalWert = :cid
                         AND tsprache.cShopStandard = \'Y\'',
-                ['cid' => $image->kMerkmalWert],
-                ReturnType::SINGLE_OBJECT
+                ['cid' => $image->kMerkmalWert]
             );
-            if (!empty($data->cSeo) && $conf === 1) {
+            if ($data !== null && !empty($data->cSeo) && $conf === 1) {
                 $imageName = $this->removeSpecialChars($data->cSeo ?: $this->convertUmlauts($data->cName)) . '.' . $ext;
             } else {
                 $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
@@ -640,24 +622,23 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param object $image
+     * @param stdClass $image
      * @param string $ext
      * @return string
      */
-    private function getCharacteristicImageName($image, string $ext): string
+    private function getCharacteristicImageName(stdClass $image, string $ext): string
     {
         $conf = (int)$this->config['bilder_merkmal_namen'];
         if ($conf === 2) {
             $imageName = $image->cPfad . '.' . $ext;
         } else {
-            $data = $this->db->queryPrepared(
+            $data = $this->db->getSingleObject(
                 'SELECT cName
                     FROM tmerkmal
                     WHERE kMerkmal = :cid',
-                ['cid' => $image->kMerkmal],
-                ReturnType::SINGLE_OBJECT
+                ['cid' => $image->kMerkmal]
             );
-            if (!empty($data->cName) && $conf === 1) {
+            if ($data !== null && !empty($data->cName) && $conf === 1) {
                 $imageName = $this->removeSpecialChars($this->convertUmlauts($data->cName)) . '.' . $ext;
             } else {
                 $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
@@ -669,7 +650,7 @@ final class Images extends AbstractSync
 
     /**
      * @param string $str
-     * @return mixed
+     * @return string
      */
     private function convertUmlauts(string $str): string
     {
@@ -708,7 +689,6 @@ final class Images extends AbstractSync
         $branding = null
     ): bool {
         $container        = $this->config['container_verwenden'] === 'Y';
-        $enlarge          = $this->config['bilder_skalieren'] === 'Y';
         $extension        = $this->getNewExtension($target);
         $target           = \PFAD_ROOT . $target;
         [$width, $height] = \getimagesize($source);
@@ -717,7 +697,7 @@ final class Images extends AbstractSync
 
             return false;
         }
-        if (!$enlarge && $width < $targetWidth && $height < $targetHeight) {
+        if ($width < $targetWidth && $height < $targetHeight) {
             $newWidth  = $width;
             $newHeight = $height;
         } else {
@@ -739,7 +719,7 @@ final class Images extends AbstractSync
     /**
      * @param array $xml
      */
-    private function handleDeletes($xml): void
+    private function handleDeletes(array $xml): void
     {
         \executeHook(\HOOK_BILDER_XML_BEARBEITEDELETES, [
             'Kategorie'        => $xml['del_bilder']['kKategoriePict'] ?? [],
@@ -866,8 +846,8 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param resource    $im
-     * @param object|null $config
+     * @param resource|\GdImage $im
+     * @param object|null      $config
      * @return mixed
      */
     private function brandImage($im, $config)
@@ -992,15 +972,15 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param resource $destImg
-     * @param resource $srcImg
-     * @param int      $destX
-     * @param int      $destY
-     * @param int      $srcX
-     * @param int      $srxY
-     * @param int      $srcW
-     * @param int      $srcH
-     * @param int      $pct
+     * @param resource|\GdImage $destImg
+     * @param resource|\GdImage $srcImg
+     * @param int               $destX
+     * @param int               $destY
+     * @param int               $srcX
+     * @param int               $srxY
+     * @param int               $srcW
+     * @param int               $srcH
+     * @param int               $pct
      * @return bool
      */
     private function imagecopymergeAlpha(
@@ -1103,7 +1083,7 @@ final class Images extends AbstractSync
      * @param bool     $branding
      * @param int|null $containerWidth
      * @param int|null $containerHeight
-     * @return false|resource
+     * @return false|resource|\GdImage
      */
     private function createImage(
         string $source,
@@ -1168,10 +1148,10 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param resource $im
-     * @param string   $format
-     * @param string   $path
-     * @param int      $quality
+     * @param resource|\GdImage $im
+     * @param string            $format
+     * @param string            $path
+     * @param int               $quality
      * @return bool
      */
     private function saveImage($im, string $format, string $path, int $quality = 80): bool
@@ -1181,16 +1161,16 @@ final class Images extends AbstractSync
         }
         switch (\strtolower($format)) {
             case 'jpg':
-                $res = \function_exists('imagejpeg') ? \imagejpeg($im, $path, $quality) : false;
+                $res = \function_exists('imagejpeg') && \imagejpeg($im, $path, $quality);
                 break;
             case 'png':
-                $res = \function_exists('imagepng') ? \imagepng($im, $path) : false;
+                $res = \function_exists('imagepng') && \imagepng($im, $path);
                 break;
             case 'gif':
-                $res = \function_exists('imagegif') ? \imagegif($im, $path) : false;
+                $res = \function_exists('imagegif') && \imagegif($im, $path);
                 break;
             case 'bmp':
-                $res = \function_exists('imagewbmp') ? \imagewbmp($im, $path) : false;
+                $res = \function_exists('imagewbmp') && \imagewbmp($im, $path);
                 break;
             default:
                 $res = false;

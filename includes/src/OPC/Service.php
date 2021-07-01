@@ -4,7 +4,6 @@ namespace JTL\OPC;
 
 use Exception;
 use JTL\Backend\AdminIO;
-use JTL\DB\DbInterface;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
 use JTL\Filter\Items\Characteristic;
@@ -29,7 +28,7 @@ class Service
     protected $adminName = '';
 
     /**
-     * @var DbInterface
+     * @var DB
      */
     protected $db;
 
@@ -46,7 +45,6 @@ class Service
     public function __construct(DB $db)
     {
         $this->db = $db;
-
         Shop::Container()->getGetText()
             ->setLanguage(Shop::getCurAdminLangTag())
             ->loadAdminLocale('pages/opc');
@@ -79,6 +77,7 @@ class Service
      */
     public function getEditorMessages(): array
     {
+        $messages     = [];
         $messageNames = [
             'opcImportSuccessTitle',
             'opcImportSuccess',
@@ -90,9 +89,12 @@ class Service
             'Cancel',
             'opcPageLocked',
             'dbUpdateNeeded',
+            'indefinitePeriodOfTime',
+            'notScheduled',
+            'now',
         ];
 
-        foreach ([13,14,7] as $i => $stepcount) {
+        foreach ([13, 14, 7] as $i => $stepcount) {
             for ($j = 0; $j < $stepcount; $j++) {
                 $messageNames[] = 'tutStepTitle_' . $i . '_' . $j;
                 $messageNames[] = 'tutStepText_' . $i . '_' . $j;
@@ -100,7 +102,7 @@ class Service
         }
 
         foreach ($messageNames as $name) {
-            $messages[$name] = __($name);
+            $messages[$name] = \__($name);
         }
 
         return $messages;
@@ -210,7 +212,14 @@ class Service
      */
     public function getBlueprintInstance(int $id): PortletInstance
     {
-        return $this->getBlueprint($id)->getInstance();
+        $instance = $this->getBlueprint($id)->getInstance();
+
+        Shop::fire('shop.OPC.Service.getBlueprintInstance', [
+            'id' => $id,
+            'instance' => &$instance
+        ]);
+
+        return $instance;
     }
 
     /**
@@ -225,10 +234,10 @@ class Service
 
     /**
      * @param string $name
-     * @param array $data
+     * @param array  $data
      * @throws Exception
      */
-    public function saveBlueprint($name, $data): void
+    public function saveBlueprint(string $name, array $data): void
     {
         $blueprint = (new Blueprint())->deserialize(['name' => $name, 'content' => $data]);
         $this->db->saveBlueprint($blueprint);
@@ -248,7 +257,7 @@ class Service
      * @return PortletInstance
      * @throws Exception
      */
-    public function createPortletInstance($class): PortletInstance
+    public function createPortletInstance(string $class): PortletInstance
     {
         $portlet = $this->db->getPortlet($class);
 
@@ -264,7 +273,7 @@ class Service
      * @return PortletInstance
      * @throws Exception
      */
-    public function getPortletInstance($data): PortletInstance
+    public function getPortletInstance(array $data): PortletInstance
     {
         if ($data['class'] === 'MissingPortlet') {
             return $this->createPortletInstance($data['missingClass'])
@@ -280,19 +289,19 @@ class Service
      * @return string
      * @throws Exception
      */
-    public function getPortletPreviewHtml($data): string
+    public function getPortletPreviewHtml(array $data): string
     {
         return $this->getPortletInstance($data)->getPreviewHtml();
     }
 
     /**
-     * @param string $portletClass
-     * @param string $missingClass
-     * @param array $props
+     * @param string      $portletClass
+     * @param string|null $missingClass
+     * @param array       $props
      * @return string
      * @throws Exception
      */
-    public function getConfigPanelHtml($portletClass, $missingClass, $props): string
+    public function getConfigPanelHtml(string $portletClass, ?string $missingClass, array $props): string
     {
         return $this->getPortletInstance([
             'class'        => $portletClass,
@@ -342,22 +351,20 @@ class Service
         return Request::verifyGPCDataInt('opcEditedPageKey');
     }
 
+
     /**
      * @param string $propname
-     * @param array $enabledFilters
+     * @param array  $enabledFilters
      * @return string
      * @throws \SmartyException
      */
-    public function getFilterList(string $propname, array $enabledFilters = [])
+    public function getFilterList(string $propname, array $enabledFilters = []): string
     {
         $filters = $this->getFilterOptions($enabledFilters);
-        $smarty  = Shop::Smarty();
-        $html    = $smarty
-            ->assign('propname', $propname)
+
+        return Shop::Smarty()->assign('propname', $propname)
             ->assign('filters', $filters)
             ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/config/filter-list.tpl');
-
-        return $html;
     }
 
     /**

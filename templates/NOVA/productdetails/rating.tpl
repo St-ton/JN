@@ -5,8 +5,12 @@
         {else}
             {lang key='productRating' section='product rating' assign='ratingLabelText'}
         {/if}
-        {block name='productdetails-rating'}
-        <span class="rating" title="{$ratingLabelText}: {$stars}/5">
+        {block name='productdetails-rating-main'}
+        {if isset($link)}
+            <a class="rating" href="{$link}#tab-votes" title="{$ratingLabelText}: {$stars}/5" aria-label={lang key='Votes'}>
+        {else}
+            <span class="rating" title="{$ratingLabelText}: {$stars}/5">
+        {/if}
         {strip}
             {if $stars >= 5}
                 <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
@@ -42,7 +46,12 @@
                 <i class="fas fa-star-half-alt"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
             {/if}
         {/strip}
-        </span>
+
+        {if isset($link)}
+            </a>
+        {else}
+            </span>
+        {/if}
         {/block}
     {/if}
 {/block}

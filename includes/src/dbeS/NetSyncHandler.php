@@ -63,12 +63,12 @@ class NetSyncHandler
         // by syncdata
         $name          = \urldecode($_REQUEST['uid']);
         $pass          = \urldecode($_REQUEST['upwd']);
-        $authenticated = (\strlen($name) > 0 && \strlen($pass) > 0)
-            ? (new Synclogin($this->db, $this->logger))->checkLogin($name, $pass)
-            : false;
+        $authenticated = \strlen($name) > 0
+            && \strlen($pass) > 0
+            && (new Synclogin($this->db, $this->logger))->checkLogin($name, $pass);
         if ($authenticated) {
             \session_start();
-            $_SESSION['bAuthed'] = $authenticated;
+            $_SESSION['bAuthed'] = true;
         }
 
         return $authenticated;
@@ -78,7 +78,7 @@ class NetSyncHandler
      * @param int        $code
      * @param null|mixed $data
      */
-    protected static function throwResponse($code, $data = null): void
+    protected static function throwResponse(int $code, $data = null): void
     {
         $response         = new stdClass();
         $response->nCode  = $code;

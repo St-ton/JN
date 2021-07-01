@@ -27,6 +27,9 @@ final class Blueprints extends AbstractItem
             return InstallCode::MISSING_BLUEPRINTS;
         }
         foreach ($bpNode['Blueprint'] as $i => $blueprint) {
+            if (!\is_array($blueprint)) {
+                continue;
+            }
             $i = (string)$i;
             if (!isset($blueprint['Name'])) {
                 return InstallCode::INVALID_BLUEPRINT_NAME;

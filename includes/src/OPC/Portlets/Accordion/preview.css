@@ -12,6 +12,9 @@
   padding: 8px;
   text-decoration: none;
 }
+.opc-Accordion-group .opc-Accordion-head:after {
+  content: "" !important;
+}
 .opc-Accordion-group .opc-Accordion-head.collapsed i:before {
   content: "";
 }

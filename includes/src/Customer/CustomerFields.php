@@ -6,7 +6,6 @@ use ArrayAccess;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use Traversable;
 use function Functional\map;
@@ -51,13 +50,12 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     {
         $this->langID = $langID;
         if (!isset(self::$fields[$langID])) {
-            self::$fields[$langID] = Shop::Container()->getDB()->queryPrepared(
+            self::$fields[$langID] = Shop::Container()->getDB()->getCollection(
                 'SELECT kKundenfeld, kSprache, cName, cWawi, cTyp, nSort, nPflicht, nEditierbar
                     FROM tkundenfeld
                     WHERE kSprache = :langID
                     ORDER BY nSort',
-                ['langID' => $langID],
-                ReturnType::COLLECTION
+                ['langID' => $langID]
             )->mapInto(CustomerField::class)->keyBy(static function (CustomerField $field) {
                 return $field->getID();
             })->toArray();
@@ -152,7 +150,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * @inheritDoc
+     * @return array
      */
     public function __debugInfo(): array
     {

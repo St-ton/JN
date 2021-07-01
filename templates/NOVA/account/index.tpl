@@ -6,7 +6,7 @@
     {block name='account-index-content'}
         {if isset($smarty.get.reg)}
             {block name='account-index-alert'}
-                {container}
+                {container fluid=$Link->getIsFluid()}
                     {alert variant="success"}{lang key='accountCreated' section='global'}{/alert}
                 {/container}
             {/block}
@@ -26,15 +26,15 @@
                     };
                     eModal.confirm(options).then(
                         function() {
-                            window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1"
+                            window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1&token={$smarty.session.jtl_token}"
                         }
                     );
                 </script>{/inline_script}
             {/block}
         {/if}
 
-        {opcMountPoint id='opc_before_account'}
-        {container}
+        {container fluid=$Link->getIsFluid()}
+            {opcMountPoint id='opc_before_account'}
             {row id="account"}
                 {col cols=12}
                     {if $step === 'login'}

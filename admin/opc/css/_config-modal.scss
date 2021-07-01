@@ -12,6 +12,10 @@
     }
   }
 
+  .colorpicker-input:placeholder-shown ~ .input-group-append i {
+    visibility: hidden !important;
+  }
+
   .product-filter-config {
     label {
       display: block;
@@ -304,7 +308,8 @@
   }
 }
 
-#opc .image-btn {
+#opc .image-btn ,
+#opc .video-btn {
   min-width: 64px;
   min-height: 64px;
   display: block;
@@ -321,6 +326,12 @@
       object-fit: contain;
     }
   }
+}
+
+#opc .video-btn video {
+  background: url('../gfx/upload-stub.png');
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 #opc .zone-props {

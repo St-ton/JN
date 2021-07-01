@@ -13,7 +13,7 @@
     {literal}
     function delInputRow() {
         i -= 1;
-        $('#price_range tbody tr:last').remove();
+        $('#price_range tbody tr').last().remove();
     }
 
     function addShippingCombination() {
@@ -69,11 +69,11 @@
     {/literal}
 </script>
 
-{assign var=cTitel value=__('createShippingMethod')}
+{assign var=cTitel value=__('createShippingMethodTitle')}
 {assign var=cBeschreibung value=__('createShippingMethodDesc')}
 
 {if isset($Versandart->kVersandart) && $Versandart->kVersandart > 0}
-    {assign var=cTitel value=__('modifyedShippingType')}
+    {assign var=cTitel value=__('modifyedShippingTypeTitle')|sprintf:$Versandart->cName}
     {assign var=cBeschreibung value=""}
 {/if}
 
@@ -231,7 +231,7 @@
                                         data-selected-text-format="count > 2"
                                         data-size="7"
                                         data-actions-box="true">
-                                    <option value="-1" {if $gesetzteKundengruppen.alle}selected{/if}>{__('all')}</option>
+                                    <option value="-1" {if isset($gesetzteKundengruppen.alle) && $gesetzteKundengruppen.alle}selected{/if}>{__('all')}</option>
                                     <option data-divider="true"></option>
                                     {foreach $customerGroups as $customerGroup}
                                         {assign var=classID value=$customerGroup->getID()}
@@ -314,7 +314,7 @@
                         <hr class="mb-3">
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right">
-                                {__('shippingPrice')} {__('amount')}:
+                                {__('amount')}:
                             </label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input type="text" id="fPreisNetto" name="fPreis" value="{if isset($Versandart->fPreis)}{$Versandart->fPreis}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxfPreisNetto', this)" /> <span id="ajaxfPreisNetto"></span>*}
@@ -323,7 +323,11 @@
                     {/if}
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right">
-                                {__('freeShipping')}:
+                                {if $versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl'}
+                                    {__('freeShippingBasketValue')}:
+                                {else}
+                                    {__('freeShipping')}:
+                                {/if}
                             </label>
                             <div class="col-sm-4 pl-sm-3 order-last order-sm-2">
                                 <select id="versandkostenfreiAktiv" name="versandkostenfreiAktiv" class="custom-select">
@@ -331,7 +335,7 @@
                                     <option value="1" {if isset($Versandart->fVersandkostenfreiAbX) && $Versandart->fVersandkostenfreiAbX > 0}selected{/if}>{__('yes')}</option>
                                 </select>
                             </div>
-                            <div class="col-sm pr-sm-5 order-last order-sm-2">
+                            <div class="col-sm pr-sm-5 order-last order-sm-2 {if $versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl'}d-none{/if}">
                                 <input type="text" id="fVersandkostenfreiAbX" name="fVersandkostenfreiAbX" class="form-control price_large" value="{if isset($Versandart->fVersandkostenfreiAbX)}{$Versandart->fVersandkostenfreiAbX}{/if}">{* onKeyUp="setzePreisAjax(false, 'ajaxversandkostenfrei', this)" /> <span id="ajaxversandkostenfrei"></span>*}
                             </div>
                         </div>
@@ -411,7 +415,6 @@
                                                 <option value="{$vclass->kVersandklasse}">{$vclass->cName}</option>
                                             {/foreach}
                                         </select>
-                                        <span class="input-group-addon">{getHelpDesc cDesc=__('shippingclassDesc')}</span>
                                     </div>
                                 {/if}
                             </div>
@@ -451,7 +454,7 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <div class="subheading1">{__('acceptedPaymentMethods')}</div>
+                        <div class="subheading1">{__('acceptedPaymentMethods')} {getHelpDesc cDesc=__('acceptedPaymentMethodsDesc')}</div>
                         <hr class="mb-n3">
                     </div>
                     <div class="card-body">

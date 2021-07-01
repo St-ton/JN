@@ -3,7 +3,6 @@
 namespace JTL\Boxes\Items;
 
 use JTL\Catalog\Product\ArtikelListe;
-use JTL\DB\ReturnType;
 use JTL\Helpers\SearchSpecial;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -34,7 +33,7 @@ final class TopOffers extends AbstractBox
                 $limit . \md5($stockFilterSQL . $parentSQL);
             if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached     = false;
-                $productIDs = Shop::Container()->getDB()->queryPrepared(
+                $productIDs = Shop::Container()->getDB()->getObjects(
                     "SELECT tartikel.kArtikel
                         FROM tartikel
                         LEFT JOIN tartikelsichtbarkeit 
@@ -45,8 +44,7 @@ final class TopOffers extends AbstractBox
                         $stockFilterSQL .
                         $parentSQL . '
                         LIMIT ' . $limit,
-                    ['cid' => $customerGroupID],
-                    ReturnType::ARRAY_OF_OBJECTS
+                    ['cid' => $customerGroupID]
                 );
                 Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }

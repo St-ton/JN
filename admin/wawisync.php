@@ -1,12 +1,13 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+
 $oAccount->permission('WAWI_SYNC_VIEW', true, true);
 
 $alertHelper = Shop::Container()->getAlertService();
@@ -27,8 +28,7 @@ if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && Form::validateToken()) {
                 ON DUPLICATE KEY UPDATE
                 cName = :cName,
                 cPass = :cPass',
-            ['cName' => $upd->cName, 'cPass' => $upd->cPass],
-            ReturnType::AFFECTED_ROWS
+            ['cName' => $upd->cName, 'cPass' => $upd->cPass]
         );
 
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');

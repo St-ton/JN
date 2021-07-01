@@ -15,10 +15,7 @@ msgid "localVideo"
 msgstr "Lokales Video"
 
 msgid "youtubeNote"
-msgstr "Weisen Sie in Ihrer Datenschutzerklärung auf folgende Punkte hin:<br>- YouTube-Videos werden im „erweiterten Datenschutzmodus“ in Ihre Seiten eingebettet.<br>- Der Aufruf der Seiten führt zur Verbindungsaufnahme mit YouTube und DoubleClick.<br>- Schon ein Klick auf das Video kann weitere Datenverarbeitungsvorgänge auslösen, auf die der Website-Betreiber keinen Einfluss mehr hat. "
-"„erweiterten Datenschutzmodus“ in Ihre Seiten eingebettet.<br>- Der Aufruf der Seiten führt zur "
-"Verbindungsaufnahme mit YouTube und DoubleClick.<br>- Schon ein Klick auf das Video kann weitere "
-"Datenverarbeitungsvorgänge auslösen, auf die der Website-Betreiber keinen Einfluss mehr hat."
+msgstr "Weisen Sie in Ihrer Datenschutzerklärung auf folgende Punkte hin:<br/>- YouTube-Videos werden im „erweiterten Datenschutzmodus“ in Ihre Seiten eingebettet.<br>- Der Aufruf der Seiten führt zur Verbindungsaufnahme mit YouTube und DoubleClick.<br>- Schon ein Klick auf das Video kann weitere Datenverarbeitungsvorgänge auslösen, auf die der Website-Betreiber keinen Einfluss mehr hat. "
 
 msgid "videoID"
 msgstr "Video-ID"
@@ -45,6 +42,12 @@ msgstr "Die Video-ID finden Sie in der Vimeo-URL als letzten Teil nach dem „/�
 msgid "repeatVideo"
 msgstr "Video nach dem Abspielen wiederholen"
 
+msgid "muteVideo"
+msgstr "Tonausgabe unterdrücken"
+
+msgid "autoplayVideo"
+msgstr "automatisch abspielen"
+
 msgid "showImage"
 msgstr "Bild anzeigen"
 
@@ -56,3 +59,18 @@ msgstr "Kanalinformationen anzeigen"
 
 msgid "videoURL"
 msgstr "Video-URL"
+
+msgid "colorYtDesc"
+msgstr "Farbe der Steuerelemente"
+
+msgid "widthPx"
+msgstr "Breite (px)"
+
+msgid "heightPx"
+msgstr "Höhe (px)"
+
+msgid "startSec"
+msgstr "Start bei Sekunde"
+
+msgid "endSec"
+msgstr "Ende bei Sekunde"

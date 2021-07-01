@@ -3,10 +3,8 @@
 namespace JTL\Media\Image;
 
 use Generator;
-use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
-use JTL\Shop;
 use PDO;
 use stdClass;
 
@@ -21,9 +19,12 @@ class ConfigGroup extends AbstractImage
     /**
      * @var string
      */
-    protected $regEx = '/^media\/image\/(?P<type>configgroup)' .
-    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
-    '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
+    public const REGEX = '/^media\/image'
+    . '\/(?P<type>configgroup)'
+    . '\/(?P<id>\d+)'
+    . '\/(?P<size>xs|sm|md|lg|xl)'
+    . '\/(?P<name>[' . self::REGEX_ALLOWED_CHARS . ']+)'
+    . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
      * @inheritdoc
@@ -32,9 +33,9 @@ class ConfigGroup extends AbstractImage
     {
         return (object)[
             'stmt' => 'SELECT cBildpfad, 0 AS number 
-                        FROM tkonfiggruppe 
-                        WHERE kKonfiggruppe = :cid 
-                        ORDER BY nSort ASC',
+                           FROM tkonfiggruppe 
+                           WHERE kKonfiggruppe = :cid 
+                           ORDER BY nSort ASC',
             'bind' => ['cid' => $id]
         ];
     }
@@ -42,9 +43,9 @@ class ConfigGroup extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getImageNames(MediaImageRequest $req): array
+    public function getImageNames(MediaImageRequest $req): array
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->getCollection(
             'SELECT a.kKonfiggruppe, t.cName, cBildPfad AS path
                 FROM tkonfiggruppe a
                 JOIN tkonfiggruppesprache t 
@@ -53,8 +54,7 @@ class ConfigGroup extends AbstractImage
                     ON tsprache.kSprache = t.kSprache
                 WHERE a.kKonfiggruppe = :cid
                 AND tsprache.cShopStandard = \'Y\'',
-            ['cid' => $req->getID()],
-            ReturnType::COLLECTION
+            ['cid' => $req->getID()]
         )->map(static function ($item) {
             return self::getCustomName($item);
         })->toArray();
@@ -71,9 +71,9 @@ class ConfigGroup extends AbstractImage
         } elseif (\method_exists($mixed, 'getSprache')) {
             $result = $mixed->getSprache()->getName();
         } elseif (isset($mixed->path)) {
-            return \pathinfo($mixed->path)['filename'];
+            $result = \pathinfo($mixed->path)['filename'];
         } elseif (isset($mixed->cBildpfad)) {
-            return \pathinfo($mixed->cBildpfad)['filename'];
+            $result = \pathinfo($mixed->cBildpfad)['filename'];
         }
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
@@ -90,23 +90,22 @@ class ConfigGroup extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getPathByID($id, int $number = null): ?string
+    public function getPathByID($id, int $number = null): ?string
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->getSingleObject(
             'SELECT cBildpfad AS path 
-                    FROM tkonfiggruppe 
-                    WHERE kKonfiggruppe = :cid LIMIT 1',
-            ['cid' => $id],
-            ReturnType::SINGLE_OBJECT
+                FROM tkonfiggruppe 
+                WHERE kKonfiggruppe = :cid LIMIT 1',
+            ['cid' => $id]
         )->path ?? null;
     }
 
     /**
      * @inheritdoc
      */
-    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = Shop::Container()->getDB()->query(
+        $images = $this->db->getPDOStatement(
             'SELECT a.kKonfiggruppe AS id, t.cName, cBildPfad AS path
                 FROM tkonfiggruppe a
                 JOIN tkonfiggruppesprache t 
@@ -115,8 +114,7 @@ class ConfigGroup extends AbstractImage
                     ON tsprache.kSprache = t.kSprache
                 WHERE tsprache.cShopStandard = \'Y\'
                   AND cBildPfad IS NOT NULL
-                  AND cBildPfad != \'\'' . self::getLimitStatement($offset, $limit),
-            ReturnType::QUERYSINGLE
+                  AND cBildPfad != \'\'' . self::getLimitStatement($offset, $limit)
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([

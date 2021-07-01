@@ -2,10 +2,8 @@
 
 namespace JTL\Filter\States;
 
-use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
-use JTL\Filter\Items\Category;
 use JTL\Filter\Join;
 use JTL\Filter\ProductFilter;
 use JTL\MagicCompatibilityTrait;
@@ -55,11 +53,11 @@ class BaseCategory extends AbstractFilter
 
     /**
      * @param bool $includeSubCategories
-     * @return Category
+     * @return $this
      */
-    public function setIncludeSubCategories($includeSubCategories): self
+    public function setIncludeSubCategories(bool $includeSubCategories): self
     {
-        $this->includeSubCategories = (bool)$includeSubCategories;
+        $this->includeSubCategories = $includeSubCategories;
 
         return $this;
     }
@@ -81,7 +79,7 @@ class BaseCategory extends AbstractFilter
     public function setSeo(array $languages): FilterInterface
     {
         if ($this->getValue() > 0) {
-            $seoData = $this->productFilter->getDB()->queryPrepared(
+            $seoData = $this->productFilter->getDB()->getObjects(
                 "SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
                     FROM tseo
                         LEFT JOIN tkategorie
@@ -90,10 +88,9 @@ class BaseCategory extends AbstractFilter
                             ON tkategoriesprache.kKategorie = tkategorie.kKategorie
                             AND tkategoriesprache.kSprache = tseo.kSprache
                     WHERE cKey = 'kKategorie' 
-                        AND kKey = :val
+                        AND kKey IN( :val )
                     ORDER BY tseo.kSprache",
-                ['val' => $this->getValue()],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['val' => \is_array($this->getValue()) ? \implode(', ', $this->getValue()) : $this->getValue()]
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';

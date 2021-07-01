@@ -10,6 +10,7 @@ use JTL\Sitemap\SchemaRenderers\DefaultSchemaRenderer;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'sitemapexport.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
 
 @ini_set('max_execution_time', '0');
 
@@ -27,7 +28,7 @@ $exporter     = new Export(
 );
 $exporter->generate(
     [CustomerGroup::getDefaultGroupID()],
-    LanguageHelper::getAllLanguages(),
+    LanguageHelper::getAllLanguages(0, true),
     $exportConfig->getFactories()
 );
 

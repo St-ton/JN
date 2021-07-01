@@ -11,7 +11,7 @@
                 {if $cnf->cConf === 'Y'}
                     <div class="form-group form-row align-items-center item{if isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->cWertName}">{$cnf->cName}</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $cnf->cInputTyp === 'number'}config-type-number{/if}">
                             {if $cnf->cInputTyp === 'selectbox'}
                                 <select class="custom-select" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
                                     {foreach name=selectfor from=$cnf->ConfWerte item=wert}
@@ -35,29 +35,10 @@
                                     </div>
                                 </div>
                             {elseif $cnf->cInputTyp === 'color'}
-                                <span class="input-group-colorpicker-wrap">
-                                <div id="{$cnf->cWertName}" style="display:inline-block">
-                                    <div style="background-color: {$cnf->gesetzterWert}" class="colorSelector"></div>
-                                </div>
-                                <input type="hidden" name="{$cnf->cWertName}" class="{$cnf->cWertName}_data" value="{$cnf->gesetzterWert}" />
-                                <script type="text/javascript">
-                                    $('#{$cnf->cWertName}').ColorPicker({ldelim}
-                                        color:    '{$cnf->gesetzterWert}',
-                                        onShow:   function (colpkr) {ldelim}
-                                            $(colpkr).fadeIn(500);
-                                            return false;
-                                        {rdelim},
-                                        onHide:   function (colpkr) {ldelim}
-                                            $(colpkr).fadeOut(500);
-                                            return false;
-                                        {rdelim},
-                                        onChange: function (hsb, hex, rgb) {ldelim}
-                                            $('#{$cnf->cWertName} div').css('backgroundColor', '#' + hex);
-                                            $('.{$cnf->cWertName}_data').val('#' + hex);
-                                        {rdelim}
-                                    {rdelim});
-                                </script>
-                                </span>
+                                {include file='snippets/colorpicker.tpl'
+                                    cpID=$cnf->cWertName
+                                    cpName=$cnf->cWertName
+                                    cpValue=$cnf->gesetzterWert}
                             {else}
                                 <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
                             {/if}
@@ -90,12 +71,12 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button name="test" type="submit" value="1" class="btn btn-default">
+                            <button name="test" type="submit" value="1" class="btn btn-default btn-block">
                                 <i class="fal fa-play-circle"></i> {__('methodTest')}
                             </button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
-                            <button name="save" type="submit" value="1" class="btn btn-primary add">
+                            <button name="save" type="submit" value="1" class="btn btn-primary btn-block add">
                             {__('saveWithIcon')}
                             </button>
                         </div>

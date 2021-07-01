@@ -3,12 +3,13 @@
 use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
 use JTL\Checkout\Bestellung;
-use JTL\DB\ReturnType;
 use JTL\Plugin\Helper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\SimpleMail;
+
+/** @global Frontend $session */
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
@@ -36,10 +37,7 @@ if (isset($_GET['i'])) {
         speicherUploads($bestellung);
         $db->delete('tbestellid', 'kBestellung', (int)$bestellid->kBestellung);
     }
-    $db->query(
-        'DELETE FROM tbestellid WHERE dDatum < DATE_SUB(NOW(), INTERVAL 30 DAY)',
-        ReturnType::DEFAULT
-    );
+    $db->query('DELETE FROM tbestellid WHERE dDatum < DATE_SUB(NOW(), INTERVAL 30 DAY)');
     $smarty->assign('abschlussseite', 1);
 } else {
     if (isset($_POST['kommentar'])) {
@@ -108,9 +106,15 @@ $kPlugin = isset($bestellung->Zahlungsart->cModulId)
     : 0;
 if ($kPlugin > 0) {
     $loader = Helper::getLoaderByPluginID($kPlugin, $db);
-    $plugin = $loader->init($kPlugin);
-    $smarty->assign('oPlugin', $plugin)
-        ->assign('plugin', $plugin);
+    try {
+        $plugin = $loader->init($kPlugin);
+        $smarty->assign('oPlugin', $plugin)
+               ->assign('plugin', $plugin);
+    } catch (InvalidArgumentException $e) {
+        Shop::Container()->getLogService()->error(
+            'Associated plugin for payment method ' . $bestellung->Zahlungsart->cModulId . ' not found'
+        );
+    }
 }
 if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {
     $session->cleanUp();

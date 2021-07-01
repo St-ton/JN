@@ -1,11 +1,18 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Groups configuration for default Minify implementation
  *
  * @package Minify
  */
 
-$isAdmin  = isset($_GET['g']) && ($_GET['g'] === 'admin_js' || $_GET['g'] === 'admin_css');
-$template = $isAdmin ? JTL\Backend\AdminTemplate::getInstance() : JTL\Template::getInstance();
+use JTL\Backend\AdminTemplate;
+use JTL\Shop;
 
-return $template->getMinifyArray(true);
+$isAdmin = isset($_GET['g']) && ($_GET['g'] === 'admin_js' || $_GET['g'] === 'admin_css');
+if ($isAdmin) {
+    return AdminTemplate::getInstance()->getMinifyArray(true);
+}
+$resources = Shop::Container()->getTemplateService()->getActiveTemplate()->getResources();
+$resources->init();
+
+return $resources->getMinifyArray(true);

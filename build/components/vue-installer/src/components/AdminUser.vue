@@ -43,7 +43,7 @@
                         <b-input-group-prepend is-text>
                             {{ $t('syncPassword') }} &nbsp; <a @click="wawi.pass = generatePassword()"><icon name="sync"></icon></a>
                         </b-input-group-prepend>
-                        <b-form-input size="35" required v-model="wawi.pass" type="text" :state="wawi.pass.length > 0"></b-form-input>
+                        <b-form-input size="35" required v-model="wawi.pass" type="text" :state="wawi.pass.length > 0 && checkPassword(wawi.pass)"></b-form-input>
                         <b-input-group-append is-text>
                             <icon name="lock"></icon>
                         </b-input-group-append>
@@ -62,7 +62,7 @@ export default {
         const messages = {
             de: {
                 headerMsg:     'Admin- und Sync-Benutzer',
-                leadMsg:       'Konfigurieren Sie die nötigen Zugangsdaten',
+                leadMsg:       'Konfigurieren Sie die nötigen Zugangsdaten. Benutzername und Passwort dürfen Groß- und Kleinbuchstaben, Zahlen sowie folgende Sonderzeichen enthalten: !\\"#$%&\'()*+,-./:;=>?@[\\\\]^_`|}~',
                 adminPassword: 'Admin-Passwort',
                 adminUser:     'Admin-Benutzer',
                 syncPassword:  'Sync-Passwort',
@@ -70,7 +70,7 @@ export default {
             },
             en: {
                 headerMsg:     'Admin and sync user',
-                leadMsg:       'Configure the required credentials',
+                leadMsg:       'Configure the required credentials. User name and password may contain uppercase and lowercase letters, numbers, and the following special characters: !\\"#$%&\'()*+,-./:;=>?@[\\\\]^_`|}~',
                 adminPassword: 'Admin password',
                 adminUser:     'Admin user',
                 syncPassword:  'Sync password',
@@ -81,8 +81,9 @@ export default {
         this.$i18n.add('de', messages.de);
         return {
             admin: {
-                name: 'admin',
-                pass: this.generatePassword()
+                name:   'admin',
+                pass:   this.generatePassword(),
+                locale: this.$i18n.locale()
             },
             wawi:  {
                 name: 'sync',
@@ -97,14 +98,19 @@ export default {
             return this.admin.name.length > 0
                 && this.admin.pass.length > 0
                 && this.wawi.name.length > 0
-                && this.wawi.pass.length > 0;
+                && this.wawi.pass.length > 0
+                && this.checkPassword(this.wawi.pass);
         },
         generatePassword() {
-            let crypto = window.crypto || window.msCrypto,
-                buf    = new Uint8Array(9);
+            const crypto = window.crypto || window.msCrypto,
+                buf = new Uint8Array(9);
             return typeof crypto !== 'undefined'
                 ? btoa(String.fromCharCode.apply(null, crypto.getRandomValues(buf)))
                 : '';
+        },
+        checkPassword(pass) {
+            const matches = pass.match(/[^A-Za-z0-9\!"\#\$%&\'\(\)\*\+,-\.\/:;\=\>\?@\[\\\\\]\^_`\|\}~]/);
+            return !(matches !== null && matches.length > 0);
         }
     }
 };

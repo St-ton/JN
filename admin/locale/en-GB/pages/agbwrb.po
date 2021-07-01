@@ -5,6 +5,9 @@ msgstr ""
 msgid "agbwrb"
 msgstr "Terms/Withdrawal"
 
+msgid "availableAGBWRB"
+msgstr "Available terms/withdrawals policies"
+
 msgid "agbwrbURL"
 msgstr "https://jtl-url.de/09qo2"
 
@@ -15,13 +18,13 @@ msgid "wrb"
 msgstr "Withdrawal"
 
 msgid "dse"
-msgstr "Privacy statement"
+msgstr "Data privacy notice"
 
 msgid "wrbform"
 msgstr "Model withdrawal form"
 
 msgid "agbWrbInfo"
-msgstr "Here you can store custom texts for your terms and conditions, any information concerning the right of withdrawal and a model withdrawal form. Our partners are happy to help you produce legally incontestable texts. Please find the list of all partners offering help with legal texts here: <i class=\"fa fa-external-link\"></i><a href=\"http://jtl-url.de/rechtstexte\" target=\"_blank\">https://jtl-url.de/legaltexts</a>."
+msgstr "Here you can store custom texts for your terms and conditions, any information concerning the right of withdrawal, a model withdrawal form, and your data privacy notice. Our partners are happy to help you produce legally incontestable texts. Please find the list of all partners offering help with legal texts here: <i class=\"fa fa-external-link\"></i><a href=\"http://jtl-url.de/rechtstexte\" target=\"_blank\">https://jtl-url.de/legaltexts</a>."
 
 msgid "errorInvalidCustomerGroup"
 msgstr "Please enter a valid customer group."

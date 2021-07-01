@@ -155,6 +155,7 @@
                         </div>
                     </div>
                 </form>
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='suchanfrage' isBottom=true}
             {else}
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
@@ -236,6 +237,7 @@
                         </div>
                     </div>
                 </form>
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiErfolglos cAnchor='erfolglos' isBottom=true}
             {else}
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
@@ -294,6 +296,7 @@
                         </div>
                     </div>
                 </form>
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiMapping cAnchor='mapping' isBottom=true}
             {else}
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}

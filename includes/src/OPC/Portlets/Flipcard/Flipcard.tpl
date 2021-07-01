@@ -1,9 +1,9 @@
 {$uid = $instance->getUid()}
 {$trigger = $instance->getProperty('flip-trigger')}
 
-<div id="{$uid}" {if $isPreview}{$instance->getDataAttributeString()}{/if}
-     {$instance->getAnimationDataAttributeString()}
-     class="opc-Flipcard opc-Flipcard-{$instance->getProperty('flip-dir')} {$instance->getAnimationClass()}"
+<div id="{$uid}" {$instance->getAnimationDataAttributeString()}
+     class="opc-Flipcard opc-Flipcard-{$instance->getProperty('flip-dir')}
+            {$instance->getAnimationClass()} {$instance->getStyleClasses()}"
      style="{$instance->getStyleString()}">
     {if $isPreview}
         <a href="#" class="opc-Flipcard-flip-btn opc-no-disable">
@@ -39,12 +39,12 @@
             var flipcardInner = flipcard.find('.opc-Flipcard-inner');
 
             {if $isPreview}
-                flipcard.find('.opc-Flipcard-flip-btn').click(flipCard);
+                flipcard.find('.opc-Flipcard-flip-btn').on('click', flipCard);
             {else}
                 {if $trigger === 'click'}
-                    flipcard.click(flipCard);
+                    flipcard.on('click', flipCard);
                 {else}
-                    flipcard.hover(flipCard);
+                    flipcard.on('mouseenter mouseleave', flipCard);
                 {/if}
             {/if}
 
@@ -71,15 +71,15 @@
 
         function updateHeight_{$uid}()
         {
-            var flipcard      = $('#{$uid}');
-            var flipcardInner = flipcard.find('.opc-Flipcard-inner');
-            var flipcardFaces = flipcardInner.find('.opc-Flipcard-face');
-            var height        = 0;
+            let flipcard      = $('#{$uid}');
+            let flipcardInner = flipcard.find('.opc-Flipcard-inner');
+            let flipcardFaces = flipcardInner.find('.opc-Flipcard-face');
+            let height        = 0;
 
             flipcardInner.css('height', 'auto');
             flipcardFaces.css('height', 'auto');
 
-            flipcardInner.find('.opc-Flipcard-face').each(function(i, elm) {
+            flipcardInner.find('.opc-Flipcard-face').each((i, elm) => {
                 height = Math.max(height, $(elm).height());
             });
 

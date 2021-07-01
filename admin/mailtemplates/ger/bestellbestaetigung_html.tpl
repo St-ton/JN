@@ -112,13 +112,13 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            {if !empty($Kunde->cFirma)}{$Kunde->cFirma}<br>{/if}
+                            {if !empty($Kunde->cFirma)}{$Kunde->cFirma} - {if !empty($Kunde->cZusatz)}{$Kunde->cZusatz}{/if}<br>{/if}
                             {$Kunde->cVorname} {$Kunde->cNachname}<br>
                             {$Kunde->cStrasse} {$Kunde->cHausnummer}<br>
                             {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}<br>{/if}
                             {$Kunde->cPLZ} {$Kunde->cOrt}<br>
                             {if $Kunde->cBundesland}{$Kunde->cBundesland}<br>{/if}
-                            <font style="text-transform: uppercase;">{$Kunde->cLand}</font>
+                            <font style="text-transform: uppercase;">{$Kunde->angezeigtesLand}</font>
                         </font>
                     </td>
                 </tr>
@@ -143,7 +143,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            {$Kunde->cTel}
+                            {$Kunde->cTel|substr:0:2}****{$Kunde->cTel|substr:-4}
                         </font>
                     </td>
                 </tr>
@@ -169,7 +169,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            {$Kunde->cMobil}
+                            {$Kunde->cMobil|substr:0:2}****{$Kunde->cMobil|substr:-4}
                         </font>
                     </td>
                 </tr>
@@ -234,7 +234,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            <strong>UstID:</strong>
+                            <strong>Ust-ID:</strong>
                         </font>
                     </td>
                 </tr>
@@ -290,7 +290,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                                 {if $Bestellung->Lieferadresse->cAdressZusatz}{$Bestellung->Lieferadresse->cAdressZusatz}<br>{/if}
                                 {$Bestellung->Lieferadresse->cPLZ} {$Bestellung->Lieferadresse->cOrt}<br>
                                 {if $Bestellung->Lieferadresse->cBundesland}{$Bestellung->Lieferadresse->cBundesland}<br>{/if}
-                                <font style="text-transform: uppercase;">{$Bestellung->Lieferadresse->cLand}</font>
+                                <font style="text-transform: uppercase;">{$Bestellung->Lieferadresse->angezeigtesLand}</font>
                             </font>
                         </td>
                     </tr>
@@ -315,7 +315,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                     <tr>
                         <td>
                             <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                {$Bestellung->Lieferadresse->cTel}
+                                {$Bestellung->Lieferadresse->cTel|substr:0:2}****{$Bestellung->Lieferadresse->cTel|substr:-4}
                             </font>
                         </td>
                     </tr>
@@ -341,7 +341,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                     <tr>
                         <td>
                             <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                {$Bestellung->Lieferadresse->cMobil}
+                                {$Bestellung->Lieferadresse->cMobil|substr:0:2}****{$Bestellung->Lieferadresse->cMobil|substr:-4}
                             </font>
                         </td>
                     </tr>
@@ -579,7 +579,7 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
     Wir belasten in Kürze folgendes Bankkonto mit der fälligen Summe:<br>
     <br>
     Kontoinhaber: {$Bestellung->Zahlungsinfo->cInhaber}<br>
-    IBAN: {$Bestellung->Zahlungsinfo->cIBAN}<br>
+    IBAN: ****{$Bestellung->Zahlungsinfo->cIBAN|substr:-4}<br>
     BIC: {$Bestellung->Zahlungsinfo->cBIC}<br>
     Bank: {$Bestellung->Zahlungsinfo->cBankName}<br>
     <br>

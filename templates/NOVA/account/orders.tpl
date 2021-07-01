@@ -6,12 +6,12 @@
         {if $Bestellungen|@count > 0}
             {block name='account-orders-orders'}
                 {foreach $orderPagination->getPageItems() as $order}
-                    {card no-body=true class='mb-3'}
+                    {card no-body=true class='account-orders-item'}
                         {cardheader}
                             {link href="{get_static_route id='jtl.php'}?bestellung={$order->kBestellung}"
                                 title="{lang key='showOrder' section='login'}: {lang key='orderNo' section='login'} {$order->cBestellNr}"
                                 data=["toggle" => "tooltip", "placement" => "bottom"]
-                                class="no-deco"}
+                            }
                                 {row}
                                     {col cols=6 md=3 order=1}
                                         <strong><i class="far fa-calendar-alt"></i> {$order->dBestelldatum}</strong>
@@ -25,7 +25,7 @@
                                     {col cols=6 md=4 order=5 order-md=4}
                                         {lang key='orderStatus' section='login'}: {$order->Status}
                                     {/col}
-                                    {col cols=2 md=1 order=3 order-md=5 class="text-right"}
+                                    {col cols=2 md=1 order=3 order-md=5 class="text-right-util"}
                                         <i class="fa fa-eye"></i>
                                     {/col}
                                 {/row}

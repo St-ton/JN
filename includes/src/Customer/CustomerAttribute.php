@@ -2,9 +2,9 @@
 
 namespace JTL\Customer;
 
-use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class CustomerAttribute
@@ -66,17 +66,14 @@ class CustomerAttribute
     public static function load(int $id): self
     {
         $instance = new self();
-        $instance->setRecord(Shop::Container()->getDB()->queryPrepared(
+        $instance->setRecord(Shop::Container()->getDB()->getSingleObject(
             'SELECT tkundenattribut.kKundenAttribut, tkundenattribut.kKunde, tkundenattribut.kKundenfeld,
                    tkundenfeld.cName, tkundenfeld.cWawi, tkundenattribut.cWert, tkundenfeld.nSort,
                    IF(COALESCE(tkundenattribut.cWert, \'\') = \'\', 1, tkundenfeld.nEditierbar) nEditierbar
                 FROM tkundenattribut
                 INNER JOIN tkundenfeld ON tkundenfeld.kKundenfeld = tkundenattribut.kKundenfeld
                 WHERE tkundenattribut.kKundenAttribut = :id',
-            [
-                'id' => $id,
-            ],
-            ReturnType::SINGLE_OBJECT
+            ['id' => $id]
         ));
 
         return $instance;
@@ -120,7 +117,7 @@ class CustomerAttribute
     }
 
     /**
-     * @param int $id
+     * @param int|null $id
      */
     public function setID(?int $id): void
     {
@@ -136,7 +133,7 @@ class CustomerAttribute
     }
 
     /**
-     * @param int $customerID
+     * @param int|null $customerID
      */
     public function setCustomerID(?int $customerID): void
     {
@@ -244,7 +241,7 @@ class CustomerAttribute
      */
     public function setEditable($editable): void
     {
-        $this->editable = $editable ? true : false;
+        $this->editable = (bool)$editable;
     }
 
     /**
@@ -282,7 +279,7 @@ class CustomerAttribute
      */
     public function getRecord(): object
     {
-        $result = new \stdClass();
+        $result = new stdClass();
 
         foreach (self::$mapping as $item => $mapped) {
             $method        = 'get' . $mapped;

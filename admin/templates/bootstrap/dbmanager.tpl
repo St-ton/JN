@@ -4,8 +4,8 @@
 {function table_scope_header table=null}
     <h2>{__('table')}: {$table}
         <div class="btn-group btn-group-xs" role="group">
-            <a href="dbmanager.php?table={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> {__('structure')}</a>
-            <a href="dbmanager.php?select={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> {__('show')}</a>
+            <a href="{$adminURL}/dbmanager.php?table={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> {__('structure')}</a>
+            <a href="{$adminURL}/dbmanager.php?select={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> {__('show')}</a>
         </div>
     </h2>
 {/function}
@@ -44,18 +44,18 @@ var $add_row_tpl = $({$filter_row_tpl_data|strip|json_encode});
 {if isset($info) && isset($info.statement)}var sql_query = {$info.statement|json_encode};{/if}
 
 $(function() {
-    var new_content = '<form action="dbmanager.php?command" method="POST">';
+    var new_content = '<form action="{$adminURL}/dbmanager.php?command" method="POST">';
     new_content += '{$jtl_token}';
     $search = $('#db-search');
 
     $('table.table-sticky-header').stickyTableHeaders({
         fixedOffset: $('.navbar-header')
     });
-    
+
     $search.keyup(function () {
         var val = $(this).val();
         var count = filter_tables(val);
-        
+
         if (count > 0) {
             $search.parent().removeClass('has-error');
         }
@@ -100,7 +100,7 @@ $(function() {
         var $inner_sql = $(this).parents('.query').find('code.sql');
         var old_text   = $inner_sql.html();
 
-        var new_content = '<form action="dbmanager.php?command" method="POST">';
+        var new_content = '<form action="{$adminURL}/dbmanager.php?command" method="POST">';
         new_content += '{$jtl_token}';
         new_content += '<div class="form-group"><textarea name="sql_query_edit" id="sql_query_edit">' + sql_query + '</textarea></div>';
         new_content += '<div class="form-group btn-group-xs last-child">';
@@ -138,7 +138,7 @@ function get_params(p) {
             delete params[i];
         }
     }
-    
+
     params.push(p);
     return params;
 }
@@ -147,7 +147,7 @@ function add_row_listener() {
     $(document).on('click', '*[data-action="add-row"] > a', function(e) {
         var $row = $(this).parent('.fieldset-row');
         var $body = $row.parent('.fieldset-body');
-        
+
         if ($row.is('.fieldset-row:first')) {
             $add_row_tpl
                 .clone()
@@ -166,19 +166,19 @@ function filter_tables(value) {
     var rex = new RegExp(value, 'i');
     var $nav = $('.db-sidenav');
     var $items = $nav.find('li');
-    
+
     $items.hide();
     $nav.unhighlight();
 
     var $found = $items.filter(function () {
         return rex.test($(this).text());
     });
-    
+
     $found.show();
     if ($found.length > 0) {
         $nav.highlight(value);
     }
-    
+
     return $found.length;
 }
 
@@ -360,14 +360,14 @@ $(function() {
         var url = location.pathname.split('/').slice(-1)[0];
         location.href = url + '?' + jQuery.param(p);
     });
-    
+
     $('#paginator')
         .css('left', offset.left)
         .addClass('paginator-bottom');
-        
+
     //var slider = $('#paginator .slider');
     //slider.css('margin-left', (slider.width()/2) * -1);
-    
+
     $(document).scroll(function() {
         var off = Math.max(0, offset.left - $(this).scrollLeft());
         $('#paginator')
@@ -387,7 +387,7 @@ $(function() {
             <nav class="db-sidebar hidden-print hidden-xs hidden-sm">
                 <ul class="nav flex-column db-sidenav">
                     {foreach $tables as $table}
-                        <li><a href="dbmanager.php?select={$table@key}&token={$smarty.session.jtl_token}">{$table@key}</a></li>
+                        <li><a href="{$adminURL}/dbmanager.php?select={$table@key}&token={$smarty.session.jtl_token}">{$table@key}</a></li>
                     {/foreach}
                 </ul>
             </nav>
@@ -395,11 +395,11 @@ $(function() {
 
         <div class="col-md-10">
             <ol class="simple-menu">
-                <li><a href="dbmanager.php">{__('overview')}</a></li>
-                <li><a href="dbmanager.php?command"><span class="glyphicon glyphicon-flash"></span> {__('sqlCommand')}</a></li>
-                <li><a href="dbcheck.php">{__('consistency')}</a></li>
+                <li><a href="{$adminURL}/dbmanager.php">{__('overview')}</a></li>
+                <li><a href="{$adminURL}/dbmanager.php?token={$smarty.session.jtl_token}&command"><span class="glyphicon glyphicon-flash"></span> {__('sqlCommand')}</a></li>
+                <li><a href="{$adminURL}/dbcheck.php">{__('consistency')}</a></li>
             </ol>
-        
+
             {if $sub === 'command'}
                 <h2>{__('sqlCommand')}</h2>
 
@@ -407,14 +407,14 @@ $(function() {
                     <i class="fa fa-keyboard-o" aria-hidden="true"></i>
                     {__('codeCompletion')}
                 </p>
-                
+
                 {if isset($error)}
                     <div class="alert alert-danger" role="alert">
                         {get_class($error)}: <strong>{$error->getMessage()}</strong>
                     </div>
                 {/if}
 
-                <form action="dbmanager.php?command" method="POST">
+                <form action="{$adminURL}/dbmanager.php?command" method="POST">
                     {$jtl_token}
                     <div class="form-group">
                         <textarea name="query" id="query" class="codemirror sql" data-hint='{$jsTypo|json_encode}'>{if isset($info) && isset($info.statement)}{$info.statement}{/if}</textarea>
@@ -423,7 +423,7 @@ $(function() {
                         <button type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__('execute')}</button>
                     </div>
                 </form>
-                
+
                 <!-- ###################################################### -->
                 {if isset($result) && !isset($result[0])}
                     <div class="alert alert-xs alert-success">
@@ -469,11 +469,11 @@ $(function() {
                             </thead>
                             {foreach $tables as $table}
                                 <tr class="text-vcenter{if count($definedTables) > 0 && !($table@key|in_array:$definedTables || $table@key|substr:0:8 === 'xplugin_')} warning{/if}" id="table-{$table@key}">
-                                    <td><a href="dbmanager.php?select={$table@key}&token={$smarty.session.jtl_token}">{$table@key}</a></td>
+                                    <td><a href="{$adminURL}/dbmanager.php?select={$table@key}&token={$smarty.session.jtl_token}">{$table@key}</a></td>
                                     <td class="text-center">
                                         <div class="btn-group btn-group-xs" role="group">
-                                            <a href="dbmanager.php?table={$table@key}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> {__('structure')}</a>
-                                            <a href="dbmanager.php?select={$table@key}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> {__('show')}</a>
+                                            <a href="{$adminURL}/dbmanager.php?table={$table@key}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> {__('structure')}</a>
+                                            <a href="{$adminURL}/dbmanager.php?select={$table@key}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> {__('show')}</a>
                                         </div>
                                     </td>
                                     <td class="text-center">{$table->Engine}</td>
@@ -520,7 +520,7 @@ $(function() {
                             {foreach $indexes as $index}
                                 <tr class="text-vcenter">
                                     <th>{$index->Index_type}</th>
-                                    <td>{array_keys($index->Columns)|implode:'<strong>,</strong> '}</td>
+                                    <td>{implode('<strong>,</strong> ', array_keys($index->Columns))}</td>
                                     <td>{$index@key}</td>
                                 </tr>
                             {/foreach}
@@ -530,15 +530,8 @@ $(function() {
             {elseif $sub === 'select'}
                 {table_scope_header table=$selectedTable}
                 {$headers = array_keys($columns)}
-                
-                <style>
-                    html {
-                        background-color: #fff;
-                    }
-                </style>
-                
                 <div id="filter">
-                    <form method="GET" action="dbmanager.php" data-sql={$info.statement|json_encode}>
+                    <form method="GET" action="{$adminURL}/dbmanager.php" data-sql={$info.statement|json_encode}>
                         <input type="hidden" name="token" value="{$smarty.session.jtl_token}">
                         <input type="hidden" name="select" value="{$selectedTable}">
 
@@ -546,7 +539,7 @@ $(function() {
                             <legend>
                                 <a href="#filter-where">{__('search')}</a>
                             </legend>
-                            
+
                             <div class="fieldset-body">
                                 {if isset($filter.where.col) && $filter.where.col|@count > 0}
                                     {for $i=0 to count($filter.where.col) - 1}
@@ -557,7 +550,7 @@ $(function() {
                                 {/if}
                             </div>
                         </fieldset>
-                        
+
                         <fieldset>
                             <legend>{__('count')}</legend>
                             <div class="fieldset-body">
@@ -573,7 +566,7 @@ $(function() {
                         </fieldset>
                     </form>
                 </div>
-                
+
                 <div class="query">
                     <div class="query-code">
                         <code class="sql"><div>{$info.statement}</div></code>
@@ -581,12 +574,12 @@ $(function() {
                     <div class="query-sub">
                         <span class="text-muted" title="Millisekunden"><i class="fa fa-clock-o" aria-hidden="true"></i> &nbsp;{"`$info.time*1000`"|number_format:2} ms</span>
                         <span class="text-muted"><i class="fa fa-database" aria-hidden="true"></i> &nbsp;{$count|number_format:0} {__('dataEntries')}</span>
-                        <a href="dbmanager.php?command&query={$info.statement|urlencode}">
+                        <a href="{$adminURL}/dbmanager.php?command&query={$info.statement|urlencode}&token={$smarty.session.jtl_token}">
                             <i class="fa fa-pencil" aria-hidden="true"></i> {__('edit')}
                         </a>
                     </div>
                 </div>
-                
+
                 {if count($data) > 0}
                     <div class="table-responsive">
                         <table class="table table-striped table-condensed table-bordered table-hover table-sql table-sticky-header nowrap">
@@ -609,11 +602,15 @@ $(function() {
                                             {$value = $value|escape:'html'|truncate:100:'...'}
                                         {elseif $info->Name|in_array:['float', 'decimal']}
                                             {$class = 'float'}
-                                            {$decimals = (int)$info->Size[1]}
-                                            {$value = $value|number_format:$decimals}
+                                            {if is_array($info->Size)}
+                                                {$decimals = (int)$info->Size[1]}
+                                                {$value = $value|number_format:$decimals}
+                                            {else}
+                                                {$value = $value|number_format:4}
+                                            {/if}
                                         {elseif $info->Name|in_array:['double']}
                                             {$class = 'float'}
-                                            {$value = $value|number_format:2}
+                                            {$value = $value|number_format:4}
                                         {elseif $info->Name|in_array:['tinyint', 'smallint', 'mediumint', 'int', 'bigint']}
                                             {$class = 'int'}
                                         {elseif $info->Name|in_array:['date', 'datetime', 'time', 'timestamp', 'year']}
@@ -637,7 +634,7 @@ $(function() {
                 {if $pages > 1}
                     <div id="pagination" class="pagination-static" data-total="{$pages}" data-current="{$page}"></div>
                 {/if}
-                
+
                 {*if $pages > 1}
                     <div id="paginator" class="paginator">
                         <input type="text" data-slider-min="1" data-slider-max="{$pages}" data-slider-scale="logarithmic" data-slider-step="1" data-slider-value="{$page}" data-slider-handle="square" />

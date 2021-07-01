@@ -12,9 +12,10 @@ interface ItemListInterface
 {
     /**
      * @param int[] $itemIDs
+     * @param bool  $activeOnly
      * @return Collection
      */
-    public function createItems(array $itemIDs): Collection;
+    public function createItems(array $itemIDs, bool $activeOnly = true): Collection;
 
     /**
      * @return Collection

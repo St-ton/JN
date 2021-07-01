@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
@@ -11,13 +10,15 @@ use JTL\Link\Link;
 use JTL\Link\LinkGroup;
 use JTL\Link\LinkGroupList;
 use JTL\Link\LinkInterface;
+use JTL\Media\Image;
 use JTL\PlausiCMS;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step        = 'uebersicht';
 $link        = null;
 $uploadDir   = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
@@ -30,6 +31,7 @@ $alertHelper = Shop::Container()->getAlertService();
 $action      = Request::verifyGPDataString('action');
 $linkID      = Request::verifyGPCDataInt('kLink');
 $linkGroupID = Request::verifyGPCDataInt('kLinkgruppe');
+$linkAdmin->getMissingSystemPages();
 if ($action !== '' && Form::validateToken()) {
     switch ($action) {
         case 'add-link-to-linkgroup':
@@ -47,7 +49,11 @@ if ($action !== '' && Form::validateToken()) {
                     'successLinkFromLinkGroupDelete'
                 );
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkFromLinkGroupDelete'), 'errorLinkFromLinkGroupDelete');
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    __('errorLinkFromLinkGroupDelete'),
+                    'errorLinkFromLinkGroupDelete'
+                );
             }
             unset($_POST['kLinkgruppe']);
             $step       = 'uebersicht';
@@ -104,14 +110,22 @@ if ($action !== '' && Form::validateToken()) {
                         $linkGroup = new LinkGroup($db);
                         $linkGroup = $linkGroup->load($linkGroupID);
                     }
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateNameDuplicate'), 'errorTemplateNameDuplicate');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_ERROR,
+                        __('errorTemplateNameDuplicate'),
+                        'errorTemplateNameDuplicate'
+                    );
                     $smarty->assign('xPlausiVar_arr', $checks->getPlausiVar())
                            ->assign('xPostVar_arr', $checks->getPostVar())
                            ->assign('linkGroup', $linkGroup);
                 } else {
                     if ($linkGroupID === 0) {
                         $linkAdmin->createOrUpdateLinkGroup(0, $_POST);
-                        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLinkGroupCreate'), 'successLinkGroupCreate');
+                        $alertHelper->addAlert(
+                            Alert::TYPE_SUCCESS,
+                            __('successLinkGroupCreate'),
+                            'successLinkGroupCreate'
+                        );
                     } else {
                         $linkgruppe = $linkAdmin->createOrUpdateLinkGroup($linkGroupID, $_POST);
                         $alertHelper->addAlert(
@@ -194,7 +208,7 @@ if ($action !== '' && Form::validateToken()) {
             break;
         case 'create-or-update-link':
             $hasHTML = [];
-            foreach (LanguageHelper::getAllLanguages() as $lang) {
+            foreach (LanguageHelper::getAllLanguages(0, true) as $lang) {
                 $hasHTML[] = 'cContent_' . $lang->getIso();
             }
             $checks = new PlausiCMS();
@@ -233,24 +247,29 @@ if ($action !== '' && Form::validateToken()) {
                     }
                     $imageCount = (count($_FILES['Bilder']['name']) + $counter);
                     for ($i = $counter; $i < $imageCount; ++$i) {
-                        if (!empty($_FILES['Bilder']['size'][$i - $counter])
-                            && $_FILES['Bilder']['error'][$i - $counter] === UPLOAD_ERR_OK
-                        ) {
-                            $type         = $_FILES['Bilder']['type'][$i - $counter];
+                        $upload = [
+                            'size'     => $_FILES['Bilder']['size'][$i - $counter],
+                            'error'    => $_FILES['Bilder']['error'][$i - $counter],
+                            'type'     => $_FILES['Bilder']['type'][$i - $counter],
+                            'name'     => $_FILES['Bilder']['name'][$i - $counter],
+                            'tmp_name' => $_FILES['Bilder']['tmp_name'][$i - $counter],
+                        ];
+                        if (Image::isImageUpload($upload)) {
+                            $type         = $upload['type'];
                             $uploadedFile = $uploadDir . $kLink . '/Bild' . ($i + 1) . '.' .
                                 mb_substr(
                                     $type,
                                     mb_strpos($type, '/') + 1,
                                     mb_strlen($type) - mb_strpos($type, '/') + 1
                                 );
-                            move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $counter], $uploadedFile);
+                            move_uploaded_file($upload['tmp_name'], $uploadedFile);
                         }
                     }
                 }
                 $dirName = $uploadDir . $link->getID();
                 if (is_dir($dirName)) {
                     $dirHandle = opendir($dirName);
-                    $shopURL   = Shop::getURL() . '/';
+                    $shopURL   = Shop::getImageBaseURL() . '/';
                     while (($file = readdir($dirHandle)) !== false) {
                         if ($file === '.' || $file === '..') {
                             continue;
@@ -303,8 +322,10 @@ if ($step === 'loesch_linkgruppe' && $linkGroupID > 0) {
     }
     $_POST = [];
 } elseif ($step === 'edit-link') {
-    $step    = 'neuer Link';
-    $link    = (new Link($db))->load($linkID);
+    $step = 'neuer Link';
+    $link = new Link($db);
+    $link->load($linkID);
+    $link->deref();
     $dirName = $uploadDir . $link->getID();
     $files   = [];
     if (Request::verifyGPCDataInt('delpic') === 1) {
@@ -355,10 +376,11 @@ if ($step === 'uebersicht') {
         );
     }
     $smarty->assign('linkGroupCountByLinkID', $linkAdmin->getLinkGroupCountForLinkIDs())
+           ->assign('missingSystemPages', $linkAdmin->getMissingSystemPages())
            ->assign('linkgruppen', $linkAdmin->getLinkGroups());
 }
 if ($step === 'neuer Link') {
-    $cgroups = $db->query('SELECT * FROM tkundengruppe ORDER BY cName', ReturnType::ARRAY_OF_OBJECTS);
+    $cgroups = $db->getObjects('SELECT * FROM tkundengruppe ORDER BY cName');
     $lgl     = new LinkGroupList($db, Shop::Container()->getCache());
     $lgl->loadAll();
     $smarty->assign('specialPages', $linkAdmin->getSpecialPageTypes())

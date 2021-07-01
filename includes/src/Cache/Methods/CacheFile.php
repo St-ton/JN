@@ -68,9 +68,9 @@ class CacheFile implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($keyValue, $expiration = null): bool
+    public function storeMulti($idContent, $expiration = null): bool
     {
-        foreach ($keyValue as $_key => $_value) {
+        foreach ($idContent as $_key => $_value) {
             $this->store($_key, $_value, $expiration);
         }
 
@@ -112,9 +112,8 @@ class CacheFile implements ICachingMethod
      */
     public function isAvailable(): bool
     {
-        $res = !\is_dir($this->options['cache_dir'])
-            ? \mkdir($this->options['cache_dir']) && \is_dir($this->options['cache_dir'])
-            : true;
+        $res = \is_dir($this->options['cache_dir'])
+            || (\mkdir($this->options['cache_dir']) && \is_dir($this->options['cache_dir']));
 
         return $res && \is_writable($this->options['cache_dir']);
     }
@@ -134,9 +133,7 @@ class CacheFile implements ICachingMethod
                 $this->recursiveDelete($path);
             }
 
-            return ($str === $this->options['cache_dir'])
-                ? true
-                : \rmdir($str);
+            return $str === $this->options['cache_dir'] || \rmdir($str);
         }
 
         return false;

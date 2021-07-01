@@ -45,7 +45,7 @@
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cEmailCopyTo">{__('emailCopyTo')} :</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cEmailCopyTo">{__('emailCopyTo')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input class="form-control" id="cEmailCopyTo" name="cEmailCopyTo" type="text" value="{if isset($mailConfig.cEmailCopyTo)}{$mailConfig.cEmailCopyTo|escape}{/if}" />
                             </div>
@@ -144,11 +144,11 @@
                     </code>
                 </div>
             </div>
-            {foreach $availableLanguages as $language}
+            {foreach $availableLanguages as $availableLanguage}
                 <div class="box_info card">
-                    {assign var=kSprache value=$language->getId()}
+                    {assign var=kSprache value=$availableLanguage->getId()}
                     <div class="card-header">
-                        <div class="subheading1">{__('content')} {$language->getLocalizedName()}</div>
+                        <div class="subheading1">{__('content')} {$availableLanguage->getLocalizedName()}</div>
                         <hr class="mb-n2">
                     </div>
                     <div class="card-body">
@@ -212,14 +212,15 @@
                                                    size="50"/>
                                             </div>
                                         </div>
-                                        <div class="input-group mb-3">
-                                            <div class="custom-file">
-                                                <input id="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}" name="cPDFS_{$kSprache}[]" type="file" class="custom-file-input" maxlength="2097152"/>
-                                                <label class="custom-file-label" for="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}">
-                                                    <span class="text-truncate">{__('fileSelect')}</span>
-                                                </label>
-                                            </div>
-                                        </div>
+                                        {include file='tpl_inc/fileupload.tpl'
+                                            fileID="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}"
+                                            fileName="cPDFS_{$kSprache}[]"
+                                            fileAllowedExtensions="['pdf']"
+                                            fileShowRemove=true
+                                            fileMaxSize=2097152
+                                            filePreview=false
+                                            fileErrorMsg=true
+                                        }
                                     </div>
                                 </div>
                             {/section}
@@ -252,3 +253,70 @@
         {getRevisions type='mail' key=$mailTemplate->getID() show=['cContentText','cContentHtml'] secondary=true data=$mailTemplate->viewCompat()}
     {/if}
 </div>
+<script>
+    {literal}
+    function validateTemplateSyntax(tplID) {
+        simpleAjaxCall('io.php', {
+            jtl_token: JTL_TOKEN,
+            io : JSON.stringify({
+                name: 'mailvorlageSyntaxCheck',
+                params : [tplID]
+            })
+        }, function (result) {
+            if (result.message && result.message !== '') {
+                createNotify({
+                    title: '{/literal}{__('smartySyntaxError')}{literal}',
+                    message: result.message,
+                }, {
+                    allow_dismiss: true,
+                    type: 'danger',
+                    delay: 0
+                });
+            }
+            if (result.result && typeof result.result === 'object') {
+                let ok = true;
+                for (var res in result.result) {
+                    var lang = result.result[res];
+                    if (lang.message && lang.state && lang.state !== 'ok') {
+                        ok = false;
+                        createNotify({
+                            title: res + ': {/literal}{__('smartySyntaxError')}{literal}',
+                            message: lang.message,
+                        }, {
+                            allow_dismiss: true,
+                            type: 'danger',
+                            delay: 0
+                        });
+                    }
+                }
+                if (ok) {
+                    createNotify({
+                        title: '{/literal}{__('Check syntax')}{literal}',
+                        message: '{/literal}{__('Smarty syntax ok')}{literal}',
+                    }, {
+                        allow_dismiss: true,
+                        type: 'success',
+                        delay: 1500
+                    });
+                }
+            }
+        }, function (result) {
+            if (result.statusText) {
+                let msg = result.statusText;
+                if (result.responseJSON && result.responseJSON.error.message !== '') {
+                    msg += '<br>' + result.responseJSON.error.message;
+                }
+                createNotify({
+                    title: '{/literal}{__('Syntax check fail')}{literal}',
+                    message: msg,
+                }, {
+                    allow_dismiss: true,
+                    type: 'warning',
+                    delay: 0
+                });
+            }
+        }, undefined, true);
+    }
+    validateTemplateSyntax({/literal}{$mailTemplate->getID()}{literal});
+    {/literal}
+</script>

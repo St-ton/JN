@@ -18,15 +18,14 @@ class Migration_20180416103817 extends Migration implements IMigration
     protected $description = 'Configuration for price range';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritdoc
      */
     public function up()
     {
         $this->setConfig(
             'articleoverview_pricerange_width',
             '150',
-            \CONF_ARTIKELUEBERSICHT,
+            CONF_ARTIKELUEBERSICHT,
             'Max. Abweichung (%) für Preis-Range Anzeige',
             'number',
             372,
@@ -36,6 +35,9 @@ class Migration_20180416103817 extends Migration implements IMigration
         ]);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('articleoverview_pricerange_width');

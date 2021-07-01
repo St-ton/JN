@@ -4,7 +4,13 @@
 	&:last-child { border-bottom-left-radius: $dropdown-border-radius; border-bottom-right-radius: $dropdown-border-radius; }
 }
 
-.dropdown-item { text-decoration: none; }
+.dropdown-item {
+	background-color: $dropdown-link-bg-color;
+	text-decoration: none;
+}
+.dropdown-divider {
+	margin: 0;
+}
 
 .dropdown-toggle {
 	&::after {
@@ -36,4 +42,13 @@
 
 .dropdown-header {
 	padding: map-get($spacers, 2) $dropdown-item-padding-x;
+}
+
+.dropdown-full-width {
+	.dropdown-menu {
+		width: 100%;
+	}
+}
+.dropdown-toggle, [data-toggle=collapse]:not(.navbar-toggler) {
+	white-space: initial;
 }

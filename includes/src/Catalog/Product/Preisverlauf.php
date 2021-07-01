@@ -3,7 +3,6 @@
 namespace JTL\Catalog\Product;
 
 use DateTime;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
@@ -62,7 +61,7 @@ class Preisverlauf
     {
         $cacheID = 'gpv_' . $productID . '_' . $customerGroupID . '_' . $month;
         if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $data     = Shop::Container()->getDB()->query(
+            $data     = Shop::Container()->getDB()->getObjects(
                 'SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
                     FROM tpreisverlauf 
                     LEFT JOIN tartikel
@@ -70,12 +69,11 @@ class Preisverlauf
                     WHERE tpreisverlauf.kArtikel = ' . $productID . '
                         AND tpreisverlauf.kKundengruppe = ' . $customerGroupID . '
                         AND DATE_SUB(NOW(), INTERVAL ' . $month . ' MONTH) < tpreisverlauf.dDate
-                    ORDER BY tpreisverlauf.dDate DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tpreisverlauf.dDate DESC'
             );
             $currency = Frontend::getCurrency();
             $dt       = new DateTime();
-            foreach ($data as &$pv) {
+            foreach ($data as $pv) {
                 if (isset($pv->timestamp)) {
                     $dt->setTimestamp((int)$pv->timestamp);
                     $pv->date     = $dt->format('d.m.Y');
@@ -85,7 +83,6 @@ class Preisverlauf
                     $pv->currency = $currency->getCode();
                 }
             }
-            unset($pv);
             Shop::Container()->getCache()->set(
                 $cacheID,
                 $data,

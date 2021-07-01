@@ -2,8 +2,9 @@
 
 namespace JTL\GeneralDataProtection;
 
-use JTL\DB\ReturnType;
+use DateTime;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class Journal
@@ -27,17 +28,6 @@ class Journal
      */
     protected $now;
 
-    /**
-     * @param \DateTime $now
-     */
-    public function __construct(\DateTime $now = null)
-    {
-        if ($now === null) {
-            $now = new \DateTime();
-        }
-        $this->now = $now;
-    }
-
     public const ISSUER_TYPE_CUSTOMER = 'CUSTOMER';
 
     public const ISSUER_TYPE_APPLICATION = 'APPLICATION';
@@ -53,18 +43,26 @@ class Journal
     public const ACTION_CUSTOMER_DELETED = 'CUSTOMER_DELETED';
 
     /**
-     * @param string         $issuerType
-     * @param int            $issuerID
-     * @param string         $action
-     * @param string         $message
-     * @param \stdClass|null $detail
+     * @param DateTime|null $now
+     */
+    public function __construct(DateTime $now = null)
+    {
+        $this->now = $now ?? new DateTime();
+    }
+
+    /**
+     * @param string        $issuerType
+     * @param int           $issuerID
+     * @param string        $action
+     * @param string        $message
+     * @param stdClass|null $detail
      */
     public function addEntry(
         string $issuerType,
         int $issuerID,
         string $action,
         string $message = '',
-        \stdClass $detail = null
+        stdClass $detail = null
     ): void {
         Shop::Container()->getDB()->queryPrepared(
             'INSERT INTO tanondatajournal(cIssuer, iIssuerId, cAction, cDetail, cMessage, dEventTime)
@@ -76,8 +74,7 @@ class Journal
                 'cIssuer'    => $issuerType,
                 'iIssuerId'  => $issuerID,
                 'dEventTime' => $this->now->format('Y-m-d H:i:s')
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 }

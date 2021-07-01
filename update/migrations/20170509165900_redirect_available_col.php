@@ -17,6 +17,9 @@ class Migration_20170509165900 extends Migration implements IMigration
     protected $author      = 'dr';
     protected $description = 'Add available column to redirect table';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute(
@@ -25,6 +28,9 @@ class Migration_20170509165900 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

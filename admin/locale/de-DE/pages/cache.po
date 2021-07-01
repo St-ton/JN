@@ -50,6 +50,12 @@ msgstr "Enthält Herstellerdaten"
 msgid "cg_filter_description"
 msgstr "Enthält Filterdaten"
 
+msgid "cg_status_description"
+msgstr "Enthält Status für Mitteilungen"
+
+msgid "cg_opc_description"
+msgstr "Enthält Daten des OPC"
+
 msgid "cg_article_nicename"
 msgstr "Artikel"
 
@@ -88,6 +94,12 @@ msgstr "Hersteller"
 
 msgid "cg_filter_nicename"
 msgstr "Artikelfilter"
+
+msgid "cg_status_nicename"
+msgstr "Status"
+
+msgid "cg_opc_nicename"
+msgstr "OPC"
 
 msgid "entries"
 msgstr "Einträge"

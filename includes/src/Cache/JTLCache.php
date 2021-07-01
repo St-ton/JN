@@ -195,6 +195,18 @@ final class JTLCache implements JTLCacheInterface
                 'value'       => \CACHING_GROUP_FILTER,
                 'description' => 'cg_filter_description'
             ],
+            [
+                'name'        => 'CACHING_GROUP_STATUS',
+                'nicename'    => 'cg_status_nicename',
+                'value'       => \CACHING_GROUP_STATUS,
+                'description' => 'cg_status_description'
+            ],
+            [
+                'name'        => 'CACHING_GROUP_OPC',
+                'nicename'    => 'cg_opc_nicename',
+                'value'       => \CACHING_GROUP_OPC,
+                'description' => 'cg_opc_description'
+            ],
         ];
 
         return $this;
@@ -250,7 +262,7 @@ final class JTLCache implements JTLCacheInterface
             // port for memcache(d) server
             'memcache_host'    => self::DEFAULT_MEMCACHE_HOST,
             // host of memcache(d) server
-            'prefix'           => 'jc_' . (\defined('DB_NAME') ? \DB_NAME . '_' : ''),
+            'prefix'           => 'j5_' . (\defined('DB_NAME') ? \DB_NAME . '_' : ''),
             // try to make a quite unique prefix if multiple shops are used
             'lifetime'         => self::DEFAULT_LIFETIME,
             // cache lifetime in seconds
@@ -298,11 +310,10 @@ final class JTLCache implements JTLCacheInterface
     public function setCache(string $methodName): bool
     {
         if (\SAFE_MODE === false) {
-            $cache = null;
-            /** @var ICachingMethod $className */
             $class = 'JTL\Cache\Methods\Cache' . \ucfirst($methodName);
-            $cache = new $class($this->options);
-            if (!empty($cache) && $cache instanceof ICachingMethod) {
+            $cache = \class_exists($class) ? new $class($this->options) : null;
+            /** @var ICachingMethod $class */
+            if ($cache !== null && $cache instanceof ICachingMethod) {
                 $this->setError($cache->getError());
                 if ($cache->isInitialized() && $cache->isAvailable()) {
                     $this->setMethod($cache);
@@ -562,9 +573,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function setCacheTag($tags, $cacheID): bool
     {
-        return $this->options['activated'] === true
-            ? $this->method->setCacheTag($tags, $cacheID)
-            : false;
+        return $this->options['activated'] === true && $this->method->setCacheTag($tags, $cacheID);
     }
 
     /**
@@ -573,7 +582,7 @@ final class JTLCache implements JTLCacheInterface
     public function setCacheLifetime(int $lifetime): JTLCacheInterface
     {
         $this->options['lifetime'] = $lifetime > 0
-            ? (int)$lifetime
+            ? $lifetime
             : self::DEFAULT_LIFETIME;
 
         return $this;
@@ -604,9 +613,7 @@ final class JTLCache implements JTLCacheInterface
     {
         $res = false;
         if ($cacheID !== null && $tags === null) {
-            $res = ($this->options['activated'] === true)
-                ? $this->method->flush($cacheID)
-                : false;
+            $res = $this->options['activated'] === true && $this->method->flush($cacheID);
         } elseif ($tags !== null) {
             $res = $this->flushTags($tags, $hookInfo);
         }
@@ -630,7 +637,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function flushTags($tags, $hookInfo = null): int
     {
-        $deleted = $this->method->flushTags($tags);
+        $deleted = $this->method->flushTags(\is_array($tags) ? $tags : [$tags]);
         if ($hookInfo !== null && \defined('HOOK_CACHE_FLUSH_AFTER') && \function_exists('executeHook')) {
             \executeHook(\HOOK_CACHE_FLUSH_AFTER, $hookInfo);
         }

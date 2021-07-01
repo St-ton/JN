@@ -14,6 +14,9 @@ msgstr "Klicken Sie auf die einzelnen Versandländer, um Zuschlagslisten (z. B. 
 msgid "createShippingMethod"
 msgstr "Versandart anlegen"
 
+msgid "createShippingMethodTitle"
+msgstr "Versandart anlegen"
+
 msgid "createShippingMethodDesc"
 msgstr "Hier legen Sie eine neue Versandart für JTL-Shop an. Diese kann im Anschluss mit einer Versandart in JTL-Wawi verknüpft werden."
 
@@ -45,7 +48,7 @@ msgid "taxshippingcosts"
 msgstr "Steuerberechnung für Versandkosten und Versandkostenfrei-Grenze"
 
 msgid "taxshippingcostsDesc"
-msgstr "Hier legen Sie fest, ob die Versandkosten als fester Brutto-Preis angegeben werden sollen. Wenn die Option „Brutto (fixer Versandkostenpreis)“ gewählt wird, bleiben die Versandkosten für den Kunden immer gleich, da sich unterschiedliche Umsatzsteuersätze nicht auf die Gesamtkosten für den Versand auswirken. Außerdem wird bei der Grenze für kostenfreien Versand der Brutto-Warenkorbwert berücksichtigt.<br> Wenn Sie als Option „Netto (automatischer USt-Aufschlag)“ wählen, wird der jeweils geltende Umsatzsteuersatz des Warenkorbs auf die Netto-Versandkosten aufgeschlagen, sodass es für den Kunden je nach Steuersatz zu unterschiedlichen Versandkosten kommen kann. Außerdem wird bei der Grenze für kostenfreien Versand der Netto-Warenkorbwert berücksichtigt."
+msgstr "Hier legen Sie fest, ob die Versandkosten als fester Brutto-Preis angegeben werden sollen. Wenn die Option „Brutto (fixer Versandkostenpreis)“ gewählt wird, bleiben die Versandkosten für den Kunden immer gleich, da sich unterschiedliche Umsatzsteuersätze nicht auf die Gesamtkosten für den Versand auswirken. Außerdem wird bei der Grenze für kostenfreien Versand der Brutto-Warenkorbwert berücksichtigt.<br><br/> Wenn Sie als Option „Netto (automatischer USt-Aufschlag)“ wählen, wird der jeweils geltende Umsatzsteuersatz des Warenkorbs auf die Netto-Versandkosten aufgeschlagen, sodass es für den Kunden je nach Steuersatz zu unterschiedlichen Versandkosten kommen kann. Außerdem wird bei der Grenze für kostenfreien Versand der Netto-Warenkorbwert berücksichtigt."
 
 msgid "net"
 msgstr "Netto (automatischer USt-Aufschlag)"
@@ -63,10 +66,7 @@ msgid "excludeShippingProposal"
 msgstr "Für Kalkulation der günstigsten Versandkosten ignorieren"
 
 msgid "excludeShippingProposalDesc"
-msgstr "Hier legen Sie fest, ob diese Versandart für die Berechnung der günstigsten Versandkosten übersprungen werden soll.<br> Unabhängig von dieser Einstellung wird die Versandart im Bestellvorgang und in der Warenkorb-Versandkostenermittlung als Option angeboten, sofern die sonstigen Kriterien erfüllt sind."
-
-msgid "tax"
-msgstr "USt."
+msgstr "Hier legen Sie fest, ob diese Versandart für die Berechnung der günstigsten Versandkosten übersprungen werden soll.<br><br/> Unabhängig von dieser Einstellung wird die Versandart im Bestellvorgang und in der Warenkorb-Versandkostenermittlung als Option angeboten, sofern die sonstigen Kriterien erfüllt sind."
 
 msgid "sortnr"
 msgstr "Sortiernummer"
@@ -86,6 +86,9 @@ msgstr "Versandart speichern"
 msgid "modifyedShippingType"
 msgstr "Änderungen speichern"
 
+msgid "modifyedShippingTypeTitle"
+msgstr "Versandart „%s“ ändern"
+
 msgid "shippingTypeName"
 msgstr "Versandart"
 
@@ -102,7 +105,7 @@ msgid "isleListFor"
 msgstr "Zuschlagslisten für"
 
 msgid "isleListsDesc"
-msgstr "Hier können Sie Zuschlagslisten (z. B. Inselzuschläge) anlegen und über „+“ eine PLZ-Basis hinzufügen. Die Zuschlagsliste gilt nur für die ausgewählte Versandart und das ausgewählte Lieferland."
+msgstr "Hier können Sie Zuschlagslisten (z.&nbsp;B. Inselzuschläge) anlegen und über „+“ eine PLZ-Basis hinzufügen. Die Zuschlagsliste gilt nur für die ausgewählte Versandart und das ausgewählte Lieferland."
 
 msgid "isleList"
 msgstr "Zuschlagsliste"
@@ -133,6 +136,9 @@ msgstr "Hinzufügen"
 
 msgid "freeShipping"
 msgstr "Versandkostenfrei ab"
+
+msgid "freeShippingBasketValue"
+msgstr "Versandkostenfrei nach letzter Staffel"
 
 msgid "maxCosts"
 msgstr "Deckelung"
@@ -192,7 +198,7 @@ msgid "always"
 msgstr "Immer"
 
 msgid "lowest"
-msgstr "Nur, wenn diese Versandart die günstigste ist"
+msgstr "Nur, wenn diese Versandart die Günstigste ist"
 
 msgid "discount"
 msgstr "Aufpreis / Rabatt"
@@ -278,9 +284,6 @@ msgstr "Bitte wählen Sie mindestens eine akzeptierte Zahlungsart aus."
 msgid "errorShippingMethodPriceMissing"
 msgstr "Bitte geben Sie mindestens einen Staffelpreis an."
 
-msgid "errorShippingFreeMax"
-msgstr "Der Versandkostenfrei-Wert darf maximal %s betragen."
-
 msgid "sendShippingNotification"
 msgstr "Versandbestätigung senden"
 
@@ -326,3 +329,6 @@ msgstr "PLZ löschen"
 
 msgid "countriesSelected"
 msgstr "ausgewählt"
+
+msgid "acceptedPaymentMethodsDesc"
+msgstr "Geben Sie für einen Rabatt einen negativen Wert ein."

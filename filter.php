@@ -34,7 +34,6 @@ $AktuelleKategorie  = new Kategorie();
 $expandedCategories = new KategorieListe();
 $hasError           = false;
 $params             = Shop::getParameters();
-/** @var ProductFilter $NaviFilter */
 if ($NaviFilter->hasCategory()) {
     $categoryID                  = $NaviFilter->getCategory()->getValue();
     $_SESSION['LetzteKategorie'] = $categoryID;
@@ -67,12 +66,11 @@ if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y'
     && !Request::isAjaxRequest()
 ) {
     $hasSubCategories = ($categoryID = $NaviFilter->getCategory()->getValue()) > 0
-        ? (new Kategorie(
+        && (new Kategorie(
             $categoryID,
             $NaviFilter->getFilterConfig()->getLanguageID(),
             $NaviFilter->getFilterConfig()->getCustomerGroupID()
-        ))->existierenUnterkategorien()
-        : false;
+        ))->existierenUnterkategorien();
     if ($NaviFilter->getFilterCount() > 0
         || $NaviFilter->getRealSearch() !== null
         || ($NaviFilter->getCategory()->getValue() > 0 && !$hasSubCategories)
@@ -96,7 +94,7 @@ if ($pages->getCurrentPage() > 0
     exit;
 }
 if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
-    $productsIDs = $oSuchergebnisse->getProducts()->map(function ($product) {
+    $productsIDs = $oSuchergebnisse->getProducts()->map(static function ($product) {
         return (int)$product->kArtikel;
     });
     $bestsellers = Bestseller::buildBestsellers(
@@ -119,7 +117,7 @@ if (!isset($_SESSION['ArtikelProSeite']) && $conf['artikeluebersicht']['artikelu
         ARTICLES_PER_PAGE_HARD_LIMIT
     );
 }
-$oSuchergebnisse->getProducts()->transform(function ($product) use ($conf) {
+$oSuchergebnisse->getProducts()->transform(static function ($product) use ($conf) {
     $product->verfuegbarkeitsBenachrichtigung = Product::showAvailabilityForm(
         $product,
         $conf['artikeldetails']['benachrichtigung_nutzen']
@@ -131,9 +129,9 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
     if ($NaviFilter->hasCategory()) {
         $categoryContent                  = new stdClass();
         $categoryContent->Unterkategorien = new KategorieListe();
-        $h                                = Category::getInstance();
-        $children                         = $h->getCategoryById($NaviFilter->getCategory()->getValue());
-        $tb                               = $conf['artikeluebersicht']['topbest_anzeigen'];
+
+        $children = Category::getInstance()->getCategoryById($NaviFilter->getCategory()->getValue());
+        $tb       = $conf['artikeluebersicht']['topbest_anzeigen'];
         if ($children !== null && $children->hasChildren()) {
             $categoryContent->Unterkategorien->elemente = $children->getChildren();
         }

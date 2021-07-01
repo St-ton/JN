@@ -5,6 +5,7 @@ namespace JTL\Filter;
 use Illuminate\Support\Collection;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Filter\Pagination\Info;
+use stdClass;
 
 /**
  * Interface SearchResultsInterface
@@ -13,15 +14,15 @@ use JTL\Filter\Pagination\Info;
 interface SearchResultsInterface
 {
     /**
-     * @param \stdClass|SearchResultsInterface $legacy
+     * @param stdClass|SearchResultsInterface $legacy
      * @return $this
      */
     public function convert($legacy): SearchResultsInterface;
 
     /**
-     * @return \stdClass
+     * @return stdClass
      */
-    public function getProductsCompat(): \stdClass;
+    public function getProductsCompat(): stdClass;
 
     /**
      * @return $this
@@ -214,6 +215,17 @@ interface SearchResultsInterface
      * @return $this
      */
     public function setSearchSpecialFilterOptions($options): SearchResultsInterface;
+
+    /**
+     * @return Option[]
+     */
+    public function getAvailabilityFilterOptions(): array;
+
+    /**
+     * @param Option[] $options
+     * @return $this
+     */
+    public function setAvailabilityFilterOptions($options): SearchResultsInterface;
 
     /**
      * @return Option[]

@@ -8,11 +8,11 @@
             {include file='snippets/extension.tpl'}
         {/block}
         {block name='account-password-heading'}
-            {container}
+            {container fluid=$Link->getIsFluid() class="account-password-heading"}
                 <h1>{lang key='forgotPassword' section='global'}</h1>
             {/container}
         {/block}
-        {container}
+        {container fluid=$Link->getIsFluid() class="account-password"}
             {if $step === 'formular'}
                 {row}
                     {col cols=12 lg=8}
@@ -29,7 +29,7 @@
                                     <fieldset>
                                         {include file='snippets/form_group_simple.tpl'
                                             options=[
-                                                'email', 'email', 'email', null,
+                                                'email', 'email', 'email', "{if $presetEmail !== ''}{$presetEmail}{/if}",
                                                 {lang key='emailadress'}, true
                                             ]
                                         }
@@ -79,7 +79,7 @@
                                                 {/if}
                                                 {input type="hidden" name="fpwh" value=$fpwh}
                                                 {button type="submit" value="1" block=true class="submit_once" variant="primary"}
-                                                    {lang key='createNewPassword' section='forgot password'}
+                                                    {lang key='confirmNewPassword' section='forgot password'}
                                                 {/button}
                                             {/formgroup}
                                         {/block}

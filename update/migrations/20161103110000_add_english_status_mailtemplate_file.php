@@ -16,6 +16,9 @@ class Migration_20161103110000 extends Migration implements IMigration
 {
     protected $author = 'dr';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $cContentHtml = $this->getDB()->escape(file_get_contents(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'eng/email_bericht_html.tpl'));
@@ -50,6 +53,9 @@ class Migration_20161103110000 extends Migration implements IMigration
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $enlish = $this->getDB()->select('tsprache', 'cIso', 'eng', null, null, null, null, false, 'kSprache');

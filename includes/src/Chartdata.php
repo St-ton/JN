@@ -3,6 +3,7 @@
 namespace JTL;
 
 use Exception;
+use stdClass;
 
 /**
  * Class Chartdata
@@ -21,7 +22,7 @@ class Chartdata
     protected $_xAxis;
 
     /**
-     * @var array
+     * @var stdClass[]|null
      */
     protected $_series;
 
@@ -41,7 +42,7 @@ class Chartdata
     protected $_url;
 
     /**
-     * @param array $options
+     * @param array|null $options
      */
     public function __construct(array $options = null)
     {

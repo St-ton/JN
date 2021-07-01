@@ -1,4 +1,4 @@
-<div id="deaktiviert" class="tab-pane fade {if isset($cTab) && $cTab === 'deaktiviert'} active show{/if}">
+<div id="deaktiviert" class="tab-pane fade {if $cTab === 'deaktiviert'} active show{/if}">
     {if $pluginsDisabled->count() > 0}
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php" id="disbled-plugins">
             {$jtl_token}
@@ -30,6 +30,14 @@
                                         <input class="custom-control-input" type="checkbox" name="kPlugin[]" id="plugin-check-{$plugin->getID()}" value="{$plugin->getID()}" />
                                         <label class="custom-control-label" for="plugin-check-{$plugin->getID()}"></label>
                                     </div>
+                                    {if $plugin->isShop5Compatible() === false}
+                                        <span title="{__('dangerPluginNotCompatibleShop5')}" class="label text-warning" data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-exclamation-triangle"></span>
+                                                <span class="fas fa-exclamation-triangle"></span>
+                                            </span>
+                                        </span>
+                                    {/if}
                                 </td>
                                 <td>
                                     <label for="plugin-check-{$plugin->getID()}">{$plugin->getName()}</label>
@@ -59,7 +67,7 @@
                                 </td>
                                 <td class="text-center plugin-version">{(string)$plugin->getVersion()}{if $plugin->isUpdateAvailable()} <span class="label text-success update-info">{(string)$plugin->isUpdateAvailable()}</span>{/if}</td>
                                 <td class="text-center plugin-install-date">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
-                                <td class="plugin-folder">{$plugin->getPath()}</td>
+                                <td class="plugin-folder">{$plugin->getDir()}</td>
                                 <td class="text-center plugin-lang-vars">
                                     {if $plugin->getLangVarCount() > 0}
                                         <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
@@ -137,70 +145,7 @@
                 </div>
             </div>
         </form>
-
-        <div id="uninstall-disabled-modal" class="modal fade" role="dialog">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2 class="modal-title">{__('deletePluginData')}</h2>
-                        <button type="button" class="close" data-dismiss="modal">
-                            <i class="fal fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-
-                    </div>
-                    <div class="modal-footer">
-                        <div class="row">
-                            <div class="ml-auto col-sm-6 col-xl-auto submit">
-                                <button type="button" class="btn btn-danger btn-bock" name="yes" data-dismiss="modal">
-                                    <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataYes')}
-                                </button>
-                            </div> <div class="col-sm-6 col-xl-auto submit">
-                                <button type="button" class="btn btn-outline-primary" name="no" data-dismiss="modal">
-                                    <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataNo')}
-                                </button>
-                            </div>
-                            <div class="col-sm-6 col-xl-auto submit">
-                                <button type="button" class="btn btn-primary" name="cancel" data-dismiss="modal">
-                                    <i class="fal fa-check text-success"></i>&nbsp;{__('cancel')}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <script>
-            {literal}
-            $(document).ready(function() {
-                var disModal = $('#uninstall-disabled-modal');
-                $('#uninstall-disabled-plugin').on('click', function(event) {
-                    disModal.modal('show');
-                    return false;
-                });
-                disModal.on('hide.bs.modal', function(event) {
-                    if (document.activeElement.name === 'yes' || document.activeElement.name === 'no') {
-                        var data = $('#disbled-plugins').serialize();
-                        data += '&deinstallieren=1&delete-data=';
-                        if (document.activeElement.name === 'yes') {
-                            data += '1';
-                        } else {
-                            data += '0';
-                        }
-                        $.ajax({
-                            type:    'POST',
-                            url:     'pluginverwaltung.php',
-                            data:    data,
-                            success: function () {
-                                location.reload();
-                            }
-                        });
-                    }
-                });
-            });
-            {/literal}
-        </script>
+        {include file='tpl_inc/pluginverwaltung_uninstall_modal.tpl' context='disabled' selector='#disbled-plugins' button='#uninstall-disabled-plugin'}
     {else}
         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
     {/if}

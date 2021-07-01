@@ -1,14 +1,6 @@
-{if $isPreview}
-    {$data = ['portlet' => $instance->getDataAttribute()]}
-{/if}
-
 {$uid = $instance->getUid()}
 
-{accordion
-    id=$uid
-    data=$data|default:null
-    style=$instance->getStyleString()
-}
+{accordion id=$uid style=$instance->getStyleString() class='opc-Accordion '|cat:$instance->getStyleClasses()}
     {foreach $instance->getProperty('groups') as $i => $group}
         {$groupId = $uid|cat:'-'|cat:$i}
         {$areaId = 'group-'|cat:$i}
@@ -18,7 +10,7 @@
                 <div id="heading-{$groupId}">
                     <a href="#" data-toggle="collapse" data-target="#{$groupId}" class="opc-Accordion-head collapsed"
                        data-parent="#{$uid}">
-                        {$group} <i class="fas fa-chevron-up"></i>
+                        {$group|escape:'html'} <i class="fas fa-chevron-up"></i>
                     </a>
                 </div>
                 {collapse
@@ -41,15 +33,16 @@
                 {$ariaExpanded = 'false'}
             {/if}
 
-            {card no-body=true}
+            {card no-body=true class='opc-Accordion-group'}
                 {cardheader id='heading-'|cat:$groupId}
                     <h2 style="margin-bottom: 0">
                         {button
                             variant='link'
                             data=['toggle' => 'collapse', 'target' => '#'|cat:$groupId, 'parent' => '#'|cat:$uid]
                             aria=['expanded' => $ariaExpanded, 'controls' => $groupId]
+                            class='opc-Accordion-head'
                         }
-                            {$group}
+                            {$group|escape:'html'}
                         {/button}
                     </h2>
                 {/cardheader}

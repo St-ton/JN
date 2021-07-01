@@ -4,6 +4,7 @@ namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\DB\DbInterface;
 use JTL\Plugin\LegacyPlugin;
+use JTL\Plugin\PluginInterface;
 use stdClass;
 
 /**
@@ -51,7 +52,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @return DbInterface
+     * @inheritDoc
      */
     public function getDB(): DbInterface
     {
@@ -59,7 +60,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @param DbInterface $db
+     * @inheritDoc
      */
     public function setDB(DbInterface $db): void
     {
@@ -67,7 +68,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @return stdClass
+     * @inheritDoc
      */
     public function getPlugin(): stdClass
     {
@@ -75,7 +76,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @param stdClass $plugin
+     * @inheritDoc
      */
     public function setPlugin(stdClass $plugin): void
     {
@@ -83,23 +84,23 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @return LegacyPlugin|stdClass|null
+     * @inheritDoc
      */
-    public function getOldPlugin()
+    public function getOldPlugin(): ?PluginInterface
     {
         return $this->oldPlugin;
     }
 
     /**
-     * @param LegacyPlugin|stdClass|null $oldPlugin
+     * @inheritDoc
      */
-    public function setOldPlugin($oldPlugin): void
+    public function setOldPlugin($plugin): void
     {
-        $this->oldPlugin = $oldPlugin;
+        $this->oldPlugin = $plugin;
     }
 
     /**
-     * @return array
+     * @inheritDoc
      */
     public function getBaseNode(): array
     {
@@ -107,7 +108,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @param array $baseNode
+     * @inheritDoc
      */
     public function setBaseNode(array $baseNode): void
     {

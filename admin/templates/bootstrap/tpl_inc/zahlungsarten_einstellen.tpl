@@ -84,6 +84,7 @@
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <textarea class="form-control" id="cHinweisText_{$cISO}" name="cHinweisText_{$cISO}">{if isset($cHinweisTexte_arr[$cISO])}{$cHinweisTexte_arr[$cISO]}{/if}</textarea>
                         </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('noticeTextEmailDesc')}</div>
                     </div>
                 {/foreach}
 

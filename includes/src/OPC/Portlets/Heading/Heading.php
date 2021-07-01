@@ -26,7 +26,7 @@ class Heading extends Portlet
     {
         return [
             'level' => [
-                'label'      => __('Level'),
+                'label'      => \__('Level'),
                 'type'       => InputType::SELECT,
                 'options'    => [
                     1 => '1',
@@ -41,10 +41,22 @@ class Heading extends Portlet
                 'width'      => 17,
             ],
             'text'  => [
-                'label'      => __('Text'),
+                'label'      => \__('Text'),
                 'type'       => InputType::TEXT,
-                'default'    => __('Heading'),
-                'width'      => 84,
+                'default'    => \__('Heading'),
+                'width'      => 58,
+            ],
+            'align' => [
+                'label'      => \__('alignment'),
+                'type'       => InputType::SELECT,
+                'default'    => 'left',
+                'options'    => [
+                    'left'   => \__('left'),
+                    'center' => \__('centered'),
+                    'right'  => \__('right'),
+                ],
+                'desc'       => \__('alignmentDesc'),
+                'width'      => 25,
             ],
         ];
     }
@@ -55,8 +67,8 @@ class Heading extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            __('Styles')    => 'styles',
-            __('Animation') => 'animations',
+            \__('Styles')    => 'styles',
+            \__('Animation') => 'animations',
         ];
     }
 }

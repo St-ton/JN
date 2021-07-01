@@ -52,8 +52,8 @@ interface BoxServiceInterface
     );
 
     /**
-     * @param int $productID
-     * @param int $limit
+     * @param int      $productID
+     * @param int|null $limit
      */
     public function addRecentlyViewed(int $productID, int $limit = null): void;
 

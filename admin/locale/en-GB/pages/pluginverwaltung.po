@@ -15,7 +15,7 @@ msgid "pluginverwaltungLicenceKey"
 msgstr "Licence key"
 
 msgid "pluginverwaltungDesc"
-msgstr "Plug-ins extend the functionality of JTL-Shop without changing its core. Active plug-ins can be deactivated or uninstalled at any time. Please do not install any updates from unknown sources. <br/><strong>Security note: Plug-ins have access to the entire database of JTL-Shop.</strong>"
+msgstr "Plug-ins extend the functionality of JTL-Shop without changing its core. Go to the <a href=\"https://jtl-url.de/exs\" target=\"_blank\">JTL-Extension Store</a> to browse through a multitude of available extensions. Active plug-ins can be deactivated or uninstalled at any time. Please do not install any updates from unknown sources. <br/><strong>Security note: Plug-ins have access to the entire database of JTL-Shop.</strong>"
 
 msgid "pluginverwaltungURL"
 msgstr "https://jtl-url.de/gfso0"
@@ -56,6 +56,9 @@ msgstr "Languages"
 msgid "pluginVersion"
 msgstr "Version"
 
+msgid "pluginCompatibility"
+msgstr "Online shop version"
+
 msgid "pluginInfo"
 msgstr "Info"
 
@@ -89,6 +92,9 @@ msgstr "Install"
 msgid "pluginBtnDeInstall"
 msgstr "Uninstall"
 
+msgid "pluginBtnDelete"
+msgstr "Delete"
+
 msgid "pluginBtnReload"
 msgstr "Reload"
 
@@ -96,7 +102,7 @@ msgid "pluginBtnLicenceAdd"
 msgstr "Enter licence key"
 
 msgid "pluginBtnLicenceChange"
-msgstr "Change"
+msgstr "Edit"
 
 msgid "pluginBtnLicence"
 msgstr "Licence"
@@ -120,10 +126,13 @@ msgid "successPluginKeySave"
 msgstr "Licence key for plug-in saved successfully."
 
 msgid "errorPluginKeyInvalid"
-msgstr "Invalid licence key! Please check the licence key for potential typing errors and contact the Support team if necessary."
+msgstr "Invalid licence key. Please check the licence key for potential typing errors and contact the Support team if necessary."
 
 msgid "errorPluginNotFound"
 msgstr "Could not find the plug-in in the database. Please install it again."
+
+msgid "errorPluginNotFoundFilesystem"
+msgstr "Could not find the plug-in in the filesystem. Please install it again."
 
 msgid "successPluginActivate"
 msgstr "Selected plug-ins activated successfully."
@@ -133,6 +142,9 @@ msgstr "Please select at least one plug-in."
 
 msgid "successPluginDeactivate"
 msgstr "Selected plug-ins deactivated successfully."
+
+msgid "errorPluginDeleteAtLeastOne"
+msgstr "At least one plugin could not be deleted."
 
 msgid "errorPluginDeleteSQL"
 msgstr "Could not uninstall plug-in due to an SQL error. Please check the log file."
@@ -182,44 +194,38 @@ msgstr "Please note that the plug-in is not fully compatible with JTL-Shop&nbsp;
 msgid "dangerPluginNotCompatibleShop4"
 msgstr "Please note that the plug-in is not fully compatible with JTL-Shop&nbsp;4. This might lead to performance issues."
 
+msgid "dangerMinShopVersion"
+msgstr "Please note that the template requires a newer version of JTL-Shop. This might lead to performance issues."
+
+msgid "dangerMaxShopVersion"
+msgstr "Please note that the template was developed for an older version of JTL-Shop. This might lead to performance issues."
+
 msgid "licensePlugin"
 msgstr "Plug-in licence"
 
-msgid "storeNotLinkedDesc"
-msgstr "In order to access contents of JTL-Store, connect your JTL account to the marketplace first."
-
-msgid "storeLink"
-msgstr "Connect account"
-
-msgid "storeRevoke"
-msgstr "Cancel connection"
-
-msgid "storeUpdatesAvailable"
-msgstr "Available updates"
-
-msgid "storeListUpdates"
-msgstr "View updates"
-
-msgid "storePlugins"
-msgstr "Licenced plug-ins"
-
-msgid "storeListAll"
-msgstr "View all"
-
-msgid "storeLastUpdate"
-msgstr "Last updated"
-
-msgid "storeUpdateNow"
-msgstr "Update"
-
 msgid "deletePluginData"
-msgstr "Delete plug-in from database?"
+msgstr "Uninstalling the plug-in"
+
+msgid "deletePluginDataInfo"
+msgstr "Uninstalling the plug-in removes the plug-in from all shop database tables. You can further configure the uninstallation via the following check boxes:"
+
+msgid "deletePluginFilesHeading"
+msgstr "Are you sure you want to try to delete all plugin files?"
+
+msgid "deletePluginFilesQuestion"
+msgstr "Also delete the associated files?"
+
+msgid "deletePluginFilesQuestionDesc"
+msgstr "With this check box enabled, all plug-in files will be removed from the web space. To install the plug-in again, it must be obtained/uploaded again. "
+
+msgid "deletePluginDataQuestion"
+msgstr "Also delete all plug-in tables from the database "
+
+msgid "deletePluginDataQuestionDesc"
+msgstr "With this check box enabled, all plug-in database tables will also be removed."
 
 msgid "deletePluginDataYes"
-msgstr "Yes, delete all plug-in data."
-
-msgid "deletePluginDataNo"
-msgstr "No, keep plug-in data."
+msgstr "Uninstall plug-in with selected settings"
 
 msgid "WRONG_PARAM"
 msgstr "Plausibility check cancelled due to missing parameters."
@@ -643,3 +649,159 @@ msgstr "Unknown error."
 
 msgid "errorPrefix"
 msgstr "Error: "
+
+msgid "MISSING_PAYMENT_METHOD_SELECTBOX_OPTIONS"
+msgstr "No Selectbox option for payment method."
+
+msgid "INVALID_PAYMENT_METHOD_OPTION"
+msgstr "Faulty option for payment method."
+
+msgid "OK_LEGACY"
+msgstr "Legacy plug-in. Everything is okay."
+
+msgid "MISSING_PLUGIN_NODE"
+msgstr "Missing plug-in node \"jtlshopplugin\"."
+
+msgid "SQL_MISSING_DATA"
+msgstr "SQL missing data."
+
+msgid "SQL_ERROR"
+msgstr "SQL error."
+
+msgid "SQL_WRONG_TABLE_NAME_DELETE"
+msgstr "SQL Delete - wrong table name."
+
+msgid "SQL_WRONG_TABLE_NAME_CREATE"
+msgstr "SQL Create - wrong table name"
+
+msgid "SQL_INVALID_FILE_CONTENT"
+msgstr "SQL file has no lines"
+
+msgid "SQL_CANNOT_SAVE_HOOK"
+msgstr "SQL cannot save hook."
+
+msgid "SQL_CANNOT_SAVE_UNINSTALL"
+msgstr "SQL problem saving to tpluginuninstall."
+
+msgid "SQL_CANNOT_SAVE_ADMIN_MENU_ITEM"
+msgstr "SQL Cannot save admin menu item."
+
+msgid "SQL_CANNOT_SAVE_SETTINGS_ITEM"
+msgstr "SQL Cannot save setting option."
+
+msgid "SQL_CANNOT_SAVE_SETTING"
+msgstr "SQL Cannot save setting."
+
+msgid "SQL_CANNOT_FIND_LINK_GROUP"
+msgstr "SQL Cannot find link group."
+
+msgid "SQL_CANNOT_SAVE_LINK"
+msgstr "SQL Cannot save link."
+
+msgid "SQL_CANNOT_SAVE_PAYMENT_METHOD"
+msgstr "SQL Cannot save payment method."
+
+msgid "SQL_CANNOT_SAVE_PAYMENT_METHOD_LOCALIZATION"
+msgstr "SQL Cannot save payment method localisation."
+
+msgid "SQL_CANNOT_SAVE_PAYMENT_METHOD_LANGUAGE"
+msgstr "SQL Cannot save payment method language."
+
+msgid "SQL_CANNOT_SAVE_PAYMENT_METHOD_SETTING"
+msgstr "SQL Cannot save payment setting."
+
+msgid "SQL_CANNOT_SAVE_BOX_TEMPLATE"
+msgstr "SQL Cannot save box template."
+
+msgid "SQL_CANNOT_SAVE_TEMPLATE"
+msgstr "SQL Cannot save template."
+
+msgid "SQL_CANNOT_SAVE_EMAIL_TEMPLATE"
+msgstr "SQL Cannot save email template."
+
+msgid "SQL_CANNOT_SAVE_LANG_VAR"
+msgstr "SQL Cannot save language variable."
+
+msgid "SQL_CANNOT_SAVE_LANG_VAR_LOCALIZATION"
+msgstr "SQL Cannot save language variable localisation."
+
+msgid "SQL_CANNOT_SAVE_WIDGET"
+msgstr "SQL Cannot save widget."
+
+msgid "SQL_CANNOT_SAVE_PORTLET"
+msgstr "SQL Cannot save portlet."
+
+msgid "SQL_CANNOT_SAVE_BLUEPRINT"
+msgstr "SQL Cannot save OPC blueprint."
+
+msgid "SQL_CANNOT_SAVE_EXPORT"
+msgstr "SQL Cannot save export."
+
+msgid "INVALID_STORE_ID"
+msgstr "Wrong Store ID."
+
+msgid "SQL_CANNOT_SAVE_VENDOR"
+msgstr "SQL Cannot save vendor."
+
+msgid "MISSING_CONSENT_VENDOR"
+msgstr "Missing consent vendor."
+
+msgid "INVALID_CONSENT_VENDOR_NAME"
+msgstr "Invalid consent vendor name."
+
+msgid "INVALID_CONSENT_VENDOR_PURPOSE"
+msgstr "Invalid consent vendor purpose."
+
+msgid "INVALID_CONSENT_VENDOR_LOCALIZATION"
+msgstr "Invalid consent vendor localisation."
+
+msgid "INVALID_CONSENT_VENDOR_LOCALIZATION_ISO"
+msgstr "Invalid consent vendor ISO."
+
+msgid "INVALID_CONSENT_VENDOR_DESCRIPTION"
+msgstr "Invalid consent vendor description."
+
+msgid "INVALID_CONSENT_VENDOR_PRIV_POL"
+msgstr "Invalid consent vendor data privacy notice."
+
+msgid "INVALID_CONSENT_VENDOR_ID"
+msgstr "Invalid consent vendor ID."
+
+msgid "INVALID_CONSENT_VENDOR_COMPANY"
+msgstr "Invalid consent vendor company."
+
+msgid "INVALID_LINK_IDENTIFIER"
+msgstr "Invalid link identifier."
+
+msgid "Deaktiviert"
+msgstr "Disabled"
+
+msgid "Aktiviert"
+msgstr "Enabled"
+
+msgid "Fehlerhaft"
+msgstr "Faulty"
+
+msgid "Update fehlgeschlagen"
+msgstr "Update failed"
+
+msgid "Lizenzschlüssel fehlt"
+msgstr "Missing licence key"
+
+msgid "Lizenzschlüssel ungültig"
+msgstr "Invalid licence key"
+
+msgid "Lizenz abgelaufen"
+msgstr "Licence expired"
+
+msgid "Subscription abgelaufen"
+msgstr "Subscription expired"
+
+msgid "Unbekannt"
+msgstr "Unknown"
+
+msgid "Safe mode restrictions."
+msgstr "Please note: In safe mode, plug-ins might not be fully deactivated or uninstalled. This could lead to unused data remaining in the database."
+
+msgid "Plugin probably flawed"
+msgstr "The plug-in might cause failures: "

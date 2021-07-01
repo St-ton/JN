@@ -9,7 +9,11 @@
     {/if}
 </div>
 <script>
+
     var dateTimeInput = $('#config-{$propname}');
     opc.gui.initDateTimePicker(dateTimeInput);
-    dateTimeInput.val('{$propval}');
+
+    {if !empty($propval)}
+        dateTimeInput.val(opc.page.decodeDate('{$propval|escape:'html'}'));
+    {/if}
 </script>

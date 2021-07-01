@@ -4,23 +4,29 @@ namespace JTL\Console;
 
 use JTL\Console\Command\Backup\DatabaseCommand;
 use JTL\Console\Command\Backup\FilesCommand;
+use JTL\Console\Command\Cache\ClearObjectCacheCommand;
 use JTL\Console\Command\Cache\DbesTmpCommand;
 use JTL\Console\Command\Cache\DeleteFileCacheCommand;
 use JTL\Console\Command\Cache\DeleteTemplateCacheCommand;
+use JTL\Console\Command\Cache\WarmCacheCommand;
 use JTL\Console\Command\Command;
 use JTL\Console\Command\InstallCommand;
+use JTL\Console\Command\Mailtemplates\ResetCommand;
 use JTL\Console\Command\Migration\CreateCommand;
+use JTL\Console\Command\Migration\InnodbUtf8Command;
 use JTL\Console\Command\Migration\MigrateCommand;
 use JTL\Console\Command\Migration\StatusCommand;
+use JTL\Console\Command\Model\CreateCommand as CreateModelCommand;
 use JTL\Console\Command\Plugin\CreateCommandCommand;
 use JTL\Console\Command\Plugin\CreateMigrationCommand;
-use JTL\Console\Command\Model\CreateCommand as CreateModelCommand;
+use JTL\Console\Command\Plugin\ValidateCommand;
 use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
 use JTL\Shop;
 use JTL\XMLParser;
+use JTLShop\SemVer\Version;
 use RuntimeException;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -31,9 +37,9 @@ use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * Class Application
- * @property ConsoleIO io
- * @property bool      devMode
- * @property bool      isInstalled
+ * @property ConsoleIO $io
+ * @property bool      $devMode
+ * @property bool      $isInstalled
  * @package JTL\Console
  */
 class Application extends BaseApplication
@@ -62,7 +68,9 @@ class Application extends BaseApplication
         $this->isInstalled = \defined('BLOWFISH_KEY');
         if ($this->isInstalled) {
             $cache = Shop::Container()->getCache();
-            $cache->setJtlCacheConfig(Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
+            $cache->setJtlCacheConfig(
+                Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING)
+            );
         }
 
         parent::__construct('JTL-Shop', \APPLICATION_VERSION . ' - ' . ($this->devMode ? 'develop' : 'production'));
@@ -73,30 +81,31 @@ class Application extends BaseApplication
      */
     public function initPluginCommands(): void
     {
-        if (!$this->isInstalled) {
+        if (!$this->isInstalled || \SAFE_MODE === true) {
             return;
         }
-        $db              = Shop::Container()->getDB();
+        $db      = Shop::Container()->getDB();
+        $version = $db->select('tversion', [], []);
+        if (Version::parse($version->nVersion ?? '400')->smallerThan(Version::parse('500'))) {
+            return;
+        }
         $cache           = Shop::Container()->getCache();
         $parser          = new XMLParser();
         $validator       = new LegacyPluginValidator($db, $parser);
         $modernValidator = new PluginValidator($db, $parser);
         $listing         = new Listing($db, $cache, $validator, $modernValidator);
-        $installed       = $listing->getInstalled();
-        $sorted          = $listing->getAll($installed);
-        $filteredPlugins = $sorted->filter(static function (ListingItem $i) {
+        $compatible      = $listing->getAll()->filter(static function (ListingItem $i) {
             return $i->isShop5Compatible();
         });
-
-        foreach ($filteredPlugins as $plugin) {
-            /** @var ListingItem $plugin */
-            if (!\is_dir($plugin->getPath() . '/Commands')) {
+        /** @var ListingItem $plugin */
+        foreach ($compatible as $plugin) {
+            if (!\is_dir($plugin->getPath() . 'Commands')) {
                 continue;
             }
             $finder = Finder::create()
                 ->ignoreVCS(false)
                 ->ignoreDotFiles(false)
-                ->in($plugin->getPath() . '/Commands');
+                ->in($plugin->getPath() . 'Commands');
 
             foreach ($finder->files() as $file) {
                 /** @var SplFileInfo $file */
@@ -106,12 +115,12 @@ class Application extends BaseApplication
                     \str_replace('.' . $file->getExtension(), '', $file->getBasename())
                 );
                 if (!\class_exists($class)) {
-                    throw new RuntimeException("Class '" . $class . "' does not exist");
+                    throw new RuntimeException('Class "' . $class . '" does not exist');
                 }
 
                 $command = new $class();
                 /** @var Command $command */
-                $command->setName($plugin->getID() . ':' . $command->getName());
+                $command->setName($plugin->getPluginID() . ':' . $command->getName());
                 $this->add($command);
             }
         }
@@ -145,12 +154,16 @@ class Application extends BaseApplication
         if ($this->isInstalled) {
             $cmds[] = new MigrateCommand();
             $cmds[] = new StatusCommand();
+            $cmds[] = new InnodbUtf8Command();
             $cmds[] = new DatabaseCommand();
             $cmds[] = new FilesCommand();
             $cmds[] = new DeleteTemplateCacheCommand();
             $cmds[] = new DeleteFileCacheCommand();
             $cmds[] = new DbesTmpCommand();
+            $cmds[] = new ClearObjectCacheCommand();
+            $cmds[] = new WarmCacheCommand();
             $cmds[] = new CreateModelCommand();
+            $cmds[] = new ResetCommand();
 
             if ($this->devMode) {
                 $cmds[] = new CreateCommand();
@@ -158,6 +171,7 @@ class Application extends BaseApplication
             if (\PLUGIN_DEV_MODE === true) {
                 $cmds[] = new CreateMigrationCommand();
                 $cmds[] = new CreateCommandCommand();
+                $cmds[] = new ValidateCommand();
             }
         } else {
             $cmds[] = new InstallCommand();

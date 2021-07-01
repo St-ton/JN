@@ -17,9 +17,14 @@ class Migration_20190415164325 extends Migration implements IMigration
     protected $author = 'fp';
     protected $description = 'Remove tpreise';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('DROP TABLE IF EXISTS tpreise');
+        $this->execute('ANALYZE TABLE tpreis');
+        $this->execute('ANALYZE TABLE tpreisverlauf');
         $this->execute('UPDATE tpreis SET kKunde = 0 WHERE kKunde IS NULL');
 
         $this->execute(
@@ -70,6 +75,9 @@ class Migration_20190415164325 extends Migration implements IMigration
         $this->execute('CREATE UNIQUE INDEX kPreis_nAnzahlAb ON tpreisdetail(kPreis, nAnzahlAb)');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         if ($this->fetchOne("SHOW INDEX FROM tpreisdetail WHERE KEY_NAME = 'kPreis_nAnzahlAb'")) {

@@ -5,6 +5,9 @@ msgstr ""
 msgid "agbwrb"
 msgstr " AGB / Widerrufsbelehrung"
 
+msgid "availableAGBWRB"
+msgstr "Vorhandene AGB / Widerrufsbelehrung"
+
 msgid "agbwrbURL"
 msgstr "https://jtl-url.de/15ge9"
 

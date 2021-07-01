@@ -51,12 +51,12 @@ interface LinkInterface
     public function setParent(int $parent): void;
 
     /**
-     * @return array
+     * @return int[]
      */
     public function getLinkGroups(): array;
 
     /**
-     * @param array $linkGroups
+     * @param int[] $linkGroups
      */
     public function setLinkGroups(array $linkGroups): void;
 
@@ -129,8 +129,8 @@ interface LinkInterface
     public function setSEOs(array $seo): void;
 
     /**
-     * @param string $url
-     * @param int    $idx
+     * @param string   $url
+     * @param int|null $idx
      */
     public function setSEO(string $url, int $idx = null): void;
 
@@ -168,8 +168,8 @@ interface LinkInterface
     public function getTitles(): array;
 
     /**
-     * @param string $title
-     * @param int    $idx
+     * @param string   $title
+     * @param int|null $idx
      */
     public function setTitle(string $title, int $idx = null): void;
 
@@ -362,7 +362,7 @@ interface LinkInterface
     public function getFileName(): string;
 
     /**
-     * @param null|string $fileName
+     * @param string $fileName
      */
     public function setFileName(string $fileName): void;
 

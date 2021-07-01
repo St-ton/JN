@@ -1,48 +1,6 @@
-<script>
-    // transfer our licenses(-json-object) from php into js
-    var vLicenses = {if isset($szLicenses)}{$szLicenses}{else}[]{/if};
-//{literal}
-
-    $(document).ready(function() {
-        token = $('input[name="jtl_token"]').val();
-
-        // for all found licenses..
-        for (var key in vLicenses) {
-            // ..bind a click-handler to the plugins checkbox
-            $('input[id="plugin-check-'+key+'"]').on('click', function(event) {
-                // grab the element, which was rising that click-event (click to the checkbox)
-                var oTemp = $(event.currentTarget);
-                szPluginName = oTemp.val();
-
-                if (this.checked) { // it's checked yet, right after the click was fired
-                    $('input[id="plugin-check-'+szPluginName+'"]').attr('disabled', 'disabled'); // block the checkbox!
-                    $('div[id="licenseModal"]').modal({backdrop : 'static'}); // set our modal static (a click in black did not hide it!)
-                    $('div[id="licenseModal"]').find('.modal-body').load('getMarkdownAsHTML.php', {'jtl_token':token, 'path':vLicenses[szPluginName]});
-                    $('div[id="licenseModal"]').modal('show');
-                }
-            });
-        }
-
-        // handle the (befor-)hiding of the modal and what's happening during it occurs
-        $('div[id="licenseModal"]').on('hide.bs.modal', function(event) {
-            // IMPORTANT: release the checkbox on modal-close again too!
-            $('input[id=plugin-check-'+szPluginName+']').removeAttr('disabled');
-
-            // check, which element is 'active' before/during the modal goes hiding (to determine, which button closes it)
-            // (it is faster than check a var or bind an event to an element)
-            if ('ok' === document.activeElement.name) {
-                $('input[id=plugin-check-'+szPluginName+']').prop('checked', true);
-            } else {
-                $('input[id=plugin-check-'+szPluginName+']').prop('checked', false);
-            }
-        });
-    });
-</script>
-{/literal}
-
-<div id="verfuegbar" class="tab-pane fade {if isset($cTab) && $cTab === 'verfuegbar'} active show{/if}">
+<div id="verfuegbar" class="tab-pane fade {if $cTab === 'verfuegbar'} active show{/if}">
     {if $pluginsAvailable->count() > 0}
-        <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
+        <form name="pluginverwaltung" method="post" action="pluginverwaltung.php" id="available-plugins">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
             <div>
@@ -85,16 +43,18 @@
                             <tr>
                                 <th></th>
                                 <th class="text-left">{__('pluginName')}</th>
+                                <th class="text-center">{__('pluginCompatibility')}</th>
                                 <th class="text-center">{__('pluginVersion')}</th>
                                 <th>{__('pluginFolder')}</th>
                             </tr>
                         </thead>
                         <tbody>
-                        {foreach $pluginsAvailable->toArray() as $listingItem}
+                        {foreach $pluginsAvailable as $listingItem}
                             <tr class="plugin">
                                 <td class="check">
                                     <div class="custom-control custom-checkbox">
-                                        <input class="custom-control-input" type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
+                                        <input type="hidden" id="plugin-ext-{$listingItem->getDir()}" name="isExtension[]" value="{if $listingItem->isLegacy()}0{else}1{/if}">
+                                        <input class="custom-control-input plugin-license-check" type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
                                         <label class="custom-control-label" for="plugin-check-{$listingItem->getDir()}"></label>
                                     </div>
                                     {if $listingItem->isShop5Compatible() === false}
@@ -122,6 +82,7 @@
                                         <div class="alert alert-info">{__('dangerPluginNotCompatibleShop4')}</div>
                                     {/if}
                                 </td>
+                                <td class="text-center">{$listingItem->displayVersionRange()}</td>
                                 <td class="text-center">{$listingItem->getVersion()}</td>
                                 <td>{$listingItem->getDir()}</td>
                             </tr>
@@ -138,6 +99,11 @@
                             </div>
                         </div>
                         <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button name="deinstallieren" id="uninstall-available-plugin" type="submit" class="btn btn-danger btn-block">
+                                <i class="fas fa-trash-alt"></i> {__('pluginBtnDelete')}
+                            </button>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
                             <button name="installieren" type="submit" class="btn btn-primary btn-block">
                                 <i class="fa fa-share"></i> {__('pluginBtnInstall')}
                             </button>
@@ -146,6 +112,7 @@
                 </div>
             </div>
         </form>
+        {include file='tpl_inc/pluginverwaltung_delete_modal.tpl' context='available' selector='#available-plugins' button='#uninstall-available-plugin'}
     {else}
         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
     {/if}

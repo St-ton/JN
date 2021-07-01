@@ -4,46 +4,44 @@
 
         {if $hrTop|default:false === true}
             {block name='snippets-productlist-page-nav-hr-top'}
-                <hr>
+                <hr class="productlist-page-nav-top">
             {/block}
         {/if}
-        {row class="{if $navid === 'header'}mt-6{/if} no-gutters productlist-page-nav"}
-            {if count($NaviFilter->getSearchResults()->getProducts()) > 0}
+        {row no-gutters=true class="{if $navid === 'header'}productlist-page-nav-header-m{/if} productlist-page-nav"}
+            {if count($NaviFilter->getSearchResults()->getProducts()) > 0  && $navid === 'header'}
                 {block name='snippets-productlist-page-nav-result-options-sort'}
-                    {col cols=12 md="auto" class="displayoptions mb-3 mb-md-0"}
+                    {col cols=12 xl="auto" class="displayoptions"}
                         {block name='snippets-productlist-page-nav-include-result-options'}
                             {if count($Suchergebnisse->getProducts()) > 0}
                                 {opcMountPoint id='opc_before_result_options'}
                             {/if}
-                            {if $navid === 'header'}
-                                {$filterPlacement=''}
-                                {if $isMobile && !$isTablet}
-                                    {$filterPlacement="collapse"}
-                                {elseif $isTablet || $Einstellungen.template.productlist.filter_placement === 'modal'}
-                                    {$filterPlacement="modal"}
-                                {/if}
-                                <div id="improve_search" class="{if $filterPlacement !== 'collapse'}d-inline-block btn-group{/if} mr-2 {if $filterPlacement === ''}d-lg-none{/if}">
-                                    {include file='productlist/result_options.tpl'
-                                        itemCount=$Suchergebnisse->getProductCount()
-                                        filterPlacement=$filterPlacement}
-                                </div>
+                            {$filterPlacement=''}
+                            {if $isMobile && !$isTablet}
+                                {$filterPlacement="collapse"}
+                            {elseif $isTablet || $Einstellungen.template.productlist.filter_placement === 'modal'}
+                                {$filterPlacement="modal"}
                             {/if}
+                            <div id="improve_search" class="result-option-wrapper {if $filterPlacement !== 'collapse'}d-inline-block btn-group{/if} {if $filterPlacement === ''}d-lg-none{/if}">
+                                {include file='productlist/result_options.tpl'
+                                    itemCount=$Suchergebnisse->getProductCount()
+                                    filterPlacement=$filterPlacement}
+                            </div>
                         {/block}
-                        {if (!$isMobile || $isTablet) && $navid === 'header'}
+                        {if !$isMobile || $isTablet}
                             {block name='snippets-productlist-page-nav-actions'}
                                 {block name='snippets-productlist-page-nav-actions-sort'}
                                     {dropdown class="filter-type-FilterItemSort btn-group" variant="outline-secondary" text="{lang key='sorting' section='productOverview'}"}
                                         {foreach $Suchergebnisse->getSortingOptions() as $option}
-                                            {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
+                                            {dropdownitem rel="nofollow" href=$option->getURL() class="page-nav-filter-item" active=$option->isActive()}
                                                 {$option->getName()}
                                             {/dropdownitem}
                                         {/foreach}
                                     {/dropdown}
                                 {/block}
                                 {block name='snippets-productlist-page-nav-actions-items'}
-                                    {dropdown class="filter-type-FilterItemLimits btn-group ml-2" variant="outline-secondary" text="{lang key='productsPerPage' section='productOverview'}"}
+                                    {dropdown class="filter-type-FilterItemLimits btn-group" variant="outline-secondary" text="{lang key='productsPerPage' section='productOverview'}"}
                                         {foreach $Suchergebnisse->getLimitOptions() as $option}
-                                            {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
+                                            {dropdownitem rel="nofollow" href=$option->getURL() class="page-nav-filter-item" active=$option->isActive()}
                                                 {$option->getName()}
                                             {/dropdownitem}
                                         {/foreach}
@@ -60,7 +58,7 @@
                 {/block}
             {/if}
             {block name='snippets-productlist-page-nav-current-page-count'}
-                {col cols="auto" class="ml-md-auto mb-2 mb-md-0 mx-auto mx-md-0 productlist-item-info d-flex {if $Suchergebnisse->getPages()->getMaxPage() > 1}border-md-right{/if} pr-md-3"}
+                {col cols="auto" class="productlist-item-info {if $Suchergebnisse->getPages()->getMaxPage() > 1}productlist-item-border{/if}"}
                     {lang key="products"} {$Suchergebnisse->getOffsetStart()} - {$Suchergebnisse->getOffsetEnd()} {lang key='of' section='productOverview'} {$Suchergebnisse->getProductCount()}
                 {/col}
             {/block}
@@ -102,7 +100,7 @@
             {/if}
         {/row}
         {block name='snippets-productlist-page-nav-hr-bottom'}
-            <hr class="mb-5">
+            <hr class="productlist-page-nav-bottom">
         {/block}
     {/if}
 {/block}

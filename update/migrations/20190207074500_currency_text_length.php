@@ -16,6 +16,9 @@ class Migration_20190207074500 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Increase currency table text fields length';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute('ALTER TABLE `twaehrung` 
@@ -23,6 +26,9 @@ class Migration_20190207074500 extends Migration implements IMigration
             CHANGE COLUMN `cNameHTML` `cNameHTML` VARCHAR(255) NULL DEFAULT NULL');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE `twaehrung` 

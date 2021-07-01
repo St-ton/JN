@@ -57,7 +57,7 @@ class PaymentMethods
             foreach ($method->oZahlungsmethodeSprache_arr as $loc) {
                 $loc->kZahlungsart = (int)$loc->kZahlungsart;
             }
-            $class                           = new \stdClass();
+            $class                           = new stdClass();
             $class->cModulId                 = $method->cModulId;
             $class->kPlugin                  = $method->kPlugin;
             $class->cClassPfad               = $method->cClassPfad;
@@ -92,7 +92,7 @@ class PaymentMethods
 
     /**
      * @param string $id
-     * @return stdClass|null
+     * @return PaymentMethod|null
      */
     public function getMethodByID(string $id): ?PaymentMethod
     {

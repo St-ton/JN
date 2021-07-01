@@ -9,7 +9,7 @@ msgid "shoptemplateURL"
 msgstr "https://jtl-url.de/4t1so"
 
 msgid "shoptemplatesDesc"
-msgstr "This page contains all templates included in the folder \"/templates/\" of the JTL-Shop root directory. If you have a new template and want to use it, use <abbr title=\"FTP (File Transfer Protocol) is a data transfer protocol\">FTP</abbr> to move it to this directory first. You can only activate one normal and one mobile template for JTL-Shop at the same time. Use the button \"Settings\" to configure the activated template."
+msgstr "This page contains all templates included in the folder \"/templates/\" of the JTL-Shop root directory. If you have a new template and want to use it, use <abbr title=\"FTP (File Transfer Protocol) is a data transfer protocol\">FTP</abbr> to move it to this directory first. You can only activate one normal and one mobile template for JTL-Shop at the same time. Use the button \"Settings\" to configure the activated template."
 
 msgid "templateName"
 msgstr "Template name"
@@ -25,12 +25,6 @@ msgstr "Could not edit template or settings. If the template is a child template
 
 msgid "errorFileUpload"
 msgstr "Could not upload file. Please check the write access of folder \"%s\"."
-
-msgid "successLayoutReset"
-msgstr "Layout reset successfully."
-
-msgid "errorLayoutReset"
-msgstr "Could not reset layout. File %s does not exist or does not have sufficient write access."
 
 msgid "errorStyleFilePermission"
 msgstr "Could not write style file. File %s does not exist or does not have sufficient write access."
@@ -64,3 +58,39 @@ msgstr "Missing parent template"
 
 msgid "errorOverlayWritePermissions"
 msgstr "Could not create item badges. Please check the write access of the folder \"%s\" and re-enable the template."
+
+msgid "successTemplateUpload"
+msgstr "Template uploaded successfully."
+
+msgid "uploadTemplateHeading"
+msgstr "Upload a template"
+
+msgid "errorTemplateUpload"
+msgstr "Could not upload template. Please contact the Support team."
+
+msgid "errorParentNotFound"
+msgstr "Parent template not found."
+
+msgid "errorShopVersionNotFound"
+msgstr "XML node \"ShopVersion\"/\"MinShopVersionParent\" not found."
+
+msgid "errorXmlNotFound"
+msgstr "template.xml not found."
+
+msgid "errorXmlParse"
+msgstr "Could not parse XML."
+
+msgid "errorNameNotFound"
+msgstr "XML node \"Name\" not found."
+
+msgid "errorInvalidVersion"
+msgstr "No valid SemVer."
+
+msgid "errorUnknown"
+msgstr "Unknown error."
+
+msgid "dangerMinShopVersion"
+msgstr "Please note: This template requires a newer version of JTL-Shop. This might lead to performance issues."
+
+msgid "dangerMaxShopVersion"
+msgstr "Please note: This template was developed for an older version of JTL-Shop. This might lead to performance issues."

@@ -27,4 +27,6 @@ class Type extends Enum
     public const IMAGECACHE = 'imagecache';
 
     public const STORE = 'store';
+
+    public const LICENSE_CHECK = 'licensecheck';
 }

@@ -25,6 +25,7 @@ const $header					= $(header)
 const $mainNavigation			= $(mainNavigation)
 const $navRightDropdowns		= $(navRightDropdowns)
 const $navbarNav				= $(navbarNav)
+const $consentManager           = $('#consent-manager')
 
 const delayDropdownFadeIn		= 400
 const delayDropdownFadeOut		= 200
@@ -159,6 +160,7 @@ $backdropMobileNav.on('click', onMobile(() => {
 $document.on('show.bs.collapse', mainNavigation, () => {
     lockScreen()
     $backdropMobileNav.insertBefore($mainNavigation)
+    $consentManager.addClass('d-none');
 })
 
 $document.on('shown.bs.collapse', mainNavigation, () => {
@@ -168,6 +170,7 @@ $document.on('shown.bs.collapse', mainNavigation, () => {
 
 $document.on('hide.bs.collapse', mainNavigation, () => {
     $backdropMobileNav.removeClass('show')
+    $consentManager.removeClass('d-none');
 })
 
 $document.on('hidden.bs.collapse', mainNavigation, () => {
@@ -192,7 +195,7 @@ $document.on('click', `${mainNavigation} .dropdown-toggle`, onMobile((e) => {
 /* desktop events */
 
 if(hasTouch()) {
-    $document.on('click', `${mainNavigation} .dropdown-toggle`, onDesktop((e) => {
+    $document.on('click', `${mainNavigation} .dropdown-toggle:not(.categories-recursive-link)`, onDesktop((e) => {
         e.preventDefault()
 
         if($activeDropdown !== null && $activeDropdown.get(0) === e.currentTarget) {

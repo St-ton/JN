@@ -6,7 +6,8 @@ use DateTime;
 use JTL\Backend\Revision;
 use JTL\Catalog\Currency;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
+use JTL\Update\Updater;
+use Smarty_Internal_Template;
 
 /**
  * Class Plugins
@@ -15,8 +16,8 @@ use JTL\Smarty\JTLSmarty;
 class Plugins
 {
     /**
-     * @param array     $params
-     * @param JTLSmarty $smarty
+     * @param array                    $params
+     * @param Smarty_Internal_Template $smarty
      * @return string
      */
     public function getRevisions(array $params, $smarty): string
@@ -25,11 +26,11 @@ class Plugins
         $data      = $params['data'] ?? null;
         $revision  = new Revision(Shop::Container()->getDB());
 
-        return $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key']))
-                      ->assign('secondary', $secondary)
-                      ->assign('data', $data)
-                      ->assign('show', $params['show'])
-                      ->fetch('tpl_inc/revisions.tpl');
+        return $smarty->assign('revisions', $revision->getRevisions($params['type'], (int)$params['key']))
+            ->assign('secondary', $secondary)
+            ->assign('data', $data)
+            ->assign('show', $params['show'])
+            ->fetch('tpl_inc/revisions.tpl');
     }
 
     /**
@@ -38,7 +39,7 @@ class Plugins
      */
     public function getCurrencyConversionSmarty(array $params): string
     {
-        $bForceSteuer = !(isset($params['bSteuer']) && $params['bSteuer'] === false);
+        $forceTax = !(isset($params['bSteuer']) && $params['bSteuer'] === false);
         if (!isset($params['fPreisBrutto'])) {
             $params['fPreisBrutto'] = 0;
         }
@@ -53,13 +54,13 @@ class Plugins
             $params['fPreisNetto'],
             $params['fPreisBrutto'],
             $params['cClass'],
-            $bForceSteuer
+            $forceTax
         );
     }
 
     /**
-     * @param array     $params
-     * @param JTLSmarty $smarty
+     * @param array                    $params
+     * @param Smarty_Internal_Template $smarty
      * @return string
      */
     public function getCurrencyConversionTooltipButton(array $params, $smarty): string
@@ -79,8 +80,8 @@ class Plugins
     }
 
     /**
-     * @param array     $params
-     * @param JTLSmarty $smarty
+     * @param array                    $params
+     * @param Smarty_Internal_Template $smarty
      */
     public function getCurrentPage($params, $smarty): void
     {
@@ -93,22 +94,24 @@ class Plugins
     }
 
     /**
-     * @param array     $params
-     * @param JTLSmarty $smarty
+     * @param array                    $params
+     * @param Smarty_Internal_Template $smarty
      * @return string
      */
     public function getHelpDesc(array $params, $smarty): string
     {
-        $placement   = $params['placement'] ?? 'left';
-        $cID         = !empty($params['cID']) ? $params['cID'] : null;
-        $description = isset($params['cDesc'])
+        $placement    = $params['placement'] ?? 'left';
+        $cID          = !empty($params['cID']) ? $params['cID'] : null;
+        $iconQuestion = !empty($params['iconQuestion']);
+        $description  = isset($params['cDesc'])
             ? \str_replace('"', '\'', $params['cDesc'])
             : null;
 
         return $smarty->assign('placement', $placement)
-                      ->assign('cID', $cID)
-                      ->assign('description', $description)
-                      ->fetch('tpl_inc/help_description.tpl');
+            ->assign('cID', $cID)
+            ->assign('description', $description)
+            ->assign('iconQuestion', $iconQuestion)
+            ->fetch('tpl_inc/help_description.tpl');
     }
 
     /**
@@ -118,16 +121,17 @@ class Plugins
     public function permission($cRecht): bool
     {
         $ok = false;
-        if (isset($_SESSION['AdminAccount'])) {
-            if ((int)$_SESSION['AdminAccount']->oGroup->kAdminlogingruppe === \ADMINGROUP) {
-                $ok = true;
-            } else {
-                $orExpressions = \explode('|', $cRecht);
-                foreach ($orExpressions as $flag) {
-                    $ok = \in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true);
-                    if ($ok) {
-                        break;
-                    }
+        if (!isset($_SESSION['AdminAccount'])) {
+            return false;
+        }
+        if ((int)$_SESSION['AdminAccount']->oGroup->kAdminlogingruppe === \ADMINGROUP) {
+            $ok = true;
+        } else {
+            $orExpressions = \explode('|', $cRecht);
+            foreach ($orExpressions as $flag) {
+                $ok = \in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true);
+                if ($ok) {
+                    break;
                 }
             }
         }
@@ -136,8 +140,8 @@ class Plugins
     }
 
     /**
-     * @param array     $params
-     * @param JTLSmarty $smarty
+     * @param array                    $params
+     * @param Smarty_Internal_Template $smarty
      * @return string
      */
     public function SmartyConvertDate(array $params, $smarty)
@@ -163,8 +167,8 @@ class Plugins
     /**
      * Map marketplace categoryId to localized category name
      *
-     * @param array     $params
-     * @param JTLSmarty $smarty
+     * @param array                    $params
+     * @param Smarty_Internal_Template $smarty
      */
     public function getExtensionCategory(array $params, $smarty): void
     {
@@ -198,7 +202,7 @@ class Plugins
             return null;
         }
 
-        return \substr_replace((int)$params['value'], '.', 1, 0);
+        return \substr_replace((string)(int)$params['value'], '.', 1, 0);
     }
 
     /**
@@ -212,17 +216,19 @@ class Plugins
             $params['account']->attributes['useAvatarUpload']->cAttribValue
             : 'templates/bootstrap/gfx/avatar-default.svg';
 
-        \executeHook(\HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
-            'url'          => &$url,
-            'AdminAccount' => &$_SESSION['AdminAccount']
-        ]);
+        if (!(new Updater(Shop::Container()->getDB()))->hasPendingUpdates()) {
+            \executeHook(\HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
+                'url'          => &$url,
+                'AdminAccount' => &$_SESSION['AdminAccount']
+            ]);
+        }
 
         return $url;
     }
 
     /**
-     * @param array     $params
-     * @param JTLSmarty $smarty
+     * @param array                    $params
+     * @param Smarty_Internal_Template $smarty
      * @return string
      */
     public function captchaMarkup(array $params, $smarty): string
@@ -233,5 +239,4 @@ class Plugins
 
         return Shop::Container()->getCaptchaService()->getHeadMarkup($smarty);
     }
-
 }

@@ -1,5 +1,8 @@
 {if $isPreview === false}
     {$href = $instance->getProperty('url')}
+    {if !empty($href)}
+        {$href = $href|escape:'html'}
+    {/if}
 {/if}
 
 {if $instance->getProperty('size') !== 'md'}
@@ -14,8 +17,13 @@
     {$target = '_blank'}
 {/if}
 
-<div {if $isPreview}data-portlet="{$instance->getDataAttribute()}"{/if}
-        class="opc-Button"
+{$title = $instance->getProperty('link-title')}
+
+{if !empty($title)}
+    {$title = $title|escape:'html'}
+{/if}
+
+<div class="opc-Button {$instance->getStyleClasses()}"
         {if $instance->getProperty('align') !== 'block'}
             style="text-align: {$instance->getProperty('align')}"
         {/if}>
@@ -24,7 +32,7 @@
             size=$size|default:null
             block=$block|default:false
             variant=$instance->getProperty('style')
-            title=$instance->getProperty('link-title')|default:null
+            title=$title|default:null
             class=$instance->getAnimationClass()
             data=$instance->getAnimationData()
             style=$instance->getStyleString()

@@ -17,7 +17,7 @@
 
     <link rel="stylesheet" href="{$shopUrl}/admin/opc/css/editor.css">
 
-    <script src="{$templateUrl}js/jquery-3.3.1.min.js"></script>
+    <script src="{$templateUrl}js/jquery-3.5.1.min.js"></script>
     <script src="{$templateUrl}js/jquery-ui.min.js"></script>
     <script src="{$shopUrl}/templates/NOVA/js/bootstrap.bundle.min.js"></script>
     <script src="{$templateUrl}js/global.js"></script>

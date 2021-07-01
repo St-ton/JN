@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Setting for SEO handling of articles which are sold out
  *
@@ -18,15 +18,14 @@ class Migration_20180907143536 extends Migration implements IMigration
     protected $description = 'Setting for SEO handling of articles which are sold out';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritdoc
      */
     public function up()
     {
         $this->setConfig(
             'artikel_artikelanzeigefilter_seo',
             'seo',
-            \CONF_GLOBAL,
+            CONF_GLOBAL,
             'Direktaufruf ausverkaufter Artikel',
             'selectbox',
             215,
@@ -42,6 +41,9 @@ class Migration_20180907143536 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     public function down()
     {
         $this->removeConfig('artikel_artikelanzeigefilter_seo');

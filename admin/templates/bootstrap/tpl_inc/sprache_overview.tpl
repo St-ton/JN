@@ -117,9 +117,10 @@
                                                     <div class="btn-group">
                                                         {if $oWert->bSystem === '0'}
                                                             <a href="sprache.php?token={$smarty.session.jtl_token}&action=delvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}"
-                                                               class="btn btn-link px-2"
+                                                               class="btn btn-link px-2 delete-confirm"
                                                                title="{__('delete')}"
-                                                               data-toggle="tooltip">
+                                                               data-toggle="tooltip"
+                                                               data-modal-body="{$oWert->cName}">
                                                                 <span class="icon-hover">
                                                                     <span class="fal fa-trash-alt"></span>
                                                                     <span class="fas fa-trash-alt"></span>
@@ -153,6 +154,9 @@
                         </div>
                     </form>
                 </div>
+                {if $bSpracheAktiv}
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}
+                {/if}
             </div>
             <div id="notfound" class="tab-pane fade {if $tab === 'notfound'}active show{/if}">
                 <div class="table-responsive">

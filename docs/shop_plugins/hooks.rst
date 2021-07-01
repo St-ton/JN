@@ -32,7 +32,7 @@ zum Beispiel der dort übergebene Kommentar verändern.
 
     <?php
 
-    if (!empty($args_arr['comment']) {
+    if (!empty($args_arr['comment'])) {
         $args_arr['comment'] .= '<br>Dieser Text wird an nicht-leere Kommentare angehängt!';
     }
 
@@ -54,7 +54,7 @@ an den Body des HTML-Dokuments anhängen:
     <?php
 
     $template = $oPlugin->cFrontendPfad . 'templates/' . 'example.tpl';
-    pq('body')->append($smarty->fetch($template);
+    pq('body')->append($smarty->fetch($template));
 
 
 Eine Übersicht über PHPQuery finden Sie in dessen `Dokumentation <https://code.google.com/archive/p/phpquery>`_.

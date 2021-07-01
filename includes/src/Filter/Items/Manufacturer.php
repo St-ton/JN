@@ -26,7 +26,7 @@ class Manufacturer extends BaseManufacturer
              ->setUrlParam('hf')
              ->setUrlParamSEO(\SEP_HST)
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_herstellerfilter_benutzen'])
-             ->setFrontendName(Shop::isAdmin() ? __('filterManufacturers') : Shop::Lang()->get('allManufacturers'))
+             ->setFrontendName(Shop::isAdmin() ? \__('filterManufacturers') : Shop::Lang()->get('allManufacturers'))
              ->setType($this->getConfig('navigationsfilter')['manufacturer_filter_type'] === 'O'
                  ? Type::OR
                  : Type::AND);

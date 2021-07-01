@@ -2,7 +2,6 @@
 
 namespace JTL\Catalog;
 
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use stdClass;
@@ -74,8 +73,16 @@ class Separator
         }
         if (isset($data->kTrennzeichen) && $data->kTrennzeichen > 0) {
             foreach (\array_keys(\get_object_vars($data)) as $member) {
-                $this->$member = $data->$member;
+                $this->$member         = $data->$member;
+                $this->nEinheit        = (int)$this->nEinheit;
+                $this->nDezimalstellen = (int)$this->nDezimalstellen;
+                $this->kSprache        = (int)$this->nEinheit;
+                $this->kTrennzeichen   = (int)$this->kTrennzeichen;
             }
+            $this->nEinheit        = (int)$this->nEinheit;
+            $this->nDezimalstellen = (int)$this->nDezimalstellen;
+            $this->kSprache        = (int)$this->nEinheit;
+            $this->kTrennzeichen   = (int)$this->kTrennzeichen;
         }
 
         return $this;
@@ -124,9 +131,9 @@ class Separator
     /**
      * Loads database member into class member
      *
-     * @param int $unitID
-     * @param int $languageID
-     * @param int $qty
+     * @param int       $unitID
+     * @param int       $languageID
+     * @param int|float $qty
      * @return int|string|Separator
      */
     public static function getUnit(int $unitID, int $languageID, $qty = -1)
@@ -194,14 +201,13 @@ class Separator
             }
             Shop::Container()->getCache()->flushTags([\CACHING_GROUP_CORE]);
 
-            return Shop::Container()->getDB()->query(
+            return Shop::Container()->getDB()->getAffectedRows(
                 "INSERT INTO `ttrennzeichen` 
                     (`kTrennzeichen`, `kSprache`, `nEinheit`, `nDezimalstellen`, `cDezimalZeichen`, `cTausenderZeichen`)
                     VALUES (
                       NULL, {$languageID}, {$unitID}, {$rows[$languageID][$unitID]['nDezimalstellen']}, 
                       '{$rows[$languageID][$unitID]['cDezimalZeichen']}',
-                    '{$rows[$languageID][$unitID]['cTausenderZeichen']}')",
-                ReturnType::AFFECTED_ROWS
+                    '{$rows[$languageID][$unitID]['cTausenderZeichen']}')"
             );
         }
 
@@ -402,7 +408,7 @@ class Separator
         $conf      = Shop::getSettings([\CONF_ARTIKELDETAILS, \CONF_ARTIKELUEBERSICHT]);
         $languages = LanguageHelper::getAllLanguages();
         if (\is_array($languages) && \count($languages) > 0) {
-            Shop::Container()->getDB()->query('TRUNCATE ttrennzeichen', ReturnType::AFFECTED_ROWS);
+            Shop::Container()->getDB()->query('TRUNCATE ttrennzeichen');
             $units = [\JTL_SEPARATOR_WEIGHT, \JTL_SEPARATOR_AMOUNT, \JTL_SEPARATOR_LENGTH];
             foreach ($languages as $language) {
                 foreach ($units as $unit) {
@@ -433,13 +439,12 @@ class Separator
             }
             Shop::Container()->getCache()->flushTags([\CACHING_GROUP_CORE]);
 
-            return Shop::Container()->getDB()->query(
+            return Shop::Container()->getDB()->getAffectedRows(
                 'DELETE teinstellungen, teinstellungenconf
                     FROM teinstellungenconf
                     LEFT JOIN teinstellungen 
                         ON teinstellungen.cName = teinstellungenconf.cWertName
-                    WHERE teinstellungenconf.kEinstellungenConf IN (1458, 1459, 495, 497, 499, 501)',
-                ReturnType::AFFECTED_ROWS
+                    WHERE teinstellungenconf.kEinstellungenConf IN (1458, 1459, 495, 497, 499, 501)'
             );
         }
 

@@ -1,327 +1,92 @@
 {include file='tpl_inc/header.tpl'}
-<style type="text/css">
-    .cr {
-        color: #f0f0f0;
-        padding: 15px;
-        position: absolute;
-        text-align: center;
-        width: 200px;
-    }
-
-    .cr-sticky {
-        position: absolute;
-    }
-
-    .cr-top {
-        top: 25px;
-    }
-
-    .cr-right {
-        right: -50px;
-    }
-
-    .cr-top.cr-left,
-    .cr-bottom.cr-right {
-        transform: rotate(-45deg);
-    }
-
-    .cr-top.cr-right,
-    .cr-bottom.cr-left {
-        transform: rotate(45deg);
-    }
-
-    .cr-premium {
-        background-color: #efcc86;
-        color: #313131;
-    }
-
-    #plugin-header {
-        position: relative;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 15.5em;
-        background-color: {$pp->getHeaderColor()};
-        overflow: hidden;
-        color: #fff;
-    }
-
-    #plugin-header-wrap {
-        margin-bottom: 15.5em;
-    }
-
-    #plugin-header-wrap .row {
-        width: 100%;
-    }
-
-    #plugin-header h1, #plugin-header h4 {
-        color: #fff;
-    }
-
-    .plugin-agws_ts_features #plugin-header h1, .plugin-agws_ts_features #plugin-header h4 {
-        color: #000;
-    }
-
-    h1.plugin-title {
-        margin-top: 0;
-    }
-
-    #plugin-main {
-        margin-top: 5em;
-    }
-
-    .form-inline {
-        display: inline;
-    }
-
-    ul .fake-list-style-image {
-        position: absolute;
-        left: -1.5em;
-        top: 3px;
-    }
-
-    ul.advantages, ul.howtos {
-        padding-left: 1em;
-    }
-
-    ul.advantages li, ul.howtos li {
-        padding-bottom: 0.5em;
-        position: relative;
-    }
-
-    .col-card{
-        margin-bottom:16px;
-    }
-    .col-card .col-card-content {
-        padding: 16px;
-        background-color: #fff;
-        position: relative;
-        -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12);
-        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12);
-    }
-
-    .col-card .col-card-content:after, .col-card .col-card-content:before {
-        content: " ";
-        display: table;
-    }
-
-    .col-card .col-card-content:after{
-        clear:both;
-    }
-    .col-card .col-card-content:after, .col-card .col-card-content:before{
-        content:" ";
-        display:table;
-    }
-    .col-card .col-card-content:after {
-        clear:both;
-    }
-</style>
 <div id="content">
-    {if $pp === null || $pp->getPluginID() === null}
-        <div class="alert alert-danger">Plugin konnte nicht gefunden werden.</div>
-    {else}
-        {assign var=ld value=$pp->getLongDescription()}
-        {assign var=sd value=$pp->getShortDescription()}
-        <div id="plugin-header-wrap" class="plugin-{$pp->getPluginID()}">
-            <div class="" id="plugin-header">
-                <div class="row" id="plugin-main">
-                    <div class="col-md-2">
-                        <img class="center-block jtl-certification-logo" height="92" alt="" src="{$pp->getCertifcationLogo()}"/>
-                    </div>
-                    <div class="col-md-10">
-                        <h1 class="plugin-title">{$pp->getTitle()}</h1>
-                        <h4 class="plugin-author">{$pp->getAuthor()}</h4>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 text-right">
-                        {if $pp->getExists()}
-                            {if !$pp->getIsInstalled()}
-                                <form method="post" action="pluginverwaltung.php" class="form-inline">
-                                    {$jtl_token}
-                                    <input type="hidden" name="installieren" value="1"/>
-                                    <input type="hidden" name="pluginverwaltung_uebersicht" value="1"/>
-                                    <input type="hidden" name="cVerzeichnis[]" value="{$pp->getPluginID()}"/>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fal fa-plus"></i> Jetzt dieses Plugin installieren
-                                    </button>
-                                </form>
-                            {elseif !$pp->getIsActivated()}
-                                <form method="post" action="pluginverwaltung.php" class="form-inline">
-                                    {$jtl_token}
-                                    <input type="hidden" name="aktivieren" value="1"/>
-                                    <input type="hidden" name="pluginverwaltung_uebersicht" value="1"/>
-                                    <input type="hidden" name="kPlugin[]" value="{$pp->getKPlugin()}"/>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fal fa-plus"></i> Jetzt dieses Plugin aktivieren
-                                    </button>
-                                </form>
-                            {else}
-                                <button class="btn btn-default disabled">bereits aktiviert</button>
-                            {/if}
-                        {else}
-                            <a class="btn btn-default" href="{$pp->getDownloadLink()}" target="_blank"><i class="fa fa-external-link"></i> Plugin herunterladen</a>
-                        {/if}
-                    </div>
-                </div>
-                <div class="cr cr-top cr-right cr-sticky cr-premium">Premium-Plugin</div>
-            </div>
-        </div>
+    {if isset($recommendation)}
         <div class="row">
-            <div class="col-md-8" id="plugin-main-description">
-                <h1>{$sd->title}</h1>
-                <p class="plugin-short-description">
-                    {$sd->html}
-                </p>
-                <h2>{$ld->title}</h2>
-                <p class="plugin-description">
-                    {$ld->html}
-                </p>
-                <hr>
-                <div class="row" id="plugin-screenshots">
-                    {foreach $pp->getScreenShots() as $screenShot}
-                        <a href="#" data-toggle="modal" data-target="#screenshot-{$screenShot@iteration}">
-                            <img class="img-responsive col-md-4" src="{$screenShot->preview}" />
-                        </a>
-                        <div class="modal fade" id="screenshot-{$screenShot@iteration}" tabindex="-1" role="dialog">
-                            <div class="modal-dialog modal-lg" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h2 class="modal-title">Screenshot {$screenShot@iteration}</h2>
-                                        <button type="button" class="close" data-dismiss="modal">
-                                            <i class="fal fa-times"></i>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <img class="img-responsive" src="{$screenShot->preview}" />
-                                    </div>
+            <div class="col-md-4 pr-md-4 pr-0">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="subheading1">{__('plugin')}</div>
+                        <hr class="mb-n3">
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-auto px-3">
+                                <img style="max-width: 160px;" src="{$recommendation->getPreviewImage()}" loading="lazy">
+                            </div>
+                            <div class="col align-self-end px-3">
+                                <div><a class="font-weight-bold" target="_blank" href="{$recommendation->getURL()}">{$recommendation->getTitle()}</a></div>
+                                <div>
+                                    {__('manufacturer')}: <a href="{$recommendation->getManufacturer()->getProfileURL()}" target="_blank">{$recommendation->getManufacturer()->getName()}</a>
                                 </div>
                             </div>
                         </div>
-                    {/foreach}
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4 col-card" id="plugin-author-meta">
-                {assign var=sp value=$pp->getServicePartner()}
-                {if $sp !== null}
-                    <div class="col-card-content">
-                        <p class="centered">
-                            <img src="{$sp->cLogoPfad}" style="max-width: 100px" alt="{$sp->cFirma}" />
-                        </p>
-                        <hr>
-                        <h4>{$sp->cFirma}</h4>
-                        <p>
-                            <span class="sp-street">{$sp->cStrasse}</span><br>
-                            <span class="sp-plz">{$sp->cPLZ} {$sp->cOrt}</span><br>
-                            <span class="sp-address-additional">{$sp->cAdresszusatz}</span>
-                        </p>
-                        <div class="vspacer-top"></div>
-                        <p>
-                            <span class="muted"><span class="sp-mail">{$sp->cMail}</span></span>
-                        </p>
-                        <p class="sp-www">
-                            <a href="{$sp->cWWW}" class="muted" target="_blank"><i class="fa fa-external-link"></i> {$sp->cWWW}</a>
-                        </p>
-                        {if $sp->marketPlaceURL !== null}
-                            <hr>
-                            <p class="centered sp-details">
-                                <a href="{$sp->marketPlaceURL}" target="_blank" class="btn btn-default"><i class="fa fa-external-link"></i> Servicepartner-Details</a><br>
-                            </p>
-                        {/if}
-                        {if $pp->hasCertifcates()}
-                            <hr>
-                            <h4>Zertifikate</h4>
-                            <div class="row" id="sp-certificates">
-                                {assign var=isOpen value=false}
-                                {foreach $sp->oZertifizierungen_arr as $cert}
-                                    {if $cert@iteration is odd}
-                                        {if $isOpen}</div>{/if}
-                                        <div class="media">
-                                        {assign var=isOpen value=true}
-                                    {/if}
-                                    <div class="col-md-6">
-                                        <img src="{$cert}" alt="" style="" class="certification-icon img-responsive media-left" />
-                                    </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <span class="underline-links">{$recommendation->getDescription()}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-5">
+            {$imgCount = $recommendation->getImages()|count}
+            {foreach $recommendation->getImages() as $image}
+                <div class="col-md{if $imgCount < 5}-3{/if} text-center pr-md-4 pr-0">
+                    <img src="{$image}" class="object-fit-cover mb-md-0 mb-2" loading="lazy">
+                </div>
+            {/foreach}
+        </div>
+        <div class="row">
+            <div class="col-md-6 pr-md-4 pr-0">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="subheading1">{__('yourAdvantages')}</div>
+                        <hr class="mb-n3">
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless table-sm font-size-base">
+                            <tbody>
+                                {foreach  $recommendation->getBenefits() as $benefit}
+                                    <tr>
+                                        <td width="20px"><i class="fal fa-check text-success"></i></td>
+                                        <td>{$benefit}</td>
+                                    </tr>
                                 {/foreach}
-                            {/if}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="subheading1">{__('installationGuide')}</div>
+                        <hr class="mb-n3">
+                    </div>
+                    <div class="card-body">
+                        <span class="underline-links">{$recommendation->getSetupDescription()}</span>
+                        <div class="row">
+                            <div class="col-sm-6 col-xl-auto">
+                                <form method="post">
+                                    {$jtl_token}
+                                    {if $hasAuth}
+                                        <button type="submit" name="action" value="install" class="btn btn-primary btn-block" {if $hasLicense}disabled{/if}>
+                                            {if $hasLicense}{__('pluginHasLicense')}{else}{__('installPlugin')}{/if}
+                                        </button>
+                                    {else}
+                                        <button type="submit" name="action" value="auth" class="btn btn-primary btn-block">
+                                           {__('authenticate')}
+                                        </button>
+                                    {/if}
+                                </form>
+                            </div>
                         </div>
                     </div>
-                {else}
-                    <span class="alert alert-info">Servicepartner konnte nicht gefunden werden.</span>
-                {/if}
-            </div>
-        </div>
-        <hr>
-        <div class="row">
-            <div class="col-md-6" id="plugin-info-1">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="subheading1">Ihre Vorteile</div>
-                        <hr class="mb-n3">
-                    </div>
-                    <div class="card-body">
-                        <ul class="advantages list-unstyled">
-                            {foreach $pp->getAdvantages() as $advantage}
-                                <li class="advantage"><i class="fal fa-check text-success fake-list-style-image"></i> {$advantage}</li>
-                            {/foreach}
-                        </ul>
-                    </div>
                 </div>
             </div>
-            <div class="col-md-6" id="plugin-info-2">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="subheading1">So funktioniert's</div>
-                        <hr class="mb-n3">
-                    </div>
-                    <div class="card-body">
-                        <ul class="howtos list-unstyled">
-                            {foreach $pp->getHowTos() as $howTo}
-                                <li class="howto"><i class="fal fa-check text-success fake-list-style-image"></i> {$howTo}
-                                </li>
-                            {/foreach}
-                        </ul>
-                    </div>
-                    <div class="card-footer">
-                        <span class="btn-group">
-                            {if $pp->getExists()}
-                                {if !$pp->getIsInstalled()}
-                                    <form method="post" action="pluginverwaltung.php" class="form-inline">
-                                        {$jtl_token}
-                                        <input type="hidden" name="installieren" value="1"/>
-                                        <input type="hidden" name="pluginverwaltung_uebersicht" value="1"/>
-                                        <input type="hidden" name="cVerzeichnis[]" value="{$pp->getPluginID()}"/>
-                                        <button type="submit" class="btn btn-primary"><i class="fal fa-plus"></i> Plugin installieren</button>
-                                    </form>
-                                {elseif !$pp->getIsActivated()}
-                                    <form method="post" action="pluginverwaltung.php" class="form-inline">
-                                        {$jtl_token}
-                                        <input type="hidden" name="aktivieren" value="1"/>
-                                        <input type="hidden" name="pluginverwaltung_uebersicht" value="1"/>
-                                        <input type="hidden" name="kPlugin[]" value="{$pp->getKPlugin()}"/>
-                                        <button type="submit" class="btn btn-primary"><i class="fal fa-plus"></i> Plugin aktivieren</button>
-                                    </form>
-                                {else}
-                                    <button class="btn btn-default disabled">bereits aktiviert</button>
-                                {/if}
-                            {else}
-                                <a class="btn btn-default" href="{$pp->getDownloadLink()}" target="_blank"><i class="fa fa-external-link"></i> Plugin herunterladen</a>
-                            {/if}
-                            {foreach $pp->getButtons() as $btn}
-                                <a{if $btn->external === true} target="_blank"{/if} class="{$btn->class}" href="{$btn->link}" title="{$btn->caption}">
-                                    {if !empty($btn->fa)} <i class="fa fa-{$btn->fa}"></i> {/if}{$btn->caption}
-                                </a>
-                            {/foreach}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <hr>
-        <div class="row">
-            {foreach $pp->getBadges() as $badge}
-                <div class="col-md-3"><img src="{$badge}" alt="" height="92"/></div>
-            {/foreach}
         </div>
     {/if}
 </div>

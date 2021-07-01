@@ -6,6 +6,7 @@ use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\MerkmalWert;
+use stdClass;
 
 /**
  * Interface MetadataInterface
@@ -179,10 +180,10 @@ interface MetadataInterface
 
     /**
      * @param int $viewType
-     * @return \stdClass
+     * @return stdClass
      * @former gibErweiterteDarstellung
      */
-    public function getExtendedView(int $viewType = 0): \stdClass;
+    public function getExtendedView(int $viewType = 0): stdClass;
 
     /**
      * @return bool

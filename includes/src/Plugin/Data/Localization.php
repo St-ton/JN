@@ -3,7 +3,9 @@
 namespace JTL\Plugin\Data;
 
 use Illuminate\Support\Collection;
+use JTL\Language\LanguageHelper;
 use JTL\Plugin\Admin\InputType;
+use stdClass;
 use function Functional\first;
 use function Functional\group;
 
@@ -44,7 +46,7 @@ class Localization
         });
         foreach ($grouped as $group) {
             $lv                                    = first($group);
-            $var                                   = new \stdClass();
+            $var                                   = new stdClass();
             $var->kPluginSprachvariable            = (int)$lv->kPluginSprachvariable;
             $var->id                               = $var->kPluginSprachvariable;
             $var->kPlugin                          = (int)$lv->kPlugin;
@@ -76,6 +78,13 @@ class Localization
         $iso   = \mb_convert_case($iso ?? $this->currentLanguageCode, \MB_CASE_UPPER);
         $first = $this->langVars->firstWhere('name', $name);
 
+        if (!isset($first->values[$iso])) {
+            $defaultIso = LanguageHelper::getDefaultLanguage()->getCode();
+            if ($iso !== \mb_convert_case($defaultIso ?? $this->currentLanguageCode, \MB_CASE_UPPER)) {
+                return $this->getTranslation($name, $defaultIso);
+            }
+        }
+
         return $first->values[$iso] ?? null;
     }
 
@@ -92,7 +101,7 @@ class Localization
     }
 
     /**
-     * compatability dummy
+     * compatibility dummy
      */
     public function setTranslations(): void
     {

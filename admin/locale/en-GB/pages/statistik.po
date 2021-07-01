@@ -40,3 +40,42 @@ msgstr "Sales revenues"
 
 msgid "statisticType"
 msgstr "Statistics type"
+
+msgid "crawlerSettings"
+msgstr "Settings"
+
+msgid "crawlerOverviewTitle"
+msgstr "Excluded crawlers"
+
+msgid "deleteCrawlerModalTitle"
+msgstr "Delete crawler"
+
+msgid "newCrawler"
+msgstr "Adding a new crawler"
+
+msgid "createCrawler"
+msgstr "Add crawler"
+
+msgid "editCrawler"
+msgstr "Editing a crawler"
+
+msgid "crawlerUserAgent"
+msgstr "Crawler name (user agent)"
+
+msgid "crawlerDescription"
+msgstr "Crawler description"
+
+msgid "crawlerListUserAgent"
+msgstr "Name (user agent)"
+
+msgid "crawlerListDescription"
+msgstr "Description"
+
+msgid "missingCrawlerFields"
+msgstr "Please complete all mandatory fields."
+
+msgid "crawlerUserAgentHint"
+msgstr "Specify which crawlers are excluded from the visitor counter."
+
+msgid "crawlerDescriptionHint"
+msgstr "Enter a clear description of the crawler."

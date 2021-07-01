@@ -7,6 +7,7 @@ use JTL\Backend\NotificationEntry;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
+use JTL\License\Struct\ExsLicense;
 use JTL\Link\LinkInterface;
 use JTL\Plugin\Admin\StateChanger;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
@@ -31,7 +32,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     private $notifications = [];
 
     /**
-     * @var LegacyPlugin
+     * @var PluginInterface
      */
     private $plugin;
 
@@ -51,7 +52,7 @@ abstract class Bootstrapper implements BootstrapperInterface
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    final public function __construct($plugin, DbInterface $db, JTLCacheInterface $cache)
+    final public function __construct(PluginInterface $plugin, DbInterface $db, JTLCacheInterface $cache)
     {
         $this->plugin   = $plugin;
         $this->pluginId = $plugin->getPluginID();
@@ -111,6 +112,13 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @inheritdoc
      */
+    public function preUpdate($oldVersion, $newVersion): void
+    {
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function updated($oldVersion, $newVersion)
     {
     }
@@ -118,7 +126,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @inheritdoc
      */
-    public function getPlugin(): PluginInterface
+    public function getPlugin()
     {
         return $this->plugin;
     }
@@ -192,7 +200,7 @@ abstract class Bootstrapper implements BootstrapperInterface
         if (\PLUGIN_DEV_MODE !== true || $this->plugin === null) {
             return -1;
         }
-        $parser       = $parser = new XMLParser();
+        $parser       = new XMLParser();
         $stateChanger = new StateChanger(
             $this->db,
             $this->cache,
@@ -201,5 +209,12 @@ abstract class Bootstrapper implements BootstrapperInterface
         );
 
         return $stateChanger->reload($this->plugin);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function licenseExpired(ExsLicense $license): void
+    {
     }
 }

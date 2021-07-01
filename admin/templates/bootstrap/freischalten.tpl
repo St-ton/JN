@@ -4,14 +4,14 @@
     <div class="card">
         <div class="card-body">
             <div class="row">
-                <div class="col-sm-6 col-xl-auto mb-3">
+                <div class="col-sm-6 col-xl-auto mb-sm-0 mb-3">
                     {include file='tpl_inc/language_switcher.tpl' id='formSprachwechselSelect' action='freischalten.php"'}
                 </div>
                 <div class="ml-auto col-sm-6 col-xl-auto">
                     <form name="suche" method="post" action="freischalten.php">
                         <div class="row">
                             {$jtl_token}
-                            <div class="col-sm-6 col-xl-auto mb-3 mb-3">
+                            <div class="col-sm-6 col-xl-auto mb-sm-0 mb-3">
                                 <div class="form-row">
                                     <label class="col-sm-auto col-form-label" for="search_type">{__('freischaltenSearchType')}:</label>
                                     <span class="col-sm-auto">
@@ -24,11 +24,11 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-xl-auto mb-3">
+                            <div class="col-sm-6 col-xl-auto mb-sm-0 mb-3">
                                 <input type="hidden" name="Suche" value="1" />
                                 <div class="form-row">
                                     <label for="search_key" class="col-sm-auto col-form-label sr-only">{__('freischaltenSearchItem')}</label>
-                                    <span class="col-sm-auto mb-3">
+                                    <span class="col-sm-auto mb-sm-0 mb-3">
                                         <input class="form-control" name="cSuche" type="text" value="{if isset($cSuche)}{$cSuche}{/if}"
                                                id="search_key" placeholder="{__('freischaltenSearchItem')}">
                                     </span>
@@ -47,29 +47,29 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || empty($cTab) || $cTab === 'bewertungen'} active{/if}" data-toggle="tab" role="tab" href="#bewertungen">
+                    <a class="nav-link {if $cTab === '' || $cTab === 'bewertungen'} active{/if}" data-toggle="tab" role="tab" href="#bewertungen">
                         {__('reviews')} <span class="badge badge-primary">{$oPagiBewertungen->getItemCount()}</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'livesearch'} active{/if}" data-toggle="tab" role="tab" href="#livesearch">
+                    <a class="nav-link {if $cTab === 'livesearch'} active{/if}" data-toggle="tab" role="tab" href="#livesearch">
                         {__('freischaltenLivesearch')} <span class="badge badge-primary">{$oPagiSuchanfragen->getItemCount()}</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'newscomments'} active{/if}" data-toggle="tab" role="tab" href="#newscomments">
+                    <a class="nav-link {if $cTab === 'newscomments'} active{/if}" data-toggle="tab" role="tab" href="#newscomments">
                         {__('freischaltenNewsComments')} <span class="badge badge-primary">{$oPagiNewskommentare->getItemCount()}</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'newsletter'} active{/if}" data-toggle="tab" role="tab" href="#newsletter">
+                    <a class="nav-link {if $cTab === 'newsletter'} active{/if}" data-toggle="tab" role="tab" href="#newsletter">
                         {__('freischaltenNewsletterReceiver')} <span class="badge badge-primary">{$oPagiNewsletterEmpfaenger->getItemCount()}</span>
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="bewertungen" class="tab-pane fade {if !isset($cTab) || empty($cTab) || $cTab === 'bewertungen'} active show{/if}">
+            <div id="bewertungen" class="tab-pane fade {if $cTab === '' || $cTab === 'bewertungen'} active show{/if}">
                 {if $ratings|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiBewertungen cAnchor='bewertungen'}
                     <form method="post" action="freischalten.php">
@@ -154,11 +154,12 @@
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiBewertungen cAnchor='bewertungen' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="livesearch" class="tab-pane fade {if isset($cTab) && $cTab === 'livesearch'} active show{/if}">
+            <div id="livesearch" class="tab-pane fade {if $cTab === 'livesearch'} active show{/if}">
                 {if $searchQueries|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='livesearch'}
                     <div>
@@ -236,12 +237,13 @@
                                 </div>
                             </div>
                         </form>
+                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='livesearch' isBottom=true}
                     </div>
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="newscomments" class="tab-pane fade {if isset($cTab) && $cTab === 'newscomments'} active show{/if}">
+            <div id="newscomments" class="tab-pane fade {if $cTab === 'newscomments'} active show{/if}">
                 {if $comments|@count > 0 && $comments}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewskommentare cAnchor='newscomments'}
                     <div>
@@ -320,12 +322,13 @@
                                 </div>
                             </div>
                         </form>
+                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewskommentare cAnchor='newscomments' isBottom=true}
                     </div>
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="newsletter" class="tab-pane fade {if isset($cTab) && $cTab === 'newsletter'} active show{/if}">
+            <div id="newsletter" class="tab-pane fade {if $cTab === 'newsletter'} active show{/if}">
                 {if $recipients|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewsletterEmpfaenger cAnchor='newsletter'}
                     <div>
@@ -387,6 +390,7 @@
                                 </div>
                             </div>
                         </form>
+                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewsletterEmpfaenger cAnchor='newsletter' isBottom=true}
                     </div>
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>

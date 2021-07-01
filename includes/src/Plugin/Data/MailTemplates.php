@@ -2,6 +2,7 @@
 
 namespace JTL\Plugin\Data;
 
+use stdClass;
 use function Functional\first;
 use function Functional\group;
 use function Functional\reindex;
@@ -44,7 +45,7 @@ class MailTemplates
             unset($first->cContentHtml, $first->cContentText, $first->kSprache, $first->cBetreff, $first->cPDFS);
             $first->oPluginEmailvorlageSprache_arr = [];
             foreach ($template as $item) {
-                $localized                               = new \stdClass();
+                $localized                               = new stdClass();
                 $localized->kEmailvorlage                = (int)$item->kEmailvorlage;
                 $localized->kSprache                     = (int)$item->kSprache;
                 $localized->cBetreff                     = $item->cBetreff;

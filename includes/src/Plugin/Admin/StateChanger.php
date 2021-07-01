@@ -98,6 +98,11 @@ class StateChanger
         $this->db->update('tlink', 'kPlugin', $pluginID, (object)['bIsActive' => 1]);
         $this->db->update('topcportlet', 'kPlugin', $pluginID, (object)['bActive' => 1]);
         $this->db->update('topcblueprint', 'kPlugin', $pluginID, (object)['bActive' => 1]);
+        $this->cache->flushTags([
+            \CACHING_GROUP_CORE,
+            \CACHING_GROUP_PLUGIN . '_' . $pluginID,
+            \CACHING_GROUP_LICENSES
+        ]);
         if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
             $p->enabled();
         }
@@ -107,27 +112,34 @@ class StateChanger
 
     /**
      * @param int $pluginID
+     * @param int $newState
      * @return int
      * @former deaktivierePlugin()
      */
-    public function deactivate(int $pluginID): int
+    public function deactivate(int $pluginID, int $newState = State::DISABLED): int
     {
         if ($pluginID <= 0) {
             return InstallCode::WRONG_PARAM;
         }
         $pluginData = $this->db->select('tplugin', 'kPlugin', $pluginID);
-        $loader     = (int)$pluginData->bExtension === 1
-            ? new PluginLoader($this->db, $this->cache)
-            : new LegacyPluginLoader($this->db, $this->cache);
-        if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
-            $p->disabled();
+        if (!\SAFE_MODE) {
+            $loader = (int)$pluginData->bExtension === 1
+                ? new PluginLoader($this->db, $this->cache)
+                : new LegacyPluginLoader($this->db, $this->cache);
+            if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
+                $p->disabled();
+            }
         }
-        $this->db->update('tplugin', 'kPlugin', $pluginID, (object)['nStatus' => State::DISABLED]);
+        $this->db->update('tplugin', 'kPlugin', $pluginID, (object)['nStatus' => $newState]);
         $this->db->update('tlink', 'kPlugin', $pluginID, (object)['bIsActive' => 0]);
         $this->db->update('tadminwidgets', 'kPlugin', $pluginID, (object)['bActive' => 0]);
         $this->db->update('topcportlet', 'kPlugin', $pluginID, (object)['bActive' => 0]);
         $this->db->update('topcblueprint', 'kPlugin', $pluginID, (object)['bActive' => 0]);
-        $this->cache->flushTags([\CACHING_GROUP_PLUGIN . '_' . $pluginID]);
+        $this->cache->flushTags([
+            \CACHING_GROUP_CORE,
+            \CACHING_GROUP_PLUGIN . '_' . $pluginID,
+            \CACHING_GROUP_LICENSES
+        ]);
 
         return InstallCode::OK;
     }

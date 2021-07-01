@@ -22,7 +22,6 @@ $conf  = Shop::getSettings([
     CONF_RSS,
     CONF_KUNDEN,
     CONF_KUNDENFELD,
-    CONF_KUNDENWERBENKUNDEN,
     CONF_NEWSLETTER
 ]);
 $kLink = $linkHelper->getSpecialPageID(LINKTYP_REGISTRIEREN);

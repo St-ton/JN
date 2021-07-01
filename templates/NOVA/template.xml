@@ -3,9 +3,11 @@
     <Name>NOVA</Name>
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
-    <ShopVersion>5.0.0</ShopVersion>
+    <MinShopVersion>5.0.2</MinShopVersion>
+    <Version>1.0.3</Version>
     <Preview>preview.png</Preview>
     <Description>JTL-Shop Responsive-Template</Description>
+    <Framework>Bootstrap4</Framework>
     <Settings>
         <Section Name="Allgemein" Key="general">
             <Setting Description="Komprimierung von JavaScript- und CSS-Dateien" Key="use_minify" Type="select" Value="N">
@@ -13,13 +15,14 @@
                 <Option Value="static">Ja, statisch</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
+            <Setting Description="Ist Nova Template" Key="is_nova" Type="text" Value="Y" Editable="false"/>
         </Section>
         <Section Name="Theme" Key="theme">
-            <Setting Description="Theme" Key="theme_default" Type="select" Value="clear" Editable="false">
+            <Setting Description="Theme" Key="theme_default" Type="select" Value="clear">
                 <Option Value="clear">clear - Handgemacht mit <![CDATA[&hearts;]]> von JTL</Option>
-                <!--<Option Value="dark">dark - Themeprototyp</Option>-->
+                <Option Value="midnight">midnight</Option>
             </Setting>
-            <Setting Description="Button Hover-Animation anzeigen" Key="button_animated" Type="select" Value="N">
+            <Setting Description="Animation für Schaltflächen beim Hovern" Key="button_animated" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
@@ -27,7 +30,13 @@
                 <Option Value="fixed">Suche beim Hochscrollen einblenden</Option>
                 <Option Value="dropdown">Icon mit Dropdown</Option>
             </Setting>
-            <Setting Description="'Scroll back to top'-Button anzeigen" Key="button_scroll_top" Type="select" Value="Y">
+            <Setting Description="Wunschzettel und Vergleichsliste - Animation anzeigen" Key="wish_compare_animation" Type="select" Value="mobile">
+                <Option Value="both">Auf Desktop und mobilen Geräten</Option>
+                <Option Value="mobile">Nur mobil</Option>
+                <Option Value="desktop">Nur Desktop</Option>
+                <Option Value="none">Keine</Option>
+            </Setting>
+            <Setting Description="Schaltfläche „Nach oben scrollen“ anzeigen"  Key="button_scroll_top" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
@@ -43,10 +52,12 @@
         </Section>
         <Section Name="Megamenu" Key="megamenu">
             <Setting Description="Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)" Key="show_categories" Type="select" Value="Y">
-                <Option Value="Y">Aktiv</Option>
+                <Option Value="Y">Auf Desktop und mobilen Geräten</Option>
+                <Option Value="mobile">Nur mobil</Option>
+                <Option Value="desktop">Nur Desktop</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
-            <Setting Description="Kategorie Bilder (Nur für erste Unterkategorie)" Key="show_category_images" Type="select" Value="N">
+            <Setting Description="Kategoriebilder für erste Unterkategorie" Key="show_category_images" Type="select" Value="N">
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
@@ -54,7 +65,7 @@
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
-            <Setting Description="Seiten der Linkgruppe 'megamenu'" Key="show_pages" Type="select" Value="Y">
+            <Setting Description="Seiten der Linkgruppe „megamenu“" Key="show_pages" Type="select" Value="Y">
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
@@ -62,49 +73,56 @@
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
-            <Setting Description="Hersteller Bilder" Key="show_manufacturer_images" Type="select" Value="N">
+            <Setting Description="Herstellerbilder" Key="show_manufacturer_images" Type="select" Value="N">
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
+            <Setting Description="Header über gesamte Bildschirmbreite darstellen" Key="header_full_width" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
         </Section>
         <Section Name="Listen- und Gallerieansicht" Key="productlist">
-            <Setting Description="Filter anzeigen in (Desktop)" Key="filter_placement" Type="select" Value="modal">
-                <Option Value="sidebar">Seitenleiste (Einstellbar unter "Standardelemente -> Footer / Boxen" und "Standardansichten -> Artikelübersicht")</Option>
-                <Option Value="modal">Modal (Einstellbar unter "Standardansichten -> Artikelübersicht")</Option>
+            <Setting Description="Auswahloptionen bei „Filter anzeigen in (Desktop)“" Key="filter_placement" Type="select" Value="sidebar">
+                <Option Value="sidebar">Seitenleiste (Einstellung einzelner Filter unter „Standardelemente > Footer /Boxen“ und „Standardansichten > Artikelübersicht“)</Option>
+                <Option Value="modal">Eigenes Fenster (Einstellung einzelner Filter unter „Standardansichten > Artikelübersicht“)</Option>
             </Setting>
-            <Setting Description="aus der Liste heraus einkaufen? (&lt;small&gt;zeigt den Warenkorb-Button in den Artikellisten an&lt;/small&gt;)" Key="buy_productlist" Type="select" Value="Y">
+            <Setting Description="Suchfeld in Filtern anzeigen ab x Einträgen" Key="filter_search_count" Type="number" Value="20"/>
+            <Setting Description="Schaltfläche „Warenkorb“ in Artikelübersicht (Listenansicht) anzeigen" Key="buy_productlist" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
-            <Setting Description="Hovereffekt für Zusatzinfos (&lt;small&gt;zeigt Details zum Artikel in einer Hover-Box oder per Tap auf Touchdisplays&lt;/small&gt;)" Key="hover_productlist" Type="select" Value="N">
+            <Setting Description="Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen" Key="hover_productlist" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
-            <Setting Description="Variationsauswahl anzeigen (&lt;small&gt;Nur in Verbindung mit &quot;Hovereffekt für Zusatzinfos&quot;&lt;/small&gt;)" Key="variation_select_productlist" Type="select" Value="N">
+            <Setting Description="Filter immer ausgeklappt" Key="filter_items_always_visible" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+            <Setting Description="Variationsauswahl anzeigen" Key="variation_select_productlist" Type="select" Value="3">
                 <Option Value="N"><![CDATA[Nein]]></Option>
                 <Option Value="1"><![CDATA[max. 1]]></Option>
                 <Option Value="2"><![CDATA[max. 2]]></Option>
                 <Option Value="3"><![CDATA[max. 3]]></Option>
                 <Option Value="5"><![CDATA[max. 5]]></Option>
-                <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
+                <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
-            <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches. (&lt;small&gt;Nur in Verbindung mit &quot;Variationsauswahl anzeigen&quot;&lt;/small&gt;)" Key="variation_max_werte_productlist" Type="select" Value="3">
+            <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches" Key="variation_max_werte_productlist" Type="select" Value="3">
                 <Option Value="3"><![CDATA[max. 3]]></Option>
                 <Option Value="5"><![CDATA[max. 5]]></Option>
                 <Option Value="9"><![CDATA[max. 9]]></Option>
                 <Option Value="12"><![CDATA[max. 12]]></Option>
-                <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
+                <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
-            <Setting Description="Anzahl der sichtbaren Filteroptionen in Boxen. (&lt;small&gt;weiter Optionen können eingeblendet werden&lt;/small&gt;)" Key="filter_max_options" Type="select" Value="5">
+            <Setting Description="Anzahl der sichtbaren Filteroptionen in Boxen" Key="filter_max_options" Type="select" Value="5">
                 <Option Value="3"><![CDATA[max. 3]]></Option>
                 <Option Value="5"><![CDATA[max. 5]]></Option>
                 <Option Value="9"><![CDATA[max. 9]]></Option>
                 <Option Value="12"><![CDATA[max. 12]]></Option>
-                <Option Value="-1"><![CDATA[keine Beschr&auml;nkung]]></Option>
+                <Option Value="-1"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
-        </Section>
-        <Section Name="Seitenleiste Einstellungen" Key="sidebar_settings">
-            <Setting Description="Preisspanne immer anzeigen (empfohlen)" Key="always_show_price_range" Type="select" Value="Y">
+            <Setting Description="Preisspanne immer anzeigen (empfohlen)" Key="always_show_price_range" Type="select" Value="Y" Editable="false">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
@@ -114,7 +132,7 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
-            <Setting Description="Social-Media-Buttons im Footer" Key="socialmedia_footer" Type="select" Value="N">
+            <Setting Description="Social-Media-Schaltflächen im Footer" Key="socialmedia_footer" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
@@ -134,14 +152,11 @@
             <File Path="themes/clear/clear.css"/>
             <File Path="themes/clear/custom.css"/>
         </CSS>
-        <CSS Name="dark.css">
-            <File Path="themes/dark/dark.css"/>
-            <File Path="themes/dark/custom.css"/>
+        <CSS Name="midnight.css">
+            <File Path="themes/midnight/midnight.css"/>
+            <File Path="themes/midnight/custom.css"/>
         </CSS>
         <JS Name="jtl3.js">
-            <File Path="js/lazysizes.min.js"/>
-            <!--<File Path="js/jquery.backstretch.min.js"/>-->
-            <!--<File Path="js/jquery.lazy.js"/>-->
             <File Path="js/bootstrap-toolkit.js"/>
             <File Path="js/popper.min.js"/>
             <File Path="js/bootstrap.bundle.min.js"/>
@@ -150,21 +165,20 @@
             <File Path="js/jquery.nivo.slider.pack.js"/>
             <File Path="js/bootstrap-select.min.js"/>
             <File Path="js/jtl.evo.js"/>
-            <File Path="js/spin.js"/>
             <File Path="js/typeahead.bundle.js"/>
-            <File Path="js/clipboard.min.js"/>
             <File Path="js/wow.min.js"/>
+            <File Path="js/colcade.js"/>
             <File Path="js/global.js"/>
             <File Path="js/slick-lightbox.min.js"/>
-            <File Path="js/jquery.serialize-object.js"/>
+            <File Path="js/jquery.serialize-object.min.js"/>
             <File Path="js/jtl.io.js"/>
             <File Path="js/jtl.article.js"/>
             <File Path="js/jtl.basket.js"/>
             <File Path="js/parallax.min.js"/>
-            <File Path="js/Chart.bundle.min.js" DependsOnSettingGroup="CONF_PREISVERLAUF" DependsOnSetting="preisverlauf.preisverlauf_anzeigen" DependsOnSettingValue="Y"/>
             <File Path="js/jqcloud.js"/>
             <File Path="js/nouislider.min.js"/>
-            <File Path="js/password/password.min.js"/>
+            <File Path="js/consent.js"/>
+            <File Path="js/consent.youtube.js"/>
         </JS>
     </Minify>
     <Boxes>

@@ -17,6 +17,9 @@ class Migration_20190717104334 extends Migration implements IMigration
     protected $author = 'fp';
     protected $description = 'Add lang var for status details';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization(
@@ -35,6 +38,9 @@ class Migration_20190717104334 extends Migration implements IMigration
         $this->execute('ALTER TABLE tbestellstatus ADD COLUMN failedAttempts INT NOT NULL DEFAULT 0');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE tbestellstatus DROP COLUMN failedAttempts');

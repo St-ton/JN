@@ -2,386 +2,453 @@
 
 namespace JTL\Helpers;
 
-use DirectoryIterator;
-use JTL\Backend\FileCheck;
-use JTL\DB\ReturnType;
+use Exception;
+use InvalidArgumentException;
 use JTL\Shop;
-use JTL\Template as CurrentTemplate;
+use JTL\Template\Config;
+use JTL\Template\Model;
+use JTL\Template\XMLReader;
 use SimpleXMLElement;
 use stdClass;
 
 /**
  * Class Template
  * @package JTL\Helpers
+ * @deprecated since 5.0.0
  */
 class Template
 {
     /**
      * @var string
      */
-    public $templateDir;
+    public static $cTemplate;
 
     /**
-     * @var bool
+     * @var int
      */
-    public $isAdmin = false;
+    public static $nVersion;
 
     /**
-     * @var Template[]
+     * @var Template
      */
-    public static $instances = [];
+    private static $frontEndInstance;
 
     /**
-     * @var bool
+     * @var string
      */
-    private $cachingEnabled = true;
+    private static $parent;
 
     /**
-     * @param bool $isAdmin
+     * @var string
      */
-    public function __construct(bool $isAdmin = false)
+    public $xmlData;
+
+    /**
+     * @var string
+     */
+    public $name;
+
+    /**
+     * @var string
+     */
+    public $author;
+
+    /**
+     * @var string
+     */
+    public $url;
+
+    /**
+     * @var string
+     */
+    public $version;
+
+    /**
+     * @var string
+     */
+    public $preview;
+
+    /**
+     * @var XMLReader
+     */
+    private $reader;
+
+    /**
+     * @var Model
+     */
+    private $model;
+
+    /**
+     * Template constructor.
+     * @throws Exception
+     */
+    public function __construct()
     {
-        $this->isAdmin         = $isAdmin;
-        $idx                   = $isAdmin ? 'admin' : 'frontend';
-        self::$instances[$idx] = $this;
+        \trigger_error(__CLASS__ . ' is deprecated.', \E_USER_DEPRECATED);
+        $this->init();
+        self::$frontEndInstance = $this;
+        $this->reader           = new XMLReader();
+        $this->model            = Shop::Container()->getTemplateService()->getActiveTemplate();
+        $this->xmlData          = $this->model;
     }
 
     /**
-     * @param bool $isAdmin
      * @return Template
      */
-    public static function getInstance(bool $isAdmin = false): self
+    public static function getInstance(): self
     {
-        $idx = $isAdmin ? 'admin' : 'frontend';
+        return self::$frontEndInstance ?? new self();
+    }
 
-        return !empty(self::$instances[$idx]) ? self::$instances[$idx] : new self($isAdmin);
+    /**
+     * @return Model
+     */
+    public function getModel(): Model
+    {
+        return $this->model;
     }
 
     /**
      * @return $this
      */
-    public function disableCaching(): self
+    public function init(): self
     {
-        $this->cachingEnabled = false;
+        $cacheID = 'current_template';
+        if (($template = Shop::Container()->getCache()->get($cacheID)) !== false) {
+            $this->loadFromModel($template);
+
+            return $this;
+        }
+        try {
+            $template = Shop::Container()->getTemplateService()->getActiveTemplate();
+            $this->loadFromModel($template);
+            Shop::Container()->getCache()->set($cacheID, $template, [\CACHING_GROUP_TEMPLATE]);
+        } catch (Exception $e) {
+            throw new InvalidArgumentException('No template loaded - Exception: ' . $e->getMessage());
+        }
 
         return $this;
     }
 
     /**
+     * @param Model $model
      * @return $this
      */
-    public function enableCaching(): self
+    private function loadFromModel(Model $model): self
     {
-        $this->cachingEnabled = true;
+        self::$cTemplate = $model->getTemplate();
+        self::$parent    = !empty($model->getParent()) ? $model->getParent() : null;
+        $this->name      = $model->getName();
+        $this->author    = $model->getAuthor();
+        $this->url       = $model->getUrl();
+        $this->version   = $model->getVersion();
+        $this->preview   = $model->getPreview();
 
         return $this;
     }
 
     /**
-     * @param string $dir
-     * @return $this
-     */
-    public function setTemplateDir(string $dir): self
-    {
-        $this->templateDir = $dir;
-
-        return $this;
-    }
-
-    /**
-     * get list of all backend templates
+     * returns current template's name
      *
-     * @return array
+     * @return string|null
      */
-    public function getAdminTemplates(): array
+    public function getFrontendTemplate(): ?string
     {
-        $templates = [];
-        $folders   = $this->getAdminTemplateFolders();
-        foreach ($folders as $folder) {
-            $templateData = $this->getData($folder, true);
-            if ($templateData) {
-                $templates[] = $templateData;
-            }
-        }
+        $template = Model::loadByAttributes(['type' => 'standard'], Shop::Container()->getDB());
 
-        return $templates;
+        self::$cTemplate = $template->getCTemplate();
+        self::$parent    = $template->getParent();
+
+        return self::$cTemplate;
     }
 
     /**
-     * @return array
-     */
-    public function getStoredTemplates(): array
-    {
-        $storedTemplates  = [];
-        $subTemplateDir   = 'original' . \DIRECTORY_SEPARATOR;
-        $storeTemplateDir = \PFAD_ROOT . \PFAD_TEMPLATES . $subTemplateDir;
-
-        $folders      = $this->getFrontendTemplateFolders();
-        $childFolders = $this->getFolders($storeTemplateDir, 2);
-
-        foreach ($childFolders as $version => $dirs) {
-            $intersect = \array_intersect(
-                \array_values($folders),
-                \array_keys($dirs)
-            );
-            foreach ($intersect as $dir) {
-                $d = $subTemplateDir . $version . \DIRECTORY_SEPARATOR . $dir;
-                if (($data = $this->getData($d, false)) !== false) {
-                    $storedTemplates[$dir][] = $data;
-                }
-            }
-        }
-
-        return $storedTemplates;
-    }
-
-    /**
-     * get list of all frontend templates
-     *
-     * @return array
-     */
-    public function getFrontendTemplates(): array
-    {
-        $templates = [];
-        $folders   = $this->getFrontendTemplateFolders();
-        foreach ($folders as $folder) {
-            $templateData = $this->getData($folder, false);
-            if ($templateData) {
-                $templates[] = $templateData;
-            }
-        }
-
-        foreach ($templates as $template) {
-            //check if given parent template is available
-            if ($template->bChild === true) {
-                $template->bHasError = true;
-                foreach ($templates as $_template) {
-                    if ($_template->cOrdner === $template->cParent) {
-                        $template->bHasError = false;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return $templates;
-    }
-
-    /**
-     * @param string $path
-     * @param int    $depth
-     * @return array
-     */
-    public function getFolders(string $path, int $depth = 0): array
-    {
-        $result = [];
-        if (!\is_dir($path)) {
-            return $result;
-        }
-
-        foreach (\scandir($path, \SCANDIR_SORT_ASCENDING) as $value) {
-            if (!\in_array($value, ['.', '..'], true) && \is_dir($path . \DIRECTORY_SEPARATOR . $value)) {
-                $result[$value] = $depth > 1
-                    ? $this->getFolders($path . \DIRECTORY_SEPARATOR . $value, $depth - 1)
-                    : [];
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * get all potential template folder names
-     *
-     * @param bool $path
-     * @return array
-     */
-    private function getFrontendTemplateFolders($path = false): array
-    {
-        $res      = [];
-        $iterator = new DirectoryIterator(\PFAD_ROOT . \PFAD_TEMPLATES);
-        foreach ($iterator as $fileinfo) {
-            if (!$fileinfo->isDot() && $fileinfo->isDir()) {
-                $res[] = $path ? $fileinfo->getRealPath() : $fileinfo->getFilename();
-            }
-        }
-
-        return $res;
-    }
-
-    /**
-     * get all potential admin template folder names
-     *
-     * @param bool $path
-     * @return array
-     */
-    private function getAdminTemplateFolders(bool $path = false): array
-    {
-        $res      = [];
-        $iterator = new DirectoryIterator(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES);
-        foreach ($iterator as $fileinfo) {
-            if (!$fileinfo->isDot() && $fileinfo->isDir() && $fileinfo->getFilename() !== 'default') {
-                // default template is deprecated since 5.0
-                $res[] = $path ? $fileinfo->getRealPath() : $fileinfo->getFilename();
-            }
-        }
-
-        return $res;
-    }
-
-    /**
-     * read xml config file
-     *
-     * @param string    $cOrdner
-     * @param bool|null $isAdmin
+     * @param null|string $dir
      * @return null|SimpleXMLElement
      */
-    public function getXML($cOrdner, bool $isAdmin = null)
+    public function leseXML($dir = null)
     {
-        $isAdmin = $isAdmin ?? $this->isAdmin;
-        $xmlFile = $isAdmin === false
-            ? \PFAD_ROOT . \PFAD_TEMPLATES . $cOrdner . \DIRECTORY_SEPARATOR . \TEMPLATE_XML
-            : \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $cOrdner . \DIRECTORY_SEPARATOR . \TEMPLATE_XML;
-        if (!\file_exists($xmlFile)) {
-            return null;
-        }
-        if (\defined('LIBXML_NOWARNING')) {
-            //try to suppress warning if opening fails
-            $xml = \simplexml_load_file($xmlFile, 'SimpleXMLElement', \LIBXML_NOWARNING);
-        } else {
-            $xml = \simplexml_load_file($xmlFile);
-        }
-        if ($xml === false) {
-            $xml = \simplexml_load_string(\file_get_contents($xmlFile));
-        }
-
-        if (\is_a($xml, SimpleXMLElement::class)) {
-            $xml->Ordner = $cOrdner;
-        } else {
-            $xml = null;
-        }
-        if (\EVO_COMPATIBILITY === false
-            && ((string)$xml->Name === 'Evo' || ((string)$xml->Parent ?? '') === 'Evo')
-            && CurrentTemplate::getInstance()->getName() !== (string)$xml->Name
-        ) {
-            return null;
-        }
-
-        return $xml;
+        return $this->reader->getXML($dir ?? self::$cTemplate);
     }
 
     /**
-     * @param string $dir
-     * @return array|bool
+     * get registered plugin resources (js/css)
+     *
+     * @return array
      */
-    public function getConfig(string $dir)
+    public function getPluginResources(): array
     {
-        $settingsData = Shop::Container()->getDB()->selectAll('ttemplateeinstellungen', 'cTemplate', $dir);
-        if (\is_array($settingsData) && \count($settingsData) > 0) {
-            $settings = [];
-            foreach ($settingsData as $oSetting) {
-                if (isset($settings[$oSetting->cSektion]) && !\is_array($settings[$oSetting->cSektion])) {
-                    $settings[$oSetting->cSektion] = [];
-                }
-                $settings[$oSetting->cSektion][$oSetting->cName] = $oSetting->cWert;
-            }
+        // @todo
+        return [];
+    }
 
-            return $settings;
-        }
+    /**
+     * get array of static resources in minify compatible format
+     *
+     * @param bool $absolute
+     * @return array|mixed
+     */
+    public function getMinifyArray($absolute = false)
+    {
+        // @todo
+        return [];
+    }
 
+    /**
+     * @return bool
+     */
+    public function hasMobileTemplate(): bool
+    {
         return false;
     }
 
     /**
-     * @param string    $dir
-     * @param bool|null $isAdmin
-     * @return bool|stdClass
+     * @return bool
      */
-    public function getData($dir, bool $isAdmin = null)
+    public function isMobileTemplateActive(): bool
     {
-        $isAdmin = $isAdmin ?? $this->isAdmin;
-        $cacheID = 'tpl_' . $dir . ($isAdmin ? '_admin' : '');
-        if ($this->cachingEnabled === true && ($template = Shop::Container()->getCache()->get($cacheID)) !== false) {
-            return $template;
-        }
-        $template = new stdClass();
-        $xml      = $this->getXML($dir, $isAdmin);
-        if (!$xml) {
-            return false;
-        }
-        $template->cName        = \trim((string)$xml->Name);
-        $template->cOrdner      = (string)$dir;
-        $template->cAuthor      = \trim((string)$xml->Author);
-        $template->cURL         = \trim((string)$xml->URL);
-        $template->cVersion     = \trim((string)$xml->Version);
-        $template->cShopVersion = \trim((string)$xml->ShopVersion);
-        $template->cPreview     = \trim((string)$xml->Preview);
-        $template->cDokuURL     = \trim((string)$xml->DokuURL);
-        $template->bChild       = !empty($xml->Parent);
-        $template->cParent      = !empty($xml->Parent) ? \trim((string)$xml->Parent) : '';
-        $template->bResponsive  = empty($xml['isFullResponsive'])
-            ? false
-            : (\strtolower((string)$xml['isFullResponsive']) === 'true');
-        $template->bHasError    = false;
-        $template->eTyp         = '';
-        $template->cDescription = !empty($xml->Description) ? \trim((string)$xml->Description) : '';
-        if (!Text::is_utf8($template->cDescription)) {
-            $template->cDescription = Text::convertUTF8($template->cDescription);
-        }
-        if (!empty($xml->Parent)) {
-            $parentConfig = $this->getData($xml->Parent, $isAdmin);
-            if ($parentConfig !== false) {
-                $template->cVersion     = !empty($template->cVersion) ? $template->cVersion : $parentConfig->cVersion;
-                $template->cShopVersion = !empty($template->cShopVersion)
-                    ? $template->cShopVersion
-                    : $parentConfig->cShopVersion;
-            }
-        } else {
-            $template->checksums = $this->getChecksums((string)$dir);
-        }
-        if (empty($template->cVersion)) {
-            $template->cVersion = $template->cShopVersion;
-        }
-
-        $templates = Shop::Container()->getDB()->query(
-            'SELECT * FROM ttemplate',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($templates as $tpl) {
-            if (!isset($template->bAktiv) || !$template->bAktiv) {
-                $template->bAktiv = (\strcasecmp($template->cOrdner, $tpl->cTemplate) === 0);
-                if ($template->bAktiv) {
-                    $template->eTyp = $tpl->eTyp;
-                }
-            }
-        }
-        $template->bEinstellungen = isset($xml->Settings->Section) || $template->bChild;
-        if (\mb_strlen($template->cName) === 0) {
-            $template->cName = $template->cOrdner;
-        }
-        if ($this->cachingEnabled === true) {
-            Shop::Container()->getCache()->set($cacheID, $template, [\CACHING_GROUP_TEMPLATE]);
-        }
-
-        return $template;
+        return false;
     }
 
     /**
-     * @param string $dirname
-     * @return array|bool|null
+     * get current template's active skin
+     *
+     * @return string|null
      */
-    private function getChecksums(string $dirname)
+    public function getSkin(): ?string
     {
-        $files       = [];
-        $errorsCount = 0;
-        $base        = \PFAD_ROOT . \PFAD_TEMPLATES . \basename($dirname) . '/';
-        $checker     = new FileCheck();
+        return Shop::getSettings([\CONF_TEMPLATE])['template']['theme']['theme_default'] ?? null;
+    }
 
-        $res = $checker->validateCsvFile($base . 'checksums.csv', $files, $errorsCount, $base);
-        if ($res === FileCheck::ERROR_INPUT_FILE_MISSING || $res === FileCheck::ERROR_NO_HASHES_FOUND) {
-            return null;
+    /**
+     * @return $this
+     */
+    public function setzeKundenTemplate(): self
+    {
+        $this->init();
+
+        return $this;
+    }
+
+    /**
+     * @param string      $folder - the current template's dir name
+     * @param string|null $parent
+     * @return array
+     */
+    public function leseEinstellungenXML($folder, $parent = null): array
+    {
+        self::$cTemplate = $folder;
+
+        return $this->reader->getConfigXML($folder, $parent);
+    }
+
+    /**
+     * @param string|null $dirName
+     * @return array
+     */
+    public function getBoxLayoutXML($dirName = null): array
+    {
+        $items  = [];
+        $dirs   = self::$parent !== null ? [self::$parent] : [];
+        $dirs[] = $dirName ?? self::$cTemplate;
+
+        foreach ($dirs as $dir) {
+            $xml = $this->reader->getXML($dir);
+            if ($xml !== null && isset($xml->Boxes) && \count($xml->Boxes) === 1) {
+                $boxXML = $xml->Boxes[0];
+                foreach ($boxXML as $ditem) {
+                    $cPosition         = (string)$ditem->attributes()->Position;
+                    $bAvailable        = (bool)(int)$ditem->attributes()->Available;
+                    $items[$cPosition] = $bAvailable;
+                }
+            }
         }
 
-        return $errorsCount === 0 ? true : $files;
+        return $items;
+    }
+
+    /**
+     * @param string $dir
+     * @return array
+     */
+    public function leseLessXML($dir): array
+    {
+        $xml       = $this->reader->getXML($dir);
+        $lessFiles = [];
+        if (!$xml || !isset($xml->Lessfiles)) {
+            return $lessFiles;
+        }
+        foreach ($xml->Lessfiles->THEME as $oXMLTheme) {
+            $theme             = new stdClass();
+            $theme->cName      = (string)$oXMLTheme->attributes()->Name;
+            $theme->oFiles_arr = [];
+            foreach ($oXMLTheme->File as $cFile) {
+                $oThemeFiles         = new stdClass();
+                $oThemeFiles->cPath  = (string)$cFile->attributes()->Path;
+                $theme->oFiles_arr[] = $oThemeFiles;
+            }
+            $lessFiles[$theme->cName] = $theme;
+        }
+
+        return $lessFiles;
+    }
+
+    /**
+     * set new frontend template
+     *
+     * @param string $dir
+     * @param string $eTyp
+     * @return bool
+     */
+    public function setTemplate($dir, $eTyp = 'standard'): bool
+    {
+        Shop::Container()->getDB()->delete('ttemplate', 'eTyp', $eTyp);
+        Shop::Container()->getDB()->delete('ttemplate', 'cTemplate', $dir);
+        $tplConfig = $this->reader->getXML($dir);
+        if ($tplConfig !== null && !empty($tplConfig->Parent)) {
+            if (!\is_dir(\PFAD_ROOT . \PFAD_TEMPLATES . (string)$tplConfig->Parent)) {
+                return false;
+            }
+            self::$parent = (string)$tplConfig->Parent;
+            $parentConfig = $this->reader->getXML(self::$parent);
+        } else {
+            $parentConfig = false;
+        }
+
+        $tplObject            = new stdClass();
+        $tplObject->cTemplate = $dir;
+        $tplObject->eTyp      = $eTyp;
+        $tplObject->parent    = !empty($tplConfig->Parent)
+            ? (string)$tplConfig->Parent
+            : '_DBNULL_';
+        $tplObject->name      = (string)$tplConfig->Name;
+        $tplObject->author    = (string)$tplConfig->Author;
+        $tplObject->url       = (string)$tplConfig->URL;
+        $tplObject->version   = empty($tplConfig->Version) && $parentConfig
+            ? $parentConfig->Version
+            : $tplConfig->Version;
+        $tplObject->preview   = (string)$tplConfig->Preview;
+        if (empty($tplObject->version)) {
+            $tplObject->version = !empty($tplConfig->ShopVersion)
+                ? $tplConfig->ShopVersion
+                : $parentConfig->ShopVersion;
+        }
+        $inserted = Shop::Container()->getDB()->insert('ttemplate', $tplObject);
+        if ($inserted > 0) {
+            if (!$dh = \opendir(\PFAD_ROOT . \PFAD_COMPILEDIR)) {
+                return false;
+            }
+            while (($obj = \readdir($dh)) !== false) {
+                if (\mb_strpos($obj, '.') === 0) {
+                    continue;
+                }
+                if (!\is_dir(\PFAD_ROOT . \PFAD_COMPILEDIR . $obj)) {
+                    \unlink(\PFAD_ROOT . \PFAD_COMPILEDIR . $obj);
+                }
+            }
+        }
+        Shop::Container()->getCache()->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
+
+        return $inserted > 0;
+    }
+
+    /**
+     * get template configuration
+     *
+     * @return array|bool
+     */
+    public function getConfig()
+    {
+        return Shop::getSettings([\CONF_TEMPLATE])['template'];
+    }
+
+    /**
+     * set template configuration
+     *
+     * @param string $dir
+     * @param string $section
+     * @param string $name
+     * @param string $value
+     * @return $this
+     */
+    public function setConfig($dir, $section, $name, $value): self
+    {
+        $config = new Config($dir, Shop::Container()->getDB());
+        $config->updateConfigInDB($section, $name, $value);
+        Shop::Container()->getCache()->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function IsMobile(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @param bool $absolute
+     * @return string
+     */
+    public function getDir($absolute = false): string
+    {
+        return $absolute ? (\PFAD_ROOT . \PFAD_TEMPLATES . self::$cTemplate) : self::$cTemplate;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getParent(): ?string
+    {
+        return self::$parent;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAuthor(): ?string
+    {
+        return $this->author;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getURL(): ?string
+    {
+        return $this->url;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPreview(): ?string
+    {
+        return $this->preview;
+    }
+
+    /**
+     * @param bool $bRedirect
+     */
+    public function check($bRedirect = true): void
+    {
     }
 }

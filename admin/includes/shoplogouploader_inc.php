@@ -14,14 +14,15 @@ use JTL\Shop;
  */
 function saveShopLogo(array $files): int
 {
-    if (!file_exists(PFAD_ROOT . PFAD_SHOPLOGO)) {
-        mkdir(PFAD_ROOT . PFAD_SHOPLOGO);
+    if (!file_exists(PFAD_ROOT . PFAD_SHOPLOGO)
+        && !mkdir($concurrentDirectory = PFAD_ROOT . PFAD_SHOPLOGO)
+        && !is_dir($concurrentDirectory)
+    ) {
+        return 4;
     }
-    // Prüfe Dateiname
     if (empty($files['shopLogo']['name'])) {
-        return 2; // Dateiname fehlt
+        return 2;
     }
-    // Prüfe Dateityp
     $allowedTypes = [
         'image/jpeg',
         'image/pjpeg',
@@ -30,10 +31,14 @@ function saveShopLogo(array $files): int
         'image/x-png',
         'image/bmp',
         'image/jpg',
-        'image/svg+xml'
+        'image/svg+xml',
+        'image/svg',
+        'image/webp'
     ];
-    if (!in_array($files['shopLogo']['type'], $allowedTypes, true)) {
-        // Dateityp entspricht nicht der Konvention (Nur jpg/gif/png/bmp/svg Bilder) oder fehlt
+    if (!in_array($files['shopLogo']['type'], $allowedTypes, true)
+        || (extension_loaded('fileinfo')
+            && !in_array(mime_content_type($files['shopLogo']['tmp_name']), $allowedTypes, true))
+    ) {
         return 3;
     }
     $file = PFAD_ROOT . PFAD_SHOPLOGO . basename($files['shopLogo']['name']);
@@ -45,7 +50,7 @@ function saveShopLogo(array $files): int
         Shop::Container()->getDB()->update('teinstellungen', 'cName', 'shop_logo', $option);
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 
-        return 1; // Alles O.K.
+        return 1;
     }
 
     return 4;
@@ -57,9 +62,7 @@ function saveShopLogo(array $files): int
  */
 function deleteShopLogo(string $logo): bool
 {
-    return is_file(PFAD_ROOT . $logo)
-        ? unlink(PFAD_ROOT . $logo)
-        : false;
+    return is_file(PFAD_ROOT . $logo) && unlink(PFAD_ROOT . $logo);
 }
 
 /**

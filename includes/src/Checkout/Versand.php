@@ -154,7 +154,7 @@ class Versand
      */
     public function setLogistik($cLogistik): self
     {
-        $this->cLogistik = Shop::Container()->getDB()->escape($cLogistik);
+        $this->cLogistik = $cLogistik;
 
         return $this;
     }
@@ -165,7 +165,7 @@ class Versand
      */
     public function setLogistikURL($cLogistikURL): self
     {
-        $this->cLogistikURL = Shop::Container()->getDB()->escape($cLogistikURL);
+        $this->cLogistikURL = $cLogistikURL;
 
         return $this;
     }
@@ -176,7 +176,7 @@ class Versand
      */
     public function setIdentCode($cIdentCode): self
     {
-        $this->cIdentCode = Shop::Container()->getDB()->escape($cIdentCode);
+        $this->cIdentCode = $cIdentCode;
 
         return $this;
     }
@@ -187,7 +187,7 @@ class Versand
      */
     public function setHinweis($cHinweis): self
     {
-        $this->cHinweis = Shop::Container()->getDB()->escape($cHinweis);
+        $this->cHinweis = $cHinweis;
 
         return $this;
     }
@@ -198,7 +198,7 @@ class Versand
      */
     public function setErstellt($dErstellt): self
     {
-        $this->dErstellt = Shop::Container()->getDB()->escape($dErstellt);
+        $this->dErstellt = $dErstellt;
 
         return $this;
     }

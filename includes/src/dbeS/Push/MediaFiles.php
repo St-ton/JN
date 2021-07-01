@@ -22,18 +22,18 @@ final class MediaFiles extends AbstractPush
         $xml    .= $this->getDirContent(\PFAD_ROOT . \PFAD_MEDIAFILES, 1);
         $xml    .= '</mediafiles>' . "\n";
         $zip     = \time() . '.jtl';
-        $xmlfile = \fopen(\PFAD_SYNC_TMP . self::XML_FILE, 'w');
+        $xmlfile = \fopen(self::TEMP_DIR . self::XML_FILE, 'w');
         \fwrite($xmlfile, $xml);
         \fclose($xmlfile);
-        if (!\file_exists(\PFAD_SYNC_TMP . self::XML_FILE)) {
+        if (!\file_exists(self::TEMP_DIR . self::XML_FILE)) {
             return $xml;
         }
         $archive = new ZipArchive();
-        if ($archive->open(\PFAD_SYNC_TMP . $zip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== false
-            && $archive->addFile(\PFAD_SYNC_TMP . self::XML_FILE) !== false
+        if ($archive->open(self::TEMP_DIR . $zip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== false
+            && $archive->addFile(self::TEMP_DIR . self::XML_FILE, self::XML_FILE) !== false
         ) {
             $archive->close();
-            \readfile(\PFAD_SYNC_TMP . $zip);
+            \readfile(self::TEMP_DIR . $zip);
             exit;
         }
         $archive->close();

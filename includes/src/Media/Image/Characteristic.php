@@ -3,10 +3,8 @@
 namespace JTL\Media\Image;
 
 use Generator;
-use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
-use JTL\Shop;
 use PDO;
 use stdClass;
 
@@ -21,9 +19,12 @@ class Characteristic extends AbstractImage
     /**
      * @var string
      */
-    protected $regEx = '/^media\/image\/(?P<type>characteristic)' .
-    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
-    '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
+    public const REGEX = '/^media\/image'
+    . '\/(?P<type>characteristic)'
+    . '\/(?P<id>\d+)'
+    . '\/(?P<size>xs|sm|md|lg|xl)'
+    . '\/(?P<name>[' . self::REGEX_ALLOWED_CHARS . ']+)'
+    . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
      * @inheritdoc
@@ -42,9 +43,9 @@ class Characteristic extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getImageNames(MediaImageRequest $req): array
+    public function getImageNames(MediaImageRequest $req): array
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->getCollection(
             'SELECT a.kMerkmal, a.cBildpfad AS path, t.cName
                 FROM tmerkmal AS a
                 JOIN tmerkmalsprache t
@@ -53,8 +54,7 @@ class Characteristic extends AbstractImage
                     ON tsprache.kSprache = t.kSprache
                 WHERE a.kMerkmal = :cid
                     AND tsprache.cShopStandard = \'Y\'',
-            ['cid' => $req->getID()],
-            ReturnType::COLLECTION
+            ['cid' => $req->getID()]
         )->each(static function ($item, $key) use ($req) {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath($item->path);
@@ -70,9 +70,10 @@ class Characteristic extends AbstractImage
     {
         switch (Image::getSettings()['naming'][Image::TYPE_CHARACTERISTIC]) {
             case 2:
+                /** @var string|null $result */
                 $result = $mixed->path ?? $mixed->cBildpfad ?? null;
                 if ($result !== null) {
-                    return \pathinfo($result)['filename'];
+                    $result = \pathinfo($result)['filename'];
                 }
                 break;
             case 1:
@@ -84,7 +85,7 @@ class Characteristic extends AbstractImage
                 break;
         }
         if ($result === null && $mixed->currentImagePath !== null) {
-            return \pathinfo($mixed->currentImagePath)['filename'];
+            $result = \pathinfo($mixed->currentImagePath)['filename'];
         }
 
         return empty($result) ? 'image' : Image::getCleanFilename((string)$result);
@@ -93,14 +94,13 @@ class Characteristic extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getPathByID($id, int $number = null): ?string
+    public function getPathByID($id, int $number = null): ?string
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->getSingleObject(
             'SELECT cBildpfad AS path
                 FROM tmerkmal
                 WHERE kMerkmal = :cid LIMIT 1',
-            ['cid' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['cid' => $id]
         )->path ?? null;
     }
 
@@ -115,14 +115,13 @@ class Characteristic extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = Shop::Container()->getDB()->query(
+        $images = $this->db->getPDOStatement(
             'SELECT cBildpfad AS path, kMerkmal, kMerkmal AS id, cName
                 FROM tmerkmal
                 WHERE cBildpfad IS NOT NULL
-                    AND cBildpfad != \'\'' . self::getLimitStatement($offset, $limit),
-            ReturnType::QUERYSINGLE
+                    AND cBildpfad != \'\'' . self::getLimitStatement($offset, $limit)
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([
@@ -140,14 +139,13 @@ class Characteristic extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getTotalImageCount(): int
+    public function getTotalImageCount(): int
     {
-        return (int)Shop::Container()->getDB()->query(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(kMerkmal) AS cnt
                 FROM tmerkmal
                 WHERE cBildpfad IS NOT NULL
-                    AND cBildpfad != \'\'',
-            ReturnType::SINGLE_OBJECT
+                    AND cBildpfad != \'\''
         )->cnt;
     }
 }

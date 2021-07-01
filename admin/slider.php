@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
@@ -11,20 +10,19 @@ use JTL\Slide;
 use JTL\Slider;
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';
-$oAccount->permission('SLIDER_VIEW', true, true);
+/** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+
+$oAccount->permission('SLIDER_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'slider_inc.php';
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
 $_kSlider    = 0;
-$redirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'slider.php';
+$redirectUrl = Shop::getAdminURL() . '/slider.php';
 $action      = isset($_REQUEST['action']) && Form::validateToken()
     ? $_REQUEST['action']
     : 'view';
-$kSlider     = isset($_REQUEST['id'])
-    ? (int)$_REQUEST['id']
-    : 0;
+$kSlider     = (int)($_REQUEST['id'] ?? 0);
 switch ($action) {
     case 'slide_set':
         $aSlideKey = array_keys((array)$_REQUEST['aSlide']);
@@ -39,6 +37,7 @@ switch ($action) {
             $slide->setSliderID($kSlider);
             $slide->setTitle(htmlspecialchars($aSlide['cTitel'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET));
             $slide->setImage($aSlide['cBild']);
+            $slide->setThumbnail($aSlide['cThumbnail']);
             $slide->setText($aSlide['cText']);
             $slide->setLink($aSlide['cLink']);
             $slide->setSort((int)$aSlide['nSort']);
@@ -47,6 +46,7 @@ switch ($action) {
             } else {
                 $slide->save();
             }
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
         }
         break;
     default:
@@ -114,6 +114,7 @@ switch ($action) {
                         'successSliderSave',
                         ['saveInSession' => true]
                     );
+                    Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
                     header('Location: ' . $redirectUrl);
                     exit;
                 }
@@ -172,6 +173,7 @@ switch ($action) {
         $slider = new Slider($db);
         $slider->load($kSlider, false);
         if ($slider->delete() === true) {
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
             header('Location: ' . $redirectUrl);
             exit;
         }
@@ -182,7 +184,7 @@ switch ($action) {
         break;
 }
 
-$sliders    = $db->query('SELECT * FROM tslider', ReturnType::ARRAY_OF_OBJECTS);
+$sliders    = $db->getObjects('SELECT * FROM tslider');
 $pagination = (new Pagination('sliders'))
     ->setRange(4)
     ->setItemArray($sliders)

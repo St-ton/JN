@@ -8,6 +8,7 @@ use JTL\Mapper\PluginState;
 use JTL\Shop;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
+use stdClass;
 
 /**
  * Class LegacyPlugin
@@ -36,7 +37,7 @@ class LegacyPlugin extends PluginBC
     public $oPluginEinstellungAssoc_arr = [];
 
     /**
-     * @var \stdClass
+     * @var stdClass
      */
     public $oPluginUninstall;
 
@@ -44,11 +45,6 @@ class LegacyPlugin extends PluginBC
      * @var string
      */
     public $cFehler = '';
-
-    /**
-     * @var int
-     */
-    public $nCalledHook;
 
     /**
      * LegacyPlugin constructor.
@@ -112,7 +108,7 @@ class LegacyPlugin extends PluginBC
      */
     public function updateInDB(): int
     {
-        $obj                       = new \stdClass();
+        $obj                       = new stdClass();
         $obj->kPlugin              = $this->getID();
         $obj->cName                = $this->getMeta()->getName();
         $obj->cBeschreibung        = $this->getMeta()->getDescription();

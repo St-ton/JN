@@ -4,7 +4,6 @@ namespace JTL\News;
 
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use function Functional\group;
 use function Functional\map;
 
@@ -18,11 +17,6 @@ final class CategoryList implements ItemListInterface
      * @var DbInterface
      */
     private $db;
-
-    /**
-     * @var int[]
-     */
-    private $itemIDs;
 
     /**
      * @var Collection
@@ -42,13 +36,13 @@ final class CategoryList implements ItemListInterface
     /**
      * @inheritdoc
      */
-    public function createItems(array $itemIDs): Collection
+    public function createItems(array $itemIDs, bool $activeOnly = true): Collection
     {
-        $this->itemIDs = \array_map('\intval', $itemIDs);
-        if (\count($this->itemIDs) === 0) {
+        $itemIDs = \array_map('\intval', $itemIDs);
+        if (\count($itemIDs) === 0) {
             return $this->items;
         }
-        $itemLanguages = $this->db->query(
+        $itemLanguages = $this->db->getObjects(
             'SELECT *
                 FROM tnewskategoriesprache
                 JOIN tnewskategorie
@@ -56,17 +50,16 @@ final class CategoryList implements ItemListInterface
                 JOIN tseo
                     ON tseo.cKey = \'kNewsKategorie\'
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
-                WHERE tnewskategorie.kNewsKategorie  IN (' . \implode(',', $this->itemIDs) . ')
+                WHERE tnewskategorie.kNewsKategorie  IN (' . \implode(',', $itemIDs) . ')
                 GROUP BY tnewskategoriesprache.kNewsKategorie,tnewskategoriesprache.languageID
-                ORDER BY tnewskategorie.lft',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY tnewskategorie.lft'
         );
         $items         = map(group($itemLanguages, static function ($e) {
             return (int)$e->kNewsKategorie;
-        }), function ($e, $newsID) {
+        }), function ($e, $newsID) use ($activeOnly) {
             $c = new Category($this->db);
             $c->setID($newsID);
-            $c->map($e);
+            $c->map($e, $activeOnly);
 
             return $c;
         });

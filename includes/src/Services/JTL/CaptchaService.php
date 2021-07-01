@@ -1,8 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Services\JTL;
-
-use JTL\Smarty\JTLSmarty;
 
 /**
  * Class CaptchaService
@@ -25,8 +23,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     *
-     * @return bool
+     * @inheritDoc
      */
     public function isConfigured(): bool
     {
@@ -43,7 +40,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function isEnabled(): bool
     {
@@ -51,8 +48,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param JTLSmarty $smarty
-     * @return string
+     * @inheritDoc
      */
     public function getHeadMarkup($smarty): string
     {
@@ -74,8 +70,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param JTLSmarty $smarty
-     * @return string
+     * @inheritDoc
      */
     public function getBodyMarkup($smarty): string
     {
@@ -97,8 +92,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param  array $requestData
-     * @return bool
+     * @inheritDoc
      */
     public function validate(array $requestData): bool
     {

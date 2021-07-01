@@ -8,7 +8,6 @@ use JTL\Plugin\Helper;
 use JTL\Profiler;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Template;
 use JTLShop\SemVer\Version;
 
 $nStartzeit = microtime(true);
@@ -31,8 +30,8 @@ function handleFatal(string $message): void
 if (defined('PFAD_ROOT')) {
     require_once PFAD_ROOT . 'includes/defines.php';
 } else {
-    handleFatal('Die Konfigurationsdatei des Shops konnte nicht geladen werden! ' .
-        'Bei einer Neuinstallation bitte <a href="install/">hier</a> klicken.');
+    handleFatal('Could not get configuration from config file. ' .
+        'For shop installation <a href="install/">click here</a>.');
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
@@ -54,7 +53,9 @@ define('JTL_MINOR_VERSION', (int)Version::parse(APPLICATION_VERSION)->getPatch()
 
 Profiler::start();
 
-$shop = Shop::getInstance();
+$db     = null;
+$config = null;
+$shop   = Shop::getInstance();
 
 if (!function_exists('Shop')) {
     /**
@@ -113,16 +114,17 @@ if (!JTL_INCLUDE_ONLY_DB && !defined('CLI_BATCHRUN')) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
     $pluginHooks    = Helper::getHookList();
-    $template       = Template::getInstance();
     $globalMetaData = Metadata::getGlobalMetaData();
     executeHook(HOOK_GLOBALINCLUDE_INC);
     $session             = (defined('JTLCRON') && JTLCRON === true)
         ? Frontend::getInstance(true, true, 'JTLCRON')
         : Frontend::getInstance();
     $bAdminWartungsmodus = false;
-    if ($config['wartungsmodus_aktiviert'] === 'Y' && basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php') {
+    if ((SAFE_MODE === true || $config['wartungsmodus_aktiviert'] === 'Y')
+        && basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php'
+    ) {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
-        if (!Shop::isAdmin()) {
+        if (!Shop::isAdmin(true)) {
             http_response_code(503);
             require_once PFAD_ROOT . 'wartung.php';
             exit;

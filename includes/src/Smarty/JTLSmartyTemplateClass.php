@@ -9,19 +9,12 @@ namespace JTL\Smarty;
 class JTLSmartyTemplateClass extends \Smarty_Internal_Template
 {
     /**
-     * Runtime function to render sub-template
-     *
-     * @param string  $template       template name
-     * @param mixed   $cache_id       cache id
-     * @param mixed   $compile_id     compile id
-     * @param integer $caching        cache mode
-     * @param integer $cache_lifetime life time of cache data
-     * @param array   $data           passed parameter template variables
-     * @param int     $scope          scope in which {include} should execute
-     * @param bool    $forceTplCache  cache template object
-     * @param string  $uid            file dependency uid
-     * @param string  $content_func   function name
-     *
+     * @var JTLSmarty
+     */
+    public $smarty;
+
+    /**
+     * @inheritDoc
      */
     public function _subTemplateRender(
         $template,
@@ -35,7 +28,7 @@ class JTLSmartyTemplateClass extends \Smarty_Internal_Template
         $uid = null,
         $content_func = null
     ) {
-        return parent::_subTemplateRender(
+        parent::_subTemplateRender(
             $this->smarty->getResourceName($template),
             $cache_id,
             $compile_id,
@@ -50,9 +43,7 @@ class JTLSmartyTemplateClass extends \Smarty_Internal_Template
     }
 
     /**
-     * @param bool $no_output_filter
-     * @param null|int $display
-     * @return string
+     * @inheritDoc
      */
     public function render($no_output_filter = true, $display = null)
     {

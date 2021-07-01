@@ -87,7 +87,7 @@
                 <div class="card-body collapse{if !empty($oKupon->massCreationCoupon)} show{/if}" id="massCreationCouponsBody">
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="numberOfCoupons">{__('numberCouponsDesc')}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 config-type-number">
                             <div class="input-group form-counter">
                                 <div class="input-group-prepend">
                                     <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
@@ -132,7 +132,7 @@
                     </div>
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="hashLength">{__('hashLengthDesc')}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 config-type-number">
                             <div class="input-group form-counter">
                                 <div class="input-group-prepend">
                                     <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
@@ -257,7 +257,7 @@
                 {/if}
                 <div class="form-group form-row align-items-center">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="nVerwendungen">{__('uses')}:</label>
-                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 config-type-number">
                         <div class="input-group form-counter">
                             <div class="input-group-prepend">
                                 <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
@@ -276,7 +276,7 @@
                 {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.shipping}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="nVerwendungenProKunde">{__('usesPerCustomer')}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 config-type-number">
                             <div class="input-group form-counter">
                                 <div class="input-group-prepend">
                                     <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
@@ -481,7 +481,7 @@
                                 keyName:           'kKunde',
                                 renderItemCb:      renderCustomerItem,
                                 onApply:           onApplySelectedCustomers,
-                                selectedKeysInit:  [{$customerIDs|implode:','}]
+                                selectedKeysInit:  [{implode(',', $customerIDs)}]
                             });
                             onApplySelectedCustomers(customerPicker.getSelection());
                         });
@@ -528,7 +528,7 @@
         <div class="card-footer save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <a class="btn btn-outline-primary btn-block" href="kupons.php">
+                    <a class="btn btn-outline-primary btn-block" href="kupons.php?tab={$oKupon->cKuponTyp}">
                         {__('cancelWithIcon')}
                     </a>
                 </div>

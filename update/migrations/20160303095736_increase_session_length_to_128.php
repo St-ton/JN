@@ -16,6 +16,9 @@ class Migration_20160303095736 extends Migration implements IMigration
 {
     protected $author = 'sh';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("ALTER TABLE tbestellung CHANGE `cSession` `cSession` VARCHAR(128) NOT NULL DEFAULT ''");
@@ -27,6 +30,9 @@ class Migration_20160303095736 extends Migration implements IMigration
         $this->execute("ALTER TABLE tsession CHANGE `cSessionId` `cSessionId` VARCHAR(128) NOT NULL DEFAULT ''");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("ALTER TABLE tbestellung CHANGE `cSession` `cSession` VARCHAR(33) NOT NULL DEFAULT ''");

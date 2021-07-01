@@ -1,30 +1,20 @@
 {block name='snippets-form-group-simple'}
-    {if !empty($options)}
-        {assign var=inputType value=$options[0]}
-        {assign var=inputId value=$options[1]}
-        {assign var=inputName value=$options[2]}
-        {assign var=inputValue value=$options[3]}
-        {assign var=label value=$options[4]}
-        {if isset($options[5])}
-            {assign var=required value=$options[5]}
-        {/if}
-        {if isset($options[6])}
-            {assign var=invalidReason value=$options[6]}
-        {/if}
-        {if isset($options[7])}
-            {assign var=autocomplete value=$options[7]}
-        {/if}
-    {/if}
+    {$inputType     = $options[0]}
+    {$inputId       = $options[1]}
+    {$inputName     = $options[2]}
+    {$inputValue    = $options[3]}
+    {$label         = $options[4]}
+    {$invalidReason = $options[6]|default:''}
+    {$autocomplete  = $options[7]|default:''}
+    {$size          = $options[8]|default:''}
+    {$isRequired    = !empty($options[5]) && ($options[5] === 'Y' || $options[5] === true)}
+    {$inputNameTmp  = $inputName|replace:"register[shipping_address][":""|replace:"]":""}
 
-    {assign var=isRequired value=!empty($required) && ($required === 'Y' || $required === true)}
-
-    {assign var=inputNameTmp value=$inputName|replace:"register[shipping_address][":""|replace:"]":""}
-
-    {if isset($invalidReason) && $invalidReason|strlen > 0}
-        {assign var=hasError value=true}
+    {if $invalidReason !== ''}
+        {$hasError = true}
     {elseif !empty($fehlendeAngaben) && isset($fehlendeAngaben.{$inputNameTmp})}
-        {assign var=errCode value=$fehlendeAngaben.{$inputNameTmp}}
-        {assign var=hasError value=true}
+        {$errCode  = $fehlendeAngaben.{$inputNameTmp}}
+        {$hasError = true}
         {if $inputNameTmp === 'email'}
             {if $errCode == 1}
                 {lang assign='invalidReason' key='fillOut'}
@@ -75,7 +65,7 @@
             {lang assign='invalidReason' key='fillOut'}
         {/if}
     {else}
-        {assign var=hasError value=false}
+        {$hasError = false}
     {/if}
 
     {formgroup label-for=$inputId
@@ -83,7 +73,7 @@
         class="{if $hasError}has-error{/if}"}
         {block name='snippets-form-group-simple-error'}
             {if $hasError}
-                <div class="form-error-msg text-danger">{$invalidReason}</div>
+                <div class="form-error-msg">{$invalidReason}</div>
             {/if}
         {/block}
         {if isset($inputType) && $inputType === 'number'}
@@ -94,11 +84,11 @@
                     {/inputgroupaddon}
                         {input type=$inputType
                             name=$inputName
-                            value="{if isset($inputValue)}{$inputValue}{/if}"
+                            value=$inputValue
                             id=$inputId
                             placeholder="{if isset($placeholder)}{$placeholder}{else}{$label}{/if}"
                             required=$isRequired
-                            autocomplete="{if !empty($autocomplete)}{$autocomplete}{/if}"
+                            autocomplete=$autocomplete
                         }
                     {inputgroupaddon append=true data=["type"=>"minus", "field"=>"quant[1]"]}
                         +
@@ -109,11 +99,12 @@
             {block name='snippets-form-group-simple-input-other'}
                 {input type="{if isset($inputType)}{$inputType}{else}text{/if}"
                     name=$inputName
-                    value="{if isset($inputValue)}{$inputValue}{/if}"
+                    value=$inputValue
                     id=$inputId
                     placeholder="{if isset($placeholder)}{$placeholder}{else} {/if}"
                     required=$isRequired
-                    autocomplete="{if !empty($autocomplete)}{$autocomplete}{/if}"
+                    autocomplete=$autocomplete
+                    size=$size
                 }
             {/block}
         {/if}

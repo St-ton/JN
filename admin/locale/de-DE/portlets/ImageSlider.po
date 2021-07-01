@@ -55,3 +55,9 @@ msgstr "Pfeilnavigation"
 
 msgid "randomEffects"
 msgstr "Zufällige Effekte"
+
+msgid "kenBurnsDesc"
+msgstr "Langsame Zoom- und Schwenkbewegung in das Bild"
+
+msgid "randomEffectsDesc"
+msgstr "Wechselt zufällig zwischen allen unten aufgelisteten Effekten"

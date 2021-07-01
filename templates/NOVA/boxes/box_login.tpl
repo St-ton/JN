@@ -1,8 +1,5 @@
 {block name='boxes-box-login'}
-    {card
-        class="box box-login mb-4"
-        id="sidebox{$oBox->getID()}"
-    }
+    <div id="sidebox{$oBox->getID()}" class="box box-login box-normal">
         {block name='boxes-box-login-content'}
             {block name='boxes-box-login-title'}
                 <div class="productlist-filter-headline">
@@ -11,24 +8,25 @@
             {/block}
             {if empty($smarty.session.Kunde->kKunde)}
                 {block name='boxes-box-login-form'}
-                    {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form box_login jtl-validate" slide=true}
+                    <div class="box-content-wrapper">
+                    {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form jtl-validate" slide=true}
                         {block name='boxes-box-login-form-data'}
                             {input type="hidden" name="login" value="1"}
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
-                                    'email', "email-box-login-{$oBox->getID()}", 'email', null,{lang key='emailadress'}, true, null, "email"
+                                    'email', "email-box-login-{$oBox->getID()}", 'email', null,{lang key='emailadress'}, true, null, 'email', 'sm'
                                 ]
                             }
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
                                     'password', "password-box-login-{$oBox->getID()}", 'passwort', null,
-                                    {lang key='password' section='account data'}, true, null, "current-password"
+                                    {lang key='password' section='account data'}, true, null, 'current-password', 'sm'
                                 ]
                             }
                         {/block}
                         {if isset($showLoginCaptcha) && $showLoginCaptcha}
                             {block name='boxes-box-login-form-captcha'}
-                                {formgroup class="text-center"}
+                                {formgroup class="simple-captcha-wrapper"}
                                     {captchaMarkup getBody=true}
                                 {/formgroup}
                             {/block}
@@ -42,25 +40,26 @@
                                     {input type="hidden" name="r" value=$oRedirect->nRedirect}
                                     {input type="hidden" name="cURL" value=$oRedirect->cURL}
                                 {/if}
-                                {button type="submit" name="speichern" value="1" variant="primary" block=true class="submit"}
+                                {button type="submit" name="speichern" value="1" variant="primary" block=true class="submit" size="sm"}
                                     {lang key='login' section='checkout'}
                                 {/button}
                             {/formgroup}
                         {/block}
                         {block name='boxes-box-login-form-links'}
-                            {nav vertical=true class="register-or-resetpw"}
-                                {navitem class="resetpw" href="{get_static_route id='pass.php' secure=true}"}
-                                    {lang key='forgotPassword'}
-                                {/navitem}
-                                {navitem class="register" href="{get_static_route id='registrieren.php'}"}
-                                    {lang key='newHere'} {lang key='registerNow'}
-                                {/navitem}
-                            {/nav}
+                            {link class="resetpw box-login-resetpw" href="{get_static_route id='pass.php' secure=true}"}
+                                {lang key='forgotPassword'}
+                            {/link}
+                            {lang key='newHere'}
+                            {link class="register text-decoration-underline" href="{get_static_route id='registrieren.php'}"}
+                                {lang key='registerNow'}
+                            {/link}
                         {/block}
                     {/form}
+                    </div>
                 {/block}
             {else}
                 {block name='boxes-box-login-actions'}
+                    <div class="box-content-wrapper">
                     {link href="{get_static_route id='jtl.php'}" class="btn btn-outline-primary btn-block btn-sm btn-account"}
                         {lang key='myAccount'}
                     {/link}
@@ -69,8 +68,12 @@
                     }
                         {lang key='logOut'}
                     {/link}
+                    </div>
                 {/block}
             {/if}
+            {block name='boxes-box-login-hr-end'}
+                <hr class="box-normal-hr">
+            {/block}
         {/block}
-    {/card}
+    </div>
 {/block}

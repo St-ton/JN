@@ -16,12 +16,15 @@ class Migration_20170928095400 extends Migration implements IMigration
 {
     protected $author = 'fm';
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setConfig(
             'global_ssl_www',
             '',
-            \CONF_GLOBAL,
+            CONF_GLOBAL,
             'Zertifikat ausgestellt auf',
             'selectbox',
             541,
@@ -35,6 +38,9 @@ class Migration_20170928095400 extends Migration implements IMigration
         ]);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->removeConfig('global_ssl_www');

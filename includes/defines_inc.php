@@ -1,9 +1,10 @@
 <?php
 
 // Version
-define('APPLICATION_VERSION', '5.0.0');
+define('APPLICATION_VERSION', '5.1.0-alpha');
 define('APPLICATION_BUILD_SHA', '#DEV#');
 define('JTL_MIN_WAWI_VERSION', 100000);
+define('JTL_MIN_SHOP_UPDATE_VERSION', '4.2.0');
 // Einstellungssektionen
 define('CONF_GLOBAL', 1);
 define('CONF_STARTSEITE', 2);
@@ -16,6 +17,7 @@ define('CONF_BOXEN', 8);
 define('CONF_BILDER', 9);
 define('CONF_SONSTIGES', 10);
 define('CONF_TEMPLATE', 11);
+define('CONF_BRANDING', 12);
 //
 define('CONF_ZAHLUNGSARTEN', 100);
 define('CONF_EXPORTFORMATE', 101);
@@ -32,15 +34,19 @@ define('CONF_EMAILBLACKLIST', 111);
 define('CONF_METAANGABEN', 112);
 define('CONF_NEWS', 113);
 define('CONF_SITEMAP', 114);
-define('CONF_KUNDENWERBENKUNDEN', 116);
 define('CONF_SUCHSPECIAL', 119);
-define('CONF_CHECKBOX', 120);
 define('CONF_AUSWAHLASSISTENT', 121);
 define('CONF_CACHING', 124);
-define('CONF_LOGO', 125);
-define('CONF_PLUGINZAHLUNGSARTEN', 126);
 define('CONF_FS', 127);
 define('CONF_CRON', 128);
+define('CONF_CONSENTMANAGER', 129);
+/**
+ * @deprecated
+ */
+define('CONF_CHECKBOX', 120);
+define('CONF_KUNDENWERBENKUNDEN', 116);
+define('CONF_LOGO', 125);
+define('CONF_PLUGINZAHLUNGSARTEN', 126);
 //
 define('C_WARENKORBPOS_TYP_ARTIKEL', 1);
 define('C_WARENKORBPOS_TYP_VERSANDPOS', 2);
@@ -56,7 +62,10 @@ define('C_WARENKORBPOS_TYP_GRATISGESCHENK', 11);
 //
 define('C_WARENKORBPOS_TYP_ZINSAUFSCHLAG', 13);
 define('C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR', 14);
-define('C_WARENKORBPOS_TYP_RESERVED', 15); // reserviert für Retoure in POS - SHOP-3545
+define('C_WARENKORBPOS_TYP_RESERVED1', 15); // reserviert für Wawi intern - SHOP-3545
+define('C_WARENKORBPOS_TYP_RESERVED2', 16); // reserviert für Retoure in POS - SHOP-3545
+define('C_WARENKORBPOS_TYP_RESERVED3', 17); // reserviert für Mehrzweckgutschein
+define('C_WARENKORBPOS_TYP_RESERVED4', 18); // reserviert für MehrzweckgutscheinDigital
 //
 define('KONFIG_ITEM_TYP_ARTIKEL', 0);
 define('KONFIG_ITEM_TYP_SPEZIAL', 1);
@@ -113,7 +122,13 @@ define('MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR', 'core_jtl_verfuegbarkeitsbenach
 define('MAILTEMPLATE_WUNSCHLISTE', 'core_jtl_wunschliste');
 define('MAILTEMPLATE_BEWERTUNGERINNERUNG', 'core_jtl_bewertungerinnerung');
 define('MAILTEMPLATE_NEWSLETTERANMELDEN', 'core_jtl_newsletteranmelden');
+/**
+ * @deprecated
+ */
 define('MAILTEMPLATE_KUNDENWERBENKUNDEN', 'core_jtl_kundenwerbenkunden');
+/**
+ * @deprecated
+ */
 define('MAILTEMPLATE_KUNDENWERBENKUNDENBONI', 'core_jtl_kundenwerbenkundenboni');
 define('MAILTEMPLATE_STATUSEMAIL', 'core_jtl_statusemail');
 define('MAILTEMPLATE_CHECKBOX_SHOPBETREIBER', 'core_jtl_checkbox_shopbetreiber');
@@ -134,6 +149,9 @@ define('SEARCH_SORT_PRICE_DESC', 4);
 define('SEARCH_SORT_EAN', 5);
 define('SEARCH_SORT_NEWEST_FIRST', 6);
 define('SEARCH_SORT_PRODUCTNO', 7);
+/**
+ * @deprecated
+ */
 define('SEARCH_SORT_AVAILABILITY', 8);
 define('SEARCH_SORT_WEIGHT', 9);
 define('SEARCH_SORT_DATEOFISSUE', 10);
@@ -144,6 +162,9 @@ define('SEARCH_SORT_CRITERION_NAME', 'artikelname');
 define('SEARCH_SORT_CRITERION_NAME_ASC', 'artikelname aufsteigend');
 define('SEARCH_SORT_CRITERION_NAME_DESC', 'artikelname absteigend');
 define('SEARCH_SORT_CRITERION_PRODUCTNO', 'artikelnummer');
+/**
+ * @deprecated
+ */
 define('SEARCH_SORT_CRITERION_AVAILABILITY', 'lagerbestand');
 define('SEARCH_SORT_CRITERION_WEIGHT', 'gewicht');
 define('SEARCH_SORT_CRITERION_PRICE', 'preis');
@@ -430,6 +451,7 @@ define('BOX_FILTER_SUCHE', 28);
 define('BOX_FILTER_SUCHSPECIAL', 29);
 define('BOX_FILTER_HERSTELLER', 101);
 define('BOX_FILTER_KATEGORIE', 102);
+define('BOX_FILTER_AVAILABILITY', 103);
 define('BOX_EIGENE_BOX_OHNE_RAHMEN', 30);
 define('BOX_EIGENE_BOX_MIT_RAHMEN', 31);
 define('BOX_KONFIGURATOR', 33);
@@ -544,6 +566,7 @@ define('CACHING_GROUP_TEMPLATE', 'tpl');
 define('CACHING_GROUP_OPTION', 'opt');
 define('CACHING_GROUP_PLUGIN', 'plgn');
 define('CACHING_GROUP_CORE', 'core');
+define('CACHING_GROUP_LICENSES', 'lic');
 define('CACHING_GROUP_OBJECT', 'obj');
 define('CACHING_GROUP_BOX', 'bx');
 define('CACHING_GROUP_NEWS', 'nws');
@@ -551,3 +574,5 @@ define('CACHING_GROUP_ATTRIBUTE', 'attr');
 define('CACHING_GROUP_MANUFACTURER', 'mnf');
 define('CACHING_GROUP_FILTER', 'fltr');
 define('CACHING_GROUP_FILTER_CHARACTERISTIC', 'fltrchr');
+define('CACHING_GROUP_STATUS', 'status');
+define('CACHING_GROUP_OPC', 'opc');

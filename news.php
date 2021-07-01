@@ -30,9 +30,9 @@ $conf             = Shopsetting::getInstance()->getAll();
 $customerGroupID  = Frontend::getCustomerGroup()->getID();
 $linkService      = Shop::Container()->getLinkService();
 $link             = $linkService->getPageLink($linkService->getSpecialPageID(LINKTYP_NEWS));
+$smarty           = Shop::Smarty();
 $controller       = new Controller($db, $conf, $smarty);
 $alertHelper      = Shop::Container()->getAlertService();
-$smarty           = Shop::Smarty();
 
 switch ($controller->getPageType($params)) {
     case ViewType::NEWS_DETAIL:
@@ -113,6 +113,7 @@ if ($controller->getNoticeMsg() !== '') {
 }
 
 $smarty->assign('oPagination', $pagination)
+    ->assign('Link', $link)
     ->assign('code_news', false);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

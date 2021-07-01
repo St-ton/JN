@@ -208,8 +208,6 @@ class PHPSettings
             $url['path'] = '/';
         }
 
-        return !\fsockopen($url['host'], $url['port'], $errno, $errstr, 30)
-            ? false
-            : true;
+        return (bool)\fsockopen($url['host'], $url['port'], $errno, $errstr, 30);
     }
 }

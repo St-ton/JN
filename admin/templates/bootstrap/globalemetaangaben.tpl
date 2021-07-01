@@ -42,7 +42,7 @@
                 {if $oConfig->cConf === 'Y'}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $oConfig->cInputTyp === 'number'}config-type-number{/if}">
                             {if $oConfig->cInputTyp === 'selectbox'}
                                 <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="custom-select combo">
                                     {foreach $oConfig->ConfWerte as $wert}
@@ -67,9 +67,7 @@
                                 <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
                             {/if}
                         </div>
-                        {if $oConfig->cBeschreibung}
-                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$oConfig->cBeschreibung}</div>
-                        {/if}
+                        {include file='snippets/einstellungen_icons.tpl' cnf=$oConfig}
                     </div>
                 {else}
                     {if $open}</div></div>{/if}

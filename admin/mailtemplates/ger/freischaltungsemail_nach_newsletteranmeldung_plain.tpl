@@ -4,7 +4,7 @@ Guten Tag,
 
 wir freuen uns, Sie als Newsletter-Abonnent bei {$Firma->cName} begrüßen zu dürfen.
 
-Bitte klicken Sie auf den folgenden Freischaltcode, um Newsletter zu empfangen:
+Bitte klicken Sie auf den folgenden Freischalt-Link, um Newsletter zu empfangen:
 {$NewsletterEmpfaenger->cFreischaltURL}
 
 Sie können sich ebenso jederzeit vom Newsletter abmelden, indem Sie entweder den Lösch-Link

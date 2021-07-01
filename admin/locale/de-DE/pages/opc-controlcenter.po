@@ -24,7 +24,7 @@ msgid "opcPortlets"
 msgstr "Verfügbare Portlets"
 
 msgid "opcBlueprints"
-msgstr "Verfügbare Vorlagen"
+msgstr "Verfügbare Blueprints"
 
 msgid "sureDeleteAll"
 msgstr "Möchten Sie wirklich alle Entwürfe für die Seite löschen?"

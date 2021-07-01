@@ -13,7 +13,7 @@
     {else}
         {block name='account-feedback-ratings'}
             {foreach $bewertungen as $Bewertung}
-                {card no-body=true}
+                {card no-body=true class="account-feedback"}
                     {cardheader}
                         {block name='account-feedback-rating-header'}
                             <strong>{$Bewertung->cTitel}</strong> - {$Bewertung->dDatum}
@@ -29,7 +29,7 @@
                                 <span class="float-right">
                                     {link class="btn btn-sm btn-outline-primary"
                                         title="{lang key='edit' section='product rating'}"
-                                        href="{$ShopURL}/bewertung.php?a={$Bewertung->kArtikel}&bfa=1"}
+                                        href="{get_static_route id='bewertung.php'}?a={$Bewertung->kArtikel}&bfa=1"}
                                         <span class="fa fa-pencil-alt"></span>
                                     {/link}
                                 </span>

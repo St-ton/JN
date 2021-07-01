@@ -39,7 +39,7 @@ interface PasswordServiceInterface
 
     /**
      * @param string $hash
-     * @return mixed
+     * @return array
      */
     public function getInfo($hash): array;
 

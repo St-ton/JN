@@ -7,8 +7,8 @@ use JTL\Cart\Cart;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\ZahlungsLog;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Plugin\Helper as PluginHelper;
@@ -51,7 +51,7 @@ class Method implements MethodInterface
     public $caption;
 
     /**
-     * @var bool
+     * @var int
      */
     public $duringCheckout;
 
@@ -120,9 +120,9 @@ class Method implements MethodInterface
     public function getOrderHash(Bestellung $order): ?string
     {
         $orderId = isset($order->kBestellung)
-            ? Shop::Container()->getDB()->query(
-                'SELECT cId FROM tbestellid WHERE kBestellung = ' . (int)$order->kBestellung,
-                ReturnType::SINGLE_OBJECT
+            ? Shop::Container()->getDB()->getSingleObject(
+                'SELECT cId FROM tbestellid WHERE kBestellung = :oid',
+                ['oid' => (int)$order->kBestellung]
             )
             : null;
 
@@ -141,14 +141,14 @@ class Method implements MethodInterface
         }
         if (Shop::getSettings([\CONF_KAUFABWICKLUNG])['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') {
             // Abschlussseite
-            $oZahlungsID = Shop::Container()->getDB()->query(
+            $paymentID = Shop::Container()->getDB()->getSingleObject(
                 'SELECT cId
                     FROM tbestellid
-                    WHERE kBestellung = ' . (int)$order->kBestellung,
-                ReturnType::SINGLE_OBJECT
+                    WHERE kBestellung = :oid',
+                ['oid' => (int)$order->kBestellung]
             );
-            if (\is_object($oZahlungsID)) {
-                return Shop::getURL() . '/bestellabschluss.php?i=' . $oZahlungsID->cId;
+            if ($paymentID !== null) {
+                return Shop::getURL() . '/bestellabschluss.php?i=' . $paymentID->cId;
             }
         }
 
@@ -201,27 +201,18 @@ class Method implements MethodInterface
      */
     public function sendErrorMail(string $body)
     {
-        $conf                = Shop::getSettings([\CONF_EMAILS]);
-        $mail                = new stdClass();
-        $mail->toEmail       = $conf['emails']['email_master_absender'];
-        $mail->toName        = $conf['emails']['email_master_absender_name'];
-        $mail->fromEmail     = $mail->toEmail;
-        $mail->fromName      = $mail->toName;
-        $mail->subject       = \sprintf(
-            Shop::Lang()->get('errorMailSubject', 'paymentMethods'),
-            $conf['global']['global_meta_title']
+        $mail = new Mail();
+
+        Shop::Container()->get(Mailer::class)->send(
+            $mail->setLanguage(LanguageHelper::getDefaultLanguage())
+                ->setToName(Shop::getSettingValue(\CONF_EMAILS, 'email_master_absender_name'))
+                ->setToMail(Shop::getSettingValue(\CONF_EMAILS, 'email_master_absender'))
+                ->setSubject(\sprintf(
+                    Shop::Lang()->get('errorMailSubject', 'paymentMethods'),
+                    Shop::getSettingValue(\CONF_GLOBAL, 'global_shopname')
+                ))
+                ->setBodyText($body)
         );
-        $mail->bodyText      = $body;
-        $mail->methode       = $conf['eMails']['eMail_methode'];
-        $mail->sendMail_pfad = $conf['eMails']['eMail_sendMail_pfad'];
-        $mail->smtp_hostname = $conf['eMails']['eMail_smtp_hostname'];
-        $mail->smtp_port     = $conf['eMails']['eMail_smtp_port'];
-        $mail->smtp_auth     = $conf['eMails']['eMail_smtp_auth'];
-        $mail->smtp_user     = $conf['eMails']['eMail_smtp_user'];
-        $mail->smtp_pass     = $conf['eMails']['eMail_smtp_pass'];
-        $mail->SMTPSecure    = $conf['emails']['email_smtp_verschluesselung'];
-        include_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
-        \verschickeMail($mail);
 
         return $this;
     }
@@ -231,7 +222,6 @@ class Method implements MethodInterface
      */
     public function generateHash(Bestellung $order): string
     {
-        $hash = null;
         if ((int)$this->duringCheckout === 1) {
             if (!isset($_SESSION['IP'])) {
                 $_SESSION['IP'] = new stdClass();
@@ -374,17 +364,13 @@ class Method implements MethodInterface
     public function getCustomerOrderCount(int $customerID): int
     {
         if ($customerID > 0) {
-            $order = Shop::Container()->getDB()->query(
-                "SELECT COUNT(*) AS nAnzahl
+            return (int)Shop::Container()->getDB()->getSingleObject(
+                "SELECT COUNT(*) AS cnt
                     FROM tbestellung
                     WHERE (cStatus = '2' || cStatus = '3' || cStatus = '4')
-                        AND kKunde = " . $customerID,
-                ReturnType::SINGLE_OBJECT
-            );
-
-            if (isset($order->nAnzahl) && count($order->nAnzahl) > 0) {
-                return (int)$order->nAnzahl;
-            }
+                        AND kKunde = :cid",
+                ['cid' => $customerID]
+            )->cnt;
         }
 
         return 0;
@@ -423,7 +409,7 @@ class Method implements MethodInterface
 
         if ($this->getSetting('min_bestellungen') > 0) {
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
-                $res   = Shop::Container()->getDB()->executeQueryPrepared(
+                $count = (int)Shop::Container()->getDB()->getSingleObject(
                     'SELECT COUNT(*) AS cnt
                         FROM tbestellung
                         WHERE kKunde = :cid
@@ -432,10 +418,8 @@ class Method implements MethodInterface
                         'cid' => (int)$customer->kKunde,
                         'stp' => \BESTELLUNG_STATUS_BEZAHLT,
                         'sts' => \BESTELLUNG_STATUS_VERSANDT
-                    ],
-                    ReturnType::SINGLE_OBJECT
-                );
-                $count = (int)$res->cnt;
+                    ]
+                )->cnt;
                 if ($count < $this->getSetting('min_bestellungen')) {
                     ZahlungsLog::add(
                         $this->moduleID,
@@ -454,12 +438,13 @@ class Method implements MethodInterface
             }
         }
 
-        $min = $this->getSetting('min');
-        if ($min > 0 && $cart->gibGesamtsummeWaren(true) <= $min) {
+        $cartTotal = $cart->gibGesamtsummeWarenOhne([\C_WARENKORBPOS_TYP_VERSANDPOS], true);
+        $min       = (float)$this->getSetting('min');
+        if ($min > 0 && $cartTotal < $min) {
             ZahlungsLog::add(
                 $this->moduleID,
-                'Bestellwert ' . $cart->gibGesamtsummeWaren(true) .
-                ' ist kleiner als der Mindestbestellwert von ' . $this->getSetting('min'),
+                'Bestellwert ' . $cartTotal .
+                ' ist kleiner als der Mindestbestellwert von ' . $min,
                 null,
                 \LOGLEVEL_NOTICE
             );
@@ -467,12 +452,12 @@ class Method implements MethodInterface
             return false;
         }
 
-        $max = $this->getSetting('max');
-        if ($max > 0 && $cart->gibGesamtsummeWaren(true) >= $max) {
+        $max = (float)$this->getSetting('max');
+        if ($max > 0 && $cartTotal >= $max) {
             ZahlungsLog::add(
                 $this->moduleID,
-                'Bestellwert ' . $cart->gibGesamtsummeWaren(true) .
-                ' ist groesser als der maximale Bestellwert von ' . $this->getSetting('max'),
+                'Bestellwert ' . $cartTotal .
+                ' ist groesser als der maximale Bestellwert von ' . $max,
                 null,
                 \LOGLEVEL_NOTICE
             );

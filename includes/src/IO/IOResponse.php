@@ -15,12 +15,45 @@ class IOResponse implements JsonSerializable
     /**
      * @var array
      */
-    private $assigns = [];
+    private $domAssigns = [];
 
     /**
      * @var array
      */
+    private $varAssigns = [];
+
+    /**
+     * @var array
+     * @deprecated since 5.0.0
+     */
     private $scripts = [];
+
+    /**
+     * @var array[]
+     */
+    private $debugLogLines = [];
+
+    /**
+     * @var null|string
+     */
+    private $windowLocationHref;
+
+    /**
+     * @var array
+     */
+    private $evoProductFunctionCalls = [];
+
+    /**
+     * @param string $target
+     * @param string $attr
+     * @param mixed  $data
+     * @return $this
+     * @deprecated since 5.0.0
+     */
+    public function assign($target, $attr, $data): self
+    {
+        return $this->assignDom($target, $attr, $data);
+    }
 
     /**
      * @param string $target
@@ -28,9 +61,9 @@ class IOResponse implements JsonSerializable
      * @param mixed  $data
      * @return $this
      */
-    public function assign($target, $attr, $data): self
+    public function assignDom($target, $attr, $data): self
     {
-        $this->assigns[] = (object)[
+        $this->domAssigns[] = (object)[
             'target' => $target,
             'attr'   => $attr,
             'data'   => $data
@@ -40,8 +73,48 @@ class IOResponse implements JsonSerializable
     }
 
     /**
+     * @param string $name
+     * @param mixed  $value
+     * @return $this
+     */
+    public function assignVar(string $name, $value): self
+    {
+        $this->varAssigns[] = (object)[
+            'name'  => $name,
+            'value' => $value,
+        ];
+
+        return $this;
+    }
+
+    /**
+     * @param string $url
+     * @return $this
+     */
+    public function setClientRedirect(string $url): self
+    {
+        $this->windowLocationHref = $url;
+
+        return $this;
+    }
+
+    /**
+     * @param array|null $msg
+     * @param bool       $groupHead
+     * @param bool       $groupEnd
+     * @return $this
+     */
+    public function debugLog($msg, bool $groupHead = false, $groupEnd = false): self
+    {
+        $this->debugLogLines[] = [$msg, $groupHead, $groupEnd];
+
+        return $this;
+    }
+
+    /**
      * @param string $js
      * @return $this
+     * @deprecated since 5.0.0
      */
     public function script($js): self
     {
@@ -51,8 +124,38 @@ class IOResponse implements JsonSerializable
     }
 
     /**
+     * @param string $name
+     * @param mixed  $args
+     * @return $this
+     */
+    public function callEvoProductFunction($name, ...$args): self
+    {
+        $this->evoProductFunctionCalls[] = [$name, $args];
+
+        if (\defined('IO_LOG_CONSOLE') && \IO_LOG_CONSOLE === true) {
+            $reset  = 'background: transparent; color: #000;';
+            $orange = 'background: #e86c00; color: #fff;';
+            $grey   = 'background: #e8e8e8; color: #333;';
+
+            $this->debugLog(['%c CALL %c ' . $name, $orange, $reset], false, false);
+            $this->debugLog(['%c PARAMS %c', $grey, $reset, $args], false, false);
+            $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset], true, false);
+
+            foreach ($this->generateCallTrace() as $trace) {
+                $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset, $trace], false, false);
+            }
+
+            $this->debugLog(null, false, true);
+            $this->debugLog(null, false, true);
+        }
+
+        return $this;
+    }
+
+    /**
      * @param string $function
      * @return $this
+     * @deprecated since 5.0.0
      */
     public function jsfunc($function): self
     {
@@ -98,20 +201,19 @@ class IOResponse implements JsonSerializable
             $orange = 'background: #e86c00; color: #fff;';
             $grey   = 'background: #e8e8e8; color: #333;';
 
-            $args = \json_encode(Text::utf8_convert_recursive($arguments));
+            $args = Text::utf8_convert_recursive($arguments);
 
-            $this->script("console.groupCollapsed('%c CALL %c {$function}()', '$orange', '$reset');");
-            $this->script("console.log('%c METHOD %c {$function}()', '$grey', '$reset');");
-            $this->script("console.log('%c PARAMS %c', '$grey', '$reset', " . $args . ');');
-
-            $this->script("console.groupCollapsed('%c TOGGLE DEBUG TRACE %c', '$grey', '$reset');");
+            $this->debugLog(['%c CALL %c {$function}()', $orange, $reset], false, false);
+            $this->debugLog(['%c METHOD %c {$function}()', $grey, $reset], false, false);
+            $this->debugLog(['%c PARAMS %c', $grey, $reset, $args], false, false);
+            $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset], true, false);
 
             foreach ($this->generateCallTrace() as $trace) {
-                $this->script("console.log('%c TRACE %c', '$grey', '$reset', " . \json_encode($trace) . ');');
+                $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset, $trace], false, false);
             }
 
-            $this->script('console.groupEnd();');
-            $this->script('console.groupEnd();');
+            $this->debugLog(null, false, true);
+            $this->debugLog(null, false, true);
         }
 
         return $this;
@@ -142,8 +244,12 @@ class IOResponse implements JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'js'  => $this->scripts,
-            'css' => $this->assigns,
+            'js'                 => $this->scripts,
+            'domAssigns'         => $this->domAssigns,
+            'varAssigns'         => $this->varAssigns,
+            'windowLocationHref' => $this->windowLocationHref,
+            'debugLogLines'      => $this->debugLogLines,
+            'evoProductCalls'    => $this->evoProductFunctionCalls,
         ];
     }
 }

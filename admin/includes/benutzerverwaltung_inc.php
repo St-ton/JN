@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\IO\IOResponse;
 use JTL\Shop;
@@ -11,7 +11,7 @@ function getRandomPasswordIO(): IOResponse
 {
     $response = new IOResponse();
     $password = Shop::Container()->getPasswordService()->generate(PASSWORD_DEFAULT_LENGTH);
-    $response->assign('cPass', 'value', $password);
+    $response->assignDom('cPass', 'value', $password);
 
     return $response;
 }

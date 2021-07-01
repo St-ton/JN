@@ -9,9 +9,7 @@ $('body').on('click', '.option li', function (e) {
 
 // prevent multiple form submit on client side
 $('.submit_once').closest('form').on('submit', function() {
-    $(this).on('submit', function() {
-        return false;
-    });
+    $(this).find('.submit_once').prop('disabled', 'true');
     return true;
 });
 
@@ -86,53 +84,68 @@ function compatibility() {
         }
     };
 }
+function regionsToState(){
+    $('.js-country-select').on('change', function() {
 
-function regionsToState() {
-    var state = $('#state');
-    if (state.length === 0) {
-        return;
-    }
-    var title = state.attr('title');
-    var stateIsRequired = state.attr('required') === 'required';
-
-    $('#country').on('change', function() {
         var result = {};
         var io = $.evo.io();
-        var val = $(this).find(':selected').val();
+        var country = $(this).find(':selected').val();
+        var connection_id = $(this).attr('id').toString().replace("-country","");
 
-        io.call('getRegionsByCountry', [val], result, function (error, data) {
+        io.call('getRegionsByCountry', [country], result, function (error, data) {
             if (error) {
                 console.error(data);
             } else {
-                var data = result.response;
-                var def = $('#state').val();
-                if (data !== null && data.length > 0) {
-                    if (stateIsRequired){
-                        var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'custom-select required form-control', required: 'required'});
-                    } else {
-                        var state = $('<select />').attr({ id: 'state', name: 'bundesland', class: 'custom-select form-control'});
-                    }
+                var state_id = connection_id+'-state';
+                var state = $('#'+state_id);
+                var state_data = state.data();
+                if (state.length === 0) {
+                    return;
+                }
+                var title = state_data.defaultoption;
+                var stateIsRequired = result.response.required;
+                var data = result.response.states;
+                var def = $('#'+state_id).val();
+                if(typeof(data)!=='undefined'){
+                    if (data !== null && data.length > 0) {
+                        if (stateIsRequired){
+                            var state = $('<select />').attr({ id: state_id, name: state.attr('name'), class: 'custom-select required form-control js-state-select', required: 'required'});
+                        } else {
+                            var state = $('<select />').attr({ id: state_id, name: state.attr('name'), class: 'custom-select form-control js-state-select'});
+                        }
 
-                    state.append('<option value="">' + title + '</option>');
-                    $(data).each(function(idx, item) {
-                        state.append(
-                            $('<option></option>').val(item.cCode).html(item.cName)
-                                .attr('selected', item.cCode == def || item.cName == def ? 'selected' : false)
-                        );
-                    });
-                    $('#state').replaceWith(state);
-                } else {
-                    if (stateIsRequired) {
-                        var state = $('<input />').attr({ type: 'text', id: 'state', name: 'bundesland', class: 'required form-control', placeholder: title, required: 'required' });
+                        Object.keys(state_data).forEach(function(key,index) {
+                            state.data(key,state_data[key]);
+                        });
+
+                        state.append('<option value="">' + title + '</option>');
+                        $(data).each(function(idx, item) {
+                            state.append(
+                                $('<option></option>').val(item.iso).html(item.name)
+                                    .attr('selected', item.iso == def || item.name == def ? 'selected' : false)
+                            );
+                        });
+                        $('#'+state_id).replaceWith(state);
                     } else {
-                        var state = $('<input />').attr({ type: 'text', id: 'state', name: 'bundesland', class: 'form-control', placeholder: title });
+                        if (stateIsRequired) {
+                            var state = $('<input />').attr({ type: 'text', id: state_id, name: state.attr('name'),  class: 'required form-control js-state-select', placeholder: title, required: 'required' });
+                        } else {
+                            var state = $('<input />').attr({ type: 'text', id: state_id, name: state.attr('name'),  class: 'form-control js-state-select', placeholder: title });
+                        }
+                        Object.keys(state_data).forEach(function(key,index) {
+                            state.data(key,state_data[key]);
+                        });
+                        $('#'+state_id).replaceWith(state);
                     }
-                    $('#state').replaceWith(state);
+                    if (stateIsRequired){
+                        state.parent().find('.state-optional').addClass('d-none');
+                    } else {
+                        state.parent().find('.state-optional').removeClass('d-none');
+                    }
                 }
             }
         });
         return false;
-
     }).trigger('change');
 }
 
@@ -147,8 +160,12 @@ function loadContent(url)
             addValidationListener();
         }
 
+        let topbarHeight      = $('#header-top-bar').outerHeight() || 0,
+            wrapperHeight     = $('#jtl-nav-wrapper').outerHeight() || 0,
+            productListHeight = $('#product-list').offset().top || 0,
+            pageNavHeight     = $('.productlist-page-nav').outerHeight() || 0;
         $('html,body').animate({
-            scrollTop: $('.list-pageinfo').offset().top - $('#main-nav-wrapper').outerHeight() - 10
+            scrollTop: productListHeight - wrapperHeight - topbarHeight - pageNavHeight - 20
         }, 100);
     });
 }
@@ -175,7 +192,7 @@ function addValidationListener() {
             $(event.target).closest('.form-group').find('div.form-error-msg').remove();
             $(event.target).closest('.form-group')
                 .addClass('has-error')
-                .append('<div class="form-error-msg text-danger w-100">' + sanitizeOutput(event.target.validationMessage) + '</div>');
+                .append('<div class="form-error-msg w-100">' + sanitizeOutput(event.target.validationMessage) + '</div>');
 
             if (!$body.data('doScrolling')) {
                 var $firstError = $(event.target).closest('.form-group.has-error');
@@ -242,7 +259,7 @@ function checkInputError(event)
     if (event.target.validity.valid) {
         $target.closest('.form-group').removeClass('has-error');
     } else {
-        $target.closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger">' + sanitizeOutput(event.target.validationMessage) + '</div>');
+        $target.closest('.form-group').addClass('has-error').append('<div class="form-error-msg">' + sanitizeOutput(event.target.validationMessage) + '</div>');
     }
 }
 
@@ -252,20 +269,6 @@ function captcha_filled() {
 
 function isTouchCapable() {
     return 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
-}
-
-function addCopyToClipboardListener() {
-    var clipboard = new ClipboardJS('.btn.copyToClipboard');
-
-    clipboard.on('success', function(e) {
-        $(e.trigger).tooltip({title: 'copied'});
-        e.clearSelection();
-    });
-
-    clipboard.on('error', function(e) {
-        console.error('Action:', e.action);
-        console.error('Trigger:', e.trigger);
-    });
 }
 
 function initWow()
@@ -318,10 +321,11 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.footnote-vat a, .versand, .popup', function(e) {
-        var url = e.currentTarget.href;
+        let url     = e.currentTarget.href,
+            classes = $(this).data('modal-classes') || '';
         url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
         eModal.ajax({
-            size: 'xl',
+            size: 'xl ' + classes,
             url: url,
             title: typeof e.currentTarget.title !== 'undefined' ? e.currentTarget.title : '',
             keyboard: true,
@@ -354,7 +358,7 @@ $(document).ready(function () {
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
             queryTokenizer: Bloodhound.tokenizers.whitespace,
             remote:         {
-                url:      'io.php?io={"name":"suggestions", "params":["%QUERY"]}',
+                url:      $.evo.io().options.ioUrl + '?io={"name":"suggestions", "params":["%QUERY"]}',
                 wildcard: '%QUERY'
             }
         });
@@ -382,7 +386,7 @@ $(document).ready(function () {
                 $(this).closest('form').find('.form-clear').removeClass('d-none');
             }
         });
-        $('.form-clear').on('click', function() {
+        $('.search-wrapper .form-clear').on('click', function() {
             $searchInput.typeahead('val', '');
             $(this).addClass('d-none');
         });
@@ -392,19 +396,19 @@ $(document).ready(function () {
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote:         {
-            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}',
+            url:      $.evo.io().options.ioUrl + '?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}',
             wildcard: '%QUERY'
         },
         dataType: "json"
     });
     $('.city_input').on('focusin', function () {
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
+        citySuggestion.remote.url = $.evo.io().options.ioUrl + '?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
     $('.postcode_input').on('change', function () {
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).val() + '"]}';
+        citySuggestion.remote.url = $.evo.io().options.ioUrl + '?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).val() + '"]}';
     });
     $('.country_input').on('change', function () {
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
+        citySuggestion.remote.url = $.evo.io().options.ioUrl + '?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
 
     $('.city_input').typeahead(
@@ -413,13 +417,14 @@ $(document).ready(function () {
             minLength: 0
         },
         {
+            limit:  50,
             name:   'cities',
             source: citySuggestion
         }
     );
 
     $('.btn-offcanvas').on('click', function() {
-        $('body').click();
+        $('body').trigger('click');
     });
 
     if ("ontouchstart" in document.documentElement) {
@@ -455,7 +460,7 @@ $(document).ready(function () {
     /*
      * Banner
      */
-    var bannerLink = $('.banner > a');
+    var bannerLink = $('.banner > a:not(.empty-popover)');
     bannerLink.popover({
         html:      true,
         placement: 'bottom',
@@ -508,6 +513,10 @@ $(document).ready(function () {
         }
     });
 
+    /*
+     * margin to last filter-box
+     */
+    $('aside .box[class*=box-filter-]').last().addClass('mb-5');
 
     /*
      * set bootstrap viewport
@@ -528,18 +537,57 @@ $(document).ready(function () {
     $('.onchangeSubmit').on('change', function(){
         this.form.submit();
     });
+
+    $('#mobile-search-dropdown').on('click', function() {
+        setTimeout(function(){
+            $('#search-header-desktop').focus();
+        },100);
+    });
+
     categoryMenu();
     regionsToState();
     compatibility();
     addValidationListener();
-    addCopyToClipboardListener();
     initWow();
     setClickableRow();
+
+    document.addEventListener('lazybeforesizes', function(e){
+        //use width of parent node instead of the image width itself
+        var parent = e.target.parentNode;
+
+        if(parent.nodeName == 'PICTURE'){
+            parent = parent.parentNode;
+        }
+        e.detail.width = parent.offsetWidth || e.detail.width;
+    });
+
+    // init auto expand for textareas
+    $('textarea.auto-expand').on('input click', function (event) {
+        autoExpand(event.target);
+    });
 });
 
-function setClickableRow ()
+function setClickableRow()
 {
     $('.clickable-row').on('click', function() {
         window.location = $(this).data('href');
     });
+}
+
+function isMobileByBodyClass() {
+    return $('body').hasClass('is-mobile');
+}
+
+function autoExpand(field)
+{
+    field.style.height = 'inherit';
+
+    let computed = window.getComputedStyle(field),
+        height   = parseInt(computed.getPropertyValue('border-top-width'), 10)
+            + parseInt(computed.getPropertyValue('padding-top'), 10)
+            + field.scrollHeight
+            + parseInt(computed.getPropertyValue('padding-bottom'), 10)
+            + parseInt(computed.getPropertyValue('border-bottom-width'), 10);
+
+    field.style.height = height + 'px';
 }

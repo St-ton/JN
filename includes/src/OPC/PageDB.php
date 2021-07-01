@@ -5,7 +5,6 @@ namespace JTL\OPC;
 use Exception;
 use JTL\Backend\Revision;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use JTL\Update\Updater;
 use stdClass;
@@ -34,10 +33,9 @@ class PageDB
      * @return bool
      * @throws Exception
      */
-    public function shopHasPendingUpdates()
+    public function shopHasPendingUpdates(): bool
     {
-        $updater = new Updater($this->shopDB);
-        return $updater->hasPendingUpdates();
+        return (new Updater($this->shopDB))->hasPendingUpdates();
     }
 
     /**
@@ -45,28 +43,22 @@ class PageDB
      */
     public function getPageCount(): int
     {
-        return (int)$this->shopDB->query(
-            'SELECT COUNT(DISTINCT cPageId) AS count FROM topcpage',
-            ReturnType::SINGLE_OBJECT
-        )->count;
+        return (int)$this->shopDB->getSingleObject('SELECT COUNT(DISTINCT cPageId) AS count FROM topcpage')->count;
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getPages(): array
     {
-        return $this->shopDB->query(
-            'SELECT cPageId, cPageUrl FROM topcpage GROUP BY cPageId, cPageUrl',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        return $this->shopDB->getObjects('SELECT cPageId, cPageUrl FROM topcpage GROUP BY cPageId, cPageUrl');
     }
 
     /**
      * @param string $id
      * @return array
      */
-    public function getDraftRows($id): array
+    public function getDraftRows(string $id): array
     {
         return $this->shopDB->selectAll('topcpage', 'cPageId', $id);
     }
@@ -75,12 +67,11 @@ class PageDB
      * @param string $id
      * @return int
      */
-    public function getDraftCount($id): int
+    public function getDraftCount(string $id): int
     {
-        return (int)$this->shopDB->queryPrepared(
+        return (int)$this->shopDB->getSingleObject(
             'SELECT COUNT(kPage) AS count FROM topcpage WHERE cPageId = :id',
-            ['id' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['id' => $id]
         )->count;
     }
 
@@ -92,7 +83,6 @@ class PageDB
     public function getDraftRow(int $key): stdClass
     {
         $draftRow = $this->shopDB->select('topcpage', 'kPage', $key);
-
         if (!\is_object($draftRow)) {
             throw new Exception('The OPC page draft could not be found in the database.');
         }
@@ -101,16 +91,15 @@ class PageDB
     }
 
     /**
-     * @param int $revId
+     * @param int $id
      * @return object
      * @throws Exception
      */
-    public function getRevisionRow(int $revId)
+    public function getRevisionRow(int $id)
     {
         $revision    = new Revision($this->shopDB);
-        $revisionRow = $revision->getRevision($revId);
-
-        if (!\is_object($revisionRow)) {
+        $revisionRow = $revision->getRevision($id);
+        if ($revisionRow === null) {
             throw new Exception('The OPC page revision could not be found in the database.');
         }
 
@@ -123,18 +112,20 @@ class PageDB
      */
     public function getPublicPageRow(string $id): ?stdClass
     {
-        $publicRow = $this->shopDB->queryPrepared(
+        $res = $this->shopDB->getSingleObject(
             'SELECT * FROM topcpage
-                WHERE cPageId = :pageId
+                WHERE cPageId = :pageID
                     AND dPublishFrom IS NOT NULL
                     AND dPublishFrom <= NOW()
                     AND (dPublishTo > NOW() OR dPublishTo IS NULL)
                 ORDER BY dPublishFrom DESC',
-            ['pageId' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['pageID' => $id]
         );
+        if ($res !== null) {
+            $res->kPage = (int)$res->kPage;
+        }
 
-        return !\is_object($publicRow) ? null : $publicRow;
+        return $res;
     }
 
     /**
@@ -145,7 +136,6 @@ class PageDB
     public function getDrafts(string $id): array
     {
         $drafts = [];
-
         foreach ($this->getDraftRows($id) as $draftRow) {
             $drafts[] = $this->getPageFromRow($draftRow);
         }
@@ -154,48 +144,29 @@ class PageDB
     }
 
     /**
-     * @param string $id
-     * @return array
-     */
-    public function getOtherLanguageDraftRows(string $id): array
-    {
-        $pageIdFields       = \explode(';', $id);
-        $langField          = \array_pop($pageIdFields);
-        $languageKey        = \explode(':', $langField);
-        $languageKey        = (int)$languageKey[1];
-        $pageIdSearchPrefix = \implode(';', $pageIdFields) . ';lang:';
-
-        return $this->shopDB->query(
-            "SELECT o.*, s.kSprache, s.cNameEnglisch
-                FROM topcpage AS o
-                    JOIN tsprache AS s ON CONCAT('$pageIdSearchPrefix', s.kSprache) = o.cPageId
-                WHERE kSprache != $languageKey",
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-    }
-
-    /**
      * @param int $key
      * @return Page
      * @throws Exception
      */
-    public function getDraft(int $key) : Page
+    public function getDraft(int $key): Page
     {
         $draftRow = $this->getDraftRow($key);
+        $seo      = $this->getPageSeo($draftRow->cPageId);
+        if (!empty($seo)) {
+            $draftRow->cPageUrl = $seo;
+        }
 
         return $this->getPageFromRow($draftRow);
     }
 
     /**
-     * @param int $revId
+     * @param int $id
      * @return Page
      * @throws Exception
      */
-    public function getRevision(int $revId): Page
+    public function getRevision(int $id): Page
     {
-        $revisionRow = $this->getRevisionRow($revId);
-
-        return $this->getPageFromRow($revisionRow);
+        return $this->getPageFromRow($this->getRevisionRow($id));
     }
 
     /**
@@ -217,18 +188,104 @@ class PageDB
     public function getPublicPage(string $id): ?Page
     {
         $publicRow = $this->getPublicPageRow($id);
-        $page      = null;
-
-        if (\is_object($publicRow)) {
-            $page = $this->getPageFromRow($publicRow);
-        }
+        $page      = $publicRow === null ? null : $this->getPageFromRow($publicRow);
 
         Shop::fire('shop.OPC.PageDB.getPublicPage', [
-            'id' => $id,
+            'id'   => $id,
             'page' => &$page
         ]);
 
         return $page;
+    }
+
+    /**
+     * @param string $pageID
+     * @return string|null
+     */
+    public function getPageSeo(string $pageID): ?string
+    {
+        $pageIdObj = \json_decode($pageID);
+
+        if (empty($pageIdObj)) {
+            return null;
+        }
+
+        switch ($pageIdObj->type) {
+            case 'product':
+                $cKey = 'kArtikel';
+                break;
+            case 'category':
+                $cKey = 'kKategorie';
+                break;
+            case 'manufacturer':
+                $cKey = 'kHersteller';
+                break;
+            case 'link':
+                $cKey = 'kLink';
+                break;
+            case 'attrib':
+                $cKey = 'kMerkmalWert';
+                break;
+            case 'special':
+                $cKey = 'suchspecial';
+                break;
+            case 'news':
+                $cKey = 'kNews';
+                break;
+            case 'newscat':
+                $cKey = 'kNewsKategorie';
+                break;
+            default:
+                $cKey = null;
+                break;
+        }
+
+        if (empty($cKey)) {
+            return null;
+        }
+
+        $seo = $this->shopDB->getSingleObject(
+            'SELECT cSeo FROM tseo WHERE cKey = :ckey AND kKey = :key AND kSprache = :lang',
+            ['ckey' => $cKey, 'key' => $pageIdObj->id, 'lang' => $pageIdObj->lang]
+        );
+        if ($seo === null) {
+            return null;
+        }
+
+        if (!empty($pageIdObj->attribs)) {
+            $attribSeos = $this->shopDB->getObjects(
+                "SELECT cSeo FROM tseo WHERE cKey = 'kMerkmalWert'
+                     AND kKey IN (" . \implode(',', $pageIdObj->attribs) . ')
+                     AND kSprache = :lang',
+                ['lang' => $pageIdObj->lang]
+            );
+            if (\count($attribSeos) !== \count($pageIdObj->attribs)) {
+                return null;
+            }
+        }
+        $manufacturerSeo = null;
+        if (!empty($pageIdObj->manufacturerFilter)) {
+            $manufacturerSeo = $this->shopDB->getSingleObject(
+                "SELECT cSeo FROM tseo WHERE cKey = 'kHersteller'
+                     AND kKey = :kKey
+                     AND kSprache = :lang",
+                ['kKey' => $pageIdObj->manufacturerFilter, 'lang' => $pageIdObj->lang]
+            );
+            if ($manufacturerSeo === null) {
+                return null;
+            }
+        }
+        $result = '/' . $seo->cSeo;
+        if (!empty($attribSeos)) {
+            foreach ($attribSeos as $seo) {
+                $result .= '__' . $seo->cSeo;
+            }
+        }
+        if ($manufacturerSeo !== null) {
+            $result .= '::' . $manufacturerSeo->cSeo;
+        }
+
+        return $result;
     }
 
     /**
@@ -291,7 +348,7 @@ class PageDB
     }
 
     /**
-     * @param Page $page existing page draft
+     * @param Page $page - existing page draft
      * @return $this
      * @throws Exception
      */
@@ -310,7 +367,7 @@ class PageDB
     }
 
     /**
-     * @param Page $page existing page draft
+     * @param Page $page - existing page draft
      * @return $this
      * @throws Exception
      */
@@ -330,7 +387,7 @@ class PageDB
     }
 
     /**
-     * @param int $draftKey
+     * @param int    $draftKey
      * @param string $draftName
      * @return PageDB
      * @throws Exception
@@ -371,11 +428,11 @@ class PageDB
     }
 
     /**
-     * @param $row
+     * @param stdClass $row
      * @return Page
      * @throws Exception
      */
-    protected function getPageFromRow($row): Page
+    protected function getPageFromRow(stdClass $row): Page
     {
         $page = (new Page())
             ->setKey((int)$row->kPage)
@@ -395,7 +452,7 @@ class PageDB
         }
 
         Shop::fire('shop.OPC.PageDB.getPageRow', [
-            'row' => &$row,
+            'row'  => &$row,
             'page' => &$page
         ]);
 

@@ -17,11 +17,17 @@ class Migration_20190508154634 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Correct nsort of artikel_lagerampel_keinlager';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->execute("UPDATE teinstellungenconf SET nSort=505 WHERE cWertName = 'artikel_lagerampel_keinlager'");
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute("UPDATE teinstellungenconf SET nSort=500 WHERE cWertName = 'artikel_lagerampel_keinlager'");

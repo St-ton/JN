@@ -3,13 +3,14 @@
 namespace JTL;
 
 use Exception;
+use InvalidArgumentException;
+use JTL\Backend\AdminIO;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Cron\QueueEntry;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Category;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -17,19 +18,26 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageModel;
 use JTL\Plugin\Helper as PluginHelper;
+use JTL\Plugin\State;
 use JTL\Session\Frontend;
 use JTL\Smarty\ExportSmarty;
 use JTL\Smarty\JTLSmarty;
 use Psr\Log\LoggerInterface;
+use SmartyException;
 use stdClass;
 use function Functional\first;
 
 /**
  * Class Exportformat
  * @package JTL
+ * @deprecated since 5.1.0
  */
 class Exportformat
 {
+    public const SYNTAX_FAIL        = 1;
+    public const SYNTAX_NOT_CHECKED = -1;
+    public const SYNTAX_OK          = 0;
+
     /**
      * @var int
      */
@@ -171,6 +179,11 @@ class Exportformat
     private $db;
 
     /**
+     * @var int
+     */
+    protected $nFehlerhaft = 0;
+
+    /**
      * Exportformat constructor.
      *
      * @param int              $id
@@ -212,10 +225,26 @@ class Exportformat
      * @param string     $msg
      * @param null|array $context
      */
-    private function log($msg, array $context = []): void
+    private function log(string $msg, array $context = []): void
     {
         if ($this->logger !== null) {
             $this->logger->log(\JTLLOG_LEVEL_NOTICE, $msg, $context);
+        }
+    }
+
+    /**
+     * @param bool $hasError
+     */
+    private function quit(bool $hasError = false): void
+    {
+        if (Request::getVar('back') === 'admin') {
+            $location  = 'Location: exportformate.php?action=exported&token=' . $_SESSION['jtl_token'];
+            $location .= '&kExportformat=' . (int)$this->queue->foreignKeyID;
+            if ($hasError) {
+                $location .= '&hasError=1';
+            }
+            \header($location);
+            exit;
         }
     }
 
@@ -227,16 +256,16 @@ class Exportformat
      */
     private function loadFromDB(int $id = 0): self
     {
-        $data = $this->db->query(
+        $data = $this->db->getSingleObject(
             'SELECT texportformat.*, tkampagne.cParameter AS campaignParameter, tkampagne.cWert AS campaignValue
                FROM texportformat
                LEFT JOIN tkampagne 
                   ON tkampagne.kKampagne = texportformat.kKampagne
                   AND tkampagne.nAktiv = 1
-               WHERE texportformat.kExportformat = ' . $id,
-            ReturnType::SINGLE_OBJECT
+               WHERE texportformat.kExportformat = :eid',
+            ['eid' => $id]
         );
-        if (isset($data->kExportformat) && $data->kExportformat > 0) {
+        if ($data !== null && $data->kExportformat > 0) {
             foreach (\get_object_vars($data) as $k => $v) {
                 $this->$k = $v;
             }
@@ -325,6 +354,7 @@ class Exportformat
         $ins->nSplitgroesse    = (int)$this->nSplitgroesse;
         $ins->dZuletztErstellt = empty($this->dZuletztErstellt) ? '_DBNULL_' : $this->dZuletztErstellt;
         $ins->nUseCache        = $this->nUseCache;
+        $ins->nFehlerhaft      = self::SYNTAX_NOT_CHECKED;
 
         $this->kExportformat = $this->db->insert('texportformat', $ins);
         if ($this->kExportformat > 0) {
@@ -356,6 +386,7 @@ class Exportformat
         $upd->nSplitgroesse    = (int)$this->nSplitgroesse;
         $upd->dZuletztErstellt = empty($this->dZuletztErstellt) ? '_DBNULL_' : $this->dZuletztErstellt;
         $upd->nUseCache        = $this->nUseCache;
+        $upd->nFehlerhaft      = self::SYNTAX_NOT_CHECKED;
 
         return $this->db->update('texportformat', 'kExportformat', $this->getExportformat(), $upd);
     }
@@ -693,6 +724,22 @@ class Exportformat
     }
 
     /**
+     * @return int
+     */
+    public function getExportProductCount(): int
+    {
+        $sql = $this->getExportSQL();
+        $cid = 'xp_' . \md5($sql);
+        if (($count = Shop::Container()->getCache()->get($cid)) !== false) {
+            return $count ?? 0;
+        }
+        $count = (int)$this->db->getSingleObject($this->getExportSQL(true))->nAnzahl;
+        Shop::Container()->getCache()->set($cid, $count, [\CACHING_GROUP_CORE], 120);
+
+        return $count;
+    }
+
+    /**
      * @param array $config
      * @return bool
      * @deprecated since 5.0.0
@@ -865,9 +912,13 @@ class Exportformat
         if ($countOnly === true) {
             $select = 'COUNT(*) AS nAnzahl';
         } else {
-            $select     = 'tartikel.kArtikel';
-            $limit      = ' ORDER BY tartikel.kArtikel LIMIT ' . $this->getQueue()->taskLimit;
-            $condition .= ' AND tartikel.kArtikel > ' . $this->getQueue()->lastProductID;
+            $queue  = $this->getQueue();
+            $select = 'tartikel.kArtikel';
+            $limit  = ' ORDER BY tartikel.kArtikel';
+            if ($queue !== null) {
+                $limit     .= ' LIMIT ' . $queue->taskLimit;
+                $condition .= ' AND tartikel.kArtikel > ' . $this->getQueue()->lastProductID;
+            }
         }
 
         return 'SELECT ' . $select . "
@@ -939,13 +990,13 @@ class Exportformat
         }
         $encoding = $this->getKodierung();
         if ($encoding === 'UTF-8') {
-             \fwrite($handle, "\xEF\xBB\xBF");
+            \fwrite($handle, "\xEF\xBB\xBF");
         }
         if ($encoding === 'UTF-8' || $encoding === 'UTF-8noBOM') {
             $header = Text::convertUTF8($header);
         }
 
-        return  \fwrite($handle, $header . "\n");
+        return \fwrite($handle, $header . "\n");
     }
 
     /**
@@ -963,7 +1014,7 @@ class Exportformat
             $footer = Text::convertUTF8($footer);
         }
 
-        return  \fwrite($handle, $footer);
+        return \fwrite($handle, $footer);
     }
 
     /**
@@ -999,7 +1050,7 @@ class Exportformat
                     // Schwelle erreicht?
                     if ($filesize <= ($this->nSplitgroesse * 1024 * 1024 - 102400)) {
                         // Schreibe Content
-                         \fwrite($newHandle, $content);
+                        \fwrite($newHandle, $content);
                         $filesize += $nSizeZeile;
                     } else {
                         // neue Datei
@@ -1009,7 +1060,7 @@ class Exportformat
                         $newHandle = \fopen($this->getFileName($splits, $fileCounter), 'w');
                         $this->writeHeader($newHandle);
                         // Schreibe Content
-                         \fwrite($newHandle, $content);
+                        \fwrite($newHandle, $content);
                         $filesize = $nSizeZeile;
                     }
                 } elseif ($row === 1) {
@@ -1162,8 +1213,23 @@ class Exportformat
                 ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->useCache())
                     ? 'enabled'
                     : 'disabled'));
-            $loader  = PluginHelper::getLoaderByPluginID($this->getPlugin(), $this->db);
-            $oPlugin = $loader->init($this->getPlugin());
+            $loader = PluginHelper::getLoaderByPluginID($this->getPlugin(), $this->db);
+            try {
+                $oPlugin = $loader->init($this->getPlugin());
+            } catch (InvalidArgumentException $e) {
+                if ($this->logger !== null) {
+                    $this->logger->error($e->getMessage());
+                }
+                $this->quit(true);
+
+                return false;
+            }
+            if ($oPlugin->getState() !== State::ACTIVATED) {
+                $this->quit(true);
+                $this->log('Plugin disabled');
+
+                return false;
+            }
             if ($isCron === true) {
                 global $oJobQueue;
                 $oJobQueue = $queueObject;
@@ -1201,11 +1267,7 @@ class Exportformat
             if ($queueObject->jobQueueID > 0 && empty($queueObject->cronID)) {
                 $this->db->delete('texportqueue', 'kExportqueue', $queueObject->jobQueueID);
             }
-            if (Request::getVar('back') === 'admin') {
-                \header('Location: exportformate.php?action=exported&token=' .
-                    $_SESSION['jtl_token'] . '&kExportformat=' . (int)$this->queue->foreignKeyID);
-                exit;
-            }
+            $this->quit();
             $this->log('Finished export');
 
             return !$started;
@@ -1220,11 +1282,7 @@ class Exportformat
         }
         $tmpFile = \fopen(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName, 'a');
         if ($max === null) {
-            $maxObj = $this->db->executeQuery(
-                $this->getExportSQL(true),
-                ReturnType::SINGLE_OBJECT
-            );
-            $max    = (int)$maxObj->nAnzahl;
+            $max = (int)$this->db->getSingleObject($this->getExportSQL(true))->nAnzahl;
         }
 
         $this->log('Starting exportformat "' . Text::convertUTF8($this->getName()) .
@@ -1268,13 +1326,10 @@ class Exportformat
             $findTwo[]    = ';';
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
-        foreach ($this->db->query(
-            $this->getExportSQL(),
-            ReturnType::QUERYSINGLE
-        ) as $productData) {
+        foreach ($this->db->getSingleObject($this->getExportSQL()) as $productData) {
             $product = new Artikel();
             $product->fuelleArtikel(
-                (int)$productData['kArtikel'],
+                (int)$productData->kArtikel,
                 $options,
                 $this->kKundengruppe,
                 $this->kSprache,
@@ -1333,7 +1388,7 @@ class Exportformat
             }
         }
         if (\mb_strlen($output) > 0) {
-             \fwrite($tmpFile, (($this->cKodierung === 'UTF-8' || $this->cKodierung === 'UTF-8noBOM')
+            \fwrite($tmpFile, (($this->cKodierung === 'UTF-8' || $this->cKodierung === 'UTF-8noBOM')
                 ? Text::convertUTF8($output)
                 : $output));
         }
@@ -1351,8 +1406,7 @@ class Exportformat
                         'nLimitM'        => $this->queue->taskLimit,
                         'nLastArticleID' => $this->queue->lastProductID,
                         'kExportqueue'   => (int)$this->queue->jobQueueID,
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
                 $protocol = ((isset($_SERVER['HTTPS']) && \mb_convert_case($_SERVER['HTTPS'], \MB_CASE_LOWER) === 'on')
                     || Request::checkSSL() === 2)
@@ -1379,11 +1433,11 @@ class Exportformat
                 }
             } else {
                 // There are no more articles to export
-                $this->db->query(
+                $this->db->queryPrepared(
                     'UPDATE texportformat 
                         SET dZuletztErstellt = NOW() 
-                        WHERE kExportformat = ' . $this->getExportformat(),
-                    ReturnType::DEFAULT
+                        WHERE kExportformat = :eid',
+                    ['eid' => $this->getExportformat()]
                 );
                 $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->foreignKeyID);
 
@@ -1525,13 +1579,13 @@ class Exportformat
         }
         if (\count($validation) === 0) {
             $this->setCaching((int)$post['nUseCache'])
-                 ->setVarKombiOption((int)$post['nVarKombiOption'])
-                 ->setSplitgroesse((int)$post['nSplitgroesse'])
-                 ->setSpecial(0)
-                 ->setKodierung($post['cKodierung'])
-                 ->setPlugin((int)($post['kPlugin'] ?? 0))
-                 ->setExportformat((int)($post['kExportformat'] ?? 0))
-                 ->setKampagne((int)($post['kKampagne'] ?? 0));
+                ->setVarKombiOption((int)$post['nVarKombiOption'])
+                ->setSplitgroesse((int)$post['nSplitgroesse'])
+                ->setSpecial(0)
+                ->setKodierung($post['cKodierung'])
+                ->setPlugin((int)($post['kPlugin'] ?? 0))
+                ->setExportformat((int)($post['kExportformat'] ?? 0))
+                ->setKampagne((int)($post['kKampagne'] ?? 0));
             if (isset($post['cFusszeile'])) {
                 $this->setFusszeile(\str_replace('<tab>', "\t", $post['cFusszeile']));
             }
@@ -1546,21 +1600,74 @@ class Exportformat
     }
 
     /**
-     * @return bool|string
+     * @param int $error
+     * @return string
      */
-    public function checkSyntax()
+    private static function getHTMLState(int $error): string
     {
+        try {
+            return Shop::Smarty()->assign('exportformat', (object)['nFehlerhaft' => $error])
+                ->fetch('snippets/exportformat_state.tpl');
+        } catch (SmartyException | Exception $e) {
+            return '';
+        }
+    }
+
+    /**
+     * @param string $out
+     * @param string $message
+     * @return string
+     */
+    private static function stripMessage(string $out, string $message): string
+    {
+        $message = \strip_tags($message);
+        // strip possible call stack
+        if (\preg_match('/(Stack trace|Call Stack):/', $message, $hits)) {
+            $callstackPos = \mb_strpos($message, $hits[0]);
+            if ($callstackPos !== false) {
+                $message = \mb_substr($message, 0, $callstackPos);
+            }
+        }
+        $errText  = '';
+        $fatalPos = \mb_strlen($out);
+        // strip smarty output if fatal error occurs
+        if (\preg_match('/((Recoverable )?Fatal error|Uncaught Error):/ui', $out, $hits)) {
+            $fatalPos = \mb_strpos($out, $hits[0]);
+            if ($fatalPos !== false) {
+                $errText = \mb_substr($out, 0, $fatalPos);
+            }
+        }
+        // strip possible error position from smarty output
+        $errText = (string)\preg_replace('/[\t\n]/', ' ', \mb_substr($errText, 0, $fatalPos));
+        $len     = \mb_strlen($errText);
+        if ($len > 75) {
+            $errText = '...' . \mb_substr($errText, $len - 75);
+        }
+
+        return \htmlentities($message) . ($len > 0 ? '<br/>on line: ' . \htmlentities($errText) : '');
+    }
+
+    /**
+     * @return stdClass
+     * @throws Exceptions\CircularReferenceException
+     * @throws Exceptions\ServiceNotFoundException
+     */
+    private function doCheck(): stdClass
+    {
+        $res = (object)[
+            'result'  => 'ok',
+            'message' => '',
+        ];
+
         $this->initSession()->initSmarty();
-        $error       = false;
         $product     = null;
-        $productData = $this->db->query(
+        $productData = $this->db->getSingleObject(
             "SELECT kArtikel 
                 FROM tartikel 
                 WHERE kVaterArtikel = 0 
-                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
-            ReturnType::SINGLE_OBJECT
+                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1"
         );
-        if (!empty($productData->kArtikel)) {
+        if ($productData !== null && $productData->kArtikel > 0) {
             $product = new Artikel();
             $product->fuelleArtikel($productData->kArtikel, Artikel::getExportOptions());
             $product->cDeeplink             = '';
@@ -1575,34 +1682,90 @@ class Exportformat
             $product->Versandkosten         = -1;
         }
         try {
+            $this->smarty->setErrorReporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
             $this->smarty->assign('Artikel', $product)
-                         ->fetch('db:' . $this->kExportformat);
+                ->fetch('db:' . $this->kExportformat);
+            $this->updateError(self::SYNTAX_OK);
         } catch (Exception $e) {
-            $error  = '<strong>Smarty-Syntaxfehler:</strong><br />';
-            $error .= '<pre>' . $e->getMessage() . '</pre>';
+            $this->updateError(self::SYNTAX_FAIL);
+            $res->result  = 'fail';
+            $res->message = \__($e->getMessage());
         }
-        $this->updateError($error ? 1 : 0);
 
-        return $error;
+        return $res;
+    }
+
+    /**
+     * @param int $id
+     * @return stdClass
+     */
+    public static function ioCheckSyntax(int $id): stdClass
+    {
+        \ini_set('html_errors', '0');
+        \ini_set('display_errors', '1');
+        \ini_set('log_errors', '0');
+        \error_reporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
+
+        Shop::Container()->getGetText()->loadAdminLocale('pages/exportformate');
+        \register_shutdown_function(static function () use ($id) {
+            $err = \error_get_last();
+            if ($err !== null && ($err['type'] & !(\E_NOTICE | \E_STRICT | \E_DEPRECATED) !== 0)) {
+                $out = \ob_get_clean();
+                $res = (object)[
+                    'result'  => 'fail',
+                    'state'   => '<span class="label text-warning">' . \__('untested') . '</span>',
+                    'message' => self::stripMessage($out, $err['message']),
+                ];
+                $ef  = new self($id, Shop::Container()->getDB());
+                $ef->updateError(self::SYNTAX_FAIL);
+                $res->state = self::getHTMLState(self::SYNTAX_FAIL);
+
+                $io = AdminIO::getInstance();
+                $io->respondAndExit($res);
+            }
+        });
+
+        $ef = new self($id, Shop::Container()->getDB());
+        $ef->updateError(self::SYNTAX_NOT_CHECKED);
+
+        try {
+            $res = $ef->doCheck();
+        } catch (Exception $e) {
+            $res = (object)[
+                'result'  => 'fail',
+                'message' => \__($e->getMessage()),
+            ];
+        }
+        $res->state = self::getHTMLState((int)($ef->nFehlerhaft ?? self::SYNTAX_NOT_CHECKED));
+
+        return $res;
+    }
+
+    /**
+     * @return bool|string
+     * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
+     */
+    public function checkSyntax()
+    {
+        return false;
+    }
+
+    /**
+     * @return bool|string
+     * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
+     */
+    public function doCheckSyntax()
+    {
+        return false;
     }
 
     /**
      * @return array
+     * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
      */
     public function checkAll(): array
     {
-        $allExports = $this->db->selectAll('texportformat', [], [], 'kExportformat');
-        $errors     = [];
-        foreach ($allExports as $export) {
-            $this->loadFromDB((int)$export->kExportformat);
-            $res = $this->checkSyntax();
-            if ($res === false) {
-                continue;
-            }
-            $errors[$this->kExportformat] = $res;
-        }
-
-        return $errors;
+        return [];
     }
 
     /**
@@ -1613,17 +1776,13 @@ class Exportformat
         if (Shop::getShopDatabaseVersion()->getMajor() < 5) {
             return;
         }
-        $res = $this->db->update(
+        if ($this->db->update(
             'texportformat',
             'kExportformat',
             $this->kExportformat,
             (object)['nFehlerhaft' => $error]
-        );
-        if ($res !== -1) {
-            $_SESSION['exportSyntaxErrorCount'] = (int)$this->db->query(
-                'SELECT COUNT(*) AS cnt FROM texportformat WHERE nFehlerhaft = 1',
-                ReturnType::SINGLE_OBJECT
-            )->cnt;
+        ) !== false) {
+            $this->nFehlerhaft = $error;
         }
     }
 }

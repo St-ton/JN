@@ -17,6 +17,7 @@ Parameter
 
 ``Warenkorb`` **oWarenkorb**
     In **oWarenkorb** wird ein ``Warenkorb``-Objekt als Referenz übergeben.
+    In **oBestellung** wird ein ``Bestellung``-Objekt als Referenz übergeben. (ab Version 5.1.0)
 
 Beispiel für eine Implementierung
 """""""""""""""""""""""""""""""""
@@ -28,7 +29,7 @@ Beispiel für eine Implementierung
     foreach ($args_arr['oWarenkorb']->PositionenArr as $i => $Position) {
         if ($Position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
             // mache irgendwas mit der Warenkorbposition wenn es ein Artikel ist...
-            ...
+            //...
         }
     }
 

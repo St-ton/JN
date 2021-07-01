@@ -18,7 +18,7 @@
                     <td width="50%"></td>
                     <td width="50%" id="version">
                         {if $bUpdateAvailable}
-                            <span class="label label-info">{__('version')} {$strLatestVersion} {if $oVersion->build > 0}({__('build')}: {$oVersion->build}){/if} {__('available')}.</span>
+                            <span class="label label-info">{__('version')} {$strLatestVersion} {if $oVersion->getBuild() > 0}({__('build')}: {$oVersion->getBuild()}){/if} {__('available')}.</span>
                         {else}
                             <span class="label label-success">{__('shopVersionUpToDate')}</span>
                         {/if}

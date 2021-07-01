@@ -38,7 +38,9 @@ final class FrontendLinks extends AbstractItem
                 return InstallCode::MISSING_FRONTEND_LINKS;
             }
             $link = $this->sanitizeLinkData($link);
-            if (\mb_strlen($link['Filename']) === 0 && $this->getContext() !== ValidationItemInterface::CONTEXT_PLUGIN) {
+            if (\mb_strlen($link['Filename']) === 0
+                && $this->getContext() !== ValidationItemInterface::CONTEXT_PLUGIN
+            ) {
                 return InstallCode::INVALID_FRONTEND_LINK_FILENAME;
             }
             \preg_match(
@@ -59,7 +61,7 @@ final class FrontendLinks extends AbstractItem
                 return InstallCode::TOO_MANY_FULLSCREEN_TEMPLATE_NAMES;
             }
             if (!isset($link['FullscreenTemplate']) || \mb_strlen($link['FullscreenTemplate']) === 0) {
-                if (\mb_strlen($link['Template']) === 0) {
+                if (!isset($link['Template']) || \mb_strlen($link['Template']) === 0) {
                     return InstallCode::INVALID_FRONTEND_LINK_TEMPLATE_FULLSCREEN_TEMPLATE;
                 }
                 \preg_match('/[a-zA-Z0-9\/_\-.]+.tpl/', $link['Template'], $hits1);
@@ -84,21 +86,17 @@ final class FrontendLinks extends AbstractItem
                     return InstallCode::INVALID_FULLSCREEN_TEMPLATE_NAME;
                 }
             }
-            \preg_match('/[NY]{1,1}/', $link['VisibleAfterLogin'], $hits2);
-            if (\mb_strlen($hits2[0]) !== \mb_strlen($link['VisibleAfterLogin'])) {
+            if (isset($link['VisibleAfterLogin']) && !\in_array($link['VisibleAfterLogin'], ['Y', 'N'], true)) {
                 return InstallCode::INVALID_FRONEND_LINK_VISIBILITY;
             }
-            \preg_match('/[NY]{1,1}/', $link['PrintButton'], $hits3);
-            if (\mb_strlen($hits3[0]) !== \mb_strlen($link['PrintButton'])) {
+            if (isset($link['PrintButton']) && !\in_array($link['PrintButton'], ['Y', 'N'], true)) {
                 return InstallCode::INVALID_FRONEND_LINK_PRINT;
             }
-            if (isset($link['NoFollow'])) {
-                \preg_match('/[NY]{1,1}/', $link['NoFollow'], $hits3);
-            } else {
-                $hits3 = [];
-            }
-            if (isset($hits3[0]) && \mb_strlen($hits3[0]) !== \mb_strlen($link['NoFollow'])) {
+            if (isset($link['NoFollow']) && !\in_array($link['NoFollow'], ['Y', 'N'], true)) {
                 return InstallCode::INVALID_FRONTEND_LINK_NO_FOLLOW;
+            }
+            if (\mb_strlen($link['Identifier'] ?? '') > 255) {
+                return InstallCode::INVALID_LINK_IDENTIFIER;
             }
             if (empty($link['LinkLanguage']) || !\is_array($link['LinkLanguage'])) {
                 return InstallCode::INVALID_FRONEND_LINK_ISO;

@@ -36,16 +36,17 @@ Für JTL-Shop 4.x gilt folgende Vorgehensweise als bevorzugt:
 
 .. code-block:: php
 
-    $Article = Shop::DB()->query('SELECT * FROM tartikel WHERE kArtikel = 2344', 1);
+    $product = Shop::DB()->query('SELECT * FROM tartikel WHERE kArtikel = 2344', 1);
 
 Ab JTL-Shop 5.0 wird folgende Vorgehensweise bevorzugt:
 
 .. code-block:: php
 
-   $Article = Shop::Contrainer()->getDB()->queryPrepared(
+   $product = Shop::Container()->getDB()->queryPrepared(
        'SELECT * FROM tartikel WHERE kArtikel = :artID',
        ['artID' => $articleID],
-       ReturnType::SINGLE_OBJECT);
+       ReturnType::SINGLE_OBJECT
+   );
 
 Für Smarty wird sowohl in JTL-Shop 4.x als auch JTL-Shop 5.0 diese Vorgehensweise bevorzugt:
 

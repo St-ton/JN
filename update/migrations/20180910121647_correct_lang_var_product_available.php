@@ -17,11 +17,17 @@ class Migration_20180910121647 extends Migration implements IMigration
     protected $author      = 'mh';
     protected $description = 'Correct lang var productAvailable';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'global', 'productAvailable', 'verfügbar');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setLocalization('ger', 'global', 'productAvailable', 'Artikel verfügbar ab');

@@ -25,55 +25,94 @@ trait PortletStyles
     }
 
     /**
+     * @param bool $preview
+     * @return array
+     */
+    final public function getCssFiles($preview = false): array
+    {
+        $list = [];
+        $file = $this->getCssFile($preview);
+
+        if (!empty($file)) {
+            $list[$file] = true;
+        }
+
+        $extras = $this->getExtraCssFiles();
+
+        foreach ($extras as $extra) {
+            $list[$extra] = true;
+        }
+
+        if (\in_array('styles', $this->getPropertyTabs(), true) && !$preview) {
+            $url        = $this->getCommonResource('hidden-size.css');
+            $list[$url] = true;
+        }
+
+        return $list;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getExtraCssFiles()
+    {
+        return [];
+    }
+
+    /**
      * @return array
      */
     public function getStylesPropertyDesc(): array
     {
         return [
-            // TODO: Support these options for both bootstrap versions
-//            'hidden-xs'        => [
-//                'type'       => InputType::CHECKBOX,
-//                'label'      => '<i class="fa fa-mobile"></i> ' . __('Visibility') . ' XS',
-//                'option'     => __('hide'),
-//                'width'      => 25,
-//            ],
-//            'hidden-sm'        => [
-//                'type'       => InputType::CHECKBOX,
-//                'label'      => '<i class="fa fa-tablet"></i> ' . __('Visibility') . ' S',
-//                'option'     => __('hide'),
-//                'width'      => 25,
-//            ],
-//            'hidden-md'        => [
-//                'type'       => InputType::CHECKBOX,
-//                'label'      => '<i class="fa fa-laptop"></i> ' . __('Visibility') . ' M',
-//                'option'     => __('hide'),
-//                'width'      => 25,
-//            ],
-//            'hidden-lg'        => [
-//                'type'       => InputType::CHECKBOX,
-//                'label'      => '<i class="fa fa-desktop"></i> ' . __('Visibility') . ' L',
-//                'option'     => __('hide'),
-//                'width'      => 25,
-//            ],
             'background-color' => [
-                'label'   => __('Background colour'),
+                'label'   => \__('Background colour'),
                 'type'    => InputType::COLOR,
                 'default' => '',
                 'width'   => 34,
             ],
             'color'            => [
                 'type'    => InputType::COLOR,
-                'label'   => __('Font colour'),
+                'label'   => \__('Font colour'),
                 'default' => '',
                 'width'   => 34,
             ],
             'font-size'        => [
-                'label'   => __('Font size'),
+                'label'   => \__('Font size'),
                 'default' => '',
                 'width'   => 34,
+                'desc'    => \__('cssNumericDesc'),
             ],
-            'box-styles'  => [
-                'type'    => InputType::BOX_STYLES,
+            'box-styles'       => [
+                'type' => InputType::BOX_STYLES,
+            ],
+            'custom-class'     => [
+                'type'        => InputType::TEXT,
+                'label'       => \__('Custom css class'),
+                'default'     => '',
+                'width'       => 100,
+                'placeholder' => \__('CustomCssClassPlaceholder'),
+                'desc'        => \__('CustomCssClassDesc'),
+            ],
+            'hidden-xs'        => [
+                'type'  => InputType::CHECKBOX,
+                'label' => \__('Hidden on XS'),
+                'width' => 25,
+            ],
+            'hidden-sm'        => [
+                'type'  => InputType::CHECKBOX,
+                'label' => \__('Hidden on SM'),
+                'width' => 25,
+            ],
+            'hidden-md'        => [
+                'type'  => InputType::CHECKBOX,
+                'label' => \__('Hidden on MD'),
+                'width' => 25,
+            ],
+            'hidden-lg'        => [
+                'type'  => InputType::CHECKBOX,
+                'label' => \__('Hidden on LG'),
+                'width' => 25,
             ],
         ];
     }

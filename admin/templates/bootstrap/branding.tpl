@@ -81,7 +81,7 @@
                         </div>
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="dTransparenz">{__('transparency')}:</label>
-                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 config-type-number">
                                 <div class="input-group form-counter min-w-sm">
                                     <div class="input-group-prepend">
                                         <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
@@ -120,7 +120,29 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cBrandingBild">{__('brandingFileName')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input name="cBrandingBild" id="cBrandingBild" type="file" class="file" accept="image/*" {if !$oBranding->cBrandingBild|strlen > 0}required{/if}>
+                                {include file='tpl_inc/fileupload.tpl'
+                                    fileID='cBrandingBild'
+                                    fileRequired=!$oBranding->cBrandingBild|strlen > 0
+                                    fileMaxSize=256
+                                    fileInitialPreview="[
+                                            {if $oBranding->cBrandingBild|strlen > 0}
+                                            '<img src=\"{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}\" class=\"file-preview-image img-fluid\" alt=\"branding\" title=\"{__('branding')}\" />'
+                                            {/if}
+                                        ]"
+                                    fileInitialPreviewConfig="[
+                                            {if $oBranding->cBrandingBild|strlen > 0}
+                                            {
+                                                url: '{$adminURL}/branding.php',
+                                                extra: {
+                                                    action: 'delete',
+                                                    logo: '{$oBranding->cBrandingBild}',
+                                                    id: {$oBranding->kBrandingTMP},
+                                                    jtl_token: '{$smarty.session.jtl_token}'
+                                                }
+                                            }
+                                            {/if}
+                                        ]"
+                                }
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('brandingFileNameDesc')}</div>
                         </div>
@@ -139,43 +161,4 @@
         </div>
     {/if}
 </div>
-<script>
-    $('#cBrandingBild').fileinput({
-        showUpload: false,
-        showRemove: false,
-        initialPreviewShowDelete: false,
-        showCancel: false,
-        uploadAsync: false,
-        showPreview: true,
-        fileActionSettings: {
-            showZoom: false,
-            showRemove: false,
-            showDrag: false
-        },
-        allowedFileExtensions : ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp'],
-        overwriteInitial: true,
-        initialPreviewCount: 1,
-        theme: 'fas',
-        language: '{$language|mb_substr:0:2}',
-        browseOnZoneClick:     true,
-        maxFileSize: 256,
-        maxFilesNum: 1,
-        {if $oBranding->cBrandingBild|strlen > 0}
-        initialPreviewConfig: [
-            {
-                url: '{$shopURL}/{$PFAD_ADMIN}branding.php',
-                extra: {
-                    action: 'delete',
-                    logo: '{$oBranding->cBrandingBild}',
-                    id: {$oBranding->kBrandingTMP},
-                    jtl_token: '{$smarty.session.jtl_token}'
-                }
-            }
-        ],
-        initialPreview: [
-            '<img src="{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}" class="file-preview-image img-fluid" alt="branding" title="{__('branding')}" />'
-        ]
-        {/if}
-    })
-</script>
 {include file='tpl_inc/footer.tpl'}

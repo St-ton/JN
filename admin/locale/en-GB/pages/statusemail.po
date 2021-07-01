@@ -121,3 +121,9 @@ msgstr "Monthly report"
 
 msgid "nextStatusMail"
 msgstr "The next %s will be sent on %s."
+
+msgid "contentTypeCountNewsletterOptOut"
+msgstr "Newsletter cancellations"
+
+msgid "contentTypeCountNewsletterOptIn"
+msgstr "Newsletter subscriptions"

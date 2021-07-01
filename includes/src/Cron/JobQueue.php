@@ -298,17 +298,17 @@ class JobQueue
     }
 
     /**
-     * @param int|null $kJobQueue
-     * @param int      $kCron
-     * @param int      $kKey
-     * @param int      $nLimitN
-     * @param int      $nLimitM
-     * @param int      $nInArbeit
-     * @param string   $cJobArt
-     * @param string   $cTabelle
-     * @param string   $cKey
-     * @param string   $dStartZeit
-     * @param string   $dZuletztGelaufen
+     * @param int|null    $kJobQueue
+     * @param int         $kCron
+     * @param int         $kKey
+     * @param int         $nLimitN
+     * @param int         $nLimitM
+     * @param int         $nInArbeit
+     * @param string      $cJobArt
+     * @param string      $cTabelle
+     * @param string      $cKey
+     * @param string      $dStartZeit
+     * @param string|null $dZuletztGelaufen
      */
     public function __construct(
         int $kJobQueue = null,
@@ -376,7 +376,7 @@ class JobQueue
             $ins->tableName     = $this->cTabelle;
             $ins->foreignKey    = $this->cKey;
             $ins->startTime     = $this->dStartZeit;
-            $ins->lastStart     = $this->dZuletztGelaufen;
+            $ins->lastStart     = $this->dZuletztGelaufen ?? '_DBNULL_';
 
             return Shop::Container()->getDB()->insert('tjobqueue', $ins);
         }
@@ -401,7 +401,7 @@ class JobQueue
             $upd->tableName     = $this->cTabelle;
             $upd->foreignKey    = $this->cKey;
             $upd->startTime     = $this->dStartZeit;
-            $upd->lastStart     = $this->dZuletztGelaufen;
+            $upd->lastStart     = $this->dZuletztGelaufen ?? '_DBNULL_';
 
             return Shop::Container()->getDB()->update('tjobqueue', 'jobQueueID', (int)$this->kJobQueue, $upd);
         }

@@ -6,8 +6,6 @@ use DateTime;
 use InvalidArgumentException;
 use JTL\ContentAuthor;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
-use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
@@ -154,7 +152,7 @@ class Item extends AbstractItem
     public function load(int $id): ItemInterface
     {
         $this->id = $id;
-        $item     = $this->db->queryPrepared(
+        $item     = $this->db->getObjects(
             "SELECT tnewssprache.languageID,
                 tnewssprache.languageCode,
                 tnews.cKundengruppe, 
@@ -178,11 +176,10 @@ class Item extends AbstractItem
                     AND tseo.kSprache = tnewssprache.languageID
                 WHERE tnews.kNews = :nid
                 GROUP BY tnewssprache.languageID",
-            ['nid' => $this->id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['nid' => $this->id]
         );
         if (\count($item) === 0) {
-            throw new InvalidArgumentException('Provided new item id ' . $this->id . ' not found.');
+            throw new InvalidArgumentException('Provided news item id ' . $this->id . ' not found.');
         }
 
         return $this->map($item);
@@ -281,25 +278,24 @@ class Item extends AbstractItem
      */
     public function getCategoryIDs(): array
     {
-        return map($this->db->queryPrepared(
+        return map($this->db->getObjects(
             'SELECT DISTINCT(tnewskategorie.kNewsKategorie)
                 FROM tnewskategorie 
                 JOIN tnewskategorienews
                     ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
                 WHERE tnewskategorienews.kNews = :nid',
-            ['nid' => $this->id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['nid' => $this->id]
         ), static function ($e) {
             return (int)$e->kNewsKategorie;
         });
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getCategories(): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getObjects(
             'SELECT t.*
                 FROM tnewskategorie 
                 JOIN tnewskategorienews
@@ -307,8 +303,7 @@ class Item extends AbstractItem
                 JOIN tnewskategoriesprache t 
                     ON tnewskategorie.kNewsKategorie = t.kNewsKategorie
                 WHERE tnewskategorienews.kNews = :nid',
-            ['nid' => $this->id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['nid' => $this->id]
         );
     }
 
@@ -321,7 +316,7 @@ class Item extends AbstractItem
         $images = [];
         if ($this->id > 0 && \is_dir($uploadDirName . $this->id)) {
             $handle       = \opendir($uploadDirName . $this->id);
-            $imageBaseURL = Shop::getURL() . '/';
+            $imageBaseURL = Shop::getImageBaseURL();
             while (($file = \readdir($handle)) !== false) {
                 if ($file !== '.' && $file !== '..') {
                     $image           = new stdClass();
@@ -762,6 +757,16 @@ class Item extends AbstractItem
         $idx = $idx ?? Shop::getLanguageID();
 
         return $this->isVisible ? ($this->previewImages[$idx] ?? '') : '';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPreviewImageBaseName(): string
+    {
+        \preg_match('/\/(.[^\/]*?)\./s', $this->getPreviewImage(), $matches);
+
+        return $matches[1] ?? 'preview';
     }
 
     /**

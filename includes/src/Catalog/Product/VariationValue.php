@@ -98,7 +98,7 @@ class VariationValue
     public $cPreisInklAufpreis;
 
     /**
-     * @var float
+     * @var array
      */
     public $fAufpreis;
 
@@ -106,6 +106,11 @@ class VariationValue
      * @var float
      */
     public $fVPEWert;
+
+    /**
+     * @var string
+     */
+    public $cPfad;
 
     /**
      * @var string
@@ -186,9 +191,9 @@ class VariationValue
     }
 
     /**
-     * @param stdClass $data
-     * @param int      $cntVariationen
-     * @param          $tmpDiscount
+     * @param stdClass  $data
+     * @param int       $cntVariationen
+     * @param int|float $tmpDiscount
      */
     public function init(stdClass $data, int $cntVariationen, $tmpDiscount): void
     {
@@ -266,6 +271,7 @@ class VariationValue
         if (!$path || !\file_exists(\PFAD_ROOT . \PFAD_VARIATIONSBILDER_NORMAL . $path)) {
             return false;
         }
+        $this->cPfad = $path;
         $this->generateAllImageSizes(true, 1, $path);
 
         $this->cBildPfadMini  = \PFAD_VARIATIONSBILDER_MINI . $path;

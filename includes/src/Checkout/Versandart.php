@@ -3,8 +3,9 @@
 namespace JTL\Checkout;
 
 use Illuminate\Support\Collection;
-use JTL\DB\ReturnType;
+use JTL\Country\Country;
 use JTL\Helpers\GeneralObject;
+use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 
 /**
@@ -13,6 +14,8 @@ use JTL\Shop;
  */
 class Versandart
 {
+    use MagicCompatibilityTrait;
+
     /**
      * @var int
      */
@@ -114,9 +117,9 @@ class Versandart
     public $eSteuer;
 
     /**
-     * @var ?string
+     * @var null|Country
      */
-    public $cCountryCode;
+    public $country;
 
     /**
      * @var ?array
@@ -127,6 +130,13 @@ class Versandart
      * @var Collection
      */
     public $shippingSurcharges;
+
+    /**
+     * @var array
+     */
+    public static $mapping = [
+        'cCountryCode' => 'CountryCode'
+    ];
 
     /**
      * Versandart constructor.
@@ -145,7 +155,8 @@ class Versandart
      */
     public function loadFromDB(int $id): int
     {
-        $obj = Shop::Container()->getDB()->select('tversandart', 'kVersandart', $id);
+        $db  = Shop::Container()->getDB();
+        $obj = $db->select('tversandart', 'kVersandart', $id);
         if ($obj === null || !$obj->kVersandart) {
             return 0;
         }
@@ -154,7 +165,7 @@ class Versandart
             $this->$member = $obj->$member;
         }
         $this->kVersandart = (int)$this->kVersandart;
-        $localized         = Shop::Container()->getDB()->selectAll(
+        $localized         = $db->selectAll(
             'tversandartsprache',
             'kVersandart',
             $this->kVersandart
@@ -163,7 +174,7 @@ class Versandart
             $this->oVersandartSprache_arr[$translation->cISOSprache] = $translation;
         }
         // Versandstaffel
-        $this->oVersandartStaffel_arr = Shop::Container()->getDB()->selectAll(
+        $this->oVersandartStaffel_arr = $db->selectAll(
             'tversandartstaffel',
             'kVersandart',
             (int)$this->kVersandart
@@ -216,19 +227,19 @@ class Versandart
         if ($id <= 0) {
             return false;
         }
-        Shop::Container()->getDB()->delete('tversandart', 'kVersandart', $id);
-        Shop::Container()->getDB()->delete('tversandartsprache', 'kVersandart', $id);
-        Shop::Container()->getDB()->delete('tversandartzahlungsart', 'kVersandart', $id);
-        Shop::Container()->getDB()->delete('tversandartstaffel', 'kVersandart', $id);
-        Shop::Container()->getDB()->query(
+        $db = Shop::Container()->getDB();
+        $db->delete('tversandart', 'kVersandart', $id);
+        $db->delete('tversandartsprache', 'kVersandart', $id);
+        $db->delete('tversandartzahlungsart', 'kVersandart', $id);
+        $db->delete('tversandartstaffel', 'kVersandart', $id);
+        $db->query(
             'DELETE tversandzuschlag, tversandzuschlagplz, tversandzuschlagsprache
                 FROM tversandzuschlag
                 LEFT JOIN tversandzuschlagplz 
                     ON tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
                 LEFT JOIN tversandzuschlagsprache 
                     ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                WHERE tversandzuschlag.kVersandart = ' . $id,
-            ReturnType::DEFAULT
+                WHERE tversandzuschlag.kVersandart = ' . $id
         );
 
         return true;
@@ -272,7 +283,7 @@ class Versandart
      * @param int    $value
      * @return array
      */
-    private static function getShippingSection($table, $key, int $value): array
+    private static function getShippingSection(string $table, string $key, int $value): array
     {
         if ($value > 0 && \mb_strlen($table) > 0 && \mb_strlen($key) > 0) {
             $Objs = Shop::Container()->getDB()->selectAll($table, $key, $value);
@@ -289,12 +300,13 @@ class Versandart
      * @param array       $objects
      * @param string      $table
      * @param string      $key
-     * @param mixed       $value
+     * @param int         $value
      * @param null|string $unsetKey
      */
     private static function cloneShippingSection(array $objects, $table, $key, int $value, $unsetKey = null): void
     {
         if ($value > 0 && \is_array($objects) && \count($objects) > 0 && \mb_strlen($key) > 0) {
+            $db = Shop::Container()->getDB();
             foreach ($objects as $item) {
                 $primary = $item->$unsetKey;
                 if ($unsetKey !== null) {
@@ -304,7 +316,7 @@ class Versandart
                 if ($table === 'tversandartzahlungsart' && empty($item->fAufpreis)) {
                     $item->fAufpreis = 0;
                 }
-                $id = Shop::Container()->getDB()->insert($table, $item);
+                $id = $db->insert($table, $item);
 
                 if ($id > 0 && $table === 'tversandzuschlag') {
                     self::cloneShippingSectionSpecial($primary, $id);
@@ -346,41 +358,41 @@ class Versandart
             return;
         }
 
-        $this->setShippingSurcharges(Shop::Container()->getDB()->queryPrepared(
+        $this->setShippingSurcharges(Shop::Container()->getDB()->getCollection(
             'SELECT kVersandzuschlag
                 FROM tversandzuschlag
                 WHERE kVersandart = :kVersandart
                 ORDER BY kVersandzuschlag DESC',
-            ['kVersandart' => $this->kVersandart],
-            ReturnType::COLLECTION
+            ['kVersandart' => $this->kVersandart]
         )->map(static function ($surcharge) {
-            return new ShippingSurcharge($surcharge->kVersandzuschlag);
+            return new ShippingSurcharge((int)$surcharge->kVersandzuschlag);
         }));
 
         $cache->set($cacheID, $this->getShippingSurcharges(), [\CACHING_GROUP_OBJECT]);
     }
 
     /**
-     * @param string $ISO
+     * @param string $iso
      * @return Collection
      */
-    public function getShippingSurchargesForCountry(string $ISO): Collection
+    public function getShippingSurchargesForCountry(string $iso): Collection
     {
-        return $this->getShippingSurcharges()->filter(static function (ShippingSurcharge $surcharge) use ($ISO) {
-            return $surcharge->getISO() === $ISO;
+        return $this->getShippingSurcharges()->filter(static function (ShippingSurcharge $surcharge) use ($iso) {
+            return $surcharge->getISO() === $iso;
         });
     }
 
     /**
      * @param string $zip
-     * @param string $ISO
+     * @param string $iso
      * @return ShippingSurcharge|null
      */
-    public function getShippingSurchargeForZip(string $zip, string $ISO): ?ShippingSurcharge
+    public function getShippingSurchargeForZip(string $zip, string $iso): ?ShippingSurcharge
     {
-        return $this->getShippingSurchargesForCountry($ISO)->filter(static function (ShippingSurcharge $surcharge) use ($zip) {
-            return $surcharge->hasZIPCode($zip);
-        })->pop();
+        return $this->getShippingSurchargesForCountry($iso)
+            ->first(static function (ShippingSurcharge $surcharge) use ($zip) {
+                return $surcharge->hasZIPCode($zip);
+            });
     }
 
 
@@ -401,5 +413,21 @@ class Versandart
         $this->shippingSurcharges = $shippingSurcharges;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCountryCode(): string
+    {
+        return $this->country !== null ? $this->country->getISO() : '';
+    }
+
+    /**
+     * @param string $countryCode
+     */
+    public function setCountryCode(string $countryCode): void
+    {
+        $this->country = Shop::Container()->getCountryService()->getCountry($countryCode);
     }
 }

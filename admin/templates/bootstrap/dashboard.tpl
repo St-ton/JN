@@ -1,8 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 
-{if 'DASHBOARD_VIEW'|permission}
-    <script type="text/javascript" src="{$templateBaseURL}js/html.sortable.js"></script>
-    <script type="text/javascript" src="{$templateBaseURL}js/dashboard.js"></script>
+{if count($oActiveWidget_arr) > 0 || count($oAvailableWidget_arr) > 0}
     <script type="text/javascript">
 
     function addWidget(kWidget) {
@@ -14,11 +12,11 @@
     }
 
     $(function() {
-        ioCall('truncateJtllog');
+        ioCall('truncateJtllog', undefined, undefined, undefined, undefined, true);
     });
     </script>
 
-    <div id="content">
+    <div id="content" class="dashboard-wrapper">
         <div class="row p-2">
             <div class="col">
                 <h1 class="content-header-headline">{__('dashboard')}</h1>
@@ -31,7 +29,7 @@
                             <span class="fas fa-cog"></span>
                         </span>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-right min-w-lg" aria-labelledby="helpcenter">
+                    <div id="available-widgets" class="dropdown-menu dropdown-menu-right min-w-lg" aria-labelledby="helpcenter">
                         {include file='tpl_inc/widget_selector.tpl' oAvailableWidget_arr=$oAvailableWidget_arr}
                     </div>
                 </div>

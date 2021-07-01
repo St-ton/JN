@@ -9,7 +9,7 @@ msgid "dbupdaterURL"
 msgstr "https://jtl-url.de/3ajp1"
 
 msgid "dbupdaterDesc"
-msgstr "Here you can update the database of your JTL-Shop. The target version of the database update corresponds to the currently installed version of JTL-Shop."
+msgstr "Here you can update the database of your JTL-Shop. The target version of the database update matches the currently installed version of JTL-Shop."
 
 msgid "buttonUpdateNow"
 msgstr "Start database update"
@@ -82,3 +82,6 @@ msgstr "Database update"
 
 msgid "required"
 msgstr "required"
+
+msgid "errorMinShopVersionRequired"
+msgstr "Your online shop does not have the minimum version required to update to version %s. Please update to version $s first and then to version %s. Please visit our <a href=\"%s\" target=\"_blank\">Guide</a> for further instructions."

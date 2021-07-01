@@ -15,6 +15,7 @@ ifndef('ADMIN_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('SHOP_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('SMARTY_LOG_LEVEL', E_ERROR | E_PARSE);
 error_reporting(SHOP_LOG_LEVEL);
+ifndef('COMPATIBILITY_TRACE_DEPTH', 0);
 ifndef('TEMPLATE_COMPATIBILITY', false);
 ifndef('EVO_COMPATIBILITY', true);
 // Image compatibility level 0 => disabled, 1 => referenced in history table, 2 => automatic detection
@@ -47,7 +48,7 @@ ifndef('DEFAULT_CURL_OPT_VERIFYHOST', 2);
 ini_set('session.use_trans_sid', '0');
 // Logging (in logs/) 0 => aus, 1 => nur errors, 2 => errors, notifications, 3 => errors, notifications, debug
 ifndef('ES_LOGGING', 1);
-ifndef('ES_DB_LOGGING', 0);
+ifndef('ES_DB_LOGGING', true);
 ifndef('DEBUG_LEVEL', 0);
 ifndef('NICEDB_DEBUG_STMT_LEN', 500);
 ifndef('NICEDB_EXCEPTION_ECHO', false);
@@ -62,6 +63,9 @@ ifndef('SMARTY_USE_SUB_DIRS', false);
 ifndef('JTL_INCLUDE_ONLY_DB', 0);
 ifndef('SOCKET_TIMEOUT', 30);
 ifndef('ARTICLES_PER_PAGE_HARD_LIMIT', 100);
+ifndef('MAX_CORRUPTED_IMAGES', 50);
+ifndef('MAX_IMAGES_PER_STEP', 50000);
+
 // Pfade
 ifndef('PFAD_CLASSES', 'classes/old/'); // DEPRECATED
 ifndef('PFAD_CONFIG', 'config/');
@@ -82,10 +86,10 @@ ifndef('PFAD_INCLUDES_MODULES', PFAD_INCLUDES . 'modules/');
 ifndef('PFAD_SMARTY', PFAD_INCLUDES . 'vendor/smarty/smarty/libs/');
 ifndef('SMARTY_DIR', PFAD_ROOT . PFAD_SMARTY);
 /**
- * @deprecated since Shop 5
+ * @deprecated since 5.0.0
  */
 ifndef('PFAD_PHPQUERY', PFAD_INCLUDES . 'vendor/jtlshop/phpquery/src/');
-ifndef('PFAD_PCLZIP', PFAD_INCLUDES . 'vendor/pclzip/pclzip/');
+ifndef('PFAD_PCLZIP', PFAD_INCLUDES . 'vendor/chamilo/pclzip/');
 ifndef('PFAD_PHPMAILER', PFAD_INCLUDES . 'vendor/phpmailer/phpmailer/');
 ifndef('PFAD_BLOWFISH', PFAD_INCLUDES_LIBS . 'vendor/jtlshop/xtea/');
 ifndef('PFAD_CLASSES_CORE', PFAD_CLASSES . 'core/');  // DEPRECATED
@@ -163,6 +167,7 @@ ifndef('STORAGE_CATEGORIES', PFAD_MEDIA_IMAGE_STORAGE . 'categories/');
 ifndef('STORAGE_CHARACTERISTICS', PFAD_MEDIA_IMAGE_STORAGE . 'characteristics/');
 ifndef('STORAGE_CHARACTERISTIC_VALUES', PFAD_MEDIA_IMAGE_STORAGE . 'characteristicvalues/');
 ifndef('STORAGE_OPC', PFAD_MEDIA_IMAGE_STORAGE . 'opc/');
+ifndef('STORAGE_VIDEO_THUMBS', PFAD_MEDIA_IMAGE_STORAGE . 'videothumbs/');
 // Plugins
 ifndef('PFAD_PLUGIN', PFAD_INCLUDES . 'plugins/');
 // dbeS
@@ -181,7 +186,7 @@ ifndef('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', PFAD_GFX . 'keinBild_kl.gif');
 ifndef('BILD_UPLOAD_ZUGRIFF_VERWEIGERT', PFAD_GFX . 'keinBild.gif');
 //MediaImage Regex
 ifndef('MEDIAIMAGE_REGEX', '/^media\/image\/(?P<type>product)' .
-    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
+    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_\.]+)' .
     '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/');
 // Suchcache Lebensdauer in Minuten nach letzter Artikeländerung durch JTL-Wawi
 ifndef('SUCHCACHE_LEBENSDAUER', 60);
@@ -192,6 +197,7 @@ ifndef('JTLLOG_MAX_LOGSIZE', 200000);
 ifndef('PCLZIP_TEMPORARY_DIR', PFAD_ROOT . PFAD_COMPILEDIR);
 
 ifndef('IMAGE_PRELOAD_LIMIT', 10);
+ifndef('FORCE_IMAGEDRIVER_GD', false);
 //when the shop has up to n categories, all category data will be loaded by KategorieHelper::combinedGetAll()
 //with more then n categories, some db fields will only be selected if the corresponding options are active
 ifndef('CATEGORY_FULL_LOAD_LIMIT', 10000);
@@ -203,12 +209,6 @@ ifndef('IMAGE_CLEANUP_LIMIT', 50);
 ifndef('OBJECT_CACHE_DIR', PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/');
 
 ifndef('SITEMAP_ITEMS_LIMIT', 25000);
-// CMS Image Widths
-ifndef('WIDTH_OPC_IMAGE_XS', '480');
-ifndef('WIDTH_OPC_IMAGE_SM', '720');
-ifndef('WIDTH_OPC_IMAGE_MD', '1080');
-ifndef('WIDTH_OPC_IMAGE_LG', '1440');
-ifndef('WIDTH_OPC_IMAGE_XL', '2040');
 // show child products in product listings? 0 - never, 1 - only when at least 1 filter is active, 2 - always
 ifndef('SHOW_CHILD_PRODUCTS', 0);
 // redis connect timeout in seconds
@@ -221,14 +221,23 @@ ifndef('MAX_REVISIONS', 5);
 
 ifndef('SHOW_DEBUG_BAR', false);
 
+ifndef('EXS_LIVE', true);
+
 ifndef('ART_MATRIX_MAX', 250);
+
+ifndef('QUEUE_MAX_STUCK_HOURS', 1);
+
+// multi-domain support for different languages
+ifndef('EXPERIMENTAL_MULTILANG_SHOP', false);
+// slug language does not have to match shop base url language if enabled
+ifndef('MULTILANG_URL_FALLBACK', false);
 
 // security
 ifndef('EXPORTFORMAT_ALLOW_PHP', false);
 ifndef('NEWSLETTER_USE_SECURITY', true);
 ifndef('MAILTEMPLATE_USE_SECURITY', true);
 ifndef('EXPORTFORMAT_USE_SECURITY', true);
-ifndef('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml');
+ifndef('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml,zip,gz');
 ifndef('PASSWORD_DEFAULT_LENGTH', 12);
 ifndef('SECURE_PHP_FUNCTIONS', '
     addcslashes, addslashes, bin2hex, chop, chr, chunk_split, count_chars, crypt, explode, html_entity_decode,
@@ -237,7 +246,7 @@ ifndef('SECURE_PHP_FUNCTIONS', '
     str_repeat, str_replace, str_rot13, str_shuffle, str_split, str_word_count, strcasecmp, strchr, strcmp, strcoll,
     strcspn, strip_tags, stripslashes, stristr, strlen, strnatcasecmp, strnatcmp, strncasecmp, strncmp, strpbrk, strpos,
     strrchr, strrev, strripos, strrpos, strspn, strstr, strtok, strtolower, strtoupper, strtr, substr_compare,
-    substr_count, substr_replace, substr, trim, ucfirst, ucwords, vsprintf, wordwrap,
+    substr_count, substr_replace, substr, trim, ucfirst, ucwords, vsprintf, var_dump, print_r, printf, wordwrap,
     
     checkdate, date_add, date_create_from_format, date_create_immutable_from_format, date_create_immutable, date_create,
     date_date_set, date_diff, date_format, date_get_last_errors, date_interval_create_from_date_string,
@@ -267,15 +276,17 @@ ifndef('SHOW_TEMPLATE_HINTS', 0);
 
 ifndef('SEO_SLUG_LOWERCASE', false);
 
+ifndef('SAFE_MODE', $GLOBALS['plgSafeMode'] ?? file_exists(PFAD_ROOT. PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck'));
+
+ifndef('TRACK_VISITORS', true);
+
 ifndef('COMPRESS_DESCRIPTION', false);
 
-ifndef('SAFE_MODE', false);
-
 /**
- * @param string     $constant
- * @param string|int $value
+ * @param string $constant
+ * @param mixed  $value
  */
-function ifndef($constant, $value)
+function ifndef(string $constant, $value)
 {
     defined($constant) || define($constant, $value);
 }

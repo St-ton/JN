@@ -5,7 +5,6 @@ namespace JTL\Review;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Services\JTL\AlertServiceInterface;
@@ -51,28 +50,27 @@ abstract class BaseController
      */
     public function updateAverage(int $productID, string $activate): bool
     {
-        $sql       = $activate === 'Y' ? ' AND nAktiv = 1' : '';
-        $countData = $this->db->query(
+        $sql = $activate === 'Y' ? ' AND nAktiv = 1' : '';
+        $cnt = (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS nAnzahl
-            FROM tbewertung
-            WHERE kArtikel = ' . $productID . $sql,
-            ReturnType::SINGLE_OBJECT
-        );
-
-        if ((int)$countData->nAnzahl === 1) {
+                FROM tbewertung
+                WHERE kArtikel = :pid' . $sql,
+            ['pid' => $productID]
+        )->nAnzahl;
+        if ($cnt === 1) {
             $sql = '';
-        } elseif ((int)$countData->nAnzahl === 0) {
+        } elseif ($cnt === 0) {
             $this->db->delete('tartikelext', 'kArtikel', $productID);
 
             return false;
         }
-        $avg = $this->db->query(
+        $avg = $this->db->getSingleObject(
             'SELECT (SUM(nSterne) / COUNT(*)) AS fDurchschnitt
-            FROM tbewertung
-            WHERE kArtikel = ' . $productID . $sql,
-            ReturnType::SINGLE_OBJECT
+                FROM tbewertung
+                WHERE kArtikel = :pid' . $sql,
+            ['pid' => $productID]
         );
-        if (isset($avg->fDurchschnitt) && $avg->fDurchschnitt > 0) {
+        if ($avg !== null && $avg->fDurchschnitt > 0) {
             $this->db->delete('tartikelext', 'kArtikel', $productID);
             $ext                          = new stdClass();
             $ext->kArtikel                = $productID;
@@ -97,22 +95,21 @@ abstract class BaseController
         $maxBalance    = (float)$this->config['bewertung']['bewertung_max_guthaben'];
         $level2balance = (float)$this->config['bewertung']['bewertung_stufe2_guthaben'];
         $level1balance = (float)$this->config['bewertung']['bewertung_stufe1_guthaben'];
-        $reviewBonus   = $this->db->queryPrepared(
+        $reviewBonus   = $this->db->getSingleObject(
             'SELECT SUM(fGuthabenBonus) AS fGuthabenProMonat
-            FROM tbewertungguthabenbonus
-            WHERE kKunde = :cid
-                AND kBewertung != :rid
-                AND YEAR(dDatum) = :dyear
-                AND MONTH(dDatum) = :dmonth',
+                FROM tbewertungguthabenbonus
+                WHERE kKunde = :cid
+                    AND kBewertung != :rid
+                    AND YEAR(dDatum) = :dyear
+                    AND MONTH(dDatum) = :dmonth',
             [
                 'cid'    => $review->getCustomerID(),
                 'rid'    => $review->getId(),
                 'dyear'  => \date('Y'),
                 'dmonth' => \date('m')
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-        if ((float)$reviewBonus->fGuthabenProMonat > $maxBalance) {
+        if ($reviewBonus !== null && (float)$reviewBonus->fGuthabenProMonat > $maxBalance) {
             return $reward;
         }
         if ((int)$this->config['bewertung']['bewertung_stufe2_anzahlzeichen'] <= \mb_strlen($review->getContent())) {
@@ -148,12 +145,11 @@ abstract class BaseController
      */
     public function increaseCustomerBalance(int $customerID, float $reward): int
     {
-        return $this->db->queryPrepared(
+        return $this->db->getAffectedRows(
             'UPDATE tkunde
                 SET fGuthaben = fGuthaben + :rew
                 WHERE kKunde = :cid',
-            ['cid' => $customerID, 'rew' => $reward],
-            ReturnType::AFFECTED_ROWS
+            ['cid' => $customerID, 'rew' => $reward]
         );
     }
 

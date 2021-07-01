@@ -382,8 +382,8 @@ class Currency
         $res        = '';
         $currencies = Frontend::getCurrencies();
         if (\count($currencies) > 0) {
-            $priceNet   = (float)\str_replace(',', '.', $priceNet ?? 0);
-            $priceGross = (float)\str_replace(',', '.', $priceGross ?? 0);
+            $priceNet   = (float)\str_replace(',', '.', (string)($priceNet ?? 0));
+            $priceGross = (float)\str_replace(',', '.', (string)($priceGross ?? 0));
             $taxClass   = Shop::Container()->getDB()->select('tsteuerklasse', 'cStandard', 'Y');
             $taxClassID = $taxClass !== null ? (int)$taxClass->kSteuerklasse : 1;
             if ((float)$priceNet > 0) {
@@ -440,11 +440,11 @@ class Currency
     /**
      * Converts price into given currency
      *
-     * @param float  $price
-     * @param string $iso - EUR / USD
-     * @param int    $id - kWaehrung
-     * @param bool   $round
-     * @param int    $precision
+     * @param float       $price
+     * @param string|null $iso - EUR / USD
+     * @param int|null    $id - kWaehrung
+     * @param bool        $round
+     * @param int         $precision
      * @return float|bool
      */
     public static function convertCurrency(

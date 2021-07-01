@@ -1,11 +1,13 @@
 {block name='account-order-item'}
-    <div class="order-items card-table mr-3 ml-3">
+    <div class="order-items card-table">
+        {block name='account-order-item-items'}
         {foreach $Bestellung->Positionen as $oPosition}
             {if !(is_string($oPosition->cUnique) && !empty($oPosition->cUnique) && (int)$oPosition->kKonfigitem > 0)} {*!istKonfigKind()*}
-                {row class="type-{$oPosition->nPosTyp}"}
+                {row class="type-{$oPosition->nPosTyp} order-item"}
+                    {block name='account-order-item-items-data'}
                     {col cols=12 md="{if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}6{else}8{/if}"}
                         {row}
-                            {col cols=3 md=4 class='pr-1 pl-1'}
+                            {col cols=3 md=4 class='order-item-image-wrapper'}
                                 {if !empty($oPosition->Artikel->cVorschaubild)}
                                     {block name='account-order-item-image'}
                                         {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
@@ -23,7 +25,7 @@
                                     {block name='account-order-item-link'}
                                         {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}
                                     {/block}
-                                    <ul class="list-unstyled text-muted small mt-2">
+                                    <ul class="list-unstyled text-muted-util small item-detail-list">
                                         {block name='account-order-item-sku'}
                                             <li class="sku">{lang key='productNo' section='global'}: {$oPosition->Artikel->cArtNr}</li>
                                         {/block}
@@ -121,13 +123,13 @@
                                     {$oPosition->cName|trans}{if isset($oPosition->discountForArticle)}{$oPosition->discountForArticle|trans}{/if}
                                     {if isset($oPosition->cArticleNameAffix)}
                                         {if is_array($oPosition->cArticleNameAffix)}
-                                            <ul class="small text-muted">
+                                            <ul class="small text-muted-util">
                                                 {foreach $oPosition->cArticleNameAffix as $cArticleNameAffix}
                                                     <li>{$cArticleNameAffix|trans}</li>
                                                 {/foreach}
                                             </ul>
                                         {else}
-                                            <ul class="small text-muted">
+                                            <ul class="small text-muted-util">
                                                 <li>{$oPosition->cArticleNameAffix|trans}</li>
                                             </ul>
                                         {/if}
@@ -140,7 +142,7 @@
 
                             {if is_string($oPosition->cUnique) && !empty($oPosition->cUnique) && (int)$oPosition->kKonfigitem === 0} {*istKonfigVater()*}
                                 {block name='account-order-item-config-items'}
-                                    <ul class="config-items text-muted small">
+                                    <ul class="config-items text-muted-util small">
                                         {foreach $Bestellung->Positionen as $KonfigPos}
                                             {if $oPosition->cUnique == $KonfigPos->cUnique && $KonfigPos->kKonfigitem > 0}
                                                 <li>
@@ -159,16 +161,17 @@
                             {/col}
                         {/row}
                     {/col}
+                    {/block}
 
                     {block name='account-order-item-price'}
                         {block name='account-order-item-price-qty'}
-                            {col class='qty-col text-right' md=2 cols=6}
+                            {col class='qty-col text-right-util' md=2 cols=6}
                                 {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{if preg_match("/(\d)/", $oPosition->Artikel->cEinheit)} x{/if} {$oPosition->Artikel->cEinheit} {/if}
                             {/col}
                         {/block}
                         {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
                             {block name='account-order-item-price-single-price'}
-                                {col class='price-col text-right hidden-xs text-nowrap' md=2 cols=3}
+                                {col class='price-col hidden-xs text-nowrap-util' md=2 cols=3}
                                     {if $oPosition->nPosTyp == $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL}
                                         {if !(is_string($oPosition->cUnique) && !empty($oPosition->cUnique) && (int)$oPosition->kKonfigitem === 0)} {*!istKonfigVater()*}
                                             {$oPosition->cEinzelpreisLocalized[$NettoPreise]}
@@ -180,7 +183,7 @@
                             {/block}
                         {/if}
                         {block name='account-order-item-price-overall'}
-                            {col class='price-col text-right text-nowrap' md=2 cols=3}
+                            {col class='price-col text-nowrap-util' md=2 cols=3}
                                 <strong class="price_overall">
                                     {if is_string($oPosition->cUnique) && !empty($oPosition->cUnique) && (int)$oPosition->kKonfigitem === 0}
                                         {$oPosition->cKonfigpreisLocalized[$NettoPreise]}
@@ -193,11 +196,89 @@
                     {/block}
                 {/row}
             {/if}
-            {if !$oPosition@last}
-                {block name='account-order-item-last-hr'}
-                    <hr class="my-3">
-                {/block}
-            {/if}
+            {block name='account-order-item-last-hr'}
+                <hr>
+            {/block}
         {/foreach}
+        {/block}
+        {block name='account-order-items-total-wrapper'}
+        {row}
+            {col xl=5 md=6 class='order-items-total'}
+                {block name='account-order-items-total'}
+                    {if $NettoPreise}
+                        {block name='account-order-items-total-price-net'}
+                            {row class="total-net"}
+                                {col }
+                                    <span class="price_label"><strong>{lang key='totalSum'} ({lang key='net'}):</strong></span>
+                                {/col}
+                                {col class="col-auto price-col"}
+                                    <strong class="price total-sum">{$Bestellung->WarensummeLocalized[1]}</strong>
+                                {/col}
+                            {/row}
+                        {/block}
+                    {/if}
+                    {if $Bestellung->GuthabenNutzen == 1}
+                        {block name='account-order-items-total-customer-credit'}
+                            {row class="customer-credit"}
+                                {col}
+                                    {lang key='useCredit' section='account data'}
+                                {/col}
+                                {col class="col-auto ml-auto-util text-right-util"}
+                                    {$Bestellung->GutscheinLocalized}
+                                {/col}
+                            {/row}
+                        {/block}
+                    {/if}
+                    {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N'}
+                        {block name='account-order-items-total-tax'}
+                            {foreach $Bestellung->Steuerpositionen as $taxPosition}
+                                {row class="tax"}
+                                    {col}
+                                        <span class="tax_label">{$taxPosition->cName}:</span>
+                                    {/col}
+                                    {col class="col-auto price-col"}
+                                        <span class="tax_label">{$taxPosition->cPreisLocalized}</span>
+                                    {/col}
+                                {/row}
+                            {/foreach}
+                        {/block}
+                    {/if}
+                    {block name='account-order-items-total-total'}
+                        <hr>
+                        {row}
+                            {col}
+                                <span class="price_label"><strong>{lang key='totalSum'} {if $NettoPreise}{lang key='gross' section='global'}{/if}:</strong></span>
+                            {/col}
+                            {col class="col-auto price-col"}
+                                <strong class="price total-sum">{$Bestellung->WarensummeLocalized[0]}</strong>
+                            {/col}
+                        {/row}
+                    {/block}
+                    {if !empty($Bestellung->OrderAttributes)}
+                        {block name='account-order-items-total-order-attributes'}
+                            {foreach $Bestellung->OrderAttributes as $attribute}
+                                {if $attribute->cName === 'Finanzierungskosten'}
+                                    {row class="type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}"}
+                                        {block name='account-order-items-finance-costs'}
+                                            {col}
+                                                {lang key='financeCosts' section='order'}
+                                            {/col}
+                                        {/block}
+                                        {block name='account-order-items-finance-costs-value'}
+                                            {col class="col-auto price-col"}
+                                                <strong class="price_overall">
+                                                    {$attribute->cValue}
+                                                </strong>
+                                            {/col}
+                                        {/block}
+                                    {/row}
+                                {/if}
+                            {/foreach}
+                        {/block}
+                    {/if}
+                {/block}
+            {/col}
+        {/row}
+        {/block}
     </div>
 {/block}

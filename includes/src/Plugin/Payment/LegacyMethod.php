@@ -52,7 +52,8 @@ class LegacyMethod
     }
 
     /**
-     * @inheritDoc
+     * @param string $name
+     * @return mixed|null
      */
     public function __get($name)
     {
@@ -64,7 +65,8 @@ class LegacyMethod
     }
 
     /**
-     * @inheritDoc
+     * @param string $name
+     * @param mixed $value
      */
     public function __set($name, $value)
     {
@@ -76,7 +78,8 @@ class LegacyMethod
     }
 
     /**
-     * @inheritDoc
+     * @param string $name
+     * @return bool
      */
     public function __isset($name)
     {
@@ -246,8 +249,7 @@ class LegacyMethod
      * @param Bestellung $order
      * @param string     $hash
      * @param array      $args
-     *
-     * @return true, if $order should be finalized
+     * @return bool - true, if $order should be finalized
      */
     public function finalizeOrder($order, $hash, $args)
     {
@@ -474,7 +476,7 @@ class LegacyMethod
             if ($plugin !== null) {
                 $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
                 if ($pluginPaymentMethod === null) {
-                    return $paymentMethod;
+                    return null;
                 }
                 $classFile = $pluginPaymentMethod->getClassFilePath();
                 if (\file_exists($classFile)) {

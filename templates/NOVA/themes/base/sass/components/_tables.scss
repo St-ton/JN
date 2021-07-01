@@ -13,6 +13,7 @@
 
 .table-vertical-middle {
 	th, td { vertical-align: middle; }
+	margin-bottom: 0;
 }
 
 .table-border-medium {
@@ -28,4 +29,16 @@
 			background-color: $table-dark-bg;
 		}
 	}
+}
+
+.table-img {
+	img {
+		width: 45px;
+		height: 45px;
+		object-fit: contain;
+	}
+}
+
+table caption {
+	caption-side: top;
 }

@@ -55,3 +55,6 @@ msgstr "Empfohlener Wert"
 
 msgid "requirementsMet"
 msgstr "Alle Voraussetzungen wurden erfüllt."
+
+msgid "extensions"
+msgstr "Erweiterungen"

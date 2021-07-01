@@ -3,9 +3,9 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             {block name='productdetails-product-images-modal-header'}
-                <div class="modal-header p-0 border-0">
+                <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true" class="fas fa-times"></span>
+                        <span aria-hidden="true">×</span>
                     </button>
                 </div>
             {/block}
@@ -13,8 +13,8 @@
                 <div class="modal-body">
                     {foreach $images as $image}
                         {block name='productdetails-product-images-modal-image'}
-                            <div class="productbox-image-wrapper">
-                                <div class="productbox-image-wrapper-inner">
+                            <div class="square square-image">
+                                <div class="inner">
                                     {image alt=$image->cAltAttribut|escape:'html'
                                         class="product-image"
                                         fluid=true

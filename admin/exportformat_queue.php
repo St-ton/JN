@@ -4,7 +4,8 @@ use JTL\Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
-global $smarty;
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('EXPORT_SCHEDULE_VIEW', true, true);
 
@@ -19,23 +20,25 @@ $messages = [
     'notice' => '',
     'error'  => ''
 ];
-if (isset($action['erstellen']) && (int)$action['erstellen'] === 1 && Form::validateToken()) {
-    $step = exportformatQueueActionErstellen($smarty);
-}
-if (isset($action['editieren']) && (int)$action['editieren'] === 1 && Form::validateToken()) {
-    $step = exportformatQueueActionEditieren($smarty, $messages);
-}
-if (isset($action['loeschen']) && (int)$action['loeschen'] === 1 && Form::validateToken()) {
-    $step = exportformatQueueActionLoeschen($messages);
-}
-if (isset($action['triggern']) && (int)$action['triggern'] === 1 && Form::validateToken()) {
-    $step = exportformatQueueActionTriggern($messages);
-}
-if (isset($action['fertiggestellt']) && (int)$action['fertiggestellt'] === 1 && Form::validateToken()) {
-    $step = exportformatQueueActionFertiggestellt($smarty);
-}
-if (isset($action['erstellen_eintragen']) && (int)$action['erstellen_eintragen'] === 1 && Form::validateToken()) {
-    $step = exportformatQueueActionErstellenEintragen($smarty, $messages);
+if (Form::validateToken()) {
+    if (isset($action['erstellen']) && (int)$action['erstellen'] === 1) {
+        $step = exportformatQueueActionErstellen($smarty);
+    }
+    if (isset($action['editieren']) && (int)$action['editieren'] === 1) {
+        $step = exportformatQueueActionEditieren($smarty, $messages);
+    }
+    if (isset($action['loeschen']) && (int)$action['loeschen'] === 1) {
+        $step = exportformatQueueActionLoeschen($messages);
+    }
+    if (isset($action['triggern']) && (int)$action['triggern'] === 1) {
+        $step = exportformatQueueActionTriggern($messages);
+    }
+    if (isset($action['fertiggestellt']) && (int)$action['fertiggestellt'] === 1) {
+        $step = exportformatQueueActionFertiggestellt($smarty);
+    }
+    if (isset($action['erstellen_eintragen']) && (int)$action['erstellen_eintragen'] === 1) {
+        $step = exportformatQueueActionErstellenEintragen($smarty, $messages);
+    }
 }
 
 exportformatQueueFinalize($step, $smarty, $messages);

@@ -1,7 +1,6 @@
 .badge {
 	border: $border-width solid transparent;
 	text-decoration: none;
-	color: $gray-lighter;
 	word-break: break-word;
 	white-space: normal;
 }
@@ -26,8 +25,8 @@
 }
 
 .badge-outline-secondary {
-	border-color: $gray-darker;
-	color: $gray-darker;
+	border-color: $secondary;
+	color: $secondary;
 }
 
 .bubble {
@@ -59,4 +58,8 @@
 		display: inline-flex;
 		align-items: center;
 	}
+}
+
+.badge-not-available{
+	margin-left: map-get($spacers, 2);
 }

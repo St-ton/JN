@@ -41,6 +41,9 @@ msgstr "Image cache"
 msgid "statusemail"
 msgstr "Status emails"
 
+msgid "licensecheck"
+msgstr "License check"
+
 msgid "dataprotection"
 msgstr "Anonymisation of customer data"
 

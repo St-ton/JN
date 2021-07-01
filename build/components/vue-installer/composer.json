@@ -15,17 +15,7 @@
     ],
     "require": {
         "php": ">=5.5.9",
-        "fzaninotto/faker": "^1.6",
-        "imanee/imanee": "dev-master",
-        "cocur/slugify": "^2.5",
-        "jtlshop/wizard": "dev-master",
         "foxy/foxy": "^1.0"
-    },
-    "repositories": [
-        { "type": "vcs", "url": "https://gitlab.com/jtl-software/jtl-shop/tools/wizard.git" }
-    ],
-    "autoload": {
-        "psr-4": { "VueInstaller\\": "lib" }
     },
     "config": {
         "foxy": {

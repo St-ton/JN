@@ -281,6 +281,7 @@
                         </div>
                     </div>
                 </form>
+                {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='redirects' isBottom=true}
             </div>
         </div>
         <div role="tabpanel" class="tab-pane fade{if $cTab === 'new_redirect'} active show{/if}" id="new_redirect">
@@ -325,37 +326,6 @@
                             <div class="ml-auto col-sm-6 col-xl-auto">
                                 <button name="action" value="new" class="btn btn-primary btn-block">
                                     <i class="fa fa-save"></i> {__('create')}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-            <form method="post" enctype="multipart/form-data">
-                {$jtl_token}
-                <div class="settings">
-                    <div class="subheading1">{__('redirectCsvImport')}</div>
-                    <hr class="mb-3">
-                    <div>
-                        <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cFile">{__('file')}:</label>
-                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <div class="input-group">
-                                    <div class="custom-file">
-                                        <input class="custom-file-input" name="cFile" type="file" id="csv-import" required>
-                                        <label class="custom-file-label" for="csv-import">
-                                            <span class="text-truncate">{__('fileSelect')}</span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="save-wrapper">
-                        <div class="row">
-                            <div class="ml-auto col-sm-6 col-xl-auto">
-                                <button name="action" value="csvimport" class="btn btn-primary btn-block">
-                                    {__('import')}
                                 </button>
                             </div>
                         </div>

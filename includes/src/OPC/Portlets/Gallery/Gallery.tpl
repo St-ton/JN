@@ -1,50 +1,59 @@
-{if $isPreview}
-    {$data = ['portlet' => $instance->getDataAttribute()]}
-    {$dataStr = $instance->getDataAttributeString()}
-{/if}
-
 {$galleryStyle = $instance->getProperty('galleryStyle')}
 {$images = $instance->getProperty('images')}
 
 {if $isPreview && empty($images)}
-    <div data-portlet="{$instance->getDataAttribute()}" class="opc-Gallery-preview"
-         style="{$instance->getStyleString()}">
+    <div class="opc-Gallery-preview" style="{$instance->getStyleString()}">
         <div>
-            {file_get_contents($portlet->getBaseUrl()|cat:'icon.svg')}
+            {file_get_contents($portlet->getBasePath()|cat:'icon.svg')}
             <span>{__('Gallery')}</span>
         </div>
     </div>
 {elseif $galleryStyle === 'columns'}
-    <div class="opc-Gallery-columns" {$dataStr|default:''}
-         id="{$instance->getUid()}"
-         style="{$instance->getStyleString()}">
+    <div class="opc-Gallery-columns {$instance->getStyleClasses()}"
+         id="{$instance->getUid()}" style="{$instance->getStyleString()}"
+         data-colcade="columns: .opc-Gallery-column, items: .opc-Gallery-btn">
+        <div class="opc-Gallery-column opc-Gallery-column-1"></div>
+        <div class="opc-Gallery-column opc-Gallery-column-2"></div>
+        <div class="opc-Gallery-column opc-Gallery-column-3"></div>
+        <div class="opc-Gallery-column opc-Gallery-column-4"></div>
         {foreach $images as $key => $image}
             {$imgAttribs = $instance->getImageAttributes($image.url, $image.alt, '')}
             <a {if $isPreview === false}
                     {if $image.action === 'link'}
-                        href="{$image.link}"
+                        href="{$image.link|escape:'html'}"
                     {elseif $image.action === 'lightbox'}
-                        href="{$imgAttribs.src}"
+                        href="{$imgAttribs.src|escape:'html'}"
                     {/if}
                {/if} class="opc-Gallery-btn {if $image.action === 'lightbox'}opc-Gallery-active-btn{/if}"
-               data-caption="{$image.desc}">
+               data-caption="{$image.desc|escape:'html'}">
                 {image class='opc-Gallery-img'
                        srcset=$imgAttribs.srcset
                        sizes=$imgAttribs.srcsizes
                        src=$imgAttribs.src
-                       alt=$imgAttribs.alt
-                       title=$imgAttribs.title}
+                       alt=$imgAttribs.alt|escape:'html'
+                       title=$imgAttribs.title
+                       webp=true}
                 {if $image.action === 'lightbox'}
                     <i class="opc-Gallery-zoom fa fa-search fa-2x"></i>
                 {/if}
             </a>
         {/foreach}
+        {if $isPreview}
+            {inline_script}<script>
+                $('#{$instance->getUid()}').colcade({
+                    columns: '.opc-Gallery-column',
+                    items: '.opc-Gallery-btn'
+                })
+            </script>{/inline_script}
+        {/if}
     </div>
 {else}
+    {if $inContainer === false}
+        <div class="container-fluid">
+    {/if}
     {row
         id=$instance->getUid()
-        class='opc-Gallery opc-Gallery-'|cat:$galleryStyle
-        data=$data|default:null
+        class='opc-Gallery opc-Gallery-'|cat:$galleryStyle|cat:' '|cat:$instance->getStyleClasses()
         style=$instance->getStyleString()
     }
         {$xsSum = 0}
@@ -97,21 +106,22 @@
             {col cols=$image.xs sm=$image.sm md=$image.md lg=$image.lg xl=$image.xl class="opc-Gallery-item"}
                 <a {if $isPreview === false}
                         {if $image.action === 'link'}
-                            href="{$image.link}"
+                            href="{$image.link|escape:'html'}"
                         {elseif $image.action === 'lightbox'}
-                            href="{$imgAttribs.src}"
+                            href="{$imgAttribs.src|escape:'html'}"
                         {/if}
                     {/if}
                    class="opc-Gallery-btn {if $image.action === 'lightbox'}opc-Gallery-active-btn{/if}"
-                   data-caption="{$image.desc}"
+                   data-caption="{$image.desc|escape:'html'}"
                    aria-label="{$image.alt}"
                 >
                     {image class='opc-Gallery-img'
                            srcset=$imgAttribs.srcset
                            sizes=$imgAttribs.srcsizes
                            src=$imgAttribs.src
-                           alt=$imgAttribs.alt
-                           title=$imgAttribs.title}
+                           alt=$imgAttribs.alt|escape:'html'
+                           title=$imgAttribs.title
+                           webp=true}
                     {if $image.action === 'lightbox'}
                         <i class="opc-Gallery-zoom fa fa-search fa-2x"></i>
                     {/if}
@@ -119,6 +129,9 @@
             {/col}
         {/foreach}
     {/row}
+    {if $inContainer === false}
+        </div>
+    {/if}
 {/if}
 
 {if $isPreview === false}

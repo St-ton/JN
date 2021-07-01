@@ -4,7 +4,6 @@ namespace JTL\Cron;
 
 use DateTime;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -52,19 +51,30 @@ class Queue
      */
     public function loadQueueFromDB(): array
     {
-        $queueData = $this->db->query(
+        $this->queueEntries = $this->db->getCollection(
             'SELECT *
                 FROM tjobqueue
                 WHERE isRunning = 0
-                    AND startTime <= NOW()',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($queueData as $entry) {
-            $this->queueEntries[] = new QueueEntry($entry);
-        }
-        $this->logger->debug('Loaded ' . \count($this->queueEntries) . ' existing job(s).');
+                    AND startTime <= NOW()'
+        )->mapInto(QueueEntry::class)->toArray();
+        $this->logger->debug(\sprintf('Loaded %d existing job(s).', \count($this->queueEntries)));
 
         return $this->queueEntries;
+    }
+
+    /**
+     * @return int
+     */
+    public function unStuckQueues(): int
+    {
+        return $this->db->getAffectedRows(
+            'UPDATE tjobqueue
+                SET isRunning = 0
+                WHERE isRunning = 1
+                    AND startTime <= NOW()
+                    AND lastStart IS NOT NULL
+                    AND DATE_SUB(CURTIME(), INTERVAL ' . \QUEUE_MAX_STUCK_HOURS . ' Hour) > lastStart'
+        );
     }
 
     /**
@@ -90,27 +100,35 @@ class Queue
 
     /**
      * @param Checker $checker
+     * @return int
      * @throws \Exception
      */
-    public function run(Checker $checker): void
+    public function run(Checker $checker): int
     {
         if ($checker->isLocked()) {
             $this->logger->debug('Cron currently locked');
-            exit;
+
+            return -1;
         }
         $checker->lock();
         $this->enqueueCronJobs($checker->check());
+        $affected = $this->unStuckQueues();
+        if ($affected > 0) {
+            $this->logger->debug(\sprintf('Unstuck %d job(s).', $affected));
+        }
         $this->loadQueueFromDB();
         foreach ($this->queueEntries as $i => $queueEntry) {
             if ($i >= \JOBQUEUE_LIMIT_JOBS) {
-                $this->logger->debug('Job limit reached after ' . \JOBQUEUE_LIMIT_JOBS . ' jobs.');
+                $this->logger->debug(\sprintf('Job limit reached after %d jobs.', \JOBQUEUE_LIMIT_JOBS));
                 break;
             }
             $job                       = $this->factory->create($queueEntry);
             $queueEntry->tasksExecuted = $job->getExecuted();
             $queueEntry->taskLimit     = $job->getLimit();
             $queueEntry->isRunning     = 1;
-            $this->logger->notice('Got job (ID = ' . $job->getCronID() . ', type = ' . $job->getType() . ')');
+            $this->logger->notice('Got job ' . \get_class($job)
+                . ' (ID = ' . $job->getCronID()
+                . ', type = ' . $job->getType() . ')');
             $job->start($queueEntry);
             $queueEntry->isRunning = 0;
             $queueEntry->lastStart = new DateTime();
@@ -120,16 +138,19 @@ class Queue
                 $job->getCronID(),
                 (object)['lastFinish' => $queueEntry->lastFinish->format('Y-m-d H:i')]
             );
+            \executeHook(\HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
+                'oJobQueue' => $queueEntry,
+                'job'       => $job,
+                'logger'    => $this->logger
+            ]);
             $job->saveProgress($queueEntry);
             if ($job->isFinished()) {
                 $this->logger->notice('Job ' . $job->getID() . ' successfully finished.');
                 $job->delete();
             }
-            \executeHook(\HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
-                'oJobQueue' => $queueEntry,
-                'job'       => $job
-            ]);
         }
         $checker->unlock();
+
+        return \count($this->queueEntries);
     }
 }

@@ -59,7 +59,7 @@ class DefaultsHydrator implements HydratorInterface
     /**
      * @inheritdoc
      */
-    public function hydrate(?object $data, object $lang): void
+    public function hydrate(?object $data, object $language): void
     {
         $data         = $data ?? new stdClass();
         $data->tkunde = $data->tkunde ?? new Customer();
@@ -70,10 +70,10 @@ class DefaultsHydrator implements HydratorInterface
         $data->tfirma        = new Firma();
         $data->tkundengruppe = new CustomerGroup($data->tkunde->kKundengruppe);
         $customer            = $data->tkunde instanceof Customer
-            ? $data->tkunde->localize($lang)
-            : $this->localizeCustomer($lang, $data->tkunde);
+            ? $data->tkunde->localize($language)
+            : $this->localizeCustomer($language, $data->tkunde);
 
-        $this->smarty->assign('int_lang', $lang)
+        $this->smarty->assign('int_lang', $language)
             ->assign('Firma', $data->tfirma)
             ->assign('Kunde', $customer)
             ->assign('Kundengruppe', $data->tkundengruppe)
@@ -155,28 +155,12 @@ class DefaultsHydrator implements HydratorInterface
         }
         $customer = GeneralObject::deepCopy($customer);
         if (isset($customer->cLand)) {
-            $iso = $customer->cLand;
-            $col = 'cDeutsch';
-            if (\mb_convert_case($lang->cISO, \MB_CASE_LOWER) !== 'ger') {
-                $col = 'cEnglisch';
+            if (isset($_SESSION['Kunde'])) {
+                $_SESSION['Kunde']->cLand = $customer->cLand;
             }
-            $country = $this->db->select(
-                'tland',
-                'cISO',
-                $customer->cLand,
-                null,
-                null,
-                null,
-                null,
-                false,
-                $col . ' AS cName, cISO'
-            );
-            if (isset($country->cName)) {
-                $customer->cLand = $country->cName;
+            if (($country = Shop::Container()->getCountryService()->getCountry($customer->cLand)) !== null) {
+                $customer->angezeigtesLand = $country->getName($lang->id);
             }
-        }
-        if (isset($_SESSION['Kunde'], $iso)) {
-            $_SESSION['Kunde']->cLand = $iso;
         }
 
         return $customer;

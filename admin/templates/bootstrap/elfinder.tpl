@@ -39,6 +39,7 @@
 					},
                     uiOptions: {
 					    toolbar: [
+                            ['mkdir'],
 					        ['info', 'quicklook', 'upload'],
                             ['rm', 'duplicate', 'rename'],
                             ['view'],
@@ -56,7 +57,7 @@
 					    {if $isCKEditor}
                             window.opener.CKEDITOR.tools.callFunction({$CKEditorFuncNum}, file.url);
                         {else}
-                            window.opener.elfinder.getFileCallback(file.url);
+                            window.opener.elfinder.getFileCallback(file, '{$mediafilesBaseUrlPath}');
                         {/if}
                         window.close();
                     },

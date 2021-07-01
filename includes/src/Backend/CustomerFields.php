@@ -2,7 +2,6 @@
 
 namespace JTL\Backend;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 use stdClass;
@@ -47,8 +46,6 @@ class CustomerFields
     {
         if ($langID === null || $langID === 0) {
             $langID = (int)$_SESSION['kSprache'];
-        } else {
-            $langID = (int)$langID;
         }
 
         if (!isset(self::$instances[$langID])) {
@@ -63,12 +60,11 @@ class CustomerFields
      */
     protected function loadFields(int $langID): void
     {
-        $this->customerFields = Shop::Container()->getDB()->queryPrepared(
+        $this->customerFields = Shop::Container()->getDB()->getCollection(
             'SELECT * FROM tkundenfeld
                 WHERE kSprache = :lid
                 ORDER BY nSort ASC',
-            ['lid' => $langID],
-            ReturnType::COLLECTION
+            ['lid' => $langID]
         )->map([$this, 'prepare'])->keyBy('kKundenfeld')->toArray();
     }
 
@@ -167,7 +163,7 @@ class CustomerFields
         }
 
         // Delete all customer values that are not in value list
-        $db->executeQueryPrepared(
+        $db->queryPrepared(
             "DELETE tkundenattribut
                     FROM tkundenattribut
                     INNER JOIN tkundenfeld ON tkundenfeld.kKundenfeld = tkundenattribut.kKundenfeld
@@ -179,8 +175,7 @@ class CustomerFields
                             WHERE tkundenfeldwert.kKundenfeld = tkundenattribut.kKundenfeld
                                 AND tkundenfeldwert.cWert = tkundenattribut.cWert
                         )",
-            ['kKundenfeld' => $customerFieldID],
-            ReturnType::DEFAULT
+            ['kKundenfeld' => $customerFieldID]
         );
     }
 
@@ -213,22 +208,20 @@ class CustomerFields
                 switch ($customerField->cTyp) {
                     case 'zahl':
                         // all customer values will be changed to numbers if possible
-                        Shop::Container()->getDB()->executeQueryPrepared(
+                        Shop::Container()->getDB()->queryPrepared(
                             'UPDATE tkundenattribut SET
-	                            cWert =	CAST(CAST(cWert AS DOUBLE) AS CHAR)
+                                cWert =	CAST(CAST(cWert AS DOUBLE) AS CHAR)
                                 WHERE tkundenattribut.kKundenfeld = :kKundenfeld',
-                            ['kKundenfeld' => $key],
-                            ReturnType::AFFECTED_ROWS
+                            ['kKundenfeld' => $key]
                         );
                         break;
                     case 'datum':
                         // all customer values will be changed to date if possible
-                        Shop::Container()->getDB()->executeQueryPrepared(
+                        Shop::Container()->getDB()->queryPrepared(
                             "UPDATE tkundenattribut SET
-	                            cWert =	DATE_FORMAT(STR_TO_DATE(cWert, '%d.%m.%Y'), '%d.%m.%Y')
+                                cWert =	DATE_FORMAT(STR_TO_DATE(cWert, '%d.%m.%Y'), '%d.%m.%Y')
                                 WHERE tkundenattribut.kKundenfeld = :kKundenfeld",
-                            ['kKundenfeld' => $key],
-                            ReturnType::AFFECTED_ROWS
+                            ['kKundenfeld' => $key]
                         );
                         break;
                     case 'text':

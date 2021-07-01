@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "auswahlassistent"
-msgstr "Selection Wizard"
+msgstr "Selection wizard"
 
 msgid "auswahlassistentDesc"
 msgstr " "
@@ -39,7 +39,7 @@ msgid "aaStartseiteTaken"
 msgstr "Another group is already displayed on the start page."
 
 msgid "aaKatSyntax"
-msgstr "Be careful to use the right syntax (e.g.: 57;58)."
+msgstr "Please use the right syntax (e.g.: 57;58)."
 
 msgid "aaKatTaken"
 msgstr "Another group is already displayed for a selected category."

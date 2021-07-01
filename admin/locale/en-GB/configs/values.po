@@ -9,7 +9,7 @@ msgid "artikel_artikelanzeigefilter_value(2)"
 msgstr "Show only items with available stock"
 
 msgid "artikel_artikelanzeigefilter_value(3)"
-msgstr "Show only items with available stock or option “Allow negative stock”"
+msgstr "Show only items with available stock or option \"Allow negative stock\""
 
 msgid "artikel_artikelanzeigefilter_seo_value(404)"
 msgstr "Page not found (404 - Not found)"
@@ -108,7 +108,7 @@ msgid "global_versandhinweis_value(zzgl)"
 msgstr "Plus Shipments"
 
 msgid "global_versandhinweis_value(inkl)"
-msgstr "includes shipping costs"
+msgstr "Incl. Shipments"
 
 msgid "global_versandhinweis_value(kein)"
 msgstr "No shipping cost information"
@@ -250,6 +250,9 @@ msgstr "Lax"
 
 msgid "global_cookie_samesite_value(Strict)"
 msgstr "Strict"
+
+msgid "global_cookie_samesite_value(None)"
+msgstr "None"
 
 msgid "email_methode_value(mail)"
 msgstr "PHP mail()"
@@ -446,15 +449,6 @@ msgstr "Yes"
 msgid "artikeluebersicht_wunschzettel_anzeigen_value(N)"
 msgstr "No"
 
-msgid "artikeluebersicht_anzahl_pfeile_value(Y)"
-msgstr "Always"
-
-msgid "artikeluebersicht_anzahl_pfeile_value(I)"
-msgstr "If permissible order quantity exists"
-
-msgid "artikeluebersicht_anzahl_pfeile_value(N)"
-msgstr "Hide"
-
 msgid "artikeluebersicht_artikelintervall_anzeigen_value(Y)"
 msgstr "Yes"
 
@@ -611,15 +605,6 @@ msgstr "Yes"
 msgid "sie_sparen_x_anzeigen_value(0)"
 msgstr "No"
 
-msgid "artikeldetails_anzahl_pfeile_value(Y)"
-msgstr "Always"
-
-msgid "artikeldetails_anzahl_pfeile_value(I)"
-msgstr "If permissible order quantity exists"
-
-msgid "artikeldetails_anzahl_pfeile_value(N)"
-msgstr "Hide"
-
 msgid "artikeldetails_canonicalurl_varkombikind_value(Y)"
 msgstr "Yes"
 
@@ -650,17 +635,11 @@ msgstr "No"
 msgid "isbn_display_value(N)"
 msgstr "No"
 
-msgid "artikeldetails_variationskombikind_bildvorschau_value(Y)"
-msgstr "Yes"
-
 msgid "adr_hazard_display_value(N)"
 msgstr "No"
 
 msgid "isbn_display_value(D)"
 msgstr "Yes, on item detail page"
-
-msgid "artikeldetails_variationskombikind_bildvorschau_value(N)"
-msgstr "No"
 
 msgid "adr_hazard_display_value(D)"
 msgstr "Yes, on item detail page"
@@ -1091,6 +1070,24 @@ msgstr "Yes, mandatory"
 msgid "lieferadresse_abfragen_standardland_value(N)"
 msgstr "No"
 
+msgid "lieferadresse_abfragen_firma_value(O)"
+msgstr "Yes, optional"
+
+msgid "lieferadresse_abfragen_firma_value(Y)"
+msgstr "Yes, mandatory"
+
+msgid "lieferadresse_abfragen_firma_value(N)"
+msgstr "No"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(O)"
+msgstr "Yes, optional"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(Y)"
+msgstr "Yes, mandatory"
+
+msgid "lieferadresse_abfragen_firmazusatz_value(N)"
+msgstr "No"
+
 msgid "shop_ustid_bzstpruefung_value(Y)"
 msgstr "Yes"
 
@@ -1137,6 +1134,12 @@ msgid "warenkorb_warenkorb2pers_merge_value(Y)"
 msgstr "Yes"
 
 msgid "warenkorb_warenkorb2pers_merge_value(N)"
+msgstr "No"
+
+msgid "warenkorb_gesamtgewicht_anzeigen_value(Y)"
+msgstr "Yes"
+
+msgid "warenkorb_gesamtgewicht_anzeigen_value(N)"
 msgstr "No"
 
 msgid "warenkorb_warenkorb2pers_merge_value(P)"
@@ -1310,9 +1313,6 @@ msgstr "Disable"
 msgid "bilder_dateiformat_value(JPG)"
 msgstr "JPEG"
 
-msgid "bilder_skalieren_value(Y)"
-msgstr "Yes"
-
 msgid "container_verwenden_value(Y)"
 msgstr "Yes"
 
@@ -1320,10 +1320,7 @@ msgid "bilder_dateiformat_value(PNG)"
 msgstr "PNG"
 
 msgid "bilder_dateiformat_value(AUTO)"
-msgstr "Auto"
-
-msgid "bilder_skalieren_value(N)"
-msgstr "No"
+msgstr "Automatically; also create .webp"
 
 msgid "container_verwenden_value(N)"
 msgstr "No"
@@ -1429,6 +1426,12 @@ msgstr "Escape with comma"
 
 msgid "exportformate_semikolon_value( )"
 msgstr "Escape with space"
+
+msgid "exportformate_line_ending_value(LF)"
+msgstr "LF"
+
+msgid "exportformate_line_ending_value(CRLF)"
+msgstr "CRLF"
 
 msgid "kontakt_abfragen_anrede_value(Y)"
 msgstr "Yes, mandatory"
@@ -1541,6 +1544,12 @@ msgstr "Yes"
 msgid "preisverlauf_anzeigen_value(N)"
 msgstr "No"
 
+msgid "vergleichsliste_anzeigen_value(Y)"
+msgstr "Yes"
+
+msgid "vergleichsliste_anzeigen_value(N)"
+msgstr "No"
+
 msgid "vergleichsliste_target_value(parent)"
 msgstr "In the same window"
 
@@ -1554,6 +1563,12 @@ msgid "bewertung_anzeigen_value(Y)"
 msgstr "Yes"
 
 msgid "bewertung_anzeigen_value(N)"
+msgstr "No"
+
+msgid "bewertung_alle_sprachen_value(Y)"
+msgstr "Yes"
+
+msgid "bewertung_alle_sprachen_value(N)"
 msgstr "No"
 
 msgid "bewertung_freischalten_value(Y)"
@@ -1588,6 +1603,12 @@ msgstr "Yes"
 
 msgid "bewertung_artikel_gekauft_value(N)"
 msgstr "No"
+
+msgid "newsletter_active_value(N)"
+msgstr "No"
+
+msgid "newsletter_active_value(Y)"
+msgstr "Yes"
 
 msgid "newsletter_emailmethode_value(mail)"
 msgstr "PHP mail()"
@@ -1688,6 +1709,18 @@ msgstr "Yes, in content area and in navigation box"
 msgid "allgemein_kategoriefilter_benutzen_value(N)"
 msgstr "No"
 
+msgid "allgemein_availabilityfilter_benutzen_value(content)"
+msgstr "Yes, in content area"
+
+msgid "allgemein_availabilityfilter_benutzen_value(box)"
+msgstr "Yes, in navigation box"
+
+msgid "allgemein_availabilityfilter_benutzen_value(Y)"
+msgstr "Yes, in content area and in navigation box"
+
+msgid "allgemein_availabilityfilter_benutzen_value(N)"
+msgstr "No"
+
 msgid "kategoriefilter_anzeigen_als_value(KA)"
 msgstr "Item categories"
 
@@ -1732,6 +1765,15 @@ msgstr "Yes, in content area and in navigation box"
 
 msgid "merkmalfilter_verwenden_value(N)"
 msgstr "No"
+
+msgid "merkmalfilter_trefferanzahl_anzeigen_value(N)"
+msgstr "Never show number of results"
+
+msgid "merkmalfilter_trefferanzahl_anzeigen_value(E)"
+msgstr "Only show number of results for single selection"
+
+msgid "merkmalfilter_trefferanzahl_anzeigen_value(Y)"
+msgstr "Also show number of results for possible multiple selection (may impact performance)"
 
 msgid "merkmal_anzeigen_als_value(T)"
 msgstr "Text"
@@ -1812,7 +1854,7 @@ msgid "kategorie_bild_anzeigen_value(B)"
 msgstr "Yes, as image"
 
 msgid "kategorie_bild_anzeigen_value(N)"
-msgstr "No category image, no category description"
+msgstr "No"
 
 msgid "kategorie_beschreibung_anzeigen_value(Y)"
 msgstr "Yes"
@@ -1892,18 +1934,6 @@ msgstr "Yes"
 msgid "news_kategorie_unternewsanzeigen_value(N)"
 msgstr "No"
 
-msgid "news_kategorie_boxanzeigen_value(Y)"
-msgstr "Yes"
-
-msgid "news_kategorie_boxanzeigen_value(N)"
-msgstr "No"
-
-msgid "news_sicherheitscode_value(Y)"
-msgstr "Yes"
-
-msgid "news_sicherheitscode_value(N)"
-msgstr "No"
-
 msgid "sitemap_seiten_anzeigen_value(Y)"
 msgstr "Yes"
 
@@ -1932,12 +1962,6 @@ msgid "sitemap_newskategorien_anzeigen_value(Y)"
 msgstr "Yes"
 
 msgid "sitemap_newskategorien_anzeigen_value(N)"
-msgstr "No"
-
-msgid "sitemap_weitereseiten_artikeluebersicht_value(Y)"
-msgstr "Yes"
-
-msgid "sitemap_weitereseiten_artikeluebersicht_value(N)"
 msgstr "No"
 
 msgid "sitemap_livesuche_anzeigen_value(Y)"
@@ -2016,12 +2040,6 @@ msgid "sitemap_google_ping_value(Y)"
 msgstr "Yes"
 
 msgid "sitemap_google_ping_value(N)"
-msgstr "No"
-
-msgid "kwk_nutzen_value(Y)"
-msgstr "Yes"
-
-msgid "kwk_nutzen_value(N)"
 msgstr "No"
 
 msgid "suchspecials_sortierung_bestseller_value(-1)"
@@ -2410,3 +2428,42 @@ msgstr "Yes, in lists"
 
 msgid "gtin_display_value(always)"
 msgstr "Yes, on item detail page and in lists"
+
+msgid "consent_manager_active_value(N)"
+msgstr "No"
+
+msgid "consent_manager_active_value(Y)"
+msgstr "Yes"
+
+msgid "bewertung_sortierung_value(0)"
+msgstr "Date in ascending order"
+
+msgid "bewertung_sortierung_value(1)"
+msgstr "Date in descending order"
+
+msgid "bewertung_sortierung_value(2)"
+msgstr "Reviews in ascending order"
+
+msgid "bewertung_sortierung_value(3)"
+msgstr "Reviews in descending order"
+
+msgid "bewertung_sortierung_value(4)"
+msgstr "Most helpful first"
+
+msgid "bewertung_sortierung_value(5)"
+msgstr "Least helpful first"
+
+msgid "direct_advertising_value(N)"
+msgstr "No"
+
+msgid "direct_advertising_value(Y)"
+msgstr "Yes"
+
+msgid "consent_manager_show_banner_value(1)"
+msgstr "Show at first page view (1)"
+
+msgid "consent_manager_show_banner_value(2)"
+msgstr "Show at second page view (2)"
+
+msgid "consent_manager_show_banner_value(3)"
+msgstr "Show at third page view (3)"

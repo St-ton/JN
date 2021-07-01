@@ -20,6 +20,9 @@ class Migration_20180109104608 extends Migration implements IMigration
 
     protected $description = 'Convert encrypted data to utf-8';
 
+    /**
+     * @var string[][]
+     */
     protected $properties = [
         'tkunde'            => ['kKunde', 'cNachname', 'cFirma', 'cZusatz', 'cStrasse'],
         'tzahlungsinfo'     => [
@@ -37,6 +40,9 @@ class Migration_20180109104608 extends Migration implements IMigration
         'tkundenkontodaten' => ['kKundenKontodaten', 'cBankName', 'nKonto', 'cBLZ', 'cIBAN', 'cBIC', 'cInhaber'],
     ];
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $cryptoService = Shop::Container()->getCryptoService();
@@ -64,6 +70,9 @@ class Migration_20180109104608 extends Migration implements IMigration
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $cryptoService = Shop::Container()->getCryptoService();

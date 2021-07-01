@@ -2,6 +2,7 @@
 
 namespace JTL\Plugin\Admin\Validation;
 
+use InvalidArgumentException;
 use JTL\Plugin\InstallCode;
 use JTLShop\SemVer\Version;
 
@@ -18,14 +19,14 @@ final class PluginValidator extends AbstractValidator
      */
     public function pluginPlausiIntern($xml, bool $forUpdate): int
     {
-        $baseNode    = $xml['jtlshopplugin'][0] ?? null;
-        $appVersion  = Version::parse(\APPLICATION_VERSION);
-        $shopVersion = null;
+        $baseNode       = $xml['jtlshopplugin'][0] ?? null;
+        $shopVersion    = Version::parse(\APPLICATION_VERSION);
+        $minShopVersion = null;
         if ($baseNode === null) {
             return InstallCode::MISSING_PLUGIN_NODE;
         }
         if (!isset($baseNode['XMLVersion'])) {
-            return ($baseNode === null && isset($xml['jtlshop3plugin']))
+            return isset($xml['jtlshop3plugin'])
                 ? InstallCode::WRONG_EXT_DIR
                 : InstallCode::INVALID_XML_VERSION;
         }
@@ -35,7 +36,7 @@ final class PluginValidator extends AbstractValidator
         ) {
             return InstallCode::INVALID_XML_VERSION;
         }
-        if (empty($baseNode['ShopVersion']) && empty($baseNode['Shop4Version'])) {
+        if (empty($baseNode['ShopVersion']) && empty($baseNode['MinShopVersion'])) {
             return InstallCode::INVALID_SHOP_VERSION;
         }
         if ($forUpdate === false) {
@@ -44,10 +45,20 @@ final class PluginValidator extends AbstractValidator
                 return InstallCode::DUPLICATE_PLUGIN_ID;
             }
         }
-        if (isset($baseNode['ShopVersion'])) {
-            $shopVersion = Version::parse($baseNode['ShopVersion']);
+        if (isset($baseNode['MinShopVersion'])) {
+            try {
+                $minShopVersion = Version::parse($baseNode['MinShopVersion']);
+            } catch (InvalidArgumentException $e) {
+                $minShopVersion = null;
+            }
+        } elseif (isset($baseNode['ShopVersion'])) {
+            try {
+                $minShopVersion = Version::parse($baseNode['ShopVersion']);
+            } catch (InvalidArgumentException $e) {
+                $minShopVersion = null;
+            }
         }
-        if (empty($appVersion) || empty($shopVersion) || $shopVersion->greaterThan($appVersion)) {
+        if (empty($shopVersion) || empty($minShopVersion) || $minShopVersion->greaterThan($shopVersion)) {
             return InstallCode::SHOP_VERSION_COMPATIBILITY;
         }
 

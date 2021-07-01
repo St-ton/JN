@@ -3,3 +3,9 @@
 	&.no-caret { display: block; }
 	&.no-caret::after { display: none; }
 }
+
+.btn[data-toggle="collapse"][aria-expanded=true] {
+	i.fa-chevron-down {
+		transform: rotate(180deg);
+	}
+}

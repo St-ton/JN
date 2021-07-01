@@ -2,6 +2,7 @@
 
 namespace JTL\Boxes\Items;
 
+use JTL\Catalog\Category\MenuItem;
 use JTL\Helpers\Category;
 use JTL\Session\Frontend;
 
@@ -21,11 +22,6 @@ final class ProductCategories extends AbstractBox
         $show = isset($config['global']['global_sichtbarkeit'])
             && ((int)$config['global']['global_sichtbarkeit'] !== 3 || Frontend::getCustomer()->getID() > 0);
         $this->setShow($show);
-        if ($show === true) {
-            $categories = $this->getCategories();
-            $this->setItems($categories);
-            $this->setShow(\count($categories) > 0);
-        }
     }
 
     /**
@@ -39,8 +35,9 @@ final class ProductCategories extends AbstractBox
         if ($boxID > 0) {
             $list2 = [];
             foreach ($list as $key => $item) {
-                if (isset($item->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX])
-                    && (int)$item->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX] === $boxID
+                /** @var MenuItem $item **/
+                if ($item->getFunctionalAttribute(\KAT_ATTRIBUT_KATEGORIEBOX) !== null
+                    && (int)$item->getFunctionalAttribute(\KAT_ATTRIBUT_KATEGORIEBOX) === $boxID
                 ) {
                     $list2[$key] = $item;
                 }
@@ -49,5 +46,17 @@ final class ProductCategories extends AbstractBox
         }
 
         return $list;
+    }
+
+    /**
+     *
+     */
+    public function init(): void
+    {
+        if ($this->getShow() === true) {
+            $categories = $this->getCategories();
+            $this->setItems($categories);
+            $this->setShow(\count($categories) > 0);
+        }
     }
 }

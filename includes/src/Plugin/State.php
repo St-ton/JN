@@ -23,4 +23,8 @@ class State extends Enum
     public const LICENSE_KEY_MISSING = 5;
 
     public const LICENSE_KEY_INVALID = 6;
+
+    public const ESX_LICENSE_EXPIRED = 7;
+
+    public const ESX_SUBSCRIPTION_EXPIRED = 8;
 }

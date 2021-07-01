@@ -1,10 +1,9 @@
 {$uid = $instance->getUid()}
 
 <div id="{$uid}"
-     class="opc-Countdown {$instance->getAnimationClass()}"
+     class="opc-Countdown {$instance->getAnimationClass()} {$instance->getStyleClasses()}"
      style="{$instance->getStyleString()}"
      {$instance->getAnimationDataAttributeString()}
-     {if $isPreview}{$instance->getDataAttributeString()}{/if}
 >
     <div class="opc-area" {if $isPreview}data-area-id="cntdwn-title"{/if}>
         {if $isPreview}
@@ -45,8 +44,13 @@
         $(() => {
             let until = new Date("{$instance->getProperty('until')}");
             let countDownDate = until.getTime();
+            let timeout = setInterval(update, 1000);
 
-            let timeout = setInterval(() => {
+            update();
+            $(window).trigger('resize');
+
+            function update()
+            {
                 let now      = new Date().getTime();
                 let distance = countDownDate - now;
                 let days     = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -61,13 +65,14 @@
                     minutes = 0;
                     seconds = 0;
                     $("#{$uid} .expired").show();
+                    $(window).trigger('resize');
                 }
 
                 $("#{$uid} .days .cntdwn-item").html(days);
                 $("#{$uid} .hours .cntdwn-item").html(hours);
                 $("#{$uid} .minutes .cntdwn-item").html(minutes);
                 $("#{$uid} .seconds .cntdwn-item").html(seconds);
-            }, 1000);
+            }
         });
     </script>{/inline_script}
 </div>

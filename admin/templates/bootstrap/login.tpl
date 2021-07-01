@@ -13,7 +13,9 @@
             <div id="login_outer" class="card">
                 <div class="card-body">
                     <p class="text-center mb-4">
-                        <img class="brand-logo" width="120" height="38" src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
+                        <a href="index.php">
+                            <img class="brand-logo" width="120" height="38" src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
+                        </a>
                     </p>
                     {if $alertError}
                         {include file='snippets/alert_list.tpl'}
@@ -41,9 +43,9 @@
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
                                 <input class="form-control" type="text" placeholder="2fa-code" name="TwoFA_code" id="inputTwoFA" value="" size="20" tabindex="10" />
-                                <!-- <div id="counterbar" style="width:5px; background:lightgreen; position:absolute; left:250px; top:8px;"></div> -->
-                                <div style="clear:both;"></div>
-                                <div id="cb" style="width:218px;height:1px;background:red"></div>
+                                <div id="counterbar" style="width:10px; background:lightgreen; position:absolute; left:250px; top:2px;"></div>
+                                {*<div style="clear:both;"></div>*}
+                                {*<div id="cb" style="width:218px;height:1px;background:red"></div>*}
                             </div>
 
                             {literal}
@@ -99,9 +101,18 @@
                                 {captchaMarkup getBody=true}
                             {/if}
                         {/if}
+                        <div id="collapseExtended" class="collapse input-group mt-2 form-group form-row align-items-center{if $plgSafeMode === true} show{/if}" aria-labelledby="headingExtended">
+                            <input id="safemode" class="col col-sm-auto ml-2" type="checkbox" name="safemode" value="on"{if $plgSafeMode === true} checked="checked"{/if}>
+                            <label for="safemode" class="col col-sm-auto col-form-label text-sm-right" title="{__('Safe mode enabled.')}" data-toggle="tooltip">{__('Safe mode')}</label>
+                        </div>
                         <button type="submit" value="Anmelden" tabindex="100" class="btn btn-primary btn-block mt-3">{__('login')}</button>
                         {if isset($smarty.session.AdminAccount->TwoFA_active) && true === $smarty.session.AdminAccount->TwoFA_active }
                             <button type="button" tabindex="110" class="btn btn-default btn-block btn-md" onclick="switchUser();">{__('changerUser')}</button>
+                        {/if}
+                        {if $plgSafeMode !== true}
+                            <div id="headingExtended" class="mt-3 text-right small">
+                                <a href="#" data-toggle="collapse" data-target="#collapseExtended" aria-expanded="false" aria-controls="collapseExtended">{__('extended')}</a>
+                            </div>
                         {/if}
                     </form>
                 </div>

@@ -18,15 +18,14 @@ class Migration_20180912115000 extends Migration implements IMigration
     protected $description = 'Sitemap settings';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritdoc
      */
     public function up()
     {
         $this->setConfig(
             'sitemap_images_categories',
             'N',
-            \CONF_SITEMAP,
+            CONF_SITEMAP,
             'Kategoriebilder anzeigen',
             'selectbox',
             121,
@@ -42,7 +41,7 @@ class Migration_20180912115000 extends Migration implements IMigration
         $this->setConfig(
             'sitemap_images_manufacturers',
             'N',
-            \CONF_SITEMAP,
+            CONF_SITEMAP,
             'Herstellerbilder anzeigen',
             'selectbox',
             122,
@@ -58,7 +57,7 @@ class Migration_20180912115000 extends Migration implements IMigration
         $this->setConfig(
             'sitemap_images_newscategory_items',
             'N',
-            \CONF_SITEMAP,
+            CONF_SITEMAP,
             'Newskategoriebilder anzeigen',
             'selectbox',
             123,
@@ -74,7 +73,7 @@ class Migration_20180912115000 extends Migration implements IMigration
         $this->setConfig(
             'sitemap_images_news_items',
             'N',
-            \CONF_SITEMAP,
+            CONF_SITEMAP,
             'Newsbeitragsbilder anzeigen',
             'selectbox',
             124,
@@ -90,7 +89,7 @@ class Migration_20180912115000 extends Migration implements IMigration
         $this->setConfig(
             'sitemap_images_attributes',
             'N',
-            \CONF_SITEMAP,
+            CONF_SITEMAP,
             'Merkmalbilder anzeigen',
             'selectbox',
             125,
@@ -105,6 +104,9 @@ class Migration_20180912115000 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     public function down()
     {
         $this->removeConfig('sitemap_images_categories');

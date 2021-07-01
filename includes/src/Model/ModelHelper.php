@@ -19,7 +19,7 @@ final class ModelHelper
      */
     private static function formatDateTime($value, $format = 'Y-m-d H:i:s'): ?string
     {
-        if (\is_a($value, 'DateTime')) {
+        if (\is_a($value, DateTime::class)) {
             return $value->format($format);
         }
         if (\is_string($value)) {
@@ -40,13 +40,13 @@ final class ModelHelper
     }
 
     /**
-     * @param string|DateTime $value
-     * @param string|DateTime $default
+     * @param string|DateTime      $value
+     * @param string|DateTime|null $default
      * @return DateTime|null
      */
     public static function fromStrToDateTime($value, $default = null): ?DateTime
     {
-        if (($value === null && $default === null) || \is_a($value, 'DateTime')) {
+        if (($value === null && $default === null) || \is_a($value, DateTime::class)) {
             return $value;
         }
         if (\is_string($value)) {
@@ -66,7 +66,7 @@ final class ModelHelper
      */
     public static function fromTimeToStr($value): ?string
     {
-        if (\is_a($value, 'DateInterval')) {
+        if (\is_a($value, DateInterval::class)) {
             return $value->format('%H:%I:%S');
         }
         if (\is_string($value)) {
@@ -77,9 +77,8 @@ final class ModelHelper
     }
 
     /**
-     * @param string|DateInterval $value
-     * @param string|DateInterval $default
-     *
+     * @param string|DateInterval|null $value
+     * @param string|DateInterval|null $default
      * @return DateInterval|null
      */
     public static function fromStrToTime($value, $default = null): ?DateInterval
@@ -87,7 +86,7 @@ final class ModelHelper
         if (!isset($value) && !isset($default)) {
             return null;
         }
-        if (\is_a($value, 'DateInterval')) {
+        if (\is_a($value, DateInterval::class)) {
             return $value;
         }
         if (\is_string($value)) {
@@ -132,8 +131,8 @@ final class ModelHelper
     }
 
     /**
-     * @param string|DateTime $value
-     * @param string|DateTime $default
+     * @param string|DateTime      $value
+     * @param string|DateTime|null $default
      * @return DateTime|null
      */
     public static function fromStrToDate($value, $default = null): ?DateTime
@@ -157,8 +156,8 @@ final class ModelHelper
     }
 
     /**
-     * @param string|DateTime $value
-     * @param string|DateTime $default
+     * @param string|DateTime      $value
+     * @param string|DateTime|null $default
      * @return DateTime|null
      */
     public static function fromStrToTimestamp($value, $default = null): ?DateTime
@@ -169,8 +168,7 @@ final class ModelHelper
     /**
      * @param string    $value
      * @param bool|null $default
-     *
-     * @return bool
+     * @return bool|null
      */
     public static function fromCharToBool($value, $default = null): ?bool
     {
@@ -191,9 +189,9 @@ final class ModelHelper
     }
 
     /**
-     * @param int       $value
-     * @param bool|null $default
-     * @return bool
+     * @param int             $value
+     * @param bool|mixed|null $default
+     * @return bool|null
      */
     public static function fromIntToBool($value, $default = null): ?bool
     {

@@ -1,26 +1,43 @@
 {block name='snippets-shipping-calculator'}
     {block name='snippets-shipping-calculator-form'}
-        <div id="shipping-estimate-form" class="mb-5">
+        <div id="shipping-estimate-form" class="shipping-calculator-main">
             {block name='snippets-shipping-calculator-form-content'}
                 {block name='snippets-shipping-calculator-estimate'}
-                    <div class="h3 mb-4">{lang key='estimateShippingCostsTo' section='checkout'}:</div>
+                    <div class="h3 shipping-calculator-main-heading">{lang key='estimateShippingCostsTo' section='checkout'}:</div>
                 {/block}
                 {block name='snippets-shipping-calculator-estimate-main'}
                     <div class="form-row">
                         {block name='snippets-shipping-calculator-countries'}
-                            {col cols=12 md=5 class="mb-3"}
-                                {select name="land" id="country" class='custom-select' placeholder="" aria=["label"=>"{lang key='country' section='account data'}"]}
-                                    {foreach $laender as $land}
-                                        <option value="{$land->getISO()}" {if ($Einstellungen.kunden.kundenregistrierung_standardland === $land->getISO() && (!isset($smarty.session.Kunde->cLand) || !$smarty.session.Kunde->cLand)) || (isset($smarty.session.Kunde->cLand) && $smarty.session.Kunde->cLand==$land->getISO())}selected{/if}>{$land->getName()}</option>
-                                    {/foreach}
-                                {/select}
+                            {col cols=12 md=5 class="shipping-calculator-main-country"}
+                                {formgroup}
+                                    {select name="land" id="country" class='custom-select' placeholder="" aria=["label"=>"{lang key='country' section='account data'}"]}
+                                        {foreach $countries as $country}
+                                            {if $country->isShippingAvailable()}
+                                                <option value="{$country->getISO()}" {if $shippingCountry === $country->getISO()}selected{/if}>
+                                                    {$country->getName()}
+                                                </option>
+                                            {/if}
+                                        {/foreach}
+                                    {/select}
+                                {/formgroup}
                             {/col}
                         {/block}
                         {block name='snippets-shipping-calculator-submit'}
                             {col cols=12 md=3}
-                                {formgroup class='mb-3' label-for="plz" label="{lang key='plz' section='forgot password'}"}
-                                    {input type="text" name="plz" size="8" maxlength="8"
-                                        value="{if isset($smarty.session.Kunde->cPLZ)}{$smarty.session.Kunde->cPLZ}{elseif isset($VersandPLZ)}{$VersandPLZ}{/if}" id="plz" placeholder=" "
+                                {$selectedISO = "
+                                    {if isset($VersandPLZ)}
+                                        {$VersandPLZ}
+                                    {elseif isset($smarty.session.Kunde->cPLZ)}
+                                        {$smarty.session.Kunde->cPLZ}
+                                    {/if}"|trim}
+                                {formgroup label-for="plz" label="{lang key='plz' section='forgot password'}"}
+                                    {input type="text"
+                                        id="plz"
+                                        name="plz"
+                                        size="8"
+                                        maxlength="8"
+                                        value=$selectedISO
+                                        placeholder=" "
                                         aria=["label"=>"{lang key='plz' section='account data'}"]
                                     }
                                 {/formgroup}
@@ -50,7 +67,7 @@
                                     {foreach $ArtikelabhaengigeVersandarten as $artikelversand}
                                         <tr>
                                             <td>{$artikelversand->cName|trans}</td>
-                                            <td class="text-right text-nowrap">
+                                            <td class="text-right-util text-nowrap-util">
                                                 <strong>{$artikelversand->cPreisLocalized}</strong>
                                             </td>
                                         </tr>
@@ -93,7 +110,7 @@
                                                     </p>
                                                 {/if}
                                             </td>
-                                            <td class="text-right text-nowrap">
+                                            <td class="text-right-util text-nowrap-util">
                                                 <strong>
                                                     {$versandart->cPreisLocalized}
                                                 </strong>
@@ -124,6 +141,8 @@
         </div>
     {/if}
     {block name='snippets-shipping-calculator-hr-end'}
-        <hr class="my-4">
+        {if $hrAtEnd|default:true}
+            <hr class="shipping-calculator-hr">
+        {/if}
     {/block}
 {/block}

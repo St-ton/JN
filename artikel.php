@@ -111,6 +111,12 @@ if (empty($cCanonicalURL)) {
 $AktuellerArtikel->berechneSieSparenX($conf['artikeldetails']['sie_sparen_x_anzeigen']);
 $productNotices = Product::getProductMessages();
 
+if ($conf['artikeldetails']['artikeldetails_fragezumprodukt_anzeigen'] !== 'N') {
+    $smarty->assign('Anfrage', Product::getProductQuestionFormDefaults());
+}
+if ($conf['artikeldetails']['benachrichtigung_nutzen'] !== 'N') {
+    $smarty->assign('Benachrichtigung', Product::getAvailabilityFormDefaults());
+}
 if ($valid && Request::postInt('fragezumprodukt') === 1) {
     $productNotices = Product::checkProductQuestion($productNotices, $conf);
 } elseif ($valid && Request::postInt('benachrichtigung_verfuegbarkeit') === 1) {
@@ -136,7 +142,8 @@ if ($AktuellerArtikel->Bewertungen === null || $ratingStars > 0) {
         $ratingPage,
         $ratingStars,
         $conf['bewertung']['bewertung_freischalten'],
-        $sorting
+        $sorting,
+        $conf['bewertung']['bewertung_alle_sprachen'] === 'Y'
     );
     $AktuellerArtikel->holehilfreichsteBewertung();
 }
@@ -146,7 +153,7 @@ if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreic
 ) {
     $ratings = array_filter(
         $AktuellerArtikel->Bewertungen->oBewertung_arr,
-        function ($oBewertung) use (&$AktuellerArtikel) {
+        static function ($oBewertung) use (&$AktuellerArtikel) {
             return (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung
                 !== (int)$oBewertung->kBewertung;
         }
@@ -170,6 +177,7 @@ $pagination = (new Pagination('ratings'))
         ['nSterne', Shop::Lang()->get('paginationOrderByRating')],
         ['nHilfreich', Shop::Lang()->get('paginationOrderUsefulness')]
     ])
+    ->setDefaultSortByDir((int)$conf['bewertung']['bewertung_sortierung'])
     ->assemble();
 
 $AktuellerArtikel->Bewertungen->Sortierung = $sorting;
@@ -198,11 +206,15 @@ $nav = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
     ? Product::getProductNavigation($AktuellerArtikel->kArtikel ?? 0, $AktuelleKategorie->kKategorie ?? 0)
     : null;
 
-$maxSize = Upload::uploadMax();
-$smarty->assign('nMaxUploadSize', $maxSize)
-       ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
-       ->assign('oUploadSchema_arr', Upload::gibArtikelUploads($AktuellerArtikel->kArtikel))
-       ->assign('showMatrix', $AktuellerArtikel->showMatrix())
+if (($AktuellerArtikel->kVariKindArtikel ?? 0) === 0 && $AktuellerArtikel->nIstVater === 0 && Upload::checkLicense()) {
+    $maxSize = Upload::uploadMax();
+    $smarty->assign('nMaxUploadSize', $maxSize)
+           ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
+           ->assign('oUploadSchema_arr', Upload::gibArtikelUploads(!empty($AktuellerArtikel->kVariKindArtikel)
+               ? $AktuellerArtikel->kVariKindArtikel
+               : $AktuellerArtikel->kArtikel));
+}
+$smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
        ->assign('oAehnlicheArtikel_arr', $similarProducts)
        ->assign('UVPlocalized', $AktuellerArtikel->cUVPLocalized)
@@ -220,7 +232,7 @@ $smarty->assign('nMaxUploadSize', $maxSize)
            )
        )
        ->assign('BlaetterNavi', $ratingNav)
-       ->assign('BewertungsTabAnzeigen', ($ratingPage || $ratingStars || $showRatings || $allLanguages) ? 1 : 0)
+       ->assign('BewertungsTabAnzeigen', (int)($ratingPage > 0 || $ratingStars > 0 || $showRatings > 0 || $allLanguages > 0))
        ->assign('alertNote', $alertHelper->alertTypeExists(Alert::TYPE_NOTE))
        ->assign('PFAD_MEDIAFILES', $shopURL . PFAD_MEDIAFILES)
        ->assign('PFAD_BILDER', PFAD_BILDER)

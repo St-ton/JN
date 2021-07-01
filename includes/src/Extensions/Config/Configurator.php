@@ -5,7 +5,6 @@ namespace JTL\Extensions\Config;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\DB\ReturnType;
 use JTL\Nice;
 use JTL\Shop;
 use function Functional\some;
@@ -81,15 +80,14 @@ class Configurator
             return false;
         }
 
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getSingleObject(
             'SELECT tartikelkonfiggruppe.kKonfiggruppe
                  FROM tartikelkonfiggruppe
                  JOIN tkonfigitem
                     ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
                         AND tartikelkonfiggruppe.kArtikel = :pid',
-            ['pid' => $productID],
-            ReturnType::SINGLE_OBJECT
-        ) !== false;
+            ['pid' => $productID]
+        ) !== null;
     }
 
     /**
@@ -106,7 +104,7 @@ class Configurator
      * @param object $cart
      * @deprecated since 5.0.0
      */
-    public static function postcheckBasket(&$cart): void
+    public static function postcheckBasket($cart): void
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         self::postcheckCart($cart);
@@ -183,7 +181,7 @@ class Configurator
         $product = new Artikel();
         $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
         // Grundpreis
-        if ($product && (int)$product->kArtikel > 0) {
+        if ($product->kArtikel > 0) {
             $total = $product->Preise->fVKNetto;
         }
         $total  = self::getTotal($total, $configItems);
@@ -204,8 +202,8 @@ class Configurator
     }
 
     /**
-     * @param float $total
-     * @param array $configItems
+     * @param float  $total
+     * @param Item[] $configItems
      * @return float|int
      */
     private static function getTotal(float $total, array $configItems)
@@ -281,7 +279,7 @@ class Configurator
     public static function hasUnavailableGroup(array $confGroups): bool
     {
         return some($confGroups, static function (Group $group) {
-            return !$group->minItemsInStock();
+            return $group->getMin() > 0 && !$group->minItemsInStock();
         });
     }
 }

@@ -27,9 +27,19 @@
 	.form-counter {
 		.btn, .input-group-text { padding-left: map-get($spacers, 2); padding-right: map-get($spacers, 2); }
 	}
+
+	textarea {
+		height: $input-height;
+	}
 }
 
-.productbox-inner { position: relative; }
+.productbox-inner {
+	position: relative;
+
+	.productbox-title {
+		top: map-get($spacers, 2);
+	}
+}
 
 .productbox-quick-actions { position: absolute; right: map-get($spacers, 2); top: map-get($spacers, 2); display: flex; z-index: 1; justify-content: flex-end;
 	.btn { margin: map-get($spacers, 1); }
@@ -39,7 +49,7 @@
 
 .productbox-sale-percentage { position: relative; top: -(map-get($spacers, 7)); }
 
-.productbox-image { position: relative; margin-bottom: $spacer; }
+.productbox-image { position: relative;}
 
 .productbox-image-wrapper { @extend .square; }
 .productbox-image-wrapper-inner { @extend .square-inner;
@@ -83,4 +93,11 @@
 	.productbox-quick-actions, .productbox-vat,
 	.productbox-details, .productbox-status,
 	.productbox-delivery, .productbox-actions { display: none; }
+}
+
+.formrow-small {
+	white-space: nowrap;
+	dd {
+		margin-bottom: 0;
+	}
 }

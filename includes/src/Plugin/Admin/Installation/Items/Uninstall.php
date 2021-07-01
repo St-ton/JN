@@ -3,6 +3,7 @@
 namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\Plugin\InstallCode;
+use stdClass;
 
 /**
  * Class Uninstall
@@ -15,8 +16,8 @@ class Uninstall extends AbstractItem
      */
     public function getNode(): array
     {
-        return !empty($base['Uninstall'])
-            ? (array)$base['Uninstall']
+        return !empty($this->baseNode['Uninstall'])
+            ? (array)$this->baseNode['Uninstall']
             : [];
     }
 
@@ -26,7 +27,7 @@ class Uninstall extends AbstractItem
     public function install()
     {
         foreach ($this->getNode() as $node) {
-            $uninstall             = new \stdClass();
+            $uninstall             = new stdClass();
             $uninstall->kPlugin    = $this->plugin->kPlugin;
             $uninstall->cDateiname = $node;
             if (!$this->db->insert('tpluginuninstall', $uninstall)) {

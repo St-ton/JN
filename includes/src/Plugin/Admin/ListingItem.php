@@ -3,6 +3,8 @@
 namespace JTL\Plugin\Admin;
 
 use DateTime;
+use InvalidArgumentException;
+use JsonSerializable;
 use JTL\Helpers\GeneralObject;
 use JTL\Mapper\PluginValidation;
 use JTL\Plugin\InstallCode;
@@ -14,7 +16,7 @@ use JTLShop\SemVer\Version;
  * Class ListingItem
  * @package JTL\Plugin\Admin
  */
-class ListingItem
+class ListingItem implements JsonSerializable
 {
     /**
      * @var bool
@@ -45,6 +47,16 @@ class ListingItem
      * @var Version
      */
     private $version;
+
+    /**
+     * @var Version
+     */
+    private $minShopVersion;
+
+    /**
+     * @var Version
+     */
+    private $maxShopVersion;
 
     /**
      * @var string
@@ -162,9 +174,11 @@ class ListingItem
      */
     public function parseXML(array $xml): self
     {
-        $node       = null;
-        $this->name = $xml['cVerzeichnis'];
-        $this->dir  = $xml['cVerzeichnis'];
+        $node                 = null;
+        $this->name           = $xml['cVerzeichnis'];
+        $this->dir            = $xml['cVerzeichnis'];
+        $this->minShopVersion = Version::parse('5.0.0');
+        $this->maxShopVersion = Version::parse('0.0.0');
         if (GeneralObject::isCountable('jtlshopplugin', $xml)) {
             $node                    = $xml['jtlshopplugin'][0];
             $this->isShop5Compatible = true;
@@ -193,7 +207,12 @@ class ListingItem
             } else {
                 $version = $node['Version'];
             }
-            $this->version = Version::parse($version);
+            try {
+                $this->version        = Version::parse($version);
+                $this->minShopVersion = Version::parse($node['MinShopVersion'] ?? $node['ShopVersion'] ?? '5.0.0');
+                $this->maxShopVersion = Version::parse($node['MaxShopVersion'] ?? '0.0.0');
+            } catch (InvalidArgumentException $e) {
+            }
         }
         if ($xml['cFehlercode'] !== InstallCode::OK) {
             $mapper             = new PluginValidation();
@@ -212,7 +231,7 @@ class ListingItem
      */
     private function fail(): self
     {
-        $this->version = Version::parse('0.0.0');
+        $this->version = $this->version ?? Version::parse('0.0.0');
 
         return $this;
     }
@@ -229,10 +248,10 @@ class ListingItem
         $this->setAuthor($meta->getAuthor());
         $this->setID($plugin->getID());
         $this->setPluginID($plugin->getPluginID());
-        $this->setPath($plugin->getPaths()->getBaseDir());
-        $this->setDir($plugin->getPaths()->getVersionedPath());
+        $this->setPath($plugin->getPaths()->getBasePath());
+        $this->setDir($plugin->getPaths()->getBaseDir());
         $this->setIsLegacy($plugin->isLegacy());
-        $this->setIcon($meta->getIcon());
+        $this->setIcon($meta->getIcon() ?? '');
         $this->setVersion($meta->getSemVer());
         $this->setState($plugin->getState());
         $this->setDateInstalled($meta->getDateInstalled());
@@ -246,8 +265,29 @@ class ListingItem
         $this->setIsShop5Compatible(!$this->isLegacy());
         $this->setLicenseKey($plugin->getLicense()->getKey());
         $this->setUpdateAvailable($plugin->getMeta()->getUpdateAvailable());
+        $this->setMinShopVersion(Version::parse('0.0.0'));
+        $this->setMaxShopVersion(Version::parse('0.0.0'));
 
         return $this;
+    }
+
+    /**
+     * @param ListingItem $item
+     */
+    public function mergeWith(ListingItem $item): void
+    {
+        $this->setOptionsCount($item->getOptionsCount());
+        $this->setDateInstalled($item->getDateInstalled());
+        $this->setID($item->getID());
+        $this->setState($item->getState());
+        $this->setIsShop5Compatible($item->isShop5Compatible());
+        $this->setIsShop4Compatible($item->isShop4Compatible());
+        $this->setLangVarCount($item->getLangVarCount());
+        $this->setReadmeMD($item->getReadmeMD());
+        $this->setLicenseMD($item->getLicenseMD());
+        $this->setLinkCount($item->getLinkCount());
+        $this->setLicenseKey($item->getLicenseKey());
+        $this->setHasLicenseCheck($item->hasLicenseCheck());
     }
 
     /**
@@ -344,6 +384,64 @@ class ListingItem
     public function setVersion(Version $version): void
     {
         $this->version = $version;
+    }
+
+    /**
+     * @return Version
+     */
+    public function getMinShopVersion(): Version
+    {
+        return $this->minShopVersion;
+    }
+
+    /**
+     * @param Version $minShopVersion
+     */
+    public function setMinShopVersion(Version $minShopVersion): void
+    {
+        $this->minShopVersion = $minShopVersion;
+    }
+
+    /**
+     * @return Version
+     */
+    public function getMaxShopVersion(): Version
+    {
+        return $this->maxShopVersion;
+    }
+
+    /**
+     * @param Version $maxShopVersion
+     */
+    public function setMaxShopVersion(Version $maxShopVersion): void
+    {
+        $this->maxShopVersion = $maxShopVersion;
+    }
+
+    /**
+     * @return string
+     */
+    public function displayVersionRange(): string
+    {
+        $min = null;
+        $max = null;
+        if ($this->minShopVersion !== null && $this->minShopVersion->greaterThan('0.0.0')) {
+            $min = (string)$this->minShopVersion;
+        }
+        if ($this->maxShopVersion !== null && $this->maxShopVersion->greaterThan('0.0.0')) {
+            $max = (string)$this->maxShopVersion;
+        }
+        if ($min === null && $max !== null) {
+            return '<= ' . $max;
+        }
+        if ($min !== null && $max === null) {
+            return '>= ' . $min;
+        }
+        if ($min !== null && $max !== null) {
+            return $min === $max ? $min : $min . ' &dash; ' . $max;
+        }
+
+        return '?';
     }
 
     /**
@@ -696,5 +794,18 @@ class ListingItem
     public function setLicenseMD(?string $licenseMD): void
     {
         $this->licenseMD = $licenseMD;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $res = [];
+        foreach (\get_object_vars($this) as $var => $val) {
+            $res[$var] = $val;
+        }
+
+        return $res;
     }
 }

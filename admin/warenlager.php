@@ -2,36 +2,31 @@
 
 use JTL\Alert\Alert;
 use JTL\Catalog\Warehouse;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Text;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('WAREHOUSE_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step        = 'uebersicht';
-$action      = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : null;
+$postData    = Text::filterXSS($_POST);
+$action      = (isset($postData['a']) && Form::validateToken()) ? $postData['a'] : null;
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
 
 if ($action === 'update') {
-    $db->query('UPDATE twarenlager SET nAktiv = 0', ReturnType::AFFECTED_ROWS);
-    if (GeneralObject::hasCount('kWarenlager', $_REQUEST)) {
-        $wl = [];
-        foreach ($_REQUEST['kWarenlager'] as $_wl) {
-            $wl[] = (int)$_wl;
-        }
-        $db->query(
-            'UPDATE twarenlager SET nAktiv = 1 WHERE kWarenlager IN (' . implode(', ', $wl) . ')',
-            ReturnType::AFFECTED_ROWS
-        );
+    $db->query('UPDATE twarenlager SET nAktiv = 0');
+    if (GeneralObject::hasCount('kWarenlager', $postData)) {
+        $wl = array_map('\intval', $postData['kWarenlager']);
+        $db->query('UPDATE twarenlager SET nAktiv = 1 WHERE kWarenlager IN (' . implode(', ', $wl) . ')');
     }
-    if (GeneralObject::hasCount('cNameSprache', $_REQUEST)) {
-        foreach ($_REQUEST['cNameSprache'] as $kWarenlager => $assocLang) {
+    if (GeneralObject::hasCount('cNameSprache', $postData)) {
+        foreach ($postData['cNameSprache'] as $kWarenlager => $assocLang) {
             $db->delete('twarenlagersprache', 'kWarenlager', (int)$kWarenlager);
-
             foreach ($assocLang as $languageID => $name) {
                 if (mb_strlen(trim($name)) > 1) {
                     $data              = new stdClass();

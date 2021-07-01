@@ -1,10 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
-use VueInstaller\VueInstaller;
+use JTL\Installation\VueInstaller;
 
 define('PFAD_ROOT', dirname(__DIR__) . '/');
-ini_set('error_reporting', E_ALL);
-ini_set('display_errors', 1);
+ini_set('error_reporting', (string)E_ALL);
+ini_set('display_errors', '1');
+
+if (PHP_VERSION_ID < 70300) {
+    echo json_encode(['error' => 'Invalid PHP version: ' . PHP_VERSION]);
+    exit;
+}
 
 $protocol   = (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || (int)$_SERVER['HTTPS'] === 1))
     ? 'https://'

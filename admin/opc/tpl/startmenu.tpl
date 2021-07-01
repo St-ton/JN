@@ -1,14 +1,22 @@
-{if \JTL\Shop::isAdmin() && $opc->isEditMode() === false && $opc->isPreviewMode() === false}
+{if $opc->isEditMode() === false && $opc->isPreviewMode() === false && \JTL\Shop::isAdmin(true)}
     {$shopHasUpdates    = $opc->shopHasUpdates()}
     {$opcStartUrl       = "{$ShopURL}/admin/opc.php"}
     {$curPageUrl        = $opcPageService->getCurPageUri()}
-    {$curPageId         = $opcPageService->createCurrentPageId()}
+
+    {if $opcPageService->isCurPageModifiable()}
+        {$curPageId = $opcPageService->createCurrentPageId()}
+    {else}
+        {$curPageId = ''}
+    {/if}
+
     {$publicDraft       = $opcPageService->getPublicPage($curPageId)}
+
     {if $publicDraft === null}
         {$publicDraftKey = 0}
     {else}
         {$publicDraftKey = $publicDraft->getKey()}
     {/if}
+
     {$pageDrafts        = $opcPageService->getDrafts($curPageId)}
     {$adminSessionToken = $opc->getAdminSessionToken()}
     {$languages         = $smarty.session.Sprachen}
@@ -46,9 +54,17 @@
             $('#opc-page-wrapper').removeClass('opc-shifted');
         }
 
-        function deleteOpcDraft(draftKey)
+        function opcConfirm(draftName, text, yesCB)
         {
-            if (confirm('{__('draftDeleteSure')}')) {
+            $('#opcDeleteModalTitle').text(draftName);
+            $('#opcDeleteModalText').text(text);
+            $('#opcDeleteModal').modal('show');
+            $('#opcDeleteBtnYes').on('click', yesCB);
+        }
+
+        function deleteOpcDraft(draftKey, draftName)
+        {
+            opcConfirm(draftName, '{__('draftDeleteSure')}', () => {
                 $.ajax({
                     method: 'post',
                     url: '{$opcStartUrl}',
@@ -65,7 +81,7 @@
                         }
                     }
                 });
-            }
+            });
         }
 
         function getSelectedOpcDraftkeys()
@@ -81,7 +97,7 @@
         {
             let draftKeys = getSelectedOpcDraftkeys();
 
-            if (confirm(draftKeys.length + ' {__('deleteDraftsContinue')}')) {
+            opcConfirm('{__('warning')}', draftKeys.length + ' {__('deleteDraftsContinue')}', () => {
                 $.ajax({
                     method: 'post',
                     url: '{$opcStartUrl}',
@@ -100,7 +116,7 @@
                         }
                     }
                 });
-            }
+            });
         }
 
         function filterOpcDrafts()
@@ -235,7 +251,28 @@
         }
     </script>{/inline_script}
     <div id="opc">
-        {if $pageDrafts|count === 0 && $shopHasUpdates === false}
+        {if $opcPageService->isCurPageModifiable() === false}
+            <nav id="opc-startmenu">
+                <button type="button" class="opc-btn-primary" onclick="openOpcStartMenu()">
+                    <img src="{$ShopURL}/admin/opc/gfx/icon-opc.svg" alt="OPC Start Icon" id="opc-start-icon">
+                    <span id="opc-start-label">{__('onPageComposer')}</span>
+                </button>
+            </nav>
+            <div id="opcSidebar">
+                <header id="opcHeader">
+                    <h1 id="opc-sidebar-title">
+                        {__('editPage')}
+                    </h1>
+                    <button onclick="closeOpcStartMenu()" class="opc-float-right opc-header-btn"
+                            title="{__('Close OnPage-Composer')}">
+                        <i class="fa fas fa-times"></i>
+                    </button>
+                </header>
+                {alert variant='danger'}
+                {__('opcNotSupportedPage')}
+                {/alert}
+            </div>
+        {elseif $pageDrafts|count === 0 && $shopHasUpdates === false}
             <nav id="opc-startmenu">
                 <form method="post" action="{$opcStartUrl}">
                     <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
@@ -271,7 +308,7 @@
                     <div id="opc-sidebar-tools">
                         <h2 id="opc-sidebar-second-title">{__('allDrafts')}</h2>
                         <div class="opc-group">
-                            <input type="search" class="opc-filter-control float-left" placeholder="&#xF002; {__('search')}"
+                            <input type="search" class="opc-filter-control float-left" aria-label="{__('search')}" placeholder="&#xF002; {__('search')}"
                                    oninput="filterOpcDrafts()" id="opc-filter-search">
                             <div class="opc-filter-control opc-dropdown float-left" id="opc-filter-status">
                                 <button class="opc-dropdown-btn" data-toggle="dropdown">
@@ -320,6 +357,30 @@
                         </form>
                     </div>
                 {/if}
+            </div>
+            <div class="modal fade" id="opcDeleteModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="opcDeleteModalTitle"></h5>
+                            <button type="button" class="opc-header-btn" data-dismiss="modal">
+                                <i class="fa fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p id="opcDeleteModalText"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="opcDeleteBtnYes"
+                                    class="opc-btn-primary opc-small-btn" data-dismiss="modal">
+                                {__('yes')}
+                            </button>
+                            <button type="button" class="opc-btn-secondary opc-small-btn" data-dismiss="modal">
+                                {__('no')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         {/if}
     </div>

@@ -25,12 +25,20 @@ final class CompareList extends AbstractBox
         $productList = Frontend::get('Vergleichsliste')->oArtikel_arr ?? [];
         $products    = [];
         if (\count($productList) > 0) {
-            $validParams = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'show', 'suche'];
+            $validParams = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'qf', 'show', 'suche'];
             $extra       = '';
             $postData    = \array_keys($_REQUEST);
             foreach ($postData as $param) {
                 if ((int)$_REQUEST[$param] > 0 && \in_array($param, $validParams, true)) {
-                    $extra .= '&' . $param . '=' . $_REQUEST[$param];
+                    if (\is_array($_REQUEST[$param])) {
+                        $extraTMP = '';
+                        foreach ($_REQUEST[$param] as $item) {
+                            $extraTMP .= '&' . $param . '%5B%5D=' . $item;
+                        }
+                        $extra .= $extraTMP;
+                    } else {
+                        $extra .= '&' . $param . '=' . $_REQUEST[$param];
+                    }
                 }
             }
             $extra          = Text::filterXSS($extra);

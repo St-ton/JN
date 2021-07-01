@@ -5,7 +5,8 @@ namespace JTL\Plugin;
 use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
+use JTL\License\Manager;
+use JTL\License\Struct\ExpiredExsLicense;
 use JTL\Plugin\Data\AdminMenu;
 use JTL\Plugin\Data\Cache;
 use JTL\Plugin\Data\Config;
@@ -80,7 +81,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadLinks(int $id): Links
     {
-        $data  = $this->db->queryPrepared(
+        $data  = $this->db->getObjects(
             'SELECT tlink.kLink
                 FROM tlink
                 JOIN tlinksprache
@@ -89,12 +90,11 @@ abstract class AbstractLoader implements LoaderInterface
                     ON tsprache.cISO = tlinksprache.cISOSprache
                 WHERE tlink.kPlugin = :plgn
                 GROUP BY tlink.kLink',
-            ['plgn' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['plgn' => $id]
         );
         $links = new Links();
 
-        return $links->load($data);
+        return $links->load($data, $this->db);
     }
 
     /**
@@ -104,7 +104,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadLocalization(int $id, string $currentLanguageCode): Localization
     {
-        $data         = $this->db->queryPrepared(
+        $data         = $this->db->getObjects(
             'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung, o.cISO,
                 COALESCE(c.cName, o.cName) AS customValue, l.type
             FROM tpluginsprachvariable AS l
@@ -115,8 +115,7 @@ abstract class AbstractLoader implements LoaderInterface
                 AND o.cISO = c.cISO
             WHERE l.kPlugin = :pid
             ORDER BY l.kPluginSprachvariable',
-            ['pid' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $id]
         );
         $localization = new Localization($currentLanguageCode);
 
@@ -141,7 +140,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadConfig(string $path, int $id): Config
     {
-        $data   = $this->db->queryPrepared(
+        $data   = $this->db->getObjects(
             'SELECT c.kPluginEinstellungenConf AS id, c.cName AS name,
             c.cBeschreibung AS description, c.kPluginAdminMenu AS menuID, c.cConf AS confType,
             c.nSort, c.cInputTyp AS inputType, c.cSourceFile AS sourceFile,
@@ -149,14 +148,13 @@ abstract class AbstractLoader implements LoaderInterface
             c.cWertName AS confName
             FROM tplugineinstellungenconf AS c
             LEFT JOIN tplugineinstellungenconfwerte AS v
-              ON c.kPluginEinstellungenConf = v.kPluginEinstellungenConf
+                ON c.kPluginEinstellungenConf = v.kPluginEinstellungenConf
             LEFT JOIN tplugineinstellungen AS e
-			  ON e.kPlugin = c.kPlugin AND e.cName = c.cWertName
+                ON e.kPlugin = c.kPlugin AND e.cName = c.cWertName
             WHERE c.kPlugin = :pid
             GROUP BY id, confValue
             ORDER BY c.nSort',
-            ['pid' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $id]
         );
         $config = new Config($path);
 
@@ -195,6 +193,7 @@ abstract class AbstractLoader implements LoaderInterface
         $paths->setBaseDir($pluginDir);
         $paths->setBasePath($basePath);
         $paths->setVersionedPath($basePath);
+        $paths->setBaseURL($baseURL);
         $paths->setFrontendPath($basePath . \PFAD_PLUGIN_FRONTEND);
         $paths->setFrontendURL($baseURL . \PFAD_PLUGIN_FRONTEND);
         $paths->setAdminPath($basePath . \PFAD_PLUGIN_ADMINMENU);
@@ -212,16 +211,25 @@ abstract class AbstractLoader implements LoaderInterface
      * @param stdClass $data
      * @return License
      */
-    protected function loadLicense($data): License
+    protected function loadLicense(stdClass $data): License
     {
         $license = new License();
         if (\strlen($data->cLizenzKlasse) > 0 && \strpos($data->cLizenzKlasse, 'Plugin\\') !== 0) {
             $namespace           = $data->cPluginID . '\\' . \trim(\PFAD_PLUGIN_LICENCE, '\\/');
             $data->cLizenzKlasse = \sprintf('Plugin\\%s\\%s', $namespace, $data->cLizenzKlasse);
         }
-        $license->setClass($data->cLizenzKlasse);
-        $license->setClassName($data->cLizenzKlasseName);
-        $license->setKey($data->cLizenz);
+        $license->setClass($data->cLizenzKlasse ?? '');
+        $license->setClassName($data->cLizenzKlasseName ?? '');
+        $license->setKey($data->cLizenz ?? '');
+        if (!empty($data->exsID)) {
+            $manager    = new Manager($this->db, $this->cache);
+            $exsLicense = $manager->getLicenseByExsID($data->exsID);
+            if ($exsLicense === null) {
+                $exsLicense = new ExpiredExsLicense();
+                $exsLicense->initFromPluginData($data);
+            }
+            $license->setExsLicense($exsLicense);
+        }
 
         return $license;
     }
@@ -248,7 +256,7 @@ abstract class AbstractLoader implements LoaderInterface
         $i     = -1;
         $menus = \array_map(static function ($menu) use (&$i) {
             $menu->name             = $menu->cName;
-            $menu->cName            = __($menu->cName);
+            $menu->cName            = \__($menu->cName);
             $menu->displayName      = $menu->cName;
             $menu->kPluginAdminMenu = (int)$menu->kPluginAdminMenu;
             $menu->id               = $menu->kPluginAdminMenu;
@@ -268,6 +276,7 @@ abstract class AbstractLoader implements LoaderInterface
         }, $this->db->selectAll('tpluginadminmenu', 'kPlugin', $plugin->getID(), '*', 'nSort'));
         $menus = \collect($menus);
         $this->addMarkdownToAdminMenu($plugin, $menus);
+        $this->addLicenseInfo($plugin, $menus);
 
         $adminMenu = new AdminMenu();
         $adminMenu->setItems($menus);
@@ -296,7 +305,7 @@ abstract class AbstractLoader implements LoaderInterface
             $menu->nSort            = $items->count() + 1;
             $menu->sort             = $menu->nSort;
             $menu->name             = 'docs';
-            $menu->cName            = __('Dokumentation');
+            $menu->cName            = \__('Dokumentation');
             $menu->displayName      = $menu->cName;
             $menu->cDateiname       = $meta->getReadmeMD();
             $menu->file             = $menu->cDateiname;
@@ -317,8 +326,8 @@ abstract class AbstractLoader implements LoaderInterface
             $menu->pluginID         = $menu->kPlugin;
             $menu->nSort            = $items->count() + 1;
             $menu->sort             = $menu->nSort;
-            $menu->name             = 'licsense';
-            $menu->cName            = __('Lizenzvereinbarungen');
+            $menu->name             = 'license';
+            $menu->cName            = \__('Lizenzvereinbarungen');
             $menu->displayName      = $menu->cName;
             $menu->cDateiname       = $meta->getLicenseMD();
             $menu->file             = $menu->cDateiname;
@@ -340,7 +349,7 @@ abstract class AbstractLoader implements LoaderInterface
             $menu->nSort            = $items->count() + 1;
             $menu->sort             = $menu->nSort;
             $menu->name             = 'changelog';
-            $menu->cName            = __('Changelog');
+            $menu->cName            = \__('Changelog');
             $menu->displayName      = $menu->cName;
             $menu->cDateiname       = $meta->getChangelogMD();
             $menu->file             = $menu->cDateiname;
@@ -349,6 +358,43 @@ abstract class AbstractLoader implements LoaderInterface
             $menu->configurable     = false;
             $menu->isMarkdown       = true;
             $menu->tpl              = 'tpl_inc/plugin_changelog.tpl';
+            $menu->html             = '';
+            $items->push($menu);
+        }
+
+        return $items;
+    }
+
+    /**
+     * @param PluginInterface $plugin
+     * @param Collection      $items
+     * @return Collection
+     */
+    protected function addLicenseInfo(PluginInterface $plugin, Collection $items): Collection
+    {
+        $lastItem = $items->last();
+        $lastIdx  = $lastItem->idx ?? -1;
+        $license  = $plugin->getLicense()->getExsLicense();
+        if ($license !== null) {
+            ++$lastIdx;
+            $menu                   = new stdClass();
+            $menu->data             = $license;
+            $menu->kPluginAdminMenu = -1;
+            $menu->id               = 'plugin-license-' . $lastIdx;
+            $menu->kPlugin          = $plugin->getID();
+            $menu->pluginID         = $menu->kPlugin;
+            $menu->nSort            = $items->count() + 1;
+            $menu->sort             = $menu->nSort;
+            $menu->name             = 'licenseinfo';
+            $menu->cName            = \__('Lizenz');
+            $menu->displayName      = $menu->cName;
+            $menu->cDateiname       = '';
+            $menu->file             = '';
+            $menu->idx              = $lastIdx;
+            $menu->nConf            = 0;
+            $menu->configurable     = false;
+            $menu->isMarkdown       = false;
+            $menu->tpl              = 'tpl_inc/plugin_license_info.tpl';
             $menu->html             = '';
             $items->push($menu);
         }
@@ -385,7 +431,7 @@ abstract class AbstractLoader implements LoaderInterface
      * @param string $canonicalFileName - full path of the file to check
      * @return bool
      */
-    protected function checkFileExistence($canonicalFileName): bool
+    protected function checkFileExistence(string $canonicalFileName): bool
     {
         static $checked = [];
         if (!\array_key_exists($canonicalFileName, $checked)) {
@@ -422,13 +468,12 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadMailTemplates(PluginInterface $plugin): MailTemplates
     {
-        $data = $this->db->queryPrepared(
+        $data = $this->db->getObjects(
             'SELECT * FROM temailvorlage
             JOIN temailvorlagesprache AS loc
                 ON loc.kEmailvorlage = temailvorlage.kEmailvorlage
             WHERE temailvorlage.kPlugin = :id',
-            ['id' => $plugin->getID()],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['id' => $plugin->getID()]
         );
         if ($data === 0) { // race condition with migrations
             $data = [];
@@ -444,26 +489,25 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadPaymentMethods(PluginInterface $plugin): PaymentMethods
     {
-        $methods = $this->db->query(
+        $methods = $this->db->getObjects(
             "SELECT *
                 FROM tzahlungsart
                 JOIN tpluginzahlungsartklasse
-		            ON tpluginzahlungsartklasse.cModulID = tzahlungsart.cModulId
-                WHERE tzahlungsart.cModulId LIKE 'kPlugin\_" . $plugin->getID() . "%'",
-            ReturnType::ARRAY_OF_OBJECTS
+                    ON tpluginzahlungsartklasse.cModulID = tzahlungsart.cModulId
+                WHERE tzahlungsart.cModulId LIKE 'kPlugin\_" . $plugin->getID() . "\_%'"
         );
         foreach ($methods as $method) {
             $moduleID                                = Helper::getModuleIDByPluginID(
                 $plugin->getID(),
                 $method->cName
             );
-            $method->oZahlungsmethodeEinstellung_arr = $this->db->query(
+            $method->oZahlungsmethodeEinstellung_arr = $this->db->getObjects(
                 "SELECT *
                     FROM tplugineinstellungenconf
-                    WHERE cWertName LIKE '" . $moduleID . "_%'
+                    WHERE cWertName LIKE :val
                         AND cConf = 'Y'
                     ORDER BY nSort",
-                ReturnType::ARRAY_OF_OBJECTS
+                ['val' => $moduleID . '\_%']
             );
             $method->oZahlungsmethodeSprache_arr     = $this->db->selectAll(
                 'tzahlungsartsprache',

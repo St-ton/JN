@@ -152,6 +152,11 @@ abstract class AbstractFilter implements FilterInterface
     protected $isActive = false;
 
     /**
+     * @var bool
+     */
+    protected $paramExclusive = false;
+
+    /**
      * AbstractFilter constructor.
      * @param ProductFilter|null $productFilter
      */
@@ -408,7 +413,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getOptions($data = null): array
+    public function getOptions($mixed = null): array
     {
         return [];
     }
@@ -802,6 +807,24 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function isParamExclusive(): bool
+    {
+        return $this->paramExclusive;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setParamExclusive(bool $paramExclusive): FilterInterface
+    {
+        $this->paramExclusive = $paramExclusive;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function __debugInfo()
@@ -811,5 +834,17 @@ abstract class AbstractFilter implements FilterInterface
         $res['productFilter'] = '*truncated*';
 
         return $res;
+    }
+
+    /**
+     * @param string $query
+     * @return string
+     */
+    public function getCacheID(string $query): string
+    {
+        $value     = $this->getValue();
+        $valuePart = $value === null ? '' : \json_encode($value);
+
+        return 'fltr_' . \str_replace('\\', '', static::class) . \md5($query) . $valuePart;
     }
 }

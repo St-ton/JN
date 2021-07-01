@@ -5,7 +5,6 @@ namespace JTL\Catalog;
 use Exception;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Merkmal;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -81,6 +80,7 @@ class ComparisonList
             $product->kArtikel             = $item->kArtikel;
             $product->cName                = $tmpProduct->cName ?? '';
             $product->cURLFull             = $tmpProduct->cURLFull ?? '';
+            $product->image                = $tmpProduct->Bilder[0] ?? '';
             $compareList->oArtikel_arr[$i] = $product;
         }
 
@@ -104,9 +104,9 @@ class ComparisonList
             $product->Variationen = $variations;
         }
         $this->oArtikel_arr[] = $product;
-        if (Frontend::get('Vergleichsliste') === null) {
-            Frontend::set('Vergleichsliste', $this);
-        }
+
+        Frontend::set('Vergleichsliste', $this);
+
         \executeHook(\HOOK_VERGLEICHSLISTE_CLASS_EINFUEGEN);
 
         return $this;
@@ -161,7 +161,7 @@ class ComparisonList
         }
         if (\count($attributes) > 0) {
             \uasort($attributes, static function (Merkmal $a, Merkmal $b) {
-                return $a->nSort > $b->nSort;
+                return $a->nSort <=> $b->nSort;
             });
         }
 
@@ -273,7 +273,7 @@ class ComparisonList
             }
         }
         $prioRows = sort($prioRows, static function (array $left, array $right) {
-            return $left['priority'] < $right['priority'];
+            return $right['priority'] <=> $left['priority'];
         });
 
         return $keysOnly ? map($prioRows, static function (array $row) {
@@ -368,15 +368,14 @@ class ComparisonList
             return;
         }
         $db   = Shop::Container()->getDB();
-        $data = $db->queryPrepared(
+        $data = $db->getSingleObject(
             'SELECT COUNT(kVergleichsliste) AS nVergleiche
                 FROM tvergleichsliste
                 WHERE cIP = :ip
                     AND dDate > DATE_SUB(NOW(),INTERVAL 1 DAY)',
-            ['ip' => Request::getRealIP()],
-            ReturnType::SINGLE_OBJECT
+            ['ip' => Request::getRealIP()]
         );
-        if ($data->nVergleiche < 3) {
+        if ($data !== null && $data->nVergleiche < 3) {
             $ins        = new stdClass();
             $ins->cIP   = Request::getRealIP();
             $ins->dDate = \date('Y-m-d H:i:s');

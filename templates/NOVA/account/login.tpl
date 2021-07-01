@@ -20,13 +20,16 @@
         {/block}
     {elseif !$alertNote}
         {block name='account-login-alert'}
-            {alert variant="info"}{lang key='loginDesc' section='login'} {if isset($oRedirect->cName) && $oRedirect->cName}{lang key='redirectDesc1'} {$oRedirect->cName} {lang key='redirectDesc2'}.{/if}{/alert}
+            {alert variant="info"}
+                {lang key='loginDesc' section='login'}
+                {if isset($oRedirect->cName) && $oRedirect->cName}{lang key='redirectDesc1'} {$oRedirect->cName} {lang key='redirectDesc2'}.{/if}
+            {/alert}
         {/block}
     {/if}
 
     {block name='account-login-form'}
         {opcMountPoint id='opc_before_login'}
-        {row}
+        {row class="login-form"}
             {col sm=8 lg=6}
                 {form id="login_form" action="{get_static_route id='jtl.php'}" method="post" role="form" class="jtl-validate" slide=true}
                     <fieldset>
@@ -52,14 +55,14 @@
 
                             {if isset($showLoginCaptcha) && $showLoginCaptcha}
                                 {block name='account-login-form-submit-captcha'}
-                                   {formgroup class="text-center"}
+                                   {formgroup class="simple-captcha-wrapper"}
                                         {captchaMarkup getBody=true}
                                    {/formgroup}
                                 {/block}
                             {/if}
 
                             {block name='account-login-form-submit'}
-                                {formgroup}
+                                {formgroup class="login-form-submit"}
                                     {input type="hidden" name="login" value="1"}
                                     {if !empty($oRedirect->cURL)}
                                         {foreach $oRedirect->oParameter_arr as $oParameter}
@@ -76,10 +79,19 @@
                                 {/formgroup}
                             {/block}
                             {block name='account-login-form-submit-register'}
-                               {link class="register mb-2 d-block d-md-inline-block" href="{get_static_route id='registrieren.php'}"}<span class="fa fa-pencil"></span> {lang key='newHere'} {lang key='registerNow'}{/link}
+                                <span class="register-wrapper">
+                                    {lang key='newHere'}
+                                    {link class="register" href="{get_static_route id='registrieren.php'}"}
+                                        {lang key='registerNow'}
+                                    {/link}
+                                </span>
                             {/block}
                             {block name='account-login-form-submit-resetpw'}
-                               {link class="resetpw ml-0 ml-md-3" href="{get_static_route id='pass.php'}"}<span class="fa fa-question-circle"></span> {lang key='forgotPassword'}{/link}
+                                <span class="resetpw-wrapper">
+                                   {link class="resetpw" href="{get_static_route id='pass.php'}"}
+                                       <span class="fa fa-question-circle"></span> {lang key='forgotPassword'}
+                                   {/link}
+                                </span>
                             {/block}
                         {/block}
                     </fieldset>

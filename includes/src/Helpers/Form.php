@@ -4,7 +4,6 @@ namespace JTL\Helpers;
 
 use Exception;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
@@ -99,41 +98,31 @@ class Form
     public static function getMissingContactFormData(): array
     {
         $ret  = [];
-        $conf = Shop::getSettings([\CONF_KONTAKTFORMULAR, \CONF_GLOBAL]);
-        if (!$_POST['nachricht']) {
+        $conf = Shop::getSettings([\CONF_KONTAKTFORMULAR, \CONF_GLOBAL])['kontakt'];
+        if (empty($_POST['nachricht'])) {
             $ret['nachricht'] = 1;
         }
-        if (!$_POST['email']) {
-            $ret['email'] = 1;
-        }
-        if (!$_POST['subject']) {
+        if (empty($_POST['subject'])) {
             $ret['subject'] = 1;
         }
-        if (Text::filterEmailAddress($_POST['email']) === false) {
+        if (empty($_POST['email'])) {
+            $ret['email'] = 1;
+        } elseif (Text::filterEmailAddress($_POST['email'] ?? '') === false) {
             $ret['email'] = 2;
-        }
-        if (SimpleMail::checkBlacklist($_POST['email'])) {
+        } elseif (SimpleMail::checkBlacklist($_POST['email'] ?? '')) {
             $ret['email'] = 3;
         }
-        if (!$_POST['vorname'] && $conf['kontakt']['kontakt_abfragen_vorname'] === 'Y') {
-            $ret['vorname'] = 1;
+        foreach (['vorname', 'nachname', 'firma'] as $key) {
+            if (empty($_POST[$key]) && $conf['kontakt_abfragen_' . $key] === 'Y') {
+                $ret[$key] = 1;
+            }
         }
-        if (!$_POST['nachname'] && $conf['kontakt']['kontakt_abfragen_nachname'] === 'Y') {
-            $ret['nachname'] = 1;
+        foreach (['fax', 'tel', 'mobil'] as $numberKey) {
+            if ($conf['kontakt_abfragen_' . $numberKey] === 'Y') {
+                $ret[$numberKey] = Text::checkPhoneNumber($_POST[$numberKey] ?? '');
+            }
         }
-        if (!$_POST['firma'] && $conf['kontakt']['kontakt_abfragen_firma'] === 'Y') {
-            $ret['firma'] = 1;
-        }
-        if ($conf['kontakt']['kontakt_abfragen_fax'] === 'Y') {
-            $ret['fax'] = Text::checkPhoneNumber($_POST['fax']);
-        }
-        if ($conf['kontakt']['kontakt_abfragen_tel'] === 'Y') {
-            $ret['tel'] = Text::checkPhoneNumber($_POST['tel']);
-        }
-        if ($conf['kontakt']['kontakt_abfragen_mobil'] === 'Y') {
-            $ret['mobil'] = Text::checkPhoneNumber($_POST['mobil']);
-        }
-        if ($conf['kontakt']['kontakt_abfragen_captcha'] !== 'N' && !self::validateCaptcha($_POST)) {
+        if ($conf['kontakt_abfragen_captcha'] !== 'N' && !self::validateCaptcha($_POST)) {
             $ret['captcha'] = 2;
         }
 
@@ -141,87 +130,30 @@ class Form
     }
 
     /**
+     * @param bool $clear
      * @return stdClass
      * @since 5.0.0
      */
-    public static function baueKontaktFormularVorgaben(): stdClass
+    public static function baueKontaktFormularVorgaben(bool $clear = false): stdClass
     {
-        $msg = new stdClass();
-        if (isset($_SESSION['Kunde'])) {
-            $msg->cAnrede   = $_SESSION['Kunde']->cAnrede;
-            $msg->cVorname  = $_SESSION['Kunde']->cVorname;
-            $msg->cNachname = $_SESSION['Kunde']->cNachname;
-            $msg->cFirma    = $_SESSION['Kunde']->cFirma;
-            $msg->cMail     = $_SESSION['Kunde']->cMail;
-            $msg->cTel      = $_SESSION['Kunde']->cTel;
-            $msg->cMobil    = $_SESSION['Kunde']->cMobil;
-            $msg->cFax      = $_SESSION['Kunde']->cFax;
+        $msg                  = self::getDefaultCustomerFormInputs();
+        $msg->kKontaktBetreff = null;
+        $msg->cNachricht      = null;
+
+        if ($clear) {
+            return $msg;
         }
+
         $msg->kKontaktBetreff = Request::postInt('subject', null);
         $msg->cNachricht      = isset($_POST['nachricht'])
             ? Text::filterXSS($_POST['nachricht'])
             : null;
 
-        if (isset($_POST['anrede']) && $_POST['anrede']) {
-            $msg->cAnrede = Text::filterXSS($_POST['anrede']);
-        }
-        if (isset($_POST['vorname']) && $_POST['vorname']) {
-            $msg->cVorname = Text::filterXSS($_POST['vorname']);
-        }
-        if (isset($_POST['nachname']) && $_POST['nachname']) {
-            $msg->cNachname = Text::filterXSS($_POST['nachname']);
-        }
-        if (isset($_POST['firma']) && $_POST['firma']) {
-            $msg->cFirma = Text::filterXSS($_POST['firma']);
-        }
-        if (isset($_POST['email']) && $_POST['email']) {
-            $msg->cMail = Text::filterXSS($_POST['email']);
-        }
-        if (isset($_POST['fax']) && $_POST['fax']) {
-            $msg->cFax = Text::filterXSS($_POST['fax']);
-        }
-        if (isset($_POST['tel']) && $_POST['tel']) {
-            $msg->cTel = Text::filterXSS($_POST['tel']);
-        }
-        if (isset($_POST['mobil']) && $_POST['mobil']) {
-            $msg->cMobil = Text::filterXSS($_POST['mobil']);
-        }
         if (isset($_POST['subject']) && $_POST['subject']) {
             $msg->kKontaktBetreff = Text::filterXSS($_POST['subject']);
         }
         if (isset($_POST['nachricht']) && $_POST['nachricht']) {
             $msg->cNachricht = Text::filterXSS($_POST['nachricht']);
-        }
-        if (isset($msg->cAnrede) && \mb_strlen($msg->cAnrede) === 1) {
-            if ($msg->cAnrede === 'm') {
-                $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
-            } elseif ($msg->cAnrede === 'w') {
-                $msg->cAnredeLocalized = Shop::Lang()->get('salutationW');
-            }
-        }
-        if (!isset($msg->cAnrede)) {
-            $msg->cAnrede = '';
-        }
-        if (!isset($msg->cVorname)) {
-            $msg->cVorname = '';
-        }
-        if (!isset($msg->cNachname)) {
-            $msg->cNachname = '';
-        }
-        if (!isset($msg->cFirma)) {
-            $msg->cFirma = '';
-        }
-        if (!isset($msg->cMail)) {
-            $msg->cMail = '';
-        }
-        if (!isset($msg->cTel)) {
-            $msg->cTel = '';
-        }
-        if (!isset($msg->cMobil)) {
-            $msg->cMobil = '';
-        }
-        if (!isset($msg->cFax)) {
-            $msg->cFax = '';
         }
 
         return $msg;
@@ -242,15 +174,14 @@ class Form
             }
         }
 
-        $subjects = Shop::Container()->getDB()->query(
+        $subjects = Shop::Container()->getDB()->getObjects(
             "SELECT kKontaktBetreff
                 FROM tkontaktbetreff
                 WHERE FIND_IN_SET('" . $customerGroupID . "', REPLACE(cKundengruppen, ';', ',')) > 0
-                    OR cKundengruppen = '0'",
-            ReturnType::ARRAY_OF_OBJECTS
+                    OR cKundengruppen = '0'"
         );
 
-        return \is_array($subjects) && \count($subjects) > 0;
+        return \count($subjects) > 0;
     }
 
     /**
@@ -292,13 +223,13 @@ class Form
         $mailData->toName       = $conf['global']['global_shopname'];
         $mailData->replyToEmail = $data->tnachricht->cMail;
         $mailData->replyToName  = '';
-        if (isset($data->tnachricht->cVorname)) {
+        if (!empty($data->tnachricht->cVorname)) {
             $mailData->replyToName .= $data->tnachricht->cVorname . ' ';
         }
-        if (isset($data->tnachricht->cNachname)) {
+        if (!empty($data->tnachricht->cNachname)) {
             $mailData->replyToName .= $data->tnachricht->cNachname;
         }
-        if (isset($data->tnachricht->cFirma)) {
+        if (!empty($data->tnachricht->cFirma)) {
             $mailData->replyToName .= ' - ' . $data->tnachricht->cFirma;
         }
         $data->mail = $mailData;
@@ -339,22 +270,48 @@ class Form
      * @return bool
      * @since 5.0.0
      */
-    public static function checkFloodProtection($min): bool
+    public static function checkFloodProtection(int $min): bool
     {
         if (!$min) {
             return false;
         }
-        $min     = (int)$min;
-        $history = Shop::Container()->getDB()->executeQueryPrepared(
+        $history = Shop::Container()->getDB()->getSingleObject(
             'SELECT kKontaktHistory
                 FROM tkontakthistory
                 WHERE cIP = :ip
                     AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
-            ['ip' => Request::getRealIP(), 'min' => $min],
-            ReturnType::SINGLE_OBJECT
+            ['ip' => Request::getRealIP(), 'min' => $min]
         );
 
-        return isset($history->kKontaktHistory) && $history->kKontaktHistory > 0;
+        return $history !== null && $history->kKontaktHistory > 0;
+    }
+
+    /**
+     * @param int $max
+     * @return bool
+     * @since 5.0.0
+     */
+    public static function reachedUploadLimitPerHour(int $max = 0): bool
+    {
+        if ($max <= 0) {
+            return false;
+        }
+        Shop::Container()->getDB()->query(
+            "DELETE
+                FROM tfloodprotect
+                WHERE dErstellt < DATE_SUB(NOW(), INTERVAL 1 HOUR)
+                    AND cTyp = 'upload'"
+        );
+
+        $result = Shop::Container()->getDB()->getSingleObject(
+            "SELECT COUNT(kFloodProtect) AS cnt
+                FROM tfloodprotect
+                WHERE cTyp = 'upload'
+                    AND cIP = :ip",
+            ['ip' => Request::getRealIP()]
+        );
+
+        return ($result->cnt ?? 0) >= $max;
     }
 
     /**
@@ -364,5 +321,36 @@ class Form
     public static function baueFormularVorgaben(): stdClass
     {
         return self::baueKontaktFormularVorgaben();
+    }
+
+    /**
+     * @return stdClass
+     */
+    public static function getDefaultCustomerFormInputs(): stdClass
+    {
+        $msg    = new stdClass();
+        $inputs = [
+            'cAnrede'   => 'anrede',
+            'cVorname'  => 'vorname',
+            'cNachname' => 'nachname',
+            'cFirma'    => 'firma',
+            'cMail'     => 'email',
+            'cFax'      => 'fax',
+            'cTel'      => 'tel',
+            'cMobil'    => 'mobil'
+        ];
+
+        foreach ($inputs as $key => $input) {
+            $msg->$key = isset($_POST[$input]) ? Text::filterXSS($_POST[$input]) : ($_SESSION['Kunde']->$key ?? null);
+        }
+
+        if ($msg->cAnrede === 'm') {
+            $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
+        } elseif ($msg->cAnrede === 'w') {
+            $msg->cAnredeLocalized = Shop::Lang()->get('salutationW');
+        }
+
+
+        return $msg;
     }
 }

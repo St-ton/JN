@@ -67,10 +67,9 @@ class Lieferschein
     public $oPosition_arr = [];
 
     /**
-     * Constructor
-     *
-     * @param int    $id
-     * @param object $data
+     * Lieferschein constructor.
+     * @param int         $id
+     * @param object|null $data
      */
     public function __construct(int $id = 0, $data = null)
     {
@@ -80,8 +79,8 @@ class Lieferschein
     }
 
     /**
-     * @param int    $id
-     * @param object $data
+     * @param int         $id
+     * @param object|null $data
      * @return $this
      */
     private function loadFromDB(int $id = 0, $data = null): self

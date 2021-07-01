@@ -3,8 +3,6 @@
 namespace JTL\Extensions\SelectionWizard;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
-use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 use stdClass;
 
@@ -93,42 +91,41 @@ class Group
     private function loadFromDB(int $groupID, bool $active, bool $activeOnly, bool $backend): void
     {
         $activeSQL = $active ? ' AND nAktiv = 1' : '';
-        $group     = $this->db->queryPrepared(
+        $group     = $this->db->getSingleObject(
             'SELECT *
                 FROM tauswahlassistentgruppe
                 WHERE kAuswahlAssistentGruppe = :groupID' .
             $activeSQL,
-            ['groupID' => $groupID],
-            ReturnType::SINGLE_OBJECT
+            ['groupID' => $groupID]
         );
-        if (isset($group->kAuswahlAssistentGruppe) && $group->kAuswahlAssistentGruppe > 0) {
-            $question = new Question();
-            foreach (\array_keys(\get_object_vars($group)) as $member) {
-                $this->$member = $group->$member;
-            }
-            $this->kAuswahlAssistentGruppe    = (int)$this->kAuswahlAssistentGruppe;
-            $this->kSprache                   = (int)$this->kSprache;
-            $this->nAktiv                     = (int)$this->nAktiv;
-            $this->oAuswahlAssistentFrage_arr = $question->getQuestions($groupID, $activeOnly);
-            $location                         = new Location(0, $groupID, $backend);
-            $this->oAuswahlAssistentOrt_arr   = $location->oOrt_arr;
-            foreach ($this->oAuswahlAssistentOrt_arr as $location) {
-                if ($location->cKey === \AUSWAHLASSISTENT_ORT_KATEGORIE) {
-                    $this->cKategorie .= $location->kKey . ';';
-                }
-                if ($location->cKey === \AUSWAHLASSISTENT_ORT_STARTSEITE) {
-                    $this->nStartseite = 1;
-                }
-            }
-            $language       = $this->db->queryPrepared(
-                'SELECT cNameDeutsch 
-                    FROM tsprache 
-                    WHERE kSprache = :langID',
-                ['langID' => (int)$this->kSprache],
-                ReturnType::SINGLE_OBJECT
-            );
-            $this->cSprache = $language->cNameDeutsch;
+        if ($group === null || $group->kAuswahlAssistentGruppe <= 0) {
+            return;
         }
+        $question = new Question();
+        foreach (\array_keys(\get_object_vars($group)) as $member) {
+            $this->$member = $group->$member;
+        }
+        $this->kAuswahlAssistentGruppe    = (int)$this->kAuswahlAssistentGruppe;
+        $this->kSprache                   = (int)$this->kSprache;
+        $this->nAktiv                     = (int)$this->nAktiv;
+        $this->oAuswahlAssistentFrage_arr = $question->getQuestions($groupID, $activeOnly);
+        $location                         = new Location(0, $groupID, $backend);
+        $this->oAuswahlAssistentOrt_arr   = $location->oOrt_arr;
+        foreach ($this->oAuswahlAssistentOrt_arr as $location) {
+            if ($location->cKey === \AUSWAHLASSISTENT_ORT_KATEGORIE) {
+                $this->cKategorie .= $location->kKey . ';';
+            }
+            if ($location->cKey === \AUSWAHLASSISTENT_ORT_STARTSEITE) {
+                $this->nStartseite = 1;
+            }
+        }
+        $language       = $this->db->getSingleObject(
+            'SELECT cNameDeutsch 
+                FROM tsprache 
+                WHERE kSprache = :langID',
+            ['langID' => (int)$this->kSprache]
+        );
+        $this->cSprache = $language->cNameDeutsch ?? '';
     }
 
     /**
@@ -142,12 +139,11 @@ class Group
     {
         $groups    = [];
         $activeSQL = $active ? ' AND nAktiv = 1' : '';
-        $groupData = $this->db->queryPrepared(
+        $groupData = $this->db->getObjects(
             'SELECT kAuswahlAssistentGruppe AS id
                 FROM tauswahlassistentgruppe
                 WHERE kSprache = :langID' . $activeSQL,
-            ['langID' => $langID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['langID' => $langID]
         );
         foreach ($groupData as $item) {
             $groups[] = new self((int)$item->id, $active, $activeOnly, $backend);
@@ -167,19 +163,17 @@ class Group
         if (\count($checks) !== 0) {
             return $checks;
         }
-        $data = GeneralObject::copyMembers($this);
-
         $this->nAktiv                  = (int)$this->nAktiv;
         $this->kSprache                = (int)$this->kSprache;
         $this->nStartseite             = (int)$this->nStartseite;
         $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
-        unset(
-            $data->cSprache,
-            $data->nStartseite,
-            $data->cKategorie,
-            $data->oAuswahlAssistentOrt_arr,
-            $data->oAuswahlAssistentFrage_arr
-        );
+
+        $data                = new stdClass();
+        $data->kSprache      = $this->kSprache;
+        $data->cName         = $this->cName;
+        $data->cBeschreibung = $this->cBeschreibung;
+        $data->nAktiv        = $this->nAktiv;
+
         $groupID = $this->db->insert('tauswahlassistentgruppe', $data);
         if ($groupID > 0) {
             $location = new Location();
@@ -256,8 +250,7 @@ class Group
                     LEFT JOIN tauswahlassistentort tao
                         ON tao.kAuswahlAssistentGruppe = tag.kAuswahlAssistentGruppe
                     WHERE tag.kAuswahlAssistentGruppe = :groupID',
-                ['groupID' => (int)$groupID],
-                ReturnType::AFFECTED_ROWS
+                ['groupID' => (int)$groupID]
             );
         }
 

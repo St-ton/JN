@@ -120,7 +120,7 @@ sorttable = {
 
           // remove sorttable_sorted classes
           theadrow = this.parentNode;
-          forEach(theadrow.childNodes, function(cell) {
+          forEach(theadrow.children, function(cell) {
             if (cell.nodeType == 1) { // an element
               cell.className = cell.className.replace('sorttable_sorted_reverse','');
               cell.className = cell.className.replace('sorttable_sorted','');
@@ -232,8 +232,8 @@ sorttable = {
         case 1:
         case 11:
           var innerText = '';
-          for (var i = 0; i < node.childNodes.length; i++) {
-            innerText += sorttable.getInnerText(node.childNodes[i]);
+          for (var i = 0; i < node.children.length; i++) {
+            innerText += sorttable.getInnerText(node.children[i]);
           }
           return innerText.replace(/^\s+|\s+$/g, '');
           break;

@@ -6,10 +6,10 @@ use InvalidArgumentException;
 use JTL\Cron\Job\Export;
 use JTL\Cron\Job\GeneralDataProtect;
 use JTL\Cron\Job\ImageCache;
+use JTL\Cron\Job\LicenseCheck;
 use JTL\Cron\Job\Newsletter;
 use JTL\Cron\Job\Statusmail;
 use JTL\Cron\Job\Store;
-use JTL\Cron\JobInterface;
 use JTL\Cron\Type;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
@@ -22,7 +22,7 @@ class JobTypeToJob
 {
     /**
      * @param string $type
-     * @return JobInterface
+     * @return string
      */
     public function map(string $type): string
     {
@@ -39,6 +39,8 @@ class JobTypeToJob
                 return GeneralDataProtect::class;
             case Type::STORE:
                 return Store::class;
+            case TYPE::LICENSE_CHECK:
+                return LicenseCheck::class;
             default:
                 $mapping = null;
                 Dispatcher::getInstance()->fire(Event::MAP_CRONJOB_TYPE, ['type' => $type, 'mapping' => &$mapping]);

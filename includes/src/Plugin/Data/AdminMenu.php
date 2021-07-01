@@ -3,6 +3,7 @@
 namespace JTL\Plugin\Data;
 
 use Illuminate\Support\Collection;
+use stdClass;
 
 /**
  * Class AdminMenu
@@ -40,10 +41,20 @@ class AdminMenu
     }
 
     /**
-     * @param $item
+     * @param stdClass $item
      */
     public function addItem($item): void
     {
         $this->items->push($item);
+    }
+
+    /**
+     * @param int $menuID
+     */
+    public function removeItem(int $menuID): void
+    {
+        $this->items = $this->items->reject(static function ($value, $key) use ($menuID) {
+            return $value->kPluginAdminMenu === $menuID;
+        });
     }
 }

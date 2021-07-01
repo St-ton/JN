@@ -2,7 +2,7 @@
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
 use stdClass;
 
 /**
@@ -87,12 +87,12 @@ class Slide
     }
 
     /**
-     * @param string $type
+     * @param string $value
      * @return string|null
      */
-    private function getMapping(string $type): ?string
+    private function getMapping(string $value): ?string
     {
-        return self::$mapping[$type] ?? null;
+        return self::$mapping[$value] ?? null;
     }
 
     /**
@@ -167,8 +167,8 @@ class Slide
     private function setAbsoluteImagePaths(): self
     {
         $basePath                = Shop::getImageBaseURL();
-        $this->absoluteImage     = $basePath . \str_replace($basePath, '', \mb_substr($this->image, 1));
-        $this->absoluteThumbnail = $basePath . \str_replace($basePath, '', \mb_substr($this->thumbnail, 1));
+        $this->absoluteImage     = $basePath . $this->image;
+        $this->absoluteThumbnail = $basePath . $this->thumbnail;
 
         return $this;
     }
@@ -179,24 +179,14 @@ class Slide
     public function save(): bool
     {
         if (!empty($this->image)) {
-            $shopURL  = \parse_url(Shop::getURL(), \PHP_URL_PATH);
-            $shopURL2 = \parse_url(\URL_SHOP, \PHP_URL_PATH);
-            if (\mb_strrpos($shopURL, '/') !== (\mb_strlen($shopURL) - 1)) {
-                $shopURL .= '/';
+            if (Text::startsWith($this->image, 'Bilder/')) {
+                $this->setThumbnail(\PFAD_MEDIAFILES . 'Bilder/.tmb/' . \basename($this->getThumbnail()));
+            } else {
+                $this->setThumbnail(\STORAGE_OPC . '.tmb/' . \basename($this->getThumbnail()));
             }
-            if (\mb_strrpos($shopURL2, '/') !== (\mb_strlen($shopURL2) - 1)) {
-                $shopURL2 .= '/';
-            }
-            $path  = $shopURL . \PFAD_MEDIAFILES;
-            $path2 = $shopURL2 . \PFAD_MEDIAFILES;
-            if (\mb_strpos($this->image, $path) !== false) {
-                $len             = \mb_strlen($path);
-                $this->image     = \mb_substr($this->image, $len);
-                $this->thumbnail = '.thumbs/' . $this->image;
-            } elseif (\mb_strpos($this->image, $path2) !== false) {
-                $len             = \mb_strlen($path2);
-                $this->image     = \mb_substr($this->image, $len);
-                $this->thumbnail = '.thumbs/' . $this->image;
+            $path = \parse_url(\Shop::getURL() . '/', \PHP_URL_PATH);
+            if (Text::startsWith($this->image, $path)) {
+                $this->image = \ltrim(\substr($this->image, \mb_strlen($path)), '/');
             }
         }
 
@@ -219,6 +209,7 @@ class Slide
         $slide->cBild   = $this->getImage();
         $slide->nSort   = $this->getSort();
         $slide->cLink   = $this->getLink();
+        $slide->cText   = $this->getText();
 
         return Shop::Container()->getDB()->update('tslide', 'kSlide', $this->getID(), $slide);
     }
@@ -236,15 +227,14 @@ class Slide
             }
             unset($slide->cBildAbsolut, $slide->cThumbnailAbsolut, $slide->kSlide);
             if ($this->sort === null) {
-                $oSort        = Shop::Container()->getDB()->queryPrepared(
+                $sort         = Shop::Container()->getDB()->getSingleObject(
                     'SELECT nSort
                         FROM tslide
                         WHERE kSlider = :sliderID
                         ORDER BY nSort DESC LIMIT 1',
-                    ['sliderID' => $this->sliderID],
-                    ReturnType::SINGLE_OBJECT
+                    ['sliderID' => $this->sliderID]
                 );
-                $slide->nSort = (!\is_object($oSort) || (int)$oSort->nSort === 0) ? 1 : ($oSort->nSort + 1);
+                $slide->nSort = ($sort === null || (int)$sort->nSort === 0) ? 1 : ($sort->nSort + 1);
             }
             $id = Shop::Container()->getDB()->insert('tslide', $slide);
             if ($id > 0) {

@@ -3,21 +3,21 @@
     {assign var=step2_active value=($bestellschritt[3] == 1 || $bestellschritt[4] == 1)}
     {assign var=step3_active value=($bestellschritt[5] == 1)}
     {if $bestellschritt[1] != 3}
-        {nav class='stepper mb-6' tag='nav' aria=["label"=>"{lang key='secureCheckout' section='checkout'}"]}
+        {nav class='stepper checkout-steps' tag='nav' aria=["label"=>"{lang key='secureCheckout' section='checkout'}"]}
             {col lg=4 class="nav-item step step-active {if $step1_active}step-current{else}col-auto{/if}"}
                 {block name='checkout-inc-steps-first'}
                     {link href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1"
                         title="{lang section='account data' key='billingAndDeliveryAddress'}"
-                        class="text-decoration-none"}
+                        class="text-decoration-none-util"}
                         <div class="step-content">
-                            <span class="badge badge-pill badge-primary mr-3 ml-md-auto">
+                            {badge variant="primary" class="badge-pill"}
                                 <span class="badge-count">1</span>
-                            </span>
-                            <span class="step-text {if !$step1_active}d-none d-md-inline-block{/if} mr-auto">
+                            {/badge}
+                            <span class="step-text {if !$step1_active}d-none d-md-inline-block{/if}">
                                 {lang section='account data' key='billingAndDeliveryAddress'}
                             </span>
                             {if $step2_active || $step3_active}
-                                <span class="fas fa-check ml-0 ml-md-3 mr-auto text-primary"></span>
+                                <span class="fas fa-check step-check"></span>
                             {/if}
                         </div>
                     {/link}
@@ -27,16 +27,16 @@
                 {block name='checkout-inc-steps-second'}
                     {link href="{get_static_route id='bestellvorgang.php'}?editVersandart=1"
                         title="{lang section='account data' key='shippingAndPaymentOptions'}"
-                        class="text-decoration-none"}
+                        class="text-decoration-none-util"}
                         <div class="step-content">
-                            <span class="badge badge-pill badge-{if $step2_active || $step3_active}primary{else}secondary{/if} mr-3 ml-md-auto">
+                            {badge variant="{if $step2_active || $step3_active}primary{else}secondary{/if}" class="badge-pill"}
                                 <span class="badge-count">2</span>
-                            </span>
-                            <span class="step-text {if !$step2_active}d-none d-md-inline-block{/if} mr-auto">
+                            {/badge}
+                            <span class="step-text {if !$step2_active}d-none d-md-inline-block{/if}">
                                 {lang section='account data' key='shippingAndPaymentOptions'}
                             </span>
                             {if $step3_active}
-                                <span class="fas fa-check ml-0 ml-md-3 mr-auto text-primary"></span>
+                                <span class="fas fa-check step-check"></span>
                             {/if}
                         </div>
                     {/link}
@@ -45,10 +45,10 @@
             {col lg=4 class="nav-item step {if $step3_active}step-active step-current{else}col-auto{/if}"}
                 {block name='checkout-inc-steps-third'}
                     <div class="step-content">
-                        <span class="badge badge-pill badge-{if $step3_active}primary mr-3{else}secondary{/if} mr-md-3 ml-md-auto">
+                        {badge variant="{if $step3_active}primary{else}secondary{/if}" class="badge-pill"}
                             <span class="badge-count">3</span>
-                        </span>
-                        <span class="step-text {if !$step3_active}d-none d-md-inline-block{/if} mr-auto">
+                        {/badge}
+                        <span class="step-text {if !$step3_active}d-none d-md-inline-block{/if}">
                             {lang section='checkout' key='summary'}
                         </span>
                     </div>

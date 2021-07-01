@@ -3,8 +3,10 @@
 namespace JTL\Filter\SortingOptions;
 
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 use JTL\Filter\ProductFilter;
 use JTL\Mapper\SortingType;
+use JTL\Plugin\PluginInterface;
 
 /**
  * Class Factory
@@ -29,7 +31,6 @@ class Factory
         \SEARCH_SORT_EAN,
         \SEARCH_SORT_NEWEST_FIRST,
         \SEARCH_SORT_PRODUCTNO,
-        \SEARCH_SORT_AVAILABILITY,
         \SEARCH_SORT_WEIGHT,
         \SEARCH_SORT_DATEOFISSUE,
         \SEARCH_SORT_BESTSELLER,
@@ -40,6 +41,11 @@ class Factory
      * @var array
      */
     private $mapping = [];
+
+    /**
+     * @var PluginInterface[]
+     */
+    private $plugins = [];
 
     /**
      * Factory constructor.
@@ -56,12 +62,14 @@ class Factory
     }
 
     /**
-     * @param int    $value
-     * @param string $className
+     * @param int                  $value
+     * @param string               $className
+     * @param PluginInterface|null $plugin
      */
-    public function registerSortingOption(int $value, string $className): void
+    public function registerSortingOption(int $value, string $className, PluginInterface $plugin = null): void
     {
         $this->mapping[$value] = $className;
+        $this->plugins[$value] = $plugin;
     }
 
     /**
@@ -77,16 +85,18 @@ class Factory
             }
         }
         foreach ($this->mapping as $id => $class) {
-            $all->push(new $class($this->productFilter));
+            $all->push(new $class($this->productFilter, $this->plugins[$id]));
         }
 
-        return $all;
+        return $all->filter(static function (SortingOptionInterface $option) {
+            return $option->getPriority() !== 0;
+        });
     }
 
     /**
      * @param int $type
      * @return SortingOptionInterface|null
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function getSortingOption(int $type): ?SortingOptionInterface
     {
@@ -96,9 +106,9 @@ class Factory
             $mapping = $this->mapping[$type] ?? null;
         }
         if ($mapping === null) {
-            throw new \InvalidArgumentException('Cannot map type ' . $type);
+            throw new InvalidArgumentException('Cannot map type ' . $type);
         }
 
-        return new $mapping($this->productFilter);
+        return new $mapping($this->productFilter, $this->plugins[$type] ?? null);
     }
 }

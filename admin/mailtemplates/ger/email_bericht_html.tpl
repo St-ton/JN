@@ -48,6 +48,8 @@
     {quantityStatisticRow cAnzahlTitle='Neue Verfügbarkeitsanfragen' nAnzahlVar=$oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit}
     {quantityStatisticRow cAnzahlTitle='Produktvergleiche' nAnzahlVar=$oMailObjekt->nAnzahlVergleiche}
     {quantityStatisticRow cAnzahlTitle='Genutzte Kupons' nAnzahlVar=$oMailObjekt->nAnzahlGenutzteKupons}
+    {quantityStatisticRow cAnzahlTitle='Newsletter Abmeldungen' nAnzahlVar=$oMailObjekt->nAnzahlNewsletterAbmeldungen}
+    {quantityStatisticRow cAnzahlTitle='Newsletter Anmeldungen' nAnzahlVar=$oMailObjekt->nAnzahlNewsletterAnmeldungen}
 </div>
 
 {includeMailTemplate template=footer type=html}

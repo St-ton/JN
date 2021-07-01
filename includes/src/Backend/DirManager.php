@@ -27,8 +27,8 @@ class DirManager
      * Userfunc (callback function) must have 1 parameter (array)
      *
      * @param string        $path
-     * @param null|callable $userfunc
-     * @param array         $parameters
+     * @param callable|null $userfunc
+     * @param array|null    $parameters
      * @return $this
      */
     public function getData(string $path, callable $userfunc = null, array $parameters = null): self

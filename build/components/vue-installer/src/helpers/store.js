@@ -52,7 +52,6 @@ export default new Vuex.Store({
     },
     getters:   {
         getStep:         state => state.step,
-        getWizardStep:   state => state.wizardStep,
         getProgress:     state => state.progress,
         getAdminUser:    state => state.adminUser,
         getWawiUser:     state => state.wawiUser,

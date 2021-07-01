@@ -1,13 +1,11 @@
 <?php
 
 use JTL\Backend\DirManager;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Text;
 use JTL\Session\Backend;
 use JTL\Shop;
-use JTL\Template;
 use JTL\Update\DBMigrationHelper;
 use JTLShop\SemVer\Parser;
 
@@ -24,13 +22,14 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
     ];
 
     $db           = Shop::Container()->getDB();
+    $cache        = Shop::Container()->getCache();
     $dbLocked     = [];
     $database     = $db->getConfig()['database'];
     $mysqlVersion = DBMigrationHelper::getMySQLVersion();
 
     if ($clearCache) {
-        if (Shop::Container()->getCache()->isActive()) {
-            Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE . '_getDBStruct']);
+        if ($cache->isActive()) {
+            $cache->flushTags([CACHING_GROUP_CORE . '_getDBStruct']);
         } else {
             Backend::set('getDBStruct_extended', false);
             Backend::set('getDBStruct_normal', false);
@@ -42,18 +41,17 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
     if ($extended) {
         $cacheID = 'getDBStruct_extended';
         if ($dbStruct['extended'] === null) {
-            $dbStruct['extended'] = Shop::Container()->getCache()->isActive()
-                ? Shop::Container()->getCache()->get($cacheID)
+            $dbStruct['extended'] = $cache->isActive()
+                ? $cache->get($cacheID)
                 : Backend::get($cacheID, false);
         }
         $dbStructure =& $dbStruct['extended'];
 
         if (version_compare($mysqlVersion->innodb->version, '5.6', '>=')) {
-            $dbStatus = $db->queryPrepared(
+            $dbStatus = $db->getObjects(
                 'SHOW OPEN TABLES
                     WHERE `Database` LIKE :schema',
-                ['schema' => $database],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['schema' => $database]
             );
             if ($dbStatus) {
                 foreach ($dbStatus as $oStatus) {
@@ -66,15 +64,15 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
     } else {
         $cacheID = 'getDBStruct_normal';
         if ($dbStruct['normal'] === null) {
-            $dbStruct['normal'] = Shop::Container()->getCache()->isActive()
-                ? Shop::Container()->getCache()->get($cacheID)
+            $dbStruct['normal'] = $cache->isActive()
+                ? $cache->get($cacheID)
                 : Backend::get($cacheID);
         }
         $dbStructure =& $dbStruct['normal'];
     }
 
     if ($dbStructure === false) {
-        $dbData = $db->queryPrepared(
+        $dbData = $db->getObjects(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
                     t.`DATA_LENGTH` + t.`INDEX_LENGTH` AS DATA_SIZE,
                     COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS,
@@ -91,8 +89,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
                     t.`DATA_LENGTH` + t.`INDEX_LENGTH`
                 ORDER BY t.`TABLE_NAME`",
-            ['schema' => $database],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['schema' => $database]
         );
 
         foreach ($dbData as $data) {
@@ -111,7 +108,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 $dbStructure[$table] = [];
             }
 
-            $columns = $db->queryPrepared(
+            $columns = $db->getObjects(
                 'SELECT `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_TYPE`, `CHARACTER_SET_NAME`, `COLLATION_NAME`
                     FROM information_schema.COLUMNS
                     WHERE `TABLE_SCHEMA` = :schema
@@ -120,8 +117,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 [
                     'schema' => $database,
                     'table'  => $table
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                ]
             );
             if ($columns !== false) {
                 foreach ($columns as $column) {
@@ -136,8 +132,8 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 $dbStructure[$table]->Migration = DBMigrationHelper::isTableNeedMigration($data);
             }
         }
-        if (Shop::Container()->getCache()->isActive()) {
-            Shop::Container()->getCache()->set(
+        if ($cache->isActive()) {
+            $cache->set(
                 $cacheID,
                 $dbStructure,
                 [CACHING_GROUP_CORE, CACHING_GROUP_CORE . '_getDBStruct']
@@ -155,46 +151,42 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
 }
 
 /**
- * @return array
+ * @return array|mixed
  */
 function getDBFileStruct()
 {
     $version    = Parser::parse(APPLICATION_VERSION);
-    $versionStr = $version->getMajor().'-'.$version->getMinor().'-'.$version->getPatch();
-
+    $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
     if ($version->hasPreRelease()) {
         $preRelease  = $version->getPreRelease();
-        $versionStr .= '-'.$preRelease->getGreek();
+        $versionStr .= '-' . $preRelease->getGreek();
         if ($preRelease->getReleaseNumber() > 0) {
-            $versionStr .= '-'.$preRelease->getReleaseNumber();
+            $versionStr .= '-' . $preRelease->getReleaseNumber();
         }
     }
 
-    $cDateiListe = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'dbstruct_' . $versionStr . '.json';
-    if (!file_exists($cDateiListe)) {
+    $fileList = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'dbstruct_' . $versionStr . '.json';
+    if (!file_exists($fileList)) {
         return [];
     }
-    $cJSON         = file_get_contents($cDateiListe);
-    $oDBFileStruct = json_decode($cJSON, false);
-    if (is_object($oDBFileStruct)) {
-        $oDBFileStruct = get_object_vars($oDBFileStruct);
-    }
+    $struct = json_decode(file_get_contents($fileList), false);
 
-    return $oDBFileStruct;
+    return is_object($struct) ? get_object_vars($struct) : $struct;
 }
 
 /**
  * @param string $msg
  * @param bool   $engineError
- * @return object
+ * @return stdClass
  */
-function createDBStructError(string $msg, bool $engineError = false): object
+function createDBStructError(string $msg, bool $engineError = false): stdClass
 {
     return (object)[
         'errMsg'        => $msg,
         'isEngineError' => $engineError,
     ];
 }
+
 /**
  * @param array $dbFileStruct
  * @param array $dbStruct
@@ -257,8 +249,6 @@ function compareDBStruct(array $dbFileStruct, array $dbStruct): array
  */
 function doDBMaintenance(string $action, array $tables)
 {
-    $tableString = implode(', ', $tables);
-
     switch ($action) {
         case 'optimize':
             $cmd = 'OPTIMIZE TABLE ';
@@ -277,7 +267,7 @@ function doDBMaintenance(string $action, array $tables)
     }
 
     return count($tables) > 0
-        ? Shop::Container()->getDB()->query($cmd . $tableString, ReturnType::ARRAY_OF_OBJECTS)
+        ? Shop::Container()->getDB()->getObjects($cmd . implode(', ', $tables))
         : false;
 }
 
@@ -287,8 +277,7 @@ function doDBMaintenance(string $action, array $tables)
  */
 function determineEngineUpdate(array $dbStruct)
 {
-    $result = new stdClass();
-
+    $result             = new stdClass();
     $result->tableCount = 0;
     $result->dataSize   = 0;
     $result->estimated  = [];
@@ -311,11 +300,11 @@ function determineEngineUpdate(array $dbStruct)
 }
 
 /**
- * @param string $fileName
+ * @param string   $fileName
  * @param string[] $shopTables
  * @return string
  */
-function doEngineUpdateScript(string $fileName, array $shopTables)
+function doEngineUpdateScript(string $fileName, array $shopTables): string
 {
     $nl = "\r\n";
 
@@ -423,19 +412,23 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
 
 /**
  * @param string $status
- * @param string $table
- * @param int $step
- * @param array $exclude
+ * @param string $tableName
+ * @param int    $step
+ * @param array  $exclude
  * @return stdClass
  * @throws CircularReferenceException
  * @throws ServiceNotFoundException
  */
-function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', int $step = 1, array $exclude = [])
-{
+function doMigrateToInnoDB_utf8(
+    string $status = 'start',
+    string $tableName = '',
+    int $step = 1,
+    array $exclude = []
+): stdClass {
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbcheck');
 
     $mysqlVersion = DBMigrationHelper::getMySQLVersion();
-    $table        = (string)Text::filterXSS($table);
+    $tableName    = (string)Text::filterXSS($tableName);
     $result       = new stdClass();
     $db           = Shop::Container()->getDB();
     $doSingle     = false;
@@ -447,14 +440,13 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
             break;
         case 'start':
             $shopTables = array_keys(getDBFileStruct());
-            $oTable     = DBMigrationHelper::getNextTableNeedMigration($exclude);
-
-            if ($oTable !== null && is_object($oTable)) {
-                if (!in_array($oTable->TABLE_NAME, $shopTables, true)) {
-                    $exclude[] = $oTable->TABLE_NAME;
+            $table      = DBMigrationHelper::getNextTableNeedMigration($db, $exclude);
+            if ($table !== null && is_object($table)) {
+                if (!in_array($table->TABLE_NAME, $shopTables, true)) {
+                    $exclude[] = $table->TABLE_NAME;
                     $result    = doMigrateToInnoDB_utf8('start', '', 1, $exclude);
                 } else {
-                    $result->nextTable = $oTable->TABLE_NAME;
+                    $result->nextTable = $table->TABLE_NAME;
                     $result->nextStep  = 1;
                     $result->status    = 'migrate';
                 }
@@ -465,82 +457,72 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
         /** @noinspection PhpMissingBreakStatementInspection */
         case 'migrate_single':
             $doSingle = true;
-            // no break
+        // no break
         case 'migrate':
-            if (!empty($table) && $step === 1) {
+            if (!empty($tableName) && $step === 1) {
                 // Migration Step 1...
-                $oTable    = DBMigrationHelper::getTable($table);
-                $migration = DBMigrationHelper::isTableNeedMigration($oTable);
-                if (is_object($oTable)
+                $table     = DBMigrationHelper::getTable($tableName);
+                $migration = DBMigrationHelper::isTableNeedMigration($table);
+                if (is_object($table)
                     && $migration !== DBMigrationHelper::MIGRATE_NONE
-                    && !in_array($oTable->TABLE_NAME, $exclude, true)
+                    && !in_array($table->TABLE_NAME, $exclude, true)
                 ) {
-                    if (!DBMigrationHelper::isTableInUse($table)) {
+                    if (!DBMigrationHelper::isTableInUse($db, $tableName)) {
                         if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
                             // If MySQL version is lower than 5.6 use alternative lock method
                             // and delete all fulltext indexes because these are not supported
-                            $db->executeQuery(
-                                DBMigrationHelper::sqlAddLockInfo($oTable),
-                                ReturnType::QUERYSINGLE
-                            );
-                            $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($oTable->TABLE_NAME);
+                            $db->query(DBMigrationHelper::sqlAddLockInfo($table));
+                            $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($table->TABLE_NAME);
 
                             if ($fulltextIndizes) {
                                 foreach ($fulltextIndizes as $fulltextIndex) {
-                                    $db->executeQuery(
-                                        'ALTER TABLE `' . $oTable->TABLE_NAME . '`
-                                            DROP KEY `' . $fulltextIndex->INDEX_NAME . '`',
-                                        ReturnType::QUERYSINGLE
+                                    $db->query(
+                                        'ALTER TABLE `' . $table->TABLE_NAME . '`
+                                            DROP KEY `' . $fulltextIndex->INDEX_NAME . '`'
                                     );
                                 }
                             }
                         }
                         if (($migration & DBMigrationHelper::MIGRATE_TABLE) !== 0) {
-                            $fkSQLs = DBMigrationHelper::sqlRecreateFKs($oTable->TABLE_NAME);
+                            $fkSQLs = DBMigrationHelper::sqlRecreateFKs($table->TABLE_NAME);
                             foreach ($fkSQLs->dropFK as $fkSQL) {
-                                $db->executeQuery($fkSQL, ReturnType::DEFAULT);
+                                $db->query($fkSQL);
                             }
-                            $migrate = $db->executeQuery(
-                                DBMigrationHelper::sqlMoveToInnoDB($oTable),
-                                ReturnType::DEFAULT
-                            );
+                            $migrate = $db->query(DBMigrationHelper::sqlMoveToInnoDB($table));
                             foreach ($fkSQLs->createFK as $fkSQL) {
-                                $db->executeQuery($fkSQL, ReturnType::DEFAULT);
+                                $db->query($fkSQL);
                             }
                         } else {
                             $migrate = true;
                         }
                         if ($migrate) {
-                            $result->nextTable = $table;
+                            $result->nextTable = $tableName;
                             $result->nextStep  = 2;
                             $result->status    = 'migrate';
                         } else {
                             $result->status = 'failure';
                         }
                         if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                            $db->executeQuery(
-                                DBMigrationHelper::sqlClearLockInfo($oTable),
-                                ReturnType::QUERYSINGLE
-                            );
+                            $db->query(DBMigrationHelper::sqlClearLockInfo($table));
                         }
                     } else {
                         $result->status = 'in_use';
                     }
                 } else {
                     // Get next table for migration...
-                    $exclude[] = $table;
+                    $exclude[] = $tableName;
                     $result    = $doSingle
                         ? doMigrateToInnoDB_utf8('stop')
                         : doMigrateToInnoDB_utf8('start', '', 1, $exclude);
                 }
-            } elseif (!empty($table) && $step === 2) {
+            } elseif (!empty($tableName) && $step === 2) {
                 // Migration Step 2...
-                if (!DBMigrationHelper::isTableInUse($table)) {
-                    $oTable = DBMigrationHelper::getTable($table);
-                    $sql    = DBMigrationHelper::sqlConvertUTF8($oTable);
+                if (!DBMigrationHelper::isTableInUse($db, $tableName)) {
+                    $table = DBMigrationHelper::getTable($tableName);
+                    $sql   = DBMigrationHelper::sqlConvertUTF8($table);
 
                     if (!empty($sql)) {
-                        if ($db->executeQuery($sql, ReturnType::QUERYSINGLE)) {
+                        if ($db->query($sql)) {
                             // Get next table for migration...
                             $result = $doSingle
                                 ? doMigrateToInnoDB_utf8('stop')
@@ -580,8 +562,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                     @rmdir($pParameters['path'] . $pParameters['filename']);
                 }
             };
-            $template    = Template::getInstance();
-            $templateDir = $template->getDir();
+            $templateDir = Shop::Container()->getTemplateService()->getActiveTemplate()->getDir();
             $dirMan      = new DirManager();
             $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $templateDir, $callback);
             $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback);
@@ -589,11 +570,10 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
             unset($_SESSION['oKategorie_arr_new']);
             // Reset Fulltext search if version is lower than 5.6
             if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                $db->executeQuery(
+                $db->query(
                     "UPDATE `teinstellungen` 
                         SET `cWert` = 'N' 
-                        WHERE `cName` = 'suche_fulltext'",
-                    ReturnType::QUERYSINGLE
+                        WHERE `cName` = 'suche_fulltext'"
                 );
             }
             $result->nextTable = '';

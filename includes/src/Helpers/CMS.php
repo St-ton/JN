@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\ArtikelListe;
 use JTL\Catalog\Product\Preise;
-use JTL\DB\ReturnType;
 use JTL\News;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -30,37 +29,34 @@ class CMS
         if (!$customerGroupID || !Frontend::getCustomerGroup()->mayViewCategories()) {
             return [];
         }
-        $boxes = self::getHomeBoxList(Shop::getSettings([\CONF_STARTSEITE])['startseite']);
+        $boxes         = self::getHomeBoxList(Shop::getSettings([\CONF_STARTSEITE])['startseite']);
+        $searchSpecial = new SearchSpecial(Shop::Container()->getDB(), Shop::Container()->getCache());
         foreach ($boxes as $box) {
-            $url      = '';
-            $products = [];
+            $type       = 0;
+            $productIDs = [];
             switch ($box->name) {
                 case 'TopAngebot':
-                    $products = SearchSpecial::getTopOffers($box->anzahl, $customerGroupID);
-                    $url      = \SEARCHSPECIALS_TOPOFFERS;
+                    $productIDs = $searchSpecial->getTopOffers($box->anzahl, $customerGroupID);
+                    $type       = \SEARCHSPECIALS_TOPOFFERS;
                     break;
 
                 case 'Bestseller':
-                    $products = SearchSpecial::getBestsellers($box->anzahl, $customerGroupID);
-                    $url      = \SEARCHSPECIALS_BESTSELLER;
+                    $productIDs = $searchSpecial->getBestsellers($box->anzahl, $customerGroupID);
+                    $type       = \SEARCHSPECIALS_BESTSELLER;
                     break;
 
                 case 'Sonderangebote':
-                    $products = SearchSpecial::getSpecialOffers($box->anzahl, $customerGroupID);
-                    $url      = \SEARCHSPECIALS_SPECIALOFFERS;
+                    $productIDs = $searchSpecial->getSpecialOffers($box->anzahl, $customerGroupID);
+                    $type       = \SEARCHSPECIALS_SPECIALOFFERS;
                     break;
 
                 case 'NeuImSortiment':
-                    $products = SearchSpecial::getNewProducts($box->anzahl, $customerGroupID);
-                    $url      = \SEARCHSPECIALS_NEWPRODUCTS;
+                    $productIDs = $searchSpecial->getNewProducts($box->anzahl, $customerGroupID);
+                    $type       = \SEARCHSPECIALS_NEWPRODUCTS;
                     break;
             }
-            $productIDs = map($products, static function ($e) {
-                return (int)$e->kArtikel;
-            });
             if (\count($productIDs) > 0) {
-                \shuffle($productIDs);
-                $box->cURL    = SearchSpecial::buildURL($url);
+                $box->cURL    = $searchSpecial->getURL($type);
                 $box->Artikel = new ArtikelListe();
                 $box->Artikel->getArtikelByKeys($productIDs, 0, \count($productIDs));
             }
@@ -90,7 +86,7 @@ class CMS
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
                 $limit = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
             }
-            $newsIDs = Shop::Container()->getDB()->query(
+            $newsIDs = Shop::Container()->getDB()->getObjects(
                 "SELECT tnews.kNews
                     FROM tnews
                     JOIN tnewskategorienews 
@@ -111,8 +107,7 @@ class CMS
                             OR FIND_IN_SET('" . $cgID . "', 
                             REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     GROUP BY tnews.kNews
-                    ORDER BY tnews.dGueltigVon DESC" . $limit,
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY tnews.dGueltigVon DESC" . $limit
             );
             $items   = new News\ItemList(Shop::Container()->getDB());
             $items->createItems(map($newsIDs, static function ($e) {
@@ -188,7 +183,7 @@ class CMS
         $limit      = (int)$conf['sonstiges']['sonstiges_livesuche_all_top_count'] > 0
             ? (int)$conf['sonstiges']['sonstiges_livesuche_all_top_count']
             : 100;
-        $searchData = Shop::Container()->getDB()->queryPrepared(
+        $searchData = Shop::Container()->getDB()->getObjects(
             "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tseo.cSeo, 
             tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche, 
             DATE_FORMAT(tsuchanfrage.dZuletztGesucht, '%d.%m.%Y  %H:%i') AS dZuletztGesucht_de
@@ -201,8 +196,7 @@ class CMS
                     AND tsuchanfrage.nAktiv = 1
                 ORDER BY tsuchanfrage.nAnzahlGesuche DESC
                 LIMIT :lmt",
-            ['lid' => Shop::getLanguageID(), 'lmt' => $limit],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['lid' => Shop::getLanguageID(), 'lmt' => $limit]
         );
         $count      = \count($searchData);
         $search     = [];
@@ -232,7 +226,7 @@ class CMS
         $limit      = (int)$conf['sonstiges']['sonstiges_livesuche_all_last_count'] > 0
             ? (int)$conf['sonstiges']['sonstiges_livesuche_all_last_count']
             : 100;
-        $searchData = Shop::Container()->getDB()->queryPrepared(
+        $searchData = Shop::Container()->getDB()->getObjects(
             "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tseo.cSeo, 
             tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche, 
             DATE_FORMAT(tsuchanfrage.dZuletztGesucht, '%d.%m.%Y  %H:%i') AS dZuletztGesucht_de
@@ -246,8 +240,7 @@ class CMS
                     AND tsuchanfrage.kSuchanfrage > 0
                 ORDER BY tsuchanfrage.dZuletztGesucht DESC
                 LIMIT :lmt",
-            ['lid' => Shop::getLanguageID(), 'lmt' => $limit],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['lid' => Shop::getLanguageID(), 'lmt' => $limit]
         );
         $count      = \count($searchData);
         $search     = [];
@@ -306,7 +299,7 @@ class CMS
         $limit    = ((int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
             ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
             : '';
-        $tmpGifts = Shop::Container()->getDB()->query(
+        $tmpGifts = Shop::Container()->getDB()->getObjects(
             'SELECT tartikel.kArtikel, tartikelattribut.cWert
                 FROM tartikel
                 JOIN tartikelattribut 
@@ -315,11 +308,8 @@ class CMS
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = ' . Frontend::getCustomerGroup()->getID() .
             " WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                AND tartikelattribut.cName = '" . \FKT_ATTRIBUT_GRATISGESCHENK . "' " .
-            Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() .
-            $sort .
-            $limit,
-            ReturnType::ARRAY_OF_OBJECTS
+                AND tartikelattribut.cName = '" . \FKT_ATTRIBUT_GRATISGESCHENK . "' "
+            . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . $sort . $limit
         );
 
         $defaultOptions = Artikel::getDefaultOptions();

@@ -145,12 +145,11 @@ final class Export
             'instance'  => $this
         ]);
         foreach ($factories as $factory) {
-            /** @var FactoryInterface $factory */
             foreach ($factory->getCollection($languages, $customerGroupIDs) as $item) {
-                /** @var ItemInterface $item */
                 if ($item === null) {
                     break;
                 }
+                /** @var ItemInterface $item */
                 if ($itemCount > $this->itemLimit) {
                     $itemCount = 1;
                     $this->buildFile($fileNumber, $markup);
@@ -319,7 +318,7 @@ final class Export
                 : 0;
             $this->db->insert('tsitemapreportfile', $ins);
         }
-        $this->logger->debug('Sitemap erfolgreich mit ' . $totalCount . ' URLs erstellt');
+        $this->logger->debug(\sprintf('Sitemap erfolgreich mit %d URLs erstellt', $totalCount));
 
         return true;
     }

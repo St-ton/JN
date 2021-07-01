@@ -3,11 +3,8 @@
 namespace JTL\Media\Image;
 
 use Generator;
-use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
-use JTL\Shop;
 use PDO;
 use stdClass;
 
@@ -22,9 +19,12 @@ class Manufacturer extends AbstractImage
     /**
      * @var string
      */
-    protected $regEx = '/^media\/image\/(?P<type>manufacturer)' .
-    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
-    '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
+    public const REGEX = '/^media\/image'
+    . '\/(?P<type>manufacturer)'
+    . '\/(?P<id>\d+)'
+    . '\/(?P<size>xs|sm|md|lg|xl)'
+    . '\/(?P<name>[' . self::REGEX_ALLOWED_CHARS . ']+)'
+    . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
      * @inheritdoc
@@ -33,8 +33,8 @@ class Manufacturer extends AbstractImage
     {
         return (object)[
             'stmt' => 'SELECT cBildpfad, 0 AS number 
-                          FROM thersteller 
-                          WHERE kHersteller = :kHersteller',
+                           FROM thersteller 
+                           WHERE kHersteller = :kHersteller',
             'bind' => ['kHersteller' => $id]
         ];
     }
@@ -42,14 +42,13 @@ class Manufacturer extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getImageNames(MediaImageRequest $req): array
+    public function getImageNames(MediaImageRequest $req): array
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->getCollection(
             'SELECT kHersteller, cName, cSeo AS seoPath, cSeo AS originalSeo, cBildpfad AS path
                 FROM thersteller
                 WHERE kHersteller = :mid',
-            ['mid' => $req->getID()],
-            ReturnType::COLLECTION
+            ['mid' => $req->getID()]
         )->each(static function ($item, $key) use ($req) {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath($item->path);
@@ -65,9 +64,10 @@ class Manufacturer extends AbstractImage
     {
         switch (Image::getSettings()['naming'][Image::TYPE_MANUFACTURER]) {
             case 2:
+                /** @var string|null $result */
                 $result = $mixed->path ?? $mixed->cBildpfad ?? null;
                 if ($result !== null) {
-                    return \pathinfo($result)['filename'];
+                    $result = \pathinfo($result)['filename'];
                 }
                 break;
             case 1:
@@ -85,14 +85,13 @@ class Manufacturer extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getPathByID($id, int $number = null): ?string
+    public function getPathByID($id, int $number = null): ?string
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->getSingleObject(
             'SELECT cBildpfad AS path
                 FROM thersteller
                 WHERE kHersteller = :mid LIMIT 1',
-            ['mid' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['mid' => $id]
         )->path ?? null;
     }
 
@@ -107,13 +106,12 @@ class Manufacturer extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = Shop::Container()->getDB()->query(
+        $images = $this->db->getPDOStatement(
             'SELECT kHersteller AS id, cName, cSeo AS seoPath, cBildpfad AS path
                 FROM thersteller
-                WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\'' . self::getLimitStatement($offset, $limit),
-            ReturnType::QUERYSINGLE
+                WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\'' . self::getLimitStatement($offset, $limit)
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([
@@ -131,21 +129,20 @@ class Manufacturer extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getTotalImageCount(): int
+    public function getTotalImageCount(): int
     {
-        return (int)Shop::Container()->getDB()->query(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(kHersteller) AS cnt
                 FROM thersteller
-                WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\'',
-            ReturnType::SINGLE_OBJECT
+                WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\''
         )->cnt;
     }
 
     /**
      * @inheritdoc
      */
-    public static function imageIsUsed(DbInterface $db, string $path): bool
+    public function imageIsUsed(string $path): bool
     {
-        return $db->select('thersteller', 'cBildpfad', $path) !== null;
+        return $this->db->select('thersteller', 'cBildpfad', $path) !== null;
     }
 }

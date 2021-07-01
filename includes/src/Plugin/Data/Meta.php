@@ -83,20 +83,26 @@ class Meta
     private $error;
 
     /**
+     * @var string|null
+     */
+    private $exsID;
+
+    /**
      * @param stdClass $data
      * @return $this
      */
     public function loadDBMapping(stdClass $data): self
     {
-        $this->author         = __($data->cAutor);
-        $this->description    = __($data->cBeschreibung);
-        $this->name           = __($data->cName);
-        $this->url            = __($data->cURL);
+        $this->author         = \__($data->cAutor);
+        $this->description    = \__($data->cBeschreibung);
+        $this->name           = \__($data->cName);
+        $this->url            = \__($data->cURL);
         $this->icon           = $data->cIcon;
         $this->dateInstalled  = new DateTime($data->dInstalliert);
         $this->dateLastUpdate = new DateTime($data->dZuletztAktualisiert);
         $this->version        = $data->nVersion;
         $this->semVer         = Version::parse($this->version);
+        $this->exsID          = $data->exsID;
 
         return $this;
     }
@@ -315,5 +321,21 @@ class Meta
     public function getUpdateAvailable()
     {
         return $this->updateAvailable;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getExsID(): ?string
+    {
+        return $this->exsID;
+    }
+
+    /**
+     * @param string|null $exsID
+     */
+    public function setExsID(?string $exsID): void
+    {
+        $this->exsID = $exsID;
     }
 }

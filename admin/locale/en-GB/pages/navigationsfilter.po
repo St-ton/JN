@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "navigationsfilter"
-msgstr "Item filters"
+msgstr "Item overview"
 
 msgid "navigationsfilterDesc"
 msgstr "Here you can set the various filter possibilities for item overview pages of JTL-Shop."
@@ -16,3 +16,6 @@ msgstr "Invalid price range."
 
 msgid "thePriceRangeOverlapps"
 msgstr "The price range overlaps with other price ranges."
+
+msgid "addPriceRange"
+msgstr "Add price range"

@@ -1,5 +1,6 @@
 <?php
 
+use JTL\Campaign;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
@@ -14,14 +15,12 @@ use JTL\Checkout\Nummern;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Checkout\ZahlungsInfo;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Date;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -163,7 +162,7 @@ function bestellungInDB($cleared = 0, $orderNo = '')
     }
     $conf = Shop::getSettings([CONF_GLOBAL]);
     //füge Warenkorb ein
-    executeHook(HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB, ['oWarenkorb' => &$cart]);
+    executeHook(HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB, ['oWarenkorb' => &$cart, 'oBestellung' => &$order]);
     $cart->kWarenkorb = $cart->insertInDB();
     //füge alle Warenkorbpositionen ein
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
@@ -307,8 +306,7 @@ function bestellungInDB($cleared = 0, $orderNo = '')
             [
                 'cred' => (float)$_SESSION['Bestellung']->fGuthabenGenutzt,
                 'cid'  => (int)$order->kKunde
-            ],
-            ReturnType::DEFAULT
+            ]
         );
         $customer->fGuthaben -= $_SESSION['Bestellung']->fGuthabenGenutzt;
     }
@@ -326,6 +324,19 @@ function bestellungInDB($cleared = 0, $orderNo = '')
     executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB, ['oBestellung' => &$order]);
 
     $orderID = $order->insertInDB();
+
+    // OrderAttributes
+    if (!empty($_SESSION['Warenkorb']->OrderAttributes)) {
+        foreach ($_SESSION['Warenkorb']->OrderAttributes as $orderAttr) {
+            $obj              = new stdClass();
+            $obj->kBestellung = $orderID;
+            $obj->cName       = $orderAttr->cName;
+            $obj->cValue      = $orderAttr->cName === 'Finanzierungskosten'
+                ? (float)str_replace(',', '.', $orderAttr->cValue)
+                : $orderAttr->cValue;
+            Shop::Container()->getDB()->insert('tbestellattribut', $obj);
+        }
+    }
 
     $logger = Shop::Container()->getLogService();
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
@@ -373,8 +384,6 @@ function bestellungInDB($cleared = 0, $orderNo = '')
  */
 function saveZahlungsInfo(int $customerID, int $orderID, bool $payAgain = false): bool
 {
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-
     if (!$customerID || !$orderID) {
         return false;
     }
@@ -560,8 +569,7 @@ function aktualisiereBestseller(int $productID, $amount): void
     if (isset($data->kArtikel) && $data->kArtikel > 0) {
         Shop::Container()->getDB()->queryPrepared(
             'UPDATE tbestseller SET fAnzahl = fAnzahl + :mnt WHERE kArtikel = :aid',
-            ['mnt' => $amount, 'aid' => $productID],
-            ReturnType::DEFAULT
+            ['mnt' => $amount, 'aid' => $productID]
         );
     } else {
         $bestseller           = new stdClass();
@@ -593,8 +601,7 @@ function aktualisiereXselling(int $productID, int $targetID): void
             [
                 'pid' => $productID,
                 'xs'  => $targetID
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     } else {
         $xs                = new stdClass();
@@ -635,8 +642,7 @@ function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, i
                 [
                     'aid' => (int)$value->kEigenschaftWert,
                     'inv' => $amount * $EigenschaftWert->fPackeinheit
-                ],
-                ReturnType::DEFAULT
+                ]
             );
         }
         updateStock($product->kArtikel, $amount, $product->fPackeinheit);
@@ -692,8 +698,7 @@ function updateStock(int $productID, $amount, $packeinheit)
         [
             'amountSubstract' => $amount * $packeinheit,
             'productID'       => $productID
-        ],
-        ReturnType::DEFAULT
+        ]
     );
 }
 
@@ -713,15 +718,14 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
         return $newStockLevel;
     }
     // Gibt es lagerrelevante Komponenten in der Stückliste?
-    $components = Shop::Container()->getDB()->queryPrepared(
+    $components = Shop::Container()->getDB()->getObjects(
         "SELECT tstueckliste.kArtikel, tstueckliste.fAnzahl
             FROM tstueckliste
             JOIN tartikel
               ON tartikel.kArtikel = tstueckliste.kArtikel
             WHERE tstueckliste.kStueckliste = :slid
                 AND tartikel.cLagerBeachten = 'Y'",
-        ['slid' => $bomID],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['slid' => $bomID]
     );
 
     if (is_array($components) && count($components) > 0) {
@@ -735,7 +739,7 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
                 aktualisiereLagerbestand(
                     $tmpArtikel,
                     $amount * $component->fAnzahl,
-                    null
+                    []
                 ) / $component->fAnzahl
             );
 
@@ -776,14 +780,14 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
 }
 
 /**
- * @param int       $productID
- * @param int|float $stockLevel
- * @param bool      $allowNegativeStock
+ * @param int   $productID
+ * @param float $stockLevel
+ * @param bool  $allowNegativeStock
  */
 function aktualisiereKomponenteLagerbestand(int $productID, float $stockLevel, bool $allowNegativeStock): void
 {
     $db   = Shop::Container()->getDB();
-    $boms = $db->queryPrepared(
+    $boms = $db->getObjects(
         "SELECT tstueckliste.kStueckliste, tstueckliste.fAnzahl,
                 tartikel.kArtikel, tartikel.fLagerbestand, tartikel.cLagerKleinerNull
             FROM tstueckliste
@@ -791,8 +795,7 @@ function aktualisiereKomponenteLagerbestand(int $productID, float $stockLevel, b
                 ON tartikel.kStueckliste = tstueckliste.kStueckliste
             WHERE tstueckliste.kArtikel = :cid
                 AND tartikel.cLagerBeachten = 'Y'",
-        ['cid' => $productID],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['cid' => $productID]
     );
     foreach ($boms as $bom) {
         // Ist der aktuelle Bestand der Stückliste größer als dies mit dem Bestand der Komponente möglich wäre?
@@ -820,9 +823,9 @@ function AktualisiereAndereStuecklisten(int $productID, $amount, $bomID = null):
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($productID > 0) {
-        $tmpArtikel = new Artikel();
-        $tmpArtikel->fuelleArtikel($productID, Artikel::getDefaultOptions());
-        aktualisiereKomponenteLagerbestand($productID, $tmpArtikel->fLagerbestand, $tmpArtikel->cLagerKleinerNull);
+        $prod = new Artikel();
+        $prod->fuelleArtikel($productID, Artikel::getDefaultOptions());
+        aktualisiereKomponenteLagerbestand($productID, $prod->fLagerbestand, $prod->cLagerKleinerNull === 'Y');
     }
 }
 
@@ -860,14 +863,14 @@ function AktualisiereLagerStuecklisten($product, $amount = null, $isBom = false)
             aktualisiereKomponenteLagerbestand(
                 $product->kArtikel,
                 $product->fLagerbestand,
-                $product->cLagerKleinerNull
+                $product->cLagerKleinerNull === 'Y'
             );
         }
     }
 }
 
 /**
- * @param $order
+ * @param Bestellung $order
  */
 function KuponVerwendungen($order): void
 {
@@ -907,8 +910,7 @@ function KuponVerwendungen($order): void
         'UPDATE tkupon
           SET nVerwendungenBisher = nVerwendungenBisher + 1
           WHERE kKupon = :couponID',
-        ['couponID' => $couponID],
-        ReturnType::DEFAULT
+        ['couponID' => $couponID]
     );
 
     $db->queryPrepared(
@@ -920,8 +922,7 @@ function KuponVerwendungen($order): void
             'couponID' => $couponID,
             'email'    => Kupon::hash(Frontend::getCustomer()->cMail),
             'used'     => 1
-        ],
-        ReturnType::DEFAULT
+        ]
     );
 
     $db->insert('tkuponflag', (object)[
@@ -1041,7 +1042,6 @@ function setzeSmartyWeiterleitung(Bestellung $order): void
  */
 function fakeBestellung()
 {
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     if (isset($_POST['kommentar'])) {
         $_SESSION['kommentar'] = mb_substr(
             strip_tags(Shop::Container()->getDB()->escape($_POST['kommentar'])),
@@ -1107,7 +1107,9 @@ function fakeBestellung()
                 $order->Positionen[$i]->$member = $item->$member;
             }
 
-            $order->Positionen[$i]->cName = $order->Positionen[$i]->cName[$_SESSION['cISOSprache']];
+            if (is_array($order->Positionen[$i]->cName)) {
+                $order->Positionen[$i]->cName = $order->Positionen[$i]->cName[$_SESSION['cISOSprache']];
+            }
             $order->Positionen[$i]->fMwSt = Tax::getSalesTax($item->kSteuerklasse);
             $order->Positionen[$i]->setzeGesamtpreisLocalized();
         }
@@ -1117,7 +1119,7 @@ function fakeBestellung()
     }
     $order->cIP = Request::getRealIP();
 
-    return $order->fuelleBestellung(false, true);
+    return $order->fuelleBestellung(false, 1);
 }
 
 /**

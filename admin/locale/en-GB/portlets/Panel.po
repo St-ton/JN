@@ -10,3 +10,6 @@ msgstr "Show header"
 
 msgid "showFooter"
 msgstr "Show footer"
+
+msgid "panelType"
+msgstr "Colour scheme"

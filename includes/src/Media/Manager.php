@@ -5,8 +5,11 @@ namespace JTL\Media;
 use DirectoryIterator;
 use Exception;
 use FilesystemIterator;
+use JTL\Alert\Alert;
+use JTL\DB\DbInterface;
 use JTL\Helpers\URL;
 use JTL\IO\IOError;
+use JTL\L10n\GetText;
 use JTL\Media\Image\Category;
 use JTL\Media\Image\Characteristic;
 use JTL\Media\Image\CharacteristicValue;
@@ -28,6 +31,22 @@ use stdClass;
 class Manager
 {
     /**
+     * @var DbInterface
+     */
+    private $db;
+
+    /**
+     * Manager constructor.
+     * @param DbInterface $db
+     * @param GetText     $getText
+     */
+    public function __construct(DbInterface $db, GetText $getText)
+    {
+        $this->db = $db;
+        $getText->loadAdminLocale('pages/bilderverwaltung');
+    }
+
+    /**
      * @param bool $filesize
      * @return array
      * @throws Exception
@@ -35,50 +54,50 @@ class Manager
     public function getItems(bool $filesize = false): array
     {
         return [
-            Image::TYPE_PRODUCT      => (object)[
-                'name'  => __('product'),
+            Image::TYPE_PRODUCT              => (object)[
+                'name'  => \__('product'),
                 'type'  => Image::TYPE_PRODUCT,
-                'stats' => Product::getStats($filesize)
+                'stats' => (new Product($this->db))->getStats($filesize)
             ],
-            Image::TYPE_CATEGORY     => (object)[
-                'name'  => __('category'),
+            Image::TYPE_CATEGORY             => (object)[
+                'name'  => \__('category'),
                 'type'  => Image::TYPE_CATEGORY,
-                'stats' => Category::getStats($filesize)
+                'stats' => (new Category($this->db))->getStats($filesize)
             ],
-            Image::TYPE_MANUFACTURER => (object)[
-                'name'  => __('manufacturer'),
+            Image::TYPE_MANUFACTURER         => (object)[
+                'name'  => \__('manufacturer'),
                 'type'  => Image::TYPE_MANUFACTURER,
-                'stats' => Manufacturer::getStats($filesize)
+                'stats' => (new Manufacturer($this->db))->getStats($filesize)
             ],
-            Image::TYPE_CHARACTERISTIC => (object)[
-                'name'  => __('characteristic'),
+            Image::TYPE_CHARACTERISTIC       => (object)[
+                'name'  => \__('characteristic'),
                 'type'  => Image::TYPE_CHARACTERISTIC,
-                'stats' => Characteristic::getStats($filesize)
+                'stats' => (new Characteristic($this->db))->getStats($filesize)
             ],
             Image::TYPE_CHARACTERISTIC_VALUE => (object)[
-                'name'  => __('characteristic value'),
+                'name'  => \__('characteristic value'),
                 'type'  => Image::TYPE_CHARACTERISTIC_VALUE,
-                'stats' => CharacteristicValue::getStats($filesize)
+                'stats' => (new CharacteristicValue($this->db))->getStats($filesize)
             ],
-            Image::TYPE_VARIATION => (object)[
-                'name'  => __('variation'),
+            Image::TYPE_VARIATION            => (object)[
+                'name'  => \__('variation'),
                 'type'  => Image::TYPE_VARIATION,
-                'stats' => Variation::getStats($filesize)
+                'stats' => (new Variation($this->db))->getStats($filesize)
             ],
-            Image::TYPE_NEWS => (object)[
-                'name'  => __('news'),
+            Image::TYPE_NEWS                 => (object)[
+                'name'  => \__('news'),
                 'type'  => Image::TYPE_NEWS,
-                'stats' => News::getStats($filesize)
+                'stats' => (new News($this->db))->getStats($filesize)
             ],
-            Image::TYPE_NEWSCATEGORY => (object)[
-                'name'  => __('newscategory'),
+            Image::TYPE_NEWSCATEGORY         => (object)[
+                'name'  => \__('newscategory'),
                 'type'  => Image::TYPE_NEWSCATEGORY,
-                'stats' => NewsCategory::getStats($filesize)
+                'stats' => (new NewsCategory($this->db))->getStats($filesize)
             ],
-            Image::TYPE_CONFIGGROUP => (object)[
-                'name'  => __('configgroup'),
+            Image::TYPE_CONFIGGROUP          => (object)[
+                'name'  => \__('configgroup'),
                 'type'  => Image::TYPE_CONFIGGROUP,
-                'stats' => ConfigGroup::getStats($filesize)
+                'stats' => (new ConfigGroup($this->db))->getStats($filesize)
             ]
         ];
     }
@@ -90,6 +109,9 @@ class Manager
      */
     public function loadStats(string $type)
     {
+        /* attention: this will parallelize async io stats */
+        \session_write_close();
+        /* but there should not be any session operations after this point */
         $items = $this->getItems(true);
 
         return ($type === null || \in_array($type, $items, true))
@@ -105,8 +127,9 @@ class Manager
     public function cleanupStorage(string $type, int $index): stdClass
     {
         $startIndex = $index;
-        $instance   = Media::getClass($type);
+        $class      = Media::getClass($type);
         /** @var IMedia $instance */
+        $instance  = new $class($this->db);
         $directory = \PFAD_ROOT . $instance::getStoragePath();
         $started   = \time();
         $result    = (object)[
@@ -127,7 +150,6 @@ class Manager
         $checkedInThisRun = 0;
         $deletedInThisRun = 0;
         $i                = 0;
-        $db               = Shop::Container()->getDB();
         foreach (new LimitIterator(new DirectoryIterator($directory), $index, \IMAGE_CLEANUP_LIMIT) as $i => $info) {
             /** @var DirectoryIterator $info */
             $fileName = $info->getFilename();
@@ -135,7 +157,7 @@ class Manager
                 continue;
             }
             ++$checkedInThisRun;
-            if (!$instance::imageIsUsed($db, $fileName)) {
+            if (!$instance->imageIsUsed($fileName)) {
                 $result->deletes[] = $fileName;
                 \unlink($info->getRealPath());
                 ++$_SESSION['deletedImages'];
@@ -170,24 +192,25 @@ class Manager
      */
     public function clearImageCache(string $type, bool $isAjax = false): array
     {
-        Shop::Container()->getGetText()->loadAdminLocale('pages/bilderverwaltung');
         if ($type !== null && \preg_match('/[a-z]*/', $type)) {
             $instance = Media::getClass($type);
             /** @var IMedia $instance */
-            $instance::clearCache();
+            $res = $instance::clearCache();
             unset($_SESSION['image_count'], $_SESSION['renderedImages']);
             if ($isAjax === true) {
-                return ['success' => __('successCacheReset')];
+                return $res === true
+                    ? ['msg' => \__('successCacheReset'), 'ok' => true]
+                    : ['msg' => \__('errorCacheReset'), 'ok' => false];
             }
-            Shop::Smarty()->assign('success', __('successCacheReset'));
+            Shop::Smarty()->assign('success', \__('successCacheReset'));
         }
 
         return [];
     }
 
     /**
-     * @param string $type
-     * @param int    $index
+     * @param string|null $type
+     * @param int|null    $index
      * @return IOError|object
      * @throws Exception
      */
@@ -196,35 +219,46 @@ class Manager
         if ($type === null || $index === null) {
             return new IOError('Invalid argument request', 500);
         }
-        $instance = Media::getClass($type);
+        $class = Media::getClass($type);
         /** @var IMedia $instance */
-        $started = \time();
-        $result  = (object)[
-            'total'          => 0,
-            'renderTime'     => 0,
-            'nextIndex'      => 0,
-            'renderedImages' => 0,
-            'images'         => []
+        $instance = new $class($this->db);
+        $started  = \time();
+        $result   = (object)[
+            'total'           => 0,
+            'renderTime'      => 0,
+            'nextIndex'       => 0,
+            'renderedImages'  => 0,
+            'lastRenderError' => null,
+            'images'          => []
         ];
 
         if ($index === 0) {
-            $_SESSION['image_count']    = $instance::getUncachedImageCount();
+            $_SESSION['image_count']    = $instance->getUncachedImageCount();
             $_SESSION['renderedImages'] = 0;
         }
 
         $total    = $_SESSION['image_count'];
-        $images   = $instance::getImages(true, $index, \IMAGE_PRELOAD_LIMIT);
-        $totalAll = $instance::getTotalImageCount();
+        $images   = $instance->getImages(true, $index, \IMAGE_PRELOAD_LIMIT);
+        $totalAll = $instance->getTotalImageCount();
         while (\count($images) === 0 && $index < $totalAll) {
             $index += 10;
-            $images = $instance::getImages(true, $index, \IMAGE_PRELOAD_LIMIT);
+            $images = $instance->getImages(true, $index, \IMAGE_PRELOAD_LIMIT);
         }
         foreach ($images as $image) {
             $seconds = \time() - $started;
             if ($seconds >= 10) {
                 break;
             }
-            $result->images[] = $instance::cacheImage($image);
+            $cachedImage = $instance->cacheImage($image);
+
+            foreach ($cachedImage as $size => $sizeImg) {
+                if ($sizeImg->success === false) {
+                    $result->lastRenderError = $sizeImg->error;
+                    break;
+                }
+            }
+
+            $result->images[] = $cachedImage;
             ++$index;
             ++$_SESSION['renderedImages'];
         }
@@ -247,21 +281,20 @@ class Manager
      */
     public function getCorruptedImages(string $type, int $limit): array
     {
-        $instance = Media::getClass($type);
+        $class    = Media::getClass($type);
+        $instance = new $class(Shop::Container()->getDB());
         /** @var IMedia $instance */
         $corruptedImages = [];
-        $totalImages     = $instance::getTotalImageCount();
-        $db              = Shop::Container()->getDB();
+        $totalImages     = $instance->getTotalImageCount();
+        $offset          = 0;
         do {
-            $i = 0;
-            foreach ($instance::getAllImages() as $image) {
-                ++$i;
+            foreach ($instance->getAllImages($offset, \MAX_IMAGES_PER_STEP) as $image) {
                 if (!\file_exists($image->getRaw())) {
                     $corruptedImage            = (object)[
                         'article' => [],
                         'picture' => ''
                     ];
-                    $data                      = $db->select(
+                    $data                      = $this->db->select(
                         'tartikel',
                         'kArtikel',
                         $image->getId()
@@ -279,8 +312,17 @@ class Manager
                         $corruptedImages[$corruptedImage->picture] = $corruptedImage;
                     }
                 }
+                if (\count($corruptedImages) >= $limit) {
+                    Shop::Container()->getAlertService()->addAlert(
+                        Alert::TYPE_ERROR,
+                        \__('Too many corrupted images'),
+                        'too-many-corrupted-images'
+                    );
+                    break;
+                }
             }
-        } while (\count($corruptedImages) < $limit && $i < $totalImages);
+            $offset += \MAX_IMAGES_PER_STEP;
+        } while (\count($corruptedImages) < $limit && $offset < $totalImages);
 
         return [$type => \array_slice($corruptedImages, 0, $limit)];
     }

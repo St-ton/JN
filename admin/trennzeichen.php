@@ -8,11 +8,12 @@ use JTL\PlausiTrennzeichen;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('SETTINGS_SEPARATOR_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'trennzeichen_inc.php';
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 setzeSprache();
 
 $step        = 'trennzeichen_uebersicht';
@@ -46,5 +47,5 @@ if (Request::verifyGPCDataInt('save') === 1 && Form::validateToken()) {
 }
 
 $smarty->assign('step', $step)
-    ->assign('oTrennzeichenAssoc_arr', Separator::getAll($_SESSION['kSprache']))
+    ->assign('oTrennzeichenAssoc_arr', Separator::getAll($_SESSION['editLanguageID']))
     ->display('trennzeichen.tpl');

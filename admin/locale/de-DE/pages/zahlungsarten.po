@@ -41,6 +41,9 @@ msgstr "Hinweistext (Onlineshop)"
 msgid "noticeTextEmail"
 msgstr "Hinweistext (E-Mail)"
 
+msgid "noticeTextEmailDesc"
+msgstr "Dieser Text wird zusätzlich zum vorhandenen Inhalt der E-Mail-Vorlagen „Bestellbestätigung“ und „Bestellung aktualisiert“ angezeigt."
+
 msgid "paymentAckMail"
 msgstr "E-Mail: Bestätigung der Zahlung"
 
@@ -118,3 +121,15 @@ msgstr "Zahlungsart nicht gefunden."
 
 msgid "feeNameHint"
 msgstr "Hier legen Sie den Namen einer eventuell anfallenden Gebühr für die Zahlungsart fest. Der Name der Gebühr wird während der Kaufabwicklung bei der Zahlungsart angezeigt. Die Höhe der Gebühr legen Sie individuell in jeder Versandart fest, für die die Zahlungsart angeboten wird."
+
+msgid "paymentsReceived"
+msgstr "Zahlungseingänge"
+
+msgid "Plugin for payment method not found"
+msgstr "Die Zahlungsart %s ist eine Plugin-Zahlungsart für %s. Das zugehörige Plugin ist jedoch nicht installiert!"
+
+msgid "Payment method can not been deleted"
+msgstr "Die Zahlungsart %s kann nicht gelöscht werden!"
+
+msgid "Payment method has been deleted"
+msgstr "Die Zahlungsart %s wurde gelöscht!"

@@ -5,7 +5,6 @@ use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Emailhistory;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -41,7 +40,7 @@ function sendeMail($moduleID, $data, $mail = null)
     if (!isset($data->tkunde->kKundengruppe) || !$data->tkunde->kKundengruppe) {
         $data->tkunde->kKundengruppe = CustomerGroup::getDefaultGroupID();
     }
-    $data->tfirma        = $db->query('SELECT * FROM tfirma', ReturnType::SINGLE_OBJECT);
+    $data->tfirma        = $db->getSingleObject('SELECT * FROM tfirma');
     $data->tkundengruppe = $db->select(
         'tkundengruppe',
         'kKundengruppe',
@@ -124,11 +123,10 @@ function sendeMail($moduleID, $data, $mail = null)
         $smarty->assign('oPluginMail', $data);
     }
 
-    $mailTPL = $db->query(
+    $mailTPL = $db->getSingleObject(
         'SELECT *
             FROM ' . $table . '
-            WHERE ' . $where,
-        ReturnType::SINGLE_OBJECT
+            WHERE ' . $where
     );
     // Email aktiv?
     if (isset($mailTPL->cAktiv) && $mailTPL->cAktiv === 'N') {
@@ -187,17 +185,16 @@ function sendeMail($moduleID, $data, $mail = null)
                 && mb_strlen($data->tbestellung->Zahlungsart->cModulId) > 0
             ) {
                 $cModulId         = $data->tbestellung->Zahlungsart->cModulId;
-                $oZahlungsartConf = $db->queryPrepared(
+                $oZahlungsartConf = $db->getSingleObject(
                     'SELECT tzahlungsartsprache.*
                         FROM tzahlungsartsprache
                         JOIN tzahlungsart
                             ON tzahlungsart.kZahlungsart = tzahlungsartsprache.kZahlungsart
                             AND tzahlungsart.cModulId = :module
                         WHERE tzahlungsartsprache.cISOSprache = :iso',
-                    ['module' => $cModulId, 'iso' => $lang->cISO],
-                    ReturnType::SINGLE_OBJECT
+                    ['module' => $cModulId, 'iso' => $lang->cISO]
                 );
-                if (isset($oZahlungsartConf->kZahlungsart) && $oZahlungsartConf->kZahlungsart > 0) {
+                if ($oZahlungsartConf !== null && $oZahlungsartConf->kZahlungsart > 0) {
                     $smarty->assign('Zahlungsart', $oZahlungsartConf);
                 }
             }
@@ -211,18 +208,17 @@ function sendeMail($moduleID, $data, $mail = null)
                 && mb_strlen($data->tbestellung->Zahlungsart->cModulId) > 0
             ) {
                 $cModulId         = $data->tbestellung->Zahlungsart->cModulId;
-                $oZahlungsartConf = $db->queryPrepared(
+                $oZahlungsartConf = $db->getSingleObject(
                     'SELECT tzahlungsartsprache.*
                         FROM tzahlungsartsprache
                         JOIN tzahlungsart
                             ON tzahlungsart.kZahlungsart = tzahlungsartsprache.kZahlungsart
                             AND tzahlungsart.cModulId = :module
                         WHERE tzahlungsartsprache.cISOSprache = :iso',
-                    ['module' => $cModulId, 'iso' => $lang->cISO],
-                    ReturnType::SINGLE_OBJECT
+                    ['module' => $cModulId, 'iso' => $lang->cISO]
                 );
 
-                if (isset($oZahlungsartConf->kZahlungsart) && $oZahlungsartConf->kZahlungsart > 0) {
+                if ($oZahlungsartConf !== null && $oZahlungsartConf->kZahlungsart > 0) {
                     $smarty->assign('Zahlungsart', $oZahlungsartConf);
                 }
             }
@@ -296,17 +292,6 @@ function sendeMail($moduleID, $data, $mail = null)
 
         case MAILTEMPLATE_NEWSLETTERANMELDEN:
             $smarty->assign('NewsletterEmpfaenger', $data->NewsletterEmpfaenger);
-            break;
-
-        case MAILTEMPLATE_KUNDENWERBENKUNDEN:
-            $smarty->assign('Neukunde', $data->oNeukunde)
-                   ->assign('Bestandskunde', $data->oBestandskunde);
-            break;
-
-        case MAILTEMPLATE_KUNDENWERBENKUNDENBONI:
-                $smarty->assign('BestandskundenBoni', $data->BestandskundenBoni)
-                       ->assign('Neukunde', $data->oNeukunde)
-                       ->assign('Bestandskunde', $data->oBestandskunde);
             break;
 
         case MAILTEMPLATE_STATUSEMAIL:
@@ -818,7 +803,7 @@ function SendNiceMailReply($fromName, $fromMail, $replyTo, $to, $subject, $text,
     if (empty($to)) {
         return false;
     }
-    $mime_boundary = md5(time()) . '_jtlshop2';
+    $mime_boundary = md5((string)time()) . '_jtlshop2';
     $headers       = '';
     if (mb_strpos($to, 'freenet')) {
         $headers .= 'From: ' . mb_convert_case($fromMail, MB_CASE_LOWER) . $eol;

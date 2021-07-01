@@ -16,6 +16,9 @@ class Migration_20160922142800 extends Migration implements IMigration
 {
     protected $author = 'msc';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'checkout', 'noShippingMethodsAvailable', 'Es steht keine Versandart für Ihre Bestellung zur Verfügung. Bitte kontaktieren Sie uns direkt, um diese Bestellung abzuwickeln.');
@@ -25,6 +28,9 @@ class Migration_20160922142800 extends Migration implements IMigration
         $this->setLocalization('ger', 'global', 'incorrectEmail', 'Es existiert kein Kunde mit der angegebenen E-Mail-Adresse. Bitte versuchen Sie es noch einmal.');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setLocalization('ger', 'checkout', 'noShippingMethodsAvailable', 'Es steht keine Versandart für Ihre Bestellung zur Verfügung. Bitte kontakieren Sie uns direkt, um diese Bestellung abzuwickeln.');

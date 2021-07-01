@@ -70,6 +70,7 @@
   Header set X-UA-Compatible "IE=edge"
   Header set X-Content-Type-Options "nosniff"
   Header unset X-Powered-By
+  Header set X-Frame-Options "SAMEORIGIN"
 
   <FilesMatch "\.(eot|otf|tt[cf]|woff2?)$">
     Header set Access-Control-Allow-Origin "*"
@@ -111,10 +112,19 @@
   RewriteRule ^export/((sitemap_).*\.(xml|txt)(\.gz)?)$ $1 [L]
   RewriteRule ^asset/(.*)$ includes/libs/minify/?g=$1 [QSA,L]
   RewriteRule ^static/(.*)$ templates_c/min/$1 [QSA,L]
+  RewriteRule ^dbeS/tmp/(.*)$ - [F,L]
+  RewriteRule ^dbeS/(.*)\.php$ dbeS/index.php?id=$1 [QSA,L]
+  RewriteRule ^dbeS/(.*)$ - [F,L]
   RewriteRule ^robots.txt$ robots.php [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !^/favicon.ico
   RewriteRule ^. index.php [L]
+  
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} ^/favicon.ico
+  RewriteRule ^. favicon-default.ico [L]
 </IfModule>
 
 FileETag None

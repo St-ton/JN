@@ -4,7 +4,6 @@ namespace JTL\Extensions\Download;
 
 use JTL\Nice;
 use JTL\Shop;
-use stdClass;
 
 /**
  * Class Localization
@@ -168,18 +167,5 @@ class Localization
     public function getBeschreibung(): ?string
     {
         return $this->cBeschreibung;
-    }
-
-    /**
-     * @return stdClass
-     */
-    private function kopiereMembers(): stdClass
-    {
-        $obj = new stdClass();
-        foreach (\array_keys(\get_object_vars($this)) as $member) {
-            $obj->$member = $this->$member;
-        }
-
-        return $obj;
     }
 }

@@ -103,3 +103,15 @@ msgstr "The value for \"Animation speed\" must not exceed the value for \"Pause 
 
 msgid "pauseTime"
 msgstr "Pause between animations (ms)"
+
+msgid "dotNavigation"
+msgstr "Dot navigation"
+
+msgid "thumbnailNavigation"
+msgstr "Thumbnail navigation"
+
+msgid "directionNavigation"
+msgstr "Arrow navigation"
+
+msgid "animationSpeed"
+msgstr "Animation speed"

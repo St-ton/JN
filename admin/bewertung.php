@@ -5,20 +5,19 @@ use JTL\Review\ReviewAdminController;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
-
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $oAccount->permission('MODULE_VOTESYSTEM_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bewertung_inc.php';
-/** @global \JTL\Smarty\JTLSmarty $smarty */
+setzeSprache();
 $cache       = Shop::Container()->getCache();
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
 $controller  = new ReviewAdminController($db, $cache, $alertHelper, $smarty);
 $tab         = mb_strlen(Request::verifyGPDataString('tab')) > 0 ? Request::verifyGPDataString('tab') : 'freischalten';
-
-setzeSprache();
-$step = $controller->handleRequest();
+$step        = $controller->handleRequest();
 if (Request::getVar('a') === 'editieren' || $step === 'bewertung_editieren') {
     $step = 'bewertung_editieren';
     $smarty->assign('review', $controller->getReview(Request::verifyGPCDataInt('kBewertung')));

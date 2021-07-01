@@ -1,14 +1,14 @@
 {block name='snippets-wishlist-dropdown'}
     {if $wishlists->isNotEmpty()}
         {block name='snippets-wishlist-dropdown-wishlists'}
-            <div class="table-responsive max-h-sm lg-max-h">
+            <div class="wishlist-dropdown-items table-responsive max-h-sm lg-max-h">
                 <table class="table table-vertical-middle table-striped">
                     <tbody>
                         {foreach $wishlists as $wishlist}
-                            <tr>
+                            <tr class="clickable-row cursor-pointer" data-href="{get_static_route id='wunschliste.php'}?wl={$wishlist->kWunschliste}">
                                 <td>
                                     {block name='snippets-wishlist-dropdown-link'}
-                                        {link href="{get_static_route id='wunschliste.php'}?wl={$wishlist->kWunschliste}"}{$wishlist->cName}{/link}<br />
+                                        {$wishlist->cName}<br />
                                     {/block}
                                     {block name='snippets-wishlist-dropdown-punlic'}
                                         <span data-switch-label-state="public-{$wishlist->kWunschliste}" class="small {if $wishlist->nOeffentlich != 1}d-none{/if}">
@@ -22,7 +22,7 @@
                                     {/block}
                                 </td>
                                 {block name='snippets-wishlist-dropdown-count'}
-                                    <td class="text-right text-nowrap">
+                                    <td class="text-right-util text-nowrap-util">
                                         {$wishlist->productCount} {lang key='products'}
                                     </td>
                                 {/block}
@@ -34,16 +34,12 @@
         {/block}
     {/if}
     {block name='snippets-wishlist-dropdown-new-wl'}
-        <div class="dropdown-body">
-            {row}
-                {col class='col-lg-auto ml-auto'}
-                    {block name='snippets-wishlist-dropdown-new-wl-link'}
-                        {button variant="primary" type="link" block=true size="sm" href="{get_static_route id='wunschliste.php'}?newWL=1"}
-                            {lang key='addNew' section='wishlist'}
-                        {/button}
-                    {/block}
-                {/col}
-            {/row}
+        <div class="wishlist-dropdown-footer dropdown-body">
+            {block name='snippets-wishlist-dropdown-new-wl-link'}
+                {button variant="primary" type="link" block=true size="sm" href="{get_static_route id='wunschliste.php'}?newWL=1"}
+                    {lang key='addNew' section='wishlist'}
+                {/button}
+            {/block}
         </div>
     {/block}
 {/block}

@@ -3,6 +3,7 @@
 namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\Plugin\InstallCode;
+use stdClass;
 
 /**
  * Class JS
@@ -30,7 +31,7 @@ class JS extends AbstractItem
             if (!isset($file['name'])) {
                 continue;
             }
-            $res           = new \stdClass();
+            $res           = new stdClass();
             $res->kPlugin  = $this->plugin->kPlugin;
             $res->type     = 'js';
             $res->path     = $file['name'];

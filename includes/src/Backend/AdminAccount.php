@@ -4,8 +4,8 @@ namespace JTL\Backend;
 
 use DateTime;
 use Exception;
+use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\L10n\GetText;
 use JTL\Mail\Mail\Mail;
@@ -13,6 +13,7 @@ use JTL\Mail\Mailer;
 use JTL\Mapper\AdminLoginStatusMessageMapper;
 use JTL\Mapper\AdminLoginStatusToLogLevel;
 use JTL\Model\AuthLogEntry;
+use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Backend;
 use JTL\Shop;
 use Psr\Log\LoggerInterface;
@@ -66,12 +67,18 @@ class AdminAccount
     private $getText;
 
     /**
+     * @var AlertServiceInterface
+     */
+    private $alertService;
+
+    /**
      * AdminAccount constructor.
      * @param DbInterface                   $db
      * @param LoggerInterface               $logger
      * @param AdminLoginStatusMessageMapper $statusMessageMapper
      * @param AdminLoginStatusToLogLevel    $levelMapper
      * @param GetText                       $getText
+     * @param AlertServiceInterface         $alertService
      * @throws Exception
      */
     public function __construct(
@@ -79,14 +86,17 @@ class AdminAccount
         LoggerInterface $logger,
         AdminLoginStatusMessageMapper $statusMessageMapper,
         AdminLoginStatusToLogLevel $levelMapper,
-        GetText $getText
+        GetText $getText,
+        AlertServiceInterface $alertService
     ) {
         $this->db            = $db;
         $this->authLogger    = $logger;
         $this->messageMapper = $statusMessageMapper;
         $this->levelMapper   = $levelMapper;
         $this->getText       = $getText;
+        $this->alertService  = $alertService;
         Backend::getInstance();
+        Shop::setIsFrontend(false);
         $this->initDefaults();
         $this->validateSession();
     }
@@ -145,7 +155,7 @@ class AdminAccount
                 $createdAt = (new DateTime())->setTimestamp((int)$timeStamp);
                 $now       = new DateTime();
                 $diff      = $now->diff($createdAt);
-                $secs      = ($diff->format('%a') * (60 * 60 * 24)); // total days
+                $secs      = ((int)$diff->format('%a') * (60 * 60 * 24)); // total days
                 $secs     += (int)$diff->format('%h') * (60 * 60); // hours
                 $secs     += (int)$diff->format('%i') * 60; // minutes
                 $secs     += (int)$diff->format('%s'); // seconds
@@ -172,7 +182,7 @@ class AdminAccount
         $now  = (new DateTime())->format('U');
         $hash = \md5($email . Shop::Container()->getCryptoService()->randomString(30));
         $upd  = (object)['cResetPasswordHash' => $now . ':' . Shop::Container()->getPasswordService()->hash($hash)];
-        $res  = Shop::Container()->getDB()->update('tadminlogin', 'cMail', $email, $upd);
+        $res  = $this->db->update('tadminlogin', 'cMail', $email, $upd);
         if ($res > 0) {
             $user                   = $this->db->select('tadminlogin', 'cMail', $email);
             $obj                    = new stdClass();
@@ -186,8 +196,11 @@ class AdminAccount
             $mail   = new Mail();
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ADMINLOGIN_PASSWORT_VERGESSEN, $obj));
 
+            $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successEmailSend'), 'successEmailSend');
+
             return true;
         }
+        $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorEmailNotFound'), 'errorEmailNotFound');
 
         return false;
     }
@@ -322,18 +335,23 @@ class AdminAccount
      */
     private function getAttributes(int $userID)
     {
-        $attributes = reindex($this->db->queryPrepared(
-            'SELECT cName, cAttribText, cAttribValue FROM tadminloginattribut
-                WHERE kAdminlogin = :userID',
-            ['userID' => $userID],
-            ReturnType::ARRAY_OF_OBJECTS
-        ), static function ($e) {
-            return $e->cName;
-        });
-        if (!empty($attributes) && isset($attributes['useAvatarUpload'])) {
-            $attributes['useAvatarUpload']->cAttribValue = Shop::getImageBaseURL() .
-                \ltrim($attributes['useAvatarUpload']->cAttribValue, '/');
+        // try, because of SHOP-4319
+        try {
+            $attributes = reindex($this->db->getObjects(
+                'SELECT cName, cAttribText, cAttribValue FROM tadminloginattribut
+                    WHERE kAdminlogin = :userID',
+                ['userID' => $userID]
+            ), static function ($e) {
+                return $e->cName;
+            });
+            if (!empty($attributes) && isset($attributes['useAvatarUpload'])) {
+                $attributes['useAvatarUpload']->cAttribValue = Shop::getImageBaseURL() .
+                    \ltrim($attributes['useAvatarUpload']->cAttribValue, '/');
+            }
+        } catch (Exception $e) {
+            $attributes = null;
         }
+
         return $attributes;
     }
 
@@ -469,7 +487,7 @@ class AdminAccount
     {
         $this->loggedIn = false;
         if (isset($_SESSION['AdminAccount']->cLogin, $_SESSION['AdminAccount']->cPass, $_SESSION['AdminAccount']->cURL)
-            && $_SESSION['AdminAccount']->cURL === Shop::getURL()
+            && $_SESSION['AdminAccount']->cURL === \URL_SHOP
         ) {
             $account                  = $this->db->select(
                 'tadminlogin',
@@ -495,7 +513,7 @@ class AdminAccount
         if (isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
             $twoFA = new TwoFA($this->db);
             $twoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
-            $valid                                 = $twoFA->isCodeValid($_POST['TwoFA_code']);
+            $valid                                 = $twoFA->isCodeValid($_POST['TwoFA_code'] ?? '');
             $this->twoFaAuthenticated              = $valid;
             $_SESSION['AdminAccount']->TwoFA_valid = $valid;
 
@@ -524,7 +542,7 @@ class AdminAccount
         $group = $this->getPermissionsByGroup($admin->kAdminlogingruppe);
         if (\is_object($group) || (int)$admin->kAdminlogingruppe === \ADMINGROUP) {
             $_SESSION['AdminAccount']              = new stdClass();
-            $_SESSION['AdminAccount']->cURL        = Shop::getURL();
+            $_SESSION['AdminAccount']->cURL        = \URL_SHOP;
             $_SESSION['AdminAccount']->kAdminlogin = (int)$admin->kAdminlogin;
             $_SESSION['AdminAccount']->cLogin      = $admin->cLogin;
             $_SESSION['AdminAccount']->cMail       = $admin->cMail;
@@ -579,8 +597,7 @@ class AdminAccount
             'UPDATE tadminlogin
                 SET nLoginVersuch = nLoginVersuch+1
                 WHERE cLogin = :login',
-            ['login' => $cLogin],
-            ReturnType::AFFECTED_ROWS
+            ['login' => $cLogin]
         );
         $data   = $this->db->select('tadminlogin', 'cLogin', $cLogin);
         $locked = (int)$data->nLoginVersuch >= \MAX_LOGIN_ATTEMPTS;
@@ -657,5 +674,21 @@ class AdminAccount
         }
 
         return false;
+    }
+
+    /**
+     * @return int
+     */
+    public function getID(): int
+    {
+        return (int)$_SESSION['AdminAccount']->kAdminlogin;
+    }
+
+    /**
+     * @return GetText
+     */
+    public function getGetText(): GetText
+    {
+        return $this->getText;
     }
 }

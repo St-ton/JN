@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * add_nfehlerhaft_texportformat
  *
@@ -6,14 +6,6 @@
  * @created Wed, 03 Apr 2019 11:55:19 +0200
  */
 
-use JTL\DB\ReturnType;
-use JTL\Exportformat;
-use JTL\Mail\Hydrator\TestHydrator;
-use JTL\Mail\Renderer\SmartyRenderer;
-use JTL\Mail\Template\TemplateFactory;
-use JTL\Mail\Validator\SyntaxChecker;
-use JTL\Shopsetting;
-use JTL\Smarty\MailSmarty;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -25,15 +17,17 @@ class Migration_20190403115519 extends Migration implements IMigration
     protected $author = 'mh';
     protected $description = 'Add nFehlerhaft to texportformat, tpluginemailvorlage';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
-        $id = $this->getDB()->query(
+        $id = $this->getDB()->getSingleObject(
             "SELECT kEmailvorlage 
                 FROM temailvorlage 
-                WHERE cModulId = 'core_jtl_rma_submitted'",
-            ReturnType::SINGLE_OBJECT
+                WHERE cModulId = 'core_jtl_rma_submitted'"
         );
-        if (isset($id->kEmailvorlage)) {
+        if ($id !== null) {
             $this->getDB()->delete('temailvorlage', 'kEmailvorlage', $id->kEmailvorlage);
             $this->getDB()->delete('temailvorlagesprache', 'kEmailvorlage', $id->kEmailvorlage);
             $this->getDB()->delete('temailvorlagespracheoriginal', 'kEmailvorlage', $id->kEmailvorlage);
@@ -74,6 +68,9 @@ class Migration_20190403115519 extends Migration implements IMigration
             CHANGE COLUMN `cDateiname` `cPDFNames` VARCHAR(255) NULL DEFAULT NULL');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute('ALTER TABLE texportformat DROP COLUMN nFehlerhaft');

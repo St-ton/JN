@@ -6,7 +6,6 @@ use JTL\Alert\Alert;
 use JTL\Cart\Cart;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Preise;
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
 use JTL\Session\Frontend;
@@ -39,7 +38,7 @@ class Tax
     }
 
     /**
-     * @param string $countryCode
+     * @param string|null $countryCode
      * @since since 5.0.0
      */
     public static function setTaxRates($countryCode = null): void
@@ -48,15 +47,16 @@ class Tax
         $billingCountryCode     = null;
         $merchantCountryCode    = 'DE';
         $db                     = Shop::Container()->getDB();
-        $Firma                  = $db->query(
-            'SELECT cLand FROM tfirma',
-            ReturnType::SINGLE_OBJECT
-        );
-        if (!empty($Firma->cLand)) {
-            $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($Firma->cLand);
+        $conf                   = Shop::getSettings([\CONF_KUNDEN])['kunden'];
+        $company                = $db->getSingleObject('SELECT cLand FROM tfirma');
+        if ($company !== null && !empty($company->cLand)) {
+            $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($company->cLand);
         }
         if (\defined('STEUERSATZ_STANDARD_LAND')) {
             $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
+        }
+        if ($conf['kundenregistrierung_standardland'] !== '') {
+            $merchantCountryCode = $conf['kundenregistrierung_standardland'];
         }
         $deliveryCountryCode = $merchantCountryCode;
         if ($countryCode) {
@@ -98,18 +98,18 @@ class Tax
                 $UstBefreiungIGL = true;
             }
         }
-        $taxZones = $db->queryPrepared(
+        $taxZones = $db->getObjects(
             'SELECT tsteuerzone.kSteuerzone
                 FROM tsteuerzone, tsteuerzoneland
                 WHERE tsteuerzoneland.cISO = :ciso
                     AND tsteuerzoneland.kSteuerzone = tsteuerzone.kSteuerzone',
-            ['ciso' => $deliveryCountryCode],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['ciso' => $deliveryCountryCode]
         );
         if (\count($taxZones) === 0) {
             // Keine Steuerzone für $deliveryCountryCode hinterlegt - das ist fatal!
-            $redirURL  = Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') .
-                '?editRechnungsadresse=1';
+            $redirURL  = Frontend::getCustomer()->isLoggedIn()
+                ? Shop::Container()->getLinkService()->getStaticRoute('jtl.php') . '?editRechnungsadresse=1'
+                : Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1';
             $urlHelper = new URL(Shop::getURL() . $_SERVER['REQUEST_URI']);
             $country   = LanguageHelper::getCountryCodeByCountryName($deliveryCountryCode);
 
@@ -153,17 +153,13 @@ class Tax
             : '';
 
         if ($qry !== '') {
-            $taxClasses = $db->query(
-                'SELECT * FROM tsteuerklasse',
-                ReturnType::ARRAY_OF_OBJECTS
-            );
+            $taxClasses = $db->getObjects('SELECT * FROM tsteuerklasse');
             foreach ($taxClasses as $taxClass) {
-                $rate                                             = $db->query(
+                $rate                                             = $db->getSingleObject(
                     'SELECT fSteuersatz
                         FROM tsteuersatz
                         WHERE kSteuerklasse = ' . (int)$taxClass->kSteuerklasse . '
-                        AND (' . $qry . ') ORDER BY nPrio DESC',
-                    ReturnType::SINGLE_OBJECT
+                        AND (' . $qry . ') ORDER BY nPrio DESC'
                 );
                 $_SESSION['Steuersatz'][$taxClass->kSteuerklasse] = $rate->fSteuersatz ?? 0;
                 if ($UstBefreiungIGL) {
@@ -177,10 +173,10 @@ class Tax
     }
 
     /**
-     * @param array             $items
-     * @param int|bool          $net
-     * @param true              $html
-     * @param Currency|stdClass $currency
+     * @param array                  $items
+     * @param int|bool               $net
+     * @param bool                   $html
+     * @param Currency|stdClass|null $currency
      * @return array
      * @former gibAlteSteuerpositionen()
      * @since since 5.0.0
@@ -223,9 +219,9 @@ class Tax
     }
 
     /**
-     * @param float $price
-     * @param float $taxRate
-     * @param int   $precision
+     * @param float|string $price
+     * @param float|string $taxRate
+     * @param int          $precision
      * @return float
      * @since since 5.0.0
      */
@@ -235,9 +231,9 @@ class Tax
     }
 
     /**
-     * @param float $price
-     * @param float $taxRate
-     * @param int   $precision
+     * @param float|string $price
+     * @param float|string $taxRate
+     * @param int          $precision
      * @return float
      * @since since 5.0.0
      */

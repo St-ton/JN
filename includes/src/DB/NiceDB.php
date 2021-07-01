@@ -2,6 +2,7 @@
 
 namespace JTL\DB;
 
+use Exception;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JTL\Exceptions\InvalidEntityNameException;
@@ -10,6 +11,7 @@ use JTL\Shop;
 use PDO;
 use PDOException;
 use PDOStatement;
+use stdClass;
 
 /**
  * Class NiceDB
@@ -52,7 +54,7 @@ class NiceDB implements DbInterface
     private static $instance;
 
     /**
-     * @var PDO
+     * @var PDO|null
      */
     private $pdo;
 
@@ -71,54 +73,69 @@ class NiceDB implements DbInterface
      */
     private $transactionCount = 0;
 
-    /** @deprecated  */
-    public const RET_SINGLE_OBJECT = 1;
-    /** @deprecated  */
-    public const RET_ARRAY_OF_OBJECTS = 2;
-    /** @deprecated  */
-    public const RET_AFFECTED_ROWS = 3;
-    /** @deprecated  */
-    public const RET_LAST_INSERTED_ID = 7;
-    /** @deprecated  */
-    public const RET_SINGLE_ASSOC_ARRAY = 8;
-    /** @deprecated  */
-    public const RET_ARRAY_OF_ASSOC_ARRAYS = 9;
-    /** @deprecated  */
-    public const RET_QUERYSINGLE = 10;
-    /** @deprecated  */
-    public const RET_ARRAY_OF_BOTH_ARRAYS = 11;
+    /**
+     * @deprecated Use ReturnType::SINGLE_OBJECT instead
+     */
+    public const RET_SINGLE_OBJECT = ReturnType::SINGLE_OBJECT;
+    /**
+     * @deprecated Use ReturnType::ARRAY_OF_OBJECTS instead
+     */
+    public const RET_ARRAY_OF_OBJECTS = ReturnType::ARRAY_OF_OBJECTS;
+    /**
+     * @deprecated Use ReturnType::AFFECTED_ROWS instead
+     */
+    public const RET_AFFECTED_ROWS = ReturnType::AFFECTED_ROWS;
+    /**
+     * @deprecated Use ReturnType::LAST_INSERTED_ID instead
+     */
+    public const RET_LAST_INSERTED_ID = ReturnType::LAST_INSERTED_ID;
+    /**
+     * @deprecated Use ReturnType::SINGLE_ASSOC_ARRAY instead
+     */
+    public const RET_SINGLE_ASSOC_ARRAY = ReturnType::SINGLE_ASSOC_ARRAY;
+    /**
+     * @deprecated Use ReturnType::SINGLE_ASSOC_ARRAY instead
+     */
+    public const RET_ARRAY_OF_ASSOC_ARRAYS = ReturnType::ARRAY_OF_ASSOC_ARRAYS;
+    /**
+     * @deprecated Use ReturnType::QUERYSINGLE instead
+     */
+    public const RET_QUERYSINGLE = ReturnType::QUERYSINGLE;
+    /**
+     * @deprecated Use ReturnType::ARRAY_OF_BOTH_ARRAYS instead
+     */
+    public const RET_ARRAY_OF_BOTH_ARRAYS = ReturnType::ARRAY_OF_BOTH_ARRAYS;
 
     /**
      * create DB Connection with default parameters
      *
-     * @param string $dbHost
-     * @param string $dbUser
-     * @param string $dbPass
-     * @param string $dbName
-     * @param bool   $debugOverride
-     * @throws \Exception
+     * @param string $host
+     * @param string $user
+     * @param string $pass
+     * @param string $db
+     * @param bool   $forceDebug
      */
-    public function __construct($dbHost, $dbUser, $dbPass, $dbName, $debugOverride = false)
+    public function __construct(string $host, string $user, string $pass, string $db, bool $forceDebug = false)
     {
-        $dsn          = 'mysql:dbname=' . $dbName;
+        $dsn          = 'mysql:dbname=' . $db;
         $this->config = [
             'driver'   => 'mysql',
-            'host'     => $dbHost,
-            'database' => $dbName,
-            'username' => $dbUser,
-            'password' => $dbPass,
+            'host'     => $host,
+            'database' => $db,
+            'username' => $user,
+            'password' => $pass,
             'charset'  => \DB_CHARSET,
         ];
         if (\defined('DB_SOCKET')) {
             $dsn .= ';unix_socket=' . \DB_SOCKET;
         } else {
-            $dsn .= ';host=' . $dbHost;
+            $dsn .= ';host=' . $host;
         }
-        $this->pdo = new PDO($dsn, $dbUser, $dbPass, $this->getOptions());
+        $this->pdo = new PDO($dsn, $user, $pass, $this->getOptions());
         if (\DB_DEFAULT_SQL_MODE !== true) {
             $this->pdo->exec("SET SQL_MODE=''");
         }
-        $this->initDebugging($debugOverride);
+        $this->initDebugging($forceDebug);
         $this->isConnected = true;
         self::$instance    = $this;
     }
@@ -153,13 +170,13 @@ class NiceDB implements DbInterface
      */
     private function initDebugging(bool $debugOverride = false): void
     {
-        if ($debugOverride === false && PROFILE_QUERIES !== false) {
+        if ($debugOverride === false && \PROFILE_QUERIES !== false) {
             $this->debugLevel = \DEBUG_LEVEL;
-            if (PROFILE_QUERIES === true) {
+            if (\PROFILE_QUERIES === true) {
                 $this->debug = true;
             }
         }
-        if (\ES_DB_LOGGING !== false && \ES_DB_LOGGING !== 0) {
+        if (\ES_DB_LOGGING === true) {
             $this->logErrors = true;
         }
         if (\NICEDB_EXCEPTION_BACKTRACE === true) {
@@ -168,17 +185,22 @@ class NiceDB implements DbInterface
     }
 
     /**
-     * @param null|string $DBHost
-     * @param null|string $DBUser
-     * @param null|string $DBpass
-     * @param null|string $DBdatabase
+     * @param null|string $host
+     * @param null|string $user
+     * @param null|string $pass
+     * @param null|string $db
      * @return NiceDB
-     * @throws \Exception
-     * @deprecated since Shop 5 use Shop::Container()->getDB() instead
+     * @throws Exception
+     * @deprecated since 5.0.0 use Shop::Container()->getDB() instead
      */
-    public static function getInstance($DBHost = null, $DBUser = null, $DBpass = null, $DBdatabase = null): DbInterface
-    {
-        return self::$instance ?? new self($DBHost, $DBUser, $DBpass, $DBdatabase);
+    public static function getInstance(
+        string $host = null,
+        string $user = null,
+        string $pass = null,
+        string $db = null
+    ): DbInterface {
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return self::$instance ?? new self($host, $user, $pass, $db);
     }
 
     /**
@@ -268,7 +290,7 @@ class NiceDB implements DbInterface
         $backtrace = $this->getBacktrace($backtrace);
         while (($row = $res->fetchObject()) !== false) {
             if (!empty($row->table)) {
-                $tableData            = new \stdClass();
+                $tableData            = new stdClass();
                 $tableData->type      = $row->select_type ?? '???';
                 $tableData->table     = $row->table;
                 $tableData->count     = 1;
@@ -282,7 +304,7 @@ class NiceDB implements DbInterface
                 }
                 Profiler::setSQLProfile($tableData);
             } elseif ($this->debugLevel > 1 && isset($row->Extra)) {
-                $tableData            = new \stdClass();
+                $tableData            = new stdClass();
                 $tableData->type      = $row->select_type ?? '???';
                 $tableData->message   = $row->Extra;
                 $tableData->statement = \preg_replace('/\s\s+/', ' ', $stmt);
@@ -350,10 +372,12 @@ class NiceDB implements DbInterface
     }
 
     /**
-     * @inheritdoc
+     * @return string
+     * @deprecated since 5.1.0
      */
     public function info(): string
     {
+        \trigger_error(__METHOD__ . ' is deprecated. Use getServerInfo() instead.', \E_USER_DEPRECATED);
         return $this->getServerInfo();
     }
 
@@ -366,10 +390,12 @@ class NiceDB implements DbInterface
     }
 
     /**
-     * @inheritdoc
+     * @return string
+     * @deprecated since 5.1.0
      */
     public function stats(): string
     {
+        \trigger_error(__METHOD__ . ' is deprecated. Use getServerStats() instead.', \E_USER_DEPRECATED);
         return $this->getServerStats();
     }
 
@@ -377,9 +403,11 @@ class NiceDB implements DbInterface
      * get db object
      *
      * @return PDO
+     * @deprecated since 5.1.0
      */
     public function DB(): PDO
     {
+        \trigger_error(__METHOD__ . ' is deprecated. Use getPDO() instead.', \E_USER_DEPRECATED);
         return $this->pdo;
     }
 
@@ -746,9 +774,9 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function executeQuery(string $stmt, int $return, bool $echo = false, $fnInfo = null)
+    public function executeQuery(string $stmt, int $return = ReturnType::DEFAULT, bool $echo = false, $fnInfo = null)
     {
-        return $this->_execute(0, $stmt, null, $return, $echo, $fnInfo);
+        return $this->_execute(0, $stmt, [], $return, $echo, $fnInfo);
     }
 
     /**
@@ -757,7 +785,7 @@ class NiceDB implements DbInterface
     public function executeQueryPrepared(
         string $stmt,
         array $params,
-        int $return,
+        int $return = ReturnType::DEFAULT,
         bool $echo = false,
         $fnInfo = null
     ) {
@@ -770,11 +798,69 @@ class NiceDB implements DbInterface
     public function queryPrepared(
         string $stmt,
         array $params,
-        int $return,
+        int $return = ReturnType::DEFAULT,
         bool $echo = false,
-        $fnINfo = null
+        $fnInfo = null
     ) {
-        return $this->_execute(1, $stmt, $params, $return, $echo, $fnINfo);
+        return $this->_execute(1, $stmt, $params, $return, $echo, $fnInfo);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getArrays(string $stmt, array $params = []): array
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::ARRAY_OF_ASSOC_ARRAYS);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getObjects(string $stmt, array $params = []): array
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::ARRAY_OF_OBJECTS);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCollection(string $stmt, array $params = []): Collection
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::COLLECTION);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSingleObject(string $stmt, array $params = []): ?stdClass
+    {
+        $res = $this->_execute(1, $stmt, $params, ReturnType::SINGLE_OBJECT);
+
+        return $res !== false ? $res : null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSingleArray(string $stmt, array $params = []): ?array
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::SINGLE_ASSOC_ARRAY);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAffectedRows(string $stmt, array $params = []): int
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::AFFECTED_ROWS);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPDOStatement(string $stmt, array $params = []): PDOStatement
+    {
+        return $this->_execute(1, $stmt, $params, ReturnType::QUERYSINGLE);
     }
 
     /**
@@ -782,9 +868,9 @@ class NiceDB implements DbInterface
      *
      * @param int           $type - Type [0 => query, 1 => prepared]
      * @param string        $stmt - Statement to be executed
-     * @param array         $params - An array of values with as many elements as there are bound parameters
+     * @param array|null    $params - An array of values with as many elements as there are bound parameters
      * @param int           $return - what should be returned.
-     * @param int|bool      $echo print current stmt
+     * @param bool          $echo print current stmt
      * @param null|callable $fnInfo
      * 1  - single fetched object
      * 2  - array of fetched objects
@@ -797,7 +883,7 @@ class NiceDB implements DbInterface
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws InvalidArgumentException
      */
-    protected function _execute(int $type, $stmt, $params, int $return, bool $echo = false, $fnInfo = null)
+    protected function _execute(int $type, string $stmt, $params, int $return, bool $echo = false, $fnInfo = null)
     {
         $params = \is_array($params) ? $params : [];
         if (!\in_array($type, [0, 1], true)) {
@@ -824,17 +910,16 @@ class NiceDB implements DbInterface
                     $this->_bind($res, $k, $v);
                 }
                 if ($res->execute() === false) {
-                    return 0;
+                    return $this->failExecute($return);
                 }
             }
         } catch (PDOException $e) {
             $this->handleException($e, $this->readableQuery($stmt, $params));
-
             if ($this->transactionCount > 0) {
                 throw $e;
             }
 
-            return 0;
+            return $this->failExecute($return);
         }
 
         if ($fnInfo !== null) {
@@ -849,13 +934,33 @@ class NiceDB implements DbInterface
         if (!$res) {
             $this->logError($this->readableQuery($stmt, $params));
 
-            return 0;
+            return $this->failExecute($return);
         }
 
         $ret = $this->getQueryResult($return, $res);
         $this->analyzeQuery($stmt, null, $type === 0 ? null : $params, \microtime(true) - $start);
 
         return $ret;
+    }
+
+    /**
+     * @param int $returnType
+     * @return array|Collection|int|stdClass
+     */
+    private function failExecute(int $returnType)
+    {
+        switch ($returnType) {
+            case ReturnType::COLLECTION:
+                return new Collection();
+            case ReturnType::ARRAY_OF_OBJECTS:
+            case ReturnType::ARRAY_OF_ASSOC_ARRAYS:
+            case ReturnType::ARRAY_OF_BOTH_ARRAYS:
+                return [];
+            case ReturnType::SINGLE_OBJECT:
+                return new stdClass();
+            default:
+                return 0;
+        }
     }
 
     /**
@@ -993,16 +1098,19 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function query($stmt, $return, bool $echo = false)
+    public function query(string $stmt, int $return = ReturnType::DEFAULT, bool $echo = false)
     {
-        return $this->executeQuery($stmt, $return, $echo);
+        return $this->_execute(0, $stmt, [], $return, $echo);
     }
 
     /**
-     * @inheritdoc
+     * @param string $stmt
+     * @return PDOStatement|int
+     * @deprecated since 5.1.0
      */
     public function exQuery($stmt)
     {
+        \trigger_error(__METHOD__ . ' is deprecated. Use executeExQuery() instead.', \E_USER_DEPRECATED);
         return $this->executeExQuery($stmt);
     }
 
@@ -1040,23 +1148,30 @@ class NiceDB implements DbInterface
     }
 
     /**
-     * @inheritdoc
+     * @param string $string
+     * @return string
+     * @deprecated since 5.1.0
      */
     public function pdoEscape($string): string
     {
+        \trigger_error(__METHOD__ . ' is deprecated. Use escape() instead.', \E_USER_DEPRECATED);
         return $this->escape($string);
     }
 
     /**
-     * @inheritdoc
+     * @param string $string
+     * @return string
+     * @deprecated since 5.1.0
      */
     public function realEscape($string): string
     {
+        \trigger_error(__METHOD__ . ' is deprecated. Use escape() instead.', \E_USER_DEPRECATED);
         return $this->escape($string);
     }
 
     /**
-     * @inheritdoc
+     * @param string $entry
+     * @return DbInterface
      */
     public function writeLog(string $entry): DbInterface
     {
@@ -1067,13 +1182,13 @@ class NiceDB implements DbInterface
     }
 
     /**
-     * @inheritdoc
+     * @return mixed
+     * @deprecated since 5.1.0
      */
     public function _getErrorCode()
     {
-        $errorCode = $this->pdo->errorCode();
-
-        return $errorCode !== '00000' ? $errorCode : 0;
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return $this->getErrorCode();
     }
 
     /**
@@ -1081,31 +1196,45 @@ class NiceDB implements DbInterface
      */
     public function getErrorCode()
     {
-        return $this->_getErrorCode();
+        $errorCode = $this->pdo->errorCode();
+
+        return $errorCode !== '00000' ? $errorCode : 0;
+    }
+
+    /**
+     * @return array
+     * @deprecated since 5.1.0
+     */
+    public function _getError(): array
+    {
+        \trigger_error(__METHOD__ . ' is deprecated. Use getError() instead.', \E_USER_DEPRECATED);
+        return $this->getError();
     }
 
     /**
      * @inheritdoc
      */
-    public function _getError()
+    public function getError(): array
     {
         return $this->pdo->errorInfo();
     }
 
     /**
-     * @inheritdoc
+     * @return string
+     * @deprecated since 5.1.0
      */
-    public function getError()
+    public function _getErrorMessage(): string
     {
-        return $this->_getError();
+        \trigger_error(__METHOD__ . ' is deprecated. Use getErrorMessage() instead.', \E_USER_DEPRECATED);
+        return $this->getErrorMessage();
     }
 
     /**
      * @inheritdoc
      */
-    public function _getErrorMessage()
+    public function getErrorMessage(): string
     {
-        $error = $this->_getError();
+        $error = $this->getError();
         if (\is_array($error) && isset($error[2])) {
             return \is_string($error[2]) ? $error[2] : '';
         }
@@ -1116,18 +1245,9 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function getErrorMessage()
-    {
-        return $this->_getErrorMessage();
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function beginTransaction(): bool
     {
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
         if ($this->transactionCount++ <= 0) {
             return $this->pdo->beginTransaction();
         }
@@ -1285,22 +1405,24 @@ class NiceDB implements DbInterface
                 Shop::dbg($assigns, false, 'Bound params:');
             }
             Shop::dbg($e->getMessage());
+            if (\NICEDB_EXCEPTION_BACKTRACE === true) {
+                Shop::dbg(\debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
+            }
         }
-        if (\NICEDB_EXCEPTION_BACKTRACE === true) {
-            Shop::dbg(\debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
-        }
+        $this->logError($stmt, $e);
     }
 
     /**
-     * @param string $stmt
+     * @param string         $stmt
+     * @param Exception|null $e
      */
-    private function logError(string $stmt): void
+    private function logError(string $stmt, ?Exception $e = null): void
     {
         if ($this->logErrors) {
-            Shop::Container()->getLogService()->error(
-                $stmt . "\n" .
-                $this->getErrorCode() . ': ' . $this->getErrorMessage()
-            );
+            $errorMessage = $e === null
+                ? $this->getErrorCode() . ': ' . $this->getErrorMessage()
+                : $e->getMessage();
+            Shop::Container()->getLogService()->error('Error executing query: ' . $stmt . "\n" . $errorMessage);
         }
     }
 

@@ -4,32 +4,30 @@
     {foreach $NaviFilter->searchFilterCompat->getOptions() as $searchFilter}
         {if $limit != -1 && $searchFilter@iteration > $limit && !$collapseInit}
             {block name='snippets-filter-search-more-top'}
-                <div class="collapse {if $NaviFilter->searchFilterCompat->isActive()} show{/if}" id="box-collps-filter{$NaviFilter->searchFilterCompat->getNiceName()}" aria-expanded="false">
+                <div class="collapse {if $NaviFilter->searchFilterCompat->isActive()} show{/if}" id="box-collps-filter{$NaviFilter->searchFilterCompat->getNiceName()}" aria-expanded="false" role="button">
                     <ul class="nav flex-column">
                 {$collapseInit = true}
             {/block}
         {/if}
         {block name='snippets-filter-search-navitem'}
-            {dropdownitem nofollow=true
+            {link rel="nofollow"
                 href=$searchFilter->getURL()
-                active=$searchFilter->isActive()
-                class="filter-item"}
-                    <div class="align-items-center d-flex">
-                        <i class="far fa-{if $searchFilter->isActive()}check-{/if}square text-muted mr-2"></i>
+                class="filter-item {if $searchFilter->isActive()}active{/if}"}
+                    <div class="box-link-wrapper">
+                        <i class="far fa-{if $searchFilter->isActive()}check-{/if}square snippets-filter-item-icon-right"></i>
                         <span class="word-break">{$searchFilter->getName()}</span>
-                        <span class="badge badge-outline-secondary ml-auto">{$searchFilter->getCount()}</span>
+                        {badge variant="outline-secondary"}{$searchFilter->getCount()}{/badge}
                     </div>
-            {/dropdownitem}
+            {/link}
         {/block}
     {/foreach}
     {if $limit != -1 && $NaviFilter->searchFilterCompat->getOptions()|count > $limit}
         {block name='snippets-filter-search-more-bottom'}
                 </ul>
             </div>
-            <div class="w-100">
+            <div class="snippets-filter-show-all">
                 {button variant="link"
                     role="button"
-                    class="p-0 ml-auto mt-1"
                     data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$NaviFilter->searchFilterCompat->getNiceName()}"]}
                     {lang key='showAll'}
                 {/button}

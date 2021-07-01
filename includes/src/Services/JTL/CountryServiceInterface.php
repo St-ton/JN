@@ -23,10 +23,10 @@ interface CountryServiceInterface
     public function getCountrylist(): Collection;
 
     /**
-     * @param string $ISO
+     * @param string $iso
      * @return null|Country
      */
-    public function getCountry(string $ISO): ?Country;
+    public function getCountry(string $iso): ?Country;
 
     /**
      * @param array $ISOToFilter
@@ -47,4 +47,9 @@ interface CountryServiceInterface
      * @return array
      */
     public function getCountriesGroupedByContinent(bool $getEU = false, array $selectedCountries = []): array;
+
+    /**
+     * @return array
+     */
+    public function getContinents(): array;
 }

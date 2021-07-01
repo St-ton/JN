@@ -8,9 +8,10 @@ use JTL\Shop;
 use JTL\Shopsetting;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $shopSettings = Shopsetting::getInstance();
 if (isset($_POST['speichern']) && Form::validateToken()) {
     $oldConfig = $shopSettings->getSettings([CONF_BILDER])['bilder'];
@@ -49,6 +50,10 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
             $cachesToClear[] = $media::getClass(Image::TYPE_CHARACTERISTIC);
             continue;
         }
+        if (strpos($item, 'opc') !== false) {
+            $cachesToClear[] = $media::getClass(Image::TYPE_OPC);
+            continue;
+        }
         if (strpos($item, 'konfiggruppe') !== false) {
             $cachesToClear[] = $media::getClass(Image::TYPE_CONFIGGROUP);
             continue;
@@ -67,24 +72,25 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
             || strpos($item, 'skalieren') !== false
             || strpos($item, 'hintergrundfarbe') !== false
         ) {
-            $cachesToClear = $media->getAllClassNames();
+            $cachesToClear = $media->getRegisteredClassNames();
             break;
         }
     }
-    foreach (\array_unique($cachesToClear) as $class) {
+    foreach (array_unique($cachesToClear) as $class) {
         /** @var IMedia $class */
         $class::clearCache();
     }
 }
 
 $indices = [
-    'kategorien'    => __('category'),
+    'kategorien'    => __('categories'),
     'variationen'   => __('variations'),
     'artikel'       => __('product'),
     'hersteller'    => __('manufacturer'),
     'merkmal'       => __('attributes'),
     'merkmalwert'   => __('attributeValues'),
-    'konfiggruppe'  => __('configGroup'),
+    'opc'           => 'OPC',
+    'konfiggruppe'  => __('configGroups'),
     'news'          => __('news'),
     'newskategorie' => __('newscategory')
 ];

@@ -73,9 +73,9 @@ class CacheMemcache implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($keyValue, $expiration = null): bool
+    public function storeMulti($idContent, $expiration = null): bool
     {
-        return $this->memcache->set($this->prefixArray($keyValue), $expiration ?? $this->options['lifetime']);
+        return $this->memcache->set($this->prefixArray($idContent), $expiration ?? $this->options['lifetime']);
     }
 
     /**

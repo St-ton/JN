@@ -55,3 +55,6 @@ msgstr "Recommended value"
 
 msgid "requirementsMet"
 msgstr "All requirements are met."
+
+msgid "extensions"
+msgstr "Extensions"

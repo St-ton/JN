@@ -35,7 +35,7 @@ msgid "Shop logo"
 msgstr "Logo"
 
 msgid "Item badges"
-msgstr "Item stickers"
+msgstr "Item badges"
 
 # Top Menu
 msgid "Contents"
@@ -73,7 +73,7 @@ msgid "Terms / Withdrawal"
 msgstr "Terms/Withdrawal"
 
 msgid "Blog posts"
-msgstr "Blog postings"
+msgstr "Blog posts"
 
 msgid "Footer / Boxes"
 msgstr "Footers/Boxes"
@@ -102,26 +102,11 @@ msgstr "Check boxes"
 msgid "Email"
 msgstr "Email"
 
-# Menu Items
-msgid "Email settings"
-msgstr "Email settings"
-
 msgid "Reports"
 msgstr "Reports"
 
 msgid "Blacklist"
 msgstr "Blacklist"
-
-msgid "E-mail log"
-msgstr "Email log"
-
-# Top Menu
-msgid "Purchases"
-msgstr "Checkout"
-
-# Mid Menu
-msgid "Shopping cart"
-msgstr "Basket"
 
 # Menu Items
 msgid "Checkout"
@@ -133,9 +118,6 @@ msgstr "Baskets"
 msgid "Free gifts"
 msgstr "Free gifts"
 
-# Just incase you want to add a translation for partners:
-#   msgid "Trusted Shops"
-#   msgstr "Trusted Shops"
 # Mid Menu
 msgid "Payments"
 msgstr "Payments"
@@ -144,12 +126,6 @@ msgstr "Payments"
 msgid "Payment methods"
 msgstr "Payment methods"
 
-# Just incase you want to add a translation for partners:
-#   msgid "Amazon Payments"
-#   msgstr "Amazon Pay"
-#
-#   msgid "Skrill"
-#   msgstr "Skrill"
 # Mid Menu
 msgid "Shipments"
 msgstr "Shipments"
@@ -164,12 +140,6 @@ msgstr "Additional packaging"
 msgid "Marketing"
 msgstr "Marketing"
 
-msgid "Customer loyalty"
-msgstr "Customer loyalty"
-
-msgid "Recommendations"
-msgstr "Customer referrals"
-
 msgid "Coupons"
 msgstr "Coupons"
 
@@ -181,10 +151,6 @@ msgstr "Comparison list"
 
 msgid "Newsletter"
 msgstr "Newsletter"
-
-# Mid Menu
-msgid "Publicity"
-msgstr "Advertisement"
 
 # Menu Items
 msgid "Banners"
@@ -311,7 +277,7 @@ msgstr "Reset"
 
 # Mid Menu
 msgid "Search"
-msgstr "Search"
+msgstr "Search & item lists"
 
 msgid "Item overview"
 msgstr "Item overview"
@@ -319,8 +285,8 @@ msgstr "Item overview"
 msgid "Search queries"
 msgstr "Search queries"
 
-msgid "Search query activation"
-msgstr "Activate search queries"
+msgid "Cron"
+msgstr "Cron"
 
 # Top Menu
 msgid "Plug-ins"
@@ -330,23 +296,14 @@ msgstr "Plug-ins"
 msgid "Overview"
 msgstr "Overview"
 
-# Menu Items
-msgid "Plug-in marketplace"
-msgstr "Plug-in marketplace"
-
 msgid "Plug-in manager"
 msgstr "Plug-in manager"
 
+msgid "My purchases"
+msgstr "My purchases"
+
 msgid "Plug-in profiler"
 msgstr "Plug-in profiler"
-
-# Mid Menu
-# This is redundant, but could be used in the future.
-#   msgid "Plugins"
-#   msgstr "Plug-ins"
-#
-#
-# Right Top Menu
 
 msgid "Dashboard"
 msgstr "Dashboard"
@@ -357,8 +314,8 @@ msgstr "Help"
 msgid "System check"
 msgstr "System check"
 
-msgid "Rating system"
-msgstr "Review system"
+msgid "Consent manager"
+msgstr "Consent manager"
 
 msgid "Manage favorites"
 msgstr "Managing favourites"
@@ -406,7 +363,7 @@ msgstr "Database"
 msgid "There are errors within the database structure."
 msgstr "Error in the database structure."
 
-msgid "Your template version differs from your shop version.<br />For additional help about template updates go to <i class='fa fa-external-link'></i> Wiki"
+msgid "Your template version differs from your shop version.<br />For additional help about template updates go to <i class=\"fa fa-external-link\"></i> Wiki"
 msgstr "The template version does not match the version of our online shop.<br/>For further information on adjusting the template, please see the <i class=\"fa fa-external-link\"></i> JTL-Guide."
 
 msgid "You are using a full responsive template. The activation of a separate mobile template is not necessary in this case."
@@ -416,7 +373,7 @@ msgid "You have activated a non-standard template!"
 msgstr "No standard template enabled."
 
 msgid "The profiler is active. This can cause strong power loss in the shop."
-msgstr "The plug-in profiler is active. This can lead to severe performance issues."
+msgstr "The plug-in profiler is enabled. This can lead to severe performance issues."
 
 msgid "New plugin versions are available."
 msgstr "There are new plug-in versions available."
@@ -473,7 +430,7 @@ msgid "Server"
 msgstr "Server"
 
 msgid "Accounts"
-msgstr "Users &amp; rights"
+msgstr "Users & rights"
 
 msgid "Troubleshooting"
 msgstr "Troubleshooting"
@@ -481,11 +438,17 @@ msgstr "Troubleshooting"
 msgid "System diagnostics"
 msgstr "Diagnostics"
 
+msgid "Set up"
+msgstr "Set up"
+
 msgid "Email templates"
-msgstr "Template"
+msgstr "Templates"
 
 msgid "Global"
 msgstr "Global"
 
 msgid "Availability notifications"
 msgstr "Availability requests"
+
+msgid "Country manager"
+msgstr "Country manager"

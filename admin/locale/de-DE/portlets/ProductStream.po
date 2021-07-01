@@ -20,5 +20,11 @@ msgstr "Einfacher Slider mit Bildern"
 msgid "presentationSlider"
 msgstr "Slider mit Namen und Preisen"
 
+msgid "presentationBoxSlider"
+msgstr "Einzelprodukt-Slider mit Name und Preis"
+
 msgid "itemFilter"
 msgstr "Artikelfilter"
+
+msgid "maxProducts"
+msgstr "Artikel-Anzahl begrenzen"

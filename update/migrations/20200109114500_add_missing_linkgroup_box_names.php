@@ -18,7 +18,7 @@ class Migration_20200109114500 extends Migration implements IMigration
     protected $description = 'Add missing linkgroup box names';
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function up()
     {
@@ -31,13 +31,14 @@ class Migration_20200109114500 extends Migration implements IMigration
                     LEFT JOIN tboxsprache
                         ON tboxsprache.kBox = tboxen.kBox
                         AND tboxsprache.cISO = tlinkgruppesprache.cISOSprache
+                    INNER JOIN tsprache ON tsprache.cISO = tlinkgruppesprache.cISOSprache
                     WHERE kCustomID > 0
                         AND tboxsprache.kBoxSprache IS NULL;"
         );
     }
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function down()
     {

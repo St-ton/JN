@@ -14,6 +14,7 @@ Templates
     template_settings
     eigenes_theme
     theme_edit
+    primary_color
     overlays
     short_checkout
     jquery_update

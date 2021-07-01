@@ -1,5 +1,5 @@
 {block name='boxes-box-linkgroups'}
-    {card class="box box-linkgroup mb-md-7 text-left" id="box{$oBox->getID()}" no-body=true}
+    <div class="box box-linkgroup box-normal text-left-util" id="box{$oBox->getID()}">
         {block name='boxes-box-linkgroups-toggle-title'}
             {link
                 id="crd-hdr-{$oBox->getID()}"
@@ -7,8 +7,10 @@
                 data=["toggle"=>"collapse"]
                 role="button"
                 aria=["expanded"=>"false","controls"=>"crd-cllps-{$oBox->getID()}"]
-                class="text-decoration-none font-weight-bold mb-2 d-md-none dropdown-toggle"}
-                {$oBox->getTitle()}
+                class="box-normal-link dropdown-toggle"}
+                <span class="text-truncate">
+                    {$oBox->getTitle()}
+                </span>
             {/link}
         {/block}
         {block name='boxes-box-linkgroups-title'}
@@ -22,7 +24,7 @@
                 visible=false
                 id="crd-cllps-{$oBox->getID()}"
                 aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}
-                    <div class="nav-panel">
+                    <div class="nav-panel box-nav-item">
                         {nav vertical=true}
                             {block name='boxes-box-linkgroups-include-linkgroups-recursive'}
                                 {include file='snippets/linkgroup_recursive.tpl' linkgroupIdentifier=$oBox->getLinkGroupTemplate() dropdownSupport=true  tplscope='box'}
@@ -31,8 +33,8 @@
                     </div>
             {/collapse}
         {/block}
-    {/card}
+    </div>
     {block name='boxes-box-linkgroups-hr-end'}
-        <hr class="my-3 d-flex d-md-none">
+        <hr class="box-normal-hr">
     {/block}
 {/block}

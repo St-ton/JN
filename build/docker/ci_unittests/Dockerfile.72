@@ -1,0 +1,25 @@
+FROM php:7.2-alpine
+RUN apk add --no-cache freetype-dev g++ git gnupg icu-dev libjpeg-turbo-dev libpng-dev libxml2-dev libzip-dev php7-bcmath php7-gd php7-intl php7-soap php7-zip unzip zip zlib-dev >/dev/null; \
+    apk add --update nodejs nodejs-npm >/dev/null; \
+    if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi; \
+    echo "] installing PHP extensions:"; \
+    echo -n "] bcmath.."; \
+    docker-php-ext-install -j$(nproc) bcmath &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi; \
+    echo -n "] gd.."; \
+    docker-php-ext-install -j$(nproc) gd &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi; \
+    echo -n "] intl.."; \
+    docker-php-ext-install -j$(nproc) intl &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi; \
+    echo -n "] soap.."; \
+    docker-php-ext-install -j$(nproc) soap &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi; \
+    echo -n "] zip.."; \
+    docker-php-ext-install -j$(nproc) zip &>/dev/null; if [ $? -gt 0 ] ; then echo -e "\e[1;31m run with ERRORs\e[0m"; else echo -e "\e[1;32m OK\e[0m"; fi
+RUN mkdir /repofolder
+WORKDIR repofolder
+RUN echo "DEBUG pwd:" && pwd
+RUN cd /usr/local/bin/; \
+    echo "] installing composer.."; \
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"; \
+    php -r "if (hash_file('sha384', 'composer-setup.php') === file_get_contents('https://composer.github.io/installer.sig')) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"; \
+    php composer-setup.php && rm composer-setup.php; \
+    mv composer.phar composer
+

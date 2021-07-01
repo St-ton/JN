@@ -1,21 +1,13 @@
 <?php
 
-use JTL\Shop;
-use JTL\Template;
-
 /**
  * @param string $dir
  * @param string $type
  * @return bool
+ * @deprecated since 5.0.0
  */
-function __switchTemplate(string $dir, string $type = 'standard')
+function __switchTemplate(string $dir, string $type = 'standard'): bool
 {
-    $dir      = Shop::Container()->getDB()->escape($dir);
-    $template = Template::getInstance();
-    $check    = $template->setTemplate($dir, $type);
-    if ($check) {
-        unset($_SESSION['cTemplate'], $_SESSION['template']);
-    }
-
-    return $check;
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return false;
 }

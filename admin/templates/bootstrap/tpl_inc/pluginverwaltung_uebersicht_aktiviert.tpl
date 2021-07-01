@@ -1,4 +1,4 @@
-<div id="aktiviert" class="tab-pane fade {if !isset($cTab) || $cTab === 'aktiviert'} active show{/if}">
+<div id="aktiviert" class="tab-pane fade {if $cTab === '' || $cTab === 'aktiviert'} active show{/if}">
     {if $pluginsInstalled->count() > 0}
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php" id="enabled-plugins">
             {$jtl_token}
@@ -12,8 +12,8 @@
                             <tr>
                                 <th></th>
                                 <th class="text-left">{__('pluginName')}</th>
-                                <th class="text-center">{__('status')}</th>
                                 <th class="text-center">{__('pluginVersion')}</th>
+                                <th class="text-center">{__('pluginCompatibility')}</th>
                                 <th class="text-center">{__('pluginInstalled')}</th>
                                 <th>{__('pluginFolder')}</th>
                                 <th class="text-center">{__('pluginEditLocales')}</th>
@@ -33,27 +33,33 @@
                                 </td>
                                 <td>
                                     <label for="plugin-check-{$plugin->getID()}">{$plugin->getName()}</label>
-                                </td>
-                                <td class="text-center plugin-status">
-                                    <span class="text-nowrap">
-                                        <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED} text-success
-                                                {elseif $plugin->getState() === \JTL\Plugin\State::DISABLED} text-warning
-                                                {elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}} text-danger
-                                                {elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING} text-warning{/if}">
-                                            {$mapper->map($plugin->getState())}
+                                    {if $plugin->getMinShopVersion()->greaterThan($shopVersion)}
+                                        <span title="{__('dangerMinShopVersion')}" class="label text-danger" data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-exclamation-triangle"></span>
+                                                <span class="fas fa-exclamation-triangle"></span>
+                                            </span>
                                         </span>
-                                        {if $plugin->isShop5Compatible() === false}
-                                            <span title="{__('dangerPluginNotCompatibleShop5')}" class="label text-warning"><i class="fal fa-exclamation-triangle"></i></span>
-                                        {elseif $plugin->isShop5Compatible() === false && $p->isShop4Compatible() === false}
-                                            <span title="{__('dangerPluginNotCompatibleShop4')}" class="label text-warning"><i class="fal fa-exclamation-triangle"></i></span>
-                                        {/if}
-                                    </span>
+                                    {elseif $plugin->getMaxShopVersion()->greaterThan('0.0.0') && $plugin->getMaxShopVersion()->smallerThan($shopVersion)}
+                                        <span title="{__('dangerMaxShopVersion')}" class="label text-danger" data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-exclamation-triangle"></span>
+                                                <span class="fas fa-exclamation-triangle"></span>
+                                            </span>
+                                        </span>
+                                    {/if}
                                 </td>
                                 <td class="text-center plugin-version">
                                     {(string)$plugin->getVersion()}{if $plugin->isUpdateAvailable()} <span class="badge update-available">{(string)$plugin->isUpdateAvailable()}</span>{/if}
+                                    {if $plugin->isShop5Compatible() === false}
+                                        <span title="{__('dangerPluginNotCompatibleShop5')}" class="label text-warning"><i class="fal fa-exclamation-triangle"></i></span>
+                                    {elseif $plugin->isShop5Compatible() === false && $p->isShop4Compatible() === false}
+                                        <span title="{__('dangerPluginNotCompatibleShop4')}" class="label text-warning"><i class="fal fa-exclamation-triangle"></i></span>
+                                    {/if}
                                 </td>
+                                <td class="text-center">{$plugin->displayVersionRange()}</td>
                                 <td class="text-center plugin-install-date">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
-                                <td class="plugin-folder">{$plugin->getPath()}</td>
+                                <td class="plugin-folder">{$plugin->getDir()}</td>
                                 <td class="text-center plugin-lang-vars">
                                     {if $plugin->getLangVarCount() > 0}
                                         <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}"
@@ -154,66 +160,44 @@
         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
     {/if}
 </div>
-<div id="uninstall-modal" class="modal fade" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">{__('deletePluginData')}</h2>
-                <button type="button" class="close" data-dismiss="modal">
-                    <i class="fal fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-
-            </div>
-            <div class="modal-footer">
-                <div class="row">
-                    <div class="ml-auto col-sm-6 col-xl-auto submit">
-                        <button type="button" class="btn btn-danger btn-bock" name="yes" data-dismiss="modal">
-                            <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataYes')}
-                        </button>
-                    </div> <div class="col-sm-6 col-xl-auto submit">
-                        <button type="button" class="btn btn-outline-primary" name="no" data-dismiss="modal">
-                            <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataNo')}
-                        </button>
-                    </div>
-                    <div class="col-sm-6 col-xl-auto submit">
-                        <button type="button" class="btn btn-primary" name="cancel" data-dismiss="modal">
-                            <i class="fal fa-check text-success"></i>&nbsp;{__('cancel')}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+{include file='tpl_inc/pluginverwaltung_uninstall_modal.tpl' context='enabled' selector='#enabled-plugins' button='#uninstall-enabled-plugin'}
+{if $smarty.const.SAFE_MODE}
 <script>
     {literal}
-    $(document).ready(function() {
-        var modal = $('#uninstall-modal');
-        $('#uninstall-enabled-plugin').on('click', function(event) {
-            modal.modal('show');
-            return false;
-        });
-        modal.on('hide.bs.modal', function(event) {
-            if (document.activeElement.name === 'yes' || document.activeElement.name === 'no') {
-                var data = $('#enabled-plugins').serialize();
-                data += '&deinstallieren=1&delete-data=';
-                if (document.activeElement.name === 'yes') {
-                    data += '1';
-                } else {
-                    data += '0';
-                }
-                $.ajax({
-                    type:    'POST',
-                    url:     'pluginverwaltung.php',
-                    data:    data,
-                    success: function () {
-                        location.reload();
-                    }
-                });
+    function invalidatePlugin(pluginID, msg) {
+        let notify = '<span title="{/literal}{__('Plugin probably flawed')}{literal} ' + msg + '" class="label text-danger" data-toggle="tooltip">'
+            + '    <span class="icon-hover">'
+            + '      <span class="fal fa-exclamation-triangle"></span>'
+            + '      <span class="fas fa-exclamation-triangle"></span>'
+            + '    </span>'
+            + '</span>';
+        $('[for="plugin-check-' + pluginID + '"]:first').append($(notify));
+    }
+    function checkPlugin(pluginID) {
+        simpleAjaxCall('io.php', {
+            jtl_token: JTL_TOKEN,
+            io : JSON.stringify({
+                name: 'pluginTestLoading',
+                params : [pluginID]
+            })
+        }, function (result) {
+            if (!result.code || result.code !== {/literal}{\JTL\Plugin\InstallCode::OK}{literal}) {
+                invalidatePlugin(pluginID, result.message
+                    ? result.message
+                    : (result.error.message ? result.error.message : ''));
             }
-        });
-    });
+        }, function (result) {
+            invalidatePlugin(pluginID, result.responseJSON.message
+                ? result.responseJSON.message
+                : (result.responseJSON.error.message ? result.responseJSON.error.message : ''));
+        }, undefined, true);
+    }
+    $('.check input').each(function () {
+        let value = parseInt($(this).val());
+        if (!isNaN(value)) {
+            checkPlugin(value);
+        }
+    })
     {/literal}
 </script>
+{/if}

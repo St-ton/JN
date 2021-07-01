@@ -88,7 +88,7 @@ class Config
     }
 
     /**
-     * @param object $conf
+     * @param stdClass|object $conf
      * @return null|array
      */
     public function getDynamicOptions($conf): ?array
@@ -167,5 +167,13 @@ class Config
     public function setOptions(Collection $options): void
     {
         $this->options = $options;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAssoc(): array
+    {
+        return $this->options->keyBy('valueID')->all();
     }
 }

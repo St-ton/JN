@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Catalog\Product\Artikel;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
@@ -14,12 +13,12 @@ function holeAktiveGeschenke(string $sql): array
     if (mb_strlen($sql) < 1) {
         return $res;
     }
-    $data = Shop::Container()->getDB()->query(
-        "SELECT kArtikel
+    $data = Shop::Container()->getDB()->getObjects(
+        'SELECT kArtikel
             FROM tartikelattribut
-            WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'
-            ORDER BY CAST(cWert AS SIGNED) DESC " . $sql,
-        ReturnType::ARRAY_OF_OBJECTS
+            WHERE cName = :atr
+            ORDER BY CAST(cWert AS SIGNED) DESC ' . $sql,
+        ['atr' => ART_ATTRIBUT_GRATISGESCHENKAB]
     );
 
     $options                            = Artikel::getDefaultOptions();
@@ -45,15 +44,14 @@ function holeHaeufigeGeschenke(string $sql): array
     if (mb_strlen($sql) < 1) {
         return $res;
     }
-    $data = Shop::Container()->getDB()->query(
+    $data = Shop::Container()->getDB()->getObjects(
         'SELECT tgratisgeschenk.kArtikel, COUNT(*) AS nAnzahl, 
             MAX(tbestellung.dErstellt) AS lastOrdered, AVG(tbestellung.fGesamtsumme) AS avgOrderValue
             FROM tgratisgeschenk
             LEFT JOIN tbestellung
                 ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
             GROUP BY tgratisgeschenk.kArtikel
-            ORDER BY nAnzahl DESC, lastOrdered DESC ' . $sql,
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY nAnzahl DESC, lastOrdered DESC ' . $sql
     );
 
     $options                            = Artikel::getDefaultOptions();
@@ -84,13 +82,12 @@ function holeLetzten100Geschenke(string $sql): array
     if (mb_strlen($sql) < 1) {
         return $res;
     }
-    $data                               = Shop::Container()->getDB()->query(
+    $data                               = Shop::Container()->getDB()->getObjects(
         'SELECT tgratisgeschenk.*, tbestellung.dErstellt AS orderCreated, tbestellung.fGesamtsumme
             FROM tgratisgeschenk
               LEFT JOIN tbestellung 
                   ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
-            ORDER BY tbestellung.dErstellt DESC ' . $sql,
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY tbestellung.dErstellt DESC ' . $sql
     );
     $options                            = Artikel::getDefaultOptions();
     $options->nKeinLagerbestandBeachten = 1;
@@ -115,12 +112,12 @@ function holeLetzten100Geschenke(string $sql): array
  */
 function gibAnzahlAktiverGeschenke(): int
 {
-    return (int)Shop::Container()->getDB()->query(
-        "SELECT COUNT(*) AS nAnzahl
+    return (int)Shop::Container()->getDB()->getSingleObject(
+        'SELECT COUNT(*) AS cnt
             FROM tartikelattribut
-            WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'",
-        ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+            WHERE cName = :nm',
+        ['nm' => ART_ATTRIBUT_GRATISGESCHENKAB]
+    )->cnt;
 }
 
 /**
@@ -128,12 +125,12 @@ function gibAnzahlAktiverGeschenke(): int
  */
 function gibAnzahlHaeufigGekaufteGeschenke(): int
 {
-    return (int)Shop::Container()->getDB()->query(
-        'SELECT COUNT(DISTINCT(kArtikel)) AS nAnzahl
+    return (int)Shop::Container()->getDB()->getSingleObject(
+        'SELECT COUNT(DISTINCT(kArtikel)) AS cnt
             FROM twarenkorbpos
-            WHERE nPosTyp = ' . C_WARENKORBPOS_TYP_GRATISGESCHENK,
-        ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+            WHERE nPosTyp = :tp',
+        ['tp' => C_WARENKORBPOS_TYP_GRATISGESCHENK]
+    )->cnt;
 }
 
 /**
@@ -141,11 +138,11 @@ function gibAnzahlHaeufigGekaufteGeschenke(): int
  */
 function gibAnzahlLetzten100Geschenke(): int
 {
-    return (int)Shop::Container()->getDB()->query(
-        'SELECT COUNT(*) AS nAnzahl
+    return (int)Shop::Container()->getDB()->getSingleObject(
+        'SELECT COUNT(*) AS cnt
             FROM twarenkorbpos
-            WHERE nPosTyp = ' . C_WARENKORBPOS_TYP_GRATISGESCHENK . '
+            WHERE nPosTyp = :tp
             LIMIT 100',
-        ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+        ['tp' => C_WARENKORBPOS_TYP_GRATISGESCHENK]
+    )->cnt;
 }

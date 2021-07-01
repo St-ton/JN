@@ -25,14 +25,14 @@
     {/block}
     {if isset($showLoginCaptcha) && $showLoginCaptcha}
         {block name='register-form-customer-login-captcha'}
-            <div class="form-group text-center">
+            <div class="form-group simple-captcha-wrapper">
                 {captchaMarkup getBody=true}
             </div>
         {/block}
     {/if}
 
     {block name='register-form-customer-login-submit'}
-        {formgroup}
+        {formgroup label-for=" " class="customer-login-buttons"}
             {input type="hidden" name="login" value="1"}
             {input type="hidden" name="wk" value="{if isset($one_step_wk)}{$one_step_wk}{else}0{/if}"}
             {if !empty($oRedirect->cURL)}
@@ -52,7 +52,7 @@
                 {/col}
                 {col cols=12 lg=6}
                     {block name='register-form-customer-forgot'}
-                        {link class="btn btn-link btn-block text-decoration-underline" href="{get_static_route id='pass.php'}"}
+                        {link class="btn btn-link customer-login-buttons-forgot" href="{get_static_route id='pass.php'}"}
                             {lang key='forgotPassword'}
                         {/link}
                     {/block}

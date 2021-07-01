@@ -1,102 +1,9 @@
-<script type="text/javascript">
-    $(function () {
-        var $el = $('#images');
-        $el.fileinput({
-            uploadAsync:           false,
-            showPreview:           true,
-            showUpload:            false,
-            showRemove:            false,
-            showDrag:              false,
-            browseClass:           'btn btn-default',
-            cancelClass:           'btn btn-outline-primary',
-            cancelIcon:            '<i class="fas fa-exclamation"></i>',
-            fileActionSettings:    {
-                showZoom:   false,
-                showDrag:   false,
-                showRemove: false,
-            },
-            theme:                 'fas',
-            language:              '{$language|mb_substr:0:2}',
-            allowedFileExtensions: ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp'],
-            browseOnZoneClick:     true,
-            maxFileSize:           {$nMaxFileSize},
-            initialPreview:        [
-                {foreach $files as $file}
-                '<img src="{$file->cURLFull}" class="file-preview-image img-fluid"/><a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$file->cName}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>',
-                {/foreach}
-            ],
-            initialPreviewConfig:  [
-                {foreach $files as $file}
-                {
-                    caption: '$#{$file->cName}#$',
-                    width:   '120px'
-                },
-                {/foreach}
-            ]
-        }).on('filebatchselected', function(event, files) {
-            $('#images').fileinput('upload');
-        });
-        var $preview = $('#previewImage');
-        $preview.fileinput({
-            uploadAsync:           false,
-            showPreview:           true,
-            showUpload:            false,
-            showRemove:            false,
-            showDrag:              false,
-            browseClass:           'btn btn-default',
-            cancelClass:           'btn btn-outline-primary',
-            cancelIcon:            '<i class="fas fa-exclamation"></i>',
-            fileActionSettings:    {
-                showZoom:   false,
-                showDrag:   false,
-                showRemove: false,
-            },
-            theme:                 'fas',
-            language:              '{$language|mb_substr:0:2}',
-            allowedFileExtensions: ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp'],
-            browseOnZoneClick:     true,
-            maxFileSize:           {$nMaxFileSize},
-            initialPreview:        [
-                {if !empty($oNews->getPreviewImage())}
-                '<img src="{$shopURL}/{$oNews->getPreviewImage()}" class="preview-image"/>',
-                {/if}
-            ],
-            initialPreviewConfig:  [
-                {if !empty($oNews->getPreviewImage())}
-                {
-                    caption: '{__('preview')}',
-                    width:   '120px'
-                }
-                {/if}
-            ]
-        }).on('filebatchselected', function(event, files) {
-            $('#preview').fileinput('upload');
-        });
-    });
-    {literal}
-    $(document).ready(function () {
-        $('#lang').on('change', function () {
-            var iso = $('#lang option:selected').val();
-            $('.iso_wrapper').slideUp();
-            $('#iso_' + iso).slideDown();
-            return false;
-        });
-
-        $('input[name="nLinkart"]').on('change', function () {
-            var lnk = $('input[name="nLinkart"]:checked').val();
-            if (lnk == '1') {
-                $('#option_isActive').slideDown("slow");
-            } else {
-                $('#option_isActive').slideUp("slow");
-                $('#option_isActive select').val(1);
-            }
-        }).trigger('change');
-    });
-    {/literal}
-</script>
+<style type="text/css">
+    .krajee-default .file-size-info, .krajee-default .file-caption-info { width: 100%; }
+</style>
 {include file='tpl_inc/seite_header.tpl' cTitel=__('news') cBeschreibung=__('newsDesc')}
 <div id="content">
-    <form name="news" method="post" action="news.php" enctype="multipart/form-data">
+    <form name="news" method="post" action="news.php" enctype="multipart/form-data" class="hide-fileinput-remove">
         {$jtl_token}
         <input type="hidden" name="news" value="1" />
         <input type="hidden" name="news_speichern" value="1" />
@@ -207,102 +114,170 @@
                                 </select>
                             </div>
                         </div>
-                        {if $oPossibleAuthors_arr|count > 0}
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right"for="kAuthor">{__('newsAuthor')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select class="custom-select" id="kAuthor" name="kAuthor">
-                                    <option value="0">Autor auswählen</option>
+                                    <option value="0">{if $oPossibleAuthors_arr|count > 0}{__('selectAuthor')}{else}{__('authorNotAvailable')}{/if}</option>
                                     {foreach $oPossibleAuthors_arr as $oPossibleAuthor}
                                         <option value="{$oPossibleAuthor->kAdminlogin}"{if isset($cPostVar_arr.nAuthor)}{if isset($cPostVar_arr.nAuthor) && $cPostVar_arr.nAuthor == $oPossibleAuthor->kAdminlogin} selected="selected"{/if}{elseif isset($oAuthor->kAdminlogin) && $oAuthor->kAdminlogin == $oPossibleAuthor->kAdminlogin} selected="selected"{/if}>{$oPossibleAuthor->cName}</option>
                                     {/foreach}
                                 </select>
                             </div>
+                            {if $oPossibleAuthors_arr|count === 0}
+                                <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                                    <span data-html="true" data-toggle="tooltip" data-placement="left" title="" data-original-title="{__('noNewsAuthor')}">
+                                        <span class="fas fa-info-circle fa-fw"></span>
+                                    </span>
+                                </div>
+                            {/if}
                         </div>
-                        {/if}
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="previewImage">{__('preview')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input class="form-control-upload" name="previewImage" id="previewImage" type="file"/>
+                                {include file='tpl_inc/fileupload.tpl'
+                                    fileID='previewImage'
+                                    fileMaxSize={$nMaxFileSize}
+                                    fileInitialPreview="[
+                                            {if !empty($oNews->getPreviewImage())}
+                                            '<img src=\"{$shopURL}/{$oNews->getPreviewImage()}\" class=\"preview-image\"/><a class=\"d-block\" href=\"news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$oNews->getPreviewImageBaseName()}&token={$smarty.session.jtl_token}\" title=\"{__('delete')}\"><i class=\"fas fa-trash-alt\"></i></a>',
+                                            {/if}
+                                        ]"
+                                    fileInitialPreviewConfig="[
+                                            {if !empty($oNews->getPreviewImage())}
+                                            {
+                                                caption: '$#preview#$',
+                                                width:   '120px'
+                                            }
+                                            {/if}
+                                        ]"
+                                }
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right">{__('newsPics')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input class="form-control-upload" id="images" name="Bilder[]" type="file" multiple/>
-                            </div>
-                        </div>
-                        <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="lang">{__('language')}:</label>
-                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <select class="custom-select" name="cISO" id="lang">
-                                    {foreach $availableLanguages as $language}
-                                        <option value="{$language->getIso()}" {if $language->getShopDefault() === 'Y'}selected="selected"{/if}>{$language->getLocalizedName()} {if $language->getShopDefault() === 'Y'}({__('standard')}){/if}</option>
-                                    {/foreach}
-                                </select>
+                                {include file='tpl_inc/fileupload.tpl'
+                                    fileID='images'
+                                    fileName='Bilder[]'
+                                    fileMaxSize={$nMaxFileSize}
+                                    fileIsSingle=false
+                                    fileInitialPreview="[
+                                            {foreach $files as $file}
+                                            '<img src=\"{$file->cURLFull}\" class=\"file-preview-image img-fluid\"/><a class=\"d-block\" href=\"news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$file->cName}&token={$smarty.session.jtl_token}\" title=\"{__('delete')}\"><i class=\"fas fa-trash-alt\"></i></a>',
+                                            {/foreach}
+                                        ]"
+                                    fileInitialPreviewConfig="[
+                                            {foreach $files as $file}
+                                            {
+                                                caption: '$#{$file->cName}#$',
+                                                width:   '120px'
+                                            },
+                                            {/foreach}
+                                        ]"
+                                }
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            {foreach $availableLanguages as $language}
-                {assign var=cISO value=$language->getIso()}
-                {assign var=langID value=$language->getId()}
-                <input type="hidden" name="lang_{$cISO}" value="{$langID}">
-                <div id="iso_{$cISO}" class="iso_wrapper{if !$language->isShopDefault()} hidden-soft{/if}">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="subheading1">{__('metaSeo')} ({$language->getLocalizedName()})</div>
-                            <hr class="mb-n3">
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group form-row align-items-center">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="cName_{$cISO}">{__('headline')} *:</label>
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input class="form-control{if !empty($cPlausiValue_arr.cBetreff)} error{/if}" id="cName_{$cISO}" type="text" name="cName_{$cISO}" value="{if isset($cPostVar_arr.betreff) && $cPostVar_arr.betreff}{$cPostVar_arr.betreff}{else}{$oNews->getTitle($langID)}{/if}" />
+            <nav class="tabs-nav">
+                <ul class="nav nav-tabs" role="tablist">
+                    {foreach $availableLanguages as $i => $language}
+                        <li class="nav-item">
+                            <a class="nav-link {if $i === 0}active{/if}" data-toggle="tab" role="tab"
+                               href="#lang_{$language->getIso()}" aria-expanded="false">
+                                {$language->getLocalizedName()}
+                                {if $language->getShopDefault() === 'Y'}({__('standard')}){/if}
+                            </a>
+                        </li>
+                    {/foreach}
+                </ul>
+            </nav>
+            <div class="tab-content">
+                {foreach $availableLanguages as $i => $language}
+                    <div id="lang_{$language->getIso()}"
+                         class="tab-pane fade {if $i === 0}active show{/if}">
+                        {$cISO   = $language->getIso()}
+                        {$langID = $language->getId()}
+                        <input type="hidden" name="lang_{$cISO}" value="{$langID}">
+                        <div id="iso_{$cISO}" class="iso_wrapper">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="subheading1">{__('metaSeo')} ({$language->getLocalizedName()})</div>
+                                    <hr class="mb-n3">
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group form-row align-items-center">
+                                        <label class="col col-sm-4 col-form-label text-sm-right"
+                                               for="cName_{$cISO}">
+                                            {__('headline')} *:
+                                        </label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <input class="form-control{if !empty($cPlausiValue_arr.cBetreff)} error{/if}"
+                                                   id="cName_{$cISO}" type="text" name="cName_{$cISO}"
+                                                   value="{if isset($cPostVar_arr.betreff) && $cPostVar_arr.betreff}{$cPostVar_arr.betreff}{else}{$oNews->getTitle($langID)}{/if}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-row align-items-center">
+                                        <label class="col col-sm-4 col-form-label text-sm-right"
+                                               for="cSeo_{$cISO}">{__('newsSeo')}:</label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <input id="cSeo_{$cISO}" name="cSeo_{$cISO}" class="form-control"
+                                                   type="text"
+                                                   value="{if isset($cPostVar_arr.seo) && $cPostVar_arr.seo}{$cPostVar_arr.seo}{else}{$oNews->getSEO($langID)}{/if}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-row align-items-center">
+                                        <label class="col col-sm-4 col-form-label text-sm-right"
+                                               for="cMetaTitle_{$cISO}">{__('newsMetaTitle')}:</label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <input class="form-control" id="cMetaTitle_{$cISO}"
+                                                   name="cMetaTitle_{$cISO}" type="text"
+                                                   value="{if isset($cPostVar_arr.cMetaTitle) && $cPostVar_arr.cMetaTitle}{$cPostVar_arr.cMetaTitle}{else}{$oNews->getMetaTitle($langID)}{/if}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-row align-items-center">
+                                        <label class="col col-sm-4 col-form-label text-sm-right"
+                                               for="cMetaDescription_{$cISO}">{__('newsMetaDescription')}:</label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <input id="cMetaDescription_{$cISO}" class="form-control"
+                                                   name="cMetaDescription_{$cISO}" type="text"
+                                                   value="{if isset($cPostVar_arr.cMetaDescription) && $cPostVar_arr.cMetaDescription}{$cPostVar_arr.cMetaDescription}{else}{$oNews->getMetaDescription($langID)}{/if}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-row align-items-center">
+                                        <label class="col col-sm-4 col-form-label text-sm-right"
+                                               for="cMetaKeywords_{$cISO}">{__('newsMetaKeywords')}:</label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <input class="form-control" id="cMetaKeywords_{$cISO}"
+                                                   name="cMetaKeywords_{$cISO}" type="text"
+                                                   value="{if isset($cPostVar_arr.cMetaKeywords) && $cPostVar_arr.cMetaKeywords}{$cPostVar_arr.cMetaKeywords}{else}{$oNews->getMetaKeyword($langID)}{/if}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-row align-items-center">
+                                        <label class="col col-sm-4 col-form-label text-sm-right"
+                                               for="newstext_{$cISO}">{__('text')} *:</label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <textarea id="newstext_{$cISO}" class="ckeditor" name="text_{$cISO}"
+                                                      rows="15" cols="60">{if isset($cPostVar_arr.text) && $cPostVar_arr.text}{$cPostVar_arr.text}{else}{$oNews->getContent($langID)}{/if}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-row align-items-center">
+                                        <label class="col col-sm-4 col-form-label text-sm-right"
+                                               for="previewtext_{$cISO}">{__('newsPreviewText')}:</label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <textarea id="previewtext_{$cISO}" class="ckeditor"
+                                                      name="cVorschauText_{$cISO}" rows="15" cols="60">{if isset($cPostVar_arr.cVorschauText) && $cPostVar_arr.cVorschauText}{$cPostVar_arr.cVorschauText}{else}{$oNews->getPreview($langID)}{/if}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info">{__('newsMandatoryFields')}</div>
                                 </div>
                             </div>
-                            <div class="form-group form-row align-items-center">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="cSeo_{$cISO}">{__('newsSeo')}:</label>
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input id="cSeo_{$cISO}" name="cSeo_{$cISO}" class="form-control" type="text" value="{if isset($cPostVar_arr.seo) && $cPostVar_arr.seo}{$cPostVar_arr.seo}{else}{$oNews->getSEO($langID)}{/if}" />
-                                </div>
-                            </div>
-                            <div class="form-group form-row align-items-center">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="cMetaTitle_{$cISO}">{__('newsMetaTitle')}:</label>
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input class="form-control" id="cMetaTitle_{$cISO}" name="cMetaTitle_{$cISO}" type="text" value="{if isset($cPostVar_arr.cMetaTitle) && $cPostVar_arr.cMetaTitle}{$cPostVar_arr.cMetaTitle}{else}{$oNews->getMetaTitle($langID)}{/if}" />
-                                </div>
-                            </div>
-                            <div class="form-group form-row align-items-center">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="cMetaDescription_{$cISO}">{__('newsMetaDescription')}:</label>
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input id="cMetaDescription_{$cISO}" class="form-control" name="cMetaDescription_{$cISO}" type="text" value="{if isset($cPostVar_arr.cMetaDescription) && $cPostVar_arr.cMetaDescription}{$cPostVar_arr.cMetaDescription}{else}{$oNews->getMetaDescription($langID)}{/if}" />
-                                </div>
-                            </div>
-                            <div class="form-group form-row align-items-center">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="cMetaKeywords_{$cISO}">{__('newsMetaKeywords')}:</label>
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input class="form-control" id="cMetaKeywords_{$cISO}" name="cMetaKeywords_{$cISO}" type="text" value="{if isset($cPostVar_arr.cMetaKeywords) && $cPostVar_arr.cMetaKeywords}{$cPostVar_arr.cMetaKeywords}{else}{$oNews->getMetaKeyword($langID)}{/if}" />
-                                </div>
-                            </div>
-                            <div class="form-group form-row align-items-center">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="newstext_{$cISO}">{__('text')} *:</label>
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <textarea id="newstext_{$cISO}" class="ckeditor" name="text_{$cISO}" rows="15" cols="60">{if isset($cPostVar_arr.text) && $cPostVar_arr.text}{$cPostVar_arr.text}{else}{$oNews->getContent($langID)}{/if}</textarea>
-                                </div>
-                            </div>
-                            <div class="form-group form-row align-items-center">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="previewtext_{$cISO}">{__('newsPreviewText')}:</label>
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <textarea id="previewtext_{$cISO}" class="ckeditor" name="cVorschauText_{$cISO}" rows="15" cols="60">{if isset($cPostVar_arr.cVorschauText) && $cPostVar_arr.cVorschauText}{$cPostVar_arr.cVorschauText}{else}{$oNews->getPreview($langID)}{/if}</textarea>
-                                </div>
-                            </div>
-                            <div class="alert alert-info">{__('newsMandatoryFields')}</div>
                         </div>
                     </div>
-                </div>
-            {/foreach}
+                {/foreach}
+            </div>
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">

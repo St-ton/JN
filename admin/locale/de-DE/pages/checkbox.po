@@ -39,7 +39,10 @@ msgid "availableCheckboxes"
 msgstr "Vorhandene Checkboxen"
 
 msgid "checkboxCreate"
-msgstr "Neue Checkbox erstellen"
+msgstr "Neue Checkbox anlegen"
+
+msgid "internalLinkTitle"
+msgstr "Interner Link"
 
 msgid "internalLink"
 msgstr "Ja"
@@ -51,7 +54,7 @@ msgid "hintInternalPage"
 msgstr "Hier können Sie optional eine eigene Seite neben der Checkbox verlinken."
 
 msgid "hintPlaceToShowCheckbox"
-msgstr "Hier legen Sie die Stelle fest, an der die Checkbox angezeigt werden soll. Diese und die Einstellung „Spezialfunktion im Onlineshop“ dürfen nicht die gleiche Auswahl enthalten."
+msgstr "Hier legen Sie die Stelle fest, an der die Checkbox angezeigt werden soll. Die Auswahl dieses Feldes muss sich von der Auswahl der Einstellung „Spezialfunktion im Onlineshop“ unterscheiden."
 
 msgid "hintCheckCheckboxActivation"
 msgstr "Hier legen Sie fest, ob die Checkbox aktiviert werden muss oder optional ist."

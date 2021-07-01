@@ -8,6 +8,7 @@ use JTL\Plugin\Admin\Installation\Items\AdminMenu;
 use JTL\Plugin\Admin\Installation\Items\Blueprints;
 use JTL\Plugin\Admin\Installation\Items\Boxes;
 use JTL\Plugin\Admin\Installation\Items\Checkboxes;
+use JTL\Plugin\Admin\Installation\Items\Consent;
 use JTL\Plugin\Admin\Installation\Items\CSS;
 use JTL\Plugin\Admin\Installation\Items\Exports;
 use JTL\Plugin\Admin\Installation\Items\FrontendLinks;
@@ -23,6 +24,8 @@ use JTL\Plugin\Admin\Installation\Items\Templates;
 use JTL\Plugin\Admin\Installation\Items\Uninstall;
 use JTL\Plugin\Admin\Installation\Items\Widgets;
 use JTL\Plugin\InstallCode;
+use JTL\Plugin\PluginInterface;
+use stdClass;
 
 /**
  * Class AbstractInstallerFactory
@@ -36,9 +39,14 @@ abstract class AbstractInstallerFactory
     protected $db;
 
     /**
-     * @var \stdClass
+     * @var stdClass
      */
     protected $plugin;
+
+    /**
+     * @var PluginInterface
+     */
+    protected $oldPlugin;
 
     /**
      * @var array
@@ -47,15 +55,17 @@ abstract class AbstractInstallerFactory
 
     /**
      * AbstractInstallerFactory constructor.
-     * @param DbInterface $db
-     * @param array       $xml
-     * @param             $plugin
+     * @param DbInterface          $db
+     * @param array                $xml
+     * @param stdClass|null        $plugin
+     * @param PluginInterface|null $oldPlugin
      */
-    public function __construct(DbInterface $db, array $xml, $plugin)
+    public function __construct(DbInterface $db, array $xml, ?stdClass $plugin, $oldPlugin = null)
     {
-        $this->db       = $db;
-        $this->baseNode = $xml['jtlshopplugin'][0] ?? $xml['jtlshop3plugin'][0] ?? null;
-        $this->plugin   = $plugin;
+        $this->db        = $db;
+        $this->baseNode  = $xml['jtlshopplugin'][0] ?? $xml['jtlshop3plugin'][0] ?? null;
+        $this->plugin    = $plugin;
+        $this->oldPlugin = $oldPlugin;
     }
 
     /**
@@ -67,17 +77,18 @@ abstract class AbstractInstallerFactory
         $items->push(new Hooks());
         $items->push(new Uninstall());
         $items->push(new AdminMenu());
+        $items->push(new Consent());
         $items->push(new SettingsLinks());
         $items->push(new FrontendLinks());
         $items->push(new PaymentMethods());
-        $items->push(new Boxes());//@todo: extension check
+        $items->push(new Boxes());
         $items->push(new Templates());
         $items->push(new MailTemplates());
         $items->push(new LanguageVariables());
-        $items->push(new Checkboxes());//@todo: extension check
-        $items->push(new Widgets());//@todo: extension check
-        $items->push(new Portlets());//@todo: extension check
-        $items->push(new Blueprints());//@todo: extension check
+        $items->push(new Checkboxes());
+        $items->push(new Widgets());
+        $items->push(new Portlets());
+        $items->push(new Blueprints());
         $items->push(new Exports());
         $items->push(new CSS());
         $items->push(new JS());
@@ -85,6 +96,7 @@ abstract class AbstractInstallerFactory
             $e->setDB($this->db);
             $e->setPlugin($this->plugin);
             $e->setBaseNode($this->baseNode);
+            $e->setOldPlugin($this->oldPlugin);
         });
 
         return $items;

@@ -26,36 +26,32 @@ class Row extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-//            'dropper' => [
-//                'type' => InputType::CUSTOM,
-//                'template' => 'dropper-extension'
-//            ],
             'layout' => [
                 'type'    => InputType::ROW_LAYOUT,
-                'label'   => __('Layout'),
+                'label'   => \__('Layout'),
                 'presets' => [
                     [
-                        'name' => '2 ' . __('Columns'),
+                        'name' => '2 ' . \__('Columns'),
                         'layout' => ['12+12', '6+6', '6+6', '6+6'],
                     ],
                     [
-                        'name' => '3 ' . __('Columns'),
+                        'name' => '3 ' . \__('Columns'),
                         'layout' => ['12+12+12', '6+6+12', '4+4+4', '4+4+4'],
                     ],
                     [
-                        'name' => '4 ' . __('Columns'),
+                        'name' => '4 ' . \__('Columns'),
                         'layout' => ['12+12+12+12', '6+6+6+6', '3+3+3+3', '3+3+3+3'],
                     ],
                     [
-                        'name' => '6 ' . __('Columns'),
+                        'name' => '6 ' . \__('Columns'),
                         'layout' => ['6+6+6+6+6+6', '4+4+4+4+4+4', '4+4+4+4+4+4', '2+2+2+2+2+2'],
                     ],
                     [
-                        'name' => '2 ' . __('Columns') . ' (2:1)',
+                        'name' => '2 ' . \__('Columns') . ' (2:1)',
                         'layout' => ['12+12', '6+6', '8+4', '8+4'],
                     ],
                     [
-                        'name' => '2 ' . __('Columns') . ' (1:2)',
+                        'name' => '2 ' . \__('Columns') . ' (1:2)',
                         'layout' => ['12+12', '6+6', '4+8', '4+8'],
                     ],
                 ],
@@ -65,7 +61,8 @@ class Row extends Portlet
                     'sm' => '6+6',
                     'md' => '6+6',
                     'lg' => '6+6',
-                ]
+                ],
+                'desc' => \__('rowLayoutDesc'),
             ],
         ];
     }
@@ -76,8 +73,8 @@ class Row extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            __('Styles')    => 'styles',
-            __('Animation') => 'animations',
+            \__('Styles')    => 'styles',
+            \__('Animation') => 'animations',
         ];
     }
 
@@ -93,6 +90,11 @@ class Row extends Portlet
         $layoutMD = \explode('+', $layouts['md']);
         $layoutLG = \explode('+', $layouts['lg']);
         $colCount = \max(\count($layoutXS), \count($layoutSM), \count($layoutMD), \count($layoutLG));
+
+        $layoutXS = \array_map('\intval', $layoutXS);
+        $layoutSM = \array_map('\intval', $layoutSM);
+        $layoutMD = \array_map('\intval', $layoutMD);
+        $layoutLG = \array_map('\intval', $layoutLG);
 
         $colLayouts = \array_fill(0, $colCount, '');
 

@@ -7,7 +7,7 @@
         {if $step === 'formular'}
             {if isset($checkout) && $checkout == 1}
                 {block name='register-index-include-inc-steps'}
-                    {container}
+                    {container fluid=$Link->getIsFluid() class="register-steps"}
                         {include file='checkout/inc_steps.tpl'}
                     {/container}
                 {/block}
@@ -23,7 +23,7 @@
                 {include file='snippets/extension.tpl'}
             {/block}
             {block name='register-index-alert'}
-                {container}
+                {container fluid=$Link->getIsFluid()}
                     {if !empty($fehlendeAngaben)}
                         {alert variant="danger"}{lang key='mandatoryFieldNotification' section='errorMessages'}{/alert}
                     {/if}
@@ -36,7 +36,7 @@
                 {/container}
             {/block}
             {block name='register-index-new-customer'}
-                {container}
+                {container fluid=$Link->getIsFluid()}
                     {row id="new_customer"}
                         {col cols=12}
                             {if !isset($checkout) && empty($smarty.session.Kunde->kKunde)}
@@ -59,8 +59,8 @@
             {/block}
         {elseif $step === 'formular eingegangen'}
             {block name='register-index-account-created'}
-                {opcMountPoint id='opc_before_heading'}
-                {container}
+                {opcMountPoint id='opc_before_heading' inContainer=false}
+                {container fluid=$Link->getIsFluid() class="register-finished"}
                     <h1>{lang key='accountCreated'}</h1>
                     {opcMountPoint id='opc_after_heading'}
                     <p>{lang key='activateAccountDesc'}</p>

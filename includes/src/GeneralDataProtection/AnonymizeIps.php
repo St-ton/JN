@@ -2,8 +2,6 @@
 
 namespace JTL\GeneralDataProtection;
 
-use JTL\DB\ReturnType;
-
 /**
  * Class AnonymizeIps
  * @package JTL\GeneralDataProtection
@@ -21,6 +19,7 @@ use JTL\DB\ReturnType;
  * `tsuchanfragencache`
  * `tverfuegbarkeitsbenachrichtigung`
  * `tvergleichsliste`
+ * `tfloodprotect`
  */
 class AnonymizeIps extends Method implements MethodInterface
 {
@@ -81,6 +80,12 @@ class AnonymizeIps extends Method implements MethodInterface
             'ColIp'      => 'cIP',
             'ColCreated' => 'dDate',
             'ColType'    => 'DATETIME'
+        ],
+        'tfloodprotect'                  => [
+            'ColKey'     => 'kFloodProtect',
+            'ColIp'      => 'cIP',
+            'ColCreated' => 'dErstellt',
+            'ColType'    => 'DATETIME'
         ]
     ];
 
@@ -125,11 +130,7 @@ class AnonymizeIps extends Method implements MethodInterface
             $sql .= " ORDER BY {$colData['ColCreated']} ASC
                 LIMIT {$this->workLimit}";
 
-            $res = $this->db->query(
-                $sql,
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            foreach ($res as $row) {
+            foreach ($this->db->getObjects($sql) as $row) {
                 try {
                     $row->cIP = $anonymizer->setIp($row->cIP)->anonymize();
                 } catch (\Exception $e) {

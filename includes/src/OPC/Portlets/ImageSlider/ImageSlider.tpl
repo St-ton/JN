@@ -3,35 +3,33 @@
     {if $slides|count > 0}
         {$imgAttribs = $instance->getImageAttributes($slides[0].url, '', '')}
     {/if}
-    <div {$instance->getDataAttributeString()}
-         class="text-center opc-ImageSlider {if $slides|count > 0}opc-ImageSlider-with-image{/if}"
+    <div class="text-center opc-ImageSlider {if $slides|count > 0}opc-ImageSlider-with-image{/if}"
          style="{if $slides|count > 0}background-image: url('{$imgAttribs.src}');{/if} {$instance->getStyleString()}">
         <div>
-            {file_get_contents($portlet->getBaseUrl()|cat:'icon.svg')}
+            {file_get_contents($portlet->getBasePath()|cat:'icon.svg')}
             <span>{__('Bilder-Slider')}</span>
         </div>
     </div>
 {else}
     {$uid = $instance->getUid()}
 
-    <div style="{$instance->getStyleString()}">
+    <div style="{$instance->getStyleString()}" class="{$instance->getStyleClasses()}">
         {if $instance->getProperty('slides')|count > 0}
             <div class="theme-{$instance->getProperty('slider-theme')}">
                 <div id="{$uid}" class="nivoSlider">
                     {foreach $instance->getProperty('slides') as $i => $slide}
-                        {if !empty($slide.desc)}
-                            {$slideTitle = $slide.title}
+                        {if !empty($slide.title) || !empty($slide.desc)}
+                            {$slideTitle = '#'|cat:$uid|cat:'_slide_caption_'|cat:$i}
                         {else}
                             {$slideTitle = ''}
                         {/if}
-
-                        {$slideTitle = '#'|cat:$uid|cat:'_slide_caption_'|cat:$i}
 
                         {if !empty($slide.url)}
                             {$imgAttribs = $instance->getImageAttributes($slide.url, '', '')}
 
                             {if !empty($slide.link)}
-                                <a href="{$slide.link}"{if !empty($slide.title)} title="{$slide.title}"{/if}
+                                <a href="{$slide.link}"
+                                   {if !empty($slide.title)}title="{$slide.title|escape:'html'}"{/if}
                                    class="slide">
                             {else}
                                 <div class="slide">
@@ -40,9 +38,9 @@
                                 srcset=$imgAttribs.srcset
                                 sizes=$imgAttribs.srcsizes
                                 src=$imgAttribs.src
-                                alt=$imgAttribs.alt
-                                title=$slideTitle
-                                data=['desc' => $slide.desc]}
+                                alt=$imgAttribs.alt|escape:'html'
+                                title=$slideTitle|escape:'html'
+                                data=['desc' => $slide.desc|escape:'html']}
                             {if empty($slide.link)}
                                 </div>
                             {else}
@@ -55,9 +53,9 @@
                     {if !empty($slide.title) || !empty($slide.desc)}
                         <div id="{$uid}_slide_caption_{$i}" class="htmlcaption" style="display: none">
                             {if !empty($slide.title)}
-                                <strong class="title">{$slide.title}</strong>
+                                <strong class="title">{$slide.title|escape:'html'}</strong>
                             {/if}
-                            <p class="desc">{$slide.desc}</p>
+                            <p class="desc">{$slide.desc|escape:'html'}</p>
                         </div>
                     {/if}
                 {/foreach}

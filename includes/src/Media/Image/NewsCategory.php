@@ -4,10 +4,8 @@ namespace JTL\Media\Image;
 
 use FilesystemIterator;
 use Generator;
-use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
-use JTL\Shop;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
@@ -24,9 +22,12 @@ class NewsCategory extends AbstractImage
     /**
      * @var string
      */
-    protected $regEx = '/^media\/image\/(?P<type>newscategory)' .
-    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl|os)\/(?P<name>[a-zA-Z0-9\-_]+)' .
-    '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
+    public const REGEX = '/^media\/image'
+    . '\/(?P<type>newscategory)'
+    . '\/(?P<id>\d+)'
+    . '\/(?P<size>xs|sm|md|lg|xl)'
+    . '\/(?P<name>[' . self::REGEX_ALLOWED_CHARS . ']+)'
+    . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
      * @inheritdoc
@@ -35,8 +36,8 @@ class NewsCategory extends AbstractImage
     {
         return (object)[
             'stmt' => 'SELECT kNewsKategorie, 0 AS number  
-                          FROM tnewskategorie 
-                          WHERE kNewsKategorie = :cid',
+                           FROM tnewskategorie 
+                           WHERE kNewsKategorie = :cid',
             'bind' => ['cid' => $id]
         ];
     }
@@ -44,16 +45,15 @@ class NewsCategory extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getImageNames(MediaImageRequest $req): array
+    public function getImageNames(MediaImageRequest $req): array
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return $this->db->getCollection(
             'SELECT a.kNewsKategorie, a.cPreviewImage AS path, t.name AS title
                 FROM tnewskategorie AS a
                 LEFT JOIN tnewskategoriesprache t
                     ON a.kNewsKategorie = t.kNewsKategorie
                 WHERE a.kNewsKategorie = :nid',
-            ['nid' => $req->getID()],
-            ReturnType::COLLECTION
+            ['nid' => $req->getID()]
         )->each(static function ($item, $key) use ($req) {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath(\str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $item->path));
@@ -75,14 +75,13 @@ class NewsCategory extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getPathByID($id, int $number = null): ?string
+    public function getPathByID($id, int $number = null): ?string
     {
-        $item = Shop::Container()->getDB()->queryPrepared(
+        $item = $this->db->getSingleObject(
             'SELECT cPreviewImage AS path
                 FROM tnewskategorie
                 WHERE kNewsKategorie = :cid LIMIT 1',
-            ['cid' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['cid' => $id]
         )->path ?? null;
 
         return empty($item->path)
@@ -101,16 +100,25 @@ class NewsCategory extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getAllImages(int $offset = null, int $limit = null): Generator
+    public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $base = \PFAD_ROOT . self::getStoragePath();
-        $rdi  = new RecursiveDirectoryIterator(
+        $base    = \PFAD_ROOT . self::getStoragePath();
+        $rdi     = new RecursiveDirectoryIterator(
             $base,
             FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
         );
+        $index   = 0;
+        $yielded = 0;
         foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $fileinfo) {
             /** @var SplFileInfo $fileinfo */
             if ($fileinfo->isFile() && \in_array($fileinfo->getExtension(), self::$imageExtensions, true)) {
+                if ($offset !== null && $offset > $index++) {
+                    continue;
+                }
+                ++$yielded;
+                if ($limit !== null && $yielded > $limit) {
+                    return;
+                }
                 $path = \str_replace($base, '', $fileinfo->getPathname());
                 yield MediaImageRequest::create([
                     'id'         => 1,
@@ -128,7 +136,7 @@ class NewsCategory extends AbstractImage
     /**
      * @inheritdoc
      */
-    public static function getTotalImageCount(): int
+    public function getTotalImageCount(): int
     {
         $rdi = new RecursiveDirectoryIterator(
             \PFAD_ROOT . self::getStoragePath(),

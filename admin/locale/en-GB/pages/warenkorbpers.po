@@ -15,7 +15,7 @@ msgid "warenkorbpersCompany"
 msgstr "Company"
 
 msgid "warenkorbpersClientName"
-msgstr "Customer"
+msgstr "Customer (Customer ID, email or first name)"
 
 msgid "warenkorbpersClient"
 msgstr "Basket saved by"
@@ -52,3 +52,6 @@ msgstr "Action"
 
 msgid "successCartPersPosDelete"
 msgstr "Selected basket deleted successfully."
+
+msgid "confirmDeleteBasket"
+msgstr "Customer: <b>%s</b> | Date: <b>%s</b>"

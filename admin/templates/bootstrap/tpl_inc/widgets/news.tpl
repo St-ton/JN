@@ -1,6 +1,16 @@
 <script type="text/javascript">
     $(document).ready(function () {
-        ioCall('getRemoteData', ['{$smarty.const.JTLURL_GET_SHOPNEWS}', 'oNews_arr', 'widgets/news_data.tpl', 'news_data_wrapper']);
+        ioCall(
+            'getRemoteData',
+            ['{$smarty.const.JTLURL_GET_SHOPNEWS}',
+                'oNews_arr',
+                'widgets/news_data.tpl',
+                'news_data_wrapper'],
+            undefined,
+            undefined,
+            undefined,
+            true
+        );
     });
 </script>
 

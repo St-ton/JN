@@ -79,9 +79,13 @@
         },
 
         getCurrent: function($item) {
-            var $current = $item.hasClass('variation') ? $item : $item.closest('.variation');
-            if ($current.tagName === 'SELECT') {
+            var $current = $item.hasClass('variation') || ($item.length === 1 && $item[0].tagName === 'SELECT')
+                ? $item
+                : $item.closest('.variation');
+            if ($current.length === 1 && $current[0].tagName === 'SELECT') {
                 $current = $item.find('option:selected');
+            } else if ($current.length === 0) {
+                $current = $item.next('.variation');
             }
 
             return $current;
@@ -99,9 +103,30 @@
             this.registerSimpleVariations($wrapper);
             this.registerSwitchVariations($wrapper);
             this.registerBulkPrices($wrapper);
+            this.registerAccordion();
             // this.registerImageSwitch($wrapper);
             //this.registerArticleOverlay($wrapper);
             this.registerFinish($wrapper);
+            window.initNumberInput();
+            this.initAbnahmeIntervallError();
+        },
+
+        registerAccordion: function() {
+            $('.is-mobile .accordion [id^="tab-"]').on('click', function () {
+                let self = $(this);
+                $.evo.destroyScrollSearchEvent();
+                setTimeout(function() {
+                    $('html').animate(
+                        {scrollTop: self.offset().top},
+                        100,
+                        'linear',
+                        function () {
+                            setTimeout(function() {
+                                $.evo.initScrollSearchEvent();
+                            }, 500);
+                        });
+                }, 400);
+            });
         },
 
         registerGallery: function(wrapper) {
@@ -122,27 +147,59 @@
 
             function toggleFullscreen(fullscreen = false)
             {
-                var maxHeight= Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-                var otherElemHeight = 0;
-                var current = ($('#gallery .slick-current').data('slick-index'));
-
-                if (fullscreen) {
-                    $('#image_wrapper').addClass('fullscreen');
-
-                    otherElemHeight = $('#image_wrapper .product-detail-image-topbar').outerHeight() +
-                        parseInt($('#image_wrapper .product-detail-image-topbar').css('marginBottom')) +
-                        230;
-
-                    $('#gallery picture *').removeAttr('sizes');
-                    lazySizes.autoSizer.updateElem($('#gallery picture *'));
-                } else {
-                    $('#image_wrapper').removeClass('fullscreen');
+                let $imgWrapper = $('#image_wrapper'),
+                    $gallery    = $('#gallery');
+                if (!$gallery.hasClass('slick-initialized') || (fullscreen && $imgWrapper.hasClass('fullscreen'))){
+                    return;
                 }
 
-                $('#gallery img').css('max-height', maxHeight-otherElemHeight);
+                let maxHeight       = Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
+                    otherElemHeight = 0,
+                    current         = ($('#gallery .slick-current').data('slick-index')),
+                    $galleryImages  = $('#gallery img, #gallery picture source'),
+                    hidePreview     = maxHeight < 700,
+                    previewHeight   = $('#gallery_preview_wrapper').length > 0 && !hidePreview ? 170 : 30,
+                    $previewBar     = $('.product-detail-image-preview-bar');
 
-                $('#gallery').slick('slickSetOption','initialSlide', current, true);
+                if (fullscreen) {
+                    $imgWrapper.addClass('fullscreen');
+                    let $galleryTopbar = $('#image_wrapper .product-detail-image-topbar');
+
+                    otherElemHeight = $galleryTopbar.outerHeight()
+                        + 2*parseInt($imgWrapper.css('paddingTop'))
+                        + previewHeight;
+
+                    $galleryImages.removeAttr('sizes');
+                    lazySizes.autoSizer.updateElem($galleryImages);
+
+                    if (hidePreview) {
+                        $previewBar.addClass('d-none');
+                    }
+
+                    $galleryImages.css('max-height', maxHeight-otherElemHeight);
+                    $gallery.css('max-height', maxHeight-otherElemHeight);
+
+                    $('body').off('click.toggleFullscreen').on('click.toggleFullscreen', function (event) {
+                        if (!($(event.target).hasClass('product-image') || $(event.target).hasClass('slick-arrow'))) {
+                            toggleFullscreen(false);
+                            $('body').off('click.toggleFullscreen');
+                        }
+                    });
+                } else {
+                    $imgWrapper.removeClass('fullscreen');
+                    $galleryImages.css('max-height', '100%');
+                    $gallery.css('max-height', '100%');
+                    $previewBar.removeClass('d-none');
+                }
+
+                $gallery.slick('slickSetOption','initialSlide', current, true);
                 $('#gallery_preview').slick('slickGoTo', current, true);
+
+                //fix firefox height bug
+                $('.slick-slide, .slick-arrow').css({'display': 'none'});
+                setTimeout(function(){
+                    $('.slick-slide, .slick-arrow').css({'display': 'block'});
+                }, 50);
             }
 
             function addClickListener() {
@@ -158,16 +215,11 @@
             if (wrapper[0].id.indexOf(this.options.modal.wrapper_modal.substr(1)) === -1) {
                 addClickListener();
 
-                $(document).keyup(e => {
-                    if (e.key === "Escape") {
+                $(document).on('keyup', e => {
+                    if (e.key === "Escape" && $('#image_wrapper').hasClass('fullscreen')) {
                         toggleFullscreen();
                         addClickListener();
                     }
-                });
-
-                $('#image_fullscreen_close').on('click', e => {
-                    toggleFullscreen();
-                    addClickListener();
                 });
             }
         },
@@ -193,12 +245,15 @@
                 config.on('change', function() {
                     that.configurator();
                 })
-                    .keypress(function (e) {
-                        if (e.which === 13) {
+                    .on('keypress', function (e) {
+                        if (e.key === 'Enter') {
                             return false;
                         }
                     });
-                that.configurator(true);
+                // timeout fixes problem with loading order of bootstrap dropdowns
+                setTimeout(function(){
+                    that.configurator(true);
+                },0);
             }
         },
 
@@ -251,8 +306,8 @@
                 that       = this,
                 $config    = $('#product-configurator');
 
-            if ($bulkPrice.length > 0 && $config.length === 0) {
-                $('#quantity', $wrapper)
+            if (($bulkPrice.length > 0 && $config.length === 0) || $('#product-list').length > 0) {
+                $('#quantity, [data-bulk="1"] .quantity', $wrapper)
                     .each(function(i, item) {
                         var $item   = $(item),
                             wrapper = '#' + $item.closest('form').closest('div[data-wrapper="true"]').attr('id');
@@ -296,44 +351,41 @@
         },
 
         registerHoverVariations: function ($wrapper) {
+            let delay=300, setTimeoutConst;
             $('.variations label.variation', $wrapper)
                 .on('mouseenter', function (e) {
-                    var $item      = $(this),
-                        $variation = $item.data('value');
-                    $('.variation-image-preview.lazyloaded.vt' + $variation).addClass('show');
-                    $('.variation-image-preview.lazyload.vt' + $variation).removeClass('d-none').on('lazyloaded', function () {
-                        $('.variation-image-preview.vt' + $variation).addClass('show');
-                    });
-                }).on('mouseleave', function (e) {
-                    var $item      = $(this),
-                        $variation = $item.data('value');
-                    $('.variation-image-preview.lazyloaded.vt' + $variation).removeClass('show');
-                    $('.variation-image-preview.lazyload.vt' + $variation).on('lazyloaded', function () {
-                        $('.variation-image-preview.vt' + $variation).removeClass('show');
-                    });
-            });
-
-            $('.variations .selectpicker').on('show.bs.select', function () {
-                var $item = $(this).parent();
-                $item.find('li .variation').on('mouseenter', function () {
-                    var $variation = $(this).find('span[data-value]').data("value");
-                    $('.variation-image-preview.lazyloaded.vt' + $variation).addClass('show');
-                    $('.variation-image-preview.lazyload.vt' + $variation).removeClass('d-none').on('lazyloaded', function () {
-                        $('.variation-image-preview.vt' + $variation).addClass('show');
-                    });
-                }).on('mouseleave', function () {
-                    var $variation = $(this).find('span[data-value]').data("value");
-                    $('.variation-image-preview.lazyloaded.vt' + $variation).removeClass('show');
-                    $('.variation-image-preview.lazyload.vt' + $variation).on('lazyloaded', function () {
-                        $('.variation-image-preview.vt' + $variation).removeClass('show');
-                    });
+                    setTimeoutConst = setTimeout(function () {
+                        let mainImageHeight = $('.js-gallery-images').innerHeight();
+                        $('.variation-image-preview.vt' + $(e.currentTarget).data('value')).addClass('show d-md-block')
+                            .css('top', $(e.currentTarget).offset().top - $(e.currentTarget).closest('#content').position().top - mainImageHeight / 2 - 12);
+                    }, delay)
+                })
+                .on('mouseleave', function (e) {
+                    clearTimeout(setTimeoutConst);
+                    $('.variation-image-preview.vt' + $(this).data('value')).removeClass('show d-md-block');
                 });
-            });
 
-            $('.variations .selectpicker').on('hide.bs.select', function () {
-                var $item = $(this).parent();
-                $item.find('li .variation').off('mouseenter mouseleave');
-            });
+            $('.variations .selectpicker')
+                .on('show.bs.select', function () {
+                    $(this).parent().find('li .variation')
+                        .on('mouseenter', function (e) {
+                            setTimeoutConst = setTimeout(function () {
+                                let mainImageHeight = $('.js-gallery-images').innerHeight();
+                                $('.variation-image-preview.vt' + $(e.currentTarget).find('span[data-value]').data("value"))
+                                    .addClass('show d-md-block')
+                                    .css('top', $(e.currentTarget).offset().top - $(e.currentTarget).closest('#content').position().top - mainImageHeight / 2 - 12);
+                            }, delay)
+                        })
+                        .on('mouseleave', function () {
+                            clearTimeout(setTimeoutConst);
+                            $('.variation-image-preview.vt' + $(this).find('span[data-value]').data("value"))
+                                .removeClass('show d-md-block');
+                    });
+                })
+                .on('hide.bs.select', function () { 
+                    $(this).parent().find('li .variation').off('mouseenter mouseleave');
+                    $('.variation-image-preview').removeClass('show');
+                });
         },
 
         registerImageSwitch: function($wrapper) {
@@ -470,11 +522,25 @@
         registerFinish: function($wrapper) {
             $('#jump-to-votes-tab', $wrapper).on('click', function () {
                 let $tabID = $('#content a[href="#tab-votes"]');
-                $tabID.tab('show');
+                if ($tabID.length > 0) {
+                    $tabID.tab('show');
+                } else {
+                    $tabID = $('#tab-votes');
+                    $tabID.collapse('show');
+                }
+
                 $([document.documentElement, document.body]).animate({
                     scrollTop: $tabID.offset().top
                 }, 200);
             });
+
+            let $tabID = $('#product-tabs a[href="' + window.location.hash + '"]');
+            if ($tabID.length) {
+                $tabID.tab('show');
+                $([document.documentElement, document.body]).animate({
+                    scrollTop: $tabID.offset().top
+                }, 200);
+            }
 
             if (this.isSingleArticle()) {
                 if ($('.switch-variations .form-group', $wrapper).length === 1) {
@@ -549,8 +615,6 @@
                 id         = wrapper.substring(1),
                 $modalBody = $('.modal-body', this.modalView);
 
-            $wrapper.addClass('loading');
-
             $.ajax(url, {data: {'isAjax':1, 'quickView':1}})
                 .done(function(data) {
                     var $html      = $('<div />').html(data);
@@ -583,8 +647,7 @@
                     if ($config.length > 0) {
                         // Configurator in child article!? Currently not supported!
                         $config.remove();
-                        $modalBody.addClass('loading');
-                        var spinner = $.evo.extended().spinner($modalBody.get(0));
+                        $.evo.extended().startSpinner($modalBody);
                         location.href = url;
                     }
                     if (title.length > 0 && title.text().length > 0) {
@@ -615,11 +678,11 @@
                     }
                 })
                 .always(function() {
-                    $wrapper.removeClass('loading');
+                    $.evo.extended().stopSpinner();
                 });
         },
 
-        addToComparelist: function(data) {
+        addToComparelist: function(data, $action) {
             var productId = parseInt(data[this.options.input.id]);
             var childId = parseInt(data[this.options.input.childId]);
             if (childId > 0) {
@@ -725,6 +788,7 @@
                 let $action = $('button[data-product-id-cl="' + data.productID + '"]')
                 $action.removeClass("on-list");
                 $action.next().removeClass("press");
+                $('.comparelist [data-product-id-cl="' + data.productID + '"]').remove();
             }
 
             for (var ind in data.cBoxContainer) {
@@ -891,10 +955,17 @@
                             $action.addClass("on-list");
                             $action.next().addClass("press");
                             $action.next().next().removeClass("press");
-                            return this.addToComparelist(data);
+                            $(this.options.selector.navCompare).removeClass('d-none');
+
+                            let $moveTo = isMobileByBodyClass()
+                                ? $('.wish-compare-animation-mobile #burger-menu')
+                                : $('.wish-compare-animation-desktop #shop-nav-compare');
+                            $.evo.article().moveItemAnimation($action, $moveTo);
+
+                            return this.addToComparelist(data, $action);
                         }
                     } else {
-                        return this.addToComparelist(data);
+                        return this.addToComparelist(data, $action);
                     }
                 case this.options.action.compareListRemove:
                     return this.removeFromCompareList(data);
@@ -907,6 +978,11 @@
                         data.a = data.wlPos;
                         return this.removeFromWishList(data);
                     } else {
+                        $action.addClass("on-list");
+                        let $moveTo = isMobileByBodyClass()
+                            ? $('.wish-compare-animation-mobile #burger-menu')
+                            : $('.wish-compare-animation-desktop #shop-nav-wish');
+                        $.evo.article().moveItemAnimation($action, $moveTo);
                         return this.addToWishlist(data, $action);
                     }
                 case this.options.action.wishListRemove:
@@ -928,7 +1004,7 @@
                     return;
                 }
 
-                let $spinner = $.evo.extended().spinner(container.get(0));
+                $.evo.extended().startSpinner(container);
 
                 $('#buy_form').find('*[data-selected="true"]')
                     .attr('checked', true)
@@ -937,7 +1013,6 @@
 
                 form = $.evo.io().getFormValues('buy_form');
 
-                container.addClass('loading');
                 $.evo.io().call('buildConfiguration', [form], that, function (error, data) {
                     var result,
                         i,
@@ -950,6 +1025,8 @@
                         enableQuantity,
                         nNetto,
                         quantityInput;
+                    $('.js-start-configuration').prop('disabled', !data.response.variationsSelected);
+                    $('.js-choose-variations-wrapper').toggleClass('d-none', data.response.variationsSelected);
                     $('.js-cfg-group').each(function (i, item) {
                         let iconChecked     = $(this).find('.js-group-checked'),
                             badgeInfoDanger = 'alert-info';
@@ -987,8 +1064,7 @@
                         $('#cfg-tab-summary-finish').children().addClass('disabled');
                         $('#cfg-tab-summary-finish').addClass('disabled');
                     }
-                    $spinner.stop();
-                    container.removeClass('loading');
+                    $.evo.extended().stopSpinner();
                     if (error) {
                         $.evo.error(data);
                         return;
@@ -1024,15 +1100,17 @@
                 }, 200);
             });
             $('#cfg-accordion .js-cfg-group-collapse').on('shown.bs.collapse', function () {
-                $(this).prev()[0].scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+                if (!$(this).find('select').is(":focus")) {
+                    $(this).prev()[0].scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
             });
             $('.js-cfg-next').on('click', function () {
                 $('button[data-target="' +  $(this).data('target') + '"]')
                     .prop('disabled', false)
-                    .closest('.js-cfg-group').addClass('visited');
+                    .closest('.js-cfg-group').addClass('visited').tooltip('disable');
                 that.configurator();
             });
             $('#cfg-tab-summary-finish').on('click', function () {
@@ -1171,18 +1249,23 @@
 
         setArticleContent: function(id, variation, url, variations, wrapper) {
             var $wrapper  = this.getWrapper(wrapper),
-                listStyle = $('#ed_list.active').length > 0 ? 'list' : 'gallery',
-                $spinner  = $.evo.extended().spinner($wrapper.get(0));
+                listStyle = $('#product-list-type').val();
+
+                if (listStyle === 'undefined') {
+                    listStyle = $('#ed_list.active').length > 0 ? 'list' : 'gallery';
+                }
+
+                $.evo.extended().startSpinner($wrapper);
 
             if (this.modalShown) {
                 this.loadModalArticle(url, wrapper,
                     function() {
                         var article = new ArticleClass();
                         article.register(wrapper);
-                        $spinner.stop();
+                        $.evo.extended().stopSpinner();
                     },
                     function() {
-                        $spinner.stop();
+                        $.evo.extended().stopSpinner();
                         $.evo.error('Error loading ' + url);
                     }
                 );
@@ -1198,13 +1281,10 @@
                     if (document.location.href !== url) {
                         history.pushState({a: id, a2: variation, url: url, variations: variations}, "", url);
                     }
-
-                    $spinner.stop();
-
-                    window.initNumberInput();
+                    $.evo.extended().stopSpinner();
                 }, function () {
                     $.evo.error('Error loading ' + url);
-                    $spinner.stop();
+                    $.evo.extended().stopSpinner();
                 }, false, wrapper);
             } else {
                 $.evo.extended().loadContent(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'isListStyle=' + listStyle, function (content) {
@@ -1225,22 +1305,10 @@
                         $.evo.article().variationSetVal(item.key, item.value, wrapper);
                     });
 
-                    if (!$wrapper.hasClass('productbox-hover')) {
-                        $.evo.extended().autoheight();
-                    }
-                    $spinner.stop();
-
-                    window.initNumberInput();
-
-                    $(wrapper + ' .list-gallery:not(.slick-initialized)').slick({
-                        lazyLoad: 'ondemand',
-                        infinite: false,
-                        dots:     false,
-                        arrows:   true
-                    });
+                    $.evo.extended().stopSpinner();
                 }, function () {
                     $.evo.error('Error loading ' + url);
-                    $spinner.stop();
+                    $.evo.extended().stopSpinner();
                 }, false, wrapper);
             }
         },
@@ -1254,13 +1322,12 @@
         },
 
         variationDisableAll: function(wrapper) {
-            var $wrapper = this.getWrapper(wrapper);
+            let $wrapper = this.getWrapper(wrapper);
 
             $('.swatches-selected', $wrapper).text('');
             $('[data-value].variation', $wrapper).each(function(i, item) {
                 $(item)
-                    .removeClass('active')
-                    .removeClass('loading')
+                    .removeClass('active loading')
                     .addClass('not-available');
                 $.evo.article()
                     .removeStockInfo($(item));
@@ -1277,7 +1344,7 @@
             var $wrapper = this.getWrapper(wrapper),
                 $item    = $('[data-value="' + value + '"].variation', $wrapper);
 
-            $item.removeClass('not-available');
+            $item.removeClass('not-available swatches-sold-out swatches-not-in-stock');
         },
 
         variationActive: function(key, value, def, wrapper) {
@@ -1327,8 +1394,8 @@
             }
         },
 
-        variationInfo: function(value, status, note) {
-            var $item = $('[data-value="' + value + '"].variation'),
+        variationInfo: function(value, status, note, notExists) {
+            let $item = $('[data-value="' + value + '"].variation'),
                 type = $item.attr('data-type'),
                 text,
                 content,
@@ -1376,6 +1443,11 @@
                         trigger: 'hover',
                         container: 'body'
                     });
+                    if (notExists) {
+                        $item.addClass('swatches-not-in-stock');
+                    } else {
+                        $item.addClass('swatches-sold-out');
+                    }
                     break;
             }
         },
@@ -1388,12 +1460,10 @@
                     value    = $current.data('value'),
                     io       = $.evo.io(),
                     args     = io.getFormValues(formID),
-                    $spinner = null,
                     $wrapper = this.getWrapper(wrapper);
 
                 if (animation) {
-                    $wrapper.addClass('loading');
-                    $spinner = $.evo.extended().spinner();
+                    $.evo.extended().startSpinner();
                 } else {
                     $('.updatingStockInfo', $wrapper).show();
                 }
@@ -1405,9 +1475,8 @@
                     .variationDispose(wrapper);
 
                 io.call('checkVarkombiDependencies', [args, key, value], $item, function (error, data) {
-                    $wrapper.removeClass('loading');
                     if (animation) {
-                        $spinner.stop();
+                        $.evo.extended().stopSpinner();
                     }
                     $('.updatingStockInfo', $wrapper).hide();
                     if (error) {
@@ -1421,12 +1490,10 @@
             var formID   = $item.closest('form').attr('id'),
                 $wrapper = this.getWrapper(wrapper),
                 io       = $.evo.io(),
-                args     = io.getFormValues(formID),
-                $spinner = null;
+                args     = io.getFormValues(formID);
 
             if (animation) {
-                $wrapper.addClass('loading');
-                $spinner = $.evo.extended().spinner();
+                $.evo.extended().startSpinner();
             }
 
             args.wrapper = wrapper;
@@ -1441,9 +1508,8 @@
                     $action.removeClass('on-list');
                 }
 
-                $wrapper.removeClass('loading');
                 if (animation) {
-                    $spinner.stop();
+                    $.evo.extended().stopSpinner();
                 }
                 if (error) {
                     $.evo.error('checkDependencies');
@@ -1455,22 +1521,61 @@
             var $wrapper = this.getWrapper(wrapper);
 
             $('[role="tooltip"]', $wrapper).remove();
+        },
+
+        moveItemAnimation: function(item, moveTo) {
+            if (!item.length || !moveTo.length || $(this).hasClass('on-list')) {
+                return;
+            }
+            setTimeout(function() {
+                let itemClone = item.clone()
+                    .offset({
+                        top: item.offset().top,
+                        left: item.offset().left
+                    }).css({
+                        'opacity': '0.5',
+                        'position': 'absolute',
+                        'z-index': '10000'
+                    })
+                    .appendTo($('body'))
+                    .animate({
+                        'top': moveTo.offset().top + 5,
+                        'left': moveTo.offset().left + 5,
+                    }, 700);
+
+                itemClone.animate({
+                    'width': 0,
+                    'height': 0
+                }, function () {
+                    $(this).detach()
+                });
+            }, 0);
+        },
+
+        initAbnahmeIntervallError: function() {
+            let $intervallNotice = $('#intervall-notice');
+            if ($intervallNotice.length > 0) {
+                $('#quantity').on('change', function () {
+                    let $step   = $(this).attr('step'),
+                        diff    = Math.abs(($(this).val() % $step) - $step),
+                        epsilon = 0.00000001;
+                    if (diff < epsilon || diff + epsilon > $step) {
+                        $('#intervall-notice-danger').remove();
+                    } else {
+                        $('#quantity-grp').after('<div id="intervall-notice-danger" class="alert alert-danger mt-2">'
+                            + $intervallNotice.html() + '</div>');
+                    }
+                });
+            }
         }
     };
 
-    $v     = new ArticleClass();
-    var ie = /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
-    if (ie && parseInt(ie) <= 9) {
-        $(document).ready(function () {
-            $v.onLoad();
-            $v.register();
-        });
-    } else {
-        $(window).on('load', function () {
-            $v.onLoad();
-            $v.register();
-        });
-    }
+    $v = new ArticleClass();
+
+    $(document).ready(function () {
+        $v.onLoad();
+        $v.register();
+    });
 
     $(window).on('resize',
         viewport.changed(function(){

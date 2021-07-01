@@ -1,13 +1,15 @@
 {block name='checkout-inc-billing-address-form'}
-    <fieldset>
+    <fieldset class="inc-billing-address-form">
         {block name='checkout-inc-billing-address-form-legend'}
-            <div class="h2">
-                {if isset($checkout)}
-                    {lang key='proceedNewCustomer' section='checkout'}
-                {elseif $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
-                    {lang key='myPersonalData'}
-                {/if}
-            </div>
+            {if isset($checkout) || $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
+                <div class="h2">
+                    {if isset($checkout)}
+                        {lang key='proceedNewCustomer' section='checkout'}
+                    {elseif $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
+                        {lang key='myPersonalData'}
+                    {/if}
+                </div>
+            {/if}
             {if isset($checkout) && $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
                 <div>
                     {lang key='guestOrRegistered' section='checkout'}
@@ -38,6 +40,11 @@
                                         label-for="salutation"
                                         label="{lang key='salutation' section='account data'}{if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                                     }
+                                    {if isset($fehlendeAngaben.anrede)}
+                                        <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
+                                            {lang key='fillOut'}
+                                        </div>
+                                    {/if}
                                     {select name="anrede" id="salutation" class='custom-select' required=($Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y') autocomplete="billing sex"}
                                         <option value="" selected="selected" {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y'}disabled{/if}>
                                             {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
@@ -45,11 +52,6 @@
                                         <option value="w" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'w'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
                                         <option value="m" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'm'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
                                     {/select}
-                                    {if isset($fehlendeAngaben.anrede)}
-                                        <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
-                                            {lang key='fillOut'}
-                                        </div>
-                                    {/if}
                                     {/formgroup}
                                 {/block}
                             {/col}
@@ -73,7 +75,7 @@
                                 {/block}
                             {/col}
                         {/if}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/block}
                     {* firstname lastname *}
                     {block name='checkout-inc-billing-address-form-firstname-lastname'}
@@ -109,7 +111,7 @@
                                 }
                             {/block}
                         {/col}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/block}
                     {* firm / firmtext *}
                     {block name='checkout-inc-billing-address-form-company-wrap'}
@@ -150,7 +152,7 @@
                                 {/block}
                             {/col}
                         {/if}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/block}
                 {/formrow}
             {/col}
@@ -201,7 +203,7 @@
                                 }
                             {/block}
                         {/col}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/block}
                     {* adress addition *}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_adresszusatz !== 'N'}
@@ -222,89 +224,86 @@
                                     }
                                 {/block}
                             {/col}
-                            <div class="w-100"></div>
+                            <div class="w-100-util"></div>
                         {/block}
                     {/if}
                     {* country *}
                     {if isset($cPost_var['land'])}
-                        {assign var=cIso value=$cPost_var['land']}
+                        {$countryISO=$cPost_var['land']}
                     {elseif !empty($Kunde->cLand)}
-                        {assign var=cIso value=$Kunde->cLand}
-                    {elseif !empty($Einstellungen.kunden.kundenregistrierung_standardland)}
-                        {assign var=cIso value=$Einstellungen.kunden.kundenregistrierung_standardland}
-                    {elseif isset($laender[0]->cISO)}
-                        {assign var=cIso value=$laender[0]->cISO}
+                        {$countryISO=$Kunde->cLand}
                     {else}
-                        {assign var=cIso value=''}
+                        {$countryISO=$shippingCountry}
                     {/if}
+                    {getCountry iso=$countryISO assign='selectedCountry'}
                     {block name='checkout-inc-billing-address-form-country-wrap'}
                         {col cols=12}
                             {block name='checkout-inc-billing-address-form-country'}
                                 {formgroup
                                     class="{if isset($fehlendeAngaben.land)} has-error{/if}"
-                                    label-for="country"
+                                    label-for="billing_address-country"
                                     label="{lang key='country' section='account data'}"
                                 }
-                                    {select name="land" id="country" class="country-input custom-select" required=true autocomplete="billing country"}
-                                        <option value="" disabled>{lang key='country' section='account data'}</option>
-                                        {foreach $laender as $land}
-                                            <option value="{$land->getISO()}" {if $cIso === $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
-                                        {/foreach}
-                                    {/select}
                                     {if isset($fehlendeAngaben.land)}
-                                        <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                        <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                             {lang key='fillOut' section='global'}
                                         </div>
                                     {/if}
+                                    {select name="land" id="billing_address-country" class="country-input custom-select js-country-select" required=true autocomplete="billing country"}
+                                        <option value="" disabled>{lang key='country' section='account data'}</option>
+                                        {foreach $countries as $country}
+                                            {if $country->isPermitRegistration()}
+                                                <option value="{$country->getISO()}" {if $selectedCountry->getISO() === $country->getISO()}selected="selected"{/if}>{$country->getName()}</option>
+                                            {/if}
+                                        {/foreach}
+                                    {/select}
                                 {/formgroup}
                             {/block}
                         {/col}
                         {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland !== 'N'}
-                            {getStates cIso=$cIso assign='oStates'}
                             {if isset($cPost_var['bundesland'])}
-                                {assign var=cState value=$cPost_var['bundesland']}
+                                {assign var=selectedState value=$cPost_var['bundesland']}
                             {elseif !empty($Kunde->cBundesland)}
-                                {assign var=cState value=$Kunde->cBundesland}
+                                {assign var=selectedState value=$Kunde->cBundesland}
                             {else}
-                                {assign var=cState value=''}
+                                {assign var=selectedState value=''}
                             {/if}
                             {col cols=12}
                                 {block name='checkout-inc-billing-address-form-state'}
                                     {formgroup class="{if isset($fehlendeAngaben.bundesland)} has-error{/if}"
                                         label-for="state"
-                                        label="{lang key='state' section='account data'}{if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland !== 'Y'}<span class='optional'> - {lang key='optional'}</span>{/if}"
+                                        label="{lang key='state' section='account data'}<span class='state-optional optional {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y' || $selectedCountry->isRequireStateDefinition()}d-none{/if}'> - {lang key='optional'}</span>"
                                     }
-                                        {if !empty($oStates)}
+                                        {if isset($fehlendeAngaben.bundesland)}
+                                            <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
+                                                {lang key='fillOut' section='global'}
+                                            </div>
+                                        {/if}
+                                        {if !empty($selectedCountry)}
                                             {select
-                                                title="{lang key=pleaseChoose}"
+                                                data=["defaultoption"=>{lang key=pleaseChoose}]
                                                 name="bundesland"
-                                                id="state"
-                                                class="state-input custom-select"
+                                                id="billing_address-state"
+                                                class="state-input custom-select js-state-select"
                                                 autocomplete="billing address-level1"
-                                                required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y')
+                                                required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y' || $selectedCountry->isRequireStateDefinition())
                                             }
                                                 <option value="" selected disabled>{lang key='pleaseChoose'}</option>
-                                                {foreach $oStates as $oState}
-                                                    <option value="{$oState->cCode}" {if $cState === $oState->cName || $cState === $oState->cCode}selected{/if}>{$oState->cName}</option>
+                                                {foreach $selectedCountry->getStates() as $state}
+                                                    <option value="{$state->getISO()}" {if $selectedState === $state->getName() || $selectedState === $state->getISO()}selected{/if}>{$state->getName()}</option>
                                                 {/foreach}
                                             {/select}
                                         {else}
                                             {input
                                                 type="text"
-                                                title="{lang key=pleaseChoose}"
                                                 name="bundesland"
-                                                value=$cState
-                                                id="state"
+                                                value=$selectedState
+                                                id="billing_address-state"
+                                                data=["defaultoption"=>{lang key=pleaseChoose}]
                                                 placeholder="{lang key='state' section='account data'}"
                                                 autocomplete="billing address-level1"
-                                                required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y')
+                                                required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y' || $selectedCountry->isRequireStateDefinition())
                                             }
-                                        {/if}
-
-                                        {if isset($fehlendeAngaben.bundesland)}
-                                            <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
-                                                {lang key='fillOut' section='global'}
-                                            </div>
                                         {/if}
                                     {/formgroup}
                                 {/block}
@@ -320,6 +319,15 @@
                                     label-for="postcode"
                                     label={lang key='plz' section='account data'}
                                 }
+                                    {if isset($fehlendeAngaben.plz)}
+                                        <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
+                                            {if $fehlendeAngaben.plz >= 2}
+                                                {lang key='checkPLZCity' section='checkout'}
+                                            {else}
+                                                {lang key='fillOut' section='global'}
+                                            {/if}
+                                        </div>
+                                    {/if}
                                     {input
                                         type="text"
                                         name="plz"
@@ -330,15 +338,6 @@
                                         required=true
                                         autocomplete="billing postal-code"
                                     }
-                                    {if isset($fehlendeAngaben.plz)}
-                                        <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
-                                            {if $fehlendeAngaben.plz >= 2}
-                                                {lang key='checkPLZCity' section='checkout'}
-                                            {else}
-                                                {lang key='fillOut' section='global'}
-                                            {/if}
-                                        </div>
-                                    {/if}
                                 {/formgroup}
                             {/block}
                         {/col}
@@ -349,6 +348,15 @@
                                     label-for="city"
                                     label=''
                                 }
+                                    {if isset($fehlendeAngaben.ort)}
+                                        <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
+                                            {if $fehlendeAngaben.ort==3}
+                                                 {lang key='cityNotNumeric' section='account data'}
+                                            {else}
+                                                {lang key='fillOut' section='global'}
+                                            {/if}
+                                        </div>
+                                    {/if}
                                     {input
                                         type="text"
                                         name="ort"
@@ -360,19 +368,10 @@
                                         required=true
                                         autocomplete="billing address-level2"
                                     }
-                                    {if isset($fehlendeAngaben.ort)}
-                                        <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
-                                            {if $fehlendeAngaben.ort==3}
-                                                 {lang key='cityNotNumeric' section='account data'}
-                                            {else}
-                                                {lang key='fillOut' section='global'}
-                                            {/if}
-                                        </div>
-                                    {/if}
                                 {/formgroup}
                             {/block}
                         {/col}
-                        <div class="w-100"></div>
+                        <div class="w-100-util"></div>
                     {/block}
                     {* UStID *}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_ustid !== 'N'}
@@ -383,16 +382,8 @@
                                     label-for="ustid"
                                     label="{lang key='ustid' section='account data'}{if $Einstellungen.kunden.kundenregistrierung_abfragen_ustid !== 'Y'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                                 }
-                                    {input
-                                        type="text"
-                                        name="ustid"
-                                        value="{if isset($cPost_var['ustid'])}{$cPost_var['ustid']}{elseif isset($Kunde->cUSTID)}{$Kunde->cUSTID}{/if}"
-                                        id="ustid"
-                                        placeholder=" "
-                                        required=($Einstellungen.kunden.kundenregistrierung_abfragen_ustid === 'Y')
-                                    }
                                     {if isset($fehlendeAngaben.ustid)}
-                                        <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                        <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
                                             {if $fehlendeAngaben.ustid == 1}
                                                 {lang key='fillOut' section='global'}
                                             {elseif $fehlendeAngaben.ustid == 2}
@@ -409,6 +400,14 @@
                                             {/if}
                                         </div>
                                     {/if}
+                                    {input
+                                        type="text"
+                                        name="ustid"
+                                        value="{if isset($cPost_var['ustid'])}{$cPost_var['ustid']}{elseif isset($Kunde->cUSTID)}{$Kunde->cUSTID}{/if}"
+                                        id="ustid"
+                                        placeholder=" "
+                                        required=($Einstellungen.kunden.kundenregistrierung_abfragen_ustid === 'Y')
+                                    }
                                 {/formgroup}
                             {/col}
                         {/block}
@@ -447,6 +446,13 @@
                             }
                         {/col}
                     {/block}
+                    {if $Einstellungen.kunden.direct_advertising === 'Y'}
+                        {block name='checkout-inc-billing-address-form-direct-advertising'}
+                            {col cols=12 class="direct-advertising"}
+                                <small>{lang key="directAdvertising" section="checkout"}</small>
+                            {/col}
+                        {/block}
+                    {/if}
                     {* phone & fax *}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_tel !== 'N' || $Einstellungen.kunden.kundenregistrierung_abfragen_fax !== 'N'
                         || $Einstellungen.kunden.kundenregistrierung_abfragen_mobil !== 'N' || $Einstellungen.kunden.kundenregistrierung_abfragen_www !== 'N'}
@@ -528,7 +534,7 @@
                                     {/block}
                                 {/col}
                             {/if}
-                            <div class="w-100"></div>
+                            <div class="w-100-util"></div>
                         {/block}
                     {/if}
 
@@ -587,6 +593,19 @@
                                         label-for="custom_{$kKundenfeld}"
                                         label="{$oKundenfeld->getLabel()}{if !$oKundenfeld->isRequired()}<span class='optional'> - {lang key='optional'}</span>{/if}"
                                     }
+                                        {if isset($fehlendeAngaben.custom[$kKundenfeld])}
+                                            <div class="form-error-msg"><i class="fas fa-exclamation-triangle"></i>
+                                                {if $fehlendeAngaben.custom[$kKundenfeld] === 1}
+                                                    {lang key='fillOut' section='global'}
+                                                {elseif $fehlendeAngaben.custom[$kKundenfeld] === 2}
+                                                    {lang key='invalidDateformat' section='global'}
+                                                {elseif $fehlendeAngaben.custom[$kKundenfeld] === 3}
+                                                    {lang key='invalidDate' section='global'}
+                                                {elseif $fehlendeAngaben.custom[$kKundenfeld] === 4}
+                                                    {lang key='invalidInteger' section='global'}
+                                                {/if}
+                                            </div>
+                                        {/if}
                                         {if $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_SELECT}
                                             {select
                                                 name="custom_{$kKundenfeld}"
@@ -640,19 +659,6 @@
                                                 readonly=(!$isKundenattributEditable)
                                             }
                                         {/if}
-                                        {if isset($fehlendeAngaben.custom[$kKundenfeld])}
-                                            <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
-                                                {if $fehlendeAngaben.custom[$kKundenfeld] === 1}
-                                                    {lang key='fillOut' section='global'}
-                                                {elseif $fehlendeAngaben.custom[$kKundenfeld] === 2}
-                                                    {lang key='invalidDateformat' section='global'}
-                                                {elseif $fehlendeAngaben.custom[$kKundenfeld] === 3}
-                                                    {lang key='invalidDate' section='global'}
-                                                {elseif $fehlendeAngaben.custom[$kKundenfeld] === 4}
-                                                    {lang key='invalidInteger' section='global'}
-                                                {/if}
-                                            </div>
-                                        {/if}
                                     {/formgroup}
                                 {/block}
                             {/foreach}
@@ -684,15 +690,13 @@
     {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true)
     && isset($Einstellungen.kunden.registrieren_captcha) && $Einstellungen.kunden.registrieren_captcha !== 'N' && empty($Kunde->kKunde)}
         {block name='checkout-inc-billing-address-form-captcha'}
-            <hr>
             {row}
                 {col cols=8 offset=4}
-                    {formgroup class="{if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha != false} has-error{/if}"}
+                    {formgroup class="simple-captcha-wrapper {if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha != false} has-error{/if}"}
                         {captchaMarkup getBody=true}
                     {/formgroup}
                 {/col}
             {/row}
-            <hr>
         {/block}
     {/if}
 {/block}

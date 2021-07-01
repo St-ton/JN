@@ -1,6 +1,6 @@
 {block name='layout-header-top-bar'}
     {strip}
-        {nav tag='ul' class='nav-dividers'}
+        {nav tag='ul' class='topbar-main nav-dividers'}
         {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1 || isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
             {block name='layout-header-top-bar-user-settings'}
                 {block name='layout-header-top-bar-user-settings-currency'}
@@ -18,25 +18,8 @@
                         {/navitemdropdown}
                     {/if}
                 {/block}
-                {block name='layout-header-top-bar-user-settings-language'}
-                    {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-                        {navitemdropdown
-                            class="language-dropdown"
-                            right=true
-                            text="
-                                {foreach $smarty.session.Sprachen as $language}
-                                    {if $language->kSprache == $smarty.session.kSprache}
-                                        {$language->iso639|upper}
-                                    {/if}
-                                {/foreach}"
-                        }
-                            {foreach $smarty.session.Sprachen as $language}
-                                {dropdownitem href="{$language->cURL}" rel="nofollow" active=($language->kSprache == $smarty.session.kSprache)}
-                                    {$language->iso639|upper}
-                                {/dropdownitem}
-                            {/foreach}
-                        {/navitemdropdown}
-                    {/if}
+                {block name='layout-header-top-bar-user-settings-include-language-dropdown'}
+                    {include file='snippets/language_dropdown.tpl'}
                 {/block}
             {/block}
         {/if}
@@ -50,5 +33,15 @@
             {/block}
         {/if}
         {/nav}
+        {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}
+            {block name='layout-header-top-bar-note'}
+                {$topbarLang = {lang key='topbarNote'}}
+                {if $topbarLang !== ''}
+                    {nav tag='ul' class='topbar-note nav-dividers'}
+                        {navitem id="topbarNote"}{$topbarLang}{/navitem}
+                    {/nav}
+                {/if}
+            {/block}
+        {/if}
     {/strip}
 {/block}

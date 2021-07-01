@@ -5,7 +5,6 @@ namespace JTL\dbeS;
 use JTL\Catalog\ReviewReminder;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\FileSystem;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
@@ -47,7 +46,7 @@ final class LastJob
 
     public function execute(): void
     {
-        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
         if (!\KEEP_SYNC_FILES) {
             FileSystem::delDirRecursively(\PFAD_ROOT . \PFAD_DBES_TMP);
         }
@@ -115,13 +114,12 @@ final class LastJob
      */
     private function getRepeatedJobs(int $hours): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getObjects(
             "SELECT kJob, nJob, dErstellt
                 FROM tlastjob
                 WHERE cType = 'RPT'
-                    AND (DATE_ADD(dErstellt, INTERVAL :hrs HOUR) < NOW())",
-            ['hrs' => $hours],
-            ReturnType::ARRAY_OF_OBJECTS
+                    AND (dErstellt IS NULL OR DATE_ADD(dErstellt, INTERVAL :hrs HOUR) < NOW())",
+            ['hrs' => $hours]
         );
     }
 
@@ -149,8 +147,8 @@ final class LastJob
     }
 
     /**
-     * @param int    $jobID
-     * @param string $name
+     * @param int         $jobID
+     * @param string|null $name
      * @return stdClass
      */
     public function run(int $jobID, $name = null): stdClass

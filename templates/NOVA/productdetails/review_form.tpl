@@ -7,7 +7,7 @@
     {/block}
 
     {block name='productdetails-review-form-content'}
-        {container}
+        {container class="review-form"}
             {block name='productdetails-review-form-heading'}
                 <h1>{lang key='productRating' section='product rating'}</h1>
             {/block}
@@ -19,23 +19,13 @@
                     {/block}
                     {if $ratingAllowed}
                         {block name='productdetails-review-form-form-main'}
-                            {block name='productdetails-review-form'}
-                                <div class="alert alert-info">{lang key='shareYourRatingGuidelines' section='product rating'}.</div>
+                            {block name='productdetails-review-form-form-info'}
+                                <div class="alert alert-info">{lang key='shareYourRatingGuidelines' section='product rating'}</div>
                             {/block}
                             {block name='productdetails-review-form-image-name'}
-                                <div class="vmiddle">
-                                    {if !empty($Artikel->Bilder[0]->cPfadMini)}
-                                        {image webp=true lazy=true
-                                            src=$Artikel->Bilder[0]->cURLMini
-                                            srcset="{$Artikel->Bilder[0]->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                    {$Artikel->Bilder[0]->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                    {$Artikel->Bilder[0]->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                            sizes="200px"
-                                            alt=$Artikel->cName
-                                            class="vmiddle"
-                                        }
-                                    {/if}
-                                    <span class="vmiddle">{$Artikel->cName}</span>
+                                <div class="review-form-image">
+                                    {include file='snippets/image.tpl' item=$Artikel square=false sizes='200px'}
+                                    <span>{$Artikel->cName}</span>
                                 </div>
                                 <hr>
                             {/block}
@@ -66,8 +56,8 @@
                             {/block}
                         {/block}
                         {block name='productdetails-review-form-form-submit'}
-                            {row}
-                                {col cols=12 md=4 lg=3 class='ml-auto'}
+                            {row class="review-form-buttons"}
+                                {col cols=12 md=4 lg=3 class='ml-auto-util'}
                                     {input type="hidden" name="bfh" value="1"}
                                     {input type="hidden" name="a" value=$Artikel->kArtikel}
                                     {button type="submit" value="1" variant="primary" block=true}

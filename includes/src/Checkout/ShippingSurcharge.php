@@ -3,9 +3,9 @@
 namespace JTL\Checkout;
 
 use JTL\Catalog\Product\Preise;
-use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class Surcharge
@@ -90,14 +90,13 @@ class ShippingSurcharge
     public function loadFromDB(int $id): void
     {
         $db        = Shop::Container()->getDB();
-        $surcharge = $db->queryPrepared(
+        $surcharge = $db->getSingleObject(
             'SELECT * 
                 FROM tversandzuschlag
                 WHERE kVersandzuschlag = :id',
-            ['id' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['id' => $id]
         );
-        if (!\is_object($surcharge)) {
+        if ($surcharge === null) {
             return;
         }
 
@@ -107,13 +106,12 @@ class ShippingSurcharge
              ->setShippingMethod((int)$surcharge->kVersandart)
              ->setPriceLocalized();
 
-        $zips = $db->queryPrepared(
+        $zips = $db->getObjects(
             'SELECT vzp.cPLZ, vzp.cPLZAb, vzp.cPLZBis 
                 FROM tversandzuschlag AS vz
                 JOIN tversandzuschlagplz AS vzp USING(kVersandzuschlag) 
                 WHERE vz.kVersandzuschlag = :id',
-            ['id' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['id' => $id]
         );
         foreach ($zips as $zip) {
             if (!empty($zip->cPLZ)) {
@@ -123,14 +121,13 @@ class ShippingSurcharge
             }
         }
 
-        $names = $db->queryPrepared(
+        $names = $db->getObjects(
             'SELECT vzs.cName, s.kSprache 
                 FROM tversandzuschlag AS vz
                 JOIN tversandzuschlagsprache AS vzs USING(kVersandzuschlag) 
-                JOIN tsprache as s ON s.cISO = vzs.cISOSprache
+                JOIN tsprache AS s ON s.cISO = vzs.cISOSprache
                 WHERE vz.kVersandzuschlag = :id',
-            ['id' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['id' => $id]
         );
         foreach ($names as $name) {
             $this->setName($name->cName, (int)$name->kSprache);
@@ -143,7 +140,7 @@ class ShippingSurcharge
     public function save(): void
     {
         $db                          = Shop::Container()->getDB();
-        $surcharge                   = new \stdClass();
+        $surcharge                   = new stdClass();
         $surcharge->cName            = $this->getTitle();
         $surcharge->kVersandart      = $this->getShippingMethod();
         $surcharge->cIso             = $this->getISO();
@@ -155,7 +152,7 @@ class ShippingSurcharge
         }
         if ($this->getID() > 0) {
             foreach ($this->getNames() as $key => $name) {
-                $surchargeLang                   = new \stdClass();
+                $surchargeLang                   = new stdClass();
                 $surchargeLang->cName            = $name;
                 $surchargeLang->cISOSprache      = Shop::Lang()->getIsoFromLangID($key)->cISO;
                 $surchargeLang->kVersandzuschlag = $this->getID();
@@ -367,7 +364,7 @@ class ShippingSurcharge
 
 
     /**
-     * @param int $idx
+     * @param int|null $idx
      * @return string
      */
     public function getName(int $idx = null): string
@@ -411,7 +408,7 @@ class ShippingSurcharge
     }
 
     /**
-     * @param string $priceLocalized
+     * @param string|null $priceLocalized
      * @return ShippingSurcharge
      */
     public function setPriceLocalized(string $priceLocalized = null): self

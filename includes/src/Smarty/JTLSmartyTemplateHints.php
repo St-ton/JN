@@ -9,12 +9,7 @@ namespace JTL\Smarty;
 class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
 {
     /**
-     * @param string $template
-     * @param null $cache_id
-     * @param null $compile_id
-     * @param null $parent
-     * @return string
-     * @throws \SmartyException
+     * @inheritDoc
      */
     public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null)
     {
@@ -39,19 +34,7 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
     }
 
     /**
-     * Runtime function to render sub-template
-     *
-     * @param string  $template template name
-     * @param mixed   $cache_id cache id
-     * @param mixed   $compile_id compile id
-     * @param integer $caching cache mode
-     * @param integer $cache_lifetime life time of cache data
-     * @param array   $data passed parameter template variables
-     * @param int     $scope scope in which {include} should execute
-     * @param bool    $forceTplCache cache template object
-     * @param string  $uid file dependency uid
-     * @param string  $content_func function name
-     *
+     * @inheritDoc
      */
     public function _subTemplateRender(
         $template,
@@ -65,7 +48,6 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
         $uid = null,
         $content_func = null
     ) {
-        $tplName = null;
         $tplID   = null;
         $tplName = \mb_strpos($template, ':') !== false
             ? \mb_substr($template, \mb_strpos($template, ':') + 1)

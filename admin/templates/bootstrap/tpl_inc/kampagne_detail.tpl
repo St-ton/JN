@@ -28,7 +28,7 @@
     {rdelim}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__('kampagneDetailStats')|cat:' '|cat:$oKampagne->cName}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('kampagneDetailStats')|cat:' - '|cat:$oKampagne->getName()}
 
 <div id="content">
     <div class="card">
@@ -40,10 +40,10 @@
                 <input type="hidden" name="kKampagne" value="{$oKampagne->kKampagne}" />
 
                 <div class="row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-auto">
                         <div class="form-row">
-                            <label class="col-sm-auto col-form-label" for="nAnsicht">{__('kampagneDetailView')}:</label>
-                            <div class="col-sm-auto">
+                            <label class="col-sm-3 col-form-label" for="nAnsicht">{__('kampagneDetailView')}:</label>
+                            <div class="col-sm">
                                 <select id="nAnsicht" name="nAnsicht" class="custom-select combo" onChange="changeSelect(this);">
                                     <option value="1"{if $smarty.session.Kampagne->nDetailAnsicht == 1} selected{/if}>{__('annual')}</option>
                                     <option value="2"{if $smarty.session.Kampagne->nDetailAnsicht == 2} selected{/if}>{__('monthly')}</option>
@@ -52,13 +52,13 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-row">
-                            <label class="col-sm-auto col-form-label" for="kKampagne">{__('kampagneSingle')}:</label>
-                            <div class="col-sm-auto">
+                        <div class="form-row mb-3">
+                            <label class="col-sm-3 col-form-label" for="kKampagne">{__('kampagneSingle')}:</label>
+                            <div class="col-sm">
                                 <select id="kKampagne" name="kKampagne" class="custom-select combo" onChange="selectSubmit(this);">
                                     {if isset($oKampagne_arr) && $oKampagne_arr|@count > 0}
                                         {foreach $oKampagne_arr as $oKampagneTMP}
-                                            <option value="{$oKampagneTMP->kKampagne}"{if $oKampagneTMP->kKampagne == $oKampagne->kKampagne} selected{/if}>{$oKampagneTMP->cName}</option>
+                                            <option value="{$oKampagneTMP->kKampagne}"{if $oKampagneTMP->kKampagne == $oKampagne->kKampagne} selected{/if}>{$oKampagneTMP->getName()}</option>
                                         {/foreach}
                                     {/if}
                                 </select>
@@ -67,7 +67,7 @@
                     </div>
                     <div class="col-sm-auto">
                         <div class="form-row">
-                            <label class="col-sm-auto col-form-label" for="SelectFromDay">{__('from')}:</label>
+                            <label class="col-sm col-form-label" for="SelectFromDay">{__('from')}:</label>
                             <div class="col-sm-auto mb-2">
                                 <select name="cFromDay" class="custom-select combo" id="SelectFromDay">
                                     {section name=fromDay loop=32 start=1 step=1}
@@ -107,15 +107,17 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <label class="col-sm-auto col-form-label" for="SelectToDay">{__('kampagneDateTill')}:</label>
-                            <select name="cToDay" class="custom-select combo" id="SelectToDay">
+                            <label class="col-sm col-form-label" for="SelectToDay">{__('kampagneDateTill')}:</label>
+                            <div class="col-sm-auto mb-2">
+                                <select name="cToDay" class="custom-select combo" id="SelectToDay">
                                 {section name=toDay loop=32 start=1 step=1}
                                     <option value="{$smarty.section.toDay.index}"
                                             {if $smarty.session.Kampagne->cToDate_arr.nTag == $smarty.section.toDay.index} selected{/if}>
                                         {$smarty.section.toDay.index}
                                     </option>
                                 {/section}
-                            </select>
+                                </select>
+                            </div>
                             <div class="col-sm-auto mb-2">
                                 <select name="cToMonth" class="custom-select combo">
                                     <option value="1"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 1} selected{/if}>{__('january')}</option>
@@ -161,15 +163,15 @@
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {if !isset($cTab) || $cTab === 'detailansicht'} active{/if}" data-toggle="tab" role="tab" href="#detailansicht">{__('kampagneDetailStats')}</a>
+                    <a class="nav-link {if $cTab === '' || $cTab === 'detailansicht'} active{/if}" data-toggle="tab" role="tab" href="#detailansicht">{__('kampagneDetailStats')}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {if isset($cTab) && $cTab === 'detailgraphen'} active{/if}" data-toggle="tab" role="tab" href="#detailgraphen">{__('kampagneDetailGraph')}</a>
+                    <a class="nav-link {if $cTab === 'detailgraphen'} active{/if}" data-toggle="tab" role="tab" href="#detailgraphen">{__('kampagneDetailGraph')}</a>
                 </li>
             </ul>
         </nav>
         <div class="tab-content">
-            <div id="detailansicht" class="tab-pane fade {if !isset($cTab) || $cTab === 'detailansicht'} active show{/if}">
+            <div id="detailansicht" class="tab-pane fade {if $cTab === '' || $cTab === 'detailansicht'} active show{/if}">
                 {if isset($oKampagneStat_arr) && $oKampagneStat_arr|@count > 0 && isset($oKampagneDef_arr) && $oKampagneDef_arr|@count > 0}
                     <div class="table-responsive">
                         <table class="table table-striped text-center">
@@ -217,7 +219,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="detailgraphen" class="tab-pane fade{if isset($cTab) && $cTab === 'detailgraphen'} active show{/if}">
+            <div id="detailgraphen" class="tab-pane fade{if $cTab === 'detailgraphen'} active show{/if}">
                 {if $Charts|@count > 0}
                     {foreach name=charts from=$Charts key=key item=Chart}
                         <div class="my-5">

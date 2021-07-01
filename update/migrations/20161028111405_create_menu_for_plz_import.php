@@ -20,16 +20,19 @@ class Migration_20161028111405 extends Migration implements IMigration
     /**
      * @param int $kAdminmenueGruppe
      */
-    protected function reorderMenu($kAdminmenueGruppe)
+    protected function reorderMenu(int $kAdminmenueGruppe): void
     {
         $this->execute('SET @SortStart = 0');
         $this->execute(
             'UPDATE tadminmenu SET nSort = @SortStart:=@SortStart + 10
-                WHERE kAdminmenueGruppe = ' . (int)$kAdminmenueGruppe . ' 
+                WHERE kAdminmenueGruppe = ' . $kAdminmenueGruppe . ' 
                 ORDER BY nSort;'
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->reorderMenu(11);
@@ -53,6 +56,9 @@ class Migration_20161028111405 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->execute(

@@ -103,3 +103,15 @@ msgstr "Der Wert von „Animationsgeschwindigkeit“ darf den Wert von „Pausen
 
 msgid "pauseTime"
 msgstr "Pausenzeit (in ms)"
+
+msgid "dotNavigation"
+msgstr "Punktnavigation"
+
+msgid "thumbnailNavigation"
+msgstr "Thumbnail-Navigation"
+
+msgid "directionNavigation"
+msgstr "Pfeilnavigation"
+
+msgid "animationSpeed"
+msgstr "Animationsgeschwindigkeit"

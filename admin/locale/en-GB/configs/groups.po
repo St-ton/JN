@@ -30,7 +30,7 @@ msgid "configgroup_1_admin_area"
 msgstr "Admin area"
 
 msgid "configgroup_1_cookies"
-msgstr "Cookie settings"
+msgstr "Cookie settings <br><span class=\"text-danger\">Faulty cookie settings may lead to a dysfunctional back-end login! Only make changes if you know what you are doing.</span>"
 
 msgid "configgroup_2_general"
 msgstr "General"
@@ -122,6 +122,9 @@ msgstr "Wish list"
 msgid "configgroup_8_box_comparelist"
 msgstr "Comparison list"
 
+msgid "configgroup_8_box_manufacturers"
+msgstr "Box: Manufacturer"
+
 msgid "configgroup_8_box_top_rated"
 msgstr "Box: Top rated"
 
@@ -203,6 +206,9 @@ msgstr "Current characteristic value"
 msgid "configgroup_110_current_category"
 msgstr "Current category"
 
+msgid "configgroup_110_availability_filter"
+msgstr "Availability filter"
+
 msgid "configgroup_111_email_blacklist"
 msgstr "Email blacklist"
 
@@ -214,9 +220,6 @@ msgstr "Blog"
 
 msgid "configgroup_114_sitemap_settings"
 msgstr "Sitemap settings"
-
-msgid "configgroup_116_customer_recruit_customer"
-msgstr "Settings for customer referral programme"
 
 msgid "configgroup_119_searchspecial_standard_search"
 msgstr "Default sorting for special items"
@@ -235,3 +238,18 @@ msgstr "General"
 
 msgid "configgroup_110_manufacturer_filter"
 msgstr "Manufacturer filter"
+
+msgid "configgroup_129_consentmanager"
+msgstr "Consent manager"
+
+msgid "configgroup_124_cache"
+msgstr "Cache"
+
+msgid "configgroup_128_cron"
+msgstr "Cron"
+
+msgid "configgroup_121_selectionwizard"
+msgstr "Selection wizard"
+
+msgid "configgroup_127_filesystem"
+msgstr "File system"

@@ -18,8 +18,7 @@ class Migration_20181112145700 extends Migration implements IMigration
     protected $description = 'changes agb wrb notices, adds delete from compare list var';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -34,8 +33,7 @@ class Migration_20181112145700 extends Migration implements IMigration
     }
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function down()
     {

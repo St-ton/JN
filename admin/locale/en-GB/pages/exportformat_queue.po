@@ -3,10 +3,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "exportformat"
-msgstr "Task scheduler for exports"
+msgstr "Export manager"
 
 msgid "exportformatDesc"
-msgstr "Use the task scheduler to create tasks that will then be executed automatically, e.g. exports for price search engines."
+msgstr "Use this task scheduler to create tasks that will then be executed automatically, e.g. exports for price search engines."
 
 msgid "exportformatUrl"
 msgstr "https://jtl-url.de/7mp5g"
@@ -45,7 +45,7 @@ msgid "exportformatNextStart"
 msgstr "Next start (scheduled)"
 
 msgid "exportformatTodaysWork"
-msgstr "Finished most recently"
+msgstr "Finished recently"
 
 msgid "exportformatTriggerCron"
 msgstr "Trigger Cron manually"
@@ -61,6 +61,9 @@ msgstr "Selected queues deleted successfully."
 
 msgid "errorCronStart"
 msgstr "Cron task(s) could not be started."
+
+msgid "errorCronLocked"
+msgstr "Cron is currently locked."
 
 msgid "successCronsStart"
 msgstr "%s Cron tasks started successfully."
@@ -85,3 +88,6 @@ msgstr "Please enter a value that equals or exceeds 1."
 
 msgid "errorFormatSelect"
 msgstr "Please select a valid export format."
+
+msgid "immediately"
+msgstr "immediately"

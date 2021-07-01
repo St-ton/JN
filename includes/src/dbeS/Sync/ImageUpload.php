@@ -66,7 +66,6 @@ final class ImageUpload extends AbstractSync
     private function getArray(SimpleXMLElement $xml): array
     {
         $items = [];
-        /** @var SimpleXMLElement $child */
         foreach ($xml->children() as $child) {
             $items[] = (object)[
                 'kBild' => (int)$child->attributes()->kBild,

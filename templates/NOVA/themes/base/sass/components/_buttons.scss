@@ -1,8 +1,8 @@
 // theme buttons
 .btn { text-decoration: none; }
 
-.btn-primary { overflow: hidden; position: relative; color: $yiq-text-dark;
-  @include hover { background-color: lighten($primary, 8%); border-color: lighten($primary, 8%); color: $yiq-text-dark; }
+.btn-primary { overflow: hidden; position: relative;
+  @include hover { background-color: lighten($primary, 8%); border-color: lighten($primary, 8%); color: color-yiq($primary);}
 
   //&:focus, &.focus { background-color: $primary; border-color: $primary; }
 
@@ -10,10 +10,10 @@
 
   &:not(:disabled):not(.disabled):active,
   &:not(:disabled):not(.disabled).active,
-  .show > &.dropdown-toggle { background-color: $primary; border-color: $primary; color: $yiq-text-dark; }
+  .show > &.dropdown-toggle { background-color: $primary; border-color: $primary; color: color-yiq($primary);}
 }
 
-.btn-outline-primary { border-color: $primary; background-color: transparent; color: $yiq-text-dark; position: relative; overflow: hidden;
+.btn-outline-primary { border-color: $primary; background-color: transparent; color: color-yiq($white);position: relative; overflow: hidden;
   @include hover { background-color: lighten($primary, 45%); color: $yiq-text-dark; }
 
   //&:focus, &.focus { border-color: $primary; background-color: transparent; color: $yiq-text-dark; }
@@ -22,7 +22,7 @@
 
   &:not(:disabled):not(.disabled):active,
   &:not(:disabled):not(.disabled).active,
-  .show > &.dropdown-toggle { border-color: $primary; background-color: $primary; color: $yiq-text-dark;
+  .show > &.dropdown-toggle { border-color: $primary; background-color: $primary; color: color-yiq($primary);;
     &::after { width: 300%; }
   }
 }
@@ -31,8 +31,8 @@
   @include hover { background-color: lighten($secondary, 8%); border-color: lighten($secondary, 8%); }
 }
 
-.btn-outline-secondary { border-color: $secondary; background-color: transparent; color: $yiq-text-dark;
-  @include hover { border-color: $secondary; background-color: $gray-medium; color: $yiq-text-dark; }
+.btn-outline-secondary { border-color: $secondary; background-color: transparent; color: color-yiq($white);
+  @include hover { border-color: $secondary; background-color: $gray-medium; color: color-yiq($gray-medium);}
 
   //&:focus, &.focus { border-color: $secondary; background-color: transparent; color: $yiq-text-dark; }
 
@@ -40,7 +40,7 @@
 
   &:not(:disabled):not(.disabled):active,
   &:not(:disabled):not(.disabled).active,
-  .show > &.dropdown-toggle { border-color: $secondary; background-color: $gray-medium; color: $yiq-text-dark; }
+  .show > &.dropdown-toggle { border-color: $secondary; background-color: $gray-medium; color: color-yiq($gray-medium);}
 }
 
 .btn-icon { @include button-size($btn-padding-x / 1.4, $btn-padding-x / 1.4, $btn-font-size * 1.15, 1, 50%); border-width: rem($btn-border-width + 1px);
@@ -106,8 +106,14 @@
 
 #add-to-cart .btn{
   .btn-basket-check {
-    /* this is the button text message */
     top: 0; left: 0; width: 100%; height: 100%; white-space: nowrap;
+    span {
+      margin-right: map_get($spacers, 1);
+      display: none;
+      @include media-breakpoint-up(sm) {
+        display: inline-block;
+      }
+    }
   }
   svg {
     /* this is the check icon */
@@ -151,6 +157,7 @@
   line-height: 15px !important;
   border-radius: 50% !important;
   padding: 0;
+  z-index: 1;
   &::before { display: none; }
   &.circle-small {
     width: 36px;
@@ -174,7 +181,7 @@
   min-width: 44px;
   width: 44px;
   height: 44px;
-  border: 1.5px solid $gray;
+  border: 1px solid $gray;
   opacity: 0.8;
   color: $gray;
   font-size: 18px;
@@ -204,7 +211,7 @@
     animation: size .4s;
     color:#fff;
     opacity: 1.0;
-    border: 1.5px solid $primary;
+    border: 1px solid $primary;
     background-color: $primary;
   }
 }
@@ -231,4 +238,22 @@
 
 .btn-white {
   background-color: $white;
+}
+
+.btn-filter-box {
+  text-decoration: none;
+  padding-left: 0;
+  padding-right: 0;
+  text-align: left;
+  @include text-truncate;
+}
+
+.btn-back {
+  display: block;
+  width: 100%;
+  margin-bottom: map-get($spacers, 3);
+}
+
+.btn-row {
+  margin-top: map-get($spacers, 5);
 }

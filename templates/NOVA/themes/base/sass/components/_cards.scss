@@ -45,4 +45,9 @@
 			column-count: $card-columns-count + 1;
 		}
 	}
+	&.card-columns-2 {
+		@include media-breakpoint-up(lg) {
+			column-count: 2;
+		}
+    }
 }

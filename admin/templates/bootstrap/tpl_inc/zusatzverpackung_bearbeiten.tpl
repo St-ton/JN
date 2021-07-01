@@ -5,7 +5,7 @@
     <div class="card">
         <div class="card-header">
             <div class="subheading1">
-                {if isset($kVerpackung) && $kVerpackung > 0}{__('zusatzverpackungEdit')}{else}{__('zusatzverpackungCreate')}{/if}
+                {if isset($kVerpackung) && $kVerpackung > 0}{__('zusatzverpackungEdit')}{else}{__('zusatzverpackungCreateTitle')}{/if}
             </div>
             <hr class="mb-n3">
         </div>
@@ -53,8 +53,8 @@
                 <label class="col col-sm-3 col-form-label text-sm-right" for="kSteuerklasse">{__('zusatzverpackungTaxClass')}:</label>
                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                     <select id="kSteuerklasse" name="kSteuerklasse" class="custom-select combo">
-                        <option value="-1">{__('zusatzverpackungAutoTax')}</option>
-                        {foreach $taxClasss as $taxClass}
+                        <option value="0">{__('zusatzverpackungAutoTax')}</option>
+                        {foreach $taxClasses as $taxClass}
                             <option value="{$taxClass->kSteuerklasse}" {if isset($oVerpackungEdit) && (int)$taxClass->kSteuerklasse === (int)$oVerpackungEdit->kSteuerklasse} selected{/if}>{$taxClass->cName}</option>
                         {/foreach}
                     </select>
@@ -101,6 +101,11 @@
         <div class="card-footer save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
+                    <a class="btn btn-outline-primary btn-block" href="zusatzverpackung.php">
+                        {__('cancelWithIcon')}
+                    </a>
+                </div>
+                <div class="col-sm-6 col-xl-auto">
                     <button class="btn btn-primary btn-block" name="speichern" type="submit">
                         {__('saveWithIcon')}
                     </button>

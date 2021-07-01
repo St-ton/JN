@@ -3,6 +3,7 @@
 namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\Plugin\InstallCode;
+use stdClass;
 
 /**
  * Class CSS
@@ -30,7 +31,7 @@ class CSS extends AbstractItem
             if (!isset($file['name'])) {
                 continue;
             }
-            $res           = new \stdClass();
+            $res           = new stdClass();
             $res->kPlugin  = $this->plugin->kPlugin;
             $res->type     = 'css';
             $res->path     = $file['name'];

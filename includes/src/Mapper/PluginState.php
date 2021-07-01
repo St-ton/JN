@@ -29,6 +29,10 @@ class PluginState
                 return 'Lizenzschlüssel fehlt';
             case State::LICENSE_KEY_INVALID:
                 return 'Lizenzschlüssel ungültig';
+            case State::ESX_LICENSE_EXPIRED:
+                return 'Lizenz abgelaufen';
+            case State::ESX_SUBSCRIPTION_EXPIRED:
+                return 'Subscription abgelaufen';
             default:
                 return 'Unbekannt';
         }

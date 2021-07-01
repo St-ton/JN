@@ -3,6 +3,7 @@
 use JTL\Alert\Alert;
 use JTL\Customer\Customer;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
 
@@ -45,7 +46,7 @@ if ($valid && isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POS
             $dateExpires = new DateTime($resetItem->dExpires);
             if ($dateExpires >= new DateTime()) {
                 $customer = new Customer((int)$resetItem->kKunde);
-                if ($customer && $customer->cSperre !== 'Y') {
+                if ($customer->kKunde > 0 && $customer->cSperre !== 'Y') {
                     $customer->updatePassword($_POST['pw_new']);
                     Shop::Container()->getDB()->delete('tpasswordreset', 'kKunde', $customer->kKunde);
                     header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?updated_pw=true');
@@ -113,6 +114,7 @@ if (!$alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
 }
 
 $smarty->assign('step', $step)
+       ->assign('presetEmail', Text::filterXSS(Request::verifyGPDataString('email')))
        ->assign('Link', $link);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

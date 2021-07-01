@@ -1,4 +1,4 @@
-<div id="probleme" class="tab-pane fade {if isset($cTab) && $cTab === 'probleme'} active show{/if}">
+<div id="probleme" class="tab-pane fade {if $cTab === 'probleme'} active show{/if}">
     {if $pluginsProblematic->count() > 0}
     <form name="pluginverwaltung" method="post" action="pluginverwaltung.php" id="problematic-plugins">
         {$jtl_token}
@@ -42,12 +42,12 @@
                                     {elseif $plugin->getState() === \JTL\Plugin\State::DISABLED} text-warning
                                     {elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}} text-danger
                                     {elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING} text-warning{/if}">
-                                {$mapper->map($plugin->getState())}
+                                {__($mapper->map($plugin->getState()))}
                             </span>
                         </td>
                         <td class="text-center">{(string)$plugin->getVersion()}{if $plugin->isUpdateAvailable()} <span class="error">{(string)$plugin->isUpdateAvailable()}</span>{/if}</td>
                         <td class="text-center">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
-                        <td>{$plugin->getPath()}</td>
+                        <td>{$plugin->getDir()}</td>
                         <td class="text-center">
                             {if $plugin->getLangVarCount() > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
@@ -129,69 +129,7 @@
         </div>
     </form>
 
-    <div id="uninstall-problematic-modal" class="modal fade" role="dialog">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">{__('deletePluginData')}</h2>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <i class="fal fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                </div>
-                <div class="modal-footer">
-                    <div class="row">
-                        <div class="ml-auto col-sm-6 col-xl-auto submit">
-                            <button type="button" class="btn btn-danger btn-bock" name="yes" data-dismiss="modal">
-                                <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataYes')}
-                            </button>
-                        </div> <div class="col-sm-6 col-xl-auto submit">
-                            <button type="button" class="btn btn-outline-primary" name="no" data-dismiss="modal">
-                                <i class="fa fa-close"></i>&nbsp;{__('deletePluginDataNo')}
-                            </button>
-                        </div>
-                        <div class="col-sm-6 col-xl-auto submit">
-                            <button type="button" class="btn btn-primary" name="cancel" data-dismiss="modal">
-                                <i class="fal fa-check text-success"></i>&nbsp;{__('cancel')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script>
-        {literal}
-        $(document).ready(function() {
-            var probModal = $('#uninstall-problematic-modal');
-            $('#uninstall-problematic-plugin').on('click', function(event) {
-                probModal.modal('show');
-                return false;
-            });
-            probModal.on('hide.bs.modal', function(event) {
-                if (document.activeElement.name === 'yes' || document.activeElement.name === 'no') {
-                    var data = $('#problematic-plugins').serialize();
-                    data += '&deinstallieren=1&delete-data=';
-                    if (document.activeElement.name === 'yes') {
-                        data += '1';
-                    } else {
-                        data += '0';
-                    }
-                    $.ajax({
-                        type:    'POST',
-                        url:     'pluginverwaltung.php',
-                        data:    data,
-                        success: function () {
-                            location.reload();
-                        }
-                    });
-                }
-            });
-        });
-        {/literal}
-    </script>
+    {include file='tpl_inc/pluginverwaltung_uninstall_modal.tpl' context='problematic' selector='#problematic-plugins' button='#uninstall-problematic-plugin'}
     {else}
         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
     {/if}

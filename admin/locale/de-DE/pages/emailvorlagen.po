@@ -18,7 +18,7 @@ msgid "testmailsGoToEmail"
 msgstr "Test-E-Mails werden an folgende Adresse gesendet: "
 
 msgid "noMasterEmailSpecified"
-msgstr "Keine Master-E-Mail-Adresse hinterlegt. Bitte tragen Sie eine Master-E-Mail-Adresse für den Absender unter Inhalte > E-Mails > Einstellungen ein."
+msgstr "Keine Master-E-Mail-Adresse hinterlegt. Bitte tragen Sie eine Master-E-Mail-Adresse für den Absender unter Administration > E-Mail > Server ein."
 
 msgid "emailTemplateModifyHint"
 msgstr "Hier bearbeiten Sie den Inhalt einer E-Mail-Vorlage in jeder in JTL-Shop gepflegten Sprache. Sie können außerdem festlegen, von welcher Adresse aus die E-Mail versendet werden soll, und ob bestimmte Anhänge standardmäßig mitgesendet werden sollen."
@@ -102,7 +102,7 @@ msgid "successFileAppendixDelete"
 msgstr "Dateianhänge für die gewählte Sprache wurden erfolgreich gelöscht."
 
 msgid "multipleDividedColon"
-msgstr "(mehrere Empfänger durch Semikolon trennen)"
+msgstr "Mehrere Empfänger durch Semikolon trennen"
 
 msgid "resetEmailTemplate"
 msgstr "Die E-Mail-Vorlage wird zurückgesetzt."
@@ -135,7 +135,7 @@ msgstr "Neukundenregistrierung"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_accounterstellung_durch_betreiber"
-msgstr "Erstellung eines Benutzerkontos durch den Onlineshop-Betreiber"
+msgstr "Erstellung eines Kundenkontos durch den Onlineshop-Betreiber"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_bestellung_bezahlt"
@@ -147,7 +147,7 @@ msgstr "Bestellung versandt"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_account_geloescht"
-msgstr "Löschung eines Benutzerkontos"
+msgstr "Löschung eines Kundenkontos"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_kdgrp_zuweisung"
@@ -202,14 +202,6 @@ msgid "name_core_jtl_newsletteranmelden"
 msgstr "Freischalt-E-Mail nach Newsletter-Anmeldung"
 
 # email name (temailvorlage)
-msgid "name_core_jtl_kundenwerbenkunden"
-msgstr "Kunden werben Kunden"
-
-# email name (temailvorlage)
-msgid "name_core_jtl_kundenwerbenkundenboni"
-msgstr "Kunden werben Kunden – Belohnung"
-
-# email name (temailvorlage)
 msgid "name_core_jtl_artikelweiterempfehlen"
 msgstr "Artikel weiterempfehlen"
 
@@ -239,3 +231,9 @@ msgstr "E-Mail-Benachrichtigung, wenn Artikel wieder verfügbar (Bestätigung na
 
 msgid "Empty mail body"
 msgstr "E-Mail-Body ist leer"
+
+msgid "Check syntax"
+msgstr "E-Mail-Sytnax prüfen"
+
+msgid "Syntax check fail"
+msgstr "E-Mail Syntaxprüfung fehlgeschlagen"

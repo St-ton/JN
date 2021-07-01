@@ -81,7 +81,7 @@ msgid "notEnoughTableSpace"
 msgstr "Nicht genügend Platz im InnoDB-Tablespace."
 
 msgid "notEnoughTableSpaceLong"
-msgstr "Im InnoDB-Tablespace Ihrer Datenbank stehen nur %s für Daten zur Verfügung. Dies wird für die zu migrierende Datenmenge u. U. nicht ausreichen. Bitte stellen Sie sicher, dass genügend Platz im InnoDB-Tablespace zur Verfügung steht."
+msgstr "Im InnoDB-Tablespace Ihrer Datenbank stehen nur %s für Daten zur Verfügung. Dies wird für die zu migrierende Datenmenge u.&nbsp;U. nicht ausreichen. Bitte stellen Sie sicher, dass genügend Platz im InnoDB-Tablespace zur Verfügung steht."
 
 msgid "structureMigration"
 msgstr "Struktur-Migration für %s Tabellen"
@@ -141,7 +141,7 @@ msgid "noteMigrationScript"
 msgstr "Die Migration per Skript über die MySQL-Konsole wird empfohlen, wenn Sie administrativen Zugang zu Ihrem Datenbankserver haben und eine große Menge an Daten migriert werden muss."
 
 msgid "noteMigrationScriptClick"
-msgstr "Mit einem Klick auf die Schaltfläche „Skript erstellen“ können Sie sich ein Skript zur Durchführung der notwendigen Migration generieren lassen. Dieses Skript können Sie dann komplett oder in Teilen auf der Konsole Ihres Datenbankservers ausführen. Sie benötigen dafür einen administrativen Zugang (z. B. per SSH) zu Ihrem Datenbank-Server. Eine Weboberfläche wie phpMyAdmin ist für das Ausführen dieses Skriptes <strong>nicht</strong> geeignet."
+msgstr "Mit einem Klick auf die Schaltfläche „Skript erstellen“ können Sie sich ein Skript zur Durchführung der notwendigen Migration generieren lassen. Dieses Skript können Sie dann komplett oder in Teilen auf der Konsole Ihres Datenbankservers ausführen. Sie benötigen dafür einen administrativen Zugang (z.&nbsp;B. per SSH) zu Ihrem Datenbank-Server. Eine Weboberfläche wie phpMyAdmin ist für das Ausführen dieses Skriptes <strong>nicht</strong> geeignet."
 
 msgid "noteMigrationScriptDesc"
 msgstr "Das Skript wird anhand der aktuellen Situation erstellt und beinhaltet nur die Änderungen, die für diesen JTL-Shop notwendig sind. Sie können das Skript nicht verwenden, um die Migration auf einem anderen JTL-Shop auszuführen."

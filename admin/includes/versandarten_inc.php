@@ -1,20 +1,19 @@
 <?php
 
-use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
 use JTL\Checkout\ShippingSurcharge;
 use JTL\Checkout\Versandart;
 use JTL\Checkout\ZipValidator;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\Language\LanguageModel;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 
 /**
- * @param float $price
- * @param float $taxRate
+ * @param float|string $price
+ * @param float|string $taxRate
  * @return float
  */
 function berechneVersandpreisBrutto($price, $taxRate)
@@ -25,8 +24,8 @@ function berechneVersandpreisBrutto($price, $taxRate)
 }
 
 /**
- * @param float $price
- * @param float $taxRate
+ * @param float|string $price
+ * @param float|string $taxRate
  * @return float
  */
 function berechneVersandpreisNetto($price, $taxRate)
@@ -41,7 +40,7 @@ function berechneVersandpreisNetto($price, $taxRate)
  * @param string $key
  * @return array
  */
-function reorganizeObjectArray($objects, $key)
+function reorganizeObjectArray($objects, $key): array
 {
     $res = [];
     if (is_array($objects)) {
@@ -68,7 +67,7 @@ function reorganizeObjectArray($objects, $key)
  * @param array $arr
  * @return array
  */
-function P($arr)
+function P($arr): array
 {
     $newArr = [];
     if (is_array($arr)) {
@@ -85,13 +84,12 @@ function P($arr)
  * @param object $key
  * @return array
  */
-function bauePot($arr, $key)
+function bauePot($arr, $key): array
 {
-    $cnt = count($arr);
-    for ($i = 0; $i < $cnt; ++$i) {
+    foreach ($arr as $val) {
         $obj                 = new stdClass();
-        $obj->kVersandklasse = $arr[$i]->kVersandklasse . '-' . $key->kVersandklasse;
-        $obj->cName          = $arr[$i]->cName . ', ' . $key->cName;
+        $obj->kVersandklasse = $val->kVersandklasse . '-' . $key->kVersandklasse;
+        $obj->cName          = $val->cName . ', ' . $key->cName;
         $arr[]               = $obj;
     }
     $arr[] = $key;
@@ -103,30 +101,29 @@ function bauePot($arr, $key)
  * @param string $shippingClasses
  * @return array
  */
-function gibGesetzteVersandklassen($shippingClasses)
+function gibGesetzteVersandklassen(string $shippingClasses): array
 {
     if (trim($shippingClasses) === '-1') {
         return ['alle' => true];
     }
     $gesetzteVK = [];
     $uniqueIDs  = [];
-    $cVKarr     = explode(' ', trim($shippingClasses));
+    $classes    = explode(' ', trim($shippingClasses));
     // $cVersandklassen is a string like "1 3-4 5-6-7 6-8 7-8 3-7 3-8 5-6 5-7"
-    foreach ($cVKarr as $idString) {
+    foreach ($classes as $idString) {
         // we want the single kVersandklasse IDs to reduce the possible amount of combinations
         foreach (explode('-', $idString) as $kVersandklasse) {
             $uniqueIDs[] = (int)$kVersandklasse;
         }
     }
-    $PVersandklassen = P(Shop::Container()->getDB()->query(
+    $items = P(Shop::Container()->getDB()->getObjects(
         'SELECT * 
             FROM tversandklasse
             WHERE kVersandklasse IN (' . implode(',', $uniqueIDs) . ')  
-            ORDER BY kVersandklasse',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY kVersandklasse'
     ));
-    foreach ($PVersandklassen as $vk) {
-        $gesetzteVK[$vk->kVersandklasse] = in_array($vk->kVersandklasse, $cVKarr, true);
+    foreach ($items as $vk) {
+        $gesetzteVK[$vk->kVersandklasse] = in_array($vk->kVersandklasse, $classes, true);
     }
 
     return $gesetzteVK;
@@ -143,23 +140,22 @@ function gibGesetzteVersandklassenUebersicht($shippingClasses)
     }
     $active    = [];
     $uniqueIDs = [];
-    $cVKarr    = explode(' ', trim($shippingClasses));
+    $classes   = explode(' ', trim($shippingClasses));
     // $cVersandklassen is a string like "1 3-4 5-6-7 6-8 7-8 3-7 3-8 5-6 5-7"
-    foreach ($cVKarr as $idString) {
+    foreach ($classes as $idString) {
         // we want the single kVersandklasse IDs to reduce the possible amount of combinations
         foreach (explode('-', $idString) as $kVersandklasse) {
             $uniqueIDs[] = (int)$kVersandklasse;
         }
     }
-    $items = P(Shop::Container()->getDB()->query(
+    $items = P(Shop::Container()->getDB()->getObjects(
         'SELECT * 
             FROM tversandklasse 
             WHERE kVersandklasse IN (' . implode(',', $uniqueIDs) . ')
-            ORDER BY kVersandklasse',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY kVersandklasse'
     ));
     foreach ($items as $item) {
-        if (in_array($item->kVersandklasse, $cVKarr, true)) {
+        if (in_array($item->kVersandklasse, $classes, true)) {
             $active[] = $item->cName;
         }
     }
@@ -171,15 +167,14 @@ function gibGesetzteVersandklassenUebersicht($shippingClasses)
  * @param string $customerGroupsString
  * @return array
  */
-function gibGesetzteKundengruppen($customerGroupsString)
+function gibGesetzteKundengruppen(string $customerGroupsString): array
 {
     $activeGroups = [];
     $groups       = Text::parseSSKint($customerGroupsString);
-    $groupData    = Shop::Container()->getDB()->query(
+    $groupData    = Shop::Container()->getDB()->getObjects(
         'SELECT kKundengruppe
             FROM tkundengruppe
-            ORDER BY kKundengruppe',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY kKundengruppe'
     );
     foreach ($groupData as $group) {
         $id                = (int)$group->kKundengruppe;
@@ -191,11 +186,11 @@ function gibGesetzteKundengruppen($customerGroupsString)
 }
 
 /**
- * @param int   $shippingMethodID
- * @param array $languages
+ * @param int             $shippingMethodID
+ * @param LanguageModel[] $languages
  * @return array
  */
-function getShippingLanguage(int $shippingMethodID, array $languages)
+function getShippingLanguage(int $shippingMethodID, array $languages): array
 {
     $localized        = [];
     $localizedMethods = Shop::Container()->getDB()->selectAll(
@@ -204,7 +199,7 @@ function getShippingLanguage(int $shippingMethodID, array $languages)
         $shippingMethodID
     );
     foreach ($languages as $language) {
-        $localized[$language->cISO] = new stdClass();
+        $localized[$language->getCode()] = new stdClass();
     }
     foreach ($localizedMethods as $localizedMethod) {
         if (isset($localizedMethod->kVersandart) && $localizedMethod->kVersandart > 0) {
@@ -219,7 +214,7 @@ function getShippingLanguage(int $shippingMethodID, array $languages)
  * @param int $feeID
  * @return array
  */
-function getZuschlagNames(int $feeID)
+function getZuschlagNames(int $feeID): array
 {
     $names = [];
     if (!$feeID) {
@@ -241,14 +236,14 @@ function getZuschlagNames(int $feeID)
  * @param string $query
  * @return array
  */
-function getShippingByName(string $query)
+function getShippingByName(string $query): array
 {
     $results = [];
     $db      = Shop::Container()->getDB();
     foreach (explode(',', $query) as $search) {
         $search = trim($search);
         if (mb_strlen($search) > 2) {
-            $hits = $db->queryPrepared(
+            $hits = $db->getObjects(
                 'SELECT va.kVersandart, va.cName
                     FROM tversandart AS va
                     LEFT JOIN tversandartsprache AS vs 
@@ -256,8 +251,7 @@ function getShippingByName(string $query)
                         AND vs.cName LIKE :search
                     WHERE va.cName LIKE :search
                     OR vs.cName LIKE :search',
-                ['search' => '%' . $search . '%'],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['search' => '%' . $search . '%']
             );
             foreach ($hits as $item) {
                 $item->kVersandart           = (int)$item->kVersandart;
@@ -274,7 +268,7 @@ function getShippingByName(string $query)
  * @param int   $length
  * @return array
  */
-function getCombinations(array $shipClasses, int $length)
+function getCombinations(array $shipClasses, int $length): array
 {
     $baselen = count($shipClasses);
     if ($baselen === 0) {
@@ -332,13 +326,8 @@ function getMissingShippingClassCombi()
     }
 
     foreach ($combinationsInShippings as $com) {
-        $classes = explode(' ', trim($com->cVersandklassen));
-        if (is_array($classes)) {
-            foreach ($classes as $class) {
-                $combinationInUse[] = trim($class);
-            }
-        } else {
-            $combinationInUse[] = trim($com->cVersandklassen);
+        foreach (explode(' ', trim($com->cVersandklassen)) as $class) {
+            $combinationInUse[] = trim($class);
         }
     }
 
@@ -359,7 +348,6 @@ function getMissingShippingClassCombi()
             $possibleShippingClassCombinations[] = implode('-', $c);
         }
     }
-
     $res = array_diff($possibleShippingClassCombinations, $combinationInUse);
     foreach ($res as &$mscc) {
         $mscc = gibGesetzteVersandklassenUebersicht($mscc)[0];
@@ -370,10 +358,10 @@ function getMissingShippingClassCombi()
 
 /**
  * @param array $data
- * @return object
+ * @return stdClass
  * @throws SmartyException
  */
-function saveShippingSurcharge(array $data): object
+function saveShippingSurcharge(array $data): stdClass
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/versandarten');
 
@@ -392,7 +380,6 @@ function saveShippingSurcharge(array $data): object
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorListPriceMissing'), 'errorListPriceMissing');
     }
     if (!$alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
-        $languages = Sprache::getAllLanguages();
         if (empty($post['kVersandzuschlag'])) {
             $surchargeTMP = (new ShippingSurcharge())
                 ->setISO($post['cISO'])
@@ -404,16 +391,17 @@ function saveShippingSurcharge(array $data): object
                 ->setTitle($post['cName'])
                 ->setSurcharge($surcharge);
         }
-        foreach ($languages as $lang) {
-            if (isset($post['cName_' . $lang->cISO])) {
-                $surchargeTMP->setName($post['cName_' . $lang->cISO] ?: $post['cName'], $lang->kSprache);
+        foreach (Sprache::getAllLanguages(0, true) as $lang) {
+            $idx = 'cName_' . $lang->getCode();
+            if (isset($post[$idx])) {
+                $surchargeTMP->setName($post[$idx] ?: $post['cName'], $lang->getId());
             }
         }
         $surchargeTMP->save();
         $surchargeTMP = new ShippingSurcharge($surchargeTMP->getID());
     }
     $message = $smarty->assign('alertList', $alertHelper)
-                      ->fetch('snippets/alert_list.tpl');
+        ->fetch('snippets/alert_list.tpl');
 
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 
@@ -429,9 +417,9 @@ function saveShippingSurcharge(array $data): object
 
 /**
  * @param int $surchargeID
- * @return object
+ * @return stdClass
  */
-function deleteShippingSurcharge(int $surchargeID): object
+function deleteShippingSurcharge(int $surchargeID): stdClass
 {
     Shop::Container()->getDB()->queryPrepared(
         'DELETE tversandzuschlag, tversandzuschlagsprache, tversandzuschlagplz
@@ -439,8 +427,7 @@ function deleteShippingSurcharge(int $surchargeID): object
             LEFT JOIN tversandzuschlagsprache USING(kVersandzuschlag)
             LEFT JOIN tversandzuschlagplz USING(kVersandzuschlag)
             WHERE tversandzuschlag.kVersandzuschlag = :surchargeID',
-        ['surchargeID' => $surchargeID],
-        ReturnType::DEFAULT
+        ['surchargeID' => $surchargeID]
     );
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 
@@ -448,11 +435,11 @@ function deleteShippingSurcharge(int $surchargeID): object
 }
 
 /**
- * @param int $surchargeID
+ * @param int    $surchargeID
  * @param string $ZIP
- * @return object
+ * @return stdClass
  */
-function deleteShippingSurchargeZIP(int $surchargeID, string $ZIP): object
+function deleteShippingSurchargeZIP(int $surchargeID, string $ZIP): stdClass
 {
     $partsZIP = explode('-', $ZIP);
     if (count($partsZIP) === 1) {
@@ -463,9 +450,8 @@ function deleteShippingSurchargeZIP(int $surchargeID, string $ZIP): object
               AND cPLZ = :ZIP',
             [
                 'surchargeID' => $surchargeID,
-                'ZIP' => $partsZIP[0]
-            ],
-            ReturnType::DEFAULT
+                'ZIP'         => $partsZIP[0]
+            ]
         );
     } elseif (count($partsZIP) === 2) {
         Shop::Container()->getDB()->queryPrepared(
@@ -476,10 +462,9 @@ function deleteShippingSurchargeZIP(int $surchargeID, string $ZIP): object
               AND cPLZbis = :ZIPTo',
             [
                 'surchargeID' => $surchargeID,
-                'ZIPFrom' => $partsZIP[0],
-                'ZIPTo' => $partsZIP[1]
-            ],
-            ReturnType::DEFAULT
+                'ZIPFrom'     => $partsZIP[0],
+                'ZIPTo'       => $partsZIP[1]
+            ]
         );
     }
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
@@ -489,10 +474,10 @@ function deleteShippingSurchargeZIP(int $surchargeID, string $ZIP): object
 
 /**
  * @param array $data
- * @return object
+ * @return stdClass
  * @throws SmartyException
  */
-function createShippingSurchargeZIP(array $data): object
+function createShippingSurchargeZIP(array $data): stdClass
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/versandarten');
 
@@ -505,41 +490,40 @@ function createShippingSurchargeZIP(array $data): object
     $smarty         = JTLSmarty::getInstance(false, ContextType::BACKEND);
     $surcharge      = new ShippingSurcharge((int)$post['kVersandzuschlag']);
     $shippingMethod = new Versandart($surcharge->getShippingMethod());
-    $oZipValidator  = new ZipValidator($surcharge->getISO());
-    $ZuschlagPLZ    = new stdClass();
+    $zipValidator   = new ZipValidator($surcharge->getISO());
+    $surchargeZip   = new stdClass();
 
-    $ZuschlagPLZ->kVersandzuschlag = $surcharge->getID();
-    $ZuschlagPLZ->cPLZ             = '';
-    $ZuschlagPLZ->cPLZAb           = '';
-    $ZuschlagPLZ->cPLZBis          = '';
+    $surchargeZip->kVersandzuschlag = $surcharge->getID();
+    $surchargeZip->cPLZ             = '';
+    $surchargeZip->cPLZAb           = '';
+    $surchargeZip->cPLZBis          = '';
 
     if (!empty($post['cPLZ'])) {
-        $ZuschlagPLZ->cPLZ = $oZipValidator->validateZip($post['cPLZ']);
+        $surchargeZip->cPLZ = $zipValidator->validateZip($post['cPLZ']);
     } elseif (!empty($post['cPLZAb']) && !empty($post['cPLZBis'])) {
         if ($post['cPLZAb'] === $post['cPLZBis']) {
-            $ZuschlagPLZ->cPLZ = $oZipValidator->validateZip($post['cPLZBis']);
+            $surchargeZip->cPLZ = $zipValidator->validateZip($post['cPLZBis']);
         } elseif ($post['cPLZAb'] > $post['cPLZBis']) {
-            $ZuschlagPLZ->cPLZAb  = $oZipValidator->validateZip($post['cPLZBis']);
-            $ZuschlagPLZ->cPLZBis = $oZipValidator->validateZip($post['cPLZAb']);
+            $surchargeZip->cPLZAb  = $zipValidator->validateZip($post['cPLZBis']);
+            $surchargeZip->cPLZBis = $zipValidator->validateZip($post['cPLZAb']);
         } else {
-            $ZuschlagPLZ->cPLZAb  = $oZipValidator->validateZip($post['cPLZAb']);
-            $ZuschlagPLZ->cPLZBis = $oZipValidator->validateZip($post['cPLZBis']);
+            $surchargeZip->cPLZAb  = $zipValidator->validateZip($post['cPLZAb']);
+            $surchargeZip->cPLZBis = $zipValidator->validateZip($post['cPLZBis']);
         }
     }
 
     $zipMatchSurcharge = $shippingMethod->getShippingSurchargesForCountry($surcharge->getISO())
-        ->filter(static function (ShippingSurcharge $surchargeTMP) use ($ZuschlagPLZ) {
-            return ($surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZ)
-                || $surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZAb)
-                || $surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZBis)
-                || $surchargeTMP->areaOverlapsWithZIPCode($ZuschlagPLZ->cPLZAb, $ZuschlagPLZ->cPLZBis)
+        ->first(static function (ShippingSurcharge $surchargeTMP) use ($surchargeZip) {
+            return ($surchargeTMP->hasZIPCode($surchargeZip->cPLZ)
+                || $surchargeTMP->hasZIPCode($surchargeZip->cPLZAb)
+                || $surchargeTMP->hasZIPCode($surchargeZip->cPLZBis)
+                || $surchargeTMP->areaOverlapsWithZIPCode($surchargeZip->cPLZAb, $surchargeZip->cPLZBis)
             );
-        })->pop();
-
-    if (empty($ZuschlagPLZ->cPLZ) && empty($ZuschlagPLZ->cPLZAb)) {
-        $szErrorString = $oZipValidator->getError();
-        if ($szErrorString !== '') {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, $szErrorString, 'errorZIPValidator');
+        });
+    if (empty($surchargeZip->cPLZ) && empty($surchargeZip->cPLZAb)) {
+        $error = $zipValidator->getError();
+        if ($error !== '') {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'errorZIPValidator');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorZIPMissing'), 'errorZIPMissing');
         }
@@ -547,21 +531,21 @@ function createShippingSurchargeZIP(array $data): object
         $alertHelper->addAlert(
             Alert::TYPE_ERROR,
             sprintf(
-                isset($ZuschlagPLZ->cPLZ) ? __('errorZIPOverlap') : __('errorZIPAreaOverlap'),
-                $ZuschlagPLZ->cPLZ ?? $ZuschlagPLZ->cPLZAb . ' - ' . $ZuschlagPLZ->cPLZBis,
+                isset($surchargeZip->cPLZ) ? __('errorZIPOverlap') : __('errorZIPAreaOverlap'),
+                $surchargeZip->cPLZ ?? $surchargeZip->cPLZAb . ' - ' . $surchargeZip->cPLZBis,
                 $zipMatchSurcharge->getTitle()
             ),
             'errorZIPOverlap'
         );
-    } elseif ($db->insert('tversandzuschlagplz', $ZuschlagPLZ)) {
+    } elseif ($db->insert('tversandzuschlagplz', $surchargeZip)) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successZIPAdd'), 'successZIPAdd');
     }
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 
     $message = $smarty->assign('alertList', $alertHelper)
-                      ->fetch('snippets/alert_list.tpl');
+        ->fetch('snippets/alert_list.tpl');
     $badges  = $smarty->assign('surcharge', new ShippingSurcharge($surcharge->getID()))
-                      ->fetch('snippets/zuschlagliste_plz_badges.tpl');
+        ->fetch('snippets/zuschlagliste_plz_badges.tpl');
 
     return (object)['message' => $message, 'badges' => $badges, 'surchargeID' => $surcharge->getID()];
 }
@@ -572,18 +556,25 @@ function createShippingSurchargeZIP(array $data): object
  */
 function getShippingTypes(int $shippingTypeID = null)
 {
-    $shippingTypes = Shop::Container()->getDB()->queryPrepared(
-        'SELECT *
-            FROM tversandberechnung'
-        . ($shippingTypeID ? ' WHERE kVersandberechnung = :shippingTypeID' : '')
-        . ' ORDER BY cName',
-        ['shippingTypeID' => $shippingTypeID],
-        ReturnType::COLLECTION
-    )->each(static function ($e) {
+    if ($shippingTypeID !== null) {
+        $shippingTypes = Shop::Container()->getDB()->getCollection(
+            'SELECT *
+                FROM tversandberechnung
+                WHERE kVersandberechnung = :shippingTypeID
+                ORDER BY cName',
+            ['shippingTypeID' => $shippingTypeID]
+        );
+    } else {
+        $shippingTypes = Shop::Container()->getDB()->getCollection(
+            'SELECT *
+                FROM tversandberechnung
+                ORDER BY cName'
+        );
+    }
+    $shippingTypes->each(static function ($e) {
         $e->kVersandberechnung = (int)$e->kVersandberechnung;
         $e->cName              = __('shippingType_' . $e->cModulId);
     });
-    /** @var Collection $shippingTypes */
 
     return $shippingTypeID === null ? $shippingTypes->toArray() : $shippingTypes->first();
 }
@@ -599,7 +590,7 @@ function getShippingSurcharge(int $id): stdClass
 
     $smarty       = JTLSmarty::getInstance(false, ContextType::BACKEND);
     $result       = new stdClass();
-    $result->body = $smarty->assign('sprachen', LanguageHelper::getAllLanguages())
+    $result->body = $smarty->assign('sprachen', LanguageHelper::getAllLanguages(0, true))
         ->assign('surchargeNew', new ShippingSurcharge($id))
         ->assign('surchargeID', $id)
         ->fetch('snippets/zuschlagliste_form.tpl');

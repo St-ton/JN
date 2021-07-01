@@ -1,6 +1,6 @@
 {block name='selectionwizard-index'}
     {if isset($AWA)}
-        {opcMountPoint id='opc_before_selection_wizard'}
+        {opcMountPoint id='opc_before_selection_wizard' inContainer=false}
         {block name='selectionwizard-index-script'}
             {inline_script}<script>
                 var nSelection_arr = [{implode(',', $AWA->getSelections())}];
@@ -68,11 +68,11 @@
             </script>{/inline_script}
         {/block}
         {block name='selectionwizard-index-include-form'}
-            {container}
-                <div id="selectionwizard" class="my-7">
+            {if isset($AWA) && !empty($AWA->getQuestions())}
+                <div id="selectionwizard" class="selection-wizard-wrapper {if $container|default:true}container {/if}">
                     {include file='selectionwizard/form.tpl' AWA=$AWA}
                 </div>
-            {/container}
+            {/if}
         {/block}
     {/if}
 {/block}

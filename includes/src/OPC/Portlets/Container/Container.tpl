@@ -1,11 +1,7 @@
-{$style = "{$instance->getStyleString()};min-height:{$instance->getProperty('min-height')}px; position:relative;"}
-{$class = 'opc-Container '|cat:$instance->getAnimationClass()}
+{$style = "{$instance->getStyleString()};{if $instance->getProperty('min-height')}min-height:{$instance->getProperty('min-height')}px;{/if} position:relative;"}
+{$class = 'opc-Container '|cat:$instance->getAnimationClass()|cat:' '|cat:$instance->getStyleClasses()}
 {$data  = $instance->getAnimationData()}
 {$fluid = $instance->getProperty('boxed') === false}
-
-{if $isPreview}
-    {$data = $data|array_merge:['portlet' => $instance->getDataAttribute()]}
-{/if}
 
 {if $instance->getProperty('background-flag') === 'still' && !empty($instance->getProperty('still-src'))}
     {$name = basename($instance->getProperty('still-src'))}
@@ -33,7 +29,7 @@
     {$videoSrcUrl    = "{Shop::getURL()}/{$smarty.const.PFAD_MEDIA_VIDEO}{$name}"}
 {/if}
 
-{container style=$style class=$class data=$data fluid=$fluid}
+{function containerContent}
     {if $instance->getProperty('background-flag') === 'video' && !empty($instance->getProperty('video-src'))}
         <video autoplay loop muted poster="{$videoPosterUrl}"
                style="display: inherit; width: 100%; position: absolute; left: 0; top: 0; opacity: 0.7;">
@@ -49,4 +45,17 @@
             {$instance->getSubareaFinalHtml('container')}
         {/if}
     </div>
-{/container}
+{/function}
+
+{if $inContainer}
+    <div style="{$style}" class="{$class}"
+         {foreach $data as $key => $value}
+             data-{$key}="{$value}"
+         {/foreach}>
+        {call containerContent}
+    </div>
+{else}
+    {container style=$style class=$class data=$data fluid=$fluid}
+        {call containerContent}
+    {/container}
+{/if}

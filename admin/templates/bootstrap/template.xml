@@ -10,7 +10,6 @@
             <File Path="css/jquery-ui.theme.css"/>
             <File Path="css/jquery-ui.min.css"/>
             <File Path="css/font-awesome.min.css"/>
-            <File Path="css/colorpicker.css"/>
             <File Path="css/bootstrap-ladda.css"/>
             <File Path="js/fileinput/fileinput.css"/>
             <File Path="css/animate.css"/>
@@ -18,20 +17,18 @@
             <File Path="css/daterangepicker.css"/>
             <File Path="css/typeaheadjs.css"/>
             <File Path="css/fontawesome-pro/css/all.min.css"/>
-
+            <File Path="css/bootstrap-colorpicker.min.css"/>
+            <File Path="css/tempusdominus-bootstrap-4.min.css"/>
             <File Path="css/app/preload.css"/>
             <File Path="css/app/app.css"/>
-
             <File Path="css/custom.css"/>
         </CSS>
         <JS Name="admin_js">
-            <File Path="js/jquery-3.3.1.min.js"/>
+            <File Path="js/jquery-3.5.1.min.js"/>
             <File Path="js/jquery-ui.min.js"/>
             <File Path="js/popper.min.js"/>
             <File Path="js/bootstrap.js"/>
             <File Path="js/button.js"/>
-            <File Path="js/colorpicker.js"/>
-            <File Path="js/jquery-ui-timepicker-addon.js"/>
             <File Path="js/jquery.cookie.js"/>
             <File Path="js/highcharts.min.js"/>
             <File Path="js/global.js"/>
@@ -50,11 +47,13 @@
             <File Path="js/daterangepicker.js"/>
             <File Path="js/searchpicker.js"/>
             <File Path="js/typeahead.bundle.js"/>
-
+            <File Path="js/bootstrap-colorpicker.min.js"/>
             <File Path="js/Chart.min.js"/>
             <File Path="js/draggable.bundle.js"/>
             <File Path="js/store.modern.min.js"/>
             <File Path="js/bootstrap-select.min.js"/>
+            <File Path="js/moment-with-locales.js"/>
+            <File Path="js/tempusdominus-bootstrap-4.min.js"/>
         </JS>
     </Minify>
 </Template>

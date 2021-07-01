@@ -3,13 +3,13 @@
 namespace JTL\Console\Command;
 
 use Exception;
-use League\Flysystem\Adapter\Local;
+use JTL\Installation\VueInstaller;
 use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use VueInstaller\VueInstaller;
 
 /**
  * Class InstallCommand
@@ -107,6 +107,7 @@ class InstallCommand extends Command
             ->addOption('admin-password', null, InputOption::VALUE_REQUIRED, 'Shop-Backend password', 'random')
             ->addOption('sync-user', null, InputOption::VALUE_REQUIRED, 'Wawi-Sync user', 'sync')
             ->addOption('sync-password', null, InputOption::VALUE_REQUIRED, 'Wawi-Sync password', 'random')
+            ->addOption('install-demo-data', null, InputOption::VALUE_NONE, 'Install demo data?')
             ->addOption(
                 'file-owner',
                 null,
@@ -152,6 +153,15 @@ class InstallCommand extends Command
     }
 
     /**
+     * @param int $length
+     * @return string
+     */
+    private function getRandomString(int $length = 10): string
+    {
+        return \bin2hex(\random_bytes($length));
+    }
+
+    /**
      * @inheritDoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -169,7 +179,16 @@ class InstallCommand extends Command
         $adminPass       = $this->getOption('admin-password');
         $syncUser        = $this->getOption('sync-user');
         $syncPass        = $this->getOption('sync-password');
-        $localFilesystem = new Filesystem(new Local(\PFAD_ROOT, \LOCK_EX, Local::SKIP_LINKS));
+        $demoData        = $this->getOption('install-demo-data');
+        $localFilesystem = new Filesystem(
+            new LocalFilesystemAdapter(\PFAD_ROOT, null, \LOCK_EX, LocalFilesystemAdapter::SKIP_LINKS)
+        );
+        if ($adminPass === 'random') {
+            $adminPass = $this->getRandomString();
+        }
+        if ($syncPass === 'random') {
+            $syncPass = $this->getRandomString();
+        }
 
         if ($uri !== null) {
             if ($scheme = \parse_url($uri, \PHP_URL_SCHEME)) {
@@ -205,7 +224,7 @@ class InstallCommand extends Command
         foreach ($systemCheckResults['testresults'] as $resultGroup) {
             foreach ($resultGroup as $test) {
                 $result = (int)$test->getResult();
-                if (isset($result) && $result !== 0) {
+                if ($result !== 0) {
                     $systemCheckFailed = true;
                 }
             }
@@ -216,20 +235,20 @@ class InstallCommand extends Command
                 $this->printSystemCheckTable($systemCheckResults['testresults']['recommendations']);
             }
             $io->error('Failed');
+
             return 1;
         }
         $io->success('All requirements are met');
 
         $io->setStep($this->currentStep++, $this->steps, 'Setting permissions');
         if ($this->currentUser !== $fileOwner) {
-            $paths = $localFilesystem->listContents(\PFAD_ROOT, true);
-            foreach ($paths as $path) {
-                \chown(\PFAD_ROOT . $path->path, $fileOwner);
-                \chgrp(\PFAD_ROOT . $path->path, $fileGroup);
+            foreach ($localFilesystem->listContents(\PFAD_ROOT, true) as $item) {
+                $path = $item->path();
+                \chown(\PFAD_ROOT . $path, $fileOwner);
+                \chgrp(\PFAD_ROOT . $path, $fileGroup);
             }
             \chown(\PFAD_ROOT, $fileOwner);
         }
-
         foreach (self::$writeablePaths as $path) {
             \chmod($path, 0777);
         }
@@ -238,9 +257,10 @@ class InstallCommand extends Command
 
         $dirCheck = (new VueInstaller('dircheck', [], true))->run();
 
-        if (\in_array(false, $dirCheck['testresults'])) {
+        if (\in_array(false, $dirCheck['testresults'], true)) {
             $this->printDirCheckTable($dirCheck['testresults'], $localFilesystem);
             $io->error('File permissions are incorrect.');
+
             return 1;
         }
 
@@ -256,6 +276,7 @@ class InstallCommand extends Command
 
         if ($dbCredentialsCheck['error']) {
             $io->error($dbCredentialsCheck['msg']);
+
             return 1;
         }
         $io->success('Credentials matched');
@@ -268,11 +289,18 @@ class InstallCommand extends Command
         ];
 
         $installed = (new VueInstaller('doinstall', $posts, true))->run();
-
         if ($installed['error']) {
             $io->error(\implode(' | ', $installed['msg']));
         } else {
             $io->success('Successful installed');
+            if ($demoData === true) {
+                $ok = (new VueInstaller('installdemodata', $posts, true))->run();
+                if ($ok['error'] === false) {
+                    $io->success('Successfully added demo data');
+                } else {
+                    $io->error('Could not add demo data');
+                }
+            }
         }
 
         $io->writeln('  <info>Admin-Login</info>');
@@ -285,11 +313,11 @@ class InstallCommand extends Command
 
         $io->setStep($this->currentStep++, $this->steps, 'Remove install dir and set new permissions for config file');
 
-        if ($localFilesystem->has('/install')) {
-            $localFilesystem->deleteDir('/install');
+        if ($localFilesystem->fileExists('/install/install.php')) {
+            $localFilesystem->deleteDirectory('/install');
         }
 
-        if ($localFilesystem->has('/includes/config.JTL-Shop.ini.php')) {
+        if ($localFilesystem->fileExists('/includes/config.JTL-Shop.ini.php')) {
             \chmod('/includes/config.JTL-Shop.ini.php', 0644);
             \chown('/includes/config.JTL-Shop.ini.php', $fileOwner);
             \chgrp('/includes/config.JTL-Shop.ini.php', $fileGroup);
@@ -334,7 +362,7 @@ class InstallCommand extends Command
         $headers = ['File/Dir', 'Correct permission', 'Permission'];
 
         foreach ($list as $path => $val) {
-            $permission = $localFilesystem->getVisibility($path);
+            $permission = $localFilesystem->visibility($path);
             $rows[]     = [$path, $val ? '<info> ✔ </info>' : '<comment> • </comment>', $permission];
         }
 

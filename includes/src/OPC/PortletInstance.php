@@ -3,6 +3,7 @@
 namespace JTL\OPC;
 
 use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
 use JTL\Shop;
@@ -14,17 +15,6 @@ use JTL\Shop;
 class PortletInstance implements \JsonSerializable
 {
     use MultiSizeImage;
-
-    /**
-     * @var array
-     */
-    protected static $dirSizes = [
-        Image::SIZE_XL => \WIDTH_OPC_IMAGE_XL,
-        Image::SIZE_LG => \WIDTH_OPC_IMAGE_LG,
-        Image::SIZE_MD => \WIDTH_OPC_IMAGE_MD,
-        Image::SIZE_SM => \WIDTH_OPC_IMAGE_SM,
-        Image::SIZE_XS => \WIDTH_OPC_IMAGE_XS,
-    ];
 
     /**
      * @var Portlet
@@ -67,7 +57,7 @@ class PortletInstance implements \JsonSerializable
     protected $uid;
 
     /**
-     * @var null|AreaList mapping area ids to subareas
+     * @var AreaList mapping area ids to subareas
      */
     protected $subareaList;
 
@@ -100,7 +90,10 @@ class PortletInstance implements \JsonSerializable
     {
         $result = $this->portlet->getPreviewHtml($this);
         $dom    = new \DOMDocument('1.0', 'utf-8');
+        // suppress mark-up warnings like embeded svg tags the DOMDocument parser can not handle
+        \libxml_use_internal_errors(true);
         $dom->loadHTML('<?xml encoding="utf-8" ?>' . $result);
+        \libxml_clear_errors();
         /** @var \DOMElement $root */
         $root = $dom->getElementsByTagName('body')[0]->firstChild;
         $root->setAttribute('data-portlet', \json_encode($this->getData()));
@@ -108,23 +101,24 @@ class PortletInstance implements \JsonSerializable
 
         Shop::fire('shop.OPC.PortletInstance.getPreviewHtml', [
             'portletInstance' => $this,
-            'result' => &$result
+            'result'          => &$result
         ]);
 
         return $result;
     }
 
     /**
+     * @param bool $inContainer
      * @return string
      * @throws \Exception
      */
-    public function getFinalHtml(): string
+    public function getFinalHtml(bool $inContainer = true): string
     {
-        $result = $this->portlet->getFinalHtml($this);
+        $result = $this->portlet->getFinalHtml($this, $inContainer);
 
         Shop::fire('shop.OPC.PortletInstance.getFinalHtml', [
             'portletInstance' => $this,
-            'result' => &$result
+            'result'          => &$result
         ]);
 
         return $result;
@@ -142,8 +136,9 @@ class PortletInstance implements \JsonSerializable
     /**
      * @param string $id
      * @return string
+     * @throws \Exception
      */
-    public function getSubareaPreviewHtml($id): string
+    public function getSubareaPreviewHtml(string $id): string
     {
         return $this->hasSubarea($id)
             ? $this->getSubarea($id)->getPreviewHtml()
@@ -153,8 +148,9 @@ class PortletInstance implements \JsonSerializable
     /**
      * @param string $id
      * @return string
+     * @throws \Exception
      */
-    public function getSubareaFinalHtml($id): string
+    public function getSubareaFinalHtml(string $id): string
     {
         return $this->hasSubarea($id)
             ? $this->getSubarea($id)->getFinalHtml()
@@ -165,7 +161,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $name
      * @return mixed
      */
-    public function getProperty($name)
+    public function getProperty(string $name)
     {
         return $this->properties[$name] ?? '';
     }
@@ -175,7 +171,7 @@ class PortletInstance implements \JsonSerializable
      * @param mixed  $value
      * @return PortletInstance
      */
-    public function setProperty($name, $value): self
+    public function setProperty(string $name, $value): self
     {
         $this->properties[$name] = $value;
 
@@ -186,15 +182,15 @@ class PortletInstance implements \JsonSerializable
      * @param string $name
      * @return bool
      */
-    public function hasProperty($name): bool
+    public function hasProperty(string $name): bool
     {
         return \array_key_exists($name, $this->properties);
     }
 
     /**
-     * @return null|AreaList
+     * @return AreaList
      */
-    public function getSubareaList(): ?AreaList
+    public function getSubareaList(): AreaList
     {
         return $this->subareaList;
     }
@@ -203,7 +199,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $id
      * @return Area
      */
-    public function getSubarea($id): Area
+    public function getSubarea(string $id): Area
     {
         return $this->subareaList->getArea($id);
     }
@@ -212,7 +208,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $id
      * @return bool
      */
-    public function hasSubarea($id): bool
+    public function hasSubarea(string $id): bool
     {
         return $this->subareaList->hasArea($id);
     }
@@ -232,13 +228,13 @@ class PortletInstance implements \JsonSerializable
      * @param string $name
      * @return string
      */
-    public function getAttribute($name): string
+    public function getAttribute(string $name): string
     {
         return $this->attributes[$name] ?? '';
     }
 
     /**
-     * @return string|null
+     * @return string
      */
     public function getUid(): string
     {
@@ -247,10 +243,10 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @param string $name
-     * @param string $value
-     * @return $this
+     * @param mixed  $value
+     * @return PortletInstance
      */
-    public function setAttribute($name, $value): self
+    public function setAttribute(string $name, $value): self
     {
         $this->attributes[$name] = $value;
 
@@ -287,7 +283,7 @@ class PortletInstance implements \JsonSerializable
                     foreach ($boxStyles as $styleName => $styleValue) {
                         $this->setStyle($styleName, $styleValue);
                     }
-                } else {
+                } elseif ($propname !== 'custom-class' && !Text::startsWith($propname, 'hidden-')) {
                     $this->setStyle($propname, $this->getProperty($propname));
                 }
             }
@@ -312,10 +308,10 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @param string $name
-     * @param string $value
-     * @return $this
+     * @param mixed  $value
+     * @return PortletInstance
      */
-    public function setStyle($name, $value): self
+    public function setStyle(string $name, $value): self
     {
         $this->styles[$name] = $value;
 
@@ -324,10 +320,10 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @param string $name
-     * @param string $value
-     * @return $this
+     * @param mixed  $value
+     * @return PortletInstance
      */
-    public function setAnimation($name, $value): self
+    public function setAnimation(string $name, $value): self
     {
         $this->animations[$name] = $value;
 
@@ -342,7 +338,7 @@ class PortletInstance implements \JsonSerializable
         $styleString = '';
 
         foreach ($this->getStyles() as $styleName => $styleValue) {
-            if (!empty($styleValue)) {
+            if ($styleValue !== '') {
                 if (\mb_stripos($styleName, 'margin-') === 0
                     || \mb_stripos($styleName, 'padding-') === 0
                     || \mb_stripos($styleName, '-width') !== false
@@ -361,11 +357,41 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return string
      */
+    public function getStyleClasses(): string
+    {
+        $res = '';
+
+        if ($this->getProperty('hidden-xs')) {
+            $res .= 'opc-hidden-xs ';
+        }
+        if ($this->getProperty('hidden-sm')) {
+            $res .= 'opc-hidden-sm ';
+        }
+        if ($this->getProperty('hidden-md')) {
+            $res .= 'opc-hidden-md ';
+        }
+        if ($this->getProperty('hidden-lg')) {
+            $res .= 'opc-hidden-lg ';
+        }
+        if ($this->getProperty('hidden-xl')) {
+            $res .= 'opc-hidden-xl ';
+        }
+        if (!empty($this->getProperty('custom-class'))) {
+            $res .= $this->getProperty('custom-class');
+        }
+
+
+        return $res;
+    }
+
+    /**
+     * @return string
+     */
     public function getAnimationClass(): string
     {
         $style = $this->getProperty('animation-style');
 
-        return $style !== '' ? 'wow ' . $style : '';
+        return $style !== '' ? 'wow ' . \htmlspecialchars($style) : '';
     }
 
     /**
@@ -379,7 +405,13 @@ class PortletInstance implements \JsonSerializable
             if ($this->hasProperty($propname) && \strpos($propname, 'wow-') === 0 &&
                 !empty($this->getProperty($propname))
             ) {
-                $data[$propname] = $this->getProperty($propname);
+                $value = $this->getProperty($propname);
+
+                if (\is_string($value)) {
+                    $value = \htmlspecialchars($value);
+                }
+
+                $data[$propname] = $value;
             }
         }
 
@@ -467,11 +499,11 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @param string    $src
-     * @param string    $alt
-     * @param string    $title
-     * @param int|array $divisor
-     * @param string    $default
+     * @param string|null $src
+     * @param string|null $alt
+     * @param string|null $title
+     * @param int|array   $divisor
+     * @param string|null $default
      * @return array
      */
     public function getImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null): array
@@ -482,24 +514,50 @@ class PortletInstance implements \JsonSerializable
         $srcset   = '';
         $srcsizes = '';
 
+        $filepath   = \PFAD_ROOT . \STORAGE_OPC . \urldecode($src);
+        $sizes      = \is_file($filepath) ? \getimagesize($filepath) : [0, 0];
+        $realWidth  = $sizes[0];
+        $realHeight = $sizes[1];
+        $portrait   = $realWidth < $realHeight;
+        $aspect     = $realWidth > 0 ? $realWidth / $realHeight : 1.0;
+
         if (empty($src)) {
             return [
-                'srcset'   => '',
-                'srcsizes' => '',
-                'src'      => $default ?? '',
-                'alt'      => $alt,
-                'title'    => $title,
+                'srcset'     => '',
+                'srcsizes'   => '',
+                'src'        => $default ?? '',
+                'alt'        => $alt,
+                'title'      => $title,
+                'realWidth'  => $realWidth,
+                'realHeight' => $realHeight,
             ];
         }
-        $this->generateAllImageSizes(true, 1, \rawurldecode(\basename($src)));
+
+        $imgSettings = Image::getSettings()[Image::TYPE_OPC];
+        $this->generateAllImageSizes(true, 1, \rawurldecode($src));
+
         foreach ($this->getImages()[1] as $size => $url) {
-            $url   = \str_replace(' ', '%20', $url);
-            $width = self::$dirSizes[$size] ?? null;
-            if ($width !== null) {
-                $srcset .= $url . ' ' . $width . 'w,';
+            $url = \str_replace(' ', '%20', $url);
+
+            if ($size === 'xl') {
+                $srcset .= $url . ' ' . $realWidth . 'w,';
+            } elseif ($portrait) {
+                $width = $imgSettings[$size]['width'] ?? null;
+                if ($width !== null) {
+                    $width  *= $aspect;
+                    $width   = (int)\round($width);
+                    $srcset .= $url . ' ' . $width . 'w,';
+                }
+            } else {
+                $width = $imgSettings[$size]['width'] ?? null;
+                if ($width !== null) {
+                    $srcset .= $url . ' ' . $width . 'w,';
+                }
             }
         }
+
         $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
+
         foreach ($this->widthHeuristics as $breakpoint => $col) {
             if (!empty($col)) {
                 $factor = 1;
@@ -510,24 +568,20 @@ class PortletInstance implements \JsonSerializable
 
                 switch ($breakpoint) {
                     case 'xs':
-                        $breakpoint = 767;
-                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                        $srcsizes .= '(max-width: 767px) '
                             . (int)($col * 100 * $factor) . 'vw, ';
                         break;
                     case 'sm':
-                        $breakpoint = 991;
-                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        $srcsizes .= '(max-width: 991px) '
+                            . (int)($col * 100 * $factor) . 'vw, ';
                         break;
                     case 'md':
-                        $breakpoint = 1199;
-                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        $srcsizes .= '(max-width: 1299px) '
+                            . (int)($col * 100 * $factor) . 'vw, ';
                         break;
                     case 'lg':
-                        $breakpoint = 1200;
-                        $srcsizes  .= '(min-width: ' . $breakpoint . 'px) '
-                            . (int)($col * $breakpoint * $factor) . 'px, ';
+                        $srcsizes .= '(min-width: 1300px) '
+                            . (int)($col * 100 * $factor) . 'vw, ';
                         break;
                     default:
                         break;
@@ -538,11 +592,13 @@ class PortletInstance implements \JsonSerializable
         $srcsizes .= '100vw';
 
         return [
-            'srcset'   => $srcset,
-            'srcsizes' => $srcsizes,
-            'src'      => \str_replace(' ', '%20', $this->getImage()),
-            'alt'      => $alt,
-            'title'    => $title,
+            'srcset'     => $srcset,
+            'srcsizes'   => $srcsizes,
+            'src'        => \str_replace(' ', '%20', $this->getImage(Image::SIZE_LG)),
+            'alt'        => $alt,
+            'title'      => $title,
+            'realWidth'  => $realWidth,
+            'realHeight' => $realHeight,
         ];
     }
 
@@ -568,11 +624,11 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @param string $src
-     * @param string $alt
-     * @param string $title
-     * @param int    $divisor
-     * @param null   $default
+     * @param string|null $src
+     * @param string|null $alt
+     * @param string|null $title
+     * @param int         $divisor
+     * @param string|null $default
      * @return $this
      */
     public function setImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null): self
@@ -621,15 +677,13 @@ class PortletInstance implements \JsonSerializable
      */
     public function jsonSerializeShort()
     {
-        $result = [
+        return [
             'id'              => $this->portlet->getId(),
             'class'           => $this->portlet->getClass(),
             'title'           => $this->portlet->getTitle(),
             'properties'      => $this->properties,
             'widthHeuristics' => $this->widthHeuristics,
         ];
-
-        return $result;
     }
 
     /**

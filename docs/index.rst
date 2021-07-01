@@ -19,3 +19,4 @@ Grundlegende Programmierkenntnisse werden vorausgesetzt.
    shop_templates/index
    shop_plugins/index
    shop_programming_tips/index
+   shop_privacy/index

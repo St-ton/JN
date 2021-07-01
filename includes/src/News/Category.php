@@ -5,7 +5,6 @@ namespace JTL\News;
 use DateTime;
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
@@ -54,7 +53,7 @@ class Category implements CategoryInterface
     /**
      * @var int
      */
-    private $rght = 0;
+    protected $rght = 0;
 
     /**
      * @var int
@@ -156,14 +155,14 @@ class Category implements CategoryInterface
 
     /**
      * @param int  $id
-     * @param bool $bActiveOnly
+     * @param bool $activeOnly
      * @return CategoryInterface
      */
-    public function load(int $id, bool $bActiveOnly = true): CategoryInterface
+    public function load(int $id, bool $activeOnly = true): CategoryInterface
     {
         $this->id          = $id;
-        $activeFilter      = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
-        $categoryLanguages = $this->db->queryPrepared(
+        $activeFilter      = $activeOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
+        $categoryLanguages = $this->db->getObjects(
             "SELECT tnewskategorie.*, t.*, tseo.cSeo
                 FROM tnewskategorie
                 JOIN tnewskategoriesprache t 
@@ -173,8 +172,7 @@ class Category implements CategoryInterface
                     AND tseo.kSprache = t.languageID
                     AND tseo.kKey = :cid
                 WHERE tnewskategorie.kNewsKategorie = :cid" . $activeFilter,
-            ['cid' => $this->id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['cid' => $this->id]
         );
         if (\count($categoryLanguages) === 0) {
             $this->setID(-1);
@@ -182,13 +180,15 @@ class Category implements CategoryInterface
             return $this;
         }
 
-        return $this->map($categoryLanguages);
+        return $this->map($categoryLanguages, $activeOnly);
     }
 
     /**
-     * @inheritdoc
+     * @param array $categoryLanguages
+     * @param bool  $activeOnly
+     * @return $this|CategoryInterface
      */
-    public function map(array $categoryLanguages): CategoryInterface
+    public function map(array $categoryLanguages, bool $activeOnly = true): CategoryInterface
     {
         foreach ($categoryLanguages as $groupLanguage) {
             $langID                          = (int)$groupLanguage->languageID;
@@ -210,12 +210,13 @@ class Category implements CategoryInterface
         if (($preview = $this->getPreviewImage()) !== '') {
             $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $preview));
         }
-        $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->queryPrepared(
-            'SELECT kNews
+        $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->getArrays(
+            'SELECT tnewskategorienews.kNews
                 FROM tnewskategorienews
-                WHERE kNewsKategorie = :cid',
-            ['cid' => $this->id],
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                JOIN tnews
+                    ON tnews.kNews = tnewskategorienews.kNews 
+                WHERE kNewsKategorie = :cid' . ($activeOnly ? ' AND tnews.dGueltigVon <= NOW()' : ''),
+            ['cid' => $this->id]
         )), static function ($e) {
             return (int)$e;
         }));
@@ -230,7 +231,7 @@ class Category implements CategoryInterface
     public function getMonthOverview(int $id): Category
     {
         $this->setID($id);
-        $overview = $this->db->queryPrepared(
+        $overview = $this->db->getSingleObject(
             'SELECT tnewsmonatsuebersicht.*, tseo.cSeo
                 FROM tnewsmonatsuebersicht
                 LEFT JOIN tseo
@@ -240,8 +241,7 @@ class Category implements CategoryInterface
             [
                 'cky' => 'kNewsMonatsUebersicht',
                 'oid' => $id
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
         if ($overview === null) {
             return $this;
@@ -252,7 +252,7 @@ class Category implements CategoryInterface
             Shop::getLanguageID()
         );
 
-        $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->queryPrepared(
+        $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->getArrays(
             'SELECT tnews.kNews
                 FROM tnews
                 JOIN tnewskategorienews 
@@ -265,8 +265,7 @@ class Category implements CategoryInterface
             [
                 'mnth' => (int)$overview->nMonat,
                 'yr'   => (int)$overview->nJahr
-            ],
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+            ]
         )), static function ($e) {
             return (int)$e;
         }));
@@ -275,13 +274,13 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @param stdClass|null $filterSQL
+     * @param stdClass $filterSQL
      * @return $this
      */
     public function getOverview(stdClass $filterSQL): Category
     {
         $this->setID(0);
-        $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->queryPrepared(
+        $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->getArrays(
             'SELECT tnews.kNews
                 FROM tnews
                 JOIN tnewssprache 
@@ -290,9 +289,9 @@ class Category implements CategoryInterface
                     ON tnewskategorienews.kNews = tnews.kNews 
                 JOIN tnewskategorie 
                     ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
-            WHERE tnewskategorie.nAktiv = 1' . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL,
-            ['cid' => $this->id],
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+            WHERE tnewskategorie.nAktiv = 1 AND tnews.dGueltigVon <= NOW() '
+                . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL,
+            ['cid' => $this->id]
         )), static function ($e) {
             return (int)$e;
         }));
@@ -412,9 +411,9 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function setNames(array $name): void
+    public function setNames(array $names): void
     {
-        $this->names = $name;
+        $this->names = $names;
     }
 
     /**

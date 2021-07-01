@@ -2,6 +2,9 @@
 
 namespace JTL\Plugin;
 
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\Plugin\Admin\StateChanger;
 use JTL\Plugin\Data\AdminMenu;
 use JTL\Plugin\Data\Cache;
 use JTL\Plugin\Data\Config;
@@ -14,6 +17,7 @@ use JTL\Plugin\Data\Meta;
 use JTL\Plugin\Data\Paths;
 use JTL\Plugin\Data\PaymentMethods;
 use JTL\Plugin\Data\Widget;
+use JTL\Shop;
 
 /**
  * Class AbstractPlugin
@@ -110,6 +114,11 @@ abstract class AbstractPlugin implements PluginInterface
      * @var PaymentMethods
      */
     protected $paymentMethods;
+
+    /**
+     * @var int|null
+     */
+    public $nCalledHook;
 
     /**
      * @inheritdoc
@@ -413,5 +422,18 @@ abstract class AbstractPlugin implements PluginInterface
     public function setPaymentMethods(PaymentMethods $paymentMethods): void
     {
         $this->paymentMethods = $paymentMethods;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function selfDestruct(
+        int $newState = State::DISABLED,
+        DbInterface $db = null,
+        JTLCacheInterface $cache = null
+    ): int {
+        $stateChanger = new StateChanger($db ?? Shop::Container()->getDB(), $cache ?? Shop::Container()->getCache());
+
+        return $stateChanger->deactivate($this->getID(), $newState);
     }
 }

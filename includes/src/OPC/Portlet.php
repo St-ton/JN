@@ -108,6 +108,34 @@ class Portlet implements \JsonSerializable
     /**
      * @return array
      */
+    public function getDeepPropertyDesc(): array
+    {
+        $deepDesc = [];
+
+        foreach ($this->getPropertyDesc() as $name => $propDesc) {
+            $deepDesc[$name] = $propDesc;
+
+            if (isset($propDesc['children'])) {
+                foreach ($propDesc['children'] as $childName => $childPropDesc) {
+                    $deepDesc[$childName] = $childPropDesc;
+                }
+            }
+
+            if (isset($propDesc['childrenFor'])) {
+                foreach ($propDesc['childrenFor'] as $optionalPropDescs) {
+                    foreach ($optionalPropDescs as $childName => $childPropDesc) {
+                        $deepDesc[$childName] = $childPropDesc;
+                    }
+                }
+            }
+        }
+
+        return $deepDesc;
+    }
+
+    /**
+     * @return array
+     */
     public function getPropertyTabs(): array
     {
         return [];
@@ -134,7 +162,7 @@ class Portlet implements \JsonSerializable
      */
     public function getTitle(): string
     {
-        return __($this->title);
+        return \__($this->title);
     }
 
     /**

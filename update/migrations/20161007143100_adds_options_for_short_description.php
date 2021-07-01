@@ -16,12 +16,15 @@ class Migration_20161007143100 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setConfig(
             'artikeldetails_kurzbeschreibung_anzeigen',
             'Y',
-            \CONF_ARTIKELDETAILS,
+            CONF_ARTIKELDETAILS,
             'Kurzbeschreibung anzeigen',
             'selectbox',
             365,
@@ -36,7 +39,7 @@ class Migration_20161007143100 extends Migration implements IMigration
         $this->setConfig(
             'artikeluebersicht_kurzbeschreibung_anzeigen',
             'N',
-            \CONF_ARTIKELUEBERSICHT,
+            CONF_ARTIKELUEBERSICHT,
             'Kurzbeschreibung anzeigen',
             'selectbox',
             315,
@@ -50,6 +53,9 @@ class Migration_20161007143100 extends Migration implements IMigration
         );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->removeConfig('artikeldetails_kurzbeschreibung_anzeigen');

@@ -19,21 +19,22 @@ class Flipcard extends Portlet
         return [
             'flip-dir' => [
                 'type'    => InputType::RADIO,
-                'label'   => __('flipcardOrientation'),
+                'label'   => \__('flipcardOrientation'),
                 'width'   => 50,
                 'options' => [
-                    'v' => __('vertical'),
-                    'h' => __('horizontal'),
+                    'v' => \__('vertical'),
+                    'h' => \__('horizontal'),
                 ],
                 'default' => 'v',
+                'desc'    => \__('flipDirDesc'),
             ],
             'flip-trigger' => [
                 'type'    => InputType::RADIO,
-                'label'   => __('flipTrigger'),
+                'label'   => \__('flipTrigger'),
                 'width'   => 50,
                 'options' => [
-                    'click' => __('onClick'),
-                    'hover' => __('onHover'),
+                    'click' => \__('onClick'),
+                    'hover' => \__('onHover'),
                 ],
                 'default' => 'click',
             ],
@@ -46,8 +47,8 @@ class Flipcard extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            __('Styles')    => 'styles',
-            __('Animation') => 'animations',
+            \__('Styles')    => 'styles',
+            \__('Animation') => 'animations',
         ];
     }
 }

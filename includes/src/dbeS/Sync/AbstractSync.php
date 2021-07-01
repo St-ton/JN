@@ -8,11 +8,9 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Campaign;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\dbeS\Mapper;
 use JTL\dbeS\Starter;
 use JTL\Exceptions\CircularReferenceException;
-use JTL\Exceptions\EmptyResultSetException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
@@ -109,7 +107,7 @@ abstract class AbstractSync
      * @param string     $pk1
      * @param string|int $pk2
      */
-    protected function upsert($tablename, array $objects, $pk1, $pk2 = 0): void
+    protected function upsert(string $tablename, array $objects, $pk1, $pk2 = 0): void
     {
         foreach ($objects as $object) {
             if (isset($object->$pk1) && !$pk2 && $pk1 && $object->$pk1) {
@@ -188,7 +186,7 @@ abstract class AbstractSync
         $stmt = 'DELETE FROM ' . $tableName . '
                 WHERE ' . \implode(' AND ', $whereKeys) . (\count($excludeValues) > 0 ? '
                     AND ' . $excludeKey . ' NOT IN (' . \implode(', ', $excludeValues) . ')' : '');
-        if (!$this->db->queryPrepared($stmt, $params, ReturnType::DEFAULT)) {
+        if (!$this->db->queryPrepared($stmt, $params)) {
             $this->logger->error(
                 'DBDeleteByKey fehlgeschlagen! Tabelle: ' . $tableName . ', PK: ' . \print_r($pks, true)
             );
@@ -200,24 +198,22 @@ abstract class AbstractSync
      * @param array  $conf
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
-     * @throws EmptyResultSetException
      */
     protected function sendAvailabilityMails($product, array $conf): void
     {
         if ($product->kArtikel <= 0) {
             return;
         }
+        $stockRatio    = $conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100;
+        $stockRelevanz = ($product->cLagerKleinerNull ?? '') !== 'Y' && ($product->cLagerBeachten ?? 'Y') === 'Y';
         $subscriptions = $this->db->selectAll(
             'tverfuegbarkeitsbenachrichtigung',
             ['nStatus', 'kArtikel'],
             [0, $product->kArtikel]
         );
         $subCount      = \count($subscriptions);
-        if ($subCount === 0
-            || (($product->fLagerbestand / $subCount) < ($conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100)
-                && ($product->cLagerKleinerNull ?? '') !== 'Y'
-                && (!isset($product->cLagerBeachten)
-                    || $product->cLagerBeachten === 'Y')
+        if ($subCount === 0 || (
+                $stockRelevanz && ($product->fLagerbestand <= 0 || ($product->fLagerbestand / $subCount) < $stockRatio)
             )
         ) {
             return;
@@ -236,7 +232,9 @@ abstract class AbstractSync
             $product->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
         }
         foreach ($subscriptions as $msg) {
-            $availAgainOptin = (new Optin(OptinAvailAgain::class))->setEmail($msg->cMail);
+            $availAgainOptin = (new Optin(OptinAvailAgain::class))->getOptinInstance()
+                ->setProduct($product)
+                ->setEmail($msg->cMail);
             if (!$availAgainOptin->isActive()) {
                 continue;
             }
@@ -288,8 +286,7 @@ abstract class AbstractSync
                     LEFT JOIN tkundengruppe ON tkundengruppe.kKundengruppe = tpreisverlauf.kKundengruppe
                 WHERE tpreisverlauf.kArtikel = :productID
                     AND tkundengruppe.kKundengruppe IS NULL',
-            ['productID' => $productID],
-            ReturnType::DEFAULT
+            ['productID' => $productID]
         );
         // Insert new base price for each customer group - update existing history for today
         $this->db->queryPrepared(
@@ -301,8 +298,7 @@ abstract class AbstractSync
             [
                 'productID'  => $productID,
                 'nettoPrice' => (float)$xml['fStandardpreisNetto'],
-            ],
-            ReturnType::DEFAULT
+            ]
         );
         // Handle price details from xml...
         $this->handlePriceDetails($productID, $xml);
@@ -330,8 +326,7 @@ abstract class AbstractSync
                         HAVING COUNT(DISTINCT tpv1.fVKNetto) = 1
                             AND COUNT(tpv1.kPreisverlauf) > 1
                     ) i)',
-            ['productID' => $productID],
-            ReturnType::DEFAULT
+            ['productID' => $productID]
         );
     }
 
@@ -357,8 +352,7 @@ abstract class AbstractSync
                         'nettoPrice'      => $details[0]->fNettoPreis,
                         'productID'       => $productID,
                         'customerGroupID' => $price->kKundenGruppe,
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
             }
         }
@@ -408,8 +402,7 @@ abstract class AbstractSync
                             'nettoPrice'      => $specialPrice->fNettoPreis,
                             'productID'       => $productID,
                             'customerGroupID' => $specialPrice->kKundengruppe,
-                        ],
-                        ReturnType::DEFAULT
+                        ]
                     );
                 }
             }
@@ -438,8 +431,7 @@ abstract class AbstractSync
                 'productID'     => $productID,
                 'customerGroup' => $customerGroupID,
                 'customerID'    => $customerID,
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -498,8 +490,7 @@ abstract class AbstractSync
                     AND tkundengruppe.kKundengruppe IS NULL',
             [
                 'productID' => $productID,
-            ],
-            ReturnType::DEFAULT
+            ]
         );
         // Delete all prices who are not base prices
         $this->db->queryPrepared(
@@ -508,16 +499,14 @@ abstract class AbstractSync
                     INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
                 WHERE tpreis.kArtikel = :productID
                     AND tpreisdetail.nAnzahlAb > 0',
-            ['productID' => $productID],
-            ReturnType::DEFAULT
+            ['productID' => $productID]
         );
         // Insert price record for each customer group - ignore existing
         $this->db->queryPrepared(
             'INSERT IGNORE INTO tpreis (kArtikel, kKundengruppe, kKunde)
                 SELECT :productID, kKundengruppe, 0
                 FROM tkundengruppe',
-            ['productID' => $productID],
-            ReturnType::DEFAULT
+            ['productID' => $productID]
         );
         // Insert base price for each price record - update existing
         $this->db->queryPrepared(
@@ -530,8 +519,7 @@ abstract class AbstractSync
             [
                 'basePrice' => $xml['fStandardpreisNetto'],
                 'productID' => $productID,
-            ],
-            ReturnType::DEFAULT
+            ]
         );
         // Handle price details from xml...
         foreach ($prices as $i => $price) {
@@ -558,8 +546,7 @@ abstract class AbstractSync
                         'productID'     => $productID,
                         'customerGroup' => $price->kKundenGruppe,
                         'customerPrice' => $price->kKunde,
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
             }
         }
@@ -600,7 +587,7 @@ abstract class AbstractSync
      */
     protected function getSeoFromDB(int $keyValue, string $keyName, int $langID = null, $assoc = null)
     {
-        if ($keyValue <= 0 || \strlen($keyName) === 0) {
+        if ($keyValue <= 0 || $keyName === '') {
             return null;
         }
         if ($langID > 0) {
@@ -612,7 +599,7 @@ abstract class AbstractSync
         if (\count($seo) === 0) {
             return null;
         }
-        if ($assoc !== null && \strlen($assoc) > 0) {
+        if ($assoc !== null && $assoc !== '') {
             $seoData = [];
             foreach ($seo as $oSeo) {
                 if (isset($oSeo->{$assoc})) {
@@ -651,7 +638,7 @@ abstract class AbstractSync
     /**
      * @param object $object
      */
-    protected function extractStreet(&$object): void
+    protected function extractStreet($object): void
     {
         $data  = \explode(' ', $object->cStrasse);
         $parts = \count($data);
@@ -670,113 +657,11 @@ abstract class AbstractSync
     protected function checkDbeSXmlRedirect($oldSeo, $newSeo): bool
     {
         // Insert into tredirect weil sich das SEO von der Kategorie geändert hat
-        if ($oldSeo === $newSeo || \strlen($oldSeo) === 0 || \strlen($newSeo) === 0) {
+        if ($oldSeo === $newSeo || $oldSeo === '' || $newSeo === '') {
             return false;
         }
         $redirect = new Redirect();
-        $parsed   = \parse_url(Shop::getURL());
-        $source   = isset($parsed['path']) ? ($parsed['path'] . '/' . $oldSeo) : ('/' . $oldSeo);
 
-        return $redirect->saveExt($source, $newSeo, true);
-    }
-
-    /**
-     * @param int[] $productIDs
-     */
-    protected function handlePriceRange(array $productIDs): void
-    {
-        $idString = \implode(',', $productIDs);
-        $this->db->executeQuery(
-            'DELETE FROM tpricerange WHERE kArtikel IN (' . $idString . ')',
-            ReturnType::DEFAULT
-        );
-        $this->db->executeQuery(
-            'INSERT INTO tpricerange
-            (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
-            SELECT baseprice.kArtikel,
-                COALESCE(baseprice.kKundengruppe, 0) AS kKundengruppe,
-                COALESCE(baseprice.kKunde, 0) AS kKunde,
-                baseprice.nRangeType,
-                MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL,
-                    baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMinAufpreisNetto)) fVKNettoMin,
-                MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL,
-                    baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMaxAufpreisNetto)) fVKNettoMax,
-                baseprice.nLagerAnzahlMax,
-                baseprice.dStart,
-                baseprice.dEnde
-            FROM (
-                SELECT IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) kArtikel,
-                    tartikel.kArtikel kKindArtikel,
-                    tartikel.nIstVater,
-                    tpreis.kKundengruppe,
-                    tpreis.kKunde,
-                    IF (tpreis.kKundengruppe > 0, 9, 1) nRangeType,
-                    null nLagerAnzahlMax,
-                    tpreisdetail.fVKNetto,
-                    null dStart, null dEnde
-                FROM tartikel
-                INNER JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
-                INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
-                WHERE tartikel.nIstVater = 0
-                    AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
-            . $idString . ')
-                UNION ALL
-                SELECT IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) kArtikel,
-                    tartikel.kArtikel kKindArtikel,
-                    tartikel.nIstVater,
-                    tsonderpreise.kKundengruppe,
-                    null kKunde,
-                    IF(tartikelsonderpreis.nIstAnzahl = 0 AND tartikelsonderpreis.nIstDatum = 0, 5, 3) nRangeType,
-                    IF(tartikelsonderpreis.nIstAnzahl = 0, null, tartikelsonderpreis.nAnzahl) nLagerAnzahlMax,
-                    IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto,
-                        tsonderpreise.fNettoPreis, tpreisdetail.fVKNetto) fVKNetto,
-                    tartikelsonderpreis.dStart dStart,
-                    IF(tartikelsonderpreis.nIstDatum = 0, null, tartikelsonderpreis.dEnde) dEnde
-                FROM tartikel
-                INNER JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
-	            INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
-                INNER JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
-                INNER JOIN tsonderpreise
-                    ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
-                    AND tsonderpreise.kKundengruppe = tpreis.kKundengruppe
-                WHERE tartikelsonderpreis.cAktiv = \'Y\'
-                    AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
-            . $idString . ')) baseprice
-            LEFT JOIN (
-                SELECT variations.kArtikel, variations.kKundengruppe,
-                    SUM(variations.fMinAufpreisNetto) fMinAufpreisNetto,
-                    SUM(variations.fMaxAufpreisNetto) fMaxAufpreisNetto
-                FROM (
-                    SELECT teigenschaft.kArtikel,
-                        tkundengruppe.kKundengruppe,
-                        teigenschaft.kEigenschaft,
-                        MIN(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto,
-                            teigenschaftwert.fAufpreisNetto)) fMinAufpreisNetto,
-                        MAX(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto,
-                            teigenschaftwert.fAufpreisNetto)) fMaxAufpreisNetto
-                    FROM teigenschaft
-                    INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
-                    JOIN tkundengruppe
-                    LEFT JOIN teigenschaftwertaufpreis
-                        ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                        AND teigenschaftwertaufpreis.kKundengruppe = tkundengruppe.kKundengruppe
-                    WHERE teigenschaft.kArtikel IN (' . $idString . ')
-                    GROUP BY teigenschaft.kArtikel, tkundengruppe.kKundengruppe, teigenschaft.kEigenschaft
-                ) variations
-                GROUP BY variations.kArtikel, variations.kKundengruppe
-            ) varaufpreis
-                ON varaufpreis.kArtikel = baseprice.kKindArtikel
-                AND varaufpreis.kKundengruppe = baseprice.kKundengruppe
-                AND baseprice.nIstVater = 0
-            WHERE baseprice.kArtikel IN (' . $idString . ')
-            GROUP BY baseprice.kArtikel,
-                baseprice.kKundengruppe,
-                baseprice.kKunde,
-                baseprice.nRangeType,
-                baseprice.nLagerAnzahlMax,
-                baseprice.dStart,
-                baseprice.dEnde',
-            ReturnType::DEFAULT
-        );
+        return $redirect->saveExt('/' . $oldSeo, $newSeo, true);
     }
 }

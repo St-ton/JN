@@ -306,8 +306,7 @@
   border-bottom: 2px solid transparent;
   border-radius: 0;
   padding: 14px 2px 12px;
-  margin: 0 14px;
-  margin-right: 8px;
+  margin: 0 0 0 17px;
   color: #BDBDBD;
   background-color: inherit;
 }
@@ -517,6 +516,8 @@
 }
 #opc #opcSidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-info .opc-draft-actions .opc-dropdown .opc-dropdown-menu {
   width: auto;
+  overflow-x: auto;
+  max-height: 150px;
 }
 #opc #opcSidebar #opc-sidebar-footer {
   position: absolute;
@@ -524,6 +525,58 @@
   width: 100%;
   padding: 24px;
   padding-top: 0;
+}
+#opc #opcDeleteModal {
+  font-size: 14px;
+  color: #435A6B;
+}
+#opc #opcDeleteModal .modal-dialog {
+  max-width: 550px;
+}
+#opc #opcDeleteModal .modal-content {
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+#opc #opcDeleteModal .modal-header {
+  padding: 12px 24px;
+  background-color: #5cbcf6;
+  color: #fff;
+  border: none;
+  border-radius: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+#opc #opcDeleteModal .modal-header:before, #opc #opcDeleteModal .modal-header:after {
+  display: none;
+}
+#opc #opcDeleteModal .modal-header h5 {
+  font-size: 16px;
+  font-weight: normal;
+  color: #fff;
+}
+#opc #opcDeleteModal .modal-header .opc-header-btn {
+  font-size: 16px;
+}
+#opc #opcDeleteModal .modal-header .opc-header-btn:hover {
+  color: #d5eefd;
+}
+#opc #opcDeleteModal .modal-body {
+  padding: 0;
+  margin: 24px;
+}
+#opc #opcDeleteModal .modal-footer {
+  border: none;
+  padding: 24px;
+  padding-top: 0;
+  margin-top: 24px;
+}
+#opc #opcDeleteModal .modal-footer button {
+  padding: 8px 32px;
+}
+#opc #opcDeleteModal .modal-footer > :not(:last-child) {
+  margin-right: 16px;
 }
 
 #opc-page-wrapper {

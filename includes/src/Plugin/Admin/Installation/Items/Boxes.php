@@ -3,6 +3,7 @@
 namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\Plugin\InstallCode;
+use stdClass;
 
 /**
  * Class Boxes
@@ -32,7 +33,7 @@ class Boxes extends AbstractItem
             if (\mb_strlen($hits[0]) !== \mb_strlen($i)) {
                 continue;
             }
-            $boxTpl              = new \stdClass();
+            $boxTpl              = new stdClass();
             $boxTpl->kCustomID   = $this->plugin->kPlugin;
             $boxTpl->eTyp        = $this->plugin->bExtension === 1 ? 'extension' : 'plugin'; // @todo
             $boxTpl->cName       = $box['Name'];

@@ -3,7 +3,6 @@
 namespace JTL\Update;
 
 use Exception;
-use JTL\DB\ReturnType;
 use stdClass;
 
 /**
@@ -103,14 +102,12 @@ trait MigrationTableTrait
                 [
                     'langKey'     => $key,
                     'langSection' => $section
-                ],
-                ReturnType::DEFAULT
+                ]
             );
         } else {
             $this->getDB()->queryPrepared(
                 'DELETE FROM tsprachwerte WHERE cName = :langKey',
-                ['langKey' => $key],
-                ReturnType::DEFAULT
+                ['langKey' => $key]
             );
         }
     }
@@ -120,18 +117,16 @@ trait MigrationTableTrait
      */
     private function getAvailableInputTypes(): array
     {
-        $result = [];
-        $items  = $this->fetchAll(
-            "SELECT DISTINCT cInputTyp 
-                FROM `teinstellungenconf` 
-                WHERE cInputTyp IS NOT NULL 
-                    AND cInputTyp != ''"
-        );
-        foreach ($items as $item) {
-            $result[] = $item->cInputTyp;
-        }
-
-        return $result;
+        return [
+            'selectbox',
+            'number',
+            'pass',
+            'text',
+            'kommazahl',
+            'listbox',
+            'selectkdngrp',
+            'color'
+        ];
     }
 
     /**
@@ -266,6 +261,9 @@ trait MigrationTableTrait
         $einstellungen->cWert                 = $configValue;
         $einstellungen->cModulId              = $cModulId;
         $this->getDB()->insert('teinstellungen', $einstellungen);
+        if ($this->getDB()->getSingleObject("SHOW TABLES LIKE 'teinstellungen_default'") !== null) {
+            $this->getDB()->insert('teinstellungen_default', $einstellungen);
+        }
         unset($einstellungen);
 
         $einstellungenConf                        = new stdClass();
@@ -307,6 +305,9 @@ trait MigrationTableTrait
     public function removeConfig($key): void
     {
         $this->execute("DELETE FROM teinstellungen WHERE cName = '{$key}'");
+        if ($this->getDB()->getSingleObject("SHOW TABLES LIKE 'teinstellungen_default'") !== null) {
+            $this->execute("DELETE FROM teinstellungen_default WHERE cName = '{$key}'");
+        }
         $this->execute(
             "DELETE FROM teinstellungenconfwerte 
                 WHERE kEinstellungenConf = (

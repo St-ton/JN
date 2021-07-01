@@ -2,7 +2,6 @@
 
 namespace JTL\dbeS\Sync;
 
-use JTL\DB\ReturnType;
 use JTL\dbeS\LastJob;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Seo;
@@ -23,7 +22,7 @@ final class Categories extends AbstractSync
     public function handle(Starter $starter)
     {
         $categoryIDs = [];
-        $this->db->query('START TRANSACTION', ReturnType::DEFAULT);
+        $this->db->query('START TRANSACTION');
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             if (isset($xml['tkategorie attr']['nGesamt']) || isset($xml['tkategorie attr']['nAktuell'])) {
@@ -40,7 +39,7 @@ final class Categories extends AbstractSync
         }));
         $lastJob = new LastJob($this->db, $this->logger);
         $lastJob->run(\LASTJOBS_KATEGORIEUPDATE, 'Kategorien_xml');
-        $this->db->query('COMMIT', ReturnType::DEFAULT);
+        $this->db->query('COMMIT');
 
         return null;
     }
@@ -88,28 +87,25 @@ final class Categories extends AbstractSync
             return 0;
         }
         // Altes SEO merken => falls sich es bei der aktualisierten Kategorie ändert => Eintrag in tredirect
-        $oldData    = $this->db->queryPrepared(
+        $oldData = $this->db->getSingleObject(
             'SELECT cSeo, lft, rght, nLevel
                 FROM tkategorie
                 WHERE kKategorie = :categoryID',
-            ['categoryID' => $category->kKategorie],
-            ReturnType::SINGLE_OBJECT
+            ['categoryID' => $category->kKategorie]
         );
+        $this->db->delete('tseo', ['kKey', 'cKey'], [$category->kKategorie, 'kKategorie']);
         $categories = $this->mapper->mapArray($xml, 'tkategorie', 'mKategorie');
         if ($categories[0]->kKategorie > 0) {
             if (!$categories[0]->cSeo) {
                 $categories[0]->cSeo = Seo::getFlatSeoPath($categories[0]->cName);
             }
-            $categories[0]->cSeo                  = Seo::getSeo($categories[0]->cSeo);
+            $categories[0]->cSeo                  = Seo::checkSeo(Seo::getSeo($categories[0]->cSeo));
             $categories[0]->dLetzteAktualisierung = 'NOW()';
             $categories[0]->lft                   = $oldData->lft ?? 0;
             $categories[0]->rght                  = $oldData->rght ?? 0;
             $categories[0]->nLevel                = $oldData->nLevel ?? 0;
-            if (!isset($oldData->cSeo) || $oldData->cSeo !== $categories[0]->cSeo) {
-                $categories[0]->cSeo = Seo::checkSeo($categories[0]->cSeo);
-            }
             $this->insertOnExistUpdate('tkategorie', $categories, ['kKategorie']);
-            if (isset($oldData->cSeo)) {
+            if ($oldData !== null) {
                 $this->checkDbeSXmlRedirect($oldData->cSeo, $categories[0]->cSeo);
             }
             $this->db->queryPrepared(
@@ -124,10 +120,8 @@ final class Categories extends AbstractSync
                         WHERE tkategorie.kKategorie = :categoryID
                             AND tsprache.cStandard = 'Y'
                             AND tkategorie.cSeo != '')",
-                ['categoryID' => (int)$categories[0]->kKategorie],
-                ReturnType::DEFAULT
+                ['categoryID' => (int)$categories[0]->kKategorie]
             );
-
             \executeHook(\HOOK_KATEGORIE_XML_BEARBEITEINSERT, ['oKategorie' => $categories[0]]);
         }
         $this->setLanguages($xml, $category->kKategorie, $categories[0]);
@@ -158,17 +152,6 @@ final class Categories extends AbstractSync
             if (!LanguageHelper::isShopLanguage($language->kSprache, $allLanguages)) {
                 continue;
             }
-            $oSeoOld = $this->db->queryPrepared(
-                'SELECT cSeo
-                    FROM tkategoriesprache
-                    WHERE kKategorie = :categoryID
-                        AND kSprache = :langID',
-                [
-                    'categoryID' => $categoryID,
-                    'langID'     => $language->kSprache,
-                ],
-                ReturnType::SINGLE_OBJECT
-            );
             if (!$language->cSeo) {
                 $language->cSeo = $language->cName;
             }
@@ -178,10 +161,7 @@ final class Categories extends AbstractSync
             if (!$language->cSeo) {
                 $language->cSeo = $category->cName;
             }
-            $language->cSeo = Seo::getSeo($language->cSeo);
-            if (!isset($oSeoOld->cSeo) || $oSeoOld->cSeo !== $language->cSeo) {
-                $language->cSeo = Seo::checkSeo($language->cSeo);
-            }
+            $language->cSeo = Seo::checkSeo(Seo::getSeo($language->cSeo));
             $this->insertOnExistUpdate('tkategoriesprache', [$language], ['kKategorie', 'kSprache']);
 
             $ins           = new stdClass();
@@ -254,8 +234,7 @@ final class Categories extends AbstractSync
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                 WHERE tkategorieattribut.kKategorie = :categoryID' . (\count($attribPKs) > 0 ? '
                     AND tkategorieattribut.kKategorieAttribut NOT IN (' . \implode(', ', $attribPKs) . ')' : ''),
-            ['categoryID' => $categoryID],
-            ReturnType::DEFAULT
+            ['categoryID' => $categoryID]
         );
     }
 
@@ -290,8 +269,7 @@ final class Categories extends AbstractSync
                 LEFT JOIN tkategorieattributsprache
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                 WHERE tkategorieattribut.kKategorie = :categoryID',
-            ['categoryID' => $id],
-            ReturnType::DEFAULT
+            ['categoryID' => $id]
         );
         $this->db->delete('tseo', ['kKey', 'cKey'], [$id, 'kKategorie']);
         $this->db->delete('tkategorie', 'kKategorie', $id);
@@ -361,18 +339,17 @@ final class Categories extends AbstractSync
                     fRabatt    = IF(tartikelkategorierabatt.fRabatt < tNew.fRabatt,
                         tNew.fRabatt,
                         tartikelkategorierabatt.fRabatt)',
-            ['categoryID' => $categoryID],
-            ReturnType::DEFAULT
+            ['categoryID' => $categoryID]
         );
     }
 
     /**
      * @param int $categoryID
-     * @return array
+     * @return stdClass[]
      */
     private function getLinkedDiscountCategories(int $categoryID): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getObjects(
             'SELECT DISTINCT tkgrp_b.kKategorie
                 FROM tkategorieartikel tart_a
                 INNER JOIN tkategorieartikel tart_b ON tart_a.kArtikel = tart_b.kArtikel
@@ -384,10 +361,7 @@ final class Categories extends AbstractSync
                 WHERE tart_a.kKategorie = :categoryID
                     AND tkgrp_b.fRabatt > COALESCE(tkgrp_a.fRabatt, 0)
                     AND tsicht.kKategorie IS NULL',
-            [
-                'categoryID' => $categoryID
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['categoryID' => $categoryID]
         );
     }
 }

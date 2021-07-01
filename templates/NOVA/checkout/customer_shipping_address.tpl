@@ -1,6 +1,6 @@
 {block name='checkout-customer-shipping-address'}
     <fieldset>
-    {formrow}
+    {formrow class="customer-shipping-address"}
         {$name = 'shipping_address'}
         {* salutation / title *}
         {block name='checkout-customer-shipping-address-salutation-title'}
@@ -12,6 +12,9 @@
                             label="{lang key='salutation' section='account data'}{if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                             label-for="{$prefix}-{$name}-salutation"
                         }
+                            {if !empty($fehlendeAngaben.anrede)}
+                                <div class="form-error-msg">{lang key='fillOut'}</div>
+                            {/if}
                             {select name="{$prefix}[{$name}][anrede]" id="{$prefix}-{$name}-salutation" class='custom-select' required=($Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y') autocomplete="shipping sex"}
                                 <option value="" selected="selected" {if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y'}disabled{/if}>
                                     {if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
@@ -19,9 +22,6 @@
                                 <option value="w"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'w'} selected="selected"{/if}>{lang key='salutationW'}</option>
                                 <option value="m"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'm'} selected="selected"{/if}>{lang key='salutationM'}</option>
                             {/select}
-                            {if !empty($fehlendeAngaben.anrede)}
-                                <div class="form-error-msg text-danger">{lang key='fillOut'}</div>
-                            {/if}
                         {/formgroup}
                     {/block}
                 {/col}
@@ -40,7 +40,7 @@
                     {/block}
                 {/col}
             {/if}
-            <div class="w-100"></div>
+            <div class="w-100-util"></div>
         {/block}
 
         {* firstname lastname *}
@@ -68,38 +68,38 @@
                     }
                 {/block}
             {/col}
-            <div class="w-100"></div>
+            <div class="w-100-util"></div>
         {/block}
 
         {* firm / firmtext *}
         {block name='checkout-customer-shipping-address-company-wrap'}
-            {if $Einstellungen.kunden.kundenregistrierung_abfragen_firma !== 'N'}
+            {if $Einstellungen.kunden.lieferadresse_abfragen_firma !== 'N'}
                 {col cols=12 md=6}
                     {block name='checkout-customer-shipping-address-company'}
                         {include file='snippets/form_group_simple.tpl'
                             options=[
                                 "text", "{$prefix}-{$name}-firm", "{$prefix}[{$name}][firma]",
                                 {$Lieferadresse->cFirma|default:null}, {lang key='firm' section='account data'},
-                                $Einstellungen.kunden.kundenregistrierung_abfragen_firma, null, "shipping organization"
+                                $Einstellungen.kunden.lieferadresse_abfragen_firma, null, "shipping organization"
                             ]
                         }
                     {/block}
                 {/col}
             {/if}
-            {if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz !== 'N'}
+            {if $Einstellungen.kunden.lieferadresse_abfragen_firmazusatz !== 'N'}
                 {col cols=12 md=6}
                     {block name='checkout-customer-shipping-address-company-additional'}
                         {include file='snippets/form_group_simple.tpl'
                             options=[
                                 "text", "{$prefix}-{$name}-firmext", "{$prefix}[{$name}][firmazusatz]",
                                 {$Lieferadresse->cZusatz|default:null}, {lang key='firmext' section='account data'},
-                                $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz
+                                $Einstellungen.kunden.lieferadresse_abfragen_firmazusatz
                             ]
                         }
                     {/block}
                 {/col}
             {/if}
-            <div class="w-100"></div>
+            <div class="w-100-util"></div>
         {/block}
 
         {* street / number *}
@@ -126,7 +126,7 @@
                     }
                 {/block}
             {/col}
-            <div class="w-100"></div>
+            <div class="w-100-util"></div>
         {/block}
 
         {* address addition *}
@@ -144,36 +144,35 @@
                     {/block}
                 {/col}
             {/block}
-            <div class="w-100"></div>
+            <div class="w-100-util"></div>
         {/if}
 
         {* country *}
         {if isset($Lieferadresse->cLand)}
-            {assign var=cIso value=$Lieferadresse->cLand}
+            {$countryISO=$Lieferadresse->cLand}
         {elseif !empty($Kunde->cLand)}
-            {assign var=cIso value=$Kunde->cLand}
-        {elseif !empty($Einstellungen.kunden.kundenregistrierung_standardland)}
-            {assign var=cIso value=$Einstellungen.kunden.kundenregistrierung_standardland}
-        {elseif isset($laender[0]->cISO)}
-            {assign var=cIso value=$laender[0]->cISO}
+            {$countryISO=$Kunde->cLand}
         {else}
-            {assign var=cIso value=''}
+            {$countryISO=$shippingCountry}
         {/if}
+        {getCountry iso=$countryISO assign='selectedCountry'}
         {block name='checkout-customer-shipping-address-country-wrap'}
             {col cols=12}
                 {block name='checkout-customer-shipping-address-country'}
                     {formgroup label="{lang key='country' section='account data'}" label-for="{$prefix}-{$name}-country"}
-                        {select name="{$prefix}[{$name}][land]" id="{$prefix}-{$name}-country" class="country-input custom-select" autocomplete="shipping country"}
+                        {select name="{$prefix}[{$name}][land]" id="{$prefix}-{$name}-country" class="country-input custom-select js-country-select" autocomplete="shipping country"}
                             <option value="" selected disabled>{lang key='country' section='account data'}</option>
                             {foreach $LieferLaender as $land}
-                                <option value="{$land->getISO()}" {if ($Einstellungen.kunden.kundenregistrierung_standardland == $land->getISO() && empty($Lieferadresse->cLand)) || (isset($Lieferadresse->cLand) && $Lieferadresse->cLand == $land->getISO())}selected="selected"{/if}>{$land->getName()}</option>
+                                {if $land->isShippingAvailable()}
+                                    <option value="{$land->getISO()}" {if $countryISO === $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
+                                {/if}
                             {/foreach}
                         {/select}
                     {/formgroup}
                 {/block}
             {/col}
             {if $Einstellungen.kunden.lieferadresse_abfragen_bundesland !== 'N'}
-                {getStates cIso=$cIso assign='oShippingStates'}
+                {getStates cIso=$countryISO assign='oShippingStates'}
                 {if isset($Lieferadresse->cBundesland)}
                     {assign var=cState value=$Lieferadresse->cBundesland}
                 {elseif !empty($Kunde->cBundesland)}
@@ -185,17 +184,17 @@
                     {block name='checkout-customer-shipping-address-state'}
                         {formgroup
                             class="{if isset($fehlendeAngaben.bundesland)} has-error{/if}"
-                            label="{lang key='state' section='account data'}{if $Einstellungen.kunden.lieferadresse_abfragen_bundesland !== 'Y'}<span class='optional'> - {lang key='optional'}</span>{/if}"
+                            label="{lang key='state' section='account data'}<span class='state-optional optional {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y' || $selectedCountry->isRequireStateDefinition()}d-none{/if}'> - {lang key='optional'}</span>"
                             label-for="{$prefix}-{$name}-state"
                         }
                             {if !empty($oShippingStates)}
                                 {select
-                                        title="{lang key=pleaseChoose}"
                                         name="{$prefix}[{$name}][bundesland]"
                                         id="{$prefix}-{$name}-state"
-                                        class="state-input custom-select"
+                                        class="state-input custom-select js-state-select"
+                                        data=["defaultoption"=>{lang key=pleaseChoose}]
                                         autocomplete="shipping address-level1"
-                                        required=($Einstellungen.kunden.lieferadresse_abfragen_bundesland === 'Y')
+                                        required=($Einstellungen.kunden.lieferadresse_abfragen_bundesland === 'Y' || $selectedCountry->isRequireStateDefinition())
                                 }
                                     <option value="" selected disabled>{lang key='pleaseChoose'}</option>
                                     {foreach $oShippingStates as $oState}
@@ -205,19 +204,21 @@
                             {else}
                                 {input
                                     type="text"
-                                    title="{lang key=pleaseChoose}"
                                     name="{$prefix}[{$name}][bundesland]"
                                     value="{if isset($Lieferadresse->cBundesland)}{$Lieferadresse->cBundesland}{/if}"
                                     id="{$prefix}-{$name}-state"
-                                    data=["toggle"=>"state",
-                                        "target"=>"#{$prefix}-{$name}-country"]
+                                    data=[
+                                        "toggle"=>"state",
+                                        "defaultoption"=>{lang key=pleaseChoose},
+                                        "target"=>"#{$prefix}-{$name}-country"
+                                    ]
                                     placeholder="{lang key='state' section='account data'}"
                                     required=($Einstellungen.kunden.lieferadresse_abfragen_bundesland === 'Y')
                                     autocomplete="shipping address-level1"}
                             {/if}
 
                             {if !empty($fehlendeAngaben.bundesland)}
-                                <div class="form-error-msg text-danger">{lang key='fillOut'}</div>
+                                <div class="form-error-msg">{lang key='fillOut'}</div>
                             {/if}
                         {/formgroup}
                     {/block}
@@ -230,10 +231,19 @@
             {col cols=12 md=4}
                 {block name='checkout-customer-shipping-address-zip'}
                     {formgroup
-                        class="{if !empty($fehlendeAngaben.plz)} has-error{/if}"
+                        class="{if !empty($fehlendeAngaben.plz)} has-error{/if} postcode-wrapper"
                         label="{lang key='plz' section='account data'}"
                         label-for="{$prefix}-{$name}-postcode"
                     }
+                        {if isset($fehlendeAngaben.plz)}
+                            <div class="form-error-msg"><i class="fa fa-exclamation-triangle"></i>
+                                {if $fehlendeAngaben.plz >= 2}
+                                    {lang key='checkPLZCity' section='checkout'}
+                                {else}
+                                    {lang key='fillOut'}
+                                {/if}
+                            </div>
+                        {/if}
                         {input
                             type="text"
                             name="{$prefix}[{$name}][plz]"
@@ -246,15 +256,6 @@
                             data-country="#{$prefix}-{$name}-country"
                             required=true
                             autocomplete="shipping postal-code"}
-                        {if isset($fehlendeAngaben.plz)}
-                            <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>
-                                {if $fehlendeAngaben.plz >= 2}
-                                    {lang key='checkPLZCity' section='checkout'}
-                                {else}
-                                    {lang key='fillOut'}
-                                {/if}
-                            </div>
-                        {/if}
                     {/formgroup}
                 {/block}
             {/col}
@@ -262,10 +263,19 @@
             {col cols=12 md=8}
                 {block name='checkout-customer-shipping-address-city'}
                     {formgroup
-                        class="{if !empty($fehlendeAngaben.ort)} has-error{/if} exclude-from-label-slide"
+                        class="{if !empty($fehlendeAngaben.ort)} has-error{/if} city-wrapper exclude-from-label-slide"
                         label=""
                         label-for="{$prefix}-{$name}-city"
                     }
+                        {if isset($fehlendeAngaben.ort)}
+                            <div class="form-error-msg"><i class="fa fa-exclamation-triangle"></i>
+                                {if $fehlendeAngaben.ort==3}
+                                    {lang key='cityNotNumeric' section='account data'}
+                                {else}
+                                    {lang key='fillOut'}
+                                {/if}
+                            </div>
+                        {/if}
                         {input type="text"
                             name="{$prefix}[{$name}][ort]"
                             value="{if isset($Lieferadresse->cOrt)}{$Lieferadresse->cOrt}{/if}"
@@ -274,17 +284,7 @@
                             placeholder="{lang key='city' section='account data'}"
                             required=true
                             autocomplete="shipping address-level2"
-                            aria=["label"=>{lang key='city' section='account data'}]
-                        }
-                        {if isset($fehlendeAngaben.ort)}
-                            <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>
-                                {if $fehlendeAngaben.ort==3}
-                                    {lang key='cityNotNumeric' section='account data'}
-                                {else}
-                                    {lang key='fillOut'}
-                                {/if}
-                            </div>
-                        {/if}
+                            aria=["label"=>{lang key='city' section='account data'}]}
                     {/formgroup}
                 {/block}
             {/col}

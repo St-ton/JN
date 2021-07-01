@@ -105,7 +105,7 @@ class AdminFavorite
 
         $favs = \is_array($favs) ? $favs : [];
 
-        foreach ($favs as &$fav) {
+        foreach ($favs as $fav) {
             $fav->bExtern = true;
             $fav->cAbsUrl = $fav->cUrl;
             if (\mb_strpos($fav->cUrl, 'http') !== 0) {

@@ -154,3 +154,24 @@ msgstr "Blog category added successfully."
 
 msgid "successNewsCommentDelete"
 msgstr "Selected blog comments deleted successfully."
+
+msgid "commentReply"
+msgstr "Reply"
+
+msgid "answerComment"
+msgstr "Reply to comment"
+
+msgid "newsCommentAnswerEdit"
+msgstr "Edit reply"
+
+msgid "displayedName"
+msgstr "Displayed name"
+
+msgid "selectAuthor"
+msgstr "Select author"
+
+msgid "authorNotAvailable"
+msgstr "Not available"
+
+msgid "noNewsAuthor"
+msgstr "No author available. No author available. If you want to enter an author responsible for this blog post, please create a user with the required rights first."

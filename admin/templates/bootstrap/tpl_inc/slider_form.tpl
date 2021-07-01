@@ -76,7 +76,7 @@
                     </li>
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="bControlNav">{__('navigation')}</label>
+                            <label for="bControlNav">{__('dotNavigation')}</label>
                         </div>
                         <div class="for">
                             <select class="custom-select" id="bControlNav" name="bControlNav">
@@ -88,7 +88,7 @@
                     </li>
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="bThumbnail">{__('thumbnail')} {__('navigation')}</label>
+                            <label for="bThumbnail">{__('thumbnailNavigation')}</label>
                         </div>
                         <div class="for">
                             <select class="custom-select" id="bThumbnail" name="bThumbnail">
@@ -100,7 +100,7 @@
                     </li>
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="bDirectionNav">{__('navigation')} ({__('direction')})</label>
+                            <label for="bDirectionNav">{__('directionNavigation')}</label>
                         </div>
                         <div class="for">
                             <select class="custom-select" id="bDirectionNav" name="bDirectionNav">
@@ -384,7 +384,7 @@
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
                     <button type="button" class="btn btn-default btn-block" onclick="window.location.href = 'slider.php';" value="zurück">
-                        {__('goBack')}
+                        {__('cancelWithIcon')}
                     </button>
                 </div>
                 <div class="col-sm-6 col-xl-auto">

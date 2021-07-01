@@ -3,17 +3,21 @@
         {foreach $Artikel->oKonfig_arr as $configGroup}
             {if $configGroup->getItemCount() > 0}
                 {$configLocalization = $configGroup->getSprache()}
-                {$configImagePath = $configGroup->getImage(\JTL\Media\Image::SIZE_XS)}
+                {$configGroupHasImage = ($configGroup->getImage(\JTL\Media\Image::SIZE_MD)|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN) === false}
                 {$kKonfiggruppe = $configGroup->getKonfiggruppe()}
-                <div class="cfg-group js-cfg-group {if $configGroup@first}visited{/if}" data-id="{$kKonfiggruppe}">
-                    <div class="hr-sect mb-0">
+                <div class="cfg-group js-cfg-group {if $configGroup@first}visited{/if}"
+                     data-id="{$kKonfiggruppe}"
+                    {if !$configGroup@first}
+                     data-toggle="tooltip"
+                     title="{lang key='completeConfigGroupHint' section='productDetails'}"
+                    {/if}>
+                    <div class="hr-sect">
                         <span class="d-none js-group-checked"><i class="far fa-check-square"></i></span>
                         <span><i class="far fa-square"></i></span>
                         {button
                             id="crd-hdr-{$configGroup@iteration}"
                             variant="link"
                             data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$configGroup@iteration}"]
-                            class="text-left text-decoration-none"
                             disabled=!$configGroup@first
                         }
                             {$configLocalization->getName()}
@@ -25,7 +29,7 @@
                         aria=["labelledby"=>"crd-hdr-{$configGroup@iteration}"]
                         data=["parent"=>"#cfg-accordion"]
                         class="js-cfg-group-collapse"}
-                        <div class="text-center mb-5 sticky-top">
+                        <div class="cfg-group-info sticky-top">
                             {if !empty($configGroup->getMin()) || !empty($configGroup->getMax())}
                                 {badge variant="info" class="js-group-badge-checked"}
                                     {if $configGroup->getMin() === 1 && $configGroup->getMax() === 1}
@@ -50,7 +54,7 @@
                         {alert variant="danger" class="js-cfg-group-error" data=["id"=>"{$kKonfiggruppe}"]}{/alert}
                     {/block}
                     {block name='productdetails-config-container-group-description'}
-                        {row class="group-description mb-3"}
+                        {row class="group-description"}
                             {if !empty($aKonfigerror_arr[$kKonfiggruppe])}
                                 {col cols=12}
                                     {alert variant="danger"}
@@ -59,21 +63,13 @@
                                 {/col}
                             {/if}
                             {if $configLocalization->hatBeschreibung()}
-                                {col cols=12 lg="{if !empty($configImagePath) && $configImagePath|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}8{else}12{/if}" order=1 order-lg=0}
-                                    <p class="desc">{$configLocalization->getBeschreibung()}</p>
+                                {col cols=12 lg="{if $configGroupHasImage}9{else}12{/if}" order=1 order-lg=0}
+                                    {$configLocalization->getBeschreibung()}
                                 {/col}
                             {/if}
-                            {if !empty($configImagePath) && $configImagePath|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
-                                {col cols=12 lg=4 offset-lg="{if $configLocalization->hatBeschreibung()}0{else}4{/if}" order=0 order-lg=1}
-                                    {image fluid=true lazy=true webp=true
-                                        src=$configImagePath
-                                        srcset="{$configGroup->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_konfiggruppe_mini_breite}w,
-                                            {$configGroup->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_konfiggruppe_klein_breite}w,
-                                            {$configGroup->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_konfiggruppe_normal_breite}w,
-                                            {$configGroup->getImage(\JTL\Media\Image::SIZE_LG)} {$Einstellungen.bilder.bilder_konfiggruppe_gross_breite}w"
-                                        alt=$configLocalization->getName()
-                                        sizes="auto"
-                                    }
+                            {if $configGroupHasImage}
+                                {col cols=12 lg=3 offset-lg="{if $configLocalization->hatBeschreibung()}0{else}5{/if}" order=0 order-lg=1}
+                                    {include file='snippets/image.tpl' item=$configGroup square=false}
                                 {/col}
                             {/if}
                         {/row}
@@ -100,6 +96,7 @@
                                                 && isset($smarty.post.item[$kKonfiggruppe])
                                                 && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe])
                                             || ($oItem->getSelektiert()
+                                                && !isset($kEditKonfig)
                                                 && (!isset($aKonfigerror_arr)
                                                     || !$aKonfigerror_arr))}
                                         {$cKurzBeschreibung = $oItem->getKurzBeschreibung()}
@@ -118,24 +115,13 @@
                                                 class="cfg-swatch"
                                                 required=$oItem@first && $configGroup->getMin() > 0
                                             }
-                                                <div data-id="{$oItem->getKonfigitem()}" class="config-item text-center mb-5{if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
+                                                <div data-id="{$oItem->getKonfigitem()}" class="config-item {if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
                                                     {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
                                                         <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                     {/if}
-                                                    {badge class="badge-circle circle-small"}<i class="fas fa-check mx-auto"></i>{/badge}
-                                                    {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
-                                                        {$productImage = $oItem->getArtikel()->Bilder[0]}
-                                                        {image fluid-grow=true webp=true lazy=true
-                                                            src=$productImage->cURLMini
-                                                            srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                                {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                            sizes="255px"
-                                                            alt=$oItem->getName()
-                                                        }
-                                                    {/if}
-                                                    <p class="my-2 cfg-item-description">
+                                                    {badge class="badge-circle circle-small"}<i class="fas fa-check"></i>{/badge}
+                                                    {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
+                                                    <p class="cfg-item-description">
                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                         {if $smarty.session.Kundengruppe->mayViewPrices()}
                                                             {badge variant="light"}
@@ -167,10 +153,10 @@
                                                                 {/button}
                                                             {/inputgroupprepend}
                                                             {input
-                                                                type="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                                type="number"
                                                                 min="{$oItem->getMin()}"
                                                                 max="{$oItem->getMax()}"
-                                                                step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{/if}"
+                                                                step="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}any{elseif $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{else}1{/if}"
                                                                 id="quantity{$oItem->getKonfigitem()}"
                                                                 class="quantity"
                                                                 name="item_quantity[{$kKonfigitem}]"
@@ -199,26 +185,13 @@
                                                 id="item{$oItem->getKonfigitem()}"
                                                 class="cfg-swatch"
                                             }
-                                                <div data-id="$oItem->getKonfigitem()" class="config-item mb-5{if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
+                                                <div data-id="$oItem->getKonfigitem()" class="config-item {if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
                                                     {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
                                                         <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                     {/if}
-                                                    {badge class="badge-circle circle-small"}<i class="fas fa-check mx-auto"></i>{/badge}
-                                                    {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
-                                                        <p>
-                                                            {$productImage = $oItem->getArtikel()->Bilder[0]}
-                                                            {image fluid-grow=true webp=true lazy=true
-                                                                src=$productImage->cURLMini
-                                                                srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                    {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                    {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                                    {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                                sizes="255px"
-                                                                alt=$oItem->getName()
-                                                            }
-                                                        </p>
-                                                    {/if}
-                                                    <p class="mb-2 cfg-item-description">
+                                                    {badge class="badge-circle circle-small"}<i class="fas fa-check"></i>{/badge}
+                                                    {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
+                                                    <p class="cfg-item-description">
                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                         {if $smarty.session.Kundengruppe->mayViewPrices()}
                                                             {badge variant="light"}
@@ -251,10 +224,10 @@
                                                                 {/button}
                                                             {/inputgroupprepend}
                                                             {input
-                                                                type="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                                type="number"
                                                                 min="{$oItem->getMin()}"
                                                                 max="{$oItem->getMax()}"
-                                                                step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{/if}"
+                                                                step="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}any{elseif $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{else}1{/if}"
                                                                 id="quantity{$oItem->getKonfigitem()}"
                                                                 class="quantity"
                                                                 name="item_quantity[{$kKonfigitem}]"
@@ -282,7 +255,7 @@
                             {/block}
                         {elseif $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN}
                             {block name='productdetails-config-container-group-item-type-dropdown'}
-                                {col cols=12 data=["id"=>$kKonfiggruppe] class="mb-3"}
+                                {col cols=12 data=["id"=>$kKonfiggruppe] class="config-option-dropdown"}
                                     {formgroup}
                                         {select name="item[{$kKonfiggruppe}][]"
                                             data=["ref"=>$kKonfiggruppe]
@@ -325,22 +298,9 @@
                                     {/if}
                                     {collapse visible=isset($nKonfigitem_arr) && in_array($oItem->getKonfigitem(), $nKonfigitem_arr) id="drpdwn_qnt_{$oItem->getKonfigitem()}" class="cfg-drpdwn-item"}
                                         {row}
-                                            {col cols=4}
-                                                {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
-                                                    <p>
-                                                        {$productImage = $oItem->getArtikel()->Bilder[0]}
-                                                        {image fluid-grow=true webp=true lazy=true
-                                                            src=$productImage->cURLMini
-                                                            srcset="{$productImage->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                {$productImage->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                {$productImage->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                                {$productImage->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                            sizes="255px"
-                                                            alt=$oItem->getName()
-                                                        }
-                                                    </p>
-                                                {/if}
-                                                <p class="mb-2 cfg-item-description">
+                                            {col md=4 cols="{if empty($cBeschreibung)}12{else}4{/if}"}
+                                                {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
+                                                <p class="cfg-item-description">
                                                     {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                     {if $smarty.session.Kundengruppe->mayViewPrices()}
                                                         {badge variant="light"}
@@ -353,9 +313,9 @@
                                                     {/if}
                                                 </p>
                                             {/col}
-                                            {col cols=8}
+                                            {col md=8 cols="{if empty($cBeschreibung)}12{else}8{/if}"}
                                                 {if !empty($cBeschreibung)}
-                                                    <div class="mb-2">
+                                                    <div class="config-option-dropdown-description">
                                                         {$cBeschreibung}
                                                     </div>
                                                 {/if}
@@ -374,10 +334,10 @@
                                                             {/button}
                                                         {/inputgroupprepend}
                                                         {input
-                                                            type="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                            type="number"
                                                             min="{$oItem->getMin()}"
                                                             max="{$oItem->getMax()}"
-                                                            step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{/if}"
+                                                            step="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}any{elseif $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{else}1{/if}"
                                                             id="quantity{$oItem->getKonfigitem()}"
                                                             class="quantity"
                                                             name="item_quantity[{$oItem->getKonfigitem()}]"
@@ -408,7 +368,6 @@
                             {if $configGroup@last}
                                 {nav}
                                     {navitem id="cfg-tab-summary-finish"
-                                        class="m-auto"
                                         href="#cfg-tab-pane-summary"
                                         role="tab"
                                         router-data=["toggle"=>"pill"]
@@ -424,7 +383,7 @@
                                     size="sm"
                                     variant="secondary"
                                     data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$configGroup@iteration + 1}"]
-                                    class="m-auto js-cfg-next no-caret"}
+                                    class="js-cfg-next no-caret"}
                                     {lang key='nextConfigurationGroup' section='productDetails'} <i class="fas fa-arrow-right"></i>
                                 {/button}
                             {/if}

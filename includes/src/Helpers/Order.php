@@ -2,13 +2,14 @@
 
 namespace JTL\Helpers;
 
+use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\Currency;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
+use JTL\Customer\CustomerGroup;
 use JTL\Shop;
 use stdClass;
 
@@ -21,150 +22,38 @@ class Order extends CartHelper
     /**
      * @var Bestellung
      */
-    protected $object;
+    protected $order;
 
     /**
-     * @param Bestellung $object
+     * @param Bestellung $order
      */
-    public function __construct($object)
+    public function __construct($order)
     {
-        $this->object = $object;
+        $this->order = $order;
     }
 
     /**
-     * @param int $decimals
-     * @return stdClass
+     * @inheritDoc
      */
-    public function getTotal(int $decimals = 0): stdClass
+    protected function calculateCredit(stdClass $cartInfo): void
     {
-        $order           = $this->getObject();
-        $info            = new stdClass();
-        $info->type      = self::GROSS;
-        $info->currency  = null;
-        $info->article   = [0, 0];
-        $info->shipping  = [0, 0];
-        $info->discount  = [0, 0];
-        $info->surcharge = [0, 0];
-        $info->total     = [0, 0];
-        $info->items     = [];
-        $info->currency  = $order->Waehrung;
-        foreach ($order->Positionen as $orderItem) {
-            $amountItem = $orderItem->fPreisEinzelNetto;
-            if (GeneralObject::isCountable('WarenkorbPosEigenschaftArr', $orderItem)
-                && (!isset($orderItem->Artikel->kVaterArtikel) || (int)$orderItem->Artikel->kVaterArtikel === 0)
-            ) {
-                foreach ($orderItem->WarenkorbPosEigenschaftArr as $attr) {
-                    if ($attr->fAufpreis !== 0) {
-                        $amountItem += $attr->fAufpreis;
-                    }
-                }
-            }
-            $amount      = $amountItem; /* $order->fWaehrungsFaktor;*/
-            $amountGross = $amount + ($amount * $orderItem->fMwSt / 100);
-            // floating-point precission bug
-            $amountGross = (float)(string)$amountGross;
+        if ((float)$this->order->fGuthaben !== 0.0) {
+            $amountGross = $this->order->fGuthaben;
 
-            switch ((int)$orderItem->nPosTyp) {
-                case \C_WARENKORBPOS_TYP_ARTIKEL:
-                    $item = (object)[
-                        'name'     => '',
-                        'quantity' => 1,
-                        'amount'   => []
-                    ];
-
-                    $item->name = \html_entity_decode($orderItem->cName);
-
-                    $item->amount = [
-                        self::NET   => $amount,
-                        self::GROSS => $amountGross
-                    ];
-
-                    if ((int)$orderItem->nAnzahl != $orderItem->nAnzahl) {
-                        $item->amount[self::NET]   *= $orderItem->nAnzahl;
-                        $item->amount[self::GROSS] *= $orderItem->nAnzahl;
-
-                        $item->name = \sprintf(
-                            '%g %s %s',
-                            (float)$orderItem->nAnzahl,
-                            $orderItem->Artikel->cEinheit ?: 'x',
-                            $item->name
-                        );
-                    } else {
-                        $item->quantity = (int)$orderItem->nAnzahl;
-                    }
-
-                    $info->article[self::NET]   += $item->amount[self::NET] * $item->quantity;
-                    $info->article[self::GROSS] += $item->amount[self::GROSS] * $item->quantity;
-
-                    $info->items[] = $item;
-                    break;
-
-                case \C_WARENKORBPOS_TYP_VERSANDPOS:
-                case \C_WARENKORBPOS_TYP_VERSANDZUSCHLAG:
-                case \C_WARENKORBPOS_TYP_VERPACKUNG:
-                case \C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG:
-                    $info->shipping[self::NET]   += $amount * $orderItem->nAnzahl;
-                    $info->shipping[self::GROSS] += $amountGross * $orderItem->nAnzahl;
-                    break;
-
-                case \C_WARENKORBPOS_TYP_KUPON:
-                case \C_WARENKORBPOS_TYP_GUTSCHEIN:
-                case \C_WARENKORBPOS_TYP_NEUKUNDENKUPON:
-                    $info->discount[self::NET]   += $amount * $orderItem->nAnzahl;
-                    $info->discount[self::GROSS] += $amountGross * $orderItem->nAnzahl;
-                    break;
-
-                case \C_WARENKORBPOS_TYP_ZAHLUNGSART:
-                case \C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR:
-                    $info->surcharge[self::NET]   += $amount * $orderItem->nAnzahl;
-                    $info->surcharge[self::GROSS] += $amountGross * $orderItem->nAnzahl;
-                    break;
-            }
+            $cartInfo->discount[self::NET]   += $amountGross;
+            $cartInfo->discount[self::GROSS] += $amountGross;
         }
-
-        if ($order->fGuthaben != 0) {
-            $amountGross = $order->fGuthaben;
-            $amount      = $amountGross;
-
-            $info->discount[self::NET]   += $amount;
-            $info->discount[self::GROSS] += $amountGross;
-        }
-
         // positive discount
-        $info->discount[self::NET]   *= -1;
-        $info->discount[self::GROSS] *= -1;
-
-        $info->total[self::NET]   = $order->fGesamtsummeNetto;
-        $info->total[self::GROSS] = $order->fGesamtsumme;
-
-        $formatter = static function ($prop) use ($decimals) {
-            return [
-                self::NET   => \number_format($prop[self::NET], $decimals, '.', ''),
-                self::GROSS => \number_format($prop[self::GROSS], $decimals, '.', ''),
-            ];
-        };
-
-        if ($decimals > 0) {
-            $info->article   = $formatter($info->article);
-            $info->shipping  = $formatter($info->shipping);
-            $info->discount  = $formatter($info->discount);
-            $info->surcharge = $formatter($info->surcharge);
-            $info->total     = $formatter($info->total);
-
-            foreach ($info->items as &$item) {
-                $item->amount = $formatter($item->amount);
-            }
-        }
-
-        return $info;
+        $cartInfo->discount[self::NET]   *= -1;
+        $cartInfo->discount[self::GROSS] *= -1;
     }
 
     /**
-     * @return Bestellung
+     * @return Cart|Bestellung|null
      */
     public function getObject()
     {
-        return $this->object;
+        return $this->order;
     }
 
     /**
@@ -172,8 +61,8 @@ class Order extends CartHelper
      */
     public function getShippingAddress()
     {
-        if ((int)$this->object->kLieferadresse > 0 && \is_object($this->object->Lieferadresse)) {
-            return $this->object->Lieferadresse;
+        if ((int)$this->order->kLieferadresse > 0 && \is_object($this->order->Lieferadresse)) {
+            return $this->order->Lieferadresse;
         }
 
         return $this->getBillingAddress();
@@ -184,7 +73,15 @@ class Order extends CartHelper
      */
     public function getBillingAddress(): ?Rechnungsadresse
     {
-        return $this->object->oRechnungsadresse;
+        return $this->order->oRechnungsadresse;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPositions(): array
+    {
+        return $this->order->Positionen;
     }
 
     /**
@@ -192,7 +89,15 @@ class Order extends CartHelper
      */
     public function getCustomer(): ?Customer
     {
-        return $this->object->oKunde;
+        return $this->order->oKunde;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCustomerGroup(): CustomerGroup
+    {
+        return new CustomerGroup($this->order->oKunde->getGroupID());
     }
 
     /**
@@ -200,7 +105,7 @@ class Order extends CartHelper
      */
     public function getCurrency(): Currency
     {
-        return $this->object->Waehrung;
+        return $this->order->Waehrung;
     }
 
     /**
@@ -208,15 +113,15 @@ class Order extends CartHelper
      */
     public function getLanguage(): string
     {
-        return Shop::Lang()->getIsoFromLangID($this->object->kSprache);
+        return Shop::Lang()->getIsoFromLangID($this->order->kSprache)->cISO;
     }
 
     /**
      * @return string
      */
-    public function getInvoiceID()
+    public function getInvoiceID(): string
     {
-        return $this->object->cBestellNr;
+        return $this->order->cBestellNr;
     }
 
     /**
@@ -224,7 +129,7 @@ class Order extends CartHelper
      */
     public function getIdentifier(): int
     {
-        return (int)$this->object->kBestellung;
+        return (int)$this->order->kBestellung;
     }
 
     /**
@@ -234,17 +139,16 @@ class Order extends CartHelper
      */
     public static function getLastOrderRefIDs(int $customerID): ?object
     {
-        $order = Shop::Container()->getDB()->queryPrepared(
+        $order = Shop::Container()->getDB()->getSingleObject(
             'SELECT kBestellung, kWarenkorb, kLieferadresse, kRechnungsadresse, kZahlungsart, kVersandart
                 FROM tbestellung
                 WHERE kKunde = :customerID
                 ORDER BY dErstellt DESC
                 LIMIT 1',
-            ['customerID' => $customerID],
-            ReturnType::SINGLE_OBJECT
+            ['customerID' => $customerID]
         );
 
-        return \is_object($order)
+        return $order !== null
             ? (object)[
                 'kBestellung'       => (int)$order->kBestellung,
                 'kWarenkorb'        => (int)$order->kWarenkorb,

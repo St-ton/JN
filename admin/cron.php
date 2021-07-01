@@ -7,9 +7,10 @@ use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
+/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('CRON_VIEW', true, true);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
 $admin    = Shop::Container()->get(Controller::class);
 $deleted  = 0;
 $updated  = 0;
@@ -36,10 +37,10 @@ if (Form::validateToken()) {
     }
 }
 $smarty->assign('jobs', $admin->getJobs())
-       ->assign('deleted', $deleted)
-       ->assign('updated', $updated)
-       ->assign('inserted', $inserted)
-       ->assign('available', $admin->getAvailableCronJobs())
-       ->assign('tab', $tab)
-       ->assign('oConfig_arr', getAdminSectionSettings(CONF_CRON))
-       ->display('cron.tpl');
+    ->assign('deleted', $deleted)
+    ->assign('updated', $updated)
+    ->assign('inserted', $inserted)
+    ->assign('available', $admin->getAvailableCronJobs())
+    ->assign('tab', $tab)
+    ->assign('oConfig_arr', getAdminSectionSettings(CONF_CRON))
+    ->display('cron.tpl');

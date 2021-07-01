@@ -3,7 +3,6 @@
 namespace JTL\Extensions\Config;
 
 use JsonSerializable;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
@@ -284,12 +283,12 @@ class Group implements JsonSerializable
      */
     public function getItemCount(): int
     {
-        return (int)Shop::Container()->getDB()->query(
-            'SELECT COUNT(*) AS nCount 
+        return (int)Shop::Container()->getDB()->getSingleObject(
+            'SELECT COUNT(*) AS cnt 
                 FROM tkonfigitem 
-                WHERE kKonfiggruppe = ' . (int)$this->kKonfiggruppe,
-            ReturnType::SINGLE_OBJECT
-        )->nCount;
+                WHERE kKonfiggruppe = :gid',
+            ['gid' => (int)$this->kKonfiggruppe]
+        )->cnt;
     }
 
     /**
@@ -303,7 +302,7 @@ class Group implements JsonSerializable
             if ($item->getMin() === $item->getMax()) {
                 $equal = true;
                 $nKey  = $item->getMin();
-                foreach ($this->oItem_arr as &$item) {
+                foreach ($this->oItem_arr as $item) {
                     if (!($item->getMin() === $item->getMax() && $item->getMin() === $nKey)) {
                         $equal = false;
                     }
@@ -320,7 +319,7 @@ class Group implements JsonSerializable
     public function getInitQuantity()
     {
         $qty = 1;
-        foreach ($this->oItem_arr as &$item) {
+        foreach ($this->oItem_arr as $item) {
             if ($item->getSelektiert()) {
                 $qty = $item->getInitial();
             }

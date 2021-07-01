@@ -97,17 +97,18 @@ trait MultiSizeImage
      */
     public function generateImagePath(string $size, int $number = 1, string $source = null): string
     {
-        $instance = Media::getClass($this->getImageType());
-        /** @var IMedia $instance */
+        $class = Media::getClass($this->getImageType());
+        /** @var IMedia $class */
         if ($source === null) {
-            $source = $instance::getPathByID($this->getID(), $number);
+            $instance = new $class();
+            $source   = $instance->getPathByID($this->getID(), $number);
             if (empty($source)) {
                 $source = null;
             }
         }
         $this->currentImagePath = $source;
 
-        return $instance::getThumb($this->getImageType(), $this->getID(), $this, $size, $number, $source);
+        return $class::getThumb($this->getImageType(), $this->getID(), $this, $size, $number, $source);
     }
 
     /**
@@ -118,13 +119,14 @@ trait MultiSizeImage
      */
     public function generateImage(string $size, int $number = 1, string $source = null): string
     {
-        $instance = Media::getClass($this->getImageType());
-        /** @var IMedia $instance */
+        $class = Media::getClass($this->getImageType());
+        /** @var IMedia $class */
         if ($source === null) {
-            $source = $instance::getPathByID($this->getID(), $number);
+            $instance = new $class();
+            $source   = $instance->getPathByID($this->getID(), $number);
         }
         $this->currentImagePath = $source;
-        $req                    = $instance::getRequest(
+        $req                    = $class::getRequest(
             $this->getImageType(),
             $this->getID(),
             $this,
@@ -137,7 +139,7 @@ trait MultiSizeImage
         } catch (Exception $e) {
         }
 
-        return $instance::getThumbByRequest($req);
+        return $class::getThumbByRequest($req);
     }
 
     /**

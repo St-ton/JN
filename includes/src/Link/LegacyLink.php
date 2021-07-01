@@ -3,7 +3,6 @@
 namespace JTL\Link;
 
 use Exception;
-use JTL\DB\ReturnType;
 use JTL\Helpers\FileSystem;
 use JTL\MainModel;
 use JTL\Shop;
@@ -588,21 +587,20 @@ class LegacyLink extends MainModel
      * @param int         $id
      * @param object|null $data
      * @param mixed|null  $option
-     * @param int         $kLinkgruppe
+     * @param int|null    $kLinkgruppe
      * @return $this
      */
     public function load($id, $data = null, $option = null, int $kLinkgruppe = null): self
     {
         if ($kLinkgruppe > 0) {
-            $data = Shop::Container()->getDB()->queryPrepared(
+            $data = Shop::Container()->getDB()->getSingleObject(
                 'SELECT tlink.* 
                     FROM tlink 
                     JOIN tlinkgroupassociations t 
                         ON tlink.kLink = t.linkID
                     WHERE tlink.kLink = :lid
                     AND t.linkGroupID = :lgid',
-                ['lid' => (int)$id, 'lgid' => $kLinkgruppe],
-                ReturnType::SINGLE_OBJECT
+                ['lid' => (int)$id, 'lgid' => $kLinkgruppe]
             );
         } else {
             $data = Shop::Container()->getDB()->select('tlink', 'kLink', (int)$id);
@@ -619,15 +617,15 @@ class LegacyLink extends MainModel
     }
 
     /**
-     * @param int $kVaterLink
-     * @param int $kVaterLinkgruppe
+     * @param int      $kVaterLink
+     * @param int|null $kVaterLinkgruppe
      * @return null|array
      */
     public static function getSub(int $kVaterLink, int $kVaterLinkgruppe = null): ?array
     {
         if ($kVaterLink > 0) {
             if (!empty($kVaterLinkgruppe)) {
-                $links = Shop::Container()->getDB()->queryPrepared(
+                $links = Shop::Container()->getDB()->getObjects(
                     'SELECT tlink.* 
                         FROM tlink 
                         JOIN tlinkgroupassociations t 
@@ -637,8 +635,7 @@ class LegacyLink extends MainModel
                     [
                         'parentID' => $kVaterLink,
                         'lgid'     => $kVaterLinkgruppe
-                    ],
-                    ReturnType::ARRAY_OF_OBJECTS
+                    ]
                 );
             } else {
                 $links = Shop::Container()->getDB()->selectAll('tlink', 'kVaterLink', $kVaterLink);
@@ -705,7 +702,7 @@ class LegacyLink extends MainModel
                     $val    = $this->$cMethod();
                     $mValue = $val === null
                         ? 'NULL'
-                        : ("'" . Shop::Container()->getDB()->realEscape($val) . "'");
+                        : ("'" . Shop::Container()->getDB()->escape($val) . "'");
                     $set[]  = $cMember . ' = ' . $mValue;
                 }
             }
@@ -713,14 +710,14 @@ class LegacyLink extends MainModel
             $sql .= \implode(', ', $set);
             $sql .= ' WHERE kLink = ' . $this->getLink() . ' AND klinkgruppe = ' . $this->getLinkgruppe();
 
-            return Shop::Container()->getDB()->query($sql, ReturnType::AFFECTED_ROWS);
+            return Shop::Container()->getDB()->getAffectedRows($sql);
         }
         throw new Exception('ERROR: Object has no members!');
     }
 
     /**
-     * @param bool $sub
-     * @param int  $linkGroupID
+     * @param bool     $sub
+     * @param int|null $linkGroupID
      * @return int
      */
     public function delete(bool $sub = true, int $linkGroupID = null): int

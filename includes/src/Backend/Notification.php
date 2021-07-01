@@ -6,9 +6,12 @@ use ArrayIterator;
 use Countable;
 use Exception;
 use IteratorAggregate;
+use JTL\DB\DbInterface;
+use JTL\Export\SyntaxChecker;
+use JTL\IO\IOResponse;
 use JTL\Link\Admin\LinkAdmin;
+use JTL\Mail\Template\Model;
 use JTL\Shop;
-use JTL\SingletonTrait;
 use function Functional\pluck;
 
 /**
@@ -17,41 +20,76 @@ use function Functional\pluck;
  */
 class Notification implements IteratorAggregate, Countable
 {
-    use SingletonTrait;
-
     /**
      * @var NotificationEntry[]
      */
     private $array = [];
 
     /**
+     * @var DbInterface
+     */
+    private $db;
+
+    /**
+     * @var Notification
+     */
+    private static $instance;
+
+    /**
+     * Notification constructor.
+     * @param DbInterface $db
+     */
+    public function __construct(DbInterface $db)
+    {
+        $this->db       = $db;
+        self::$instance = $this;
+    }
+
+    /**
+     * @param DbInterface|null $db
+     * @return Notification
+     */
+    public static function getInstance(DbInterface $db = null): self
+    {
+
+        return static::$instance ?? new self($db ?? Shop::Container()->getDB());
+    }
+
+    /**
      * @param int         $type
      * @param string      $title
      * @param string|null $description
      * @param string|null $url
+     * @param string|null $hash
      */
-    public function add(int $type, string $title, string $description = null, string $url = null)
-    {
-        $this->addNotify(new NotificationEntry($type, $title, $description, $url));
+    public function add(
+        int $type,
+        string $title,
+        ?string $description = null,
+        ?string $url = null,
+        ?string $hash = null
+    ): void {
+        $this->addNotify(new NotificationEntry($type, $title, $description, $url, $hash));
     }
 
     /**
      * @param NotificationEntry $notify
      */
-    public function addNotify(NotificationEntry $notify)
+    public function addNotify(NotificationEntry $notify): void
     {
         $this->array[] = $notify;
     }
 
     /**
+     * @param bool $withIgnored
      * @return int - highest type in record
      */
-    public function getHighestType(): int
+    public function getHighestType(bool $withIgnored = false): int
     {
         $type = NotificationEntry::TYPE_NONE;
         foreach ($this as $notify) {
             /** @var NotificationEntry $notify */
-            if ($notify->getType() > $type) {
+            if (($withIgnored || !$notify->isIgnored()) && $notify->getType() > $type) {
                 $type = $notify->getType();
             }
         }
@@ -63,6 +101,16 @@ class Notification implements IteratorAggregate, Countable
      * @return int
      */
     public function count(): int
+    {
+        return \count(\array_filter($this->array, static function ($item) {
+            return !$item->isIgnored();
+        }));
+    }
+
+    /**
+     * @return int
+     */
+    public function totalCount(): int
     {
         return \count($this->array);
     }
@@ -82,96 +130,112 @@ class Notification implements IteratorAggregate, Countable
     /**
      * Build default system notifications.
      *
-     * @todo Remove translated messages
+     * @param bool $flushCache
      * @return $this
      * @throws Exception
+     * @todo Remove translated messages
      */
-    public function buildDefault(): self
+    public function buildDefault(bool $flushCache = false): self
     {
-        $status    = Status::getInstance();
-        $db        = Shop::Container()->getDB();
+        $adminURL  = Shop::getAdminURL() . '/';
         $cache     = Shop::Container()->getCache();
-        $linkAdmin = new LinkAdmin($db, $cache);
+        $status    = Status::getInstance($this->db, $cache, $flushCache);
+        $linkAdmin = new LinkAdmin($this->db, $cache);
 
         Shop::Container()->getGetText()->loadAdminLocale('notifications');
 
         if ($status->hasPendingUpdates()) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                __('hasPendingUpdatesTitle'),
-                __('hasPendingUpdatesMessage'),
-                'dbupdater.php'
+                \__('hasPendingUpdatesTitle'),
+                \__('hasPendingUpdatesMessage'),
+                $adminURL . 'dbupdater.php'
             );
             return $this;
         }
 
-        if (!$status->validFolderPermissions()) {
+        $hash = 'validFolderPermissions';
+        if (!$status->validFolderPermissions($hash)) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                __('validFolderPermissionsTitle'),
-                __('validFolderPermissionsMessage'),
-                'permissioncheck.php'
+                \__('validFolderPermissionsTitle'),
+                \__('validFolderPermissionsMessage'),
+                $adminURL . 'permissioncheck.php',
+                $hash
             );
         }
 
         if ($status->hasInstallDir()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                __('hasInstallDirTitle'),
-                __('hasInstallDirMessage')
+                \__('hasInstallDirTitle'),
+                \__('hasInstallDirMessage')
             );
         }
 
         if (!$status->validDatabaseStruct()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                __('validDatabaseStructTitle'),
-                __('validDatabaseStructMessage'),
-                'dbcheck.php'
+                \__('validDatabaseStructTitle'),
+                \__('validDatabaseStructMessage'),
+                $adminURL . 'dbcheck.php'
             );
         }
 
-        if (!$status->validModifiedFileStruct() || !$status->validOrphanedFilesStruct()) {
+        $hash = 'validModifiedFileStruct';
+        if (!$status->validModifiedFileStruct($hash) || !$status->validOrphanedFilesStruct($hash)) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                __('validModifiedFileStructTitle'),
-                __('validModifiedFileStructMessage'),
-                'filecheck.php'
+                \__('validModifiedFileStructTitle'),
+                \__('validModifiedFileStructMessage'),
+                $adminURL . 'filecheck.php',
+                $hash
             );
         }
 
         if ($status->hasMobileTemplateIssue()) {
             $this->add(
                 NotificationEntry::TYPE_INFO,
-                __('hasMobileTemplateIssueTitle'),
-                __('hasMobileTemplateIssueMessage'),
-                'shoptemplate.php'
+                \__('hasMobileTemplateIssueTitle'),
+                \__('hasMobileTemplateIssueMessage'),
+                $adminURL . 'shoptemplate.php'
             );
         }
 
         if ($status->hasStandardTemplateIssue()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                __('hasStandardTemplateIssueTitle'),
-                __('hasStandardTemplateIssueMessage'),
-                'shoptemplate.php'
+                \__('hasStandardTemplateIssueTitle'),
+                \__('hasStandardTemplateIssueMessage'),
+                $adminURL . 'shoptemplate.php'
             );
         }
 
         if ($status->hasActiveProfiler()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                __('hasActiveProfilerTitle'),
-                __('hasActiveProfilerMessage')
+                \__('hasActiveProfilerTitle'),
+                \__('hasActiveProfilerMessage')
             );
         }
 
         if ($status->hasNewPluginVersions()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                __('hasNewPluginVersionsTitle'),
-                __('hasNewPluginVersionsMessage'),
-                'pluginverwaltung.php'
+                \__('hasNewPluginVersionsTitle'),
+                \__('hasNewPluginVersionsMessage'),
+                $adminURL . 'pluginverwaltung.php'
+            );
+        }
+
+        $hash = 'hasLicenseExpirations';
+        if ($status->hasLicenseExpirations($hash)) {
+            $this->add(
+                NotificationEntry::TYPE_WARNING,
+                \__('hasLicenseExpirationsTitle'),
+                \__('hasLicenseExpirationsMessage'),
+                $adminURL . 'licenses.php',
+                $hash
             );
         }
 
@@ -200,26 +264,29 @@ class Notification implements IteratorAggregate, Countable
         if ($status->hasFullTextIndexError()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                __('hasFullTextIndexErrorTitle'),
-                __('hasFullTextIndexErrorMessage'),
-                'sucheinstellungen.php'
+                \__('hasFullTextIndexErrorTitle'),
+                \__('hasFullTextIndexErrorMessage'),
+                $adminURL . 'sucheinstellungen.php'
             );
         }
 
         if ($status->hasInvalidPasswordResetMailTemplate()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                __('hasInvalidPasswordResetMailTemplateTitle'),
-                __('hasInvalidPasswordResetMailTemplateMessage')
+                \__('hasInvalidPasswordResetMailTemplateTitle'),
+                \__('hasInvalidPasswordResetMailTemplateMessage'),
+                $adminURL . 'emailvorlagen'
             );
         }
 
-        if ($status->hasInsecureMailConfig()) {
+        $hash = 'hasInsecureMailConfig';
+        if ($status->hasInsecureMailConfig($hash)) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                __('hasInsecureMailConfigTitle'),
-                __('hasInsecureMailConfigMessage'),
-                Shop::getURL() . '/' . \PFAD_ADMIN . 'einstellungen.php?kSektion=3'
+                \__('hasInsecureMailConfigTitle'),
+                \__('hasInsecureMailConfigMessage'),
+                $adminURL . 'einstellungen.php?kSektion=3',
+                $hash
             );
         }
 
@@ -227,68 +294,203 @@ class Notification implements IteratorAggregate, Countable
             if ($status->needPasswordRehash2FA()) {
                 $this->add(
                     NotificationEntry::TYPE_DANGER,
-                    __('needPasswordRehash2FATryTitle'),
-                    __('needPasswordRehash2FATryMessage'),
-                    'benutzerverwaltung.php'
+                    \__('needPasswordRehash2FATryTitle'),
+                    \__('needPasswordRehash2FATryMessage'),
+                    $adminURL . 'benutzerverwaltung.php'
                 );
             }
         } catch (Exception $e) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                __('needPasswordRehash2FACatchTitle'),
-                __('needPasswordRehash2FACatchMessage'),
-                'dbupdater.php'
+                \__('needPasswordRehash2FACatchTitle'),
+                \__('needPasswordRehash2FACatchMessage'),
+                $adminURL . 'dbupdater.php'
             );
         }
 
         if (\count($status->getDuplicateLinkGroupTemplateNames()) > 0) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                __('getDuplicateLinkGroupTemplateNamesTitle'),
+                \__('getDuplicateLinkGroupTemplateNamesTitle'),
                 \sprintf(
-                    __('getDuplicateLinkGroupTemplateNamesMessage'),
+                    \__('getDuplicateLinkGroupTemplateNamesMessage'),
                     \implode(', ', pluck($status->getDuplicateLinkGroupTemplateNames(), 'cName'))
                 ),
-                'links.php'
+                $adminURL . 'links.php'
             );
         }
 
         if ($linkAdmin->getDuplicateSpecialLinks()->count() > 0) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                __('duplicateSpecialLinkTitle'),
-                __('duplicateSpecialLinkDesc'),
-                'links.php'
+                \__('duplicateSpecialLinkTitle'),
+                \__('duplicateSpecialLinkDesc'),
+                $adminURL . 'links.php'
             );
         }
 
-        if (($exportSyntaxErrorCount = $status->getExportFormatErrorCount()) > 0) {
+        if (($missingTranslations = $linkAdmin->getUntranslatedPageIDs()->count()) > 0) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                __('getExportFormatErrorCountTitle'),
-                \sprintf(__('getExportFormatErrorCountMessage'), $exportSyntaxErrorCount),
-                'exportformate.php'
+                \__('Missing translations'),
+                \sprintf(\__('%d pages are not translated in all available languages.'), $missingTranslations),
+                $adminURL . 'links.php'
             );
         }
 
-        if (($emailSyntaxErrorCount = $status->getEmailTemplateSyntaxErrorCount()) > 0) {
+        if (($missingSystemPages = $linkAdmin->getMissingSystemPages()->count()) > 0) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                __('getEmailTemplateSyntaxErrorCountTitle'),
-                \sprintf(__('getEmailTemplateSyntaxErrorCountMessage'), $emailSyntaxErrorCount),
-                'emailvorlagen.php'
+                \__('Missing special pages'),
+                \sprintf(\__('%d special pages are missing.'), $missingSystemPages),
+                $adminURL . 'links.php'
+            );
+        }
+
+        if (($expSyntaxErrorCount = $status->getExportFormatErrorCount()) > 0) {
+            $this->add(
+                NotificationEntry::TYPE_DANGER,
+                \__('getExportFormatErrorCountTitle'),
+                \sprintf(\__('getExportFormatErrorCountMessage'), $expSyntaxErrorCount),
+                $adminURL . 'exportformate.php'
+            );
+        }
+
+        $hash = 'hasUncheckedExportTemplates';
+        if (($expSyntaxErrorCount = $status->getExportFormatErrorCount(SyntaxChecker::SYNTAX_NOT_CHECKED, $hash)) > 0) {
+            $this->add(
+                NotificationEntry::TYPE_WARNING,
+                \__('getExportFormatUncheckedCountTitle'),
+                \sprintf(\__('getExportFormatUncheckedCountMessage'), $expSyntaxErrorCount),
+                $adminURL . 'exportformate.php',
+                $hash
+            );
+        }
+
+        if (($emailSyntaxErrCount = $status->getEmailTemplateSyntaxErrorCount()) > 0) {
+            $this->add(
+                NotificationEntry::TYPE_DANGER,
+                \__('getEmailTemplateSyntaxErrorCountTitle'),
+                \sprintf(\__('getEmailTemplateSyntaxErrorCountMessage'), $emailSyntaxErrCount),
+                $adminURL . 'emailvorlagen.php'
+            );
+        }
+
+        $hash = 'hasUncheckedEmailTemplates';
+        if (($emailSyntaxErrCount = $status->getEmailTemplateSyntaxErrorCount(Model::SYNTAX_NOT_CHECKED, $hash)) > 0) {
+            $this->add(
+                NotificationEntry::TYPE_WARNING,
+                \__('getEmailTemplateSyntaxUncheckedCountTitle'),
+                \sprintf(\__('getEmailTemplateSyntaxUncheckedCountMessage'), $emailSyntaxErrCount),
+                $adminURL . 'emailvorlagen.php',
+                $hash
             );
         }
 
         if (!$status->hasExtensionSOAP()) {
             $this->add(
                 NotificationEntry::TYPE_INFO,
-                __('ustIdMiasCheckTitle'),
-                __('ustIdMiasCheckMessage'),
-                Shop::getAdminURL().'/einstellungen.php?kSektion=6'
+                \__('ustIdMiasCheckTitle'),
+                \__('ustIdMiasCheckMessage'),
+                $adminURL . 'einstellungen.php?kSektion=6'
             );
         }
 
+
         return $this;
+    }
+
+    /**
+     * @param IOResponse $response
+     * @param string     $hash
+     * @return void
+     * @throws Exception
+     */
+    protected function ignoreNotification(IOResponse $response, string $hash): void
+    {
+        $this->db->upsert('tnotificationsignore', (object)[
+            'user_id'           => Shop::Container()->getAdminAccount()->getID(),
+            'notification_hash' => $hash,
+            'created'           => 'NOW()',
+        ], ['created']);
+
+        $response->assignDom($hash, 'outerHTML', '');
+    }
+
+    /**
+     * @param IOResponse $response
+     * @return void
+     * @throws Exception
+     */
+    protected function resetIgnoredNotifications(IOResponse $response): void
+    {
+        $this->db->delete(
+            'tnotificationsignore',
+            'user_id',
+            Shop::Container()->getAdminAccount()->getID()
+        );
+
+        $this->updateNotifications($response, true);
+    }
+
+    /**
+     * @param IOResponse $response
+     * @param bool       $flushCache
+     * @return void
+     * @throws Exception
+     */
+    protected function updateNotifications(IOResponse $response, bool $flushCache = false): void
+    {
+        Shop::fire('backend.notification', $this->buildDefault($flushCache));
+        $res    = $this->db->getCollection(
+            'SELECT notification_hash
+                FROM tnotificationsignore
+                WHERE user_id = :userID', // AND NOW() < DATE_ADD(created, INTERVAL 7 DAY)',
+            ['userID' => Shop::Container()->getAdminAccount()->getID()]
+        );
+        $hashes = $res->keyBy('notification_hash');
+        foreach ($this->array as $notificationEntry) {
+            if (($hash = $notificationEntry->getHash()) !== null && $hashes->has($hash)) {
+                $notificationEntry->setIgnored(true);
+                $hashes->forget($hash);
+            }
+        }
+        if ($hashes->count() > 0) {
+            $this->db->query(
+                "DELETE FROM tnotificationsignore
+                    WHERE notification_hash IN ('" . $hashes->implode('notification_hash', "', '") . "')"
+            );
+        }
+
+        $response->assignDom('notify-drop', 'innerHTML', \getNotifyDropIO()['tpl']);
+    }
+
+    /**
+     * @param string     $action
+     * @param mixed|null $data
+     * @return IOResponse
+     * @throws Exception
+     */
+    public static function ioNotification(string $action, $data = null): IOResponse
+    {
+        $response      = new IOResponse();
+        $notifications = self::getInstance();
+
+        switch ($action) {
+            case 'update':
+                $notifications->updateNotifications($response);
+                break;
+            case 'refresh':
+                $notifications->updateNotifications($response, true);
+                break;
+            case 'dismiss':
+                $notifications->ignoreNotification($response, (string)$data);
+                break;
+            case 'reset':
+                $notifications->resetIgnoredNotifications($response);
+                break;
+        }
+
+        return $response;
     }
 }

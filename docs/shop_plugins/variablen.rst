@@ -31,9 +31,9 @@ in der PHP-Datei eines Frontend-Links
 
 .. code-block:: php
 
-    $smarty->assign(
+    $smarty->assign([
         'pluginName' => $plugin->getMeta()->getName()
-    );
+    ]);
 
 in einem Frontend-Template
 

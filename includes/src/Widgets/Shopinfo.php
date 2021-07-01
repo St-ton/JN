@@ -3,7 +3,6 @@
 namespace JTL\Widgets;
 
 use JTL\Shop;
-use JTL\Template;
 
 /**
  * Class Shopinfo
@@ -16,18 +15,19 @@ class Shopinfo extends AbstractWidget
      */
     public function init()
     {
-        $tpl             = Template::getInstance();
-        $strTplVersion   = $tpl->getVersion();
+        $strTplVersion   = Shop::Container()->getTemplateService()->getActiveTemplate()->getVersion();
         $strFileVersion  = Shop::getApplicationVersion();
         $strDBVersion    = Shop::getShopDatabaseVersion();
         $strUpdated      = \date_format(\date_create(\getJTLVersionDB(true)), 'd.m.Y, H:i:m');
         $strMinorVersion = \APPLICATION_BUILD_SHA === '#DEV#' ? 'DEV' : '';
 
         $this->oSmarty->assign('strFileVersion', $strFileVersion)
-                      ->assign('strDBVersion', $strDBVersion)
-                      ->assign('strTplVersion', $strTplVersion)
-                      ->assign('strUpdated', $strUpdated)
-                      ->assign('strMinorVersion', $strMinorVersion);
+            ->assign('strDBVersion', $strDBVersion)
+            ->assign('strTplVersion', $strTplVersion)
+            ->assign('strUpdated', $strUpdated)
+            ->assign('strMinorVersion', $strMinorVersion);
+
+        $this->setPermission('DIAGNOSTIC_VIEW');
     }
 
     /**

@@ -9,22 +9,27 @@ namespace JTL;
 class XML
 {
     /**
+     * @var string|null
+     */
+    private static $lastParseError;
+
+    /**
      * @var resource
      */
     public $parser;
 
     /**
-     * @var
+     * @var array
      */
     public $document;
 
     /**
-     * @var
+     * @var array|string
      */
     public $parent;
 
     /**
-     * @var
+     * @var array
      */
     public $stack;
 
@@ -42,7 +47,7 @@ class XML
      * XML constructor.
      * @param string $encoding
      */
-    public function __construct($encoding)
+    public function __construct(string $encoding)
     {
         $this->parser = \xml_parser_create($encoding);
         \xml_parser_set_option($this->parser, \XML_OPTION_CASE_FOLDING, false);
@@ -51,6 +56,7 @@ class XML
         \xml_set_object($this->parser, $this);
         \xml_set_element_handler($this->parser, 'open', 'close');
         \xml_set_character_data_handler($this->parser, 'data');
+        $this->checkError();
     }
 
     /**
@@ -69,10 +75,11 @@ class XML
      * @param string $encoding
      * @return array|null
      */
-    public static function unserialize(&$xml, $encoding = 'UTF-8'): ?array
+    public static function unserialize(&$xml, string $encoding = 'UTF-8'): ?array
     {
         $parser = new self($encoding);
         $data   = $parser->parse($xml);
+        $parser->checkError();
         $parser->destruct();
 
         return $data;
@@ -108,11 +115,11 @@ class XML
     }
 
     /**
-     * @param string $parser
-     * @param mixed  $tag
-     * @param mixed  $attributes
+     * @param resource $parser
+     * @param mixed    $tag
+     * @param mixed    $attributes
      */
-    public function open(&$parser, $tag, $attributes): void
+    public function open($parser, $tag, $attributes): void
     {
         $this->data            = '';
         $this->last_opened_tag = $tag;
@@ -145,7 +152,7 @@ class XML
      * @param resource $parser
      * @param string   $data
      */
-    public function data(&$parser, $data): void
+    public function data($parser, $data): void
     {
         if ($this->last_opened_tag !== null) {
             $this->data .= $data;
@@ -156,7 +163,7 @@ class XML
      * @param resource $parser
      * @param string   $tag
      */
-    public function close(&$parser, $tag): void
+    public function close($parser, $tag): void
     {
         if ($this->last_opened_tag === $tag) {
             $this->parent          = $this->data;
@@ -175,5 +182,28 @@ class XML
     private function countNumericItems(&$array): int
     {
         return \is_array($array) ? \count(\array_filter(\array_keys($array), '\is_numeric')) : 0;
+    }
+
+    /**
+     * @return void
+     */
+    private function checkError(): void
+    {
+        $errCode = \xml_get_error_code($this->parser);
+        if ($errCode !== \XML_ERROR_NONE) {
+            $lineNumber           = \xml_get_current_line_number($this->parser);
+            self::$lastParseError = \xml_error_string($errCode)
+                . ($lineNumber !== false ? '- on line: ' . $lineNumber : '');
+        } else {
+            self::$lastParseError = '';
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public static function getLastParseError(): string
+    {
+        return self::$lastParseError ?? '';
     }
 }

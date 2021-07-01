@@ -4,6 +4,7 @@ namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\Helpers\GeneralObject;
 use JTL\Plugin\InstallCode;
+use stdClass;
 
 /**
  * Class AdminMenu
@@ -37,7 +38,7 @@ class AdminMenu extends AbstractItem
                 if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
                     $sort = (int)$customLink['sort'];
                 } elseif (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
-                    $menuItem             = new \stdClass();
+                    $menuItem             = new stdClass();
                     $menuItem->kPlugin    = $this->plugin->kPlugin;
                     $menuItem->cName      = $customLink['Name'];
                     $menuItem->cDateiname = $customLink['Filename'] ?? '';

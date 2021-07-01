@@ -4,7 +4,8 @@
         router-aria=['label' => {lang key='myAccount'}]
         no-caret=true
         right=true
-        text='<span class="fas fa-user"></span>'}
+        text='<span class="fas fa-user"></span>'
+        class="account-icon-dropdown"}
         {if empty($smarty.session.Kunde->kKunde)}
             {block name='layout-header-shop-nav-account-logged-out'}
                 <div class="dropdown-body lg-min-w-lg">
@@ -13,22 +14,21 @@
                             <fieldset id="quick-login">
                                 {block name='layout-header-nav-account-form-email'}
                                     {formgroup label-for="email_quick" label={lang key='emailadress'}}
-                                        {input type="email" name="email" id="email_quick" size="sm"
+                                        {input type="email" name="email" id="email_quick" size-class="sm"
                                                placeholder=" " required=true
-                                               autocomplete="quick-login username"}
-
+                                               autocomplete="email"}
                                     {/formgroup}
                                 {/block}
                                 {block name='layout-header-nav-account-form-password'}
-                                    {formgroup label-for="password_quick" label={lang key='password'} class="mb-5"}
-                                        {input type="password" name="passwort" id="password_quick" size="sm"
+                                    {formgroup label-for="password_quick" label={lang key='password'} class="account-icon-dropdown-pass"}
+                                        {input type="password" name="passwort" id="password_quick" size-class="sm"
                                                required=true placeholder=" "
-                                               autocomplete="quick-login current-password"}
+                                               autocomplete="current-password"}
                                     {/formgroup}
                                 {/block}
                                 {block name='layout-header-nav-account-form-captcha'}
                                     {if isset($showLoginCaptcha) && $showLoginCaptcha}
-                                        {formgroup class="text-center"}
+                                        {formgroup class="simple-captcha-wrapper"}
                                             {captchaMarkup getBody=true}
                                         {/formgroup}
                                     {/if}
@@ -56,9 +56,10 @@
                     {/block}
                 </div>
                 {block name='layout-header-nav-account-link-register'}
-                    <div class="dropdown-footer bg-gray-light">
+                    <div class="dropdown-footer">
+                        {lang key='newHere'}
                         {link href="{get_static_route id='registrieren.php'}" rel="nofollow" title="{lang key='registerNow'}"}
-                            {lang key='newHere'} <span class="text-decoration-underline">{lang key='registerNow'}</span>
+                            {lang key='registerNow'}
                         {/link}
                     </div>
                 {/block}
@@ -78,7 +79,7 @@
                     {lang key='myWishlists'}
                 {/dropdownitem}
                 {dropdowndivider}
-                {dropdownitem href="{get_static_route id='jtl.php' secure=true}?logout=1" rel="nofollow" title="{lang key='logOut'}" class="mb-2"}
+                {dropdownitem href="{get_static_route id='jtl.php' secure=true}?logout=1" rel="nofollow" title="{lang key='logOut'}" class="account-icon-dropdown-logout"}
                     {lang key='logOut'}
                 {/dropdownitem}
             {/block}

@@ -179,6 +179,38 @@
             </div>
         </div>
 
+        <div class="grid-item">
+            <div class="card">
+                <div class="card-header">
+                    <div class="subheading1">{__('extensions')}</div>
+                    <hr class="mb-n3">
+                </div>
+                <div class="card-body">
+                    <ul class="infolist list-group list-group-flush">
+                        {foreach $status->getExtensions() as $extension}
+                            <li class="list-group-item {if $extension@first}first{elseif $extension@last}last{/if}">
+                                <p class="key">
+                                    {if $extension->bActive}
+                                        <i class="fal fa-check-circle text-success fa-fw" aria-hidden="true"></i>
+                                    {else}
+                                        <i class="fa fa-times-circle text-warning fa-fw" aria-hidden="true"></i>
+                                    {/if}
+                                    <span>{$extension->cName}</span>
+                                    <span class="float-right">
+                                        {if $extension->bActive}
+                                            <span class="text-success">{__('active')}</span>
+                                        {else}
+                                           <a href="{$extension->cURL}" target="_blank" rel="noopener">{__('buyNow')}</a>
+                                        {/if}
+                                    </span>
+                                </p>
+                            </li>
+                        {/foreach}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {$incorrectPaymentMethods = $status->getPaymentMethodsWithError()}
         {if count($incorrectPaymentMethods) > 0}
             <div class="grid-item">

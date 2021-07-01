@@ -41,86 +41,86 @@ class ImageSlider extends Portlet
     {
         $desc = [
             'slider-theme'                => [
-                'label'      => __('Theme'),
+                'label'      => \__('Theme'),
                 'type'       => InputType::SELECT,
                 'options'    => [
-                    'default' => __('themeStandard'),
-                    'bar'     => __('themeBar'),
-                    'light'   => __('themeBright'),
-                    'dark'    => __('themeDark'),
+                    'default' => \__('themeStandard'),
+                    'bar'     => \__('themeBar'),
+                    'light'   => \__('themeBright'),
+                    'dark'    => \__('themeDark'),
                 ],
                 'width' => 34,
             ],
             'slider-animation-speed'      => [
-                'label'      => __('sliderAnimationSpeed'),
+                'label'      => \__('sliderAnimationSpeed'),
                 'type'       => InputType::NUMBER,
                 'default'    => 1500,
                 'width'      => 34,
             ],
             'slider-animation-pause'      => [
-                'label'      => __('pause'),
+                'label'      => \__('pause'),
                 'type'       => InputType::NUMBER,
                 'default'    => 6000,
                 'width'      => 34,
             ],
             'slider-start'                => [
-                'label'      => __('autoStart'),
+                'label'      => \__('autoStart'),
                 'type'       => InputType::RADIO,
                 'options'    => [
-                    'true'  => __('yes'),
-                    'false' => __('no'),
+                    'true'  => \__('yes'),
+                    'false' => \__('no'),
                 ],
                 'default'    => 'true',
                 'inline'     => true,
-                'width'      => 34,
+                'width'      => 25,
             ],
             'slider-pause'                => [
-                'label'      => __('pauseOnHover'),
+                'label'      => \__('pauseOnHover'),
                 'type'       => InputType::RADIO,
                 'options'    => [
-                    'true'  => __('pauseOnHoverPause'),
-                    'false' => __('pauseOnHoverContinue'),
+                    'true'  => \__('pauseOnHoverPause'),
+                    'false' => \__('pauseOnHoverContinue'),
                 ],
                 'default'    => 'false',
-                'width'      => 34,
+                'width'      => 25,
             ],
             'slider-navigation'           => [
-                'label'      => __('pointNavigation'),
+                'label'      => \__('pointNavigation'),
                 'type'       => InputType::RADIO,
                 'options'    => [
-                    'true'  => __('yes'),
-                    'false' => __('no'),
+                    'true'  => \__('yes'),
+                    'false' => \__('no'),
                 ],
                 'default'    => 'false',
-                'width'      => 34,
-            ],
-            'slider-kenburns'             => [
-                'label'      => __('useKenBurnsEffect'),
-                'type'       => InputType::CHECKBOX,
-                'hint'       => __('overridesOtherSettings'),
+                'width'      => 25,
             ],
             'slider-direction-navigation' => [
-                'label'      => __('showNavigationArrows'),
+                'label'      => \__('showNavigationArrows'),
                 'type'       => InputType::RADIO,
                 'options'    => [
-                    'true'  => __('yes'),
-                    'false' => __('no'),
+                    'true'  => \__('yes'),
+                    'false' => \__('no'),
                 ],
                 'default'    => 'false',
-                'width'      => 50
+                'width'      => 25
+            ],
+            'slider-kenburns'             => [
+                'label'      => \__('useKenBurnsEffect'),
+                'type'       => InputType::CHECKBOX,
+                'desc'       => \__('kenBurnsDesc') . ' - ' . \__('overridesOtherSettings')
             ],
             'slider-effects-random'       => [
-                'label'   => __('randomEffects'),
+                'label'   => \__('randomEffects'),
                 'type'    => InputType::RADIO,
                 'options' => [
-                    'true'  => __('yes'),
-                    'false' => __('no'),
+                    'true'  => \__('yes'),
+                    'false' => \__('no'),
                 ],
                 'default' => 'true',
-                'width'   => 50
+                'desc'    => \__('randomEffectsDesc'),
             ],
             'slides'                      => [
-                'label'      => __('images'),
+                'label'      => \__('images'),
                 'type'       => InputType::IMAGE_SET,
                 'default'    => [],
                 'useLinks'   => true,
@@ -145,8 +145,8 @@ class ImageSlider extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            __('Slides') => ['slides'],
-            __('Styles') => 'styles',
+            \__('Slides') => ['slides'],
+            \__('Styles') => 'styles',
         ];
     }
 }

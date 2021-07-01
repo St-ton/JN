@@ -163,14 +163,16 @@ interface BoxInterface
     public function setCustomID(int $id): void;
 
     /**
+     * @param int|null $pageID
      * @return int
      */
-    public function getSort(): int;
+    public function getSort(?int $pageID = null): int;
 
     /**
-     * @param int $sort
+     * @param int      $sort
+     * @param int|null $pageID
      */
-    public function setSort(int $sort): void;
+    public function setSort(int $sort, ?int $pageID = null): void;
 
     /**
      * @return int
@@ -203,12 +205,12 @@ interface BoxInterface
     public function setIsActive(bool $isActive): void;
 
     /**
-     * @return array|Artikel[]|ArtikelListe
+     * @return Artikel[]|ArtikelListe
      */
     public function getProducts();
 
     /**
-     * @param array|ArtikelListe $products
+     * @param Artikel[]|ArtikelListe $products
      */
     public function setProducts($products): void;
 
@@ -223,7 +225,7 @@ interface BoxInterface
     public function setItems($items): void;
 
     /**
-     * @param int $idx
+     * @param int|null $idx
      * @return array|bool
      */
     public function getFilter(int $idx = null);
@@ -244,12 +246,12 @@ interface BoxInterface
     public function setConfig(array $config): void;
 
     /**
-     * @return null|string
+     * @return string
      */
     public function getJSON(): string;
 
     /**
-     * @param null|string $json
+     * @param string $json
      */
     public function setJSON(string $json): void;
 
@@ -299,4 +301,9 @@ interface BoxInterface
      * @param string $renderedContent
      */
     public function setRenderedContent(string $renderedContent): void;
+
+    /**
+     *
+     */
+    public function init(): void;
 }

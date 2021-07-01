@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('paymentmethods') cBeschreibung=__('installedPaymentmethods') cDokuURL=__('paymentmethodsURL')}
-<div id="content" class="row">
-    <div class="col-md-7">
+<div id="content" class="row mr-0">
+    <div class="{if $recommendations->getRecommendations()->isNotEmpty()}col-md-7{else}col-lg-9 col-xl-7{/if} pr-0 pr-md-4">
         <div class="card">
             <div class="card-body table-responsive">
                 <table class="table table-content-center">
@@ -53,22 +53,34 @@
                                     </a>
                                     <a {if $zahlungsart->nEingangAnzahl > 0}href="zahlungsarten.php?a=payments&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"{/if}
                                        class="btn btn-link sx-2 {if $zahlungsart->nEingangAnzahl === 0}disabled{/if}"
-                                       title="Zahlungseingänge"
+                                       title="{__('paymentsReceived')}"
                                        data-toggle="tooltip">
                                         <span class="icon-hover">
-                                            <span class="fal fa-hand-holding-us"></span>
-                                            <span class="fas fa-hand-holding-us"></span>
+                                            <span class="fal fa-hand-holding-usd"></span>
+                                            <span class="fas fa-hand-holding-usd"></span>
                                         </span>
                                     </a>
-                                    <a href="zahlungsarten.php?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
-                                       class="btn btn-link sx-2"
-                                       title="{__('edit')}"
-                                       data-toggle="tooltip">
-                                        <span class="icon-hover">
-                                            <span class="fal fa-edit"></span>
-                                            <span class="fas fa-edit"></span>
-                                        </span>
-                                    </a>
+                                    {if $zahlungsart->markedForDelete}
+                                        <a href="zahlungsarten.php?a=del&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
+                                           class="btn btn-link sx-2"
+                                           title="{__('delete')}"
+                                           data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-trash"></span>
+                                                <span class="fas fa-trash"></span>
+                                            </span>
+                                        </a>
+                                    {else}
+                                        <a href="zahlungsarten.php?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
+                                           class="btn btn-link sx-2"
+                                           title="{__('edit')}"
+                                           data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-edit"></span>
+                                                <span class="fas fa-edit"></span>
+                                            </span>
+                                        </a>
+                                    {/if}
                                 </div>
                             </td>
                         </tr>
@@ -91,51 +103,36 @@
             </div>
         </div>
     </div>
-    <div class="col-md-5">
-        {*<div class="card">*}
-            {*<div class="card-body">*}
-                {*<div class="table-responsive">*}
-                    {*<table class="table">*}
-                        {*<thead>*}
-                        {*<tr>*}
-                            {*<th colspan="2">Wir empfehlen:</th>*}
-                        {*</tr>*}
-                        {*</thead>*}
-                        {*<tbody>*}
-                        {*<tr>*}
-                            {*<td><img src="placeholder/klarna-logo.png" width="108" height="42" alt="Klarna"></td>*}
-                            {*<td>*}
-                                {*<p>Klarna wurde 2005 in Stockholm mit der Idee gegründet, das Einkaufen zu*}
-                                    {*vereinfachen. Dies erreichen wir, indem wir es den Verbrauchern ermöglichen,*}
-                                    {*erst nach Warenerhalt zu bezahlen, und gleichzeitig das Kredit- und*}
-                                    {*Betrugsrisiko für die Händler übernehmen.</p>*}
-                                {*<a href="#" class="btn btn-primary">Mehr erfahren</a>*}
-                            {*</td>*}
-                        {*</tr>*}
-                        {*<tr>*}
-                            {*<td><img src="placeholder/klarna-logo.png" width="108" height="42" alt="Klarna"></td>*}
-                            {*<td>*}
-                                {*<p>Klarna wurde 2005 in Stockholm mit der Idee gegründet, das Einkaufen zu*}
-                                    {*vereinfachen. Dies erreichen wir, indem wir es den Verbrauchern ermöglichen,*}
-                                    {*erst nach Warenerhalt zu bezahlen, und gleichzeitig das Kredit- und*}
-                                    {*Betrugsrisiko für die Händler übernehmen.</p>*}
-                                {*<a href="#" class="btn btn-primary">Mehr erfahren</a>*}
-                            {*</td>*}
-                        {*</tr>*}
-                        {*<tr>*}
-                            {*<td><img src="placeholder/klarna-logo.png" width="108" height="42" alt="Klarna"></td>*}
-                            {*<td>*}
-                                {*<p>Klarna wurde 2005 in Stockholm mit der Idee gegründet, das Einkaufen zu*}
-                                    {*vereinfachen. Dies erreichen wir, indem wir es den Verbrauchern ermöglichen,*}
-                                    {*erst nach Warenerhalt zu bezahlen, und gleichzeitig das Kredit- und*}
-                                    {*Betrugsrisiko für die Händler übernehmen.</p>*}
-                                {*<a href="#" class="btn btn-primary">Mehr erfahren</a>*}
-                            {*</td>*}
-                        {*</tr>*}
-                        {*</tbody>*}
-                    {*</table>*}
-                {*</div>*}
-            {*</div>*}
+    {if $recommendations->getRecommendations()->isNotEmpty()}
+    <div class="col-md-5 pr-0 pr-md-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th colspan="2">{__('weRecommend')}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $recommendations->getRecommendations() as $recommendation}
+                                <tr>
+                                    <td><img src="{$recommendation->getPreviewImage()}" style="max-width: 120px;" alt="{$recommendation->getTitle()}" loading="lazy"></td>
+                                    <td>
+                                        <p>{$recommendation->getTeaser()}</p>
+                                        <a href="premiumplugin.php?scope={$recommendations->getScope()}&id={$recommendation->getId()}"
+                                           class="btn btn-primary">
+                                            {__('getToKnowMore')}
+                                            <span class="fal fa-long-arrow-right ml-1"></span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
+    {/if}
 </div>

@@ -1,23 +1,26 @@
 {block name='boxes-box-filter-category'}
     {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
         && !($isMobile || $Einstellungen.template.productlist.filter_placement === 'modal')}
-        <div class="box box-filter-category d-none d-lg-block" id="sidebox{$oBox->getID()}">
+        <div id="sidebox{$oBox->getID()}" class="box box-filter-category d-none d-lg-block">
             {button
                 variant="link"
-                class="text-decoration-none px-0 text-left dropdown-toggle"
+                class="btn-filter-box dropdown-toggle"
                 block=true
                 role="button"
                 data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}"]
             }
-                {$oBox->getTitle()}
+                <span class="text-truncate">
+                    {$oBox->getTitle()}
+                </span>
             {/button}
-            {collapse id="cllps-box{$oBox->getID()}" visible=$oBox->getItems()->isActive()}
-            {block name='boxes-box-filter-category-content'}
-                {include file='snippets/filter/genericFilterItem.tpl' filter=$oBox->getItems()}
-            {/block}
+            {collapse id="cllps-box{$oBox->getID()}"
+                visible=$oBox->getItems()->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
+                {block name='boxes-box-filter-category-content'}
+                    {include file='snippets/filter/genericFilterItem.tpl' filter=$oBox->getItems()}
+                {/block}
             {/collapse}
             {block name='boxes-box-filter-category-hr'}
-                <hr class="my-2">
+                <hr class="box-filter-hr">
             {/block}
         </div>
     {/if}

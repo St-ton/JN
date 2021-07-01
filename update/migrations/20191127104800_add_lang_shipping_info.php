@@ -19,8 +19,7 @@ class Migration_20191127104800 extends Migration implements IMigration
     protected $description = 'Add lang shipping info';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritDoc
      */
     public function up()
     {
@@ -28,20 +27,20 @@ class Migration_20191127104800 extends Migration implements IMigration
             'ger',
             'productDetails',
             'shippingInformation',
-            "Die angegebenen Lieferzeiten gelten für den Versand innerhalb von %s. Die Lieferzeiten für den " .
+            'Die angegebenen Lieferzeiten gelten für den Versand innerhalb von %s. Die Lieferzeiten für den ' .
             "Versand ins Ausland finden Sie in unseren <a href=\'%s\'>Versandinformationen</a>."
         );
         $this->setLocalization(
             'eng',
             'productDetails',
             'shippingInformation',
-            "The indicated delivery times refer to shipments within %s. For information on the delivery times " .
+            'The indicated delivery times refer to shipments within %s. For information on the delivery times ' .
             "for shipments to other countries, please see the  <a href=\'%s\'>Shipping information</a>."
         );
     }
 
     /**
-     * @return mixed|void
+     * @inheritDoc
      */
     public function down()
     {

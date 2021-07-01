@@ -2,9 +2,9 @@
 
 namespace JTL\dbeS\Sync;
 
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use SimpleXMLElement;
+use stdClass;
 
 /**
  * Class ImageCheck
@@ -40,10 +40,8 @@ final class ImageCheck extends AbstractSync
             $hash   = $this->db->escape($item->hash);
             $sqls[] = '(kBild = ' . $item->id . " && cPfad = '" . $hash . "')";
         }
-        $sqlOr  = \implode(' || ', $sqls);
-        $sql    = 'SELECT kBild AS id, cPfad AS hash FROM tbild WHERE ' . $sqlOr;
-        $images = $this->db->query($sql, ReturnType::ARRAY_OF_OBJECTS);
-        foreach ($images as $image) {
+        $sqlOr = \implode(' || ', $sqls);
+        foreach ($this->db->getObjects('SELECT kBild AS id, cPfad AS hash FROM tbild WHERE ' . $sqlOr) as $image) {
             $image->id = (int)$image->id;
             $storage   = \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $image->hash;
             if (\file_exists($storage)) {
@@ -85,9 +83,9 @@ final class ImageCheck extends AbstractSync
 
     /**
      * @param SimpleXMLElement $xml
-     * @return object
+     * @return stdClass
      */
-    private function getObject(SimpleXMLElement $xml)
+    private function getObject(SimpleXMLElement $xml): stdClass
     {
         $cloudURL = (string)$xml->attributes()->cloudURL;
         $check    = (object)[
@@ -95,7 +93,6 @@ final class ImageCheck extends AbstractSync
             'cloud' => \strlen($cloudURL) > 0,
             'items' => []
         ];
-        /** @var SimpleXMLElement $child */
         foreach ($xml->children() as $child) {
             $check->items[] = (object)[
                 'id'   => (int)$child->attributes()->kBild,

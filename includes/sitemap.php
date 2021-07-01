@@ -1,10 +1,9 @@
 <?php
 
-use JTL\DB\ReturnType;
+use JTL\Crawler\Controller;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
-use JTL\Visitor;
 
 define('JTL_INCLUDE_ONLY_DB', 1);
 require_once __DIR__ . '/globalinclude.php';
@@ -17,14 +16,13 @@ if ($cDatei === null) {
     exit;
 }
 $ip              = Request::getRealIP();
-$floodProtection = Shop::Container()->getDB()->queryPrepared(
+$floodProtection = Shop::Container()->getDB()->getAffectedRows(
     'SELECT * 
         FROM `tsitemaptracker` 
         WHERE `cIP` = :ip 
             AND DATE_ADD(`dErstellt`, INTERVAL 2 MINUTE) >= NOW() 
         ORDER BY `dErstellt` DESC',
-    ['ip' => $ip],
-    ReturnType::AFFECTED_ROWS
+    ['ip' => $ip]
 );
 if ($floodProtection === 0) {
     // Track request
@@ -32,7 +30,7 @@ if ($floodProtection === 0) {
     $sitemapTracker->cSitemap     = basename($cDatei);
     $sitemapTracker->kBesucherBot = getRequestBot();
     $sitemapTracker->cIP          = $ip;
-    $sitemapTracker->cUserAgent   = Text::filterXSS($_SERVER['HTTP_USER_AGENT']);
+    $sitemapTracker->cUserAgent   = Text::filterXSS($_SERVER['HTTP_USER_AGENT'] ?? '');
     $sitemapTracker->dErstellt    = 'NOW()';
 
     Shop::Container()->getDB()->insert('tsitemaptracker', $sitemapTracker);
@@ -45,15 +43,10 @@ sendRequestFile($cDatei);
  */
 function getRequestBot(): int
 {
-    foreach (array_keys(Visitor::getSpiders()) as $agent) {
-        if (mb_stripos($_SERVER['HTTP_USER_AGENT'], $agent) !== false) {
-            $bot = Shop::Container()->getDB()->select('tbesucherbot', 'cUserAgent', $agent);
+    $controller = new Controller(Shop::Container()->getDB(), Shop::Container()->getCache());
+    $bot        = $controller->getByUserAgent($_SERVER['HTTP_USER_AGENT'] ?? '');
 
-            return isset($bot->kBesucherBot) ? (int)$bot->kBesucherBot : 0;
-        }
-    }
-
-    return 0;
+    return (int)($bot->kBesucherBot ?? 0);
 }
 
 /**

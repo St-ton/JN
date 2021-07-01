@@ -2,6 +2,7 @@
 
 namespace JTL\Plugin\Admin\Validation;
 
+use InvalidArgumentException;
 use JTL\Helpers\GeneralObject;
 use JTL\Plugin\InstallCode;
 use JTL\XMLParser;
@@ -16,13 +17,11 @@ final class LegacyPluginValidator extends AbstractValidator
     protected const BASE_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
     /**
-     * @param int  $kPlugin
-     * @param bool $forUpdate
-     * @return int
+     * @inheritDoc
      */
-    public function validateByPluginID(int $kPlugin, bool $forUpdate = false): int
+    public function validateByPluginID(int $pluginID, bool $forUpdate = false): int
     {
-        $plugin = $this->db->select('tplugin', 'kPlugin', $kPlugin);
+        $plugin = $this->db->select('tplugin', 'kPlugin', $pluginID);
         if (empty($plugin->kPlugin)) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
@@ -41,9 +40,7 @@ final class LegacyPluginValidator extends AbstractValidator
     }
 
     /**
-     * @param string $path
-     * @param bool   $forUpdate
-     * @return int
+     * @inheritDoc
      */
     public function validateByPath(string $path, bool $forUpdate = false): int
     {
@@ -65,21 +62,16 @@ final class LegacyPluginValidator extends AbstractValidator
     }
 
     /**
-     * @param      $xml
-     * @param bool $forUpdate
-     * @return int
-     * @former pluginPlausiIntern()
+     * @inheritDoc
      */
     public function pluginPlausiIntern($xml, bool $forUpdate): int
     {
-        $isShop4Compatible    = false;
-        $parsedXMLShopVersion = null;
-        $parsedVersion        = null;
-        $baseNode             = $xml['jtlshop3plugin'][0] ?? null;
+        $isShop4Compatible = false;
+        $shopVersion       = Version::parse(\APPLICATION_VERSION);
+        $baseNode          = $xml['jtlshop3plugin'][0] ?? null;
         if ($baseNode === null) {
             return InstallCode::MISSING_PLUGIN_NODE;
         }
-        $parsedVersion = Version::parse(\APPLICATION_VERSION);
         if (!isset($baseNode['XMLVersion'])) {
             return InstallCode::INVALID_XML_VERSION;
         }
@@ -101,25 +93,29 @@ final class LegacyPluginValidator extends AbstractValidator
                 return InstallCode::DUPLICATE_PLUGIN_ID;
             }
         }
-        if (isset($baseNode['Shop4Version'])) {
-            $parsedXMLShopVersion = Version::parse($baseNode['Shop4Version']);
-            $isShop4Compatible    = true;
-        } else {
-            $parsedXMLShopVersion = Version::parse($baseNode['ShopVersion']);
+        try {
+            if (isset($baseNode['Shop4Version'])) {
+                $parsedXMLShopVersion = Version::parse($baseNode['Shop4Version']);
+                $isShop4Compatible    = true;
+            } else {
+                $parsedXMLShopVersion = Version::parse($baseNode['MaxShopVersion'] ?? $baseNode['ShopVersion']);
+            }
+        } catch (InvalidArgumentException $e) {
+            $parsedXMLShopVersion = null;
         }
-        if (empty($parsedVersion)
-            || empty($parsedXMLShopVersion)
-            || $parsedXMLShopVersion->greaterThan($parsedVersion)
+        if (empty($shopVersion)
+            || $parsedXMLShopVersion === null
+            || $parsedXMLShopVersion->greaterThan($shopVersion)
         ) {
             return InstallCode::SHOP_VERSION_COMPATIBILITY;
         }
 
-        $cVersionsnummer = $this->getVersion($baseNode['Install'][0], $this->dir);
-        if (!\is_string($cVersionsnummer)) {
-            return $cVersionsnummer;
+        $versionNumber = $this->getVersion($baseNode['Install'][0], $this->dir);
+        if (!\is_string($versionNumber)) {
+            return $versionNumber;
         }
         $validation = new LegacyPluginValidationFactory();
-        $checks     = $validation->getValidations($baseNode, $this->dir, $cVersionsnummer, $baseNode['PluginID']);
+        $checks     = $validation->getValidations($baseNode, $this->dir, $versionNumber, $baseNode['PluginID']);
         foreach ($checks as $check) {
             $res = $check->validate();
             if ($res !== InstallCode::OK) {

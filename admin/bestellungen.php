@@ -9,6 +9,7 @@ use JTL\Pagination\Pagination;
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bestellungen_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
+/** @global \JTL\Backend\AdminAccount $oAccount */
 $oAccount->permission('ORDER_VIEW', true, true);
 
 $step         = 'bestellungen_uebersicht';
@@ -28,7 +29,7 @@ if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneOrder'), 'errorAtLeastOneOrder');
     }
-} elseif (Request::verifyGPCDataInt('Suche') === 1) { // Bestellnummer gesucht
+} elseif (Request::verifyGPCDataInt('Suche') === 1 && Form::validateToken()) {
     $query = Text::filterXSS(Request::verifyGPDataString('cSuche'));
     if (mb_strlen($query) > 0) {
         $searchFilter = $query;

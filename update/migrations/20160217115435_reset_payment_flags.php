@@ -16,6 +16,9 @@ class Migration_20160217115435 extends Migration implements IMigration
 {
     protected $author = 'aj';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $items = [
@@ -76,6 +79,9 @@ class Migration_20160217115435 extends Migration implements IMigration
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
     }

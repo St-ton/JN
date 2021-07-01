@@ -320,25 +320,18 @@
                 {if isset($oNewslettervorlageStd->oNewslettervorlageStdVar_arr) && $oNewslettervorlageStd->oNewslettervorlageStdVar_arr|@count > 0}
                     {foreach $oNewslettervorlageStd->oNewslettervorlageStdVar_arr as $oNewslettervorlageStdVar}
                         {if $oNewslettervorlageStdVar->cTyp === 'BILD'}
-                            {if isset($oNewslettervorlageStdVar->cInhalt) && $oNewslettervorlageStdVar->cInhalt|strlen > 0}
-                                <div class="form-group form-row align-items-center">
-                                    <label class="col col-sm-4 col-form-label text-sm-right"></label>
-                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <img class="img-fluid" src="{$oNewslettervorlageStdVar->cInhalt}?={$nRand}" />
-                                    </div>
-                                </div>
-                            {/if}
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}">{$oNewslettervorlageStdVar->cName}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <div class="input-group mb-3">
-                                        <div class="custom-file">
-                                            <input class="custom-file-input" id="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" name="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" type="file" accept="image/*" />
-                                            <label class="custom-file-label" for="cBrandingBild">
-                                                <span class="text-truncate">{__('fileSelect')}</span>
-                                            </label>
-                                        </div>
-                                    </div>
+                                    {include file='tpl_inc/fileupload.tpl'
+                                        fileID="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}"
+                                        fileShowRemove=true
+                                        fileInitialPreview="[
+                                                {if isset($oNewslettervorlageStdVar->cInhalt) && $oNewslettervorlageStdVar->cInhalt|strlen > 0}
+                                                    '<img class=\"img-fluid\" src=\"{$oNewslettervorlageStdVar->cInhalt}?={$nRand}\" />'
+                                                {/if}
+                                                ]"
+                                            }
                                 </div>
                             </div>
                             <div class="form-group form-row align-items-center">
@@ -371,11 +364,11 @@
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         {if (isset($oNewslettervorlageStd->kNewsletterVorlage) && $oNewslettervorlageStd->kNewsletterVorlage > 0) || (isset($cPostVar_arr.kNewslettervorlage) && $cPostVar_arr.kNewslettervorlage > 0)}
                             <a class="btn btn-outline-primary btn-block" href="newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}">
-                                {__('goBack')}
+                                {__('cancelWithIcon')}
                             </a>
                         {else}
                             <a class="btn btn-outline-primary btn-block" href="newsletter.php?tab=newslettervorlagenstd&token={$smarty.session.jtl_token}">
-                                {__('goBack')}
+                                {__('cancelWithIcon')}
                             </a>
                         {/if}
                     </div>

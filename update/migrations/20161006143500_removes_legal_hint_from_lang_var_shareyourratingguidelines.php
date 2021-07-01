@@ -16,12 +16,18 @@ class Migration_20161006143500 extends Migration implements IMigration
 {
     protected $author = 'ms';
 
+    /**
+     * @inheritDoc
+     */
     public function up()
     {
         $this->setLocalization('ger', 'product rating', 'shareYourRatingGuidelines', 'Teilen Sie uns Ihre Meinung mit');
         $this->setLocalization('eng', 'product rating', 'shareYourRatingGuidelines', 'Share your experience');
     }
 
+    /**
+     * @inheritDoc
+     */
     public function down()
     {
         $this->setLocalization('ger', 'product rating', 'shareYourRatingGuidelines', 'Teilen Sie uns Ihre Meinung mit. Bitte beachten Sie dabei unsere Artikelbewertungs-Richtlinien');

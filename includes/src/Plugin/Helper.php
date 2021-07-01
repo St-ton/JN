@@ -2,9 +2,12 @@
 
 namespace JTL\Plugin;
 
+use Exception;
+use InvalidArgumentException;
+use JTL\Backend\AdminIO;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
+use JTL\IO\IOError;
 use JTL\Plugin\Data\Config;
 use JTL\Shop;
 use stdClass;
@@ -16,7 +19,7 @@ use stdClass;
 class Helper
 {
     /**
-     * @var array
+     * @var array|null
      */
     private static $hookList;
 
@@ -49,15 +52,14 @@ class Helper
         }
         $hook     = null;
         $hooks    = [];
-        $hookData = Shop::Container()->getDB()->queryPrepared(
+        $hookData = Shop::Container()->getDB()->getObjects(
             'SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.cVerzeichnis, tplugin.nVersion, tpluginhook.cDateiname
                 FROM tplugin
                 JOIN tpluginhook
                     ON tpluginhook.kPlugin = tplugin.kPlugin
                 WHERE tplugin.nStatus = :state
                 ORDER BY tpluginhook.nPriority, tplugin.kPlugin',
-            ['state' => State::ACTIVATED],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['state' => State::ACTIVATED]
         );
         foreach ($hookData as $hook) {
             $plugin             = new stdClass();
@@ -117,10 +119,7 @@ class Helper
         $langID  = Shop::getLanguageID();
         $cacheID = 'plugin_id_list';
         if (($plugins = $cache->get($cacheID)) === false) {
-            $plugins = $db->query(
-                'SELECT kPlugin, cPluginID, bExtension FROM tplugin',
-                ReturnType::ARRAY_OF_OBJECTS
-            );
+            $plugins = $db->getObjects('SELECT kPlugin, cPluginID, bExtension FROM tplugin');
             $cache->set($cacheID, $plugins, [\CACHING_GROUP_PLUGIN]);
         }
         foreach ($plugins as $plugin) {
@@ -131,7 +130,11 @@ class Helper
                 ? new PluginLoader($db, $cache)
                 : new LegacyPluginLoader($db, $cache);
 
-            return $loader->init((int)$plugin->kPlugin, false, $langID);
+            try {
+                return $loader->init((int)$plugin->kPlugin, false, $langID);
+            } catch (InvalidArgumentException $e) {
+                return null;
+            }
         }
 
         return null;
@@ -161,14 +164,13 @@ class Helper
                 'cPluginID, cVerzeichnis, nVersion, bExtension',
                 'nPrio'
             );
-        } catch (\InvalidArgumentException $e) {
-            $plugins = Shop::Container()->getDB()->queryPrepared(
+        } catch (InvalidArgumentException $e) {
+            $plugins = Shop::Container()->getDB()->getObjects(
                 'SELECT cPluginID, cVerzeichnis, nVersion, 0 AS bExtension
                     FROM tplugin
                     WHERE nStatus = :stt
                     ORDER BY nPrio',
-                ['stt' => State::ACTIVATED],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['stt' => State::ACTIVATED]
             );
         }
         foreach ($plugins as $plugin) {
@@ -297,7 +299,18 @@ class Helper
     {
         $plugin = Shop::Container()->getDB()->select('tplugin', 'cPluginID', $pluginID);
 
-        return isset($plugin->kPlugin) ? (int)$plugin->kPlugin : 0;
+        return (int)($plugin->kPlugin ?? 0);
+    }
+
+    /**
+     * @param string $exsID
+     * @return int
+     * @former gibkPluginAuscPluginID()
+     * @since 5.0.0
+     */
+    public static function getIDByExsID(string $exsID): int
+    {
+        return (int)(Shop::Container()->getDB()->select('tplugin', 'exsID', $exsID)->kPlugin ?? 0);
     }
 
     /**
@@ -307,14 +320,14 @@ class Helper
      * @former gibPluginSprachvariablen()
      * @since 5.0.0
      */
-    public static function getLanguageVariablesByID(int $id, $iso = ''): array
+    public static function getLanguageVariablesByID(int $id, string $iso = ''): array
     {
         $return = [];
         $sql    = '';
         if (\mb_strlen($iso) > 0) {
             $sql = " AND tpluginsprachvariablesprache.cISO = '" . \mb_convert_case($iso, \MB_CASE_UPPER) . "'";
         }
-        $langVars = Shop::Container()->getDB()->query(
+        $langVars = Shop::Container()->getDB()->getArrays(
             'SELECT t.kPluginSprachvariable,
                 t.kPlugin,
                 t.cName,
@@ -328,11 +341,10 @@ class Helper
                     ON c.kPlugin = t.kPlugin
                     AND c.kPluginSprachvariable = t.kPluginSprachvariable
                     AND tpluginsprachvariablesprache.cISO = c.cISO
-                WHERE t.kPlugin = ' . $id . $sql,
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                WHERE t.kPlugin = ' . $id . $sql
         );
         if (!\is_array($langVars) || \count($langVars) < 1) {
-            $langVars = Shop::Container()->getDB()->query(
+            $langVars = Shop::Container()->getDB()->getArrays(
                 "SELECT tpluginsprachvariable.kPluginSprachvariable,
                 tpluginsprachvariable.kPlugin,
                 tpluginsprachvariable.cName,
@@ -340,8 +352,7 @@ class Helper
                 CONCAT('#', tpluginsprachvariable.cName, '#') AS customValue, '" .
                 \mb_convert_case($iso, \MB_CASE_UPPER) . "' AS cISO
                     FROM tpluginsprachvariable
-                    WHERE tpluginsprachvariable.kPlugin = " . $id,
-                ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                    WHERE tpluginsprachvariable.kPlugin = " . $id
             );
         }
         foreach ($langVars as $_sv) {
@@ -360,7 +371,7 @@ class Helper
      */
     public static function getLanguageVariables(int $pluginID): array
     {
-        $langVars = Shop::Container()->getDB()->queryPrepared(
+        $langVars = Shop::Container()->getDB()->getArrays(
             'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung,
             COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)  AS cISO,
             COALESCE(c.cName, tpluginsprachvariablesprache.cName) AS customValue
@@ -372,8 +383,7 @@ class Helper
                     AND tpluginsprachvariablesprache.cISO = COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)
             WHERE l.kPlugin = :pid
             ORDER BY l.kPluginSprachvariable',
-            ['pid' => $pluginID],
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+            ['pid' => $pluginID]
         );
         if (\count($langVars) === 0) {
             return [];
@@ -405,7 +415,7 @@ class Helper
     public static function getConfigByID(int $id): array
     {
         $conf = [];
-        $data = Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->getObjects(
             'SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugin
                 JOIN tplugineinstellungen 
@@ -414,8 +424,7 @@ class Helper
                     ON tplugineinstellungenconf.kPlugin = tplugin.kPlugin 
                     AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
                 WHERE tplugin.kPlugin = :pid',
-            ['pid' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $id]
         );
         foreach ($data as $item) {
             $conf[$item->cName] = $item->cConf === Config::TYPE_DYNAMIC
@@ -434,8 +443,12 @@ class Helper
     public static function bootstrap(int $id, LoaderInterface $loader): ?BootstrapperInterface
     {
         if (!isset(self::$bootstrapper[$id])) {
-            $plugin = $loader->init($id);
-            if ($plugin === null || $plugin->isBootstrap() === false) {
+            try {
+                $plugin = $loader->init($id);
+            } catch (InvalidArgumentException $e) {
+                return null;
+            }
+            if ($plugin->isBootstrap() === false) {
                 return null;
             }
             if ($loader instanceof LegacyPluginLoader) {
@@ -478,8 +491,11 @@ class Helper
      * @param JTLCacheInterface|null $cache
      * @return LoaderInterface
      */
-    public static function getLoaderByPluginID(int $id, DbInterface $db = null, $cache = null): LoaderInterface
-    {
+    public static function getLoaderByPluginID(
+        int $id,
+        ?DbInterface $db = null,
+        ?JTLCacheInterface $cache = null
+    ) : LoaderInterface {
         $cache = $cache ?? Shop::Container()->getCache();
         $db    = $db ?? Shop::Container()->getDB();
         $data  = $db->select('tplugin', 'kPlugin', $id);
@@ -493,11 +509,74 @@ class Helper
      * @param JTLCacheInterface|null $cache
      * @return LoaderInterface
      */
-    public static function getLoader(bool $isExtension, DbInterface $db = null, $cache = null): LoaderInterface
-    {
+    public static function getLoader(
+        bool $isExtension,
+        ?DbInterface $db = null,
+        ?JTLCacheInterface $cache = null
+    ): LoaderInterface {
         $cache = $cache ?? Shop::Container()->getCache();
         $db    = $db ?? Shop::Container()->getDB();
 
         return $isExtension ? new PluginLoader($db, $cache) : new LegacyPluginLoader($db, $cache);
+    }
+
+    /**
+     * @param int $pluginID
+     * @return stdClass
+     */
+    public static function ioTestLoading(int $pluginID): stdClass
+    {
+        $result = (object)[
+            'code'     => InstallCode::WRONG_PARAM,
+            'message'  => '',
+        ];
+        if ($pluginID <= 0) {
+            $result->code    = InstallCode::NO_PLUGIN_FOUND;
+            $result->message = \__('errorPluginNotFound');
+
+            return $result;
+        }
+
+        \register_shutdown_function(static function () {
+            $err = \error_get_last();
+            if ($err !== null) {
+                \ob_get_clean();
+                $io = AdminIO::getInstance();
+                $io->respondAndExit(new IOError($err['message']));
+            }
+        });
+
+        $db     = Shop::Container()->getDB();
+        $cache  = Shop::Container()->getCache();
+        $data   = $db->select('tplugin', 'kPlugin', $pluginID);
+        $loader = (int)$data->bExtension === 1
+            ? new PluginLoader($db, $cache)
+            : new LegacyPluginLoader($db, $cache);
+        try {
+            $plugin = $loader->init($pluginID);
+            if ($plugin === null) {
+                $result->code    = InstallCode::NO_PLUGIN_FOUND;
+                $result->message = \__('errorPluginNotFound');
+
+                return $result;
+            }
+            $boot = self::bootstrap($pluginID, $loader);
+            if ($boot === null) {
+                $result->code = InstallCode::OK;
+
+                return $result;
+            }
+            if (($p = $boot->getPlugin()) !== null) {
+                $result->code    = InstallCode::OK;
+                $result->message = $p->getPluginID();
+
+                return $result;
+            }
+        } catch (Exception $e) {
+            $result->code    = $e->getCode();
+            $result->message = $e->getMessage();
+        }
+
+        return $result;
     }
 }

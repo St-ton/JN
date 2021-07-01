@@ -181,13 +181,13 @@ class Mail implements MailInterface
      */
     private function parseData(): void
     {
-        if (isset($this->data->tkunde->cMail)) {
-            $this->toMail = $this->data->tkunde->cMail;
-            $this->toName = $this->data->tkunde->cVorname . ' ' . $this->data->tkunde->cNachname;
-        } elseif (!empty($this->data->NewsletterEmpfaenger->cEmail)) {
+        if (!empty($this->data->NewsletterEmpfaenger->cEmail)) {
             $this->toMail = $this->data->NewsletterEmpfaenger->cEmail;
+            $this->toName = $this->data->NewsletterEmpfaenger->cVorname . ' '
+                . $this->data->NewsletterEmpfaenger->cNachname;
         } elseif (!empty($this->data->mailReceiver->cEmail)) {
             $this->toMail = $this->data->mailReceiver->cEmail;
+            $this->toName = $this->data->mailReceiver->cVorname . ' ' . $this->data->mailReceiver->cNachname;
         } elseif (isset($this->data->mail)) {
             if (isset($this->data->mail->fromEmail)) {
                 $this->fromMail = $this->data->mail->fromEmail;
@@ -207,6 +207,9 @@ class Mail implements MailInterface
             if (isset($this->data->mail->replyToName)) {
                 $this->replyToName = $this->data->mail->replyToName;
             }
+        } elseif (isset($this->data->tkunde->cMail)) {
+            $this->toMail = $this->data->tkunde->cMail;
+            $this->toName = $this->data->tkunde->cVorname . ' ' . $this->data->tkunde->cNachname;
         }
     }
 

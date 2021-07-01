@@ -34,21 +34,12 @@ class MissingPortlet extends Portlet
 
     /**
      * @param PortletInstance $instance
+     * @param bool $inContainer
      * @return string
      */
-    public function getFinalHtml(PortletInstance $instance): string
+    public function getFinalHtml(PortletInstance $instance, bool $inContainer = true): string
     {
         return '';
-    }
-
-    /**
-     * @param PortletInstance $instance
-     * @return string
-     * @throws \Exception
-     */
-    public function getConfigPanelHtml(PortletInstance $instance): string
-    {
-        return $this->getConfigPanelHtmlFromTpl($instance);
     }
 
     /**

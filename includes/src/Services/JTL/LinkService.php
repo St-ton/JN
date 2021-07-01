@@ -11,7 +11,9 @@ use JTL\Link\LinkGroupInterface;
 use JTL\Link\LinkGroupList;
 use JTL\Link\LinkGroupListInterface;
 use JTL\Link\LinkInterface;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Shop;
+use stdClass;
 use function Functional\first;
 use function Functional\first_index_of;
 
@@ -50,7 +52,7 @@ final class LinkService implements LinkServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * @return LinkServiceInterface
      */
     public static function getInstance(): LinkServiceInterface
     {
@@ -100,6 +102,9 @@ final class LinkService implements LinkServiceInterface
      */
     public function getLinkByID(int $id): ?LinkInterface
     {
+        if ($id === 0) {
+            return null;
+        }
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
             $first = first($linkGroup->getLinks(), static function (LinkInterface $link) use ($id) {
@@ -118,6 +123,9 @@ final class LinkService implements LinkServiceInterface
      */
     public function getParentForID(int $id): ?LinkInterface
     {
+        if ($id === 0) {
+            return null;
+        }
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
             $first = first($linkGroup->getLinks(), static function (LinkInterface $link) use ($id) {
@@ -186,10 +194,10 @@ final class LinkService implements LinkServiceInterface
         if ($parentLinkID <= 0) {
             return false;
         }
+        /** @var LinkGroupInterface $linkGroup */
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
-            /** @var LinkGroupInterface $linkGroup */
+            /** @var LinkInterface $link */
             foreach ($linkGroup->getLinks() as $link) {
-                /** @var LinkInterface $link */
                 if ($link->getID() === $linkID && $link->getParent() === $parentLinkID) {
                     return true;
                 }
@@ -216,11 +224,13 @@ final class LinkService implements LinkServiceInterface
     {
         $lg = $this->getLinkGroupByName('specialpages');
 
-        return $lg !== null
-            ? $lg->getLinks()->first(static function (LinkInterface $l) use ($linkType) {
-                return $l->getLinkType() === $linkType;
-            })
-            : null;
+        if ($lg === null || ($lt = $lg->getLinks()->first(static function (LinkInterface $l) use ($linkType) {
+            return $l->getLinkType() === $linkType;
+        })) === null) {
+            throw new SpecialPageNotFoundException($linkType);
+        }
+
+        return $lt;
     }
 
     /**
@@ -228,7 +238,12 @@ final class LinkService implements LinkServiceInterface
      */
     public function getSpecialPageID(int $linkType, bool $fallback = true)
     {
-        $link = $this->getSpecialPage($linkType);
+        try {
+            $link = $this->getSpecialPage($linkType);
+        } catch (SpecialPageNotFoundException $e) {
+            Shop::Container()->getLogService()->warning($e->getMessage());
+            $link = null;
+        }
         if ($link !== null) {
             return $link->getID();
         }
@@ -377,10 +392,9 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function buildSpecialPageMeta(int $type): \stdClass
+    public function buildSpecialPageMeta(int $type): stdClass
     {
-        $first           = null;
-        $meta            = new \stdClass();
+        $meta            = new stdClass();
         $meta->cTitle    = '';
         $meta->cDesc     = '';
         $meta->cKeywords = '';
@@ -415,10 +429,10 @@ final class LinkService implements LinkServiceInterface
     public function activate(int $pageType): LinkGroupCollection
     {
         $linkGroups = $this->linkGroupList->getLinkGroups();
+        /** @var LinkGroupInterface $linkGroup */
         foreach ($linkGroups as $linkGroup) {
-            /** @var LinkGroupInterface $linkGroup */
+            /** @var LinkInterface $link */
             foreach ($linkGroup->getLinks() as $link) {
-                /** @var LinkInterface $link */
                 $link->setIsActive(false);
                 $linkType = $link->getLinkType();
                 $linkID   = $link->getID();
@@ -498,8 +512,10 @@ final class LinkService implements LinkServiceInterface
      */
     public function getAGBWRB(int $langID, int $customerGroupID)
     {
-        $linkAGB = null;
-        $linkWRB = null;
+        $linkAGB     = null;
+        $linkWRB     = null;
+        $linkWRBForm = null;
+        $conf        = Shop::getSettings([\CONF_KAUFABWICKLUNG])['kaufabwicklung'];
         // kLink für AGB und WRB suchen
         foreach ($this->getSpecialPages() as $sp) {
             /** @var LinkInterface $sp */
@@ -507,6 +523,8 @@ final class LinkService implements LinkServiceInterface
                 $linkAGB = $sp;
             } elseif ($sp->getLinkType() === \LINKTYP_WRB) {
                 $linkWRB = $sp;
+            } elseif ($sp->getLinkType() === \LINKTYP_WRB_FORMULAR) {
+                $linkWRBForm = $sp;
             }
         }
         $data = $this->db->select(
@@ -522,10 +540,26 @@ final class LinkService implements LinkServiceInterface
         if (empty($data->kText)) {
             return false;
         }
-        $data->cURLAGB  = $linkAGB !== null ? $linkAGB->getURL() : '';
-        $data->cURLWRB  = $linkWRB !== null ? $linkWRB->getURL() : '';
-        $data->kLinkAGB = $linkAGB !== null ? $linkAGB->getID() : 0;
-        $data->kLinkWRB = $linkWRB !== null ? $linkWRB->getID() : 0;
+        $data->cURLAGB      = $linkAGB !== null ? $linkAGB->getURL() : '';
+        $data->cURLWRB      = $linkWRB !== null ? $linkWRB->getURL() : '';
+        $data->cURLWRBForm  = $linkWRBForm !== null ? $linkWRBForm->getURL() : '';
+        $data->kLinkAGB     = $linkAGB !== null ? $linkAGB->getID() : 0;
+        $data->kLinkWRB     = $linkWRB !== null ? $linkWRB->getID() : 0;
+        $data->kLinkWRBForm = $linkWRBForm !== null ? $linkWRBForm->getID() : 0;
+
+        $data->agbWrbNotice = $conf['bestellvorgang_wrb_anzeigen'] === '1'
+        ? \sprintf(
+            Shop::Lang()->get('termsCancelationNotice', 'checkout'),
+            $data->cURLAGB,
+            $data->kLinkAGB > 0 ? 'class="popup"' : 'data-toggle="modal" data-target="#agb-modal" class="modal-popup"',
+            $data->cURLWRB,
+            $data->kLinkWRB > 0 ? 'class="popup"' : 'data-toggle="modal" data-target="#wrb-modal" class="modal-popup"'
+        )
+        : \sprintf(
+            Shop::Lang()->get('termsNotice', 'checkout'),
+            $data->cURLAGB,
+            $data->kLinkAGB > 0 ? 'class="popup"' : 'data-toggle="modal" data-target="#agb-modal" class="modal-popup"'
+        );
 
         return $data;
     }

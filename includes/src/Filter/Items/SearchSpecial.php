@@ -2,7 +2,6 @@
 
 namespace JTL\Filter\Items;
 
-use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
@@ -40,7 +39,7 @@ class SearchSpecial extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('qf')
-             ->setFrontendName(Shop::isAdmin() ? __('filterSearchSpecial') : Shop::Lang()->get('specificProducts'))
+             ->setFrontendName(Shop::isAdmin() ? \__('filterSearchSpecial') : Shop::Lang()->get('specificProducts'))
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_suchspecialfilter_benutzen'])
              ->setType($this->getConfig('navigationsfilter')['search_special_filter_type'] === 'O'
                  ? Type::OR
@@ -52,7 +51,7 @@ class SearchSpecial extends AbstractFilter
      */
     public function setValue($value): FilterInterface
     {
-        $this->value = \is_array($value) ? $value : [(int)$value];
+        $this->value = \is_array($value) ? \array_map('\intval', $value) : (int)$value;
 
         return $this;
     }
@@ -86,13 +85,12 @@ class SearchSpecial extends AbstractFilter
             if (!\is_array($val)) {
                 $val = [$val];
             }
-            $seoData = $this->productFilter->getDB()->query(
+            $seoData = $this->productFilter->getDB()->getObjects(
                 "SELECT tseo.cSeo, tseo.kSprache
                     FROM tseo
                     WHERE cKey = 'suchspecial' 
                         AND kKey IN (" . \implode(', ', $val) . ')
-                    ORDER BY kSprache',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY kSprache'
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
@@ -149,7 +147,11 @@ class SearchSpecial extends AbstractFilter
         $or         = $this->getType() === Type::OR;
         $conf       = $this->getConfig();
         $conditions = [];
-        foreach ($this->getValue() as $value) {
+        $values     = $this->getValue();
+        if (!\is_array($values)) {
+            $values = [$values];
+        }
+        foreach ($values as $value) {
             switch ($value) {
                 case \SEARCHSPECIALS_BESTSELLER:
                     $minSales = ($min = (int)$conf['global']['global_bestseller_minanzahl']) > 0
@@ -183,8 +185,7 @@ class SearchSpecial extends AbstractFilter
                         : 30;
 
                     $conditions[] = "tartikel.cNeu = 'Y' 
-                                AND DATE_SUB(NOW(),INTERVAL " . $days  . " DAY) < tartikel.dErstellt 
-                                AND tartikel.cNeu = 'Y'";
+                                AND DATE_SUB(NOW(),INTERVAL " . $days  . ' DAY) < tartikel.dErstellt';
                     break;
 
                 case \SEARCHSPECIALS_TOPOFFERS:
@@ -228,6 +229,9 @@ class SearchSpecial extends AbstractFilter
             ? 'JOIN'
             : 'LEFT JOIN';
         $baseValue = $this->productFilter->getSearchSpecial()->getValue();
+        if (!\is_array($values)) {
+            $values = [$values];
+        }
         foreach ($values as $value) {
             switch ($value) {
                 case \SEARCHSPECIALS_BESTSELLER:
@@ -290,7 +294,7 @@ class SearchSpecial extends AbstractFilter
     /**
      * @inheritdoc
      */
-    public function getOptions($data = null): array
+    public function getOptions($mixed = null): array
     {
         if ($this->getConfig('navigationsfilter')['allgemein_suchspecialfilter_benutzen'] === 'N') {
             $this->options = [];
@@ -306,8 +310,7 @@ class SearchSpecial extends AbstractFilter
             ? $this->getClassName()
             : null;
         $state            = (new StateSQL())->from($this->productFilter->getCurrentStateData($ignore));
-        $cacheID          = 'fltr_' . \str_replace('\\', '', __CLASS__) .
-            \md5($this->productFilter->getFilterSQL()->getBaseQuery($state));
+        $cacheID          = $this->getCacheID($this->productFilter->getFilterSQL()->getBaseQuery($state));
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 
@@ -392,7 +395,7 @@ class SearchSpecial extends AbstractFilter
                     break;
             }
             $qry    = $this->productFilter->getFilterSQL()->getBaseQuery($state);
-            $qryRes = $this->productFilter->getDB()->query($qry, ReturnType::ARRAY_OF_OBJECTS);
+            $qryRes = $this->productFilter->getDB()->getObjects($qry);
             if (($count = \count($qryRes)) > 0) {
                 if ($baseValue === $i) {
                     continue;

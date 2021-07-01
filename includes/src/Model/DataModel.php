@@ -359,8 +359,11 @@ abstract class DataModel implements DataModelInterface, Iterator
      * @return mixed
      * @throws Exception - throws an exception with ERR_INVALID_PARAM if type is not a supported datatype
      */
-    protected static function cast($value, $type)
+    protected static function cast($value, $type, bool $nullable = false)
     {
+        if ($nullable === true && ($value === null || $value === '_DBNULL_')) {
+            return null;
+        }
         $result = null;
         switch (self::getType($type)) {
             case 'bool':
@@ -380,6 +383,7 @@ abstract class DataModel implements DataModelInterface, Iterator
                 }
                 break;
             case 'model':
+            case 'object':
                 return $value;
             case 'yesno':
                 if (\is_string($value) && \in_array($value, ['Y', 'N'], true)) {
@@ -406,6 +410,9 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     private static function getType(string $type)
     {
+        if ($type === 'object') {
+            return $type;
+        }
         if (self::isChildModel($type)) {
             return 'model';
         }
@@ -427,6 +434,9 @@ abstract class DataModel implements DataModelInterface, Iterator
         });
     }
 
+    /**
+     *
+     */
     protected function onInstanciation(): void
     {
     }
@@ -438,10 +448,16 @@ abstract class DataModel implements DataModelInterface, Iterator
     {
     }
 
+    /**
+     *
+     */
     protected function onBeforeInsert(): void
     {
     }
 
+    /**
+     *
+     */
     protected function onBeforeUpdate(): void
     {
     }
@@ -557,7 +573,7 @@ abstract class DataModel implements DataModelInterface, Iterator
             }
         }
         $members = $this->getMembersToSave($members, $partial);
-        if (!$this->loaded || $noPrimaryKey || $keyValue === null) {
+        if (!$this->loaded || $noPrimaryKey || $keyValue === null || $keyValue === 0) {
             $pkValue = $this->db->insert($this->getTableName(), $members);
             if ((empty($keyValue) || $noPrimaryKey) && !empty($pkValue)) {
                 $this->setKey($pkValue);
@@ -802,10 +818,15 @@ abstract class DataModel implements DataModelInterface, Iterator
         if (isset($this->setters[$attribName])) {
             $this->members[$attribName] = self::cast(
                 \call_user_func($this->setters[$attribName], $value, $this),
-                $attributes[$attribName]->dataType
+                $attributes[$attribName]->dataType,
+                $attributes[$attribName]->nullable
             );
         } else {
-            $this->members[$attribName] = self::cast($value, $attributes[$attribName]->dataType);
+            $this->members[$attribName] = self::cast(
+                $value,
+                $attributes[$attribName]->dataType,
+                $attributes[$attribName]->nullable
+            );
         }
 
         return $this;

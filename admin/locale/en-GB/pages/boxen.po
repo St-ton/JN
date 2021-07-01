@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "boxen"
-msgstr "Boxes/Footer"
+msgstr "Footers/Boxes"
 
 msgid "boxenURL"
 msgstr "https://jtl-url.de/li846"
 
 msgid "boxenDesc"
-msgstr "Here you can create and edit boxes for different box containers and manage the footer. You can specify for each container on which pages it should be visible. Depending on the template used, different containers are available. Some boxes can also be further configured via the Edit button."
+msgstr "Here you can create and edit boxes for different box containers and manage the footer. You can specify for each container on which pages it should be visible. Depending on the template used, different containers are available. Some boxes can also be further configured via the \"Edit\" button."
 
 msgid "showContainer"
 msgstr "Activate container"
@@ -126,10 +126,10 @@ msgid "deactivatedOnAllPages"
 msgstr "deactivated on all pages"
 
 msgid "warningChangesForAllPages"
-msgstr "The selection \"All pages\" overwrites existing changes to the boxes that were performed for individual pages beforehand."
+msgstr "The selection \"All pages\" overwrites existing changes to the boxes that were made for individual pages beforehand."
 
 msgid "errorBoxesVisibilityEdit"
-msgstr "Could not set box visibility due to a MySQL error. Please contact the Support team."
+msgstr "Could not set box visibility due to a MySQL error. Please contact the JTL Support team."
 
 #box name
 msgid "Bestseller"
@@ -269,3 +269,9 @@ msgstr "Category"
 
 msgid "templateTypeExtension"
 msgstr "Plug-in"
+
+msgid "warningNovaSidebar"
+msgstr "The NOVA template only supports boxes in the left side bar for the page type \"Item overview\". Please use a personalised template if you also want to display boxes in the left side bar on other pages."
+
+msgid "notAllowedForPage"
+msgstr "Cannot display the box on the selected page."

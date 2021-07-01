@@ -3,7 +3,6 @@
 namespace JTL\Mail\Template;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use stdClass;
@@ -17,6 +16,10 @@ use function Functional\tail;
  */
 final class Model
 {
+    public const SYNTAX_OK          = 0;
+    public const SYNTAX_FAIL        = 1;
+    public const SYNTAX_NOT_CHECKED = -1;
+
     /**
      * @var int
      */
@@ -50,7 +53,7 @@ final class Model
     /**
      * @var string
      */
-    private $active = true;
+    private $active = 'Y';
 
     /**
      * @var bool
@@ -78,9 +81,9 @@ final class Model
     private $showDSE = true;
 
     /**
-     * @var bool
+     * @var int - one of the SYNTAX_-constants
      */
-    private $hasError = false;
+    private $hasError = self::SYNTAX_OK;
 
     /**
      * @var int
@@ -143,7 +146,7 @@ final class Model
         'nWRB'          => 'ShowWRB',
         'nWRBForm'      => 'ShowWRBForm',
         'nDSE'          => 'ShowDSE',
-        'nFehlerhaft'   => 'HasError',
+        'nFehlerhaft'   => 'SyntaxCheck',
         'kPlugin'       => 'PluginID'
     ];
 
@@ -235,13 +238,13 @@ final class Model
      */
     public function getDescription(): string
     {
-        return $this->description;
+        return $this->description ?? '';
     }
 
     /**
-     * @param string $description
+     * @param string|null $description
      */
-    public function setDescription(string $description): void
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
     }
@@ -416,7 +419,7 @@ final class Model
      */
     public function getHasError(): bool
     {
-        return $this->hasError;
+        return $this->hasError === self::SYNTAX_FAIL;
     }
 
     /**
@@ -424,10 +427,30 @@ final class Model
      */
     public function setHasError($hasError): void
     {
-        $this->hasError = (bool)$hasError;
-        if ($this->hasError) {
+        $this->hasError = (int)$hasError > 0 ? self::SYNTAX_FAIL : self::SYNTAX_OK;
+        if ($this->hasError === self::SYNTAX_FAIL) {
             $this->setActive(false);
         }
+    }
+
+    /**
+     * @param bool|int $checked
+     */
+    public function setSyntaxCheck($checked): void
+    {
+        if ((int)$checked >= 0) {
+            $this->setHasError($checked);
+        } else {
+            $this->hasError = self::SYNTAX_NOT_CHECKED;
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function getSyntaxCheck(): int
+    {
+        return $this->hasError;
     }
 
     /**
@@ -727,15 +750,14 @@ final class Model
         if (\strpos($templateID, 'kPlugin') === 0) {
             [, $pluginID, $moduleID] = \explode('_', $templateID);
         }
-        $data = $this->db->queryPrepared(
+        $data = $this->db->getObjects(
             'SELECT *, temailvorlage.kEmailvorlage AS id
                 FROM temailvorlage
                 LEFT JOIN temailvorlagesprache
                     ON temailvorlage.kEmailvorlage = temailvorlagesprache.kEmailvorlage
                 WHERE temailvorlage.kPlugin = :pid
                     AND cModulId = :mid',
-            ['pid' => $pluginID, 'mid' => $moduleID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['pid' => $pluginID, 'mid' => $moduleID]
         );
 
         return \count($data) === 0

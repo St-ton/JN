@@ -42,7 +42,7 @@
                 ?token={$smarty.session.jtl_token}
                 &action=quick_change_language
                 &language=` + tag + `
-                &referer=` + window.location.href{/strip};
+                &referer=` +  encodeURIComponent(window.location.href){/strip};
         }
     </script>
 
@@ -56,45 +56,56 @@
     {getCurrentPage assign='currentPage'}
     <div class="spinner"></div>
     <div id="page-wrapper" class="backend-wrapper hidden disable-transitions{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
-        {if !$hasPendingUpdates}
-        {include file='tpl_inc/backend_sidebar.tpl'}
+        {if !$hasPendingUpdates && $wizardDone}
+            {include file='tpl_inc/backend_sidebar.tpl'}
         {/if}
-        <div class="backend-main sidebar-offset">
-            {if !$hasPendingUpdates}
+        <div class="backend-main {if !$hasPendingUpdates && $wizardDone}sidebar-offset{/if}">
+            {if $smarty.const.SAFE_MODE}
+            <div class="alert alert-warning fade show" role="alert">
+                <i class="fal fa-exclamation-triangle mr-2"></i>
+                {__('Safe mode enabled.')}
+                <a href="./?safemode=off" class="btn btn-light"><span class="fas fa-exclamation-circle mr-0 mr-lg-2"></span><span>{__('deactivate')}</span></a>
+            </div>
+            {/if}
             <div id="topbar" class="backend-navbar row mx-0 align-items-center topbar flex-nowrap">
+                {if !$hasPendingUpdates && $wizardDone}
                 <div class="col search px-0 px-md-3">
                     {include file='tpl_inc/backend_search.tpl'}
                 </div>
+                {/if}
                 <div class="col-auto ml-auto px-2">
                     <ul class="nav align-items-center">
-                        <li class="nav-item dropdown mr-md-3" id="favs-drop">
-                            {include file="tpl_inc/favs_drop.tpl"}
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a href="#" class="nav-link text-dark-gray px-2" data-toggle="dropdown">
-                                <span class="fal fa-map-marker-question fa-fw"></span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <span class="dropdown-header">Hilfecenter</span>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="https://jtl-url.de/shopschritte" target="_blank" rel="noopener">
-                                    {__('firstSteps')}
+                        {if !$hasPendingUpdates && $wizardDone}
+                            <li class="nav-item dropdown mr-md-3" id="favs-drop">
+                                {include file="tpl_inc/favs_drop.tpl"}
+                            </li>
+                            <li class="nav-item dropdown fa-lg">
+                                <a href="#" class="nav-link text-dark-gray px-2" data-toggle="dropdown">
+                                    <span class="fal fa-map-marker-question fa-fw"></span>
                                 </a>
-                                <a class="dropdown-item" href="https://jtl-url.de/shopguide" target="_blank" rel="noopener">
-                                    {__('jtlGuide')}
-                                </a>
-                                <a class="dropdown-item" href="https://forum.jtl-software.de" target="_blank" rel="noopener">
-                                    {__('jtlForum')}
-                                </a>
-                                <a class="dropdown-item" href="https://www.jtl-software.de/Training" target="_blank" rel="noopener">
-                                    {__('training')}
-                                </a>
-                                <a class="dropdown-item" href="https://www.jtl-software.de/Servicepartner" target="_blank" rel="noopener">
-                                    {__('servicePartners')}
-                                </a>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <span class="dropdown-header">{__('helpCenterHeader')}</span>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="https://jtl-url.de/shopschritte" target="_blank" rel="noopener">
+                                        {__('firstSteps')}
+                                    </a>
+                                    <a class="dropdown-item" href="https://jtl-url.de/0762z" target="_blank" rel="noopener">
+                                        {__('jtlGuide')}
+                                    </a>
+                                    <a class="dropdown-item" href="https://forum.jtl-software.de" target="_blank" rel="noopener">
+                                        {__('jtlForum')}
+                                    </a>
+                                    <a class="dropdown-item" href="https://www.jtl-software.de/Training" target="_blank" rel="noopener">
+                                        {__('training')}
+                                    </a>
+                                    <a class="dropdown-item" href="https://www.jtl-software.de/Servicepartner" target="_blank" rel="noopener">
+                                        {__('servicePartners')}
+                                    </a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown fa-lg" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                            <li class="nav-item dropdown fa-lg" id="updates-drop">{include file="tpl_inc/updates_drop.tpl"}</li>
+                        {/if}
                         <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle parent btn-toggle" data-toggle="dropdown">
                                 <i class="fal fa-language d-sm-none"></i> <span class="d-sm-block d-none">{$languageName}</span>
@@ -117,7 +128,7 @@
                             <img src="{getAvatar account=$account}" class="img-circle">
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item link-shop" href="{$URL_SHOP}" title="Zum Shop">
+                            <a class="dropdown-item link-shop" href="{$URL_SHOP}?fromAdmin=yes" title="{__('goShop')}" target="_blank">
                                 <i class="fa fa-shopping-cart"></i> {__('goShop')}
                             </a>
                             <a class="dropdown-item link-logout" href="logout.php?token={$smarty.session.jtl_token}"
@@ -129,6 +140,85 @@
                 </div>
                 <div class="opaque-background"></div>
             </div>
+            {if !$hasPendingUpdates && $expiredLicenses->count() > 0}
+                <div class="modal fade in" id="expiredLicensesNotice" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">{__('Licensing problem detected')}</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-2"><i class="fa fa-exclamation-triangle" style="font-size: 8em; padding-bottom:10px; color: red;"></i></div>
+                                    <div class="col-md-10 ml-auto">
+                                        <strong>{__('No valid licence found for the following installed and active extensions:')}</strong>
+                                        {form id="plugins-disable-form"}
+                                            <input type="hidden" name="action" value="disable-expired-plugins">
+                                            <ul>
+                                                {$hasPlugin = false}
+                                                {$hasTemplate = false}
+                                                {foreach $expiredLicenses as $license}
+                                                    {if $license->getType() === 'plugin'}
+                                                        {$hasPlugin = true}
+                                                    {elseif $license->getType() === 'template'}
+                                                        {$hasTemplate = true}
+                                                    {/if}
+                                                    <li>{$license->getName()}</li>
+                                                    <input type="hidden" name="pluginID[]" value="{$license->getReferencedItem()->getInternalID()}">
+                                                {/foreach}
+                                            </ul>
+                                        {/form}
+                                    </div>
+                                </div>
+                                <div class="alert alert-secondary" role="alert">
+                                    <p><strong>{__('Possible reasons:')}</strong></p>
+                                    <ul class="small">
+                                        <li>{__('The extension was obtained from a different source than the JTL-Extension Store')}</li>
+                                        <li>{__('The licence is not bound to this shop yet (check licence in "My purchases")')}</li>
+                                        <li>{__('The licence is bound to a different customer account that is not connected to this shop (check connected account in "My purchases")')}</li>
+                                        <li>{__('The manufacturer disabled the licence')}</li>
+                                    </ul>
+                                </div>
+                                <p><strong>{__('Further use of the extension may constitute a licence violation!')}</strong><br>
+                                    {__('Please purchase a licence in the JTL-Extension Store or contact the manufacturer of the extension for information on rights of use.')}
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="checkbox" id="understood-license-notice">
+                                <label for="understood-license-notice">{__('I understood this notice.')}</label>
+                                <button type="button" class="btn btn-default" disabled data-dismiss="modal" id="licenseUnderstood">{__('Understood')}</button>
+                                {if $hasPlugin === true}
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="licenseDisablePlugins">{__('Disable plugins')}</button>
+                                {/if}
+                                {if $hasTemplate === true}
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="licenseGotoTemplates">{__('Disable template')}</button>
+                                {/if}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    $(document).ready(function() {
+                        $('#expiredLicensesNotice').modal('show');
+                        $('#understood-license-notice').on('click', function (e) {
+                            $('#licenseUnderstood').attr('disabled', false);
+                        });
+                        $('#licenseUnderstood').on('click', function (e) {
+                            var newURL = new URL(window.location.href);
+                            newURL.searchParams.append('licensenoticeaccepted', 'true');
+                            window.location.href = newURL.toString();
+                            return true;
+                        });
+                        $('#licenseDisablePlugins').on('click', function (e) {
+                            $('#plugins-disable-form').submit();
+                            return true;
+                        });
+                        $('#licenseGotoTemplates').on('click', function (e) {
+                            window.location.href = '{$shopURL}/{$smarty.const.PFAD_ADMIN}shoptemplate.php?licensenoticeaccepted=true';
+                            return true;
+                        });
+                    });
+                </script>
             {/if}
             <div class="backend-content" id="content_wrapper">
 

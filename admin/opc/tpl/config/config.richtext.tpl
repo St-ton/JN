@@ -15,10 +15,15 @@
             {
                 baseFloatZIndex: 9000,
                 language: adminLang,
+                filebrowserBrowseUrl: 'elfinder.php?ckeditor=1&token=' + JTL_TOKEN + '&mediafilesType=image',
             },
         );
 
-        opc.setConfigSaveCallback(function() {
+        $.each(CKEDITOR.dtd.$removeEmpty, key => {
+            CKEDITOR.dtd.$removeEmpty[key] = false;
+        });
+
+        opc.once('save-config', () => {
             $('#textarea-{$propname}').val(CKEDITOR.instances['textarea-{$propname}'].getData());
         });
     </script>

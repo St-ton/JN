@@ -2,9 +2,6 @@
 
 namespace JTL\GeneralDataProtection;
 
-use JTL\DB\ReturnType;
-use JTL\Shop;
-
 /**
  * Class CleanupLogs
  * @package JTL\GeneralDataProtection
@@ -16,13 +13,13 @@ use JTL\Shop;
  *
  * `temailhistory`
  * `tkontakthistory`
- * `tkundenwerbenkunden`
  * `tzahlungslog`
  * `tproduktanfragehistory`
  * `tverfuegbarkeitsbenachrichtigung`
  * `tjtllog`
  * `tzahlungseingang`
  * `tkundendatenhistory`
+ * `tfloodprotect`
  */
 class CleanupLogs extends Method implements MethodInterface
 {
@@ -33,7 +30,7 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->cleanupEmailHistory();
         $this->cleanupContactHistory();
-        $this->cleanupCustomerRecruitings();
+        $this->cleanupFloodProtect();
         $this->cleanupPaymentLogEntries();
         $this->cleanupProductInquiries();
         $this->cleanupAvailabilityInquiries();
@@ -46,7 +43,7 @@ class CleanupLogs extends Method implements MethodInterface
      * delete email history
      * older than given interval
      */
-    private function cleanupEmailHistory()
+    private function cleanupEmailHistory(): void
     {
         $this->db->queryPrepared(
             'DELETE FROM temailhistory
@@ -56,8 +53,7 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -75,27 +71,25 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
     /**
-     * delete customer recruitings
-     * older than the given interval
+     * delete upload request history
+     * older than given interval
      */
-    private function cleanupCustomerRecruitings(): void
+    private function cleanupFloodProtect(): void
     {
-        Shop::Container()->getDB()->queryPrepared(
-            'DELETE FROM tkundenwerbenkunden
-            WHERE dErstellt <= :pDateLimit
-            ORDER BY dErstellt ASC
-            LIMIT :pLimit',
+        $this->db->queryPrepared(
+            'DELETE FROM tfloodprotect
+                WHERE dErstellt <= :pDateLimit
+                ORDER BY dErstellt ASC
+                LIMIT :pLimit',
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -105,7 +99,7 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupPaymentLogEntries(): void
     {
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             'DELETE FROM tzahlungslog
             WHERE dDatum <= :pDateLimit
             ORDER BY dDatum ASC
@@ -113,8 +107,7 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -124,7 +117,7 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupProductInquiries(): void
     {
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             'DELETE FROM tproduktanfragehistory
             WHERE dErstellt <= :pDateLimit
             ORDER BY dErstellt ASC
@@ -132,8 +125,7 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -143,7 +135,7 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupAvailabilityInquiries(): void
     {
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             'DELETE FROM tverfuegbarkeitsbenachrichtigung
             WHERE dErstellt <= :pDateLimit
             ORDER BY dErstellt ASC
@@ -151,8 +143,7 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -171,8 +162,7 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -191,8 +181,7 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -212,8 +201,7 @@ class CleanupLogs extends Method implements MethodInterface
             [
                 'pNow'   => $this->now->format('Y-m-d H:i:s'),
                 'pLimit' => $this->workLimit
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 }

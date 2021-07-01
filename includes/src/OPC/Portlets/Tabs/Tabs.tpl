@@ -1,11 +1,10 @@
-<div {$instance->getAttributeString()}
-     {if $isPreview}{$instance->getDataAttributeString()}{/if}
-     class="opc-Tabs">
-    {tabs}
+<div {$instance->getAttributeString()} class="opc-Tabs {$instance->getStyleClasses()}">
+    <nav class="tab-navigation">
+        {tabs}
         {foreach $instance->getProperty('tabs') as $i => $tabTitle}
             {$tabId = $instance->getUid()|cat:'-'|cat:$i}
             {$areaId = 'tab-'|cat:$i}
-            {tab id=$tabId title=$tabTitle active=$i==0}
+            {tab id=$tabId title=$tabTitle|escape:'html' active=$i==0}
                 <div data-area-id="{$areaId}" class="opc-area">
                     {if $isPreview}
                         {$instance->getSubareaPreviewHtml($areaId)}
@@ -15,5 +14,6 @@
                 </div>
             {/tab}
         {/foreach}
-    {/tabs}
+        {/tabs}
+    </nav>
 </div>

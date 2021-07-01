@@ -3,7 +3,7 @@
     {lang key='bestsellers' assign='slidertitle'}
     {block name='boxes-box-bestseller-include-product-slider'}
         {include file='snippets/product_slider.tpl'
-            id='boxslider-bestsellers'
+            id="boxslider-bestsellers-{$oBox->getID()}"
             productlist=$oBox->getProducts()->elemente
             title=$slidertitle
             tplscope='box'

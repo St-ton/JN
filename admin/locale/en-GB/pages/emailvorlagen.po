@@ -18,7 +18,7 @@ msgid "testmailsGoToEmail"
 msgstr "Test emails will be sent to the following address: "
 
 msgid "noMasterEmailSpecified"
-msgstr "No master email address found. Please enter a master sender email address under Contents > Emails > Settings."
+msgstr "No master email address found. Please enter a master sender email address under Administration > Email > Server."
 
 msgid "emailTemplateModifyHint"
 msgstr "Here you can edit the content of an email template in every language available for JTL-Shop. You can also specify the email address from which the email is to be send and whether certain attachments will be added by default."
@@ -51,7 +51,7 @@ msgid "emailAddWRBForm"
 msgstr "Attach model withdrawal form"
 
 msgid "emailAddDSE"
-msgstr "Attach data privacy statement"
+msgstr "Attach data privacy notice"
 
 msgid "emailActive"
 msgstr "Send email"
@@ -102,7 +102,7 @@ msgid "successFileAppendixDelete"
 msgstr "Attachments for the selected languages deleted successfully."
 
 msgid "multipleDividedColon"
-msgstr "(in case of multiple recipients, use a semicolon as a separator)"
+msgstr "In case of multiple recipients, use a semicolon as a separator"
 
 msgid "resetEmailTemplate"
 msgstr "The email template will be reset."
@@ -202,14 +202,6 @@ msgid "name_core_jtl_newsletteranmelden"
 msgstr "Activation email after newsletter subscription"
 
 # email name (temailvorlage)
-msgid "name_core_jtl_kundenwerbenkunden"
-msgstr "Customer referral programme"
-
-# email name (temailvorlage)
-msgid "name_core_jtl_kundenwerbenkundenboni"
-msgstr "Customer referral programme – reward"
-
-# email name (temailvorlage)
 msgid "name_core_jtl_artikelweiterempfehlen"
 msgstr "Recommend item"
 
@@ -239,3 +231,9 @@ msgstr "Back in stock notification email (double opt-in confirmation)"
 
 msgid "Empty mail body"
 msgstr "Empty email body"
+
+msgid "Check syntax"
+msgstr "Check email sytnax"
+
+msgid "Syntax check fail"
+msgstr "Email syntax check failed"

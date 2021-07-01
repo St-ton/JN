@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "Bilder-Slider"
-msgstr "Image slider"
+msgstr "Image Slider"
 
 msgid "Slides"
 msgstr "Slides"
@@ -55,3 +55,9 @@ msgstr "Arrow navigation"
 
 msgid "randomEffects"
 msgstr "Random effects"
+
+msgid "kenBurnsDesc"
+msgstr "Slow panning and zooming effect into the image"
+
+msgid "randomEffectsDesc"
+msgstr "Switches randomly between all effects listed below."

@@ -38,7 +38,7 @@ class CacheRedisCluster implements ICachingMethod
     /**
      * @param array $options
      */
-    public function __construct($options)
+    public function __construct(array $options)
     {
         $res             = false;
         $this->journalID = 'redis_journal';
@@ -47,7 +47,8 @@ class CacheRedisCluster implements ICachingMethod
             $res = $this->setRedisCluster(
                 $options['rediscluster_hosts'],
                 $options['redis_persistent'],
-                (int)$options['rediscluster_strategy']
+                (int)$options['rediscluster_strategy'],
+                $options['redis_pass']
             );
         }
         $this->isInitialized = $res;
@@ -57,12 +58,14 @@ class CacheRedisCluster implements ICachingMethod
      * @param string|null $hosts
      * @param bool        $persist
      * @param int         $strategy
+     * @param string|null $pass
      * @return bool
      */
-    private function setRedisCluster($hosts = null, $persist = false, $strategy = 0): bool
+    private function setRedisCluster($hosts = null, $persist = false, $strategy = 0, string $pass = null): bool
     {
         try {
-            $redis = new RedisCluster(null, \explode(',', $hosts), 1.5, 1.5, $persist);
+            $pass  = $pass !== null && \strlen($pass) > 0 ? $pass : null;
+            $redis = new RedisCluster(null, \explode(',', $hosts), 1.5, 1.5, $persist, $pass);
             $redis->setOption(Redis::OPT_PREFIX, $this->options['prefix']);
             // set php serializer for objects and arrays
             $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
@@ -82,11 +85,9 @@ class CacheRedisCluster implements ICachingMethod
                     break;
             }
             $this->masters = $redis->_masters();
-
-            $this->redis = $redis;
+            $this->redis   = $redis;
         } catch (RedisClusterException $e) {
             $this->setError($e->getMessage());
-            Shop::Container()->getLogService()->critical('RedisClusterException: ' . $e->getMessage());
         }
 
         return \count($this->masters) > 0;
@@ -210,9 +211,7 @@ class CacheRedisCluster implements ICachingMethod
      */
     public function flushTags($tags): int
     {
-        $tags = \array_unique($this->getKeysByTag($tags));
-
-        return $this->flush($tags) ? \count($tags) : 0;
+        return $this->flush(\array_unique($this->getKeysByTag($tags))) ? \count($tags) : 0;
     }
 
     /**
@@ -256,9 +255,9 @@ class CacheRedisCluster implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function keyExists($cacheID): bool
+    public function keyExists($key): bool
     {
-        return $this->redis->exists($cacheID);
+        return (bool)$this->redis->exists($key);
     }
 
     /**

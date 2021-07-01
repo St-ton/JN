@@ -26,12 +26,6 @@ msgstr "Template bzw. Einstellungen konnten nicht geändert werden. Falls das Te
 msgid "errorFileUpload"
 msgstr "Der Datei-Upload konnte nicht ausgeführt werden – bitte überprüfen Sie die Schreibrechte des Ordners „%s“."
 
-msgid "successLayoutReset"
-msgstr "Layout wurde erfolgreich zurückgesetzt."
-
-msgid "errorLayoutReset"
-msgstr "Layout konnte nicht zurückgesetzt werden. Die Datei %s existiert nicht oder hat nicht genügend Schreibrechte."
-
 msgid "errorStyleFilePermission"
 msgstr "Style-Datei konnte nicht geschrieben werden. Die Datei %s existiert nicht oder hat nicht genügend Schreibrechte."
 
@@ -64,3 +58,39 @@ msgstr "Parent-Template fehlt"
 
 msgid "errorOverlayWritePermissions"
 msgstr "Die Artikelsticker konnten nicht erzeugt werden. Bitte prüfen Sie die Schreibrechte des Ordners „%s“ und aktivieren Sie das Template erneut."
+
+msgid "successTemplateUpload"
+msgstr "Template wurde erfolgreich hochgeladen."
+
+msgid "uploadTemplateHeading"
+msgstr "Template hochladen"
+
+msgid "errorTemplateUpload"
+msgstr "Template konnte nicht hochgeladen werden. Bitte wenden Sie sich an den Support."
+
+msgid "errorParentNotFound"
+msgstr "Parent-Template konnte nicht gefunden werden."
+
+msgid "errorShopVersionNotFound"
+msgstr "XML-Knoten „ShopVersion“/„MinShopVersion“ konnte nicht gefunden werden."
+
+msgid "errorXmlNotFound"
+msgstr "template.xml konnte nicht gefunden werden."
+
+msgid "errorXmlParse"
+msgstr "XML konnte nicht geparst werden."
+
+msgid "errorNameNotFound"
+msgstr "XML-Knoten „Name“ konnte nicht gefunden werden."
+
+msgid "errorInvalidVersion"
+msgstr "Keine gültige SemVer."
+
+msgid "errorUnknown"
+msgstr "Unbekannter Fehler."
+
+msgid "dangerMinShopVersion"
+msgstr "Bitte beachten Sie, dass dieses Template eine aktuellere Version von JTL-Shop erfordert. Es können daher Probleme beim Betrieb entstehen."
+
+msgid "dangerMaxShopVersion"
+msgstr "Bitte beachten Sie, dass dieses Template für eine ältere Version von JTL-Shop entwickelt wurde. Es können daher Probleme beim Betrieb entstehen."

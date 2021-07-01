@@ -1,11 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Services\JTL;
 
 use Exception;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 
 /**
  * Class SimpleCaptchaService
@@ -19,7 +18,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     private $enabled;
 
     /**
-     * CaptchaService constructor.
+     * SimpleCaptchaService constructor.
      * @param bool $enabled
      */
     public function __construct(bool $enabled)
@@ -28,7 +27,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function isConfigured(): bool
     {
@@ -36,7 +35,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function isEnabled(): bool
     {
@@ -44,8 +43,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param JTLSmarty $smarty
-     * @return string
+     * @inheritDoc
      */
     public function getHeadMarkup($smarty): string
     {
@@ -53,28 +51,28 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param JTLSmarty $smarty
-     * @return string
-     * @throws \SmartyException
+     * @inheritDoc
      */
     public function getBodyMarkup($smarty): string
     {
         if (!$this->isEnabled()) {
             return '';
         }
-
-        $cryptoService = Shop::Container()->getCryptoService();
-        try {
-            $token = $cryptoService->randomString(8);
-            $code  = $cryptoService->randomString(12);
-            $code .= ':' . \time();
-        } catch (Exception $e) {
-            $token = 'token';
-            $code  = \rand() . ':' . \time();
+        $token = Frontend::get('simplecaptcha.token');
+        $code  = Frontend::get('simplecaptcha.code');
+        if ($token === null || $code === null) {
+            $cryptoService = Shop::Container()->getCryptoService();
+            try {
+                $token = $cryptoService->randomString(8);
+                $code  = $cryptoService->randomString(12);
+                $code .= ':' . \time();
+            } catch (Exception $e) {
+                $token = 'token';
+                $code  = \rand() . ':' . \time();
+            }
+            Frontend::set('simplecaptcha.token', $token);
+            Frontend::set('simplecaptcha.code', $code);
         }
-
-        Frontend::set('simplecaptcha.token', $token);
-        Frontend::set('simplecaptcha.code', $code);
 
         return $smarty->assign('captchaToken', $token)
                       ->assign('captchaCode', \sha1($code))
@@ -82,15 +80,13 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param  array $requestData
-     * @return bool
+     * @inheritDoc
      */
     public function validate(array $requestData): bool
     {
         if (!$this->isEnabled()) {
             return true;
         }
-
         $token = Frontend::get('simplecaptcha.token');
         $code  = Frontend::get('simplecaptcha.code');
 
@@ -104,11 +100,10 @@ class SimpleCaptchaService implements CaptchaServiceInterface
         $time = \mb_substr($code, \mb_strpos($code, ':') + 1);
 
         // if form is filled out during lower than 5 seconds it must be a bot...
-        return \time() > $time + 5
+        return \time() > (int)$time + 5
             && isset($requestData[$token])
             && ($requestData[$token] === \sha1($code));
     }
-
 
     /**
      * @param string $plain

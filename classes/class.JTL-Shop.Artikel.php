@@ -2420,13 +2420,12 @@ class Artikel
                         // Wenn der Artikel ein VarikombiKind ist, rechne nicht nochmal die Variationsaufpreise drauf
                         //(int)$this->Variationen[$nZaehler]->Werte[$i]->oVariationsKombi->kArtikel
                         if ($this->kVaterArtikel > 0) {
-
                             $variationBasePrice = new Preise(
                                 $kKundengruppe,
                                 (int)$this->Variationen[$nZaehler]->Werte[$i]->oVariationsKombi->kArtikel,
                                 isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0
                             );
-                            $VariationVKNetto = $variationBasePrice->fVKNetto;
+                            $VariationVKNetto   = $variationBasePrice->fVKNetto;
 
                             $this->Variationen[$nZaehler]->Werte[$i]->cPreisInklAufpreis[0] = gibPreisStringLocalized(berechneBrutto(
                                 $VariationVKNetto,

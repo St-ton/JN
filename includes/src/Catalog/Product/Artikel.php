@@ -1029,8 +1029,9 @@ class Artikel
         $this->conf    = $this->getConfig();
         $this->taxData = $this->getShippingAndTaxData();
         if ($this->compressed === true) {
-            $this->cBeschreibung = \gzuncompress($this->cBeschreibung);
-            $this->compressed    = false;
+            $this->cBeschreibung    = \gzuncompress($this->cBeschreibung);
+            $this->cKurzbezeichnung = \gzuncompress($this->cKurzbezeichnung);
+            $this->compressed       = false;
         }
     }
 
@@ -3322,8 +3323,9 @@ class Artikel
             $toSave->oVariationKombiKinderAssoc_arr = null;
             $toSave->Preise                         = $basePrice;
             if (\COMPRESS_DESCRIPTION === true) {
-                $toSave->cBeschreibung = \gzcompress($toSave->cBeschreibung);
-                $toSave->compressed    = true;
+                $toSave->cBeschreibung    = \gzcompress($toSave->cBeschreibung);
+                $toSave->cKurzbezeichnung = \gzcompress($toSave->cKurzbezeichnung);
+                $toSave->compressed       = true;
             }
             Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
         }

@@ -20579,6 +20579,11 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   white-space: initial;
 }
 
+.sidepanel-left .dropdown-menu, .productlist-filter-wrapper .dropdown-menu {
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
 .slick-slide .square, .slick-slide .productbox-image-wrapper {
   display: flex !important;
 }

@@ -59,7 +59,7 @@ class ShippingSurcharge
     public $ZIPCodes;
 
     /**
-     * @var array
+     * @var ShippingSurchargeArea[]
      */
     public $ZIPAreas = [];
 
@@ -178,7 +178,6 @@ class ShippingSurcharge
             }
         }
 
-        /** @var ShippingSurchargeArea $zipArea */
         foreach ($this->getZIPAreas() ?? [] as $zipArea) {
             if ($zipArea->isInArea($zip)) {
                 return true;
@@ -335,7 +334,7 @@ class ShippingSurcharge
     }
 
     /**
-     * @return array|null
+     * @return ShippingSurchargeArea[]|null
      */
     public function getZIPAreas(): ?array
     {
@@ -343,7 +342,7 @@ class ShippingSurcharge
     }
 
     /**
-     * @param array $ZIPAreas
+     * @param ShippingSurchargeArea[] $ZIPAreas
      * @return ShippingSurcharge
      */
     public function setZIPAreas(array $ZIPAreas): self

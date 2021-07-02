@@ -338,3 +338,6 @@ msgstr "The postal codes do not match."
 
 msgid "infoAllowedZipAreas"
 msgstr "Only numerical postal code areas or numerical postal code areas with matching suffixes or prefixes are supported. <br> (e.g. 41836–41840, 9104BR–9112BR, BB9104–BB9112)"
+
+msgid "errorInvalidZipCode"
+msgstr "The postal code does not match the country specifications: "

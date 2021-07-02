@@ -35,6 +35,7 @@ $languages       = LanguageHelper::getAllLanguages(0, true);
 $getText         = Shop::Container()->getGetText();
 $cache           = Shop::Container()->getCache();
 $postData        = Text::filterXSS($_POST);
+$postCountries   = $postData['land'] ?? [];
 
 $missingShippingClassCombis = getMissingShippingClassCombi();
 $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis);
@@ -136,11 +137,8 @@ if (Form::validateToken()) {
             : 0;
 
         $shippingMethod->cLaender = '';
-        $Laender                  = array_unique($postData['land']);
-        if (is_array($Laender)) {
-            foreach ($Laender as $Land) {
-                $shippingMethod->cLaender .= $Land . ' ';
-            }
+        foreach (array_unique($postCountries) as $postIso) {
+            $shippingMethod->cLaender .= $postIso . ' ';
         }
 
         $VersandartZahlungsarten = [];
@@ -220,8 +218,8 @@ if (Form::validateToken()) {
             ? ' ' . $postData['kVersandklasse'] . ' '
             : '-1');
 
-        if (count($postData['land']) >= 1
-            && count($postData['kZahlungsart']) >= 1
+        if (count($postCountries) >= 1
+            && count($postData['kZahlungsart'] ?? []) >= 1
             && $shippingMethod->cName
             && $staffelDa
         ) {
@@ -301,14 +299,14 @@ if (Form::validateToken()) {
                     'errorShippingMethodNameMissing'
                 );
             }
-            if (count($postData['land']) < 1) {
+            if (count($postCountries) < 1) {
                 $alertHelper->addAlert(
                     Alert::TYPE_ERROR,
                     __('errorShippingMethodCountryMissing'),
                     'errorShippingMethodCountryMissing'
                 );
             }
-            if (count($postData['kZahlungsart']) < 1) {
+            if (count($postData['kZahlungsart'] ?? []) < 1) {
                 $alertHelper->addAlert(
                     Alert::TYPE_ERROR,
                     __('errorShippingMethodPaymentMissing'),

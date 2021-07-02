@@ -3,6 +3,7 @@
 namespace JTL\Plugin\Data;
 
 use Illuminate\Support\Collection;
+use JTL\Language\LanguageHelper;
 use JTL\Plugin\Admin\InputType;
 use stdClass;
 use function Functional\first;
@@ -76,6 +77,13 @@ class Localization
     {
         $iso   = \mb_convert_case($iso ?? $this->currentLanguageCode, \MB_CASE_UPPER);
         $first = $this->langVars->firstWhere('name', $name);
+
+        if (!isset($first->values[$iso])) {
+            $defaultIso = LanguageHelper::getDefaultLanguage()->getCode();
+            if ($iso !== \mb_convert_case($defaultIso ?? $this->currentLanguageCode, \MB_CASE_UPPER)) {
+                return $this->getTranslation($name, $defaultIso);
+            }
+        }
 
         return $first->values[$iso] ?? null;
     }

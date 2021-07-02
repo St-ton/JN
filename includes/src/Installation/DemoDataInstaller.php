@@ -8,6 +8,7 @@ use Faker\Generator;
 use JTL\DB\DbInterface;
 use JTL\Installation\Faker\de_DE\Commerce;
 use JTL\Installation\Faker\ImageProvider;
+use JTL\xtea\XTEA;
 use stdClass;
 
 /**
@@ -454,55 +455,54 @@ class DemoDataInstaller
      */
     public function createCategories($callback = null): self
     {
-        $maxPk      = (int)$this->pdo->getSingleObject('SELECT max(kKategorie) AS maxPk FROM tkategorie')->maxPk;
-        $limit      = $this->config['categories'];
-        $name_index = 0;
+        $maxPk   = (int)$this->pdo->getSingleObject('SELECT max(kKategorie) AS maxPk FROM tkategorie')->maxPk;
+        $limit   = $this->config['categories'];
+        $nameIDX = 0;
         for ($i = 1; $i <= $limit; ++$i) {
             try {
-                $_name = $this->faker->unique()->department;
-                $res   = $this->pdo->getObjects('SELECT kKategorie FROM tkategorie WHERE cName = "' . $_name . '"');
+                $name = $this->faker->unique()->department;
+                $res  = $this->pdo->getObjects('SELECT kKategorie FROM tkategorie WHERE cName = "' . $name . '"');
                 if (\is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
                 }
             } catch (\OverflowException $e) {
-                $_name = $this->faker->unique(true)->department . '_' . ++$name_index;
+                $name = $this->faker->unique(true)->department . '_' . ++$nameIDX;
             }
-            $_category                        = new stdClass();
-            $_category->kKategorie            = $maxPk + $i;
-            $_category->cName                 = $_name;
-            $_category->cSeo                  = $this->slug($_name);
-            $_category->cBeschreibung         = $this->faker->text(200);
-            $_category->kOberKategorie        = \rand(0, $_category->kKategorie - 1);
-            $_category->nSort                 = 0;
-            $_category->dLetzteAktualisierung = 'now()';
-            $_category->lft                   = 0;
-            $_category->rght                  = 0;
-            $res                              = $this->pdo->insert('tkategorie', $_category);
+            $category                        = new stdClass();
+            $category->kKategorie            = $maxPk + $i;
+            $category->cName                 = $name;
+            $category->cSeo                  = $this->slug($name);
+            $category->cBeschreibung         = $this->faker->text(200);
+            $category->kOberKategorie        = \rand(0, $category->kKategorie - 1);
+            $category->nSort                 = 0;
+            $category->dLetzteAktualisierung = 'now()';
+            $category->lft                   = 0;
+            $category->rght                  = 0;
+            $res                             = $this->pdo->insert('tkategorie', $category);
             if ($res > 0) {
-                $_seoEntry       = new stdClass();
-                $_seoEntry->cKey = 'kKategorie';
-                $_seoEntry->cSeo = $_category->cSeo;
-
+                $seo       = new stdClass();
+                $seo->cKey = 'kKategorie';
+                $seo->cSeo = $category->cSeo;
                 $seo_index = 0;
-                while (($data = $this->pdo->select('tseo', 'cKey', $_seoEntry->cKey, 'cSeo', $_seoEntry->cSeo)) !== false
+                while (($data = $this->pdo->select('tseo', 'cKey', $seo->cKey, 'cSeo', $seo->cSeo)) !== false
                     && \is_array($data)
                     && count($data) > 0
                 ) {
-                    $_seoEntry->cSeo = $_category->cSeo . '_' . ++$seo_index;
+                    $seo->cSeo = $category->cSeo . '_' . ++$seo_index;
                 }
 
-                $_seoEntry->kKey     = $_category->kKategorie;
-                $_seoEntry->kSprache = 1;
-                $this->pdo->insert('tseo', $_seoEntry);
+                $seo->kKey     = $category->kKategorie;
+                $seo->kSprache = 1;
+                $this->pdo->insert('tseo', $seo);
 
-                $_seoEntry->cSeo    .= '-en';
-                $_seoEntry->kSprache = 2;
-                $this->pdo->insert('tseo', $_seoEntry);
+                $seo->cSeo    .= '-en';
+                $seo->kSprache = 2;
+                $this->pdo->insert('tseo', $seo);
 
-                $this->createCategoryImage($_category->kKategorie, $_name);
+                $this->createCategoryImage($category->kKategorie, $name);
             }
 
-            $this->callback($callback, $i, $limit, $res > 0, $_name);
+            $this->callback($callback, $i, $limit, $res > 0, $name);
         }
         $this->rebuildCategoryTree(0, 1);
 
@@ -675,12 +675,10 @@ class DemoDataInstaller
      */
     public function createCustomers($callback = null): self
     {
-        $limit  = $this->config['customers'];
-        $fake   = $this->faker;
-        $pdo    = $this->pdo;
-        $secret = \BLOWFISH_KEY;
-        $xtea   = new \XTEA($secret);
-
+        $limit = $this->config['customers'];
+        $fake  = $this->faker;
+        $pdo   = $this->pdo;
+        $xtea  = new XTEA(\BLOWFISH_KEY);
         for ($i = 1; $i <= $limit; ++$i) {
             if (\rand(0, 1) === 0) {
                 $firstName = $fake->firstNameMale;

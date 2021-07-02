@@ -17,7 +17,10 @@ class Migration_20200522000000 extends Migration implements IMigration
     protected $author      = 'fm';
     protected $description = 'Syntax checks';
 
-    /** @noinspection SqlWithoutWhere */
+    /**
+     * @inheritdoc
+     * @noinspection SqlWithoutWhere
+     */
     public function up()
     {
         // removed syntax check - set only to unchecked SHOP-4630

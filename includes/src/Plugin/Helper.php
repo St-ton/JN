@@ -310,7 +310,7 @@ class Helper
      */
     public static function getIDByExsID(string $exsID): int
     {
-        (int)(Shop::Container()->getDB()->select('tplugin', 'exsID', $exsID)->kPlugin ?? 0);
+        return (int)(Shop::Container()->getDB()->select('tplugin', 'exsID', $exsID)->kPlugin ?? 0);
     }
 
     /**
@@ -532,7 +532,7 @@ class Helper
         ];
         if ($pluginID <= 0) {
             $result->code    = InstallCode::NO_PLUGIN_FOUND;
-            $result->message = __('errorPluginNotFound');
+            $result->message = \__('errorPluginNotFound');
 
             return $result;
         }
@@ -556,7 +556,7 @@ class Helper
             $plugin = $loader->init($pluginID);
             if ($plugin === null) {
                 $result->code    = InstallCode::NO_PLUGIN_FOUND;
-                $result->message = __('errorPluginNotFound');
+                $result->message = \__('errorPluginNotFound');
 
                 return $result;
             }

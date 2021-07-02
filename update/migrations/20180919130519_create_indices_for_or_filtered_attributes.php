@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Create status table for or-filtered attributes
  *
@@ -6,7 +6,6 @@
  * @created Wed, 19 Sep 2018 13:05:19 +0200
  */
 
-use JTL\DB\ReturnType;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -23,12 +22,11 @@ class Migration_20180919130519 extends Migration implements IMigration
      */
     public function up()
     {
-        $duplicates = $this->getDB()->query(
+        $duplicates = $this->getDB()->getObjects(
             'SELECT kMerkmal, kMerkmalWert, kArtikel, COUNT(*) cntData
                 FROM tartikelmerkmal
                 GROUP BY kMerkmal, kMerkmalWert, kArtikel
-                HAVING COUNT(*) > 1;',
-            ReturnType::ARRAY_OF_OBJECTS
+                HAVING COUNT(*) > 1'
         );
         foreach ($duplicates as $duplicate) {
             $this->getDB()->queryPrepared(

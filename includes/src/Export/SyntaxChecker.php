@@ -231,7 +231,7 @@ class SyntaxChecker
         } catch (Exception $e) {
             $this->updateError(self::SYNTAX_FAIL);
             $res->result  = 'fail';
-            $res->message = __($e->getMessage());
+            $res->message = \__($e->getMessage());
         }
 
         return $res;
@@ -255,7 +255,7 @@ class SyntaxChecker
                 $out = \ob_get_clean();
                 $res = (object)[
                     'result'  => 'fail',
-                    'state'   => '<span class="label text-warning">' . __('untested') . '</span>',
+                    'state'   => '<span class="label text-warning">' . \__('untested') . '</span>',
                     'message' => self::stripMessage($out, $err['message']),
                 ];
                 $ef  = new self($id, Shop::Container()->getDB());
@@ -273,7 +273,7 @@ class SyntaxChecker
         } catch (Exception $e) {
             $res = (object)[
                 'result'  => 'fail',
-                'message' => __($e->getMessage()),
+                'message' => \__($e->getMessage()),
             ];
         }
         $res->state = self::getHTMLState($ef->errorCode);

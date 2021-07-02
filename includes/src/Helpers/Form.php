@@ -117,9 +117,9 @@ class Form
                 $ret[$key] = 1;
             }
         }
-        foreach (['fax', 'tel', 'mobil'] as $numberKey) {
-            if ($conf['kontakt_abfragen_' . $numberKey] === 'Y') {
-                $ret[$numberKey] = Text::checkPhoneNumber($_POST[$numberKey] ?? '');
+        foreach (['fax', 'tel', 'mobil'] as $idx) {
+            if ($conf['kontakt_abfragen_' . $idx] === 'Y' && ($ok = Text::checkPhoneNumber($_POST[$idx] ?? '')) > 0) {
+                $ret[$idx] = $ok;
             }
         }
         if ($conf['kontakt_abfragen_captcha'] !== 'N' && !self::validateCaptcha($_POST)) {

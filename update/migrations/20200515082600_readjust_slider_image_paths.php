@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
@@ -20,21 +19,19 @@ class Migration_20200515082600 extends Migration implements IMigration
     {
         $mediafilesPath = PFAD_MEDIAFILES;
 
-        $this->__execute(
+        $this->execute(
             "UPDATE tslide
                 SET cBild = CONCAT('$mediafilesPath', cBild),
                     cThumbnail = CONCAT('$mediafilesPath', 'Bilder/.tmb/', substring_index(cBild, '/', -1))
-                WHERE cBild LIKE 'Bilder/%'",
-            ReturnType::DEFAULT
+                WHERE cBild LIKE 'Bilder/%'"
         );
 
         $shopPath = parse_url(Shop::getURL() . '/', PHP_URL_PATH);
 
-        $this->__execute(
+        $this->execute(
             "UPDATE tslide
                 SET cBild = TRIM(LEADING '$shopPath' FROM cBild)
-                WHERE cBild LIKE '$shopPath%'",
-            ReturnType::DEFAULT
+                WHERE cBild LIKE '$shopPath%'"
         );
     }
 

@@ -26,12 +26,12 @@ class Countdown extends Portlet
     {
         return [
             'until'        => [
-                'label'    => __('countdownDateTime'),
+                'label'    => \__('countdownDateTime'),
                 'type'     => InputType::DATETIME,
                 'required' => true,
             ],
             'expired-text' => [
-                'label' => __('textAfterCountdownFinished'),
+                'label' => \__('textAfterCountdownFinished'),
                 'type'  => InputType::RICHTEXT,
             ]
         ];
@@ -43,8 +43,8 @@ class Countdown extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            __('Styles')    => 'styles',
-            __('Animation') => 'animations',
+            \__('Styles')    => 'styles',
+            \__('Animation') => 'animations',
         ];
     }
 }

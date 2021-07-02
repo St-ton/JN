@@ -202,7 +202,7 @@ class Admin
                 $errorCode      = $result;
                 $mappedErrorMsg = $mapper->map($result);
                 if (empty($response->error)) {
-                    $response->error = __('Error code: %d', $errorCode) . ' - ' . $mappedErrorMsg;
+                    $response->error = \__('Error code: %d', $errorCode) . ' - ' . $mappedErrorMsg;
                 }
                 $smarty->assign('licenseErrorMessage', $response->error)
                     ->assign('mappedErrorMessage', $mappedErrorMsg)
@@ -351,6 +351,7 @@ class Admin
     {
         $data = $this->manager->getLicenseData();
         $smarty->assign('hasAuth', $this->auth->isValid())
+            ->assign('tokenOwner', $data->owner ?? null)
             ->assign('lastUpdate', $data->timestamp ?? null);
     }
 
@@ -368,7 +369,7 @@ class Admin
         } catch (Exception $e) {
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_ERROR,
-                __('errorFetchLicenseAPI') . '' . $e->getMessage(),
+                \__('errorFetchLicenseAPI') . '' . $e->getMessage(),
                 'errorFetchLicenseAPI'
             );
         }

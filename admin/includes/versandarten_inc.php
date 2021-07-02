@@ -392,7 +392,7 @@ function saveShippingSurcharge(array $data): stdClass
                 ->setTitle($post['cName'])
                 ->setSurcharge($surcharge);
         }
-        foreach (Sprache::getAllLanguages() as $lang) {
+        foreach (Sprache::getAllLanguages(0, true) as $lang) {
             $idx = 'cName_' . $lang->getCode();
             if (isset($post[$idx])) {
                 $surchargeTMP->setName($post[$idx] ?: $post['cName'], $lang->getId());
@@ -592,7 +592,7 @@ function getShippingSurcharge(int $id): stdClass
 
     $smarty       = JTLSmarty::getInstance(false, ContextType::BACKEND);
     $result       = new stdClass();
-    $result->body = $smarty->assign('sprachen', LanguageHelper::getAllLanguages())
+    $result->body = $smarty->assign('sprachen', LanguageHelper::getAllLanguages(0, true))
         ->assign('surchargeNew', new ShippingSurcharge($id))
         ->assign('surchargeID', $id)
         ->fetch('snippets/zuschlagliste_form.tpl');

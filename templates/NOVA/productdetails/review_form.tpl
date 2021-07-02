@@ -7,7 +7,7 @@
     {/block}
 
     {block name='productdetails-review-form-content'}
-        {container class="review-form"}
+        {container class="review-form {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
             {block name='productdetails-review-form-heading'}
                 <h1>{lang key='productRating' section='product rating'}</h1>
             {/block}

@@ -1689,7 +1689,7 @@ class Exportformat
         } catch (Exception $e) {
             $this->updateError(self::SYNTAX_FAIL);
             $res->result  = 'fail';
-            $res->message = __($e->getMessage());
+            $res->message = \__($e->getMessage());
         }
 
         return $res;
@@ -1713,7 +1713,7 @@ class Exportformat
                 $out = \ob_get_clean();
                 $res = (object)[
                     'result'  => 'fail',
-                    'state'   => '<span class="label text-warning">' . __('untested') . '</span>',
+                    'state'   => '<span class="label text-warning">' . \__('untested') . '</span>',
                     'message' => self::stripMessage($out, $err['message']),
                 ];
                 $ef  = new self($id, Shop::Container()->getDB());
@@ -1733,7 +1733,7 @@ class Exportformat
         } catch (Exception $e) {
             $res = (object)[
                 'result'  => 'fail',
-                'message' => __($e->getMessage()),
+                'message' => \__($e->getMessage()),
             ];
         }
         $res->state = self::getHTMLState((int)($ef->nFehlerhaft ?? self::SYNTAX_NOT_CHECKED));

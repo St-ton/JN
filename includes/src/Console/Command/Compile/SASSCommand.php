@@ -4,7 +4,7 @@ namespace JTL\Console\Command\Compile;
 
 use JTL\Console\Command\Command;
 use JTL\Console\ConsoleIO;
-use League\Flysystem\Adapter\Local;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\Filesystem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -41,11 +41,11 @@ class SASSCommand extends Command
         $templateDir      = !isset($templateDirParam)
             ? \PFAD_ROOT . \PFAD_TEMPLATES .'NOVA/themes/' : \PFAD_ROOT . \PFAD_TEMPLATES . $templateDirParam;
         $templateDir      = substr($templateDir, -1) !== '/' ? $templateDir . '/' : $templateDir;
-        $fileSystem       = new Filesystem(new Local('/'));
+        $fileSystem       = new Filesystem(new LocalFilesystemAdapter('/'));
         $themeFolders     = $fileSystem->listContents($templateDir, false);
         if (!isset($themeParam)) {
             foreach ($themeFolders as $themeFolder) {
-                $this->compile($themeFolder['basename'], $templateDir, $cacheDir, $io);
+                $this->compile(\basename($themeFolder->path()), $templateDir, $cacheDir, $io);
             }
         } else {
             $this->compile($themeParam, $templateDir, $cacheDir, $io);
@@ -127,9 +127,9 @@ class SASSCommand extends Command
                 }
             }
 
-            return null;
+            return 1;
         });
-        $content = $compiler->compile(\file_get_contents($file));
+        $content = $compiler->compileString(\file_get_contents($file));
         $content = \str_replace('content: \'\\\\', 'content: \'\\', $content);
         \file_put_contents($target, $content);
     }

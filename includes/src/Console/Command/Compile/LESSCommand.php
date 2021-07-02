@@ -4,9 +4,9 @@ namespace JTL\Console\Command\Compile;
 
 use JTL\Console\Command\Command;
 use JTL\Console\ConsoleIO;
-use League\Flysystem\Adapter\Local;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\Filesystem;
-use Less_Parser;
+use lessc;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -37,12 +37,12 @@ class LESSCommand extends Command
         $themeParam       = $this->getOption('theme');
         $templateDirParam = $this->getOption('templateDir');
         $directory        = !isset($templateDirParam)
-        ? \PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/themes/' : \PFAD_ROOT . \PFAD_TEMPLATES . $templateDirParam;
+        ? \PFAD_ROOT . \PFAD_TEMPLATES . 'evo/themes/' : \PFAD_ROOT . \PFAD_TEMPLATES . $templateDirParam;
         if ($themeParam === null) {
-            $fileSystem = new Filesystem(new Local('/'));
+            $fileSystem = new Filesystem(new LocalFilesystemAdapter('/'));
             foreach ($fileSystem->listContents($directory) as $themeFolder) {
-                if ($themeFolder['basename'] !== 'base') {
-                    $this->compileLess('/' . $themeFolder['path'], $themeFolder['basename'], $io);
+                if (\basename($themeFolder->path()) !== 'base') {
+                    $this->compileLess('/' . $themeFolder->path(), \basename($themeFolder->path()), $io);
                 }
             }
             $io->writeln('...');
@@ -52,6 +52,7 @@ class LESSCommand extends Command
             $io->writeln('...');
             $io->writeln('<info>Theme ' . $themeParam . ' was compiled successfully.</info>');
         }
+        return 1;
     }
 
     /**
@@ -61,11 +62,9 @@ class LESSCommand extends Command
      */
     private function compileLess(string $path, string $themeName, ConsoleIO $io): void
     {
-        $parser = new Less_Parser();
+        $parser = new lessc();
         try {
-            $parser->parseFile($path . '/less/theme.less', '/');
-            $css = $parser->getCss();
-            \file_put_contents($path . '/bootstrap.css', $css);
+            $parser->checkedCompile($path . '/less/theme.less', $path . '/bootstrap.css');
             $io->writeln('<info>compiled ' . $themeName . ' theme </info>');
             unset($parser);
         } catch (\Exception $e) {

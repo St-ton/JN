@@ -42,7 +42,7 @@
         "chamilo/pclzip": "^2.8",
         "psr/container": "1.0.0",
         "lstrojny/functional-php": "^1.14",
-        "monolog/monolog": "^2.1",
+        "monolog/monolog": "~2.0",
         "myclabs/php-enum": "^1.7",
         "jtlshop/semver": "~0.0.7",
         "studio-42/elfinder": "^2.1",
@@ -62,7 +62,9 @@
         "illuminate/collections": "^8.12",
         "nesbot/carbon": "^2.41",
         "gettext/translator": "^1.0",
-        "mrclay/minify": "^3.0"
+        "mrclay/minify": "^3.0",
+        "marcusschwarz/lesserphp" :  "~0.5.1",
+        "scssphp/scssphp": "1.5.2"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",

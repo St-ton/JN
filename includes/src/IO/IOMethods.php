@@ -33,7 +33,6 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
-use JTL\Staat;
 use SmartyException;
 use stdClass;
 use function Functional\filter;

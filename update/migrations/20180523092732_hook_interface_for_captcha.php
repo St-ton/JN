@@ -20,11 +20,6 @@ class Migration_20180523092732 extends Migration implements IMigration
     protected $author      = 'fp';
     protected $description = 'Hook interface for captcha';
 
-    private $settingsMap = [
-        'global_google_recaptcha_public'  => 'jtl_google_recaptcha_sitekey',
-        'global_google_recaptcha_private' => 'jtl_google_recaptcha_secretkey',
-    ];
-
     /**
      * @inheritDoc
      */
@@ -93,6 +88,6 @@ class Migration_20180523092732 extends Migration implements IMigration
 
         $this->removeLocalization('captcha_code_active');
 
-        Shop::Container()->getCache()->flushTags(CACHING_GROUP_OPTION);
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
     }
 }

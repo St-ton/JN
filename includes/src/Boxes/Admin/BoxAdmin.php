@@ -454,29 +454,29 @@ final class BoxAdmin
         );
         foreach ($data as $template) {
             $id   = 0;
-            $name = __('templateTypeTemplate');
+            $name = \__('templateTypeTemplate');
             if ($template->eTyp === Type::TEXT) {
                 $id   = 1;
-                $name = __('templateTypeContent');
+                $name = \__('templateTypeContent');
             } elseif ($template->eTyp === Type::LINK) {
                 $id   = 2;
-                $name = __('templateTypeLinkList');
+                $name = \__('templateTypeLinkList');
             } elseif ($template->eTyp === Type::PLUGIN) {
                 $id   = 3;
-                $name = __('templateTypePlugin');
+                $name = \__('templateTypePlugin');
             } elseif ($template->eTyp === Type::CATBOX) {
                 $id   = 4;
-                $name = __('templateTypeCategory');
+                $name = \__('templateTypeCategory');
             } elseif ($template->eTyp === Type::EXTENSION) {
                 $id   = 5;
-                $name = __('templateTypeExtension');
+                $name = \__('templateTypeExtension');
             }
 
             if (!isset($templates[$id])) {
                 $templates[$id]               = new stdClass();
                 $templates[$id]->oVorlage_arr = [];
             }
-            $template->cName                = __($template->cName);
+            $template->cName                = \__($template->cName);
             $templates[$id]->cName          = $name;
             $templates[$id]->oVorlage_arr[] = $template;
         }

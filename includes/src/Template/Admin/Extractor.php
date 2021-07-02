@@ -3,10 +3,10 @@
 namespace JTL\Template\Admin;
 
 use InvalidArgumentException;
+use JTL\Filesystem\Filesystem;
+use JTL\Filesystem\LocalFilesystem;
 use JTL\Plugin\Admin\Installation\InstallationResponse;
 use JTL\Shop;
-use League\Flysystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\MountManager;
 use Throwable;
 use ZipArchive;
@@ -38,8 +38,8 @@ class Extractor
     {
         $this->response = new InstallationResponse();
         $this->manager  = new MountManager([
-            'root' => new Filesystem(new LocalFilesystemAdapter(\PFAD_ROOT)),
-            'tpl'  => Shop::Container()->get(\JTL\Filesystem\Filesystem::class)
+            'root' => Shop::Container()->get(LocalFilesystem::class),
+            'tpl'  => Shop::Container()->get(Filesystem::class)
         ]);
     }
 
@@ -83,7 +83,7 @@ class Extractor
         try {
             $this->manager->createDirectory('tpl://' . $base . $dirName);
         } catch (Throwable $e) {
-            $this->handlExtractionErrors(0, __('errorDirCreate') . $base . $dirName);
+            $this->handlExtractionErrors(0, \__('errorDirCreate') . $base . $dirName);
 
             return false;
         }

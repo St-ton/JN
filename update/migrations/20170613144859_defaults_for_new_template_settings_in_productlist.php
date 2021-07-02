@@ -7,7 +7,6 @@
  */
 
 use JTL\Template\Config;
-use JTL\Template\TemplateServiceInterface;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 use JTL\Shop;

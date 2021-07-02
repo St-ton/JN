@@ -26,25 +26,25 @@ class Panel extends Portlet
     {
         return [
             'panel-state' => [
-                'label' => __('panelType'),
+                'label' => \__('panelType'),
                 'type'  => InputType::SELECT,
                 'width' => 30,
                 'options'    => [
-                    'default' => __('standard'),
-                    'primary' => __('stylePrimary'),
-                    'success' => __('styleSuccess'),
-                    'info'    => __('styleInfo'),
-                    'warning' => __('styleWarning'),
-                    'danger'  => __('styleDanger'),
+                    'default' => \__('standard'),
+                    'primary' => \__('stylePrimary'),
+                    'success' => \__('styleSuccess'),
+                    'info'    => \__('styleInfo'),
+                    'warning' => \__('styleWarning'),
+                    'danger'  => \__('styleDanger'),
                 ],
             ],
             'title-flag'  => [
-                'label' => __('showHeader'),
+                'label' => \__('showHeader'),
                 'type'  => InputType::CHECKBOX,
                 'width' => 30,
             ],
             'footer-flag' => [
-                'label' => __('showFooter'),
+                'label' => \__('showFooter'),
                 'type'  => InputType::CHECKBOX,
                 'width' => 30,
             ],
@@ -57,8 +57,8 @@ class Panel extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            __('Styles')    => 'styles',
-            __('Animation') => 'animations',
+            \__('Styles')    => 'styles',
+            \__('Animation') => 'animations',
         ];
     }
 }

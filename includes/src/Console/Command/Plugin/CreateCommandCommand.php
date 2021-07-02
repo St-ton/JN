@@ -5,10 +5,9 @@ namespace JTL\Console\Command\Plugin;
 use DateTime;
 use Exception;
 use JTL\Console\Command\Command;
-use JTL\Filesystem\Filesystem;
+use JTL\Filesystem\LocalFilesystem;
 use JTL\Plugin\Helper;
 use JTL\Shop;
-use League\Flysystem\Local\LocalFilesystemAdapter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -30,6 +29,28 @@ class CreateCommandCommand extends Command
             ->addArgument('plugin-id', InputArgument::REQUIRED, 'Plugin id')
             ->addArgument('command-name', InputArgument::REQUIRED, 'Command name, like \'CronCommand\'')
             ->addArgument('author', InputArgument::REQUIRED, 'Author');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function interact(InputInterface $input, OutputInterface $output): void
+    {
+        $pluginID = \trim($input->getArgument('plugin-id') ?? '');
+        $command  = \trim($input->getArgument('command-name') ?? '');
+        $author   = \trim($input->getArgument('author') ?? '');
+        while ($pluginID === null || \strlen($pluginID) < 3) {
+            $pluginID = $this->getIO()->ask('PluginID');
+        }
+        $input->setArgument('plugin-id', $pluginID);
+        if (\strlen($command) < 2) {
+            $command = $this->getIO()->ask('Command name');
+            $input->setArgument('command-name', $command);
+        }
+        if (\strlen($author) < 2) {
+            $author = $this->getIO()->ask('Author');
+            $input->setArgument('author', $author);
+        }
     }
 
     /**
@@ -67,9 +88,9 @@ class CreateCommandCommand extends Command
         }
 
         $datetime      = new DateTime('NOW');
-        $relPath       = 'plugins/' . $pluginID . '/Commands';
+        $relPath       = \PLUGIN_DIR . $pluginID . '/Commands';
         $migrationPath = $relPath . '/' . $commandName . '.php';
-        $fileSystem    = new Filesystem(new LocalFilesystemAdapter(\PFAD_ROOT));
+        $fileSystem    = Shop::Container()->get(LocalFilesystem::class);
         try {
             $fileSystem->createDirectory($relPath);
         } catch (Throwable $e) {

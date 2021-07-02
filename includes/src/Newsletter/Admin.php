@@ -563,14 +563,14 @@ final class Admin
                 $this->db->update('tnewslettervorlage', 'kNewsletterVorlage', $templateID, $upd);
                 $alertHelper->addAlert(
                     Alert::TYPE_SUCCESS,
-                    \sprintf(__('successNewsletterTemplateEdit'), $tpl->cName),
+                    \sprintf(\__('successNewsletterTemplateEdit'), $tpl->cName),
                     'successNewsletterTemplateEdit'
                 );
             } else {
                 $templateID = $this->db->insert('tnewslettervorlage', $tpl);
                 $alertHelper->addAlert(
                     Alert::TYPE_SUCCESS,
-                    \sprintf(__('successNewsletterTemplateSave'), $tpl->cName),
+                    \sprintf(\__('successNewsletterTemplateSave'), $tpl->cName),
                     'successNewsletterTemplateSave'
                 );
             }
@@ -865,20 +865,20 @@ final class Admin
         $newsletter->kKunde       = 0;
 
         if (empty($newsletter->cEmail)) {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorFillEmail'), 'errorFillEmail');
+            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorFillEmail'), 'errorFillEmail');
         } else {
             $exists = $this->db->select('tnewsletterempfaenger', 'cEmail', $newsletter->cEmail);
             if ($exists) {
                 $this->alertService->addAlert(
                     Alert::TYPE_ERROR,
-                    __('errorEmailExists'),
+                    \__('errorEmailExists'),
                     'errorEmailExists'
                 );
             } else {
                 $this->db->insert('tnewsletterempfaenger', $newsletter);
                 $this->alertService->addAlert(
                     Alert::TYPE_SUCCESS,
-                    __('successNewsletterAboAdd'),
+                    \__('successNewsletterAboAdd'),
                     'successNewsletterAboAdd'
                 );
             }
@@ -920,7 +920,7 @@ final class Admin
         }
         $this->alertService->addAlert(
             Alert::TYPE_SUCCESS,
-            \sprintf(__('successNewsletterQueueDelete'), \mb_substr($msg, 0, -2)),
+            \sprintf(\__('successNewsletterQueueDelete'), \mb_substr($msg, 0, -2)),
             'successDeleteQueue'
         );
     }
@@ -937,7 +937,7 @@ final class Admin
         }
         $this->alertService->addAlert(
             Alert::TYPE_SUCCESS,
-            \sprintf(__('successNewsletterHistoryDelete'), \mb_substr($noticeTMP, 0, -2)),
+            \sprintf(\__('successNewsletterHistoryDelete'), \mb_substr($noticeTMP, 0, -2)),
             'successDeleteHistory'
         );
     }
@@ -977,7 +977,7 @@ final class Admin
                 $this->alertService->addAlert(
                     Alert::TYPE_SUCCESS,
                     \sprintf(
-                        __('successNewsletterTemplateEdit'),
+                        \__('successNewsletterTemplateEdit'),
                         $filteredPost['cName']
                     ),
                     'successNewsletterTemplateEdit'
@@ -986,7 +986,7 @@ final class Admin
                 $this->alertService->addAlert(
                     Alert::TYPE_SUCCESS,
                     \sprintf(
-                        __('successNewsletterTemplateSave'),
+                        \__('successNewsletterTemplateSave'),
                         $filteredPost['cName']
                     ),
                     'successNewsletterTemplateSave'
@@ -1027,7 +1027,7 @@ final class Admin
     /**
      * @param stdClass|null $newsletterTPL
      * @param JTLSmarty     $smarty
-     * @return false
+     * @return bool
      */
     public function saveAndContinue(?stdClass $newsletterTPL, JTLSmarty $smarty): bool
     {
@@ -1043,7 +1043,7 @@ final class Admin
             return false;
         }
         if ($checks === false) {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, __('newsletterCronjobNotFound'), 'errorNewsletter');
+            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('newsletterCronjobNotFound'), 'errorNewsletter');
 
             return false;
         }
@@ -1153,9 +1153,11 @@ final class Admin
 
         $this->alertService->addAlert(
             Alert::TYPE_SUCCESS,
-            \sprintf(__('successNewsletterPrepared'), $newsletter->cName),
+            \sprintf(\__('successNewsletterPrepared'), $newsletter->cName),
             'successNewsletterPrepared'
         );
+
+        return true;
     }
 
     /**
@@ -1196,7 +1198,7 @@ final class Admin
         $mailRecipient->cLoeschCode = 'dc1338521613c3cfeb1988261029fe3058';
         $mailRecipient->cLoeschURL  = Shop::getURL() . '/?oc=' . $mailRecipient->cLoeschCode;
         if (empty($mailRecipient->cEmail)) {
-            $result = __('errorTestTemplateEmpty');
+            $result = \__('errorTestTemplateEmpty');
         } else {
             $result = $instance->send(
                 $checks,
@@ -1213,7 +1215,7 @@ final class Admin
         } else {
             $this->alertService->addAlert(
                 Alert::TYPE_SUCCESS,
-                \sprintf(__('successTestEmailTo'), $checks->cName, $mailRecipient->cEmail),
+                \sprintf(\__('successTestEmailTo'), $checks->cName, $mailRecipient->cEmail),
                 'successNewsletterPrepared'
             );
         }
@@ -1230,7 +1232,7 @@ final class Admin
         if (\count($templateIDs) === 0) {
             $this->alertService->addAlert(
                 Alert::TYPE_ERROR,
-                __('errorAtLeastOneNewsletter'),
+                \__('errorAtLeastOneNewsletter'),
                 'errorAtLeastOneNewsletter'
             );
 
@@ -1266,7 +1268,7 @@ final class Admin
         }
         $this->alertService->addAlert(
             Alert::TYPE_SUCCESS,
-            __('successNewsletterTemplateDelete'),
+            \__('successNewsletterTemplateDelete'),
             'successNewsletterTemplateDelete'
         );
 

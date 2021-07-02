@@ -510,11 +510,11 @@ class Updater
     public function getMinUpdateVersionError(): string
     {
         return \sprintf(
-            __('errorMinShopVersionRequired'),
+            \__('errorMinShopVersionRequired'),
             \APPLICATION_VERSION,
             \JTL_MIN_SHOP_UPDATE_VERSION,
             \APPLICATION_VERSION,
-            __('dbupdaterURL')
+            \__('dbupdaterURL')
         );
     }
 }

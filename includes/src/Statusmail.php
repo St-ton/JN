@@ -98,16 +98,16 @@ class Statusmail
     private function createCronJob(int $id, int $frequency): bool
     {
         $types     = [
-            24  => ['name' => __('intervalDay'), 'date' => 'tomorrow'],
-            168 => ['name' => __('intervalWeek'), 'date' => 'next week'],
-            720 => ['name' => __('intervalMonth'), 'date' => 'first day of next month']
+            24  => ['name' => \__('intervalDay'), 'date' => 'tomorrow'],
+            168 => ['name' => \__('intervalWeek'), 'date' => 'next week'],
+            720 => ['name' => \__('intervalMonth'), 'date' => 'first day of next month']
         ];
         $startDate = \date('Y-m-d', \strtotime($types[$frequency]['date']));
         $d         = new DateTime($startDate);
         $d->setTime(0, 0);
         Shop::Container()->getAlertService()->addAlert(
             Alert::TYPE_INFO,
-            \sprintf(__('nextStatusMail'), $types[$frequency]['name'], $d->format('d.m.Y')),
+            \sprintf(\__('nextStatusMail'), $types[$frequency]['name'], $d->format('d.m.Y')),
             'nextStatusMail' . $frequency
         );
         $cron = new LegacyCron(
@@ -151,9 +151,9 @@ class Statusmail
     private function getPossibleIntervals(): array
     {
         return [
-            __('intervalDay')   => 1,
-            __('intervalWeek')  => 7,
-            __('intervalMonth') => 30
+            \__('intervalDay')   => 1,
+            \__('intervalWeek')  => 7,
+            \__('intervalMonth') => 30
         ];
     }
 
@@ -163,32 +163,32 @@ class Statusmail
     private function getPossibleContentTypes(): array
     {
         return [
-            __('contentTypeCountItemCustomerGroup')         => 1,
-            __('contentTypeCountNewCustomer')               => 2,
-            __('contentTypeCountNewCustomerOrdered')        => 3,
-            __('contentTypeCountOrders')                    => 4,
-            __('contentTypeCountOrdersNewCustomers')        => 5,
-            __('contentTypeCountPayments')                  => 23,
-            __('contentTypeCountOrdersSent')                => 24,
-            __('contentTypeCountVisitors')                  => 6,
-            __('contentTypeCountVisitorsSearchEngine')      => 7,
-            __('contentTypeCountRatings')                   => 8,
-            __('contentTypeCountRatingsLocked')             => 9,
-            __('contentTypeCountRatingDepositPayed')        => 10,
-            __('contentTypeCountCustomerRecruited')         => 13,
-            __('contentTypeCountCustomerRecruitedOrdered')  => 14,
-            __('contentTypeCountSentWishlists')             => 15,
-            __('contentTypeCountNewsComments')              => 17,
-            __('contentTypeCountNewsCommentsLocked')        => 18,
-            __('contentTypeCountProductQuestion')           => 19,
-            __('contentTypeCountAvailabilityNotifications') => 20,
-            __('contentTypeCountProductCompare')            => 21,
-            __('contentTypeCountCouponsUsed')               => 22,
-            __('contentTypeLastErrorLog')                   => 25,
-            __('contentTypeLastNoteLog')                    => 26,
-            __('contentTypeLastDebugLog')                   => 27,
-            __('contentTypeCountNewsletterOptOut')          => 28,
-            __('contentTypeCountNewsletterOptIn')           => 29,
+            \__('contentTypeCountItemCustomerGroup')         => 1,
+            \__('contentTypeCountNewCustomer')               => 2,
+            \__('contentTypeCountNewCustomerOrdered')        => 3,
+            \__('contentTypeCountOrders')                    => 4,
+            \__('contentTypeCountOrdersNewCustomers')        => 5,
+            \__('contentTypeCountPayments')                  => 23,
+            \__('contentTypeCountOrdersSent')                => 24,
+            \__('contentTypeCountVisitors')                  => 6,
+            \__('contentTypeCountVisitorsSearchEngine')      => 7,
+            \__('contentTypeCountRatings')                   => 8,
+            \__('contentTypeCountRatingsLocked')             => 9,
+            \__('contentTypeCountRatingDepositPayed')        => 10,
+            \__('contentTypeCountCustomerRecruited')         => 13,
+            \__('contentTypeCountCustomerRecruitedOrdered')  => 14,
+            \__('contentTypeCountSentWishlists')             => 15,
+            \__('contentTypeCountNewsComments')              => 17,
+            \__('contentTypeCountNewsCommentsLocked')        => 18,
+            \__('contentTypeCountProductQuestion')           => 19,
+            \__('contentTypeCountAvailabilityNotifications') => 20,
+            \__('contentTypeCountProductCompare')            => 21,
+            \__('contentTypeCountCouponsUsed')               => 22,
+            \__('contentTypeLastErrorLog')                   => 25,
+            \__('contentTypeLastNoteLog')                    => 26,
+            \__('contentTypeLastDebugLog')                   => 27,
+            \__('contentTypeCountNewsletterOptOut')          => 28,
+            \__('contentTypeCountNewsletterOptIn')           => 29,
         ];
     }
 

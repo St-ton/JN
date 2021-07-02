@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\DB\ReturnType;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 

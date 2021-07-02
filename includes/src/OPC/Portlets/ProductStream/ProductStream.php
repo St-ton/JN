@@ -30,33 +30,33 @@ class ProductStream extends Portlet
         return [
             'listStyle'    => [
                 'type'    => InputType::SELECT,
-                'label'   => __('presentation'),
+                'label'   => \__('presentation'),
                 'width'   => 66,
                 'options' => [
-                    'gallery'      => __('presentationGallery'),
-                    'list'         => __('presentationList'),
-                    'simpleSlider' => __('presentationSimpleSlider'),
-                    'slider'       => __('presentationSlider'),
-                    'box-slider'   => __('presentationBoxSlider'),
+                    'gallery'      => \__('presentationGallery'),
+                    'list'         => \__('presentationList'),
+                    'simpleSlider' => \__('presentationSimpleSlider'),
+                    'slider'       => \__('presentationSlider'),
+                    'box-slider'   => \__('presentationBoxSlider'),
                 ],
                 'default' => 'gallery',
             ],
             'maxProducts' => [
                 'type'     => InputType::NUMBER,
-                'label'    => __('maxProducts'),
+                'label'    => \__('maxProducts'),
                 'width'    => 33,
                 'default'  => 15,
                 'required' => true,
             ],
             'search' => [
                 'type'        => InputType::SEARCH,
-                'label'       => __('search'),
-                'placeholder' => __('search'),
+                'label'       => \__('search'),
+                'placeholder' => \__('search'),
                 'width'       => 50,
             ],
             'filters'      => [
                 'type'     => InputType::FILTER,
-                'label'    => __('itemFilter'),
+                'label'    => \__('itemFilter'),
                 'default'  => [],
                 'searcher' => 'search',
             ],
@@ -69,7 +69,7 @@ class ProductStream extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            __('Styles') => 'styles',
+            \__('Styles') => 'styles',
         ];
     }
 

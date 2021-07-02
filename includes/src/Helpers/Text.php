@@ -769,4 +769,17 @@ class Text
 
         return $string;
     }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    public static function replaceUmlauts(string $text): string
+    {
+        return \str_replace(
+            ['Ä', 'Ö', 'Ü', 'ß', 'ä', 'ö', 'ü', 'æ'],
+            ['Ae', 'Oe', 'Ue', 'ss', 'ae', 'oe', 'ue', 'ae'],
+            $text
+        );
+    }
 }

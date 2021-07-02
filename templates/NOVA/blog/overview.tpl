@@ -1,7 +1,7 @@
 {block name='blog-overview'}
     {block name='blog-overview-heading'}
         {opcMountPoint id='opc_before_heading' inContainer=false}
-        {container fluid=$Link->getIsFluid()}
+        {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
             <h1>{lang key='news' section='news'}</h1>
         {/container}
     {/block}
@@ -10,7 +10,7 @@
         {include file='snippets/extension.tpl'}
     {/block}
     {opcMountPoint id='opc_before_filter' inContainer=false}
-    {container fluid=$Link->getIsFluid() class="blog-overview"}
+    {container fluid=$Link->getIsFluid() class="blog-overview {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
         {block name='filter'}
             {row class="blog-overview-main"}
                 {col cols=12 class="col-xl"}

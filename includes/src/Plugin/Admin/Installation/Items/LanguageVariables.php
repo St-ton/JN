@@ -27,7 +27,7 @@ class LanguageVariables extends AbstractItem
      */
     public function install(): int
     {
-        $languages = LanguageHelper::getAllLanguages(2);
+        $languages = LanguageHelper::getAllLanguages(2, true);
         foreach ($this->getNode() as $t => $langVar) {
             $t = (string)$t;
             \preg_match('/[0-9]+/', $t, $hits1);

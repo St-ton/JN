@@ -4,21 +4,9 @@
 {assign var=cLandISO value=$Land->getISO()}
 
 {include file='tpl_inc/seite_header.tpl'
-         cTitel=$isleListFor|cat: ' '|cat:$cVersandartName|cat:', '|cat:$cLandName|cat:'('|cat:$cLandISO|cat:')'
+         cTitel=$isleListFor|cat: ' '|cat:$cVersandartName|cat:', '|cat:$cLandName|cat:' ('|cat:$cLandISO|cat:')'
          cBeschreibung=__('isleListsDesc')}
-<div class="card">
-    <div class="card-body">
-        <button id="surcharge-create"
-                type="submit"
-                class="btn btn-primary"
-                data-iso="{$cLandISO}"
-                data-versandart-id="{$Versandart->kVersandart}"
-                data-toggle="modal"
-                data-target="#new-surcharge-modal">
-            <i class="fa fa-save"></i> {__('create')}
-        </button>
-    </div>
-</div>
+
 <div class="card">
     <div class="card-body">
         {include file='tpl_inc/pagination.tpl'
@@ -92,6 +80,17 @@
                     {__('goBack')}
                 </a>
             </div>
+            <div class="col-sm-6 col-lg-auto">
+                <button id="surcharge-create"
+                        type="submit"
+                        class="btn btn-primary btn-block"
+                        data-iso="{$cLandISO}"
+                        data-versandart-id="{$Versandart->kVersandart}"
+                        data-toggle="modal"
+                        data-target="#new-surcharge-modal">
+                    <i class="fa fa-save"></i> {__('create')}
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -100,13 +99,12 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="subheading1">{__('addZip')} - <span id="add-zip-modal-title"></span></div>
+                <h2 class="modal-title">{__('addZip')} - <span id="add-zip-modal-title"></span></h2>
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fa fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <hr class="mb-3">
                 <div id="add-zip-notice"></div>
                 <form id="add-zip-form">
                     <div class="form-group">
@@ -154,13 +152,12 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <div id="new-surcharge-modal-title" class="subheading1">{__('createList')}</div>
+                <h2 id="new-surcharge-modal-title" class="modal-title">{__('createList')}</h2>
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fa fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <hr class="mb-3">
                 <div id="new-surcharge-form-wrapper">
                     {include file='snippets/zuschlagliste_form.tpl'}
                 </div>

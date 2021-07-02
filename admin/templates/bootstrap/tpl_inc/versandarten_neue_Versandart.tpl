@@ -559,9 +559,9 @@
                                                    type="checkbox" name="land[]"
                                                    data-id="country_{$country->getISO()}"
                                                    value="{$country->getISO()}"
-                                                   id="country_{$country->getISO()}"
+                                                   id="country_{$country->getISO()}_{$continentKey}"
                                                     {if isset($gewaehlteLaender) && is_array($gewaehlteLaender) && in_array($country->getISO(),$gewaehlteLaender)} checked="checked"{/if} />
-                                            <label class="custom-control-label" for="country_{$country->getISO()}">{$country->getName()}</label>
+                                            <label class="custom-control-label" for="country_{$country->getISO()}_{$continentKey}">{$country->getName()}</label>
                                         </div>
                                     </div>
                                     {/foreach}

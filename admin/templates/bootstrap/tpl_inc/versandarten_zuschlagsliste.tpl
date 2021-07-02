@@ -123,6 +123,7 @@
                         <input type="text" id="cPLZ" name="cPLZ" class="form-control zipcode" />
                     </div>
                     <div id="zip-area-container" class="form-row d-none">
+                        <div class="alert alert-info">{__('infoAllowedZipAreas')}</div>
                         <label class="" for="cPLZ">{__('zipRange')}:</label>
                         <div class="input-group">
                             <input type="text" name="cPLZAb" class="form-control zipcode" />

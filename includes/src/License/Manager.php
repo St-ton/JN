@@ -8,7 +8,6 @@ use GuzzleHttp\Exception\GuzzleException;
 use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\License\Struct\ExsLicense;
 use JTL\Shop;
 use stdClass;
@@ -22,6 +21,8 @@ class Manager
     private const MAX_REQUESTS = 10;
 
     private const CHECK_INTERVAL_HOURS = 4;
+
+    private const USER_API_URL = 'https://oauth2.api.jtl-software.com/api/v1/user';
 
     private const API_LIVE_URL = 'https://checkout.jtl-software.com/v1/licenses';
 
@@ -66,8 +67,7 @@ class Manager
     private function checkUpdate(): bool
     {
         return ($lastItem = $this->getLicenseData()) === null
-            ? true
-            : (\time() - \strtotime($lastItem->timestamp)) / (60 * 60) > self::CHECK_INTERVAL_HOURS;
+            || (\time() - \strtotime($lastItem->timestamp)) / (60 * 60) > self::CHECK_INTERVAL_HOURS;
     }
 
     /**
@@ -212,10 +212,36 @@ class Manager
         $this->housekeeping();
         $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
 
+        $owner       = $this->getTokenOwner();
+        $data        = \json_decode((string)$res->getBody());
+        $data->owner = isset($owner->given_name, $owner->family_name) ? $owner : null;
+
         return $this->db->insert(
             'licenses',
-            (object)['data' => (string)$res->getBody(), 'returnCode' => $res->getStatusCode()]
+            (object)['data' => \json_encode($data), 'returnCode' => $res->getStatusCode()]
         );
+    }
+
+    /**
+     * @return stdClass
+     * @throws GuzzleException
+     */
+    private function getTokenOwner(): stdClass
+    {
+        $res = $this->client->request(
+            'GET',
+            self::USER_API_URL,
+            [
+                'headers' => [
+                    'Accept'        => 'application/json',
+                    'Content-Type'  => 'application/json',
+                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
+                ],
+                'verify'  => true
+            ]
+        );
+
+        return \json_decode($res->getBody()->getContents());
     }
 
     /**
@@ -223,14 +249,13 @@ class Manager
      */
     public function getLicenseData(): ?stdClass
     {
-        $data = $this->db->query(
+        $data = $this->db->getSingleObject(
             'SELECT * FROM licenses
                 WHERE returnCode = 200
                 ORDER BY id DESC
-                LIMIT 1',
-            ReturnType::SINGLE_OBJECT
+                LIMIT 1'
         );
-        if ($data === false) {
+        if ($data === null) {
             return null;
         }
         $obj             = \json_decode($data->data, false);
@@ -272,7 +297,7 @@ class Manager
      */
     private function housekeeping(): int
     {
-        return $this->db->queryPrepared(
+        return $this->db->getAffectedRows(
             'DELETE a 
                 FROM licenses AS a 
                 JOIN ( 
@@ -281,8 +306,7 @@ class Manager
                         ORDER BY timestamp DESC 
                         LIMIT 99999 OFFSET :max) AS b
                 ON a.id = b.id',
-            ['max' => self::MAX_REQUESTS],
-            ReturnType::AFFECTED_ROWS
+            ['max' => self::MAX_REQUESTS]
         );
     }
 

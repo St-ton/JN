@@ -146,6 +146,9 @@ msgstr "Connect account"
 msgid "unlink"
 msgstr "Cancel connection"
 
+msgid "unlink from %s"
+msgstr "Cancel connection with %s"
+
 msgid "Validity"
 msgstr "Validity"
 
@@ -181,3 +184,9 @@ msgstr "License for extension already bound to domain"
 
 msgid "btnExploreExtensionStore"
 msgstr "Go to JTL-Extension Store"
+
+msgid "Your shop version is not compatible with this plugin version"
+msgstr "Your shop version is not compatible with this plugin version"
+
+msgid "Key"
+msgstr "Key"

@@ -47,4 +47,9 @@ interface CountryServiceInterface
      * @return array
      */
     public function getCountriesGroupedByContinent(bool $getEU = false, array $selectedCountries = []): array;
+
+    /**
+     * @return array
+     */
+    public function getContinents(): array;
 }

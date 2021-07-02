@@ -18,7 +18,7 @@
                     </div>
                     <div class="col-sm-6 col-xl-auto submit">
                         <button type="button" class="btn btn-primary" name="cancel" data-dismiss="modal">
-                            <i class="fal fa-check text-success"></i>&nbsp;{__('cancel')}
+                            {__('cancelWithIcon')}
                         </button>
                     </div>
                 </div>

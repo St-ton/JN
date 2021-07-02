@@ -29,16 +29,16 @@ class CronjobHistory
     public $cLastStartDate;
 
     /**
-     * @param string $cExportformat
-     * @param string $cDateiname
-     * @param int    $nDone
-     * @param string $cLastStartDate
+     * @param string $name
+     * @param string $fileName
+     * @param int    $done
+     * @param string $lastStartDate
      */
-    public function __construct($cExportformat, $cDateiname, $nDone, $cLastStartDate)
+    public function __construct($name, $fileName, $done, $lastStartDate)
     {
-        $this->cExportformat  = $cExportformat;
-        $this->cDateiname     = $cDateiname;
-        $this->nDone          = $nDone;
-        $this->cLastStartDate = $cLastStartDate;
+        $this->cExportformat  = $name;
+        $this->cDateiname     = $fileName;
+        $this->nDone          = $done;
+        $this->cLastStartDate = $lastStartDate;
     }
 }

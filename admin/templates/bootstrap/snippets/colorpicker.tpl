@@ -12,5 +12,6 @@
     $('#{$cpID}-group').colorpicker({
         format: 'hex',
         fallbackColor: '#FFF',
+        autoInputFallback: false
     });
 </script>

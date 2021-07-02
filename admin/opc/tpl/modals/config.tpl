@@ -12,7 +12,7 @@
                     <i class="fa fas fa-times"></i>
                 </button>
             </div>
-            <form id="configForm" onsubmit="opc.gui.saveConfig()">
+            <form id="configForm" action="javascript:void(0);" onsubmit="opc.gui.saveConfig()">
                 <div class="modal-body" id="configModalBody"></div>
                 <div class="modal-footer" id="stdConfigButtons">
                     <button type="button" class="opc-btn-secondary opc-small-btn" data-dismiss="modal">

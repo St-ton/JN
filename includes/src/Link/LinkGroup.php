@@ -4,7 +4,6 @@ namespace JTL\Link;
 
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 use function Functional\flatten;
@@ -52,6 +51,11 @@ final class LinkGroup implements LinkGroupInterface
     private $isSpecial = true;
 
     /**
+     * @var bool
+     */
+    private $isSystem = true;
+
+    /**
      * @var array
      */
     private $languageID = [];
@@ -87,16 +91,16 @@ final class LinkGroup implements LinkGroupInterface
     public function load(int $id): LinkGroupInterface
     {
         $this->id       = $id;
-        $groupLanguages = $this->db->queryPrepared(
-            'SELECT l.*, g.cTemplatename AS template, g.cName AS groupName, lang.kSprache 
+        $groupLanguages = $this->db->getObjects(
+            'SELECT g.*, l.cName AS localizedName, l.cISOSprache, g.cTemplatename AS template,
+                g.cName AS groupName, lang.kSprache 
                 FROM tlinkgruppe AS g 
                 JOIN tlinkgruppesprache AS l
                     ON g.kLinkgruppe = l.kLinkgruppe
                 JOIN tsprache AS lang
                     ON lang.cISO = l.cISOSprache
                 WHERE g.kLinkgruppe = :lgid',
-            ['lgid' => $this->id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['lgid' => $this->id]
         );
         if (\count($groupLanguages) === 0) {
             return $this;
@@ -111,22 +115,22 @@ final class LinkGroup implements LinkGroupInterface
     public function map(array $groupLanguages): LinkGroupInterface
     {
         foreach ($groupLanguages as $groupLanguage) {
+            $this->isSystem              = (int)($groupLanguage->bIsSystem ?? 0) === 1;
             $langID                      = (int)$groupLanguage->kSprache;
             $this->languageID[]          = $langID;
-            $this->names[$langID]        = $groupLanguage->cName;
+            $this->names[$langID]        = $groupLanguage->localizedName;
             $this->languageCode[$langID] = $groupLanguage->cISOSprache;
             $this->template              = $groupLanguage->template;
             $this->groupName             = $groupLanguage->groupName;
         }
-        $this->links = (new LinkList($this->db))->createLinks(map(flatten($this->db->queryPrepared(
+        $this->links = (new LinkList($this->db))->createLinks(map(flatten($this->db->getArrays(
             'SELECT kLink
                 FROM tlink
                 JOIN tlinkgroupassociations a 
                     ON tlink.kLink = a.linkID
                 WHERE a.linkGroupID = :lgid
                 ORDER BY tlink.nSort, tlink.cName',
-            ['lgid' => $this->id],
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+            ['lgid' => $this->id]
         )), static function ($e) {
             return (int)$e;
         }));
@@ -279,6 +283,22 @@ final class LinkGroup implements LinkGroupInterface
     public function setIsSpecial(bool $isSpecial): void
     {
         $this->isSpecial = $isSpecial;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSystem(): bool
+    {
+        return $this->isSystem;
+    }
+
+    /**
+     * @param bool $isSystem
+     */
+    public function setIsSystem(bool $isSystem): void
+    {
+        $this->isSystem = $isSystem;
     }
 
     /**

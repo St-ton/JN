@@ -6,7 +6,6 @@
  * @created Tue, 04 Jun 2019 12:27:45 +0200
  */
 
-use JTL\DB\ReturnType;
 use JTL\Optin\OptinNewsletter;
 use JTL\Optin\OptinRefData;
 use JTL\Update\IMigration;
@@ -25,11 +24,7 @@ class Migration_20190604122745 extends Migration implements IMigration
      */
     public function up()
     {
-        $nlSubscribers = $this->getDB()->queryPrepared(
-            'SELECT * FROM tnewsletterempfaenger WHERE nAktiv = :active',
-            ['active' => 1],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $nlSubscribers = $this->getDB()->getObjects('SELECT * FROM tnewsletterempfaenger WHERE nAktiv = 1');
         foreach ($nlSubscribers as $subscriber) {
             $refData = (new OptinRefData())
                 ->setOptinClass(OptinNewsletter::class)
@@ -69,8 +64,7 @@ class Migration_20190604122745 extends Migration implements IMigration
                     'email'           => $subscriber->cEmail,
                     'refData'         => quotemeta(serialize($refData)),
                     'eingetragen'     => $subscriber->dEingetragen
-                ],
-                ReturnType::DEFAULT
+                ]
             );
         }
     }

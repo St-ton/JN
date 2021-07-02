@@ -8,11 +8,9 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Campaign;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\dbeS\Mapper;
 use JTL\dbeS\Starter;
 use JTL\Exceptions\CircularReferenceException;
-use JTL\Exceptions\EmptyResultSetException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
@@ -109,7 +107,7 @@ abstract class AbstractSync
      * @param string     $pk1
      * @param string|int $pk2
      */
-    protected function upsert($tablename, array $objects, $pk1, $pk2 = 0): void
+    protected function upsert(string $tablename, array $objects, $pk1, $pk2 = 0): void
     {
         foreach ($objects as $object) {
             if (isset($object->$pk1) && !$pk2 && $pk1 && $object->$pk1) {
@@ -188,7 +186,7 @@ abstract class AbstractSync
         $stmt = 'DELETE FROM ' . $tableName . '
                 WHERE ' . \implode(' AND ', $whereKeys) . (\count($excludeValues) > 0 ? '
                     AND ' . $excludeKey . ' NOT IN (' . \implode(', ', $excludeValues) . ')' : '');
-        if (!$this->db->queryPrepared($stmt, $params, ReturnType::DEFAULT)) {
+        if (!$this->db->queryPrepared($stmt, $params)) {
             $this->logger->error(
                 'DBDeleteByKey fehlgeschlagen! Tabelle: ' . $tableName . ', PK: ' . \print_r($pks, true)
             );
@@ -200,24 +198,22 @@ abstract class AbstractSync
      * @param array  $conf
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
-     * @throws EmptyResultSetException
      */
     protected function sendAvailabilityMails($product, array $conf): void
     {
         if ($product->kArtikel <= 0) {
             return;
         }
+        $stockRatio    = $conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100;
+        $stockRelevanz = ($product->cLagerKleinerNull ?? '') !== 'Y' && ($product->cLagerBeachten ?? 'Y') === 'Y';
         $subscriptions = $this->db->selectAll(
             'tverfuegbarkeitsbenachrichtigung',
             ['nStatus', 'kArtikel'],
             [0, $product->kArtikel]
         );
         $subCount      = \count($subscriptions);
-        if ($subCount === 0
-            || (($product->fLagerbestand / $subCount) < ($conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100)
-                && ($product->cLagerKleinerNull ?? '') !== 'Y'
-                && (!isset($product->cLagerBeachten)
-                    || $product->cLagerBeachten === 'Y')
+        if ($subCount === 0 || (
+                $stockRelevanz && ($product->fLagerbestand <= 0 || ($product->fLagerbestand / $subCount) < $stockRatio)
             )
         ) {
             return;
@@ -236,7 +232,9 @@ abstract class AbstractSync
             $product->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
         }
         foreach ($subscriptions as $msg) {
-            $availAgainOptin = (new Optin(OptinAvailAgain::class))->setEmail($msg->cMail);
+            $availAgainOptin = (new Optin(OptinAvailAgain::class))->getOptinInstance()
+                ->setProduct($product)
+                ->setEmail($msg->cMail);
             if (!$availAgainOptin->isActive()) {
                 continue;
             }
@@ -288,8 +286,7 @@ abstract class AbstractSync
                     LEFT JOIN tkundengruppe ON tkundengruppe.kKundengruppe = tpreisverlauf.kKundengruppe
                 WHERE tpreisverlauf.kArtikel = :productID
                     AND tkundengruppe.kKundengruppe IS NULL',
-            ['productID' => $productID],
-            ReturnType::DEFAULT
+            ['productID' => $productID]
         );
         // Insert new base price for each customer group - update existing history for today
         $this->db->queryPrepared(
@@ -301,8 +298,7 @@ abstract class AbstractSync
             [
                 'productID'  => $productID,
                 'nettoPrice' => (float)$xml['fStandardpreisNetto'],
-            ],
-            ReturnType::DEFAULT
+            ]
         );
         // Handle price details from xml...
         $this->handlePriceDetails($productID, $xml);
@@ -330,8 +326,7 @@ abstract class AbstractSync
                         HAVING COUNT(DISTINCT tpv1.fVKNetto) = 1
                             AND COUNT(tpv1.kPreisverlauf) > 1
                     ) i)',
-            ['productID' => $productID],
-            ReturnType::DEFAULT
+            ['productID' => $productID]
         );
     }
 
@@ -357,8 +352,7 @@ abstract class AbstractSync
                         'nettoPrice'      => $details[0]->fNettoPreis,
                         'productID'       => $productID,
                         'customerGroupID' => $price->kKundenGruppe,
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
             }
         }
@@ -408,8 +402,7 @@ abstract class AbstractSync
                             'nettoPrice'      => $specialPrice->fNettoPreis,
                             'productID'       => $productID,
                             'customerGroupID' => $specialPrice->kKundengruppe,
-                        ],
-                        ReturnType::DEFAULT
+                        ]
                     );
                 }
             }
@@ -438,8 +431,7 @@ abstract class AbstractSync
                 'productID'     => $productID,
                 'customerGroup' => $customerGroupID,
                 'customerID'    => $customerID,
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -498,8 +490,7 @@ abstract class AbstractSync
                     AND tkundengruppe.kKundengruppe IS NULL',
             [
                 'productID' => $productID,
-            ],
-            ReturnType::DEFAULT
+            ]
         );
         // Delete all prices who are not base prices
         $this->db->queryPrepared(
@@ -508,16 +499,14 @@ abstract class AbstractSync
                     INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
                 WHERE tpreis.kArtikel = :productID
                     AND tpreisdetail.nAnzahlAb > 0',
-            ['productID' => $productID],
-            ReturnType::DEFAULT
+            ['productID' => $productID]
         );
         // Insert price record for each customer group - ignore existing
         $this->db->queryPrepared(
             'INSERT IGNORE INTO tpreis (kArtikel, kKundengruppe, kKunde)
                 SELECT :productID, kKundengruppe, 0
                 FROM tkundengruppe',
-            ['productID' => $productID],
-            ReturnType::DEFAULT
+            ['productID' => $productID]
         );
         // Insert base price for each price record - update existing
         $this->db->queryPrepared(
@@ -530,8 +519,7 @@ abstract class AbstractSync
             [
                 'basePrice' => $xml['fStandardpreisNetto'],
                 'productID' => $productID,
-            ],
-            ReturnType::DEFAULT
+            ]
         );
         // Handle price details from xml...
         foreach ($prices as $i => $price) {
@@ -558,8 +546,7 @@ abstract class AbstractSync
                         'productID'     => $productID,
                         'customerGroup' => $price->kKundenGruppe,
                         'customerPrice' => $price->kKunde,
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
             }
         }

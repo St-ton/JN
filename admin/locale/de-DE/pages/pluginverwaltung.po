@@ -131,6 +131,9 @@ msgstr "Der eingegebene Lizenzschlüssel ist ungültig. Bitte überprüfen Sie d
 msgid "errorPluginNotFound"
 msgstr "Das Plugin konnte nicht in der Datenbank gefunden werden. Bitte installieren Sie es erneut."
 
+msgid "errorPluginNotFoundFilesystem"
+msgstr "Das Plugin konnte im Dateisystem nicht gefunden werden. Bitte installieren Sie es erneut."
+
 msgid "successPluginActivate"
 msgstr "Ausgewählte Plugins wurden erfolgreich aktiviert."
 
@@ -201,19 +204,28 @@ msgid "licensePlugin"
 msgstr "Plugin-Lizenz"
 
 msgid "deletePluginData"
-msgstr "Möchten Sie das Plugin aus der Datenbank löschen?"
+msgstr "Plugin-Deinstallation"
+
+msgid "deletePluginDataInfo"
+msgstr "Über die Deinstallation wird das Plugin aus allen shopeigenen Datenbanktabellen entfernt. Zusätzlich können Sie die Deinstallation über die folgenden Checkboxen weiter verfeinern:"
 
 msgid "deletePluginFilesHeading"
 msgstr "Möchten Sie wirklich versuchen, sämtliche Plugindateien zu löschen?"
 
 msgid "deletePluginFilesQuestion"
-msgstr "Sollen die dazugehörigen Dateien ebenfalls gelöscht werden?"
+msgstr "Dazugehörige Dateien ebenfalls löschen"
+
+msgid "deletePluginFilesQuestionDesc"
+msgstr "Wenn diese Checkbox aktiviert ist, werden alle Plugin-Dateien vom Webspace entfernt. Für eine erneute Installation des Plugins muss das Plugin neu bezogen/hochgeladen werden."
+
+msgid "deletePluginDataQuestion"
+msgstr "Alle plugineigenen Tabellen ebenfalls aus der Datenbank löschen"
+
+msgid "deletePluginDataQuestionDesc"
+msgstr "Wenn diese Checkbox aktiviert ist, werden auch alle plugineigenen Datenbanktabellen entfernt."
 
 msgid "deletePluginDataYes"
-msgstr "Ja, alle Plugin-Daten löschen."
-
-msgid "deletePluginDataNo"
-msgstr "Nein, Plugin-Daten behalten."
+msgstr "Plugin mit den gewählten Einstellungen deinstallieren"
 
 msgid "WRONG_PARAM"
 msgstr "Die Plausibilitätsprüfung wurde aufgrund fehlender Parameter abgebrochen."
@@ -757,6 +769,9 @@ msgstr "Invalider consent vendor ID."
 
 msgid "INVALID_CONSENT_VENDOR_COMPANY"
 msgstr "Invalider consent vendor Firma."
+
+msgid "INVALID_LINK_IDENTIFIER"
+msgstr "Ungültiger Link Identifier."
 
 msgid "Deaktiviert"
 msgstr "Deaktiviert"

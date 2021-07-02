@@ -6,10 +6,9 @@ use DateTime;
 use DirectoryIterator;
 use Exception;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
+use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\Filesystem;
+use Throwable;
 
 /**
  * Class MigrationHelper
@@ -123,8 +122,7 @@ final class MigrationHelper
                 pluginID varchar(255) NOT NULL, 
                 dExecuted datetime NOT NULL,
                 PRIMARY KEY (kMigration)
-            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'",
-            ReturnType::DEFAULT
+            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'"
         );
         $this->db->query(
             "CREATE TABLE IF NOT EXISTS tmigrationlog 
@@ -136,8 +134,7 @@ final class MigrationHelper
                 cLog text NOT NULL, 
                 dCreated datetime NOT NULL, 
                 PRIMARY KEY (kMigrationlog)
-            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'",
-            ReturnType::DEFAULT
+            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'"
         );
     }
 
@@ -148,10 +145,9 @@ final class MigrationHelper
      */
     public function indexColumns(string $idxTable, string $idxName): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getObjects(
             'SHOW INDEXES FROM `' . $idxTable . '` WHERE Key_name = :idxName',
-            ['idxName' => $idxName],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['idxName' => $idxName]
         );
     }
 
@@ -173,7 +169,7 @@ final class MigrationHelper
                 . ' INDEX `' . $idxName . '` ON `' . $idxTable . '` '
                 . '(`' . \implode('`, `', $idxColumns) . '`)';
 
-            return !$this->db->executeQuery($ddl, ReturnType::DEFAULT) ? false : true;
+            return !$this->db->query($ddl) ? false : true;
         }
 
         return false;
@@ -187,9 +183,8 @@ final class MigrationHelper
     public function dropIndex(string $idxTable, string $idxName): bool
     {
         if (\count($this->indexColumns($idxTable, $idxName)) > 0) {
-            return !$this->db->executeQuery(
-                'DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` ',
-                ReturnType::DEFAULT
+            return !$this->db->query(
+                'DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` '
             ) ? false : true;
         }
 
@@ -229,12 +224,13 @@ final class MigrationHelper
         $datetime      = new DateTime('NOW');
         $timestamp     = $datetime->format('YmdHis');
         $filePath      = 'Migration' . $timestamp;
-        $relPath       = 'plugins/' . $pluginDir . '/Migrations';
+        $relPath       = \PLUGIN_DIR . $pluginDir . '/Migrations';
         $migrationPath = $relPath . '/' . $filePath . '.php';
-        $fileSystem    = new Filesystem(new Local(\PFAD_ROOT));
-
-        if (!$fileSystem->has($relPath)) {
-            throw new Exception('Migrations path doesn\'t exist!');
+        $fileSystem    = Shop::Container()->get(LocalFilesystem::class);
+        try {
+            $fileSystem->createDirectory($relPath);
+        } catch (Throwable $e) {
+            throw new Exception('Migrations path doesn\'t exist and could not be created!');
         }
 
         $content = Shop::Smarty()
@@ -245,7 +241,7 @@ final class MigrationHelper
             ->assign('timestamp', $timestamp)
             ->fetch(\PFAD_ROOT . 'includes/src/Console/Command/Plugin/Template/migration.class.tpl');
 
-        $fileSystem->put($migrationPath, $content);
+        $fileSystem->write($migrationPath, $content);
 
         return $migrationPath;
     }

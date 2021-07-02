@@ -76,8 +76,8 @@
                 {/if}
 
                 {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
-                    {foreach item=oSprache from=$smarty.session.Sprachen}
-                        <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURLFull}">
+                    {foreach $smarty.session.Sprachen as $language}
+                        <link rel="alternate" hreflang="{$language->getIso639()}" href="{$language->getUrl()}">
                     {/foreach}
                 {/if}
                 <script src="{$ShopURL}/{$templateDir}js/jquery-3.5.1.min.js"></script>
@@ -104,18 +104,24 @@
                 {block name='snippets-maintenance-content-maintenance'}
                      {row}
                         {col class="maintenance-main-item" cols=12 md=6 offset-md=3}
-                            {if isset($ShopLogoURL)}
-                                {image src=$ShopLogoURL
-                                    alt=$Einstellungen.global.global_shopname
-                                    class="maintenance-main-image"
-                                    style="{if $ShopLogoURL|strpos:'.svg' !== false}height: 100px;{/if}"}
-                            {else}
-                                <span class="h1">{$Einstellungen.global.global_shopname}</span>
-                            {/if}
-                                <h1 class="display-5">{lang key='maintainance'}</h1>
-                                <div>
+                            {block name='snippets-maintenance-content-maintenance-logo'}
+                                {if isset($ShopLogoURL)}
+                                    {image src=$ShopLogoURL
+                                        alt=$Einstellungen.global.global_shopname
+                                        class="maintenance-main-image"
+                                        style="{if $ShopLogoURL|strpos:'.svg' !== false}height: 100px;{/if}"}
+                                {else}
+                                    <span class="h1">{$Einstellungen.global.global_shopname}</span>
+                                {/if}
+                            {/block}
+                            {block name='snippets-maintenance-content-maintenance-heading'}
+                                <h1 class="maintenance-main-heading">{lang key='maintainance'}</h1>
+                            {/block}
+                            {block name='snippets-maintenance-content-maintenance-notice'}
+                                <div class="maintenance-main-notice">
                                     <p>{lang key='maintenanceModeActive'}</p>
                                 </div>
+                            {/block}
                         {/col}
                     {/row}
                 {/block}

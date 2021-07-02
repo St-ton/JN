@@ -142,7 +142,8 @@ if ($AktuellerArtikel->Bewertungen === null || $ratingStars > 0) {
         $ratingPage,
         $ratingStars,
         $conf['bewertung']['bewertung_freischalten'],
-        $sorting
+        $sorting,
+        $conf['bewertung']['bewertung_alle_sprachen'] === 'Y'
     );
     $AktuellerArtikel->holehilfreichsteBewertung();
 }
@@ -231,7 +232,7 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
            )
        )
        ->assign('BlaetterNavi', $ratingNav)
-       ->assign('BewertungsTabAnzeigen', ($ratingPage || $ratingStars || $showRatings || $allLanguages) ? 1 : 0)
+       ->assign('BewertungsTabAnzeigen', (int)($ratingPage > 0 || $ratingStars > 0 || $showRatings > 0 || $allLanguages > 0))
        ->assign('alertNote', $alertHelper->alertTypeExists(Alert::TYPE_NOTE))
        ->assign('PFAD_MEDIAFILES', $shopURL . PFAD_MEDIAFILES)
        ->assign('PFAD_BILDER', PFAD_BILDER)

@@ -26,7 +26,7 @@
                 let mainNode = $(this);
                 mainNode.removeClass('slick-lazy');
                 if (!mainNode.hasClass('slick-initialized')) {
-                    mainNode.find('.product-wrapper').removeClass('m-auto ml-auto mr-auto');
+                    mainNode.find('.product-wrapper').removeClass('mx-auto ml-auto-util mr-auto');
                     self.initSlick(mainNode, mainNode.data('slick-type'));
                 }
             });
@@ -54,7 +54,7 @@
                         && Math.abs(startX - e.changedTouches[0].pageX) > 80
                     ) {
                         mainNode.removeClass('slick-lazy');
-                        mainNode.find('.product-wrapper').removeClass('m-auto ml-auto mr-auto');
+                        mainNode.find('.product-wrapper').removeClass('mx-auto ml-auto-util mr-auto');
                         self.initSlick(mainNode, mainNode.data('slick-type'));
                         let slickOptions = mainNode.slick('getSlick');
                         if(slickOptions.slideCount > mainNode.slick('slickGetOption', 'slidesToShow')) {
@@ -613,7 +613,7 @@
                 $form.find('fieldset, button[type="submit"]')
                     .attr('disabled', true);
 
-                var url = 'bestellvorgang.php?kVersandart=' + id;
+                var url = $('#jtl-io-path').data('path') + '/bestellvorgang.php?kVersandart=' + id;
                 $.evo.loadContent(url, function() {
                     $.evo.checkout();
                 }, null, true);
@@ -861,14 +861,14 @@
         },
 
         initFilters: function (href) {
-            let $wrapper = $('.js-collapse-filter'),
-                self=this;
+            let $wrapper = $('.js-collapse-filter');
             $.evo.extended().startSpinner($wrapper);
 
             $.ajax(href, {data: {'useMobileFilters':1}})
                 .done(function(data) {
                     $wrapper.html(data);
-                    self.initPriceSlider($wrapper, false);
+                    $.evo.initPriceSlider($wrapper, false);
+                    $.evo.initItemSearch('filter');
                 })
                 .always(function() {
                     $.evo.extended().stopSpinner();
@@ -968,6 +968,57 @@
             });
         },
 
+        initItemSearch: function(context) {
+            let searchWrapper  = '.' + context + '-search-wrapper',
+                searchInput    = '.' + context + '-search',
+                itemValue      = '.' + context + '-item-value',
+                item           = '.' + context + '-item',
+                clear          = '.form-clear',
+                inputSelected  = 'input-group-selected',
+                $searchWrapper = $(searchWrapper);
+
+            if ($searchWrapper.length === 0) {
+                return;
+            }
+            $searchWrapper.each((i, itemWrapper) => {
+                $(itemWrapper).find(searchInput).on('input', function () {
+                    filterSearch($(itemWrapper));
+                }).on('keydown', e => {
+                    if (e.key === 'Escape') {
+                        e.stopPropagation();
+                    }
+                });
+            });
+            $(searchWrapper + ' ' + clear).on('click', function() {
+                $(this).prev().val('');
+                $(this).addClass('d-none');
+                filterSearch($(this).closest(searchWrapper));
+            });
+            $(searchInput).on('focusin', function() {
+                $(this).closest(searchWrapper).addClass(inputSelected);
+            }).on('focusout', function() {
+                $(this).closest(searchWrapper).removeClass(inputSelected);
+            });
+
+            function filterSearch (itemWrapper) {
+                let searchTerm = itemWrapper.find(searchInput).val().toLowerCase();
+                itemWrapper.find(itemValue).each((i, itemTMP) => {
+                    itemTMP = $(itemTMP);
+                    let text = itemTMP.text().toLowerCase();
+                    if (text.indexOf(searchTerm) === -1) {
+                        itemTMP.closest(item).hide();
+                    } else {
+                        itemTMP.closest(item).show();
+                    }
+                    if (searchTerm.length === 0) {
+                        itemWrapper.find(clear).addClass('d-none');
+                    } else {
+                        itemWrapper.find(clear).removeClass('d-none');
+                    }
+                });
+            }
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -998,6 +1049,7 @@
             this.initWishlist();
             this.initPaginationEvents();
             this.initFilterEvents();
+            this.initItemSearch('filter');
         }
     };
 

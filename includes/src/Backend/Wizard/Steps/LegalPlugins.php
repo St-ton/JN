@@ -29,8 +29,8 @@ final class LegalPlugins extends AbstractStep
     {
         parent::__construct($db, $alertService);
         $collection = new Collection();
-        $this->setTitle(__('stepThree'));
-        $this->setDescription(__('stepThreeDesc'));
+        $this->setTitle(\__('stepThree'));
+        $this->setDescription(\__('stepThreeDesc'));
         $this->setID(3);
 
         $scope           = Manager::SCOPE_WIZARD_LEGAL_TEXTS;
@@ -38,9 +38,9 @@ final class LegalPlugins extends AbstractStep
 
         $question = new Question($db);
         $question->setID(9);
-        $question->setSubheading(__('weRecommend') . ':');
-        $question->setSubheadingDescription(__('weRecommendLegalDesc'));
-        $question->setSummaryText(__('legalTexts'));
+        $question->setSubheading(\__('weRecommend') . ':');
+        $question->setSubheadingDescription(\__('weRecommendLegalDesc'));
+        $question->setSummaryText(\__('legalTexts'));
         $question->setType(QuestionType::PLUGIN);
         $question->setIsFullWidth(true);
         $question->setIsRequired(false);

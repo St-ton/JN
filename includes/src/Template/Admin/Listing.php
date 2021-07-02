@@ -76,7 +76,6 @@ final class Listing
      */
     private function parseTemplateDir(XMLParser $parser, string $templateDir): Collection
     {
-        $validator = $this->validator;
         if (!\is_dir($templateDir)) {
             return $this->items;
         }
@@ -97,7 +96,7 @@ final class Listing
                 continue;
             }
             $xml                 = $parser->parse($info);
-            $code                = $validator->validate($templateDir . $dir, $xml);
+            $code                = $this->validator->validate($templateDir . $dir, $xml);
             $xml['cVerzeichnis'] = $dir;
             $xml['cFehlercode']  = $code;
             $item                = new ListingItem();
@@ -107,14 +106,14 @@ final class Listing
 
             $gettext->loadTemplateItemLocale('base', $item);
             $msgid = $item->getFramework() . '_desc';
-            $desc  = __($msgid);
+            $desc  = \__($msgid);
             if ($desc !== $msgid) {
                 $item->setDescription($desc);
             } else {
-                $item->setDescription(__($item->getDescription()));
+                $item->setDescription(\__($item->getDescription()));
             }
-            $item->setAuthor(__($item->getAuthor()));
-            $item->setName(__($item->getName()));
+            $item->setAuthor(\__($item->getAuthor()));
+            $item->setName(\__($item->getName()));
             if ($code === TemplateValidator::RES_OK) {
                 $item->setAvailable(true);
                 $item->setHasError(false);

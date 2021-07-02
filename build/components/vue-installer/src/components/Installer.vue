@@ -2,14 +2,6 @@
     <div>
         <b-progress v-model="installProgress" striped :animated="installProgress < 100" class="mb-3 mt-3 d-print-none"></b-progress>
         <div id="install-wrapper">
-<!--            <finished class="steps" id="step-11" v-if="istep === 11"></finished>-->
-
-<!--            <wizard class="steps" id="step-10" v-if="istep === 10" wizardStepID="2"></wizard>-->
-
-<!--            <wizard class="steps" id="step-9" v-if="istep === 9" wizardStepID="1"></wizard>-->
-
-<!--            <wawi-check class="steps" id="step-8" v-if="istep === 8"></wawi-check>-->
-
             <installation-summary class="steps" id="step-7" v-if="istep === 7"></installation-summary>
 
             <schema class="steps" id="step-6" v-if="istep === 6"></schema>
@@ -38,9 +30,6 @@ import DatabaseParameters from './DatabaseParameters';
 import AdminUser from './AdminUser';
 import Schema from './Schema';
 import InstallationSummary from './InstallationSummary';
-// import Wizard from './Wizard';
-// import WawiCheck from './WawiCheck';
-// import Finished from './Finished';
 export default {
     name:       'installer',
     components: {
@@ -52,9 +41,6 @@ export default {
         AdminUser,
         Schema,
         InstallationSummary
-        // Wizard,
-        // WawiCheck,
-        // Finished
     }
 };
 </script>

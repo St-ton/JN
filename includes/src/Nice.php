@@ -1,8 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
 use JTL\xtea\XTEA;
 use stdClass;
 
@@ -76,11 +75,10 @@ class Nice
     {
         $cacheID = 'cbrocken';
         if (($brocken = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $data = Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->getSingleObject(
                 'SELECT cBrocken 
                     FROM tbrocken 
-                    LIMIT 1',
-                ReturnType::SINGLE_OBJECT
+                    LIMIT 1'
             );
             if (!empty($data->cBrocken)) {
                 $passA   = \mb_substr(\base64_decode($data->cBrocken), 0, 9);
@@ -109,12 +107,11 @@ class Nice
      */
     public function checkErweiterung(int $moduleID): bool
     {
-        return ($this->apiKey !== ''
+        return $this->apiKey !== ''
             && \mb_strlen($this->apiKey) > 0
             && !empty($this->domain)
-            && \count($this->moduleIDs) > 0)
-            ? \in_array($moduleID, $this->moduleIDs, true)
-            : false;
+            && \count($this->moduleIDs) > 0
+            && \in_array($moduleID, $this->moduleIDs, true);
     }
 
     /**
@@ -143,31 +140,31 @@ class Nice
         $this->initConstants();
         $module           = new stdClass();
         $module->kModulId = \SHOP_ERWEITERUNG_AUSWAHLASSISTENT;
-        $module->cName    = __('moduleSelectionWizard');
+        $module->cName    = \__('moduleSelectionWizard');
         $module->cDefine  = 'SHOP_ERWEITERUNG_AUSWAHLASSISTENT';
         $module->cURL     = 'https://jtl-url.de/q6tox';
         $modules[]        = $module;
         $module           = new stdClass();
         $module->kModulId = \SHOP_ERWEITERUNG_UPLOADS;
-        $module->cName    = __('moduleUpload');
+        $module->cName    = \__('moduleUpload');
         $module->cDefine  = 'SHOP_ERWEITERUNG_UPLOADS';
         $module->cURL     = 'https://jtl-url.de/7-cop';
         $modules[]        = $module;
         $module           = new stdClass();
         $module->kModulId = \SHOP_ERWEITERUNG_DOWNLOADS;
-        $module->cName    = __('moduleDownload');
+        $module->cName    = \__('moduleDownload');
         $module->cDefine  = 'SHOP_ERWEITERUNG_DOWNLOADS';
         $module->cURL     = 'https://jtl-url.de/i0zvj';
         $modules[]        = $module;
         $module           = new stdClass();
         $module->kModulId = \SHOP_ERWEITERUNG_KONFIGURATOR;
-        $module->cName    = __('moduleConfigurator');
+        $module->cName    = \__('moduleConfigurator');
         $module->cDefine  = 'SHOP_ERWEITERUNG_KONFIGURATOR';
         $module->cURL     = 'https://jtl-url.de/ni9f5';
         $modules[]        = $module;
         $module           = new stdClass();
         $module->kModulId = \SHOP_ERWEITERUNG_BRANDFREE;
-        $module->cName    = __('moduleBrandFree');
+        $module->cName    = \__('moduleBrandFree');
         $module->cDefine  = 'SHOP_ERWEITERUNG_BRANDFREE';
         $module->cURL     = 'https://jtl-url.de/t4egb';
         $modules[]        = $module;

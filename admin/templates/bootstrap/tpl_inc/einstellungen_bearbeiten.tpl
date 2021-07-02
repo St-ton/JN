@@ -40,11 +40,19 @@
                         <label class="col col-sm-4 col-form-label text-sm-right order-1" for="{$cnf->cWertName}">{$cnf->cName}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $cnf->cInputTyp === 'number'}config-type-number{/if}">
                             {if $cnf->cInputTyp === 'selectbox'}
-                                <select class="custom-select" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
-                                    {foreach $cnf->ConfWerte as $wert}
-                                        <option value="{$wert->cWert}" {if $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
-                                    {/foreach}
-                                </select>
+                                {if $cnf->cWertName === 'kundenregistrierung_standardland' || $cnf->cWertName === 'lieferadresse_abfragen_standardland' }
+                                    <select class="custom-select" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
+                                        {foreach $countries as $country}
+                                            <option value="{$country->getISO()}" {if $cnf->gesetzterWert == $country->getISO()}selected{/if}>{$country->getName()}</option>
+                                        {/foreach}
+                                    </select>
+                                {else}
+                                    <select class="custom-select" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
+                                        {foreach $cnf->ConfWerte as $wert}
+                                            <option value="{$wert->cWert}" {if $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
+                                        {/foreach}
+                                    </select>
+                                {/if}
                             {elseif $cnf->cInputTyp === 'listbox'}
                                 <select name="{$cnf->cWertName}[]"
                                 id="{$cnf->cWertName}"
@@ -59,32 +67,24 @@
                             {elseif $cnf->cInputTyp === 'pass'}
                                 <input class="form-control" autocomplete="off" type="password" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
                             {elseif $cnf->cInputTyp === 'number'}
-                            <div class="input-group form-counter">
-                                <div class="input-group-prepend">
-                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                        <span class="fas fa-minus"></span>
-                                    </button>
+                                <div class="input-group form-counter">
+                                    <div class="input-group-prepend">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                            <span class="fas fa-minus"></span>
+                                        </button>
+                                    </div>
+                                    <input class="form-control" type="number" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" tabindex="1" />
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                            <span class="fas fa-plus"></span>
+                                        </button>
+                                    </div>
                                 </div>
-                                <input class="form-control" type="number" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" tabindex="1" />
-                                <div class="input-group-append">
-                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                        <span class="fas fa-plus"></span>
-                                    </button>
-                                </div>
-                            </div>
-
                             {else}
                                 <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" tabindex="1" />
                             {/if}
                         </div>
-                        {if !empty($cnf->cBeschreibung)}
-                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                                {getHelpDesc cDesc=$cnf->cBeschreibung cID=$cnf->kEinstellungenConf}
-                            </div>
-                        {/if}
-                        {if isset($oSections[$kEinstellungenSektion]) && $oSections[$kEinstellungenSektion]->hasValueMarkup}
-                            {*{$oSections[$kEinstellungenSektion]->getValueMarkup($cnf)}*}
-                        {/if}
+                        {include file='snippets/einstellungen_icons.tpl' cnf=$cnf}
                     </div>
                 {else}
                     {if $cnf@index !== 0}

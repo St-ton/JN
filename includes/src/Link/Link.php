@@ -5,7 +5,6 @@ namespace JTL\Link;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\State;
 use JTL\Shop;
@@ -151,6 +150,11 @@ final class Link extends AbstractLink
     /**
      * @var bool
      */
+    protected $isSystem = false;
+
+    /**
+     * @var bool
+     */
     protected $visibleLoggedInOnly = false;
 
     /**
@@ -250,7 +254,8 @@ final class Link extends AbstractLink
     public function load(int $id): LinkInterface
     {
         $this->id = $id;
-        $link     = $this->db->queryPrepared(
+        $realID   = $this->getRealID($id);
+        $links    = $this->db->getObjects(
             "SELECT tlink.*, loc.cISOSprache, tlink.cName AS displayName,
                 loc.cName AS localizedName,  loc.cTitle AS localizedTitle,
                 loc.cContent AS content, loc.cMetaDescription AS metaDescription,
@@ -264,7 +269,7 @@ final class Link extends AbstractLink
                     ON tlink.kLink = loc.kLink
                 JOIN tsprache
                     ON tsprache.cISO = loc.cISOSprache
-                JOIN tseo
+                LEFT JOIN tseo
                     ON tseo.cKey = 'kLink'
                     AND tseo.kKey = loc.kLink
                     AND tseo.kSprache = tsprache.kSprache
@@ -277,14 +282,18 @@ final class Link extends AbstractLink
                     AND tlink.kLink = pld.kLink
                 WHERE tlink.kLink = :lid
                 GROUP BY tseo.kSprache",
-            ['lid' => $this->getRealID($id)],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['lid' => $realID]
         );
-        if (\count($link) === 0) {
+        if (\count($links) === 0) {
             throw new InvalidArgumentException('Provided link id ' . $this->id . ' not found.');
         }
+        if ($id !== $realID) {
+            foreach ($links as $link) {
+                $link->reference = $realID;
+            }
+        }
 
-        return $this->map($link);
+        return $this->map($links);
     }
 
     /**
@@ -293,13 +302,12 @@ final class Link extends AbstractLink
      */
     private function getRealID(int $id): int
     {
-        $reference = $this->db->queryPrepared(
+        $reference = $this->db->getSingleObject(
             'SELECT `reference` FROM `tlink` WHERE kLink = :lid',
-            ['lid' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['lid' => $id]
         );
 
-        return (int)$reference->reference > 0
+        return $reference !== null && (int)$reference->reference > 0
             ? (int)$reference->reference
             : $id;
     }
@@ -362,6 +370,7 @@ final class Link extends AbstractLink
             $this->setSSL((bool)$link->bSSL);
             $this->setIsFluid((bool)$link->bIsFluid);
             $this->setIsEnabled($this->checkActivationSetting((bool)$link->bIsActive));
+            $this->setIsSystem((int)($link->bIsSystem ?? 0) === 1);
             $this->setFileName($link->cDateiname ?? '');
             $this->setLanguageCode($link->cISOSprache, $link->languageID);
             $this->setContent($link->content ?? '', $link->languageID);
@@ -1136,6 +1145,22 @@ final class Link extends AbstractLink
     }
 
     /**
+     * @return bool
+     */
+    public function isSystem(): bool
+    {
+        return $this->isSystem;
+    }
+
+    /**
+     * @param bool $isSystem
+     */
+    public function setIsSystem(bool $isSystem): void
+    {
+        $this->isSystem = $isSystem;
+    }
+
+    /**
      * @inheritdoc
      */
     public function getLevel(): int
@@ -1224,6 +1249,7 @@ final class Link extends AbstractLink
         $duplicateLinks = $group->getLinks()->filter(function (LinkInterface $link) {
             return ($link->getPluginID() === 0
                 && $link->getLinkType() === $this->getLinkType()
+                && $this->getReference() === 0
                 && $link->getID() !== $this->getID()
                 && (empty($this->getCustomerGroups())
                     || \in_array(-1, $this->getCustomerGroups(), true)

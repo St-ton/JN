@@ -73,27 +73,27 @@
 
         {* firm / firmtext *}
         {block name='checkout-customer-shipping-address-company-wrap'}
-            {if $Einstellungen.kunden.kundenregistrierung_abfragen_firma !== 'N'}
+            {if $Einstellungen.kunden.lieferadresse_abfragen_firma !== 'N'}
                 {col cols=12 md=6}
                     {block name='checkout-customer-shipping-address-company'}
                         {include file='snippets/form_group_simple.tpl'
                             options=[
                                 "text", "{$prefix}-{$name}-firm", "{$prefix}[{$name}][firma]",
                                 {$Lieferadresse->cFirma|default:null}, {lang key='firm' section='account data'},
-                                $Einstellungen.kunden.kundenregistrierung_abfragen_firma, null, "shipping organization"
+                                $Einstellungen.kunden.lieferadresse_abfragen_firma, null, "shipping organization"
                             ]
                         }
                     {/block}
                 {/col}
             {/if}
-            {if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz !== 'N'}
+            {if $Einstellungen.kunden.lieferadresse_abfragen_firmazusatz !== 'N'}
                 {col cols=12 md=6}
                     {block name='checkout-customer-shipping-address-company-additional'}
                         {include file='snippets/form_group_simple.tpl'
                             options=[
                                 "text", "{$prefix}-{$name}-firmext", "{$prefix}[{$name}][firmazusatz]",
                                 {$Lieferadresse->cZusatz|default:null}, {lang key='firmext' section='account data'},
-                                $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz
+                                $Einstellungen.kunden.lieferadresse_abfragen_firmazusatz
                             ]
                         }
                     {/block}
@@ -155,6 +155,7 @@
         {else}
             {$countryISO=$shippingCountry}
         {/if}
+        {getCountry iso=$countryISO assign='selectedCountry'}
         {block name='checkout-customer-shipping-address-country-wrap'}
             {col cols=12}
                 {block name='checkout-customer-shipping-address-country'}
@@ -162,7 +163,9 @@
                         {select name="{$prefix}[{$name}][land]" id="{$prefix}-{$name}-country" class="country-input custom-select js-country-select" autocomplete="shipping country"}
                             <option value="" selected disabled>{lang key='country' section='account data'}</option>
                             {foreach $LieferLaender as $land}
-                                <option value="{$land->getISO()}" {if $countryISO === $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
+                                {if $land->isShippingAvailable()}
+                                    <option value="{$land->getISO()}" {if $countryISO === $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
+                                {/if}
                             {/foreach}
                         {/select}
                     {/formgroup}
@@ -181,7 +184,7 @@
                     {block name='checkout-customer-shipping-address-state'}
                         {formgroup
                             class="{if isset($fehlendeAngaben.bundesland)} has-error{/if}"
-                            label="{lang key='state' section='account data'}{if $Einstellungen.kunden.lieferadresse_abfragen_bundesland !== 'Y'}<span class='optional'> - {lang key='optional'}</span>{/if}"
+                            label="{lang key='state' section='account data'}<span class='state-optional optional {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y' || $selectedCountry->isRequireStateDefinition()}d-none{/if}'> - {lang key='optional'}</span>"
                             label-for="{$prefix}-{$name}-state"
                         }
                             {if !empty($oShippingStates)}
@@ -191,7 +194,7 @@
                                         class="state-input custom-select js-state-select"
                                         data=["defaultoption"=>{lang key=pleaseChoose}]
                                         autocomplete="shipping address-level1"
-                                        required=($Einstellungen.kunden.lieferadresse_abfragen_bundesland === 'Y')
+                                        required=($Einstellungen.kunden.lieferadresse_abfragen_bundesland === 'Y' || $selectedCountry->isRequireStateDefinition())
                                 }
                                     <option value="" selected disabled>{lang key='pleaseChoose'}</option>
                                     {foreach $oShippingStates as $oState}

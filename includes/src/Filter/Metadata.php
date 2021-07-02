@@ -8,7 +8,6 @@ use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Category\MenuItem;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\MerkmalWert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Category;
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
@@ -282,10 +281,9 @@ class Metadata implements MetadataInterface
     public static function getGlobalMetaData(): array
     {
         return Shop::Container()->getCache()->get('jtl_glob_meta', static function ($cache, $id, &$content, &$tags) {
-            $globalTmp = Shop::Container()->getDB()->query(
+            $globalTmp = Shop::Container()->getDB()->getObjects(
                 'SELECT cName, kSprache, cWertName 
-                    FROM tglobalemetaangaben ORDER BY kSprache',
-                ReturnType::ARRAY_OF_OBJECTS
+                    FROM tglobalemetaangaben ORDER BY kSprache'
             );
             $content   = map(group($globalTmp, static function ($g) {
                 return (int)$g->kSprache;
@@ -309,43 +307,25 @@ class Metadata implements MetadataInterface
     {
         if ($category !== null && $this->productFilter->hasCategory()) {
             $this->category = $category;
-            if ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'Y') {
-                $this->setName($this->category->getName() ?? '');
-            } elseif ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'BT') {
-                $this->setName($this->category->getName() ?? '');
-                $this->setImageURL($this->category->getImage());
-            } elseif ($this->conf['navigationsfilter']['kategorie_bild_anzeigen'] === 'B') {
-                $this->setImageURL($category->getImage());
-            }
+            $this->setName($this->category->getName() ?? '');
+            $this->setImageURL($category->getImage());
         } elseif ($this->productFilter->hasManufacturer()) {
             $this->manufacturer = new Hersteller($this->productFilter->getManufacturer()->getValue());
-            if ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'Y') {
-                $this->setName($this->manufacturer->getName() ?? '');
-            } elseif ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'BT') {
-                $this->setName($this->manufacturer->getName() ?? '');
-                $this->setImageURL($this->manufacturer->getImage());
-            } elseif ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'B') {
-                $this->setImageURL($this->manufacturer->getImage());
-            }
-            if ($this->manufacturer !== null) {
-                $this->setMetaTitle($this->manufacturer->cMetaTitle)
-                     ->setMetaDescription($this->manufacturer->cMetaDescription)
-                     ->setMetaKeywords($this->manufacturer->cMetaKeywords);
+            if ($this->manufacturer->getID() > 0) {
+                $this->setName($this->manufacturer->getName() ?? '')
+                    ->setImageURL($this->manufacturer->getImage())
+                    ->setMetaTitle($this->manufacturer->cMetaTitle)
+                    ->setMetaDescription($this->manufacturer->cMetaDescription)
+                    ->setMetaKeywords($this->manufacturer->cMetaKeywords);
             }
         } elseif ($this->productFilter->hasCharacteristicValue()) {
             $this->characteristicValue = new MerkmalWert($this->productFilter->getCharacteristicValue()->getValue());
-            if ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'Y') {
-                $this->setName($this->characteristicValue->cWert);
-            } elseif ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'BT') {
+            if ($this->characteristicValue->kMerkmalWert > 0) {
                 $this->setName($this->characteristicValue->cWert)
-                     ->setImageURL($this->characteristicValue->getImage());
-            } elseif ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'B') {
-                $this->setImageURL($this->characteristicValue->getImage());
-            }
-            if ($this->characteristicValue !== null) {
-                $this->setMetaTitle($this->characteristicValue->cMetaTitle)
-                     ->setMetaDescription($this->characteristicValue->cMetaDescription)
-                     ->setMetaKeywords($this->characteristicValue->cMetaKeywords);
+                    ->setImageURL($this->characteristicValue->getImage())
+                    ->setMetaTitle($this->characteristicValue->cMetaTitle)
+                    ->setMetaDescription($this->characteristicValue->cMetaDescription)
+                    ->setMetaKeywords($this->characteristicValue->cMetaKeywords);
             }
         }
 

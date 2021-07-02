@@ -10,7 +10,7 @@
                         {if $parent !== null}
                             {breadcrumbitem class="breadcrumb-arrow"
                                 href=$parent->getURLFull()
-                                title=$parent->getName()|escape:'html'
+                                title={sanitizeTitle title=$parent->getName()}
                             }
                                 <span itemprop="name">{$parent->getName()}</span>
                             {/breadcrumbitem}
@@ -23,7 +23,7 @@
                                     {breadcrumbitem class="first"
                                         router-tag-itemprop="url"
                                         href=$oItem->getURLFull()
-                                        title=$oItem->getName()|escape:'html'
+                                        title={sanitizeTitle title=$oItem->getName()}
                                         itemprop="itemListElement"
                                         itemscope=true
                                         itemtype="http://schema.org/ListItem"
@@ -37,8 +37,8 @@
                                 {block name='layout-breadcrumb-last-item'}
                                     {breadcrumbitem class="last active"
                                         router-tag-itemprop="url"
-                                        href="{if $oItem->getHasChild() === true}{$oItem->getURLFull()}{/if}"
-                                        title=$oItem->getName()|escape:'html'
+                                        href="{$oItem->getURLFull()}"
+                                        title={sanitizeTitle title=$oItem->getName()}
                                         itemprop="itemListElement"
                                         itemscope=true
                                         itemtype="http://schema.org/ListItem"
@@ -58,7 +58,7 @@
                                 {block name='layout-breadcrumb-item'}
                                     {breadcrumbitem router-tag-itemprop="url"
                                         href=$oItem->getURLFull()
-                                        title=$oItem->getName()|escape:'html'
+                                        title={sanitizeTitle title=$oItem->getName()}
                                         itemprop="itemListElement"
                                         itemscope=true
                                         itemtype="http://schema.org/ListItem"
@@ -79,7 +79,7 @@
                     {if isset($NavigationBlaettern->naechsterArtikel->kArtikel)}
                         {button variant="link"
                             href=$NavigationBlaettern->naechsterArtikel->cURLFull
-                            title=$NavigationBlaettern->naechsterArtikel->cName
+                            title={sanitizeTitle title=$NavigationBlaettern->naechsterArtikel->cName}
                             aria=["label"=>"{lang section='productDetails' key='nextProduct'}: {$NavigationBlaettern->naechsterArtikel->cName}"]
                         }
                             <span class="fa fa-chevron-right"></span>
@@ -88,7 +88,7 @@
                     {if isset($NavigationBlaettern->vorherigerArtikel->kArtikel)}
                         {button variant="link"
                             href=$NavigationBlaettern->vorherigerArtikel->cURLFull
-                            title=$NavigationBlaettern->vorherigerArtikel->cName
+                            title={sanitizeTitle title=$NavigationBlaettern->vorherigerArtikel->cName}
                             aria=["label"=>"{lang section='productDetails' key='previousProduct'}: {$NavigationBlaettern->vorherigerArtikel->cName}"]
                         }
                             <span class="fa fa-chevron-left"></span>

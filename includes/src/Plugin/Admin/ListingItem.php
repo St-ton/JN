@@ -4,6 +4,7 @@ namespace JTL\Plugin\Admin;
 
 use DateTime;
 use InvalidArgumentException;
+use JsonSerializable;
 use JTL\Helpers\GeneralObject;
 use JTL\Mapper\PluginValidation;
 use JTL\Plugin\InstallCode;
@@ -15,7 +16,7 @@ use JTLShop\SemVer\Version;
  * Class ListingItem
  * @package JTL\Plugin\Admin
  */
-class ListingItem
+class ListingItem implements JsonSerializable
 {
     /**
      * @var bool
@@ -247,7 +248,7 @@ class ListingItem
         $this->setAuthor($meta->getAuthor());
         $this->setID($plugin->getID());
         $this->setPluginID($plugin->getPluginID());
-        $this->setPath($plugin->getPaths()->getVersionedPath());
+        $this->setPath($plugin->getPaths()->getBasePath());
         $this->setDir($plugin->getPaths()->getBaseDir());
         $this->setIsLegacy($plugin->isLegacy());
         $this->setIcon($meta->getIcon() ?? '');
@@ -268,6 +269,25 @@ class ListingItem
         $this->setMaxShopVersion(Version::parse('0.0.0'));
 
         return $this;
+    }
+
+    /**
+     * @param ListingItem $item
+     */
+    public function mergeWith(ListingItem $item): void
+    {
+        $this->setOptionsCount($item->getOptionsCount());
+        $this->setDateInstalled($item->getDateInstalled());
+        $this->setID($item->getID());
+        $this->setState($item->getState());
+        $this->setIsShop5Compatible($item->isShop5Compatible());
+        $this->setIsShop4Compatible($item->isShop4Compatible());
+        $this->setLangVarCount($item->getLangVarCount());
+        $this->setReadmeMD($item->getReadmeMD());
+        $this->setLicenseMD($item->getLicenseMD());
+        $this->setLinkCount($item->getLinkCount());
+        $this->setLicenseKey($item->getLicenseKey());
+        $this->setHasLicenseCheck($item->hasLicenseCheck());
     }
 
     /**
@@ -774,5 +794,18 @@ class ListingItem
     public function setLicenseMD(?string $licenseMD): void
     {
         $this->licenseMD = $licenseMD;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $res = [];
+        foreach (\get_object_vars($this) as $var => $val) {
+            $res[$var] = $val;
+        }
+
+        return $res;
     }
 }

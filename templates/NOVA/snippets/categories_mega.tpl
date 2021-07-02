@@ -1,81 +1,89 @@
 {block name='snippets-categories-mega'}
     {strip}
-    {if !isset($i)}
-        {assign var=i value=0}
-    {/if}
-
+    {block name='snippets-categories-mega-assigns'}
+        {if !isset($i)}
+            {assign var=i value=0}
+        {/if}
+        {if !isset($activeId)}
+            {if $NaviFilter->hasCategory()}
+                {$activeId = $NaviFilter->getCategory()->getValue()}
+            {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && isset($Artikel)}
+                {$activeId = $Artikel->gibKategorie()}
+            {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && isset($smarty.session.LetzteKategorie)}
+                {$activeId = $smarty.session.LetzteKategorie}
+            {else}
+                {$activeId = 0}
+            {/if}
+        {/if}
+    {/block}
     {block name='snippets-categories-mega-categories'}
     {if $Einstellungen.template.megamenu.show_categories !== 'N'
         && ($Einstellungen.global.global_sichtbarkeit != 3 || \JTL\Session\Frontend::getCustomer()->getID() > 0)}
         {get_category_array categoryId=0 assign='categories'}
         {if !empty($categories)}
-            {if !isset($activeId)}
-                {if $NaviFilter->hasCategory()}
-                    {$activeId = $NaviFilter->getCategory()->getValue()}
-                {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && isset($Artikel)}
-                    {assign var=activeId value=$Artikel->gibKategorie()}
-                {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && isset($smarty.session.LetzteKategorie)}
-                    {$activeId = $smarty.session.LetzteKategorie}
-                {else}
-                    {$activeId = 0}
-                {/if}
-            {/if}
             {if !isset($activeParents)
             && ($nSeitenTyp === $smarty.const.PAGE_ARTIKEL || $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE)}
                 {get_category_parents categoryId=$activeId assign='activeParents'}
             {/if}
-            {block name='snippets-categories-mega-categories'}
+            {block name='snippets-categories-mega-categories-inner'}
             {foreach $categories as $category}
                 {if isset($activeParents) && is_array($activeParents) && isset($activeParents[$i])}
                     {assign var=activeParent value=$activeParents[$i]}
                 {/if}
-                {if $category->hasChildren()}
-                    {block name='snippets-categories-mega-category-child'}
-                        <li class="nav-item nav-scrollbar-item dropdown dropdown-full{if $category->getID() === $activeId
-                        || ((isset($activeParent)
-                            && isset($activeParent->kKategorie))
-                            && $activeParent->kKategorie == $category->getID())} active{/if}">
-                            {link href=$category->getURL() title=$category->getName() class="nav-link dropdown-toggle" target="_self"}
-                                <span class="nav-mobile-heading">{$category->getName()}</span>
-                            {/link}
-                            <div class="dropdown-menu">
-                                <div class="dropdown-body">
-                                    {container class="subcategory-wrapper"}
-                                        {row class="lg-row-lg nav"}
-                                            {col lg=4 xl=3 class="nav-item-lg-m nav-item dropdown d-lg-none"}
-                                                {link href=$category->getURL() rel="nofollow"}
-                                                    <strong class="nav-mobile-heading">{lang key='menuShow' printf=$category->getName()}</strong>
-                                                {/link}
-                                            {/col}
-                                            {block name='snippets-categories-mega-sub-categories'}
-                                                {if $category->hasChildren()}
-                                                    {if !empty($category->getChildren())}
-                                                        {assign var=sub_categories value=$category->getChildren()}
-                                                    {else}
-                                                        {get_category_array categoryId=$category->getID() assign='sub_categories'}
+                {if $category->isOrphaned() === false}
+                    {if $category->hasChildren()}
+                        {block name='snippets-categories-mega-category-child'}
+                            <li class="nav-item nav-scrollbar-item dropdown dropdown-full
+                                {if $Einstellungen.template.megamenu.show_categories === 'mobile'} d-lg-none
+                                {elseif $Einstellungen.template.megamenu.show_categories === 'desktop'} d-none d-lg-inline-block {/if}
+                                {if $category->getID() === $activeId
+                            || ((isset($activeParent)
+                                && isset($activeParent->kKategorie))
+                                && $activeParent->kKategorie == $category->getID())} active{/if}">
+                                {link href=$category->getURL() title=$category->getName()|@seofy class="nav-link dropdown-toggle" target="_self"}
+                                    <span class="nav-mobile-heading">{$category->getShortName()}</span>
+                                {/link}
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-body">
+                                        {container class="subcategory-wrapper"}
+                                            {row class="lg-row-lg nav"}
+                                                {col lg=4 xl=3 class="nav-item-lg-m nav-item dropdown d-lg-none"}
+                                                    {link href=$category->getURL() rel="nofollow"}
+                                                        <strong class="nav-mobile-heading">{lang key='menuShow' printf=$category->getShortName()}</strong>
+                                                    {/link}
+                                                {/col}
+                                                {block name='snippets-categories-mega-sub-categories'}
+                                                    {if $category->hasChildren()}
+                                                        {if !empty($category->getChildren())}
+                                                            {assign var=sub_categories value=$category->getChildren()}
+                                                        {else}
+                                                            {get_category_array categoryId=$category->getID() assign='sub_categories'}
+                                                        {/if}
+                                                        {foreach $sub_categories as $sub}
+                                                            {col lg=4 xl=3 class="nav-item-lg-m nav-item {if $sub->hasChildren()}dropdown{/if}"}
+                                                                {block name='snippets-categories-mega-category-child-body-include-categories-mega-recursive'}
+                                                                    {include file='snippets/categories_mega_recursive.tpl' mainCategory=$sub firstChild=true subCategory=$i + 1}
+                                                                {/block}
+                                                            {/col}
+                                                        {/foreach}
                                                     {/if}
-                                                    {foreach $sub_categories as $sub}
-                                                        {col lg=4 xl=3 class="nav-item-lg-m nav-item {if $sub->hasChildren()}dropdown{/if}"}
-                                                            {block name='snippets-categories-mega-category-child-body-include-categories-mega-recursive'}
-                                                                {include file='snippets/categories_mega_recursive.tpl' mainCategory=$sub firstChild=true subCategory=$i + 1}
-                                                            {/block}
-                                                        {/col}
-                                                    {/foreach}
-                                                {/if}
-                                            {/block}
-                                        {/row}
-                                    {/container}
+                                                {/block}
+                                            {/row}
+                                        {/container}
+                                    </div>
                                 </div>
-                            </div>
-                        </li>
-                    {/block}
-                {else}
-                    {block name='snippets-categories-mega-category-no-child'}
-                        {navitem href=$category->getURL() title=$category->getName()
-                            class="nav-scrollbar-item {if $category->getID() === $activeId}active{/if}"}
-                            <span class="text-truncate d-block">{$category->getShortName()}</span>
-                        {/navitem}
-                    {/block}
+                            </li>
+                        {/block}
+                    {else}
+                        {block name='snippets-categories-mega-category-no-child'}
+                            {navitem href=$category->getURL() title=$category->getName()|@seofy
+                                class="nav-scrollbar-item {if $Einstellungen.template.megamenu.show_categories === 'mobile'} d-lg-none
+                                    {elseif $Einstellungen.template.megamenu.show_categories === 'desktop'} d-none d-lg-inline-block {/if}
+                                    {if $category->getID() === $activeId}active{/if}"}
+                                <span class="text-truncate d-block">{$category->getShortName()}</span>
+                            {/navitem}
+                        {/block}
+                    {/if}
                 {/if}
             {/foreach}
             {/block}
@@ -173,12 +181,14 @@
                 {/badge}
             {/navitem}
         {/if}
-        {navitem href="{get_static_route id='vergleichsliste.php'}" class="comparelist-nav-scrollbar-item nav-scrollbar-item"}
-            {lang key='compare'}
-            {badge id="comparelist-badge" variant="primary" class="product-count"}
-                {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{else}0{/if}
-            {/badge}
-        {/navitem}
+        {if $Einstellungen.vergleichsliste.vergleichsliste_anzeigen === 'Y'}
+            {navitem href="{get_static_route id='vergleichsliste.php'}" class="comparelist-nav-scrollbar-item nav-scrollbar-item"}
+                {lang key='compare'}
+                {badge id="comparelist-badge" variant="primary" class="product-count"}
+                    {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{else}0{/if}
+                {/badge}
+            {/navitem}
+        {/if}
         {if $linkgroups->getLinkGroupByTemplate('Kopf') !== null}
         {block name='snippets-categories-mega-top-links'}
             {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}

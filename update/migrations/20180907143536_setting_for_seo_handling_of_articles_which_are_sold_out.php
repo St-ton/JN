@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Setting for SEO handling of articles which are sold out
  *
@@ -18,8 +18,7 @@ class Migration_20180907143536 extends Migration implements IMigration
     protected $description = 'Setting for SEO handling of articles which are sold out';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritdoc
      */
     public function up()
     {
@@ -43,7 +42,7 @@ class Migration_20180907143536 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -146,10 +146,10 @@ final class Export
         ]);
         foreach ($factories as $factory) {
             foreach ($factory->getCollection($languages, $customerGroupIDs) as $item) {
-                /** @var ItemInterface $item */
                 if ($item === null) {
                     break;
                 }
+                /** @var ItemInterface $item */
                 if ($itemCount > $this->itemLimit) {
                     $itemCount = 1;
                     $this->buildFile($fileNumber, $markup);

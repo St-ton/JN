@@ -37,6 +37,8 @@
                         </tbody>
                     </table>
                 </div>
+                {include file='tpl_inc/pagination.tpl' pagination=$paginationPaymentLog cParam_arr=['a'=>'log',
+                'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$paymentData->kZahlungsart] isBottom=true}
                 <div class="save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-lg-auto">

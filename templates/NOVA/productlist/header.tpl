@@ -29,19 +29,34 @@
     {/block}
 
     {block name='productlist-header-description'}
+        {$showTitle = true}
+        {$showImage = true}
+        {$navData = null}
+        {if $oNavigationsinfo->getCategory() !== null}
+            {$showTitle = in_array($Einstellungen['navigationsfilter']['kategorie_bild_anzeigen'], ['Y', 'BT'])}
+            {$showImage = in_array($Einstellungen['navigationsfilter']['kategorie_bild_anzeigen'], ['B', 'BT'])}
+            {$navData = $oNavigationsinfo->getCategory()}
+        {elseif $oNavigationsinfo->getManufacturer() !== null}
+            {$showImage = in_array($Einstellungen['navigationsfilter']['hersteller_bild_anzeigen'], ['B', 'BT'])}
+            {$showTitle = in_array($Einstellungen['navigationsfilter']['hersteller_bild_anzeigen'], ['Y', 'BT'])}
+            {$navData = $oNavigationsinfo->getManufacturer()}
+        {elseif $oNavigationsinfo->getCharacteristicValue() !== null}
+            {$showImage = in_array($Einstellungen['navigationsfilter']['merkmalwert_bild_anzeigen'], ['B', 'BT'])}
+            {$showTitle = in_array($Einstellungen['navigationsfilter']['merkmalwert_bild_anzeigen'], ['Y', 'BT'])}
+            {$navData = $oNavigationsinfo->getCharacteristicValue()}
+        {/if}
+
         {if $oNavigationsinfo->getImageURL() !== $smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN
             && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'
-            && $oNavigationsinfo->getImageURL() !== $imageBaseURL|cat:$smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN}
-            {if $oNavigationsinfo->getCategory() !== null}
-                {$navData = $oNavigationsinfo->getCategory()}
-            {elseif $oNavigationsinfo->getManufacturer() !== null}
-                {$navData = $oNavigationsinfo->getManufacturer()}
-            {elseif $oNavigationsinfo->getCharacteristicValue() !== null}
-                {$navData = $oNavigationsinfo->getCharacteristicValue()}
-            {/if}
-            {include file='snippets/image.tpl' class='productlist-header-description-image' item=$navData square=false alt=$navData->cBeschreibung|strip_tags|truncate:50}
+            && $oNavigationsinfo->getImageURL() !== $imageBaseURL|cat:$smarty.const.BILD_KEIN_KATEGORIEBILD_VORHANDEN
+            && $showImage}
+                {include file='snippets/image.tpl'
+                class='productlist-header-description-image'
+                item=$navData
+                square=false
+                alt="{if $oNavigationsinfo->getCategory() !== null && !empty($navData->getImageAlt())}{$navData->getImageAlt()}{else}{$navData->cBeschreibung|strip_tags|truncate:50}{/if}"}
         {/if}
-        {if $oNavigationsinfo->getName()}
+        {if $oNavigationsinfo->getName() && $showTitle}
             <div class="title">
                 {opcMountPoint id='opc_before_heading'}
                 {block name='productlist-header-description-heading'}
@@ -89,10 +104,11 @@
                             {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
                                 {block name='productlist-header-subcategories-image'}
                                     {link href=$subCategory->getURL()}
+                                        {$imgAlt = $subCategory->getAttribute('img_alt')}
                                         <div class="subcategories-image d-none d-md-flex">
                                             {image fluid=true lazy=true webp=true
                                                 src=$subCategory->getImage(\JTL\Media\Image::SIZE_SM)
-                                                alt=$subCategory->getName()}
+                                                alt="{if empty($imgAlt->cWert)}{$subCategory->getName()}{else}{$imgAlt->cWert}{/if}"}
                                         </div>
                                     {/link}
                                 {/block}

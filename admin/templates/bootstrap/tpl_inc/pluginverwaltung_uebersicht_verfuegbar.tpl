@@ -1,51 +1,3 @@
-<script>
-    // transfer our licenses(-json-object) from php into js
-    var vLicenses = {if isset($szLicenses)}{$szLicenses}{else}[]{/if};
-//{literal}
-
-    $(document).ready(function() {
-        token = $('input[name="jtl_token"]').val();
-
-        // for all found licenses..
-        for (var key in vLicenses) {
-            // ..bind a click-handler to the plugins checkbox
-            $('input[id="plugin-check-'+key+'"]').on('click', function(event) {
-                // grab the element, which was rising that click-event (click to the checkbox)
-                var oTemp = $(event.currentTarget);
-                szPluginName = oTemp.val();
-
-                if (this.checked) { // it's checked yet, right after the click was fired
-                    $('input[id="plugin-check-'+szPluginName+'"]').attr('disabled', 'disabled'); // block the checkbox!
-                    $('div[id="licenseModal"]').modal({backdrop : 'static'}); // set our modal static (a click in black did not hide it!)
-                    startSpinner();
-                    $('div[id="licenseModal"]').find('.modal-body').load(
-                        'getMarkdownAsHTML.php',
-                        {'jtl_token':token, 'path':vLicenses[szPluginName]},
-                        function () {
-                        stopSpinner();
-                    });
-                    $('div[id="licenseModal"]').modal('show');
-                }
-            });
-        }
-
-        // handle the (befor-)hiding of the modal and what's happening during it occurs
-        $('div[id="licenseModal"]').on('hide.bs.modal', function(event) {
-            // IMPORTANT: release the checkbox on modal-close again too!
-            $('input[id=plugin-check-'+szPluginName+']').removeAttr('disabled');
-
-            // check, which element is 'active' before/during the modal goes hiding (to determine, which button closes it)
-            // (it is faster than check a var or bind an event to an element)
-            if ('ok' === document.activeElement.name) {
-                $('input[id=plugin-check-'+szPluginName+']').prop('checked', true);
-            } else {
-                $('input[id=plugin-check-'+szPluginName+']').prop('checked', false);
-            }
-        });
-    });
-</script>
-{/literal}
-
 <div id="verfuegbar" class="tab-pane fade {if $cTab === 'verfuegbar'} active show{/if}">
     {if $pluginsAvailable->count() > 0}
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php" id="available-plugins">
@@ -102,7 +54,7 @@
                                 <td class="check">
                                     <div class="custom-control custom-checkbox">
                                         <input type="hidden" id="plugin-ext-{$listingItem->getDir()}" name="isExtension[]" value="{if $listingItem->isLegacy()}0{else}1{/if}">
-                                        <input class="custom-control-input" type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
+                                        <input class="custom-control-input plugin-license-check" type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
                                         <label class="custom-control-label" for="plugin-check-{$listingItem->getDir()}"></label>
                                     </div>
                                     {if $listingItem->isShop5Compatible() === false}

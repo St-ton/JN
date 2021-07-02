@@ -1,10 +1,10 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use function Functional\map;
@@ -18,7 +18,7 @@ $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
 $step        = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
-$languages   = LanguageHelper::getAllLanguages();
+$languages   = LanguageHelper::getAllLanguages(0, true);
 if (Request::getInt('del') > 0 && Form::validateToken()) {
     $db->delete('tkontaktbetreff', 'kKontaktBetreff', Request::getInt('del'));
     $db->delete('tkontaktbetreffsprache', 'kKontaktBetreff', Request::getInt('del'));
@@ -60,14 +60,15 @@ if (Request::postInt('content') === 1 && Form::validateToken()) {
 }
 
 if (Request::postInt('betreff') === 1 && Form::validateToken()) {
-    if ($_POST['cName'] && $_POST['cMail']) {
+    $postData = Text::filterXSS($_POST);
+    if ($postData['cName'] && $postData['cMail']) {
         $newSubject        = new stdClass();
-        $newSubject->cName = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-        $newSubject->cMail = $_POST['cMail'];
-        if (is_array($_POST['cKundengruppen'])) {
-            $newSubject->cKundengruppen = implode(';', $_POST['cKundengruppen']) . ';';
+        $newSubject->cName = htmlspecialchars($postData['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $newSubject->cMail = $postData['cMail'];
+        if (is_array($postData['cKundengruppen'])) {
+            $newSubject->cKundengruppen = implode(';', $postData['cKundengruppen']) . ';';
         }
-        if (GeneralObject::hasCount('cKundengruppen', $_POST) && in_array(0, $_POST['cKundengruppen'])) {
+        if (GeneralObject::hasCount('cKundengruppen', $postData) && in_array(0, $postData['cKundengruppen'])) {
             $newSubject->cKundengruppen = 0;
         }
         $newSubject->nSort = Request::postInt('nSort');
@@ -90,9 +91,9 @@ if (Request::postInt('betreff') === 1 && Form::validateToken()) {
             $code                   = $language->getIso();
             $localized->cISOSprache = $code;
             $localized->cName       = $newSubject->cName;
-            if ($_POST['cName_' . $code]) {
+            if ($postData['cName_' . $code]) {
                 $localized->cName = htmlspecialchars(
-                    $_POST['cName_' . $code],
+                    $postData['cName_' . $code],
                     ENT_COMPAT | ENT_HTML401,
                     JTL_CHARSET
                 );
@@ -125,10 +126,7 @@ if ((Request::getInt('kKontaktBetreff') > 0 || Request::getInt('neu') === 1) && 
 }
 
 if ($step === 'uebersicht') {
-    $subjects = $db->query(
-        'SELECT * FROM tkontaktbetreff ORDER BY nSort',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    $subjects = $db->getObjects('SELECT * FROM tkontaktbetreff ORDER BY nSort');
     foreach ($subjects as $subject) {
         $groups = '';
         if (!$subject->cKundengruppen) {
@@ -170,12 +168,8 @@ if ($step === 'betreff') {
         );
     }
 
-    $customerGroups = $db->query(
-        'SELECT * FROM tkundengruppe ORDER BY cName',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
     $smarty->assign('Betreff', $newSubject)
-        ->assign('kundengruppen', $customerGroups)
+        ->assign('kundengruppen', $db->getObjects('SELECT * FROM tkundengruppe ORDER BY cName'))
         ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($newSubject))
         ->assign('Betreffname', ($newSubject !== null) ? getNames($newSubject->kKontaktBetreff) : null);
 }
@@ -189,7 +183,7 @@ $smarty->assign('step', $step)
  * @param object $link
  * @return array
  */
-function getGesetzteKundengruppen($link)
+function getGesetzteKundengruppen($link): array
 {
     $ret = [];
     if (!isset($link->cKundengruppen) || !$link->cKundengruppen) {
@@ -208,7 +202,7 @@ function getGesetzteKundengruppen($link)
  * @param int $id
  * @return array
  */
-function getNames(int $id)
+function getNames(int $id): array
 {
     $data = Shop::Container()->getDB()->selectAll('tkontaktbetreffsprache', 'kKontaktBetreff', $id);
 

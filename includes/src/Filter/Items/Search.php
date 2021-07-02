@@ -2,7 +2,6 @@
 
 namespace JTL\Filter\Items;
 
-use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
@@ -65,7 +64,7 @@ class Search extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setVisibility($this->getConfig('navigationsfilter')['suchtrefferfilter_nutzen'])
-             ->setFrontendName(Shop::isAdmin() ? __('filterSearch') : Shop::Lang()->get('searchFilter'))
+             ->setFrontendName(Shop::isAdmin() ? \__('filterSearch') : Shop::Lang()->get('searchFilter'))
              ->setUrlParam('sf');
     }
 
@@ -131,7 +130,7 @@ class Search extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $seo = $this->productFilter->getDB()->executeQueryPrepared(
+        $seo = $this->productFilter->getDB()->getSingleObject(
             'SELECT cSuche
                 FROM tsuchanfrage
                 WHERE kSuchanfrage = :kkey
@@ -139,10 +138,9 @@ class Search extends AbstractFilter
             [
                 'kkey'       => $this->getValue(),
                 'languageID' => (int)$_SESSION['kSprache']
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-        if (!empty($seo->cSuche)) {
+        if ($seo !== null && !empty($seo->cSuche)) {
             $this->setName($seo->cSuche);
         }
 
@@ -227,13 +225,12 @@ class Search extends AbstractFilter
         }
         // Ist md5(IP) bereits X mal im Cache
         $maxHits       = (int)$this->getConfig('artikeluebersicht')['livesuche_max_ip_count'];
-        $userCacheHits = (int)$this->productFilter->getDB()->executeQueryPrepared(
+        $userCacheHits = (int)$this->productFilter->getDB()->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tsuchanfragencache
                 WHERE kSprache = :lang
                 AND cIP = :ip',
-            ['lang' => $languageID, 'ip' => Request::getRealIP()],
-            ReturnType::SINGLE_OBJECT
+            ['lang' => $languageID, 'ip' => Request::getRealIP()]
         )->cnt;
         $ipUsed        = $this->productFilter->getDB()->select(
             'tsuchanfragencache',
@@ -257,8 +254,7 @@ class Search extends AbstractFilter
             $this->productFilter->getDB()->query(
                 'DELETE
                     FROM tsuchanfragencache
-                    WHERE dZeit < DATE_SUB(NOW(), INTERVAL 1 HOUR)',
-                ReturnType::AFFECTED_ROWS
+                    WHERE dZeit < DATE_SUB(NOW(), INTERVAL 1 HOUR)'
             );
             if ($hits > 0) {
                 $searchQuery                  = new stdClass();
@@ -281,13 +277,13 @@ class Search extends AbstractFilter
                     'kSuchanfrage'
                 );
                 if ($real && $previuousQuery !== null && $previuousQuery->kSuchanfrage > 0) {
-                    $this->productFilter->getDB()->query(
+                    $this->productFilter->getDB()->queryPrepared(
                         'UPDATE tsuchanfrage
-                            SET nAnzahlTreffer = ' . (int)$searchQuery->nAnzahlTreffer . ',
+                            SET nAnzahlTreffer = :hc,
                                 nAnzahlGesuche = nAnzahlGesuche + 1,
                                 dZuletztGesucht = NOW()
-                            WHERE kSuchanfrage = ' . (int)$previuousQuery->kSuchanfrage,
-                        ReturnType::AFFECTED_ROWS
+                            WHERE kSuchanfrage = :qid',
+                        ['hc' => (int)$searchQuery->nAnzahlTreffer, 'qid' => (int)$previuousQuery->kSuchanfrage]
                     );
                 } elseif (!isset($previuousQuery->kSuchanfrage) || !$previuousQuery->kSuchanfrage) {
                     $this->productFilter->getDB()->delete(
@@ -316,13 +312,12 @@ class Search extends AbstractFilter
                     'kSuchanfrageErfolglos'
                 );
                 if ($real && $oldMiss !== null && $oldMiss->kSuchanfrageErfolglos > 0) {
-                    $this->productFilter->getDB()->query(
+                    $this->productFilter->getDB()->queryPrepared(
                         'UPDATE tsuchanfrageerfolglos
                             SET nAnzahlGesuche = nAnzahlGesuche + 1,
                                 dZuletztGesucht = NOW()
-                            WHERE kSuchanfrageErfolglos = ' .
-                        (int)$oldMiss->kSuchanfrageErfolglos,
-                        ReturnType::AFFECTED_ROWS
+                            WHERE kSuchanfrageErfolglos = :qid',
+                        ['qid' => (int)$oldMiss->kSuchanfrageErfolglos]
                     );
                 } else {
                     $this->productFilter->getDB()->delete(
@@ -385,15 +380,14 @@ class Search extends AbstractFilter
      */
     private function generateSearchCaches(int $limit = 0): self
     {
-        $allQueries = $this->productFilter->getDB()->query(
+        $allQueries = $this->productFilter->getDB()->getObjects(
             'SELECT tsuchanfrage.cSuche FROM tsuchanfrage
                 LEFT JOIN tsuchcache
                     ON tsuchcache.cSuche = tsuchanfrage.cSuche
                 WHERE tsuchanfrage.nAktiv = 1
                     AND tsuchcache.kSuchCache IS NULL
                 ORDER BY tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche'
-                . ($limit > 0 ? ' LIMIT ' . $limit : ''),
-            ReturnType::ARRAY_OF_OBJECTS
+                . ($limit > 0 ? ' LIMIT ' . $limit : '')
         );
         foreach ($allQueries as $nonCachedQuery) {
             $bsq = new BaseSearchQuery($this->productFilter);
@@ -458,12 +452,11 @@ class Search extends AbstractFilter
         }
         $nLimit = $limit > 0 ? ' LIMIT ' . $limit : '';
         $this->generateSearchCaches($limit > 0 ? $limit : 10);
-        $searchFilters = $this->productFilter->getDB()->query(
+        $searchFilters = $this->productFilter->getDB()->getObjects(
             'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.kSuchCache, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . ') AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
-                    ORDER BY ssMerkmal.cSuche' . $nLimit,
-            ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY ssMerkmal.cSuche' . $nLimit
         );
         $searchQueries = [];
         if ($this->productFilter->hasSearch()) {

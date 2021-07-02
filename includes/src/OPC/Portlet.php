@@ -162,7 +162,7 @@ class Portlet implements \JsonSerializable
      */
     public function getTitle(): string
     {
-        return __($this->title);
+        return \__($this->title);
     }
 
     /**

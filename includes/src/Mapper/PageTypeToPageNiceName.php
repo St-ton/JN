@@ -16,75 +16,75 @@ class PageTypeToPageNiceName
     {
         switch ($type) {
             case \PAGE_STARTSEITE:
-                return __('Startseite');
+                return \__('Startseite');
             case \PAGE_VERSAND:
-                return __('Informationen zum Versand');
+                return \__('Informationen zum Versand');
             case \PAGE_WRB:
-                return __('WRB');
+                return \__('WRB');
             case \PAGE_AGB:
-                return __('AGB');
+                return \__('AGB');
             case \PAGE_LIVESUCHE:
-                return __('Livesuche');
+                return \__('Livesuche');
             case \PAGE_DATENSCHUTZ:
-                return __('Datenschutz');
+                return \__('Datenschutz');
             case \PAGE_HERSTELLER:
-                return __('Hersteller Übersicht');
+                return \__('Hersteller Übersicht');
             case \PAGE_SITEMAP:
-                return __('Sitemap');
+                return \__('Sitemap');
             case \PAGE_GRATISGESCHENK:
-                return __('Gratis Geschenk');
+                return \__('Gratis Geschenk');
             case \PAGE_AUSWAHLASSISTENT:
-                return __('Auswahlassistent');
+                return \__('Auswahlassistent');
             case \PAGE_EIGENE:
-                return __('pageCustom');
+                return \__('pageCustom');
             case \PAGE_MEINKONTO:
-                return __('pageAccount');
+                return \__('pageAccount');
             case \PAGE_LOGIN:
-                return __('Login');
+                return \__('Login');
             case \PAGE_REGISTRIERUNG:
-                return __('Registrieren');
+                return \__('Registrieren');
             case \PAGE_WARENKORB:
-                return __('Warenkorb');
+                return \__('Warenkorb');
             case \PAGE_PASSWORTVERGESSEN:
-                return __('Passwort vergessen');
+                return \__('Passwort vergessen');
             case \PAGE_KONTAKT:
-                return __('Kontakt');
+                return \__('Kontakt');
             case \PAGE_NEWSLETTER:
-                return __('Newsletter');
+                return \__('Newsletter');
             case \PAGE_NEWSLETTERARCHIV:
-                return __('Newsletterarchiv');
+                return \__('Newsletterarchiv');
             case \PAGE_NEWS:
-                return __('News');
+                return \__('News');
             case \PAGE_NEWSMONAT:
-                return __('pageNewsMonth');
+                return \__('pageNewsMonth');
             case \PAGE_NEWSKATEGORIE:
-                return __('pageNewsCategory');
+                return \__('pageNewsCategory');
             case \PAGE_NEWSDETAIL:
-                return __('pageNewsDetail');
+                return \__('pageNewsDetail');
             case \PAGE_PLUGIN:
-                return __('pagePlugin');
+                return \__('pagePlugin');
             case \PAGE_404:
-                return __('404');
+                return \__('404');
             case \PAGE_BESTELLVORGANG:
-                return __('Bestellvorgang');
+                return \__('Bestellvorgang');
             case \PAGE_BESTELLABSCHLUSS:
-                return __('Bestellabschluss');
+                return \__('Bestellabschluss');
             case \PAGE_WUNSCHLISTE:
-                return __('Wunschliste');
+                return \__('Wunschliste');
             case \PAGE_VERGLEICHSLISTE:
-                return __('Vergleichsliste');
+                return \__('Vergleichsliste');
             case \PAGE_ARTIKEL:
-                return __('pageProduct');
+                return \__('pageProduct');
             case \PAGE_ARTIKELLISTE:
-                return __('pageProductList');
+                return \__('pageProductList');
             case \PAGE_BEWERTUNG:
-                return __('pageRating');
+                return \__('pageRating');
             case \PAGE_WARTUNG:
-                return __('pageMaintenance');
+                return \__('pageMaintenance');
             case \PAGE_BESTELLSTATUS:
-                return __('pageOrderStatus');
+                return \__('pageOrderStatus');
             case \PAGE_UNBEKANNT:
-                return __('pageUnknown');
+                return \__('pageUnknown');
             default:
                 return '';
         }

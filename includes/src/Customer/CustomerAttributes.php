@@ -6,7 +6,6 @@ use ArrayAccess;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
-use JTL\DB\ReturnType;
 use JTL\Shop;
 use Traversable;
 
@@ -48,7 +47,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
         $this->attributes = [];
         $this->customerID = $customerID;
 
-        foreach (Shop::Container()->getDB()->queryPrepared(
+        foreach (Shop::Container()->getDB()->getObjects(
             'SELECT tkundenattribut.kKundenAttribut, COALESCE(tkundenattribut.kKunde, :customerID) kKunde,
                     tkundenfeld.kKundenfeld, tkundenfeld.cName, tkundenfeld.cWawi, tkundenattribut.cWert,
                     tkundenfeld.nSort,
@@ -62,8 +61,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
             [
                 'customerID' => $customerID,
                 'langID'     => Shop::getLanguageID(),
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         ) as $customerAttribute) {
             $this->attributes[$customerAttribute->kKundenfeld] = new CustomerAttribute($customerAttribute);
         }
@@ -96,8 +94,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
                 ? ' AND kKundenAttribut NOT IN (' . \implode(', ', $usedIDs) . ')' : ''),
             [
                 'customerID' => $this->customerID,
-            ],
-            ReturnType::DEFAULT
+            ]
         );
 
         return $this;

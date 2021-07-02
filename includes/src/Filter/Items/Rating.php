@@ -2,7 +2,6 @@
 
 namespace JTL\Filter\Items;
 
-use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
@@ -39,7 +38,7 @@ class Rating extends AbstractFilter
              ->setUrlParam('bf')
              ->setVisibility($this->getConfig('navigationsfilter')['bewertungsfilter_benutzen'])
              ->setParamExclusive(true)
-             ->setFrontendName(Shop::isAdmin() ? __('filterRatings') : Shop::Lang()->get('Votes'));
+             ->setFrontendName(Shop::isAdmin() ? \__('filterRatings') : Shop::Lang()->get('Votes'));
     }
 
     /**
@@ -131,12 +130,11 @@ class Rating extends AbstractFilter
 
             return $this->options;
         }
-        $res         = $this->productFilter->getDB()->query(
+        $res         = $this->productFilter->getDB()->getObjects(
             'SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . ' ) AS ssMerkmal
                 GROUP BY ssMerkmal.nSterne
-                ORDER BY ssMerkmal.nSterne DESC',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY ssMerkmal.nSterne DESC'
         );
         $stars       = 0;
         $extraFilter = new self($this->getProductFilter());

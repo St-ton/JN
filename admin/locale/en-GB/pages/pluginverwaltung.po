@@ -131,6 +131,9 @@ msgstr "Invalid licence key. Please check the licence key for potential typing e
 msgid "errorPluginNotFound"
 msgstr "Could not find the plug-in in the database. Please install it again."
 
+msgid "errorPluginNotFoundFilesystem"
+msgstr "Could not find the plug-in in the filesystem. Please install it again."
+
 msgid "successPluginActivate"
 msgstr "Selected plug-ins activated successfully."
 
@@ -201,7 +204,10 @@ msgid "licensePlugin"
 msgstr "Plug-in licence"
 
 msgid "deletePluginData"
-msgstr "Delete plug-in from database?"
+msgstr "Uninstalling the plug-in"
+
+msgid "deletePluginDataInfo"
+msgstr "Uninstalling the plug-in removes the plug-in from all shop database tables. You can further configure the uninstallation via the following check boxes:"
 
 msgid "deletePluginFilesHeading"
 msgstr "Are you sure you want to try to delete all plugin files?"
@@ -209,11 +215,17 @@ msgstr "Are you sure you want to try to delete all plugin files?"
 msgid "deletePluginFilesQuestion"
 msgstr "Also delete the associated files?"
 
-msgid "deletePluginDataYes"
-msgstr "Yes, delete all plug-in data."
+msgid "deletePluginFilesQuestionDesc"
+msgstr "With this check box enabled, all plug-in files will be removed from the web space. To install the plug-in again, it must be obtained/uploaded again. "
 
-msgid "deletePluginDataNo"
-msgstr "No, keep plug-in data."
+msgid "deletePluginDataQuestion"
+msgstr "Also delete all plug-in tables from the database "
+
+msgid "deletePluginDataQuestionDesc"
+msgstr "With this check box enabled, all plug-in database tables will also be removed."
+
+msgid "deletePluginDataYes"
+msgstr "Uninstall plug-in with selected settings"
 
 msgid "WRONG_PARAM"
 msgstr "Plausibility check cancelled due to missing parameters."
@@ -757,6 +769,9 @@ msgstr "Invalid consent vendor ID."
 
 msgid "INVALID_CONSENT_VENDOR_COMPANY"
 msgstr "Invalid consent vendor company."
+
+msgid "INVALID_LINK_IDENTIFIER"
+msgstr "Invalid link identifier."
 
 msgid "Deaktiviert"
 msgstr "Disabled"

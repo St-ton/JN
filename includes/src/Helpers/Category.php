@@ -5,7 +5,6 @@ namespace JTL\Helpers;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\MenuItem;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -47,7 +46,7 @@ class Category
     private static $config;
 
     /**
-     * @var array
+     * @var array|null
      */
     private static $fullCategories;
 
@@ -135,6 +134,8 @@ class Category
                 $cat->setShortName($cat->getAttribute(\ART_ATTRIBUT_SHORTNAME)->cWert ?? $cat->getName());
             }
             $fullCats = $this->buildTree($nodes);
+            $fullCats = $this->setOrphanedCategories($nodes, $fullCats);
+
             if ($filterEmpty) {
                 $fullCats = $this->removeRelicts($this->filterEmpty($fullCats));
             }
@@ -159,16 +160,11 @@ class Category
             \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
         $stockFilter        = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $showCategoryImages = self::$config['template']['megamenu']['show_category_images'] ?? 'N';
-        $stockJoin          = '';
         $extended           = !empty($stockFilter);
         $isDefaultLang      = LanguageHelper::isDefaultLanguageActive();
-        $categoryCount      = (int)self::$db->query(
-            'SELECT COUNT(*) AS cnt FROM tkategorie',
-            ReturnType::SINGLE_OBJECT
-        )->cnt;
+        $categoryCount      = (int)self::$db->getSingleObject('SELECT COUNT(*) AS cnt FROM tkategorie')->cnt;
         self::$limitReached = $categoryCount >= \CATEGORY_FULL_LOAD_LIMIT;
         $descriptionSelect  = ", '' AS cBeschreibung";
-        $visibilityWhere    = ' AND tartikelsichtbarkeit.kArtikel IS NULL';
         $depthWhere         = self::$limitReached === true
             ? ' AND node.nLevel <= ' . \CATEGORY_FULL_LOAD_MAX_LEVEL
             : '';
@@ -185,64 +181,79 @@ class Category
                 ? ', node.cBeschreibung' // no description needed if we don't show category info in mega menu
                 : ', node.cBeschreibung, tkategoriesprache.cBeschreibung AS cBeschreibung_spr';
         }
-        $imageSelect          = ($categoryCount >= \CATEGORY_FULL_LOAD_LIMIT && $showCategoryImages === 'N')
+        $imageSelect = ($categoryCount >= \CATEGORY_FULL_LOAD_LIMIT && $showCategoryImages === 'N')
             ? ", '' AS cPfad" // select empty path if we don't need category images for the mega menu
             : ', tkategoriepict.cPfad, atr.cWert As customImgName';
-        $imageJoin            = ($categoryCount >= \CATEGORY_FULL_LOAD_LIMIT && $showCategoryImages === 'N')
+        $imageJoin   = ($categoryCount >= \CATEGORY_FULL_LOAD_LIMIT && $showCategoryImages === 'N')
             ? '' //the join is not needed if we don't select the category image path
             : ' LEFT JOIN tkategoriepict
                     ON tkategoriepict.kKategorie = node.kKategorie
                 LEFT JOIN tkategorieattribut atr
                     ON atr.kKategorie = node.kKategorie
                     AND atr.cName = \'bildname\'';
-        $nameSelect           = $isDefaultLang === true
+        $nameSelect  = $isDefaultLang === true
                 ? ', node.cName'
                 : ', node.cName, tkategoriesprache.cName AS cName_spr';
-        $langJoin             = $isDefaultLang === true
+        $langJoin    = $isDefaultLang === true
                 ? ''
                 : ' LEFT JOIN tkategoriesprache
                         ON tkategoriesprache.kKategorie = node.kKategorie
                             AND tkategoriesprache.kSprache = ' . self::$languageID . ' ';
-        $seoJoin              = " LEFT JOIN tseo
+        $seoJoin     = " LEFT JOIN tseo
                         ON tseo.cKey = 'kKategorie'
                         AND tseo.kKey = node.kKategorie
                         AND tseo.kSprache = " . self::$languageID . ' ';
-        $hasProductsCheckJoin = ' LEFT JOIN tkategorieartikel ON tkategorieartikel.kKategorie = node.kKategorie ';
         if ($extended) {
-            $countSelect    = ', COUNT(tartikel.kArtikel) AS cnt';
-            $stockJoin      = ' LEFT JOIN tartikel
-                        ON tkategorieartikel.kArtikel = tartikel.kArtikel ' . $stockFilter;
-            $visibilityJoin = ' LEFT JOIN tartikelsichtbarkeit
-                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . self::$customerGroupID;
-        } elseif ($filterEmpty === true) {
-            $countSelect    = ', COUNT(tkategorieartikel.kArtikel) AS cnt';
-            $visibilityJoin = ' LEFT JOIN tartikelsichtbarkeit
+            $countSelect    = ', COALESCE(s1.cnt, 0) cnt';
+            $visibilityJoin = ' LEFT JOIN (
+                SELECT tkategorieartikel.kKategorie, COUNT(tkategorieartikel.kArtikel) AS cnt
+                FROM tkategorieartikel
+                INNER JOIN tartikel
+                    ON tkategorieartikel.kArtikel = tartikel.kArtikel ' . $stockFilter . '
+                LEFT JOIN  tartikelsichtbarkeit
                     ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . self::$customerGroupID;
+                        AND tartikelsichtbarkeit.kKundengruppe = ' . self::$customerGroupID . '
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                GROUP BY tkategorieartikel.kKategorie) AS s1 ON s1.kKategorie = node.kKategorie';
+        } elseif ($filterEmpty === true) {
+            $countSelect    = ', COALESCE(s1.cnt, 0) cnt';
+            $visibilityJoin = ' LEFT JOIN (
+                SELECT tkategorieartikel.kKategorie, COUNT(tkategorieartikel.kArtikel) AS cnt
+                FROM tkategorieartikel
+                LEFT JOIN  tartikelsichtbarkeit
+                    ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                        AND tartikelsichtbarkeit.kKundengruppe = ' . self::$customerGroupID . '
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                GROUP BY tkategorieartikel.kKategorie) AS s1 ON s1.kKategorie = node.kKategorie';
         } else {
             // if we want to display all categories without filtering out empty ones, we don't have to check the
             // product count. this saves a very expensive join - cnt will be always -1
-            $countSelect          = ', -1 AS cnt';
-            $hasProductsCheckJoin = '';
-            $visibilityJoin       = '';
-            $visibilityWhere      = '';
+            $countSelect    = ', -1 AS cnt';
+            $visibilityJoin = '';
         }
 
-        return self::$db->query(
+        return self::$db->getCollection(
             'SELECT node.kKategorie, node.kOberKategorie, tseo.cSeo' . $nameSelect .
                 $descriptionSelect . $imageSelect . $countSelect . '
-                FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
+                FROM (SELECT node.kKategorie, node.kOberKategorie, node.cName, node.cBeschreibung, node.lft
+                    FROM tkategorie AS node
+                    INNER JOIN tkategorie AS parent ON node.lft BETWEEN parent.lft AND parent.rght
+                    WHERE parent.kOberKategorie = 0 AND node.nLevel > 0 AND parent.nLevel > 0
+                    UNION
+                    SELECT node.kKategorie, node.kOberKategorie, node.cName, node.cBeschreibung, node.lft
+                    FROM tkategorie AS node
+                    INNER JOIN tkategorie AS parent ON node.lft BETWEEN parent.lft AND parent.rght
+                    WHERE node.nLevel > 0 AND parent.nLevel > 0 AND NOT EXISTS(
+                          SELECT 1
+                          FROM tkategorie parents
+                          WHERE parent.kOberKategorie = 0 || parents.kKategorie = parent.kOberKategorie)
+                    ) AS node ' . $langJoin . $seoJoin . $imageJoin . '
                 LEFT JOIN tkategoriesichtbarkeit
                     ON node.kKategorie = tkategoriesichtbarkeit.kKategorie
-                    AND tkategoriesichtbarkeit.kKundengruppe = ' . self::$customerGroupID . $seoJoin . $imageJoin .
-                    $hasProductsCheckJoin . $stockJoin . $visibilityJoin . '                     
-                WHERE node.nLevel > 0 AND parent.nLevel > 0
-                    AND tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght
-                    AND parent.kOberKategorie = 0 ' . $visibilityWhere . $depthWhere . '                    
-                GROUP BY node.kKategorie
-                ORDER BY node.lft',
-            ReturnType::COLLECTION
+                    AND tkategoriesichtbarkeit.kKundengruppe = ' . self::$customerGroupID .
+                    $visibilityJoin . '
+                WHERE tkategoriesichtbarkeit.kKategorie IS NULL ' . $depthWhere . '
+                ORDER BY node.lft'
         )->each(static function ($item) {
             $item->bUnterKategorien = false;
             $item->Unterkategorien  = [];
@@ -260,7 +271,7 @@ class Category
             ? ' WHERE tkategorieattribut.kKategorie = ' . $categoryID . ' '
             : '';
 
-        return self::$db->query(
+        return self::$db->getCollection(
             'SELECT tkategorieattribut.kKategorie, 
                     COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName, 
                     COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
@@ -270,8 +281,7 @@ class Category
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                     AND tkategorieattributsprache.kSprache = ' . self::$languageID . $condition . '
                 ORDER BY tkategorieattribut.kKategorie, tkategorieattribut.bIstFunktionsAttribut DESC, 
-                tkategorieattribut.nSort',
-            ReturnType::COLLECTION
+                tkategorieattribut.nSort'
         )->each(static function ($e) {
             $e->kKategorie            = (int)$e->kKategorie;
             $e->bIstFunktionsAttribut = (bool)$e->bIstFunktionsAttribut;
@@ -386,7 +396,7 @@ class Category
             }
         }
 
-        $nodes = self::$db->query(
+        $nodes = self::$db->getCollection(
             'SELECT parent.kKategorie, parent.kOberKategorie' . $nameSelect .
             $descriptionSelect . $imageSelect . $seoSelect . $countSelect . '
                 FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
@@ -398,8 +408,7 @@ class Category
                     AND tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght
                     AND node.kKategorie = ' . $categoryID . $visibilityWhere . '                    
                 GROUP BY parent.kKategorie
-                ORDER BY parent.lft',
-            ReturnType::COLLECTION
+                ORDER BY parent.lft'
         )->each(static function ($item) use ($functionAttributes, $localizedAttributes) {
             $item->cSeo                = URL::buildURL($item, \URLART_KATEGORIE, true);
             $item->functionAttributes  = $functionAttributes;
@@ -415,7 +424,7 @@ class Category
     }
 
     /**
-     * remove items from category list that have no articles and no subcategories
+     * remove items from category list that have no products and no subcategories
      *
      * @param MenuItem[] $catList
      * @return array
@@ -435,7 +444,7 @@ class Category
 
     /**
      * self::filterEmpty() may have removed all sub categories from a category that now may have
-     * no articles and no sub categories with articles in them. in this case, bUnterKategorien
+     * no products and no sub categories with products in them. in this case, bUnterKategorien
      * has a wrong value and the whole category has to be removed from the result
      *
      * @param MenuItem[]    $menuItems
@@ -651,5 +660,36 @@ class Category
         $category = self::getInstance()->getCategoryById($categoryID);
 
         return $category === null ? [] : $category->getChildren();
+    }
+
+
+    /**
+     * @param MenuItem[] $nodes
+     * @param  array $fullCats
+     * @return array
+     */
+    private function setOrphanedCategories(array $nodes, array $fullCats): array
+    {
+        $ids = \array_map(static function ($e) {
+            return $e->getID();
+        }, $nodes);
+
+        $orphanedCategories = \array_filter($nodes, static function ($e) use ($ids) {
+            if ($e->getParentID() === 0) {
+                return false;
+            }
+            return \in_array($e->getParentID(), $ids, true) === false;
+        });
+
+        foreach ($orphanedCategories as $oCat) {
+            $children = $this->buildTree($nodes, $oCat->getID());
+            $oCat->setParentID(0);
+            $oCat->setOrphaned(true);
+            $oCat->setChildren($children);
+            $oCat->setHasChildren(count($children) > 0);
+            $fullCats[$oCat->getID()] = $oCat;
+        }
+
+        return $fullCats;
     }
 }

@@ -1040,7 +1040,7 @@ define('HOOK_CRON_EXPORTFORMATE_OUTPUT_FETCHED', 139);
  *
  * @file JTLSmarty.php
  * @param \JTL\Smarty\JTLSmarty smarty
- * @param phpQueryObject document
+ * @param \JTL\phpQuery\phpQueryObject document
  */
 define('HOOK_SMARTY_OUTPUTFILTER', 140);
 
@@ -1095,7 +1095,7 @@ define('HOOK_INDEX_SEO_404', 146);
  * triggered when checkbox has plugin special functions and is checked by a customer
  *
  * @file CheckBox.php
- * @param Checkbox - oCheckBox
+ * @param \JTL\CheckBox - oCheckBox
  */
 define('HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION', 147);
 
@@ -1708,7 +1708,8 @@ define('HOOK_BACKEND_FUNCTIONS_GRAVATAR', 227);
 
 /**
  * @param Cart - oWarenkorb
- *@since 4.06
+ * @param Bestellung - oBestellung
+ * @since 4.06
  * @file includes/bestellabschluss_inc.php
  */
 define('HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB', 228);

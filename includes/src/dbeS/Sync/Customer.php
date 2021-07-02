@@ -2,12 +2,12 @@
 
 namespace JTL\dbeS\Sync;
 
+use JTL\Catalog\Currency;
 use JTL\Checkout\Adresse;
 use JTL\Customer\Customer as CustomerClass;
 use JTL\Customer\CustomerAttribute;
 use JTL\Customer\CustomerField;
 use JTL\Customer\DataHistory;
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\GeneralDataProtection\Journal;
 use JTL\Helpers\GeneralObject;
@@ -19,6 +19,7 @@ use JTL\Services\JTL\CryptoServiceInterface;
 use JTL\Shop;
 use JTL\SimpleMail;
 use JTL\XML;
+use Preise;
 use stdClass;
 
 /**
@@ -152,7 +153,8 @@ final class Customer extends AbstractSync
         if (!isset($xml['gutscheine']['gutschein']) || !\is_array($xml['gutscheine']['gutschein'])) {
             return;
         }
-        $mailer = Shop::Container()->get(Mailer::class);
+        $mailer          = Shop::Container()->get(Mailer::class);
+        $defaultCurrency = (new Currency())->getDefault();
         foreach ($this->mapper->mapArray($xml['gutscheine'], 'gutschein', 'mGutschein') as $voucher) {
             if (!($voucher->kGutschein > 0 && $voucher->kKunde > 0)) {
                 continue;
@@ -169,21 +171,21 @@ final class Customer extends AbstractSync
             );
             $this->db->query(
                 'UPDATE tkunde 
-                SET fGuthaben = fGuthaben + ' . (float)$voucher->fWert . ' 
-                WHERE kKunde = ' . (int)$voucher->kKunde,
-                ReturnType::DEFAULT
+                    SET fGuthaben = fGuthaben + ' . (float)$voucher->fWert . ' 
+                    WHERE kKunde = ' . (int)$voucher->kKunde
             );
-            $this->db->query(
+            $this->db->queryPrepared(
                 'UPDATE tkunde 
-                SET fGuthaben = 0 
-                WHERE kKunde = ' . (int)$voucher->kKunde . ' 
-                    AND fGuthaben < 0',
-                ReturnType::DEFAULT
+                    SET fGuthaben = 0 
+                    WHERE kKunde = :cid 
+                        AND fGuthaben < 0',
+                ['cid' => (int)$voucher->kKunde]
             );
-            $customer        = new CustomerClass((int)$voucher->kKunde);
-            $obj             = new stdClass();
-            $obj->tkunde     = $customer;
-            $obj->tgutschein = $voucher;
+            $voucher->cLocalizedWert = Preise::getLocalizedPriceString($voucher->fWert, $defaultCurrency, false);
+            $customer                = new CustomerClass((int)$voucher->kKunde);
+            $obj                     = new stdClass();
+            $obj->tkunde             = $customer;
+            $obj->tgutschein         = $voucher;
             if ($customer->cMail) {
                 $mail = new Mail();
                 $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_GUTSCHEIN, $obj));
@@ -279,15 +281,14 @@ final class Customer extends AbstractSync
      */
     private function notifyDuplicateCustomer(stdClass $oldCustomer, array $xml): array
     {
-        $cstmr  = $this->db->query(
+        $cstmr  = $this->db->getArrays(
             "SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
                     cNachname, cFirma, cZusatz, cStrasse, cHausnummer, cAdressZusatz, cPLZ, cOrt, cBundesland, 
                     cLand, cTel, cMobil, cFax, cMail, cUSTID, cWWW, fGuthaben, cNewsletter, dGeburtstag, fRabatt,
                     cHerkunft, dErstellt, dVeraendert, cAktiv, cAbgeholt,
                     date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag_formatted, nRegistriert
-                    FROM tkunde
-                    WHERE kKunde = " . (int)$oldCustomer->kKunde,
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                FROM tkunde
+                WHERE kKunde = " . (int)$oldCustomer->kKunde
         );
         $crypto = Shop::Container()->getCryptoService();
 
@@ -303,11 +304,10 @@ final class Customer extends AbstractSync
         $cstmr[0]['cLand'] = LanguageHelper::getCountryCodeByCountryName($cstmr[0]['cLand']);
         unset($cstmr[0]['cPasswort']);
         $cstmr['0 attr']             = $this->buildAttributes($cstmr[0]);
-        $cstmr[0]['tkundenattribut'] = $this->db->query(
+        $cstmr[0]['tkundenattribut'] = $this->db->getArrays(
             'SELECT *
                 FROM tkundenattribut
-                 WHERE kKunde = ' . (int)$cstmr['0 attr']['kKunde'],
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+                 WHERE kKunde = ' . (int)$cstmr['0 attr']['kKunde']
         );
         foreach ($cstmr[0]['tkundenattribut'] as $o => $attr) {
             $cstmr[0]['tkundenattribut'][$o . ' attr'] = $this->buildAttributes($attr);
@@ -554,7 +554,7 @@ final class Customer extends AbstractSync
         }
         foreach ($attributes as $attribute) {
             $field = CustomerField::loadByName($attribute->cName, $languageID);
-            if ($field->getID() > 0 && $field->validate($attribute->cWert) !== CustomerField::VALIDATE_OK) {
+            if ($field->getID() > 0 && $field->validate($attribute->cWert) === CustomerField::VALIDATE_OK) {
                 $customerAttr = new CustomerAttribute();
                 $customerAttr->setCustomerID($customerID);
                 $customerAttr->setCustomerFieldID($field->getID());

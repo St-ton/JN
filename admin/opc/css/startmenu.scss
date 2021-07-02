@@ -225,6 +225,8 @@
 
                 .opc-dropdown-menu {
                   width: auto;
+                  overflow-x: auto;
+                  max-height: 150px;
                 }
               }
             }

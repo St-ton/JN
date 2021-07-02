@@ -64,11 +64,10 @@
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group">
-                                                <a class="btn btn-link px-2" title="{__('deleteDraftAll')}"
-                                                   href="{strip}?token={$smarty.session.jtl_token}&
-                                                         action=restore&pageId={$page->cPageId}{/strip}"
-                                                   onclick="return confirm('{__('sureDeleteAll')}');"
-                                                   data-toggle="tooltip">
+                                                <a class="btn btn-link px-2 delete-confirm" title="{__('deleteDraftAll')}"
+                                                   href="?token={$smarty.session.jtl_token}&action=restore&pageId={$page->cPageId|htmlentities}"
+                                                   data-toggle="tooltip"
+                                                   data-modal-body="{$page->cPageUrl}">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-trash-alt"></span>
                                                         <span class="fas fa-trash-alt"></span>
@@ -107,7 +106,7 @@
                                                         <td>
                                                             {if empty($draft->getPublishFrom())}
                                                                 <span class="text-danger">{__('unpublished')}</span>
-                                                            {elseif $publicPageRow->kPage == $draft->getKey()}
+                                                            {elseif $publicPageRow !== null && $publicPageRow->kPage == $draft->getKey()}
                                                                 <span class="text-success">
                                                                     {$draft->getPublishFrom()|date_format:'%c'}
                                                                 </span>
@@ -128,12 +127,12 @@
                                                         </td>
                                                         <td>
                                                             <div class="btn-group float-right">
-                                                                <a class="btn btn-link px-2" title="{__('deleteDraft')}"
+                                                                <a class="btn btn-link px-2 delete-confirm" title="{__('deleteDraft')}"
                                                                    href="{strip}?token={$smarty.session.jtl_token}&
                                                                          action=discard&
                                                                          pageKey={$draft->getKey()}{/strip}"
-                                                                   onclick="return confirm('{__('sureDelete')}');"
-                                                                   data-toggle="tooltip">
+                                                                   data-toggle="tooltip"
+                                                                   data-modal-body="{$draft->getName()}">
                                                                     <span class="icon-hover">
                                                                         <span class="fal fa-trash-alt"></span>
                                                                         <span class="fas fa-trash-alt"></span>
@@ -163,6 +162,7 @@
                             </tbody>
                         </table>
                     </div>
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagesPagi cParam_arr=['tab'=>'pages'] isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">
                         {__('noDataAvailable')}

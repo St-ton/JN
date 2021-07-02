@@ -38,10 +38,12 @@
                                     <th class="text-left">{__('customer')}</th>
                                     <th class="th-3 text-center">{__('wishlistPosCount')}</th>
                                     <th class="th-4 text-center">{__('date')}</th>
+                                    <th class="th-4 text-center">{__('action')}</th>
                                 </tr>
                             </thead>
                             <tbody>
                             {foreach $CWunschliste_arr as $CWunschliste}
+                                {$name=$CWunschliste->cVorname|cat:' '|cat:$CWunschliste->cNachname}
                                 <tr>
                                     <td>
                                         {if $CWunschliste->nOeffentlich == 1}
@@ -50,14 +52,29 @@
                                             <span>{$CWunschliste->cName}</span>
                                         {/if}
                                     </td>
-                                    <td>{$CWunschliste->cVorname} {$CWunschliste->cNachname}</td>
+                                    <td>{$name}</td>
                                     <td class="text-center">{$CWunschliste->Anzahl}</td>
                                     <td class="text-center">{$CWunschliste->Datum}</td>
+                                    <td class="text-center">
+                                        <span {if $CWunschliste->isOnline}data-toggle="tooltip" title="{__('wishlistCustomerOnline')}{/if}">
+                                            <a href="wunschliste.php?delete={$CWunschliste->kWunschliste}&token={$smarty.session.jtl_token}"
+                                               class="btn btn-link px-2 delete-confirm {if $CWunschliste->isOnline} disabled {/if}"
+                                               data-modal-body="{__('wishlistDelete')|sprintf:$CWunschliste->cName:$name}"
+                                               data-toggle="tooltip"
+                                               title="{__('delete')}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-trash-alt"></span>
+                                                    <span class="fas fa-trash-alt"></span>
+                                                </span>
+                                            </a>
+                                        </span>
+                                    </td>
                                 </tr>
                             {/foreach}
                             </tbody>
                         </table>
                     </div>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiPos cAnchor='wunschlistepos' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
@@ -87,6 +104,7 @@
                             </tbody>
                         </table>
                     </div>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiArtikel cAnchor='wunschlisteartikel' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
@@ -120,6 +138,7 @@
                             </tbody>
                         </table>
                     </div>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiFreunde cAnchor='wunschlistefreunde' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}

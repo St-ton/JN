@@ -15,7 +15,7 @@
 </script>
 
 {if isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0}
-    {include file='tpl_inc/seite_header.tpl' cTitel=__('kampagneEdit')}
+    {include file='tpl_inc/seite_header.tpl' cTitel=__('kampagneEdit')|cat:' - '|cat:$oKampagne->getName()}
 {else}
     {include file='tpl_inc/seite_header.tpl' cTitel=__('kampagneCreate')}
 {/if}

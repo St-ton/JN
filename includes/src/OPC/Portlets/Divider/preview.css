@@ -1,4 +1,4 @@
-.opc-Divider {
+body:not(.is-nova) .opc-Divider {
   display: flex;
   flex-basis: 100%;
   align-items: center;
@@ -7,7 +7,7 @@
   font-size: 1.425rem;
   font-family: "Montserrat", Helvetica, Arial, sans-serif;
 }
-.opc-Divider:before, .opc-Divider:after {
+body:not(.is-nova) .opc-Divider:before, body:not(.is-nova) .opc-Divider:after {
   content: "";
   flex-grow: 1;
   background: #ebebeb;
@@ -16,19 +16,26 @@
   line-height: 0;
   margin: 0 30px;
 }
-.opc-Divider a {
+body:not(.is-nova) .opc-Divider a {
   text-decoration: none;
   border-bottom: 0.375rem solid transparent;
   font-weight: 600;
 }
-.opc-Divider a:hover {
+body:not(.is-nova) .opc-Divider a:hover {
   border-color: #F8BF00;
 }
-.opc-Divider.opc-Divider-empty:before {
+body:not(.is-nova) .opc-Divider.opc-Divider-empty:before {
   margin-right: 0;
 }
-.opc-Divider.opc-Divider-empty:after {
+body:not(.is-nova) .opc-Divider.opc-Divider-empty:after {
   margin-left: 0;
+}
+
+.is-nova .hr-sect.opc-Divider-empty::before {
+  margin: 0;
+}
+.is-nova .hr-sect.opc-Divider-empty::after {
+  margin: 0;
 }
 
 /*# sourceMappingURL=preview.css.map */

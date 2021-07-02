@@ -24,14 +24,15 @@ class SalesVolume extends AbstractWidget
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statistik_inc.php';
         $this->oWaehrung = $this->oDB->select('twaehrung', 'cStandard', 'Y');
+        $this->setPermission('STATS_EXCHANGE_VIEW');
     }
 
     /**
      * @param int $month
      * @param int $year
-     * @return array|mixed
+     * @return array
      */
-    public function calcVolumeOfMonth(int $month, int $year)
+    public function calcVolumeOfMonth(int $month, int $year): array
     {
         $interval = 0;
         $stats    = \gibBackendStatistik(

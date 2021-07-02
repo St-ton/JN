@@ -139,6 +139,7 @@
                                 </div>
                             </div>
                         </form>
+                        {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiveAbos cAnchor='inaktiveabonnenten' isBottom=true}
                     </div>
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
@@ -232,6 +233,7 @@
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiAlleAbos cAnchor='alleabonnenten' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     {if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}
@@ -365,11 +367,11 @@
                                             </button>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarteschlange cAnchor='newsletterqueue' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
@@ -487,6 +489,7 @@
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiVorlagen cAnchor='newslettervorlagen' isBottom=true}
                 {else}
                     <form method="post" action="newsletter.php">
                         {$jtl_token}
@@ -611,6 +614,7 @@
                             </div>
                         </div>
                     </form>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiHistory cAnchor='newsletterhistory' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}

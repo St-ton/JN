@@ -118,7 +118,7 @@ final class Controller
             $newsItem->nAktiv        = $active;
             $newsItem->dErstellt     = (new DateTime())->format('Y-m-d H:i:s');
             $newsItem->dGueltigVon   = DateTime::createFromFormat('d.m.Y H:i', $dateValidFrom)->format('Y-m-d H:i:00');
-            if ($previewImage !== '') {
+            if ($previewImage !== '' && Image::isImageUpload($_FILES['previewImage'])) {
                 $newsItem->cPreviewImage = $previewImage;
             }
             if ($update === true) {
@@ -225,7 +225,7 @@ final class Controller
             }
             $dir = self::UPLOAD_DIR . $newsItemID;
             if (!\is_dir($dir) && !\mkdir(self::UPLOAD_DIR . $newsItemID) && !\is_dir($dir)) {
-                throw new Exception('Cannot create upload dir: ' . $dir);
+                throw new Exception(\__('errorDirCreate') . $dir);
             }
 
             $oldImages = $this->getNewsImages($newsItemID, self::UPLOAD_DIR, false);
@@ -244,7 +244,7 @@ final class Controller
                 $this->db->insert('tnewskategorienews', $ins);
             }
             $this->flushCache();
-            $this->msg .= __('successNewsSave');
+            $this->msg .= \__('successNewsSave');
             if (isset($post['continue']) && $post['continue'] === '1') {
                 $this->step         = 'news_editieren';
                 $this->continueWith = $newsItemID;
@@ -259,7 +259,7 @@ final class Controller
                 ->assign('cPlausiValue_arr', $validation)
                 ->assign('oNewsKategorie_arr', $this->getAllNewsCategories())
                 ->assign('oNews', $newsItem);
-            $this->errorMsg .= __('errorFillRequired');
+            $this->errorMsg .= \__('errorFillRequired');
 
             if (isset($post['kNews']) && \is_numeric($post['kNews'])) {
                 $this->continueWith = $newsItemID;
@@ -528,14 +528,14 @@ final class Controller
         $dir   = self::UPLOAD_DIR_CATEGORY . $categoryID;
         if (!\is_dir($dir) && !\mkdir($dir) && !\is_dir($dir)) {
             $error = true;
-            $this->setErrorMsg(__('errorDirCreate') . $dir);
+            $this->setErrorMsg(\__('errorDirCreate') . $dir);
         }
-        if (isset($_FILES['previewImage']['name']) && \mb_strlen($_FILES['previewImage']['name']) > 0) {
+        if (isset($_FILES['previewImage']['name']) && Image::isImageUpload($_FILES['previewImage'])) {
             $this->updateNewsCategoryPreview($_FILES['previewImage'], $oldPreview, $categoryID);
         }
         $this->rebuildCategoryTree(0, 1);
         if ($error === false) {
-            $this->msg .= __('successNewsCatSave') . '<br />';
+            $this->msg .= \__('successNewsCatSave') . '<br />';
             $this->newsRedirect('kategorien', $this->msg);
         }
         $newsCategory = new Category($this->db);
@@ -609,14 +609,21 @@ final class Controller
         $counter    = $this->getLastImageNumber($newsItemID);
         $imageCount = \count($_FILES['Bilder']['name']) + $counter;
         for ($i = $counter; $i < $imageCount; ++$i) {
-            if (!empty($_FILES['Bilder']['size'][$i - $counter])
-                && $_FILES['Bilder']['error'][$i - $counter] === \UPLOAD_ERR_OK
-            ) {
+            if (!empty($_FILES['Bilder']['size'][$i - $counter])) {
+                $upload     = [
+                    'size'     => $_FILES['Bilder']['size'][$i - $counter],
+                    'error'    => $_FILES['Bilder']['error'][$i - $counter],
+                    'type'     => $_FILES['Bilder']['type'][$i - $counter],
+                    'name'     => $_FILES['Bilder']['name'][$i - $counter],
+                    'tmp_name' => $_FILES['Bilder']['tmp_name'][$i - $counter],
+                ];
                 $info       = \pathinfo($_FILES['Bilder']['name'][$i - $counter]);
                 $oldName    = $info['filename'];
                 $newName    = Image::getCleanFilename($oldName);
                 $uploadFile = self::UPLOAD_DIR . $newsItemID . '/' . $newName . '.' . $info['extension'];
-                \move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $counter], $uploadFile);
+                if (Image::isImageUpload($upload)) {
+                    \move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $counter], $uploadFile);
+                }
             }
         }
 
@@ -624,11 +631,11 @@ final class Controller
     }
 
     /**
-     * @param array $customerGroups
-     * @param array $categories
+     * @param array|null $customerGroups
+     * @param array|null $categories
      * @return array
      */
-    private function pruefeNewsPost($customerGroups, $categories): array
+    private function pruefeNewsPost(?array $customerGroups, ?array $categories): array
     {
         $validation = [];
         if (!\is_array($customerGroups) || \count($customerGroups) === 0) {
@@ -770,7 +777,7 @@ final class Controller
     public function deleteComments(array $items, Item $newsItem = null): void
     {
         if (\count($items) === 0) {
-            $this->setErrorMsg(__('errorAtLeastOneNewsComment'));
+            $this->setErrorMsg(\__('errorAtLeastOneNewsComment'));
 
             return;
         }
@@ -778,7 +785,7 @@ final class Controller
             $this->db->delete('tnewskommentar', 'kNewsKommentar', (int)$id);
         }
         $this->flushCache();
-        $this->setMsg(__('successNewsCommentDelete'));
+        $this->setMsg(\__('successNewsCommentDelete'));
         $tab    = Request::verifyGPDataString('tab');
         $params = [
             'news'  => '1',
@@ -811,7 +818,7 @@ final class Controller
                 continue;
             }
             \unlink($fileinfo->getPathname());
-            if ($imageName === 'preview') {
+            if ($imageName === 'preview' || \mb_strpos($imageName, '_preview') !== false) {
                 $upd                = new stdClass();
                 $upd->cPreviewImage = '';
                 if (\mb_strpos($uploadDir, \PFAD_NEWSKATEGORIEBILDER) !== false) {

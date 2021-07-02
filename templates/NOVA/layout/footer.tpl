@@ -3,12 +3,9 @@
     {block name='layout-footer-content-all-closingtags'}
 
         {block name='layout-footer-aside'}
-            {has_boxes position='left' assign='hasLeftBox'}
-
-            {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
-            && !$bExclusive
-            && $hasLeftBox
-            && !empty($boxes.left|strip_tags|trim)
+            {if ($smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp || $Einstellungen.template.theme.left_sidebar === 'Y')
+                && !$bExclusive
+                && $boxesLeftActive
             }
                 {block name='layout-footer-content-productlist-col-closingtag'}
                     </div>{* /col *}
@@ -94,9 +91,11 @@
                         {if isset($footerBoxes) && count($footerBoxes) > 0}
                             {row id='footer-boxes'}
                                 {foreach $footerBoxes as $box}
-                                    {col cols=12 sm=6 md=4 lg=3}
-                                        {$box->getRenderedContent()}
-                                    {/col}
+                                    {if $box->isActive() && !empty($box->getRenderedContent())}
+                                        {col cols=12 sm=6 md=4 lg=3}
+                                            {$box->getRenderedContent()}
+                                        {/col}
+                                    {/if}
                                 {/foreach}
                             {/row}
                         {/if}

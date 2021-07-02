@@ -10,6 +10,7 @@ use JTL\Link\Link;
 use JTL\Link\LinkGroup;
 use JTL\Link\LinkGroupList;
 use JTL\Link\LinkInterface;
+use JTL\Media\Image;
 use JTL\PlausiCMS;
 use JTL\Shop;
 
@@ -207,7 +208,7 @@ if ($action !== '' && Form::validateToken()) {
             break;
         case 'create-or-update-link':
             $hasHTML = [];
-            foreach (LanguageHelper::getAllLanguages() as $lang) {
+            foreach (LanguageHelper::getAllLanguages(0, true) as $lang) {
                 $hasHTML[] = 'cContent_' . $lang->getIso();
             }
             $checks = new PlausiCMS();
@@ -246,24 +247,29 @@ if ($action !== '' && Form::validateToken()) {
                     }
                     $imageCount = (count($_FILES['Bilder']['name']) + $counter);
                     for ($i = $counter; $i < $imageCount; ++$i) {
-                        if (!empty($_FILES['Bilder']['size'][$i - $counter])
-                            && $_FILES['Bilder']['error'][$i - $counter] === UPLOAD_ERR_OK
-                        ) {
-                            $type         = $_FILES['Bilder']['type'][$i - $counter];
+                        $upload = [
+                            'size'     => $_FILES['Bilder']['size'][$i - $counter],
+                            'error'    => $_FILES['Bilder']['error'][$i - $counter],
+                            'type'     => $_FILES['Bilder']['type'][$i - $counter],
+                            'name'     => $_FILES['Bilder']['name'][$i - $counter],
+                            'tmp_name' => $_FILES['Bilder']['tmp_name'][$i - $counter],
+                        ];
+                        if (Image::isImageUpload($upload)) {
+                            $type         = $upload['type'];
                             $uploadedFile = $uploadDir . $kLink . '/Bild' . ($i + 1) . '.' .
                                 mb_substr(
                                     $type,
                                     mb_strpos($type, '/') + 1,
                                     mb_strlen($type) - mb_strpos($type, '/') + 1
                                 );
-                            move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $counter], $uploadedFile);
+                            move_uploaded_file($upload['tmp_name'], $uploadedFile);
                         }
                     }
                 }
                 $dirName = $uploadDir . $link->getID();
                 if (is_dir($dirName)) {
                     $dirHandle = opendir($dirName);
-                    $shopURL   = Shop::getURL() . '/';
+                    $shopURL   = Shop::getImageBaseURL() . '/';
                     while (($file = readdir($dirHandle)) !== false) {
                         if ($file === '.' || $file === '..') {
                             continue;

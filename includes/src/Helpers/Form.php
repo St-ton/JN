@@ -117,9 +117,9 @@ class Form
                 $ret[$key] = 1;
             }
         }
-        foreach (['fax', 'tel', 'mobil'] as $numberKey) {
-            if ($conf['kontakt_abfragen_' . $numberKey] === 'Y') {
-                $ret[$numberKey] = Text::checkPhoneNumber($_POST[$numberKey] ?? '');
+        foreach (['fax', 'tel', 'mobil'] as $idx) {
+            if ($conf['kontakt_abfragen_' . $idx] === 'Y' && ($ok = Text::checkPhoneNumber($_POST[$idx] ?? '')) > 0) {
+                $ret[$idx] = $ok;
             }
         }
         if ($conf['kontakt_abfragen_captcha'] !== 'N' && !self::validateCaptcha($_POST)) {
@@ -270,12 +270,11 @@ class Form
      * @return bool
      * @since 5.0.0
      */
-    public static function checkFloodProtection($min): bool
+    public static function checkFloodProtection(int $min): bool
     {
         if (!$min) {
             return false;
         }
-        $min     = (int)$min;
         $history = Shop::Container()->getDB()->getSingleObject(
             'SELECT kKontaktHistory
                 FROM tkontakthistory
@@ -297,23 +296,22 @@ class Form
         if ($max <= 0) {
             return false;
         }
-        Shop::Container()->getDB()->executeQueryPrepared(
+        Shop::Container()->getDB()->query(
             "DELETE
                 FROM tfloodprotect
                 WHERE dErstellt < DATE_SUB(NOW(), INTERVAL 1 HOUR)
-                    AND cTyp = 'upload'",
-            []
+                    AND cTyp = 'upload'"
         );
 
         $result = Shop::Container()->getDB()->getSingleObject(
-            "SELECT COUNT(kFloodProtect) AS nAnfragen
+            "SELECT COUNT(kFloodProtect) AS cnt
                 FROM tfloodprotect
                 WHERE cTyp = 'upload'
                     AND cIP = :ip",
             ['ip' => Request::getRealIP()]
         );
 
-        return ($result->nAnfragen ?? 0) >= $max;
+        return ($result->cnt ?? 0) >= $max;
     }
 
     /**

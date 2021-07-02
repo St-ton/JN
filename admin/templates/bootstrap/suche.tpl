@@ -13,7 +13,7 @@
             <li class="has-icon" tabindex="-1">
                 <a class="dropdown-item" href="{$item->link}">
                     <span class="title">
-                        <span class="mr-2">{include file="img/icons/{$item->icon}.svg"}</span>
+                        <span class="icon-wrapper">{include file="img/icons/{$item->icon}.svg"}</span>
                         {$item->path}
                     </span>
                 </a>

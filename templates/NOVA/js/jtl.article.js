@@ -147,8 +147,9 @@
 
             function toggleFullscreen(fullscreen = false)
             {
-                let $imgWrapper = $('#image_wrapper');
-                if (fullscreen && $imgWrapper.hasClass('fullscreen')){
+                let $imgWrapper = $('#image_wrapper'),
+                    $gallery    = $('#gallery');
+                if (!$gallery.hasClass('slick-initialized') || (fullscreen && $imgWrapper.hasClass('fullscreen'))){
                     return;
                 }
 
@@ -158,7 +159,6 @@
                     $galleryImages  = $('#gallery img, #gallery picture source'),
                     hidePreview     = maxHeight < 700,
                     previewHeight   = $('#gallery_preview_wrapper').length > 0 && !hidePreview ? 170 : 30,
-                    $gallery        = $('#gallery'),
                     $previewBar     = $('.product-detail-image-preview-bar');
 
                 if (fullscreen) {
@@ -216,7 +216,7 @@
                 addClickListener();
 
                 $(document).on('keyup', e => {
-                    if (e.key === "Escape") {
+                    if (e.key === "Escape" && $('#image_wrapper').hasClass('fullscreen')) {
                         toggleFullscreen();
                         addClickListener();
                     }
@@ -522,7 +522,13 @@
         registerFinish: function($wrapper) {
             $('#jump-to-votes-tab', $wrapper).on('click', function () {
                 let $tabID = $('#content a[href="#tab-votes"]');
-                $tabID.tab('show');
+                if ($tabID.length > 0) {
+                    $tabID.tab('show');
+                } else {
+                    $tabID = $('#tab-votes');
+                    $tabID.collapse('show');
+                }
+
                 $([document.documentElement, document.body]).animate({
                     scrollTop: $tabID.offset().top
                 }, 200);
@@ -782,6 +788,7 @@
                 let $action = $('button[data-product-id-cl="' + data.productID + '"]')
                 $action.removeClass("on-list");
                 $action.next().removeClass("press");
+                $('.comparelist [data-product-id-cl="' + data.productID + '"]').remove();
             }
 
             for (var ind in data.cBoxContainer) {

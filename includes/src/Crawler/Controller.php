@@ -101,7 +101,7 @@ class Controller
     public function deleteCrawler(array $ids): bool
     {
         $where_in = '(' . \implode(',', \array_map('\intval', $ids)) . ')';
-        $this->db->executeQuery(
+        $this->db->query(
             'DELETE FROM tbesucherbot 
                 WHERE kBesucherBot IN ' . $where_in . ' '
         );
@@ -141,7 +141,7 @@ class Controller
         if (Form::validateToken() === false
             && (Request::postInt('save_crawler') || Request::postInt('delete_crawler'))
         ) {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorCSRF'), 'errorCSRF');
+            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorCSRF'), 'errorCSRF');
 
             return $crawler;
         }
@@ -159,14 +159,14 @@ class Controller
                 if ($result === -1) {
                     $this->alertService->addAlert(
                         Alert::TYPE_ERROR,
-                        __('missingCrawlerFields'),
+                        \__('missingCrawlerFields'),
                         'missingCrawlerFields'
                     );
                 } else {
                     \header('Location: statistik.php?s=3&tab=settings');
                 }
             } else {
-                $this->alertService->addAlert(Alert::TYPE_ERROR, __('missingCrawlerFields'), 'missingCrawlerFields');
+                $this->alertService->addAlert(Alert::TYPE_ERROR, \__('missingCrawlerFields'), 'missingCrawlerFields');
             }
         }
         if (Request::verifyGPCDataInt('edit') === 1 || Request::verifyGPCDataInt('new') === 1) {

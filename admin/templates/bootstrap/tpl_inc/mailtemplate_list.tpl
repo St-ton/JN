@@ -17,7 +17,7 @@
                 <tbody>
                 {foreach $mailTemplates as $template}
                     <tr>
-                        <td>{__('name_'|cat:$template->getModuleID())}</td>
+                        <td>{if $isPlugin|default:false}{$template->getName()}{else}{__('name_'|cat:$template->getModuleID())}{/if}</td>
                         <td class="text-center">{$template->getType()}</td>
                         <td class="text-center" id="tplState_{$template->getID()}">
                             {include file='snippets/mailtemplate_state.tpl' template=$template}

@@ -18,9 +18,9 @@ class Tabs extends Portlet
     {
         return [
             'tabs' => [
-                'label'   => __('Tabs'),
+                'label'   => \__('Tabs'),
                 'type'    => InputType::TEXT_LIST,
-                'default' => [__('tabOne'), __('tabTwo'), __('tabThree')],
+                'default' => [\__('tabOne'), \__('tabTwo'), \__('tabThree')],
             ],
         ];
     }
@@ -31,8 +31,8 @@ class Tabs extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            __('Styles')    => 'styles',
-            __('Animation') => 'animations',
+            \__('Styles')    => 'styles',
+            \__('Animation') => 'animations',
         ];
     }
 }

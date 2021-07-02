@@ -81,10 +81,10 @@ class PriceRange
             $customerID = Frontend::getCustomer()->kKunde ?? 0;
         }
 
-        $this->customerGroupID            = $customerGroupID;
-        $this->customerID                 = $customerID;
-        $this->discount                   = 0;
-        $this->productData                = Shop::Container()->getDB()->select(
+        $this->customerGroupID = $customerGroupID;
+        $this->customerID      = $customerID;
+        $this->discount        = 0;
+        $this->productData     = Shop::Container()->getDB()->selectSingleRow(
             'tartikel',
             'kArtikel',
             $productID,
@@ -95,10 +95,21 @@ class PriceRange
             false,
             'kArtikel, kSteuerklasse, fLagerbestand, fStandardpreisNetto fNettoPreis'
         );
-        $this->productData->kArtikel      = (int)$this->productData->kArtikel;
-        $this->productData->kSteuerklasse = (int)$this->productData->kSteuerklasse;
+        if ($this->productData !== null) {
+            $this->productData->kArtikel      = (int)$this->productData->kArtikel;
+            $this->productData->kSteuerklasse = (int)$this->productData->kSteuerklasse;
+            $this->productData->fLagerbestand = (float)$this->productData->fLagerbestand;
+            $this->productData->fNettoPreis   = (float)$this->productData->fNettoPreis;
 
-        $this->loadPriceRange();
+            $this->loadPriceRange();
+        } else {
+            $this->productData = (object)[
+                'kArtikel'            => 0,
+                'kSteuerklasse'       => 0,
+                'fLagerbestand'       => 0,
+                'fNettoPreis'         => 0.0,
+            ];
+        }
     }
 
     /**
@@ -146,7 +157,10 @@ class PriceRange
                                 AND iPrice.kKundengruppe = 0
                                 AND iPrice.kArtikel = tartikel.kArtikel
                         )))
-                  AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) = :productID
+                  AND (
+                    (tartikel.kVaterartikel = 0 AND tartikel.kArtikel = :productID)
+                        OR tartikel.kVaterartikel = :productID
+                  )
             ) baseprice
             LEFT JOIN (
                       SELECT variations.kArtikel,
@@ -222,7 +236,6 @@ class PriceRange
                 INNER JOIN tartikelkonfiggruppe ON tartikelkonfiggruppe.kArtikel = tartikel.kArtikel
                 INNER JOIN tkonfiggruppe ON tkonfiggruppe.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
                 INNER JOIN tkonfigitem ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
-                INNER JOIN tartikel tkonfigartikel ON tkonfigartikel.kArtikel = tkonfigitem.kArtikel
                 LEFT JOIN tkonfigitempreis ON tkonfigitempreis.kKonfigitem = tkonfigitem.kKonfigitem
                     AND tkonfigitempreis.kKundengruppe = :customerGroup
                 WHERE tartikel.kArtikel = :productID

@@ -189,7 +189,7 @@ trait PortletHtml
         }
 
         if (\count($desc) > 0) {
-            $tabs = [__('general') => $desc] + $tabs;
+            $tabs = [\__('general') => $desc] + $tabs;
         }
 
         return Shop::Smarty()

@@ -1,11 +1,11 @@
 {function test_result}
     {if $test->getResult() === Systemcheck\Tests\AbstractTest::RESULT_OK}
-        <h4 class="label-wrap"><span class="label label-success">
+        <h4 class="label-wrap"><span class="label badge-success">
             {$state = $test->getCurrentState()}
             {if $state !== null && $state|strlen > 0}
                 {$state}
             {else}
-                <i class="fal fa-check text-success" aria-hidden="true"></i>
+                <i class="fal fa-check" aria-hidden="true"></i>
             {/if}
         </span></h4>
     {elseif $test->getResult() === Systemcheck\Tests\AbstractTest::RESULT_FAILED}
@@ -13,7 +13,7 @@
             {if $test->getIsRecommended()}
                 {$state = $test->getCurrentState()}
                 <h4 class="label-wrap">
-                    <span class="label label-warning">
+                    <span class="label badge-warning">
                         {if $state !== null && $state|strlen > 0}
                             {$state}
                         {else}
@@ -24,7 +24,7 @@
             {else}
                 {$state = $test->getCurrentState()}
                 <h4 class="label-wrap">
-                    <span class="label label-primary">
+                    <span class="label badge-primary">
                         {if $state !== null && $state|strlen > 0}
                             {$state}
                         {else}
@@ -36,7 +36,7 @@
         {else}
             {$state = $test->getCurrentState()}
             <h4 class="label-wrap">
-                <span class="label label-danger">
+                <span class="label badge-danger">
                     {if $state !== null && $state|strlen > 0}
                         {$state}
                     {else}

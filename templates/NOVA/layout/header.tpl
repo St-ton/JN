@@ -196,7 +196,9 @@
             {* Languages *}
             {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
                 {foreach $smarty.session.Sprachen as $language}
-                    <link rel="alternate" hreflang="{$language->getIso639()}" href="{$language->getUrl()}">
+                    <link rel="alternate"
+                          hreflang="{$language->getIso639()}"
+                          href="{if $language->getShopDefault() === 'Y' && isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}{$ShopURL}/{else}{$language->getUrl()}{/if}">
                 {/foreach}
             {/if}
         {/block}
@@ -275,7 +277,7 @@
                      {if $Einstellungen.template.theme.wish_compare_animation === 'desktop'
                         || $Einstellungen.template.theme.wish_compare_animation === 'both'}wish-compare-animation-desktop{/if}
                      {if $isMobile}is-mobile{/if}
-                     {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG} is-checkout{/if}"
+                     {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG} is-checkout{/if} is-nova"
               data-page="{$nSeitenTyp}"
               {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
     {/block}
@@ -297,13 +299,11 @@
 
         {block name='layout-header-header'}
             {block name='layout-header-branding-top-bar'}
-                {if !$isMobile}
-                    <div id="header-top-bar" class="d-none topbar-wrapper {if $Einstellungen.template.megamenu.header_full_width === 'Y'}is-fullwidth{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
-                        <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
-                            {include file='layout/header_top_bar.tpl'}
-                        </div>
+                <div id="header-top-bar" class="d-none topbar-wrapper {if $Einstellungen.template.megamenu.header_full_width === 'Y'}is-fullwidth{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
+                    <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
+                        {include file='layout/header_top_bar.tpl'}
                     </div>
-                {/if}
+                </div>
             {/block}
             <header class="d-print-none {if !$isMobile || $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar" id="jtl-nav-wrapper">
                 {block name='layout-header-container-inner'}
@@ -442,12 +442,13 @@
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
             <div id="content-wrapper"
-                 class="{if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}is-item-list container-fluid container-fluid-xl{/if}
+                 class="{if ($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}has-left-sidebar container-fluid container-fluid-xl{/if}
+                 {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}is-item-list{/if}
                         {if $isFluidBanner || $isFluidSlider} has-fluid{/if}">
         {/block}
 
         {block name='layout-header-breadcrumb'}
-            {container fluid=($smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp || (isset($Link) && $Link->getIsFluid())) class="breadcrumb-container"}
+            {container fluid=(($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp || (isset($Link) && $Link->getIsFluid())) class="breadcrumb-container"}
                 {include file='layout/breadcrumb.tpl'}
             {/container}
         {/block}
@@ -456,7 +457,7 @@
             <div id="content">
         {/block}
 
-        {if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
+        {if !$bExclusive && !empty($boxes.left|strip_tags|trim) && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}
             {block name='layout-header-content-productlist-starttags'}
                 <div class="row">
                     <div class="col-lg-8 col-xl-9 ml-auto-util order-lg-1">

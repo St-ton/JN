@@ -74,29 +74,13 @@ if (!empty($_FILES['plugin-install-upload']) && Form::validateToken()) {
     $response       = $extractor->extractPlugin($_FILES['plugin-install-upload']['tmp_name']);
     $pluginUploaded = true;
 }
+$pluginsAll         = $listing->getAll();
 $pluginsInstalled   = $listing->getInstalled();
-$pluginsAll         = $listing->getAll($pluginsInstalled);
-$pluginsDisabled    = $pluginsInstalled->filter(static function (ListingItem $e) {
-    return $e->getState() === State::DISABLED;
-});
-$pluginsProblematic = $pluginsInstalled->filter(static function (ListingItem $e) {
-    return in_array(
-        $e->getState(),
-        [State::ERRONEOUS, State::UPDATE_FAILED, State::LICENSE_KEY_MISSING,
-            State::LICENSE_KEY_INVALID, State::ESX_LICENSE_EXPIRED, State::ESX_SUBSCRIPTION_EXPIRED],
-        true
-    );
-});
-$pluginsInstalled   = $pluginsInstalled->filter(static function (ListingItem $e) {
-    return $e->getState() === State::ACTIVATED;
-});
-$listing->checkLegacyToModernUpdates($pluginsInstalled, $pluginsAll);
-$pluginsAvailable = $pluginsAll->filter(static function (ListingItem $item) {
-    return $item->isAvailable() === true && $item->isInstalled() === false;
-});
-$pluginsErroneous = $pluginsAll->filter(static function (ListingItem $item) {
-    return $item->isHasError() === true && $item->isInstalled() === false;
-});
+$pluginsDisabled    = $listing->getDisabled();
+$pluginsProblematic = $listing->getProblematic();
+$pluginsInstalled   = $listing->getEnabled();
+$pluginsAvailable   = $listing->getAvailable();
+$pluginsErroneous   = $listing->getErroneous();
 if ($pluginUploaded === true) {
     $smarty->assign('pluginsDisabled', $pluginsDisabled)
         ->assign('pluginsInstalled', $pluginsInstalled)
@@ -357,7 +341,8 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 'SELECT * FROM tpluginsprachvariable
                     JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariable.kPluginSprachvariable = tpluginsprachvariablesprache.kPluginSprachvariable
-                    WHERE tpluginsprachvariable.kPlugin = ' . $pluginID
+                    WHERE tpluginsprachvariable.kPlugin = :pid',
+                ['pid' => $pluginID]
             );
             $original = group($original, static function ($e) {
                 return (int)$e->kPluginSprachvariable;

@@ -132,7 +132,7 @@ final class LinkAdmin
         }
         $localized              = new stdClass();
         $localized->kLinkgruppe = $groupID;
-        foreach (LanguageHelper::getAllLanguages() as $language) {
+        foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
             $localized->cISOSprache = $language->getIso();
             $localized->cName       = $linkGroup->cName;
             $idx                    = 'cName_' . $language->getIso();
@@ -371,6 +371,9 @@ final class LinkAdmin
         if ($link->getID() === 0) {
             return self::ERROR_LINK_NOT_FOUND;
         }
+        if ($link->getReference() > 0) {
+            $linkID = $link->getReference();
+        }
         $targetLinkGroup = $this->db->select('tlinkgruppe', 'kLinkgruppe', $targetLinkGroupID);
         if (!isset($targetLinkGroup->kLinkgruppe) || $targetLinkGroup->kLinkgruppe <= 0) {
             return self::ERROR_LINK_GROUP_NOT_FOUND;
@@ -386,8 +389,8 @@ final class LinkAdmin
         $ref            = new stdClass();
         $ref->kPlugin   = $link->getPluginID();
         $ref->nLinkart  = \LINKTYP_REFERENZ;
-        $ref->reference = $link->getID();
-        $ref->cName     = __('Referenz') . ' ' . $link->getID();
+        $ref->reference = $linkID;
+        $ref->cName     = \__('Referenz') . ' ' . $linkID;
         $linkID         = $this->db->insert('tlink', $ref);
 
         $ins              = new stdClass();
@@ -570,7 +573,7 @@ final class LinkAdmin
         }
         $localized        = new stdClass();
         $localized->kLink = $kLink;
-        foreach (LanguageHelper::getAllLanguages() as $language) {
+        foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
             $code                   = $language->getIso();
             $localized->cISOSprache = $code;
             $localized->cName       = $link->cName;
@@ -594,13 +597,18 @@ final class LinkAdmin
             if (isset($post[$idx])) {
                 $localized->cMetaTitle = $this->specialChars($post[$idx]);
             }
-            $localized->cMetaKeywords    = $this->specialChars($post['cMetaKeywords_' . $code]);
-            $localized->cMetaDescription = $this->specialChars($post['cMetaDescription_' . $code]);
+            $localized->cMetaKeywords    = $this->specialChars($post['cMetaKeywords_' . $code] ?? '');
+            $localized->cMetaDescription = $this->specialChars($post['cMetaDescription_' . $code] ?? '');
             $this->db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $code]);
             $localized->cSeo = $link->nLinkart === \LINKTYP_EXTERNE_URL
                 ? $localized->cSeo
                 : Seo::getSeo($localized->cSeo);
             $this->db->insert('tlinksprache', $localized);
+            $oldSeo = $this->db->select(
+                'tseo',
+                ['cKey', 'kKey', 'kSprache'],
+                ['kLink', $localized->kLink, $language->getId()]
+            );
             $this->db->delete(
                 'tseo',
                 ['cKey', 'kKey', 'kSprache'],
@@ -612,6 +620,10 @@ final class LinkAdmin
             $seo->cKey     = 'kLink';
             $seo->kSprache = $language->getId();
             $this->db->insert('tseo', $seo);
+
+            $upd           = new stdClass();
+            $upd->cPageUrl = '/' . $seo->cSeo;
+            $this->db->update('topcpage', 'cPageUrl', '/' . $oldSeo->cSeo, $upd);
         }
         $linkInstance = new Link($this->db);
         $linkInstance->load($kLink);
@@ -737,6 +749,6 @@ final class LinkAdmin
      */
     private function specialChars(string $text): string
     {
-        return \htmlspecialchars($text, \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
+        return \htmlspecialchars($text, \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET, false);
     }
 }

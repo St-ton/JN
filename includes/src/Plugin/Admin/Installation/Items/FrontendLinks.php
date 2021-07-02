@@ -18,8 +18,7 @@ class FrontendLinks extends AbstractItem
      */
     public function getNode(): array
     {
-        return isset($this->baseNode['Install'][0]['FrontendLink'][0]['Link'])
-        && \is_array($this->baseNode['Install'][0]['FrontendLink'][0]['Link'])
+        return \is_array($this->baseNode['Install'][0]['FrontendLink'][0]['Link'] ?? null)
             ? $this->baseNode['Install'][0]['FrontendLink'][0]['Link']
             : [];
     }
@@ -53,7 +52,7 @@ class FrontendLinks extends AbstractItem
                 'tlinkgroupassociations',
                 (object)['linkGroupID' => $linkGroupID, 'linkID' => $linkID]
             );
-            $allLanguages    = LanguageHelper::getAllLanguages(2);
+            $allLanguages    = LanguageHelper::getAllLanguages(2, true);
             $linkLang        = new stdClass();
             $linkLang->kLink = $linkID;
             $bLinkStandard   = false;
@@ -94,11 +93,12 @@ class FrontendLinks extends AbstractItem
                     }
                     if (($allLanguages[$linkLang->cISOSprache]->kSprache ?? 0) > 0) {
                         $or = isset($oldLink->kLink) ? (' OR kKey = ' . (int)$oldLink->kLink) : '';
-                        $this->db->query(
+                        $this->db->queryPrepared(
                             "DELETE FROM tseo
                                 WHERE cKey = 'kLink'
                                     AND (kKey = " . $linkID . $or . ')
-                                    AND kSprache = ' . (int)$allLanguages[$linkLang->cISOSprache]->kSprache
+                                    AND kSprache = :lid',
+                            ['lid' => (int)$allLanguages[$linkLang->cISOSprache]->kSprache]
                         );
                         $seo           = new stdClass();
                         $seo->cSeo     = Seo::checkSeo(Seo::getSeo($localized['Seo']));
@@ -185,6 +185,7 @@ class FrontendLinks extends AbstractItem
         $link->cSichtbarNachLogin = $links['VisibleAfterLogin'] ?? 'N';
         $link->cDruckButton       = $links['PrintButton'] ?? 'N';
         $link->cNoFollow          = $links['NoFollow'] ?? 'N';
+        $link->cIdentifier        = $links['Identifier'] ?? '';
         $link->nSort              = \LINKTYP_PLUGIN;
         $link->bSSL               = (int)($links['SSL'] ?? 0);
 

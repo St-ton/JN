@@ -201,17 +201,15 @@ class Frontend extends AbstractSession
             $_SESSION['jtl_token'] = Shop::Container()->getCryptoService()->randomString(32);
         }
         $defaultLang = '';
-        $allowed     = [];
         foreach ($_SESSION['Sprachen'] as $language) {
             $iso = Text::convertISO2ISO639($language->getCode());
             $language->setIso639($iso);
-            $allowed[] = $iso;
             if ($language->isShopDefault()) {
                 $defaultLang = $iso;
             }
         }
         if (!isset($_SESSION['kSprache'])) {
-            $default = Text::convertISO6392ISO($this->getBrowserLanguage($allowed, $defaultLang));
+            $default = Text::convertISO6392ISO($defaultLang);
             foreach ($_SESSION['Sprachen'] as $lang) {
                 if ($lang->cISO === $default || (empty($default) && $lang->cShopStandard === 'Y')) {
                     $_SESSION['kSprache']    = $lang->kSprache;
@@ -294,6 +292,13 @@ class Frontend extends AbstractSession
      */
     private function checkComparelistDeletes(): self
     {
+        if (Request::verifyGPDataString('delete') === 'all') {
+            unset($_SESSION['Vergleichsliste']);
+            \http_response_code(301);
+            \header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php'));
+            exit;
+        }
+
         $listID = Request::verifyGPCDataInt('vlplo');
         if ($listID !== 0 && GeneralObject::isCountable('oArtikel_arr', $_SESSION['Vergleichsliste'])) {
             // Wunschliste Position aus der Session löschen

@@ -264,27 +264,28 @@ class KategorieListe
         $defaultLanguageActive = LanguageHelper::isDefaultLanguageActive();
         $orderByName           = $defaultLanguageActive ? '' : 'tkategoriesprache.cName, ';
         $categories            = $db->getObjects(
-            'SELECT tkategorie.kKategorie, tkategorie.cName, tkategorie.cBeschreibung, 
+            "SELECT tkategorie.kKategorie, tkategorie.cName, tkategorie.cBeschreibung, 
                 tkategorie.kOberKategorie, tkategorie.nSort, tkategorie.dLetzteAktualisierung, 
                 tkategoriesprache.cName AS cName_spr, tkategoriesprache.cBeschreibung AS cBeschreibung_spr, 
                 tseo.cSeo, tkategoriepict.cPfad
                 FROM tkategorie
                 LEFT JOIN tkategoriesprache 
                     ON tkategoriesprache.kKategorie = tkategorie.kKategorie
-                    AND tkategoriesprache.kSprache = ' . $languageID . '
+                    AND tkategoriesprache.kSprache = :lid
                 LEFT JOIN tkategoriesichtbarkeit 
                     ON tkategorie.kKategorie = tkategoriesichtbarkeit.kKategorie
-                AND tkategoriesichtbarkeit.kKundengruppe = ' . $customerGroupID . "
+                AND tkategoriesichtbarkeit.kKundengruppe = :cgid
                 LEFT JOIN tseo 
                     ON tseo.cKey = 'kKategorie'
                     AND tseo.kKey = tkategorie.kKategorie
-                    AND tseo.kSprache = " . $languageID . '
+                    AND tseo.kSprache = :lid
                 LEFT JOIN tkategoriepict 
                     ON tkategoriepict.kKategorie = tkategorie.kKategorie
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                    AND tkategorie.kOberKategorie = ' . $categoryID . '
+                    AND tkategorie.kOberKategorie = :cid
                 GROUP BY tkategorie.kKategorie
-                ORDER BY tkategorie.nSort, ' . $orderByName . 'tkategorie.cName'
+                ORDER BY tkategorie.nSort, " . $orderByName . 'tkategorie.cName',
+            ['lid' => $languageID, 'cid' => $categoryID, 'cgid' => $customerGroupID]
         );
 
         $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID] = [];
@@ -349,9 +350,10 @@ class KategorieListe
                     FROM tkategorieattribut
                     LEFT JOIN tkategorieattributsprache 
                         ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                        AND tkategorieattributsprache.kSprache = ' . $languageID . '
-                    WHERE kKategorie = ' . (int)$category->kKategorie . '
-                    ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort'
+                        AND tkategorieattributsprache.kSprache = :lid
+                    WHERE kKategorie = :cid
+                    ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort',
+                ['lid' => $languageID, 'cid' => (int)$category->kKategorie]
             );
             foreach ($categoryAttributes as $categoryAttribute) {
                 $id = \mb_convert_case($categoryAttribute->cName, \MB_CASE_LOWER);
@@ -457,11 +459,12 @@ class KategorieListe
                 FROM tkategorieartikel, tartikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                    AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kArtikel = tkategorieartikel.kArtikel
-                    AND tkategorieartikel.kKategorie = ' . $categoryID . $availability . '
-                LIMIT 1'
+                    AND tkategorieartikel.kKategorie = :cid' . $availability . '
+                LIMIT 1',
+            ['cgid' => $customerGroupID, 'cid' => $categoryID]
         )->kArtikel ?? 0) > 0;
     }
 }

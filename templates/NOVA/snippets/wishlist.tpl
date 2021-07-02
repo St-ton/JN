@@ -8,7 +8,7 @@
             {include file='snippets/extension.tpl'}
         {/block}
 
-        {container fluid=$Link->getIsFluid() class="snippets-wishlist"}
+        {container fluid=$Link->getIsFluid() class="snippets-wishlist {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
         {if $step === 'wunschliste versenden' && $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
             {block name='snippets-wishlist-content-heading-email'}
                 <div class="h2">{lang key='wishlistViaEmail' section='login'}</div>
@@ -361,7 +361,7 @@
                 {include file='snippets/pagination.tpl'
                     cThisUrl="wunschliste.php"
                     oPagination=$pagination
-                    cParam_arr=['wl' => {$CWunschliste->kWunschliste}]}
+                    cParam_arr=['wl' => {$CWunschliste->kWunschliste}, 'wlid' => $cURLID]}
                 {form method="post"
                     action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
                     name="Wunschliste"

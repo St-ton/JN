@@ -1277,9 +1277,10 @@ class Artikel
             $images = Shop::Container()->getDB()->getObjects(
                 'SELECT cPfad, nNr
                     FROM tartikelpict 
-                    WHERE kArtikel = ' . (int)$this->kArtikel . ' 
+                    WHERE kArtikel = :pid 
                     GROUP BY cPfad 
-                    ORDER BY nNr'
+                    ORDER BY nNr',
+                ['pid' => (int)$this->kArtikel]
             );
         }
         if (isset($this->FunktionsAttribute[\FKT_ATTRIBUT_BILDNAME])) {
@@ -1613,7 +1614,7 @@ class Artikel
                     ON tartikel.kStueckliste = sub.kStueckliste',
             ['kArtikel' => $this->kArtikel]
         );
-        if (isset($main->kArtikel, $main->kStueckliste) && $main->kArtikel > 0 && $main->kStueckliste > 0) {
+        if ($main !== null && $main->kArtikel > 0 && $main->kStueckliste > 0) {
             $options                             = self::getDefaultOptions();
             $options->nKeineSichtbarkeitBeachten = 1;
             $options->nStueckliste               = 1;
@@ -1873,28 +1874,16 @@ class Artikel
             $productID = ($this->kEigenschaftKombi !== null && (int)$this->kEigenschaftKombi > 0)
                 ? (int)$this->kVaterArtikel
                 : (int)$this->kArtikel;
-            if ($productID === null) {
-                $rating = Shop::Container()->getDB()->getSingleObject(
-                    'SELECT fDurchschnittsBewertung
-                        FROM tartikelext
-                        WHERE round(fDurchschnittsBewertung) >= ' . $minStars . '
-                            AND kArtikel = ' . (int)$this->kArtikel
-                );
-                if ($rating !== null) {
-                    $this->fDurchschnittsBewertung = \round($rating->fDurchschnittsBewertung * 2) / 2;
-                }
-            } else {
-                $productID = $productID > 0 ? $productID : (int)$this->kArtikel;
-                $rating    = Shop::Container()->getDB()->getSingleObject(
-                    'SELECT fDurchschnittsBewertung
-                        FROM tartikelext
-                        WHERE ROUND(fDurchschnittsBewertung) >= :minStars
-                            AND kArtikel = :kArtikel',
-                    ['minStars' => $minStars, 'kArtikel' => $productID]
-                );
-                if ($rating !== null) {
-                    $this->fDurchschnittsBewertung = \round($rating->fDurchschnittsBewertung * 2) / 2;
-                }
+            $productID = $productID > 0 ? $productID : (int)$this->kArtikel;
+            $rating    = Shop::Container()->getDB()->getSingleObject(
+                'SELECT fDurchschnittsBewertung
+                    FROM tartikelext
+                    WHERE ROUND(fDurchschnittsBewertung) >= :ms
+                        AND kArtikel = :pid',
+                ['ms' => $minStars, 'pid' => $productID]
+            );
+            if ($rating !== null) {
+                $this->fDurchschnittsBewertung = \round($rating->fDurchschnittsBewertung * 2) / 2;
             }
         }
 
@@ -2255,10 +2244,11 @@ class Artikel
                     FROM teigenschaft
                     LEFT JOIN teigenschaftsichtbarkeit 
                         ON teigenschaftsichtbarkeit.kEigenschaft = teigenschaft.kEigenschaft
-                        AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                    WHERE kArtikel = ' . (int)$this->kVaterArtikel . '
+                        AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
+                    WHERE kArtikel = :pid
                         AND teigenschaft.cTyp NOT IN (\'FREIFELD\', \'PFLICHT-FREIFELD\')
-                        AND teigenschaftsichtbarkeit.kEigenschaft IS NULL'
+                        AND teigenschaftsichtbarkeit.kEigenschaft IS NULL',
+                ['cgid' => $customerGroupID, 'pid' => (int)$this->kVaterArtikel]
             )->cnt;
         foreach ($variations as $i => $tmpVariation) {
             if ($lastID !== $tmpVariation->kEigenschaft) {
@@ -2574,15 +2564,16 @@ class Artikel
                             ON teigenschaftwertpict.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                         LEFT JOIN teigenschaftsichtbarkeit 
                             ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                            AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                            AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
                         LEFT JOIN teigenschaftwertsichtbarkeit 
                             ON teigenschaftwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
-                            AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                        WHERE teigenschaft.kArtikel = ' . (int)$this->kArtikel . '
+                            AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgid
+                        WHERE teigenschaft.kArtikel = :pid
                             AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                             AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                         ORDER BY teigenschaft.nSort, teigenschaft.cName,
-                            teigenschaftwert.nSort, teigenschaftwert.cName'
+                            teigenschaftwert.nSort, teigenschaftwert.cName',
+                    ['pid' => (int)$this->kArtikel, 'cgid' => $customerGroupID]
                 );
             } elseif (\count($this->VariationenOhneFreifeld) === 2) {
                 // Baue Warenkorbmatrix Bildvorschau
@@ -2595,15 +2586,16 @@ class Artikel
                             ON teigenschaftwertpict.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                         LEFT JOIN teigenschaftsichtbarkeit 
                             ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                            AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                            AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
                         LEFT JOIN teigenschaftwertsichtbarkeit 
                             ON teigenschaftwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
-                            AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                        WHERE teigenschaft.kArtikel = ' . (int)$this->kArtikel . '
+                            AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgid
+                        WHERE teigenschaft.kArtikel = :pid
                             AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                             AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                         ORDER BY teigenschaft.nSort, teigenschaft.cName, 
-                                 teigenschaftwert.nSort, teigenschaftwert.cName'
+                                 teigenschaftwert.nSort, teigenschaftwert.cName',
+                    ['pid' => (int)$this->kArtikel, 'cgid' => $customerGroupID]
                 );
             }
             $error = false;
@@ -2842,15 +2834,15 @@ class Artikel
             'SELECT tartikel.kArtikel, teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert
                 FROM teigenschaftkombiwert
                 JOIN tartikel 
-                    ON tartikel.kVaterArtikel = ' . $this->kArtikel . '
+                    ON tartikel.kVaterArtikel = :pid
                     AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                    AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 ' . Preise::getPriceJoinSql($customerGroupID) . '
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL'
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL',
+            ['pid' => (int)$this->kArtikel, 'cgid' => $customerGroupID]
         );
-
         if ($this->nIstVater === 1) {
             $this->cVaterVKLocalized = $this->Preise->cVKLocalized;
         }
@@ -3439,7 +3431,8 @@ class Artikel
         $bom    = $db->getSingleObject(
             'SELECT kStueckliste AS id, fLagerbestand AS stock
                 FROM tartikel
-                WHERE kArtikel = ' . $productID
+                WHERE kArtikel = :pid',
+            ['pid' => $productID]
         );
         $bomSQL = ' tartikel.fLagerbestand, ';
         if ($bom === null || empty($bom->id)) {
@@ -3988,16 +3981,17 @@ class Artikel
                     FROM tartikel AS a
                     JOIN tpreis AS p
                         ON p.kArtikel = a.kArtikel
-                        AND p.kKundengruppe = ' . $customerGroupID . '
+                        AND p.kKundengruppe = :cgid
                     JOIN tpreisdetail AS d
                         ON d.kPreis = p.kPreis
                     LEFT JOIN tartikelsonderpreis AS asp
                         ON asp.kArtikel = a.kArtikel
                     LEFT JOIN tsonderpreise AS sp
                         ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
-                        AND sp.kKundengruppe = ' . $customerGroupID . '
-                    WHERE a.kVaterArtikel = ' . $this->kArtikel . '
-                        AND COALESCE(sp.fNettoPreis, d.fVKNetto) - ' . $net . ' > 0.0001'
+                        AND sp.kKundengruppe = :cgid
+                    WHERE a.kVaterArtikel = :pid
+                        AND COALESCE(sp.fNettoPreis, d.fVKNetto) - ' . $net . ' > 0.0001',
+                ['cgid' => $customerGroupID, 'pid' => (int)$this->kArtikel]
             );
 
             $this->nVariationsAufpreisVorhanden = (int)($specialPrice->specialPrices ?? 0) > 0 ? 1 : 0;
@@ -4776,7 +4770,8 @@ class Artikel
                 FROM tartikel
                 JOIN tstueckliste
                     ON tstueckliste.kArtikel = tartikel.kArtikel
-                    AND tstueckliste.kStueckliste = ' . (int)$this->kStueckliste
+                    AND tstueckliste.kStueckliste = :plid',
+            ['plid' => (int)$this->kStueckliste]
         );
         // check if this is a set product - if so, calculate the delivery time from the set of products
         // we don't have loaded the list of pieces yet, do so!
@@ -4796,8 +4791,9 @@ class Artikel
                     FROM tstueckliste
                     LEFT JOIN tartikel
                       ON tartikel.kArtikel = tstueckliste.kArtikel
-                    WHERE tstueckliste.kStueckliste = ' . (int)$this->kStueckliste . '
-                        AND tartikel.kArtikel IS NULL'
+                    WHERE tstueckliste.kStueckliste = :plid
+                        AND tartikel.kArtikel IS NULL',
+                ['plid' => (int)$this->kStueckliste]
             );
 
             if ($piecesNotInShop !== null && (int)$piecesNotInShop->nAnzahl > 0) {
@@ -5123,24 +5119,24 @@ class Artikel
                     (
                         SELECT kSuchCache
                         FROM tsuchcachetreffer
-                        WHERE kArtikel = ' . $productID . '
+                        WHERE kArtikel = :pid
                             AND nSort <= 10
                     ) AS ssSuchCache
                     JOIN tsuchcachetreffer
                         ON tsuchcachetreffer.kSuchCache = ssSuchCache.kSuchCache
-                        AND tsuchcachetreffer.kArtikel != ' . $productID . '
+                        AND tsuchcachetreffer.kArtikel != :pid
                     LEFT JOIN tartikelsichtbarkeit
                         ON tsuchcachetreffer.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     JOIN tartikel
                         ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
-                        AND tartikel.kVaterArtikel != ' . $productID . '
+                        AND tartikel.kVaterArtikel != :pid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         ' . $stockFilterSQL . '
                         ' . $xSellSQL . '
                     GROUP BY tsuchcachetreffer.kArtikel
-                    ORDER BY COUNT(*) DESC ' .
-                $limitSQL
+                    ORDER BY COUNT(*) DESC ' . $limitSQL,
+                ['pid' => $productID, 'cgid' => $customerGroupID]
             );
         }
 
@@ -5198,7 +5194,7 @@ class Artikel
                 'checkCategoryDiscount',
                 Shop::Container()->getDB()->getSingleObject(
                     'SELECT COUNT(kArtikel) AS cnt
-                          FROM tartikelkategorierabatt'
+                        FROM tartikelkategorierabatt'
                 )->cnt > 0
             );
         }
@@ -5786,8 +5782,8 @@ class Artikel
                     ++$i;
                 }
             }
-            $sql              = \implode(' ', $queries);
-            $oEigenschaft_arr = Shop::Container()->getDB()->getObjects(
+            $sql  = \implode(' ', $queries);
+            $attr = Shop::Container()->getDB()->getObjects(
                 'SELECT e1.*, k.cName, k.cLagerBeachten, k.cLagerKleinerNull, k.fLagerbestand
                     FROM teigenschaftkombiwert e1
                     INNER JOIN tartikel k
@@ -5800,7 +5796,7 @@ class Artikel
                         AND tartikelsichtbarkeit.kArtikel IS NULL',
                 $prepvalues
             );
-            foreach ($oEigenschaft_arr as $oEigenschaft) {
+            foreach ($attr as $oEigenschaft) {
                 $oEigenschaft->kEigenschaftWert = (int)$oEigenschaft->kEigenschaftWert;
                 if (!isset($possibleVariations[$oEigenschaft->kEigenschaft])) {
                     $possibleVariations[$oEigenschaft->kEigenschaft] = [];

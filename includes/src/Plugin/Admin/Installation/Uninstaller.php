@@ -6,6 +6,8 @@ use Exception;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\Filesystem\Filesystem;
+use JTL\Filesystem\LocalFilesystem;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\Helper;
 use JTL\Plugin\InstallCode;
@@ -13,8 +15,6 @@ use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
-use League\Flysystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter as Local;
 use League\Flysystem\MountManager;
 use Throwable;
 
@@ -96,8 +96,8 @@ final class Uninstaller
             if ($deleteFiles === true) {
                 $dir     = $plugin->getPaths()->getBaseDir();
                 $manager = new MountManager([
-                    'root' => new Filesystem(new Local(\PFAD_ROOT)),
-                    'plgn' => Shop::Container()->get(\JTL\Filesystem\Filesystem::class)
+                    'root' => Shop::Container()->get(LocalFilesystem::class),
+                    'plgn' => Shop::Container()->get(Filesystem::class)
                 ]);
                 $dirName = (int)$data->bExtension === 1
                     ? (\PLUGIN_DIR . $dir)
@@ -135,7 +135,7 @@ final class Uninstaller
      */
     private function fullDelete(int $pluginID): void
     {
-        $this->db->query(
+        $this->db->queryPrepared(
             'DELETE tpluginsprachvariablesprache, tpluginsprachvariablecustomsprache, tpluginsprachvariable
                 FROM tpluginsprachvariable
                 LEFT JOIN tpluginsprachvariablesprache
@@ -143,7 +143,8 @@ final class Uninstaller
                 LEFT JOIN tpluginsprachvariablecustomsprache
                     ON tpluginsprachvariablecustomsprache.cSprachvariable = tpluginsprachvariable.cName
                     AND tpluginsprachvariablecustomsprache.kPlugin = tpluginsprachvariable.kPlugin
-                WHERE tpluginsprachvariable.kPlugin = ' . $pluginID
+                WHERE tpluginsprachvariable.kPlugin = :pid',
+            ['pid' => $pluginID]
         );
         $this->db->delete('tplugineinstellungen', 'kPlugin', $pluginID);
         $this->db->delete('tconsent', 'pluginID', $pluginID);
@@ -168,7 +169,7 @@ final class Uninstaller
                     AND (tboxvorlage.eTyp = 'plugin' OR tboxvorlage.eTyp = 'extension')",
             ['pid' => $pluginID]
         );
-        $this->db->query(
+        $this->db->queryPrepared(
             'DELETE tpluginemailvorlageeinstellungen, temailvorlagespracheoriginal,
                 temailvorlage, temailvorlagesprache
                 FROM temailvorlage
@@ -178,7 +179,8 @@ final class Uninstaller
                     ON tpluginemailvorlageeinstellungen.kEmailvorlage = temailvorlage.kEmailvorlage
                 LEFT JOIN temailvorlagesprache
                     ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
-                WHERE temailvorlage.kPlugin = ' . $pluginID
+                WHERE temailvorlage.kPlugin = :pid',
+            ['pid' => $pluginID]
         );
     }
 
@@ -255,7 +257,7 @@ final class Uninstaller
             );
         }
         if (\count($links) === 2) {
-            $languages = LanguageHelper::getAllLanguages(2);
+            $languages = LanguageHelper::getAllLanguages(2, true);
             foreach ($this->db->selectAll('tlinksprache', 'kLink', $links[0]->kLink) as $item) {
                 $this->db->update(
                     'tlinksprache',

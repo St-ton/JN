@@ -70,7 +70,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
             // neue Variable erstellen
             $step                     = 'newvar';
             $variable                 = new stdClass();
-            $variable->kSprachsektion = isset($_REQUEST['kSprachsektion']) ? (int)$_REQUEST['kSprachsektion'] : 1;
+            $variable->kSprachsektion = (int)($_REQUEST['kSprachsektion'] ?? 1);
             $variable->cName          = $_REQUEST['cName'] ?? '';
             $variable->cWert_arr      = [];
             break;
@@ -110,8 +110,8 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
                         JOIN tsprache AS s
                             ON s.cISO = si.cISO 
                     WHERE sw.cName = :cName
-                        AND sw.kSprachsektion = :kSprachsektion',
-                ['cName' => $variable->cName, 'kSprachsektion' => $variable->kSprachsektion]
+                        AND sw.kSprachsektion = :sid',
+                ['cName' => $variable->cName, 'sid' => $variable->kSprachsektion]
             );
 
             foreach ($data as $item) {
@@ -253,7 +253,8 @@ if ($step === 'newvar') {
             FROM tsprachlog AS sl
             LEFT JOIN tsprachsektion AS ss
                 ON ss.cName = sl.cSektion
-            WHERE kSprachISO = ' . $langIsoID
+            WHERE kSprachISO = :lid',
+        ['lid' => $langIsoID]
     );
 
     $smarty->assign('oFilter', $filter)

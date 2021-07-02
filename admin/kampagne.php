@@ -5,6 +5,7 @@ use JTL\Campaign;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 
@@ -72,19 +73,18 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     $stamp        = Request::verifyGPDataString('cStamp');
 } elseif (Request::verifyGPCDataInt('erstellen_speichern') === 1 && Form::validateToken()) {
     // Speichern / Editieren
+    $postData             = Text::filterXSS($_POST);
     $campaign             = new Campaign();
-    $campaign->cName      = $_POST['cName'] ?? '';
-    $campaign->cParameter = $_POST['cParameter'];
-    $campaign->cWert      = $_POST['cWert'] ?? '';
-    $campaign->nDynamisch = $_POST['nDynamisch'] ?? 0;
-    $campaign->nAktiv     = $_POST['nAktiv'] ?? 0;
+    $campaign->cName      = $postData['cName'] ?? '';
+    $campaign->cParameter = $postData['cParameter'];
+    $campaign->cWert      = $postData['cWert'] ?? '';
+    $campaign->nDynamisch = (int)($postData['nDynamisch'] ?? 0);
+    $campaign->nAktiv     = (int)($postData['nAktiv'] ?? 0);
     $campaign->dErstellt  = 'NOW()';
-
     // Editieren
     if (Request::verifyGPCDataInt('kKampagne') > 0) {
         $campaign->kKampagne = Request::verifyGPCDataInt('kKampagne');
     }
-
     $res = speicherKampagne($campaign);
     if ($res === 1) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCampaignSave'), 'successCampaignSave');
@@ -140,7 +140,7 @@ if ($step === 'kampagne_uebersicht') {
         ->assign('oKampagneStat_arr', holeKampagneGesamtStats($campaigns, $definitions));
 } elseif ($step === 'kampagne_erstellen') { // Erstellen / Editieren
     if ($campaignID > 0) {
-        $smarty->assign('oKampagne', holeKampagne($campaignID));
+        $smarty->assign('oKampagne', new Campaign($campaignID));
     }
 } elseif ($step === 'kampagne_detail') { // Detailseite
     if ($campaignID > 0) {
@@ -161,7 +161,7 @@ if ($step === 'kampagne_uebersicht') {
 
         $smarty->assign('TypeNames', GetTypes())
             ->assign('Charts', $charts)
-            ->assign('oKampagne', holeKampagne($campaignID))
+            ->assign('oKampagne', new Campaign($campaignID))
             ->assign('oKampagneStat_arr', $stats)
             ->assign('oKampagne_arr', $campaigns)
             ->assign('oKampagneDef_arr', $definitions)
@@ -201,7 +201,7 @@ if ($step === 'kampagne_uebersicht') {
         );
 
         $smarty->assign('oPagiDefDetail', $paginationDefinitionDetail)
-            ->assign('oKampagne', holeKampagne($campaignID))
+            ->assign('oKampagne', new Campaign($campaignID))
             ->assign('oKampagneStat_arr', $campaignStats)
             ->assign('oKampagneDef', $definition)
             ->assign('cMember_arr', $members)

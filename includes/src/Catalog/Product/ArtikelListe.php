@@ -62,10 +62,11 @@ class ArtikelListe
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND ' . $qry . '
-                    ORDER BY rand() LIMIT ' . $limit
+                    ORDER BY rand() LIMIT ' . $limit,
+                ['cgid' => $customerGroupID]
             );
             Shop::Container()->getCache()->set($cacheID, $items, [\CACHING_GROUP_CATEGORY]);
         }
@@ -213,14 +214,15 @@ class ArtikelListe
                 'SELECT DISTINCT (tartikel.kArtikel)
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
-                        ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . ' ' .
-                    Preise::getPriceJoinSql($customerGroupID) . " 
+                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid '
+                    . Preise::getPriceJoinSql($customerGroupID) . " 
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
                         AND tartikel.cTopArtikel = 'Y'
                         AND (tkategorieartikel.kKategorie IN (" . \implode(', ', $categoryIDs) . ')) ' .
-                        $stockFilterSQL . '  ORDER BY rand() ' . $limitSql
+                        $stockFilterSQL . '  ORDER BY rand() ' . $limitSql,
+                ['cgid' => $customerGroupID]
             );
             $cacheTags       = [\CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION];
             foreach ($categoryIDs as $id) {
@@ -292,14 +294,14 @@ class ArtikelListe
                     FROM tkategorieartikel, tbestseller, tartikel
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . ' ' .
-                    Preise::getPriceJoinSql($customerGroupID) . '
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid ' . Preise::getPriceJoinSql($customerGroupID) . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL' . $excludes . '
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
                         AND tartikel.kArtikel = tbestseller.kArtikel
                         AND (tkategorieartikel.kKategorie IN (' . \implode(', ', $categoryIDs) . ')) ' .
                         $stockFilterSQL . '
-                    ORDER BY tbestseller.fAnzahl DESC ' . $limitSQL
+                    ORDER BY tbestseller.fAnzahl DESC ' . $limitSQL,
+                ['cgid' => $customerGroupID]
             );
             $cacheTags      = [\CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION];
             foreach ($categoryIDs as $id) {

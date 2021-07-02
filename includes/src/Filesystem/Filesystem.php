@@ -4,11 +4,10 @@ namespace JTL\Filesystem;
 
 use Exception;
 use JTL\Path;
-use League\Flysystem\FilesystemAdapter;
+use JTL\Shop;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\MountManager;
-use League\Flysystem\PathNormalizer;
 use League\Flysystem\ZipArchive\FilesystemZipArchiveProvider;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use SplFileInfo;
@@ -22,23 +21,6 @@ use ZipArchive;
  */
 class Filesystem extends \League\Flysystem\Filesystem
 {
-    /**
-     * @var FilesystemAdapter
-     */
-    protected $adapter;
-
-    /**
-     * Filesystem constructor.
-     * @param FilesystemAdapter   $adapter
-     * @param array               $config
-     * @param PathNormalizer|null $pathNormalizer
-     */
-    public function __construct(FilesystemAdapter $adapter, array $config = [], PathNormalizer $pathNormalizer = null)
-    {
-        $this->adapter = $adapter;
-        parent::__construct($adapter, $config, $pathNormalizer);
-    }
-
     /**
      * @param string $location
      * @return bool
@@ -138,12 +120,12 @@ class Filesystem extends \League\Flysystem\Filesystem
      */
     public function zip(Finder $finder, string $archive, callable $callback = null): bool
     {
-        $provider = new FilesystemZipArchiveProvider($archive);
-        $root     = new Filesystem(new LocalFilesystemAdapter(\PFAD_ROOT));
-        $zip      = new Filesystem(new ZipArchiveAdapter($provider));
-        $manager  = new MountManager(['root' => $root, 'zip' => $zip]);
-        $count    = $finder->count();
-        $index    = 0;
+        $manager = new MountManager([
+            'root' => Shop::Container()->get(LocalFilesystem::class),
+            'zip'  => new Filesystem(new ZipArchiveAdapter(new FilesystemZipArchiveProvider($archive)))
+        ]);
+        $count   = $finder->count();
+        $index   = 0;
         foreach ($finder->files() as $file) {
             /** @var SplFileInfo $file */
             $path = $file->getPathname();
@@ -185,11 +167,12 @@ class Filesystem extends \League\Flysystem\Filesystem
             'zip'  => new Filesystem(new ZipArchiveAdapter(new FilesystemZipArchiveProvider($archive)))
         ]);
         foreach ($manager->listContents('root:///', true) as $item) {
-            $path = $item->path();
+            $path   = $item->path();
+            $target = \str_replace('root://', '', $path);
             if ($item->isDir()) {
-                $manager->createDirectory('zip://' . $path);
+                $manager->createDirectory('zip://' . $target);
             } else {
-                $manager->copy('root://' . $path, 'zip://' . $path);
+                $manager->copy($path, 'zip://' . $target);
             }
         }
 

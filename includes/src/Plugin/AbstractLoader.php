@@ -256,7 +256,7 @@ abstract class AbstractLoader implements LoaderInterface
         $i     = -1;
         $menus = \array_map(static function ($menu) use (&$i) {
             $menu->name             = $menu->cName;
-            $menu->cName            = __($menu->cName);
+            $menu->cName            = \__($menu->cName);
             $menu->displayName      = $menu->cName;
             $menu->kPluginAdminMenu = (int)$menu->kPluginAdminMenu;
             $menu->id               = $menu->kPluginAdminMenu;
@@ -305,7 +305,7 @@ abstract class AbstractLoader implements LoaderInterface
             $menu->nSort            = $items->count() + 1;
             $menu->sort             = $menu->nSort;
             $menu->name             = 'docs';
-            $menu->cName            = __('Dokumentation');
+            $menu->cName            = \__('Dokumentation');
             $menu->displayName      = $menu->cName;
             $menu->cDateiname       = $meta->getReadmeMD();
             $menu->file             = $menu->cDateiname;
@@ -327,7 +327,7 @@ abstract class AbstractLoader implements LoaderInterface
             $menu->nSort            = $items->count() + 1;
             $menu->sort             = $menu->nSort;
             $menu->name             = 'license';
-            $menu->cName            = __('Lizenzvereinbarungen');
+            $menu->cName            = \__('Lizenzvereinbarungen');
             $menu->displayName      = $menu->cName;
             $menu->cDateiname       = $meta->getLicenseMD();
             $menu->file             = $menu->cDateiname;
@@ -349,7 +349,7 @@ abstract class AbstractLoader implements LoaderInterface
             $menu->nSort            = $items->count() + 1;
             $menu->sort             = $menu->nSort;
             $menu->name             = 'changelog';
-            $menu->cName            = __('Changelog');
+            $menu->cName            = \__('Changelog');
             $menu->displayName      = $menu->cName;
             $menu->cDateiname       = $meta->getChangelogMD();
             $menu->file             = $menu->cDateiname;
@@ -386,7 +386,7 @@ abstract class AbstractLoader implements LoaderInterface
             $menu->nSort            = $items->count() + 1;
             $menu->sort             = $menu->nSort;
             $menu->name             = 'licenseinfo';
-            $menu->cName            = __('Lizenz');
+            $menu->cName            = \__('Lizenz');
             $menu->displayName      = $menu->cName;
             $menu->cDateiname       = '';
             $menu->file             = '';
@@ -504,9 +504,10 @@ abstract class AbstractLoader implements LoaderInterface
             $method->oZahlungsmethodeEinstellung_arr = $this->db->getObjects(
                 "SELECT *
                     FROM tplugineinstellungenconf
-                    WHERE cWertName LIKE '" . $moduleID . "\_%'
+                    WHERE cWertName LIKE :val
                         AND cConf = 'Y'
-                    ORDER BY nSort"
+                    ORDER BY nSort",
+                ['val' => $moduleID . '\_%']
             );
             $method->oZahlungsmethodeSprache_arr     = $this->db->selectAll(
                 'tzahlungsartsprache',

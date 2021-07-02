@@ -103,8 +103,8 @@ function regionsToState(){
                     return;
                 }
                 var title = state_data.defaultoption;
-                var stateIsRequired = state.attr('required') === 'required';
-                var data = result.response;
+                var stateIsRequired = result.response.required;
+                var data = result.response.states;
                 var def = $('#'+state_id).val();
                 if(typeof(data)!=='undefined'){
                     if (data !== null && data.length > 0) {
@@ -121,8 +121,8 @@ function regionsToState(){
                         state.append('<option value="">' + title + '</option>');
                         $(data).each(function(idx, item) {
                             state.append(
-                                $('<option></option>').val(item.cCode).html(item.cName)
-                                    .attr('selected', item.cCode == def || item.cName == def ? 'selected' : false)
+                                $('<option></option>').val(item.iso).html(item.name)
+                                    .attr('selected', item.iso == def || item.name == def ? 'selected' : false)
                             );
                         });
                         $('#'+state_id).replaceWith(state);
@@ -136,6 +136,11 @@ function regionsToState(){
                             state.data(key,state_data[key]);
                         });
                         $('#'+state_id).replaceWith(state);
+                    }
+                    if (stateIsRequired){
+                        state.parent().find('.state-optional').addClass('d-none');
+                    } else {
+                        state.parent().find('.state-optional').removeClass('d-none');
                     }
                 }
             }
@@ -353,7 +358,7 @@ $(document).ready(function () {
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
             queryTokenizer: Bloodhound.tokenizers.whitespace,
             remote:         {
-                url:      'io.php?io={"name":"suggestions", "params":["%QUERY"]}',
+                url:      $.evo.io().options.ioUrl + '?io={"name":"suggestions", "params":["%QUERY"]}',
                 wildcard: '%QUERY'
             }
         });
@@ -381,7 +386,7 @@ $(document).ready(function () {
                 $(this).closest('form').find('.form-clear').removeClass('d-none');
             }
         });
-        $('.form-clear').on('click', function() {
+        $('.search-wrapper .form-clear').on('click', function() {
             $searchInput.typeahead('val', '');
             $(this).addClass('d-none');
         });
@@ -391,19 +396,19 @@ $(document).ready(function () {
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote:         {
-            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}',
+            url:      $.evo.io().options.ioUrl + '?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}',
             wildcard: '%QUERY'
         },
         dataType: "json"
     });
     $('.city_input').on('focusin', function () {
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
+        citySuggestion.remote.url = $.evo.io().options.ioUrl + '?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
     $('.postcode_input').on('change', function () {
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).val() + '"]}';
+        citySuggestion.remote.url = $.evo.io().options.ioUrl + '?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).val() + '"]}';
     });
     $('.country_input').on('change', function () {
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
+        citySuggestion.remote.url = $.evo.io().options.ioUrl + '?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
 
     $('.city_input').typeahead(

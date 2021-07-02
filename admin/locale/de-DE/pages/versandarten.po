@@ -198,7 +198,7 @@ msgid "always"
 msgstr "Immer"
 
 msgid "lowest"
-msgstr "Nur, wenn diese Versandart die günstigste ist"
+msgstr "Nur, wenn diese Versandart die Günstigste ist"
 
 msgid "discount"
 msgstr "Aufpreis / Rabatt"
@@ -283,9 +283,6 @@ msgstr "Bitte wählen Sie mindestens eine akzeptierte Zahlungsart aus."
 
 msgid "errorShippingMethodPriceMissing"
 msgstr "Bitte geben Sie mindestens einen Staffelpreis an."
-
-msgid "errorShippingFreeMax"
-msgstr "Der Versandkostenfrei-Wert darf maximal %s betragen."
 
 msgid "sendShippingNotification"
 msgstr "Versandbestätigung senden"

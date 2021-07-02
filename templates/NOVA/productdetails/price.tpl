@@ -36,25 +36,24 @@
                         {else}
                             {if $Artikel->Preise->oPriceRange->isRange() && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0}{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)}{else}{$Artikel->Preise->cVKLocalized[$NettoPreise]}{/if}
                         {/if}
-                        {if $Artikel->Preise->oPriceRange->isRange() && $tplscope !== 'box'}
-                            <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
+                        {if $tplscope !== 'detail' && !$Artikel->Preise->oPriceRange->isRange()} <span class="footnote-reference">*</span>{/if}
+                    {/block}
+                </div>
+                {block name='productdetails-price-snippets'}
+                    {if $tplscope !== 'box'}
+                        {if $Artikel->Preise->oPriceRange->isRange()}
                             <meta itemprop="minPrice" content="{$Artikel->Preise->oPriceRange->minBruttoPrice}">
                             <meta itemprop="maxPrice" content="{$Artikel->Preise->oPriceRange->maxBruttoPrice}">
                         {/if}
-                        {if $tplscope !== 'detail' && !$Artikel->Preise->oPriceRange->isRange()} <span class="footnote-reference">*</span>{/if}
-                    {/block}
-                    {block name='productdetails-price-snippets'}
-                        {if $tplscope !== 'box'}
-                            <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{$Artikel->Preise->oPriceRange->minBruttoPrice}{else}{$Artikel->Preise->fVKBrutto}{/if}">
-                            <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
-                            {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== null && $Artikel->dSonderpreisEnde_en !== null}
-                                <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">
-                                <meta itemprop="validThrough" content="{$Artikel->dSonderpreisEnde_en}">
-                                <meta itemprop="priceValidUntil" content="{$Artikel->dSonderpreisEnde_en}">
-                            {/if}
+                        <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{$Artikel->Preise->oPriceRange->minBruttoPrice}{else}{$Artikel->Preise->fVKBrutto}{/if}">
+                        <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
+                        {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== null && $Artikel->dSonderpreisEnde_en !== null}
+                            <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">
+                            <meta itemprop="validThrough" content="{$Artikel->dSonderpreisEnde_en}">
+                            <meta itemprop="priceValidUntil" content="{$Artikel->dSonderpreisEnde_en}">
                         {/if}
-                    {/block}
-                </div>
+                    {/if}
+                {/block}
                 {if $tplscope === 'detail'}
                     {block name='productdetails-price-detail'}
                         <div class="price-note">

@@ -7,7 +7,7 @@
         {if !empty($Spezialcontent->titel)}
             {block name='contact-index-heading'}
                 {opcMountPoint id='opc_before_heading' inContainer=false}
-                {container fluid=$Link->getIsFluid()}
+                {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                     <div class="title h2">
                         {$Spezialcontent->titel}
                     </div>
@@ -19,7 +19,7 @@
             {include file='snippets/extension.tpl'}
         {/block}
         {if isset($step)}
-            {container fluid=$Link->getIsFluid()}
+            {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                 {opcMountPoint id='opc_before_form'}
                 {if !empty($Spezialcontent->oben)}
                     {block name='contact-index-custom-content-top'}

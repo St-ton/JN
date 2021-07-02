@@ -227,14 +227,14 @@ class Slide
             }
             unset($slide->cBildAbsolut, $slide->cThumbnailAbsolut, $slide->kSlide);
             if ($this->sort === null) {
-                $oSort        = Shop::Container()->getDB()->getSingleObject(
+                $sort         = Shop::Container()->getDB()->getSingleObject(
                     'SELECT nSort
                         FROM tslide
                         WHERE kSlider = :sliderID
                         ORDER BY nSort DESC LIMIT 1',
                     ['sliderID' => $this->sliderID]
                 );
-                $slide->nSort = ($oSort === null || (int)$oSort->nSort === 0) ? 1 : ($oSort->nSort + 1);
+                $slide->nSort = ($sort === null || (int)$sort->nSort === 0) ? 1 : ($sort->nSort + 1);
             }
             $id = Shop::Container()->getDB()->insert('tslide', $slide);
             if ($id > 0) {

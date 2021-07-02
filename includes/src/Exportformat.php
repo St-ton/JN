@@ -11,7 +11,6 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Cron\QueueEntry;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Category;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -31,6 +30,7 @@ use function Functional\first;
 /**
  * Class Exportformat
  * @package JTL
+ * @deprecated since 5.1.0
  */
 class Exportformat
 {
@@ -179,6 +179,11 @@ class Exportformat
     private $db;
 
     /**
+     * @var int
+     */
+    protected $nFehlerhaft = 0;
+
+    /**
      * Exportformat constructor.
      *
      * @param int              $id
@@ -218,9 +223,9 @@ class Exportformat
 
     /**
      * @param string     $msg
-     * @param array|null $context
+     * @param null|array $context
      */
-    private function log(string $msg, ?array $context = []): void
+    private function log(string $msg, array $context = []): void
     {
         if ($this->logger !== null) {
             $this->logger->log(\JTLLOG_LEVEL_NOTICE, $msg, $context);
@@ -251,16 +256,16 @@ class Exportformat
      */
     private function loadFromDB(int $id = 0): self
     {
-        $data = $this->db->query(
+        $data = $this->db->getSingleObject(
             'SELECT texportformat.*, tkampagne.cParameter AS campaignParameter, tkampagne.cWert AS campaignValue
                FROM texportformat
                LEFT JOIN tkampagne 
                   ON tkampagne.kKampagne = texportformat.kKampagne
                   AND tkampagne.nAktiv = 1
-               WHERE texportformat.kExportformat = ' . $id,
-            ReturnType::SINGLE_OBJECT
+               WHERE texportformat.kExportformat = :eid',
+            ['eid' => $id]
         );
-        if (isset($data->kExportformat) && $data->kExportformat > 0) {
+        if ($data !== null && $data->kExportformat > 0) {
             foreach (\get_object_vars($data) as $k => $v) {
                 $this->$k = $v;
             }
@@ -728,7 +733,7 @@ class Exportformat
         if (($count = Shop::Container()->getCache()->get($cid)) !== false) {
             return $count ?? 0;
         }
-        $count = (int)$this->db->query($this->getExportSQL(true), ReturnType::SINGLE_OBJECT)->nAnzahl;
+        $count = (int)$this->db->getSingleObject($this->getExportSQL(true))->nAnzahl;
         Shop::Container()->getCache()->set($cid, $count, [\CACHING_GROUP_CORE], 120);
 
         return $count;
@@ -1277,11 +1282,7 @@ class Exportformat
         }
         $tmpFile = \fopen(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName, 'a');
         if ($max === null) {
-            $maxObj = $this->db->executeQuery(
-                $this->getExportSQL(true),
-                ReturnType::SINGLE_OBJECT
-            );
-            $max    = (int)$maxObj->nAnzahl;
+            $max = (int)$this->db->getSingleObject($this->getExportSQL(true))->nAnzahl;
         }
 
         $this->log('Starting exportformat "' . Text::convertUTF8($this->getName()) .
@@ -1325,13 +1326,10 @@ class Exportformat
             $findTwo[]    = ';';
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
-        foreach ($this->db->query(
-            $this->getExportSQL(),
-            ReturnType::QUERYSINGLE
-        ) as $productData) {
+        foreach ($this->db->getSingleObject($this->getExportSQL()) as $productData) {
             $product = new Artikel();
             $product->fuelleArtikel(
-                (int)$productData['kArtikel'],
+                (int)$productData->kArtikel,
                 $options,
                 $this->kKundengruppe,
                 $this->kSprache,
@@ -1434,11 +1432,12 @@ class Exportformat
                     \header('Location: ' . $cURL);
                 }
             } else {
-                // There are no more products to export
-                $this->db->query(
+                // There are no more articles to export
+                $this->db->queryPrepared(
                     'UPDATE texportformat 
                         SET dZuletztErstellt = NOW() 
-                        WHERE kExportformat = ' . $this->getExportformat()
+                        WHERE kExportformat = :eid',
+                    ['eid' => $this->getExportformat()]
                 );
                 $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->foreignKeyID);
 
@@ -1662,14 +1661,13 @@ class Exportformat
 
         $this->initSession()->initSmarty();
         $product     = null;
-        $productData = $this->db->query(
+        $productData = $this->db->getSingleObject(
             "SELECT kArtikel 
                 FROM tartikel 
                 WHERE kVaterArtikel = 0 
-                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
-            ReturnType::SINGLE_OBJECT
+                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1"
         );
-        if (!empty($productData->kArtikel)) {
+        if ($productData !== null && $productData->kArtikel > 0) {
             $product = new Artikel();
             $product->fuelleArtikel($productData->kArtikel, Artikel::getExportOptions());
             $product->cDeeplink             = '';
@@ -1691,7 +1689,7 @@ class Exportformat
         } catch (Exception $e) {
             $this->updateError(self::SYNTAX_FAIL);
             $res->result  = 'fail';
-            $res->message = __($e->getMessage());
+            $res->message = \__($e->getMessage());
         }
 
         return $res;
@@ -1715,7 +1713,7 @@ class Exportformat
                 $out = \ob_get_clean();
                 $res = (object)[
                     'result'  => 'fail',
-                    'state'   => '<span class="label text-warning">' . __('untested') . '</span>',
+                    'state'   => '<span class="label text-warning">' . \__('untested') . '</span>',
                     'message' => self::stripMessage($out, $err['message']),
                 ];
                 $ef  = new self($id, Shop::Container()->getDB());
@@ -1735,7 +1733,7 @@ class Exportformat
         } catch (Exception $e) {
             $res = (object)[
                 'result'  => 'fail',
-                'message' => __($e->getMessage()),
+                'message' => \__($e->getMessage()),
             ];
         }
         $res->state = self::getHTMLState((int)($ef->nFehlerhaft ?? self::SYNTAX_NOT_CHECKED));

@@ -26,22 +26,21 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         'saveSettings'
     );
 }
-$oPagiAktiv     = (new Pagination('aktiv'))
+$paginationActive  = (new Pagination('aktiv'))
     ->setItemCount(gibAnzahlAktiverGeschenke())
     ->assemble();
-$oPagiHaeufig   = (new Pagination('haeufig'))
+$paginationCommon  = (new Pagination('haeufig'))
     ->setItemCount(gibAnzahlHaeufigGekaufteGeschenke())
     ->assemble();
-$oPagiLetzte100 = (new Pagination('letzte100'))
+$paginationLast100 = (new Pagination('letzte100'))
     ->setItemCount(gibAnzahlLetzten100Geschenke())
     ->assemble();
 
-$smarty->assign('oPagiAktiv', $oPagiAktiv)
-       ->assign('oPagiHaeufig', $oPagiHaeufig)
-       ->assign('oPagiLetzte100', $oPagiLetzte100)
-       ->assign('oAktiveGeschenk_arr', holeAktiveGeschenke(' LIMIT ' . $oPagiAktiv->getLimitSQL()))
-       ->assign('oHaeufigGeschenk_arr', holeHaeufigeGeschenke(' LIMIT ' . $oPagiHaeufig->getLimitSQL()))
-       ->assign('oLetzten100Geschenk_arr', holeLetzten100Geschenke(' LIMIT ' . $oPagiLetzte100->getLimitSQL()))
-       ->assign('oConfig_arr', getAdminSectionSettings($settingsIDs, true))
-       ->assign('ART_ATTRIBUT_GRATISGESCHENKAB', ART_ATTRIBUT_GRATISGESCHENKAB)
-       ->display('gratisgeschenk.tpl');
+$smarty->assign('oPagiAktiv', $paginationActive)
+    ->assign('oPagiHaeufig', $paginationCommon)
+    ->assign('oPagiLetzte100', $paginationLast100)
+    ->assign('oAktiveGeschenk_arr', holeAktiveGeschenke(' LIMIT ' . $paginationActive->getLimitSQL()))
+    ->assign('oHaeufigGeschenk_arr', holeHaeufigeGeschenke(' LIMIT ' . $paginationCommon->getLimitSQL()))
+    ->assign('oLetzten100Geschenk_arr', holeLetzten100Geschenke(' LIMIT ' . $paginationLast100->getLimitSQL()))
+    ->assign('oConfig_arr', getAdminSectionSettings($settingsIDs, true))
+    ->display('gratisgeschenk.tpl');

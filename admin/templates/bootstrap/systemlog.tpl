@@ -10,6 +10,11 @@
                 </a>
             </li>
             <li role="presentation" class="nav-item">
+                <a class="nav-link {if $cTab === 'configlog'} active{/if}" data-toggle="tab" role="tab" href="#configlog">
+                    {__('configLog')}
+                </a>
+            </li>
+            <li role="presentation" class="nav-item">
                 <a class="nav-link {if $cTab === 'config'} active{/if}" data-toggle="tab" role="tab" href="#config">
                     {__('systemlogConfig')}
                 </a>
@@ -81,8 +86,37 @@
                         </div>
                     </div>
                 </form>
-                {include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}
+                {if $nTotalLogCount !== 0}
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}
+                {/if}
             </div>
+        </div>
+        <div role="tabpanel" class="tab-pane fade{if $cTab === 'configlog'} active show{/if}" id="configlog">
+            {include file='tpl_inc/filtertools.tpl' oFilter=$settingLogsFilter cParam_arr=['tab' => 'configlog']}
+            {include file='tpl_inc/pagination.tpl' pagination=$settingLogsPagination cParam_arr=['tab' => 'configlog']}
+            <div class="table-responsive">
+                <table class="table table-striped table-condensed table-bordered table-hover table-sticky-header">
+                    <thead>
+                    <tr>
+                        <th>{__('nameValueNameId')}</th>
+                        <th>{__('settingChangedBy')}</th>
+                        <th>{__('settingValueOld')}</th>
+                        <th>{__('settingValueNew')}</th>
+                        <th>{__('date')}</th>
+                    </tr>
+                    </thead>
+                    {foreach $settingLogs as $settingLog}
+                        <tr class="text-vcenter">
+                            <td>{__($settingLog->getSettingName()|cat:'_name')} | {$settingLog->getSettingName()} | {$settingLog->getId()}</td>
+                            <td>{$settingLog->getAdminName()}</td>
+                            <td>{$settingLog->getValueOld()}</td>
+                            <td>{$settingLog->getValueNew()}</td>
+                            <td>{$settingLog->getDate()}</td>
+                        </tr>
+                    {/foreach}
+                </table>
+            </div>
+            {include file='tpl_inc/pagination.tpl' pagination=$settingLogsPagination cParam_arr=['tab' => 'configlog'] isBottom=true}
         </div>
         <div role="tabpanel" class="tab-pane fade{if $cTab === 'config'} active show{/if}" id="config">
             <form class="sttings" action="systemlog.php" method="post">

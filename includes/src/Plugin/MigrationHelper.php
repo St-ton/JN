@@ -6,9 +6,8 @@ use DateTime;
 use DirectoryIterator;
 use Exception;
 use JTL\DB\DbInterface;
+use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
-use League\Flysystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter;
 use Throwable;
 
 /**
@@ -170,7 +169,7 @@ final class MigrationHelper
                 . ' INDEX `' . $idxName . '` ON `' . $idxTable . '` '
                 . '(`' . \implode('`, `', $idxColumns) . '`)';
 
-            return !$this->db->executeQuery($ddl) ? false : true;
+            return !$this->db->query($ddl) ? false : true;
         }
 
         return false;
@@ -184,7 +183,7 @@ final class MigrationHelper
     public function dropIndex(string $idxTable, string $idxName): bool
     {
         if (\count($this->indexColumns($idxTable, $idxName)) > 0) {
-            return !$this->db->executeQuery(
+            return !$this->db->query(
                 'DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` '
             ) ? false : true;
         }
@@ -225,9 +224,9 @@ final class MigrationHelper
         $datetime      = new DateTime('NOW');
         $timestamp     = $datetime->format('YmdHis');
         $filePath      = 'Migration' . $timestamp;
-        $relPath       = 'plugins/' . $pluginDir . '/Migrations';
+        $relPath       = \PLUGIN_DIR . $pluginDir . '/Migrations';
         $migrationPath = $relPath . '/' . $filePath . '.php';
-        $fileSystem    = new Filesystem(new LocalFilesystemAdapter(\PFAD_ROOT));
+        $fileSystem    = Shop::Container()->get(LocalFilesystem::class);
         try {
             $fileSystem->createDirectory($relPath);
         } catch (Throwable $e) {

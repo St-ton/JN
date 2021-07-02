@@ -191,7 +191,8 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('isMobile', $device->isMobile())
     ->assign('isTablet', $device->isTablet())
     ->assign('isNova', ($conf['template']['general']['is_nova'] ?? 'N') === 'Y')
-    ->assign('isAjax', Request::isAjaxRequest());
+    ->assign('isAjax', Request::isAjaxRequest())
+    ->assign('countries', Shop::Container()->getCountryService()->getCountrylist());
 
 if ($smarty->getTemplateVars('Link') === null) {
     $smarty->assign('Link', $link ?? new Link(Shop::Container()->getDB()));
@@ -254,6 +255,7 @@ $smarty->assign('bCookieErlaubt', isset($_COOKIE[Frontend::getSessionName()]))
     ->assign('Brotnavi', $nav->createNavigation())
     ->assign('nIsSSL', Request::checkSSL())
     ->assign('boxes', $boxesToShow)
+    ->assign('boxesLeftActive', !empty($boxesToShow['left']))
     ->assign('consentItems', Shop::Container()->getConsentManager()->getActiveItems(Shop::getLanguageID()))
     ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
     ->assign('Besucherzaehler', $visitorCount)

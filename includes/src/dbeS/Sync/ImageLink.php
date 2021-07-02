@@ -85,7 +85,8 @@ final class ImageLink extends AbstractSync
         }
         // is last reference
         $res = $this->db->getSingleObject(
-            'SELECT COUNT(*) AS cnt FROM tartikelpict WHERE kBild = ' . (int)$image->kBild
+            'SELECT COUNT(*) AS cnt FROM tartikelpict WHERE kBild = :iid',
+            ['iid' => (int)$image->kBild]
         );
         if ((int)($res->cnt ?? 0) === 1) {
             $this->db->delete('tbild', 'kBild', (int)$image->kBild);

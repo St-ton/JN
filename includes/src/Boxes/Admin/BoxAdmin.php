@@ -4,6 +4,7 @@ namespace JTL\Boxes\Admin;
 
 use JTL\Boxes\Type;
 use JTL\DB\DbInterface;
+use JTL\Helpers\Text;
 use JTL\Mapper\PageTypeToPageNiceName;
 use JTL\Shop;
 use stdClass;
@@ -131,7 +132,7 @@ final class BoxAdmin
      */
     private function getLastSortID(int $pageID, string $position = 'left', int $containerID = 0): int
     {
-        $oBox = $this->db->getSingleObject(
+        $box = $this->db->getSingleObject(
             'SELECT tboxensichtbar.nSort, tboxen.ePosition
                 FROM tboxensichtbar
                 LEFT JOIN tboxen
@@ -148,7 +149,7 @@ final class BoxAdmin
             ]
         );
 
-        return $oBox ? ++$oBox->nSort : 0;
+        return $box ? ++$box->nSort : 0;
     }
 
     /**
@@ -170,7 +171,7 @@ final class BoxAdmin
      */
     public function getByID(int $boxID): stdClass
     {
-        $oBox = $this->db->getSingleObject(
+        $box = $this->db->getSingleObject(
             'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.cTitel, tboxen.ePosition,
                 tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cVerfuegbar, tboxvorlage.cTemplate
                 FROM tboxen
@@ -180,16 +181,16 @@ final class BoxAdmin
             ['bxid' => $boxID]
         );
 
-        $oBox->oSprache_arr      = ($oBox && ($oBox->eTyp === Type::TEXT || $oBox->eTyp === Type::CATBOX
-                || $oBox->eTyp === Type::LINK))
+        $box->oSprache_arr      = ($box && ($box->eTyp === Type::TEXT || $box->eTyp === Type::CATBOX
+                || $box->eTyp === Type::LINK))
             ? $this->getContent($boxID)
             : [];
-        $oBox->kBox              = (int)$oBox->kBox;
-        $oBox->kBoxvorlage       = (int)$oBox->kBoxvorlage;
-        $oBox->supportsRevisions = $oBox->kBoxvorlage === \BOX_EIGENE_BOX_OHNE_RAHMEN
-            || $oBox->kBoxvorlage === \BOX_EIGENE_BOX_MIT_RAHMEN;
+        $box->kBox              = (int)$box->kBox;
+        $box->kBoxvorlage       = (int)$box->kBoxvorlage;
+        $box->supportsRevisions = $box->kBoxvorlage === \BOX_EIGENE_BOX_OHNE_RAHMEN
+            || $box->kBoxvorlage === \BOX_EIGENE_BOX_MIT_RAHMEN;
 
-        return $oBox;
+        return $box;
     }
 
     /**
@@ -201,28 +202,28 @@ final class BoxAdmin
      */
     public function create(int $baseID, int $pageID, string $position = 'left', int $containerID = 0): bool
     {
-        $validPageTypes    = $this->getValidPageTypes();
-        $oBox              = new stdClass();
-        $template          = $this->getTemplate($baseID);
-        $oBox->cTitel      = $template === null
+        $validPageTypes   = $this->getValidPageTypes();
+        $box              = new stdClass();
+        $template         = $this->getTemplate($baseID);
+        $box->cTitel      = $template === null
             ? ''
             : $template->cName;
-        $oBox->kBoxvorlage = $baseID;
-        $oBox->ePosition   = $position;
-        $oBox->kContainer  = $containerID;
-        $oBox->kCustomID   = (isset($template->kCustomID) && \is_numeric($template->kCustomID))
+        $box->kBoxvorlage = $baseID;
+        $box->ePosition   = $position;
+        $box->kContainer  = $containerID;
+        $box->kCustomID   = (isset($template->kCustomID) && \is_numeric($template->kCustomID))
             ? (int)$template->kCustomID
             : 0;
 
-        $boxID = $this->db->insert('tboxen', $oBox);
+        $boxID = $this->db->insert('tboxen', $box);
         if ($boxID) {
-            $oBoxSichtbar       = new stdClass();
-            $oBoxSichtbar->kBox = $boxID;
+            $visibility       = new stdClass();
+            $visibility->kBox = $boxID;
             foreach ($validPageTypes as $validPageType) {
-                $oBoxSichtbar->nSort  = $this->getLastSortID($pageID, $position, $containerID);
-                $oBoxSichtbar->kSeite = $validPageType;
-                $oBoxSichtbar->bAktiv = ($pageID === $validPageType || $pageID === 0) ? 1 : 0;
-                $this->db->insert('tboxensichtbar', $oBoxSichtbar);
+                $visibility->nSort  = $this->getLastSortID($pageID, $position, $containerID);
+                $visibility->kSeite = $validPageType;
+                $visibility->bAktiv = ($pageID === $validPageType || $pageID === 0) ? 1 : 0;
+                $this->db->insert('tboxensichtbar', $visibility);
             }
 
             return true;
@@ -238,13 +239,13 @@ final class BoxAdmin
      * @return bool
      * @former bearbeiteBox()
      */
-    public function update(int $boxID, $title, int $customID = 0): bool
+    public function update(int $boxID, string $title, int $customID = 0): bool
     {
-        $oBox            = new stdClass();
-        $oBox->cTitel    = $title;
-        $oBox->kCustomID = $customID;
+        $box            = new stdClass();
+        $box->cTitel    = Text::filterXSS($title);
+        $box->kCustomID = $customID;
 
-        return $this->db->update('tboxen', 'kBox', $boxID, $oBox) >= 0;
+        return $this->db->update('tboxen', 'kBox', $boxID, $box) >= 0;
     }
 
     /**
@@ -257,21 +258,22 @@ final class BoxAdmin
      */
     public function updateLanguage(int $boxID, string $isoCode, string $title, string $content): bool
     {
-        $oBox = $this->db->select('tboxsprache', 'kBox', $boxID, 'cISO', $isoCode);
-        if (isset($oBox->kBox)) {
+        $title = Text::filterXSS($title);
+        $box   = $this->db->select('tboxsprache', 'kBox', $boxID, 'cISO', $isoCode);
+        if (isset($box->kBox)) {
             $upd          = new stdClass();
             $upd->cTitel  = $title;
             $upd->cInhalt = $content;
 
             return $this->db->update('tboxsprache', ['kBox', 'cISO'], [$boxID, $isoCode], $upd) >= 0;
         }
-        $_ins          = new stdClass();
-        $_ins->kBox    = $boxID;
-        $_ins->cISO    = $isoCode;
-        $_ins->cTitel  = $title;
-        $_ins->cInhalt = $content;
+        $ins          = new stdClass();
+        $ins->kBox    = $boxID;
+        $ins->cISO    = Text::filterXSS($isoCode);
+        $ins->cTitel  = $title;
+        $ins->cInhalt = $content;
 
-        return $this->db->insert('tboxsprache', $_ins) > 0;
+        return $this->db->insert('tboxsprache', $ins) > 0;
     }
 
     /**
@@ -309,14 +311,13 @@ final class BoxAdmin
 
         return $this->db->queryPrepared(
             'INSERT INTO tboxenanzeige 
-                SET bAnzeigen = :show, nSeite = :page, ePosition = :position
-                ON DUPLICATE KEY UPDATE
-                  bAnzeigen = :show',
+                    SET bAnzeigen = :show, nSeite = :page, ePosition = :position
+                    ON DUPLICATE KEY UPDATE bAnzeigen = :show',
             [
-                'show'     => $show,
-                'page'     => $pageID,
-                'position' => $position
-            ]
+                    'show'     => $show,
+                    'page'     => $pageID,
+                    'position' => $position
+                ]
         ) !== 0;
     }
 
@@ -329,7 +330,7 @@ final class BoxAdmin
      * @return bool
      * @former sortBox()
      */
-    public function sort(int $boxID, int $pageID, int $sort, $active = true, $ignore = false): bool
+    public function sort(int $boxID, int $pageID, int $sort, $active = true, bool $ignore = false): bool
     {
         $active         = (int)$active;
         $validPageTypes = $this->getValidPageTypes();
@@ -377,30 +378,30 @@ final class BoxAdmin
                     ON DUPLICATE KEY UPDATE
                       nSort = :sort, bAktiv = :active',
             [
-                'boxID'         => $boxID,
-                'validPageType' => $pageID,
-                'sort'          => $sort,
-                'active'        => $active
-            ]
+                    'boxID'         => $boxID,
+                    'validPageType' => $pageID,
+                    'sort'          => $sort,
+                    'active'        => $active
+                ]
         ) !== 0;
     }
 
     /**
      * @param int          $boxID
-     * @param int          $kSeite
-     * @param string|array $cFilter
+     * @param int          $pageID
+     * @param string|array $filter
      * @return int
      */
-    public function filterBoxVisibility(int $boxID, int $kSeite, $cFilter = ''): int
+    public function filterBoxVisibility(int $boxID, int $pageID, $filter = ''): int
     {
-        if (\is_array($cFilter)) {
-            $cFilter = \array_unique($cFilter);
-            $cFilter = \implode(',', $cFilter);
+        if (\is_array($filter)) {
+            $filter = \array_unique($filter);
+            $filter = \implode(',', $filter);
         }
         $upd          = new stdClass();
-        $upd->cFilter = $cFilter;
+        $upd->cFilter = $filter;
 
-        return $this->db->update('tboxensichtbar', ['kBox', 'kSeite'], [$boxID, $kSeite], $upd);
+        return $this->db->update('tboxensichtbar', ['kBox', 'kSeite'], [$boxID, $pageID], $upd);
     }
 
     /**
@@ -453,29 +454,29 @@ final class BoxAdmin
         );
         foreach ($data as $template) {
             $id   = 0;
-            $name = __('templateTypeTemplate');
+            $name = \__('templateTypeTemplate');
             if ($template->eTyp === Type::TEXT) {
                 $id   = 1;
-                $name = __('templateTypeContent');
+                $name = \__('templateTypeContent');
             } elseif ($template->eTyp === Type::LINK) {
                 $id   = 2;
-                $name = __('templateTypeLinkList');
+                $name = \__('templateTypeLinkList');
             } elseif ($template->eTyp === Type::PLUGIN) {
                 $id   = 3;
-                $name = __('templateTypePlugin');
+                $name = \__('templateTypePlugin');
             } elseif ($template->eTyp === Type::CATBOX) {
                 $id   = 4;
-                $name = __('templateTypeCategory');
+                $name = \__('templateTypeCategory');
             } elseif ($template->eTyp === Type::EXTENSION) {
                 $id   = 5;
-                $name = __('templateTypeExtension');
+                $name = \__('templateTypeExtension');
             }
 
             if (!isset($templates[$id])) {
                 $templates[$id]               = new stdClass();
                 $templates[$id]->oVorlage_arr = [];
             }
-            $template->cName                = __($template->cName);
+            $template->cName                = \__($template->cName);
             $templates[$id]->cName          = $name;
             $templates[$id]->oVorlage_arr[] = $template;
         }

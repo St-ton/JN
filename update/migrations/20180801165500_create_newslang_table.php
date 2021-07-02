@@ -3,7 +3,7 @@
  * Create news lang table
  */
 
-use JTL\DB\ReturnType;
+use JTL\DB\DbInterface;
 use JTL\Shop;
 use JTL\Update\DBMigrationHelper;
 use JTL\Update\IMigration;
@@ -64,8 +64,7 @@ class Migration_20180801165500 extends Migration implements IMigration
                   ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci"
         );
-        $allNewsEntries = $db->query('SELECT * FROM tnews', ReturnType::ARRAY_OF_OBJECTS);
-        foreach ($allNewsEntries as $newsEntry) {
+        foreach ($db->getObjects('SELECT * FROM tnews') as $newsEntry) {
             $new                  = new stdClass();
             $new->kNews           = (int)$newsEntry->kNews;
             $new->languageID      = (int)$newsEntry->kSprache;
@@ -78,8 +77,7 @@ class Migration_20180801165500 extends Migration implements IMigration
             $new->metaDescription = $newsEntry->cMetaDescription;
             $db->insert('tnewssprache', $new);
         }
-        $allNewsCategories = $db->query('SELECT * FROM tnewskategorie', ReturnType::ARRAY_OF_OBJECTS);
-        foreach ($allNewsCategories as $newsCategory) {
+        foreach ($db->getObjects('SELECT * FROM tnewskategorie') as $newsCategory) {
             $new                  = new stdClass();
             $new->kNewsKategorie  = (int)$newsCategory->kNewsKategorie;
             $new->languageID      = (int)$newsCategory->kSprache;
@@ -157,10 +155,10 @@ class Migration_20180801165500 extends Migration implements IMigration
     /**
      * update lft/rght values for categories in the nested set model
      *
-     * @param \JTL\DB\DbInterface $db
-     * @param int                 $parent_id
-     * @param int                 $left
-     * @param int                 $level
+     * @param DbInterface $db
+     * @param int         $parent_id
+     * @param int         $left
+     * @param int         $level
      * @return int
      */
     private function rebuildCategoryTree($db, int $parent_id, int $left, int $level = 0): int

@@ -26,6 +26,7 @@ use JTL\Events\Dispatcher;
 use JTL\Events\Event;
 use JTL\Filesystem\AdapterFactory;
 use JTL\Filesystem\Filesystem;
+use JTL\Filesystem\LocalFilesystem;
 use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\ProductFilter;
@@ -87,6 +88,9 @@ use JTL\Smarty\MailSmarty;
 use JTL\Template\TemplateService;
 use JTL\Template\TemplateServiceInterface;
 use JTLShop\SemVer\Version;
+use League\Flysystem\Config as FlysystemConfig;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\Visibility;
 use LinkHelper;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
@@ -1596,15 +1600,15 @@ final class Shop
                 self::setPageType(\PAGE_STARTSEITE);
                 self::$fileName = 'seite.php';
                 if (Frontend::getCustomerGroup()->getID() > 0) {
-                    $cKundengruppenSQL = " AND (FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
+                    $customerGroupSQL = " AND (FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(cKundengruppen, ';', ',')) > 0
                         OR cKundengruppen IS NULL
                         OR cKundengruppen = 'NULL'
                         OR tlink.cKundengruppen = '')";
-                    $link              = self::Container()->getDB()->getSingleObject(
+                    $link             = self::Container()->getDB()->getSingleObject(
                         'SELECT kLink
                             FROM tlink
-                            WHERE nLinkart = ' . \LINKTYP_STARTSEITE . $cKundengruppenSQL
+                            WHERE nLinkart = ' . \LINKTYP_STARTSEITE . $customerGroupSQL
                     );
                 }
                 self::$kLink = isset($link->kLink)
@@ -2244,7 +2248,17 @@ final class Shop
         $container->singleton(Filesystem::class, static function () {
             $factory = new AdapterFactory(self::getConfig([\CONF_FS])['fs']);
 
-            return new Filesystem($factory->getAdapter());
+            return new Filesystem(
+                $factory->getAdapter(),
+                [FlysystemConfig::OPTION_DIRECTORY_VISIBILITY => Visibility::PUBLIC]
+            );
+        });
+
+        $container->singleton(LocalFilesystem::class, static function () {
+            return new Filesystem(
+                new LocalFilesystemAdapter(\PFAD_ROOT),
+                [FlysystemConfig::OPTION_DIRECTORY_VISIBILITY => Visibility::PUBLIC]
+            );
         });
 
         $container->bind(Mailer::class, static function (Container $container) {
@@ -2323,6 +2337,6 @@ final class Shop
     public static function getRequestURL(): string
     {
         return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
-            . '://' . $_SERVER['HTTP_HOST'] . ($_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'] ?? '');
+            . '://' . ($_SERVER['HTTP_HOST'] ?? '') . ($_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'] ?? '');
     }
 }

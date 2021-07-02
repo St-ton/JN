@@ -181,7 +181,7 @@ class CheckBox
                 (int)$this->kCheckBoxFunktion
             );
             if (isset($func->kCheckBoxFunktion) && $func->kCheckBoxFunktion > 0) {
-                $func->cName             = __($func->cName);
+                $func->cName             = \__($func->cName);
                 $this->oCheckBoxFunktion = $func;
             } else {
                 $this->kCheckBoxFunktion = 0;
@@ -392,8 +392,19 @@ class CheckBox
      * @param string $limitSQL
      * @param bool   $active
      * @return CheckBox[]
+     * @deprecated since 5.1.0
      */
     public function getAllCheckBox(string $limitSQL = '', bool $active = false): array
+    {
+        return $this->getAll($limitSQL, $active);
+    }
+
+    /**
+     * @param string $limitSQL
+     * @param bool   $active
+     * @return CheckBox[]
+     */
+    public function getAll(string $limitSQL = '', bool $active = false): array
     {
         return $this->db->getCollection(
             'SELECT kCheckBox AS id
@@ -410,20 +421,40 @@ class CheckBox
     /**
      * @param bool $active
      * @return int
+     * @deprecated since 5.1.0
      */
     public function getAllCheckBoxCount(bool $active = false): int
     {
+        return $this->getTotalCount($active);
+    }
+
+    /**
+     * @param bool $active
+     * @return int
+     */
+    public function getTotalCount(bool $active = false): int
+    {
         return (int)$this->db->getSingleObject(
-            'SELECT COUNT(*) AS nAnzahl
+            'SELECT COUNT(*) AS cnt
                 FROM tcheckbox' . ($active ? ' WHERE nAktiv = 1' : '')
-        )->nAnzahl;
+        )->cnt;
+    }
+
+    /**
+     * @param int[] $checkboxIDs
+     * @return bool
+     * @deprecated since 5.1.0
+     */
+    public function aktivateCheckBox(array $checkboxIDs): bool
+    {
+        return $this->activate($checkboxIDs);
     }
 
     /**
      * @param int[] $checkboxIDs
      * @return bool
      */
-    public function aktivateCheckBox(array $checkboxIDs): bool
+    public function activate(array $checkboxIDs): bool
     {
         if (\count($checkboxIDs) === 0) {
             return false;
@@ -441,8 +472,18 @@ class CheckBox
     /**
      * @param int[] $checkboxIDs
      * @return bool
+     * @deprecated since 5.1.0
      */
     public function deaktivateCheckBox(array $checkboxIDs): bool
+    {
+        return $this->deactivate($checkboxIDs);
+    }
+
+    /**
+     * @param int[] $checkboxIDs
+     * @return bool
+     */
+    public function deactivate(array $checkboxIDs): bool
     {
         if (\count($checkboxIDs) === 0) {
             return false;
@@ -460,8 +501,18 @@ class CheckBox
     /**
      * @param int[] $checkboxIDs
      * @return bool
+     * @deprecated since 5.1.0
      */
     public function deleteCheckBox(array $checkboxIDs): bool
+    {
+        return $this->delete($checkboxIDs);
+    }
+
+    /**
+     * @param int[] $checkboxIDs
+     * @return bool
+     */
+    public function delete(array $checkboxIDs): bool
     {
         if (\count($checkboxIDs) === 0) {
             return false;
@@ -489,7 +540,7 @@ class CheckBox
                 ORDER BY cName'
         )->each(static function ($e) {
             $e->kCheckBoxFunktion = (int)$e->kCheckBoxFunktion;
-            $e->cName             = __($e->cName);
+            $e->cName             = \__($e->cName);
         })->all();
     }
 
@@ -640,13 +691,13 @@ class CheckBox
         Shop::Container()->getGetText()->loadAdminLocale('pages/checkbox');
 
         return [
-            \CHECKBOX_ORT_REGISTRIERUNG        => __('checkboxPositionRegistration'),
-            \CHECKBOX_ORT_BESTELLABSCHLUSS     => __('checkboxPositionOrderFinal'),
-            \CHECKBOX_ORT_NEWSLETTERANMELDUNG  => __('checkboxPositionNewsletterRegistration'),
-            \CHECKBOX_ORT_KUNDENDATENEDITIEREN => __('checkboxPositionEditCustomerData'),
-            \CHECKBOX_ORT_KONTAKT              => __('checkboxPositionContactForm'),
-            \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT    => __('checkboxPositionProductQuestion'),
-            \CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT => __('checkboxPositionAvailabilityNotification')
+            \CHECKBOX_ORT_REGISTRIERUNG        => \__('checkboxPositionRegistration'),
+            \CHECKBOX_ORT_BESTELLABSCHLUSS     => \__('checkboxPositionOrderFinal'),
+            \CHECKBOX_ORT_NEWSLETTERANMELDUNG  => \__('checkboxPositionNewsletterRegistration'),
+            \CHECKBOX_ORT_KUNDENDATENEDITIEREN => \__('checkboxPositionEditCustomerData'),
+            \CHECKBOX_ORT_KONTAKT              => \__('checkboxPositionContactForm'),
+            \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT    => \__('checkboxPositionProductQuestion'),
+            \CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT => \__('checkboxPositionAvailabilityNotification')
         ];
     }
 

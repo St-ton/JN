@@ -1,7 +1,7 @@
 {block name='productdetails-details'}
     {*{has_boxes position='left' assign='hasLeftBox'}*}
     {$hasLeftBox = false}
-    {container}
+    {container class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
         {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
             {block name='productdetails-details-include-pushed-success'}
                 {include file='productdetails/pushed_success.tpl' card=true}
@@ -14,7 +14,7 @@
     {/container}
     {block name='productdetails-details-form'}
         {opcMountPoint id='opc_before_buy_form' inContainer=false}
-        {container}
+        {container class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
             {form id="buy_form" action=$Artikel->cURLFull class="jtl-validate"}
                 {row id="product-offer" class="product-detail"}
                     {block name='productdetails-details-include-image'}
@@ -112,13 +112,15 @@
                                                 {block name='productdetails-details-product-info-manufacturer'}
                                                     <li  class="product-manufacturer" itemprop="brand" itemscope="true" itemtype="http://schema.org/Organization">
                                                         <strong>{lang key='manufacturers'}:</strong>
-                                                        <a href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
-                                                            {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'}
-                                                                data-toggle="tooltip"
-                                                                data-placement="left"
-                                                                title="{$Artikel->cHersteller}"
-                                                            {/if}
-                                                           itemprop="url">
+                                                        {if $Einstellungen.artikeldetails.artikel_weitere_artikel_hersteller_anzeigen === 'Y'}
+                                                            <a href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
+                                                                {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'}
+                                                                    data-toggle="tooltip"
+                                                                    data-placement="left"
+                                                                    title="{$Artikel->cHersteller}"
+                                                                {/if}
+                                                               itemprop="url">
+                                                        {/if}
                                                             {if ($Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'
                                                                 || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'BT')
                                                                 && !empty($Artikel->cHerstellerBildURLKlein)}
@@ -132,7 +134,9 @@
                                                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'}
                                                                 <span itemprop="name">{$Artikel->cHersteller}</span>
                                                             {/if}
-                                                        </a>
+                                                        {if $Einstellungen.artikeldetails.artikel_weitere_artikel_hersteller_anzeigen === 'Y'}
+                                                            </a>
+                                                        {/if}
                                                     </li>
                                                 {/block}
                                             {/if}
@@ -299,7 +303,7 @@
         || isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0
         || isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0
         || isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
-            {container fluid=true}
+            {container fluid=true class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                 {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0}
                     {block name='productdetails-details-include-product-slider-partslist'}
                         <div class="partslist">

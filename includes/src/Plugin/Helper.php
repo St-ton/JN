@@ -310,9 +310,7 @@ class Helper
      */
     public static function getIDByExsID(string $exsID): int
     {
-        $plugin = Shop::Container()->getDB()->select('tplugin', 'exsID', $exsID);
-
-        return (int)($plugin->kPlugin ?? 0);
+        return (int)(Shop::Container()->getDB()->select('tplugin', 'exsID', $exsID)->kPlugin ?? 0);
     }
 
     /**
@@ -322,7 +320,7 @@ class Helper
      * @former gibPluginSprachvariablen()
      * @since 5.0.0
      */
-    public static function getLanguageVariablesByID(int $id, $iso = ''): array
+    public static function getLanguageVariablesByID(int $id, string $iso = ''): array
     {
         $return = [];
         $sql    = '';
@@ -493,8 +491,11 @@ class Helper
      * @param JTLCacheInterface|null $cache
      * @return LoaderInterface
      */
-    public static function getLoaderByPluginID(int $id, DbInterface $db = null, $cache = null): LoaderInterface
-    {
+    public static function getLoaderByPluginID(
+        int $id,
+        ?DbInterface $db = null,
+        ?JTLCacheInterface $cache = null
+    ) : LoaderInterface {
         $cache = $cache ?? Shop::Container()->getCache();
         $db    = $db ?? Shop::Container()->getDB();
         $data  = $db->select('tplugin', 'kPlugin', $id);
@@ -508,8 +509,11 @@ class Helper
      * @param JTLCacheInterface|null $cache
      * @return LoaderInterface
      */
-    public static function getLoader(bool $isExtension, DbInterface $db = null, $cache = null): LoaderInterface
-    {
+    public static function getLoader(
+        bool $isExtension,
+        ?DbInterface $db = null,
+        ?JTLCacheInterface $cache = null
+    ): LoaderInterface {
         $cache = $cache ?? Shop::Container()->getCache();
         $db    = $db ?? Shop::Container()->getDB();
 
@@ -528,7 +532,7 @@ class Helper
         ];
         if ($pluginID <= 0) {
             $result->code    = InstallCode::NO_PLUGIN_FOUND;
-            $result->message = __('errorPluginNotFound');
+            $result->message = \__('errorPluginNotFound');
 
             return $result;
         }
@@ -552,7 +556,7 @@ class Helper
             $plugin = $loader->init($pluginID);
             if ($plugin === null) {
                 $result->code    = InstallCode::NO_PLUGIN_FOUND;
-                $result->message = __('errorPluginNotFound');
+                $result->message = \__('errorPluginNotFound');
 
                 return $result;
             }

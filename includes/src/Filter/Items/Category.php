@@ -32,7 +32,7 @@ class Category extends BaseCategory
              ->setUrlParam('kf')
              ->setUrlParamSEO(\SEP_KAT)
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_kategoriefilter_benutzen'])
-             ->setFrontendName(Shop::isAdmin() ? __('filterCategory') : Shop::Lang()->get('allCategories'))
+             ->setFrontendName(Shop::isAdmin() ? \__('filterCategory') : Shop::Lang()->get('allCategories'))
              ->setType($this->getConfig('navigationsfilter')['category_filter_type'] === 'O'
                 ? Type::OR
                 : Type::AND);
@@ -232,9 +232,10 @@ class Category extends BaseCategory
                 FROM (' . $baseQuery . " ) AS ssMerkmal
                     LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
                         AND tseo.cKey = 'kKategorie'
-                        AND tseo.kSprache = " . $this->getLanguageID() . '
+                        AND tseo.kSprache = :lid
                     GROUP BY ssMerkmal.kKategorie
-                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName'
+                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName",
+            ['lid' => $this->getLanguageID()]
         );
         $langID             = $this->getLanguageID();
         $customerGroupID    = $this->getCustomerGroupID();

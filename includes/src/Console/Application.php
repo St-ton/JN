@@ -8,6 +8,7 @@ use JTL\Console\Command\Cache\ClearObjectCacheCommand;
 use JTL\Console\Command\Cache\DbesTmpCommand;
 use JTL\Console\Command\Cache\DeleteFileCacheCommand;
 use JTL\Console\Command\Cache\DeleteTemplateCacheCommand;
+use JTL\Console\Command\Cache\WarmCacheCommand;
 use JTL\Console\Command\Command;
 use JTL\Console\Command\InstallCommand;
 use JTL\Console\Command\Mailtemplates\ResetCommand;
@@ -93,20 +94,18 @@ class Application extends BaseApplication
         $validator       = new LegacyPluginValidator($db, $parser);
         $modernValidator = new PluginValidator($db, $parser);
         $listing         = new Listing($db, $cache, $validator, $modernValidator);
-        $installed       = $listing->getInstalled();
-        $sorted          = $listing->getAll($installed);
-        $compatible      = $sorted->filter(static function (ListingItem $i) {
+        $compatible      = $listing->getAll()->filter(static function (ListingItem $i) {
             return $i->isShop5Compatible();
         });
+        /** @var ListingItem $plugin */
         foreach ($compatible as $plugin) {
-            /** @var ListingItem $plugin */
-            if (!\is_dir($plugin->getPath() . '/Commands')) {
+            if (!\is_dir($plugin->getPath() . 'Commands')) {
                 continue;
             }
             $finder = Finder::create()
                 ->ignoreVCS(false)
                 ->ignoreDotFiles(false)
-                ->in($plugin->getPath() . '/Commands');
+                ->in($plugin->getPath() . 'Commands');
 
             foreach ($finder->files() as $file) {
                 /** @var SplFileInfo $file */
@@ -116,12 +115,12 @@ class Application extends BaseApplication
                     \str_replace('.' . $file->getExtension(), '', $file->getBasename())
                 );
                 if (!\class_exists($class)) {
-                    throw new RuntimeException("Class '" . $class . "' does not exist");
+                    throw new RuntimeException('Class "' . $class . '" does not exist');
                 }
 
                 $command = new $class();
                 /** @var Command $command */
-                $command->setName($plugin->getID() . ':' . $command->getName());
+                $command->setName($plugin->getPluginID() . ':' . $command->getName());
                 $this->add($command);
             }
         }
@@ -162,6 +161,7 @@ class Application extends BaseApplication
             $cmds[] = new DeleteFileCacheCommand();
             $cmds[] = new DbesTmpCommand();
             $cmds[] = new ClearObjectCacheCommand();
+            $cmds[] = new WarmCacheCommand();
             $cmds[] = new CreateModelCommand();
             $cmds[] = new ResetCommand();
 

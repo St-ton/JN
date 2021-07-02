@@ -4,11 +4,10 @@ namespace JTL\Update;
 
 use DateTime;
 use Exception;
+use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
-use League\Flysystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter;
 use Throwable;
 
 /**
@@ -203,7 +202,7 @@ class MigrationHelper
                 . ' INDEX `' . $idxName . '` ON `' . $idxTable . '` '
                 . '(`' . \implode('`, `', $idxColumns) . '`)';
 
-            return !Shop::Container()->getDB()->executeQuery($ddl) ? false : true;
+            return !Shop::Container()->getDB()->query($ddl) ? false : true;
         }
 
         return false;
@@ -217,7 +216,7 @@ class MigrationHelper
     public static function dropIndex(string $idxTable, string $idxName): bool
     {
         if (\count(self::indexColumns($idxTable, $idxName)) > 0) {
-            return !Shop::Container()->getDB()->executeQuery(
+            return !Shop::Container()->getDB()->query(
                 'DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` '
             ) ? false : true;
         }
@@ -247,8 +246,7 @@ class MigrationHelper
         );
         $relPath       = 'update/migrations';
         $migrationPath = $relPath . '/' . $filePath . '.php';
-        $fileSystem    = new Filesystem(new LocalFilesystemAdapter(\PFAD_ROOT));
-
+        $fileSystem    = Shop::Container()->get(LocalFilesystem::class);
         try {
             $fileSystem->createDirectory($relPath);
         } catch (Throwable $e) {

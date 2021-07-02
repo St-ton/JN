@@ -77,8 +77,11 @@
     }
 
   }
-  .basket-summary-notice {
+  .basket-summary-top {
      margin-top: map-get($spacers, 5);
+  }
+  .basket-summary-notice-weight-wrapper {
+     margin-top: map-get($spacers, 2);
   }
   #cart-checkout-btn {
     width: 100%;
@@ -111,6 +114,9 @@
       margin-bottom: 0;
     }
     white-space: nowrap;
+    .configurepos {
+      white-space: normal;
+    }
   }
   .cart-items-price {
     margin-left: auto;

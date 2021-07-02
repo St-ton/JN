@@ -250,9 +250,9 @@
                                 {if $oPosition->istKonfigVater()}
                                     <div class="qty-wrapper max-w-sm">
                                         {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
-                                        {link class="btn btn-outline-secondary configurepos ml-3"
-                                        href="index.php?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
-                                            <i class="fa fa-cogs"></i><span class="ml-1">{lang key='configure'}</span>
+                                        {link class="btn btn-outline-secondary configurepos btn-block btn-sm"
+                                        href="{get_static_route id='index.php'}?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
+                                            <i class="fa fa-cogs icon-mr-2"></i>{lang key='configure'}
                                         {/link}
                                     </div>
                                 {else}
@@ -308,7 +308,7 @@
                         || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK
                         }
                             {col cols=$cols xl=10 class='cart-items-delete' data=['toggle'=>'product-actions']}
-                                {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
+                                {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y' && $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                     {block name='basket-cart-items-cart-submit-include-wishlist-button'}
                                         {include file='snippets/wishlist_button.tpl' Artikel=$oPosition->Artikel buttonAndText=true}
                                     {/block}

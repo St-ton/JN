@@ -145,7 +145,7 @@ class Statistik
                     ) AS t
                     GROUP BY t.cReferer
                     ORDER BY nCount DESC',
-                ['directEntry' => __('directEntry')]
+                ['directEntry' => \__('directEntry')]
             );
         }
 
@@ -258,18 +258,15 @@ class Statistik
     private function gibDifferenz(): self
     {
         if (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0) {
-            $oDay = Shop::Container()->getDB()->query(
+            $dateDiff = Shop::Container()->getDB()->getSingleObject(
                 "SELECT DATEDIFF('" . $this->cDatumBis_arr['cDatum'] . "', '" .
-                $this->cDatumVon_arr['cDatum'] . "') AS nTage",
-                1
+                $this->cDatumVon_arr['cDatum'] . "') AS nTage"
             );
-
-            if (isset($oDay->nTage)) {
-                $this->nTage = (int)$oDay->nTage + 1;
+            if ($dateDiff !== null) {
+                $this->nTage = (int)$dateDiff->nTage + 1;
             }
         } elseif ($this->nStampVon > 0 && $this->nStampBis > 0) {
-            $nDiff       = $this->nStampBis - $this->nStampVon;
-            $this->nTage = $nDiff / 3600 / 24;
+            $this->nTage = ($this->nStampBis - $this->nStampVon) / 3600 / 24;
             if ($this->nTage <= 1) {
                 $this->nTage = 1;
             } else {

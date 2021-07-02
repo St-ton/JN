@@ -266,7 +266,7 @@ class ShippingMethod
                     $shippingMethod->cLieferdauer[$language->cISO]           = $localized->cLieferdauer;
                 }
             }
-            if ($shippingMethod->fEndpreis < $minSum) {
+            if ($shippingMethod->fEndpreis < $minSum && $shippingMethod->cIgnoreShippingProposal !== 'Y') {
                 $minSum = $shippingMethod->fEndpreis;
             }
             if ($shippingMethod->fEndpreis == 0) {
@@ -1178,13 +1178,14 @@ class ShippingMethod
      */
     public static function getLowestShippingFees($iso, $product, $allowCash, $customerGroupID)
     {
-        $dep = '';
-        $fee = 99999;
-        $db  = Shop::Container()->getDB();
-        if (empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN])
-            && empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT])
-        ) {
+        $dep             = '';
+        $fee             = 99999;
+        $db              = Shop::Container()->getDB();
+        $productShipping = 0;
+        if ($product->isUsedForShippingCostCalculation($iso)) {
             $dep = " AND cNurAbhaengigeVersandart = 'N'";
+        } elseif (($costs = self::gibArtikelabhaengigeVersandkosten($iso, $product, 1)) !== false) {
+            $productShipping = $costs->fKosten;
         }
         $methods = $db->getObjects(
             "SELECT *
@@ -1223,7 +1224,7 @@ class ShippingMethod
             }
         }
 
-        return $fee === 99999 ? -1 : $fee;
+        return $fee === 99999 ? -1 : ($fee + $productShipping);
     }
 
     /**

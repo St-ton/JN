@@ -215,12 +215,14 @@ class JSONAPI
     private function validateTableName(string $table): bool
     {
         $res = Shop::Container()->getDB()->getSingleObject(
-            "SELECT `table_name` 
-                FROM information_schema.tables 
-                WHERE `table_type` = 'base table'
-                    AND `table_schema` = :sma
-                    AND `table_name` = :tn",
-            ['sma' => DB_NAME, 'tn' => $table]
+            'SELECT `TABLE_NAME` AS table_name
+                FROM information_schema.TABLES
+                WHERE `TABLE_SCHEMA` = :sma
+                    AND `TABLE_NAME` = :tn',
+            [
+                'sma' => \DB_NAME,
+                'tn' => $table
+            ]
         );
 
         return $res !== null && $res->table_name === $table;
@@ -238,11 +240,14 @@ class JSONAPI
             $rows = $tableRows[$table];
         } else {
             $res  = Shop::Container()->getDB()->getObjects(
-                'SELECT `column_name` 
-                    FROM information_schema.columns 
-                    WHERE `table_schema` = :sma
-                        AND `table_name` = :tn',
-                ['sma' => DB_NAME, 'tn' => $table]
+                'SELECT `COLUMN_NAME` AS column_name
+                    FROM information_schema.COLUMNS
+                    WHERE `TABLE_SCHEMA` = :sma
+                        AND `TABLE_NAME` = :tn',
+                [
+                    'sma' => \DB_NAME,
+                    'tn' => $table
+                ]
             );
             $rows = [];
             foreach ($res as $item) {

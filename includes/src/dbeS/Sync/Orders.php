@@ -694,7 +694,7 @@ final class Orders extends AbstractSync
 
         if (($state === \BESTELLUNG_STATUS_VERSANDT &&
                 $shopOrder->cStatus !== \BESTELLUNG_STATUS_VERSANDT &&
-                $diff < \BESTELLUNG_VERSANDBESTAETIGUNG_MAX_TAGE) ||
+                $diff <= \BESTELLUNG_VERSANDBESTAETIGUNG_MAX_TAGE) ||
             ($state === \BESTELLUNG_STATUS_TEILVERSANDT && $doSend === true)
         ) {
             $mailType = $state === \BESTELLUNG_STATUS_VERSANDT
@@ -736,7 +736,7 @@ final class Orders extends AbstractSync
             $now     = new DateTime(\date('Y-m-d'));
             $diff    = $now->diff($earlier)->format('%a');
 
-            if ($diff > \BESTELLUNG_ZAHLUNGSBESTAETIGUNG_MAX_TAGE) {
+            if ($diff >= \BESTELLUNG_ZAHLUNGSBESTAETIGUNG_MAX_TAGE) {
                 return;
             }
 

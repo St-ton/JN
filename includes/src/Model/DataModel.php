@@ -359,8 +359,11 @@ abstract class DataModel implements DataModelInterface, Iterator
      * @return mixed
      * @throws Exception - throws an exception with ERR_INVALID_PARAM if type is not a supported datatype
      */
-    protected static function cast($value, $type)
+    protected static function cast($value, $type, bool $nullable = false)
     {
+        if ($nullable === true && ($value === null || $value === '_DBNULL_')) {
+            return null;
+        }
         $result = null;
         switch (self::getType($type)) {
             case 'bool':
@@ -815,10 +818,15 @@ abstract class DataModel implements DataModelInterface, Iterator
         if (isset($this->setters[$attribName])) {
             $this->members[$attribName] = self::cast(
                 \call_user_func($this->setters[$attribName], $value, $this),
-                $attributes[$attribName]->dataType
+                $attributes[$attribName]->dataType,
+                $attributes[$attribName]->nullable
             );
         } else {
-            $this->members[$attribName] = self::cast($value, $attributes[$attribName]->dataType);
+            $this->members[$attribName] = self::cast(
+                $value,
+                $attributes[$attribName]->dataType,
+                $attributes[$attribName]->nullable
+            );
         }
 
         return $this;

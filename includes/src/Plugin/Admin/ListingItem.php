@@ -248,7 +248,7 @@ class ListingItem implements JsonSerializable
         $this->setAuthor($meta->getAuthor());
         $this->setID($plugin->getID());
         $this->setPluginID($plugin->getPluginID());
-        $this->setPath($plugin->getPaths()->getVersionedPath());
+        $this->setPath($plugin->getPaths()->getBasePath());
         $this->setDir($plugin->getPaths()->getBaseDir());
         $this->setIsLegacy($plugin->isLegacy());
         $this->setIcon($meta->getIcon() ?? '');
@@ -269,6 +269,25 @@ class ListingItem implements JsonSerializable
         $this->setMaxShopVersion(Version::parse('0.0.0'));
 
         return $this;
+    }
+
+    /**
+     * @param ListingItem $item
+     */
+    public function mergeWith(ListingItem $item): void
+    {
+        $this->setOptionsCount($item->getOptionsCount());
+        $this->setDateInstalled($item->getDateInstalled());
+        $this->setID($item->getID());
+        $this->setState($item->getState());
+        $this->setIsShop5Compatible($item->isShop5Compatible());
+        $this->setIsShop4Compatible($item->isShop4Compatible());
+        $this->setLangVarCount($item->getLangVarCount());
+        $this->setReadmeMD($item->getReadmeMD());
+        $this->setLicenseMD($item->getLicenseMD());
+        $this->setLinkCount($item->getLinkCount());
+        $this->setLicenseKey($item->getLicenseKey());
+        $this->setHasLicenseCheck($item->hasLicenseCheck());
     }
 
     /**

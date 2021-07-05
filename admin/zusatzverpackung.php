@@ -19,7 +19,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('ORDER_PACKAGE_VIEW', true, true);
 
 $step        = 'zusatzverpackung';
-$languages   = LanguageHelper::getAllLanguages();
+$languages   = LanguageHelper::getAllLanguages(0, true);
 $action      = '';
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();

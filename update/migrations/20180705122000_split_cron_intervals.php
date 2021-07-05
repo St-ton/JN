@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * split cron intervals
  *
@@ -6,7 +6,6 @@
  * @created Thu, 05 Jun 2018 12:20:00 +0200
  */
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
@@ -24,9 +23,9 @@ class Migration_20180705122000 extends Migration implements IMigration
      */
     public function up()
     {
-        $statusMail = $this->getDB()->query('SELECT * FROM tstatusemail', ReturnType::SINGLE_OBJECT);
+        $statusMail = $this->getDB()->getSingleObject('SELECT * FROM tstatusemail');
         $updates    = [];
-        if ($statusMail !== false) {
+        if ($statusMail !== null) {
             foreach (Text::parseSSKint($statusMail->cIntervall) as $interval) {
                 $upd            = new stdClass();
                 $upd->cEmail    = $statusMail->cEmail;

@@ -106,7 +106,11 @@ class Admin
     public function display(): void
     {
         $this->smarty->assign('step', $this->step)
-            ->assign('exportformate', Model::loadAll($this->db, [], [])->sortBy('name', \SORT_NATURAL | \SORT_FLAG_CASE))
+            ->assign('exportformate', Model::loadAll(
+                $this->db,
+                [],
+                []
+            )->sortBy('name', \SORT_NATURAL | \SORT_FLAG_CASE))
             ->display('exportformate.tpl');
     }
 
@@ -132,7 +136,7 @@ class Admin
                 $checkResult->save();
                 $this->alertService->addAlert(
                     Alert::TYPE_SUCCESS,
-                    \sprintf(__('successFormatEdit'), $checkResult->getName()),
+                    \sprintf(\__('successFormatEdit'), $checkResult->getName()),
                     'successFormatEdit'
                 );
             } else {
@@ -141,7 +145,7 @@ class Admin
                 $exportID = $checkResult->getId();
                 $this->alertService->addAlert(
                     Alert::TYPE_SUCCESS,
-                    \sprintf(__('successFormatCreate'), $checkResult->getName()),
+                    \sprintf(\__('successFormatCreate'), $checkResult->getName()),
                     'successFormatCreate'
                 );
             }
@@ -184,8 +188,9 @@ class Admin
                 ->assign('cPostVar_arr', Collection::make(Text::filterXSS($_POST))->map(static function ($e) {
                     return \is_string($e) ? Text::htmlentities($e) : $e;
                 })->all());
+            $this->view();
             $this->step = 'edit';
-            $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');
+            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorCheckInput'), 'errorCheckInput');
         }
         $this->smarty->assign('checkTemplate', $doCheck ?? 0);
     }
@@ -259,7 +264,7 @@ class Admin
         if ($exportformat === null) {
             $this->alertService->addAlert(
                 Alert::TYPE_ERROR,
-                \sprintf(__('errorFormatCreate'), '?'),
+                \sprintf(\__('errorFormatCreate'), '?'),
                 'errorFormatCreate'
             );
         }
@@ -271,20 +276,20 @@ class Admin
             if (empty($_GET['hasError'])) {
                 $this->alertService->addAlert(
                     Alert::TYPE_SUCCESS,
-                    \sprintf(__('successFormatCreate'), $exportformat->cName),
+                    \sprintf(\__('successFormatCreate'), $exportformat->cName),
                     'successFormatCreate'
                 );
             } else {
                 $this->alertService->addAlert(
                     Alert::TYPE_ERROR,
-                    \sprintf(__('errorFormatCreate'), $exportformat->cName),
+                    \sprintf(\__('errorFormatCreate'), $exportformat->cName),
                     'errorFormatCreate'
                 );
             }
         } else {
             $this->alertService->addAlert(
                 Alert::TYPE_ERROR,
-                \sprintf(__('errorFormatCreate'), $exportformat->cName),
+                \sprintf(\__('errorFormatCreate'), $exportformat->cName),
                 'errorFormatCreate'
             );
         }
@@ -315,9 +320,9 @@ class Admin
         );
 
         if ($deleted > 0) {
-            $this->alertService->addAlert(Alert::TYPE_SUCCESS, __('successFormatDelete'), 'successFormatDelete');
+            $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successFormatDelete'), 'successFormatDelete');
         } else {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorFormatDelete'), 'errorFormatDelete');
+            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorFormatDelete'), 'errorFormatDelete');
         }
 
         return $deleted > 0;
@@ -348,7 +353,7 @@ class Admin
         }
         $this->alertService->addAlert(
             Alert::TYPE_ERROR,
-            \sprintf(__('File %s not found.'), $file),
+            \sprintf(\__('File %s not found.'), $file),
             'errorCannotDownloadExport'
         );
     }

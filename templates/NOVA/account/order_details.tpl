@@ -52,7 +52,7 @@
                                                         && $Bestellung->Zahlungsart->cModulId !== 'za_rechnung_jtl'
                                                         && $Bestellung->Zahlungsart->cModulId !== 'za_barzahlung_jtl')
                                                         && (isset($Bestellung->Zahlungsart->bPayAgain) && $Bestellung->Zahlungsart->bPayAgain))}
-                                                            {link href="bestellab_again.php?kBestellung={$Bestellung->kBestellung}"}{lang key='payNow' section='global'}{/link}
+                                                            {link href="{get_static_route id='bestellab_again.php'}?kBestellung={$Bestellung->kBestellung}"}{lang key='payNow' section='global'}{/link}
                                                         {else}
                                                             {lang key='notPayedYet' section='login'}
                                                         {/if}

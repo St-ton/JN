@@ -95,7 +95,7 @@ class Manager
         });
 
         if ($recommendation === null && $showAlert) {
-            $this->alertService->addAlert(Alert::TYPE_WARNING, __('noRecommendationFound'), 'noRecommendationFound');
+            $this->alertService->addAlert(Alert::TYPE_WARNING, \__('noRecommendationFound'), 'noRecommendationFound');
         }
 
         return $recommendation;

@@ -198,77 +198,62 @@ final class Model extends DataModel
         if ($attributes === null) {
             $attributes                    = [];
             $attributes['id']              = DataAttribute::create('kExportformat', 'int', null, false, true);
-            $attributes['customerGroupID'] = DataAttribute::create('kKundengruppe', 'int', null, true, false);
-            $attributes['languageID']      = DataAttribute::create('kSprache', 'int', null, true, false);
-            $attributes['currencyID']      = DataAttribute::create('kWaehrung', 'int', null, true, false);
+            $attributes['customerGroupID'] = DataAttribute::create('kKundengruppe', 'int');
+            $attributes['languageID']      = DataAttribute::create('kSprache', 'int');
+            $attributes['currencyID']      = DataAttribute::create('kWaehrung', 'int');
             $attributes['campaignID']      = DataAttribute::create(
                 'kKampagne',
                 'int',
-                self::cast('0', 'int'),
-                true,
-                false
+                self::cast('0', 'int')
             );
-            $attributes['pluginID']        = DataAttribute::create('kPlugin', 'int', null, false, false);
-            $attributes['name']            = DataAttribute::create('cName', 'varchar', null, true, false);
-            $attributes['filename']        = DataAttribute::create('cDateiname', 'varchar', null, true, false);
-            $attributes['header']          = DataAttribute::create('cKopfzeile', 'mediumtext', null, true, false);
-            $attributes['content']         = DataAttribute::create('cContent', 'mediumtext', null, true, false);
-            $attributes['footer']          = DataAttribute::create('cFusszeile', 'mediumtext', null, false, false);
+            $attributes['pluginID']        = DataAttribute::create('kPlugin', 'int', null, false);
+            $attributes['name']            = DataAttribute::create('cName', 'varchar');
+            $attributes['filename']        = DataAttribute::create('cDateiname', 'varchar');
+            $attributes['header']          = DataAttribute::create('cKopfzeile', 'mediumtext');
+            $attributes['content']         = DataAttribute::create('cContent', 'mediumtext');
+            $attributes['footer']          = DataAttribute::create('cFusszeile', 'mediumtext', null, false);
             $attributes['encoding']        = DataAttribute::create(
                 'cKodierung',
                 'varchar',
                 self::cast('ASCII', 'varchar'),
-                false,
                 false
             );
             $attributes['isSpecial']       = DataAttribute::create(
                 'nSpecial',
                 'tinyint',
                 self::cast('0', 'tinyint'),
-                false,
                 false
             );
             $attributes['varcombOption']   = DataAttribute::create(
                 'nVarKombiOption',
                 'tinyint',
                 self::cast('1', 'tinyint'),
-                false,
                 false
             );
             $attributes['splitSize']       = DataAttribute::create(
                 'nSplitgroesse',
                 'int',
-                self::cast('0', 'int'),
-                true,
-                false
+                self::cast('0', 'int')
             );
             $attributes['dateLastCreated'] = DataAttribute::create(
                 'dZuletztErstellt',
-                'datetime',
-                null,
-                true,
-                false
+                'datetime'
             );
             $attributes['useCache']        = DataAttribute::create(
                 'nUseCache',
                 'tinyint',
                 self::cast('0', 'tinyint'),
-                false,
                 false
             );
             $attributes['hasError']        = DataAttribute::create(
                 'nFehlerhaft',
                 'tinyint',
-                self::cast('0', 'tinyint'),
-                true,
-                false
+                self::cast('0', 'tinyint')
             );
             $attributes['async']           = DataAttribute::create(
                 'async',
                 'tinyint',
-                self::cast('0', 'tinyint'),
-                true,
-                false
+                self::cast('0', 'tinyint')
             );
 
             $cParam = new DataAttribute();

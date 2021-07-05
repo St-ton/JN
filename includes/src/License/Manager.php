@@ -22,6 +22,8 @@ class Manager
 
     private const CHECK_INTERVAL_HOURS = 4;
 
+    private const USER_API_URL = 'https://oauth2.api.jtl-software.com/api/v1/user';
+
     private const API_LIVE_URL = 'https://checkout.jtl-software.com/v1/licenses';
 
     private const API_DEV_URL = 'https://checkout-stage.jtl-software.com/v1/licenses';
@@ -210,10 +212,36 @@ class Manager
         $this->housekeeping();
         $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
 
+        $owner       = $this->getTokenOwner();
+        $data        = \json_decode((string)$res->getBody());
+        $data->owner = isset($owner->given_name, $owner->family_name) ? $owner : null;
+
         return $this->db->insert(
             'licenses',
-            (object)['data' => (string)$res->getBody(), 'returnCode' => $res->getStatusCode()]
+            (object)['data' => \json_encode($data), 'returnCode' => $res->getStatusCode()]
         );
+    }
+
+    /**
+     * @return stdClass
+     * @throws GuzzleException
+     */
+    private function getTokenOwner(): stdClass
+    {
+        $res = $this->client->request(
+            'GET',
+            self::USER_API_URL,
+            [
+                'headers' => [
+                    'Accept'        => 'application/json',
+                    'Content-Type'  => 'application/json',
+                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
+                ],
+                'verify'  => true
+            ]
+        );
+
+        return \json_decode($res->getBody()->getContents());
     }
 
     /**

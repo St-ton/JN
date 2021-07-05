@@ -522,7 +522,13 @@
         registerFinish: function($wrapper) {
             $('#jump-to-votes-tab', $wrapper).on('click', function () {
                 let $tabID = $('#content a[href="#tab-votes"]');
-                $tabID.tab('show');
+                if ($tabID.length > 0) {
+                    $tabID.tab('show');
+                } else {
+                    $tabID = $('#tab-votes');
+                    $tabID.collapse('show');
+                }
+
                 $([document.documentElement, document.body]).animate({
                     scrollTop: $tabID.offset().top
                 }, 200);

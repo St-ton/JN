@@ -10,6 +10,7 @@ use JTL\Link\SpecialPageNotFoundException;
 use JTL\Mapper\PageTypeToLinkType;
 use JTL\News\Category;
 use JTL\News\Item;
+use JTL\Plugin\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -45,7 +46,7 @@ use function Functional\reindex;
  * @method static string getIsoCodeByCountryName(string $country)
  * @method static string getCountryCodeByCountryName(string $iso)
  * @method static LanguageModel getDefaultLanguage(bool $shop = true)
- * @method static LanguageModel[] getAllLanguages(int $returnType = 0)
+ * @method static LanguageModel[] getAllLanguages(int $returnType = 0, bool $forceLoad = false)
  * @method static bool isShopLanguage(int $languageID, array $languages = [])
  */
 class LanguageHelper
@@ -256,36 +257,66 @@ class LanguageHelper
     public function initLangVars(): self
     {
         $this->langVars = $this->loadLangVars();
-        if (\count($this->langVars) === 0) {
-            $collection = $this->db->getCollection(
-                'SELECT tsprachwerte.cWert AS val, tsprachwerte.cName AS name, 
-                    tsprachsektion.cName AS sectionName, tsprache.kSprache AS langID
-                    FROM tsprachwerte
-                    INNER JOIN tsprachiso iso ON tsprachwerte.kSprachISO = iso.kSprachISO
-                    INNER JOIN tsprache ON iso.cISO = tsprache.cISO
-                    LEFT JOIN tsprachsektion
-                        ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion',
-                []
-            )->groupBy([
-                'langID',
-                static function ($e) {
-                    return $e->sectionName;
-                }
-            ]);
-            foreach ($collection as $langID => $sections) {
-                foreach ($sections as $section => $data) {
-                    $variables = [];
-                    foreach ($data as $variable) {
-                        $variables[$variable->name] = $variable->val;
-                    }
-                    $collection[$langID][$section] = $variables;
-                }
-            }
-            $this->langVars = $collection->toArray();
-            $this->saveLangVars();
+        if (\count($this->langVars) > 0) {
+            return $this;
         }
+        $collection = $this->db->getCollection(
+            'SELECT tsprachwerte.cWert AS val, tsprachwerte.cName AS name, 
+                tsprachsektion.cName AS sectionName, tsprache.kSprache AS langID
+                FROM tsprachwerte
+                INNER JOIN tsprachiso iso 
+                    ON tsprachwerte.kSprachISO = iso.kSprachISO
+                INNER JOIN tsprache 
+                    ON iso.cISO = tsprache.cISO
+                LEFT JOIN tsprachsektion
+                    ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion'
+        )->groupBy(['langID', 'sectionName'])->toArray();
+        foreach ($collection as $langID => $sections) {
+            foreach ($sections as $section => $data) {
+                $variables = [];
+                foreach ($data as $variable) {
+                    $variables[$variable->name] = $variable->val;
+                }
+                $collection[$langID][$section] = $variables;
+            }
+        }
+        $this->langVars = $collection;
+        $this->getPluginLangVars();
+        $this->saveLangVars();
 
         return $this;
+    }
+
+    private function getPluginLangVars(): void
+    {
+        $all = $this->db->getCollection(
+            'SELECT tplugin.cPluginID, l.cName AS name,
+                COALESCE(c.cName, tpluginsprachvariablesprache.cName) AS val,
+                tsprache.kSprache
+                FROM tplugin
+                    JOIN tpluginsprachvariable AS l
+                        ON tplugin.kPlugin = l.kPlugin
+                    LEFT JOIN tpluginsprachvariablecustomsprache AS c
+                        ON c.kPluginSprachvariable = l.kPluginSprachvariable
+                    LEFT JOIN tpluginsprachvariablesprache
+                        ON tpluginsprachvariablesprache.kPluginSprachvariable = l.kPluginSprachvariable
+                        AND tpluginsprachvariablesprache.cISO = COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)
+                    JOIN tsprache
+                        ON tsprache.cISO = COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)
+                WHERE tplugin.nStatus = :sts
+                ORDER BY l.kPluginSprachvariable',
+            ['sts' => State::ACTIVATED]
+        )->groupBy(['kSprache', 'cPluginID'])->toArray();
+        foreach ($all as $langID => $sections) {
+            $langID = (int)$langID;
+            foreach ($sections as $section => $data) {
+                $variables = [];
+                foreach ($data as $variable) {
+                    $variables[$variable->name] = $variable->val;
+                }
+                $this->langVars[$langID][$section] = $variables;
+            }
+        }
     }
 
     private function initLangData(): void
@@ -295,8 +326,7 @@ class LanguageHelper
                 'SELECT tsprache.*, tsprachiso.kSprachISO FROM tsprache 
                     LEFT JOIN tsprachiso
                         ON tsprache.cISO = tsprachiso.cISO
-                    ORDER BY tsprache.kSprache ASC',
-                []
+                    ORDER BY tsprache.kSprache ASC'
             );
             $tags    = [\CACHING_GROUP_LANGUAGE];
 
@@ -464,15 +494,13 @@ class LanguageHelper
      * @param int|null $sectionID
      * @return array
      */
-    public function gibSektionsWerte($sectionName, $sectionID = null): array
+    public function gibSektionsWerte(string $sectionName, ?int $sectionID = null): array
     {
-        $values        = [];
-        $localizations = [];
+        $values = [];
         if ($sectionID === null) {
             $section   = $this->db->select('tsprachsektion', 'cName', $sectionName);
-            $sectionID = $section->kSprachsektion ?? 0;
+            $sectionID = (int)($section->kSprachsektion ?? 0);
         }
-        $sectionID = (int)$sectionID;
         if ($sectionID > 0) {
             $localizations = $this->db->selectAll(
                 'tsprachwerte',
@@ -480,12 +508,40 @@ class LanguageHelper
                 [$this->currentLanguageID, $sectionID],
                 'cName, cWert'
             );
+        } else {
+            $localizations = $this->getPluginLocalizations($sectionName);
         }
         foreach ($localizations as $translation) {
             $values[$translation->cName] = $translation->cWert;
         }
 
         return $values;
+    }
+
+    /**
+     * @param string $pluginID
+     * @return array
+     */
+    private function getPluginLocalizations(string $pluginID): array
+    {
+        return $this->db->getObjects(
+            'SELECT l.cName, COALESCE(c.cName, tpluginsprachvariablesprache.cName) AS cWert
+                FROM tplugin
+                    JOIN tpluginsprachvariable AS l
+                        ON tplugin.kPlugin = l.kPlugin
+                    LEFT JOIN tpluginsprachvariablecustomsprache AS c
+                        ON c.kPluginSprachvariable = l.kPluginSprachvariable
+                    LEFT JOIN tpluginsprachvariablesprache
+                        ON tpluginsprachvariablesprache.kPluginSprachvariable = l.kPluginSprachvariable
+                        AND tpluginsprachvariablesprache.cISO = COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)
+                    JOIN tsprache
+                        ON tsprache.cISO = COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)
+                WHERE tplugin.nStatus = :sts
+                    AND tplugin.cPluginID = :pid
+                    AND tsprache.kSprache = :lid
+                ORDER BY l.cName, cWert',
+            ['sts' => State::ACTIVATED, 'pid' => $pluginID, 'lid' => $this->currentLanguageID]
+        );
     }
 
     /**
@@ -939,18 +995,20 @@ class LanguageHelper
     /**
      * gibt alle Sprachen zurück
      *
-     * @param int $returnType
+     * @param int  $returnType
      * 0 = Normales Array
      * 1 = Gib ein Assoc mit Key = kSprache
      * 2 = Gib ein Assoc mit Key = cISO
+     * @param bool $forceLoad
      * @return LanguageModel[]
+     * @throws \Exception
      * @former gibAlleSprachen()
      * @since  5.0.0
      */
-    private function mappedGetAllLanguages(int $returnType = 0)
+    private function mappedGetAllLanguages(int $returnType = 0, bool $forceLoad = false)
     {
         $languages = Frontend::getLanguages();
-        if (\count($languages) === 0) {
+        if ($forceLoad || \count($languages) === 0) {
             $languages = LanguageModel::loadAll($this->db, [], [])->toArray();
         }
         switch ($returnType) {

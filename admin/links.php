@@ -208,7 +208,7 @@ if ($action !== '' && Form::validateToken()) {
             break;
         case 'create-or-update-link':
             $hasHTML = [];
-            foreach (LanguageHelper::getAllLanguages() as $lang) {
+            foreach (LanguageHelper::getAllLanguages(0, true) as $lang) {
                 $hasHTML[] = 'cContent_' . $lang->getIso();
             }
             $checks = new PlausiCMS();

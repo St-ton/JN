@@ -52,6 +52,63 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function setActiveTemplate(string $dir, string $type = 'standard'): bool
+    {
+        $this->db->delete('ttemplate', 'eTyp', $type);
+        $this->db->delete('ttemplate', 'cTemplate', $dir);
+        $reader       = new XMLReader();
+        $tplConfig    = $reader->getXML($dir);
+        $parentConfig = false;
+        if ($tplConfig !== null && !empty($tplConfig->Parent)) {
+            if (!\is_dir(\PFAD_ROOT . \PFAD_TEMPLATES . $tplConfig->Parent)) {
+                return false;
+            }
+            $parent       = (string)$tplConfig->Parent;
+            $parentConfig = $reader->getXML($parent);
+        }
+        $model = new Model($this->db);
+        if (isset($tplConfig->ExsID)) {
+            $model->setExsID((string)$tplConfig->ExsID);
+        }
+        $model->setCTemplate($dir);
+        $model->setType($type);
+        if (!empty($tplConfig->Parent)) {
+            $model->setParent((string)$tplConfig->Parent);
+        }
+        $model->setName((string)$tplConfig->Name);
+        $model->setAuthor((string)$tplConfig->Author);
+        $model->setUrl((string)$tplConfig->URL);
+        $model->setPreview((string)$tplConfig->Preview);
+        $version = empty($tplConfig->Version) && $parentConfig
+            ? (string)$parentConfig->Version
+            : (string)$tplConfig->Version;
+        $model->setVersion($version);
+        if (!empty($tplConfig->Framework)) {
+            $model->setFramework((string)$tplConfig->Framework);
+        }
+        $model->setBootstrap((int)\file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $dir . '/Bootstrap.php'));
+        $save = $model->save();
+        if ($save === true) {
+            if (!$dh = \opendir(\PFAD_ROOT . \PFAD_COMPILEDIR)) {
+                return false;
+            }
+            while (($obj = \readdir($dh)) !== false) {
+                if (\mb_strpos($obj, '.') === 0) {
+                    continue;
+                }
+                if (!\is_dir(\PFAD_ROOT . \PFAD_COMPILEDIR . $obj)) {
+                    \unlink(\PFAD_ROOT . \PFAD_COMPILEDIR . $obj);
+                }
+            }
+        }
+        $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
+
+        return $save;
+    }
+
+    /**
      * @inheritDoc
      */
     public function save(): void
@@ -145,9 +202,8 @@ class TemplateService implements TemplateServiceInterface
         $template->setDocumentationURL(\trim((string)$xml->DokuURL));
         $template->setIsChild(!empty($xml->Parent));
         $template->setParent(!empty($xml->Parent) ? \trim((string)$xml->Parent) : null);
-        $template->setIsResponsive(empty($xml['isFullResponsive'])
-            ? false
-            : (\strtolower((string)$xml['isFullResponsive']) === 'true'));
+        $template->setIsResponsive(!empty($xml['isFullResponsive'])
+            && \strtolower((string)$xml['isFullResponsive']) === 'true');
         $template->setHasError(false);
         $template->setDescription(!empty($xml->Description) ? \trim((string)$xml->Description) : '');
         if ($parentXML !== null && !empty($xml->Parent)) {

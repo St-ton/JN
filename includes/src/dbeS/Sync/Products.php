@@ -9,6 +9,7 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
+use JTL\XML;
 use stdClass;
 use function Functional\flatten;
 use function Functional\map;
@@ -864,7 +865,7 @@ final class Products extends AbstractSync
             $productID = (int)$xml['tartikel attr']['kArtikel'];
         }
         if (!$productID) {
-            $this->logger->error('kArtikel fehlt! XML:' . \print_r($xml, true));
+            $this->logger->error('kArtikel fehlt! XML: ' . XML::getLastParseError() . ' in:' . \print_r($xml, true));
 
             return $res;
         }
@@ -926,7 +927,20 @@ final class Products extends AbstractSync
         }
         foreach ($xml['del_artikel']['kArtikel'] as $productID) {
             $productID = (int)$productID;
-            $parent    = Product::getParent($productID);
+            if ((int)($this->db->selectSingleRow(
+                'tartikel',
+                'kArtikel',
+                $productID,
+                null,
+                null,
+                null,
+                null,
+                false,
+                'kArtikel'
+            )->kArtikel ?? 0) === 0) {
+                continue;
+            }
+            $parent = Product::getParent($productID);
             $this->db->queryPrepared(
                 'DELETE teigenschaftkombiwert
                     FROM teigenschaftkombiwert
@@ -990,6 +1004,12 @@ final class Products extends AbstractSync
         $this->db->delete('tartikelsprache', 'kArtikel', $id);
         $this->db->delete('tartikelattribut', 'kArtikel', $id);
         $this->db->delete('tartikelwarenlager', 'kArtikel', $id);
+        $this->db->delete('tartikelabnahme', 'kArtikel', $id);
+        $this->db->delete('tartikelpicthistory', 'kArtikel', $id);
+        $this->db->delete('tsuchcachetreffer', 'kArtikel', $id);
+        $this->db->delete('timagemaparea', 'kArtikel', $id);
+        $this->db->delete('tvergleichslistepos', 'kArtikel', $id);
+        $this->db->delete('twunschlistepos', 'kArtikel', $id);
         $this->deleteProductAttributes($id);
         $this->deleteProductAttributeValues($id);
         $this->deleteProperties($id);
@@ -1117,6 +1137,7 @@ final class Products extends AbstractSync
         foreach ($this->db->selectAll('tuploadschema', 'kCustomID', $productID, 'kUploadSchema') as $upload) {
             $this->deleteUpload((int)$upload->kUploadSchema);
         }
+        $this->db->delete('tuploadqueue', 'kArtikel', $productID);
     }
 
     /**

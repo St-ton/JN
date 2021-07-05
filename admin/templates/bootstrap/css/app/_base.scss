@@ -108,3 +108,15 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 		right: 0;
 	}
 }
+
+.first-ml-auto {
+	> div:first-child {
+		margin-left: auto;
+	}
+}
+
+.second-ml-auto {
+	> div:nth-child(2) {
+		margin-left: auto;
+	}
+}

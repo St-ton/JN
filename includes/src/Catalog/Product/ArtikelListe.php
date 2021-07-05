@@ -215,7 +215,8 @@ class ArtikelListe
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = :cgid ' . Preise::getPriceJoinSql($customerGroupID) . " 
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid '
+                    . Preise::getPriceJoinSql($customerGroupID) . " 
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
                         AND tartikel.cTopArtikel = 'Y'

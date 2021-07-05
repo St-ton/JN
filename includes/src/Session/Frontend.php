@@ -201,17 +201,15 @@ class Frontend extends AbstractSession
             $_SESSION['jtl_token'] = Shop::Container()->getCryptoService()->randomString(32);
         }
         $defaultLang = '';
-        $allowed     = [];
         foreach ($_SESSION['Sprachen'] as $language) {
             $iso = Text::convertISO2ISO639($language->getCode());
             $language->setIso639($iso);
-            $allowed[] = $iso;
             if ($language->isShopDefault()) {
                 $defaultLang = $iso;
             }
         }
         if (!isset($_SESSION['kSprache'])) {
-            $default = Text::convertISO6392ISO($this->getBrowserLanguage($allowed, $defaultLang));
+            $default = Text::convertISO6392ISO($defaultLang);
             foreach ($_SESSION['Sprachen'] as $lang) {
                 if ($lang->cISO === $default || (empty($default) && $lang->cShopStandard === 'Y')) {
                     $_SESSION['kSprache']    = $lang->kSprache;

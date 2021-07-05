@@ -376,7 +376,12 @@ class Image
         ]);
         $img->save($thumbnail, $settings['quality'], $regExt);
         if ($streamOutput) {
-            echo $img->response($regExt);
+            $response = $img->response($regExt);
+            if (\is_object($response) && \method_exists($response, 'send')) {
+                $response->send();
+            } else {
+                echo $response;
+            }
         }
     }
 

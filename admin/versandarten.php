@@ -12,6 +12,7 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
 use JTL\Plugin\Helper as PluginHelper;
+use JTL\Services\JTL\CountryService;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -30,8 +31,9 @@ $shippingMethod  = null;
 $taxRateKeys     = array_keys($_SESSION['Steuersatz']);
 $alertHelper     = Shop::Container()->getAlertService();
 $countryHelper   = Shop::Container()->getCountryService();
-$languages       = LanguageHelper::getAllLanguages();
+$languages       = LanguageHelper::getAllLanguages(0, true);
 $getText         = Shop::Container()->getGetText();
+$cache           = Shop::Container()->getCache();
 $postData        = Text::filterXSS($_POST);
 
 $missingShippingClassCombis = getMissingShippingClassCombi();
@@ -47,7 +49,7 @@ if (Form::validateToken()) {
 
     if (Request::postInt('del') > 0 && Versandart::deleteInDB((int)$postData['del'])) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successShippingMethodDelete'), 'successShippingMethodDelete');
-        Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
+        $cache->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
     }
     if (Request::postInt('edit') > 0) {
         $step                            = 'neue Versandart';
@@ -83,7 +85,7 @@ if (Form::validateToken()) {
                 __('successShippingMethodDuplicated'),
                 'successShippingMethodDuplicated'
             );
-            Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
+            $cache->flushTags([CACHING_GROUP_OPTION]);
         } else {
             $alertHelper->addAlert(
                 Alert::TYPE_ERROR,
@@ -289,7 +291,7 @@ if (Form::validateToken()) {
                 }
                 $step = 'uebersicht';
             }
-            Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
+            $cache->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
         } else {
             $step = 'neue Versandart';
             if (!$shippingMethod->cName) {
@@ -329,6 +331,7 @@ if (Form::validateToken()) {
                 ->assign('gewaehlteLaender', explode(' ', $shippingMethod->cLaender));
         }
     }
+    $cache->flush(CountryService::CACHE_ID);
 }
 if ($step === 'neue Versandart') {
     $versandlaender = $countryHelper->getCountrylist();

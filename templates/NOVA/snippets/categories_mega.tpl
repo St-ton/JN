@@ -192,7 +192,7 @@
         {if $linkgroups->getLinkGroupByTemplate('Kopf') !== null}
         {block name='snippets-categories-mega-top-links'}
             {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}
-                {navitem class="nav-scrollbar-item" active=$Link->getIsActive() href=$Link->getURL() title=$Link->getTitle()}
+                {navitem class="nav-scrollbar-item d-lg-none" active=$Link->getIsActive() href=$Link->getURL() title=$Link->getTitle()}
                     {$Link->getName()}
                 {/navitem}
             {/foreach}
@@ -201,7 +201,7 @@
         {block name='layout-header-top-bar-user-settings'}
             {block name='layout-header-top-bar-user-settings-currency'}
                 {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
-                    <li class="currency-nav-scrollbar-item nav-item nav-scrollbar-item dropdown dropdown-full">
+                    <li class="currency-nav-scrollbar-item nav-item nav-scrollbar-item dropdown dropdown-full d-lg-none">
                         {block name='layout-header-top-bar-user-settings-currency-link'}
                             {link id='currency-dropdown' href='#' title={lang key='currency'} class="nav-link dropdown-toggle" target="_self"}
                                 {lang key='currency'}

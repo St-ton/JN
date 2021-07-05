@@ -4,11 +4,11 @@
         {opcMountPoint id='opc_before_shipping' inContainer=false}
         {if !isset($smarty.get.shipping_calculator)
             || (isset($smarty.get.shipping_calculator) && $smarty.get.shipping_calculator !== "0")}
-            {container fluid=$Link->getIsFluid() class="page-shipping"}
+            {container fluid=$Link->getIsFluid() class="page-shipping {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                 {if isset($smarty.session.Warenkorb->PositionenArr) && $smarty.session.Warenkorb->PositionenArr|@count > 0}
                     {block name='page-shipping-form'}
                         {form method="post"
-                            action="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}index.php{/if}{if $bExclusive}?exclusive_content=1{/if}"
+                            action="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}{get_static_route id='index.php'}{/if}{if $bExclusive}?exclusive_content=1{/if}"
                             class="jtl-validate shipping-calculator-form"
                             id="shipping-calculator-form"
                             slide=true}

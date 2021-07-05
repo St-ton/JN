@@ -351,26 +351,43 @@ class Navigation
 
                 if (Request::verifyGPCDataInt('accountPage') !== 1) {
                     $childPages = [
-                        'bestellungen'         => $this->language->get('myOrders'),
-                        'editRechnungsadresse' => $this->language->get('myPersonalData'),
-                        'wllist'               => $this->language->get('myWishlists'),
-                        'del'                  => $this->language->get('deleteAccount', 'login'),
-                        'bestellung'           => $this->language->get('bcOrder', 'breadcrumb'),
-                        'wl'                   => $this->language->get('bcWishlist', 'breadcrumb'),
-                        'pass'                 => $this->language->get('changePassword', 'login')
+                        'bestellungen'         => ['name' => $this->language->get('myOrders')],
+                        'editRechnungsadresse' => ['name' => $this->language->get('myPersonalData')],
+                        'wllist'               => ['name' => $this->language->get('myWishlists')],
+                        'del'                  => ['name' => $this->language->get('deleteAccount', 'login')],
+                        'bestellung'           => [
+                            'name' => $this->language->get('bcOrder', 'breadcrumb'),
+                            'parent' => 'bestellungen'
+                        ],
+                        'wl'                   => ['name' => $this->language->get('bcWishlist', 'breadcrumb')],
+                        'pass'                 => ['name' => $this->language->get('changePassword', 'login')]
                     ];
 
-                    foreach ($childPages as $childPage => $childPageLang) {
-                        if (Request::verifyGPCDataInt($childPage) === 0) {
+                    foreach ($childPages as $childPageKey => $childPageData) {
+                        $currentId = Request::verifyGPCDataInt($childPageKey);
+                        if ($currentId === 0) {
                             continue;
                         }
-                        $url     = $this->linkService->getStaticRoute('jtl.php', false) . '?' . $childPage . '=1';
-                        $urlFull = $this->linkService->getStaticRoute('jtl.php') . '?' . $childPage . '=1';
-                        $ele     = new NavigationEntry();
-                        $ele->setName($childPageLang);
+                        $hasParent = isset($childPageData['parent']);
+                        $childPage = $hasParent ? $childPageData['parent'] : $childPageKey;
+                        $url       = $this->linkService->getStaticRoute('jtl.php', false) . '?' . $childPage . '=1';
+                        $urlFull   = $this->linkService->getStaticRoute('jtl.php') . '?' . $childPage . '=1';
+                        $ele       = new NavigationEntry();
+                        $ele->setName($childPages[$childPage]['name']);
                         $ele->setURL($url);
                         $ele->setURLFull($urlFull);
                         $breadCrumb[] = $ele;
+                        if ($hasParent) {
+                            $url     = $this->linkService->getStaticRoute('jtl.php', false) . '?' . $childPageKey . '='
+                                . $currentId;
+                            $urlFull = $this->linkService->getStaticRoute('jtl.php') . '?' . $childPageKey . '='
+                                . $currentId;
+                            $ele     = new NavigationEntry();
+                            $ele->setName($childPageData['name']);
+                            $ele->setURL($url);
+                            $ele->setURLFull($urlFull);
+                            $breadCrumb[] = $ele;
+                        }
                     }
                 }
 

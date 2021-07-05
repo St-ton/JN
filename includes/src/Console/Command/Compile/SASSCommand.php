@@ -50,6 +50,8 @@ class SASSCommand extends Command
         } else {
             $this->compile($themeParam, $templateDir, $cacheDir, $io);
         }
+
+        return 0;
     }
 
     /**
@@ -79,7 +81,7 @@ class SASSCommand extends Command
         }
         $input = $directory . 'sass/' . $theme . '.scss';
         if (!\file_exists($input)) {
-            $io->error('Theme scss file does not exist. ');
+            $io->error("Theme scss file: $input does not exist. ");
             return;
         }
         try {
@@ -103,34 +105,15 @@ class SASSCommand extends Command
     private function compileSass(string $file, string $target, string $directory): void
     {
         $baseDir  = $directory . 'sass/';
+        $critical = \strpos($file, '_crit') !== false;
         $compiler = new Compiler();
-        $compiler->setSourceMap(Compiler::SOURCE_MAP_FILE);
-        $compiler->setSourceMapOptions([
-            'sourceMapBasepath' => $directory,
-            'sourceMapWriteTo'  => $target . '.map',
-            'sourceMapURL'      => \basename($target) . '.map'
-        ]);
-
+        $compiler->setSourceMap($critical ? Compiler::SOURCE_MAP_NONE : Compiler::SOURCE_MAP_FILE);
         $compiler->addImportPath($baseDir);
-        $compiler->addImportPath(static function ($path) use ($baseDir, $compiler) {
-            if (\strpos($path, '.css') === false) {
-                $possibleBases         = map($compiler->getParsedFiles(), static function ($i, $e) {
-                    return \pathinfo($e)['dirname'] . '/';
-                });
-                $possibleBases['base'] = $baseDir;
-                $possibleBases         = \array_unique(\array_values($possibleBases));
-                foreach ($possibleBases as $base) {
-                    $real = \realpath($base . $path . '.css');
-                    if ($real !== false && \file_exists($real)) {
-                        return $real;
-                    }
-                }
-            }
+        $result   = $compiler->compileString(\file_get_contents($file));
+        \file_put_contents($target, $result->getCss());
+        if (!$critical) {
+            \file_put_contents($target . '.map', $result->getSourceMap());
+        }
 
-            return 1;
-        });
-        $content = $compiler->compileString(\file_get_contents($file));
-        $content = \str_replace('content: \'\\\\', 'content: \'\\', $content);
-        \file_put_contents($target, $content);
     }
 }

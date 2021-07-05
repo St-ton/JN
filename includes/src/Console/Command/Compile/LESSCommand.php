@@ -52,7 +52,8 @@ class LESSCommand extends Command
             $io->writeln('...');
             $io->writeln('<info>Theme ' . $themeParam . ' was compiled successfully.</info>');
         }
-        return 1;
+
+        return 0;
     }
 
     /**
@@ -69,7 +70,7 @@ class LESSCommand extends Command
             unset($parser);
         } catch (\Exception $e) {
             $io->error($e->getMessage());
-            exit;
+            exit(1);
         }
     }
 }

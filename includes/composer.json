@@ -64,7 +64,7 @@
         "gettext/translator": "^1.0",
         "mrclay/minify": "^3.0",
         "marcusschwarz/lesserphp" :  "~0.5.1",
-        "scssphp/scssphp": "1.5.2"
+        "scssphp/scssphp": "^1.5.2"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",

@@ -88,7 +88,7 @@ build_create()
     echo "Writing config.JTL-Shop.ini.initial.php";
     build_create_config_file;
 	
-    echo "Compile css from less and scss files";
+    echo "Compile css from scss files";
     build_compile_css_files;
 	
     echo "Executing migrations";
@@ -394,7 +394,6 @@ build_add_files_to_patch_dir()
 
 build_compile_css_files()
 {
-	php ${REPOSITORY_DIR}/cli compile:less;
 	php ${REPOSITORY_DIR}/cli compile:sass;
 }
 build_reset_mailtemplates()

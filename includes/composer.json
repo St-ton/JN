@@ -63,7 +63,7 @@
         "nesbot/carbon": "^2.41",
         "gettext/translator": "^1.0",
         "mrclay/minify": "^3.0",
-        "marcusschwarz/lesserphp" :  "~0.5.1",
+        "wikimedia/less.php": "~3.0.0",
         "scssphp/scssphp": "^1.5.2"
     },
     "require-dev": {

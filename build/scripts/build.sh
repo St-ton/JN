@@ -88,9 +88,9 @@ build_create()
     echo "Writing config.JTL-Shop.ini.initial.php";
     build_create_config_file;
 	
-	echo "Compile css from less and scss files";
-	build_compile_css_files;
-
+    echo "Compile css from less and scss files";
+    build_compile_css_files;
+	
     echo "Executing migrations";
     build_migrate;
 

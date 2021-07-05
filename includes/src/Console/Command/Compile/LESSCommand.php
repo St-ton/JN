@@ -6,7 +6,7 @@ use JTL\Console\Command\Command;
 use JTL\Console\ConsoleIO;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\Filesystem;
-use lessc;
+use Less_Parser;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -63,9 +63,11 @@ class LESSCommand extends Command
      */
     private function compileLess(string $path, string $themeName, ConsoleIO $io): void
     {
-        $parser = new lessc();
+        $parser = new Less_Parser();
         try {
-            $parser->checkedCompile($path . '/less/theme.less', $path . '/bootstrap.css');
+            $parser->parseFile($path . '/less/theme.less', '/');
+            $css = $parser->getCss();
+            \file_put_contents($path . '/bootstrap.css', $css);
             $io->writeln('<info>compiled ' . $themeName . ' theme </info>');
             unset($parser);
         } catch (\Exception $e) {

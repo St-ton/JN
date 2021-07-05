@@ -94,6 +94,7 @@ class SASSCommand extends Command
             $io->writeln('<info>' . $theme . '.css was compiled successfully.</info>');
         } catch (\Exception $e) {
             $io->error($e->getMessage());
+            exit(1);
         }
     }
 
@@ -109,11 +110,10 @@ class SASSCommand extends Command
         $compiler = new Compiler();
         $compiler->setSourceMap($critical ? Compiler::SOURCE_MAP_NONE : Compiler::SOURCE_MAP_FILE);
         $compiler->addImportPath($baseDir);
-        $result   = $compiler->compileString(\file_get_contents($file));
+        $result = $compiler->compileString(\file_get_contents($file));
         \file_put_contents($target, $result->getCss());
         if (!$critical) {
             \file_put_contents($target . '.map', $result->getSourceMap());
         }
-
     }
 }

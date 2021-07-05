@@ -1040,7 +1040,7 @@ define('HOOK_CRON_EXPORTFORMATE_OUTPUT_FETCHED', 139);
  *
  * @file JTLSmarty.php
  * @param \JTL\Smarty\JTLSmarty smarty
- * @param phpQueryObject document
+ * @param \JTL\phpQuery\phpQueryObject document
  */
 define('HOOK_SMARTY_OUTPUTFILTER', 140);
 
@@ -1095,7 +1095,7 @@ define('HOOK_INDEX_SEO_404', 146);
  * triggered when checkbox has plugin special functions and is checked by a customer
  *
  * @file CheckBox.php
- * @param Checkbox - oCheckBox
+ * @param \JTL\CheckBox - oCheckBox
  */
 define('HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION', 147);
 

@@ -376,7 +376,7 @@ class BoxService implements BoxServiceInterface
             );
             if (isset($_SESSION['AdminAccount'])) {
                 $boxData = map($boxData, static function ($box) {
-                    $box->cName = __($box->cName ?? '');
+                    $box->cName = \__($box->cName ?? '');
 
                     return $box;
                 });

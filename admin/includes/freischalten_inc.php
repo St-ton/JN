@@ -281,7 +281,7 @@ function mappeLiveSuche($queryIDs, string $mapTo): int
         return 2; // Leere Übergabe
     }
     $db = Shop::Container()->getDB();
-    foreach (\array_map('\intval', $queryIDs) as $queryID) {
+    foreach (array_map('\intval', $queryIDs) as $queryID) {
         $query = $db->select('tsuchanfrage', 'kSuchanfrage', $queryID);
         if ($query === null || empty($query->kSuchanfrage)) {
             return 3; // Mindestens eine Suchanfrage wurde nicht in der Datenbank gefunden.

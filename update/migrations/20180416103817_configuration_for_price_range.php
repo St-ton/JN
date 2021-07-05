@@ -18,8 +18,7 @@ class Migration_20180416103817 extends Migration implements IMigration
     protected $description = 'Configuration for price range';
 
     /**
-     * @return bool|void
-     * @throws Exception
+     * @inheritdoc
      */
     public function up()
     {

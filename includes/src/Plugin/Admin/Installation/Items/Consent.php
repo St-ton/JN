@@ -41,7 +41,7 @@ class Consent extends AbstractItem
             if ($consentID <= 0) {
                 return InstallCode::SQL_CANNOT_SAVE_VENDOR;
             }
-            $allLanguages            = \collect(LanguageHelper::getAllLanguages(1));
+            $allLanguages            = \collect(LanguageHelper::getAllLanguages(1, true));
             $defaultLanguage         = LanguageHelper::getDefaultLanguage();
             $localization            = new stdClass();
             $localization->consentID = $consentID;

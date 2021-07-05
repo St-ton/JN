@@ -12,7 +12,7 @@ class Migration_20200204112200 extends Migration implements IMigration
     protected $description = 'Remove global meta keywords';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -21,7 +21,7 @@ class Migration_20200204112200 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
+     * @inheritdoc
      */
     public function down()
     {

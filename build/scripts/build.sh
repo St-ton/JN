@@ -27,19 +27,35 @@ build_create()
     git config diff.renames 0;
 
     echo "Create build info";
-#   create_version_string ${REPOSITORY_DIR} ${APPLICATION_VERSION} ${APPLICATION_BUILD_SHA};
 
-#   if [[ "$APPLICATION_VERSION"  == "master" ]]; then
-#       if [[ ! -z "${NEW_VERSION}" ]]; then
-#           export APPLICATION_VERSION_STR=${NEW_VERSION};
-#       fi
-#   else
-#       export APPLICATION_VERSION_STR=${APPLICATION_VERSION};
+	# extract version from defines_inc.php -> APPLICATION_VERSION
+	definesInc=`cat ${REPOSITORY_DIR}/includes/defines_inc.php`;
+	pattern=".*define\('APPLICATION_VERSION', '([0-9]\.[0-9].[0-9])(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?'\);";
 
-    export APPLICATION_VERSION_STR=`cat ${REPOSITORY_DIR}/VERSION`;
-    sed -i "s/'APPLICATION_VERSION', '.*'/'APPLICATION_VERSION', '${APPLICATION_VERSION_STR}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
+	if [[ $definesInc =~ $pattern ]];then
+		if [[ ! -z "${BASH_REMATCH[2]}" ]]; then
+			  #if string contains prerelease versions like alpha|beta|rc
+			  export APPLICATION_VERSION_STR="${BASH_REMATCH[1]}${BASH_REMATCH[2]}";
+		else
+			  export APPLICATION_VERSION_STR="${BASH_REMATCH[1]}";
+		fi
+	else
+		echo "version extraction pattern did not found a match"
+	fi
+	
+	#if tag was created, check if defines_inc version matches the tag version, if not, abort.
+    if [[ ${APPLICATION_VERSION} =~ ${VERSION_REGEX} ]]; then
+		if [[ "v${APPLICATION_VERSION_STR}" != "${APPLICATION_VERSION}" ]]; then
+			echo "Tag creation aborted, please make sure the APPLICATION_VERSION (includes/defines_inc.php) and the tag version are the same (don't mind the leading 'v').";
+			echo "parsed APPLICATION_VERSION: v${APPLICATION_VERSION_STR}";
+			echo "tag version: ${APPLICATION_VERSION} ";
+			echo "\n\nPLEASE DELETE THE FAILED, LAST CREATED TAG BEFORE CREATING A NEW ONE!";
+			exit 1;
+		fi
+    fi
+	
+	# insert git sha hash into defines_inc.php -> APPLICATION_BUILD_SHA
     sed -i "s/'APPLICATION_BUILD_SHA', '#DEV#'/'APPLICATION_BUILD_SHA', '${APPLICATION_BUILD_SHA}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
-    rm ${REPOSITORY_DIR}/VERSION
 
     echo "Executing composer";
     build_composer_execute;
@@ -88,8 +104,8 @@ build_create()
     build_clean_up;
 
     if [[ ${APPLICATION_VERSION} =~ ${VERSION_REGEX} ]]; then
-        echo "Create patch(es)";
-        build_create_patches "${BASH_REMATCH[@]}";
+	    echo "Create patch(es)";
+	    build_create_patches "${BASH_REMATCH[@]}";
     fi
 
     # Activate git renameList

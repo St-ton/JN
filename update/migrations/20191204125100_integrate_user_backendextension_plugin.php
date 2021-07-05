@@ -7,7 +7,6 @@
  * @created Wed, 04 Dec 2019 12:51:00 +0200
  */
 
-use JTL\DB\ReturnType;
 use JTL\Plugin\Admin\StateChanger;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
@@ -35,22 +34,21 @@ class Migration_20191204125100 extends Migration implements IMigration
         $pluginValidator = new PluginValidator($db, $parser);
         $stateChanger    = new StateChanger($db, $cache, $legacyValidator, $pluginValidator);
 
-        $res = $db->query(
+        $res = $db->getSingleObject(
             "SELECT kPlugin
                   FROM tplugin
-                  WHERE cPluginID = 'jtl_backenduser_extension'",
-            ReturnType::SINGLE_OBJECT
+                  WHERE cPluginID = 'jtl_backenduser_extension'"
         );
-        if (!empty($res)) {
-            $stateChanger->deactivate($res->kPlugin);
+        if ($res !== null) {
+            $stateChanger->deactivate((int)$res->kPlugin);
         }
 
-        $this->execute("
-          UPDATE `tadminloginattribut`
-            SET cAttribValue = 'N'
-            WHERE cName = 'useAvatar'
-              AND cAttribValue = 'G'
-        ");
+        $this->execute(
+          "UPDATE `tadminloginattribut`
+               SET cAttribValue = 'N'
+               WHERE cName = 'useAvatar'
+               AND cAttribValue = 'G'"
+        );
         $this->execute("DELETE FROM `tadminloginattribut` WHERE cName = 'useGPlus' OR cName = 'useGravatarEmail'");
     }
 
@@ -59,6 +57,5 @@ class Migration_20191204125100 extends Migration implements IMigration
      */
     public function down()
     {
-
     }
 }

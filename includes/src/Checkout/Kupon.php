@@ -1159,7 +1159,7 @@ class Kupon
             case 0:
                 Shop::Container()->getAlertService()->addAlert(
                     Alert::TYPE_SUCCESS,
-                    Shop::Lang()->get('couponSuccess', 'global'),
+                    Shop::Lang()->get('couponSuccess'),
                     'couponSuccess'
                 );
                 return null;

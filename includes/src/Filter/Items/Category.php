@@ -32,7 +32,7 @@ class Category extends BaseCategory
              ->setUrlParam('kf')
              ->setUrlParamSEO(\SEP_KAT)
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_kategoriefilter_benutzen'])
-             ->setFrontendName(Shop::isAdmin() ? __('filterCategory') : Shop::Lang()->get('allCategories'))
+             ->setFrontendName(Shop::isAdmin() ? \__('filterCategory') : Shop::Lang()->get('allCategories'))
              ->setType($this->getConfig('navigationsfilter')['category_filter_type'] === 'O'
                 ? Type::OR
                 : Type::AND);

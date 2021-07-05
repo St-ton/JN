@@ -37,18 +37,18 @@ class Banner extends Portlet
         return [
             'src' => [
                 'type'  => InputType::IMAGE,
-                'label' => __('Image'),
+                'label' => \__('Image'),
                 'thumb' => true,
             ],
             'zones' => [
                 'type'    => InputType::ZONES,
-                'label'   => __('bannerAreas'),
+                'label'   => \__('bannerAreas'),
                 'srcProp' => 'src',
                 'default' => [],
             ],
             'alt'   => [
-                'label' => __('alternativeText'),
-                'desc'  => __('altTextDesc'),
+                'label' => \__('alternativeText'),
+                'desc'  => \__('altTextDesc'),
             ],
         ];
     }
@@ -59,8 +59,8 @@ class Banner extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            __('Styles')    => 'styles',
-            __('Animation') => 'animations',
+            \__('Styles')    => 'styles',
+            \__('Animation') => 'animations',
         ];
     }
 }

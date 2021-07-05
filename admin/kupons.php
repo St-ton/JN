@@ -24,7 +24,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
 $action      = '';
 $tab         = Kupon::TYPE_STANDARD;
-$languages   = LanguageHelper::getAllLanguages();
+$languages   = LanguageHelper::getAllLanguages(0, true);
 $coupon      = null;
 $alertHelper = Shop::Container()->getAlertService();
 $errors      = [];

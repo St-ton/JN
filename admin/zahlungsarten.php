@@ -175,7 +175,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
     }
     $localized               = new stdClass();
     $localized->kZahlungsart = Request::postInt('kZahlungsart');
-    foreach (LanguageHelper::getAllLanguages() as $lang) {
+    foreach (LanguageHelper::getAllLanguages(0, true) as $lang) {
         $langCode               = $lang->getCode();
         $localized->cISOSprache = $langCode;
         $localized->cName       = $paymentMethod->cName;

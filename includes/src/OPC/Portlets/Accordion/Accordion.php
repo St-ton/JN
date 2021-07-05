@@ -19,12 +19,12 @@ class Accordion extends Portlet
         return [
             'groups' => [
                 'type' => InputType::TEXT_LIST,
-                'label' => __('groupName'),
-                'default' => [__('groupName')]
+                'label' => \__('groupName'),
+                'default' => [\__('groupName')]
             ],
             'expanded' => [
                 'type' => InputType::CHECKBOX,
-                'label' => __('unfoldFirstGroup')
+                'label' => \__('unfoldFirstGroup')
             ]
         ];
     }
@@ -35,7 +35,7 @@ class Accordion extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            __('Styles') => 'styles',
+            \__('Styles') => 'styles',
         ];
     }
 }

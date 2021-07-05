@@ -154,7 +154,7 @@ class AdminAccountManager
         }
         if (!empty($perms)) {
             $permissionsOrdered[] = (object)[
-                'name'     => __('noMenuItem'),
+                'name'     => \__('noMenuItem'),
                 'children' => [(object)[
                     'name'       => '',
                     'permissions' => $perms
@@ -282,7 +282,7 @@ class AdminAccountManager
                     'attribText' => $longText ?? null
                 ]
             ) === 0) {
-                $this->addError(\sprintf(__('errorKeyChange'), $key));
+                $this->addError(\sprintf(\__('errorKeyChange'), $key));
             }
             $handledKeys[] = $key;
         }
@@ -319,12 +319,12 @@ class AdminAccountManager
                 $attribs['useAvatarUpload'] = $this->uploadAvatarImage($_FILES['extAttribs'], 'useAvatarUpload');
 
                 if ($attribs['useAvatarUpload'] === false) {
-                    $this->addError(__('errorImageUpload'));
+                    $this->addError(\__('errorImageUpload'));
 
                     $result = ['useAvatarUpload' => 1];
                 }
             } elseif (empty($attribs['useAvatarUpload'])) {
-                $this->addError(__('errorImageMissing'));
+                $this->addError(\__('errorImageMissing'));
 
                 $result = ['useAvatarUpload' => 1];
             }
@@ -335,7 +335,7 @@ class AdminAccountManager
             $attribs['useAvatarUpload'] = '';
         }
 
-        foreach (LanguageHelper::getAllLanguages() as $language) {
+        foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
             $useVita_ISO = 'useVita_' . $language->cISO;
             if (!empty($attribs[$useVita_ISO])) {
                 $shortText = Text::filterXSS($attribs[$useVita_ISO]);
@@ -410,10 +410,10 @@ class AdminAccountManager
         if (!empty($account->kAdminlogin)
             && (int)$account->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin
         ) {
-            $this->addError(__('errorSelfLock'));
+            $this->addError(\__('errorSelfLock'));
         } elseif (\is_object($account)) {
             if ((int)$account->kAdminlogingruppe === \ADMINGROUP) {
-                $this->addError(__('errorLockAdmin'));
+                $this->addError(\__('errorLockAdmin'));
             } else {
                 $result = true;
                 $this->db->update('tadminlogin', 'kAdminlogin', $adminID, (object)['bAktiv' => 0]);
@@ -425,11 +425,11 @@ class AdminAccountManager
                     'result'   => &$result
                 ]);
                 if ($result === true) {
-                    $this->addNotice(__('successLock'));
+                    $this->addNotice(\__('successLock'));
                 }
             }
         } else {
-            $this->addError(__('errorUserNotFound'));
+            $this->addError(\__('errorUserNotFound'));
         }
 
         return 'index_redirect';
@@ -453,10 +453,10 @@ class AdminAccountManager
                 'result'   => &$result
             ]);
             if ($result === true) {
-                $this->addNotice(__('successUnlocked'));
+                $this->addNotice(\__('successUnlocked'));
             }
         } else {
-            $this->addError(__('errorUserNotFound'));
+            $this->addError(\__('errorUserNotFound'));
         }
 
         return 'index_redirect';
@@ -525,7 +525,7 @@ class AdminAccountManager
                 $errors['cMail'] = 2;
                 $this->alertService->addAlert(
                     Alert::TYPE_DANGER,
-                    __('validationErrorIncorrectEmail'),
+                    \__('validationErrorIncorrectEmail'),
                     'validationErrorIncorrectEmail'
                 );
             }
@@ -557,9 +557,9 @@ class AdminAccountManager
             }
             if (\count($errors) > 0) {
                 $this->smarty->assign('cError_arr', $errors);
-                $this->addError(__('errorFillRequired'));
+                $this->addError(\__('errorFillRequired'));
                 if (isset($errors['bMinAdmin']) && $errors['bMinAdmin'] === 1) {
-                    $this->addError(__('errorAtLeastOneAdmin'));
+                    $this->addError(\__('errorAtLeastOneAdmin'));
                 }
             } elseif ($tmpAcc->kAdminlogin > 0) {
                 if (!$validUntil) {
@@ -594,13 +594,13 @@ class AdminAccountManager
                         'result'   => &$result
                     ]);
                     if ($result === true) {
-                        $this->addNotice(__('successUserSave'));
+                        $this->addNotice(\__('successUserSave'));
 
                         return 'index_redirect';
                     }
                     $this->smarty->assign('cError_arr', \array_merge($errors, (array)$result));
                 } else {
-                    $this->addError(__('errorUserSave'));
+                    $this->addError(\__('errorUserSave'));
                     $this->smarty->assign('cError_arr', $errors);
                 }
             } else {
@@ -625,13 +625,13 @@ class AdminAccountManager
                         'result'   => &$result
                     ]);
                     if ($result === true) {
-                        $this->addNotice(__('successUserAdd'));
+                        $this->addNotice(\__('successUserAdd'));
 
                         return 'index_redirect';
                     }
                     $this->smarty->assign('cError_arr', \array_merge($errors, (array)$result));
                 } else {
-                    $this->addError(__('errorUserAdd'));
+                    $this->addError(\__('errorUserAdd'));
                     $this->smarty->assign('cError_arr', $errors);
                 }
             }
@@ -691,10 +691,10 @@ class AdminAccountManager
         )->cnt;
         $account    = $this->db->select('tadminlogin', 'kAdminlogin', $adminID);
         if ($account !== null && (int)$account->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
-            $this->addError(__('errorSelfDelete'));
+            $this->addError(\__('errorSelfDelete'));
         } elseif (\is_object($account)) {
             if ((int)$account->kAdminlogingruppe === \ADMINGROUP && $groupCount <= 1) {
-                $this->addError(__('errorAtLeastOneAdmin'));
+                $this->addError(\__('errorAtLeastOneAdmin'));
             } elseif ($this->deleteAttributes($account) &&
                 $this->db->delete('tadminlogin', 'kAdminlogin', $adminID)) {
                 $result = true;
@@ -706,13 +706,13 @@ class AdminAccountManager
                     'result'   => &$result
                 ]);
                 if ($result === true) {
-                    $this->addNotice(__('successUserDelete'));
+                    $this->addNotice(\__('successUserDelete'));
                 }
             } else {
-                $this->addError(__('errorUserDelete'));
+                $this->addError(\__('errorUserDelete'));
             }
         } else {
-            $this->addError(__('errorUserNotFound'));
+            $this->addError(\__('errorUserNotFound'));
         }
 
         return 'index_redirect';
@@ -756,9 +756,9 @@ class AdminAccountManager
                     ->assign('cAdminGroupPermission_arr', $groupPermissions);
 
                 if (isset($errors['cPerm'])) {
-                    $this->addError(__('errorAtLeastOneRight'));
+                    $this->addError(\__('errorAtLeastOneRight'));
                 } else {
-                    $this->addError(__('errorFillRequired'));
+                    $this->addError(\__('errorFillRequired'));
                 }
             } else {
                 if ($adminGroup->kAdminlogingruppe > 0) {
@@ -779,7 +779,7 @@ class AdminAccountManager
                         $permission->cRecht = $oAdminGroupPermission;
                         $this->db->insert('tadminrechtegruppe', $permission);
                     }
-                    $this->addNotice(__('successGroupEdit'));
+                    $this->addNotice(\__('successGroupEdit'));
 
                     return 'group_redirect';
                 }
@@ -792,7 +792,7 @@ class AdminAccountManager
                     $permission->cRecht = $oAdminGroupPermission;
                     $this->db->insert('tadminrechtegruppe', $permission);
                 }
-                $this->addNotice(__('successGroupCreate'));
+                $this->addNotice(\__('successGroupCreate'));
 
                 return 'group_redirect';
             }
@@ -823,7 +823,7 @@ class AdminAccountManager
             ['gid' => $groupID]
         )->cnt;
         if ($count !== 0) {
-            $this->addError(__('errorGroupDeleteCustomer'));
+            $this->addError(\__('errorGroupDeleteCustomer'));
 
             return 'group_redirect';
         }
@@ -831,9 +831,9 @@ class AdminAccountManager
         if ($groupID !== \ADMINGROUP) {
             $this->db->delete('tadminlogingruppe', 'kAdminlogingruppe', $groupID);
             $this->db->delete('tadminrechtegruppe', 'kAdminlogingruppe', $groupID);
-            $this->addNotice(__('successGroupDelete'));
+            $this->addNotice(\__('successGroupDelete'));
         } else {
-            $this->addError(__('errorGroupDelete'));
+            $this->addError(\__('errorGroupDelete'));
         }
 
         return 'group_redirect';
@@ -931,7 +931,7 @@ class AdminAccountManager
                 if (Request::postInt('id') > 0) {
                     $this->alertService->addAlert(
                         Alert::TYPE_WARNING,
-                        __('warningPasswordResetAuth'),
+                        \__('warningPasswordResetAuth'),
                         'warningPasswordResetAuth'
                     );
                 }

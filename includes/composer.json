@@ -42,7 +42,7 @@
         "chamilo/pclzip": "^2.8",
         "psr/container": "1.0.0",
         "lstrojny/functional-php": "^1.14",
-        "monolog/monolog": "~2.0",
+        "monolog/monolog": "^2.1",
         "myclabs/php-enum": "^1.7",
         "jtlshop/semver": "~0.0.7",
         "studio-42/elfinder": "^2.1",

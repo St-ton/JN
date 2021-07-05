@@ -203,7 +203,7 @@ if (Form::validateToken()) {
         }
         // Kundengruppe
         $shippingMethod->cKundengruppen = '';
-        if (!$postData['kKundengruppe']) {
+        if (!isset($postData['kKundengruppe'])) {
             $postData['kKundengruppe'] = [-1];
         }
         if (is_array($postData['kKundengruppe'])) {
@@ -213,7 +213,7 @@ if (Form::validateToken()) {
                 $shippingMethod->cKundengruppen = ';' . implode(';', $postData['kKundengruppe']) . ';';
             }
         }
-        //Versandklassen
+        // Versandklassen
         $shippingMethod->cVersandklassen = ((!empty($postData['kVersandklasse']) && $postData['kVersandklasse'] !== '-1')
             ? ' ' . $postData['kVersandklasse'] . ' '
             : '-1');

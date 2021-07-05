@@ -222,7 +222,12 @@ final class Globals extends AbstractSync
             return;
         }
         if ($del) {
-            $this->db->query('DELETE FROM ' . $tablename);
+            if ($tablename === 'tsprache') {
+                $this->db->query("DELETE FROM tsprache WHERE cISO != 'ger' AND cISO != 'eng'");
+                $this->db->query("UPDATE tsprache SET active = FALSE, cShopStandard = 'N', cStandard = 'N'");
+            } else {
+                $this->db->query('DELETE FROM ' . $tablename);
+            }
         }
         foreach ($objects as $object) {
             //hack? unset arrays/objects that would result in nicedb exceptions
@@ -231,7 +236,7 @@ final class Globals extends AbstractSync
                     unset($object->$key);
                 }
             }
-            $key = $this->db->insert($tablename, $object);
+            $key = $this->db->upsert($tablename, $object);
             if (!$key) {
                 $this->logger->error(__METHOD__ . ' failed: ' . $tablename . ', data: ' . \print_r($object, true));
             }

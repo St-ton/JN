@@ -49,8 +49,8 @@ class ExtensionPoint
      */
     public function load(): self
     {
-        $db        = Shop::Container()->getDB();
-        $key       = $this->getPageKey();
+        $db         = Shop::Container()->getDB();
+        $key        = $this->getPageKey();
         $extensions = $db->getObjects(
             "SELECT cClass, kInitial FROM textensionpoint
                 WHERE (kSprache = :lid OR kSprache = 0)

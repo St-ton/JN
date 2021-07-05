@@ -84,7 +84,9 @@ class PluginLoader extends AbstractLoader
      */
     public function loadFromObject(stdClass $obj, string $currentLanguageCode): PluginInterface
     {
-        $id      = (int)$obj->kPlugin;
+        $hm = HookManager::getInstance();
+        $id = (int)$obj->kPlugin;
+        $hm->lock($id);
         $paths   = $this->loadPaths($obj->cVerzeichnis);
         $plugin  = new Plugin();
         $getText = Shop::Container()->getGetText();
@@ -112,6 +114,7 @@ class PluginLoader extends AbstractLoader
         $plugin->setPaymentMethods($this->loadPaymentMethods($plugin));
 
         $this->saveToCache($plugin);
+        $hm->unlock();
 
         return $plugin;
     }

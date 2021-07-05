@@ -365,29 +365,6 @@ build_add_files_to_patch_dir()
     rsync -rR includes/ext/ ${PATCH_DIR};
     rsync -rR includes/vendor/ ${PATCH_DIR};
     rsync -rR templates/NOVA/checksums.csv ${PATCH_DIR};
-
-    # if [[ -f "${PATCH_DIR}/includes/composer.lock" ]]; then
-        # mkdir "/tmp_composer-${PATCH_VERSION}";
-        # mkdir "/tmp_composer-${PATCH_VERSION}/includes";
-        # touch "/tmp_composer-${PATCH_VERSION}/includes/composer.json";
-        # git show ${PATCH_VERSION}:includes/composer.json > /tmp_composer-${PATCH_VERSION}/includes/composer.json;
-        # git show ${PATCH_VERSION}:includes/composer.lock > /tmp_composer-${PATCH_VERSION}/includes/composer.lock;
-        # composer install --no-dev -o -q -d /tmp_composer-${PATCH_VERSION}/includes;
-
-        # while read -r line;
-        # do
-            # path=$(echo "${line}" | grep "^Files.*differ$" | sed 's/^Files .* and \(.*\) differ$/\1/');
-            # if [[ -z "${path}" ]]; then
-                # filename=$(echo "${line}" | grep "^Only in includes\/vendor.*: .*$" | sed 's/^Only in \(includes\/vendor[\/]*.*\): \(.*\)$/\1\/\2/');
-                # if [[ ! -z "${filename}" ]]; then
-                    # path="${filename}";
-                    # rsync -Ra -f"+ *" ${path} ${PATCH_DIR};
-                # fi
-            # else
-                # rsync -R ${path} ${PATCH_DIR};
-            # fi
-        # done< <(diff -rq /tmp_composer-${PATCH_VERSION}/includes/vendor includes/vendor);
-    # fi
 }
 
 build_reset_mailtemplates()

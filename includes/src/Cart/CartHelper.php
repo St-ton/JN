@@ -101,21 +101,21 @@ class CartHelper
             return;
         }
         foreach ($payments as $payed) {
-            $incomming = (float)$payed->fBetrag;
-            if ($incomming === 0.0) {
+            $incoming = (float)$payed->fBetrag;
+            if ($incoming === 0.0) {
                 continue;
             }
 
-            $cartInfo->total[self::NET]     -= $incomming;
-            $cartInfo->total[self::GROSS]   -= $incomming;
-            $cartInfo->article[self::NET]   -= $incomming;
-            $cartInfo->article[self::GROSS] -= $incomming;
+            $cartInfo->total[self::NET]     -= $incoming;
+            $cartInfo->total[self::GROSS]   -= $incoming;
+            $cartInfo->article[self::NET]   -= $incoming;
+            $cartInfo->article[self::GROSS] -= $incoming;
             $cartInfo->items[]               = (object)[
                 'name'     => \html_entity_decode($payed->cZahlungsanbieter),
                 'quantity' => 1,
                 'amount'   => [
-                    self::NET   => -$incomming,
-                    self::GROSS => -$incomming
+                    self::NET   => -$incoming,
+                    self::GROSS => -$incoming
                 ]
             ];
         }

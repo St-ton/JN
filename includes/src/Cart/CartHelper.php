@@ -15,6 +15,7 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
+use JTL\DB\ReturnType;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Extensions\Config\Configurator;
@@ -76,6 +77,48 @@ class CartHelper
         // positive discount
         $cartInfo->discount[self::NET]   *= -1;
         $cartInfo->discount[self::GROSS] *= -1;
+    }
+
+    /**
+     * @param stdClass $cartInfo
+     * @param int      $orderId
+     */
+    protected function calculatePayment(stdClass $cartInfo, int $orderId): void
+    {
+        if ($orderId <= 0) {
+            return;
+        }
+        $payments = Shop::Container()->getDB()->queryPrepared(
+            'SELECT cZahlungsanbieter, fBetrag
+                FROM tzahlungseingang
+                WHERE kBestellung = :orderId',
+            [
+                'orderId' => $orderId
+            ],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        if (!$payments) {
+            return;
+        }
+        foreach ($payments as $payed) {
+            $incoming = (float)$payed->fBetrag;
+            if ($incoming === 0.0) {
+                continue;
+            }
+
+            $cartInfo->total[self::NET]     -= $incoming;
+            $cartInfo->total[self::GROSS]   -= $incoming;
+            $cartInfo->article[self::NET]   -= $incoming;
+            $cartInfo->article[self::GROSS] -= $incoming;
+            $cartInfo->items[]               = (object)[
+                'name'     => \html_entity_decode($payed->cZahlungsanbieter),
+                'quantity' => 1,
+                'amount'   => [
+                    self::NET   => -$incoming,
+                    self::GROSS => -$incoming
+                ]
+            ];
+        }
     }
 
     /**
@@ -192,6 +235,7 @@ class CartHelper
         }
 
         $this->calculateCredit($info);
+        $this->calculatePayment($info, $this->getIdentifier());
         $this->calculateTotal($info);
 
         $formatter = static function ($prop) use ($decimals) {

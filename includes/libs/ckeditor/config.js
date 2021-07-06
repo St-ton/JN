@@ -40,5 +40,6 @@ CKEDITOR.editorConfig = function( config ) {
     config.ignoreEmptyParagraph = false;
     config.fillEmptyBlocks = false;
     config.autoParagraph = false;
+    config.removePlugins = 'exportpdf,language,iframe,flash';
 
 };

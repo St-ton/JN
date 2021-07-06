@@ -931,6 +931,10 @@ final class Shop
             $manager = new Manager(self::Container()->getDB());
             die(\json_encode((object)['status' => 'OK', 'data' => $manager->save(Request::postVar('data'))]));
         }
+        if (Request::postVar('action') === 'initconsent' && Form::validateToken()) {
+            $manager = new Manager(self::Container()->getDB());
+            die(\json_encode((object)['status' => 'OK', 'data' => $manager->save(Request::postVar('data'))]));
+        }
         self::$kKonfigPos             = Request::verifyGPCDataInt('ek');
         self::$kKategorie             = Request::verifyGPCDataInt('k');
         self::$kArtikel               = Request::verifyGPCDataInt('a');

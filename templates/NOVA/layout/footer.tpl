@@ -260,6 +260,14 @@
                     setTimeout(function() {
                         $('#consent-manager, #consent-settings-btn').removeClass('d-none');
                     }, 100)
+                    document.addEventListener('consent.ready', function(e) {
+                        $.post('{$ShopURLSSL}/', {
+                                'action': 'initconsent',
+                                'jtl_token': '{$smarty.session.jtl_token}',
+                                'data': e.detail
+                            }
+                        );
+                    });
                     window.CM = new ConsentManager({
                         version: 1
                     });

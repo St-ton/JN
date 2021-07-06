@@ -139,7 +139,7 @@ if ($ratingPage === 0) {
 }
 if ($AktuellerArtikel->Bewertungen === null || $ratingStars > 0) {
     $AktuellerArtikel->holeBewertung(
-        $conf['bewertung']['bewertung_anzahlseite'],
+        -1,
         $ratingPage,
         $ratingStars,
         $conf['bewertung']['bewertung_freischalten'],

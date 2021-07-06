@@ -220,7 +220,7 @@
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
                                 {col cols=$cols lg=2 class="checkout-items-item-price-single text-nowrap-util"}
                                     {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                                        {if (!$oPosition->istKonfigVater() || $oPosition->oKonfig_arr|count === 0)}
+                                        {if (!$oPosition->istKonfigVater() || !isset($oPosition->oKonfig_arr) || $oPosition->oKonfig_arr|count === 0)}
                                             <span class="checkout-items-item-title">{lang key="pricePerUnit" section="productDetails"}:</span>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
                                         {/if}
                                     {/if}

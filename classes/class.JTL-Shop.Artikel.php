@@ -2418,40 +2418,14 @@ class Artikel
                         ));
                         $this->Variationen[$nZaehler]->Werte[$i]->cAufpreisLocalized[1] = gibPreisStringLocalized($this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto);
                         // Wenn der Artikel ein VarikombiKind ist, rechne nicht nochmal die Variationsaufpreise drauf
+                        //(int)$this->Variationen[$nZaehler]->Werte[$i]->oVariationsKombi->kArtikel
                         if ($this->kVaterArtikel > 0) {
-                            $surcharge          = $this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto;
-                            $parentProductPrice = new Preise(
+                            $variationBasePrice = new Preise(
                                 $kKundengruppe,
-                                $this->kVaterArtikel,
+                                (int)$this->Variationen[$nZaehler]->Werte[$i]->oVariationsKombi->kArtikel,
                                 isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0
                             );
-                            //Wenn nur übergeordnete Varkombiaufpreise gesetzt sind (keine Kundengruppenaufpreise)
-                            if ($parentProductPrice->fVKNetto <= 0) {
-                                $productOptions                            = new stdClass();
-                                $productOptions->nKeinLagerbestandBeachten = 1;
-                                $productOptions->nArtikelAttribute         = 1;
-                                $productOptions->nVariationen              = 0;
-                                $parentProductPrice                        = (new self)
-                                    ->fuelleArtikel($this->kVaterArtikel, $productOptions)->Preise;
-                            }
-
-                            $VariationVKNetto   = $surcharge + $parentProductPrice->fVKNetto;
-                            $varKombiSurcharges = 0;
-
-                            foreach ($oVariationTMP_arr as $variation) {
-                                if ((int)$variation->kEigenschaft === $this->Variationen[$nZaehler]->Werte[$i]->kEigenschaft &&
-                                    (int)$this->Variationen[$nZaehler]->Werte[$i]->oVariationsKombi->kArtikel === $this->kArtikel) {
-                                    $VariationVKNetto = $this->Preise->fVKNetto;
-                                }
-                                if ((int)$variation->tartikel_kArtikel === $this->kArtikel &&
-                                    (int)$variation->kEigenschaft !== $this->Variationen[$nZaehler]->Werte[$i]->kEigenschaft) {
-                                    $varKombiSurcharges += $variation->fAufpreisNetto;
-                                }
-                            }
-
-                            $VariationVKNetto = $varKombiSurcharges > 0 ?
-                                $surcharge + $parentProductPrice->fVKNetto + $varKombiSurcharges :
-                                $VariationVKNetto;
+                            $VariationVKNetto   = $variationBasePrice->fVKNetto;
 
                             $this->Variationen[$nZaehler]->Werte[$i]->cPreisInklAufpreis[0] = gibPreisStringLocalized(berechneBrutto(
                                 $VariationVKNetto,

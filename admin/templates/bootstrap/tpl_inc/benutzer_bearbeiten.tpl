@@ -443,15 +443,7 @@ $(document).ready(function() {
                                 {assign var="cISO" value=$language->cISO}
                                 {assign var="useVita_ISO" value="useVita_"|cat:$cISO}
                                 <div id="isoVita_{$cISO}" class="iso_wrapper{if $language->cShopStandard != 'Y'} hidden-soft{/if}">
-                                    <textarea class="form-control ckeditor" id="useVita_{$cISO}" name="extAttribs[useVita_{$cISO}]" rows="10" cols="40">
-                                        {if isset($attribValues.$useVita_ISO)}
-                                            {if !empty($attribValues.$useVita_ISO->cAttribText)}
-                                                {$attribValues.$useVita_ISO->cAttribText}
-                                            {else}
-                                                {$attribValues.$useVita_ISO->cAttribValue}
-                                            {/if}
-                                        {/if}
-                                    </textarea>
+                                    <textarea class="form-control ckeditor" id="useVita_{$cISO}" name="extAttribs[useVita_{$cISO}]" rows="10" cols="40">{if isset($attribValues.$useVita_ISO)}{if !empty($attribValues.$useVita_ISO->cAttribText)}{$attribValues.$useVita_ISO->cAttribText}{else}{$attribValues.$useVita_ISO->cAttribValue}{/if}{/if}</textarea>
                                 </div>
                             {/foreach}
                         </div>

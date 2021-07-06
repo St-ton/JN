@@ -5,6 +5,5 @@
           rows="{if isset($setting->textareaAttributes.Rows)}{$setting->textareaAttributes.Rows}{/if}"
           id="{$setting->elementID}"
           placeholder="{__($setting->cPlaceholder)}"
-    >{$setting->cTextAreaValue|escape:'html'}
-    </textarea>
+    >{$setting->cTextAreaValue|escape:'html'}</textarea>
 </div>

@@ -268,6 +268,9 @@ define('FKT_ATTRIBUT_ATTRIBUTEANHAENGEN', 'attribute anhaengen');
 define('FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN', 'stuecklistenkomponenten');
 define('FKT_ATTRIBUT_INHALT', 'inhalt');
 define('FKT_ATTRIBUT_CANONICALURL_VARKOMBI', 'varkombi_canonicalurl');
+define('FKT_ATTRIBUT_VOUCHER', 'jtl_voucher');
+define('FKT_ATTRIBUT_VOUCHER_FLEX', 'jtl_voucher_flex');
+
 /**
  * @deprecated
  */

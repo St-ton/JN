@@ -10,6 +10,7 @@ use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Form;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
+use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
@@ -193,6 +194,13 @@ $ratingNav    = Product::getRatingNavigation(
 );
 if (Request::hasGPCData('ek')) {
     Product::getEditConfigMode(Request::verifyGPCDataInt('ek'), $smarty);
+    $smarty->assign(
+        'voucherPrice',
+        Tax::getGross(
+            Frontend::getCart()->PositionenArr[Request::verifyGPCDataInt('ek')]->fPreis,
+            Tax::getSalesTax($AktuellerArtikel->kSteuerklasse)
+        )
+    );
 }
 foreach ($AktuellerArtikel->Variationen as $Variation) {
     if (!$Variation->Werte || $Variation->cTyp === 'FREIFELD' || $Variation->cTyp === 'PFLICHT-FREIFELD') {

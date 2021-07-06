@@ -16,6 +16,7 @@ use JTL\Mail\Mailer;
 use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Shop;
 use stdClass;
+use DateTime;
 
 /**
  * Class Orders
@@ -687,8 +688,14 @@ final class Orders extends AbstractSync
                 break;
             }
         }
-        if (($state === \BESTELLUNG_STATUS_VERSANDT && $shopOrder->cStatus !== \BESTELLUNG_STATUS_VERSANDT)
-            || ($state === \BESTELLUNG_STATUS_TEILVERSANDT && $doSend === true)
+        $earlier = new DateTime(\date('Y-m-d', \strtotime($updatedOrder->dVersandDatum)));
+        $now     = new DateTime(\date('Y-m-d'));
+        $diff    = $now->diff($earlier)->format('%a');
+
+        if (($state === \BESTELLUNG_STATUS_VERSANDT &&
+                $shopOrder->cStatus !== \BESTELLUNG_STATUS_VERSANDT &&
+                $diff <= \BESTELLUNG_VERSANDBESTAETIGUNG_MAX_TAGE) ||
+            ($state === \BESTELLUNG_STATUS_TEILVERSANDT && $doSend === true)
         ) {
             $mailType = $state === \BESTELLUNG_STATUS_VERSANDT
                 ? \MAILTEMPLATE_BESTELLUNG_VERSANDT
@@ -723,7 +730,16 @@ final class Orders extends AbstractSync
      */
     private function sendPaymentMail(stdClass $shopOrder, stdClass $order, $customer): void
     {
+
         if (!$shopOrder->dBezahltDatum && $order->dBezahltDatum && $customer->kKunde > 0) {
+            $earlier = new DateTime(\date('Y-m-d', \strtotime($order->dBezahltDatum)));
+            $now     = new DateTime(\date('Y-m-d'));
+            $diff    = $now->diff($earlier)->format('%a');
+
+            if ($diff >= \BESTELLUNG_ZAHLUNGSBESTAETIGUNG_MAX_TAGE) {
+                return;
+            }
+
             $module = $this->getPaymentMethod($order->kBestellung);
             if ($module) {
                 $module->sendMail($order->kBestellung, \MAILTEMPLATE_BESTELLUNG_BEZAHLT);

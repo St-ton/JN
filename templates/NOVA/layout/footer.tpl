@@ -257,16 +257,23 @@
             {include file='snippets/consent_manager.tpl'}
             {inline_script}
                 <script>
+                    var consentManagerDetails = {$consentManager|json_encode};
                     setTimeout(function() {
                         $('#consent-manager, #consent-settings-btn').removeClass('d-none');
                     }, 100)
                     document.addEventListener('consent.ready', function(e) {
-                        $.post('{$ShopURLSSL}/', {
-                                'action': 'initconsent',
-                                'jtl_token': '{$smarty.session.jtl_token}',
-                                'data': e.detail
+                        try {
+                            if (JSON.stringify(consentManagerDetails) !== JSON.stringify(e.detail)) {
+                                $.post('{$ShopURLSSL}/', {
+                                        'action': 'initconsent',
+                                        'jtl_token': '{$smarty.session.jtl_token}',
+                                        'data': e.detail
+                                    }
+                                );
                             }
-                        );
+                        } catch (e) {
+                            console.log(e);
+                        }
                     });
                     window.CM = new ConsentManager({
                         version: 1

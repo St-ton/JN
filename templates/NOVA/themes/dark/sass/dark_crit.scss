@@ -181,6 +181,7 @@ html {
 }
 
 #header-top-bar, header {
+  font-family: $font-accent;
   background-color: $header-bg-color;
   color: $header-color;
   a {
@@ -197,17 +198,14 @@ html {
 
 header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94); position: relative; z-index: $zindex-sticky;
 
-  .form-control, .form-control:focus  {
-    background-color: $white;
-    color: $gray-dark;
-
-  }
-
-  #search {
+  #search, .main-search {
+    font-weight: $font-weight-light;
     input::placeholder {
       color: $gray-dark;
     }
     .form-control, .form-control:focus  {
+      height: 2.1rem;
+      padding: map_get($spacers,1) map_get($spacers,2);
       &::placeholder {
         color: $gray-dark;
       }
@@ -215,8 +213,8 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
     .btn-secondary {
       background: $white;
       border-left-color: transparent;
+      padding: map_get($spacers,1) map_get($spacers,2);
     }
-
   }
 
   .navbar {

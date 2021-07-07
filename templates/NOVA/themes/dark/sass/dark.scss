@@ -20,7 +20,8 @@ header {
   }
 }
 
-#shop-nav .fas {
+#shop-nav .fas,
+.main-search .fas {
   font-weight: 400;
   &.fa-search {
     background: $url-search;
@@ -34,6 +35,10 @@ header {
 
 .btn {
   font-weight: $font-weight-normal;
+}
+
+.btn-primary {
+  @include button-variant($gray-darker, $gray-darker);
 }
 
 .btn-outline-secondary {
@@ -178,6 +183,35 @@ header {
   margin-top: map_get($spacers, 2);
 }
 
+.checkout-existing-customer .card-gray {
+  background: $white;
+  border: $input-border-width solid $input-border-color;
+}
+.checkout-steps .step-check {
+  color: $gray-dark;
+}
+
+.stepper { border: 0; background: $white;
+  // badge
+  .badge { opacity: 0; }
+  .badge-count { font-size: .9rem; }
+
+  // arrow
+  .step::after { content: initial;}
+  .step::before { content: initial;}
+
+  // active
+  .step-active .step-content::after { background: $gray-dark;}
+
+  @include media-breakpoint-down(md) { background: $white; border: 0;
+    .step-current .step-content::after { background: $gray-dark;}
+  }
+}
+
+
+
+
+
 aside {
   .nav-panel {
     > .nav > .active > .nav-link {
@@ -201,11 +235,28 @@ aside {
     margin: 0 0 3rem 0;
     background: $hr-border-color;
     height: 1px;
-    width: 70%;
+    width: 80%;
     align-self: center;
+  }
+  > .container {
+    @each $breakpoint, $container-max-width in $container-max-widths {
+      @include media-breakpoint-up($breakpoint, $grid-breakpoints) {
+        max-width: 100%;
+      }
+    }
+  }
+  .newsletter-footer {
+    width: 80%;
+    margin: auto;
+    +hr {
+      border: 0;
+    }
   }
   .newsletter-email-wrapper button[type=submit] {
     background: $white;
     color: $secondary;
+    &:hover, &:focus {
+      background: $gray-light;
+    }
   }
 }

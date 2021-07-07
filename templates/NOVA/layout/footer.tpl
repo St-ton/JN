@@ -261,15 +261,18 @@
                     setTimeout(function() {
                         $('#consent-manager, #consent-settings-btn').removeClass('d-none');
                     }, 100)
+                    document.addEventListener('consent.updated', function(e) {
+                        $.post('{$ShopURLSSL}/', {
+                                'action': 'updateconsent',
+                                'jtl_token': '{$smarty.session.jtl_token}',
+                                'data': e.detail
+                            }
+                        );
+                    });
                     document.addEventListener('consent.ready', function(e) {
                         try {
                             if (JSON.stringify(consentManagerDetails) !== JSON.stringify(e.detail)) {
-                                $.post('{$ShopURLSSL}/', {
-                                        'action': 'initconsent',
-                                        'jtl_token': '{$smarty.session.jtl_token}',
-                                        'data': e.detail
-                                    }
-                                );
+                                document.dispatchEvent(new CustomEvent('consent.updated', { detail: e.detail }));
                             }
                         } catch (e) {
                             console.log(e);
@@ -296,14 +299,6 @@
                     for(let i = 0; i < trigger.length; ++i) {
                         trigger[i].addEventListener('click', triggerCall)
                     }
-                    document.addEventListener('consent.updated', function(e) {
-                        $.post('{$ShopURLSSL}/', {
-                                'action': 'updateconsent',
-                                'jtl_token': '{$smarty.session.jtl_token}',
-                                'data': e.detail
-                            }
-                        );
-                    });
                 </script>
             {/inline_script}
         {/if}

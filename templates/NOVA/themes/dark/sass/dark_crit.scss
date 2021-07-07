@@ -198,8 +198,25 @@ html {
 header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94); position: relative; z-index: $zindex-sticky;
 
   .form-control, .form-control:focus  {
-    background-color: $header-bg-color;
-    color: $header-color;
+    background-color: $white;
+    color: $gray-dark;
+
+  }
+
+  #search {
+    input::placeholder {
+      color: $gray-dark;
+    }
+    .form-control, .form-control:focus  {
+      &::placeholder {
+        color: $gray-dark;
+      }
+    }
+    .btn-secondary {
+      background: $white;
+      border-left-color: transparent;
+    }
+
   }
 
   .navbar {

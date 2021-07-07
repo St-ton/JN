@@ -26235,7 +26235,6 @@ header .dropdown-menu a {
   background: url(../base/images/search_icon.svg);
   width: 1em;
   height: 1em;
-  filter: invert(100%);
 }
 #shop-nav .fas.fa-search ::before {
   content: initial;

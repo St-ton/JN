@@ -26,7 +26,6 @@ header {
     background: $url-search;
     width: 1em;
     height: 1em;
-    filter: invert(100%);
     ::before{
       content: initial;
     }

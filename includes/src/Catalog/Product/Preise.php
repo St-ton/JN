@@ -587,6 +587,15 @@ class Preise
         );
         $currencyName = $html ? $currency->getHtmlEntity() : $currency->getName();
 
+        \executeHook(\HOOK_LOCALIZED_PRICE_STRING, [
+            'price'        => $price,
+            'currency'     => &$currency,
+            'html'         => $html,
+            'decimals'     => $decimals,
+            'currencyName' => &$currencyName,
+            'localized'    => &$localized
+        ]);
+
         return $currency->getForcePlacementBeforeNumber()
             ? ($currencyName . ' ' . $localized)
             : ($localized . ' ' . $currencyName);

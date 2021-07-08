@@ -77,7 +77,7 @@ if ($valid && Request::postInt('unreg_form') === 1) {
     if ($conf['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y') {
         pruefeUnregistriertBestellen($_POST);
     } elseif (isset($_POST['shipping_address'], $_POST['register']['shipping_address'])) {
-        pruefeNeueLieferadresse($_POST);
+        checkNewShippingAddress($_POST);
     }
 }
 if (isset($_GET['editLieferadresse'])) {

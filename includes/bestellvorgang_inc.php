@@ -89,7 +89,7 @@ function pruefeUnregistriertBestellen($post): int
     $customerAttributes = getKundenattribute($post);
     $customerGroupID    = Frontend::getCustomerGroup()->getID();
     $checkBox           = new CheckBox();
-    $missingInput       = gebeMissingInput($post, $customerGroupID, $checkBox);
+    $missingInput       = getMissingInput($post, $customerGroupID, $checkBox);
 
     $Kunde->getCustomerAttributes()->assign($customerAttributes);
     Frontend::set('customerAttributes', $customerAttributes);
@@ -101,7 +101,7 @@ function pruefeUnregistriertBestellen($post): int
         } elseif (isset($post['kLieferadresse']) && (int)$post['kLieferadresse'] > 0) {
             pruefeLieferdaten($post);
         } elseif (isset($post['register']['shipping_address'])) {
-            pruefeNeueLieferadresse($post, $missingInput);
+            checkNewShippingAddress($post, $missingInput);
         }
     } elseif (isset($post['lieferdaten']) && (int)$post['lieferdaten'] === 1) {
         // compatibility with older template
@@ -166,7 +166,7 @@ function pruefeUnregistriertBestellen($post): int
  *
  * @return array
  */
-function gebeMissingInput(array $post, ?int $customerGroupId = null, ?CheckBox $checkBox = null): array
+function getMissingInput(array $post, ?int $customerGroupId = null, ?CheckBox $checkBox = null): array
 {
     $missingInput    = checkKundenFormular(0);
     $customerGroupId = $customerGroupId ?? Frontend::getCustomerGroup()->getID();
@@ -186,9 +186,9 @@ function gebeMissingInput(array $post, ?int $customerGroupId = null, ?CheckBox $
  * @param array      $post
  * @param array|null $missingInput
  */
-function pruefeNeueLieferadresse(array $post, ?array $missingInput = null): void
+function checkNewShippingAddress(array $post, ?array $missingInput = null): void
 {
-    $missingInput = $missingInput ?? gebeMissingInput($post);
+    $missingInput = $missingInput ?? getMissingInput($post);
     pruefeLieferdaten($post['register']['shipping_address'], $missingInput);
 }
 

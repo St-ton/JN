@@ -1,10 +1,16 @@
+
+$(document).ready(function() {
+	if (typeof(window.CM) === 'undefined') {
+		embedVideoServices({ youtube:true, vimeo:true });
+	}
+});
 document.addEventListener('consent.ready', function(e) {
-	embedYoutube(e.detail);
+	embedVideoServices(e.detail);
 });
 document.addEventListener('consent.updated', function(e) {
-	embedYoutube(e.detail);
+	embedVideoServices(e.detail);
 });
-function embedYoutube(detail) {
+function embedVideoServices(detail) {
 	if (detail !== null && typeof detail.youtube !== 'undefined' && detail.youtube === true) {
 		let embeds = document.querySelectorAll('iframe.needs-consent.youtube');
 		for (let i = 0; i < embeds.length; ++i) {

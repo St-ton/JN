@@ -144,6 +144,11 @@ class Kategorie
     public $cKurzbezeichnung = '';
 
     /**
+     * @var bool
+     */
+    private $compressed = false;
+
+    /**
      * @param int  $id
      * @param int  $languageID
      * @param int  $customerGroupID
@@ -186,13 +191,17 @@ class Kategorie
         }
         $this->kSprache    = $languageID;
         $defaultLangActive = LanguageHelper::isDefaultLanguageActive(false, $languageID);
-        $cacheID           = \CACHING_GROUP_CATEGORY . '_' . $id .
-            '_' . $languageID .
-            '_cg_' . $customerGroupID .
-            '_ssl_' . Request::checkSSL();
+        $cacheID           = \CACHING_GROUP_CATEGORY . '_' . $id
+            . '_' . $languageID
+            . '_cg_' . $customerGroupID;
         if (!$noCache && ($category = Shop::Container()->getCache()->get($cacheID)) !== false) {
             foreach (\get_object_vars($category) as $k => $v) {
                 $this->$k = $v;
+            }
+            if ($this->compressed === true) {
+                $this->cBeschreibung    = \gzuncompress($this->cBeschreibung);
+                $this->cKurzbezeichnung = \gzuncompress($this->cKurzbezeichnung);
+                $this->compressed       = false;
             }
             \executeHook(\HOOK_KATEGORIE_CLASS_LOADFROMDB, [
                 'oKategorie' => &$this,
@@ -275,7 +284,13 @@ class Kategorie
             'cached'     => false
         ]);
         if (!$noCache) {
-            Shop::Container()->getCache()->set($cacheID, $this, $cacheTags);
+            $toSave = clone $this;
+            if (\COMPRESS_DESCRIPTION === true) {
+                $toSave->cBeschreibung    = \gzcompress($toSave->cBeschreibung);
+                $toSave->cKurzbezeichnung = \gzcompress($toSave->cKurzbezeichnung);
+                $toSave->compressed       = true;
+            }
+            Shop::Container()->getCache()->set($cacheID, $toSave, $cacheTags);
         }
 
         return $this;

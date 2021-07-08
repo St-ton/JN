@@ -10,6 +10,7 @@ document.addEventListener('consent.ready', function(e) {
 document.addEventListener('consent.updated', function(e) {
 	embedVideoServices(e.detail);
 });
+
 function embedVideoServices(detail) {
 	if (detail !== null && typeof detail.youtube !== 'undefined' && detail.youtube === true) {
 		let embeds = document.querySelectorAll('iframe.needs-consent.youtube');
@@ -33,4 +34,8 @@ function embedVideoServices(detail) {
 			notices[j].classList.add('d-none');
 		}
 	}
+}
+
+function embedYoutube(detail) {
+	embedVideoServices(detail);
 }

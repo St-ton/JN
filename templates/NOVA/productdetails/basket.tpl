@@ -21,6 +21,29 @@
                 {if !$showMatrix}
                     {block name='productdetails-basket-form-inline'}
                         {row class="basket-form-inline"}
+                            {if $Artikel->Preise->fVKNetto == 0 && $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX]}
+                                {block name='productdetails-basket-voucher-flex'}
+                                    {col cols=12 sm=6}
+                                        {inputgroup class="form-counter"}
+                                            {input type="number"
+                                                step=".01"
+                                                value="{if isset($voucherPrice)}{$voucherPrice}{/if}"
+                                                name="{$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX}Value"
+                                                required=true
+                                                placeholder="{lang key='voucherFlexPlaceholder' section='productDetails' printf=$smarty.session.Waehrung->getName()}"}
+                                            {inputgroupappend}
+                                                {inputgrouptext class="form-control"}
+                                                    {$smarty.session.Waehrung->getName()}
+                                                {/inputgrouptext}
+                                            {/inputgroupappend}
+                                        {/inputgroup}
+                                    {/col}
+                                    {if isset($kEditKonfig)}
+                                        <input type="hidden" name="kEditKonfig" value="{$kEditKonfig}"/>
+                                    {/if}
+                                    {input type="hidden" id="quantity" class="quantity" name="anzahl" value="1"}
+                                {/block}
+                            {else}
                             {block name='productdetails-basket-quantity'}
                                 {col cols=12 sm=6}
                                     {inputgroup id="quantity-grp" class="form-counter choose_quantity"}
@@ -56,6 +79,7 @@
                                     {/inputgroup}
                                 {/col}
                             {/block}
+                            {/if}
                             {block name='productdetails-basket-add-to-cart'}
                                 {col cols=12 sm=6}
                                     {button aria=["label"=>"{lang key='addToCart'}"]

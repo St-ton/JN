@@ -908,7 +908,7 @@ class AccountController
                 'cPasswort, cMail'
             );
             if (isset($user->cPasswort, $user->cMail)) {
-                $ok = $customer->checkCredentials($user->cMail, $_POST['altesPasswort']);
+                $ok = $customer->checkCredentials($user->cMail, $_POST['altesPasswort'] ?? '');
                 if ($ok !== false) {
                     $customer->updatePassword($_POST['neuesPasswort1']);
                     $step = 'mein Konto';

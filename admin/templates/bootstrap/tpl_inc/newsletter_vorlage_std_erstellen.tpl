@@ -350,9 +350,7 @@
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}">{$oNewslettervorlageStdVar->cName}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <textarea id="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" class="form-control codemirror smarty" name="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" style="width: 500px; height: 400px;">
-                                        {if isset($oNewslettervorlageStdVar->cInhalt) && $oNewslettervorlageStdVar->cInhalt|strlen > 0}{$oNewslettervorlageStdVar->cInhalt}{/if}
-                                    </textarea>
+                                    <textarea id="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" class="form-control codemirror smarty" name="kNewslettervorlageStdVar_{$oNewslettervorlageStdVar->kNewslettervorlageStdVar}" style="width: 500px; height: 400px;">{if isset($oNewslettervorlageStdVar->cInhalt) && $oNewslettervorlageStdVar->cInhalt|strlen > 0}{$oNewslettervorlageStdVar->cInhalt}{/if}</textarea>
                                 </div>
                             </div>
                         {/if}

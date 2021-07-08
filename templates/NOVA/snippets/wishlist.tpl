@@ -8,7 +8,7 @@
             {include file='snippets/extension.tpl'}
         {/block}
 
-        {container fluid=$Link->getIsFluid() class="snippets-wishlist"}
+        {container fluid=$Link->getIsFluid() class="snippets-wishlist {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
         {if $step === 'wunschliste versenden' && $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
             {block name='snippets-wishlist-content-heading-email'}
                 <div class="h2">{lang key='wishlistViaEmail' section='login'}</div>

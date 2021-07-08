@@ -20626,8 +20626,6 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 }
 .square-image .inner img.lazyloading {
   color: transparent;
-  opacity: 1;
-  transition: opacity 300ms;
   width: auto;
   height: auto;
   max-width: 40px;
@@ -22899,24 +22897,6 @@ input.typeahead:-ms-input-placeholder {
 
 .loading {
   min-height: 140px;
-}
-
-.lazyload {
-  opacity: 0;
-}
-
-.lazyloading {
-  color: transparent;
-  opacity: 1;
-  transition: opacity 300ms;
-  width: auto;
-  height: auto;
-  max-width: 40px;
-  max-height: 40px;
-}
-
-.lazyloaded {
-  transition: none;
 }
 
 .list-group-wrapper.disabled {

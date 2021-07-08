@@ -204,7 +204,7 @@
 
                                 {row}
                                     {block name='productdetails-details-include-price'}
-                                        {if !($Artikel->Preise->fVKNetto == 0 && $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX])}
+                                        {if !($Artikel->Preise->fVKNetto == 0 && isset($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX]))}
                                             {col}
                                                 {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail' priceLarge=true}
                                             {/col}

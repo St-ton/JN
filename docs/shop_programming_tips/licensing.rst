@@ -229,7 +229,7 @@ zu deaktivieren.
             parent::boot($dispatcher);
             $license = $this->getPlugin()->getLicense()->getExsLicense();
             if ($license === null || $license->getLicense()->getSubscription()->isExpired()) {
-                $this->getPlugin()->selfDestruct(State::ESX_SUBSCRIPTION_EXPIRED, $this->getDB(), $this->getCache());
+                $this->getPlugin()->selfDestruct(State::EXS_SUBSCRIPTION_EXPIRED, $this->getDB(), $this->getCache());
             }
         }
     }

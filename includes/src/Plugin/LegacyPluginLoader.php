@@ -112,39 +112,39 @@ class LegacyPluginLoader extends AbstractLoader
      */
     public function loadFromObject(stdClass $obj, string $currentLanguageCode): PluginInterface
     {
+        $hm = HookManager::getInstance();
+        $id = (int)$obj->kPlugin;
+        $hm->lock($id);
         $currentLanguageCode = $currentLanguageCode
             ?? Shop::getLanguageCode()
             ?? LanguageHelper::getDefaultLanguage()->cISO;
 
         Shop::Container()->getGetText();
-
         if ($this->plugin === null) {
             $this->plugin = new LegacyPlugin();
         }
-        $this->plugin->setID((int)$obj->kPlugin);
+        $this->plugin->setID($id);
         $this->plugin->setPluginID($obj->cPluginID);
         $this->plugin->setState((int)$obj->nStatus);
         $this->plugin->setPriority((int)$obj->nPrio);
         $this->plugin->setBootstrap((int)$obj->bBootstrap === 1);
         $this->plugin->setIsExtension(isset($obj->bExtension) && (int)$obj->bExtension === 1);
-
         $this->plugin->setMeta($this->loadMetaData($obj));
         $this->plugin->setLicense($this->loadLicense($obj));
         $this->plugin->setLinks(new Links());
-
         $this->plugin->setCache($this->loadCacheData($this->plugin));
-
         $this->plugin->setPaths($this->loadPaths($obj->cVerzeichnis));
-        $this->plugin->oPluginHook_arr = $this->loadHooks((int)$obj->kPlugin);
+        $this->plugin->oPluginHook_arr = $this->loadHooks($id);
         $this->loadMarkdownFiles($this->plugin->getPaths()->getBasePath(), $this->plugin->getMeta());
         $this->loadAdminMenu($this->plugin);
-        $this->plugin->setConfig($this->loadConfig($this->plugin->getPaths()->getAdminPath(), $this->plugin->getID()));
-        $this->plugin->setLocalization($this->loadLocalization($this->plugin->getID(), $currentLanguageCode));
-        $this->plugin->setLinks($this->loadLinks($this->plugin->getID()));
+        $this->plugin->setConfig($this->loadConfig($this->plugin->getPaths()->getAdminPath(), $id));
+        $this->plugin->setLocalization($this->loadLocalization($id, $currentLanguageCode));
+        $this->plugin->setLinks($this->loadLinks($id));
         $this->plugin->setWidgets($this->loadWidgets($this->plugin));
         $this->plugin->setPaymentMethods($this->loadPaymentMethods($this->plugin));
         $this->plugin->setMailTemplates($this->loadMailTemplates($this->plugin));
         $this->saveToCache($this->plugin);
+        $hm->unlock();
 
         return $this->plugin;
     }

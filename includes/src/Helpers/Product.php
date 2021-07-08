@@ -1513,9 +1513,18 @@ class Product
                         $notices[] = Shop::Lang()->get('quantityNotAvailable', 'messages');
                         break;
                     case \R_MINDESTMENGE:
+                        if ($product === null) {
+                            if (Request::getInt('child') > 0) {
+                                $product = new Artikel();
+                                $product->fuelleArtikel(Request::getInt('child'));
+                            } elseif (Request::getInt('a') > 0) {
+                                $product = new Artikel();
+                                $product->fuelleArtikel(Request::getInt('a'));
+                            }
+                        }
                         $notices[] = \lang_mindestbestellmenge(
                             $product ?? $GLOBALS['AktuellerArtikel'],
-                            $amount ?? $_GET['n'],
+                            $amount ?? $_GET['n'] ?? 0,
                             $configItemID
                         );
                         break;

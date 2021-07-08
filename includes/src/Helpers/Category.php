@@ -235,15 +235,15 @@ class Category
         return self::$db->getCollection(
             'SELECT node.kKategorie, node.kOberKategorie, tseo.cSeo' . $nameSelect .
                 $descriptionSelect . $imageSelect . $countSelect . '
-                FROM (SELECT node.kKategorie, node.kOberKategorie, node.cName, node.cBeschreibung, node.lft
+                FROM (SELECT node.kKategorie, node.nLevel, node.kOberKategorie, node.cName, node.cBeschreibung, node.lft
                     FROM tkategorie AS node
                     INNER JOIN tkategorie AS parent ON node.lft BETWEEN parent.lft AND parent.rght
-                    WHERE parent.kOberKategorie = 0 AND node.nLevel > 0 AND parent.nLevel > 0
+                    WHERE parent.kOberKategorie = 0 AND node.nLevel > 0 AND parent.nLevel > 0 ' . $depthWhere . '
                     UNION
-                    SELECT node.kKategorie, node.kOberKategorie, node.cName, node.cBeschreibung, node.lft
+                    SELECT node.kKategorie, node.nLevel, node.kOberKategorie, node.cName, node.cBeschreibung, node.lft
                     FROM tkategorie AS node
                     INNER JOIN tkategorie AS parent ON node.lft BETWEEN parent.lft AND parent.rght
-                    WHERE node.nLevel > 0 AND parent.nLevel > 0 AND NOT EXISTS(
+                    WHERE node.nLevel > 0 AND parent.nLevel > 0 ' . $depthWhere . ' AND NOT EXISTS(
                           SELECT 1
                           FROM tkategorie parents
                           WHERE parent.kOberKategorie = 0 || parents.kKategorie = parent.kOberKategorie)
@@ -252,7 +252,7 @@ class Category
                     ON node.kKategorie = tkategoriesichtbarkeit.kKategorie
                     AND tkategoriesichtbarkeit.kKundengruppe = ' . self::$customerGroupID .
                     $visibilityJoin . '
-                WHERE tkategoriesichtbarkeit.kKategorie IS NULL ' . $depthWhere . '
+                WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                 ORDER BY node.lft'
         )->each(static function ($item) {
             $item->bUnterKategorien = false;

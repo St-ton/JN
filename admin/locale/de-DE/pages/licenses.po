@@ -146,6 +146,9 @@ msgstr "Konto verknüpfen"
 msgid "unlink"
 msgstr "Kontoverknüpfung aufheben"
 
+msgid "unlink from %s"
+msgstr "Kontoverknüpfung mit %s aufheben"
+
 msgid "Validity"
 msgstr "Gültigkeit"
 

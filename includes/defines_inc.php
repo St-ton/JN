@@ -1,7 +1,7 @@
 <?php
 
 // Version
-define('APPLICATION_VERSION', '5.0.0');
+define('APPLICATION_VERSION', '5.1.0-alpha');
 define('APPLICATION_BUILD_SHA', '#DEV#');
 define('JTL_MIN_WAWI_VERSION', 100000);
 define('JTL_MIN_SHOP_UPDATE_VERSION', '4.2.0');
@@ -97,6 +97,8 @@ define('BESTELLUNG_STATUS_IN_BEARBEITUNG', 2);
 define('BESTELLUNG_STATUS_BEZAHLT', 3);
 define('BESTELLUNG_STATUS_VERSANDT', 4);
 define('BESTELLUNG_STATUS_TEILVERSANDT', 5);
+define('BESTELLUNG_VERSANDBESTAETIGUNG_MAX_TAGE', 7);
+define('BESTELLUNG_ZAHLUNGSBESTAETIGUNG_MAX_TAGE', 7);
 // zahlungsart mails
 define('ZAHLUNGSART_MAIL_EINGANG', 0x0001);
 define('ZAHLUNGSART_MAIL_STORNO', 0x0010);
@@ -266,6 +268,9 @@ define('FKT_ATTRIBUT_ATTRIBUTEANHAENGEN', 'attribute anhaengen');
 define('FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN', 'stuecklistenkomponenten');
 define('FKT_ATTRIBUT_INHALT', 'inhalt');
 define('FKT_ATTRIBUT_CANONICALURL_VARKOMBI', 'varkombi_canonicalurl');
+define('FKT_ATTRIBUT_VOUCHER', 'jtl_voucher');
+define('FKT_ATTRIBUT_VOUCHER_FLEX', 'jtl_voucher_flex');
+
 /**
  * @deprecated
  */

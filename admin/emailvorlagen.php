@@ -154,7 +154,7 @@ if ((($emailTemplateID > 0 && $continue === true)
         $configAssoc[$item->cKey] = $item->cValue;
     }
     $mailTemplate = $mailTemplate ?? $controller->getTemplateByID($emailTemplateID);
-    $smarty->assign('availableLanguages', LanguageHelper::getAllLanguages())
+    $smarty->assign('availableLanguages', LanguageHelper::getAllLanguages(0, true))
            ->assign('mailConfig', $configAssoc)
            ->assign('cUploadVerzeichnis', $uploadDir);
 }

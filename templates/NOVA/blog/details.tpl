@@ -3,7 +3,7 @@
         {include file='snippets/extension.tpl'}
     {/block}
 
-    {container fluid=$Link->getIsFluid() class="blog-details"}
+    {container fluid=$Link->getIsFluid() class="blog-details {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
     {if !empty($cNewsErr)}
         {block name='blog-details-alert'}
             {alert variant="danger"}{lang key='newsRestricted' section='news'}{/alert}

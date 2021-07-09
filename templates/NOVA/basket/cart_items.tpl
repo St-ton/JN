@@ -235,7 +235,7 @@
                         {block name='basket-cart-items-price-single'}
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
                                 {col cols=$cols xl=2 class="cart-items-single-price"}
-                                {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL && !$oPosition->istKonfigVater()}
+                                {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL && (!$oPosition->istKonfigVater() || !isset($oPosition->oKonfig_arr) || $oPosition->oKonfig_arr|count === 0)}
                                     <strong class="cart-items-price-text">
                                         {lang key="pricePerUnit" section="productDetails"}:
                                     </strong>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
@@ -250,9 +250,9 @@
                                 {if $oPosition->istKonfigVater()}
                                     <div class="qty-wrapper max-w-sm">
                                         {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
-                                        {link class="btn btn-outline-secondary configurepos ml-3"
+                                        {link class="btn btn-outline-secondary configurepos btn-block btn-sm"
                                         href="{get_static_route id='index.php'}?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
-                                            <i class="fa fa-cogs"></i><span class="ml-1">{lang key='configure'}</span>
+                                            <i class="fa fa-cogs icon-mr-2"></i>{lang key='configure'}
                                         {/link}
                                     </div>
                                 {else}

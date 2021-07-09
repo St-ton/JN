@@ -956,38 +956,17 @@ class ShippingMethod
      */
     public static function getAdditionalFees($shippingMethod, $iso, $zip): ?stdClass
     {
-        $db   = Shop::Container()->getDB();
-        $fees = $db->selectAll(
-            'tversandzuschlag',
-            ['kVersandart', 'cISO'],
-            [(int)$shippingMethod->kVersandart, $iso]
-        );
-        foreach ($fees as $fee) {
-            $zipData = $db->getSingleObject(
-                'SELECT * FROM tversandzuschlagplz
-                    WHERE ((cPLZAb <= :plz
-                        AND cPLZBis >= :plz)
-                        OR cPLZ = :plz)
-                        AND kVersandzuschlag = :sid',
-                ['plz' => $zip, 'sid' => (int)$fee->kVersandzuschlag]
-            );
-            if ($zipData !== null && $zipData->kVersandzuschlagPlz > 0) {
-                $fee->angezeigterName = [];
-                foreach (Frontend::getLanguages() as $Sprache) {
-                    $localized = $db->select(
-                        'tversandzuschlagsprache',
-                        'kVersandzuschlag',
-                        (int)$fee->kVersandzuschlag,
-                        'cISOSprache',
-                        $Sprache->cISO
-                    );
-
-                    $fee->angezeigterName[$Sprache->cISO] = $localized->cName;
-                }
-                $fee->cPreisLocalized = Preise::getLocalizedPriceString($fee->fZuschlag);
-
-                return $fee;
-            }
+        $shippingMethodData = new Versandart($shippingMethod->kVersandart);
+        if (($surcharge = $shippingMethodData->getShippingSurchargeForZip($zip, $iso)) !== null) {
+            return (object)[
+                'kVersandzuschlag' => $surcharge->getID(),
+                'kVersandart'      => $surcharge->getShippingMethod(),
+                'cIso'             => $surcharge->getISO(),
+                'cName'            => $surcharge->getTitle(),
+                'fZuschlag'        => $surcharge->getSurcharge(),
+                'cPreisLocalized'  => $surcharge->getPriceLocalized(),
+                'angezeigterName'  => $surcharge->getNames()
+            ];
         }
 
         return null;
@@ -1178,13 +1157,14 @@ class ShippingMethod
      */
     public static function getLowestShippingFees($iso, $product, $allowCash, $customerGroupID)
     {
-        $dep = '';
-        $fee = 99999;
-        $db  = Shop::Container()->getDB();
-        if (empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN])
-            && empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT])
-        ) {
+        $dep             = '';
+        $fee             = 99999;
+        $db              = Shop::Container()->getDB();
+        $productShipping = 0;
+        if ($product->isUsedForShippingCostCalculation($iso)) {
             $dep = " AND cNurAbhaengigeVersandart = 'N'";
+        } elseif (($costs = self::gibArtikelabhaengigeVersandkosten($iso, $product, 1)) !== false) {
+            $productShipping = $costs->fKosten;
         }
         $methods = $db->getObjects(
             "SELECT *
@@ -1223,7 +1203,7 @@ class ShippingMethod
             }
         }
 
-        return $fee === 99999 ? -1 : $fee;
+        return $fee === 99999 ? -1 : ($fee + $productShipping);
     }
 
     /**

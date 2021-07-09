@@ -34,9 +34,7 @@ class Migration_20210525130500 extends Migration implements IMigration
             CONF_VERGLEICHSLISTE,
             'Spaltenbreite der Attribute',
             'number',
-            210,
-            null,
-            false
+            210
         );
         $this->getDB()->queryPrepared(
             "DELETE FROM `teinstellungen_default`

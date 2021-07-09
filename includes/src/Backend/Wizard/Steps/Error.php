@@ -118,23 +118,23 @@ class Error
     {
         switch ($this->getCode()) {
             case ErrorCode::ERROR_REQUIRED:
-                $error = __('validationErrorRequired');
+                $error = \__('validationErrorRequired');
                 $this->setCritical(true);
                 break;
             case ErrorCode::INVALID_EMAIL:
-                $error = __('validationErrorIncorrectEmail');
+                $error = \__('validationErrorIncorrectEmail');
                 $this->setCritical(true);
                 break;
             case ErrorCode::ERROR_SSL_PLUGIN:
-                $error = __('validationErrorSSLPlugin');
+                $error = \__('validationErrorSSLPlugin');
                 $this->setCritical(true);
                 break;
             case ErrorCode::ERROR_SSL:
-                $error = __('validationErrorSSL');
+                $error = \__('validationErrorSSL');
                 $this->setCritical(true);
                 break;
             case ErrorCode::ERROR_VAT:
-                $error = __('errorVATPattern');
+                $error = \__('errorVATPattern');
                 $this->setCritical(true);
                 break;
             case ErrorCode::OK:

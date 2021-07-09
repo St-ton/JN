@@ -3,8 +3,8 @@
 namespace JTL\Console\Command\Backup;
 
 use JTL\Console\Command\Command;
-use JTL\Filesystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter;
+use JTL\Filesystem\LocalFilesystem;
+use JTL\Shop;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -36,10 +36,10 @@ class FilesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io         = $this->getIO();
-        $filesystem = new Filesystem(new LocalFilesystemAdapter(\PFAD_ROOT));
-        $archive    = \PFAD_ROOT . \PFAD_EXPORT_BACKUP . \date('YmdHis') . '_file_backup.zip';
-        $excludes   = \array_merge(['export',
+        $io       = $this->getIO();
+        $fs       = Shop::Container()->get(LocalFilesystem::class);
+        $archive  = \PFAD_ROOT . \PFAD_EXPORT_BACKUP . \date('YmdHis') . '_file_backup.zip';
+        $excludes = \array_merge(['export',
             'templates_c',
             'build',
             'admin/templates_c',
@@ -47,15 +47,15 @@ class FilesCommand extends Command
             'dbeS/logs',
             'jtllogs',
             'install/logs'], $this->getOption('exclude-dir'));
-        $finder     = Finder::create()
+        $finder   = Finder::create()
             ->ignoreVCS(false)
             ->ignoreDotFiles(false)
             ->exclude($excludes)
             ->in(\PFAD_ROOT);
 
         $io->progress(
-            static function ($mycb) use ($filesystem, $archive, $finder) {
-                $filesystem->zip($finder, $archive, static function ($count, $index) use (&$mycb) {
+            static function ($mycb) use ($fs, $archive, $finder) {
+                $fs->zip($finder, $archive, static function ($count, $index) use (&$mycb) {
                     $mycb($count, $index);
                 });
             },

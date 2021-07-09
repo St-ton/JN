@@ -1,7 +1,7 @@
 {block name='productdetails-details'}
     {*{has_boxes position='left' assign='hasLeftBox'}*}
     {$hasLeftBox = false}
-    {container}
+    {container class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
         {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
             {block name='productdetails-details-include-pushed-success'}
                 {include file='productdetails/pushed_success.tpl' card=true}
@@ -14,7 +14,7 @@
     {/container}
     {block name='productdetails-details-form'}
         {opcMountPoint id='opc_before_buy_form' inContainer=false}
-        {container}
+        {container class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
             {form id="buy_form" action=$Artikel->cURLFull class="jtl-validate"}
                 {row id="product-offer" class="product-detail"}
                     {block name='productdetails-details-include-image'}
@@ -204,9 +204,11 @@
 
                                 {row}
                                     {block name='productdetails-details-include-price'}
-                                        {col}
-                                            {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail' priceLarge=true}
-                                        {/col}
+                                        {if !($Artikel->Preise->fVKNetto == 0 && isset($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX]))}
+                                            {col}
+                                                {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail' priceLarge=true}
+                                            {/col}
+                                        {/if}
                                     {/block}
                                     {block name='productdetails-details-stock'}
                                         {col cols=12}
@@ -303,7 +305,7 @@
         || isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0
         || isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0
         || isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
-            {container fluid=true}
+            {container fluid=true class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                 {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0}
                     {block name='productdetails-details-include-product-slider-partslist'}
                         <div class="partslist">

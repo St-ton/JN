@@ -34,4 +34,11 @@ interface TemplateServiceInterface
      * @throws Exception
      */
     public function loadFull(array $attributes, bool $withLicense = true): Model;
+
+    /**
+     * @param string $dir
+     * @param string $type
+     * @return bool
+     */
+    public function setActiveTemplate(string $dir, string $type = 'standard'): bool;
 }

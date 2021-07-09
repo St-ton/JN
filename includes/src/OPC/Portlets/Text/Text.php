@@ -26,9 +26,9 @@ class Text extends Portlet
     {
         return [
             'text' => [
-                'label'   => __('text'),
+                'label'   => \__('text'),
                 'type'    => InputType::RICHTEXT,
-                'default' => __('exampleRichText'),
+                'default' => \__('exampleRichText'),
             ],
         ];
     }
@@ -39,7 +39,7 @@ class Text extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            __('Styles') => 'styles',
+            \__('Styles') => 'styles',
         ];
     }
 }

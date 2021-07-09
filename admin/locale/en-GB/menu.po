@@ -449,3 +449,6 @@ msgstr "Global"
 
 msgid "Availability notifications"
 msgstr "Availability requests"
+
+msgid "Country manager"
+msgstr "Country manager"

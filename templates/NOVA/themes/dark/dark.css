@@ -5804,7 +5804,7 @@ h1, .h1 {
 }
 
 h2, .h2, .product-matrix .product-matrix-title {
-  font-size: 1.5rem;
+  font-size: 1.875rem;
 }
 
 h3, .h3, .sidepanel-left .box-normal .box-normal-link {
@@ -21705,7 +21705,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   left: 50%;
   transform: translateX(-50%);
   border-width: 0 0 6px;
-  border-color: #ffffff;
+  border-color: #212121;
   border-style: solid;
   transition: width 0.4s;
   width: 0;
@@ -21874,7 +21874,7 @@ aside .card {
 }
 aside .card .card-title {
   margin-bottom: 0.5rem;
-  font-size: 1.5rem;
+  font-size: 1.875rem;
   font-weight: 600;
 }
 aside .card.card-default .card-heading {
@@ -22393,7 +22393,7 @@ ul.partlist-items {
   align-items: center;
   color: #212121;
   margin: 8px 0;
-  font-size: 1.5rem;
+  font-size: 1.875rem;
   font-family: "Poppins", sans-serif;
 }
 .hr-sect::before {
@@ -23741,7 +23741,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   left: 50%;
   transform: translateX(-50%);
   border-width: 0 0 0.375rem;
-  border-color: #ffffff;
+  border-color: #212121;
   border-style: solid;
   transition: width 0.4s ease-in-out;
   width: 0;
@@ -25025,7 +25025,7 @@ header .nav-right .dropdown-menu {
     left: 50%;
     transform: translateX(-50%);
     border-width: 0 0 6px;
-    border-color: #ffffff;
+    border-color: #212121;
     border-style: solid;
     transition: width 0.4s;
     width: 0;
@@ -26243,6 +26243,10 @@ header .dropdown-menu a {
   content: initial;
 }
 
+#shop-nav .dropdown-menu.show .btn-primary {
+  color: #ffffff;
+}
+
 .btn {
   font-weight: 400;
 }
@@ -26347,7 +26351,7 @@ header .dropdown-menu a {
   transform: translateY(-50%);
 }
 .slick-arrow::after {
-  font-size: 1.5rem;
+  font-size: 1.875rem;
 }
 .slick-arrow:hover {
   background-color: #EFC03D;
@@ -26390,7 +26394,7 @@ header .dropdown-menu a {
 .badge-circle, .badge-circle-1 {
   border: 0;
   opacity: 0;
-  color: #707070;
+  color: #212121;
 }
 .badge-circle:hover, .badge-circle:focus, .badge-circle-1:hover, .badge-circle-1:focus {
   background-color: #EFC03D;
@@ -26401,6 +26405,10 @@ header .dropdown-menu a {
 
 .product-wrapper:hover .badge-circle, .product-wrapper:hover .badge-circle-1, .product-wrapper:focus .badge-circle, .product-wrapper:focus .badge-circle-1 {
   opacity: 1;
+}
+
+.tab-navigation .nav-link::after {
+  border-width: 0 0 3px;
 }
 
 .productbox-inner .productbox-title a {
@@ -26463,14 +26471,41 @@ header .dropdown-menu a {
   }
 }
 
+.table th, .table td {
+  border-color: #212121;
+}
+
 aside .nav-panel > .nav > .active > .nav-link {
   border-bottom: 0.375rem solid #212121;
 }
+aside .dropdown-toggle::after, aside [data-toggle=collapse]:not(.navbar-toggler)::after {
+  color: #212121;
+}
 
-.filter-item .badge {
+.choose_quantity .btn {
+  color: #212121;
+}
+
+.filter-item .badge, .box-monthlynews .nav-link .badge {
   word-break: keep-all;
   min-width: 40px;
-  padding-bottom: 0.5rem;
+  line-height: inherit;
+}
+
+.price-range-inputs .input-group-prepend .input-group-text {
+  font-weight: 400;
+}
+
+.noUi-horizontal .noUi-connect {
+  background: #212121;
+}
+.noUi-horizontal .noUi-handle {
+  background: #212121;
+  box-shadow: 0px 0px 0px 5px rgba(33, 33, 33, 0.5);
+}
+
+.modal-header .close {
+  background: #ffffff;
 }
 
 #footer {
@@ -26509,6 +26544,12 @@ aside .nav-panel > .nav > .active > .nav-link {
 #footer .newsletter-footer {
   width: 80%;
   margin: auto;
+  flex-direction: column;
+  text-align: center;
+}
+#footer .newsletter-footer .newsletter-footer-heading {
+  font-weight: bold;
+  font-size: 1.25rem;
 }
 #footer .newsletter-footer + hr {
   border: 0;

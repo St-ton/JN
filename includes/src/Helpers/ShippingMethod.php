@@ -385,7 +385,6 @@ class ShippingMethod
         $additionalProduct->fGewicht        = 0;
 
         $shippingClasses        = self::getShippingClasses($cart);
-        $conf                   = Shop::getSettings([\CONF_KAUFABWICKLUNG]);
         $defaultOptions         = Artikel::getDefaultOptions();
         $additionalShippingFees = 0;
         $perTaxClass            = [];
@@ -637,7 +636,7 @@ class ShippingMethod
                 }
             }
 
-            if ($conf['kaufabwicklung']['bestellvorgang_versand_steuersatz'] === 'US') {
+            if (Shop::getSettingValue(\CONF_KAUFABWICKLUNG, 'bestellvorgang_versand_steuersatz') === 'US') {
                 $maxSum = 0;
                 foreach ($perTaxClass as $j => $fWarensummeProSteuerklasse) {
                     if ($fWarensummeProSteuerklasse > $maxSum) {
@@ -1421,10 +1420,10 @@ class ShippingMethod
         if (empty($customerGroupID)) {
             $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
-        $conf          = Shop::getSettings([\CONF_KUNDEN]);
         $countryHelper = Shop::Container()->getCountryService();
-
-        if (!$force && ($conf['kunden']['kundenregistrierung_nur_lieferlaender'] === 'Y' || $ignoreConf)) {
+        if (!$force && ($ignoreConf
+                || Shop::getSettingValue(\CONF_KUNDEN, 'kundenregistrierung_nur_lieferlaender') === 'Y')
+        ) {
             $countryISOFilter = Shop::Container()->getDB()->getObjects(
                 "SELECT DISTINCT tland.cISO
                     FROM tland

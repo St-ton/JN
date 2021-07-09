@@ -1,8 +1,8 @@
 {block name='layout-header'}
     {block name='layout-header-doctype'}<!DOCTYPE html>{/block}
-    <html {block name='layout-header-html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp === $smarty.const.URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
-          {elseif $nSeitenTyp === $smarty.const.URLART_KATEGORIE}itemtype="http://schema.org/CollectionPage"
-          {else}itemtype="http://schema.org/WebPage"{/if}{/block}>
+    <html {block name='layout-header-html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp === $smarty.const.URLART_ARTIKEL}itemtype="https://schema.org/ItemPage"
+          {elseif $nSeitenTyp === $smarty.const.URLART_KATEGORIE}itemtype="https://schema.org/CollectionPage"
+          {else}itemtype="https://schema.org/WebPage"{/if}{/block}>
     {block name='layout-header-head'}
     <head>
         {block name='layout-header-head-meta'}
@@ -317,7 +317,7 @@
                             {/block}
 
                             {block name='layout-header-logo'}
-                                <div id="logo" class="logo-wrapper" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+                                <div id="logo" class="logo-wrapper" itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
                                     <span itemprop="name" class="d-none">{$meta_publisher}</span>
                                     <meta itemprop="url" content="{$ShopHomeURL}">
                                     <meta itemprop="logo" content="{$ShopLogoURL}">

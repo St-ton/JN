@@ -131,7 +131,7 @@
                                 {/block}
                             {/if}
                         {/col}
-                        {col cols=12 xl=4 class='productbox-options' itemprop='offers' itemscope=true itemtype='http://schema.org/Offer'}
+                        {col cols=12 xl=4 class='productbox-options' itemprop='offers' itemscope=true itemtype='https://schema.org/Offer'}
                             <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
                             {block name='productlist-item-list-form'}
                                 {block name='productlist-item-list-include-price'}

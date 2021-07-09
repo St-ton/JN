@@ -112,7 +112,7 @@
                             {/if}
                         {/block}
                         {block name='productlist-index-include-price'}
-                            <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                            <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
                                 <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
                                 {include file='productdetails/price.tpl' Artikel=$Artikel tplscope=$tplscope}
                             </div>

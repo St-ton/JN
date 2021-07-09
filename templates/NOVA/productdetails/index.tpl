@@ -20,7 +20,7 @@
             {/if}
         {else}
             {block name='productdetails-index-result-wrapper'}
-                <div id="result-wrapper" data-wrapper="true" itemprop="mainEntity" itemscope itemtype="http://schema.org/Product">
+                <div id="result-wrapper" data-wrapper="true" itemprop="mainEntity" itemscope itemtype="https://schema.org/Product">
                     <meta itemprop="url" content="{$Artikel->cURLFull}">
                     {block name='productdetails-index-include-extension'}
                         {include file='snippets/extension.tpl'}

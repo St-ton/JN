@@ -447,6 +447,16 @@ class GUI
                         propval = propval === '1';
                     } else if (propInput[0].type === 'number') {
                         propval = parseInt(propval);
+                    } else if (propInput.prop('name') === 'video-vim-id') {
+                        let match = propval.match(/^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/))?([0-9]+)/);
+                        if (match && match[5] !== undefined) {
+                            propval = match[5];
+                        }
+                    } else if (propInput.prop('name') === 'video-vim-id') {
+                        let match = propval.match(/^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/))?([0-9]+)/);
+                        if (match && match[5] !== undefined) {
+                            propval = match[5];
+                        }
                     }
                 }
 

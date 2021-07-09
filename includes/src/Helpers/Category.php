@@ -61,9 +61,9 @@ class Category
     private static $db;
 
     /**
-     *
+     * Category constructor.
      */
-    public function __construct()
+    protected function __construct()
     {
         self::$instance = $this;
     }
@@ -593,7 +593,7 @@ class Category
      */
     public static function getDataByAttribute($attribute, $value, callable $callback = null)
     {
-        $res = Shop::Container()->getDB()->select('tkategorie', $attribute, $value);
+        $res = self::$db->select('tkategorie', $attribute, $value);
 
         return \is_callable($callback)
             ? $callback($res)

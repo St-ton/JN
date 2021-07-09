@@ -75,9 +75,11 @@
                 {dropdownitem href="{get_static_route id='jtl.php' secure=true}?editRechnungsadresse=1" rel="nofollow" title="{lang key='myAccount'}"}
                     {lang key='myPersonalData'}
                 {/dropdownitem}
-                {dropdownitem href="{get_static_route id='jtl.php' secure=true}#my-wishlists" rel="nofollow" title="{lang key='myAccount'}"}
-                    {lang key='myWishlists'}
-                {/dropdownitem}
+                {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
+                    {dropdownitem href="{get_static_route id='jtl.php' secure=true}#my-wishlists" rel="nofollow" title="{lang key='myAccount'}"}
+                        {lang key='myWishlists'}
+                    {/dropdownitem}
+                {/if}
                 {dropdowndivider}
                 {dropdownitem href="{get_static_route id='jtl.php' secure=true}?logout=1" rel="nofollow" title="{lang key='logOut'}" class="account-icon-dropdown-logout"}
                     {lang key='logOut'}

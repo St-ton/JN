@@ -51,7 +51,7 @@ class FilesCommand extends Command
             ->ignoreVCS(false)
             ->ignoreDotFiles(false)
             ->exclude($excludes)
-            ->in(\PFAD_ROOT . 'qqq');
+            ->in(\PFAD_ROOT);
 
         $io->progress(
             static function ($mycb) use ($fs, $archive, $finder) {

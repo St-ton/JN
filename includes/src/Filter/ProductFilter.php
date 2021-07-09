@@ -1731,6 +1731,7 @@ class ProductFilter
             foreach ($productKeys->forPage($this->nSeite, $productsPerPage) as $id) {
                 $productList->push((new Artikel())->fuelleArtikel($id, $opt));
             }
+            $productList = $productList->filter();
             $this->searchResults->setVisibleProductCount($productList->count());
         }
         $this->url                             = $this->filterURL->createUnsetFilterURLs($this->url);

@@ -168,7 +168,7 @@ msgid "global_ust_auszeichnung_name"
 msgstr "Umsatzsteuer-Ausweisung am Artikel"
 
 msgid "global_ust_auszeichnung_desc"
-msgstr "Hier legen Sie fest, wie die Umsatzsteuer am Artikelpreis ausgewiesen wird."
+msgstr "„Automatisch ‚inkl./exkl. USt‘ einfügen“ zeigt abhängig von der Kundengruppe an, ob der Preis inklusive oder exklusive Umsatzsteuer angegeben ist. Dabei können Sie entscheiden, ob zusätzlich der konkrete Steuersatz angezeigt wird oder nicht. Wenn Sie „‚Endpreis*‘ einfügen“ auswählen, wird „Endpreis*“ am Artikel angezeigt. Den zugehörigen Hinweis tragen Sie unter „Hinweise in Fußzeile“ ein."
 
 msgid "global_fusszeilehinweis_name"
 msgstr "Hinweise in Fußzeile"

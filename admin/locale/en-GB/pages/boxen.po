@@ -271,7 +271,7 @@ msgid "templateTypeExtension"
 msgstr "Plug-in"
 
 msgid "warningNovaSidebar"
-msgstr "The NOVA template only supports boxes in the left side bar for the page type \"Item overview\". Please use a personalised template if you also want to display boxes in the left side bar on other pages."
+msgstr "If you want to use the left side bar on all pages in the NOVA template, you need to set the template setting \"Show left sidebar\" to \"On all pages\"."
 
 msgid "notAllowedForPage"
 msgstr "Cannot display the box on the selected page."

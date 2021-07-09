@@ -332,3 +332,12 @@ msgstr "ausgewählt"
 
 msgid "acceptedPaymentMethodsDesc"
 msgstr "Geben Sie für einen Rabatt einen negativen Wert ein."
+
+msgid "errorZIPsDoNotMatch"
+msgstr "Die beiden eingegebenen Postleitzahlen passen nicht zusammen."
+
+msgid "infoAllowedZipAreas"
+msgstr "Es werden nur numerische PLZ-Bereiche oder numerische PLZ-Bereiche mit gleichem Suffix bzw. Präfix unterstützt. <br> (z. B. 41836–41840, 9104BR–9112BR, BB9104–BB9112)"
+
+msgid "errorInvalidZipCode"
+msgstr "Die Postleitzahl stimmt nicht mit der Landesvorgabe überein: "

@@ -1990,3 +1990,13 @@ define('CONSENT_MANAGER_GET_ACTIVE_ITEMS', 320);
  * @param float|string newNetPrice
  */
 define('HOOK_RECALCULATED_NET_PRICE', 321);
+
+/**
+ * @param float|string $price
+ * @param mixed        $currency
+ * @param bool         $html
+ * @param int          $decimals
+ * @param string       $currencyName
+ * @param string       $localized
+ */
+define('HOOK_LOCALIZED_PRICE_STRING', 330);

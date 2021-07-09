@@ -257,7 +257,6 @@
             {include file='snippets/consent_manager.tpl'}
             {inline_script}
                 <script>
-                    var consentManagerDetails = {$consentManager|json_encode};
                     setTimeout(function() {
                         $('#consent-manager, #consent-settings-btn').removeClass('d-none');
                     }, 100)
@@ -269,15 +268,12 @@
                             }
                         );
                     });
-                    document.addEventListener('consent.ready', function(e) {
-                        try {
-                            if (JSON.stringify(consentManagerDetails) !== JSON.stringify(e.detail)) {
-                                document.dispatchEvent(new CustomEvent('consent.updated', { detail: e.detail }));
-                            }
-                        } catch (e) {
-                            console.log(e);
-                        }
-                    });
+                    {if !isset($smarty.session.consents)}
+                        document.addEventListener('consent.ready', function(e) {
+                            document.dispatchEvent(new CustomEvent('consent.updated', { detail: e.detail }));
+                        });
+                    {/if}
+
                     window.CM = new ConsentManager({
                         version: 1
                     });

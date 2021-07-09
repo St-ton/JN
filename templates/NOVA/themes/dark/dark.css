@@ -26224,10 +26224,11 @@ header .dropdown-menu a {
   color: #000000;
 }
 
-#mainNavigation .dropdown-toggle::after, #mainNavigation [data-toggle=collapse]:not(.navbar-toggler)::after {
-  content: initial !important;
-}
-
+/*#mainNavigation {
+  .dropdown-toggle::after, [data-toggle=collapse]:not(.navbar-toggler)::after{
+    content: initial !important;
+  }
+}*/
 #shop-nav .fas,
 .main-search .fas {
   font-weight: 400;
@@ -26331,7 +26332,7 @@ header .dropdown-menu a {
   margin: 0 50px;
 }
 .carousel-arrows-inside .slick-arrow {
-  top: 30%;
+  top: 35%;
 }
 .carousel-arrows-inside .slick-prev {
   transform: translate(-100%, -50%);
@@ -26359,6 +26360,10 @@ header .dropdown-menu a {
 }
 .slick-arrow:focus {
   outline: 0;
+}
+
+.carousel-thumbnails .slick-arrow {
+  color: #707070;
 }
 
 .hr-sect {
@@ -26504,7 +26509,13 @@ aside .dropdown-toggle::after, aside [data-toggle=collapse]:not(.navbar-toggler)
   box-shadow: 0px 0px 0px 5px rgba(33, 33, 33, 0.5);
 }
 
-.modal-header .close {
+.badge-primary {
+  color: #ffffff;
+  background-color: #000000;
+}
+
+.modal-header .close,
+#image_wrapper.fullscreen .product-detail-image-topbar #image_fullscreen_close {
   background: #ffffff;
 }
 
@@ -26523,22 +26534,22 @@ aside .dropdown-toggle::after, aside [data-toggle=collapse]:not(.navbar-toggler)
 }
 @media (min-width: 576px) {
   #footer > .container {
-    max-width: 100%;
+    max-width: 103.125rem;
   }
 }
 @media (min-width: 768px) {
   #footer > .container {
-    max-width: 100%;
+    max-width: 103.125rem;
   }
 }
 @media (min-width: 992px) {
   #footer > .container {
-    max-width: 100%;
+    max-width: 103.125rem;
   }
 }
 @media (min-width: 1300px) {
   #footer > .container {
-    max-width: 100%;
+    max-width: 103.125rem;
   }
 }
 #footer .newsletter-footer {
@@ -26557,6 +26568,10 @@ aside .dropdown-toggle::after, aside [data-toggle=collapse]:not(.navbar-toggler)
 #footer .newsletter-email-wrapper button[type=submit] {
   background: #ffffff;
   color: #212121;
+  font-weight: 700;
+  -webkit-box-shadow: inset 0px 0px 1px 1px #000000;
+  -moz-box-shadow: inset 0px 0px 1px 1px #000000;
+  box-shadow: inset 0px 0px 1px 1px #000000;
 }
 #footer .newsletter-email-wrapper button[type=submit]:hover, #footer .newsletter-email-wrapper button[type=submit]:focus {
   background: #F5F7FA;

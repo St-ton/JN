@@ -14,11 +14,11 @@ header {
   }
 }
 
-#mainNavigation {
+/*#mainNavigation {
   .dropdown-toggle::after, [data-toggle=collapse]:not(.navbar-toggler)::after{
     content: initial !important;
   }
-}
+}*/
 
 #shop-nav .fas,
 .main-search .fas {
@@ -93,7 +93,7 @@ header {
 .carousel-arrows-inside {
   margin: 0 50px;
   .slick-arrow {
-    top: 30%;
+    top: 35%;
   }
   .slick-prev {
     transform: translate(-100%, -50%);
@@ -114,6 +114,9 @@ header {
   &::after { font-size: $h2-font-size; }
   &:hover { background-color: $primary; color: $white; }
   &:focus { outline: 0; }
+}
+.carousel-thumbnails .slick-arrow {
+  color: $gray;
 }
 
 .hr-sect {
@@ -257,7 +260,13 @@ aside {
   }
 }
 
-.modal-header .close {
+.badge-primary {
+  color: $white;
+  background-color: $black;
+}
+
+.modal-header .close,
+#image_wrapper.fullscreen .product-detail-image-topbar #image_fullscreen_close {
   background: $white;
 }
 
@@ -276,7 +285,7 @@ aside {
   > .container {
     @each $breakpoint, $container-max-width in $container-max-widths {
       @include media-breakpoint-up($breakpoint, $grid-breakpoints) {
-        max-width: 100%;
+        max-width: rem(1650px);
       }
     }
   }
@@ -296,6 +305,10 @@ aside {
   .newsletter-email-wrapper button[type=submit] {
     background: $white;
     color: $secondary;
+    font-weight: $font-weight-bold;
+    -webkit-box-shadow: inset 0px 0px 1px 1px $black;
+    -moz-box-shadow: inset 0px 0px 1px 1px $black;
+    box-shadow: inset 0px 0px 1px 1px $black;
     &:hover, &:focus {
       background: $gray-light;
     }

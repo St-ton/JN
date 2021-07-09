@@ -22,8 +22,13 @@ class GenerateDemoDataCommand extends Command
     private $products;
     /** @var int */
     private $customers;
+    /** @var ProgressBar */
+    private $bar;
 
-    protected function configure()
+    /**
+     * @inheritDoc
+     */
+    protected function configure(): void
     {
         $this->setName('generate:demodata')
             ->setDescription('Generate Demo-Data')
@@ -33,15 +38,23 @@ class GenerateDemoDataCommand extends Command
             ->addOption('products', 'p', InputOption::VALUE_OPTIONAL, 'Amount of products', 0);
     }
     
+    public function callBack(): void
+    {
+        $this->bar->advance();
+    }
+
+    /**
+     * Generate the demo-Data.
+     */
     private function generate(): void
     {
-        $genarator = new DemoDataInstaller(
+        $generator = new DemoDataInstaller(
             $this->db,
             [
-                'manufacturers' => $this->manufacturers > 0 ? 1 : 0,
-                'categories'    => $this->categories > 0 ? 1 : 0,
-                'articles'      => $this->products > 0 ? 1 : 0,
-                'customers'     => $this->customers > 0 ? 1 : 0
+                'manufacturers' => $this->manufacturers,
+                'categories'    => $this->categories,
+                'articles'      => $this->products,
+                'customers'     => $this->customers
             ]
         );
         ProgressBar::setFormatDefinition(
@@ -49,35 +62,64 @@ class GenerateDemoDataCommand extends Command
             '%message:s% %current%/%max% %bar% %percent:3s%% %elapsed:6s%/%estimated:-6s%'
         );
         
-        $this->generateItems($genarator, 'createManufacturers', $this->manufacturers, 'manufacturers');
-        $this->generateItems($genarator, 'createCategories', $this->categories, 'categories');
-        $this->generateItems($genarator, 'createProducts', $this->products, 'products');
-        $this->generateItems($genarator, 'createCustomers', $this->customers, 'customer');
+        if ($this->manufacturers > 0) {
+            $this->barStart($this->manufacturers, 'manufacturer');
+            $generator->createManufacturers([$this, 'callBack']);
+            $this->barEnd();
+        }
+
+        if ($this->categories > 0) {
+            $this->barStart($this->categories, 'categories');
+            $generator->createCategories([$this, 'callBack']);
+            $this->barEnd();
+        }
+
+        if ($this->products > 0) {
+            $this->barStart($this->products, 'products');
+            $generator->createProducts([$this, 'callBack']);
+            $this->barEnd();
+            $generator->updateRatingsAvg();
+        }
+        
+        if ($this->customers > 0) {
+            $this->barStart($this->customers, 'customers');
+            $generator->createCustomers([$this, 'callBack']);
+            $this->barEnd();
+        }
         
         $this->getIO()->writeln('Generated manufacturers: ' . $this->manufacturers);
         $this->getIO()->writeln('Generated categories: ' . $this->categories);
         $this->getIO()->writeln('Generated products: ' . $this->products);
         $this->getIO()->writeln('Generated customers: ' . $this->customers);
     }
-    
-    private function generateItems(DemoDataInstaller $generator, string $func, int $max, string $itemName): void
+
+    /**
+     * execute before starting any Progress to initialize the progress-bar.
+     *
+     * @param int    $max
+     * @param string $subject
+     */
+    private function barStart(int $max, string $subject): void
     {
-        if ($max === 0) {
-            return;
-        }
-        $bar = new ProgressBar($this->getIO(), $max);
-        $bar->start();
-        $bar->setFormat('generator');
-        $bar->setMessage('Generate ' . $itemName . ':');
-        for ($i = 0; $i < $max; $i++) {
-            $generator->$func();
-            $bar->advance();
-        }
-        $bar->finish();
+        $this->bar = new ProgressBar($this->getIO(), $max);
+        $this->bar->start();
+        $this->bar->setFormat('generator');
+        $this->bar->setMessage('Generate ' . $subject . ':');
+    }
+
+    /**
+     * execute if progress has finished.
+     */
+    private function barEnd(): void
+    {
+        $this->bar->finish();
         $this->getIO()->newLine();
         $this->getIO()->newLine();
     }
-    
+
+    /**
+     * @inheritDoc
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->db            = Shop::Container()->getDB();

@@ -417,10 +417,9 @@ class DemoDataInstaller
             $manufacturer->cBildpfad   = $this->createManufacturerImage($manufacturer->kHersteller, $name);
             $res                       = $this->db->insert('thersteller', $manufacturer);
             if ($res > 0) {
-                $seoItem       = new stdClass();
-                $seoItem->cKey = 'kHersteller';
-                $seoItem->cSeo = $this->getUniqueSlug($manufacturer->cSeo);
-
+                $seoItem           = new stdClass();
+                $seoItem->cKey     = 'kHersteller';
+                $seoItem->cSeo     = $this->getUniqueSlug($manufacturer->cSeo);
                 $seoItem->kKey     = $manufacturer->kHersteller;
                 $seoItem->kSprache = 1;
                 $this->db->insert('tseo', $seoItem);
@@ -472,10 +471,9 @@ class DemoDataInstaller
             $category->rght                  = 0;
             $res                             = $this->db->insert('tkategorie', $category);
             if ($res > 0) {
-                $seo       = new stdClass();
-                $seo->cKey = 'kKategorie';
-                $seo->cSeo = $this->getUniqueSlug($category->cSeo);
-
+                $seo           = new stdClass();
+                $seo->cKey     = 'kKategorie';
+                $seo->cSeo     = $this->getUniqueSlug($category->cSeo);
                 $seo->kKey     = $category->kKategorie;
                 $seo->kSprache = 1;
                 $this->db->insert('tseo', $seo);
@@ -598,22 +596,20 @@ class DemoDataInstaller
                 for ($j = 0; $j < $numRatings; ++$j) {
                     $this->createRating($product->kArtikel);
                 }
-
-                $maxCategroyProduct = (int)$this->db->getSingleObject(
+                $maxCategoryProduct = (int)$this->db->getSingleObject(
                     'SELECT MAX(kKategorieArtikel) AS cnt 
                         FROM tkategorieartikel'
                 )->cnt;
 
                 $productCategory                    = new stdClass();
-                $productCategory->kKategorieArtikel = $maxCategroyProduct + 1;
+                $productCategory->kKategorieArtikel = $maxCategoryProduct + 1;
                 $productCategory->kArtikel          = $product->kArtikel;
                 $productCategory->kKategorie        = \random_int(1, $categories);
                 $this->db->insert('tkategorieartikel', $productCategory);
 
-                $seoItem       = new stdClass();
-                $seoItem->cKey = 'kArtikel';
-                $seoItem->cSeo = $this->getUniqueSlug($product->cSeo);
-
+                $seoItem           = new stdClass();
+                $seoItem->cKey     = 'kArtikel';
+                $seoItem->cSeo     = $this->getUniqueSlug($product->cSeo);
                 $seoItem->kKey     = $product->kArtikel;
                 $seoItem->kSprache = 1;
                 $this->db->insert('tseo', $seoItem);
@@ -762,18 +758,19 @@ class DemoDataInstaller
     private function createProductImage(int $productID, string $text, int $imageNumber): void
     {
         $maxPk = (int)$this->db->getSingleObject('SELECT MAX(kArtikelPict) AS maxPk FROM tartikelpict')->maxPk;
-        if ($productID > 0) {
-            $file = '1024_1024_' . \md5($text . $productID . $imageNumber) . '.jpg';
-            if ($this->createImage(\PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $file, $text, 1024, 1024) === true) {
-                $image                   = new stdClass();
-                $image->cPfad            = $file;
-                $image->kBild            = $this->db->insert('tbild', $image);
-                $image->kArtikelPict     = $maxPk + 1;
-                $image->kMainArtikelBild = 0;
-                $image->kArtikel         = $productID;
-                $image->nNr              = $imageNumber;
-                $this->db->insert('tartikelpict', $image);
-            }
+        if ($productID <= 0) {
+            return;
+        }
+        $file = '1024_1024_' . \md5($text . $productID . $imageNumber) . '.jpg';
+        if ($this->createImage(\PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $file, $text, 1024, 1024) === true) {
+            $image                   = new stdClass();
+            $image->cPfad            = $file;
+            $image->kBild            = $this->db->insert('tbild', $image);
+            $image->kArtikelPict     = $maxPk + 1;
+            $image->kMainArtikelBild = 0;
+            $image->kArtikel         = $productID;
+            $image->nNr              = $imageNumber;
+            $this->db->insert('tartikelpict', $image);
         }
     }
 
@@ -804,7 +801,7 @@ class DemoDataInstaller
         $rating                  = new stdClass();
         $rating->kArtikel        = $productID;
         $rating->kKunde          = 0;
-        $rating->kSprache        = 1; //@todo: rand(0, 1)?
+        $rating->kSprache        = 1;
         $rating->cName           = $this->faker->name;
         $rating->cTitel          = \addcslashes($this->faker->realText(75), '\'"');
         $rating->cText           = $this->faker->text(100);

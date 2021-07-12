@@ -217,8 +217,7 @@ class AuthToken
         \header('Location: ' . self::AUTH_SERVER . '?' . \http_build_query([
                 'url'  => $returnURL,
                 'code' => $authCode
-            ])
-        );
+            ]));
 
         exit;
     }

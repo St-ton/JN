@@ -956,38 +956,17 @@ class ShippingMethod
      */
     public static function getAdditionalFees($shippingMethod, $iso, $zip): ?stdClass
     {
-        $db   = Shop::Container()->getDB();
-        $fees = $db->selectAll(
-            'tversandzuschlag',
-            ['kVersandart', 'cISO'],
-            [(int)$shippingMethod->kVersandart, $iso]
-        );
-        foreach ($fees as $fee) {
-            $zipData = $db->getSingleObject(
-                'SELECT * FROM tversandzuschlagplz
-                    WHERE ((cPLZAb <= :plz
-                        AND cPLZBis >= :plz)
-                        OR cPLZ = :plz)
-                        AND kVersandzuschlag = :sid',
-                ['plz' => $zip, 'sid' => (int)$fee->kVersandzuschlag]
-            );
-            if ($zipData !== null && $zipData->kVersandzuschlagPlz > 0) {
-                $fee->angezeigterName = [];
-                foreach (Frontend::getLanguages() as $Sprache) {
-                    $localized = $db->select(
-                        'tversandzuschlagsprache',
-                        'kVersandzuschlag',
-                        (int)$fee->kVersandzuschlag,
-                        'cISOSprache',
-                        $Sprache->cISO
-                    );
-
-                    $fee->angezeigterName[$Sprache->cISO] = $localized->cName;
-                }
-                $fee->cPreisLocalized = Preise::getLocalizedPriceString($fee->fZuschlag);
-
-                return $fee;
-            }
+        $shippingMethodData = new Versandart($shippingMethod->kVersandart);
+        if (($surcharge = $shippingMethodData->getShippingSurchargeForZip($zip, $iso)) !== null) {
+            return (object)[
+                'kVersandzuschlag' => $surcharge->getID(),
+                'kVersandart'      => $surcharge->getShippingMethod(),
+                'cIso'             => $surcharge->getISO(),
+                'cName'            => $surcharge->getTitle(),
+                'fZuschlag'        => $surcharge->getSurcharge(),
+                'cPreisLocalized'  => $surcharge->getPriceLocalized(),
+                'angezeigterName'  => $surcharge->getNames()
+            ];
         }
 
         return null;

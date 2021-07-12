@@ -3,7 +3,7 @@
         {include file='snippets/extension.tpl'}
     {/block}
 
-    {container fluid=$Link->getIsFluid() class="blog-details"}
+    {container fluid=$Link->getIsFluid() class="blog-details {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
     {if !empty($cNewsErr)}
         {block name='blog-details-alert'}
             {alert variant="danger"}{lang key='newsRestricted' section='news'}{/alert}
@@ -32,7 +32,7 @@
                             {/block}
                         {else}
                             {block name='blog-details-noauthor'}
-                                <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="d-none">
+                                <div itemprop="author publisher" itemscope itemtype="https://schema.org/Organization" class="d-none">
                                     <span itemprop="name">{$meta_publisher}</span>
                                     <meta itemprop="logo" content="{$ShopLogoURL}" />
                                 </div>
@@ -221,7 +221,7 @@
                 <div class="h2">{lang key='news' section='news'}</div>
                 <div itemprop="about"
                     itemscope=true
-                    itemtype="http://schema.org/Blog"
+                    itemtype="https://schema.org/Blog"
                     class="carousel carousel-arrows-inside mx-0 slick-lazy slick-type-three {if $oNews_arr|count < 3}slider-no-preview{/if}"
                     data-slick-type="slider-three">
                     {include file='snippets/slider_items.tpl' items=$oNews_arr type='news'}

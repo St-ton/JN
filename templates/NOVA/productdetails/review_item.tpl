@@ -21,12 +21,12 @@
         {/block}
         {block name='productdetails-review-item-content'}
             {col cols=12}
-                {row itemprop="review" itemscope=true itemtype="http://schema.org/Review"}
+                {row itemprop="review" itemscope=true itemtype="https://schema.org/Review"}
                     {block name='productdetails-review-item-title'}
                         <span itemprop="name" class="d-none">{$oBewertung->cTitel}</span>
                     {/block}
                     {block name='productdetails-review-item-review'}
-                        {col class="col-auto text-center-util" itemprop="reviewRating" itemscope=true itemtype="http://schema.org/Rating"}
+                        {col class="col-auto text-center-util" itemprop="reviewRating" itemscope=true itemtype="https://schema.org/Rating"}
                             {block name='productdetails-review-item-rating'}
                                 {block name='productdetails-review-item-include-rating'}
                                     {include file='productdetails/rating.tpl' stars=$oBewertung->nSterne}
@@ -77,7 +77,7 @@
                                 <span class="subheadline">{$oBewertung->cTitel}</span>
                                 <p itemprop="reviewBody">{$oBewertung->cText|nl2br}</p>
                                 <div class="blockquote-footer">
-                                    <span itemprop="author" itemscope=true itemtype="http://schema.org/Person">
+                                    <span itemprop="author" itemscope=true itemtype="https://schema.org/Person">
                                         <span itemprop="name">{$oBewertung->cName}</span>
                                     </span>,
                                     <meta itemprop="datePublished" content="{$oBewertung->dDatum}" />{$oBewertung->Datum}

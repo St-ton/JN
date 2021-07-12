@@ -49,14 +49,8 @@ class ExtensionPoint
      */
     public function load(): self
     {
-        $db        = Shop::Container()->getDB();
-        $cache     = Shop::Container()->getCache();
-        $key       = $this->getPageKey();
-        $instances = $cache->get('jtl_extensionpoint_instances');
-        if ($instances !== false) {
-            return $this;
-        }
-        $instances  = [];
+        $db         = Shop::Container()->getDB();
+        $key        = $this->getPageKey();
         $extensions = $db->getObjects(
             "SELECT cClass, kInitial FROM textensionpoint
                 WHERE (kSprache = :lid OR kSprache = 0)
@@ -78,12 +72,10 @@ class ExtensionPoint
                 /** @var IExtensionPoint $instance */
                 $instance = new $class($db);
                 $instance->init((int)$extension->kInitial);
-                $instances[] = $instance;
             } else {
                 Shop::Container()->getLogService()->error('Extension "' . $class . '" not found');
             }
         }
-        $cache->set('jtl_extensionpoint_instances', $instances, [\CACHING_GROUP_CORE]);
 
         return $this;
     }

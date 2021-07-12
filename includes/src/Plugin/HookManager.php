@@ -48,6 +48,11 @@ class HookManager
     private $dispatcher;
 
     /**
+     * @var int
+     */
+    private $lockedForPluginID = 0;
+
+    /**
      * HookManager constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
@@ -103,6 +108,9 @@ class HookManager
             return;
         }
         foreach ($this->hookList[$hookID] as $item) {
+            if ($this->lockedForPluginID === $item->kPlugin) {
+                continue;
+            }
             $plugin = $this->getPluginInstance($item->kPlugin);
             if ($plugin === null) {
                 continue;
@@ -163,5 +171,18 @@ class HookManager
         }
 
         return $plugin;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function lock(int $id): void
+    {
+        $this->lockedForPluginID = $id;
+    }
+
+    public function unlock(): void
+    {
+        $this->lockedForPluginID = 0;
     }
 }

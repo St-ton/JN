@@ -1158,9 +1158,10 @@ class Artikel
      * @param int|float $amount
      * @param array     $attributes
      * @param int       $customerGroupID
+     * @param string    $unique
      * @return float|null
      */
-    public function gibPreis($amount, array $attributes, int $customerGroupID = 0)
+    public function gibPreis($amount, array $attributes, int $customerGroupID = 0, string $unique = '')
     {
         if (!Frontend::getCustomerGroup()->mayViewPrices()) {
             return null;
@@ -1179,6 +1180,16 @@ class Artikel
             : $this->kArtikel;
         $this->Preise->rabbatierePreise($this->getDiscount($customerGroupID, $productID));
         $price = $this->Preise->fVKNetto;
+        if (isset($this->FunktionsAttribute[\FKT_ATTRIBUT_VOUCHER_FLEX])) {
+            $customCalculated = (float)Frontend::get(
+                'customCalculated_' . $unique,
+                Request::postVar(\FKT_ATTRIBUT_VOUCHER_FLEX . 'Value')
+            );
+            if ($customCalculated > 0) {
+                $price = Tax::getNet($customCalculated, Tax::getSalesTax($this->kSteuerklasse), 4);
+                Frontend::set('customCalculated_' . $unique, $customCalculated);
+            }
+        }
         foreach ($this->Preise->fPreis_arr as $i => $fPreis) {
             if ($this->Preise->nAnzahl_arr[$i] <= $amount) {
                 $price = $fPreis;
@@ -3832,7 +3843,8 @@ class Artikel
             $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_LAGER;
         }
         if (!$this->bHasKonfig
-            && $this->Preise->fVKNetto == 0
+            && $this->Preise->fVKNetto === 0.0
+            && !isset($this->FunktionsAttribute[\FKT_ATTRIBUT_VOUCHER_FLEX])
             && $this->conf['global']['global_preis0'] === 'N'
             && isset($this->Preise->fVKNetto, $this->conf['global']['global_preis0'])
         ) {
@@ -5338,6 +5350,8 @@ class Artikel
         }
         if ($this->conf['global']['global_ust_auszeichnung'] === 'auto') {
             $ust = $inklexkl . ' ' . $mwst . '% ' . Shop::Lang()->get('vat', 'productDetails');
+        } elseif ($this->conf['global']['global_ust_auszeichnung'] === 'autoNoVat') {
+            $ust = $inklexkl . ' ' . Shop::Lang()->get('vat', 'productDetails');
         } elseif ($this->conf['global']['global_ust_auszeichnung'] === 'endpreis') {
             $ust = Shop::Lang()->get('finalprice', 'productDetails');
         }

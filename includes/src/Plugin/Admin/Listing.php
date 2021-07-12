@@ -309,7 +309,7 @@ final class Listing
             return \in_array(
                 $e->getState(),
                 [State::ERRONEOUS, State::UPDATE_FAILED, State::LICENSE_KEY_MISSING,
-                    State::LICENSE_KEY_INVALID, State::ESX_LICENSE_EXPIRED, State::ESX_SUBSCRIPTION_EXPIRED],
+                    State::LICENSE_KEY_INVALID, State::EXS_LICENSE_EXPIRED, State::EXS_SUBSCRIPTION_EXPIRED],
                 true
             );
         });

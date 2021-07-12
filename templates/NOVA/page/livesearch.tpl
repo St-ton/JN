@@ -1,7 +1,7 @@
 {block name='page-livesearch'}
     {if count($LivesucheTop) > 0 || count($LivesucheLast) > 0}
         {opcMountPoint id='opc_before_livesearch' inContainer=false}
-        {container}
+        {container class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
             {row id="livesearch" class="mt-4"}
                 {block name='page-livesearch-top-searches'}
                     {col}

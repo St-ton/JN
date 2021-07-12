@@ -4,7 +4,7 @@
     {if !empty($Brotnavi) && !$bExclusive && !$bAjaxRequest && $nSeitenTyp !== $smarty.const.PAGE_STARTSEITE && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG && $nSeitenTyp !== $smarty.const.PAGE_BESTELLSTATUS}
         {row no-gutters=true class="breadcrumb-wrapper"}
             {col cols="auto"}
-                {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="http://schema.org/BreadcrumbList"}
+                {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="https://schema.org/BreadcrumbList"}
                     {block name='layout-breadcrumb-sm-back'}
                         {$parent = $Brotnavi[($Brotnavi|count - 2)|max:0]}
                         {if $parent !== null}
@@ -26,7 +26,7 @@
                                         title={sanitizeTitle title=$oItem->getName()}
                                         itemprop="itemListElement"
                                         itemscope=true
-                                        itemtype="http://schema.org/ListItem"
+                                        itemtype="https://schema.org/ListItem"
                                     }
                                         <span itemprop="name">{$oItem->getName()|escape:'html'}</span>
                                         <meta itemprop="item" content="{$oItem->getURLFull()}" />
@@ -41,7 +41,7 @@
                                         title={sanitizeTitle title=$oItem->getName()}
                                         itemprop="itemListElement"
                                         itemscope=true
-                                        itemtype="http://schema.org/ListItem"
+                                        itemtype="https://schema.org/ListItem"
                                     }
                                         <span itemprop="name">
                                             {if $oItem->getName() !== null}
@@ -61,7 +61,7 @@
                                         title={sanitizeTitle title=$oItem->getName()}
                                         itemprop="itemListElement"
                                         itemscope=true
-                                        itemtype="http://schema.org/ListItem"
+                                        itemtype="https://schema.org/ListItem"
                                     }
                                         <span itemprop="name">{$oItem->getName()}</span>
                                         <meta itemprop="item" content="{$oItem->getURLFull()}" />

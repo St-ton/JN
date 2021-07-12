@@ -25,8 +25,13 @@ class ShippingSurchargeArea
      */
     public function __construct(string $ZIPFrom, string $ZIPTo)
     {
-        $this->setZIPFrom($ZIPFrom)
-             ->setZIPTo($ZIPTo);
+        if ($this->getNumber($ZIPFrom) < $this->getNumber($ZIPTo)) {
+            $this->setZIPFrom($ZIPFrom)
+                ->setZIPTo($ZIPTo);
+        } else {
+            $this->setZIPFrom($ZIPTo)
+                ->setZIPTo($ZIPFrom);
+        }
     }
 
     /**
@@ -43,7 +48,7 @@ class ShippingSurchargeArea
      */
     public function setZIPFrom(string $ZIPFrom): self
     {
-        $this->ZIPFrom = $ZIPFrom;
+        $this->ZIPFrom = \str_replace(' ', '', $ZIPFrom);
 
         return $this;
     }
@@ -62,7 +67,7 @@ class ShippingSurchargeArea
      */
     public function setZIPTo(string $ZIPTo): self
     {
-        $this->ZIPTo = $ZIPTo;
+        $this->ZIPTo = \str_replace(' ', '', $ZIPTo);
 
         return $this;
     }
@@ -73,7 +78,11 @@ class ShippingSurchargeArea
      */
     public function isInArea(string $zip): bool
     {
-        return ($this->getZIPFrom() <= $zip && $this->getZIPTo() >= $zip);
+        $zipNumber = $this->getNumber($zip);
+
+        return $this->getLetters($zip) === $this->getLetters($this->ZIPFrom)
+            && $this->getNumber($this->ZIPFrom) <= $zipNumber
+            && $this->getNumber($this->ZIPTo) >= $zipNumber;
     }
 
     /**
@@ -81,6 +90,36 @@ class ShippingSurchargeArea
      */
     public function getArea(): string
     {
-        return $this->getZIPFrom() . ' - ' . $this->getZIPTo();
+        return $this->ZIPFrom . ' - ' . $this->ZIPTo;
+    }
+
+    /**
+     * @param $zip
+     * @return int
+     */
+    private function getNumber($zip): int
+    {
+        \preg_match('/[\d]+/', $zip, $number);
+
+        return (int)($number[0] ?? 0);
+    }
+
+    /**
+     * @param $zip
+     * @return string
+     */
+    private function getLetters($zip): string
+    {
+        \preg_match('/[A-Za-z]+/', $zip, $letters);
+
+        return $letters[0] ?? '';
+    }
+
+    /**
+     * @return bool
+     */
+    public function lettersMatch(): bool
+    {
+        return $this->getLetters($this->ZIPFrom) === $this->getLetters($this->ZIPTo);
     }
 }

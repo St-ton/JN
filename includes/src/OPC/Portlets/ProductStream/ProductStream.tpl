@@ -30,7 +30,7 @@
                      class="product-wrapper {if !($style === 'list' && $Artikel@last)}mb-4{/if}"
                      itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
                     {if $style === 'list'}
-                        {include file='productlist/item_list.tpl' tplscope=$style}
+                        {include file='productlist/item_list.tpl' tplscope=$style isOPC=true}
                     {elseif $style === 'gallery'}
                         {include file='productlist/item_box.tpl' tplscope=$style class='thumbnail'}
                     {/if}

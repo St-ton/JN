@@ -1,12 +1,15 @@
 {block name='productlist-item-list'}
-    {if $Einstellungen.template.productlist.variation_select_productlist === 'N'}
-        {assign var=hasOnlyListableVariations value=0}
-    {else}
-        {hasOnlyListableVariations artikel=$Artikel
-            maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist
-            maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist
-            assign='hasOnlyListableVariations'}
-    {/if}
+    {block name='productlist-item-list-variables'}
+        {if $Einstellungen.template.productlist.variation_select_productlist === 'N'}
+            {assign var=hasOnlyListableVariations value=0}
+        {else}
+            {hasOnlyListableVariations artikel=$Artikel
+                maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist
+                maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist
+                assign='hasOnlyListableVariations'}
+        {/if}
+        {$isOPC=$isOPC|default:false}
+    {/block}
     <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true"
          class="productbox productbox-row productbox-show-variations {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($listStyle) && $listStyle === 'list'} active{/if}">
         <div class="productbox-inner">
@@ -128,7 +131,7 @@
                                 {/block}
                             {/if}
                         {/col}
-                        {col cols=12 xl=4 class='productbox-options' itemprop='offers' itemscope=true itemtype='http://schema.org/Offer'}
+                        {col cols=12 xl=4 class='productbox-options' itemprop='offers' itemscope=true itemtype='https://schema.org/Offer'}
                             <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
                             {block name='productlist-item-list-form'}
                                 {block name='productlist-item-list-include-price'}
@@ -141,6 +144,7 @@
                                 {/block}
                             {/block}
                             {block name='productlist-item-list-basket-details'}
+                                {if !$isOPC}
                                 <div class="form-row productbox-onhover productbox-actions item-list-basket-details">
                                     {if ($Artikel->inWarenkorbLegbar === 1
                                             || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))
@@ -211,6 +215,7 @@
                                         {/col}
                                     {/if}
                                 </div>
+                                {/if}
                             {/block}
                             {block name='productlist-item-form-expandable-inputs-hidden'}
                                 {if $Artikel->kArtikelVariKombi > 0}

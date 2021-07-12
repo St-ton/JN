@@ -52,3 +52,9 @@
 .dropdown-toggle, [data-toggle=collapse]:not(.navbar-toggler) {
 	white-space: initial;
 }
+.sidepanel-left, .productlist-filter-wrapper {
+	.dropdown-menu {
+		max-height: 50vh;
+		overflow-y: auto;
+	}
+}

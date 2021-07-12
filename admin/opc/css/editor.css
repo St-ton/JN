@@ -1406,4 +1406,12 @@ html, body {
   background-color: rgba(255, 0, 0, 0.5);
 }
 
+.fade {
+  transition: opacity 0.2s linear;
+}
+
+.modal-dialog {
+  transition: transform 0.1s ease-out;
+}
+
 /*# sourceMappingURL=editor.css.map */

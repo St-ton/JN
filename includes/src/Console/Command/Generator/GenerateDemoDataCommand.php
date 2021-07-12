@@ -10,17 +10,35 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class GenerateDemoDataCommand
+ * @package JTL\Console\Command\Generator
+ */
 class GenerateDemoDataCommand extends Command
 {
-    /** @var int */
+    /**
+     * @var int
+     */
     private $manufacturers;
-    /** @var int */
+
+    /**
+     * @var int
+     */
     private $categories;
-    /** @var int */
+
+    /**
+     * @var int
+     */
     private $products;
-    /** @var int */
+
+    /**
+     * @var int
+     */
     private $customers;
-    /** @var ProgressBar */
+
+    /**
+     * @var ProgressBar
+     */
     private $bar;
 
     /**
@@ -35,7 +53,7 @@ class GenerateDemoDataCommand extends Command
             ->addOption('customers', 'u', InputOption::VALUE_OPTIONAL, 'Amount of customers', 0)
             ->addOption('products', 'p', InputOption::VALUE_OPTIONAL, 'Amount of products', 0);
     }
-    
+
     /**
      * @inheritDoc
      */
@@ -52,7 +70,7 @@ class GenerateDemoDataCommand extends Command
     }
 
     /**
-     * Generate the demo-Data.
+     * Generate the demo data.
      */
     private function generate(): void
     {
@@ -69,7 +87,7 @@ class GenerateDemoDataCommand extends Command
             'generator',
             '%message:s% %current%/%max% %bar% %percent:3s%% %elapsed:6s%/%estimated:-6s%'
         );
-        
+
         if ($this->manufacturers > 0) {
             $this->barStart($this->manufacturers, 'manufacturer');
             $generator->createManufacturers([$this, 'callBack']);
@@ -88,13 +106,13 @@ class GenerateDemoDataCommand extends Command
             $this->barEnd();
             $generator->updateRatingsAvg();
         }
-        
+
         if ($this->customers > 0) {
             $this->barStart($this->customers, 'customers');
             $generator->createCustomers([$this, 'callBack']);
             $this->barEnd();
         }
-        
+
         $this->getIO()->writeln('Generated manufacturers: ' . $this->manufacturers);
         $this->getIO()->writeln('Generated categories: ' . $this->categories);
         $this->getIO()->writeln('Generated products: ' . $this->products);

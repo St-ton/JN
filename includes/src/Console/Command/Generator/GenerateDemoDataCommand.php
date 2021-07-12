@@ -12,8 +12,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateDemoDataCommand extends Command
 {
-    /** @var \JTL\DB\DbInterface */
-    private $db;
     /** @var int */
     private $manufacturers;
     /** @var int */
@@ -38,9 +36,19 @@ class GenerateDemoDataCommand extends Command
             ->addOption('products', 'p', InputOption::VALUE_OPTIONAL, 'Amount of products', 0);
     }
     
-    public function callBack(): void
+    /**
+     * @inheritDoc
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->bar->advance();
+        $this->manufacturers = (int)$this->getOption('manufacturers');
+        $this->categories    = (int)$this->getOption('categories');
+        $this->products      = (int)$this->getOption('products');
+        $this->customers     = (int)$this->getOption('customers');
+
+        $this->generate();
+
+        return Command::SUCCESS;
     }
 
     /**
@@ -49,7 +57,7 @@ class GenerateDemoDataCommand extends Command
     private function generate(): void
     {
         $generator = new DemoDataInstaller(
-            $this->db,
+            Shop::Container()->getDB(),
             [
                 'manufacturers' => $this->manufacturers,
                 'categories'    => $this->categories,
@@ -117,19 +125,8 @@ class GenerateDemoDataCommand extends Command
         $this->getIO()->newLine();
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function callBack(): void
     {
-        $this->db            = Shop::Container()->getDB();
-        $this->manufacturers = (int)$this->getOption('manufacturers');
-        $this->categories    = (int)$this->getOption('categories');
-        $this->products      = (int)$this->getOption('products');
-        $this->customers     = (int)$this->getOption('customers');
-
-        $this->generate();
-        
-        return 1;
+        $this->bar->advance();
     }
 }

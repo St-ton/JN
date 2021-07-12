@@ -6,6 +6,7 @@ use Cocur\Slugify\Slugify;
 use Faker\Factory as Fake;
 use Faker\Generator;
 use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 use JTL\Installation\Faker\de_DE\Commerce;
 use JTL\Installation\Faker\ImageProvider;
 use JTL\xtea\XTEA;
@@ -424,15 +425,7 @@ class DemoDataInstaller
             if ($res > 0) {
                 $seoItem       = new stdClass();
                 $seoItem->cKey = 'kHersteller';
-                $seoItem->cSeo = $_manufacturer->cSeo;
-
-                $seo_index = 0;
-                while (($data = $this->pdo->select('tseo', 'cKey', $seoItem->cKey, 'cSeo', $seoItem->cSeo)) !== false
-                    && \is_array($data)
-                    && count($data) > 0
-                ) {
-                    $seoItem->cSeo = $_manufacturer->cSeo . '_' . ++$seo_index;
-                }
+                $seoItem->cSeo = $this->getUniqueSeoKey($_manufacturer->cSeo);
 
                 $seoItem->kKey     = $_manufacturer->kHersteller;
                 $seoItem->kSprache = 1;
@@ -482,14 +475,7 @@ class DemoDataInstaller
             if ($res > 0) {
                 $seo       = new stdClass();
                 $seo->cKey = 'kKategorie';
-                $seo->cSeo = $category->cSeo;
-                $seo_index = 0;
-                while (($data = $this->pdo->select('tseo', 'cKey', $seo->cKey, 'cSeo', $seo->cSeo)) !== false
-                    && \is_array($data)
-                    && count($data) > 0
-                ) {
-                    $seo->cSeo = $category->cSeo . '_' . ++$seo_index;
-                }
+                $seo->cSeo = $this->getUniqueSeoKey($category->cSeo);
 
                 $seo->kKey     = $category->kKategorie;
                 $seo->kSprache = 1;
@@ -608,30 +594,21 @@ class DemoDataInstaller
                     $this->createRating($product->kArtikel);
                 }
 
+                $maxCategroyProduct =
+                    (int)$this->pdo->getSingleObject(
+                        'SELECT max(kKategorieArtikel) AS cnt FROM tkategorieartikel'
+                    )->cnt;
+                
                 $productCategory                    = new stdClass();
-                $productCategory->kKategorieArtikel = $product->kArtikel;
+                $productCategory->kKategorieArtikel = $maxCategroyProduct + 1;
                 $productCategory->kArtikel          = $product->kArtikel;
                 $productCategory->kKategorie        = \rand(1, $categories);
                 $this->pdo->insert('tkategorieartikel', $productCategory);
 
                 $seoItem       = new stdClass();
                 $seoItem->cKey = 'kArtikel';
-                $seoItem->cSeo = $product->cSeo;
-
-                $seo_index = 0;
-                while (($data = $this->pdo->select(
-                    'tseo',
-                    'cKey',
-                    $seoItem->cKey,
-                    'cSeo',
-                    $seoItem->cSeo
-                )) !== false
-                    && \is_array($data)
-                    && count($data) > 0
-                ) {
-                    $seoItem->cSeo = $product->cSeo . '_' . ++$seo_index;
-                }
-
+                $seoItem->cSeo = $this->getUniqueSeoKey($product->cSeo);
+                
                 $seoItem->kKey     = $product->kArtikel;
                 $seoItem->kSprache = 1;
                 $this->pdo->insert('tseo', $seoItem);
@@ -734,7 +711,6 @@ class DemoDataInstaller
                 'cAbgeholt'          => 'N',
                 'nRegistriert'       => 1,
                 'nLoginversuche'     => 0,
-                'cResetPasswordHash' => '',
             ];
 
             $res = $pdo->insert('tkunde', $insertObj);
@@ -882,6 +858,22 @@ class DemoDataInstaller
         return $right + 1;
     }
 
+    private function getUniqueSeoKey(string $cSeo): string
+    {
+        $seoIndex = 0;
+        
+        while ($this->pdo->queryPrepared(
+            'SELECT cSeo FROM tseo WHERE cSeo = :cSeo',
+            ['cSeo' => $cSeo],
+            ReturnType::ARRAY_OF_OBJECTS
+        )
+        ) {
+            $seoIndex++;
+            $cSeo .= '_' . $seoIndex;
+        }
+        
+        return $cSeo;
+    }
     /**
      * @param string $text
      * @return string

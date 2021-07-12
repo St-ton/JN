@@ -9,6 +9,7 @@ use IteratorAggregate;
 use JTL\DB\DbInterface;
 use JTL\Export\SyntaxChecker;
 use JTL\IO\IOResponse;
+use JTL\Language\LanguageHelper;
 use JTL\Link\Admin\LinkAdmin;
 use JTL\Mail\Template\Model;
 use JTL\Shop;
@@ -396,6 +397,16 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
+        if (!$status->hasInstalledStandardLang()) {
+            $this->add(
+                NotificationEntry::TYPE_DANGER,
+                'Standarsprache nicht installiert',
+                \sprintf(
+                    'Standarsprache "%s" ist nicht installiert',
+                    LanguageHelper::getDefaultLanguage()->getNameDE()
+                )
+            );
+        }
 
         return $this;
     }

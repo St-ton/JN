@@ -156,7 +156,7 @@ class CartHelper
                 }
             }
             $amount      = $amountItem * $info->currency->getConversionFactor();
-            $amountGross = Tax::getGross($amount, Tax::getSalesTax((int)$item->kSteuerklasse));
+            $amountGross = Tax::getGross($amount, Tax::getSalesTax((int)$item->kSteuerklasse), $decimals > 0 ? $decimals : 2 );
 
             switch ((int)$item->nPosTyp) {
                 case \C_WARENKORBPOS_TYP_ARTIKEL:

@@ -23,13 +23,14 @@ class Manufacturer extends BaseManufacturer
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('hf')
-             ->setUrlParamSEO(\SEP_HST)
-             ->setVisibility($this->getConfig('navigationsfilter')['allgemein_herstellerfilter_benutzen'])
-             ->setFrontendName(Shop::isAdmin() ? \__('filterManufacturers') : Shop::Lang()->get('allManufacturers'))
-             ->setType($this->getConfig('navigationsfilter')['manufacturer_filter_type'] === 'O'
-                 ? Type::OR
-                 : Type::AND);
+            ->setUrlParam('hf')
+            ->setUrlParamSEO(\SEP_HST)
+            ->setVisibility($this->getConfig('navigationsfilter')['allgemein_herstellerfilter_benutzen'])
+            ->setFrontendName(Shop::isAdmin() ? \__('filterManufacturers') : Shop::Lang()->get('allManufacturers'))
+            ->setFilterName($this->getFrontendName())
+            ->setType($this->getConfig('navigationsfilter')['manufacturer_filter_type'] === 'O'
+                ? Type::OR
+                : Type::AND);
     }
 
     /**

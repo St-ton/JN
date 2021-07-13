@@ -68,7 +68,7 @@ class URL
     /**
      * @param string|null $url
      */
-    public function __construct($url = null)
+    public function __construct(?string $url = null)
     {
         if ($url) {
             $this->setUrl($url);
@@ -89,14 +89,12 @@ class URL
      */
     public function setUrl(string $url): bool
     {
-        $this->url = $url;
-        // parse URL into respective parts
-        $url_components = \parse_url($this->url);
-
-        if (!$url_components) {
+        $this->url  = $url;
+        $components = \parse_url($this->url);
+        if (!$components) {
             return false;
         }
-        foreach ($url_components as $key => $value) {
+        foreach ($components as $key => $value) {
             if (\property_exists($this, $key)) {
                 $this->$key = $value;
             }

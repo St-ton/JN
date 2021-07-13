@@ -956,8 +956,14 @@
                 $('.js-update-wl').on('change', function () {
                     $.evo.extended().updateWishlistItem($(this).closest('.productbox-inner'));
                 });
+                $(window).on('resize', function () {
+                    setWishlistItemheights();
+                });
+                setWishlistItemheights();
+            }
+            function setWishlistItemheights() {
                 $('.product-list').children().each(function() {
-                    $(this).css('height', $(this).height());
+                    $(this).css('height', window.innerWidth > globals.breakpoints.xl ? $(this).height() : 'unset');
                 });
             }
         },

@@ -225,6 +225,9 @@ final class Globals extends AbstractSync
             if ($tablename === 'tsprache') {
                 $this->db->query("DELETE FROM tsprache WHERE cISO != 'ger' AND cISO != 'eng'");
                 $this->db->query("UPDATE tsprache SET active = FALSE, cShopStandard = 'N', cStandard = 'N'");
+                foreach ($objects as $lang) {
+                    $lang->active = true;
+                }
             } else {
                 $this->db->query('DELETE FROM ' . $tablename);
             }

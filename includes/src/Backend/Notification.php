@@ -400,9 +400,9 @@ class Notification implements IteratorAggregate, Countable
         if (!$status->hasInstalledStandardLang()) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                'Standarsprache nicht installiert',
+                __('defaultLangNotInstalledTitle'),
                 \sprintf(
-                    'Standarsprache "%s" ist nicht installiert',
+                    __('defaultLangNotInstalledMessage'),
                     LanguageHelper::getDefaultLanguage()->getNameDE()
                 )
             );

@@ -4049,7 +4049,7 @@ class Artikel
         $this->cArtikelgewicht = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $kSprache, $this->fArtikelgewicht);
 
         if ($this->fMassMenge != 0) {
-            $this->cMassMenge = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $kSprache, $this->fMassMenge);
+            $this->cMassMenge = Trennzeichen::getUnit(JTLSEPARATER_AMOUNT, $kSprache, $this->fMassMenge);
         }
 
         if ($this->fPackeinheit == 0) {

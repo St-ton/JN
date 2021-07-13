@@ -24,7 +24,7 @@
                                 sizes='24px'}
                         {/if}
                         {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
-                            {$characteristic->cName}
+                            {$characteristic->getName()}
                         {/if}
                     </span>
                 {/button}

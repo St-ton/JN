@@ -354,7 +354,7 @@ class Status
      */
     public function hasInstalledStandardLang(): bool
     {
-        $default = LanguageHelper::getDefaultLanguage();
+        $default        = LanguageHelper::getDefaultLanguage();
         $installedLangs = LanguageHelper::getInstance()->getInstalled();
         foreach ($installedLangs as $lang) {
             if ($lang->getId() === $default->getId()) {

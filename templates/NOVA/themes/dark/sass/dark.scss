@@ -14,11 +14,16 @@ header {
   }
 }
 
-/*#mainNavigation {
-  .dropdown-toggle::after, [data-toggle=collapse]:not(.navbar-toggler)::after{
-    content: initial !important;
-  }
-}*/
+#jtl-nav-wrapper .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
+  background-color: $white;
+  color: $black;
+}
+
+  /*#mainNavigation {
+    .dropdown-toggle::after, [data-toggle=collapse]:not(.navbar-toggler)::after{
+      content: initial !important;
+    }
+  }*/
 
 #shop-nav .fas,
 .main-search .fas {
@@ -42,6 +47,9 @@ header {
 
 .btn-primary {
   @include button-variant($gray-darker, $gray-darker);
+}
+.btn-outline-primary {
+  border-color: $gray-dark;
 }
 
 .btn-outline-secondary {
@@ -90,8 +98,14 @@ header {
   }
 }
 
+#image_wrapper #gallery .slick-arrow {
+  background: $gray-dark;
+}
+
 .carousel-arrows-inside {
-  margin: 0 50px;
+  @include media-breakpoint-up(lg) {
+    margin: 0 50px;
+  }
   .slick-arrow {
     top: 35%;
   }
@@ -130,6 +144,9 @@ header {
     margin: 10px 0 0 0;
     width: 300px;
   }
+  @include media-breakpoint-down(md) {
+    border: 0;
+  }
 }
 
 .blog-preview-author {
@@ -150,7 +167,7 @@ header {
   flex-direction: column;
 }
 .badge-circle, .badge-circle-1 {
-  border: 0;
+  border-color: $gray-dark;
   opacity: 0;
   color: $gray-dark;
   &:hover, &:focus {
@@ -168,6 +185,10 @@ header {
   }
 }
 
+.productbox-price {
+  font-weight: $font-weight-normal;
+}
+
 .tab-navigation .nav-link::after {
   border-width: 0 0 $nav-tabs-border-width * 3;
 }
@@ -183,13 +204,21 @@ header {
 .price_wrapper .price {
   color: $black;
 }
-
+@include media-breakpoint-up(md) {
+  .productlist-page-nav .displayoptions {
+    width: 100%;
+    text-align: right;
+    padding-bottom: map_get($spacers, 3);
+    margin-bottom: - map_get($spacers, 2);;
+    border-bottom: $hr-border-width solid $hr-border-color;
+  }
+}
 .productlist-page-nav-top{
-  border-color: $gray-medium;
+  border-color: $gray-dark;
   margin-bottom: map_get($spacers, 2);
 }
 .productlist-page-nav-bottom {
-  border-color: $gray-medium;
+  border-color: $gray-dark;
   margin-top: map_get($spacers, 2);
 }
 

@@ -423,7 +423,7 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 }
 
 .productlist-filter-headline {
-  border-bottom: $border-width solid $gray-light;
+  border-bottom: $border-width solid $gray-dark;
   padding-bottom: map-get($spacers, 2);
   margin-bottom: map-get($spacers, 3);
   font-weight: bold;

@@ -12,6 +12,7 @@ use JTL\Console\Command\Cache\WarmCacheCommand;
 use JTL\Console\Command\Command;
 use JTL\Console\Command\Compile\LESSCommand;
 use JTL\Console\Command\Compile\SASSCommand;
+use JTL\Console\Command\Generator\GenerateDemoDataCommand;
 use JTL\Console\Command\InstallCommand;
 use JTL\Console\Command\Mailtemplates\ResetCommand;
 use JTL\Console\Command\Migration\CreateCommand;
@@ -168,6 +169,7 @@ class Application extends BaseApplication
             $cmds[] = new LESSCommand();
             $cmds[] = new SASSCommand();
             $cmds[] = new ResetCommand();
+            $cmds[] = new GenerateDemoDataCommand();
 
             if ($this->devMode) {
                 $cmds[] = new CreateCommand();

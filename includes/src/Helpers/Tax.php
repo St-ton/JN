@@ -188,8 +188,7 @@ class Tax
         }
         $taxRates = [];
         $taxPos   = [];
-        $conf     = Shop::getSettings([\CONF_GLOBAL]);
-        if ($conf['global']['global_steuerpos_anzeigen'] === 'N') {
+        if (Shop::getSettingValue(\CONF_GLOBAL, 'global_steuerpos_anzeigen') === 'N') {
             return $taxPos;
         }
         foreach ($items as $item) {

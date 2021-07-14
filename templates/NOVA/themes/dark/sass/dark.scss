@@ -36,6 +36,24 @@ header {
       content: initial;
     }
   }
+  &.fa-shopping-cart {
+    background: $url-cart;
+    width: 2em;
+    height: 2em;
+    ::before{
+      content: initial;
+    }
+    filter: invert(1);
+    .fa-sup {
+      filter: invert(1);
+    }
+  }
+}
+
+.fixed-search .fa-search {
+  @include media-breakpoint-down(md) {
+    filter: invert(1);
+  }
 }
 
 #shop-nav .dropdown-menu.show .btn-primary {
@@ -149,6 +167,10 @@ header {
   }
 }
 
+#cfg-container .hr-sect {
+  flex-direction: row;
+}
+
 .blog-preview-author {
   font-weight: bold;
 }
@@ -247,10 +269,6 @@ header {
   }
 }
 
-.table th, .table td {
-  border-color: $gray-dark;
-}
-
 aside {
   .nav-panel {
     > .nav > .active > .nav-link {
@@ -262,8 +280,23 @@ aside {
       color: $gray-dark;
     }
   }
+  @include media-breakpoint-down(md) {
+    .box {
+      margin-bottom: map_get($spacers, 6);
+    }
+    .box-normal-hr {
+      border: 0;
+    }
+  }
 }
-
+@include media-breakpoint-down(md) {
+  .sidepanel-left .box-normal .box-normal-link {
+    border-bottom: $border-width solid $gray-dark;
+    padding-bottom: map-get($spacers, 2);
+    margin-bottom: map-get($spacers, 3);
+    font-weight: bold !important;
+  }
+}
 .choose_quantity .btn {
   color: $gray-dark;
 }

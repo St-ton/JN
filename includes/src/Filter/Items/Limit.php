@@ -24,8 +24,9 @@ class Limit extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('af')
-             ->setFrontendName(Shop::Lang()->get('productsPerPage', 'productOverview'));
+            ->setUrlParam('af')
+            ->setFrontendName(Shop::Lang()->get('productsPerPage', 'productOverview'))
+            ->setFilterName($this->getFrontendName());
     }
 
     /**

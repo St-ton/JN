@@ -38,12 +38,13 @@ class SearchSpecial extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('qf')
-             ->setFrontendName(Shop::isAdmin() ? \__('filterSearchSpecial') : Shop::Lang()->get('specificProducts'))
-             ->setVisibility($this->getConfig('navigationsfilter')['allgemein_suchspecialfilter_benutzen'])
-             ->setType($this->getConfig('navigationsfilter')['search_special_filter_type'] === 'O'
-                 ? Type::OR
-                 : Type::AND);
+            ->setUrlParam('qf')
+            ->setFrontendName(Shop::isAdmin() ? \__('filterSearchSpecial') : Shop::Lang()->get('specificProducts'))
+            ->setFilterName($this->getFrontendName())
+            ->setVisibility($this->getConfig('navigationsfilter')['allgemein_suchspecialfilter_benutzen'])
+            ->setType($this->getConfig('navigationsfilter')['search_special_filter_type'] === 'O'
+                ? Type::OR
+                : Type::AND);
     }
 
     /**

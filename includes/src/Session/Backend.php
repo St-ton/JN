@@ -63,16 +63,15 @@ class Backend extends AbstractSession
         if (!isset($_SESSION['kSprache'], $_SESSION['cISOSprache'])) {
             if (($this->setLanguageByAdminAccount() === false) && $this->setLanguageFromDefault() === false) {
                 // default shop language is not a backend language
-                $installed = LanguageHelper::getInstance()->gibInstallierteSprachen();
-                $lang      = first(
-                    $installed,
+                $lang = first(
+                    LanguageHelper::getInstance()->gibInstallierteSprachen(),
                     static function (LanguageModel $e) {
                         return $e->isShopDefault() === true;
                     }
                 );
                 if ($lang === null) {
                     $lang = first(
-                        $installed,
+                        LanguageHelper::getAllLanguages(),
                         static function (LanguageModel $e) {
                             return $e->getIso() === 'ger';
                         }

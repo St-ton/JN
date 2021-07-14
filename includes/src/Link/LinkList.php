@@ -59,7 +59,7 @@ final class LinkList implements LinkListInterface
         $linkLanguages = $this->db->getObjects(
             "SELECT tlink.*, loc.cISOSprache,
                 tlink.cName AS displayName, loc.cName AS localizedName, loc.cTitle AS localizedTitle, 
-                loc.cContent AS content,
+                loc.cContent AS content, loc.cSeo AS linkURL,
                 loc.cMetaDescription AS metaDescription, loc.cMetaKeywords AS metaKeywords, loc.cMetaTitle AS metaTitle,
                 tsprache.kSprache, tseo.kSprache AS languageID, tseo.cSeo AS localizedUrl,
                 tspezialseite.cDateiname,

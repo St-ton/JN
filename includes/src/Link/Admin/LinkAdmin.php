@@ -607,7 +607,7 @@ final class LinkAdmin
                 ? $localized->cSeo
                 : Seo::getSeo($localized->cSeo);
             $this->db->insert('tlinksprache', $localized);
-            $oldSeo = $this->db->select(
+            $prev = $this->db->select(
                 'tseo',
                 ['cKey', 'kKey', 'kSprache'],
                 ['kLink', $localized->kLink, $language->getId()]
@@ -623,8 +623,8 @@ final class LinkAdmin
             $seo->cKey     = 'kLink';
             $seo->kSprache = $language->getId();
             $this->db->insert('tseo', $seo);
-            if ($oldSeo !== null) {
-                $this->db->update('topcpage', 'cPageUrl', '/' . $oldSeo->cSeo, (object)['cPageUrl' => $seo->cSeo]);
+            if ($prev !== null) {
+                $this->db->update('topcpage', 'cPageUrl', '/' . $prev->cSeo, (object)['cPageUrl' => '/' . $seo->cSeo]);
             }
         }
         $linkInstance = new Link($this->db);

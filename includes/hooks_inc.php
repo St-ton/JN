@@ -1040,7 +1040,7 @@ define('HOOK_CRON_EXPORTFORMATE_OUTPUT_FETCHED', 139);
  *
  * @file JTLSmarty.php
  * @param \JTL\Smarty\JTLSmarty smarty
- * @param phpQueryObject document
+ * @param \JTL\phpQuery\phpQueryObject document
  */
 define('HOOK_SMARTY_OUTPUTFILTER', 140);
 
@@ -1095,7 +1095,7 @@ define('HOOK_INDEX_SEO_404', 146);
  * triggered when checkbox has plugin special functions and is checked by a customer
  *
  * @file CheckBox.php
- * @param Checkbox - oCheckBox
+ * @param \JTL\CheckBox - oCheckBox
  */
 define('HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION', 147);
 
@@ -1980,3 +1980,15 @@ define('HOOK_IO_HANDLE_REQUEST_ADMIN', 311);
  * @param Collection items - collection of JTL\Consent\ConsentModel\ConsentModel
  */
 define('CONSENT_MANAGER_GET_ACTIVE_ITEMS', 320);
+
+/**
+ * @since 5.1.0
+ * @file Preise.php
+ * @param float|string $price
+ * @param mixed        $currency
+ * @param bool         $html
+ * @param int          $decimals
+ * @param string       $currencyName
+ * @param string       $localized
+ */
+define('HOOK_LOCALIZED_PRICE_STRING', 330);

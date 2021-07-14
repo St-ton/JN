@@ -2,6 +2,7 @@
 
 use JTL\Alert\Alert;
 use JTL\Checkout\ShippingSurcharge;
+use JTL\Checkout\ShippingSurchargeArea;
 use JTL\Checkout\Versandart;
 use JTL\Checkout\ZipValidator;
 use JTL\Helpers\Text;
@@ -391,7 +392,7 @@ function saveShippingSurcharge(array $data): stdClass
                 ->setTitle($post['cName'])
                 ->setSurcharge($surcharge);
         }
-        foreach (Sprache::getAllLanguages() as $lang) {
+        foreach (Sprache::getAllLanguages(0, true) as $lang) {
             $idx = 'cName_' . $lang->getCode();
             if (isset($post[$idx])) {
                 $surchargeTMP->setName($post[$idx] ?: $post['cName'], $lang->getId());
@@ -497,18 +498,17 @@ function createShippingSurchargeZIP(array $data): stdClass
     $surchargeZip->cPLZ             = '';
     $surchargeZip->cPLZAb           = '';
     $surchargeZip->cPLZBis          = '';
+    $area                           = null;
 
     if (!empty($post['cPLZ'])) {
         $surchargeZip->cPLZ = $zipValidator->validateZip($post['cPLZ']);
     } elseif (!empty($post['cPLZAb']) && !empty($post['cPLZBis'])) {
-        if ($post['cPLZAb'] === $post['cPLZBis']) {
-            $surchargeZip->cPLZ = $zipValidator->validateZip($post['cPLZBis']);
-        } elseif ($post['cPLZAb'] > $post['cPLZBis']) {
-            $surchargeZip->cPLZAb  = $zipValidator->validateZip($post['cPLZBis']);
-            $surchargeZip->cPLZBis = $zipValidator->validateZip($post['cPLZAb']);
+        $area = new ShippingSurchargeArea($post['cPLZAb'], $post['cPLZBis']);
+        if ($area->getZIPFrom() === $area->getZIPTo()) {
+            $surchargeZip->cPLZ = $zipValidator->validateZip($area->getZIPFrom());
         } else {
-            $surchargeZip->cPLZAb  = $zipValidator->validateZip($post['cPLZAb']);
-            $surchargeZip->cPLZBis = $zipValidator->validateZip($post['cPLZBis']);
+            $surchargeZip->cPLZAb  = $zipValidator->validateZip($area->getZIPFrom());
+            $surchargeZip->cPLZBis = $zipValidator->validateZip($area->getZIPTo());
         }
     }
 
@@ -520,7 +520,9 @@ function createShippingSurchargeZIP(array $data): stdClass
                 || $surchargeTMP->areaOverlapsWithZIPCode($surchargeZip->cPLZAb, $surchargeZip->cPLZBis)
             );
         });
-    if (empty($surchargeZip->cPLZ) && empty($surchargeZip->cPLZAb)) {
+    if ($area !== null && !$area->lettersMatch()) {
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorZIPsDoNotMatch'), 'errorZIPsDoNotMatch');
+    } elseif (empty($surchargeZip->cPLZ) && empty($surchargeZip->cPLZAb)) {
         $error = $zipValidator->getError();
         if ($error !== '') {
             $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'errorZIPValidator');
@@ -590,7 +592,7 @@ function getShippingSurcharge(int $id): stdClass
 
     $smarty       = JTLSmarty::getInstance(false, ContextType::BACKEND);
     $result       = new stdClass();
-    $result->body = $smarty->assign('sprachen', LanguageHelper::getAllLanguages())
+    $result->body = $smarty->assign('sprachen', LanguageHelper::getAllLanguages(0, true))
         ->assign('surchargeNew', new ShippingSurcharge($id))
         ->assign('surchargeID', $id)
         ->fetch('snippets/zuschlagliste_form.tpl');

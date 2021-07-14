@@ -174,14 +174,14 @@ class Cart
         if ($excludePos !== null) {
             $tmpAmount = $this->getAllDependentAmount($onlyStockRelevant, $excludePos);
 
-            return $tmpAmount[$productID] ?? 0;
+            return $tmpAmount[$productID] ?? 0.0;
         }
 
         if (!isset($depAmount[$productID])) {
             $depAmount = $this->getAllDependentAmount($onlyStockRelevant);
         }
 
-        return $depAmount[$productID] ?? 0;
+        return $depAmount[$productID] ?? 0.0;
     }
 
     /**
@@ -366,7 +366,7 @@ class Cart
         $cartItem->kArtikel          = $cartItem->Artikel->kArtikel;
         $cartItem->kVersandklasse    = $cartItem->Artikel->kVersandklasse;
         $cartItem->kSteuerklasse     = $cartItem->Artikel->kSteuerklasse;
-        $cartItem->fPreisEinzelNetto = $cartItem->Artikel->gibPreis($cartItem->nAnzahl, []);
+        $cartItem->fPreisEinzelNetto = $cartItem->Artikel->gibPreis($cartItem->nAnzahl, [], 0, $unique);
         $cartItem->fPreis            = $cartItem->fPreisEinzelNetto;
         $cartItem->cArtNr            = $cartItem->Artikel->cArtNr;
         $cartItem->nPosTyp           = $type;
@@ -971,8 +971,13 @@ class Cart
                     $qty = $this->gibAnzahlEinesArtikels($product->kArtikel);
                 }
                 $item->Artikel           = $product;
-                $item->fPreisEinzelNetto = $product->gibPreis($qty, []);
-                $item->fPreis            = $product->gibPreis($qty, $item->WarenkorbPosEigenschaftArr);
+                $item->fPreisEinzelNetto = $product->gibPreis($qty, [], 0, $item->cUnique);
+                $item->fPreis            = $product->gibPreis(
+                    $qty,
+                    $item->WarenkorbPosEigenschaftArr,
+                    0,
+                    $item->cUnique
+                );
                 $item->fGesamtgewicht    = $item->gibGesamtgewicht();
                 \executeHook(\HOOK_SETZTE_POSITIONSPREISE, [
                     'position'    => $item,

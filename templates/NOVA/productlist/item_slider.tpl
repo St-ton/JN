@@ -40,7 +40,7 @@
             {/if}
         {/if}
         {block name='productlist-item-slider-include-price'}
-            <div class="item-slider-price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+            <div class="item-slider-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
                 {include file='productdetails/price.tpl' Artikel=$Artikel tplscope=$tplscope}
             </div>
         {/block}

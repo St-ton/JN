@@ -1004,6 +1004,12 @@ final class Products extends AbstractSync
         $this->db->delete('tartikelsprache', 'kArtikel', $id);
         $this->db->delete('tartikelattribut', 'kArtikel', $id);
         $this->db->delete('tartikelwarenlager', 'kArtikel', $id);
+        $this->db->delete('tartikelabnahme', 'kArtikel', $id);
+        $this->db->delete('tartikelpicthistory', 'kArtikel', $id);
+        $this->db->delete('tsuchcachetreffer', 'kArtikel', $id);
+        $this->db->delete('timagemaparea', 'kArtikel', $id);
+        $this->db->delete('tvergleichslistepos', 'kArtikel', $id);
+        $this->db->delete('twunschlistepos', 'kArtikel', $id);
         $this->deleteProductAttributes($id);
         $this->deleteProductAttributeValues($id);
         $this->deleteProperties($id);
@@ -1131,6 +1137,7 @@ final class Products extends AbstractSync
         foreach ($this->db->selectAll('tuploadschema', 'kCustomID', $productID, 'kUploadSchema') as $upload) {
             $this->deleteUpload((int)$upload->kUploadSchema);
         }
+        $this->db->delete('tuploadqueue', 'kArtikel', $productID);
     }
 
     /**

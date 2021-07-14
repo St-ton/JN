@@ -230,14 +230,14 @@ final class Listing
                 $item->setIsLegacy(false);
                 $gettext->loadPluginItemLocale('base', $item);
                 $msgid = $item->getPluginID() . '_desc';
-                $desc  = __($msgid);
+                $desc  = \__($msgid);
                 if ($desc !== $msgid) {
                     $item->setDescription($desc);
                 } else {
-                    $item->setDescription(__($item->getDescription()));
+                    $item->setDescription(\__($item->getDescription()));
                 }
-                $item->setAuthor(__($item->getAuthor()));
-                $item->setName(__($item->getName()));
+                $item->setAuthor(\__($item->getAuthor()));
+                $item->setName(\__($item->getName()));
             }
             if ($code === InstallCode::OK_LEGACY || $code === InstallCode::OK) {
                 $item->setAvailable(true);
@@ -309,7 +309,7 @@ final class Listing
             return \in_array(
                 $e->getState(),
                 [State::ERRONEOUS, State::UPDATE_FAILED, State::LICENSE_KEY_MISSING,
-                    State::LICENSE_KEY_INVALID, State::ESX_LICENSE_EXPIRED, State::ESX_SUBSCRIPTION_EXPIRED],
+                    State::LICENSE_KEY_INVALID, State::EXS_LICENSE_EXPIRED, State::EXS_SUBSCRIPTION_EXPIRED],
                 true
             );
         });

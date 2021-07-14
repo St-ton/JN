@@ -112,11 +112,9 @@ class FileWriter
      */
     public function writeContent(string $data, $handle = null): int
     {
-        $handle = $handle ?? $this->tmpFile;
+        $utf8 = ($this->model->getEncoding() === 'UTF-8' || $this->model->getEncoding() === 'UTF-8noBOM');
 
-        return \fwrite($handle, (($this->model->getEncoding() === 'UTF-8' || $this->model->getEncoding() === 'UTF-8noBOM')
-            ? Text::convertUTF8($data)
-            : $data));
+        return \fwrite($handle ?? $this->tmpFile, ($utf8 ? Text::convertUTF8($data) : $data));
     }
 
     /**

@@ -106,9 +106,10 @@ function lang_steuerposition($ust, $net)
     if ($ust == (int)$ust) {
         $ust = (int)$ust;
     }
-    return $net
-        ? Shop::Lang()->get('plus', 'productDetails') . ' ' . $ust . '% ' . Shop::Lang()->get('vat', 'productDetails')
-        : Shop::Lang()->get('incl', 'productDetails') . ' ' . $ust . '% ' . Shop::Lang()->get('vat', 'productDetails');
+    $showVat  = Shop::getSettingValue(\CONF_GLOBAL, 'global_ust_auszeichnung') === 'autoNoVat' ? '' : ($ust . '% ');
+    $inklexkl = Shop::Lang()->get($net === true ? 'excl' : 'incl', 'productDetails');
+
+    return $inklexkl . ' ' . $showVat . Shop::Lang()->get('vat', 'productDetails');
 }
 
 /**

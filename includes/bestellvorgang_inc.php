@@ -85,17 +85,11 @@ function pruefeUnregistriertBestellen($post): int
     $cart = Frontend::getCart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
-    $missingInput       = checkKundenFormular(0);
     $Kunde              = getKundendaten($post, 0);
     $customerAttributes = getKundenattribute($post);
     $customerGroupID    = Frontend::getCustomerGroup()->getID();
     $checkBox           = new CheckBox();
-    $missingInput       = array_merge($missingInput, $checkBox->validateCheckBox(
-        CHECKBOX_ORT_REGISTRIERUNG,
-        $customerGroupID,
-        $post,
-        true
-    ));
+    $missingInput       = getMissingInput($post, $customerGroupID, $checkBox);
 
     $Kunde->getCustomerAttributes()->assign($customerAttributes);
     Frontend::set('customerAttributes', $customerAttributes);
@@ -107,7 +101,7 @@ function pruefeUnregistriertBestellen($post): int
         } elseif (isset($post['kLieferadresse']) && (int)$post['kLieferadresse'] > 0) {
             pruefeLieferdaten($post);
         } elseif (isset($post['register']['shipping_address'])) {
-            pruefeLieferdaten($post['register']['shipping_address'], $missingInput);
+            checkNewShippingAddress($post, $missingInput);
         }
     } elseif (isset($post['lieferdaten']) && (int)$post['lieferdaten'] === 1) {
         // compatibility with older template
@@ -161,6 +155,41 @@ function pruefeUnregistriertBestellen($post): int
         ->assign('cPost_var', Text::filterXSS($post));
 
     return 0;
+}
+
+/**
+ * Gibt mögliche fehlende Felder aus Formulareingaben zurück.
+ *
+ * @param array              $post
+ * @param int|null           $customerGroupId
+ * @param \JTL\CheckBox|null $checkBox
+ *
+ * @return array
+ */
+function getMissingInput(array $post, ?int $customerGroupId = null, ?CheckBox $checkBox = null): array
+{
+    $missingInput    = checkKundenFormular(0);
+    $customerGroupId = $customerGroupId ?? Frontend::getCustomerGroup()->getID();
+    $checkBox        = $checkBox ?? new CheckBox();
+    
+    return array_merge($missingInput, $checkBox->validateCheckBox(
+        CHECKBOX_ORT_REGISTRIERUNG,
+        $customerGroupId,
+        $post,
+        true
+    ));
+}
+
+/**
+ * Prüft, ob eine neue Lieferadresse gültig ist.
+ *
+ * @param array      $post
+ * @param array|null $missingInput
+ */
+function checkNewShippingAddress(array $post, ?array $missingInput = null): void
+{
+    $missingInput = $missingInput ?? getMissingInput($post);
+    pruefeLieferdaten($post['register']['shipping_address'], $missingInput);
 }
 
 /**
@@ -2178,6 +2207,9 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
             }
             if (mb_strlen($data['pass']) < $conf['kunden']['kundenregistrierung_passwortlaenge']) {
                 $ret['pass_zu_kurz'] = 1;
+            }
+            if (mb_strlen($data['pass']) > 255) {
+                $ret['pass_zu_lang'] = 1;
             }
         }
         //existiert diese email bereits?

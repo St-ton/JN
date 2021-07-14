@@ -72,11 +72,13 @@ if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
 if (Request::verifyGPCDataInt('wk') === 1) {
     Kupon::resetNewCustomerCoupon();
 }
-if ($valid
-    && Request::postInt('unreg_form') === 1
-    && $conf['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
-) {
-    pruefeUnregistriertBestellen($_POST);
+
+if ($valid && Request::postInt('unreg_form') === 1) {
+    if ($conf['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y') {
+        pruefeUnregistriertBestellen($_POST);
+    } elseif (isset($_POST['shipping_address'], $_POST['register']['shipping_address'])) {
+        checkNewShippingAddress($_POST);
+    }
 }
 if (isset($_GET['editLieferadresse'])) {
     // Shipping address and customer address are now on same site

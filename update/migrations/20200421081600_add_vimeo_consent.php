@@ -24,9 +24,9 @@ class Migration_20200421081600 extends Migration implements IMigration
             ReturnType::LAST_INSERTED_ID
         );
         $this->execute(
-            "INSERT INTO `tconsentlocalization` 
+            'INSERT INTO `tconsentlocalization` 
                 (`consentID`,`languageID`,`privacyPolicy`,`description`,`purpose`,`name`)
-             VALUES (" . $id . ",1,'https://policies.google.com/privacy?hl=de',
+             VALUES (' . $id . ",1,'https://policies.google.com/privacy?hl=de',
              'Um Inhalte von Vimeo auf dieser Seite zu entsperren, ist Ihre Zustimmung zur Datenweitergabe und
               Speicherung von Drittanbieter-Cookies des Anbieters Vimeo erforderlich.\nDies erlaubt uns,
               unser Angebot sowie das Nutzererlebnis für Sie zu verbessern und interessanter auszugestalten.\nOhne
@@ -36,9 +36,9 @@ class Migration_20200421081600 extends Migration implements IMigration
              'Vimeo')
          ");
         $this->execute(
-            "INSERT INTO `tconsentlocalization` 
+            'INSERT INTO `tconsentlocalization` 
                 (`consentID`,`languageID`,`privacyPolicy`,`description`,`purpose`,`name`) 
-                VALUES (" . $id . ",2,
+                VALUES (' . $id . ",2,
                 'https://google.com/privacy-policy','To view Vimeo contents on this website, you need to consent to the
                 transfer of data and storage of third-party cookies by Vimeo..\n\nThis allows us to improve your user
                 experience and to make our website better and more interesting.\n\nWithout your consent, no data will

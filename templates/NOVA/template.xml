@@ -48,6 +48,10 @@
                 <Option Value="N">im Contentbereich</Option>
                 <Option Value="Y">zwischen Header und Content</Option>
             </Setting>
+            <Setting Description="Linke Seitenleiste anzeigen" Key="left_sidebar" Type="select" Value="N">
+                <Option Value="N">Nur auf Artikellisten</Option>
+                <Option Value="Y">Auf allen Seiten</Option>
+            </Setting>
             <Setting Description="Favicon" Key="favicon" Type="upload" Value="favicon.ico" maxFileSize="123456" showPreview="false" allowedFileExtensions="['ico','png']" accept="image/*" target="themes/base/images/" targetFileName="favicon.ico"/>
         </Section>
         <Section Name="Megamenu" Key="megamenu">

@@ -157,6 +157,7 @@
         {/row}
 
         {row}
+            {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
             {col cols=12 lg=6 class="account-data-item account-data-item-wishlist"}
                 {block name='account-my-account-wishlist-content'}
                     {card no-body=true id='my-wishlists'}
@@ -220,6 +221,7 @@
                     {/card}
                 {/block}
             {/col}
+            {/if}
             {if $Einstellungen.vergleichsliste.vergleichsliste_anzeigen === 'Y'}
             {col cols=12 lg=6 class="account-data-item account-data-item-comparelist"}
                 {block name='account-my-account-comparelist'}

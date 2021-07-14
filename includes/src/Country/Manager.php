@@ -105,7 +105,7 @@ class Manager
                 $action = $this->addCountry(Text::filterXSS($_POST));
                 $this->alertService->addAlert(
                     Alert::TYPE_WARNING,
-                    __('warningCreateCountryInWawi'),
+                    \__('warningCreateCountryInWawi'),
                     'warningCreateCountryInWawi'
                 );
                 break;
@@ -132,7 +132,7 @@ class Manager
         if ($this->countryService->getCountry($iso) !== null) {
             $this->alertService->addAlert(
                 Alert::TYPE_DANGER,
-                \sprintf(__('errorCountryIsoExists'), $iso),
+                \sprintf(\__('errorCountryIsoExists'), $iso),
                 'errorCountryIsoExists'
             );
             return 'add';
@@ -153,7 +153,7 @@ class Manager
         $this->cache->flush(CountryService::CACHE_ID);
         $this->alertService->addAlert(
             Alert::TYPE_SUCCESS,
-            \sprintf(__('successCountryAdd'), $iso),
+            \sprintf(\__('successCountryAdd'), $iso),
             'successCountryAdd',
             ['saveInSession' => true]
         );
@@ -173,7 +173,7 @@ class Manager
             $this->cache->flush(CountryService::CACHE_ID);
             $this->alertService->addAlert(
                 Alert::TYPE_SUCCESS,
-                \sprintf(__('successCountryDelete'), $iso),
+                \sprintf(\__('successCountryDelete'), $iso),
                 'successCountryDelete',
                 ['saveInSession' => true]
             );
@@ -210,7 +210,7 @@ class Manager
         $this->cache->flush(CountryService::CACHE_ID);
         $this->alertService->addAlert(
             Alert::TYPE_SUCCESS,
-            \sprintf(__('successCountryUpdate'), $postData['cISO']),
+            \sprintf(\__('successCountryUpdate'), $postData['cISO']),
             'successCountryUpdate',
             ['saveInSession' => true]
         );
@@ -230,7 +230,7 @@ class Manager
         if ($countryName === '' || $countryName === $iso) {
             $this->alertService->addAlert(
                 Alert::TYPE_ERROR,
-                \sprintf(__('errorIsoDoesNotExist'), $iso),
+                \sprintf(\__('errorIsoDoesNotExist'), $iso),
                 'errorIsoDoesNotExist'
             );
 

@@ -48,9 +48,9 @@ class Tax
         $merchantCountryCode    = 'DE';
         $db                     = Shop::Container()->getDB();
         $conf                   = Shop::getSettings([\CONF_KUNDEN])['kunden'];
-        $Firma                  = $db->getSingleObject('SELECT cLand FROM tfirma');
-        if (!empty($Firma->cLand)) {
-            $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($Firma->cLand);
+        $company                = $db->getSingleObject('SELECT cLand FROM tfirma');
+        if ($company !== null && !empty($company->cLand)) {
+            $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($company->cLand);
         }
         if (\defined('STEUERSATZ_STANDARD_LAND')) {
             $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
@@ -188,8 +188,7 @@ class Tax
         }
         $taxRates = [];
         $taxPos   = [];
-        $conf     = Shop::getSettings([\CONF_GLOBAL]);
-        if ($conf['global']['global_steuerpos_anzeigen'] === 'N') {
+        if (Shop::getSettingValue(\CONF_GLOBAL, 'global_steuerpos_anzeigen') === 'N') {
             return $taxPos;
         }
         foreach ($items as $item) {

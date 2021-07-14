@@ -148,14 +148,14 @@ final class SyntaxChecker
             ) {
                 $model->setHasError(true);
                 $res->state   = 'fail';
-                $res->message = __('Empty mail body');
+                $res->message = \__('Empty mail body');
             } elseif (!$model->getHasError()) {
                 $model->setHasError(false);
             }
         } catch (Exception $e) {
             $model->setHasError(true);
             $res->state   = 'fail';
-            $res->message = __($e->getMessage());
+            $res->message = \__($e->getMessage());
         } finally {
             $model->save();
         }
@@ -178,7 +178,7 @@ final class SyntaxChecker
         Shop::Container()->getGetText()->loadAdminLocale('pages/emailvorlagen');
         $res = (object)[
             'result'  => [],
-            'state'   => '<span class="label text-warning">' . __('untested') . '</span>',
+            'state'   => '<span class="label text-warning">' . \__('untested') . '</span>',
         ];
 
         $db    = Shop::Container()->getDB();
@@ -189,7 +189,7 @@ final class SyntaxChecker
                 $out = \ob_get_clean();
                 $res = (object)[
                     'result'  => 'fail',
-                    'state'   => '<span class="label text-warning">' . __('untested') . '</span>',
+                    'state'   => '<span class="label text-warning">' . \__('untested') . '</span>',
                     'message' => self::stripMessage($out, $err['message']),
                 ];
                 if ($model !== null) {
@@ -212,7 +212,7 @@ final class SyntaxChecker
 
             if ($template === null) {
                 $res->result  = 'fail';
-                $res->message = __('errorTemplateMissing');
+                $res->message = \__('errorTemplateMissing');
 
                 return $res;
             }
@@ -228,7 +228,7 @@ final class SyntaxChecker
             $res->state = self::getHTMLState($model);
         } catch (SmartyException $e) {
             $res->result  = 'fail';
-            $res->message = __($e->getMessage());
+            $res->message = \__($e->getMessage());
         }
 
         return $res;

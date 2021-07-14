@@ -196,8 +196,7 @@ class Request
      */
     public static function checkSSL(): int
     {
-        $conf   = Shop::getSettings([\CONF_GLOBAL]);
-        $useSSL = $conf['global']['kaufabwicklung_ssl_nutzen'];
+        $useSSL = Shop::getSettingValue(\CONF_GLOBAL, 'kaufabwicklung_ssl_nutzen');
         if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
             $_SERVER['HTTPS'] = 'on';
         }

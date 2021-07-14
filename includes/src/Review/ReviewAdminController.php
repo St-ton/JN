@@ -58,13 +58,13 @@ final class ReviewAdminController extends BaseController
             $step = 'bewertung_editieren';
             if ($this->edit($_POST)) {
                 $step = 'bewertung_uebersicht';
-                $this->alertService->addAlert(Alert::TYPE_SUCCESS, __('successRatingEdit'), 'successRatingEdit');
+                $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successRatingEdit'), 'successRatingEdit');
                 if (Request::verifyGPCDataInt('nFZ') === 1) {
                     \header('Location: freischalten.php');
                     exit();
                 }
             } else {
-                $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
+                $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorFillRequired'), 'errorFillRequired');
             }
 
             return $step;
@@ -89,7 +89,7 @@ final class ReviewAdminController extends BaseController
         if (Request::verifyGPDataString('bewertung_guthaben_nutzen') === 'Y'
             && Request::verifyGPDataString('bewertung_freischalten') !== 'Y'
         ) {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorCreditUnlock'), 'errorCreditUnlock');
+            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorCreditUnlock'), 'errorCreditUnlock');
             return false;
         }
         $this->cache->flushTags([\CACHING_GROUP_ARTICLE]);
@@ -113,7 +113,7 @@ final class ReviewAdminController extends BaseController
         if (isset($data['aktivieren']) && GeneralObject::hasCount('kBewertung', $data)) {
             $this->alertService->addAlert(
                 Alert::TYPE_SUCCESS,
-                $this->activate($data['kBewertung']) . __('successRatingUnlock'),
+                $this->activate($data['kBewertung']) . \__('successRatingUnlock'),
                 'successRatingUnlock'
             );
 
@@ -122,7 +122,7 @@ final class ReviewAdminController extends BaseController
         if (isset($data['loeschen']) && GeneralObject::hasCount('kBewertung', $data)) {
             $this->alertService->addAlert(
                 Alert::TYPE_SUCCESS,
-                $this->delete($_POST['kBewertung']) . __('successRatingDelete'),
+                $this->delete($_POST['kBewertung']) . \__('successRatingDelete'),
                 'successRatingDelete'
             );
 
@@ -141,7 +141,7 @@ final class ReviewAdminController extends BaseController
         if (isset($data['loeschen']) && GeneralObject::hasCount('kBewertung', $data)) {
             $this->alertService->addAlert(
                 Alert::TYPE_SUCCESS,
-                $this->delete($data['kBewertung']) . __('successRatingDelete'),
+                $this->delete($data['kBewertung']) . \__('successRatingDelete'),
                 'successRatingDelete'
             );
         }
@@ -172,7 +172,7 @@ final class ReviewAdminController extends BaseController
             $this->removeReply(Request::verifyGPCDataInt('kBewertung'));
             $this->alertService->addAlert(
                 Alert::TYPE_SUCCESS,
-                __('successRatingCommentDelete'),
+                \__('successRatingCommentDelete'),
                 'successRatingCommentDelete'
             );
         }

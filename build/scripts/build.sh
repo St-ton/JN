@@ -27,19 +27,35 @@ build_create()
     git config diff.renames 0;
 
     echo "Create build info";
-#   create_version_string ${REPOSITORY_DIR} ${APPLICATION_VERSION} ${APPLICATION_BUILD_SHA};
 
-#   if [[ "$APPLICATION_VERSION"  == "master" ]]; then
-#       if [[ ! -z "${NEW_VERSION}" ]]; then
-#           export APPLICATION_VERSION_STR=${NEW_VERSION};
-#       fi
-#   else
-#       export APPLICATION_VERSION_STR=${APPLICATION_VERSION};
+	# extract version from defines_inc.php -> APPLICATION_VERSION
+	definesInc=`cat ${REPOSITORY_DIR}/includes/defines_inc.php`;
+	pattern=".*define\('APPLICATION_VERSION', '([0-9]\.[0-9].[0-9])(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?'\);";
 
-    export APPLICATION_VERSION_STR=`cat ${REPOSITORY_DIR}/VERSION`;
-    sed -i "s/'APPLICATION_VERSION', '.*'/'APPLICATION_VERSION', '${APPLICATION_VERSION_STR}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
+	if [[ $definesInc =~ $pattern ]];then
+		if [[ ! -z "${BASH_REMATCH[2]}" ]]; then
+			  #if string contains prerelease versions like alpha|beta|rc
+			  export APPLICATION_VERSION_STR="${BASH_REMATCH[1]}${BASH_REMATCH[2]}";
+		else
+			  export APPLICATION_VERSION_STR="${BASH_REMATCH[1]}";
+		fi
+	else
+		echo "version extraction pattern did not found a match"
+	fi
+	
+	#if tag was created, check if defines_inc version matches the tag version, if not, abort.
+    if [[ ${APPLICATION_VERSION} =~ ${VERSION_REGEX} ]]; then
+		if [[ "v${APPLICATION_VERSION_STR}" != "${APPLICATION_VERSION}" ]]; then
+			echo "Tag creation aborted, please make sure the APPLICATION_VERSION (includes/defines_inc.php) and the tag version are the same (don't mind the leading 'v').";
+			echo "parsed APPLICATION_VERSION: v${APPLICATION_VERSION_STR}";
+			echo "tag version: ${APPLICATION_VERSION} ";
+			echo "\n\nPLEASE DELETE THE FAILED, LAST CREATED TAG BEFORE CREATING A NEW ONE!";
+			exit 1;
+		fi
+    fi
+	
+	# insert git sha hash into defines_inc.php -> APPLICATION_BUILD_SHA
     sed -i "s/'APPLICATION_BUILD_SHA', '#DEV#'/'APPLICATION_BUILD_SHA', '${APPLICATION_BUILD_SHA}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
-    rm ${REPOSITORY_DIR}/VERSION
 
     echo "Executing composer";
     build_composer_execute;
@@ -88,8 +104,8 @@ build_create()
     build_clean_up;
 
     if [[ ${APPLICATION_VERSION} =~ ${VERSION_REGEX} ]]; then
-        echo "Create patch(es)";
-        build_create_patches "${BASH_REMATCH[@]}";
+	    echo "Create patch(es)";
+	    build_create_patches "${BASH_REMATCH[@]}";
     fi
 
     # Activate git renameList
@@ -347,30 +363,8 @@ build_add_files_to_patch_dir()
     rsync -rR admin/classes/ ${PATCH_DIR};
     rsync -rR classes/ ${PATCH_DIR};
     rsync -rR includes/ext/ ${PATCH_DIR};
+    rsync -rR includes/vendor/ ${PATCH_DIR};
     rsync -rR templates/NOVA/checksums.csv ${PATCH_DIR};
-
-    if [[ -f "${PATCH_DIR}/includes/composer.lock" ]]; then
-        mkdir "/tmp_composer-${PATCH_VERSION}";
-        mkdir "/tmp_composer-${PATCH_VERSION}/includes";
-        touch "/tmp_composer-${PATCH_VERSION}/includes/composer.json";
-        git show ${PATCH_VERSION}:includes/composer.json > /tmp_composer-${PATCH_VERSION}/includes/composer.json;
-        git show ${PATCH_VERSION}:includes/composer.lock > /tmp_composer-${PATCH_VERSION}/includes/composer.lock;
-        composer install --no-dev -o -q -d /tmp_composer-${PATCH_VERSION}/includes;
-
-        while read -r line;
-        do
-            path=$(echo "${line}" | grep "^Files.*differ$" | sed 's/^Files .* and \(.*\) differ$/\1/');
-            if [[ -z "${path}" ]]; then
-                filename=$(echo "${line}" | grep "^Only in includes\/vendor.*: .*$" | sed 's/^Only in \(includes\/vendor[\/]*.*\): \(.*\)$/\1\/\2/');
-                if [[ ! -z "${filename}" ]]; then
-                    path="${filename}";
-                    rsync -Ra -f"+ *" ${path} ${PATCH_DIR};
-                fi
-            else
-                rsync -R ${path} ${PATCH_DIR};
-            fi
-        done< <(diff -rq /tmp_composer-${PATCH_VERSION}/includes/vendor includes/vendor);
-    fi
 }
 
 build_reset_mailtemplates()

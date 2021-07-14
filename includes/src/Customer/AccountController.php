@@ -908,7 +908,7 @@ class AccountController
                 'cPasswort, cMail'
             );
             if (isset($user->cPasswort, $user->cMail)) {
-                $ok = $customer->checkCredentials($user->cMail, $_POST['altesPasswort']);
+                $ok = $customer->checkCredentials($user->cMail, $_POST['altesPasswort'] ?? '');
                 if ($ok !== false) {
                     $customer->updatePassword($_POST['neuesPasswort1']);
                     $step = 'mein Konto';
@@ -958,7 +958,8 @@ class AccountController
         $_SESSION['Kunde']->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($_SESSION['Kunde']->cLand);
         $this->smarty->assign('Bestellung', $order)
             ->assign('billingAddress', $order->oRechnungsadresse)
-            ->assign('Lieferadresse', $order->Lieferadresse ?? null);
+            ->assign('Lieferadresse', $order->Lieferadresse ?? null)
+            ->assign('incommingPayments', $order->getIncommingPayments());
         if (isset($order->oEstimatedDelivery->longestMin, $order->oEstimatedDelivery->longestMax)) {
             $this->smarty->assign(
                 'cEstimatedDeliveryEx',

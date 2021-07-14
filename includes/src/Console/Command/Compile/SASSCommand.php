@@ -2,15 +2,15 @@
 
 namespace JTL\Console\Command\Compile;
 
+use Exception;
 use JTL\Console\Command\Command;
 use JTL\Console\ConsoleIO;
-use League\Flysystem\Local\LocalFilesystemAdapter;
-use League\Flysystem\Filesystem;
+use JTL\Filesystem\LocalFilesystem;
+use JTL\Shop;
+use ScssPhp\ScssPhp\Compiler;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use ScssPhp\ScssPhp\Compiler;
-use function Functional\map;
 
 /**
  * Class SASSCommand
@@ -25,33 +25,42 @@ class SASSCommand extends Command
     {
         $this->setName('compile:sass')
             ->setDescription('Compile all theme specific sass files')
-            ->addOption('theme', null, InputOption::VALUE_OPTIONAL, 'choose a single theme name to compile')
-            ->addOption('templateDir', null, InputOption::VALUE_OPTIONAL, 'choose a template directory to compile from');
+            ->addOption('theme', null, InputOption::VALUE_OPTIONAL, 'Single theme name to compile')
+            ->addOption('templateDir', null, InputOption::VALUE_OPTIONAL, 'Template directory to compile from');
     }
 
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io               = $this->getIO();
         $themeParam       = $this->getOption('theme');
         $templateDirParam = $this->getOption('templateDir');
         $cacheDir         = \PFAD_ROOT . \PFAD_COMPILEDIR . 'tpleditortmp';
-        $templateDir      = !isset($templateDirParam)
-            ? \PFAD_ROOT . \PFAD_TEMPLATES .'NOVA/themes/' : \PFAD_ROOT . \PFAD_TEMPLATES . $templateDirParam;
-        $templateDir      = substr($templateDir, -1) !== '/' ? $templateDir . '/' : $templateDir;
-        $fileSystem       = new Filesystem(new LocalFilesystemAdapter('/'));
+        $templateDir      = $templateDirParam === null
+            ? \PFAD_TEMPLATES .'NOVA/themes/'
+            : \PFAD_TEMPLATES . \rtrim($templateDirParam, '/') . '/themes/';
+        $fileSystem       = Shop::Container()->get(LocalFilesystem::class);
         $themeFolders     = $fileSystem->listContents($templateDir, false);
-        if (!isset($themeParam)) {
-            foreach ($themeFolders as $themeFolder) {
-                $this->compile(\basename($themeFolder->path()), $templateDir, $cacheDir, $io);
-            }
-        } else {
+        if ($themeParam !== null) {
             $this->compile($themeParam, $templateDir, $cacheDir, $io);
+        } else {
+            $compiled = 0;
+            foreach ($themeFolders as $themeFolder) {
+                if (!$this->compile(\basename($themeFolder->path()), $templateDir, $cacheDir, $io)) {
+                    return Command::FAILURE;
+                }
+                ++$compiled;
+            }
+            if ($compiled === 0) {
+                $io->writeln('<info>No files were compiled.</info>');
+
+                return Command::FAILURE;
+            }
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**
@@ -59,18 +68,19 @@ class SASSCommand extends Command
      * @param string    $templateDir
      * @param string    $cacheDir
      * @param ConsoleIO $io
+     * @return bool
      */
-    private function compile(string $themeFolderName, string $templateDir, string $cacheDir, ConsoleIO $io): void
+    private function compile(string $themeFolderName, string $templateDir, string $cacheDir, ConsoleIO $io): bool
     {
         if ($themeFolderName === 'base') {
-            return;
+            return true;
         }
         $theme     = $themeFolderName;
-        $directory = $templateDir . $theme;
-        $directory = \realpath($directory) . '/';
+        $directory = \realpath(\PFAD_ROOT . $templateDir . $theme) . '/';
         if (\strpos($directory, \PFAD_ROOT . \PFAD_TEMPLATES) !== 0) {
             $io->error('Theme does not exist. ');
-            return;
+
+            return false;
         }
         if (\defined('THEME_COMPILE_CACHE') && \THEME_COMPILE_CACHE === true) {
             if (\file_exists($cacheDir)) {
@@ -82,7 +92,8 @@ class SASSCommand extends Command
         $input = $directory . 'sass/' . $theme . '.scss';
         if (!\file_exists($input)) {
             $io->error("Theme scss file: $input does not exist. ");
-            return;
+
+            return false;
         }
         try {
             $this->compileSass($input, $directory . $theme . '.css', $directory);
@@ -92,9 +103,12 @@ class SASSCommand extends Command
                 $io->writeln('<info>' . $theme . '_crit.css was compiled successfully.</info>');
             }
             $io->writeln('<info>' . $theme . '.css was compiled successfully.</info>');
-        } catch (\Exception $e) {
+
+            return true;
+        } catch (Exception $e) {
             $io->error($e->getMessage());
-            exit(1);
+
+            return false;
         }
     }
 

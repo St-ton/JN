@@ -19553,6 +19553,10 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
     padding-right: 0.75rem;
   }
 }
+#shop-nav .nav-item .table-responsive {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
 
 .nav-panel .nav .nav {
   padding-left: 0.5rem;

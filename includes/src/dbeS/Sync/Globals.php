@@ -239,10 +239,10 @@ final class Globals extends AbstractSync
                     unset($object->$key);
                 }
             }
-            if ($del) {
-                $key = $this->db->insert($tablename, $object);
-            } else {
+            if ($tablename === 'tsprache') {
                 $key = $this->db->upsert($tablename, $object);
+            } else {
+                $key = $this->db->insert($tablename, $object);
             }
             if (!$key) {
                 $this->logger->error(__METHOD__ . ' failed: ' . $tablename . ', data: ' . \print_r($object, true));

@@ -2085,11 +2085,11 @@ class CartHelper
         }
         $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
         if ($exists) {
-            $notice         = \sprintf(
+            $notice  = \sprintf(
                 Shop::Lang()->get('orderExpandInventory', 'basket'),
                 '<ul>' . $name . '</ul>'
             );
-            $notice        .= '<strong>' .
+            $notice .= '<strong>' .
                 Shop::Lang()->get('shippingTime', 'global') .
                 ': ' .
                 $cart->cEstimatedDelivery .

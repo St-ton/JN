@@ -30,6 +30,7 @@
                         {if !$isMobile || $isTablet}
                             {block name='snippets-productlist-page-nav-actions'}
                                 {block name='snippets-productlist-page-nav-actions-sort'}
+                                    {if count($Suchergebnisse->getSortingOptions()) > 0}
                                     {dropdown class="filter-type-FilterItemSort btn-group" variant="outline-secondary" text="{lang key='sorting' section='productOverview'}"}
                                         {foreach $Suchergebnisse->getSortingOptions() as $option}
                                             {dropdownitem rel="nofollow" href=$option->getURL() class="page-nav-filter-item" active=$option->isActive()}
@@ -37,8 +38,10 @@
                                             {/dropdownitem}
                                         {/foreach}
                                     {/dropdown}
+                                    {/if}
                                 {/block}
                                 {block name='snippets-productlist-page-nav-actions-items'}
+                                    {if count($Suchergebnisse->getLimitOptions()) > 0}
                                     {dropdown class="filter-type-FilterItemLimits btn-group" variant="outline-secondary" text="{lang key='productsPerPage' section='productOverview'}"}
                                         {foreach $Suchergebnisse->getLimitOptions() as $option}
                                             {dropdownitem rel="nofollow" href=$option->getURL() class="page-nav-filter-item" active=$option->isActive()}
@@ -46,6 +49,7 @@
                                             {/dropdownitem}
                                         {/foreach}
                                     {/dropdown}
+                                    {/if}
                                 {/block}
                                 {if !$isMobile}
                                     {block name='snippets-productlist-page-nav-include-layout-options'}

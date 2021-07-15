@@ -75,9 +75,10 @@ class SASSCommand extends Command
         if ($themeFolderName === 'base') {
             return true;
         }
-        $theme     = $themeFolderName;
-        $directory = \realpath(\PFAD_ROOT . $templateDir . $theme) . '/';
-        if (\strpos($directory, \PFAD_ROOT . \PFAD_TEMPLATES) !== 0) {
+        $theme      = $themeFolderName;
+        $directory  = \realpath(\PFAD_ROOT . $templateDir . $theme) . '/';
+        $compareDir = str_replace(array('/', '\\'), \DIRECTORY_SEPARATOR, \PFAD_ROOT . \PFAD_TEMPLATES);
+        if (\strpos($directory, $compareDir) !== 0) {
             $io->error('Theme does not exist. ');
 
             return false;

@@ -3779,31 +3779,36 @@ class Artikel
      */
     private function addManufacturerData(stdClass $data): self
     {
-        if ($this->kHersteller > 0) {
-            $manufacturer = new Hersteller($this->kHersteller, $this->kSprache);
+        if ($this->kHersteller <= 0) {
+            return $this;
+        }
+        $manufacturer = new Hersteller($this->kHersteller, $this->kSprache);
 
-            $this->cHersteller         = $data->cName_thersteller;
-            $this->cHerstellerSeo      = $manufacturer->cSeo;
-            $this->cHerstellerURL      = URL::buildURL($manufacturer, \URLART_HERSTELLER);
-            $this->cHerstellerHomepage = $data->cHomepage;
-            if (\filter_var($this->cHerstellerHomepage, \FILTER_VALIDATE_URL) === false) {
-                $this->cHerstellerHomepage = 'http://' . $data->cHomepage;
-                if (\filter_var($this->cHerstellerHomepage, \FILTER_VALIDATE_URL) === false) {
-                    $this->cHerstellerHomepage = $data->cHomepage;
-                }
+        $this->cHersteller         = $data->cName_thersteller;
+        $this->cHerstellerSeo      = $manufacturer->cSeo;
+        $this->cHerstellerURL      = URL::buildURL($manufacturer, \URLART_HERSTELLER);
+        $this->cHerstellerHomepage = $data->cHomepage;
+
+        $filterTest = \idn_to_ascii($this->cHerstellerHomepage, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46);
+        if (\filter_var($filterTest, \FILTER_VALIDATE_URL) === false) {
+            $this->cHerstellerHomepage = 'http://' . $data->cHomepage;
+
+            $filterTest = \idn_to_ascii($this->cHerstellerHomepage, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46);
+            if (\filter_var($filterTest, \FILTER_VALIDATE_URL) === false) {
+                $this->cHerstellerHomepage = $data->cHomepage;
             }
-            $this->cHerstellerMetaTitle       = $data->cMetaTitle_spr;
-            $this->cHerstellerMetaKeywords    = $data->cMetaKeywords_spr;
-            $this->cHerstellerMetaDescription = $data->cMetaDescription_spr;
-            $this->cHerstellerBeschreibung    = $data->cBeschreibung_hst_spr;
-            $this->cHerstellerSortNr          = $data->nSortNr_thersteller;
-            if ($data->manufImg !== null && \mb_strlen($data->manufImg) > 0) {
-                $this->cBildpfad_thersteller    = $manufacturer->getImage(Image::SIZE_XS);
-                $this->cHerstellerBildKlein     = \PFAD_HERSTELLERBILDER_KLEIN . $data->manufImg;
-                $this->cHerstellerBildNormal    = \PFAD_HERSTELLERBILDER_NORMAL . $data->manufImg;
-                $this->cHerstellerBildURLKlein  = $manufacturer->getImage(Image::SIZE_XS);
-                $this->cHerstellerBildURLNormal = $manufacturer->getImage(Image::SIZE_MD);
-            }
+        }
+        $this->cHerstellerMetaTitle       = $data->cMetaTitle_spr;
+        $this->cHerstellerMetaKeywords    = $data->cMetaKeywords_spr;
+        $this->cHerstellerMetaDescription = $data->cMetaDescription_spr;
+        $this->cHerstellerBeschreibung    = $data->cBeschreibung_hst_spr;
+        $this->cHerstellerSortNr          = $data->nSortNr_thersteller;
+        if ($data->manufImg !== null && \mb_strlen($data->manufImg) > 0) {
+            $this->cBildpfad_thersteller    = $manufacturer->getImage(Image::SIZE_XS);
+            $this->cHerstellerBildKlein     = \PFAD_HERSTELLERBILDER_KLEIN . $data->manufImg;
+            $this->cHerstellerBildNormal    = \PFAD_HERSTELLERBILDER_NORMAL . $data->manufImg;
+            $this->cHerstellerBildURLKlein  = $manufacturer->getImage(Image::SIZE_XS);
+            $this->cHerstellerBildURLNormal = $manufacturer->getImage(Image::SIZE_MD);
         }
 
         return $this;

@@ -4,19 +4,30 @@
             {block name='checkout-coupon-form-form-content'}
                 {input type="hidden" name="pruefekupon" value="1"}
                 <fieldset>
-                    {inputgroup}
-                        {input type="text"
-                            name="Kuponcode"
-                            maxlength="32"
-                            value="{if !empty($Kuponcode)}{$Kuponcode}{/if}"
-                            id="kupon"
-                            placeholder="{lang key='couponCode' section='account data'}"
-                            aria=["label"=>"{lang key='couponCode' section='account data'}"]
-                            required=true}
-                        {inputgroupaddon append=true}
-                            {button type="submit" value="1" variant="outline-primary"}{lang key='useCoupon' section='checkout'}{/button}
-                        {/inputgroupaddon}
-                    {/inputgroup}
+                    {row}
+                        {col cols=12}
+                            {block name='checkout-coupon-form-desc'}
+                                <p class="credit-description">{lang key='couponFormDesc' section='checkout'}</p>
+                            {/block}
+                        {/col}
+                        {col cols=12}
+                            {block name='checkout-coupon-form-btn'}
+                                {inputgroup}
+                                    {input type="text"
+                                        name="Kuponcode"
+                                        maxlength="32"
+                                        value="{if !empty($Kuponcode)}{$Kuponcode}{/if}"
+                                        id="kupon"
+                                        placeholder="{lang key='couponCodePlaceholder' section='checkout'}"
+                                        aria=["label"=>"{lang key='couponCode' section='account data'}"]
+                                        required=true}
+                                    {inputgroupaddon append=true}
+                                        {button type="submit" value="1" variant="outline-primary"}{lang key='coupon' section='account data'}{/button}
+                                    {/inputgroupaddon}
+                                {/inputgroup}
+                            {/block}
+                        {/col}
+                    {/row}
                 </fieldset>
             {/block}
         {/form}

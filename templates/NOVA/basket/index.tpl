@@ -133,10 +133,10 @@
                                                     {cardbody}
                                                     {block name='basket-index-coupon-form'}
                                                         {form class="jtl-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}" slide=true}
-                                                            {formgroup label-for="couponCode" label={lang key='couponCode' section='account data'} class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
+                                                            {formgroup label-for="couponCode" label={lang key='couponCodePlaceholder' section='checkout'} class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
                                                                 {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder=" " required=true}
                                                             {/formgroup}
-                                                            {button type="submit" value=1 variant="outline-primary" block=true}{lang key='useCoupon' section='checkout'}{/button}
+                                                            {button type="submit" value=1 variant="outline-primary" block=true}{lang key='coupon' section='account data'}{/button}
                                                         {/form}
                                                     {/block}
                                                     {/cardbody}

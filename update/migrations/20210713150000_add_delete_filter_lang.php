@@ -16,8 +16,8 @@ class Migration_20210713150000 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->setLocalization('ger', 'global', 'deleteFilter', 'Filter entfernen');
-        $this->setLocalization('eng', 'global', 'deleteFilter', 'Delete filter');
+        $this->setLocalization('ger', 'global', 'deleteFilter', 'Diesen Filter entfernen');
+        $this->setLocalization('eng', 'global', 'deleteFilter', 'Remove this filter');
     }
 
     /**

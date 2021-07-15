@@ -16,7 +16,7 @@ class Migration_20210611132300 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->execute("ALTER TABLE tsprache ADD COLUMN active BOOL NOT NULL DEFAULT 1");
+        $this->execute("ALTER TABLE tsprache ADD COLUMN active TINYINT(1) NOT NULL DEFAULT 1");
     }
 
     /**

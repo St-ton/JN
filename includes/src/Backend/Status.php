@@ -9,6 +9,7 @@ use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Export\SyntaxChecker;
 use JTL\Language\LanguageHelper;
+use JTL\Language\LanguageModel;
 use JTL\License\Manager;
 use JTL\License\Mapper;
 use JTL\Mail\Template\Model as MailTplModel;
@@ -353,14 +354,13 @@ class Status
      */
     public function hasInstalledStandardLang(): bool
     {
-        $default        = LanguageHelper::getDefaultLanguage();
-        $installedLangs = LanguageHelper::getInstance()->getInstalled();
-        foreach ($installedLangs as $lang) {
-            if ($lang->getId() === $default->getId()) {
-                return true;
+        $defaultID = LanguageHelper::getDefaultLanguage()->getId();
+        return some(
+            LanguageHelper::getInstance()->getInstalled(),
+            static function (LanguageModel $lang) use ($defaultID) {
+                return $lang->getId() === $defaultID;
             }
-        }
-        return false;
+        );
     }
 
     /**

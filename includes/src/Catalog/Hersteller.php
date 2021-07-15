@@ -127,7 +127,7 @@ class Hersteller
             $this->kHersteller = (int)$this->kHersteller;
             $this->nSortNr     = (int)$this->nSortNr;
         }
-        $this->cHomepage = Text::filterURL($this->cHomepage);
+        $this->cHomepage = Text::filterURL($this->cHomepage, true, true);
         if ($this->cHomepage === false) {
             $this->cHomepage = '';
         }

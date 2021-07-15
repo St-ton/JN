@@ -29,19 +29,47 @@ header {
 .main-search .fas {
   font-weight: 400;
   &.fa-search {
-    background: $url-search;
-    width: 1em;
-    height: 1em;
-    ::before{
-      content: initial;
+    background: $url-search center center no-repeat;
+    width: 1rem;
+    height: 1rem;
+    vertical-align: middle;
+    &::before{
+      content: none;
     }
   }
   &.fa-shopping-cart {
-    background: $url-cart;
-    width: 2em;
-    height: 2em;
-    ::before{
-      content: initial;
+    background: $url-cart center center no-repeat;
+    width: 1rem;
+    height: 1rem;
+    vertical-align: middle;
+    &::before{
+      content: none;
+    }
+    filter: invert(1);
+    .fa-sup {
+      filter: invert(1);
+    }
+  }
+  &.fa-user {
+    background: $url-user center center no-repeat;
+    width: 1rem;
+    height: 1rem;
+    vertical-align: middle;
+    &::before{
+      content: none;
+    }
+    filter: invert(1);
+    .fa-sup {
+      filter: invert(1);
+    }
+  }
+  &.fa-heart {
+    background: $url-heart center center no-repeat;
+    width: 1rem;
+    height: 1rem;
+    vertical-align: middle;
+    &::before{
+      content: none;
     }
     filter: invert(1);
     .fa-sup {

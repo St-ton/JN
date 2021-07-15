@@ -37,6 +37,7 @@
                             {if $Artikel->Preise->oPriceRange->isRange() && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0}{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)}{else}{$Artikel->Preise->cVKLocalized[$NettoPreise]}{/if}
                         {/if}
                         {if $tplscope !== 'detail' && !$Artikel->Preise->oPriceRange->isRange()} <span class="footnote-reference">*</span>{/if}
+                        </span>
                     {/block}
                 </div>
                 {block name='productdetails-price-snippets'}
@@ -180,10 +181,10 @@
                                     <meta itemprop="price" content="{($Artikel->Preise->fVKBrutto/$Artikel->fVPEWert)|string_format:"%.2f"}">
                                     <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
                                     <span class="value" itemprop="referenceQuantity" itemscope itemtype="http://schema.org/QuantitativeValue">
-                                    {$Artikel->cLocalizedVPE[$NettoPreise]}
-                                    <meta itemprop="value" content="{$Artikel->fGrundpreisMenge}">
-                                    <meta itemprop="unitText" content="{$Artikel->cVPEEinheit|regex_replace:"/[\d ]/":""}">
-                                </span>
+                                        {$Artikel->cLocalizedVPE[$NettoPreise]}
+                                        <meta itemprop="value" content="{$Artikel->fGrundpreisMenge}">
+                                        <meta itemprop="unitText" content="{$Artikel->cVPEEinheit|regex_replace:"/[\d ]/":""}">
+                                    </span>
                                 </div>
                             {/block}
                         {/if}

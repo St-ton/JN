@@ -2089,8 +2089,11 @@ class CartHelper
                 Shop::Lang()->get('orderExpandInventory', 'basket'),
                 '<ul>' . $name . '</ul>'
             );
-            $langVarDelTime = Shop::Lang()->get('shippingTime', 'global');
-            $notice        .= '<strong>' . $langVarDelTime . ': ' .  $cart->cEstimatedDelivery . '</strong>';
+            $notice        .= '<strong>' .
+                Shop::Lang()->get('shippingTime', 'global') .
+                ': ' .
+                $cart->cEstimatedDelivery .
+                '</strong>';
         }
 
         return $notice;

@@ -166,10 +166,14 @@ class Characteristic extends BaseCharacteristic
         $seoData       = $this->batchCharacteristicData[$value]
             ?? $this->productFilter->getDB()->getObjects(
                 'SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal, 
-                    tmerkmalwertsprache.cSeo, tmerkmalwertsprache.kSprache
+                    tmerkmalwertsprache.cSeo, tmerkmalwertsprache.kSprache,
+                    tmerkmalsprache.cName AS characteristicName
                     FROM tmerkmalwertsprache
                     JOIN tmerkmalwert 
                         ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
+                    JOIN tmerkmalsprache
+                       ON tmerkmalsprache.kMerkmal = tmerkmalwert.kMerkmal
+                        AND tmerkmalsprache.kSprache = tmerkmalwertsprache.kSprache
                     WHERE tmerkmalwertsprache.kMerkmalWert = :val',
                 ['val' => $value]
             );
@@ -183,6 +187,7 @@ class Characteristic extends BaseCharacteristic
                     if ($language->kSprache === $currentLangID) {
                         $this->setID((int)$seo->kMerkmal)
                             ->setName($seo->cWert)
+                            ->setFilterName($seo->characteristicName)
                             ->setFrontendName($seo->cWert);
                     }
                     break;
@@ -649,11 +654,14 @@ class Characteristic extends BaseCharacteristic
             return (int)$row->kMerkmalWert;
         }, $characteristicValues));
         $queryResult            = $this->productFilter->getDB()->getObjects(
-            'SELECT tmerkmalwertsprache.cWert, tmerkmalwertsprache.kMerkmalWert, 
-            tmerkmalwertsprache.cSeo, tmerkmalwert.kMerkmal, tmerkmalwertsprache.kSprache
+            'SELECT tmerkmalwertsprache.cWert, tmerkmalwertsprache.kMerkmalWert, tmerkmalwertsprache.cSeo,
+            tmerkmalwert.kMerkmal, tmerkmalwertsprache.kSprache, tmerkmalsprache.cName AS characteristicName
                 FROM tmerkmalwertsprache
                 JOIN tmerkmalwert 
                     ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
+                JOIN tmerkmalsprache
+                    ON tmerkmalsprache.kMerkmal = tmerkmalwert.kMerkmal
+                    AND tmerkmalsprache.kSprache = tmerkmalwertsprache.kSprache
                 WHERE tmerkmalwertsprache.kMerkmalWert IN (' . $characteristicValueIDs . ')'
         );
         $result                 = [];

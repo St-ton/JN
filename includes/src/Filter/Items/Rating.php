@@ -35,10 +35,11 @@ class Rating extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('bf')
-             ->setVisibility($this->getConfig('navigationsfilter')['bewertungsfilter_benutzen'])
-             ->setParamExclusive(true)
-             ->setFrontendName(Shop::isAdmin() ? \__('filterRatings') : Shop::Lang()->get('Votes'));
+            ->setUrlParam('bf')
+            ->setVisibility($this->getConfig('navigationsfilter')['bewertungsfilter_benutzen'])
+            ->setParamExclusive(true)
+            ->setFrontendName(Shop::isAdmin() ? \__('filterRatings') : Shop::Lang()->get('Votes'))
+            ->setFilterName($this->getFrontendName());
     }
 
     /**

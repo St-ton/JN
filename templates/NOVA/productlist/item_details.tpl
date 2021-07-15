@@ -41,7 +41,7 @@
     {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N' && !empty($Artikel->cHersteller)}
         {block name='productlist-item-details-manufacturer'}
             {col tag='dt' cols=6}{lang key='manufacturer' section='productDetails'}:{/col}
-            {col tag='dd' cols=6 itemprop='manufacturer' itemscope=true itemtype='http://schema.org/Organization'}
+            {col tag='dd' cols=6 itemprop='manufacturer' itemscope=true itemtype='https://schema.org/Organization'}
                 {link href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
                     class="text-decoration-none-util"
                     itemprop="url"

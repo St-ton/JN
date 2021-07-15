@@ -925,6 +925,7 @@
                 }
                 $navContainerWish.html(data.response.content);
                 $navBadgeWish.html(data.response.currentPosCount);
+                setClickableRow();
             });
 
             for (var ind in data.cBoxContainer) {

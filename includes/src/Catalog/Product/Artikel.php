@@ -5350,6 +5350,8 @@ class Artikel
         }
         if ($this->conf['global']['global_ust_auszeichnung'] === 'auto') {
             $ust = $inklexkl . ' ' . $mwst . '% ' . Shop::Lang()->get('vat', 'productDetails');
+        } elseif ($this->conf['global']['global_ust_auszeichnung'] === 'autoNoVat') {
+            $ust = $inklexkl . ' ' . Shop::Lang()->get('vat', 'productDetails');
         } elseif ($this->conf['global']['global_ust_auszeichnung'] === 'endpreis') {
             $ust = Shop::Lang()->get('finalprice', 'productDetails');
         }

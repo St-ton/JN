@@ -136,7 +136,7 @@
                                                             {formgroup label-for="couponCode" label={lang key='couponCodePlaceholder' section='checkout'} class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
                                                                 {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder=" " required=true}
                                                             {/formgroup}
-                                                            {button type="submit" value=1 variant="outline-primary" block=true}{lang key='coupon' section='account data'}{/button}
+                                                            {button type="submit" value=1 variant="outline-primary" block=true}{lang key='couponSubmit' section='checkout'}{/button}
                                                         {/form}
                                                     {/block}
                                                     {/cardbody}

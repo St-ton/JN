@@ -22,7 +22,7 @@
                                         aria=["label"=>"{lang key='couponCode' section='account data'}"]
                                         required=true}
                                     {inputgroupaddon append=true}
-                                        {button type="submit" value="1" variant="outline-primary"}{lang key='coupon' section='account data'}{/button}
+                                        {button type="submit" value="1" variant="outline-primary"}{lang key='couponSubmit' section='checkout'}{/button}
                                     {/inputgroupaddon}
                                 {/inputgroup}
                             {/block}

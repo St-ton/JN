@@ -22,6 +22,8 @@ class Migration_20210715154900 extends Migration implements IMigration
         $this->setLocalization('eng', 'checkout', 'couponFormDesc', 'Redeem a free promotional coupon.');
         $this->setLocalization('ger', 'checkout', 'couponCodePlaceholder', 'Coupon-Code eingeben');
         $this->setLocalization('eng', 'checkout', 'couponCodePlaceholder', 'Enter coupon code');
+        $this->setLocalization('ger', 'checkout', 'couponSubmit', 'Coupon einlösen');
+        $this->setLocalization('eng', 'checkout', 'couponSubmit', 'Redeem coupon');
     }
 
     /**
@@ -34,5 +36,6 @@ class Migration_20210715154900 extends Migration implements IMigration
 
         $this->removeLocalization('couponFormDesc', 'checkout');
         $this->removeLocalization('couponCodePlaceholder', 'checkout');
+        $this->removeLocalization('couponSubmit', 'checkout');
     }
 }

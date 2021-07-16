@@ -642,7 +642,7 @@ class Cart
         $name,
         $qty,
         $price,
-        $taxClassID,
+        int $taxClassID,
         int $type,
         bool $delSamePosType = true,
         bool $grossPrice = true,
@@ -1629,8 +1629,8 @@ class Cart
     }
 
     /**
-     * @param bool $isRedirect
-     * @param bool $unique
+     * @param bool        $isRedirect
+     * @param bool|string $unique
      */
     public function redirectTo(bool $isRedirect = false, $unique = false): void
     {

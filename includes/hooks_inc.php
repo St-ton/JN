@@ -1992,3 +1992,10 @@ define('CONSENT_MANAGER_GET_ACTIVE_ITEMS', 320);
  * @param string       $localized
  */
 define('HOOK_LOCALIZED_PRICE_STRING', 330);
+
+/**
+ * @since 5.1.0
+ * @file Cart.php
+ * @param array $sum
+ */
+define('HOOK_CART_GET_LOCALIZED_SUM', 331);

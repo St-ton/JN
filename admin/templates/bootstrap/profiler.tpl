@@ -36,15 +36,14 @@ var pies = [];
         <div class="tab-content">
             <div id="plugins" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active show{/if}">
                 {if $pluginProfilerData|@count > 0}
-                    <div class="card-group" id="accordion" role="tablist" aria-multiselectable="true">
+                    <div class="accordion" id="accordion" role="tablist" aria-multiselectable="true">
                         {foreach $pluginProfilerData as $profile}
                         <div class="card">
                             <div class="card-header" role="tab" data-idx="{$profile@index}" id="heading-profile-{$profile@index}">
                                 <div class="subheading1">
                                     <a data-toggle="collapse" data-parent="#accordion" href="#profile-{$profile@index}" aria-expanded="true" aria-controls="profile-{$profile@index}">
-                                        <span class="badge left">{$profile->runID}</span> {$profile->url} - {$profile->timestamp} - {$profile->total_time}s
+                                        <span class="badge badge-primary">{$profile->runID}</span> {$profile->url} - {$profile->timestamp} - {$profile->total_time}s
                                     </a>
-                                    <hr class="mb-n3">
                                 </div>
                             </div>
                             <div id="profile-{$profile@index}" class="collapse collapse" role="tabpanel" aria-labelledby="heading-profile-{$profile@index}">

@@ -3,6 +3,7 @@
 namespace JTL\Helpers;
 
 use Exception;
+use JTL\Shop;
 
 /**
  * Class Strings
@@ -598,20 +599,33 @@ class Text
     /**
      * @note PHP's FILTER_SANITIZE_URL cannot handle unicode -
      * without idn_to_ascii (PECL) this will fail with umlaut domains
-     * @param string $input
-     * @param bool   $validate
-     * @param bool   $setHTTP
+     * @param mixed $input
+     * @param bool  $validate
+     * @param bool  $setHTTP
      * @return string|false - a filtered string or false if invalid
      */
     public static function filterURL($input, bool $validate = true, bool $setHTTP = false)
     {
+        if (!\is_string($input)) {
+            return false;
+        }
         if (\mb_detect_encoding($input) !== 'UTF-8' || !self::is_utf8($input)) {
             $input = self::convertUTF8($input);
         }
-        if ($setHTTP) {
-            $input = \mb_strpos($input, 'http') !== 0 ? 'http://' . $input : $input;
+        $parsed = \parse_url($input);
+        if ($parsed === false) {
+            return false;
         }
-        $input     = \idn_to_ascii($input, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46);
+        $hasScheme = isset($parsed['scheme']);
+        $domain    = $parsed['host'] ?? $parsed['path'];
+
+        $idnDomain = \idn_to_ascii($domain, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46);
+        if ($idnDomain !== $domain) {
+            $input = \str_replace($domain, $idnDomain, $input);
+        }
+        if ($setHTTP && $hasScheme === false) {
+            $input = 'http://' . $input;
+        }
         $sanitized = \filter_var($input, \FILTER_SANITIZE_URL);
 
         return $validate

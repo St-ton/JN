@@ -8,6 +8,8 @@ use JTL\Checkout\ZahlungsLog;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Export\SyntaxChecker;
+use JTL\Language\LanguageHelper;
+use JTL\Language\LanguageModel;
 use JTL\License\Manager;
 use JTL\License\Mapper;
 use JTL\Mail\Template\Model as MailTplModel;
@@ -345,6 +347,20 @@ class Status
         $systemcheck->executeTestGroup('Shop5');
 
         return $systemcheck->getIsPassed();
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasInstalledStandardLang(): bool
+    {
+        $defaultID = LanguageHelper::getDefaultLanguage()->getId();
+        return some(
+            LanguageHelper::getInstance()->getInstalled(),
+            static function (LanguageModel $lang) use ($defaultID) {
+                return $lang->getId() === $defaultID;
+            }
+        );
     }
 
     /**

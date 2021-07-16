@@ -220,6 +220,7 @@ function pruefeLieferdaten($post, &$missingData = null): void
 
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_RECHNUNGLIEFERADRESSE);
     }
+    $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand;
     Tax::setTaxRates();
     // lieferland hat sich geändert und versandart schon gewählt?
     if (isset($_SESSION['Lieferadresse'], $_SESSION['Versandart'])
@@ -401,7 +402,10 @@ function pruefeLieferadresseStep($get): void
     //sondersteps Lieferadresse ändern
     if (!empty($_SESSION['Lieferadresse'])) {
         $Lieferadresse = $_SESSION['Lieferadresse'];
-        if (isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1) {
+        if (isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1
+            || isset($_SESSION['preferredDeliveryCountryCode'])
+            && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand
+        ) {
             Kupon::resetNewCustomerCoupon();
             unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
             $step = 'Lieferadresse';

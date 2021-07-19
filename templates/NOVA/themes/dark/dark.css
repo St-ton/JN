@@ -15275,7 +15275,7 @@ select.selectpicker {
   white-space: nowrap;
 }
 .bootstrap-select > .dropdown-toggle.bs-placeholder, .bootstrap-select > .bs-placeholder[data-toggle=collapse]:not(.navbar-toggler), .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
-  color: #707070;
+  color: #212121;
 }
 .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary, .bootstrap-select > .bs-placeholder.btn-primary[data-toggle=collapse]:not(.navbar-toggler), .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:active, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary, .bootstrap-select > .bs-placeholder.btn-secondary[data-toggle=collapse]:not(.navbar-toggler), .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:active, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success, .bootstrap-select > .bs-placeholder.btn-success[data-toggle=collapse]:not(.navbar-toggler), .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:active, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger, .bootstrap-select > .bs-placeholder.btn-danger[data-toggle=collapse]:not(.navbar-toggler), .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:active, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info, .bootstrap-select > .bs-placeholder.btn-info[data-toggle=collapse]:not(.navbar-toggler), .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:active, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark, .bootstrap-select > .bs-placeholder.btn-dark[data-toggle=collapse]:not(.navbar-toggler), .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:active {
   color: rgba(255, 255, 255, 0.5);
@@ -19331,6 +19331,10 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
   }
+}
+#shop-nav .nav-item .table-responsive {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
 }
 
 .nav-panel .nav .nav {
@@ -26221,12 +26225,24 @@ header .dropdown-menu {
 header .dropdown-menu a {
   color: #000000;
 }
+header .nav-mobile-body .dropdown-menu {
+  background: #000000;
+  color: #ffffff;
+}
+header .nav-mobile-body .dropdown-menu a {
+  color: #ffffff;
+}
 
 #jtl-nav-wrapper .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
   background-color: #ffffff;
   color: #000000;
 }
 
+@media (min-width: 992px) {
+  header .navbar-nav > .nav-item > .nav-link::before {
+    border-color: #ffffff;
+  }
+}
 /*#mainNavigation {
   .dropdown-toggle::after, [data-toggle=collapse]:not(.navbar-toggler)::after{
     content: initial !important;
@@ -26246,6 +26262,12 @@ header .dropdown-menu a {
 #shop-nav .fas.fa-search::before,
 .main-search .fas.fa-search::before {
   content: none;
+}
+@media (max-width: 991.98px) {
+  #shop-nav .fas.fa-search,
+.main-search .fas.fa-search {
+    filter: invert(1);
+  }
 }
 #shop-nav .fas.fa-shopping-cart,
 .main-search .fas.fa-shopping-cart {
@@ -26469,6 +26491,11 @@ header .dropdown-menu a {
   border-bottom: 4px solid #212121;
 }
 
+.pagination-wrapper {
+  border-top: 1px solid #212121;
+  border-bottom: 1px solid #212121;
+}
+
 .productbox-quick-actions .product-actions {
   flex-direction: column;
 }
@@ -26485,20 +26512,39 @@ header .dropdown-menu a {
   opacity: 1;
 }
 
+.gallery-with-action:hover .badge-circle, .gallery-with-action:hover .badge-circle-1, .review .badge-circle, .review .badge-circle-1 {
+  opacity: 1;
+}
+
 .product-wrapper:hover .badge-circle, .product-wrapper:hover .badge-circle-1, .product-wrapper:focus .badge-circle, .product-wrapper:focus .badge-circle-1 {
   opacity: 1;
 }
 
 .productbox-price {
-  font-weight: 400;
+  font-weight: 700;
 }
 
 .tab-navigation .nav-link::after {
   border-width: 0 0 3px;
 }
 
-.productbox-inner .productbox-title a {
-  color: #888888;
+.product-list.layout-gallery .productbox .productbox-title, .product-list.layout-gallery .productbox .productbox-title a, #wl-items-form .productbox .productbox-title, #wl-items-form .productbox .productbox-title a {
+  text-decoration: none;
+  text-align: center;
+  font-family: "Poppins";
+  font-weight: 300;
+  margin: 10px 0 5px;
+}
+.product-list.layout-gallery .productbox .productbox-title:hover, .product-list.layout-gallery .productbox .productbox-title a:hover, #wl-items-form .productbox .productbox-title:hover, #wl-items-form .productbox .productbox-title a:hover {
+  text-decoration: underline;
+}
+.product-list.layout-gallery .productbox .price_wrapper, #wl-items-form .productbox .price_wrapper {
+  text-align: center;
+}
+.product-list.layout-gallery .productbox .rating, #wl-items-form .productbox .rating {
+  display: flex;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .productbox-ribbon.ribbon {
@@ -26566,6 +26612,19 @@ header .dropdown-menu a {
   }
 }
 
+.wishlist-actions + hr, .wishlist-url + hr {
+  border-color: transparent;
+}
+
+.tt-dropdown-menu, .tt-menu {
+  background: #ffffff;
+  color: #212121;
+}
+
+.tt-input::placeholder {
+  color: #212121;
+}
+
 aside .nav-panel > .nav > .active > .nav-link {
   border-bottom: 0.375rem solid #212121;
 }
@@ -26593,7 +26652,7 @@ aside .dropdown-toggle::after, aside [data-toggle=collapse]:not(.navbar-toggler)
   color: #212121;
 }
 
-.filter-item .badge, .box-monthlynews .nav-link .badge {
+.filter-item .badge, .box-monthlynews .nav-link .badge, .box-newscategories .nav-link .badge {
   word-break: keep-all;
   min-width: 40px;
   line-height: inherit;
@@ -26609,6 +26668,19 @@ aside .dropdown-toggle::after, aside [data-toggle=collapse]:not(.navbar-toggler)
 .noUi-horizontal .noUi-handle {
   background: #212121;
   box-shadow: 0px 0px 0px 5px rgba(33, 33, 33, 0.5);
+}
+
+.card-gray {
+  background: transparent;
+  border: 1px solid #212121;
+}
+
+.card-header {
+  background: transparent;
+}
+
+.badge, .custom-select, .price-col, .order-details-date {
+  font-family: "Poppins", sans-serif;
 }
 
 .badge-primary {

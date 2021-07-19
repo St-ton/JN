@@ -211,7 +211,12 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
       }
     }
     .btn-secondary {
-      background: $white;
+      @include media-breakpoint-up(lg) {
+        background: $white;
+        border-color: $black;
+        border-left-color: transparent;
+      }
+      border-color: $white;
       border-left-color: transparent;
       padding: map_get($spacers,1) map_get($spacers,2);
     }
@@ -288,6 +293,12 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
     }
   }
 }
+#search-header-mobile-top{
+  background: $gray-dark;
+  color: $white;
+  border-color: $white;
+}
+
 /* bootstrap */
 .btn {
   display: inline-block;
@@ -492,8 +503,6 @@ hr {
   color: transparent;
   opacity: 1;
   transition: opacity 300ms;
-  width: auto;
-  height: auto;
-  max-width: 40px;
-  max-height: 40px;
+  width: 40px;
+  height: 40px;
 }

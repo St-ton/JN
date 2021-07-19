@@ -83,15 +83,14 @@ var pies = [];
             </div>
             <div id="sqlprofiler" class="tab-pane fade{if isset($tab) && $tab === 'sqlprofiler'} active show{/if}">
                 {if $sqlProfilerData !== null && $sqlProfilerData|@count > 0}
-                    <div class="card-group" id="accordion2" role="tablist" aria-multiselectable="true">
+                    <div class="accordion" id="accordion2" role="tablist" aria-multiselectable="true">
                         {foreach $sqlProfilerData as $run}
                             <div class="card">
                                 <div class="card-header" role="tab" data-idx="{$run@index}" id="heading-sql-profile-{$run@index}">
                                     <div class="subheading1">
                                         <a data-toggle="collapse" data-parent="#accordion2" href="#sql-profile-{$run@index}" aria-expanded="true" aria-controls="profile-{$run@index}">
-                                            <span class="badge left">{$run->runID}</span> {$run->url} - {$run->timestamp} - {$run->total_time}s
+                                            <span class="badge badge-primary">{$run->runID}</span> {$run->url} - {$run->timestamp} - {$run->total_time}s
                                         </a>
-                                        <hr class="mb-n3">
                                     </div>
                                 </div>
                                 <div id="sql-profile-{$run@index}" class="collapse collapse" role="tabpanel" aria-labelledby="heading-sql-profile-{$run@index}">

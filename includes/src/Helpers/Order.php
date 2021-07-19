@@ -25,9 +25,10 @@ class Order extends CartHelper
     protected $order;
 
     /**
+     * Order constructor.
      * @param Bestellung $order
      */
-    public function __construct($order)
+    public function __construct(Bestellung $order)
     {
         $this->order = $order;
     }

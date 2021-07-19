@@ -184,7 +184,7 @@ class Product
         if (!$customerGroupID) {
             $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
-        $cGroupBy = $group ? 'GROUP BY teigenschaftkombiwert.kEigenschaftWert ' : '';
+        $groupBy = $group ? 'GROUP BY teigenschaftkombiwert.kEigenschaftWert ' : '';
 
         return \array_map(
             static function ($e) {
@@ -203,7 +203,7 @@ class Product
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = :cgid
-                    WHERE tartikelsichtbarkeit.kArtikel IS NULL ' . $cGroupBy .
+                    WHERE tartikelsichtbarkeit.kArtikel IS NULL ' . $groupBy .
                 'ORDER BY teigenschaftkombiwert.kEigenschaftWert',
                 ['pid' => $parentID, 'cgid' => $customerGroupID]
             )
@@ -241,10 +241,7 @@ class Product
         }
 
         foreach ($children as $child) {
-            $id = (int)$child->kEigenschaft;
-            if (!isset($result[$id]) || !\is_array($result[$id])) {
-                $result[$id] = (int)$child->kEigenschaftWert;
-            }
+            $result[(int)$child->kEigenschaft] = (int)$child->kEigenschaftWert;
         }
         $parentID = (int)$children[0]->kVaterArtikel;
 
@@ -348,10 +345,11 @@ class Product
                             FROM teigenschaftwert
                             LEFT JOIN teigenschaftwertsichtbarkeit
                                 ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                                AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroup . '
-                            WHERE teigenschaftwert.kEigenschaftWert = ' . $attr2->kEigenschaftWert . '
+                                AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgid
+                            WHERE teigenschaftwert.kEigenschaftWert = :avid
                                 AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                                AND teigenschaftwert.kEigenschaft = ' . $attr2->kEigenschaft
+                                AND teigenschaftwert.kEigenschaft = :aid',
+                        ['cgid' => $customerGroup, 'aid' => $attr2->kEigenschaft, 'avid' => $attr2->kEigenschaftWert]
                     );
 
                     if ($valueExists !== null && $valueExists->kEigenschaftWert) {
@@ -393,9 +391,7 @@ class Product
                     exit();
                 }
                 $propValue                = new stdClass();
-                $propValue->cFreifeldWert = Text::filterXSS(
-                    self::getSelectedVariationValue($attr2->kEigenschaft)
-                );
+                $propValue->cFreifeldWert = Text::filterXSS(self::getSelectedVariationValue($attr2->kEigenschaft));
                 $propValue->kEigenschaft  = $attr2->kEigenschaft;
                 $propValue->cTyp          = $attr2->cTyp;
                 $properties[]             = $propValue;
@@ -619,18 +615,18 @@ class Product
 
     /**
      * @param Artikel  $product
-     * @param object[] $variationPicturesArr
+     * @param object[] $variationImages
      */
-    public static function addVariationPictures(Artikel $product, $variationPicturesArr): void
+    public static function addVariationPictures(Artikel $product, $variationImages): void
     {
-        if (\is_array($variationPicturesArr) && \count($variationPicturesArr) > 0) {
+        if (\is_array($variationImages) && \count($variationImages) > 0) {
             $product->Bilder = \array_filter($product->Bilder, static function ($item) {
                 return !(isset($item->isVariation) && $item->isVariation);
             });
-            if (\count($variationPicturesArr) === 1) {
-                \array_unshift($product->Bilder, $variationPicturesArr[0]);
+            if (\count($variationImages) === 1) {
+                \array_unshift($product->Bilder, $variationImages[0]);
             } else {
-                $product->Bilder = \array_merge($product->Bilder, $variationPicturesArr);
+                $product->Bilder = \array_merge($product->Bilder, $variationImages);
             }
 
             $nNr = 1;
@@ -671,14 +667,14 @@ class Product
         $massUnit = UnitsOfMeasure::getUnit($product->kMassEinheit);
 
         if (isset($gpUnit, $massUnit, $unitMappings[$gpUnit->cCode], $unitMappings[$massUnit->cCode])) {
-            $fFactor    = UnitsOfMeasure::getConversionFaktor($unitMappings[$massUnit->cCode], $massUnit->cCode);
-            $threshold  = 250 * $fFactor / 1000;
+            $factor     = UnitsOfMeasure::getConversionFaktor($unitMappings[$massUnit->cCode], $massUnit->cCode);
+            $threshold  = 250 * $factor / 1000;
             $nAmount    = 1;
             $mappedCode = $unitMappings[$massUnit->cCode];
 
             if ($threshold > 0 && $result->fMassMenge > $threshold) {
                 $result->fGrundpreisMenge = $nAmount;
-                $result->fMassMenge      /= $fFactor;
+                $result->fMassMenge      /= $factor;
                 $result->fVPEWert         = $result->fMassMenge / $amount / $result->fGrundpreisMenge;
                 $result->fBasePreis       = $price / $result->fVPEWert;
                 $result->cVPEEinheit      = $result->fGrundpreisMenge . ' ' .

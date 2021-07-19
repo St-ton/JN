@@ -631,7 +631,7 @@ class LanguageHelper
         return \array_filter(
             LanguageModel::loadAll($this->db, [], [])->toArray(),
             function (LanguageModel $l) {
-                return $this->mappekISO($l->getIso()) > 0;
+                return $this->mappekISO($l->getIso()) > 0 && $l->getActive() === 1;
             }
         );
     }

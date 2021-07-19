@@ -642,7 +642,7 @@ class Cart
         $name,
         $qty,
         $price,
-        $taxClassID,
+        int $taxClassID,
         int $type,
         bool $delSamePosType = true,
         bool $grossPrice = true,
@@ -1292,6 +1292,9 @@ class Cart
         $sum    = [];
         $sum[0] = Preise::getLocalizedPriceString($this->gibGesamtsummeWaren(true));
         $sum[1] = Preise::getLocalizedPriceString($this->gibGesamtsummeWaren());
+        \executeHook(\HOOK_CART_GET_LOCALIZED_SUM, [
+            'sum' => &$sum
+        ]);
 
         return $sum;
     }
@@ -1626,8 +1629,8 @@ class Cart
     }
 
     /**
-     * @param bool $isRedirect
-     * @param bool $unique
+     * @param bool        $isRedirect
+     * @param bool|string $unique
      */
     public function redirectTo(bool $isRedirect = false, $unique = false): void
     {

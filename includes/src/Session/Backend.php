@@ -52,7 +52,7 @@ class Backend extends AbstractSession
         if (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === stdClass::class) {
             $_SESSION['Waehrung'] = new Currency($_SESSION['Waehrung']->kWaehrung);
         }
-        if (empty($_SESSION['Sprachen']) || \get_class($_SESSION['Sprachen'][0]) === stdClass::class) {
+        if (empty($_SESSION['Sprachen']) || \get_class(\array_values($_SESSION['Sprachen'])[0]) === stdClass::class) {
             $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
         }
         $this->initLanguageURLs();
@@ -70,7 +70,12 @@ class Backend extends AbstractSession
                     }
                 );
                 if ($lang === null) {
-                    die('No language installed...');
+                    $lang = first(
+                        LanguageHelper::getAllLanguages(),
+                        static function (LanguageModel $e) {
+                            return $e->getIso() === 'ger';
+                        }
+                    );
                 }
                 $_SESSION['kSprache']    = $lang->getId();
                 $_SESSION['cISOSprache'] = $lang->getCode();

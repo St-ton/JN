@@ -322,14 +322,14 @@ interface LinkInterface
     public function setVisibleLoggedInOnly(bool $visibleLoggedInOnly): void;
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getIdentifier(): ?string;
+    public function getIdentifier(): string;
 
     /**
-     * @param string|null $identifier
+     * @param string $identifier
      */
-    public function setIdentifier($identifier): void;
+    public function setIdentifier(string $identifier): void;
 
     /**
      * @return bool
@@ -352,9 +352,9 @@ interface LinkInterface
     public function setChildLinks($links): void;
 
     /**
-     * @param Link $link
+     * @param LinkInterface $link
      */
-    public function addChildLink($link): void;
+    public function addChildLink(LinkInterface $link): void;
 
     /**
      * @return string

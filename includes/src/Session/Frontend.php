@@ -157,7 +157,8 @@ class Frontend extends AbstractSession
     {
         return ((isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === 'stdClass')
             || (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === 'stdClass')
-            || (isset($_SESSION['Sprachen']) && \get_class($_SESSION['Sprachen'][0]) === 'stdClass'));
+            || (isset($_SESSION['Sprachen'])
+                && \get_class(\array_values($_SESSION['Sprachen'])[0]) === stdClass::class));
     }
 
     /**

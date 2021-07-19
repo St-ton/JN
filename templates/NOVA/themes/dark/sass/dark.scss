@@ -281,7 +281,7 @@ header {
     .productbox-title, .productbox-title a {
       text-decoration: none;
       text-align: center;
-      font-family: 'Poppins';
+      font-family: $font-accent;
       font-weight: 300;
       margin: 10px 0 5px;
       &:hover {
@@ -423,7 +423,9 @@ aside {
   background: transparent;
 }
 
-.badge, .custom-select, .price-col, .order-details-date {
+.badge, .custom-select, .price-col, .order-details-date, .price_overall,
+.checkout-items-item-price-single, .account-orders-item .order-1,
+.order-details .order-details-date {
   font-family: $font-accent;
 }
 

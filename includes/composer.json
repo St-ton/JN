@@ -23,7 +23,7 @@
         "ext-zip": "*",
         "ext-zlib": "*",
         "ext-fileinfo": "*",
-        "intervention/image": "^2.5",
+        "intervention/image": "^2.6",
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^5.1",
         "symfony/process": "^5.1",

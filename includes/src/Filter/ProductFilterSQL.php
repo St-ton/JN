@@ -42,7 +42,6 @@ class ProductFilterSQL implements ProductFilterSQLInterface
         $sort       = $state->getOrderBy();
         $limit      = $state->getLimit();
         $groupBy    = $state->getGroupBy();
-
         if ($sort === null) {
             $sort    = $this->productFilter->getSorting()->getActiveSorting();
             $joins[] = $sort->getJoin();
@@ -142,7 +141,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
     /**
      * @inheritdoc
      */
-    public function getStockFilterSQL($withAnd = true): string
+    public function getStockFilterSQL(bool $withAnd = true): string
     {
         $filterSQL  = '';
         $filterType = (int)$this->conf['global']['artikel_artikelanzeigefilter'];

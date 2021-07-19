@@ -103,7 +103,7 @@ class Category extends BaseCategory
             ->setComment('join from ' . __METHOD__)
             ->setType('JOIN');
         if ($this->getConfig('navigationsfilter')['kategoriefilter_anzeigen_als'] === 'HF') {
-            $join->setTable('(
+            return $join->setTable('(
                 SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
                     FROM tkategorieartikel
                         INNER JOIN tkategorie 

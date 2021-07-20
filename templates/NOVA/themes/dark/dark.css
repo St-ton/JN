@@ -26225,12 +26225,14 @@ header .dropdown-menu {
 header .dropdown-menu a {
   color: #000000;
 }
-header .nav-mobile-body .dropdown-menu {
-  background: #000000;
-  color: #ffffff;
-}
-header .nav-mobile-body .dropdown-menu a {
-  color: #ffffff;
+@media (max-width: 1299.98px) {
+  header .nav-mobile-body .dropdown-menu {
+    background: #000000;
+    color: #ffffff;
+  }
+  header .nav-mobile-body .dropdown-menu a {
+    color: #ffffff;
+  }
 }
 
 #jtl-nav-wrapper .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
@@ -26491,7 +26493,7 @@ header .nav-mobile-body .dropdown-menu a {
   border-bottom: 4px solid #212121;
 }
 
-.pagination-wrapper {
+.pagination-wrapper:not(.pagination-no-wrapper) {
   border-top: 1px solid #212121;
   border-bottom: 1px solid #212121;
 }
@@ -26514,6 +26516,14 @@ header .nav-mobile-body .dropdown-menu a {
 
 .gallery-with-action:hover .badge-circle, .gallery-with-action:hover .badge-circle-1, .review .badge-circle, .review .badge-circle-1 {
   opacity: 1;
+}
+
+.blog-details .blog-details-comments-list {
+  background-color: #ffffff;
+  border: 1px solid #212121;
+}
+.blog-details .blog-details-comments-list-item {
+  background-color: #ffffff;
 }
 
 .product-wrapper:hover .badge-circle, .product-wrapper:hover .badge-circle-1, .product-wrapper:focus .badge-circle, .product-wrapper:focus .badge-circle-1 {
@@ -26680,8 +26690,9 @@ aside .dropdown-toggle::after, aside [data-toggle=collapse]:not(.navbar-toggler)
 }
 
 .badge, .custom-select, .price-col, .order-details-date, .price_overall,
-.checkout-items-item-price-single, .account-orders-item .order-1,
-.order-details .order-details-date {
+.checkout-items-item-price-single, .cart-items-single-price,
+.account-orders-item .order-1,
+.order-details .order-details-date, .credit-amount {
   font-family: "Poppins", sans-serif;
 }
 
@@ -26729,10 +26740,14 @@ aside .dropdown-toggle::after, aside [data-toggle=collapse]:not(.navbar-toggler)
   }
 }
 #footer .newsletter-footer {
-  width: 80%;
   margin: auto;
   flex-direction: column;
   text-align: center;
+}
+@media (min-width: 768px) {
+  #footer .newsletter-footer {
+    width: 80%;
+  }
 }
 #footer .newsletter-footer .newsletter-footer-heading {
   font-weight: bold;

@@ -13,10 +13,12 @@ header {
     }
   }
   .nav-mobile-body .dropdown-menu {
-    background: $black;
-    color: $white;
-    a {
+    @include media-breakpoint-down(lg) {
+      background: $black;
       color: $white;
+      a {
+        color: $white;
+      }
     }
   }
 }
@@ -234,7 +236,7 @@ header {
   }
 }
 
-.pagination-wrapper {
+.pagination-wrapper:not(.pagination-no-wrapper) {
   border-top: 1px solid $gray-dark;
   border-bottom: 1px solid $gray-dark;
 }
@@ -259,7 +261,16 @@ header {
   }
 }
 
+.blog-details {
+  .blog-details-comments-list {
+    background-color: $white;
+    border: 1px solid $gray-dark;
+  }
 
+  .blog-details-comments-list-item {
+    background-color: $white;
+  }
+}
 .product-wrapper {
   &:hover, &:focus {
     .badge-circle, .badge-circle-1 {
@@ -424,8 +435,9 @@ aside {
 }
 
 .badge, .custom-select, .price-col, .order-details-date, .price_overall,
-.checkout-items-item-price-single, .account-orders-item .order-1,
-.order-details .order-details-date {
+.checkout-items-item-price-single, .cart-items-single-price,
+.account-orders-item .order-1,
+.order-details .order-details-date, .credit-amount {
   font-family: $font-accent;
 }
 
@@ -459,7 +471,7 @@ aside {
     }
   }
   .newsletter-footer {
-    width: 80%;
+    @include media-breakpoint-up(md) {width: 80%;}
     margin: auto;
     flex-direction: column;
     text-align: center;

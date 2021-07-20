@@ -69,20 +69,6 @@
                             </div>
                         {/block}
 
-                        {if $smarty.session.Kundengruppe->mayViewPrices()
-                            && isset($Artikel->SieSparenX)
-                            && $Artikel->SieSparenX->anzeigen == 1
-                            && $Artikel->SieSparenX->nProzent > 0
-                            && !$NettoPreise
-                            && $Artikel->taxData['tax'] > 0
-                        }
-                            {block name='productlist-item-badge-yousave'}
-                                <div class="productbox-sale-percentage">
-                                    <div class="ribbon ribbon-7 productbox-ribbon">{$Artikel->SieSparenX->nProzent}%</div>
-                                </div>
-                            {/block}
-                        {/if}
-
                         {block name='productlist-item-box-include-productlist-actions'}
                             <div class="productbox-quick-actions productbox-onhover d-none d-md-flex">
                                 {include file='productlist/productlist_actions.tpl'}

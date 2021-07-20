@@ -104,6 +104,8 @@ function pruefeUnregistriertBestellen($post): int
             $post['kLieferadresse'] = 0;
             $post['lieferdaten']    = 1;
             pruefeLieferdaten($post);
+            $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand;
+            Tax::setTaxRates();
         } elseif (isset($post['kLieferadresse']) && (int)$post['kLieferadresse'] > 0) {
             pruefeLieferdaten($post);
         } elseif (isset($post['register']['shipping_address'])) {
@@ -185,6 +187,9 @@ function pruefeLieferdaten($post, &$missingData = null): void
         $Lieferadresse             = getLieferdaten($post);
         $ok                        = angabenKorrekt($missingData);
         $_SESSION['Lieferadresse'] = $Lieferadresse;
+
+        $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand;
+        Tax::setTaxRates();
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_NEUELIEFERADRESSE_PLAUSI, [
             'nReturnValue'    => &$ok,
             'fehlendeAngaben' => &$missingData
@@ -220,7 +225,6 @@ function pruefeLieferdaten($post, &$missingData = null): void
 
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_RECHNUNGLIEFERADRESSE);
     }
-    $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand;
     Tax::setTaxRates();
     // lieferland hat sich geändert und versandart schon gewählt?
     if (isset($_SESSION['Lieferadresse'], $_SESSION['Versandart'])

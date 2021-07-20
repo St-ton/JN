@@ -385,7 +385,6 @@ class ShippingMethod
         $additionalProduct->fGewicht        = 0;
 
         $shippingClasses        = self::getShippingClasses($cart);
-        $conf                   = Shop::getSettings([\CONF_KAUFABWICKLUNG]);
         $defaultOptions         = Artikel::getDefaultOptions();
         $additionalShippingFees = 0;
         $perTaxClass            = [];
@@ -637,7 +636,7 @@ class ShippingMethod
                 }
             }
 
-            if ($conf['kaufabwicklung']['bestellvorgang_versand_steuersatz'] === 'US') {
+            if (Shop::getSettingValue(\CONF_KAUFABWICKLUNG, 'bestellvorgang_versand_steuersatz') === 'US') {
                 $maxSum = 0;
                 foreach ($perTaxClass as $j => $fWarensummeProSteuerklasse) {
                     if ($fWarensummeProSteuerklasse > $maxSum) {
@@ -956,38 +955,17 @@ class ShippingMethod
      */
     public static function getAdditionalFees($shippingMethod, $iso, $zip): ?stdClass
     {
-        $db   = Shop::Container()->getDB();
-        $fees = $db->selectAll(
-            'tversandzuschlag',
-            ['kVersandart', 'cISO'],
-            [(int)$shippingMethod->kVersandart, $iso]
-        );
-        foreach ($fees as $fee) {
-            $zipData = $db->getSingleObject(
-                'SELECT * FROM tversandzuschlagplz
-                    WHERE ((cPLZAb <= :plz
-                        AND cPLZBis >= :plz)
-                        OR cPLZ = :plz)
-                        AND kVersandzuschlag = :sid',
-                ['plz' => $zip, 'sid' => (int)$fee->kVersandzuschlag]
-            );
-            if ($zipData !== null && $zipData->kVersandzuschlagPlz > 0) {
-                $fee->angezeigterName = [];
-                foreach (Frontend::getLanguages() as $Sprache) {
-                    $localized = $db->select(
-                        'tversandzuschlagsprache',
-                        'kVersandzuschlag',
-                        (int)$fee->kVersandzuschlag,
-                        'cISOSprache',
-                        $Sprache->cISO
-                    );
-
-                    $fee->angezeigterName[$Sprache->cISO] = $localized->cName;
-                }
-                $fee->cPreisLocalized = Preise::getLocalizedPriceString($fee->fZuschlag);
-
-                return $fee;
-            }
+        $shippingMethodData = new Versandart($shippingMethod->kVersandart);
+        if (($surcharge = $shippingMethodData->getShippingSurchargeForZip($zip, $iso)) !== null) {
+            return (object)[
+                'kVersandzuschlag' => $surcharge->getID(),
+                'kVersandart'      => $surcharge->getShippingMethod(),
+                'cIso'             => $surcharge->getISO(),
+                'cName'            => $surcharge->getTitle(),
+                'fZuschlag'        => $surcharge->getSurcharge(),
+                'cPreisLocalized'  => $surcharge->getPriceLocalized(),
+                'angezeigterName'  => $surcharge->getNames()
+            ];
         }
 
         return null;
@@ -1442,10 +1420,10 @@ class ShippingMethod
         if (empty($customerGroupID)) {
             $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
-        $conf          = Shop::getSettings([\CONF_KUNDEN]);
         $countryHelper = Shop::Container()->getCountryService();
-
-        if (!$force && ($conf['kunden']['kundenregistrierung_nur_lieferlaender'] === 'Y' || $ignoreConf)) {
+        if (!$force && ($ignoreConf
+                || Shop::getSettingValue(\CONF_KUNDEN, 'kundenregistrierung_nur_lieferlaender') === 'Y')
+        ) {
             $countryISOFilter = Shop::Container()->getDB()->getObjects(
                 "SELECT DISTINCT tland.cISO
                     FROM tland

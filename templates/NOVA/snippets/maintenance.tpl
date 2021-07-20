@@ -1,8 +1,8 @@
 {block name='snippets-maintenance'}
     {block name='snippets-maintenance-header-doctype'}<!DOCTYPE html>{/block}
-    <html {block name='snippets-maintenance-header-html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp === $smarty.const.URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
-          {elseif $nSeitenTyp === $smarty.const.URLART_KATEGORIE}itemtype="http://schema.org/CollectionPage"
-          {else}itemtype="http://schema.org/WebPage"{/if}{/block}>
+    <html {block name='snippets-maintenance-header-html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp === $smarty.const.URLART_ARTIKEL}itemtype="https://schema.org/ItemPage"
+          {elseif $nSeitenTyp === $smarty.const.URLART_KATEGORIE}itemtype="https://schema.org/CollectionPage"
+          {else}itemtype="https://schema.org/WebPage"{/if}{/block}>
     {block name='snippets-maintenance-header-head'}
         <head>
             {block name='snippets-maintenance-header-head-meta'}

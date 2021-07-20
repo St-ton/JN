@@ -116,7 +116,7 @@
                                             <div class="input-group">
                                                 <input class="form-control" type="text" disabled="disabled" value="$#{$file->cName}#$">
                                                 <div class="input-group-addon">
-                                                    <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&delpic={$oDatei->cName}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>
+                                                    <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&delpic={$file->cName}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>
                                                 </div>
                                             </div>
                                         </div>

@@ -1980,3 +1980,22 @@ define('HOOK_IO_HANDLE_REQUEST_ADMIN', 311);
  * @param Collection items - collection of JTL\Consent\ConsentModel\ConsentModel
  */
 define('CONSENT_MANAGER_GET_ACTIVE_ITEMS', 320);
+
+/**
+ * @since 5.1.0
+ * @file Preise.php
+ * @param float|string $price
+ * @param mixed        $currency
+ * @param bool         $html
+ * @param int          $decimals
+ * @param string       $currencyName
+ * @param string       $localized
+ */
+define('HOOK_LOCALIZED_PRICE_STRING', 330);
+
+/**
+ * @since 5.1.0
+ * @file Cart.php
+ * @param array $sum
+ */
+define('HOOK_CART_GET_LOCALIZED_SUM', 331);

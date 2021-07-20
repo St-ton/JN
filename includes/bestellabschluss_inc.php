@@ -1098,7 +1098,13 @@ function fakeBestellung()
     if (mb_strlen(Frontend::getDeliveryAddress()->cVorname) > 0) {
         $order->Lieferadresse = gibLieferadresseAusSession();
     }
+    if (isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1) {
+        $order->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
+    }
     $order->cBestellNr = date('dmYHis') . mb_substr($order->cSession, 0, 4);
+    $order->cIP        = Request::getRealIP();
+    $order->fuelleBestellung(false, 1);
+
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
         $order->Positionen = [];
         foreach ($cart->PositionenArr as $i => $item) {
@@ -1114,12 +1120,8 @@ function fakeBestellung()
             $order->Positionen[$i]->setzeGesamtpreisLocalized();
         }
     }
-    if (isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1) {
-        $order->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
-    }
-    $order->cIP = Request::getRealIP();
 
-    return $order->fuelleBestellung(false, 1);
+    return $order;
 }
 
 /**

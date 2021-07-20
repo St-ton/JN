@@ -927,14 +927,9 @@ class ProductFilter
      */
     public function getFilterByClassName(string $filterClassName): ?FilterInterface
     {
-        $filter = \array_filter(
-            $this->filters,
-            static function ($f) use ($filterClassName) {
-                return $f->getClassName() === $filterClassName;
-            }
-        );
-
-        return \is_array($filter) ? \current($filter) : null;
+        return first($this->filters, static function (FilterInterface $filter) use ($filterClassName) {
+            return $filter->getClassName() === $filterClassName;
+        });
     }
 
     /**
@@ -943,14 +938,9 @@ class ProductFilter
      */
     public function getActiveFilterByClassName(string $filterClassName): ?FilterInterface
     {
-        $filter = \array_filter(
-            $this->activeFilters,
-            static function ($f) use ($filterClassName) {
-                return $f->getClassName() === $filterClassName;
-            }
-        );
-
-        return \is_array($filter) ? \current($filter) : null;
+        return first($this->activeFilters, static function (FilterInterface $filter) use ($filterClassName) {
+            return $filter->getClassName() === $filterClassName;
+        });
     }
 
     /**
@@ -1731,6 +1721,7 @@ class ProductFilter
             foreach ($productKeys->forPage($this->nSeite, $productsPerPage) as $id) {
                 $productList->push((new Artikel())->fuelleArtikel($id, $opt));
             }
+            $productList = $productList->filter();
             $this->searchResults->setVisibleProductCount($productList->count());
         }
         $this->url                             = $this->filterURL->createUnsetFilterURLs($this->url);

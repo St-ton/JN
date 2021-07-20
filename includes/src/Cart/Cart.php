@@ -366,7 +366,7 @@ class Cart
         $cartItem->kArtikel          = $cartItem->Artikel->kArtikel;
         $cartItem->kVersandklasse    = $cartItem->Artikel->kVersandklasse;
         $cartItem->kSteuerklasse     = $cartItem->Artikel->kSteuerklasse;
-        $cartItem->fPreisEinzelNetto = $cartItem->Artikel->gibPreis($cartItem->nAnzahl, []);
+        $cartItem->fPreisEinzelNetto = $cartItem->Artikel->gibPreis($cartItem->nAnzahl, [], 0, $unique);
         $cartItem->fPreis            = $cartItem->fPreisEinzelNetto;
         $cartItem->cArtNr            = $cartItem->Artikel->cArtNr;
         $cartItem->nPosTyp           = $type;
@@ -642,7 +642,7 @@ class Cart
         $name,
         $qty,
         $price,
-        $taxClassID,
+        int $taxClassID,
         int $type,
         bool $delSamePosType = true,
         bool $grossPrice = true,
@@ -971,8 +971,13 @@ class Cart
                     $qty = $this->gibAnzahlEinesArtikels($product->kArtikel);
                 }
                 $item->Artikel           = $product;
-                $item->fPreisEinzelNetto = $product->gibPreis($qty, []);
-                $item->fPreis            = $product->gibPreis($qty, $item->WarenkorbPosEigenschaftArr);
+                $item->fPreisEinzelNetto = $product->gibPreis($qty, [], 0, $item->cUnique);
+                $item->fPreis            = $product->gibPreis(
+                    $qty,
+                    $item->WarenkorbPosEigenschaftArr,
+                    0,
+                    $item->cUnique
+                );
                 $item->fGesamtgewicht    = $item->gibGesamtgewicht();
                 \executeHook(\HOOK_SETZTE_POSITIONSPREISE, [
                     'position'    => $item,
@@ -1287,6 +1292,9 @@ class Cart
         $sum    = [];
         $sum[0] = Preise::getLocalizedPriceString($this->gibGesamtsummeWaren(true));
         $sum[1] = Preise::getLocalizedPriceString($this->gibGesamtsummeWaren());
+        \executeHook(\HOOK_CART_GET_LOCALIZED_SUM, [
+            'sum' => &$sum
+        ]);
 
         return $sum;
     }
@@ -1621,8 +1629,8 @@ class Cart
     }
 
     /**
-     * @param bool $isRedirect
-     * @param bool $unique
+     * @param bool        $isRedirect
+     * @param bool|string $unique
      */
     public function redirectTo(bool $isRedirect = false, $unique = false): void
     {

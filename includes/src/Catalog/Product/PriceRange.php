@@ -474,4 +474,14 @@ class PriceRange
             Preise::getLocalizedPriceString($this->maxNettoPrice, $currency),
         ];
     }
+
+    /**
+     * get product data
+     *
+     * @return mixed|stdClass
+     */
+    public function getProductData()
+    {
+        return $this->productData;
+    }
 }

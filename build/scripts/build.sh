@@ -87,7 +87,10 @@ build_create()
 
     echo "Writing config.JTL-Shop.ini.initial.php";
     build_create_config_file;
-
+	
+    echo "Compile css from scss files";
+    build_compile_css_files;
+	
     echo "Executing migrations";
     build_migrate;
 
@@ -363,32 +366,14 @@ build_add_files_to_patch_dir()
     rsync -rR admin/classes/ ${PATCH_DIR};
     rsync -rR classes/ ${PATCH_DIR};
     rsync -rR includes/ext/ ${PATCH_DIR};
+    rsync -rR includes/vendor/ ${PATCH_DIR};
     rsync -rR templates/NOVA/checksums.csv ${PATCH_DIR};
-
-    if [[ -f "${PATCH_DIR}/includes/composer.lock" ]]; then
-        mkdir "/tmp_composer-${PATCH_VERSION}";
-        mkdir "/tmp_composer-${PATCH_VERSION}/includes";
-        touch "/tmp_composer-${PATCH_VERSION}/includes/composer.json";
-        git show ${PATCH_VERSION}:includes/composer.json > /tmp_composer-${PATCH_VERSION}/includes/composer.json;
-        git show ${PATCH_VERSION}:includes/composer.lock > /tmp_composer-${PATCH_VERSION}/includes/composer.lock;
-        composer install --no-dev -o -q -d /tmp_composer-${PATCH_VERSION}/includes;
-
-        while read -r line;
-        do
-            path=$(echo "${line}" | grep "^Files.*differ$" | sed 's/^Files .* and \(.*\) differ$/\1/');
-            if [[ -z "${path}" ]]; then
-                filename=$(echo "${line}" | grep "^Only in includes\/vendor.*: .*$" | sed 's/^Only in \(includes\/vendor[\/]*.*\): \(.*\)$/\1\/\2/');
-                if [[ ! -z "${filename}" ]]; then
-                    path="${filename}";
-                    rsync -Ra -f"+ *" ${path} ${PATCH_DIR};
-                fi
-            else
-                rsync -R ${path} ${PATCH_DIR};
-            fi
-        done< <(diff -rq /tmp_composer-${PATCH_VERSION}/includes/vendor includes/vendor);
-    fi
 }
 
+build_compile_css_files()
+{
+	php ${REPOSITORY_DIR}/cli compile:sass;
+}
 build_reset_mailtemplates()
 {
     php ${REPOSITORY_DIR}/cli mailtemplates:reset

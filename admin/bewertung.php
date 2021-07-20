@@ -10,7 +10,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('MODULE_VOTESYSTEM_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bewertung_inc.php';
 setzeSprache();
 $cache       = Shop::Container()->getCache();
 $alertHelper = Shop::Container()->getAlertService();

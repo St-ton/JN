@@ -499,9 +499,9 @@ class Preise
      */
     public static function getPriceJoinSql(
         int $customerGroupID,
-        $priceAlias = 'tpreis',
-        $detailAlias = 'tpreisdetail',
-        $productAlias = 'tartikel'
+        string $priceAlias = 'tpreis',
+        string $detailAlias = 'tpreisdetail',
+        string $productAlias = 'tartikel'
     ): string {
         return 'JOIN tpreis AS ' . $priceAlias . ' ON ' . $priceAlias . '.kArtikel = ' . $productAlias . '.kArtikel
                     AND ' . $priceAlias . '.kKundengruppe = ' . $customerGroupID . '
@@ -538,19 +538,19 @@ class Preise
     }
 
     /**
-     * @param float         $preis
-     * @param Currency|null $waehrung
-     * @param bool          $html
+     * @param float|string           $price
+     * @param Currency|stdClass|null $currency
+     * @param bool                   $html
      * @return string
      * @former gibPreisLocalizedOhneFaktor()
      */
-    public static function getLocalizedPriceWithoutFactor($preis, $waehrung = null, bool $html = true): string
+    public static function getLocalizedPriceWithoutFactor($price, $currency = null, bool $html = true): string
     {
-        $currency = !$waehrung ? Frontend::getCurrency() : $waehrung;
+        $currency = $currency ?? Frontend::getCurrency();
         if ($currency !== null && \get_class($currency) === 'stdClass') {
             $currency = new Currency($currency->kWaehrung);
         }
-        $localized = \number_format($preis, 2, $currency->getDecimalSeparator(), $currency->getThousandsSeparator());
+        $localized = \number_format($price, 2, $currency->getDecimalSeparator(), $currency->getThousandsSeparator());
         $name      = $html ? $currency->getHtmlEntity() : $currency->getName();
 
         return $currency->getForcePlacementBeforeNumber()
@@ -586,6 +586,15 @@ class Preise
             $currency->getThousandsSeparator()
         );
         $currencyName = $html ? $currency->getHtmlEntity() : $currency->getName();
+
+        \executeHook(\HOOK_LOCALIZED_PRICE_STRING, [
+            'price'        => $price,
+            'currency'     => &$currency,
+            'html'         => $html,
+            'decimals'     => $decimals,
+            'currencyName' => &$currencyName,
+            'localized'    => &$localized
+        ]);
 
         return $currency->getForcePlacementBeforeNumber()
             ? ($currencyName . ' ' . $localized)

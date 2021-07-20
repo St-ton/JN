@@ -2,6 +2,7 @@
 
 namespace JTL\Catalog;
 
+use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
@@ -93,6 +94,11 @@ class Hersteller
     public $cBildURLNormal;
 
     /**
+     * @var string
+     */
+    public $cHomepage = '';
+
+    /**
      * Hersteller constructor.
      *
      * @param int  $id
@@ -120,6 +126,10 @@ class Hersteller
             }
             $this->kHersteller = (int)$this->kHersteller;
             $this->nSortNr     = (int)$this->nSortNr;
+        }
+        $this->cHomepage = Text::filterURL($this->cHomepage, true, true);
+        if ($this->cHomepage === false) {
+            $this->cHomepage = '';
         }
         $this->loadImages($obj);
 

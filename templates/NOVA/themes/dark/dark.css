@@ -26319,6 +26319,22 @@ header .dropdown-menu a {
 .main-search .fas.fa-heart .fa-sup {
   filter: invert(1);
 }
+#shop-nav .fas.fa-list,
+.main-search .fas.fa-list {
+  background: url(../base/images/icon_list.svg) center center no-repeat;
+  width: 1rem;
+  height: 1rem;
+  vertical-align: middle;
+  filter: invert(1);
+}
+#shop-nav .fas.fa-list::before,
+.main-search .fas.fa-list::before {
+  content: none;
+}
+#shop-nav .fas.fa-list .fa-sup,
+.main-search .fas.fa-list .fa-sup {
+  filter: invert(1);
+}
 
 @media (max-width: 991.98px) {
   .fixed-search .fa-search {

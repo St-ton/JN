@@ -99,6 +99,19 @@ header {
       filter: invert(1);
     }
   }
+  &.fa-list {
+    background: $url-list center center no-repeat;
+    width: 1rem;
+    height: 1rem;
+    vertical-align: middle;
+    &::before{
+      content: none;
+    }
+    filter: invert(1);
+    .fa-sup {
+      filter: invert(1);
+    }
+  }
 }
 
 .fixed-search .fa-search {

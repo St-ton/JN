@@ -77,20 +77,6 @@
                                     {/if}
                                 </div>
                             {/block}
-
-                            {if $smarty.session.Kundengruppe->mayViewPrices()
-                                && isset($Artikel->SieSparenX)
-                                && $Artikel->SieSparenX->anzeigen == 1
-                                && $Artikel->SieSparenX->nProzent > 0
-                                && !$NettoPreise
-                                && $Artikel->taxData['tax'] > 0
-                            }
-                                {block name='productlist-item-list-badge-yousave'}
-                                    <div class="productbox-sale-percentage">
-                                        <div class="ribbon ribbon-7 productbox-ribbon">{$Artikel->SieSparenX->nProzent}%</div>
-                                    </div>
-                                {/block}
-                            {/if}
                         </div>
                     {/block}
                 {/col}

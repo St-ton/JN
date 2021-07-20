@@ -535,6 +535,9 @@ class Boxen
                     executeHook(HOOK_BOXEN_INC_UMFRAGE, ['box' => &$oBox, 'cache_tags' => &$cacheTags]);
                     Shop::Cache()->set($cacheID, $oUmfrage_arr, $cacheTags); //@todo: invalidate
                 }
+                if (is_array($oUmfrage_arr) && count($oUmfrage_arr) > 0) {
+                    $oBox->anzeigen   = 'Y';
+                }
                 $oBox->oUmfrage_arr = $oUmfrage_arr;
 
                 break;

@@ -12,10 +12,8 @@ define('FREIDEFINIERBARER_FEHLER', 8);
 
 require_once DEFINES_PFAD . 'config.JTL-Shop.ini.php';
 require_once DEFINES_PFAD . 'defines.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 
 /**

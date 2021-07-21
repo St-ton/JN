@@ -61,7 +61,7 @@
                 {block name='productdetails-attributes-product-weight'}
                     <tr class="attr-weight">
                         <td class="h6">{lang key='productWeight'}:</td>
-                        <td class="weight-unit" itemprop="weight" itemscope itemtype="http://schema.org/QuantitativeValue">
+                        <td class="weight-unit" itemprop="weight" itemscope itemtype="https://schema.org/QuantitativeValue">
                             <span itemprop="value">{$Artikel->cArtikelgewicht}</span> <span itemprop="unitText">{lang key='weightUnit'}
                         </td>
                     </tr>

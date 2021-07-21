@@ -203,9 +203,7 @@
                                                         <input class="form-control" id="title-{$language->getIso()}" type="text" name="title[{$language->getIso()}]" value="{foreach $oEditBox->oSprache_arr  as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
                                                     </div>
                                                 </div>
-                                                <textarea id="text-{$language->getIso()}" name="text[{$language->getIso()}]" class="form-control ckeditor" rows="15" cols="60">
-                                                    {foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cInhalt}{/if}{/foreach}
-                                                </textarea>
+                                                <textarea id="text-{$language->getIso()}" name="text[{$language->getIso()}]" class="form-control ckeditor" rows="15" cols="60">{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cInhalt}{/if}{/foreach}</textarea>
                                                 <hr>
                                             {/foreach}
                                         {elseif $oEditBox->eTyp === 'catbox'}

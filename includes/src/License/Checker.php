@@ -142,10 +142,14 @@ class Checker
             return;
         }
         $stateChanger = new StateChanger($this->db, $this->cache);
+        /** @var ExsLicense $license */
         foreach ($expired as $license) {
-            /** @var ExsLicense $license */
+            $ref = $license->getReferencedItem();
+            if ($ref === null || $ref->getInternalID() === 0 || $ref->isActive() === false) {
+                continue;
+            }
             $this->logger->warning(\sprintf('Plugin %s disabled due to expired test license.', $license->getID()));
-            $stateChanger->deactivate($license->getReferencedItem()->getInternalID(), State::LICENSE_KEY_INVALID);
+            $stateChanger->deactivate($ref->getInternalID(), State::LICENSE_KEY_INVALID);
         }
     }
 }

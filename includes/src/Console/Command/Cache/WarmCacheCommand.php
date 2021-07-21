@@ -56,6 +56,11 @@ class WarmCacheCommand extends Command
     private $preFlush = false;
 
     /**
+     * @var bool
+     */
+    private $childProducts = false;
+
+    /**
      * @var DbInterface
      */
     private $db;
@@ -67,12 +72,13 @@ class WarmCacheCommand extends Command
     {
         $this->setName('cache:warm')
             ->setDescription('Warm object cache')
-            ->addOption('details', 'd', InputOption::VALUE_OPTIONAL, 'Warm product details', true)
-            ->addOption('list', 'l', InputOption::VALUE_OPTIONAL, 'Warm product lists', true)
-            ->addOption('linkgroups', 'lg', InputOption::VALUE_OPTIONAL, 'Warm link groups', false)
-            ->addOption('categories', 'c', InputOption::VALUE_OPTIONAL, 'Warm categories', false)
-            ->addOption('manufacturers', 'm', InputOption::VALUE_OPTIONAL, 'Warm manufacturers', false)
-            ->addOption('preflush', 'p', InputOption::VALUE_OPTIONAL, 'Flush cache before run', false);
+            ->addOption('details', 'd', InputOption::VALUE_NONE, 'Warm product details')
+            ->addOption('list', 'l', InputOption::VALUE_NONE, 'Warm product lists')
+            ->addOption('childproducts', 'k', InputOption::VALUE_NONE, 'Warm product lists')
+            ->addOption('linkgroups', 'g', InputOption::VALUE_NONE, 'Warm link groups')
+            ->addOption('categories', 'c', InputOption::VALUE_NONE, 'Warm categories')
+            ->addOption('manufacturers', 'm', InputOption::VALUE_NONE, 'Warm manufacturers')
+            ->addOption('preflush', 'p', InputOption::VALUE_NONE, 'Flush cache before run');
     }
 
     /**
@@ -98,16 +104,15 @@ class WarmCacheCommand extends Command
             return 0;
         }
         $generated = 0;
+        $where     = $this->childProducts ? '' : ' WHERE kVaterArtikel = 0';
         $listOpt   = Artikel::getDefaultOptions();
         $detailOpt = Artikel::getDetailOptions();
-        $total     = (int)$this->db->getSingleObject(
-            'SELECT COUNT(kArtikel) AS cnt FROM tartikel WHERE kVaterArtikel = 0'
-        )->cnt;
+        $total     = (int)$this->db->getSingleObject('SELECT COUNT(kArtikel) AS cnt FROM tartikel' . $where)->cnt;
         $bar       = new ProgressBar($this->getIO(), $total);
         $bar->setFormat('cache');
         $bar->setMessage('Warming products');
         $bar->start();
-        foreach ($this->db->getObjects('SELECT kArtikel AS id FROM tartikel WHERE kVaterArtikel = 0') as $item) {
+        foreach ($this->db->getObjects('SELECT kArtikel AS id FROM tartikel' . $where) as $item) {
             $pid = (int)$item->id;
             foreach ($customerGroups as $customerGroup) {
                 $_SESSION['Kundengruppe'] = $customerGroup;
@@ -305,31 +310,21 @@ class WarmCacheCommand extends Command
             . \number_format(\microtime(true) - $start, 4) . 's.');
     }
 
-    private function sanitizeOptions(): void
-    {
-        $this->details       = $this->details === null || $this->details === true;
-        $this->list          = $this->list === null || $this->list === true;
-        $this->categories    = $this->categories === null || $this->categories === true;
-        $this->links         = $this->links === null || $this->links === true;
-        $this->preFlush      = $this->preFlush === null || $this->preFlush === true;
-        $this->manufacturers = $this->manufacturers === null || $this->manufacturers === true;
-    }
-
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->db            = Shop::Container()->getDB();
         $this->details       = $this->getOption('details');
         $this->list          = $this->getOption('list');
+        $this->childProducts = $this->getOption('childproducts');
         $this->categories    = $this->getOption('categories');
         $this->links         = $this->getOption('linkgroups');
         $this->manufacturers = $this->getOption('manufacturers');
         $this->preFlush      = $this->getOption('preflush');
-        $this->sanitizeOptions();
         $this->warm();
 
-        return 1;
+        return Command::SUCCESS;
     }
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -6,7 +6,7 @@ use Illuminate\Support\Collection;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\ArtikelListe;
 use JTL\Catalog\Product\Preise;
-use JTL\News;
+use JTL\News\ItemList;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -99,17 +99,17 @@ class CMS
                     LEFT JOIN tseo 
                         ON tseo.cKey = 'kNews'
                         AND tseo.kKey = tnews.kNews
-                        AND tseo.kSprache = " . $langID . '
-                    WHERE t.languageID = ' . $langID . "
+                        AND tseo.kSprache = :lid
+                    WHERE t.languageID = :lid
                         AND tnews.nAktiv = 1
                         AND tnews.dGueltigVon <= NOW()
                         AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                            OR FIND_IN_SET('" . $cgID . "', 
-                            REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
+                            OR FIND_IN_SET(:cgid, REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     GROUP BY tnews.kNews
-                    ORDER BY tnews.dGueltigVon DESC" . $limit
+                    ORDER BY tnews.dGueltigVon DESC" . $limit,
+                ['lid' => $langID, 'cgid' => $cgID]
             );
-            $items   = new News\ItemList(Shop::Container()->getDB());
+            $items   = new ItemList(Shop::Container()->getDB());
             $items->createItems(map($newsIDs, static function ($e) {
                 return (int)$e->kNews;
             }));
@@ -138,7 +138,7 @@ class CMS
      * @return array
      * @since 5.0.0
      */
-    private static function getHomeBoxList($conf): array
+    private static function getHomeBoxList(array $conf): array
     {
         $boxes       = [];
         $obj         = new stdClass();
@@ -205,7 +205,7 @@ class CMS
             : 0;
         foreach ($searchData as $item) {
             $item->Klasse   = $priority < 1
-                ? \rand(1, 10)
+                ? \random_int(1, 10)
                 : (\round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1);
             $item->cURL     = URL::buildURL($item, \URLART_LIVESUCHE);
             $item->cURLFull = URL::buildURL($item, \URLART_LIVESUCHE, true);
@@ -249,7 +249,7 @@ class CMS
             : 0;
         foreach ($searchData as $item) {
             $item->Klasse   = $priority < 1
-                ? \rand(1, 10)
+                ? \random_int(1, 10)
                 : \round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1;
             $item->cURL     = URL::buildURL($item, \URLART_LIVESUCHE);
             $item->cURLFull = URL::buildURL($item, \URLART_LIVESUCHE, true);
@@ -306,10 +306,11 @@ class CMS
                     ON tartikelattribut.kArtikel = tartikel.kArtikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . Frontend::getCustomerGroup()->getID() .
-            " WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                AND tartikelattribut.cName = '" . \FKT_ATTRIBUT_GRATISGESCHENK . "' "
-            . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . $sort . $limit
+                    AND tartikelsichtbarkeit.kKundengruppe = :cgid
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                    AND tartikelattribut.cName = :an'
+            . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . $sort . $limit,
+            ['cgid' => Frontend::getCustomerGroup()->getID(), 'an' => \FKT_ATTRIBUT_GRATISGESCHENK]
         );
 
         $defaultOptions = Artikel::getDefaultOptions();

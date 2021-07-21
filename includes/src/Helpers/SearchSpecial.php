@@ -232,10 +232,7 @@ class SearchSpecial
         if (!$customerGroupID) {
             $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
-        $config      = Shop::getSettings([\CONF_GLOBAL]);
-        $minAmount   = isset($config['global']['global_bestseller_minanzahl'])
-            ? (float)$config['global']['global_bestseller_minanzahl']
-            : 10;
+        $minAmount   = (float)(Shop::getSettingValue(\CONF_GLOBAL, 'global_bestseller_minanzahl') ?? 10);
         $cacheID     = 'ssp_bestsellers_' . $customerGroupID . '_' . $minAmount;
         $bestsellers = $this->cache->get($cacheID);
         if ($bestsellers === false || !\is_countable($bestsellers)) {
@@ -315,10 +312,8 @@ class SearchSpecial
         if (!$customerGroupID) {
             $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
-        $config  = Shop::getSettings([\CONF_BOXEN]);
-        $days    = ($config['boxen']['box_neuimsortiment_alter_tage'] > 0)
-            ? (int)$config['boxen']['box_neuimsortiment_alter_tage']
-            : 30;
+        $config  = Shop::getSettingValue(\CONF_BOXEN, 'box_neuimsortiment_alter_tage');
+        $days    = $config > 0 ? (int)$config : 30;
         $cacheID = 'ssp_new_' . $customerGroupID . '_days';
         $new     = $this->cache->get($cacheID);
         if ($new === false || !\is_countable($new)) {

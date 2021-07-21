@@ -471,10 +471,12 @@ hr {
 
 .lazyloading {
   color: transparent;
-  opacity: 1;
-  transition: opacity 300ms;
   width: auto;
   height: auto;
   max-width: 40px;
   max-height: 40px;
+}
+
+.lazyload {
+  opacity: 0 !important;
 }

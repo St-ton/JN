@@ -1158,9 +1158,10 @@ class Artikel
      * @param int|float $amount
      * @param array     $attributes
      * @param int       $customerGroupID
+     * @param string    $unique
      * @return float|null
      */
-    public function gibPreis($amount, array $attributes, int $customerGroupID = 0)
+    public function gibPreis($amount, array $attributes, int $customerGroupID = 0, string $unique = '')
     {
         if (!Frontend::getCustomerGroup()->mayViewPrices()) {
             return null;
@@ -1179,6 +1180,16 @@ class Artikel
             : $this->kArtikel;
         $this->Preise->rabbatierePreise($this->getDiscount($customerGroupID, $productID));
         $price = $this->Preise->fVKNetto;
+        if (isset($this->FunktionsAttribute[\FKT_ATTRIBUT_VOUCHER_FLEX])) {
+            $customCalculated = (float)Frontend::get(
+                'customCalculated_' . $unique,
+                Request::postVar(\FKT_ATTRIBUT_VOUCHER_FLEX . 'Value')
+            );
+            if ($customCalculated > 0) {
+                $price = Tax::getNet($customCalculated, Tax::getSalesTax($this->kSteuerklasse), 4);
+                Frontend::set('customCalculated_' . $unique, $customCalculated);
+            }
+        }
         foreach ($this->Preise->fPreis_arr as $i => $fPreis) {
             if ($this->Preise->nAnzahl_arr[$i] <= $amount) {
                 $price = $fPreis;
@@ -3180,7 +3191,7 @@ class Artikel
             return $this;
         }
         $this->sanitizeProductData($tmpProduct);
-        $this->addManufacturerData($tmpProduct);
+        $this->addManufacturerData();
         if ((int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
             && $this->getOption('bSimilar', false) === true
         ) {
@@ -3511,11 +3522,6 @@ class Artikel
                 gpmes.cName AS cGrundpreisEinheitName,
                 ' . $seoSQL->cSELECT . '
                 ' . $localizationSQL->cSELECT . '
-                thersteller.cName AS cName_thersteller, thersteller.cHomepage,
-                thersteller.nSortNr AS nSortNr_thersteller, thersteller.cBildpfad AS manufImg,
-                therstellersprache.cMetaTitle AS cMetaTitle_spr, therstellersprache.cMetaKeywords AS cMetaKeywords_spr,
-                therstellersprache.cMetaDescription AS cMetaDescription_spr,
-                therstellersprache.cBeschreibung AS cBeschreibung_hst_spr,
                 tsonderpreise.fNettoPreis, tartikelext.fDurchschnittsBewertung,
                  tlieferstatus.cName AS cName_tlieferstatus, teinheit.cName AS teinheitcName,
                 tartikelsonderpreis.cAktiv AS cAktivSonderpreis, tartikelsonderpreis.dStart AS dStart_en,
@@ -3539,11 +3545,6 @@ class Artikel
                 ' . $localizationSQL->cJOIN . '
                 LEFT JOIN tbestseller
                 ON tbestseller.kArtikel = tartikel.kArtikel
-                LEFT JOIN thersteller
-                    ON thersteller.kHersteller = tartikel.kHersteller
-                LEFT JOIN therstellersprache
-                    ON therstellersprache.kHersteller = tartikel.kHersteller
-                    AND therstellersprache.kSprache = ' . $langID . '
                 LEFT JOIN tartikelext
                     ON tartikelext.kArtikel = tartikel.kArtikel
                 LEFT JOIN tlieferstatus
@@ -3572,10 +3573,10 @@ class Artikel
     }
 
     /**
-     * @param object $data
-     * @return object
+     * @param stdClass $data
+     * @return stdClass
      */
-    private function localizeData($data)
+    private function localizeData(stdClass $data): stdClass
     {
         if (!isset($data->cName_spr)) {
             return $data;
@@ -3594,9 +3595,9 @@ class Artikel
     }
 
     /**
-     * @param object $data
+     * @param stdClass $data
      */
-    private function sanitizeProductData($data): void
+    private function sanitizeProductData(stdClass $data): void
     {
         $this->originalName                      = $data->cName;
         $this->originalSeo                       = $data->originalSeo;
@@ -3763,36 +3764,30 @@ class Artikel
     }
 
     /**
-     * @param stdClass $data
      * @return Artikel
      */
-    private function addManufacturerData(stdClass $data): self
+    private function addManufacturerData(): self
     {
-        if ($this->kHersteller > 0) {
-            $manufacturer = new Hersteller($this->kHersteller, $this->kSprache);
+        if ($this->kHersteller <= 0) {
+            return $this;
+        }
+        $manufacturer = new Hersteller($this->kHersteller, $this->kSprache);
 
-            $this->cHersteller         = $data->cName_thersteller;
-            $this->cHerstellerSeo      = $manufacturer->cSeo;
-            $this->cHerstellerURL      = URL::buildURL($manufacturer, \URLART_HERSTELLER);
-            $this->cHerstellerHomepage = $data->cHomepage;
-            if (\filter_var($this->cHerstellerHomepage, \FILTER_VALIDATE_URL) === false) {
-                $this->cHerstellerHomepage = 'http://' . $data->cHomepage;
-                if (\filter_var($this->cHerstellerHomepage, \FILTER_VALIDATE_URL) === false) {
-                    $this->cHerstellerHomepage = $data->cHomepage;
-                }
-            }
-            $this->cHerstellerMetaTitle       = $data->cMetaTitle_spr;
-            $this->cHerstellerMetaKeywords    = $data->cMetaKeywords_spr;
-            $this->cHerstellerMetaDescription = $data->cMetaDescription_spr;
-            $this->cHerstellerBeschreibung    = $data->cBeschreibung_hst_spr;
-            $this->cHerstellerSortNr          = $data->nSortNr_thersteller;
-            if ($data->manufImg !== null && \mb_strlen($data->manufImg) > 0) {
-                $this->cBildpfad_thersteller    = $manufacturer->getImage(Image::SIZE_XS);
-                $this->cHerstellerBildKlein     = \PFAD_HERSTELLERBILDER_KLEIN . $data->manufImg;
-                $this->cHerstellerBildNormal    = \PFAD_HERSTELLERBILDER_NORMAL . $data->manufImg;
-                $this->cHerstellerBildURLKlein  = $manufacturer->getImage(Image::SIZE_XS);
-                $this->cHerstellerBildURLNormal = $manufacturer->getImage(Image::SIZE_MD);
-            }
+        $this->cHersteller                = $manufacturer->cName;
+        $this->cHerstellerSeo             = $manufacturer->cSeo;
+        $this->cHerstellerURL             = URL::buildURL($manufacturer, \URLART_HERSTELLER);
+        $this->cHerstellerHomepage        = $manufacturer->cHomepage;
+        $this->cHerstellerMetaTitle       = $manufacturer->cMetaTitle;
+        $this->cHerstellerMetaKeywords    = $manufacturer->cMetaKeywords;
+        $this->cHerstellerMetaDescription = $manufacturer->cMetaDescription;
+        $this->cHerstellerBeschreibung    = $manufacturer->cBeschreibung;
+        $this->cHerstellerSortNr          = $manufacturer->nSortNr;
+        if ($manufacturer->cBildpfad !== null && \mb_strlen($manufacturer->cBildpfad) > 0) {
+            $this->cHerstellerBildKlein     = \PFAD_HERSTELLERBILDER_KLEIN . $manufacturer->cBildpfad;
+            $this->cHerstellerBildNormal    = \PFAD_HERSTELLERBILDER_NORMAL . $manufacturer->cBildpfad;
+            $this->cBildpfad_thersteller    = $manufacturer->getImage(Image::SIZE_XS);
+            $this->cHerstellerBildURLKlein  = $this->cBildpfad_thersteller;
+            $this->cHerstellerBildURLNormal = $manufacturer->getImage(Image::SIZE_MD);
         }
 
         return $this;
@@ -3832,7 +3827,8 @@ class Artikel
             $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_LAGER;
         }
         if (!$this->bHasKonfig
-            && $this->Preise->fVKNetto == 0
+            && $this->Preise->fVKNetto === 0.0
+            && !isset($this->FunktionsAttribute[\FKT_ATTRIBUT_VOUCHER_FLEX])
             && $this->conf['global']['global_preis0'] === 'N'
             && isset($this->Preise->fVKNetto, $this->conf['global']['global_preis0'])
         ) {
@@ -5338,6 +5334,8 @@ class Artikel
         }
         if ($this->conf['global']['global_ust_auszeichnung'] === 'auto') {
             $ust = $inklexkl . ' ' . $mwst . '% ' . Shop::Lang()->get('vat', 'productDetails');
+        } elseif ($this->conf['global']['global_ust_auszeichnung'] === 'autoNoVat') {
+            $ust = $inklexkl . ' ' . Shop::Lang()->get('vat', 'productDetails');
         } elseif ($this->conf['global']['global_ust_auszeichnung'] === 'endpreis') {
             $ust = Shop::Lang()->get('finalprice', 'productDetails');
         }

@@ -140,7 +140,7 @@
                         {card no-body=true id="panel-edit-coupon"}
                             {cardheader}
                                 {block name='checkout-step5-confirmation-coupon-header'}
-                                    <span class="h3 checkout-confirmation-heading">{lang key='coupon' section='account data'}</span>
+                                    <span class="h3 checkout-confirmation-heading">{lang key='useCoupon' section='checkout'}</span>
                                 {/block}
                             {/cardheader}
                             {cardbody}

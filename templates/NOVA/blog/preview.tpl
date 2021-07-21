@@ -32,7 +32,7 @@
                                     {/block}
                                 </div>
                             {else}
-                                <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="d-none">
+                                <div itemprop="author publisher" itemscope itemtype="https://schema.org/Organization" class="d-none">
                                     <span itemprop="name">{$meta_publisher}</span>
                                     <meta itemprop="url" content="{$ShopURL}">
                                     <meta itemprop="logo" content="{$ShopLogoURL}">

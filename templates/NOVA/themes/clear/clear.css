@@ -19553,6 +19553,10 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
     padding-right: 0.75rem;
   }
 }
+#shop-nav .nav-item .table-responsive {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
 
 .nav-panel .nav .nav {
   padding-left: 0.5rem;
@@ -20626,8 +20630,6 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 }
 .square-image .inner img.lazyloading {
   color: transparent;
-  opacity: 1;
-  transition: opacity 300ms;
   width: auto;
   height: auto;
   max-width: 40px;
@@ -22054,7 +22056,7 @@ table caption {
   right: 20px;
   bottom: -20px;
   padding-top: 2px;
-  border-radius: 5px;
+  border-radius: 0.125rem;
   transition: all 0.5s ease-in-out;
   transition-delay: 0.2s;
   background: #ffffff;
@@ -22899,24 +22901,6 @@ input.typeahead:-ms-input-placeholder {
 
 .loading {
   min-height: 140px;
-}
-
-.lazyload {
-  opacity: 0;
-}
-
-.lazyloading {
-  color: transparent;
-  opacity: 1;
-  transition: opacity 300ms;
-  width: auto;
-  height: auto;
-  max-width: 40px;
-  max-height: 40px;
-}
-
-.lazyloaded {
-  transition: none;
 }
 
 .list-group-wrapper.disabled {

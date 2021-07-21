@@ -82,7 +82,7 @@
         {/if}
     </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
+<script src="{$templateBaseURL}js/diff_match_patch.js"></script>
 <script src="{$PFAD_CODEMIRROR}addon/merge/merge.js"></script>
 <link rel="stylesheet" type="text/css" href="{$PFAD_CODEMIRROR}addon/merge/merge.css" />
 

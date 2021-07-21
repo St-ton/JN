@@ -59,7 +59,7 @@
                     {block name='page-index-news'}
                         {row itemprop="about"
                              itemscope=true
-                             itemtype="http://schema.org/Blog"
+                             itemtype="https://schema.org/Blog"
                              class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-news {if $oNews_arr|count < 3}slider-no-preview{/if}"
                              data=["slick-type"=>"news-slider"]}
                             {include file='snippets/slider_items.tpl' items=$oNews_arr type='news'}

@@ -333,6 +333,13 @@ class Preise
             $newNetPrice = \round($netPrice * ($defaultTax + 100) / 100, 2) / ($conversionTax + 100) * 100;
         }
 
+        \executeHook(\HOOK_RECALCULATED_NET_PRICE, [
+            'netPrice'      => $netPrice,
+            'defaultTax'    => $defaultTax,
+            'conversionTax' => $conversionTax,
+            'newNetPrice'   => &$newNetPrice
+        ]);
+
         return (double)$newNetPrice;
     }
 

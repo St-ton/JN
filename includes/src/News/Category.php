@@ -291,7 +291,7 @@ class Category implements CategoryInterface
                     ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
             WHERE tnewskategorie.nAktiv = 1 AND tnews.dGueltigVon <= NOW() '
                 . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL,
-            ['cid' => $this->id]
+            []
         )), static function ($e) {
             return (int)$e;
         }));

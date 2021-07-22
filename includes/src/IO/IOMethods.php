@@ -1036,7 +1036,9 @@ class IOMethods
                 $set               = [$propertyID => $propertyValueID];
                 $invalidVariations = $product->getVariationsBySelection($set, true);
                 // Auswählter EigenschaftWert ist ebenfalls nicht vorhanden
-                if (\in_array($propertyValueID, $invalidVariations[$propertyID])) {
+                if (isset($invalidVariations[$propertyID])
+                    && \in_array($propertyValueID, $invalidVariations[$propertyID])
+                ) {
                     $set = [];
                     // Wir befinden uns im Kind-Artikel -> Weiterleitung auf Vater-Artikel
                     if ($childProductID > 0) {

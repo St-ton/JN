@@ -261,9 +261,9 @@ class AdminAccountManager
         $handledKeys = [];
         foreach ($extAttribs as $key => $value) {
             $longText = null;
-            if (\is_array($value) && count($value) > 0) {
+            if (\is_array($value) && \count($value) > 0) {
                 $shortText = Text::filterXSS($value[0]);
-                if (count($value) > 1) {
+                if (\count($value) > 1) {
                     $longText = $value[1];
                 }
             } else {

@@ -188,10 +188,10 @@ class Import
         if (isset($oldMail->kKunde) && $oldMail->kKunde > 0) {
             return \sprintf(\__('errorEmailDuplicate'), $customer->cMail);
         }
-        if ($customer->cAnrede === 'f' || \mb_convert_case($customer->cAnrede, MB_CASE_LOWER) === 'frau') {
+        if ($customer->cAnrede === 'f' || \mb_convert_case($customer->cAnrede, \MB_CASE_LOWER) === 'frau') {
             $customer->cAnrede = 'w';
         }
-        if ($customer->cAnrede === 'h' || \mb_convert_case($customer->cAnrede, MB_CASE_LOWER) === 'herr') {
+        if ($customer->cAnrede === 'h' || \mb_convert_case($customer->cAnrede, \MB_CASE_LOWER) === 'herr') {
             $customer->cAnrede = 'm';
         }
         if ($customer->cNewsletter === '1' || $customer->cNewsletter === 'y' || $customer->cNewsletter === 'Y') {

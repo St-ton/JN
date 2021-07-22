@@ -268,10 +268,11 @@ class Admin
                 'errorFormatCreate'
             );
         }
+        $realBase   = \realpath(\PFAD_ROOT . \PFAD_EXPORT);
         $real       = \realpath(\PFAD_ROOT . \PFAD_EXPORT . $exportformat->cDateiname);
-        $ok1        = \is_string($real) && \strpos($real, \PFAD_ROOT . \PFAD_EXPORT) === 0;
+        $ok1        = \is_string($real) && \strpos($real, $realBase) === 0;
         $realZipped = \realpath(\PFAD_ROOT . \PFAD_EXPORT . $exportformat->cDateiname . '.zip');
-        $ok2        = \is_string($realZipped) && \strpos($realZipped, \PFAD_ROOT . \PFAD_EXPORT) === 0;
+        $ok2        = \is_string($realZipped) && \strpos($realZipped, $realBase) === 0;
         if ($ok1 === true || $ok2 === true || (int)($exportformat->nSplitgroesse ?? 0) > 0) {
             if (empty($_GET['hasError'])) {
                 $this->alertService->addAlert(

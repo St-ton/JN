@@ -137,7 +137,7 @@ class DefaultsHydrator implements HydratorInterface
      * @param stdClass|Customer $customer
      * @return mixed
      */
-    private function localizeCustomer($lang, $customer)
+    private function localizeCustomer(object $lang, $customer)
     {
         $language = Shop::Lang();
         if ($language->gibISO() !== $lang->cISO) {

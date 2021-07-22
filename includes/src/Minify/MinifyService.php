@@ -40,7 +40,7 @@ class MinifyService
      * @param string|null $cacheTime
      * @return string
      */
-    public function buildURI($urlPrefix, $query, $type, string $cacheTime = null): string
+    public function buildURI(string $urlPrefix, string $query, string $type, string $cacheTime = null): string
     {
         $urlPrefix = \rtrim($urlPrefix, '/');
         $query     = \ltrim($query, '?');
@@ -112,8 +112,8 @@ class MinifyService
     {
         $minify      = $template->getResources()->getMinifyArray();
         $tplVersion  = $template->getVersion();
-        $config      = Shop::getConfig([\CONF_TEMPLATE])['template'];
-        $allowStatic = isset($config['general']['use_minify']) && $config['general']['use_minify'] === 'static';
+        $config      = Shop::getSettingValue(\CONF_TEMPLATE, 'general');
+        $allowStatic = ($config['use_minify'] ?? 'N') === 'static';
         $cacheTime   = $allowStatic ? $this->getCacheTime() : null;
         $css         = $minify[$themeDir . '.css'] ?? [];
         $js          = $minify['jtl3.js'] ?? [];

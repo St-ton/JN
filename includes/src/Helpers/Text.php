@@ -3,7 +3,6 @@
 namespace JTL\Helpers;
 
 use Exception;
-use JTL\Shop;
 
 /**
  * Class Strings

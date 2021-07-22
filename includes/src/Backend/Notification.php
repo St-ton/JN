@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
@@ -400,9 +400,9 @@ class Notification implements IteratorAggregate, Countable
         if (!$status->hasInstalledStandardLang()) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                __('defaultLangNotInstalledTitle'),
+                \__('defaultLangNotInstalledTitle'),
                 \sprintf(
-                    __('defaultLangNotInstalledMessage'),
+                    \__('defaultLangNotInstalledMessage'),
                     LanguageHelper::getDefaultLanguage()->getNameDE()
                 )
             );

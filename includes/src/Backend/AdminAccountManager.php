@@ -888,7 +888,7 @@ class AdminAccountManager
     /**
      * @param string $tab
      */
-    public function benutzerverwaltungRedirect($tab = ''): void
+    public function benutzerverwaltungRedirect(string $tab = ''): void
     {
         if ($this->getNotice() !== '') {
             $_SESSION['benutzerverwaltung.notice'] = $this->getNotice();

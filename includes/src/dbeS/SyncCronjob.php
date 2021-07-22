@@ -26,9 +26,9 @@ class SyncCronjob extends NetSyncHandler
                             $job->kCron,
                             $job->cName,
                             $job->dStart_de,
-                            $job->nAlleXStd,
-                            (int)$job->oJobQueue->nLimitN,
-                            (int)$job->nAnzahlArtikel->nAnzahl,
+                            $job->frequency,
+                            (int)($job->oJobQueue->tasksExecuted ?? 0),
+                            (int)($job->nAnzahlArtikel->nAnzahl ?? 0),
                             $job->dLetzterStart_de,
                             $job->dNaechsterStart_de
                         );

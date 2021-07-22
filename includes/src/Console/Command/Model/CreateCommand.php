@@ -58,7 +58,7 @@ class CreateCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io        = $this->getIO();
         $targetDir = $input->getArgument('target-dir') ?? \PFAD_ROOT;
@@ -68,7 +68,7 @@ class CreateCommand extends Command
 
         $io->writeln("<info>Created DataModel:</info> <comment>'{$modelName}'</comment>");
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**

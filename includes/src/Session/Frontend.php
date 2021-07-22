@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Session;
 
@@ -43,8 +43,11 @@ class Frontend extends AbstractSession
      * @return Frontend
      * @throws \Exception
      */
-    public static function getInstance(bool $start = true, $force = false, $sessionName = self::DEFAULT_SESSION): self
-    {
+    public static function getInstance(
+        bool $start = true,
+        bool $force = false,
+        string $sessionName = self::DEFAULT_SESSION
+    ): self {
         return ($force === true || self::$instance === null || self::$sessionName !== $sessionName)
             ? new self($start, $sessionName)
             : self::$instance;

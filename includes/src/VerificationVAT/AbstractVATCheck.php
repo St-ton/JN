@@ -38,7 +38,7 @@ abstract class AbstractVATCheck implements VATCheckInterface
      * @param string $sourceString
      * @return string
      */
-    public function condenseSpaces($sourceString): string
+    public function condenseSpaces(string $sourceString): string
     {
         return \str_replace(' ', '', $sourceString);
     }

@@ -77,7 +77,7 @@ class SASSCommand extends Command
         }
         $theme      = $themeFolderName;
         $directory  = \realpath(\PFAD_ROOT . $templateDir . $theme) . '/';
-        $compareDir = str_replace(array('/', '\\'), \DIRECTORY_SEPARATOR, \PFAD_ROOT . \PFAD_TEMPLATES);
+        $compareDir = \str_replace(array('/', '\\'), \DIRECTORY_SEPARATOR, \PFAD_ROOT . \PFAD_TEMPLATES);
         if (\strpos($directory, $compareDir) !== 0) {
             $io->error('Theme does not exist. ');
 

@@ -96,7 +96,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @return InputInterface
      */
-    public function getInput()
+    public function getInput(): InputInterface
     {
         return $this->input;
     }
@@ -104,7 +104,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @return OutputInterface
      */
-    public function getOutput()
+    public function getOutput(): OutputInterface
     {
         return $this->output;
     }

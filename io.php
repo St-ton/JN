@@ -10,7 +10,7 @@ ob_start();
 require_once __DIR__ . '/includes/globalinclude.php';
 
 $io        = IO::getInstance();
-$ioMethods = new IOMethods($io);
+$ioMethods = new IOMethods($io,Shop::Container()->getDB());
 $ioMethods->registerMethods();
 Shop::Smarty()->setCaching(false)
     ->assign('BILD_KEIN_KATEGORIEBILD_VORHANDEN', BILD_KEIN_KATEGORIEBILD_VORHANDEN)

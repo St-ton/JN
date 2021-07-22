@@ -272,7 +272,7 @@ class ZipValidator
     public function getError(): string
     {
         if ($this->errorString !== '') {
-            return __('errorInvalidZipCode') . '(<span class="text-muted">' . $this->errorString . '</span>)';
+            return \__('errorInvalidZipCode') . '(<span class="text-muted">' . $this->errorString . '</span>)';
         }
 
         return '';

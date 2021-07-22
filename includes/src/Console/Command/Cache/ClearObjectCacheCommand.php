@@ -25,16 +25,16 @@ class ClearObjectCacheCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = $this->getIO();
         if (Shop::Container()->getCache()->flushAll()) {
             $io->success('Object cache cleared.');
 
-            return 0;
+            return Command::SUCCESS;
         }
         $io->warning('Could not clear object cache.');
 
-        return 1;
+        return Command::FAILURE;
     }
 }

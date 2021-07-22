@@ -112,7 +112,7 @@ class GeneralObject
     }
 
     /**
-     * @param object $object
+     * @param mixed $object
      * @return mixed
      * @since 5.0.0
      */

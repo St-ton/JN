@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
@@ -162,7 +162,7 @@ class Staat
      * @param string $countryISO
      * @return null|Staat
      */
-    public static function getRegionByIso(string $code, $countryISO = ''): ?Staat
+    public static function getRegionByIso(string $code, string $countryISO = ''): ?Staat
     {
         $key2 = null;
         $val2 = null;

@@ -547,9 +547,9 @@ final class Customer extends AbstractSync
      * @param int   $languageID
      * @param array $attributes
      */
-    private function saveAttribute(int $customerID, int $languageID, $attributes): void
+    private function saveAttribute(int $customerID, int $languageID, array $attributes): void
     {
-        if ($customerID <= 0 || $languageID <= 0 || !\is_array($attributes) || \count($attributes) === 0) {
+        if ($customerID <= 0 || $languageID <= 0) {
             return;
         }
         foreach ($attributes as $attribute) {

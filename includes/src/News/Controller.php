@@ -196,7 +196,7 @@ class Controller
         Pagination $pagination,
         int $categoryID = 0,
         int $monthOverviewID = 0,
-        $customerGroupID = 0
+        int $customerGroupID = 0
     ): Category {
         $category = new Category($this->db);
         if ($categoryID > 0) {
@@ -458,7 +458,7 @@ class Controller
      * @param object $sql
      * @return stdClass[]
      */
-    private function getNewsDates($sql): array
+    private function getNewsDates(object $sql): array
     {
         $dateData = $this->db->getObjects(
             'SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr

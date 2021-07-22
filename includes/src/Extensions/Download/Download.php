@@ -631,7 +631,7 @@ class Download
     /**
      * @return int|null
      */
-    public function getAnzahl()
+    public function getAnzahl(): ?int
     {
         return $this->nAnzahl;
     }
@@ -639,7 +639,7 @@ class Download
     /**
      * @return int|null
      */
-    public function getTage()
+    public function getTage(): ?int
     {
         return $this->nTage;
     }
@@ -647,7 +647,7 @@ class Download
     /**
      * @return int|null
      */
-    public function getSort()
+    public function getSort(): ?int
     {
         return $this->nSort;
     }
@@ -655,7 +655,7 @@ class Download
     /**
      * @return string|null
      */
-    public function getErstellt()
+    public function getErstellt(): ?string
     {
         return $this->dErstellt;
     }

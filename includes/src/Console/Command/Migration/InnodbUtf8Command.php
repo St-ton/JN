@@ -34,7 +34,7 @@ class InnodbUtf8Command extends Command
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $db    = Shop::Container()->getDB();
         $table = DBMigrationHelper::getNextTableNeedMigration($db, $this->excludeTables);
@@ -42,7 +42,7 @@ class InnodbUtf8Command extends Command
             if ($this->errCounter > 20) {
                 $this->getIO()->error('aborted due to too many errors');
 
-                return 1;
+                return Command::FAILURE;
             }
 
             $output->write('migrate ' . $table->TABLE_NAME . '... ');
@@ -87,7 +87,7 @@ class InnodbUtf8Command extends Command
             $this->getIO()->success('all done');
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
@@ -149,7 +149,7 @@ final class Shopsetting implements ArrayAccess
         if (isset($this->container[$offset])) {
             return $this->container[$offset];
         }
-        $section = static::mapSettingName(null, $offset);
+        $section = self::mapSettingName(null, $offset);
         $cacheID = 'setting_' . $section;
         if ($section === false || $section === null) {
             return null;
@@ -201,7 +201,7 @@ final class Shopsetting implements ArrayAccess
      * @param string $offset
      * @param array  $settings
      */
-    private function addContainerData($offset, array $settings): void
+    private function addContainerData(string $offset, array $settings): void
     {
         $this->container[$offset] = [];
         foreach ($settings as $setting) {
@@ -219,10 +219,10 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param string $section
+     * @param int $section
      * @return array
      */
-    private function getSectionData($section): array
+    private function getSectionData(int $section): array
     {
         if ($section === \CONF_PLUGINZAHLUNGSARTEN) {
             return Shop::Container()->getDB()->getObjects(
@@ -269,7 +269,7 @@ final class Shopsetting implements ArrayAccess
      * @param string $option
      * @return string|array|int|null
      */
-    public function getValue(int $section, $option)
+    public function getValue(int $section, string $option)
     {
         $settings    = $this->getSettings([$section]);
         $sectionName = self::mapSettingName($section);
@@ -282,7 +282,7 @@ final class Shopsetting implements ArrayAccess
      * @param null|string $name
      * @return mixed|null
      */
-    public static function mapSettingName($section = null, $name = null)
+    public static function mapSettingName(?int $section = null, ?string $name = null)
     {
         if ($section === null && $name === null) {
             return false;

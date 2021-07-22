@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -76,7 +76,7 @@ abstract class AbstractSync
      * @param string     $pk1
      * @param int|string $pk2
      */
-    protected function upsertXML($xml, $table, $toMap, $pk1, $pk2 = 0): void
+    protected function upsertXML($xml, string $table, string $toMap, $pk1, $pk2 = 0): void
     {
         $idx = $table . ' attr';
         if (GeneralObject::isCountable($table, $xml) || GeneralObject::isCountable($idx, $xml)) {
@@ -585,7 +585,7 @@ abstract class AbstractSync
      * @param string|null $assoc
      * @return array|null|stdClass
      */
-    protected function getSeoFromDB(int $keyValue, string $keyName, int $langID = null, $assoc = null)
+    protected function getSeoFromDB(int $keyValue, string $keyName, int $langID = null, ?string $assoc = null)
     {
         if ($keyValue <= 0 || $keyName === '') {
             return null;

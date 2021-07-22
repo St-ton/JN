@@ -944,9 +944,9 @@ class Exportformat
     }
 
     /**
-     * @return QueueEntry
+     * @return QueueEntry|null
      */
-    public function getQueue()
+    public function getQueue(): ?QueueEntry
     {
         return $this->queue;
     }

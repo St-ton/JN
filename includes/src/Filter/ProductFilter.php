@@ -1529,12 +1529,12 @@ class ProductFilter
             $_SESSION['Usersortierung'] = (int)$_SESSION['UsersortierungVorSuche'];
         }
         // search special sorting
-        if ($this->hasSearchSpecial()) {
+        if ($_SESSION['Usersortierung'] === \SEARCH_SORT_STANDARD && $this->hasSearchSpecial()) {
             $mapping = $this->getSearchSpecialConfigMapping();
             $idx     = $this->getSearchSpecial()->getValue();
-            $ssConf  = isset($mapping[$idx]) ?: null;
-            if ($ssConf !== null && $ssConf !== -1 && \count($mapping) > 0) {
-                $_SESSION['Usersortierung'] = (int)$mapping[$idx];
+            $ssConf  = $mapping[$idx] ?? -1;
+            if ($ssConf !== -1) {
+                $_SESSION['Usersortierung'] = $ssConf;
             }
         }
         // explicitly set by user
@@ -1556,12 +1556,12 @@ class ProductFilter
         $config = $this->getFilterConfig()->getConfig('suchspecials');
 
         return [
-            \SEARCHSPECIALS_BESTSELLER       => $config['suchspecials_sortierung_bestseller'],
-            \SEARCHSPECIALS_SPECIALOFFERS    => $config['suchspecials_sortierung_sonderangebote'],
-            \SEARCHSPECIALS_NEWPRODUCTS      => $config['suchspecials_sortierung_neuimsortiment'],
-            \SEARCHSPECIALS_TOPOFFERS        => $config['suchspecials_sortierung_topangebote'],
-            \SEARCHSPECIALS_UPCOMINGPRODUCTS => $config['suchspecials_sortierung_inkuerzeverfuegbar'],
-            \SEARCHSPECIALS_TOPREVIEWS       => $config['suchspecials_sortierung_topbewertet'],
+            \SEARCHSPECIALS_BESTSELLER       => (int)$config['suchspecials_sortierung_bestseller'],
+            \SEARCHSPECIALS_SPECIALOFFERS    => (int)$config['suchspecials_sortierung_sonderangebote'],
+            \SEARCHSPECIALS_NEWPRODUCTS      => (int)$config['suchspecials_sortierung_neuimsortiment'],
+            \SEARCHSPECIALS_TOPOFFERS        => (int)$config['suchspecials_sortierung_topangebote'],
+            \SEARCHSPECIALS_UPCOMINGPRODUCTS => (int)$config['suchspecials_sortierung_inkuerzeverfuegbar'],
+            \SEARCHSPECIALS_TOPREVIEWS       => (int)$config['suchspecials_sortierung_topbewertet'],
         ];
     }
 

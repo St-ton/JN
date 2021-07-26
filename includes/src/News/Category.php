@@ -290,8 +290,7 @@ class Category implements CategoryInterface
                 JOIN tnewskategorie 
                     ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
             WHERE tnewskategorie.nAktiv = 1 AND tnews.dGueltigVon <= NOW() '
-                . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL,
-            []
+                . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL
         )), static function ($e) {
             return (int)$e;
         }));

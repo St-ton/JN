@@ -346,7 +346,7 @@ class Admin
             return;
         }
         $real = \realpath(\PFAD_ROOT . \PFAD_EXPORT . $file);
-        if ($real !== false && \strpos($real, \PFAD_ROOT . \PFAD_EXPORT) === 0) {
+        if ($real !== false && \strpos($real, \realpath(\PFAD_ROOT . \PFAD_EXPORT)) === 0) {
             \header('Content-type: text/plain');
             \header('Content-Disposition: attachment; filename=' . $file);
             echo \file_get_contents($real);

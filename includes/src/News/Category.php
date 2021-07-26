@@ -316,7 +316,7 @@ class Category implements CategoryInterface
      * @param int $languageID
      * @return Collection
      */
-    public function filterAndSortItems(int $customerGroupID = 0, $languageID = 0): Collection
+    public function filterAndSortItems(int $customerGroupID = 0, int $languageID = 0): Collection
     {
         switch ($_SESSION['NewsNaviFilter']->nSort) {
             case -1:

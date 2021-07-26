@@ -108,13 +108,13 @@ class Controller
             }
         }
         $this->smarty->assign('oDatum_arr', $this->getNewsDates(self::getFilterSQL(true)))
-                     ->assign('nPlausiValue_arr', [
-                         'cKommentar' => 0,
-                         'nAnzahl'    => 0,
-                         'cEmail'     => 0,
-                         'cName'      => 0,
-                         'captcha'    => 0
-                     ]);
+            ->assign('nPlausiValue_arr', [
+                'cKommentar' => 0,
+                'nAnzahl'    => 0,
+                'cEmail'     => 0,
+                'cName'      => 0,
+                'captcha'    => 0
+            ]);
 
         return $currentNewsType;
     }
@@ -196,7 +196,7 @@ class Controller
         Pagination $pagination,
         int $categoryID = 0,
         int $monthOverviewID = 0,
-        $customerGroupID = 0
+        int $customerGroupID = 0
     ): Category {
         $category = new Category($this->db);
         if ($categoryID > 0) {
@@ -220,14 +220,14 @@ class Controller
             );
         }
         $this->smarty->assign('oNewsUebersicht_arr', $items)
-                     ->assign('newsItems', $items)
-                     ->assign('noarchiv', 0)
-                     ->assign('oNewsKategorie_arr', $this->getAllNewsCategories(true))
-                     ->assign('nSort', $_SESSION['NewsNaviFilter']->nSort)
-                     ->assign('cDatum', $_SESSION['NewsNaviFilter']->cDatum)
-                     ->assign('oNewsCat', $category)
-                     ->assign('oPagination', $pagination)
-                     ->assign('kNewsKategorie', $_SESSION['NewsNaviFilter']->nNewsKat);
+            ->assign('newsItems', $items)
+            ->assign('noarchiv', 0)
+            ->assign('oNewsKategorie_arr', $this->getAllNewsCategories(true))
+            ->assign('nSort', $_SESSION['NewsNaviFilter']->nSort)
+            ->assign('cDatum', $_SESSION['NewsNaviFilter']->cDatum)
+            ->assign('oNewsCat', $category)
+            ->assign('oPagination', $pagination)
+            ->assign('kNewsKategorie', $_SESSION['NewsNaviFilter']->nNewsKat);
         if ($items->count() === 0) {
             $this->smarty->assign('noarchiv', 1);
             $_SESSION['NewsNaviFilter']->nNewsKat = -1;
@@ -286,9 +286,7 @@ class Controller
                 $comment             = new stdClass();
                 $comment->kNews      = (int)$data['kNews'];
                 $comment->kKunde     = (int)$_SESSION['Kunde']->kKunde;
-                $comment->nAktiv     = $this->config['news']['news_kommentare_freischalten'] === 'Y'
-                    ? 0
-                    : 1;
+                $comment->nAktiv     = $this->config['news']['news_kommentare_freischalten'] === 'Y' ? 0 : 1;
                 $comment->cName      = $_SESSION['Kunde']->cVorname . ' ' . $_SESSION['Kunde']->cNachname[0] . '.';
                 $comment->cEmail     = $_SESSION['Kunde']->cMail;
                 $comment->cKommentar = Text::htmlentities(Text::filterXSS($data['cKommentar']));
@@ -297,7 +295,6 @@ class Controller
                 \executeHook(\HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN, ['comment' => &$comment]);
 
                 $this->db->insert('tnewskommentar', $comment);
-
                 if ($this->config['news']['news_kommentare_freischalten'] === 'Y') {
                     $this->noticeMsg .= Shop::Lang()->get('newscommentAddactivate', 'messages') . '<br>';
                 } else {
@@ -306,7 +303,7 @@ class Controller
             } else {
                 $this->errorMsg .= self::getCommentErrors($checks);
                 $this->smarty->assign('nPlausiValue_arr', $checks)
-                             ->assign('cPostVar_arr', Text::filterXSS($data));
+                    ->assign('cPostVar_arr', Text::filterXSS($data));
             }
         }
 
@@ -455,10 +452,10 @@ class Controller
     }
 
     /**
-     * @param object $sql
+     * @param stdClass $sql
      * @return stdClass[]
      */
-    private function getNewsDates($sql): array
+    private function getNewsDates(stdClass $sql): array
     {
         $dateData = $this->db->getObjects(
             'SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
@@ -472,9 +469,10 @@ class Controller
                     AND (tnews.cKundengruppe LIKE '%;-1;%' 
                         OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID() .
             "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
-                    AND tnewssprache.languageID = " . Shop::getLanguageID() . '
+                    AND tnewssprache.languageID = :lid
                 GROUP BY nJahr, nMonat
-                ORDER BY dGueltigVon DESC'
+                ORDER BY dGueltigVon DESC",
+            ['lid' => Shop::getLanguageID()]
         );
         $dates    = [];
         foreach ($dateData as $date) {

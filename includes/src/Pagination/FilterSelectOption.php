@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Pagination;
 
@@ -30,7 +30,7 @@ class FilterSelectOption
      * @param string|int $value
      * @param int    $testOp
      */
-    public function __construct($title, $value, int $testOp)
+    public function __construct(string $title, $value, int $testOp)
     {
         $this->title  = $title;
         $this->value  = $value;

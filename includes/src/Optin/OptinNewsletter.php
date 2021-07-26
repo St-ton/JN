@@ -78,11 +78,14 @@ class OptinNewsletter extends OptinBase implements OptinInterface
 
     /**
      * @param OptinRefData $refData
+     * @param int $location
      * @return OptinInterface
      * @throws InvalidInputException
      */
-    public function createOptin(OptinRefData $refData): OptinInterface
-    {
+    public function createOptin(
+        OptinRefData $refData,
+        int $location = \CHECKBOX_ORT_NEWSLETTERANMELDUNG
+    ): OptinInterface {
         $this->refData = $refData;
         $this->optCode = $this->generateUniqOptinCode();
 
@@ -97,7 +100,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                 $checkBox                       = new CheckBox();
                 $checks->nPlausi_arr            = \array_merge(
                     $checks->nPlausi_arr,
-                    $checkBox->validateCheckBox(\CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true)
+                    $checkBox->validateCheckBox($location, $kKundengruppe, $_POST, true)
                 );
                 $checks->cPost_arr['cAnrede']   = Text::filterXSS($this->refData->getSalutation());
                 $checks->cPost_arr['cVorname']  = Text::filterXSS($this->refData->getFirstName());

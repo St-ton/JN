@@ -408,22 +408,22 @@ class Controller
             default:
                 $sql->cSortSQL = ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC';
                 break;
-            case 1: // Datum absteigend
+            case 1: // date descending
                 $sql->cSortSQL = ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC';
                 break;
-            case 2: // Datum aufsteigend
+            case 2: // date ascending
                 $sql->cSortSQL = ' ORDER BY tnews.dGueltigVon';
                 break;
-            case 3: // Name a ... z
+            case 3: // name a-z
                 $sql->cSortSQL = ' ORDER BY tnewssprache.title';
                 break;
-            case 4: // Name z ... a
+            case 4: // name z-a
                 $sql->cSortSQL = ' ORDER BY tnewssprache.title DESC';
                 break;
-            case 5: // Anzahl Kommentare absteigend
+            case 5: // comment count descending
                 $sql->cSortSQL = ' ORDER BY nNewsKommentarAnzahl DESC';
                 break;
-            case 6: // Anzahl Kommentare aufsteigend
+            case 6: // comment count ascending
                 $sql->cSortSQL = ' ORDER BY nNewsKommentarAnzahl';
                 break;
         }
@@ -431,21 +431,20 @@ class Controller
             $date = \explode('-', $_SESSION['NewsNaviFilter']->cDatum);
             if (\count($date) > 1) {
                 [$nMonat, $nJahr] = $date;
-                $sql->cDatumSQL   = " AND MONTH(tnews.dGueltigVon) = '" . (int)$nMonat . "' 
-                                      AND YEAR(tnews.dGueltigVon) = '" . (int)$nJahr . "'";
+                $sql->cDatumSQL   = ' AND MONTH(tnews.dGueltigVon) = ' . (int)$nMonat . ' 
+                                      AND YEAR(tnews.dGueltigVon) = ' . (int)$nJahr;
             } else { //invalid date given/xss -> reset to -1
                 $_SESSION['NewsNaviFilter']->cDatum = -1;
             }
         }
-        if ($_SESSION['NewsNaviFilter']->nNewsKat > 0) {
-            $sql->cNewsKatSQL = ' AND tnewskategorienews.kNewsKategorie = ' .
-                (int)$_SESSION['NewsNaviFilter']->nNewsKat;
+        $catID = (int)($_SESSION['NewsNaviFilter']->nNewsKat ?? 0);
+        if ($catID > 0) {
+            $sql->cNewsKatSQL = ' AND tnewskategorienews.kNewsKategorie = ' . $catID;
         }
-
         if ($activeOnly) {
             $sql->cNewsKatSQL .= ' JOIN tnewskategorie 
-                                    ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
-                                    AND tnewskategorie.nAktiv = 1';
+                                   ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
+                                   AND tnewskategorie.nAktiv = 1';
         }
 
         return $sql;
@@ -467,18 +466,18 @@ class Controller
                 WHERE tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= NOW()
                     AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                        OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID() .
-            "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
+                        OR FIND_IN_SET(:cgid, REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     AND tnewssprache.languageID = :lid
                 GROUP BY nJahr, nMonat
                 ORDER BY dGueltigVon DESC",
-            ['lid' => Shop::getLanguageID()]
+            ['lid' => Shop::getLanguageID(), 'cgid' => Frontend::getCustomerGroup()->getID()]
         );
         $dates    = [];
+        $code     = Shop::getLanguageCode();
         foreach ($dateData as $date) {
             $item        = new stdClass();
             $item->cWert = $date->nMonat . '-' . $date->nJahr;
-            $item->cName = self::mapDateName((int)$date->nMonat, (int)$date->nJahr, Shop::getLanguageCode());
+            $item->cName = self::mapDateName((int)$date->nMonat, (int)$date->nJahr, $code);
             $dates[]     = $item;
         }
 

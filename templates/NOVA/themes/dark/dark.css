@@ -25397,6 +25397,11 @@ header #burger-menu {
   margin-bottom: 1rem;
 }
 
+/* reviews */
+.account-feedback {
+  margin-bottom: 1rem;
+}
+
 /* basket */
 /* cart-dropdown */
 .cart-dropdown .cart-dropdown-total-item {

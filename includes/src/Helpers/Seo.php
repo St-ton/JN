@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -11,7 +11,7 @@ use JTL\Shop;
 class Seo
 {
     /**
-     * @param string $url
+     * @param string|mixed $url
      * @return string
      */
     public static function getSeo($url): string
@@ -20,7 +20,7 @@ class Seo
     }
 
     /**
-     * @param string $url
+     * @param string|mixed $url
      * @return string
      */
     public static function checkSeo($url): string
@@ -79,7 +79,7 @@ class Seo
      * @param string $path - the seo path e.g. "My/Product/Name"
      * @return string - flat SEO-URL Path e.g. "My-Product-Name"
      */
-    public static function getFlatSeoPath($path): string
+    public static function getFlatSeoPath(string $path): string
     {
         return \trim(\str_replace('/', '-', $path), ' -_');
     }

@@ -1165,7 +1165,7 @@ class Exportformat
         $product->Versandkosten         = ShippingMethod::getLowestShippingFees(
             $this->config['exportformate_lieferland'] ?? '',
             $product,
-            0,
+            false,
             $this->kKundengruppe
         );
         if ($product->Versandkosten !== -1) {

@@ -24,6 +24,8 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
+$_SESSION['deliveryCountryPrefLocked'] = true;
+
 Shop::setPageType(PAGE_BESTELLVORGANG);
 $conf         = Shopsetting::getInstance()->getAll();
 $step         = 'accountwahl';

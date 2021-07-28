@@ -61,15 +61,18 @@ class Tax
             }
         }
         $deliveryCountryCode = $merchantCountryCode;
-        if ($countryCode) {
-            $deliveryCountryCode = $countryCode;
-        }
         if (!empty(Frontend::getCustomer()->cLand)) {
             $deliveryCountryCode = Frontend::getCustomer()->cLand;
             $billingCountryCode  = Frontend::getCustomer()->cLand;
         }
         if (!empty($_SESSION['Lieferadresse']->cLand)) {
             $deliveryCountryCode = $_SESSION['Lieferadresse']->cLand;
+        }
+        if (!empty($_SESSION['preferredDeliveryCountryCode'])) {
+            $deliveryCountryCode = $_SESSION['preferredDeliveryCountryCode'];
+        }
+        if ($countryCode) {
+            $deliveryCountryCode = $countryCode;
         }
         if ($billingCountryCode === null) {
             $billingCountryCode = $deliveryCountryCode;

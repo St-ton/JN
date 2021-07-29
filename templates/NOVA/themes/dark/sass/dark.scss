@@ -249,9 +249,12 @@ header {
   }
 }
 
-.pagination-wrapper:not(.pagination-no-wrapper) {
-  border-top: 1px solid $gray-dark;
-  border-bottom: 1px solid $gray-dark;
+.pagination-wrapper {
+  font-family: $font-accent;
+  &:not(.pagination-no-wrapper) {
+    border-top: 1px solid $gray-dark;
+    border-bottom: 1px solid $gray-dark;
+  }
 }
 
 .productbox-quick-actions .product-actions {
@@ -524,4 +527,8 @@ aside {
   a {
     color: $gray-dark;
   }
+}
+
+.productlist-page-nav {
+  font-family: $font-accent;
 }

@@ -26514,6 +26514,9 @@ header .dropdown-menu a {
   border-bottom: 4px solid #212121;
 }
 
+.pagination-wrapper {
+  font-family: "Poppins", sans-serif;
+}
 .pagination-wrapper:not(.pagination-no-wrapper) {
   border-top: 1px solid #212121;
   border-bottom: 1px solid #212121;
@@ -26802,6 +26805,10 @@ aside .dropdown-toggle::after, aside [data-toggle=collapse]:not(.navbar-toggler)
 
 .snippets-suggestion a {
   color: #212121;
+}
+
+.productlist-page-nav {
+  font-family: "Poppins", sans-serif;
 }
 
 /*# sourceMappingURL=dark.css.map */

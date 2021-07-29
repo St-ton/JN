@@ -50,7 +50,7 @@ class Tax
         $db                     = Shop::Container()->getDB();
         $conf                   = Shop::getConfigValue(\CONF_KUNDEN, 'kundenregistrierung_standardland');
         if ($conf !== '') {
-            $merchantCountryCode = $conf['kundenregistrierung_standardland'];
+            $merchantCountryCode = $conf;
         } else {
             $company = new Firma();
             if (!empty($company->cLand)) {

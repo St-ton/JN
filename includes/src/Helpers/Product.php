@@ -215,7 +215,7 @@ class Product
      * @param int $parentID
      * @return array
      */
-    public static function getPropertiesForVarCombiArticle(int $productID, &$parentID): array
+    public static function getPropertiesForVarCombiArticle(int $productID, int &$parentID): array
     {
         $result   = [];
         $parentID = 0;
@@ -617,25 +617,26 @@ class Product
      * @param Artikel  $product
      * @param object[] $variationImages
      */
-    public static function addVariationPictures(Artikel $product, $variationImages): void
+    public static function addVariationPictures(Artikel $product, array $variationImages): void
     {
-        if (\is_array($variationImages) && \count($variationImages) > 0) {
-            $product->Bilder = \array_filter($product->Bilder, static function ($item) {
-                return !(isset($item->isVariation) && $item->isVariation);
-            });
-            if (\count($variationImages) === 1) {
-                \array_unshift($product->Bilder, $variationImages[0]);
-            } else {
-                $product->Bilder = \array_merge($product->Bilder, $variationImages);
-            }
-
-            $nNr = 1;
-            foreach (\array_keys($product->Bilder) as $key) {
-                $product->Bilder[$key]->nNr = $nNr++;
-            }
-
-            $product->cVorschaubild = $product->Bilder[0]->cURLKlein;
+        if (\count($variationImages) === 0) {
+            return;
         }
+        $product->Bilder = \array_filter($product->Bilder, static function ($item) {
+            return !(isset($item->isVariation) && $item->isVariation);
+        });
+        if (\count($variationImages) === 1) {
+            \array_unshift($product->Bilder, $variationImages[0]);
+        } else {
+            $product->Bilder = \array_merge($product->Bilder, $variationImages);
+        }
+
+        $nNr = 1;
+        foreach (\array_keys($product->Bilder) as $key) {
+            $product->Bilder[$key]->nNr = $nNr++;
+        }
+
+        $product->cVorschaubild = $product->Bilder[0]->cURLKlein;
     }
 
     /**
@@ -703,12 +704,12 @@ class Product
 
     /**
      * @param string        $attribute
-     * @param string        $value
+     * @param string|int    $value
      * @param callable|null $callback
      * @return mixed
      * @since 5.0.0
      */
-    public static function getProductByAttribute($attribute, $value, callable $callback = null)
+    public static function getProductByAttribute(string $attribute, $value, callable $callback = null)
     {
         $art = ($res = self::getDataByAttribute($attribute, $value)) !== null
             ? (new Artikel())->fuelleArtikel($res->kArtikel, Artikel::getDefaultOptions())
@@ -868,7 +869,7 @@ class Product
      * @former gibArtikelXSelling()
      * @since 5.0.0
      */
-    public static function getXSelling(int $productID, $isParent = null): ?stdClass
+    public static function getXSelling(int $productID, bool $isParent = null): ?stdClass
     {
         if ($productID <= 0) {
             return null;
@@ -1468,7 +1469,7 @@ class Product
      * @param null|string|array $redirectParam
      * @param bool              $renew
      * @param null|Artikel      $product
-     * @param null|float        $amount
+     * @param null|float|int    $amount
      * @param int               $configItemID
      * @param array             $notices
      * @return array
@@ -1477,10 +1478,10 @@ class Product
      */
     public static function getProductMessages(
         $redirectParam = null,
-        $renew = false,
-        $product = null,
+        bool $renew = false,
+        ?Artikel $product = null,
         $amount = null,
-        $configItemID = 0,
+        int $configItemID = 0,
         array $notices = []
     ): array {
         if ($redirectParam === null && isset($_GET['r'])) {
@@ -1656,13 +1657,13 @@ class Product
     /**
      * Mappt den Fehlercode für Bewertungen
      *
-     * @param string $code
-     * @param float  $fGuthaben
+     * @param string           $code
+     * @param float|int|string $credit
      * @return string
      * @former mappingFehlerCode()
      * @since 5.0.0
      */
-    public static function mapErrorCode($code, $fGuthaben = 0.0): string
+    public static function mapErrorCode(string $code, $credit = 0.0): string
     {
         switch ($code) {
             case 'f01':
@@ -1690,7 +1691,7 @@ class Product
                 $error = Shop::Lang()->get('bewertungHilfchange', 'messages');
                 break;
             case 'h04':
-                $error = \sprintf(Shop::Lang()->get('bewertungBewaddCredits', 'messages'), (string)$fGuthaben);
+                $error = \sprintf(Shop::Lang()->get('bewertungBewaddCredits', 'messages'), (string)$credit);
                 break;
             case 'h05':
                 $error = Shop::Lang()->get('bewertungBewaddacitvate', 'messages');
@@ -1710,14 +1711,13 @@ class Product
      * @former fasseVariVaterUndKindZusammen()
      * @since 5.0.0
      */
-    public static function combineParentAndChild($parent, $child)
+    public static function combineParentAndChild(Artikel $parent, Artikel $child)
     {
         $product                              = $child;
-        $kVariKindArtikel                     = (int)$child->kArtikel;
-        $product->kArtikel                    = (int)$parent->kArtikel;
-        $product->kVariKindArtikel            = $kVariKindArtikel;
+        $product->kArtikel                    = $parent->kArtikel;
+        $product->kVariKindArtikel            = $child->kArtikel;
         $product->nIstVater                   = 1;
-        $product->kVaterArtikel               = (int)$parent->kArtikel;
+        $product->kVaterArtikel               = $parent->kArtikel;
         $product->kEigenschaftKombi           = $parent->kEigenschaftKombi;
         $product->kEigenschaftKombi_arr       = $parent->kEigenschaftKombi_arr;
         $product->fDurchschnittsBewertung     = $parent->fDurchschnittsBewertung;
@@ -1749,24 +1749,26 @@ class Product
         $xsellProductIDs = [];
         if ($xSeller !== null && GeneralObject::hasCount('XSellGruppen', $xSeller->Standard)) {
             foreach ($xSeller->Standard->XSellGruppen as $xSeller) {
-                if (GeneralObject::hasCount('Artikel', $xSeller)) {
-                    foreach ($xSeller->Artikel as $product) {
-                        $product->kArtikel = (int)$product->kArtikel;
-                        if (!\in_array($product->kArtikel, $xsellProductIDs, true)) {
-                            $xsellProductIDs[] = $product->kArtikel;
-                        }
+                if (!GeneralObject::hasCount('Artikel', $xSeller)) {
+                    continue;
+                }
+                foreach ($xSeller->Artikel as $product) {
+                    $product->kArtikel = (int)$product->kArtikel;
+                    if (!\in_array($product->kArtikel, $xsellProductIDs, true)) {
+                        $xsellProductIDs[] = $product->kArtikel;
                     }
                 }
             }
         }
         if (isset($xSeller->Kauf) && GeneralObject::hasCount('XSellGruppen', $xSeller->Kauf)) {
             foreach ($xSeller->Kauf->XSellGruppen as $xSeller) {
-                if (GeneralObject::hasCount('Artikel', $xSeller)) {
-                    foreach ($xSeller->Artikel as $product) {
-                        $product->kArtikel = (int)$product->kArtikel;
-                        if (!\in_array($product->kArtikel, $xsellProductIDs, true)) {
-                            $xsellProductIDs[] = $product->kArtikel;
-                        }
+                if (!GeneralObject::hasCount('Artikel', $xSeller)) {
+                    continue;
+                }
+                foreach ($xSeller->Artikel as $product) {
+                    $product->kArtikel = (int)$product->kArtikel;
+                    if (!\in_array($product->kArtikel, $xsellProductIDs, true)) {
+                        $xsellProductIDs[] = $product->kArtikel;
                     }
                 }
             }
@@ -1898,11 +1900,11 @@ class Product
     public static function buildConfig(
         int $productID,
         $amount,
-        $variations,
-        $configGroups,
-        $configGroupAmounts,
-        $configItemAmounts,
-        $singleProductOutput = false
+        array $variations,
+        array $configGroups,
+        array $configGroupAmounts,
+        array $configItemAmounts,
+        bool $singleProductOutput = false
     ): ?stdClass {
         $config                  = new stdClass;
         $config->fAnzahl         = $amount;
@@ -2011,7 +2013,7 @@ class Product
      * @former holeKonfigBearbeitenModus()
      * @since  5.0.0
      */
-    public static function getEditConfigMode($configID, $smarty): void
+    public static function getEditConfigMode(int $configID, JTLSmarty $smarty): void
     {
         $cart = Frontend::getCart();
         if (!isset($cart->PositionenArr[$configID]) || !Item::checkLicense()) {
@@ -2036,10 +2038,10 @@ class Product
                 }
             }
             $smarty->assign('fAnzahl', $baseItem->nAnzahl)
-                   ->assign('kEditKonfig', $configID)
-                   ->assign('nKonfigitem_arr', $configItems)
-                   ->assign('nKonfigitemAnzahl_arr', $configItemAmounts)
-                   ->assign('nKonfiggruppeAnzahl_arr', $configGroupAmounts);
+                ->assign('kEditKonfig', $configID)
+                ->assign('nKonfigitem_arr', $configItems)
+                ->assign('nKonfigitemAnzahl_arr', $configItemAmounts)
+                ->assign('nKonfiggruppeAnzahl_arr', $configGroupAmounts);
         }
         if (isset($baseItem->WarenkorbPosEigenschaftArr)) {
             $attrValues = [];

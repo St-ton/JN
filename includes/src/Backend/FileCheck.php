@@ -119,10 +119,14 @@ class FileCheck
         } catch (Exception $e) {
             return -1;
         }
+        /** @var Filesystem $fs */
         foreach ($orphanedFiles as $i => $file) {
-            if ($fs->delete($file->name)) {
+            try {
+                $fs->delete($file->name);
                 unset($orphanedFiles[$i]);
                 ++$count;
+            } catch (Exception $e) {
+
             }
         }
 

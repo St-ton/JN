@@ -509,3 +509,12 @@ hr {
 .lazyload {
   opacity: 0 !important;
 }
+
+.text-accent {
+  font-family: $font-accent;
+  font-weight: $font-weight-semibold;
+}
+
+.price.h1, .product-title.h2 {
+  @extend .text-accent;
+}

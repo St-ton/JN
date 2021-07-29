@@ -382,8 +382,19 @@ header {
   background: $white;
   color: $gray-dark;
 }
-.tt-input::placeholder {
-  color: $gray-dark;
+input.typeahead {
+  &::-webkit-input-placeholder {
+    color:$gray !important;
+  }
+  &:-moz-placeholder { /* Firefox 18- */
+    color:$gray !important;
+  }
+  &::-moz-placeholder {  /* Firefox 19+ */
+    color:$gray !important;
+  }
+  &:-ms-input-placeholder {
+    color:$gray !important;
+  }
 }
 
 aside {
@@ -506,5 +517,11 @@ aside {
     &:hover, &:focus {
       background: $gray-light;
     }
+  }
+}
+
+.snippets-suggestion {
+  a {
+    color: $gray-dark;
   }
 }

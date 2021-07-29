@@ -26652,8 +26652,19 @@ header .dropdown-menu a {
   color: #212121;
 }
 
-.tt-input::placeholder {
-  color: #212121;
+input.typeahead::-webkit-input-placeholder {
+  color: #707070 !important;
+}
+input.typeahead:-moz-placeholder {
+  /* Firefox 18- */
+  color: #707070 !important;
+}
+input.typeahead::-moz-placeholder {
+  /* Firefox 19+ */
+  color: #707070 !important;
+}
+input.typeahead:-ms-input-placeholder {
+  color: #707070 !important;
 }
 
 aside .nav-panel > .nav > .active > .nav-link {
@@ -26787,6 +26798,10 @@ aside .dropdown-toggle::after, aside [data-toggle=collapse]:not(.navbar-toggler)
 }
 #footer .newsletter-email-wrapper button[type=submit]:hover, #footer .newsletter-email-wrapper button[type=submit]:focus {
   background: #f5f5f5;
+}
+
+.snippets-suggestion a {
+  color: #212121;
 }
 
 /*# sourceMappingURL=dark.css.map */

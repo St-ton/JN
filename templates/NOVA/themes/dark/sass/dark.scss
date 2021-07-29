@@ -438,8 +438,11 @@ aside {
   line-height: inherit;
 }
 
-.price-range-inputs .input-group-prepend .input-group-text {
-  font-weight: $font-weight-normal;
+.price-range-inputs {
+  font-family: $font-accent;
+  .input-group-prepend .input-group-text {
+    font-weight: $font-weight-normal;
+  }
 }
 
 .noUi-horizontal {

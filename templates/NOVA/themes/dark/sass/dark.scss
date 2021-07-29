@@ -308,7 +308,6 @@ header {
     .productbox-title, .productbox-title a {
       text-decoration: none;
       text-align: center;
-      font-family: $font-accent;
       font-weight: 300;
       margin: 10px 0 5px;
       &:hover {
@@ -324,6 +323,14 @@ header {
       text-decoration: none;
     }
   }
+}
+.productbox-inner {
+  .productbox-title, .price_wrapper {
+    font-family: $font-accent;
+  }
+}
+.product-wrapper-product {
+  font-family: $font-accent;
 }
 .productbox-ribbon.ribbon {
   top: map_get($spacers, 6);

@@ -26565,7 +26565,6 @@ header .dropdown-menu a {
 .product-list.layout-gallery .productbox .productbox-title, .product-list.layout-gallery .productbox .productbox-title a, #wl-items-form .productbox .productbox-title, #wl-items-form .productbox .productbox-title a {
   text-decoration: none;
   text-align: center;
-  font-family: "Poppins", sans-serif;
   font-weight: 300;
   margin: 10px 0 5px;
 }
@@ -26579,6 +26578,14 @@ header .dropdown-menu a {
   display: flex;
   justify-content: center;
   text-decoration: none;
+}
+
+.productbox-inner .productbox-title, .productbox-inner .price_wrapper {
+  font-family: "Poppins", sans-serif;
+}
+
+.product-wrapper-product {
+  font-family: "Poppins", sans-serif;
 }
 
 .productbox-ribbon.ribbon {

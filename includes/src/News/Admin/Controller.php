@@ -557,7 +557,7 @@ final class Controller
             && \file_exists(\PFAD_ROOT . $oldPreview)
         ) {
             $real = \realpath(\PFAD_ROOT . $oldPreview);
-            if (\strpos($real, self::UPLOAD_DIR_CATEGORY) === 0) {
+            if (\strpos($real, \realpath(self::UPLOAD_DIR_CATEGORY)) === 0) {
                 \unlink($real);
             }
         }

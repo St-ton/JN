@@ -532,3 +532,12 @@ aside {
 .productlist-page-nav {
   font-family: $font-accent;
 }
+
+.box-filter-hr {
+  border-top: $hr-border-width solid $gray-light;
+}
+@include media-breakpoint-up(lg) {
+  .productlist-filter-headline {
+    border-bottom: $hr-border-width solid $gray-light;
+  }
+}

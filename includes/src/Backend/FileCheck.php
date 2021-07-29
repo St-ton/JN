@@ -126,7 +126,6 @@ class FileCheck
                 unset($orphanedFiles[$i]);
                 ++$count;
             } catch (Exception $e) {
-
             }
         }
 

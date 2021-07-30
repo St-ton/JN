@@ -109,8 +109,20 @@
                         <tr class="text-vcenter">
                             <td><a href="{$adminURL}/searchresults.php?cSuche={__($settingLog->getSettingName()|cat:'_name')}">{__($settingLog->getSettingName()|cat:'_name')} | {$settingLog->getSettingName()} | {$settingLog->getId()}</a></td>
                             <td>{$settingLog->getAdminName()}</td>
-                            <td>{$settingLog->getValueOld()}</td>
-                            <td>{$settingLog->getValueNew()}</td>
+                            <td>
+                                {if $settingLog->getSettingType() === 'selectbox'}
+                                    {__("{$settingLog->getSettingName()}_value({$settingLog->getValueOld()})")} ({$settingLog->getValueOld()})
+                                {else}
+                                    {$settingLog->getValueOld()}
+                                {/if}
+                            </td>
+                            <td>
+                                {if $settingLog->getSettingType() === 'selectbox'}
+                                    {__("{$settingLog->getSettingName()}_value({$settingLog->getValueNew()})")} ({$settingLog->getValueNew()})
+                                {else}
+                                    {$settingLog->getValueNew()}
+                                {/if}
+                            </td>
                             <td>{$settingLog->getDate()}</td>
                         </tr>
                     {/foreach}

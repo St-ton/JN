@@ -470,7 +470,9 @@ aside {
 .card-header, .card-products .card-header .btn {
   background: transparent;
 }
-
+.order-details .card-header {
+  border-bottom: inherit;
+}
 .badge, .custom-select, .price-col, .order-details-date, .price_overall,
 .checkout-items-item-price-single, .cart-items-single-price,
 .account-orders-item .order-1,

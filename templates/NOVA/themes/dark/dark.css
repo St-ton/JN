@@ -26734,6 +26734,10 @@ aside .dropdown-toggle::after, aside [data-toggle=collapse]:not(.navbar-toggler)
   background: transparent;
 }
 
+.order-details .card-header {
+  border-bottom: inherit;
+}
+
 .badge, .custom-select, .price-col, .order-details-date, .price_overall,
 .checkout-items-item-price-single, .cart-items-single-price,
 .account-orders-item .order-1,

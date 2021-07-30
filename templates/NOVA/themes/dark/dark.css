@@ -26730,7 +26730,7 @@ aside .dropdown-toggle::after, aside [data-toggle=collapse]:not(.navbar-toggler)
   border: 1px solid #212121;
 }
 
-.card-header {
+.card-header, .card-products .card-header .btn {
   background: transparent;
 }
 

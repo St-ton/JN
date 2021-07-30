@@ -107,7 +107,7 @@
                     </thead>
                     {foreach $settingLogs as $settingLog}
                         <tr class="text-vcenter">
-                            <td>{__($settingLog->getSettingName()|cat:'_name')} | {$settingLog->getSettingName()} | {$settingLog->getId()}</td>
+                            <td><a href="{$adminURL}/searchresults.php?cSuche={__($settingLog->getSettingName()|cat:'_name')}">{__($settingLog->getSettingName()|cat:'_name')}| {$settingLog->getSettingName()} | {$settingLog->getId()}</a></td>
                             <td>{$settingLog->getAdminName()}</td>
                             <td>{$settingLog->getValueOld()}</td>
                             <td>{$settingLog->getValueNew()}</td>

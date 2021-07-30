@@ -184,10 +184,15 @@ header {
   background: $gray-dark;
 }
 
-.carousel-arrows-inside {
-  @include media-breakpoint-up(lg) {
-    margin: 0 50px;
+.container-fluid {
+  .carousel-arrows-inside {
+    @include media-breakpoint-up(lg) {
+      margin: 0 50px;
+    }
   }
+}
+
+.carousel-arrows-inside {
   .slick-arrow {
     top: 35%;
   }

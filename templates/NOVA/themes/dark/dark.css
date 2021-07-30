@@ -26440,10 +26440,11 @@ header .dropdown-menu a {
 }
 
 @media (min-width: 992px) {
-  .carousel-arrows-inside {
+  .container-fluid .carousel-arrows-inside {
     margin: 0 50px;
   }
 }
+
 .carousel-arrows-inside .slick-arrow {
   top: 35%;
 }

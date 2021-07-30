@@ -26478,6 +26478,9 @@ header .dropdown-menu a {
 
 .carousel-thumbnails .slick-arrow {
   color: #707070;
+  width: initial;
+  height: initial;
+  padding: 0.5rem;
 }
 
 .hr-sect {

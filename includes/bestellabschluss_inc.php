@@ -387,40 +387,21 @@ function saveZahlungsInfo(int $customerID, int $orderID, bool $payAgain = false)
     if (!$customerID || !$orderID) {
         return false;
     }
+    $info = $_SESSION['Zahlungsart']->ZahlungsInfo;
+
     $_SESSION['ZahlungsInfo']               = new ZahlungsInfo();
     $_SESSION['ZahlungsInfo']->kBestellung  = $orderID;
     $_SESSION['ZahlungsInfo']->kKunde       = $customerID;
-    $_SESSION['ZahlungsInfo']->cKartenTyp   = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenTyp)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenTyp)
-        : null;
-    $_SESSION['ZahlungsInfo']->cGueltigkeit = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cGueltigkeit)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cGueltigkeit)
-        : null;
-    $_SESSION['ZahlungsInfo']->cBankName    = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cBankName)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cBankName)
-        : null;
-    $_SESSION['ZahlungsInfo']->cKartenNr    = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenNr)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenNr)
-        : null;
-    $_SESSION['ZahlungsInfo']->cCVV         = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cCVV)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cCVV)
-        : null;
-    $_SESSION['ZahlungsInfo']->cKontoNr     = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr)
-        : null;
-    $_SESSION['ZahlungsInfo']->cBLZ         = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ)
-        : null;
-    $_SESSION['ZahlungsInfo']->cIBAN        = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN)
-        : null;
-    $_SESSION['ZahlungsInfo']->cBIC         = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cBIC)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cBIC)
-        : null;
-    $_SESSION['ZahlungsInfo']->cInhaber     = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber)
-        : null;
-
+    $_SESSION['ZahlungsInfo']->cKartenTyp   = Text::unhtmlentities($info->cKartenTyp ?? null);
+    $_SESSION['ZahlungsInfo']->cGueltigkeit = Text::unhtmlentities($info->cGueltigkeit ?? null);
+    $_SESSION['ZahlungsInfo']->cBankName    = Text::unhtmlentities($info->cBankName ?? null);
+    $_SESSION['ZahlungsInfo']->cKartenNr    = Text::unhtmlentities($info->cKartenNr ?? null);
+    $_SESSION['ZahlungsInfo']->cCVV         = Text::unhtmlentities($info->cCVV ?? null);
+    $_SESSION['ZahlungsInfo']->cKontoNr     = Text::unhtmlentities($info->cKontoNr ?? null);
+    $_SESSION['ZahlungsInfo']->cBLZ         = Text::unhtmlentities($info->cBLZ ?? null);
+    $_SESSION['ZahlungsInfo']->cIBAN        = Text::unhtmlentities($info->cIBAN ?? null);
+    $_SESSION['ZahlungsInfo']->cBIC         = Text::unhtmlentities($info->cBIC ?? null);
+    $_SESSION['ZahlungsInfo']->cInhaber     = Text::unhtmlentities($info->cInhaber ?? null);
     if (!$payAgain) {
         $cart                = Frontend::getCart();
         $cart->kZahlungsInfo = $_SESSION['ZahlungsInfo']->insertInDB();
@@ -428,11 +409,9 @@ function saveZahlungsInfo(int $customerID, int $orderID, bool $payAgain = false)
     } else {
         $_SESSION['ZahlungsInfo']->insertInDB();
     }
-    if (isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr)
-        || isset($_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN)
-    ) {
+    if (isset($info->cKontoNr) || isset($info->cIBAN)) {
         Shop::Container()->getDB()->delete('tkundenkontodaten', 'kKunde', $customerID);
-        speicherKundenKontodaten($_SESSION['Zahlungsart']->ZahlungsInfo);
+        speicherKundenKontodaten($info);
     }
 
     return true;

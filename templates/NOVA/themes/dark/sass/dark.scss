@@ -242,6 +242,15 @@ header {
 #cfg-container .hr-sect {
   flex-direction: row;
 }
+.cfg-tab-total {
+  font-family: $font-accent;
+  .nav-link.disabled {
+    color: $gray-dark;
+  }
+}
+.cfg-price {
+  font-family: $font-accent;
+}
 
 .blog-preview-author {
   font-weight: bold;

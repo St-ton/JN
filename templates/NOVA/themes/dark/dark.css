@@ -24294,6 +24294,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #cfg-container .modal-body {
   padding: 1rem 0 0;
 }
+#cfg-container .cfg-price {
+  text-align: right;
+  white-space: nowrap;
+}
 
 #cfg-modal-tabs {
   margin-top: auto;
@@ -26502,6 +26506,17 @@ header .dropdown-menu a {
 
 #cfg-container .hr-sect {
   flex-direction: row;
+}
+
+.cfg-tab-total {
+  font-family: "Poppins", sans-serif;
+}
+.cfg-tab-total .nav-link.disabled {
+  color: #212121;
+}
+
+.cfg-price {
+  font-family: "Poppins", sans-serif;
 }
 
 .blog-preview-author {

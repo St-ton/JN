@@ -426,7 +426,7 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
      */
     public function setValidation(?callable $validation = null): void
     {
-        $this->validation = $validation ?? function (QuestionInterface $question) {
+        $this->validation = $validation ?? static function (QuestionInterface $question) {
                 return (new QuestionValidation($question))->getValidationError();
         };
     }

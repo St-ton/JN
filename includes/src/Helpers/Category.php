@@ -686,7 +686,7 @@ class Category
             $oCat->setParentID(0);
             $oCat->setOrphaned(true);
             $oCat->setChildren($children);
-            $oCat->setHasChildren(count($children) > 0);
+            $oCat->setHasChildren(\count($children) > 0);
             $fullCats[$oCat->getID()] = $oCat;
         }
 

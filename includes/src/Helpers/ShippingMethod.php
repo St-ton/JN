@@ -1155,15 +1155,11 @@ class ShippingMethod
      */
     public static function getLowestShippingFees(string $iso, Artikel $product, $allowCash, int $customerGroupID)
     {
-        $dep             = '';
-        $fee             = 99999;
-        $db              = Shop::Container()->getDB();
-        $productShipping = 0;
-        if ($product->isUsedForShippingCostCalculation($iso)) {
-            $dep = " AND cNurAbhaengigeVersandart = 'N'";
-        } elseif (($costs = self::gibArtikelabhaengigeVersandkosten($iso, $product, 1)) !== false) {
-            $productShipping = $costs->fKosten;
-        }
+        $fee                    = 99999;
+        $db                     = Shop::Container()->getDB();
+        $hasProductShippingCost = $product->isUsedForShippingCostCalculation($iso) ? 'N' : 'Y';
+        $dep                    = " AND cNurAbhaengigeVersandart = '" . $hasProductShippingCost . "' ";
+
         $methods = $db->getObjects(
             "SELECT *
                 FROM tversandart
@@ -1201,7 +1197,7 @@ class ShippingMethod
             }
         }
 
-        return $fee === 99999 ? -1 : ($fee + $productShipping);
+        return $fee === 99999 ? -1 : $fee;
     }
 
     /**

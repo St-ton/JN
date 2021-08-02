@@ -98,7 +98,7 @@ class Campaign
         $obj->nAktiv     = (int)$this->nAktiv;
         $obj->dErstellt  = $this->dErstellt;
         $this->kKampagne = Shop::Container()->getDB()->insert('tkampagne', $obj);
-        if (\mb_convert_case($this->dErstellt, MB_CASE_LOWER) === 'now()') {
+        if (\mb_convert_case($this->dErstellt, \MB_CASE_LOWER) === 'now()') {
             $this->dErstellt = \date_format(\date_create(), 'Y-m-d H:i:s');
         }
         $this->dErstellt_DE = \date_format(\date_create($this->dErstellt), 'd.m.Y H:i:s');
@@ -121,7 +121,7 @@ class Campaign
         $obj->kKampagne  = (int)$this->kKampagne;
 
         $res = Shop::Container()->getDB()->update('tkampagne', 'kKampagne', $obj->kKampagne, $obj);
-        if (\mb_convert_case($this->dErstellt, MB_CASE_LOWER) === 'now()') {
+        if (\mb_convert_case($this->dErstellt, \MB_CASE_LOWER) === 'now()') {
             $this->dErstellt = \date_format(\date_create(), 'Y-m-d H:i:s');
         }
         $this->dErstellt_DE = \date_format(\date_create($this->dErstellt), 'd.m.Y H:i:s');

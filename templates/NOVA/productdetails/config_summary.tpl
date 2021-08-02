@@ -3,7 +3,7 @@
     {block name='productdetails-config-summary-name-net'}
         <tr>
             <td colspan="2">{$Artikel->cName}</td>
-            <td class="text-right-util text-nowrap-util">{$Artikel->Preise->cVKLocalized[$NettoPreise]}</td>
+            <td class="cfg-price">{$Artikel->Preise->cVKLocalized[$NettoPreise]}</td>
         </tr>
     {/block}
     {if $oKonfig->oKonfig_arr|@count > 0}
@@ -16,7 +16,7 @@
                             <tr>
                                 <td class="text-nowrap-util">{$oKonfigitem->fAnzahl} &times;</td>
                                 <td class="word-break">{$oKonfigitem->getName()}</td>
-                                <td class="text-right-util text-nowrap-util">{$oKonfigitem->getFullPriceLocalized(true, false, 1)}</td>
+                                <td class="cfg-price">{$oKonfigitem->getFullPriceLocalized(true, false, 1)}</td>
                             </tr>
                         {elseif $oKonfigitem->bAktiv && $oKonfigitem->ignoreMultiplier()}
                             {$isIgnoreMultiplier = true}
@@ -37,7 +37,7 @@
                                 <tr>
                                     <td class="text-nowrap-util">{$oKonfigitem->fAnzahl} &times;</td>
                                     <td class="word-break">{$oKonfigitem->getName()}</td>
-                                    <td class="text-right-util">{$oKonfigitem->getFullPriceLocalized()}</td>
+                                    <td class="cfg-price">{$oKonfigitem->getFullPriceLocalized()}</td>
                                 </tr>
                             {/if}
                         {/foreach}

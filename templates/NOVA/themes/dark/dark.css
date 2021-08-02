@@ -7929,7 +7929,7 @@ input[type=button].btn-block {
   color: #212121;
   text-align: center;
   white-space: nowrap;
-  background-color: #e9ecef;
+  background-color: #f5f5f5;
   border: 1px solid #212121;
 }
 .input-group-text input[type=radio],
@@ -8221,7 +8221,7 @@ input[type=button].btn-block {
   line-height: 1.5;
   color: #212121;
   content: "Browse";
-  background-color: #e9ecef;
+  background-color: #f5f5f5;
   border-left: inherit;
 }
 
@@ -24294,6 +24294,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #cfg-container .modal-body {
   padding: 1rem 0 0;
 }
+#cfg-container .cfg-price {
+  text-align: right;
+  white-space: nowrap;
+}
 
 #cfg-modal-tabs {
   margin-top: auto;
@@ -26440,10 +26444,11 @@ header .dropdown-menu a {
 }
 
 @media (min-width: 992px) {
-  .carousel-arrows-inside {
+  .container-fluid .carousel-arrows-inside {
     margin: 0 50px;
   }
 }
+
 .carousel-arrows-inside .slick-arrow {
   top: 35%;
 }
@@ -26477,6 +26482,9 @@ header .dropdown-menu a {
 
 .carousel-thumbnails .slick-arrow {
   color: #707070;
+  width: initial;
+  height: initial;
+  padding: 0.5rem;
 }
 
 .hr-sect {
@@ -26500,6 +26508,17 @@ header .dropdown-menu a {
   flex-direction: row;
 }
 
+.cfg-tab-total {
+  font-family: "Poppins", sans-serif;
+}
+.cfg-tab-total .nav-link.disabled {
+  color: #212121;
+}
+
+.cfg-price {
+  font-family: "Poppins", sans-serif;
+}
+
 .blog-preview-author {
   font-weight: bold;
 }
@@ -26514,6 +26533,9 @@ header .dropdown-menu a {
   border-bottom: 4px solid #212121;
 }
 
+.pagination-wrapper {
+  font-family: "Poppins", sans-serif;
+}
 .pagination-wrapper:not(.pagination-no-wrapper) {
   border-top: 1px solid #212121;
   border-bottom: 1px solid #212121;
@@ -26562,7 +26584,6 @@ header .dropdown-menu a {
 .product-list.layout-gallery .productbox .productbox-title, .product-list.layout-gallery .productbox .productbox-title a, #wl-items-form .productbox .productbox-title, #wl-items-form .productbox .productbox-title a {
   text-decoration: none;
   text-align: center;
-  font-family: "Poppins", sans-serif;
   font-weight: 300;
   margin: 10px 0 5px;
 }
@@ -26576,6 +26597,14 @@ header .dropdown-menu a {
   display: flex;
   justify-content: center;
   text-decoration: none;
+}
+
+.productbox-inner .productbox-title {
+  font-family: "Poppins", sans-serif;
+}
+
+.product-wrapper-product {
+  font-family: "Poppins", sans-serif;
 }
 
 .productbox-ribbon.ribbon {
@@ -26652,8 +26681,19 @@ header .dropdown-menu a {
   color: #212121;
 }
 
-.tt-input::placeholder {
-  color: #212121;
+input.typeahead::-webkit-input-placeholder {
+  color: #707070 !important;
+}
+input.typeahead:-moz-placeholder {
+  /* Firefox 18- */
+  color: #707070 !important;
+}
+input.typeahead::-moz-placeholder {
+  /* Firefox 19+ */
+  color: #707070 !important;
+}
+input.typeahead:-ms-input-placeholder {
+  color: #707070 !important;
 }
 
 aside .nav-panel > .nav > .active > .nav-link {
@@ -26689,6 +26729,9 @@ aside .dropdown-toggle::after, aside [data-toggle=collapse]:not(.navbar-toggler)
   line-height: inherit;
 }
 
+.price-range-inputs {
+  font-family: "Poppins", sans-serif;
+}
 .price-range-inputs .input-group-prepend .input-group-text {
   font-weight: 400;
 }
@@ -26706,8 +26749,12 @@ aside .dropdown-toggle::after, aside [data-toggle=collapse]:not(.navbar-toggler)
   border: 1px solid #212121;
 }
 
-.card-header {
+.card-header, .card-products .card-header .btn {
   background: transparent;
+}
+
+.order-details .card-header {
+  border-bottom: inherit;
 }
 
 .badge, .custom-select, .price-col, .order-details-date, .price_overall,
@@ -26787,6 +26834,29 @@ aside .dropdown-toggle::after, aside [data-toggle=collapse]:not(.navbar-toggler)
 }
 #footer .newsletter-email-wrapper button[type=submit]:hover, #footer .newsletter-email-wrapper button[type=submit]:focus {
   background: #f5f5f5;
+}
+
+.snippets-suggestion a {
+  color: #212121;
+}
+
+.productlist-page-nav,
+.selection-wizard-answer,
+.content-cats-small .sub-categories a,
+.product-offer .variations,
+.stock-information,
+.price_wrapper {
+  font-family: "Poppins", sans-serif;
+}
+
+.box-filter-hr {
+  border-top: 1px solid #f5f5f5;
+}
+
+@media (min-width: 992px) {
+  .productlist-filter-headline {
+    border-bottom: 1px solid #f5f5f5;
+  }
 }
 
 /*# sourceMappingURL=dark.css.map */

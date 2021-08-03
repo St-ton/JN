@@ -55,9 +55,9 @@ class Preisverlauf
      * @param int $productID
      * @param int $customerGroupID
      * @param int $month
-     * @return mixed
+     * @return array
      */
-    public function gibPreisverlauf(int $productID, int $customerGroupID, int $month)
+    public function gibPreisverlauf(int $productID, int $customerGroupID, int $month): array
     {
         $cacheID = 'gpv_' . $productID . '_' . $customerGroupID . '_' . $month;
         if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {

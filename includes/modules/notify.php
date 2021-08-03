@@ -48,7 +48,7 @@ if (strlen(Request::verifyGPDataString('key')) > 0 && strlen(Request::verifyGPDa
 if (strlen($cSh) > 0) {
     $cSh = Text::filterXSS($cSh);
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
-        $logger->debug('Notify SH: ' . print_r($_REQUEST, true));
+        $logger->debug('Notify SH: ' . print_r(Text::filterXSS($_REQUEST), true));
     }
     // Load from Session Hash / Session Hash starts with "_"
     $sessionHash    = substr(Text::htmlentities($cSh), 1);

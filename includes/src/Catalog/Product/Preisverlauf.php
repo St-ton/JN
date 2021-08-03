@@ -64,7 +64,7 @@ class Preisverlauf
             $data     = Shop::Container()->getDB()->getObjects(
                 'SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
                     FROM tpreisverlauf 
-                    LEFT JOIN tartikel
+                    JOIN tartikel
                         ON tartikel.kArtikel = tpreisverlauf.kArtikel
                     WHERE tpreisverlauf.kArtikel = :pid
                         AND tpreisverlauf.kKundengruppe = :cgid

@@ -25,6 +25,11 @@ class Preisverlauf
     public $kArtikel;
 
     /**
+     * @var int
+     */
+    public $kKundengruppe;
+
+    /**
      * @var float
      */
     public $fPreisPrivat;
@@ -105,6 +110,9 @@ class Preisverlauf
             foreach (\array_keys(\get_object_vars($item)) as $member) {
                 $this->$member = $item->$member;
             }
+            $this->kPreisverlauf = (int)$this->kPreisverlauf;
+            $this->kArtikel      = (int)$this->kArtikel;
+            $this->kKundengruppe = (int)$this->kKundengruppe;
         }
 
         return $this;

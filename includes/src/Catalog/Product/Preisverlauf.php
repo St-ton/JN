@@ -66,10 +66,11 @@ class Preisverlauf
                     FROM tpreisverlauf 
                     LEFT JOIN tartikel
                         ON tartikel.kArtikel = tpreisverlauf.kArtikel
-                    WHERE tpreisverlauf.kArtikel = ' . $productID . '
-                        AND tpreisverlauf.kKundengruppe = ' . $customerGroupID . '
-                        AND DATE_SUB(NOW(), INTERVAL ' . $month . ' MONTH) < tpreisverlauf.dDate
-                    ORDER BY tpreisverlauf.dDate DESC'
+                    WHERE tpreisverlauf.kArtikel = :pid
+                        AND tpreisverlauf.kKundengruppe = :cgid
+                        AND DATE_SUB(NOW(), INTERVAL :mnth MONTH) < tpreisverlauf.dDate
+                    ORDER BY tpreisverlauf.dDate DESC',
+                ['pid' => $productID, 'cgid' => $customerGroupID, 'mnth' => $month]
             );
             $currency = Frontend::getCurrency();
             $dt       = new DateTime();

@@ -1399,6 +1399,11 @@ class IOMethods
      */
     public function setWishlistVisibility(int $wlID, bool $state, string $token): IOResponse
     {
+        $objResponse = new IOResponse();
+        $wl          = Wishlist::instanceByID($wlID);
+        if ($wl->isSelfControlled() === false) {
+            return $objResponse;
+        }
         if (Form::validateToken($token)) {
             if ($state) {
                 Wishlist::setPublic($wlID);
@@ -1406,7 +1411,6 @@ class IOMethods
                 Wishlist::setPrivate($wlID);
             }
         }
-        $objResponse     = new IOResponse();
         $response        = new stdClass();
         $response->wlID  = $wlID;
         $response->state = $state;
@@ -1424,7 +1428,8 @@ class IOMethods
      */
     public function updateWishlistItem(int $wlID, array $formData): IOResponse
     {
-        if (Form::validateToken($formData['jtl_token'])) {
+        $wl = Wishlist::instanceByID($wlID);
+        if ($wl->isSelfControlled() === true && Form::validateToken($formData['jtl_token'])) {
             Wishlist::update($wlID, $formData);
         }
 

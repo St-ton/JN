@@ -39,9 +39,10 @@ class Tax
 
     /**
      * @param string|null $countryCode
-     * @since since 5.0.0
+     * @param bool $skipUpdateCart
+     * @since 5.0.0
      */
-    public static function setTaxRates($countryCode = null, $skipUpdateCart = false): void
+    public static function setTaxRates($countryCode = null, bool $skipUpdateCart = false): void
     {
         $_SESSION['Steuersatz'] = [];
         $billingCountryCode     = null;

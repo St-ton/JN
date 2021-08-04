@@ -413,7 +413,6 @@ class Starter
         return self::OK;
     }
 
-
     /**
      * @param bool $string
      * @return Generator

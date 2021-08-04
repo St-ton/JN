@@ -13,7 +13,7 @@ header {
     }
   }
   .nav-mobile-body .dropdown-menu {
-    @include media-breakpoint-down(lg) {
+    @include media-breakpoint-down(md) {
       background: $black;
       color: $white;
       a {

@@ -908,7 +908,7 @@ class CartHelper
         }
         // fehlen zu einer Variation werte?
         foreach ($product->Variationen as $var) {
-            if (\count($redirectParam) > 0) {
+            if (\in_array(\R_VARWAEHLEN, $redirectParam, true)) {
                 break;
             }
             if ($var->cTyp === 'FREIFELD') {

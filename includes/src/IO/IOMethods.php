@@ -755,13 +755,19 @@ class IOMethods
         ));
         $config->errorMessages      = $itemErrors ?? [];
         $config->valid              = empty($config->invalidGroups) && empty($config->errorMessages);
+        $cartHelperErrors           = CartHelper::addToCartCheck(
+            $product,
+            1,
+            Product::getSelectedPropertiesForArticle($productID, false)
+        );
         $config->variationsSelected = $product->kVaterArtikel > 0 || !\in_array(
             \R_VARWAEHLEN,
-            CartHelper::addToCartCheck(
-                $product,
-                1,
-                Product::getSelectedPropertiesForArticle($productID, false)
-            ),
+            $cartHelperErrors,
+            true
+        );
+        $config->inStock            = !\in_array(
+            \R_LAGER,
+            $cartHelperErrors,
             true
         );
         $smarty->assign('oKonfig', $config)

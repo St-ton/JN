@@ -26234,7 +26234,7 @@ header .dropdown-menu {
 header .dropdown-menu a {
   color: #000000;
 }
-@media (max-width: 1299.98px) {
+@media (max-width: 991.98px) {
   header .nav-mobile-body .dropdown-menu {
     background: #000000;
     color: #ffffff;

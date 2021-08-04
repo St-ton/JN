@@ -30,7 +30,7 @@ final class Orders extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             if (\strpos($file, 'ack_bestellung.xml') !== false) {
                 $this->handleACK($xml);
@@ -864,10 +864,10 @@ final class Orders extends AbstractSync
                     $this->db->update(
                         'tbestellattribut',
                         'kBestellattribut',
-                        $orderAttributeOld->kBestellattribut,
+                        (int)$orderAttributeOld->kBestellattribut,
                         (object)['cValue' => $orderAttribute->value]
                     );
-                    $updated[] = $orderAttributeOld->kBestellattribut;
+                    $updated[] = (int)$orderAttributeOld->kBestellattribut;
                 } else {
                     $updated[] = $this->db->insert('tbestellattribut', (object)[
                         'kBestellung' => $orderID,

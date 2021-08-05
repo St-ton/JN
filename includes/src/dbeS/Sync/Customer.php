@@ -524,11 +524,11 @@ final class Customer extends AbstractSync
     }
 
     /**
-     * @param object                 $address
+     * @param stdClass               $address
      * @param CryptoServiceInterface $crypto
      * @return object
      */
-    private function getDeliveryAddress($address, CryptoServiceInterface $crypto)
+    private function getDeliveryAddress(stdClass $address, CryptoServiceInterface $crypto)
     {
         $this->extractStreet($address);
         $address->cNachname = $crypto->encryptXTEA(\trim($address->cNachname));

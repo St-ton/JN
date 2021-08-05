@@ -70,13 +70,13 @@ abstract class AbstractSync
     abstract public function handle(Starter $starter);
 
     /**
-     * @param array      $xml
-     * @param string     $table
-     * @param string     $toMap
-     * @param string     $pk1
-     * @param int|string $pk2
+     * @param array       $xml
+     * @param string      $table
+     * @param string      $toMap
+     * @param string      $pk1
+     * @param string|null $pk2
      */
-    protected function upsertXML($xml, $table, $toMap, $pk1, $pk2 = 0): void
+    protected function upsertXML(array $xml, string $table, string $toMap, string $pk1, ?string $pk2 = null): void
     {
         $idx = $table . ' attr';
         if (GeneralObject::isCountable($table, $xml) || GeneralObject::isCountable($idx, $xml)) {
@@ -102,12 +102,12 @@ abstract class AbstractSync
     }
 
     /**
-     * @param string     $tablename
-     * @param array      $objects
-     * @param string     $pk1
-     * @param string|int $pk2
+     * @param string      $tablename
+     * @param array       $objects
+     * @param string      $pk1
+     * @param string|null $pk2
      */
-    protected function upsert(string $tablename, array $objects, $pk1, $pk2 = 0): void
+    protected function upsert(string $tablename, array $objects, string $pk1, ?string $pk2 = null): void
     {
         foreach ($objects as $object) {
             if (isset($object->$pk1) && !$pk2 && $pk1 && $object->$pk1) {
@@ -194,12 +194,12 @@ abstract class AbstractSync
     }
 
     /**
-     * @param object $product
-     * @param array  $conf
+     * @param stdClass $product
+     * @param array    $conf
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
      */
-    protected function sendAvailabilityMails($product, array $conf): void
+    protected function sendAvailabilityMails(stdClass $product, array $conf): void
     {
         if ($product->kArtikel <= 0) {
             return;
@@ -585,7 +585,7 @@ abstract class AbstractSync
      * @param string|null $assoc
      * @return array|null|stdClass
      */
-    protected function getSeoFromDB(int $keyValue, string $keyName, int $langID = null, $assoc = null)
+    protected function getSeoFromDB(int $keyValue, string $keyName, int $langID = null, ?string $assoc = null)
     {
         if ($keyValue <= 0 || $keyName === '') {
             return null;
@@ -615,11 +615,11 @@ abstract class AbstractSync
     }
 
     /**
-     * @param array $arr
-     * @param array $excludes
+     * @param array|mixed $arr
+     * @param array       $excludes
      * @return array
      */
-    protected function buildAttributes(&$arr, $excludes = []): array
+    protected function buildAttributes(&$arr, array $excludes = []): array
     {
         $attributes = [];
         if (!\is_array($arr)) {
@@ -638,7 +638,7 @@ abstract class AbstractSync
     /**
      * @param object $object
      */
-    protected function extractStreet($object): void
+    protected function extractStreet(object $object): void
     {
         $data  = \explode(' ', $object->cStrasse);
         $parts = \count($data);
@@ -654,7 +654,7 @@ abstract class AbstractSync
      * @param string $newSeo
      * @return bool
      */
-    protected function checkDbeSXmlRedirect($oldSeo, $newSeo): bool
+    protected function checkDbeSXmlRedirect(string $oldSeo, string $newSeo): bool
     {
         // Insert into tredirect weil sich das SEO von der Kategorie geändert hat
         if ($oldSeo === $newSeo || $oldSeo === '' || $newSeo === '') {

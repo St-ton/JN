@@ -230,8 +230,8 @@ final class Products extends AbstractSync
     }
 
     /**
-     * @param array $products
-     * @return array
+     * @param stdClass[] $products
+     * @return stdClass[]
      */
     private function addProduct(array $products): array
     {

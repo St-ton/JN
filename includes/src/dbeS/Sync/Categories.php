@@ -137,11 +137,11 @@ final class Categories extends AbstractSync
     }
 
     /**
-     * @param array  $xml
-     * @param int    $categoryID
-     * @param object $category
+     * @param array    $xml
+     * @param int      $categoryID
+     * @param stdClass $category
      */
-    private function setLanguages(array $xml, int $categoryID, $category): void
+    private function setLanguages(array $xml, int $categoryID, stdClass $category): void
     {
         $seoData      = $this->getSeoFromDB($categoryID, 'kKategorie', null, 'kSprache');
         $catLanguages = $this->mapper->mapArray($xml['tkategorie'], 'tkategoriesprache', 'mKategorieSprache');
@@ -281,11 +281,11 @@ final class Categories extends AbstractSync
     }
 
     /**
-     * @param array  $xmlParent
-     * @param object $attribute
+     * @param array    $xmlParent
+     * @param stdClass $attribute
      * @return int
      */
-    private function saveAttribute($xmlParent, $attribute): int
+    private function saveAttribute(array $xmlParent, stdClass $attribute): int
     {
         // Fix: die Wawi überträgt für die normalen Attribute die ID in kAttribut statt in kKategorieAttribut
         if (!isset($attribute->kKategorieAttribut) && isset($attribute->kAttribut)) {

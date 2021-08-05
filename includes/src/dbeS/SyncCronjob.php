@@ -46,7 +46,7 @@ class SyncCronjob extends NetSyncHandler
                         $job = new CronjobHistory(
                             $job->cName,
                             $job->cDateiname,
-                            $job->nLimitN,
+                            (int)$job->nLimitN,
                             $job->dZuletztGelaufen_DE
                         );
                     }

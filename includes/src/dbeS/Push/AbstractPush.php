@@ -60,11 +60,11 @@ abstract class AbstractPush
     abstract public function getData();
 
     /**
-     * @param array $arr
-     * @param array $excludes
+     * @param array|mixed $arr
+     * @param array       $excludes
      * @return array
      */
-    protected function buildAttributes(&$arr, $excludes = []): array
+    protected function buildAttributes(&$arr, array $excludes = []): array
     {
         $attributes = [];
         if (!\is_array($arr)) {

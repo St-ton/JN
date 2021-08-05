@@ -641,7 +641,7 @@ final class Installer
         $this->db->queryPrepared(
             'DELETE FROM tboxen
                 WHERE kCustomID = :pid 
-                AND kBoxvorlage NOT IN (SELECT kBoxvorlage FROM tboxvorlage WHERE kCustomID = :pid)',
+                AND kBoxvorlage NOT IN (SELECT kBoxvorlage FROM tboxvorlage)',
             ['pid' => $oldPluginID]
         );
     }

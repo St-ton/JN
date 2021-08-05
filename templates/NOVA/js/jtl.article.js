@@ -1026,7 +1026,7 @@
                         enableQuantity,
                         nNetto,
                         quantityInput;
-                    $('.js-start-configuration').prop('disabled', !data.response.variationsSelected);
+                    $('.js-start-configuration').prop('disabled', !(data.response.variationsSelected && data.response.inStock));
                     $('.js-choose-variations-wrapper').toggleClass('d-none', data.response.variationsSelected);
                     $('.js-cfg-group').each(function (i, item) {
                         let iconChecked     = $(this).find('.js-group-checked'),

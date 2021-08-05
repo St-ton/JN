@@ -285,6 +285,13 @@ if ($wishlist === null) {
 }
 if ($customerID > 0) {
     $wishlists = Wishlist::getWishlists()->toArray();
+    if (($invisibleItemCount = Wishlist::getInvisibleItemCount($wishlists, $wishlist, $kWunschliste)) > 0) {
+        $alertHelper->addAlert(
+            Alert::TYPE_WARNING,
+            sprintf(Shop::Lang()->get('warningInvisibleItems', 'wishlist'), $invisibleItemCount),
+            'warningInvisibleItems'
+        );
+    }
 } elseif ($wishlist->kWunschliste === 0) {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '&r=' . R_LOGIN_WUNSCHLISTE);
     exit;

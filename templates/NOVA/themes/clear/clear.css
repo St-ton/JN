@@ -24518,6 +24518,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #cfg-container .modal-body {
   padding: 1rem 0 0;
 }
+#cfg-container .cfg-price {
+  text-align: right;
+  white-space: nowrap;
+}
 
 #cfg-modal-tabs {
   margin-top: auto;

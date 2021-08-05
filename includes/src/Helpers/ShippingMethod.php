@@ -244,9 +244,21 @@ class ShippingMethod
                 $vatNote       = ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' .
                     Shop::Lang()->get('vat', 'productDetails');
             } else {
-                $shippingCosts = $gross
-                    ? $shippingMethod->fEndpreis
-                    : \round($shippingMethod->fEndpreis * (100 + Tax::getSalesTax($taxClassID)) / 100, 2);
+                if ($gross) {
+                    $shippingCosts = $shippingMethod->fEndpreis;
+                } else {
+                    $oldDeliveryCountryCode = $_SESSION['cLieferlandISO'];
+                    if ($oldDeliveryCountryCode !== $countryCode) {
+                        Tax::setTaxRates($countryCode, true);
+                    }
+                    $shippingCosts = \round(
+                        $shippingMethod->fEndpreis * (100 + Tax::getSalesTax($taxClassID)) / 100,
+                        2
+                    );
+                    if ($oldDeliveryCountryCode !== $countryCode) {
+                        Tax::setTaxRates($oldDeliveryCountryCode, true);
+                    }
+                }
             }
             $shippingMethod->angezeigterName           = [];
             $shippingMethod->angezeigterHinweistext    = [];
@@ -337,8 +349,6 @@ class ShippingMethod
                 $cgroupID
             );
             if (\count($shippingMethods) > 0) {
-                Frontend::set('cLieferlandISO', $country);
-
                 Shop::Smarty()
                     ->assign('ArtikelabhaengigeVersandarten', self::gibArtikelabhaengigeVersandkostenImWK(
                         $country,

@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 
-{if count($oActiveWidget_arr) > 0 || count($oAvailableWidget_arr) > 0}
+{if !empty($oActiveWidget_arr) || !empty($oAvailableWidget_arr)}
     <script type="text/javascript">
 
     function addWidget(kWidget) {

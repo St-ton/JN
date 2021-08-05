@@ -454,7 +454,11 @@ class Controller
      * @param stdClass $sql
      * @return stdClass[]
      */
+<<<<<<< HEAD
     private function getNewsDates(stdClass $sql): array
+=======
+    private function getNewsDates(object $sql): array
+>>>>>>> felix15
     {
         $dateData = $this->db->getObjects(
             'SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr

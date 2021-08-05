@@ -1586,7 +1586,7 @@ class Cart
     }
 
     /**
-     * @return object|null
+     * @return Artikel|null
      */
     public function gibLetztenWKArtikel()
     {

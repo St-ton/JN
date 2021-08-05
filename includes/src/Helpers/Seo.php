@@ -33,7 +33,8 @@ class Seo
             return $url;
         }
         Shop::Container()->getDB()->query('SET @IKEY := 0');
-        $obj = Shop::Container()->getDB()->getSingleObject(
+
+        return Shop::Container()->getDB()->getSingleObject(
             "SELECT oseo.newSeo
                 FROM (
                     SELECT CONCAT('{$url}', '_', (CONVERT(@IKEY:=@IKEY+1 USING 'utf8') COLLATE utf8_unicode_ci)) newSeo,
@@ -50,9 +51,7 @@ class Seo
                 )
                 ORDER BY oseo.nOrder
                 LIMIT 1"
-        );
-
-        return $obj->newSeo ?? $url;
+        )->newSeo ?? $url;
     }
 
     /**

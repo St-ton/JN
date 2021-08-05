@@ -82,7 +82,7 @@ class Bestseller
     /**
      * @return int
      */
-    public function getCustomergroup()
+    public function getCustomergroup(): int
     {
         return $this->customergrp;
     }
@@ -223,20 +223,21 @@ class Bestseller
      * @param array $bestsellers
      * @return int[]
      */
-    public static function ignoreProducts(&$products, $bestsellers): array
+    public static function ignoreProducts(array &$products, array $bestsellers): array
     {
         $ignoredkeys = [];
-        if (\is_array($products) && \is_array($bestsellers) && \count($products) > 0 && \count($bestsellers) > 0) {
-            foreach ($products as $i => $product) {
-                if (\count($products) === 1) {
+        if (\count($products) === 0 || \count($bestsellers) === 0) {
+            return $ignoredkeys;
+        }
+        foreach ($products as $i => $product) {
+            if (\count($products) === 1) {
+                break;
+            }
+            foreach ($bestsellers as $bestseller) {
+                if ($product->kArtikel === $bestseller->kArtikel) {
+                    unset($products[$i]);
+                    $ignoredkeys[] = $bestseller->kArtikel;
                     break;
-                }
-                foreach ($bestsellers as $bestseller) {
-                    if ($product->kArtikel === $bestseller->kArtikel) {
-                        unset($products[$i]);
-                        $ignoredkeys[] = $bestseller->kArtikel;
-                        break;
-                    }
                 }
             }
         }

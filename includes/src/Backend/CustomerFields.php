@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
@@ -18,7 +18,7 @@ class CustomerFields
     private static $instances;
 
     /**
-     * @var object[]
+     * @var stdClass[]
      */
     protected $customerFields = [];
 
@@ -69,10 +69,10 @@ class CustomerFields
     }
 
     /**
-     * @param object $customerField
+     * @param stdClass $customerField
      * @return object
      */
-    public function prepare($customerField)
+    public function prepare(stdClass $customerField)
     {
         $customerField->kKundenfeld = (int)$customerField->kKundenfeld;
         $customerField->kSprache    = (int)$customerField->kSprache;
@@ -101,10 +101,10 @@ class CustomerFields
     }
 
     /**
-     * @param object $customerField
-     * @return null|object[]
+     * @param stdClass $customerField
+     * @return null|stdClass[]
      */
-    public function getCustomerFieldValues($customerField): ?array
+    public function getCustomerFieldValues(stdClass $customerField): ?array
     {
         $this->prepare($customerField);
 
@@ -122,18 +122,18 @@ class CustomerFields
     }
 
     /**
-     * @param int $kCustomerField
+     * @param int $fieldID
      * @return bool
      */
-    public function delete(int $kCustomerField): bool
+    public function delete(int $fieldID): bool
     {
-        if ($kCustomerField !== 0) {
-            $ret = Shop::Container()->getDB()->delete('tkundenattribut', 'kKundenfeld', $kCustomerField) >= 0
-                && Shop::Container()->getDB()->delete('tkundenfeldwert', 'kKundenfeld', $kCustomerField) >= 0
-                && Shop::Container()->getDB()->delete('tkundenfeld', 'kKundenfeld', $kCustomerField) >= 0;
+        if ($fieldID !== 0) {
+            $ret = Shop::Container()->getDB()->delete('tkundenattribut', 'kKundenfeld', $fieldID) >= 0
+                && Shop::Container()->getDB()->delete('tkundenfeldwert', 'kKundenfeld', $fieldID) >= 0
+                && Shop::Container()->getDB()->delete('tkundenfeld', 'kKundenfeld', $fieldID) >= 0;
 
             if ($ret) {
-                unset($this->customerFields[$kCustomerField]);
+                unset($this->customerFields[$fieldID]);
             } else {
                 $this->loadFields($this->langID);
             }
@@ -180,11 +180,11 @@ class CustomerFields
     }
 
     /**
-     * @param object     $customerField
+     * @param stdClass   $customerField
      * @param null|array $customerFieldValues
      * @return bool
      */
-    public function save($customerField, $customerFieldValues = null): bool
+    public function save(stdClass $customerField, ?array $customerFieldValues = null): bool
     {
         $this->prepare($customerField);
         $key = $customerField->kKundenfeld ?? null;

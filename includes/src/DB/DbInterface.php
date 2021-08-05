@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\DB;
 
@@ -132,7 +132,7 @@ interface DbInterface extends \Serializable
         $keyvalue2 = null,
         bool $echo = false,
         string $select = '*'
-    );
+    ): ?stdClass;
 
     /**
      * @param string            $tableName
@@ -175,7 +175,7 @@ interface DbInterface extends \Serializable
         string $select = '*',
         string $orderBy = '',
         $limit = ''
-    );
+    ): array;
 
     /**
      * @param string           $tableName
@@ -193,7 +193,7 @@ interface DbInterface extends \Serializable
         string $select = '*',
         string $orderBy = '',
         $limit = ''
-    );
+    ): array;
 
     /**
      * executes query and returns misc data
@@ -402,5 +402,5 @@ interface DbInterface extends \Serializable
      * @param array  $params
      * @return string
      */
-    public function readableQuery($query, $params);
+    public function readableQuery(string $query, array $params): string;
 }

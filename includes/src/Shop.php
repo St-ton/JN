@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
@@ -849,7 +849,7 @@ final class Shop
      * @param string $option
      * @return string|array|int|null
      */
-    public static function getSettingValue(int $section, $option)
+    public static function getSettingValue(int $section, string $option)
     {
         return self::getConfigValue($section, $option);
     }
@@ -859,7 +859,7 @@ final class Shop
      * @param string $option
      * @return string|array|int|null
      */
-    public static function getConfigValue(int $section, $option)
+    public static function getConfigValue(int $section, string $option)
     {
         return (self::$settings ?? Shopsetting::getInstance())->getValue($section, $option);
     }

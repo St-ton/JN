@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\DB;
 
@@ -631,7 +631,7 @@ class NiceDB implements DbInterface
         $keyvalue2 = null,
         bool $echo = false,
         string $select = '*'
-    ) {
+    ): ?stdClass {
         $start = \microtime(true);
         $this->validateEntityName($tableName);
         foreach ((array)$keyname as $x) {
@@ -722,7 +722,7 @@ class NiceDB implements DbInterface
         string $select = '*',
         string $orderBy = '',
         $limit = ''
-    ) {
+    ): array {
         $this->validateEntityName($tableName);
         foreach ((array)$keys as $key) {
             $this->validateEntityName($key);
@@ -767,7 +767,7 @@ class NiceDB implements DbInterface
         string $select = '*',
         string $orderBy = '',
         $limit = ''
-    ) {
+    ): array {
         return $this->selectArray($tableName, $keys, $values, $select, $orderBy, $limit);
     }
 
@@ -1328,7 +1328,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function readableQuery($query, $params)
+    public function readableQuery(string $query, array $params): string
     {
         $keys   = [];
         $values = [];

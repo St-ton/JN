@@ -32,23 +32,36 @@ function holeExportformatCron(): array
             ORDER BY tcron.startDate DESC"
     );
     foreach ($exports as $export) {
-        $export->cAlleXStdToDays = rechneUmAlleXStunden((int)$export->frequency);
-        $export->Sprache         = Shop::Lang()->getLanguageByID((int)$export->kSprache);
+        $export->kExportformat   = (int)$export->kExportformat;
+        $export->kKundengruppe   = (int)$export->kKundengruppe;
+        $export->kSprache        = (int)$export->kSprache;
+        $export->kWaehrung       = (int)$export->kWaehrung;
+        $export->kKampagne       = (int)$export->kKampagne;
+        $export->kPlugin         = (int)$export->kPlugin;
+        $export->nSpecial        = (int)$export->nSpecial;
+        $export->nVarKombiOption = (int)$export->nVarKombiOption;
+        $export->nSplitgroesse   = (int)$export->nSplitgroesse;
+        $export->nUseCache       = (int)$export->nUseCache;
+        $export->nFehlerhaft     = (int)$export->nFehlerhaft;
+        $export->cronID          = (int)$export->cronID;
+        $export->frequency       = (int)$export->frequency;
+        $export->cAlleXStdToDays = rechneUmAlleXStunden($export->frequency);
+        $export->Sprache         = Shop::Lang()->getLanguageByID($export->kSprache);
         $export->Waehrung        = $db->select(
             'twaehrung',
             'kWaehrung',
-            (int)$export->kWaehrung
+            $export->kWaehrung
         );
         $export->Kundengruppe    = $db->select(
             'tkundengruppe',
             'kKundengruppe',
-            (int)$export->kKundengruppe
+            $export->kKundengruppe
         );
         $export->oJobQueue       = $db->getSingleObject(
             "SELECT *, DATE_FORMAT(lastStart, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
                 FROM tjobqueue 
                 WHERE cronID = :id",
-            ['id' => (int)$export->cronID]
+            ['id' => $export->cronID]
         );
         $exportFormat            = new Exportformat($export->kExportformat, $db);
         $export->nAnzahlArtikel  = (object)[
@@ -248,7 +261,7 @@ function loescheExportformatCron(array $cronIDs): bool
 
 /**
  * @param int $hours
- * @return array|bool
+ * @return stdClass[]|bool
  */
 function holeExportformatQueueBearbeitet(int $hours = 24)
 {
@@ -282,7 +295,11 @@ function holeExportformatQueueBearbeitet(int $hours = 24)
         ['lid' => $languageID, 'hrs' => $hours]
     );
     foreach ($queues as $exportFormat) {
-        $exportFormat->name = $languages[$languageID]->getLocalizedName();
+        $exportFormat->name      = $languages[$languageID]->getLocalizedName();
+        $exportFormat->kJobQueue = (int)$exportFormat->kJobQueue;
+        $exportFormat->nLimitN   = (int)$exportFormat->nLimitN;
+        $exportFormat->nLimitM   = (int)$exportFormat->nLimitM;
+        $exportFormat->nInArbeit = (int)$exportFormat->nInArbeit;
     }
 
     return $queues;

@@ -214,14 +214,15 @@ final class Controller
                         }
                     } else {
                         $this->addErrorMessage(\__('errorFileSizeType'));
+
                         return self::ERROR_UPLOAD_FILE_SIZE;
                     }
                 } elseif (isset($files['cPDFS_' . $langID]['name'][$i], $post['cPDFNames_' . $langID][$i])
                     && \mb_strlen($files['cPDFS_' . $langID]['name'][$i]) > 0
                     && \mb_strlen($post['cPDFNames_' . $langID][$i]) === 0
                 ) {
-                    $attachmentErrors[$langID][$i] = 1;
                     $this->addErrorMessage(\__('errorFileNameMissing'));
+
                     return self::ERROR_UPLOAD_FILE_SIZE;
                 }
             }

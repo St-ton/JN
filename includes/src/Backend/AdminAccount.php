@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
@@ -443,7 +443,7 @@ class AdminAccount
      * @param bool   $showNoAccessPage
      * @return bool
      */
-    public function permission($permission, bool $redirectToLogin = false, bool $showNoAccessPage = false): bool
+    public function permission(string $permission, bool $redirectToLogin = false, bool $showNoAccessPage = false): bool
     {
         if ($redirectToLogin) {
             $this->redirectOnFailure();

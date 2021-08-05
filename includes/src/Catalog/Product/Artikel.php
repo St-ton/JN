@@ -4487,20 +4487,19 @@ class Artikel
     }
 
     /**
-     * @param object|null $product
-     * @return object
+     * @param Artikel|stdClass|null $product
+     * @return stdClass
      * @since 4.06.7
      */
-    public function getStockInfo($product = null)
+    public function getStockInfo($product = null): stdClass
     {
-        $conf    = Shop::getSettings([\CONF_GLOBAL]);
         $product = $product ?? $this;
         $result  = (object)[
             'inStock'   => false,
             'notExists' => false,
         ];
 
-        switch ((int)$conf['global']['artikel_artikelanzeigefilter']) {
+        switch ((int)$this->conf['global']['artikel_artikelanzeigefilter']) {
             case \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER:
                 if ((isset($product->cLagerVariation) && $product->cLagerVariation === 'Y')
                     || $product->fLagerbestand > 0

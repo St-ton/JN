@@ -624,7 +624,7 @@ class LegacyLink extends MainModel
     public static function getSub(int $kVaterLink, int $kVaterLinkgruppe = null): ?array
     {
         if ($kVaterLink > 0) {
-            if (!empty($kVaterLinkgruppe)) {
+            if ($kVaterLinkgruppe > 0) {
                 $links = Shop::Container()->getDB()->getObjects(
                     'SELECT tlink.* 
                         FROM tlink 
@@ -724,7 +724,7 @@ class LegacyLink extends MainModel
     {
         $rowCount = 0;
         if ($this->kLink > 0) {
-            if (!empty($linkGroupID)) {
+            if ($linkGroupID > 0) {
                 $rowCount = Shop::Container()->getDB()->delete(
                     'tlink',
                     ['kLink', 'kLinkgruppe'],

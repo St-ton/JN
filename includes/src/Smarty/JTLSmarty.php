@@ -12,14 +12,14 @@ use JTL\Plugin\Helper;
 use JTL\Shop;
 use JTL\Template\BootChecker;
 use RuntimeException;
-use SmartyBC;
+use Smarty;
 
 /**
  * Class JTLSmarty
  * @package \JTL\Smarty
  * @method JTLSmarty assign(string $variable, mixed $value)
  */
-class JTLSmarty extends SmartyBC
+class JTLSmarty extends Smarty
 {
     /**
      * @var array
@@ -52,11 +52,6 @@ class JTLSmarty extends SmartyBC
     private $templateDir;
 
     /**
-     * @var string|null
-     */
-    private $parentTemplateName;
-
-    /**
      * modified constructor with custom initialisation
      *
      * @param bool   $fast - set to true when init from backend to avoid setting session data
@@ -65,7 +60,7 @@ class JTLSmarty extends SmartyBC
     public function __construct(bool $fast = false, string $context = ContextType::FRONTEND)
     {
         parent::__construct();
-        \Smarty::$_CHARSET = \JTL_CHARSET;
+        self::$_CHARSET = \JTL_CHARSET;
         $this->setErrorReporting(\SMARTY_LOG_LEVEL)
             ->setForceCompile(\SMARTY_FORCE_COMPILE)
             ->setDebugging(\SMARTY_DEBUG_CONSOLE)
@@ -131,7 +126,7 @@ class JTLSmarty extends SmartyBC
             if (!\is_dir($compileDir) && !\mkdir($compileDir) && !\is_dir($compileDir)) {
                 throw new RuntimeException(\sprintf('Directory "%s" could not be created', $compileDir));
             }
-            $this->setCaching(\Smarty::CACHING_OFF)
+            $this->setCaching(self::CACHING_OFF)
                 ->setDebugging(\SMARTY_DEBUG_CONSOLE)
                 ->setTemplateDir([$this->context => \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir])
                 ->setCompileDir($compileDir)
@@ -147,7 +142,7 @@ class JTLSmarty extends SmartyBC
      * @param string|null $parent
      * @throws \SmartyException
      */
-    private function init($parent = null): void
+    private function init(?string $parent = null): void
     {
         $pluginCollection = new PluginCollection($this->config, LanguageHelper::getInstance());
         $this->registerPlugin(self::PLUGIN_FUNCTION, 'lang', [$pluginCollection, 'translate'])
@@ -497,7 +492,7 @@ class JTLSmarty extends SmartyBC
     public function activateBackendSecurityMode(): self
     {
         $sec                = new \Smarty_Security($this);
-        $sec->php_handling  = \Smarty::PHP_REMOVE;
+        $sec->php_handling  = self::PHP_REMOVE;
         $jtlModifier        = [
             'replace_delim',
             'count_characters',

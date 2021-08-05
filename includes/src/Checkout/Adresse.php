@@ -4,6 +4,7 @@ namespace JTL\Checkout;
 
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class Adresse
@@ -154,9 +155,9 @@ class Adresse
     }
 
     /**
-     * @return object
+     * @return stdClass
      */
-    public function toObject()
+    public function toObject(): stdClass
     {
         return (object)$this->toArray();
     }

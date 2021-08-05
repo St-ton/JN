@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Services\JTL;
 
@@ -279,8 +279,12 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getStaticRoute($id = 'kontakt.php', $full = true, $secure = true, $langISO = null): string
-    {
+    public function getStaticRoute(
+        string $id = 'kontakt.php',
+        bool $full = true,
+        bool $secure = false,
+        string $langISO = null
+    ): string {
         $idx = null;
         $lg  = $this->getLinkGroupByName('staticroutes');
         if ($lg !== null) {

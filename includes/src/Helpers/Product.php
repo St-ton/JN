@@ -863,13 +863,14 @@ class Product
     }
 
     /**
-     * @param int       $productID
-     * @param bool|null $isParent
+     * @param int        $productID
+     * @param bool|null  $isParent
+     * @param array|null $conf
      * @return stdClass|null
      * @former gibArtikelXSelling()
      * @since 5.0.0
      */
-    public static function getXSelling(int $productID, bool $isParent = null): ?stdClass
+    public static function getXSelling(int $productID, bool $isParent = null, ?array $conf = null): ?stdClass
     {
         if ($productID <= 0) {
             return null;
@@ -880,8 +881,8 @@ class Product
         $xSelling->Kauf                   = new stdClass();
         $xSelling->Standard->XSellGruppen = [];
         $xSelling->Kauf->Artikel          = [];
-        $config                           = Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
-        if ($config['artikeldetails_xselling_standard_anzeigen'] === 'Y') {
+        $conf                             = $conf ?? Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
+        if ($conf['artikeldetails_xselling_standard_anzeigen'] === 'Y') {
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $xsell          = Shop::Container()->getDB()->getObjects(
                 'SELECT txsell.*, txsellgruppe.cName, txsellgruppe.cBeschreibung
@@ -917,15 +918,15 @@ class Product
             }
         }
 
-        if ($config['artikeldetails_xselling_kauf_anzeigen'] === 'Y') {
-            $limit = (int)$config['artikeldetails_xselling_kauf_anzahl'];
+        if ($conf['artikeldetails_xselling_kauf_anzeigen'] === 'Y') {
+            $limit = (int)$conf['artikeldetails_xselling_kauf_anzahl'];
             if ($isParent === null) {
                 $isParent = self::isParent($productID);
             }
             if ($isParent === true) {
                 $selectSQL = 'txsellkauf.kXSellArtikel';
                 $filterSQL = 'tartikel.kVaterArtikel';
-                if ($config['artikeldetails_xselling_kauf_parent'] === 'Y') {
+                if ($conf['artikeldetails_xselling_kauf_parent'] === 'Y') {
                     $selectSQL = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
                     $filterSQL = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
                 }
@@ -937,14 +938,15 @@ class Product
                         WHERE (txsellkauf.kArtikel IN (
                                 SELECT tartikel.kArtikel
                                 FROM tartikel
-                                WHERE tartikel.kVaterArtikel = ' . $productID . '
-                            ) OR txsellkauf.kArtikel = ' . $productID . ')
-                            AND ' . $filterSQL . ' != ' . $productID . '
+                                WHERE tartikel.kVaterArtikel = :pid
+                            ) OR txsellkauf.kArtikel = :pid)
+                            AND ' . $filterSQL . ' != :pid
                         GROUP BY 1, 2
                         ORDER BY SUM(txsellkauf.nAnzahl) DESC
-                        LIMIT ' . $limit
+                        LIMIT :lmt',
+                    ['pid' => $productID, 'lmt' => $limit]
                 );
-            } elseif ($config['artikeldetails_xselling_kauf_parent'] === 'Y') {
+            } elseif ($conf['artikeldetails_xselling_kauf_parent'] === 'Y') {
                 $xsell = Shop::Container()->getDB()->getObjects(
                     'SELECT txsellkauf.kArtikel,
                     IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
@@ -994,60 +996,60 @@ class Product
     }
 
     /**
-     * @param array $notices
-     * @param array $conf
+     * @param array   $notices
+     * @param array   $conf - product details config section
+     * @param Artikel $product
      * @return array
      * @former bearbeiteFrageZumProdukt()
      * @since 5.0.0
      */
-    public static function checkProductQuestion(array $notices, array $conf): array
+    public static function checkProductQuestion(array $notices, array $conf, Artikel $product): array
     {
-        if ($conf['artikeldetails']['artikeldetails_fragezumprodukt_anzeigen'] !== 'N') {
-            $missingData = self::getMissingProductQuestionFormData($conf);
-            Shop::Smarty()->assign('fehlendeAngaben_fragezumprodukt', $missingData);
-            $resultCode = Form::eingabenKorrekt($missingData);
-
-            \executeHook(\HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT_PLAUSI);
-            if ($resultCode) {
-                if (!self::checkProductQuestionFloodProtection(
-                    (int)$conf['artikeldetails']['produktfrage_sperre_minuten']
-                )) {
-                    $checkbox        = new CheckBox();
-                    $customerGroupID = Frontend::getCustomerGroup()->getID();
-                    $inquiry         = self::getProductQuestionFormDefaults();
-
-                    \executeHook(\HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT);
-                    if (empty($inquiry->cNachname)) {
-                        $inquiry->cNachname = '';
-                    }
-                    if (empty($inquiry->cVorname)) {
-                        $inquiry->cVorname = '';
-                    }
-                    $checkbox->triggerSpecialFunction(
-                        \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT,
-                        $customerGroupID,
-                        true,
-                        $_POST,
-                        ['oKunde' => $inquiry, 'oNachricht' => $inquiry]
-                    )->checkLogging(\CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $customerGroupID, $_POST, true);
-                    Shop::Smarty()->assign('PositiveFeedback', self::sendProductQuestion());
-                } else {
-                    $notices[] = Shop::Lang()->get('questionNotPossible', 'messages');
-                }
-            } elseif (isset($missingData['email']) && $missingData['email'] === 3) {
-                $notices[] = Shop::Lang()->get('blockedEmail');
-            } else {
-                $notices[] = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
-            }
-        } else {
+        if ($conf['artikeldetails_fragezumprodukt_anzeigen'] === 'N') {
             $notices[] = Shop::Lang()->get('productquestionPleaseLogin', 'errorMessages');
+
+            return $notices;
+        }
+        $missingData = self::getMissingProductQuestionFormData($conf);
+        Shop::Smarty()->assign('fehlendeAngaben_fragezumprodukt', $missingData);
+        $resultCode = Form::eingabenKorrekt($missingData);
+
+        \executeHook(\HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT_PLAUSI);
+        if ($resultCode) {
+            if (!self::checkProductQuestionFloodProtection((int)$conf['produktfrage_sperre_minuten'])) {
+                $checkbox        = new CheckBox();
+                $customerGroupID = Frontend::getCustomerGroup()->getID();
+                $inquiry         = self::getProductQuestionFormDefaults();
+
+                \executeHook(\HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT);
+                if (empty($inquiry->cNachname)) {
+                    $inquiry->cNachname = '';
+                }
+                if (empty($inquiry->cVorname)) {
+                    $inquiry->cVorname = '';
+                }
+                $checkbox->triggerSpecialFunction(
+                    \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT,
+                    $customerGroupID,
+                    true,
+                    $_POST,
+                    ['oKunde' => $inquiry, 'oNachricht' => $inquiry]
+                )->checkLogging(\CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $customerGroupID, $_POST, true);
+                Shop::Smarty()->assign('PositiveFeedback', self::sendProductQuestion($product));
+            } else {
+                $notices[] = Shop::Lang()->get('questionNotPossible', 'messages');
+            }
+        } elseif (isset($missingData['email']) && $missingData['email'] === 3) {
+            $notices[] = Shop::Lang()->get('blockedEmail');
+        } else {
+            $notices[] = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
         }
 
         return $notices;
     }
 
     /**
-     * @param array $conf
+     * @param array $conf - product details config section
      * @return array
      * @former gibFehlendeEingabenProduktanfrageformular()
      * @since 5.0.0
@@ -1067,25 +1069,25 @@ class Product
         if (!$_POST['email']) {
             $ret['email'] = 1;
         }
-        if ($conf['artikeldetails']['produktfrage_abfragen_vorname'] === 'Y' && !$_POST['vorname']) {
+        if ($conf['produktfrage_abfragen_vorname'] === 'Y' && !$_POST['vorname']) {
             $ret['vorname'] = 1;
         }
-        if ($conf['artikeldetails']['produktfrage_abfragen_nachname'] === 'Y' && !$_POST['nachname']) {
+        if ($conf['produktfrage_abfragen_nachname'] === 'Y' && !$_POST['nachname']) {
             $ret['nachname'] = 1;
         }
-        if ($conf['artikeldetails']['produktfrage_abfragen_firma'] === 'Y' && !$_POST['firma']) {
+        if ($conf['produktfrage_abfragen_firma'] === 'Y' && !$_POST['firma']) {
             $ret['firma'] = 1;
         }
-        if ($conf['artikeldetails']['produktfrage_abfragen_fax'] === 'Y' && !$_POST['fax']) {
+        if ($conf['produktfrage_abfragen_fax'] === 'Y' && !$_POST['fax']) {
             $ret['fax'] = 1;
         }
-        if ($conf['artikeldetails']['produktfrage_abfragen_tel'] === 'Y' && !$_POST['tel']) {
+        if ($conf['produktfrage_abfragen_tel'] === 'Y' && !$_POST['tel']) {
             $ret['tel'] = 1;
         }
-        if ($conf['artikeldetails']['produktfrage_abfragen_mobil'] === 'Y' && !$_POST['mobil']) {
+        if ($conf['produktfrage_abfragen_mobil'] === 'Y' && !$_POST['mobil']) {
             $ret['mobil'] = 1;
         }
-        if ($conf['artikeldetails']['produktfrage_abfragen_captcha'] !== 'N' && !Form::validateCaptcha($_POST)) {
+        if ($conf['produktfrage_abfragen_captcha'] !== 'N' && !Form::validateCaptcha($_POST)) {
             $ret['captcha'] = 2;
         }
         $checkBox = new CheckBox();
@@ -1115,15 +1117,16 @@ class Product
     }
 
     /**
+     * @param Artikel $product
      * @return string
      * @former sendeProduktanfrage()
      * @since 5.0.0
      */
-    public static function sendProductQuestion(): string
+    public static function sendProductQuestion(Artikel $product): string
     {
         $conf             = Shop::getSettings([\CONF_EMAILS, \CONF_ARTIKELDETAILS, \CONF_GLOBAL]);
         $data             = new stdClass();
-        $data->tartikel   = $GLOBALS['AktuellerArtikel'];
+        $data->tartikel   = $product;
         $data->tnachricht = self::getProductQuestionFormDefaults();
         $replyToName      = '';
         if ($data->tnachricht->cVorname) {
@@ -1209,27 +1212,28 @@ class Product
     }
 
     /**
-     * @param array $notices
+     * @param array      $notices
+     * @param array|null $conf - product details config section
      * @return array
      * @former bearbeiteBenachrichtigung()
      * @since 5.0.0
      */
-    public static function checkAvailabilityMessage(array $notices): array
+    public static function checkAvailabilityMessage(array $notices, ?array $conf = null): array
     {
-        $conf = Shop::getSettings([\CONF_ARTIKELDETAILS]);
-        if (!isset($_POST['a'], $conf['artikeldetails']['benachrichtigung_nutzen'])
+        $conf = $conf ?? Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
+        if (!isset($_POST['a'], $conf['benachrichtigung_nutzen'])
             || (int)$_POST['a'] <= 0
-            || $conf['artikeldetails']['benachrichtigung_nutzen'] === 'N'
+            || $conf['benachrichtigung_nutzen'] === 'N'
         ) {
             return $notices;
         }
-        $missingData = self::getMissingAvailibilityFormData();
+        $missingData = self::getMissingAvailibilityFormData($conf);
         Shop::Smarty()->assign('fehlendeAngaben_benachrichtigung', $missingData);
         $resultCode = Form::eingabenKorrekt($missingData);
 
         \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG_PLAUSI);
         if ($resultCode) {
-            if (!self::checkAvailibityFormFloodProtection($conf['artikeldetails']['benachrichtigung_sperre_minuten'])) {
+            if (!self::checkAvailibityFormFloodProtection($conf['benachrichtigung_sperre_minuten'])) {
                 $dbHandler = Shop::Container()->getDB();
                 $refData   = (new OptinRefData())
                     ->setSalutation('')
@@ -1278,14 +1282,15 @@ class Product
     }
 
     /**
+     * @param array|null $conf - product details config section
      * @return array
      * @former gibFehlendeEingabenBenachrichtigungsformular()
      * @since 5.0.0
      */
-    public static function getMissingAvailibilityFormData(): array
+    public static function getMissingAvailibilityFormData(?array $conf = null): array
     {
         $ret  = [];
-        $conf = Shop::getSettings([\CONF_ARTIKELDETAILS, \CONF_GLOBAL]);
+        $conf = $conf ?? Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
         if (!$_POST['email']) {
             $ret['email'] = 1;
         } elseif (Text::filterEmailAddress($_POST['email']) === false) {
@@ -1294,15 +1299,13 @@ class Product
         if (SimpleMail::checkBlacklist($_POST['email'])) {
             $ret['email'] = 3;
         }
-        if (empty($_POST['vorname']) && $conf['artikeldetails']['benachrichtigung_abfragen_vorname'] === 'Y') {
+        if (empty($_POST['vorname']) && $conf['benachrichtigung_abfragen_vorname'] === 'Y') {
             $ret['vorname'] = 1;
         }
-        if (empty($_POST['nachname']) && $conf['artikeldetails']['benachrichtigung_abfragen_nachname'] === 'Y') {
+        if (empty($_POST['nachname']) && $conf['benachrichtigung_abfragen_nachname'] === 'Y') {
             $ret['nachname'] = 1;
         }
-        if ($conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N'
-            && !Form::validateCaptcha($_POST)
-        ) {
+        if ($conf['benachrichtigung_abfragen_captcha'] !== 'N' && !Form::validateCaptcha($_POST)) {
             $ret['captcha'] = 2;
         }
         // CheckBox Plausi
@@ -1744,8 +1747,8 @@ class Product
     {
         $products        = [];
         $limit           = ' LIMIT 3';
-        $conf            = Shop::getSettings([\CONF_ARTIKELDETAILS]);
-        $xSeller         = self::getXSelling($productID);
+        $conf            = Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
+        $xSeller         = self::getXSelling($productID, null, $conf);
         $xsellProductIDs = [];
         if ($xSeller !== null && GeneralObject::hasCount('XSellGruppen', $xSeller->Standard)) {
             foreach ($xSeller->Standard->XSellGruppen as $xSeller) {
@@ -1779,8 +1782,8 @@ class Product
             : '';
 
         if ($productID > 0) {
-            if ((int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
-                $limit = ' LIMIT ' . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
+            if ((int)$conf['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
+                $limit = ' LIMIT ' . (int)$conf['artikeldetails_aehnlicheartikel_anzahl'];
             }
             $stockFilterSQL    = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $customerGroupID   = Frontend::getCustomerGroup()->getID();

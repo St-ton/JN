@@ -147,7 +147,10 @@ class File
         $baseURL = Shop::getURL();
         $crypto  = Shop::Container()->getCryptoService();
         foreach ($files as &$upload) {
-            $upload             = self::copyMembers($upload);
+            $upload = self::copyMembers($upload);
+            if ($upload === null) {
+                continue;
+            }
             $upload->cGroesse   = Upload::formatGroesse($upload->nBytes);
             $upload->bVorhanden = \is_file(\PFAD_UPLOADS . $upload->cPfad);
             $upload->bVorschau  = Upload::vorschauTyp($upload->cName);

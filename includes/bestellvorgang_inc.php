@@ -175,7 +175,7 @@ function getMissingInput(array $post, ?int $customerGroupId = null, ?CheckBox $c
     $missingInput    = checkKundenFormular(0);
     $customerGroupId = $customerGroupId ?? Frontend::getCustomerGroup()->getID();
     $checkBox        = $checkBox ?? new CheckBox();
-    
+
     return array_merge($missingInput, $checkBox->validateCheckBox(
         CHECKBOX_ORT_REGISTRIERUNG,
         $customerGroupId,
@@ -1948,8 +1948,13 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
     if ($shippingMethod === null || $shippingMethod->kVersandart <= 0) {
         return false;
     }
-    $shippingMethod->Zuschlag  = ShippingMethod::getAdditionalFees($shippingMethod, $countryCode, $poCode);
-    $shippingMethod->fEndpreis = ShippingMethod::calculateShippingFees($shippingMethod, $countryCode, null);
+    $shippingMethod->kVersandart        = (int)$shippingMethod->kVersandart;
+    $shippingMethod->kVersandberechnung = (int)$shippingMethod->kVersandberechnung;
+    $shippingMethod->nSort              = (int)$shippingMethod->nSort;
+    $shippingMethod->nMinLiefertage     = (int)$shippingMethod->nMinLiefertage;
+    $shippingMethod->nMaxLiefertage     = (int)$shippingMethod->nMaxLiefertage;
+    $shippingMethod->Zuschlag           = ShippingMethod::getAdditionalFees($shippingMethod, $countryCode, $poCode);
+    $shippingMethod->fEndpreis          = ShippingMethod::calculateShippingFees($shippingMethod, $countryCode, null);
     if ($shippingMethod->fEndpreis == -1) {
         return false;
     }

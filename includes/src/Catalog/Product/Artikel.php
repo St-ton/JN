@@ -5057,7 +5057,7 @@ class Artikel
         $return    = ['kArtikelXSellerKey_arr', 'oArtikelArr'];
         $limitSQL  = ' LIMIT 3';
         // Gibt es X-Seller? Aus der Artikelmenge der änhlichen Artikel, dann alle X-Seller rausfiltern
-        $xSeller  = ProductHelper::getXSelling($productID, $this->nIstVater > 0);
+        $xSeller  = ProductHelper::getXSelling($productID, $this->nIstVater > 0, $this->conf['artikeldetails']);
         $xSellIDs = [];
         if ($xSeller !== null) {
             foreach ($xSeller->Standard->XSellGruppen as $group) {

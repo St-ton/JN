@@ -911,7 +911,7 @@ class ShippingMethod
         bool $checkDelivery = true
     ): array {
         $shippingItems = [];
-        $items = \array_filter($items, static function ($item) {
+        $items         = \array_filter($items, static function ($item) {
             return (int)$item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && \is_object($item->Artikel);
         });
         foreach ($items as $item) {
@@ -960,7 +960,7 @@ class ShippingMethod
      */
     public static function getAdditionalFees($shippingMethod, string $iso, string $zip): ?stdClass
     {
-        $shippingMethodData = new Versandart($shippingMethod->kVersandart);
+        $shippingMethodData = new Versandart((int)$shippingMethod->kVersandart);
         if (($surcharge = $shippingMethodData->getShippingSurchargeForZip($zip, $iso)) !== null) {
             return (object)[
                 'kVersandzuschlag' => $surcharge->getID(),

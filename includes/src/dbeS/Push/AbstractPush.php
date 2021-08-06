@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Push;
 
@@ -87,7 +87,7 @@ abstract class AbstractPush
      */
     public function zipRedirect(string $zip, $xml, string $wawiVersion): void
     {
-        $xmlfile       = \fopen(self::TEMP_DIR . self::XML_FILE, 'w');
+        $xmlfile       = \fopen(self::TEMP_DIR . self::XML_FILE, 'wb');
         $serializedXML = $wawiVersion === 'unknown'
             ? \strtr(Text::convertISO(XML::serialize($xml)), "\0", ' ')
             : XML::serialize($xml);

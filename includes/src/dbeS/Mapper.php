@@ -129,7 +129,6 @@ final class Mapper
             'cBeschreibung'
         ],
 
-//
         'mHerstellerSpracheSeo' => [
             'cSeo'
         ],
@@ -688,6 +687,7 @@ final class Mapper
      */
     public function map($xmlTree, string $toMap): stdClass
     {
+        \error_log(__METHOD__ . ' xml tree type: ' . \get_class($xmlTree));
         $mapped = new stdClass();
         foreach ($xmlTree->Attributes() as $key => $val) {
             $mapped->$key = (string)$val;
@@ -742,17 +742,16 @@ final class Mapper
     }
 
     /**
-     * @param stdClass|object|null $obj
-     * @param array|mixed          $xml
-     * @param string               $toMap
+     * @param object|null  $obj
+     * @param array|string $xml
+     * @param string       $toMap
      */
-    public function mapObject(&$obj, $xml, $toMap): void
+    public function mapObject(?object &$obj, $xml, string $toMap): void
     {
         $map = self::getTableMapping($toMap);
         if ($obj === null) {
             $obj = new stdClass();
         }
-
         if ($this->isAssoc($map)) {
             foreach ($map as $key => $value) {
                 $val = null;
@@ -774,7 +773,7 @@ final class Mapper
      * @param stdClass|null $obj
      * @param array|mixed   $xml
      */
-    public function mapAttributes(&$obj, $xml): void
+    public function mapAttributes(?stdClass &$obj, $xml): void
     {
         if (!\is_array($xml)) {
             return;

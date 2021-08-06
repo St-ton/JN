@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -34,7 +34,7 @@ final class Customer extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             $fileName     = \pathinfo($file)['basename'];
             // the first 5 cases come from Kunden_xml.php
@@ -328,6 +328,7 @@ final class Customer extends AbstractSync
         $customerAttributes = [];
         if (GeneralObject::hasCount('tkundenattribut', $source)) {
             $members = \array_keys($source['tkundenattribut']);
+            \error_log(__METHOD__ . ' members:' . \print_r($members, true));
             if ($members[0] == '0') {
                 foreach ($source['tkundenattribut'] as $data) {
                     $customerAttribute        = new stdClass();

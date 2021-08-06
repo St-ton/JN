@@ -194,35 +194,33 @@ abstract class AbstractSync
     }
 
     /**
-     * @param stdClass $product
+     * @param stdClass $data
      * @param array    $conf
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
      */
-    protected function sendAvailabilityMails(stdClass $product, array $conf): void
+    protected function sendAvailabilityMails(stdClass $data, array $conf): void
     {
-        if ($product->kArtikel <= 0) {
+        if ($data->kArtikel <= 0) {
             return;
         }
         $stockRatio    = $conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100;
-        $stockRelevanz = ($product->cLagerKleinerNull ?? '') !== 'Y' && ($product->cLagerBeachten ?? 'Y') === 'Y';
+        $stockCheck    = ($data->cLagerKleinerNull ?? '') !== 'Y' && ($data->cLagerBeachten ?? 'Y') === 'Y';
         $subscriptions = $this->db->selectAll(
             'tverfuegbarkeitsbenachrichtigung',
             ['nStatus', 'kArtikel'],
-            [0, $product->kArtikel]
+            [0, $data->kArtikel]
         );
-        $subCount      = \count($subscriptions);
-        if ($subCount === 0 || (
-                $stockRelevanz && ($product->fLagerbestand <= 0 || ($product->fLagerbestand / $subCount) < $stockRatio)
-            )
-        ) {
+        $subs          = \count($subscriptions);
+        $stock         = $data->fLagerbestand;
+        if ($subs === 0 || ( $stockCheck && ($stock <= 0 || ($stock / $subs) < $stockRatio))) {
             return;
         }
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
 
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
-        $product                             = (new Artikel())->fuelleArtikel($product->kArtikel, $options);
+        $product                             = (new Artikel())->fuelleArtikel($data->kArtikel, $options);
         if ($product === null) {
             return;
         }

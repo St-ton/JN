@@ -96,7 +96,7 @@ function getCategories($selKats = '', $kKategorie = 0, $tiefe = 0)
 
 /**
  * Parse Datumsstring und formatiere ihn im DB-kompatiblen Standardformat
- * 
+ *
  * @param string $string
  * @return string
  */
@@ -140,7 +140,7 @@ function getRawCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = ''
 
 /**
  * Get instances of existing coupons, each with some enhanced information that can be displayed
- * 
+ *
  * @param string $cKuponTyp
  * @param string $cWhereSQL - an SQL WHERE clause (col1 = val1 AND vol2 LIKE ...)
  * @param string $cOrderSQL - an SQL ORDER BY clause (cName DESC)
@@ -274,7 +274,7 @@ function augmentCoupon($oKupon)
 
 /**
  * Create a fresh Kupon instance with default values to be edited
- * 
+ *
  * @param $cKuponTyp - 'standard', 'versandkupon', 'neukundenkupon'
  * @return Kupon
  */
@@ -310,75 +310,76 @@ function createNewCoupon($cKuponTyp)
 
 /**
  * Read coupon settings from the edit page form and create a Kupon instance of it
- * 
+ *
  * @return Kupon
  */
 function createCouponFromInput()
 {
-    $oKupon                        = new Kupon((int)$_POST['kKuponBearbeiten']);
-    $oKupon->cKuponTyp             = $_POST['cKuponTyp'];
-    $oKupon->cName                 = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-    $oKupon->fWert                 = !empty($_POST['fWert']) ? (float)str_replace(',', '.', $_POST['fWert']) : null;
-    $oKupon->cWertTyp              = !empty($_POST['cWertTyp']) ? $_POST['cWertTyp'] : null;
-    $oKupon->cZusatzgebuehren      = !empty($_POST['cZusatzgebuehren']) ? $_POST['cZusatzgebuehren'] : 'N';
-    $oKupon->nGanzenWKRabattieren  = !empty($_POST['nGanzenWKRabattieren']) ? (int)$_POST['nGanzenWKRabattieren'] : 0;
-    $oKupon->kSteuerklasse         = !empty($_POST['kSteuerklasse']) ? (int)$_POST['kSteuerklasse'] : null;
-    $oKupon->fMindestbestellwert   = (float)str_replace(',', '.', $_POST['fMindestbestellwert']);
-    $oKupon->cCode                 = !empty($_POST['cCode']) ? $_POST['cCode'] : '';
-    $oKupon->cLieferlaender        = !empty($_POST['cLieferlaender']) ? strtoupper($_POST['cLieferlaender']) : '';
-    $oKupon->nVerwendungen         = !empty($_POST['nVerwendungen']) ? (int)$_POST['nVerwendungen'] : 0;
-    $oKupon->nVerwendungenProKunde = !empty($_POST['nVerwendungenProKunde']) ? (int)$_POST['nVerwendungenProKunde'] : 0;
-    $oKupon->cArtikel              = !empty($_POST['cArtikel']) ? ';' . trim($_POST['cArtikel'], ";\t\n\r") . ';' : '';
+    $postData                      = StringHandler::filterXSS($_POST);
+    $oKupon                        = new Kupon((int)$postData['kKuponBearbeiten']);
+    $oKupon->cKuponTyp             = $postData['cKuponTyp'];
+    $oKupon->cName                 = htmlspecialchars($postData['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+    $oKupon->fWert                 = !empty($postData['fWert']) ? (float)str_replace(',', '.', $postData['fWert']) : null;
+    $oKupon->cWertTyp              = !empty($postData['cWertTyp']) ? $postData['cWertTyp'] : null;
+    $oKupon->cZusatzgebuehren      = !empty($postData['cZusatzgebuehren']) ? $postData['cZusatzgebuehren'] : 'N';
+    $oKupon->nGanzenWKRabattieren  = !empty($postData['nGanzenWKRabattieren']) ? (int)$postData['nGanzenWKRabattieren'] : 0;
+    $oKupon->kSteuerklasse         = !empty($postData['kSteuerklasse']) ? (int)$postData['kSteuerklasse'] : null;
+    $oKupon->fMindestbestellwert   = (float)str_replace(',', '.', $postData['fMindestbestellwert']);
+    $oKupon->cCode                 = !empty($postData['cCode']) ? $postData['cCode'] : '';
+    $oKupon->cLieferlaender        = !empty($postData['cLieferlaender']) ? strtoupper($postData['cLieferlaender']) : '';
+    $oKupon->nVerwendungen         = !empty($postData['nVerwendungen']) ? (int)$postData['nVerwendungen'] : 0;
+    $oKupon->nVerwendungenProKunde = !empty($postData['nVerwendungenProKunde']) ? (int)$postData['nVerwendungenProKunde'] : 0;
+    $oKupon->cArtikel              = !empty($postData['cArtikel']) ? ';' . trim($postData['cArtikel'], ";\t\n\r") . ';' : '';
     $oKupon->cHersteller           = '-1';
-    $oKupon->kKundengruppe         = (int)$_POST['kKundengruppe'];
-    $oKupon->dGueltigAb            = normalizeDate(!empty($_POST['dGueltigAb']) ? $_POST['dGueltigAb'] : date_create()->format('Y-m-d H:i') . ':00');
-    $oKupon->dGueltigBis           = normalizeDate(!empty($_POST['dGueltigBis']) ? $_POST['dGueltigBis'] : '');
-    $oKupon->cAktiv                = isset($_POST['cAktiv']) && $_POST['cAktiv'] === 'Y' ? 'Y' : 'N';
+    $oKupon->kKundengruppe         = (int)$postData['kKundengruppe'];
+    $oKupon->dGueltigAb            = normalizeDate(!empty($postData['dGueltigAb']) ? $postData['dGueltigAb'] : date_create()->format('Y-m-d H:i') . ':00');
+    $oKupon->dGueltigBis           = normalizeDate(!empty($postData['dGueltigBis']) ? $postData['dGueltigBis'] : '');
+    $oKupon->cAktiv                = isset($postData['cAktiv']) && $postData['cAktiv'] === 'Y' ? 'Y' : 'N';
     $oKupon->cKategorien           = '-1';
     if ($oKupon->cKuponTyp !== 'neukundenkupon') {
         $oKupon->cKunden = '-1';
     }
-    if (isset($_POST['bOpenEnd']) && $_POST['bOpenEnd'] === 'Y') {
+    if (isset($postData['bOpenEnd']) && $postData['bOpenEnd'] === 'Y') {
         $oKupon->dGueltigBis = '0000-00-00 00:00:00';
-    } elseif (!empty($_POST['dDauerTage'])) {
+    } elseif (!empty($postData['dDauerTage'])) {
         $oKupon->dGueltigBis     = '';
         $actualTimestamp         = date_create();
         $actualTimestampEndofDay = date_time_set($actualTimestamp, 23, 59, 59);
-        $setDays                 = new DateInterval('P' . $_POST['dDauerTage'] . 'D');
+        $setDays                 = new DateInterval('P' . $postData['dDauerTage'] . 'D');
         $oKupon->dGueltigBis     = date_add($actualTimestampEndofDay, $setDays)->format('Y-m-d H:i:s');
     }
-    if (!empty($_POST['kHersteller']) &&
-        is_array($_POST['kHersteller']) && count($_POST['kHersteller']) > 0 &&
-        !in_array('-1', $_POST['kHersteller'])) {
-        $oKupon->cHersteller = StringHandler::createSSK($_POST['kHersteller']);
+    if (!empty($postData['kHersteller']) &&
+        is_array($postData['kHersteller']) && count($postData['kHersteller']) > 0 &&
+        !in_array('-1', $postData['kHersteller'])) {
+        $oKupon->cHersteller = StringHandler::createSSK($postData['kHersteller']);
     }
-    if (!empty($_POST['kKategorien']) &&
-        is_array($_POST['kKategorien']) && count($_POST['kKategorien']) > 0 &&
-        !in_array('-1', $_POST['kKategorien'])) {
-        $oKupon->cKategorien = StringHandler::createSSK($_POST['kKategorien']);
+    if (!empty($postData['kKategorien']) &&
+        is_array($postData['kKategorien']) && count($postData['kKategorien']) > 0 &&
+        !in_array('-1', $postData['kKategorien'])) {
+        $oKupon->cKategorien = StringHandler::createSSK($postData['kKategorien']);
     }
-    if (!empty($_POST['cKunden']) && $_POST['cKunden'] != "-1") {
-        $oKupon->cKunden = trim($_POST['cKunden'], ";\t\n\r") . ';';
+    if (!empty($postData['cKunden']) && $postData['cKunden'] != "-1") {
+        $oKupon->cKunden = trim($postData['cKunden'], ";\t\n\r") . ';';
     }
-    if (isset($_POST['couponCreation'])) {
+    if (isset($postData['couponCreation'])) {
         $massCreationCoupon                  = new stdClass();
-        $massCreationCoupon->cActiv          = (!empty($_POST['couponCreation']))
-            ? (int)$_POST['couponCreation']
+        $massCreationCoupon->cActiv          = (!empty($postData['couponCreation']))
+            ? (int)$postData['couponCreation']
             : 0;
-        $massCreationCoupon->numberOfCoupons = ($massCreationCoupon->cActiv === 1 && !empty($_POST['numberOfCoupons']))
-            ? (int)$_POST['numberOfCoupons']
+        $massCreationCoupon->numberOfCoupons = ($massCreationCoupon->cActiv === 1 && !empty($postData['numberOfCoupons']))
+            ? (int)$postData['numberOfCoupons']
             : 2;
-        $massCreationCoupon->lowerCase       = ($massCreationCoupon->cActiv === 1 && !empty($_POST['lowerCase']));
-        $massCreationCoupon->upperCase       = ($massCreationCoupon->cActiv === 1 && !empty($_POST['upperCase']));
-        $massCreationCoupon->numbersHash     = ($massCreationCoupon->cActiv === 1 && !empty($_POST['numbersHash']));
-        $massCreationCoupon->hashLength      = ($massCreationCoupon->cActiv === 1 && !empty($_POST['hashLength']))
-            ? $_POST['hashLength']
+        $massCreationCoupon->lowerCase       = ($massCreationCoupon->cActiv === 1 && !empty($postData['lowerCase']));
+        $massCreationCoupon->upperCase       = ($massCreationCoupon->cActiv === 1 && !empty($postData['upperCase']));
+        $massCreationCoupon->numbersHash     = ($massCreationCoupon->cActiv === 1 && !empty($postData['numbersHash']));
+        $massCreationCoupon->hashLength      = ($massCreationCoupon->cActiv === 1 && !empty($postData['hashLength']))
+            ? $postData['hashLength']
             : 4;
-        $massCreationCoupon->prefixHash      = ($massCreationCoupon->cActiv === 1 && !empty($_POST['prefixHash']))
-            ? $_POST['prefixHash']
+        $massCreationCoupon->prefixHash      = ($massCreationCoupon->cActiv === 1 && !empty($postData['prefixHash']))
+            ? $postData['prefixHash']
             : '';
-        $massCreationCoupon->suffixHash      = ($massCreationCoupon->cActiv === 1 && !empty($_POST['suffixHash']))
-            ? $_POST['suffixHash']
+        $massCreationCoupon->suffixHash      = ($massCreationCoupon->cActiv === 1 && !empty($postData['suffixHash']))
+            ? $postData['suffixHash']
             : '';
 
         $oKupon->massCreationCoupon          = $massCreationCoupon;
@@ -389,7 +390,7 @@ function createCouponFromInput()
 
 /**
  * Get the number of existing coupons of type $cKuponTyp
- * 
+ *
  * @param string $cKuponTyp
  * @param string $cWhereSQL
  * @return int
@@ -408,7 +409,7 @@ function getCouponCount($cKuponTyp = 'standard', $cWhereSQL = '')
 
 /**
  * Validates the fields of a given Kupon instance
- * 
+ *
  * @param Kupon $oKupon
  * @return array - list of error messages
  */
@@ -506,7 +507,7 @@ function validateCoupon($oKupon)
 
 /**
  * Save a new or already existing coupon in the DB
- * 
+ *
  * @param Kupon $oKupon
  * @param array $oSprache_arr
  * @return int - 0 on failure ; kKupon on success
@@ -560,7 +561,7 @@ function saveCoupon($oKupon, $oSprache_arr)
                     $kuponSprache              = new stdClass();
                     $kuponSprache->kKupon      = $kKupon;
                     $kuponSprache->cISOSprache = $oSprache->cISO;
-                    $kuponSprache->cName       = $cKuponSpracheName;
+                    $kuponSprache->cName       = StringHandler::filterXSS($cKuponSpracheName);
                     Shop::DB()->insert('tkuponsprache', $kuponSprache);
                 }
             }
@@ -576,7 +577,7 @@ function saveCoupon($oKupon, $oSprache_arr)
                 $kuponSprache              = new stdClass();
                 $kuponSprache->kKupon      = $oKupon->kKupon;
                 $kuponSprache->cISOSprache = $oSprache->cISO;
-                $kuponSprache->cName       = $cKuponSpracheName;
+                $kuponSprache->cName       = StringHandler::filterXSS($cKuponSpracheName);
                 Shop::DB()->insert('tkuponsprache', $kuponSprache);
             }
         }
@@ -587,7 +588,7 @@ function saveCoupon($oKupon, $oSprache_arr)
 
 /**
  * Send notification emails to all customers admitted to this Kupon
- * 
+ *
  * @param Kupon $oKupon
  */
 function informCouponCustomers($oKupon)

@@ -325,7 +325,7 @@ final class ReviewAdminController extends BaseController
     public function activate(array $ids): int
     {
         $cacheTags = [];
-        foreach (\array_map('\intval', $ids) as $i => $id) {
+        foreach (\array_map('\intval', $ids) as $id) {
             try {
                 $model = ReviewModel::load(['id' => $id], $this->db, ReviewModel::ON_NOTEXISTS_FAIL);
             } catch (Exception $e) {

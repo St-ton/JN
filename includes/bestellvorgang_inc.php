@@ -437,9 +437,9 @@ function pruefeLieferadresseStep($get): void
     //sondersteps Lieferadresse ändern
     if (!empty($_SESSION['Lieferadresse'])) {
         $Lieferadresse = $_SESSION['Lieferadresse'];
-        if (isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1
-            || isset($_SESSION['preferredDeliveryCountryCode'])
-            && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand
+        if ((isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1)
+            || (isset($_SESSION['preferredDeliveryCountryCode'])
+            && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand)
         ) {
             Kupon::resetNewCustomerCoupon();
             unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);

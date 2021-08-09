@@ -190,7 +190,7 @@ class ArtikelListe
         }
         $categoryIDs = [];
         if (!empty($categoryList->elemente)) {
-            foreach ($categoryList->elemente as $i => $category) {
+            foreach ($categoryList->elemente as $category) {
                 /** @var MenuItem $category */
                 $categoryIDs[] = $category->getID();
                 if ($category->hasChildren()) {
@@ -251,7 +251,7 @@ class ArtikelListe
         }
         $categoryIDs = [];
         if (GeneralObject::isCountable('elemente', $categoryList)) {
-            foreach ($categoryList->elemente as $i => $category) {
+            foreach ($categoryList->elemente as $category) {
                 /** @var MenuItem $category */
                 $categoryIDs[] = $category->getID();
                 if ($category->hasChildren()) {

@@ -108,10 +108,10 @@ class DB extends JTLDefault
     /**
      * @inheritDoc
      */
-    public function destroy($sessID)
+    public function destroy($id)
     {
         // if session was deleted, return true,
-        return $this->db->delete($this->tableName, 'cSessionId', $sessID) > 0;
+        return $this->db->delete($this->tableName, 'cSessionId', $id) > 0;
     }
 
     /**

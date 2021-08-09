@@ -44,8 +44,6 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
      * @param OptinRefData $refData
      * @param int $location
      * @return OptinInterface
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
     public function createOptin(OptinRefData $refData, int $location = 0): OptinInterface
     {

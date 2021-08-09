@@ -657,7 +657,7 @@ final class Shop
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
 
-        return static::Container()->getDBServiceGC();
+        return self::Container()->getDBServiceGC();
     }
 
     /**
@@ -2113,11 +2113,11 @@ final class Shop
      */
     public static function Container(): DefaultServicesInterface
     {
-        if (!static::$container) {
-            static::createContainer();
+        if (!self::$container) {
+            self::createContainer();
         }
 
-        return static::$container;
+        return self::$container;
     }
 
     /**
@@ -2135,8 +2135,8 @@ final class Shop
      */
     private static function createContainer(): void
     {
-        $container         = new Services\Container();
-        static::$container = $container;
+        $container       = new Services\Container();
+        self::$container = $container;
 
         $container->singleton(DbInterface::class, static function () {
             return new NiceDB(\DB_HOST, \DB_USER, \DB_PASS, \DB_NAME);

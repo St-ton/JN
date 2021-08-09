@@ -919,7 +919,7 @@ class Customer
                 try {
                     $lang     = Shop::Lang()->getLanguageByID($languageID);
                     $langCode = $lang->cISO;
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $lang = null;
                 }
             }

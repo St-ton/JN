@@ -109,12 +109,12 @@ class Manager
      */
     public function loadStats(string $type)
     {
-        /* attention: this will parallelize async io stats */
+        // attention: this will parallelize async io stats
         \session_write_close();
-        /* but there should not be any session operations after this point */
+        // but there should not be any session operations after this point
         $items = $this->getItems(true);
 
-        return ($type === null || \in_array($type, $items, true))
+        return !\array_key_exists($type, $items)
             ? new IOError('Invalid argument request', 500)
             : $items[$type]->stats;
     }
@@ -192,7 +192,7 @@ class Manager
      */
     public function clearImageCache(string $type, bool $isAjax = false): array
     {
-        if ($type !== null && \preg_match('/[a-z]*/', $type)) {
+        if (\preg_match('/[a-z]*/', $type)) {
             $instance = Media::getClass($type);
             /** @var IMedia $instance */
             $res = $instance::clearCache();

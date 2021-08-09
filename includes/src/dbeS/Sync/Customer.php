@@ -328,7 +328,7 @@ final class Customer extends AbstractSync
         $customerAttributes = [];
         if (GeneralObject::hasCount('tkundenattribut', $source)) {
             $members = \array_keys($source['tkundenattribut']);
-            \error_log(__METHOD__ . ' members:' . \print_r($members, true));
+            \error_log(__METHOD__ . ' memberss:' . \print_r($members, true));
             if ($members[0] == '0') {
                 foreach ($source['tkundenattribut'] as $data) {
                     $customerAttribute        = new stdClass();

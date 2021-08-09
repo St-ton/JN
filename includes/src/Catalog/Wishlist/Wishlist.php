@@ -296,11 +296,7 @@ class Wishlist
         }
         $count    = 0;
         $wishlist = new self($wishlistID);
-        if (!($wishlist->kWunschliste > 0
-            && \is_array($items)
-            && \count($wishlist->CWunschlistePos_arr) > 0
-            && \count($items) > 0)
-        ) {
+        if (!($wishlist->kWunschliste > 0 && \count($wishlist->CWunschlistePos_arr) > 0 && \count($items) > 0)) {
             return false;
         }
         foreach ($wishlist->CWunschlistePos_arr as $item) {
@@ -1291,15 +1287,15 @@ class Wishlist
     }
 
     /**
-     * @param array $wishlists
+     * @param array    $wishlists
      * @param Wishlist $currentWishlist
-     * @param $wishlistId
+     * @param int      $wishlistID
      * @return int
      */
-    public static function getInvisibleItemCount(array $wishlists, Wishlist $currentWishlist, int $wishlistId): int
+    public static function getInvisibleItemCount(array $wishlists, Wishlist $currentWishlist, int $wishlistID): int
     {
         foreach ($wishlists as $wishlist) {
-            if ($wishlist->kWunschliste === $wishlistId) {
+            if ($wishlist->kWunschliste === $wishlistID) {
                 return $wishlist->productCount - \count($currentWishlist->CWunschlistePos_arr);
             }
         }

@@ -166,7 +166,7 @@ class ConsoleIO extends OutputStyle
         $lines = \explode("\n", $message);
         if ($this->lastMessagesLength !== null) {
             foreach ($lines as $i => $line) {
-                $len = Helper::strlenWithoutDecoration($this->bufferedOutput->getFormatter(), $line);
+                $len = Helper::width(Helper::removeDecoration($this->bufferedOutput->getFormatter(), $line));
                 if ($this->lastMessagesLength > $len) {
                     $lines[$i] = $line . \str_repeat("\x20", $this->lastMessagesLength - $len);
                 }
@@ -178,7 +178,7 @@ class ConsoleIO extends OutputStyle
 
         $this->lastMessagesLength = 0;
         foreach ($lines as $line) {
-            $len = Helper::strlenWithoutDecoration($this->bufferedOutput->getFormatter(), $line);
+            $len = Helper::width(Helper::removeDecoration($this->bufferedOutput->getFormatter(), $line));
             if ($len > $this->lineLength) {
                 $line = \substr($line, 0, $this->lineLength);
             }
@@ -322,7 +322,7 @@ class ConsoleIO extends OutputStyle
                 $lines,
                 \explode(
                     \PHP_EOL,
-                    \wordwrap($message, $this->lineLength - Helper::strlen($prefix), \PHP_EOL, true)
+                    \wordwrap($message, $this->lineLength - Helper::width($prefix), \PHP_EOL, true)
                 )
             );
 
@@ -339,7 +339,7 @@ class ConsoleIO extends OutputStyle
         $length = \max(
             \array_map(
                 function ($line) {
-                    return Helper::strlenWithoutDecoration($this->getFormatter(), $line);
+                    return Helper::width(Helper::removeDecoration($this->getFormatter(), $line));
                 },
                 $lines
             )
@@ -349,7 +349,7 @@ class ConsoleIO extends OutputStyle
 
         foreach ($lines as &$line) {
             $line  = \sprintf('%s%s', $prefix, $line);
-            $line .= \str_repeat(' ', $length - Helper::strlenWithoutDecoration($this->getFormatter(), $line));
+            $line .= \str_repeat(' ', $length - Helper::width(Helper::removeDecoration($this->getFormatter(), $line)));
 
             if ($style) {
                 $line = \sprintf('<%s>%s</>', $style, $line);
@@ -375,7 +375,7 @@ class ConsoleIO extends OutputStyle
                 \sprintf('<comment>%s</comment>', $message),
                 \sprintf(
                     '<comment>%s</comment>',
-                    \str_repeat('=', Helper::strlenWithoutDecoration($this->getFormatter(), $message))
+                    \str_repeat('=', Helper::width(Helper::removeDecoration($this->getFormatter(), $message)))
                 ),
             ]
         );
@@ -396,7 +396,7 @@ class ConsoleIO extends OutputStyle
                 \sprintf('<comment>%s</comment>', $message),
                 \sprintf(
                     '<comment>%s</comment>',
-                    \str_repeat('-', Helper::strlenWithoutDecoration($this->getFormatter(), $message))
+                    \str_repeat('-', Helper::width(Helper::removeDecoration($this->getFormatter(), $message)))
                 ),
             ]
         );

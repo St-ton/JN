@@ -352,7 +352,7 @@ class BaseSearchQuery extends AbstractFilter
                 ->setURL($this->productFilter->getFilterURL()->getURL(
                     $additionalFilter->init((int)$searchFilter->kSuchanfrage)
                 ))
-                ->setClass((string)\rand(1, 10))
+                ->setClass((string)\random_int(1, 10))
                 ->setParam($this->getUrlParam())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
@@ -846,7 +846,7 @@ class BaseSearchQuery extends AbstractFilter
         $parts          = \explode(' ', $query);
         $query_stripped = \stripslashes($query);
         if ($query_stripped[0] !== '"' || $query_stripped[\mb_strlen($query_stripped) - 1] !== '"') {
-            foreach ($parts as $i => $searchString) {
+            foreach ($parts as $searchString) {
                 if (\mb_strpos($searchString, '+') !== false) {
                     $searchPart = \explode('+', $searchString);
                     foreach ($searchPart as $part) {

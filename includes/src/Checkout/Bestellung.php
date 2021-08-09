@@ -546,7 +546,7 @@ class Bestellung
             $languageID           = (int)$language->kSprache;
             $_SESSION['kSprache'] = $languageID;
         }
-        foreach ($this->Positionen as $i => $item) {
+        foreach ($this->Positionen as $item) {
             $item->kArtikel            = (int)$item->kArtikel;
             $item->nPosTyp             = (int)$item->nPosTyp;
             $item->kWarenkorbPos       = (int)$item->kWarenkorbPos;

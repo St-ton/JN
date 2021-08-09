@@ -1437,7 +1437,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function unserialize($serialized)
+    public function unserialize($data)
     {
     }
 }

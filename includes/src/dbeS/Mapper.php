@@ -687,7 +687,7 @@ final class Mapper
      */
     public function map($xmlTree, string $toMap): stdClass
     {
-        \error_log(__METHOD__ . ' xml tree type: ' . \get_class($xmlTree));
+        \error_log(__METHOD__ . ' xml tree typee: ' . \get_class($xmlTree));
         $mapped = new stdClass();
         foreach ($xmlTree->Attributes() as $key => $val) {
             $mapped->$key = (string)$val;

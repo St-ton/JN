@@ -57,8 +57,8 @@ switch ($action) {
 
     default:
         if (isset($_POST['title'], $_POST['url'])) {
-            $titles = $_POST['title'];
-            $urls   = $_POST['url'];
+            $titles = StringHandler::filterXSS($_POST['title']);
+            $urls   = StringHandler::filterXSS($_POST['url']);
 
             if (is_array($titles) && is_array($urls) && count($titles) === count($urls)) {
                 AdminFavorite::remove($kAdminlogin);

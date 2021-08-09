@@ -19,14 +19,14 @@ $hasPermission = $oAccount->permission('SETTINGS_SEARCH_VIEW', false, false);
 
 if (!$hasPermission) {
     $result = $response->buildError('Unauthorized', 401);
-    $response->makeResponse($result, $action);
+    $response->makeResponse($result);
     exit;
 }
 
 Shop::DB()->executeQuery('SET NAMES ' . str_replace('-', '', JTL_CHARSET), 3);
 
-$query   = isset($_GET['query']) ? $_GET['query'] : null;
-$suggest = isset($_GET['suggest']) ? true : false;
+$query   = isset($_GET['query']) ? StringHandler::filterXSS($_GET['query']) : null;
+$suggest = isset($_GET['suggest']);
 $data    = isset($_GET['data']) ? (bool)(int)$_GET['data'] : false;
 
 $settings       = bearbeiteEinstellungsSuche($query);

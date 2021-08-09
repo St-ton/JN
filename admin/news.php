@@ -121,8 +121,8 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                     $oNewsKommentar                 = new stdClass();
                     $oNewsKommentar->kNewsKommentar = $_POST['kNewsKommentar'];
                     $oNewsKommentar->kNews          = $_POST['kNews'];
-                    $oNewsKommentar->cName          = $_POST['cName'];
-                    $oNewsKommentar->cKommentar     = $_POST['cKommentar'];
+                    $oNewsKommentar->cName          = StringHandler::filterXSS($_POST['cName']);
+                    $oNewsKommentar->cKommentar     = StringHandler::filterXSS($_POST['cKommentar']);
                     $smarty->assign('oNewsKommentar', $oNewsKommentar);
                 }
             } else {
@@ -138,20 +138,21 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             }
         }
     } elseif (isset($_POST['news_speichern']) && (int)$_POST['news_speichern'] === 1) { // News speichern
-        $kKundengruppe_arr  = (isset($_POST['kKundengruppe']) ? $_POST['kKundengruppe'] : null);
-        $kNewsKategorie_arr = (isset($_POST['kNewsKategorie']) ? $_POST['kNewsKategorie'] : null);
-        $cBetreff           = $_POST['betreff'];
-        $cSeo               = $_POST['seo'];
-        $cText              = $_POST['text'];
-        $cVorschauText      = $_POST['cVorschauText'];
-        $nAktiv             = (int)$_POST['nAktiv'];
-        $cMetaTitle         = $_POST['cMetaTitle'];
-        $cMetaDescription   = $_POST['cMetaDescription'];
-        $cMetaKeywords      = $_POST['cMetaKeywords'];
-        $dGueltigVon        = $_POST['dGueltigVon'];
-        $cPreviewImage      = $_POST['previewImage'];
-        $kAuthor            = (int)$_POST['kAuthor'];
-        //$dGueltigBis      = $_POST['dGueltigBis'];
+        $postData           = StringHandler::filterXSS($_POST);
+        $kKundengruppe_arr  = (isset($postData['kKundengruppe']) ? $postData['kKundengruppe'] : null);
+        $kNewsKategorie_arr = (isset($postData['kNewsKategorie']) ? $postData['kNewsKategorie'] : null);
+        $cBetreff           = $postData['betreff'];
+        $cSeo               = $postData['seo'];
+        $cText              = $postData['text'];
+        $cVorschauText      = $postData['cVorschauText'];
+        $nAktiv             = (int)$postData['nAktiv'];
+        $cMetaTitle         = $postData['cMetaTitle'];
+        $cMetaDescription   = $postData['cMetaDescription'];
+        $cMetaKeywords      = $postData['cMetaKeywords'];
+        $dGueltigVon        = $postData['dGueltigVon'];
+        $cPreviewImage      = $postData['previewImage'];
+        $kAuthor            = (int)$postData['kAuthor'];
+        //$dGueltigBis      = $postData['dGueltigBis'];
 
         $cPlausiValue_arr = pruefeNewsPost($cBetreff, $cText, $kKundengruppe_arr, $kNewsKategorie_arr);
 
@@ -171,9 +172,9 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             $oNews->cPreviewImage    = $cPreviewImage;
 
             $nNewsOld = 0;
-            if (isset($_POST['news_edit_speichern']) && (int)$_POST['news_edit_speichern'] === 1) {
+            if (isset($postData['news_edit_speichern']) && (int)$postData['news_edit_speichern'] === 1) {
                 $nNewsOld = 1;
-                $kNews    = (int)$_POST['kNews'];
+                $kNews    = (int)$postData['kNews'];
                 $revision = new Revision();
                 $revision->addRevision('news', $kNews);
                 Shop::DB()->delete('tnews', 'kNews', $kNews);
@@ -334,7 +335,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                 }
             }
             $cHinweis .= 'Ihre News wurde erfolgreich gespeichert.<br />';
-            if (isset($_POST['continue']) && $_POST['continue'] === '1') {
+            if (isset($postData['continue']) && $postData['continue'] === '1') {
                 $step         = 'news_editieren';
                 $continueWith = (int)$kNews;
             } else {
@@ -343,12 +344,12 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             }
         } else {
             $step = 'news_editieren';
-            $smarty->assign('cPostVar_arr', $_POST)
+            $smarty->assign('cPostVar_arr', $postData)
                    ->assign('cPlausiValue_arr', $cPlausiValue_arr);
             $cFehler .= 'Fehler: Bitte f&uuml;llen Sie alle Pflichtfelder aus.<br />';
 
-            if (isset($_POST['kNews']) && is_numeric($_POST['kNews'])) {
-                $continueWith = (int)$_POST['kNews'];
+            if (isset($postData['kNews']) && is_numeric($postData['kNews'])) {
+                $continueWith = (int)$postData['kNews'];
             } else {
                 $oNewsKategorie_arr = holeNewskategorie($_SESSION['kSprache']);
                 $smarty->assign('oNewsKategorie_arr', $oNewsKategorie_arr)
@@ -407,26 +408,27 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         }
     } elseif (isset($_POST['news_kategorie_speichern']) && (int)$_POST['news_kategorie_speichern'] === 1) {
         //Newskategorie speichern
+        $postData         = StringHandler::filterXSS($_POST);
         $step             = 'news_uebersicht';
-        $cName            = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-        $cSeo             = $_POST['cSeo'];
-        $nSort            = (int)$_POST['nSort'];
-        $nAktiv           = (int)$_POST['nAktiv'];
-        $cMetaTitle       = htmlspecialchars($_POST['cMetaTitle'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-        $cMetaDescription = htmlspecialchars($_POST['cMetaDescription'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-        $cBeschreibung    = $_POST['cBeschreibung'];
-        $cPreviewImage    = $_POST['previewImage'];
-        $cPlausiValue_arr = pruefeNewsKategorie($_POST['cName'], isset($_POST['newskategorie_edit_speichern'])
-            ? (int)$_POST['newskategorie_edit_speichern']
+        $cName            = htmlspecialchars($postData['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $cSeo             = $postData['cSeo'];
+        $nSort            = (int)$postData['nSort'];
+        $nAktiv           = (int)$postData['nAktiv'];
+        $cMetaTitle       = htmlspecialchars($postData['cMetaTitle'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $cMetaDescription = htmlspecialchars($postData['cMetaDescription'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $cBeschreibung    = $postData['cBeschreibung'];
+        $cPreviewImage    = $postData['previewImage'];
+        $cPlausiValue_arr = pruefeNewsKategorie($postData['cName'], isset($postData['newskategorie_edit_speichern'])
+            ? (int)$postData['newskategorie_edit_speichern']
             : 0
         );
         if (is_array($cPlausiValue_arr) && count($cPlausiValue_arr) === 0) {
             $kNewsKategorie = 0;
 
-            if (isset($_POST['newskategorie_edit_speichern'], $_POST['kNewsKategorie']) &&
-                (int)$_POST['newskategorie_edit_speichern'] === 1 && (int)$_POST['kNewsKategorie'] > 0
+            if (isset($postData['newskategorie_edit_speichern'], $postData['kNewsKategorie']) &&
+                (int)$postData['newskategorie_edit_speichern'] === 1 && (int)$postData['kNewsKategorie'] > 0
             ) {
-                $kNewsKategorie = (int)$_POST['kNewsKategorie'];
+                $kNewsKategorie = (int)$postData['kNewsKategorie'];
                 Shop::DB()->delete('tnewskategorie', 'kNewsKategorie', $kNewsKategorie);
                 // tseo loeschen
                 Shop::DB()->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $kNewsKategorie]);
@@ -502,7 +504,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             }
 
             $smarty->assign('cPlausiValue_arr', $cPlausiValue_arr)
-                   ->assign('cPostVar_arr', $_POST);
+                   ->assign('cPostVar_arr', $postData);
         }
     } elseif (isset($_POST['news_kategorie_loeschen']) && (int)$_POST['news_kategorie_loeschen'] === 1) {
         // Newskategorie loeschen

@@ -11,16 +11,17 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 $cFehler  = '';
 $cHinweis = '';
 $cAction  = (isset($_REQUEST['action']) && validateToken()) ? $_REQUEST['action'] : 'view';
+$postData = StringHandler::filterXSS($_POST);
 
-if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && validateToken()) {
+if (!empty($postData) && (isset($postData['cName']) || isset($postData['kImageMap'])) && validateToken()) {
     $cPlausi_arr = [];
     $oBanner     = new ImageMap();
-    $kImageMap   = (isset($_POST['kImageMap']) ? (int)$_POST['kImageMap'] : null);
-    $cName       = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+    $kImageMap   = (isset($postData['kImageMap']) ? (int)$postData['kImageMap'] : null);
+    $cName       = htmlspecialchars($postData['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
     if (strlen($cName) === 0) {
         $cPlausi_arr['cName'] = 1;
     }
-    $cBannerPath = (isset($_POST['cPath']) && $_POST['cPath'] !== '' ? $_POST['cPath'] : null);
+    $cBannerPath = (isset($postData['cPath']) && $postData['cPath'] !== '' ? $postData['cPath'] : null);
     if (isset($_FILES['oFile'])
         && $_FILES['oFile']['error'] === UPLOAD_ERR_OK
         && move_uploaded_file($_FILES['oFile']['tmp_name'], PFAD_ROOT . PFAD_BILDER_BANNER . $_FILES['oFile']['name'])
@@ -32,17 +33,17 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
     }
     $vDatum = null;
     $bDatum = null;
-    if (isset($_POST['vDatum']) && $_POST['vDatum'] !== '') {
+    if (isset($postData['vDatum']) && $postData['vDatum'] !== '') {
         try {
-            $vDatum = new DateTime($_POST['vDatum']);
+            $vDatum = new DateTime($postData['vDatum']);
             $vDatum = $vDatum->format('Y-m-d H:i:s');
         } catch (Exception $e) {
             $cPlausi_arr['vDatum'] = 1;
         }
     }
-    if (isset($_POST['bDatum']) && $_POST['bDatum'] !== '') {
+    if (isset($postData['bDatum']) && $postData['bDatum'] !== '') {
         try {
-            $bDatum = new DateTime($_POST['bDatum']);
+            $bDatum = new DateTime($postData['bDatum']);
             $bDatum = $bDatum->format('Y-m-d H:i:s');
         } catch (Exception $e) {
             $cPlausi_arr['bDatum'] = 1;
@@ -61,17 +62,17 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             $oBanner->update($kImageMap, $cName, $cBannerPath, $vDatum, $bDatum);
         }
         // extensionpoint
-        $kSprache      = (int)$_POST['kSprache'];
-        $kKundengruppe = (int)$_POST['kKundengruppe'];
-        $nSeite        = (int)$_POST['nSeitenTyp'];
-        $cKey          = $_POST['cKey'];
+        $kSprache      = (int)$postData['kSprache'];
+        $kKundengruppe = (int)$postData['kKundengruppe'];
+        $nSeite        = (int)$postData['nSeitenTyp'];
+        $cKey          = $postData['cKey'];
         $cKeyValue     = '';
         $cValue        = '';
 
         if ($nSeite === PAGE_ARTIKEL) {
             $cKey      = 'kArtikel';
             $cKeyValue = 'article_key';
-            $cValue    = isset($_POST[$cKeyValue]) ? $_POST[$cKeyValue] : null;
+            $cValue    = isset($postData[$cKeyValue]) ? $postData[$cKeyValue] : null;
         } elseif ($nSeite === PAGE_ARTIKELLISTE) {
             // data mapping
             $aFilter_arr = [
@@ -82,11 +83,11 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
                 'cSuche'       => 'keycSuche'
             ];
             $cKeyValue = $aFilter_arr[$cKey];
-            $cValue    = isset($_POST[$cKeyValue]) ? $_POST[$cKeyValue] : null;
+            $cValue    = isset($postData[$cKeyValue]) ? $postData[$cKeyValue] : null;
         } elseif ($nSeite === PAGE_EIGENE) {
             $cKey      = 'kLink';
             $cKeyValue = 'link_key';
-            $cValue    = isset($_POST[$cKeyValue]) ? $_POST[$cKeyValue] : null;
+            $cValue    = isset($postData[$cKeyValue]) ? $postData[$cKeyValue] : null;
         }
 
         Shop::DB()->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
@@ -111,23 +112,23 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
     } else {
         $cFehler = 'Bitte f&uuml;llen Sie alle Pflichtfelder die mit einem * marktiert sind aus';
         $smarty->assign('cPlausi_arr', $cPlausi_arr)
-               ->assign('cName', isset($_POST['cName']) ? $_POST['cName'] : null)
-               ->assign('vDatum', isset($_POST['vDatum']) ? $_POST['vDatum'] : null)
-               ->assign('bDatum', isset($_POST['bDatum']) ? $_POST['bDatum'] : null)
-               ->assign('kSprache', isset($_POST['kSprache']) ? $_POST['kSprache'] : null)
-               ->assign('kKundengruppe', isset($_POST['kKundengruppe']) ? $_POST['kKundengruppe'] : null)
-               ->assign('nSeitenTyp', isset($_POST['nSeitenTyp']) ? $_POST['nSeitenTyp'] : null)
-               ->assign('cKey', isset($_POST['cKey']) ? $_POST['cKey'] : null)
-               ->assign('categories_key', isset($_POST['categories_key']) ? $_POST['categories_key'] : null)
-               ->assign('attribute_key', isset($_POST['attribute_key']) ? $_POST['attribute_key'] : null)
-               ->assign('tag_key', isset($_POST['tag_key']) ? $_POST['tag_key'] : null)
-               ->assign('manufacturer_key', isset($_POST['manufacturer_key']) ? $_POST['manufacturer_key'] : null)
-               ->assign('keycSuche', isset($_POST['keycSuche']) ? $_POST['keycSuche'] : null);
+               ->assign('cName', isset($postData['cName']) ? $postData['cName'] : null)
+               ->assign('vDatum', isset($postData['vDatum']) ? $postData['vDatum'] : null)
+               ->assign('bDatum', isset($postData['bDatum']) ? $postData['bDatum'] : null)
+               ->assign('kSprache', isset($postData['kSprache']) ? $postData['kSprache'] : null)
+               ->assign('kKundengruppe', isset($postData['kKundengruppe']) ? $postData['kKundengruppe'] : null)
+               ->assign('nSeitenTyp', isset($postData['nSeitenTyp']) ? $postData['nSeitenTyp'] : null)
+               ->assign('cKey', isset($postData['cKey']) ? $postData['cKey'] : null)
+               ->assign('categories_key', isset($postData['categories_key']) ? $postData['categories_key'] : null)
+               ->assign('attribute_key', isset($postData['attribute_key']) ? $postData['attribute_key'] : null)
+               ->assign('tag_key', isset($postData['tag_key']) ? $postData['tag_key'] : null)
+               ->assign('manufacturer_key', isset($postData['manufacturer_key']) ? $postData['manufacturer_key'] : null)
+               ->assign('keycSuche', isset($postData['keycSuche']) ? $postData['keycSuche'] : null);
     }
 }
 switch ($cAction) {
     case 'area':
-        $id      = (int)$_POST['id'];
+        $id      = (int)$postData['id'];
         $oBanner = holeBanner($id, false); //do not fill with complete article object to avoid utf8 errors on json_encode
         if (!is_object($oBanner)) {
             $cFehler = 'Banner wurde nicht gefunden';
@@ -146,9 +147,9 @@ switch ($cAction) {
         break;
 
     case 'edit':
-        $id = isset($_POST['id'])
-            ? (int)$_POST['id']
-            : (int)$_POST['kImageMap'];
+        $id = isset($postData['id'])
+            ? (int)$postData['id']
+            : (int)$postData['kImageMap'];
         $oBanner       = holeBanner($id);
         $oExtension    = holeExtension($id);
         $oSprache      = Sprache::getInstance(false);
@@ -181,7 +182,7 @@ switch ($cAction) {
         break;
 
     case 'delete':
-        $id  = (int)$_POST['id'];
+        $id  = (int)$postData['id'];
         $bOk = entferneBanner($id);
         if ($bOk) {
             $cHinweis = 'Erfolgreich entfernt.';

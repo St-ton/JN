@@ -67,10 +67,10 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
 ) {
     // Newsletterabonnenten hinzufuegen
     $oNewsletter               = new stdClass();
-    $oNewsletter->cAnrede      = $_POST['cAnrede'];
-    $oNewsletter->cVorname     = $_POST['cVorname'];
-    $oNewsletter->cNachname    = $_POST['cNachname'];
-    $oNewsletter->cEmail       = $_POST['cEmail'];
+    $oNewsletter->cAnrede      = StringHandler::filterXSS($_POST['cAnrede']);
+    $oNewsletter->cVorname     = StringHandler::filterXSS($_POST['cVorname']);
+    $oNewsletter->cNachname    = StringHandler::filterXSS($_POST['cNachname']);
+    $oNewsletter->cEmail       = StringHandler::filterXSS($_POST['cEmail']);
     $oNewsletter->kSprache     = (int)$_POST['kSprache'];
     $oNewsletter->dEingetragen = 'now()';
     $oNewsletter->cOptCode     = create_NewsletterCode('cOptCode', $oNewsletter->cEmail);
@@ -739,8 +739,8 @@ if ($step === 'uebersicht') {
     ;
 }
 $smarty->assign('Sprachen', gibAlleSprachen())
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
+       ->assign('hinweis', StringHandler::filterXSS($cHinweis))
+       ->assign('fehler', StringHandler::filterXSS($cFehler))
        ->assign('step', $step)
        ->assign('nRand', time())
        ->display('newsletter.tpl');

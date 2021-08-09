@@ -1065,7 +1065,7 @@ final class Shop
             $cRequestFile = '/' . ltrim($cPath, '/');
             if ($cRequestFile === '/index.php') {
                 // special case: /index.php shall be redirected to Shop-URL
-                header('Location: ' . Shop::getURL(), true, 301);
+                header('Location: ' . self::getURL(), true, 301);
                 exit;
             }
             if ($cRequestFile === '/') {
@@ -1078,7 +1078,7 @@ final class Shop
                         OR cKundengruppen IS NULL 
                         OR cKundengruppen = 'NULL' 
                         OR tlink.cKundengruppen = '')";
-                    $link = Shop::DB()->query("
+                    $link = self::DB()->query("
                         SELECT kLink 
                             FROM tlink
                             WHERE nLinkart = " . LINKTYP_STARTSEITE . $cKundengruppenSQL, 1
@@ -1905,11 +1905,11 @@ final class Shop
             $shopURL = defined('URL_SHOP_' . $code) ? constant('URL_SHOP_' . $code) : URL_SHOP;
             foreach ([0, 1] as $forceSSL) {
                 if ($sslStatus === 2) {
-                    $shopURL = \str_replace('http://', 'https://', $shopURL);
+                    $shopURL = str_replace('http://', 'https://', $shopURL);
                 } elseif ($sslStatus === 4 || ($sslStatus === 3 && $forceSSL)) {
-                    $shopURL = \str_replace('http://', 'https://', $shopURL);
+                    $shopURL = str_replace('http://', 'https://', $shopURL);
                 }
-                self::$url[$language->kSprache][$forceSSL] = \rtrim($shopURL, '/');
+                self::$url[$language->kSprache][$forceSSL] = rtrim($shopURL, '/');
             }
         }
     }
@@ -1930,14 +1930,14 @@ final class Shop
         if (isset(self::$url[$langID][$idx])) {
             return self::$url[$langID][$idx];
         }
-        $shopURL   = \URL_SHOP;
+        $shopURL   = URL_SHOP;
         $sslStatus = pruefeSSL();
         if ($sslStatus === 2) {
-            $shopURL = \str_replace('http://', 'https://', $shopURL);
+            $shopURL = str_replace('http://', 'https://', $shopURL);
         } elseif ($sslStatus === 4 || ($sslStatus === 3 && $bForceSSL)) {
-            $shopURL = \str_replace('http://', 'https://', $shopURL);
+            $shopURL = str_replace('http://', 'https://', $shopURL);
         }
-        $url                      = \rtrim($shopURL, '/');
+        $url                      = rtrim($shopURL, '/');
         self::$url[$langID][$idx] = $url;
 
         return $url;
@@ -1989,11 +1989,9 @@ final class Shop
             $xShopurl_arr['path'] = '/';
         }
 
-        $cPath = isset($xBaseurl_arr['path'])
+        return isset($xBaseurl_arr['path'])
             ? substr($xBaseurl_arr['path'], strlen($xShopurl_arr['path']))
             : '';
-
-        return $cPath;
     }
 
     /**

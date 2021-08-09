@@ -28,16 +28,13 @@ class MediaImage implements IMedia
      */
     public static function getRequest($type, $id, $mixed, $size, $number = 1)
     {
-        $name = Image::getCustomName($type, $mixed);
-        $req  = MediaImageRequest::create([
+        return MediaImageRequest::create([
             'id'     => $id,
             'type'   => $type,
             'number' => $number,
-            'name'   => $name,
+            'name'   => Image::getCustomName($type, $mixed),
             'size'   => $size,
         ]);
-
-        return $req;
     }
 
     /**
@@ -228,7 +225,7 @@ class MediaImage implements IMedia
             $matchFound = false;
 
             foreach ($imgNames as $imgName) {
-                $imgName->imgPath = MediaImage::getThumb(
+                $imgName->imgPath = self::getThumb(
                     $mediaReq->type, $mediaReq->id, $imgName, $mediaReq->size, $mediaReq->number
                 );
 
@@ -473,6 +470,11 @@ class MediaImage implements IMedia
         return MediaImageRequest::create($matches);
     }
 
+    /**
+     * @param $type
+     * @param $id
+     * @return mixed|void
+     */
     public static function getPrimaryNumber($type, $id)
     {
         $prepared = self::getImageStmt($type, $id);
@@ -483,7 +485,7 @@ class MediaImage implements IMedia
             }
         }
 
-        return;
+        return null;
     }
 
     /**

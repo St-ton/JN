@@ -1816,28 +1816,20 @@ class Artikel
         switch ($attributeName) {
             case ART_ATTRIBUT_STEUERTEXT:
                 return true;
-                break;
             case ART_ATTRIBUT_METATITLE:
                 return true;
-                break;
             case ART_ATTRIBUT_METADESCRIPTION:
                 return true;
-                break;
             case ART_ATTRIBUT_METAKEYWORDS:
                 return true;
-                break;
             case ART_ATTRIBUT_AMPELTEXT_GRUEN:
                 return true;
-                break;
             case ART_ATTRIBUT_AMPELTEXT_GELB:
                 return true;
-                break;
             case ART_ATTRIBUT_AMPELTEXT_ROT:
                 return true;
-                break;
             case ART_ATTRIBUT_SHORTNAME:
                 return true;
-                break;
         }
 
         return false;
@@ -4722,7 +4714,7 @@ class Artikel
     /**
      * Set stock text to parent if ampel_text_ attribute is set
      *
-     * @param string $stockTextType
+     * @param string $stockTextConstant
      * @param string $stockTextLangVar
      */
     private function setToParentStockText ($stockTextConstant, $stockTextLangVar)
@@ -6850,9 +6842,8 @@ class Artikel
             $optStr = StringHandler::remove_accent($optStr);
         }
         $optStr = strtolower($optStr);
-        $optStr = preg_replace('/[^-a-z0-9_]+/', '', $optStr);
 
-        return $optStr;
+        return preg_replace('/[^-a-z0-9_]+/', '', $optStr);
     }
 
 }

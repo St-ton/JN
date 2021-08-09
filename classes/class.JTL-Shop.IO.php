@@ -12,7 +12,7 @@ class IO
     /**
      * @var static
      */
-    protected static $instance = null;
+    protected static $instance;
 
     /**
      * @var array

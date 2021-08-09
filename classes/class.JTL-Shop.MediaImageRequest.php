@@ -20,7 +20,7 @@ class MediaImageRequest
     public $id;
 
     /**
-     * @var string|string
+     * @var string
      */
     public $name;
 

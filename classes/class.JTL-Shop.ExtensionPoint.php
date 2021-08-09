@@ -192,11 +192,9 @@ class ExtensionPoint
             return $GLOBALS['NaviFilter'];
         }
         $oNaviFilter                           = new stdClass();
-        $oNaviFilter->oSprache_arr             = new stdClass();
         $oNaviFilter->oSprache_arr             = $_SESSION['Sprachen'];
         $this->cParam_arr['MerkmalFilter_arr'] = setzeMerkmalFilter();
-        $oNaviFilter                           = Shop::buildNaviFilter($this->cParam_arr);
 
-        return $oNaviFilter;
+        return Shop::buildNaviFilter($this->cParam_arr);
     }
 }

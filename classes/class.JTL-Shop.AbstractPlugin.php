@@ -35,7 +35,7 @@ abstract class AbstractPlugin implements IPlugin
      */
     public function boot(EventDispatcher $dispatcher)
     {
-        $dispatcher->listen('backend.notification', function (\Notification $notify) use (&$dispatcher) {
+        $dispatcher->listen('backend.notification', function (Notification $notify) use (&$dispatcher) {
             $dispatcher->forget('backend.notification');
             if (count($this->notifications) > 0) {
                 foreach ($this->notifications as $n) {

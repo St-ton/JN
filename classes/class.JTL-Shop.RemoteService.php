@@ -20,6 +20,9 @@ class RemoteService
         }
     }
 
+    /**
+     * @return mixed
+     */
     public function getSubscription()
     {
         if (!isset($_SESSION['rs']['subscription'])) {
@@ -37,6 +40,9 @@ class RemoteService
         return $_SESSION['rs']['subscription'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getAvailableVersions()
     {
         if (!isset($_SESSION['rs']['versions'])) {
@@ -46,6 +52,9 @@ class RemoteService
         return $_SESSION['rs']['versions'];
     }
 
+    /**
+     * @return false|mixed
+     */
     public function getLatestVersion()
     {
         $nVersion = Shop::getVersion();
@@ -63,6 +72,9 @@ class RemoteService
         return end($oVersions);
     }
 
+    /**
+     * @return bool
+     */
     public function hasNewerVersion()
     {
         if (JTL_MINOR_VERSION === '#JTL_MINOR_VERSION#') {
@@ -78,6 +90,11 @@ class RemoteService
                 ((int)$oVersion->version == $nVersion && $oVersion->build > $nMinorVersion));
     }
 
+    /**
+     * @param string $uri
+     * @param null   $data
+     * @return mixed|null
+     */
     protected function call($uri, $data = null)
     {
         $uri = self::URI . '/' . ltrim($uri, '/');

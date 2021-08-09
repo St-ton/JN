@@ -35,7 +35,7 @@ class NewsJson
         if (count($oNews_arr) > 0) {
             $shopURL = Shop::getURL() . '/';
             foreach ($oNews_arr as $oNews) {
-                $oNewsItem = new NewsItem($oNews->cBetreff, $oNews->cText, $oNews->dGueltigVonJS, $shopURL . "{$oNews->cUrl}");
+                $oNewsItem = new NewsItem($oNews->cBetreff, $oNews->cText, $oNews->dGueltigVonJS, $shopURL . $oNews->cUrl);
 
                 if ($this->checkMedia($oNews->cVorschauText)) {
                     $oNewsItemAsset = new NewsItemAsset($oNews->cVorschauText);

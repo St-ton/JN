@@ -131,7 +131,7 @@ class Statistik
 
             $oDatumSQL = $this->baueDatumSQL('dZeit');
 
-            $oStatTMP_arr = Shop::DB()->query(
+            return Shop::DB()->query(
                 "SELECT * , sum( t.nCount ) AS nCount
                     FROM (
                         SELECT if(cReferer = '', 'direkter Einstieg', cReferer) AS cReferer, 
@@ -150,8 +150,6 @@ class Statistik
                     GROUP BY t.cReferer
                     ORDER BY nCount DESC", 2
             );
-
-            return $oStatTMP_arr;
         }
 
         return [];
@@ -171,7 +169,7 @@ class Statistik
 
             $oDatumSQL = $this->baueDatumSQL('dZeit');
 
-            $oStatTMP_arr = Shop::DB()->query(
+            return Shop::DB()->query(
                 "SELECT tbesucherbot.cUserAgent, SUM(t.nCount) AS nCount
                     FROM
                     (
@@ -190,8 +188,6 @@ class Statistik
                     " . ($nLimit > -1 ? "LIMIT " . (int)$nLimit : ""),
                 2
             );
-
-            return $oStatTMP_arr;
         }
 
         return [];
@@ -241,7 +237,8 @@ class Statistik
             $this->gibAnzeigeIntervall();
 
             $oDatumSQL    = $this->baueDatumSQL('dZeit');
-            $oStatTMP_arr = Shop::DB()->query(
+
+            return Shop::DB()->query(
                 "SELECT *, sum(t.nCount) AS nCount
                     FROM
                     (
@@ -259,8 +256,6 @@ class Statistik
                     GROUP BY t.cEinstiegsseite
                     ORDER BY nCount DESC", 2
             );
-
-            return $oStatTMP_arr;
         }
 
         return [];

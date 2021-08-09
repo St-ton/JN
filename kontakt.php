@@ -91,11 +91,11 @@ if (Form::checkSubject()) {
     $cCanonicalURL = $linkHelper->getStaticRoute('kontakt.php');
 
     $smarty->assign('step', $step)
-           ->assign('code', false)
-           ->assign('betreffs', $subjects)
-           ->assign('Vorgaben', Form::baueKontaktFormularVorgaben($step === 'nachricht versendet'))
-           ->assign('fehlendeAngaben', $missingData)
-           ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
+        ->assign('code', false)
+        ->assign('betreffs', $subjects)
+        ->assign('Vorgaben', Form::baueKontaktFormularVorgaben($step === 'nachricht versendet'))
+        ->assign('fehlendeAngaben', $missingData)
+        ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
 } else {
     Shop::Container()->getLogService()->error('Kein Kontaktbetreff vorhanden! Bitte im Backend unter ' .
         'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.');
@@ -104,7 +104,7 @@ if (Form::checkSubject()) {
 }
 
 $smarty->assign('Link', $link)
-       ->assign('Spezialcontent', $specialContent);
+    ->assign('Spezialcontent', $specialContent);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_KONTAKT_PAGE);

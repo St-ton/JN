@@ -173,17 +173,17 @@ if (($priceRangesCount = count($priceRanges)) > 0) {
 }
 
 $smarty->assign('NaviFilter', $NaviFilter)
-       ->assign('priceRangeMax', $priceRangeMax ?? 0)
-       ->assign('KategorieInhalt', $categoryContent)
-       ->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($params['nDarstellung']))
-       ->assign('oBestseller_arr', $bestsellers)
-       ->assign('oNaviSeite_arr', $pagination->getItemsCompat())
-       ->assign('filterPagination', $pagination)
-       ->assign('Suchergebnisse', $oSuchergebnisse)
-       ->assign('oNavigationsinfo', $oNavigationsinfo)
-       ->assign('priceRange', $NaviFilter->getPriceRangeFilter()->getValue())
-       ->assign('nMaxAnzahlArtikel', (int)($oSuchergebnisse->getProductCount() >=
-           (int)$conf['artikeluebersicht']['suche_max_treffer']));
+    ->assign('priceRangeMax', $priceRangeMax ?? 0)
+    ->assign('KategorieInhalt', $categoryContent)
+    ->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($params['nDarstellung']))
+    ->assign('oBestseller_arr', $bestsellers)
+    ->assign('oNaviSeite_arr', $pagination->getItemsCompat())
+    ->assign('filterPagination', $pagination)
+    ->assign('Suchergebnisse', $oSuchergebnisse)
+    ->assign('oNavigationsinfo', $oNavigationsinfo)
+    ->assign('priceRange', $NaviFilter->getPriceRangeFilter()->getValue())
+    ->assign('nMaxAnzahlArtikel', (int)($oSuchergebnisse->getProductCount() >=
+        (int)$conf['artikeluebersicht']['suche_max_treffer']));
 
 executeHook(HOOK_FILTER_PAGE);
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

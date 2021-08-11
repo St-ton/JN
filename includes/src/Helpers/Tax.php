@@ -39,9 +39,10 @@ class Tax
 
     /**
      * @param string|null $countryCode
-     * @since since 5.0.0
+     * @param bool $skipUpdateCart
+     * @since 5.0.0
      */
-    public static function setTaxRates($countryCode = null): void
+    public static function setTaxRates($countryCode = null, bool $skipUpdateCart = false): void
     {
         $_SESSION['Steuersatz'] = [];
         $billingCountryCode     = null;
@@ -170,7 +171,7 @@ class Tax
                 }
             }
         }
-        if (isset($_SESSION['Warenkorb']) && $_SESSION['Warenkorb'] instanceof Cart) {
+        if ($skipUpdateCart === false && isset($_SESSION['Warenkorb']) && $_SESSION['Warenkorb'] instanceof Cart) {
             Frontend::getCart()->setzePositionsPreise();
         }
     }

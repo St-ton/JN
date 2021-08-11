@@ -336,9 +336,10 @@
                                     <meta itemprop="logo" content="{$ShopLogoURL}">
                                     {link class="navbar-brand" href=$ShopHomeURL title=$Einstellungen.global.global_shopname}
                                     {if isset($ShopLogoURL)}
-                                        {image src=$ShopLogoURL
-                                        alt=$Einstellungen.global.global_shopname
-                                        id="shop-logo"
+                                        {image width=180 height=50 src=$ShopLogoURL
+                                            alt=$Einstellungen.global.global_shopname
+                                            id="shop-logo"
+                                            class="img-aspect-ratio"
                                         }
                                     {else}
                                         <span class="h1">{$Einstellungen.global.global_shopname}</span>

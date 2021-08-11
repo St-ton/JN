@@ -7,6 +7,7 @@ use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Text;
 use JTL\Plugin\Admin\Validation\ValidatorInterface;
+use JTL\Plugin\BootstrapperInterface;
 use JTL\Plugin\Helper;
 use JTL\Plugin\InstallCode;
 use JTL\Plugin\LegacyPluginLoader;
@@ -210,7 +211,28 @@ final class Installer
         $plugin->dInstalliert         = ($this->plugin !== null && $this->plugin->getID() > 0)
             ? $this->plugin->getMeta()->getDateInstalled()->format('Y-m-d H:i:s')
             : 'NOW()';
-        $plugin->kPlugin              = $this->db->insert('tplugin', $plugin);
+
+        $continue = true;
+        if ($this->plugin === null && $plugin->bBootstrap === 1 && $plugin->bExtension === 1) {
+            $plugin->kPlugin = 0;
+            $loader          = new PluginLoader($this->db, $cache);
+            if (($languageID = Shop::getLanguageID()) === 0) {
+                $languageID = Shop::Lang()->getDefaultLanguage()->kSprache;
+            }
+            $languageCode = Shop::Lang()->getIsoFromLangID($languageID)->cISO;
+            $instance     = $loader->loadFromObject($plugin, $languageCode);
+            $class        = \sprintf('Plugin\\%s\\%s', $plugin->cPluginID, 'Bootstrap');
+            if (\class_exists($class)) {
+                $bootstrapper = new $class($instance, $loader->getDB(), $loader->getCache());
+                if ($bootstrapper instanceof BootstrapperInterface) {
+                    $continue = $bootstrapper->preInstallCheck();
+                }
+            }
+        }
+        if ($continue === false) {
+            return InstallCode::CANCELED;
+        }
+        $plugin->kPlugin = $this->db->insert('tplugin', $plugin);
         $this->flushCache($baseNode);
         if ($plugin->kPlugin <= 0) {
             return InstallCode::WRONG_PARAM;

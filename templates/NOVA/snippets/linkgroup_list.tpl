@@ -20,7 +20,7 @@
                         {block name='snippets-linkgroup-list-links-dropdown'}
                             <li class="link-group-item nav-item nav-scrollbar-item dropdown dropdown-full{if $activeId == $li->getId()} active{/if}">
                                 {link href=$li->getURL() title=$li->getName() class="nav-link dropdown-toggle" target="_self"}
-                                    <span class="text-truncate">{$li->getName()}</span>
+                                    <span class="text-truncate nav-mobile-heading">{$li->getName()}</span>
                                 {/link}
                                 <div class="dropdown-menu">
                                     <div class="dropdown-body">

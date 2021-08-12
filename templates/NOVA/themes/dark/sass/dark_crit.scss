@@ -191,6 +191,9 @@ html {
       color: $primary;
     }
   }
+  .nav-mobile-heading {
+    background-color: $header-bg-color;
+  }
   .dropdown-menu.show a {
     color: $gray-dark;
   }

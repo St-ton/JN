@@ -31,6 +31,9 @@
                                                             square=false
                                                             srcSize='xs'
                                                             sizes='40px'
+                                                            width='40'
+                                                            height='40'
+                                                            class='img-aspect-ratio'
                                                             alt=$characteristicValue->cWert}
                                                     {else}
                                                         {badge variant="primary"}{$characteristicValue->cWert|escape:'html'}{/badge}

@@ -98,7 +98,7 @@ function pruefeUnregistriertBestellen($post): int
             $post['kLieferadresse'] = 0;
             $post['lieferdaten']    = 1;
             pruefeLieferdaten($post);
-            $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand;
+            $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand ?? $post['land'];
             Tax::setTaxRates();
         } elseif (isset($post['kLieferadresse']) && (int)$post['kLieferadresse'] > 0) {
             pruefeLieferdaten($post);

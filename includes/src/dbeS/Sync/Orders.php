@@ -2,7 +2,6 @@
 
 namespace JTL\dbeS\Sync;
 
-use DateTime;
 use JTL\Checkout\Adresse;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Lieferadresse;
@@ -17,6 +16,7 @@ use JTL\Mail\Mailer;
 use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Shop;
 use stdClass;
+use DateTime;
 
 /**
  * Class Orders
@@ -112,10 +112,22 @@ final class Orders extends AbstractSync
             if ($module) {
                 $module->cancelOrder($orderID, true);
             }
+            $customerId = (int)($this->db->getSingleObject(
+                'SELECT tbestellung.kKunde 
+                    FROM tbestellung
+                    INNER JOIN tkunde ON tbestellung.kKunde = tkunde.kKunde
+                    WHERE tbestellung.kBestellung = :oid
+                        AND tkunde.nRegistriert = 0',
+                ['oid' => $orderID]
+            )->kKunde ?? 0);
             $this->deleteOrder($orderID);
             // uploads (bestellungen)
             $this->db->delete('tuploadschema', ['kCustomID', 'nTyp'], [$orderID, 2]);
             $this->db->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$orderID, 2]);
+
+            if ($customerId > 0) {
+                (new Customer($customerId))->deleteAccount(Journal::ISSUER_TYPE_DBES, $orderID);
+            }
         }
     }
 
@@ -798,15 +810,7 @@ final class Orders extends AbstractSync
      */
     private function deleteOrder(int $orderID): void
     {
-        $customerID = (int)($this->db->getSingleObject(
-            'SELECT tbestellung.kKunde 
-                    FROM tbestellung
-                    INNER JOIN tkunde ON tbestellung.kKunde = tkunde.kKunde
-                    WHERE tbestellung.kBestellung = :oid
-                        AND tkunde.nRegistriert = 0',
-            ['oid' => $orderID]
-        )->kKunde ?? 0);
-        $cartID     = (int)($this->db->select(
+        $cartID = (int)($this->db->select(
             'tbestellung',
             'kBestellung',
             $orderID,
@@ -839,9 +843,6 @@ final class Orders extends AbstractSync
                 );
             }
         }
-        if ($customerID > 0) {
-            (new Customer($customerID))->deleteAccount(Journal::ISSUER_TYPE_DBES, $orderID);
-        }
     }
 
     /**
@@ -865,13 +866,21 @@ final class Orders extends AbstractSync
                     $orderAttributeOld->kBestellattribut,
                     (object)['cValue' => $orderAttribute->value]
                 );
-                $updated[] = $orderAttributeOld->kBestellattribut;
-            } else {
-                $updated[] = $this->db->insert('tbestellattribut', (object)[
-                    'kBestellung' => $orderID,
-                    'cName'       => $orderAttribute->key,
-                    'cValue'      => $orderAttribute->value,
-                ]);
+                if (isset($orderAttributeOld->kBestellattribut)) {
+                    $this->db->update(
+                        'tbestellattribut',
+                        'kBestellattribut',
+                        (int)$orderAttributeOld->kBestellattribut,
+                        (object)['cValue' => $orderAttribute->value]
+                    );
+                    $updated[] = (int)$orderAttributeOld->kBestellattribut;
+                } else {
+                    $updated[] = $this->db->insert('tbestellattribut', (object)[
+                        'kBestellung' => $orderID,
+                        'cName'       => $orderAttribute->key,
+                        'cValue'      => $orderAttribute->value,
+                    ]);
+                }
             }
         }
 

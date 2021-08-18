@@ -12,6 +12,7 @@ if (PHP_VERSION_ID < 70300) {
 }
 
 $protocol   = (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || (int)$_SERVER['HTTPS'] === 1))
+    || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
     ? 'https://'
     : 'http://';
 $port       = '';

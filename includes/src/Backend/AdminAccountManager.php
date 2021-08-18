@@ -14,6 +14,7 @@ use JTL\Media\Image;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use JTL\TwoFA\UserData;
 use stdClass;
 use function Functional\pluck;
 use function Functional\reindex;
@@ -462,6 +463,7 @@ class AdminAccountManager
         return 'index_redirect';
     }
 
+
     /**
      * @return string
      * @throws Exception
@@ -474,17 +476,20 @@ class AdminAccountManager
         $qrCode      = '';
         $knownSecret = '';
         if ($adminID !== null) {
-            $twoFA = new TwoFA($this->db);
-            $twoFA->setUserByID($adminID);
-
+            $twoFA    = new TwoFA($this->db);
+            $userData = new UserData($adminID);
+            $data     = $this->db->select('tadminlogin', 'kAdminlogin', $adminID);
+            if ($data !== null) {
+                $userData->setName($data->cLogin);
+                $userData->setUse2FA((bool)$data->b2FAauth);
+                $userData->setSecret($data->c2FAauthSecret);
+            }
+            $twoFA->setUserData($userData);
             if ($twoFA->is2FAauthSecretExist() === true) {
                 $qrCode      = $twoFA->getQRcode();
                 $knownSecret = $twoFA->getSecret();
             }
         }
-        $this->smarty->assign('QRcodeString', $qrCode)
-            ->assign('cKnownSecret', $knownSecret);
-
         if (isset($_POST['save'])) {
             $errors              = [];
             $tmpAcc              = new stdClass();
@@ -656,7 +661,9 @@ class AdminAccountManager
             $extAttribs = [];
         }
 
-        $this->smarty->assign('attribValues', $extAttribs);
+        $this->smarty->assign('QRcodeString', $qrCode)
+            ->assign('cKnownSecret', $knownSecret)
+            ->assign('attribValues', $extAttribs);
 
         $extContent = '';
         \executeHook(\HOOK_BACKEND_ACCOUNT_PREPARE_EDIT, [
@@ -888,7 +895,7 @@ class AdminAccountManager
     /**
      * @param string $tab
      */
-    public function benutzerverwaltungRedirect($tab = ''): void
+    public function benutzerverwaltungRedirect(string $tab = ''): void
     {
         if ($this->getNotice() !== '') {
             $_SESSION['benutzerverwaltung.notice'] = $this->getNotice();

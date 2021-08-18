@@ -4,7 +4,7 @@ use JTL\Backend\AdminIO;
 use JTL\Backend\Settings\Manager as SettingsManager;
 use JTL\Backend\JSONAPI;
 use JTL\Backend\Notification;
-use JTL\Backend\TwoFA;
+use JTL\TwoFA\TwoFA;
 use JTL\Backend\Wizard\WizardIO;
 use JTL\Export\SyntaxChecker as ExportSyntaxChecker;
 use JTL\Helpers\Form;
@@ -70,8 +70,8 @@ try {
        ->register('getCurrencyConversion', 'getCurrencyConversionIO')
        ->register('setCurrencyConversionTooltip', 'setCurrencyConversionTooltipIO')
        ->register('getNotifyDropIO')
-       ->register('getNewTwoFA', [TwoFA::class, 'getNewTwoFA'])
-       ->register('genTwoFAEmergencyCodes', [TwoFA::class, 'genTwoFAEmergencyCodes'])
+       ->register('getNewTwoFA', [$oAccount, 'getNewTwoFA'])
+       ->register('genTwoFAEmergencyCodes', [$oAccount, 'genTwoFAEmergencyCodes'])
        ->register('setWidgetPosition', 'setWidgetPosition', $dashboardInc, 'DASHBOARD_VIEW')
        ->register('closeWidget', 'closeWidget', $dashboardInc, 'DASHBOARD_VIEW')
        ->register('addWidget', 'addWidget', $dashboardInc, 'DASHBOARD_VIEW')

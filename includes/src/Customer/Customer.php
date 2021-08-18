@@ -10,13 +10,14 @@ use JTL\GeneralDataProtection\Journal;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
-use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Shop;
 use JTL\Shopsetting;
+use JTL\TwoFA\TwoFA;
+use JTL\TwoFA\UserData;
 use stdClass;
 
 /**
@@ -36,6 +37,10 @@ class Customer
     public const ERROR_CAPTCHA = 4;
 
     public const ERROR_INVALID_DATA = 0;
+
+    public const ERROR_DO_TWO_FA = 5;
+
+    public const ERROR_INVALID_TWO_FA = 6;
 
     /**
      * @var int
@@ -248,6 +253,21 @@ class Customer
     public $nLoginversuche = 0;
 
     /**
+     * @var int
+     */
+    private $b2FAauth = 0;
+
+    /**
+     * @var string
+     */
+    private $c2FAauthSecret = '';
+
+    /**
+     * @var bool
+     */
+    private $twoFaAuthenticated = false;
+
+    /**
      * @var array
      */
     public static $mapping = [
@@ -273,25 +293,19 @@ class Customer
      */
     public function holRegKundeViaEmail(string $mail): ?Customer
     {
-        if ($mail !== '') {
-            $data = Shop::Container()->getDB()->select(
-                'tkunde',
-                'cMail',
-                Text::filterXSS($mail),
-                null,
-                null,
-                null,
-                null,
-                false,
-                'kKunde'
-            );
+        $data = Shop::Container()->getDB()->select(
+            'tkunde',
+            'cMail',
+            $mail,
+            null,
+            null,
+            null,
+            null,
+            false,
+            'kKunde'
+        );
 
-            if ($data !== null && isset($data->kKunde) && $data->kKunde > 0) {
-                return new self($data->kKunde);
-            }
-        }
-
-        return null;
+        return $data !== null && $data->kKunde > 0 ? new self($data->kKunde) : null;
     }
 
     /**
@@ -310,7 +324,7 @@ class Customer
             $attempts = Shop::Container()->getDB()->select(
                 'tkunde',
                 'cMail',
-                Text::filterXSS($name),
+                $name,
                 'nRegistriert',
                 1,
                 null,
@@ -322,7 +336,7 @@ class Customer
                 && isset($attempts->nLoginversuche)
                 && (int)$attempts->nLoginversuche >= (int)$conf['kunden']['kundenlogin_max_loginversuche']
             ) {
-                if (Form::validateCaptcha($_POST)) {
+                if (Form::validateCaptcha($post)) {
                     return true;
                 }
 
@@ -334,17 +348,28 @@ class Customer
     }
 
     /**
-     * @param string $username
-     * @param string $password
-     * @return int 1 = Alles O.K., 2 = Kunde ist gesperrt
+     * @param string      $username
+     * @param string      $password
+     * @param string|null $twoFaCode
+     * @return int
      * @throws Exception
      */
-    public function holLoginKunde(string $username, string $password): int
+    public function holLoginKunde(string $username, string $password, ?string $twoFaCode = null): int
     {
         if ($username === '' || $password === '') {
             return self::ERROR_INVALID_DATA;
         }
         $user = $this->checkCredentials($username, $password);
+        if ($user->b2FAauth === 1) {
+            if ($twoFaCode === null) {
+                return self::ERROR_DO_TWO_FA;
+            }
+            $userData = new UserData($user->kKunde, $user->cMail, $user->c2FAauthSecret, (bool)$user->b2FAauth);
+            if ($this->doTwoFA($userData, $twoFaCode) === false) {
+                return self::ERROR_INVALID_TWO_FA;
+            }
+        }
+
         if (($state = $this->validateCustomerData($user)) !== self::OK) {
             return $state;
         }
@@ -366,6 +391,21 @@ class Customer
         }
 
         return self::ERROR_INVALID_DATA;
+    }
+
+
+    /**
+     * @param UserData $userData
+     * @param string   $code
+     * @return bool
+     */
+    public function doTwoFA(UserData $userData, string $code): bool
+    {
+        $twoFA = new TwoFA(Shop::Container()->getDB());
+        $twoFA->setUserData($userData);
+        $this->twoFaAuthenticated = $twoFA->isCodeValid($code);
+
+        return $this->twoFaAuthenticated;
     }
 
     /**
@@ -400,8 +440,7 @@ class Customer
         $this->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($this->cLand);
         // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
         if (isset($user->cPasswort) && $passwordService->needsRehash($user->cPasswort)) {
-            $upd            = new stdClass();
-            $upd->cPasswort = $passwordService->hash($user->cPasswort);
+            $upd = (object)['cPasswort' => $passwordService->hash($user->cPasswort)];
             Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$user->kKunde, $upd);
         }
     }
@@ -414,6 +453,7 @@ class Customer
      */
     public function checkCredentials(string $user, string $pass)
     {
+        $update          = false;
         $user            = \mb_substr($user, 0, 255);
         $pass            = \mb_substr($pass, 0, 255);
         $passwordService = Shop::Container()->getPasswordService();
@@ -433,6 +473,7 @@ class Customer
             return false;
         }
         $customer->kKunde                = (int)$customer->kKunde;
+        $customer->b2FAauth              = (int)($customer->b2FAauth ?? 0);
         $customer->kKundengruppe         = (int)$customer->kKundengruppe;
         $customer->kSprache              = (int)$customer->kSprache;
         $customer->nLoginversuche        = (int)$customer->nLoginversuche;
@@ -447,12 +488,10 @@ class Customer
 
             return false;
         }
-        $update = false;
         if ($passwordService->needsRehash($customer->cPasswort)) {
             $customer->cPasswort = $passwordService->hash($pass);
             $update              = true;
         }
-
         if ($customer->nLoginversuche > 0) {
             $customer->nLoginversuche = 0;
             $update                   = true;
@@ -484,7 +523,7 @@ class Customer
             return $this;
         }
         $data = Shop::Container()->getDB()->select('tkunde', 'kKunde', $id);
-        if ($data !== null && isset($data->kKunde) && $data->kKunde > 0) {
+        if ($data !== null && $data->kKunde > 0) {
             $members = \array_keys(\get_object_vars($data));
             foreach ($members as $member) {
                 $this->$member = $data->$member;
@@ -639,9 +678,12 @@ class Customer
         if ($obj->dErstellt === null || $obj->dErstellt === '') {
             $obj->dErstellt = '_DBNULL_';
         }
-        $obj->cLand       = $this->pruefeLandISO($obj->cLand);
-        $obj->dVeraendert = 'NOW()';
-        $return           = Shop::Container()->getDB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
+        $obj->cLand          = $this->pruefeLandISO($obj->cLand);
+        $obj->dVeraendert    = 'NOW()';
+        $obj->b2FAauth       = $this->b2FAauth;
+        $obj->c2FAauthSecret = $this->c2FAauthSecret;
+
+        $return = Shop::Container()->getDB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
 
         if ($obj->dGeburtstag === '_DBNULL_') {
             $obj->dGeburtstag = '';
@@ -1213,5 +1255,45 @@ class Customer
         }
 
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getB2FAauth(): int
+    {
+        return $this->b2FAauth;
+    }
+
+    /**
+     * @param int $b2FAauth
+     */
+    public function setB2FAauth(int $b2FAauth): void
+    {
+        $this->b2FAauth = $b2FAauth;
+    }
+
+    /**
+     * @return string
+     */
+    public function getC2FAauthSecret(): string
+    {
+        return $this->c2FAauthSecret;
+    }
+
+    /**
+     * @param string $c2FAauthSecret
+     */
+    public function setC2FAauthSecret(string $c2FAauthSecret): void
+    {
+        $this->c2FAauthSecret = $c2FAauthSecret;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsTwoFaAuthenticated(): bool
+    {
+        return $this->twoFaAuthenticated;
     }
 }

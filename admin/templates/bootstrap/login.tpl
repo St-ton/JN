@@ -58,29 +58,24 @@
                                         var sec = date.getSeconds();
                                         setInterval(function () {
                                             sec++;
-
                                             /* variant 1: vertical, shrinking bar right-side of the code-box */
                                             var len = sec;
-                                            if(len < 30) {
+                                            if (len < 30) {
                                                 $("[id$=counterbar]").css('height', (30-len) );
                                             } else {
                                                 $("[id$=counterbar]").css('height', (30-(len-30)) );
                                             }
-
                                             /* variant 2: horizontal, shrinking bar below the code-box */
                                             var d = (sec * distance);
-                                            if(len < 30) {
-                                                $("[id$=cb]").animate({width:Math.round((218-d))+'px'},900,'linear');
+                                            if (len < 30) {
+                                                $("[id$=cb]").animate({width:Math.round((218-d))+'px'}, 900, 'linear');
                                             } else {
-                                                $("[id$=cb]").animate({width:Math.round((218-(d-218)))+'px'},900,'linear');
+                                                $("[id$=cb]").animate({width:Math.round((218-(d-218)))+'px'}, 900, 'linear');
                                             }
-
-
                                             if (sec === 60) {
                                                 sec = 0;
                                             }
                                         }, 1000);
-
                                     });
 
                                     function switchUser() {

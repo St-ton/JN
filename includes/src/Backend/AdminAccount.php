@@ -16,6 +16,9 @@ use JTL\Model\AuthLogEntry;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Backend;
 use JTL\Shop;
+use JTL\TwoFA\TwoFA;
+use JTL\TwoFA\TwoFAEmergency;
+use JTL\TwoFA\UserData;
 use Psr\Log\LoggerInterface;
 use stdClass;
 use function Functional\reindex;
@@ -512,16 +515,70 @@ class AdminAccount
     public function doTwoFA(): bool
     {
         if (isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
-            $twoFA = new TwoFA($this->db);
-            $twoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
-            $valid                                 = $twoFA->isCodeValid($_POST['TwoFA_code'] ?? '');
-            $this->twoFaAuthenticated              = $valid;
-            $_SESSION['AdminAccount']->TwoFA_valid = $valid;
+            $twoFA    = new TwoFA($this->db);
+            $userData = $this->getTwoFaUserData($_SESSION['AdminAccount']->cLogin);
+            $twoFA->setUserData($userData);
 
-            return $valid;
+            $this->twoFaAuthenticated              = $twoFA->isCodeValid($_POST['TwoFA_code'] ?? '');
+            $_SESSION['AdminAccount']->TwoFA_valid = $this->twoFaAuthenticated;
+
+            return $this->twoFaAuthenticated;
         }
 
         return false;
+    }
+
+    /**
+     * @param string $userName
+     * @return UserData
+     */
+    private function getTwoFaUserData(string $userName): UserData
+    {
+        $userData = new UserData();
+        $userData->setName($userName);
+        if (($data = $this->db->select('tadminlogin', 'cLogin', $userName)) !== null) {
+            $userData->setID((int)$data->kAdminlogin);
+            $userData->setSecret($data->c2FAauthSecret);
+            $userData->setUse2FA((bool)$data->b2FAauth);
+        }
+        return $userData;
+    }
+
+    /**
+     * @param string $userName
+     * @return string
+     */
+    public function getNewTwoFA(string $userName): string
+    {
+        $twoFA = new TwoFA($this->db);
+        $twoFA->setUserData($this->getTwoFaUserData($userName));
+        $twoFA->createNewSecret();
+
+        $data           = new stdClass();
+        $data->szSecret = $twoFA->getSecret();
+        $data->szQRcode = $twoFA->getQRcode();
+
+        return \json_encode($data);
+    }
+
+    /**
+     * @param string $userName
+     * @return stdClass
+     */
+    public function genTwoFAEmergencyCodes(string $userName): stdClass
+    {
+        $twoFA = new TwoFA($this->db);
+        $twoFA->setUserData($this->getTwoFaUserData($userName));
+
+        $emergencyCodes = new TwoFAEmergency($this->db);
+        $emergencyCodes->removeExistingCodes($twoFA->getUserTuple());
+
+        $data            = new stdClass();
+        $data->loginName = $twoFA->getUserTuple()->getName();
+        $data->shopName  = $twoFA->getShopName();
+        $data->vCodes    = $emergencyCodes->createNewCodes($twoFA->getUserTuple());
+
+        return $data;
     }
 
     /**

@@ -33,6 +33,9 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
+use JTL\TwoFA\TwoFA;
+use JTL\TwoFA\TwoFAEmergency;
+use JTL\TwoFA\UserData;
 use SmartyException;
 use stdClass;
 use function Functional\filter;
@@ -70,26 +73,95 @@ class IOMethods
     public function registerMethods(): IO
     {
         return $this->io->register('suggestions', [$this, 'suggestions'])
-                        ->register('pushToBasket', [$this, 'pushToBasket'])
-                        ->register('pushToComparelist', [$this, 'pushToComparelist'])
-                        ->register('removeFromComparelist', [$this, 'removeFromComparelist'])
-                        ->register('pushToWishlist', [$this, 'pushToWishlist'])
-                        ->register('removeFromWishlist', [$this, 'removeFromWishlist'])
-                        ->register('updateWishlistDropdown', [$this, 'updateWishlistDropdown'])
-                        ->register('checkDependencies', [$this, 'checkDependencies'])
-                        ->register('checkVarkombiDependencies', [$this, 'checkVarkombiDependencies'])
-                        ->register('generateToken', [$this, 'generateToken'])
-                        ->register('buildConfiguration', [$this, 'buildConfiguration'])
-                        ->register('getBasketItems', [$this, 'getBasketItems'])
-                        ->register('getCategoryMenu', [$this, 'getCategoryMenu'])
-                        ->register('getRegionsByCountry', [$this, 'getRegionsByCountry'])
-                        ->register('checkDeliveryCountry', [$this, 'checkDeliveryCountry'])
-                        ->register('setSelectionWizardAnswers', [$this, 'setSelectionWizardAnswers'])
-                        ->register('getCitiesByZip', [$this, 'getCitiesByZip'])
-                        ->register('getOpcDraftsHtml', [$this, 'getOpcDraftsHtml'])
-                        ->register('setWishlistVisibility', [$this, 'setWishlistVisibility'])
-                        ->register('updateWishlistItem', [$this, 'updateWishlistItem'])
-                        ->register('updateReviewHelpful', [$this, 'updateReviewHelpful']);
+            ->register('genTwoFAEmergencyCodes', [$this, 'genTwoFAEmergencyCodes'])
+            ->register('getNewTwoFA', [$this, 'getNewTwoFA'])
+            ->register('pushToBasket', [$this, 'pushToBasket'])
+            ->register('pushToComparelist', [$this, 'pushToComparelist'])
+            ->register('removeFromComparelist', [$this, 'removeFromComparelist'])
+            ->register('pushToWishlist', [$this, 'pushToWishlist'])
+            ->register('removeFromWishlist', [$this, 'removeFromWishlist'])
+            ->register('updateWishlistDropdown', [$this, 'updateWishlistDropdown'])
+            ->register('checkDependencies', [$this, 'checkDependencies'])
+            ->register('checkVarkombiDependencies', [$this, 'checkVarkombiDependencies'])
+            ->register('generateToken', [$this, 'generateToken'])
+            ->register('buildConfiguration', [$this, 'buildConfiguration'])
+            ->register('getBasketItems', [$this, 'getBasketItems'])
+            ->register('getCategoryMenu', [$this, 'getCategoryMenu'])
+            ->register('getRegionsByCountry', [$this, 'getRegionsByCountry'])
+            ->register('checkDeliveryCountry', [$this, 'checkDeliveryCountry'])
+            ->register('setSelectionWizardAnswers', [$this, 'setSelectionWizardAnswers'])
+            ->register('getCitiesByZip', [$this, 'getCitiesByZip'])
+            ->register('getOpcDraftsHtml', [$this, 'getOpcDraftsHtml'])
+            ->register('setWishlistVisibility', [$this, 'setWishlistVisibility'])
+            ->register('updateWishlistItem', [$this, 'updateWishlistItem'])
+            ->register('updateReviewHelpful', [$this, 'updateReviewHelpful']);
+    }
+
+    /**
+     * @param int $userID
+     * @return IOResponse
+     */
+    public function getNewTwoFA(int $userID): IOResponse
+    {
+        $customer = Frontend::getCustomer();
+        $response = new IOResponse();
+        $response->assignVar('response', null);
+        if ($userID !== $customer->getID()) {
+            return $response;
+        }
+
+        $twoFA    = new TwoFA(Shop::Container()->getDB());
+        $userData = new UserData(
+            $customer->getID(),
+            $customer->cMail,
+            $customer->getC2FAauthSecret(),
+            (bool)$customer->getB2FAauth()
+        );
+        $twoFA->setUserData($userData);
+
+        $data           = new stdClass();
+        $data->szSecret = $twoFA->createNewSecret()->getSecret();
+        $data->szQRcode = $twoFA->getQRcode();
+        $response->assignVar('response', $data);
+
+        return $response;
+    }
+
+    /**
+     * @param int $userID
+     * @return IOResponse
+     * @throws Exception
+     */
+    public function genTwoFAEmergencyCodes(int $userID): IOResponse
+    {
+        $customer = Frontend::getCustomer();
+        $response = new IOResponse();
+        $response->assignVar('response', null);
+        if ($userID !== $customer->getID()) {
+            return $response;
+        }
+        $data     = new stdClass();
+        $db       = Shop::Container()->getDB();
+        $twoFA    = new TwoFA($db);
+        $userData = new UserData(
+            $customer->getID(),
+            $customer->cMail,
+            $customer->getC2FAauthSecret(),
+            (bool)$customer->getB2FAauth()
+        );
+        $twoFA->setUserData($userData);
+
+        $data->loginName = $twoFA->getUserTuple()->getName();
+        $data->shopName  = $twoFA->getShopName();
+
+        $emergencyCodes = new TwoFAEmergency($db);
+        $emergencyCodes->removeExistingCodes($twoFA->getUserTuple());
+
+        $data->vCodes = $emergencyCodes->createNewCodes($twoFA->getUserTuple());
+
+        $response->assignVar('response', $data);
+
+        return $response;
     }
 
     /**

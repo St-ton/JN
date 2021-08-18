@@ -148,6 +148,20 @@
                                             </td>
                                         </tr>
                                     {/block}
+                                    {block name='account-my-account-billing-address-twofa'}
+                                        <tr>
+                                            <td class="min-w-sm">
+                                                {lang key='twoFactorAuthentication' section='account data'}
+                                            </td>
+                                            <td class="text-right-util">
+                                                {link href="{get_static_route id='jtl.php' params=['twofa' => 1]}"
+                                                    aria=["label"=>{lang key='manageTwoFA' section='account data'}]
+                                                }
+                                                    <span class="fas fa-pencil-alt"></span>
+                                                {/link}
+                                            </td>
+                                        </tr>
+                                    {/block}
                                 </table>
                             </div>
                         {/block}

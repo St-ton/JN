@@ -36,6 +36,8 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
+use JTL\TwoFA\TwoFA;
+use JTL\TwoFA\UserData;
 use stdClass;
 use function Functional\some;
 
@@ -95,6 +97,7 @@ class AccountController
      */
     public function handleRequest(): void
     {
+        $this->smarty->assign('showTwoFAForm', false);
         Shop::setPageType(\PAGE_MEINKONTO);
         $customer   = Frontend::getCustomer();
         $customerID = $customer->getID();
@@ -124,6 +127,9 @@ class AccountController
                 'changepasswordSuccess'
             );
         }
+        if (isset($_POST['TwoFA_code']) && Request::postInt('twofa') === 1) {
+            $customerID = $this->doTwoFa($_POST['TwoFA_code'])->getID();
+        }
         if (isset($_POST['email'], $_POST['passwort']) && Request::postInt('login') === 1) {
             $customerID = $this->login($_POST['email'], $_POST['passwort'])->getID();
         }
@@ -148,9 +154,29 @@ class AccountController
             Shop::Container()->getLogService()->error($e->getMessage());
             $link = null;
         }
+
+        $qrCode      = '';
+        $knownSecret = '';
+        if ($customerID > 0) {
+            $twoFA    = new TwoFA($this->db);
+            $userData = new UserData();
+            $userData->setID($customerID);
+            $userData->setName($customer->cMail);
+            $userData->setUse2FA((bool)$customer->getB2FAauth());
+            $userData->setSecret($customer->getC2FAauthSecret());
+            $twoFA->setUserData($userData);
+            if ($twoFA->is2FAauthSecretExist() === true) {
+                $qrCode      = $twoFA->getQRcode();
+                $knownSecret = $twoFA->getSecret();
+            }
+        }
+        $this->smarty->assign('QRcodeString', $qrCode)
+            ->assign('cKnownSecret', $knownSecret);
+
+
         $this->smarty->assign('alertNote', $alertNote)
-                     ->assign('step', $step)
-                     ->assign('Link', $link);
+            ->assign('step', $step)
+            ->assign('Link', $link);
     }
 
     /**
@@ -234,9 +260,15 @@ class AccountController
         }
         if (Request::getInt('pass') === 1) {
             $step = 'passwort aendern';
+        } elseif (Request::getInt('twofa') === 1) {
+            $step = 'manageTwoFA';
         }
         if ($valid && Request::postInt('edit') === 1) {
             $this->changeCustomerData();
+        }
+        if ($valid && Request::postInt('manage_two_fa') === 1 && Request::postInt('twoFACustomerID') > 0) {
+            $this->saveTwoFA(Request::postInt('twoFACustomerID'));
+            $step = 'manageTwoFA';
         }
         if ($valid && Request::postInt('pass_aendern') > 0) {
             $step = $this->changePassword($customerID);
@@ -308,11 +340,25 @@ class AccountController
     }
 
     /**
-     * @param string $userLogin
-     * @param string $passLogin
+     * @param string $code
      * @return Customer
      */
-    public function login(string $userLogin, string $passLogin): Customer
+    private function doTwoFa(string $code): Customer
+    {
+        if (!isset($_SESSION['oldPost']['email'], $_SESSION['oldPost']['passwort'])) {
+            return new Customer();
+        }
+
+        return $this->login($_SESSION['oldPost']['email'], $_SESSION['oldPost']['passwort'], $code);
+    }
+
+    /**
+     * @param string      $userLogin
+     * @param string      $passLogin
+     * @param string|null $twoFaCode
+     * @return Customer
+     */
+    public function login(string $userLogin, string $passLogin, ?string $twoFaCode = null): Customer
     {
         $customer = new Customer();
         if (Form::validateToken() === false) {
@@ -321,24 +367,32 @@ class AccountController
                 Shop::Lang()->get('csrfValidationFailed'),
                 'csrfValidationFailed'
             );
-            Shop::Container()->getLogService()->warning('CSRF-Warnung für Login: ' . $_POST['login']);
+            Shop::Container()->getLogService()->warning('CSRF-Warnung für Login: ' . Text::filterXSS($_POST['login']));
 
             return $customer;
         }
-        $captchaState = $customer->verifyLoginCaptcha($_POST);
+        $captchaState = $twoFaCode === null ? $customer->verifyLoginCaptcha($_POST) : true;
         if ($captchaState === true) {
-            $returnCode = $customer->holLoginKunde($userLogin, $passLogin);
+            $returnCode = $customer->holLoginKunde($userLogin, $passLogin, $twoFaCode);
             $tries      = $customer->nLoginversuche;
         } else {
             $returnCode = Customer::ERROR_CAPTCHA;
             $tries      = $captchaState;
         }
         if ($customer->getID() > 0) {
+            unset($_SESSION['oldPost']);
             $this->initCustomer($customer);
         } elseif ($returnCode === Customer::ERROR_LOCKED) {
             $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountLocked'), 'accountLocked');
         } elseif ($returnCode === Customer::ERROR_INACTIVE) {
             $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountInactive'), 'accountInactive');
+        } elseif ($returnCode === Customer::ERROR_DO_TWO_FA) {
+            $_SESSION['oldPost'] = $_POST;
+            $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountSetTwoFA'), 'accountRequires2FA');
+            $this->smarty->assign('showTwoFAForm', true);
+        } elseif ($returnCode === Customer::ERROR_INVALID_TWO_FA) {
+            $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountInvalidTwoFA'), 'accountInv2FA');
+            $this->smarty->assign('showTwoFAForm', true);
         } else {
             $this->checkLoginCaptcha($tries);
             $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('incorrectLogin'), 'incorrectLogin');
@@ -1132,6 +1186,20 @@ class AccountController
         }
 
         return $step;
+    }
+
+    /**
+     * @param int $customerID
+     */
+    private function saveTwoFA(int $customerID): void
+    {
+        $customer = Frontend::getCustomer();
+        if ($customer->getID() !== $customerID) {
+            return;
+        }
+        $customer->setC2FAauthSecret($_POST['c2FAsecret']);
+        $customer->setB2FAauth((int)$_POST['b2FAauth']);
+        $customer->updateInDB();
     }
 
     /**

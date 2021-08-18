@@ -1,27 +1,26 @@
 <?php declare(strict_types=1);
 
-namespace JTL\Backend;
+namespace JTL\TwoFA;
 
 use Exception;
 use JTL\DB\DbInterface;
 use JTL\Shop;
-use stdClass;
 
 /**
  * Class TwoFAEmergency
- * @package Backend
+ * @package JTL\TwoFA
  */
 class TwoFAEmergency
 {
     /**
-     * all the generated emergency-codes, in plain-text
+     * all the generated emergency codes, in plain-text
      *
      * @var array
      */
     private $codes = [];
 
     /**
-     * generate 10 codes (maybe should placed into a config)
+     * generate 10 codes
      *
      * @var int
      */
@@ -45,40 +44,20 @@ class TwoFAEmergency
      * create a pool of emergency-codes
      * for the current admin-account and store them in the DB.
      *
-     * @param stdClass $userTuple - user-data, as delivered from TwoFA-object
+     * @param UserData $userData - user-data, as delivered from TwoFA-object
      * @return array - new created emergency-codes (as written into the DB)
      * @throws Exception
      */
-    public function createNewCodes(stdClass $userTuple): array
+    public function createNewCodes(UserData $userData): array
     {
         $passwordService = Shop::Container()->getPasswordService();
-        $bindings        = [];
-        $rowValues       = '';
-        $valCount        = 'a';
+        $userID          = $userData->getID();
         for ($i = 0; $i < $this->codeCount; $i++) {
             $code          = \mb_substr(\md5((string)\random_int(1000, 9000)), 0, 16);
             $this->codes[] = $code;
-
-            if ($rowValues !== '') {
-                $rowValues .= ', ';
-            }
-            $code = $passwordService->hash($code);
-
-            // to prevent the fireing from within a loop against the DB
-            // we build a values-string (like this: "(:a, :b), (:c, :d), ... " )
-            // and an according array
-            $bindings[$valCount] = $userTuple->kAdminlogin;
-            $rowValues          .= '(:' . $valCount . ',';
-            $valCount++;
-            $bindings[$valCount] = $code;
-            $rowValues          .= ' :' . $valCount . ')';
-            $valCount++;
+            $hashed        = $passwordService->hash($code);
+            $this->db->insert('tadmin2facodes', (object)['kAdminlogin' => $userID, 'cEmergencyCode' => $hashed]);
         }
-        // now write into the DB what we got till now
-        $this->db->queryPrepared(
-            'INSERT INTO `tadmin2facodes`(`kAdminlogin`, `cEmergencyCode`) VALUES' . $rowValues,
-            $bindings
-        );
 
         return $this->codes;
     }
@@ -86,14 +65,15 @@ class TwoFAEmergency
     /**
      * delete all the existing codes for the given user
      *
-     * @param stdClass $userTuple - user data, as delivered from TwoFA-object
+     * @param UserData $userTuple - user data, as delivered from TwoFA-object
+     * @todo
      */
-    public function removeExistingCodes(stdClass $userTuple): void
+    public function removeExistingCodes(UserData $userTuple): void
     {
         $effected = $this->db->deleteRow(
             'tadmin2facodes',
             'kAdminlogin',
-            $userTuple->kAdminlogin
+            $userTuple->getID()
         );
         if ($this->codeCount !== $effected) {
             Shop::Container()->getLogService()->error(
@@ -109,11 +89,12 @@ class TwoFAEmergency
      * @param int    $adminID - admin-account ID
      * @param string $code - code, as typed in the login-fields
      * @return bool - true="valid emergency-code", false="not a valid emergency-code"
+     * @todo
      */
     public function isValidEmergencyCode(int $adminID, string $code): bool
     {
         $hashes = $this->db->selectArray('tadmin2facodes', 'kAdminlogin', $adminID);
-        if (1 > \count($hashes)) {
+        if (\count($hashes) < 1) {
             return false; // no emergency-codes are there
         }
 

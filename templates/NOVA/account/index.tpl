@@ -53,6 +53,10 @@
                         {block name='account-index-include-change-password'}
                             {include file='account/change_password.tpl'}
                         {/block}
+                    {elseif $step === 'manageTwoFA'}
+                        {block name='account-index-include-manage-two-fa'}
+                            {include file='account/2fa.tpl'}
+                        {/block}
                     {elseif $step === 'bestellung'}
                         {block name='account-index-include-order-details'}
                             {include file='account/order_details.tpl'}

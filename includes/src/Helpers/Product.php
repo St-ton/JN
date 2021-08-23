@@ -1388,7 +1388,7 @@ class Product
             }
             if ($prevID > 0) {
                 $nav->vorherigerArtikel = (new Artikel())->fuelleArtikel($prevID, Artikel::getDefaultOptions());
-                if ($nav->vorherigerArtikel->kArtikel === null) {
+                if ($nav->vorherigerArtikel === null) {
                     unset($nav->vorherigerArtikel);
                 }
             }

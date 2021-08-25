@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Cart\CartItem;
 use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
 use JTL\Checkout\Kupon;
@@ -2373,7 +2374,7 @@ function gibGesamtsummeKuponartikelImWarenkorb($coupon, array $cartItems)
         ) {
             $total += $item->fPreis
                 * $item->nAnzahl
-                * ((100 + Tax::getSalesTax($item->kSteuerklasse)) / 100);
+                * ((100 + CartItem::getTaxRate($item)) / 100);
         }
     }
 

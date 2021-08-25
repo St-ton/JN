@@ -4683,7 +4683,7 @@ class Artikel
             $this->fGewicht = 0;
         }
         $hasProductShippingCost = $this->isUsedForShippingCostCalculation($countryCode) ? 'N' : 'Y';
-        $dep                    = " AND cNurAbhaengigeVersandart = '" . $hasProductShippingCost . "' ";
+        $dep                    = " AND va.cNurAbhaengigeVersandart = '" . $hasProductShippingCost . "' ";
 
         // cheapest shipping except shippings that offer cash payment
         $shipping = Shop::Container()->getDB()->getSingleObject(

@@ -66,7 +66,8 @@ if (!empty($uid)) {
         ]);
         $smarty->assign('Kunde', new Customer($order->kKunde))
                ->assign('Lieferadresse', $order->Lieferadresse)
-               ->assign('billingAddress', $order->oRechnungsadresse);
+               ->assign('billingAddress', $order->oRechnungsadresse)
+               ->assign('incommingPayments', $order->getIncommingPayments());
     }
 } else {
     Shop::Container()->getAlertService()->addAlert(

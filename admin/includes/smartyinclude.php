@@ -110,13 +110,14 @@ if (!$hasPendingUpdates) {
                 $thirdKey = 0;
 
                 if (is_object($secondEntry)) {
-                    if (!$oAccount->permission($secondEntry->permissions)) {
+                    if (isset($secondEntry->permissions) && !$oAccount->permission($secondEntry->permissions)) {
                         continue;
                     }
                     $linkGruppe->oLink_arr = (object)[
                         'cLinkname' => $secondName,
                         'cURL'      => $secondEntry->link,
-                        'cRecht'    => $secondEntry->permissions,
+                        'cRecht'    => $secondEntry->permissions ?? null,
+                        'target'    => $secondEntry->target ?? null,
                     ];
                     if (Request::urlHasEqualRequestParameter($linkGruppe->oLink_arr->cURL, 'kSektion')
                         && strpos($curScriptFileNameWithRequest, $linkGruppe->oLink_arr->cURL) === 0

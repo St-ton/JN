@@ -321,6 +321,9 @@ msgstr "Übersicht"
 msgid "Plug-in manager"
 msgstr "Plugin-Manager"
 
+msgid "JTL-ExtensionStore"
+msgstr "JTL-ExtensionStore"
+
 msgid "My purchases"
 msgstr "Meine Käufe"
 

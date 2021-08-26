@@ -299,6 +299,9 @@ msgstr "Overview"
 msgid "Plug-in manager"
 msgstr "Plug-in manager"
 
+msgid "JTL-ExtensionStore"
+msgstr "JTL-ExtensionStore"
+
 msgid "My purchases"
 msgstr "My purchases"
 

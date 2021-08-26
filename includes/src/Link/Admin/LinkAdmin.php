@@ -324,7 +324,13 @@ final class LinkAdmin
         foreach ($this->getSpecialPageTypes() as $specialPage) {
             if (\in_array(
                 $specialPage->nLinkart,
-                [\LINKTYP_NEWSLETTERARCHIV, \LINKTYP_GRATISGESCHENK, \LINKTYP_AUSWAHLASSISTENT, true],
+                [
+                    \LINKTYP_NEWSLETTERARCHIV,
+                    \LINKTYP_GRATISGESCHENK,
+                    \LINKTYP_AUSWAHLASSISTENT,
+                    \LINKTYP_BATTERIEGESETZ_HINWEISE,
+                    true
+                ],
                 true
             )) {
                 continue;

@@ -798,7 +798,7 @@ final class Orders extends AbstractSync
      */
     private function deleteOrder(int $orderID): void
     {
-        $customerId = (int)($this->db->getSingleObject(
+        $customerID = (int)($this->db->getSingleObject(
             'SELECT tbestellung.kKunde
                 FROM tbestellung
                 INNER JOIN tkunde ON tbestellung.kKunde = tkunde.kKunde
@@ -839,8 +839,8 @@ final class Orders extends AbstractSync
                 );
             }
         }
-        if ($customerId > 0) {
-            (new Customer($customerId))->deleteAccount(Journal::ISSUER_TYPE_DBES, $orderID);
+        if ($customerID > 0) {
+            (new Customer($customerID))->deleteAccount(Journal::ISSUER_TYPE_DBES, $orderID);
         }
     }
 

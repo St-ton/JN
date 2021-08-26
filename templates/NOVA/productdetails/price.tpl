@@ -180,7 +180,7 @@
                                 <div class="base_price" itemprop="priceSpecification" itemscope itemtype="https://schema.org/UnitPriceSpecification">
                                     <meta itemprop="price" content="{($Artikel->Preise->fVKBrutto/$Artikel->fVPEWert)|string_format:"%.2f"}">
                                     <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
-                                    <span class="value" itemprop="referenceQuantity" itemscope itemtype="http://schema.org/QuantitativeValue">
+                                    <span class="value" itemprop="referenceQuantity" itemscope itemtype="https://schema.org/QuantitativeValue">
                                         {$Artikel->cLocalizedVPE[$NettoPreise]}
                                         <meta itemprop="value" content="{$Artikel->fGrundpreisMenge}">
                                         <meta itemprop="unitText" content="{$Artikel->cVPEEinheit|regex_replace:"/[\d ]/":""}">

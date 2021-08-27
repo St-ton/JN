@@ -193,10 +193,10 @@ class InstallCommand extends Command
         if ($uri !== null) {
             if ($scheme = \parse_url($uri, \PHP_URL_SCHEME)) {
                 if (!\in_array($scheme, ['http', 'https'], true)) {
-                    throw new Exception("Invalid Shop url '{$uri}'");
+                    throw new Exception(\sprintf('Invalid Shop URL: "%s"', $uri));
                 }
             } else {
-                throw new Exception("Invalid Shop url '{$uri}'");
+                throw new Exception(\sprintf('Invalid Shop URL: "%s"', $uri));
             }
         }
         $parsedUri = \parse_url($uri);

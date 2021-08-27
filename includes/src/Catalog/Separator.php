@@ -103,7 +103,7 @@ class Separator
             return self::$unitObject[$languageID][$unitID];
         }
         $cacheID = 'units_' . $unitID . '_' . $languageID;
-        if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (true || ($data = Shop::Container()->getCache()->get($cacheID)) === false) {
             $data = Shop::Container()->getDB()->select(
                 'ttrennzeichen',
                 'nEinheit',
@@ -174,44 +174,43 @@ class Separator
         // Standardwert [kSprache][nEinheit]
         $rows = [];
         foreach (LanguageHelper::getAllLanguages() as $language) {
-            $rows[$language->kSprache][\JTL_SEPARATOR_WEIGHT] = [
+            $rows[$language->getId()][\JTL_SEPARATOR_WEIGHT] = [
                 'nDezimalstellen'   => 2,
                 'cDezimalZeichen'   => ',',
                 'cTausenderZeichen' => '.'
             ];
-            $rows[$language->kSprache][\JTL_SEPARATOR_LENGTH] = [
+            $rows[$language->getId()][\JTL_SEPARATOR_LENGTH] = [
                 'nDezimalstellen'   => 2,
                 'cDezimalZeichen'   => ',',
                 'cTausenderZeichen' => '.'
             ];
-            $rows[$language->kSprache][\JTL_SEPARATOR_AMOUNT] = [
+            $rows[$language->getId()][\JTL_SEPARATOR_AMOUNT] = [
                 'nDezimalstellen'   => 2,
                 'cDezimalZeichen'   => ',',
                 'cTausenderZeichen' => '.'
             ];
         }
-        if ($unitID > 0 && $languageID > 0) {
-            if (!isset($rows[$languageID][$unitID])) {
-                $rows[$languageID]          = [];
-                $rows[$languageID][$unitID] = [
-                    'nDezimalstellen'   => 2,
-                    'cDezimalZeichen'   => ',',
-                    'cTausenderZeichen' => '.'
-                ];
-            }
-            Shop::Container()->getCache()->flushTags([\CACHING_GROUP_CORE]);
-
-            return Shop::Container()->getDB()->getAffectedRows(
-                "INSERT INTO `ttrennzeichen` 
-                    (`kTrennzeichen`, `kSprache`, `nEinheit`, `nDezimalstellen`, `cDezimalZeichen`, `cTausenderZeichen`)
-                    VALUES (
-                      NULL, {$languageID}, {$unitID}, {$rows[$languageID][$unitID]['nDezimalstellen']}, 
-                      '{$rows[$languageID][$unitID]['cDezimalZeichen']}',
-                    '{$rows[$languageID][$unitID]['cTausenderZeichen']}')"
-            );
+        if ($unitID <= 0 || $languageID <= 0) {
+            return false;
         }
+        if (!isset($rows[$languageID][$unitID])) {
+            $rows[$languageID]          = [];
+            $rows[$languageID][$unitID] = [
+                'nDezimalstellen'   => 2,
+                'cDezimalZeichen'   => ',',
+                'cTausenderZeichen' => '.'
+            ];
+        }
+        $ins                    = new stdClass();
+        $ins->kSprache          = $languageID;
+        $ins->nEinheit          = $unitID;
+        $ins->nDezimalstellen   = $rows[$languageID][$unitID]['nDezimalstellen'];
+        $ins->cDezimalZeichen   = $rows[$languageID][$unitID]['cDezimalZeichen'];
+        $ins->cTausenderZeichen = $rows[$languageID][$unitID]['cTausenderZeichen'];
 
-        return false;
+        Shop::Container()->getCache()->flushTags([\CACHING_GROUP_CORE]);
+
+        return Shop::Container()->getDB()->insert('ttrennzeichen', $ins);
     }
 
     /**

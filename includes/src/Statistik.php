@@ -480,7 +480,14 @@ class Statistik
 
                 case 3: // Monate
                     $start = \mktime(0, 0, 0, (int)\date('m', $this->nStampVon), 1, (int)\date('Y', $this->nStampVon));
-                    $end   = \mktime(23, 59, 59, (int)\date('m', $this->nStampBis), 31, (int)\date('Y', $this->nStampBis));
+                    $end   = \mktime(
+                        23,
+                        59,
+                        59,
+                        (int)\date('m', $this->nStampBis),
+                        31,
+                        (int)\date('Y', $this->nStampBis)
+                    );
                     break;
 
                 case 4:    // Jahre

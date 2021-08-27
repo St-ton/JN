@@ -84,7 +84,6 @@ class IOMethods
             ->register('updateWishlistDropdown', [$this, 'updateWishlistDropdown'])
             ->register('checkDependencies', [$this, 'checkDependencies'])
             ->register('checkVarkombiDependencies', [$this, 'checkVarkombiDependencies'])
-            ->register('generateToken', [$this, 'generateToken'])
             ->register('buildConfiguration', [$this, 'buildConfiguration'])
             ->register('getBasketItems', [$this, 'getBasketItems'])
             ->register('getCategoryMenu', [$this, 'getCategoryMenu'])
@@ -997,12 +996,12 @@ class IOMethods
     }
 
     /**
-     * @param array $values
-     * @param int   $propertyID
-     * @param int   $propertyValueID
+     * @param array      $values
+     * @param int|string $propertyID
+     * @param int|string $propertyValueID
      * @return IOResponse
      */
-    public function checkVarkombiDependencies($values, $propertyID = 0, $propertyValueID = 0): IOResponse
+    public function checkVarkombiDependencies(array $values, $propertyID = 0, $propertyValueID = 0): IOResponse
     {
         $propertyID      = (int)$propertyID;
         $propertyValueID = (int)$propertyValueID;
@@ -1014,96 +1013,98 @@ class IOMethods
         $set             = \array_filter($idx);
         $wrapper         = isset($values['wrapper']) ? Text::filterXSS($values['wrapper']) : '';
 
-        if ($parentProductID > 0) {
-            $options                            = new stdClass();
-            $options->nKeinLagerbestandBeachten = 1;
-            $options->nMain                     = 1;
-            $options->nWarenlager               = 1;
-            $options->nVariationen              = 1;
-            $product                            = new Artikel();
-            $product->fuelleArtikel($parentProductID, $options);
-            // Alle Variationen ohne Freifeld
-            $keyValueVariations = $product->keyValueVariations($product->VariationenOhneFreifeld);
-            // Freifeldpositionen gesondert zwischenspeichern
-            foreach ($set as $kKey => $cVal) {
-                if (!isset($keyValueVariations[$kKey])) {
-                    unset($set[$kKey]);
-                    $freetextValues[$kKey] = $cVal;
-                }
+        if ($parentProductID <= 0) {
+            throw new Exception('Product not found ' . $parentProductID);
+        }
+        $options                            = new stdClass();
+        $options->nKeinLagerbestandBeachten = 1;
+        $options->nMain                     = 1;
+        $options->nWarenlager               = 1;
+        $options->nVariationen              = 1;
+        $product                            = new Artikel();
+        $product->fuelleArtikel($parentProductID, $options);
+        // Alle Variationen ohne Freifeld
+        $keyValueVariations = $product->keyValueVariations($product->VariationenOhneFreifeld);
+        // Freifeldpositionen gesondert zwischenspeichern
+        foreach ($set as $kKey => $cVal) {
+            if (!isset($keyValueVariations[$kKey])) {
+                unset($set[$kKey]);
+                $freetextValues[$kKey] = $cVal;
             }
-            $hasInvalidSelection = false;
-            $invalidVariations   = $product->getVariationsBySelection($set, true);
-            foreach ($set as $kKey => $kValue) {
-                if (isset($invalidVariations[$kKey]) && \in_array($kValue, $invalidVariations[$kKey])) {
-                    $hasInvalidSelection = true;
-                    break;
-                }
+        }
+        $hasInvalidSelection = false;
+        $invalidVariations   = $product->getVariationsBySelection($set, true);
+        foreach ($set as $kKey => $kValue) {
+            if (isset($invalidVariations[$kKey]) && \in_array($kValue, $invalidVariations[$kKey])) {
+                $hasInvalidSelection = true;
+                break;
             }
-            // Auswahl zurücksetzen sobald eine nicht vorhandene Variation ausgewählt wurde.
-            if ($hasInvalidSelection) {
-                $ioResponse->callEvoProductFunction('variationResetAll', $wrapper);
-                $set               = [$propertyID => $propertyValueID];
-                $invalidVariations = $product->getVariationsBySelection($set, true);
-                // Auswählter EigenschaftWert ist ebenfalls nicht vorhanden
-                if (isset($invalidVariations[$propertyID])
-                    && \in_array($propertyValueID, $invalidVariations[$propertyID])
-                ) {
-                    $set = [];
-                    // Wir befinden uns im Kind-Artikel -> Weiterleitung auf Vater-Artikel
-                    if ($childProductID > 0) {
-                        $ioResponse->callEvoProductFunction(
-                            'setArticleContent',
-                            $product->kArtikel,
-                            0,
-                            $product->cURL,
-                            [],
-                            $wrapper
-                        );
-
-                        return $ioResponse;
-                    }
-                }
-            }
-            // Alle EigenschaftWerte vorhanden, Kind-Artikel ermitteln
-            if (\count($set) >= $product->nVariationOhneFreifeldAnzahl) {
-                $products = $this->getArticleByVariations($parentProductID, $set);
-                if (\count($products) === 1 && $childProductID !== (int)$products[0]->kArtikel) {
-                    $tmpProduct              = $products[0];
-                    $gesetzteEigeschaftWerte = [];
-                    foreach ($freetextValues as $cKey => $cValue) {
-                        $gesetzteEigeschaftWerte[] = (object)[
-                            'key'   => $cKey,
-                            'value' => $cValue
-                        ];
-                    }
+        }
+        // Auswahl zurücksetzen sobald eine nicht vorhandene Variation ausgewählt wurde.
+        if ($hasInvalidSelection) {
+            $ioResponse->callEvoProductFunction('variationResetAll', $wrapper);
+            $set               = [$propertyID => $propertyValueID];
+            $invalidVariations = $product->getVariationsBySelection($set, true);
+            // Auswählter EigenschaftWert ist ebenfalls nicht vorhanden
+            if (isset($invalidVariations[$propertyID])
+                && \in_array($propertyValueID, $invalidVariations[$propertyID])
+            ) {
+                $set = [];
+                // Wir befinden uns im Kind-Artikel -> Weiterleitung auf Vater-Artikel
+                if ($childProductID > 0) {
                     $ioResponse->callEvoProductFunction(
                         'setArticleContent',
-                        $parentProductID,
-                        $tmpProduct->kArtikel,
-                        URL::buildURL($tmpProduct, \URLART_ARTIKEL, true),
-                        $gesetzteEigeschaftWerte,
+                        $product->kArtikel,
+                        0,
+                        $product->cURL,
+                        [],
                         $wrapper
                     );
-
-                    \executeHook(\HOOK_TOOLSAJAXSERVER_PAGE_TAUSCHEVARIATIONKOMBI, [
-                        'objResponse' => &$ioResponse,
-                        'oArtikel'    => &$product,
-                        'bIO'         => true
-                    ]);
 
                     return $ioResponse;
                 }
             }
+        }
+        // Alle EigenschaftWerte vorhanden, Kind-Artikel ermitteln
+        if (\count($set) >= $product->nVariationOhneFreifeldAnzahl) {
+            $products = $this->getArticleByVariations($parentProductID, $set);
+            if (\count($products) === 1 && $childProductID !== (int)$products[0]->kArtikel) {
+                $tmpProduct              = $products[0];
+                $gesetzteEigeschaftWerte = [];
+                foreach ($freetextValues as $cKey => $cValue) {
+                    $gesetzteEigeschaftWerte[] = (object)[
+                        'key'   => $cKey,
+                        'value' => $cValue
+                    ];
+                }
+                $ioResponse->callEvoProductFunction(
+                    'setArticleContent',
+                    $parentProductID,
+                    $tmpProduct->kArtikel,
+                    URL::buildURL($tmpProduct, \URLART_ARTIKEL, true),
+                    $gesetzteEigeschaftWerte,
+                    $wrapper
+                );
 
-            $ioResponse->callEvoProductFunction('variationDisableAll', $wrapper);
-            $possibleVariations = $product->getVariationsBySelection($set);
-            $checkStockInfo     = \count($set) > 0 && (\count($set) === \count($possibleVariations) - 1);
-            $stockInfo          = (object)[
-                'stock'  => true,
-                'status' => 2,
-                'text'   => '',
-            ];
-            foreach ($product->Variationen as $variation) {
+                \executeHook(\HOOK_TOOLSAJAXSERVER_PAGE_TAUSCHEVARIATIONKOMBI, [
+                    'objResponse' => &$ioResponse,
+                    'oArtikel'    => &$product,
+                    'bIO'         => true
+                ]);
+
+                return $ioResponse;
+            }
+        }
+
+        $ioResponse->callEvoProductFunction('variationDisableAll', $wrapper);
+        $possibleVariations = $product->getVariationsBySelection($set);
+        $checkStockInfo     = \count($set) > 0 && (\count($set) === \count($possibleVariations) - 1);
+        $stockInfo          = (object)[
+            'stock'  => true,
+            'status' => 2,
+            'text'   => '',
+        ];
+        foreach ($product->Variationen as $variation) {
                 if (\in_array($variation->cTyp, ['FREITEXT', 'PFLICHTFREITEXT'])) {
                     $ioResponse->callEvoProductFunction('variationEnable', $variation->kEigenschaft, 0, $wrapper);
                 } else {
@@ -1166,9 +1167,6 @@ class IOMethods
                     }
                 }
             }
-        } else {
-            throw new Exception('Product not found ' . $parentProductID);
-        }
         $ioResponse->callEvoProductFunction('variationRefreshAll', $wrapper);
 
         return $ioResponse;
@@ -1275,18 +1273,20 @@ class IOMethods
      */
     public function getRegionsByCountry(string $iso): IOResponse
     {
-        $response = new IOResponse();
+        $ioResponse = new IOResponse();
         if (\mb_strlen($iso) === 2) {
-            $conf           = Shopsetting::getInstance();
-            $country        = Shop::Container()->getCountryService()->getCountry($iso);
+            $country = Shop::Container()->getCountryService()->getCountry($iso);
+            if ($country === null) {
+                return $ioResponse;
+            }
             $data           = new stdClass();
             $data->states   = $country->getStates();
             $data->required = $country->isRequireStateDefinition()
-                || $conf->getValue(\CONF_KUNDEN, 'kundenregistrierung_abfragen_bundesland') === 'Y';
-            $response->assignVar('response', $data);
+                || Shop::getSettingValue(\CONF_KUNDEN, 'kundenregistrierung_abfragen_bundesland') === 'Y';
+            $ioResponse->assignVar('response', $data);
         }
 
-        return $response;
+        return $ioResponse;
     }
 
     /**
@@ -1355,7 +1355,7 @@ class IOMethods
         foreach ($languages as $i => $lang) {
             $languages[$i] = (object)$lang;
         }
-
+error_log('$currentLanguage:'.print_r($currentLanguage, true));
         $opcPageService   = Shop::Container()->getOPCPageService();
         $smarty           = Shop::Smarty();
         $response         = new IOResponse();
@@ -1375,21 +1375,6 @@ class IOMethods
         $response->assignDom('opc-draft-list', 'innerHTML', $newDraftListHtml);
 
         return $response;
-    }
-
-    /**
-     * @return IOResponse
-     * @deprecated since 5.0.0
-     */
-    public function generateToken(): IOResponse
-    {
-        $ioResponse              = new IOResponse();
-        $token                   = \gibToken();
-        $name                    = \gibTokenName();
-        $_SESSION['xcrsf_token'] = \json_encode(['name' => $name, 'token' => $token]);
-        $ioResponse->script("doXcsrfToken('" . $name . "', '" . $token . "');");
-
-        return $ioResponse;
     }
 
     /**
@@ -1421,7 +1406,6 @@ class IOMethods
 
         return $ioResponse;
     }
-
 
     /**
      * @param int   $wlID

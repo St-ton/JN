@@ -40,8 +40,6 @@ use function Functional\filter;
 use function Functional\flatten;
 use function Functional\pluck;
 
-require_once \PFAD_ROOT . \PFAD_INCLUDES . 'artikel_inc.php';
-
 /**
  * Class IOMethods
  * @package JTL\IO
@@ -1105,68 +1103,68 @@ class IOMethods
             'text'   => '',
         ];
         foreach ($product->Variationen as $variation) {
-                if (\in_array($variation->cTyp, ['FREITEXT', 'PFLICHTFREITEXT'])) {
-                    $ioResponse->callEvoProductFunction('variationEnable', $variation->kEigenschaft, 0, $wrapper);
-                } else {
-                    foreach ($variation->Werte as $value) {
-                        $id               = $value->kEigenschaft;
-                        $stockInfo->stock = true;
-                        $stockInfo->text  = '';
+            if (\in_array($variation->cTyp, ['FREITEXT', 'PFLICHTFREITEXT'])) {
+                $ioResponse->callEvoProductFunction('variationEnable', $variation->kEigenschaft, 0, $wrapper);
+            } else {
+                foreach ($variation->Werte as $value) {
+                    $id               = $value->kEigenschaft;
+                    $stockInfo->stock = true;
+                    $stockInfo->text  = '';
 
-                        if (isset($possibleVariations[$id])
-                            && \in_array($value->kEigenschaftWert, $possibleVariations[$id])
-                        ) {
-                            $ioResponse->callEvoProductFunction(
-                                'variationEnable',
-                                $id,
-                                $value->kEigenschaftWert,
-                                $wrapper
-                            );
-
-                            if ($checkStockInfo && !\array_key_exists($id, $set)) {
-                                $set[$id] = $value->kEigenschaftWert;
-
-                                $products = $this->getArticleByVariations($parentProductID, $set);
-                                if (\count($products) === 1) {
-                                    $stockInfo = $this->getArticleStockInfo((int)$products[0]->kArtikel);
-                                }
-                                unset($set[$id]);
-                            }
-                        } else {
-                            $stockInfo->stock  = false;
-                            $stockInfo->status = 0;
-                            $stockInfo->text   = Shop::Lang()->get('notAvailableInSelection');
-                        }
-                        if ($value->notExists || !$value->inStock) {
-                            $stockInfo->stock  = false;
-                            $stockInfo->status = 0;
-                            $stockInfo->text   = $value->notExists
-                                ? Shop::Lang()->get('notAvailableInSelection')
-                                : Shop::Lang()->get('ampelRot');
-                        }
-                        if (!$stockInfo->stock) {
-                            $ioResponse->callEvoProductFunction(
-                                'variationInfo',
-                                $value->kEigenschaftWert,
-                                $stockInfo->status,
-                                $stockInfo->text,
-                                $value->notExists,
-                                $wrapper
-                            );
-                        }
-                    }
-
-                    if (isset($set[$variation->kEigenschaft])) {
+                    if (isset($possibleVariations[$id])
+                        && \in_array($value->kEigenschaftWert, $possibleVariations[$id])
+                    ) {
                         $ioResponse->callEvoProductFunction(
-                            'variationActive',
-                            $variation->kEigenschaft,
-                            \addslashes($set[$variation->kEigenschaft]),
-                            null,
+                            'variationEnable',
+                            $id,
+                            $value->kEigenschaftWert,
+                            $wrapper
+                        );
+
+                        if ($checkStockInfo && !\array_key_exists($id, $set)) {
+                            $set[$id] = $value->kEigenschaftWert;
+
+                            $products = $this->getArticleByVariations($parentProductID, $set);
+                            if (\count($products) === 1) {
+                                $stockInfo = $this->getArticleStockInfo((int)$products[0]->kArtikel);
+                            }
+                            unset($set[$id]);
+                        }
+                    } else {
+                        $stockInfo->stock  = false;
+                        $stockInfo->status = 0;
+                        $stockInfo->text   = Shop::Lang()->get('notAvailableInSelection');
+                    }
+                    if ($value->notExists || !$value->inStock) {
+                        $stockInfo->stock  = false;
+                        $stockInfo->status = 0;
+                        $stockInfo->text   = $value->notExists
+                            ? Shop::Lang()->get('notAvailableInSelection')
+                            : Shop::Lang()->get('ampelRot');
+                    }
+                    if (!$stockInfo->stock) {
+                        $ioResponse->callEvoProductFunction(
+                            'variationInfo',
+                            $value->kEigenschaftWert,
+                            $stockInfo->status,
+                            $stockInfo->text,
+                            $value->notExists,
                             $wrapper
                         );
                     }
                 }
+
+                if (isset($set[$variation->kEigenschaft])) {
+                    $ioResponse->callEvoProductFunction(
+                        'variationActive',
+                        $variation->kEigenschaft,
+                        \addslashes($set[$variation->kEigenschaft]),
+                        null,
+                        $wrapper
+                    );
+                }
             }
+        }
         $ioResponse->callEvoProductFunction('variationRefreshAll', $wrapper);
 
         return $ioResponse;
@@ -1191,7 +1189,7 @@ class IOMethods
                 $variationID    = $id;
                 $variationValue = $value;
             } else {
-                $combinations[] = "($id, $value)";
+                $combinations[] = '(' . $id . ', ' . $value . ')';
             }
         }
 
@@ -1339,7 +1337,7 @@ class IOMethods
     }
 
     /**
-     * @param string $curPageId
+     * @param string $curPageID
      * @param string $adminSessionToken
      * @param array  $languages
      * @param array  $currentLanguage
@@ -1347,22 +1345,21 @@ class IOMethods
      * @throws SmartyException|Exception
      */
     public function getOpcDraftsHtml(
-        string $curPageId,
+        string $curPageID,
         string $adminSessionToken,
         array $languages,
-        $currentLanguage
+        array $currentLanguage
     ): IOResponse {
         foreach ($languages as $i => $lang) {
             $languages[$i] = (object)$lang;
         }
-error_log('$currentLanguage:'.print_r($currentLanguage, true));
         $opcPageService   = Shop::Container()->getOPCPageService();
         $smarty           = Shop::Smarty();
         $response         = new IOResponse();
-        $publicDraft      = $opcPageService->getPublicPage($curPageId);
+        $publicDraft      = $opcPageService->getPublicPage($curPageID);
         $publicDraftkey   = $publicDraft === null ? 0 : $publicDraft->getKey();
         $newDraftListHtml = $smarty
-            ->assign('pageDrafts', $opcPageService->getDrafts($curPageId))
+            ->assign('pageDrafts', $opcPageService->getDrafts($curPageID))
             ->assign('ShopURL', Shop::getURL())
             ->assign('adminSessionToken', $adminSessionToken)
             ->assign('languages', $languages)

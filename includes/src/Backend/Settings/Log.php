@@ -63,7 +63,7 @@ class Log
     {
         $this->setId((int)$data->kEinstellungenLog);
         $this->setAdminId((int)$data->kAdminlogin);
-        $this->setAdminName($data->adminName);
+        $this->setAdminName($data->adminName ?? \__('unknown') . '(' . $data->kAdminlogin . ')');
         $this->setSettingType($data->settingType);
         $this->setSettingName($data->cEinstellungenName);
         $this->setValueNew($data->cEinstellungenWertNeu);

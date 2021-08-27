@@ -1232,8 +1232,8 @@ class Product
                 $dbHandler = Shop::Container()->getDB();
                 $refData   = (new OptinRefData())
                     ->setSalutation('')
-                    ->setFirstName(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['vorname']))) ?: '')
-                    ->setLastName(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['nachname']))) ?: '')
+                    ->setFirstName(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['vorname'] ?? ''))) ?: '')
+                    ->setLastName(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['nachname'] ?? ''))) ?: '')
                     ->setProductId(Request::postInt('a'))
                     ->setEmail(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['email']))) ?: '')
                     ->setLanguageID(Shop::getLanguageID())
@@ -1388,7 +1388,7 @@ class Product
             }
             if ($prevID > 0) {
                 $nav->vorherigerArtikel = (new Artikel())->fuelleArtikel($prevID, Artikel::getDefaultOptions());
-                if ($nav->vorherigerArtikel->kArtikel === null) {
+                if ($nav->vorherigerArtikel === null) {
                     unset($nav->vorherigerArtikel);
                 }
             }

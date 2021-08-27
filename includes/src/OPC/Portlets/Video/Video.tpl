@@ -41,7 +41,7 @@
                     &rel={$instance->getProperty('video-yt-rel')}
                     &showinfo=0&color={$instance->getProperty('video-yt-color')}
                     &iv_load_policy=3
-                    &playlist={$instance->getProperty('video-yt-playlist')|escape:'html'}
+                    {if !empty($instance->getProperty('video-yt-playlist'))}&playlist={$instance->getProperty('video-yt-playlist')|escape:'html'}{/if}
                     {if !empty($instance->getProperty('video-yt-start'))}&start={$instance->getProperty('video-yt-start')}{/if}
                     {if !empty($instance->getProperty('video-yt-end'))}&end={$instance->getProperty('video-yt-end')}{/if}"
                     {/strip}

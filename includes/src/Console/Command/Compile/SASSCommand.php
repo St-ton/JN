@@ -77,7 +77,7 @@ class SASSCommand extends Command
         }
         $theme      = $themeFolderName;
         $directory  = \realpath(\PFAD_ROOT . $templateDir . $theme) . '/';
-        $compareDir = \str_replace(array('/', '\\'), \DIRECTORY_SEPARATOR, \PFAD_ROOT . \PFAD_TEMPLATES);
+        $compareDir = \str_replace(['/', '\\'], \DIRECTORY_SEPARATOR, \realpath(\PFAD_ROOT . \PFAD_TEMPLATES));
         if (\strpos($directory, $compareDir) !== 0) {
             $io->error('Theme does not exist. ');
 
@@ -98,7 +98,7 @@ class SASSCommand extends Command
         }
         try {
             $this->compileSass($input, $directory . $theme . '.css', $directory);
-            $critical = $input = $directory . 'sass/' . $theme . '_crit.scss';
+            $critical = $directory . 'sass/' . $theme . '_crit.scss';
             if (\file_exists($critical)) {
                 $this->compileSass($critical, $directory . $theme . '_crit.css', $directory);
                 $io->writeln('<info>' . $theme . '_crit.css was compiled successfully.</info>');

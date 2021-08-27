@@ -191,9 +191,17 @@ html {
       color: $primary;
     }
   }
+  .nav-mobile-heading {
+    background-color: $header-bg-color;
+  }
   .dropdown-menu.show a {
     color: $gray-dark;
   }
+}
+
+.img-aspect-ratio {
+  width: 100%;
+  height: auto;
 }
 
 header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94); position: relative; z-index: $zindex-sticky;
@@ -239,6 +247,7 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
     padding-bottom: $navbar-padding-y;
     img {
       height: $navbar-image-height;
+      width: auto;
     }
   }
 
@@ -508,4 +517,13 @@ hr {
 }
 .lazyload {
   opacity: 0 !important;
+}
+
+.text-accent {
+  font-family: $font-accent;
+  font-weight: $font-weight-semibold;
+}
+
+.price.h1, .product-title.h2 {
+  @extend .text-accent;
 }

@@ -33,9 +33,9 @@ class Test
     {
         if (Request::postInt('wawiversion') < \JTL_MIN_WAWI_VERSION) {
             \syncException(
-                'Ihr JTL-Shop Version ' . \APPLICATION_VERSION .
-                ' benötigt für den Datenabgleich mindestens JTL-Wawi Version ' . (\JTL_MIN_WAWI_VERSION / 100000.0) .
-                ". \nEine aktuelle Version erhalten Sie unter: https://jtl-url.de/wawidownload",
+                'Ihr JTL-Shop Version ' . \APPLICATION_VERSION
+                . ' benötigt für den Datenabgleich mindestens JTL-Wawi Version ' . (\JTL_MIN_WAWI_VERSION / 100000.0)
+                . ". \nEine aktuelle Version erhalten Sie unter: https://jtl-url.de/wawidownload",
                 \FREIDEFINIERBARER_FEHLER
             );
         }

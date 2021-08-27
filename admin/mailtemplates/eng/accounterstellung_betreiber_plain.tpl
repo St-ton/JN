@@ -12,9 +12,9 @@ Please review your account details:
 {$Kunde->cPLZ} {$Kunde->cOrt}
 {if $Kunde->cBundesland}{$Kunde->cBundesland}{/if}
 {$Kunde->angezeigtesLand}
-{if $Kunde->cTel}Phone: {$Kunde->cTel}{/if}
-{if $Kunde->cMobil}Mobile: {$Kunde->cMobil}{/if}
-{if $Kunde->cFax}Fax: {$Kunde->cFax}{/if}
+{if $Kunde->cTel}Phone: {$Kunde->cTel|maskPrivate:2:4:'** ***'}{/if}
+{if $Kunde->cMobil}Mobile: {$Kunde->cMobil|maskPrivate:2:4:'** ***'}{/if}
+{if $Kunde->cFax}Fax: {$Kunde->cFax|maskPrivate:2:4:'** ***'}{/if}
 Email address: {$Kunde->cMail}
 {if $Kunde->cUSTID}VAT ID: {$Kunde->cUSTID}{/if}
 

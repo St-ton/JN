@@ -246,17 +246,30 @@
 
         {getUploaderLang iso=$smarty.session.currentLanguage->getIso639()|default:'' assign='uploaderLang'}
 
-        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-solid-900.woff2" as="font" crossorigin/>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-regular-400.woff2" as="font" crossorigin/>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-600.woff2" as="font" crossorigin/>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-regular.woff2" as="font" crossorigin/>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin/>
-        <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/globals.js" as="script" crossorigin>
-        <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/snippets/form-counter.js" as="script" crossorigin>
-        <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/plugins/navscrollbar.js" as="script" crossorigin>
-        <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/plugins/tabdrop.js" as="script" crossorigin>
-        <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/views/header.js" as="script" crossorigin>
-        <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/views/productdetails.js" as="script" crossorigin>
+        {block name='layout-header-head-resources-preload'}
+            {if $Einstellungen.template.theme.theme_default === 'dark'}
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/poppins/Poppins-Light.ttf" as="font" crossorigin/>
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/poppins/Poppins-Regular.ttf" as="font" crossorigin/>
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/poppins/Poppins-SemiBold.ttf" as="font" crossorigin/>
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/raleway/Raleway-Bold.ttf" as="font" crossorigin/>
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/raleway/Raleway-Medium.ttf" as="font" crossorigin/>
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/raleway/Raleway-Regular.ttf" as="font" crossorigin/>
+            {else}
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-600.woff2" as="font" crossorigin/>
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-regular.woff2" as="font" crossorigin/>
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin/>
+            {/if}
+            <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-solid-900.woff2" as="font" crossorigin/>
+            <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-regular-400.woff2" as="font" crossorigin/>
+        {/block}
+        {block name='layout-header-head-resources-modulepreload'}
+            <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/globals.js" as="script" crossorigin>
+            <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/snippets/form-counter.js" as="script" crossorigin>
+            <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/plugins/navscrollbar.js" as="script" crossorigin>
+            <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/plugins/tabdrop.js" as="script" crossorigin>
+            <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/views/header.js" as="script" crossorigin>
+            <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/views/productdetails.js" as="script" crossorigin>
+        {/block}
         {if !empty($oUploadSchema_arr)}
             <script defer src="{$ShopURL}/{$templateDir}js/fileinput/fileinput.min.js"></script>
             <script defer src="{$ShopURL}/{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
@@ -323,9 +336,10 @@
                                     <meta itemprop="logo" content="{$ShopLogoURL}">
                                     {link class="navbar-brand" href=$ShopHomeURL title=$Einstellungen.global.global_shopname}
                                     {if isset($ShopLogoURL)}
-                                        {image src=$ShopLogoURL
-                                        alt=$Einstellungen.global.global_shopname
-                                        id="shop-logo"
+                                        {image width=180 height=50 src=$ShopLogoURL
+                                            alt=$Einstellungen.global.global_shopname
+                                            id="shop-logo"
+                                            class="img-aspect-ratio"
                                         }
                                     {else}
                                         <span class="h1">{$Einstellungen.global.global_shopname}</span>

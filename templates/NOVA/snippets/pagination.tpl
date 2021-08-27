@@ -20,7 +20,7 @@
 
     {get_static_route id=$cThisUrl assign=cThisUrl}
     {block name='snippets-pagination-content'}
-        {row class="{if $noWrapper === true}pagination-no-wrapper{/if} pagination-wrapper clearfix"}
+        {row class="{if $noWrapper === true}pagination-no-wrapper{/if} pagination-wrapper no-gutters clearfix"}
             {if $oPagination->getPageCount() > 1}
                 {if in_array('label', $parts) || in_array('pagi', $parts)}
                     {block name='snippets-pagination-page-count-multiple'}

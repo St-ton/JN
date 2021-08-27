@@ -1,7 +1,7 @@
 {block name='blog-preview'}
     {$title = $newsItem->getTitle()|escape:'quotes'}
     <div itemprop="blogPost" itemscope=true itemtype="https://schema.org/BlogPosting" class="newsbox blog-preview">
-        <meta itemprop="mainEntityOfPage" content="{$ShopURL}/{$newsItem->getURL()}">
+        <meta itemprop="mainEntityOfPage" content="{$newsItem->getURL()}">
         {block name='blog-preview-news-header'}
             <div class="newsbox-header">
                 {if !empty($newsItem->getPreviewImage())}

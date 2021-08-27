@@ -1872,7 +1872,7 @@ class Cart
         $customerGroupSQL = $customerGroupID > 0
             ? " OR FIND_IN_SET('" . $customerGroupID . "', REPLACE(va.cKundengruppen, ';', ',')) > 0"
             : '';
-        $countryCode      = $this->getShippingCountry();
+        $countryCode      = $_SESSION['cLieferlandISO'];
         // if nothing changed, return cached shipping-object
         if ($this->oFavourableShipping !== null
             && $this->oFavourableShipping->getCountryCode() === $_SESSION['cLieferlandISO']

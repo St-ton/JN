@@ -3,6 +3,7 @@
 namespace JTL;
 
 use JTL\Helpers\Text;
+use stdClass;
 
 /**
  * Class Jtllog
@@ -198,13 +199,20 @@ class Jtllog
      */
     public static function getLogWhere(string $whereSQL = '', $limitSQL = ''): array
     {
-        return Shop::Container()->getDB()->getObjects(
+        return Shop::Container()->getDB()->getCollection(
             'SELECT *
                 FROM tjtllog' .
             ($whereSQL !== '' ? ' WHERE ' . $whereSQL : '') .
             ' ORDER BY dErstellt DESC, kLog DESC ' .
             ($limitSQL !== '' ? ' LIMIT ' . $limitSQL : '')
-        );
+        )->map(static function (stdClass $log) {
+            $log->kLog   = (int)$log->kLog;
+            $log->nLevel = (int)$log->nLevel;
+            $log->kKey   = (int)$log->kKey;
+            $log->cLog   = Text::filterXSS($log->cLog);
+
+            return $log;
+        })->all();
     }
 
     /**

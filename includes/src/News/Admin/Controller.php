@@ -250,7 +250,7 @@ final class Controller
                 $this->continueWith = $newsItemID;
             } else {
                 $tab = Request::verifyGPDataString('tab');
-                $this->newsRedirect(empty($tab) ? 'aktiv' : $tab, $this->msg);
+                $this->newsRedirect(empty($tab) ? 'aktiv' : $tab, $this->getMsg());
             }
         } else {
             $newsItem   = new Item($this->db);
@@ -536,7 +536,7 @@ final class Controller
         $this->rebuildCategoryTree(0, 1);
         if ($error === false) {
             $this->msg .= \__('successNewsCatSave') . '<br />';
-            $this->newsRedirect('kategorien', $this->msg);
+            $this->newsRedirect('kategorien', $this->getMsg());
         }
         $newsCategory = new Category($this->db);
         $this->flushCache();
@@ -557,7 +557,7 @@ final class Controller
             && \file_exists(\PFAD_ROOT . $oldPreview)
         ) {
             $real = \realpath(\PFAD_ROOT . $oldPreview);
-            if (\strpos($real, self::UPLOAD_DIR_CATEGORY) === 0) {
+            if (\strpos($real, \realpath(self::UPLOAD_DIR_CATEGORY)) === 0) {
                 \unlink($real);
             }
         }

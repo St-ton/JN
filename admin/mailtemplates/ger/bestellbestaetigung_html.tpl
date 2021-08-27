@@ -143,7 +143,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            {$Kunde->cTel|substr:0:2}****{$Kunde->cTel|substr:-4}
+                            {$Kunde->cTel|maskPrivate:2:4:'** ***'}
                         </font>
                     </td>
                 </tr>
@@ -169,7 +169,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            {$Kunde->cMobil|substr:0:2}****{$Kunde->cMobil|substr:-4}
+                            {$Kunde->cMobil|maskPrivate:2:4:'** ***'}
                         </font>
                     </td>
                 </tr>
@@ -195,7 +195,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            {$Kunde->cFax}
+                            {$Kunde->cFax|maskPrivate:2:4:'** ***'}
                         </font>
                     </td>
                 </tr>
@@ -579,7 +579,7 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
     Wir belasten in Kürze folgendes Bankkonto mit der fälligen Summe:<br>
     <br>
     Kontoinhaber: {$Bestellung->Zahlungsinfo->cInhaber}<br>
-    IBAN: ****{$Bestellung->Zahlungsinfo->cIBAN|substr:-4}<br>
+    IBAN: {$Bestellung->Zahlungsinfo->cIBAN|maskPrivate}<br>
     BIC: {$Bestellung->Zahlungsinfo->cBIC}<br>
     Bank: {$Bestellung->Zahlungsinfo->cBankName}<br>
     <br>

@@ -205,7 +205,7 @@ class Text
      * @param string $needle
      * @return bool
      */
-    public static function startsWith(string $haystack, string $needle)
+    public static function startsWith(string $haystack, string $needle): bool
     {
         return \mb_strpos($haystack, $needle) === 0;
     }
@@ -215,9 +215,10 @@ class Text
      * @param string $needle
      * @return bool
      */
-    public static function endsWith(string $haystack, string $needle)
+    public static function endsWith(string $haystack, string $needle): bool
     {
         $length = \mb_strlen($needle);
+
         return \mb_substr($haystack, -$length, $length) === $needle;
     }
 
@@ -272,11 +273,14 @@ class Text
     }
 
     /**
-     * @param string $input
-     * @return string
+     * @param string|mixed $input
+     * @return string|mixed
      */
-    public static function unhtmlentities($input): string
+    public static function unhtmlentities($input)
     {
+        if (!\is_string($input)) {
+            return $input;
+        }
         // replace numeric entities
         $input = \preg_replace_callback(
             '~&#x([0-9a-fA-F]+);~i',
@@ -776,7 +780,7 @@ class Text
      */
     public static function removeNumerousWhitespaces(string $string): string
     {
-        while (\mb_strpos($string, '  ')) {
+        while (\mb_strpos($string, '  ') !== false) {
             $string = \str_replace('  ', ' ', $string);
         }
 

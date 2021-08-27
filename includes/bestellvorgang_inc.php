@@ -98,8 +98,12 @@ function pruefeUnregistriertBestellen($post): int
             $post['kLieferadresse'] = 0;
             $post['lieferdaten']    = 1;
             pruefeLieferdaten($post);
+            $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand ?? $post['land'];
+            Tax::setTaxRates();
         } elseif (isset($post['kLieferadresse']) && (int)$post['kLieferadresse'] > 0) {
             pruefeLieferdaten($post);
+            $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand;
+            Tax::setTaxRates();
         } elseif (isset($post['register']['shipping_address'])) {
             checkNewShippingAddress($post, $missingInput);
         }
@@ -214,6 +218,9 @@ function pruefeLieferdaten($post, &$missingData = null): void
         $Lieferadresse             = getLieferdaten($post);
         $ok                        = angabenKorrekt($missingData);
         $_SESSION['Lieferadresse'] = $Lieferadresse;
+
+        $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand;
+        Tax::setTaxRates();
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_NEUELIEFERADRESSE_PLAUSI, [
             'nReturnValue'    => &$ok,
             'fehlendeAngaben' => &$missingData
@@ -430,7 +437,10 @@ function pruefeLieferadresseStep($get): void
     //sondersteps Lieferadresse ändern
     if (!empty($_SESSION['Lieferadresse'])) {
         $Lieferadresse = $_SESSION['Lieferadresse'];
-        if (isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1) {
+        if (isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1
+            || isset($_SESSION['preferredDeliveryCountryCode'])
+            && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand
+        ) {
             Kupon::resetNewCustomerCoupon();
             unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
             $step = 'Lieferadresse';

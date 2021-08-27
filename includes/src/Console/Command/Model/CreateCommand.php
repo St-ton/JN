@@ -101,9 +101,8 @@ class CreateCommand extends Command
         foreach ($attribs as $attrib) {
             $dataType    = \preg_match('/^([a-zA-Z0-9]+)/', $attrib['Type'], $hits) ? $hits[1] : $attrib['Type'];
             $tableDesc[] = (object)[
-                'name'         => "'{$attrib['Field']}'",
-                'phpName'      => $attrib['Field'],
-                'dataType'     => "'{$dataType}'",
+                'name'         => $attrib['Field'],
+                'dataType'     => $dataType,
                 'phpType'      => \array_reduce($typeMap, static function ($carry, $item) use ($dataType) {
                     if (!isset($carry) && \preg_match("/{$item}/", $dataType)) {
                         $carry = \explode('|', $item, 2)[0];
@@ -112,7 +111,7 @@ class CreateCommand extends Command
                     return $carry;
                 }),
                 'default'      => isset($attrib['Default'])
-                    ? "self::cast('{$attrib['Default']}', '{$dataType}')"
+                    ? "self::cast('" . $attrib['Default'] . "', '" . $dataType . "')"
                     : 'null',
                 'nullable'     => $attrib['Null'] === 'YES' ? 'true' : 'false',
                 'isPrimaryKey' => $attrib['Key'] === 'PRI' ? 'true' : 'false',

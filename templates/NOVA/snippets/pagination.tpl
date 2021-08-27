@@ -104,7 +104,7 @@
 
             {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}
                 {block name='snippets-pagination-form'}
-                    {col cols="12" md="auto" class="pagination-selects {if $oPagination->getPageCount() === 1}ml-auto{/if}"}
+                    {col cols="12" md="auto" class="pagination-selects"}
                         {form action="{$cThisUrl}{$cAnchor}" method="get"}
                             {block name='snippets-pagination-form-content'}
                                 {row}

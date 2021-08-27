@@ -3,7 +3,6 @@
 namespace JTL\Pagination;
 
 use Illuminate\Support\Collection;
-use function Functional\map;
 
 /**
  * Class Pagination
@@ -140,11 +139,6 @@ class Pagination
      * @var int
      */
     private $defaultSortByDir = 0;
-
-    /**
-     * @var int
-     */
-    private $sortByLang = 0;
 
     /**
      * Pagination constructor.
@@ -331,40 +325,15 @@ class Pagination
             $this->sortBySQL  = $this->sortByOptions[$this->sortBy][0];
             $this->sortDirSQL = $this->sortDir === 0 ? 'ASC' : 'DESC';
             $this->orderSQL   = $this->sortBySQL . ' ' . $this->sortDirSQL;
-            $sortFac          = $this->sortDir === 0 ? +1 : -1;
-            $sortBy           = $this->sortBySQL;
+            $nSortFac         = $this->sortDir === 0 ? +1 : -1;
+            $cSortBy          = $this->sortBySQL;
             if (\is_array($this->items)) {
-                $sortByLang = $this->sortByLang;
-                if ($sortByLang > 0) {
-                    \usort($this->items, static function ($a, $b) use ($sortBy, $sortFac, $sortByLang) {
-                        if ($a->kSprache === $b->kSprache) {
-                            $vA = \is_string($a->$sortBy) ? \mb_convert_case($a->$sortBy, \MB_CASE_LOWER) : $a->$sortBy;
-                            $vB = \is_string($b->$sortBy) ? \mb_convert_case($b->$sortBy, \MB_CASE_LOWER) : $b->$sortBy;
+                \usort($this->items, static function ($a, $b) use ($cSortBy, $nSortFac) {
+                    $valueA = \is_string($a->$cSortBy) ? \mb_convert_case($a->$cSortBy, \MB_CASE_LOWER) : $a->$cSortBy;
+                    $valueB = \is_string($b->$cSortBy) ? \mb_convert_case($b->$cSortBy, \MB_CASE_LOWER) : $b->$cSortBy;
 
-                            return $vA == $vB ? 0 : ($vA < $vB ? -$sortFac : +$sortFac);
-                        }
-                        if ($a->kSprache === $sortByLang) {
-                            $a->kSprache = 0;
-                        }
-                        if ($b->kSprache === $sortByLang) {
-                            $b->kSprache = 0;
-                        }
-                        return $a->kSprache <=> $b->kSprache;
-                    });
-                    $this->items = map($this->items, static function ($e) use ($sortByLang) {
-                        if ($e->kSprache === 0) {
-                            $e->kSprache = $sortByLang;
-                        }
-                        return $e;
-                    });
-                } else {
-                    \usort($this->items, static function ($a, $b) use ($sortBy, $sortFac) {
-                        $vA = \is_string($a->$sortBy) ? \mb_convert_case($a->$sortBy, \MB_CASE_LOWER) : $a->$sortBy;
-                        $vB = \is_string($b->$sortBy) ? \mb_convert_case($b->$sortBy, \MB_CASE_LOWER) : $b->$sortBy;
-
-                        return $vA == $vB ? 0 : ($vA < $vB ? -$sortFac : +$sortFac);
-                    });
-                }
+                    return $valueA == $valueB ? 0 : ($valueA < $valueB ? -$nSortFac : +$nSortFac);
+                });
             }
         }
         $this->limitSQL = $this->firstPageItem . ',' . $this->pageItemCount;
@@ -565,24 +534,5 @@ class Pagination
     public function getSortByDir(): int
     {
         return $this->sortByDir;
-    }
-
-    /**
-     * @return int
-     */
-    public function getSortByLang(): int
-    {
-        return $this->sortByLang;
-    }
-
-    /**
-     * @param int $sortByLang
-     * @return Pagination
-     */
-    public function setSortByLang(int $sortByLang): self
-    {
-        $this->sortByLang = $sortByLang;
-
-        return $this;
     }
 }

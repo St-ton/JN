@@ -179,7 +179,6 @@ $pagination = (new Pagination('ratings'))
         ['nHilfreich', Shop::Lang()->get('paginationOrderUsefulness')]
     ])
     ->setDefaultSortByDir((int)$conf['bewertung']['bewertung_sortierung'])
-    ->setSortByLang($conf['bewertung']['bewertung_alle_sprachen'] === 'Y' ? Shop::getLanguageID() : 0)
     ->assemble();
 
 $AktuellerArtikel->Bewertungen->Sortierung = $sorting;

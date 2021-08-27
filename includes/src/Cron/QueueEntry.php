@@ -104,7 +104,7 @@ class QueueEntry
         $this->tasksExecuted = (int)$data->tasksExecuted;
         $this->nLimitM       = (int)$data->taskLimit;
         $this->lastProductID = (int)$data->lastProductID;
-        $this->isRunning     = 0;
+        $this->isRunning     = false;
         $this->jobType       = $data->jobType;
         $this->tableName     = $data->tableName;
         $this->foreignKey    = $data->foreignKey;

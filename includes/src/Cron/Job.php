@@ -409,7 +409,7 @@ abstract class Job implements JobInterface
             'tjobqueue',
             'jobQueueID',
             $queueEntry->jobQueueID,
-            (object)['isRunning' => $queueEntry->isRunning, 'lastStart' => 'NOW()']
+            (object)['isRunning' => (int)$queueEntry->isRunning, 'lastStart' => 'NOW()']
         );
         $this->db->update(
             'tcron',

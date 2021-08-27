@@ -1401,7 +1401,7 @@ class IOMethods
     public function setWishlistVisibility(int $wlID, bool $state, string $token): IOResponse
     {
         $ioResponse = new IOResponse();
-        $wl          = Wishlist::instanceByID($wlID);
+        $wl         = Wishlist::instanceByID($wlID);
         if ($wl->isSelfControlled() === false) {
             return $ioResponse;
         }
@@ -1415,7 +1415,7 @@ class IOMethods
         $response        = new stdClass();
         $response->wlID  = $wlID;
         $response->state = $state;
-        $response->url   = Wishlist::instanceByID($wlID)->cURLID;
+        $response->url   = $wl->cURLID;
 
         $ioResponse->assignVar('response', $response);
 

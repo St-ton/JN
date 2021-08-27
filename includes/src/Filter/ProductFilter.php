@@ -1667,7 +1667,7 @@ class ProductFilter
             $end = \min($nLimitN + $productsPerPage, $productCount);
             $this->searchResults->setOffsetStart($nLimitN + 1)
                                 ->setOffsetEnd($end > 0 ? $end : $productCount);
-            $total   = $productsPerPage > 0 ? (int)\ceil($productCount / $productsPerPage) : 1;
+            $total   = $productsPerPage > 0 ? (int)\ceil($productCount / $productsPerPage) : \min($productCount, 1);
             $minPage = (int)\max($this->nSeite - \floor($maxPaginationPageCount / 2), 1);
             $maxPage = $minPage + $maxPaginationPageCount - 1;
             if ($maxPage > $total) {

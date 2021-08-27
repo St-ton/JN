@@ -98,7 +98,7 @@ class SASSCommand extends Command
         }
         try {
             $this->compileSass($input, $directory . $theme . '.css', $directory);
-            $critical = $input = $directory . 'sass/' . $theme . '_crit.scss';
+            $critical = $directory . 'sass/' . $theme . '_crit.scss';
             if (\file_exists($critical)) {
                 $this->compileSass($critical, $directory . $theme . '_crit.css', $directory);
                 $io->writeln('<info>' . $theme . '_crit.css was compiled successfully.</info>');

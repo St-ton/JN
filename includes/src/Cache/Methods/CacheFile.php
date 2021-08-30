@@ -128,8 +128,7 @@ class CacheFile implements ICachingMethod
             return \unlink($str);
         }
         if (\is_dir($str)) {
-            $scan = \glob(\rtrim($str, '/') . '/*');
-            foreach ($scan as $index => $path) {
+            foreach (\glob(\rtrim($str, '/') . '/*') as $path) {
                 $this->recursiveDelete($path);
             }
 

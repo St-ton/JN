@@ -357,7 +357,7 @@ class Download
         if ($downloadID > 0 && $customerID > 0 && $orderID > 0) {
             $order = new Bestellung($orderID);
             // Existiert die Bestellung und wurde Sie bezahlt?
-            if ($order->kBestellung <= 0 || empty($order->dBezahltDatum) || $order->dBezahltDatum === null) {
+            if ($order->kBestellung <= 0 || empty($order->dBezahltDatum)) {
                 return self::ERROR_ORDER_NOT_FOUND;
             }
             // Stimmt der Kunde?

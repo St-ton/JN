@@ -246,8 +246,6 @@ trait JTLCacheTrait
             $this->clearCacheTags($_id);
             if ($res === true) {
                 ++$deleted;
-            } elseif (\is_int($res)) {
-                $deleted += $res;
             }
         }
 

@@ -373,7 +373,7 @@ class LegacyBoxes
     public function isVisible(int $kBoxvorlage): bool
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        foreach ($this->boxes as $_position => $_boxes) {
+        foreach ($this->getBoxList() as $_boxes) {
             foreach ($_boxes as $_box) {
                 if ((int)$_box->kBoxvorlage === $kBoxvorlage) {
                     return true;

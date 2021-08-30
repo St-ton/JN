@@ -103,7 +103,7 @@ class Separator
             return self::$unitObject[$languageID][$unitID];
         }
         $cacheID = 'units_' . $unitID . '_' . $languageID;
-        if (true || ($data = Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
             $data = Shop::Container()->getDB()->select(
                 'ttrennzeichen',
                 'nEinheit',

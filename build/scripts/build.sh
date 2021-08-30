@@ -63,10 +63,6 @@ build_create()
     echo "Create delete files csv";
     build_create_deleted_files_csv;
 
-    echo "Create templates md5 csv files";
-    create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/Evo";
-    create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/NOVA";
-
     echo "Move class files";
     build_move_class_files;
 
@@ -91,6 +87,10 @@ build_create()
     echo "Compile css from scss files";
     build_compile_css_files;
 
+    echo "Create templates md5 csv files";
+    create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/Evo";
+    create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/NOVA";
+	
     echo "Executing migrations";
     build_migrate;
 

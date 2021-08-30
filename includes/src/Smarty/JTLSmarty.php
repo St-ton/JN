@@ -12,14 +12,13 @@ use JTL\Plugin\Helper;
 use JTL\Shop;
 use JTL\Template\BootChecker;
 use RuntimeException;
-use Smarty;
 
 /**
  * Class JTLSmarty
  * @package \JTL\Smarty
  * @method JTLSmarty assign(string $variable, mixed $value)
  */
-class JTLSmarty extends Smarty
+class JTLSmarty extends BC
 {
     /**
      * @var array
@@ -115,7 +114,7 @@ class JTLSmarty extends Smarty
                 $templateKey = 'plugin_' . $moduleId;
                 $this->addTemplateDir($path, $templateKey);
             }
-            if (($bootstrapper = BootChecker::bootstrap($tplDir)) !== null) {
+            if (($bootstrapper = BootChecker::bootstrap($tplDir) ?? BootChecker::bootstrap($parent)) !== null) {
                 $bootstrapper->setSmarty($this);
                 $bootstrapper->setTemplate($model);
                 $bootstrapper->boot();

@@ -7,6 +7,10 @@
 header {
   .dropdown-menu {
     background-color: $white;
+    color: $gray-darker;
+    a {
+      color: $gray-darker;
+    }
   }
   .nav-mobile-body .dropdown-menu {
     @include media-breakpoint-down(md) {
@@ -21,6 +25,7 @@ header {
 
 #jtl-nav-wrapper .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
   background-color: $white;
+  color: $gray-darker;
 }
 
 @include media-breakpoint-up(lg) {
@@ -491,7 +496,7 @@ aside {
 
 .badge-primary {
   color: $white;
-  background-color: $gray-darker;
+  background-color: $black;
 }
 
 .modal-header .close,
@@ -566,4 +571,9 @@ aside {
   .productlist-filter-headline {
     border-bottom: $hr-border-width solid $gray-light;
   }
+}
+
+.form-control {
+  font-family: $font-accent;
+  font-weight: $font-weight-light;
 }

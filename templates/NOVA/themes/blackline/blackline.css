@@ -27028,6 +27028,10 @@ header #burger-menu {
 
 header .dropdown-menu {
   background-color: #ffffff;
+  color: #212121;
+}
+header .dropdown-menu a {
+  color: #212121;
 }
 @media (max-width: 991.98px) {
   header .nav-mobile-body .dropdown-menu {
@@ -27041,6 +27045,7 @@ header .dropdown-menu {
 
 #jtl-nav-wrapper .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
   background-color: #ffffff;
+  color: #212121;
 }
 
 @media (min-width: 992px) {
@@ -27556,7 +27561,7 @@ aside .dropdown-toggle:not(.btn-secondary)::after, aside [data-toggle=collapse]:
 
 .badge-primary {
   color: #ffffff;
-  background-color: #212121;
+  background-color: #000000;
 }
 
 .modal-header .close,
@@ -27647,6 +27652,10 @@ aside .dropdown-toggle:not(.btn-secondary)::after, aside [data-toggle=collapse]:
   .productlist-filter-headline {
     border-bottom: 1px solid #f5f5f5;
   }
+}
+.form-control {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
 }
 
 /*# sourceMappingURL=blackline.css.map */

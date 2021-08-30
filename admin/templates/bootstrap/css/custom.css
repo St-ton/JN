@@ -1967,6 +1967,8 @@ pre#debug b {
   opacity: 1;
 }
 .content-header .description a {
+  color: #5cbcf6;
+  font-weight: bold;
   text-decoration: underline;
 }
 .dropdown.avatar > a {

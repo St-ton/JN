@@ -3,6 +3,7 @@
 namespace JTL\dbeS;
 
 use JTL\Helpers\GeneralObject;
+use SimpleXMLElement;
 use stdClass;
 
 /**
@@ -681,13 +682,12 @@ final class Mapper
     }
 
     /**
-     * @param object $xmlTree
-     * @param string $toMap
+     * @param SimpleXMLElement $xmlTree
+     * @param string           $toMap
      * @return stdClass
      */
-    public function map($xmlTree, string $toMap): stdClass
+    public function map(SimpleXMLElement $xmlTree, string $toMap): stdClass
     {
-        \error_log(__METHOD__ . ' xml tree typee: ' . \get_class($xmlTree));
         $mapped = new stdClass();
         foreach ($xmlTree->Attributes() as $key => $val) {
             $mapped->$key = (string)$val;

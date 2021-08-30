@@ -203,9 +203,8 @@ final class Globals extends AbstractSync
      * @param string $toMap
      * @param bool   $del
      */
-    private function xml2db($xml, string $table, string $toMap, bool $del = true): void
+    private function xml2db(array $xml, string $table, string $toMap, bool $del = true): void
     {
-        \error_log(__METHOD__ . ' xml typee: ' . \get_class($xml));
         if (GeneralObject::isCountable($table, $xml)) {
             $objects = $this->mapper->mapArray($xml, $table, $toMap);
             $this->dbDelInsert($table, $objects, $del);

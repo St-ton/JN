@@ -221,7 +221,7 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
     .btn-secondary {
       @include media-breakpoint-up(lg) {
         background: $white;
-        border-color: $black;
+        border-color: $gray-darker;
         border-left-color: transparent;
       }
       border-color: $white;

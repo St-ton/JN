@@ -42,7 +42,7 @@ build_create()
 	else
 		echo "version extraction pattern did not found a match"
 	fi
-	
+
 	#if tag was created, check if defines_inc version matches the tag version, if not, abort.
     if [[ ${APPLICATION_VERSION} =~ ${VERSION_REGEX} ]]; then
 		if [[ "v${APPLICATION_VERSION_STR}" != "${APPLICATION_VERSION}" ]]; then
@@ -53,7 +53,7 @@ build_create()
 			exit 1;
 		fi
     fi
-	
+
 	# insert git sha hash into defines_inc.php -> APPLICATION_BUILD_SHA
     sed -i "s/'APPLICATION_BUILD_SHA', '#DEV#'/'APPLICATION_BUILD_SHA', '${APPLICATION_BUILD_SHA}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
 
@@ -83,7 +83,7 @@ build_create()
 
     echo "Writing config.JTL-Shop.ini.initial.php";
     build_create_config_file;
-	
+
     echo "Compile css from scss files";
     build_compile_css_files;
 
@@ -137,8 +137,9 @@ build_create_deleted_files_csv()
     cd ${REPOSITORY_DIR};
     git pull >/dev/null 2>&1;
     git diff --name-only --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME};
+    # temporary deactivate following line(s):
 	#get all modified files with content: // removed in x.x.x and concat it to the csv file
-	git diff --name-only --diff-filter M -S'<?php // removed in ' tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} >> ${DELETE_FILES_CSV_FILENAME};
+	#git diff --name-only --diff-filter M -S'<?php // removed in ' tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} >> ${DELETE_FILES_CSV_FILENAME};
 
     echo "  Deleted files schema admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
 }

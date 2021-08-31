@@ -450,7 +450,14 @@ class Statistik
 
                 case 3: // Monate
                     $start = \mktime(0, 0, 0, $monthFrom, 1, $yearFrom);
-                    $end   = \mktime(23, 59, 59, $monthTo, 31, $yearTo);
+                    $end   = \mktime(
+                        23,
+                        59,
+                        59,
+                        $monthTo,
+                        \cal_days_in_month(CAL_GREGORIAN, $monthTo, $yearTo),
+                        $yearTo
+                    );
                     break;
 
                 case 4:    // Jahre

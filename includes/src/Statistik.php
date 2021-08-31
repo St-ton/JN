@@ -429,55 +429,33 @@ class Statistik
      */
     private function mergeDaten($tmpData): array
     {
-        $stats = $this->vordefStats();
+        $stats     = $this->vordefStats();
+        $dayFrom   = (int)\date('d', $this->nStampVon);
+        $monthFrom = (int)\date('m', $this->nStampVon);
+        $yearFrom  = (int)\date('Y', $this->nStampVon);
+        $dayTo     = (int)\date('d', $this->nStampBis);
+        $monthTo   = (int)\date('m', $this->nStampBis);
+        $yearTo    = (int)\date('Y', $this->nStampBis);
         if ($this->nStampVon !== null) {
             switch ($this->nAnzeigeIntervall) {
                 case 1: // Stunden
-                    $start = \mktime(
-                        0,
-                        0,
-                        0,
-                        (int)\date('m', $this->nStampVon),
-                        (int)\date('d', $this->nStampVon),
-                        (int)\date('Y', $this->nStampVon)
-                    );
-                    $end   = \mktime(
-                        23,
-                        59,
-                        59,
-                        (int)\date('m', $this->nStampBis),
-                        (int)\date('d', $this->nStampBis),
-                        (int)\date('Y', $this->nStampBis)
-                    );
+                    $start = \mktime(0, 0, 0, $monthFrom, $dayFrom, $yearFrom);
+                    $end   = \mktime(23, 59, 59, $monthTo, $dayTo, $yearTo);
                     break;
 
                 case 2: // Tage
-                    $start = \mktime(
-                        0,
-                        0,
-                        0,
-                        (int)\date('m', $this->nStampVon),
-                        (int)\date('d', $this->nStampVon),
-                        (int)\date('Y', $this->nStampVon)
-                    );
-                    $end   = \mktime(
-                        23,
-                        59,
-                        59,
-                        (int)\date('m', $this->nStampBis),
-                        (int)\date('d', $this->nStampBis),
-                        (int)\date('Y', $this->nStampBis)
-                    );
+                    $start = \mktime(0, 0, 0, $monthFrom, $dayFrom, $yearFrom);
+                    $end   = \mktime(23, 59, 59, $monthTo, $dayTo, $yearTo);
                     break;
 
                 case 3: // Monate
-                    $start = \mktime(0, 0, 0, (int)\date('m', $this->nStampVon), 1, (int)\date('Y', $this->nStampVon));
-                    $end   = \mktime(23, 59, 59, (int)\date('m', $this->nStampBis), 31, (int)\date('Y', $this->nStampBis));
+                    $start = \mktime(0, 0, 0, $monthFrom, 1, $yearFrom);
+                    $end   = \mktime(23, 59, 59, $monthTo, 31, $yearTo);
                     break;
 
                 case 4:    // Jahre
-                    $start = \mktime(0, 0, 0, 1, 1, (int)\date('Y', $this->nStampVon));
-                    $end   = \mktime(23, 59, 59, 12, 31, (int)\date('Y', $this->nStampBis));
+                    $start = \mktime(0, 0, 0, 1, 1, $yearFrom);
+                    $end   = \mktime(23, 59, 59, 12, 31, $yearTo);
                     break;
 
                 default:

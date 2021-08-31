@@ -358,19 +358,15 @@ class Statistik
             return [];
         }
         $stats = [];
+        $day   = (int)\date('d', $this->nStampVon);
+        $month = (int)\date('m', $this->nStampVon);
+        $year  = (int)\date('Y', $this->nStampVon);
 
         switch ($this->nAnzeigeIntervall) {
             case 1: // Stunden
                 for ($i = 0; $i <= 23; $i++) {
                     $oStat         = new stdClass();
-                    $oStat->dZeit  = \mktime(
-                        $i,
-                        0,
-                        0,
-                        (int)\date('m', $this->nStampVon),
-                        (int)\date('d', $this->nStampVon),
-                        (int)\date('Y', $this->nStampVon)
-                    );
+                    $oStat->dZeit  = \mktime($i, 0, 0, $month, $day, $year);
                     $oStat->nCount = 0;
                     $stats[]       = $oStat;
                 }
@@ -379,14 +375,7 @@ class Statistik
             case 2: // Tage
                 for ($i = 0; $i <= 30; $i++) {
                     $oStat         = new stdClass();
-                    $oStat->dZeit  = \mktime(
-                        0,
-                        0,
-                        0,
-                        (int)\date('m', $this->nStampVon),
-                        (int)\date('d', $this->nStampVon) + $i,
-                        (int)\date('Y', $this->nStampVon)
-                    );
+                    $oStat->dZeit  = \mktime(0, 0, 0, $month, $day + $i, $year);
                     $oStat->nCount = 0;
                     $stats[]       = $oStat;
                 }
@@ -395,13 +384,16 @@ class Statistik
             case 3: // Monate
                 for ($i = 0; $i <= 11; $i++) {
                     $oStat         = new stdClass();
+                    $nextYear      = $month + $i > 12;
+                    $monthTMP      = $nextYear ? $month + $i - 12 : $month + $i;
+                    $yearTMP       = $nextYear ? $year + 1 : $year;
                     $oStat->dZeit  = \mktime(
                         0,
                         0,
                         0,
-                        (int)\date('m', $this->nStampVon) + $i,
-                        (int)\date('d', $this->nStampVon),
-                        (int)\date('Y', $this->nStampVon)
+                        $monthTMP,
+                        \min($day, \cal_days_in_month(CAL_GREGORIAN, $monthTMP, $yearTMP)),
+                        $yearTMP
                     );
                     $oStat->nCount = 0;
                     $stats[]       = $oStat;

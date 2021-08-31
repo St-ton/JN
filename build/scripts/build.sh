@@ -137,9 +137,12 @@ build_create_deleted_files_csv()
     cd ${REPOSITORY_DIR};
     git pull >/dev/null 2>&1;
     git diff --name-only --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME};
-    # temporary deactivate following line(s):
-	#get all modified files with content: // removed in x.x.x and concat it to the csv file
-	#git diff --name-only --diff-filter M -S'<?php // removed in ' tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} >> ${DELETE_FILES_CSV_FILENAME};
+    
+	# get all modified files with content: // removed in x.x.x and concat it to the csv file
+	git diff --name-only --diff-filter M -S'<?php // removed in ' tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} > "${REPOSITORY_DIR}/deleted_files_temp.txt";
+    cat "${REPOSITORY_DIR}/deleted_files_temp.txt" >> ${DELETE_FILES_CSV_FILENAME};
+    cat "${REPOSITORY_DIR}/deleted_files_temp.txt" >> ${REPOSITORY_DIR}/build/scripts/md5_excludes.lst;
+    rm "${REPOSITORY_DIR}/deleted_files_temp.txt";
 
     echo "  Deleted files schema admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
 }
@@ -184,7 +187,7 @@ build_create_md5_hashfile()
     local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${VERSION}.csv";
 
     cd ${REPOSITORY_DIR};
-    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name ".travis.yml" -or -name "${VERSION}.csv" -or -name "composer.lock" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -vE ".git/|admin/gfx/|admin/includes/emailpdfs/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
+    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name ".travis.yml" -or -name "${VERSION}.csv" -or -name "composer.lock" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -v -f "${REPOSITORY_DIR}/build/scripts/md5_excludes.lst" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
     cd ${CUR_PWD};
 
     echo "  File checksums admin/includes/shopmd5files/${VERSION}.csv";

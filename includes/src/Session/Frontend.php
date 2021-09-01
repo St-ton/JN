@@ -480,4 +480,142 @@ class Frontend extends AbstractSession
     {
         return $_SESSION['Vergleichsliste'] ?? new ComparisonList();
     }
+
+    /**
+     * @param string $langISO
+     * @former checkeSpracheWaehrung()
+     * @since 5.0.0
+     */
+    public static function checkReset(string $langISO = ''): void
+    {
+        if ($langISO !== '') {
+            if ($langISO !== Shop::getLanguageCode()) {
+                $_SESSION['oKategorie_arr']     = [];
+                $_SESSION['oKategorie_arr_new'] = [];
+            }
+            $lang = first(LanguageHelper::getAllLanguages(), static function ($l) use ($langISO) {
+                return $l->cISO === $langISO;
+            });
+            if ($lang === null) {
+                self::urlFallback();
+            }
+            $_SESSION['cISOSprache'] = $lang->cISO;
+            $_SESSION['kSprache']    = (int)$lang->kSprache;
+            Shop::setLanguage($lang->kSprache, $lang->cISO);
+            unset($_SESSION['Suche']);
+            self::setSpecialLinks();
+            if (isset($_SESSION['Wunschliste'])) {
+                self::getWishList()->umgebungsWechsel();
+            }
+            if (isset($_SESSION['Vergleichsliste'])) {
+                self::getCompareList()->umgebungsWechsel();
+            }
+            $_SESSION['currentLanguage'] = clone $lang;
+            unset($_SESSION['currentLanguage']->cURL);
+        }
+
+        $currencyCode = Request::verifyGPDataString('curr');
+        if ($currencyCode) {
+            $cart     = self::getCart();
+            $currency = first(self::getCurrencies(), static function (Currency $c) use ($currencyCode) {
+                return $c->getCode() === $currencyCode;
+            });
+            if ($currency !== null) {
+                $_SESSION['Waehrung']      = $currency;
+                $_SESSION['cWaehrungName'] = $currency->getName();
+                if (isset($_SESSION['Wunschliste'])) {
+                    self::getWishList()->umgebungsWechsel();
+                }
+                if (isset($_SESSION['Vergleichsliste'])) {
+                    self::getCompareList()->umgebungsWechsel();
+                }
+                if ($cart !== null && \count($cart->PositionenArr) > 0) {
+                    $cart->setzePositionsPreise();
+                }
+            }
+        }
+        LanguageHelper::getInstance()->autoload();
+    }
+
+    /**
+     * @since 5.0.0
+     */
+    private static function urlFallback(): void
+    {
+        $productID             = Request::verifyGPCDataInt('a');
+        $categoryID            = Request::verifyGPCDataInt('k');
+        $pageID                = Request::verifyGPCDataInt('s');
+        $childProductID        = Request::verifyGPCDataInt('a2');
+        $manufacturerID        = Request::verifyGPCDataInt('h');
+        $searchQueryID         = Request::verifyGPCDataInt('l');
+        $kMerkmalWert          = Request::verifyGPCDataInt('m');
+        $kSuchspecial          = Request::verifyGPCDataInt('q');
+        $kNews                 = Request::verifyGPCDataInt('n');
+        $kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');
+        $kNewsKategorie        = Request::verifyGPCDataInt('nk');
+        $key                   = 'kArtikel';
+        $val                   = 0;
+        \http_response_code(301);
+        if ($productID > 0) {
+            $key = 'kArtikel';
+            $val = $productID;
+        } elseif ($categoryID > 0) {
+            $key = 'kKategorie';
+            $val = $categoryID;
+        } elseif ($pageID > 0) {
+            $key = 'kLink';
+            $val = $pageID;
+        } elseif ($childProductID > 0) {
+            $key = 'kArtikel';
+            $val = $childProductID;
+        } elseif ($manufacturerID > 0) {
+            $key = 'kHersteller';
+            $val = $manufacturerID;
+        } elseif ($searchQueryID > 0) {
+            $key = 'kSuchanfrage';
+            $val = $searchQueryID;
+        } elseif ($kMerkmalWert > 0) {
+            $key = 'kMerkmalWert';
+            $val = $kMerkmalWert;
+        } elseif ($kSuchspecial > 0) {
+            $key = 'kSuchspecial';
+            $val = $kSuchspecial;
+        } elseif ($kNews > 0) {
+            $key = 'kNews';
+            $val = $kNews;
+        } elseif ($kNewsMonatsUebersicht > 0) {
+            $key = 'kNewsMonatsUebersicht';
+            $val = $kNewsMonatsUebersicht;
+        } elseif ($kNewsKategorie > 0) {
+            $key = 'kNewsKategorie';
+            $val = $kNewsKategorie;
+        }
+        $dbRes = Shop::Container()->getDB()->select(
+            'tseo',
+            'cKey',
+            $key,
+            'kKey',
+            $val,
+            'kSprache',
+            Shop::getLanguageID()
+        );
+        $seo   = $dbRes->cSeo ?? '';
+        \header('Location: ' . Shop::getURL() . '/' . $seo, true, 301);
+        exit;
+    }
+
+    /**
+     * @return LinkGroupCollection
+     * @former setzeLinks()
+     * @since 5.0.0
+     */
+    public static function setSpecialLinks(): LinkGroupCollection
+    {
+        $linkGroups                    = Shop::Container()->getLinkService()->getLinkGroups();
+        $_SESSION['Link_Datenschutz']  = $linkGroups->Link_Datenschutz;
+        $_SESSION['Link_AGB']          = $linkGroups->Link_AGB;
+        $_SESSION['Link_Versandseite'] = $linkGroups->Link_Versandseite;
+
+        return $linkGroups;
+    }
 }

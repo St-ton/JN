@@ -137,12 +137,6 @@ build_create_deleted_files_csv()
     cd ${REPOSITORY_DIR};
     git pull >/dev/null 2>&1;
     git diff --name-only --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME};
-    
-	# get all modified files with content: // removed in x.x.x and concat it to the csv file
-	git diff --name-only --diff-filter M -S'<?php // removed in ' tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} > "${REPOSITORY_DIR}/deleted_files_temp.txt";
-    cat "${REPOSITORY_DIR}/deleted_files_temp.txt" >> ${DELETE_FILES_CSV_FILENAME};
-    cat "${REPOSITORY_DIR}/deleted_files_temp.txt" >> ${REPOSITORY_DIR}/build/scripts/md5_excludes.lst;
-    rm "${REPOSITORY_DIR}/deleted_files_temp.txt";
 
     echo "  Deleted files schema admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
 }

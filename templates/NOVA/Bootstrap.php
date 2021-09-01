@@ -5,6 +5,7 @@ namespace Template\NOVA;
 use JTL\License\Struct\ExsLicense;
 use JTL\Shop;
 use JTL\Template\Bootstrapper;
+use scc\ComponentRegistratorInterface;
 use scc\DefaultComponentRegistrator;
 use scc\Renderer;
 use scc\RendererInterface;
@@ -17,7 +18,7 @@ use Smarty;
 class Bootstrap extends Bootstrapper
 {
     /**
-     * @var DefaultComponentRegistrator
+     * @var ComponentRegistratorInterface
      */
     protected $scc;
 

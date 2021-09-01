@@ -312,12 +312,6 @@ final class Shop
     public static $bHerstellerFilterNotFound;
 
     /**
-     * @var bool
-     * @deprecated since 5.0.0
-     */
-    public static $isSeoMainword = false;
-
-    /**
      * @var null|Shop
      */
     private static $instance;
@@ -574,57 +568,6 @@ final class Shop
     }
 
     /**
-     * get remote service instance
-     *
-     * @return JTLApi
-     * @deprecated since 5.0.0 use Shop::Container()->get(JTLApi::class) instead
-     */
-    public function RS(): JTLApi
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return self::Container()->get(JTLApi::class);
-    }
-
-    /**
-     * get session instance
-     *
-     * @return Frontend
-     * @throws Exception
-     * @deprecated since 5.0.0
-     */
-    public function Session(): Frontend
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return Frontend::getInstance();
-    }
-
-    /**
-     * get db adapter instance
-     *
-     * @return DbInterface
-     * @deprecated since 5.0.0 - use Shop::Container()->getDB() instead
-     */
-    public function _DB(): DbInterface
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return self::Container()->getDB();
-    }
-
-    /**
-     * @return DbInterface
-     * @deprecated since 5.0.0 - use Shop::Container()->getDB() instead
-     */
-    public static function DB(): DbInterface
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return self::Container()->getDB();
-    }
-
-    /**
      * get language instance
      *
      * @return LanguageHelper
@@ -632,69 +575,6 @@ final class Shop
     public function _Language(): LanguageHelper
     {
         return LanguageHelper::getInstance();
-    }
-
-    /**
-     * get config
-     *
-     * @return Shopsetting
-     * @deprecated since 5.0.0
-     */
-    public function Config(): Shopsetting
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return self::$settings;
-    }
-
-    /**
-     * get garbage collector
-     *
-     * @return GcServiceInterface
-     * @deprecated since 5.0.0 -> use Shop::Container()->getGc() instead
-     */
-    public function Gc(): GcServiceInterface
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return self::Container()->getDBServiceGC();
-    }
-
-    /**
-     * get logger
-     *
-     * @return Jtllog
-     * @deprecated since 5.0.0
-     */
-    public function Logger(): Jtllog
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return new Jtllog();
-    }
-
-    /**
-     * @return PHPSettings
-     * @deprecated since 5.0.0
-     */
-    public function PHPSettingsHelper(): PHPSettings
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return PHPSettings::getInstance();
-    }
-
-    /**
-     * get cache instance
-     *
-     * @return JTLCacheInterface
-     * @deprecated since 5.0.0
-     */
-    public function _Cache(): JTLCacheInterface
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return self::Container()->getCache();
     }
 
     /**
@@ -708,32 +588,6 @@ final class Shop
             $context = self::isFrontend() ? ContextType::FRONTEND : ContextType::BACKEND;
         }
         return JTLSmarty::getInstance($fast, $context);
-    }
-
-    /**
-     * get media instance
-     *
-     * @return Media
-     * @deprecated since 5.0.0
-     */
-    public function _Media(): Media
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return Media::getInstance();
-    }
-
-    /**
-     * get event instance
-     *
-     * @return Dispatcher
-     * @deprecated since 5.0.0
-     */
-    public function _Event(): Dispatcher
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return Dispatcher::getInstance();
     }
 
     /**
@@ -1751,24 +1605,6 @@ final class Shop
     }
 
     /**
-     * build navigation filter object from parameters
-     *
-     * @param array                     $params
-     * @param object|null|ProductFilter $productFilter
-     * @return ProductFilter
-     * @deprecated since 5.0.0
-     */
-    public static function buildNaviFilter(array $params, $productFilter = null): ProductFilter
-    {
-        \trigger_error(
-            __METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::buildProductFilter() instead',
-            \E_USER_DEPRECATED
-        );
-
-        return self::buildProductFilter($params, $productFilter);
-    }
-
-    /**
      * build product filter object from parameters
      *
      * @param array                       $params
@@ -1797,20 +1633,6 @@ final class Shop
 
     /**
      * @return ProductFilter
-     * @deprecated since 5.0.0
-     */
-    public static function getNaviFilter(): ProductFilter
-    {
-        \trigger_error(
-            __METHOD__ . 'is deprecated. Use ' . __CLASS__ . '::getProductFilter() instead',
-            \E_USER_DEPRECATED
-        );
-
-        return self::getProductFilter();
-    }
-
-    /**
-     * @return ProductFilter
      */
     public static function getProductFilter(): ProductFilter
     {
@@ -1830,15 +1652,6 @@ final class Shop
     }
 
     /**
-     * @param null|ProductFilter $productFilter
-     * @deprecated since 5.0.0 - this is done in ProductFilter:validate()
-     */
-    public static function checkNaviFilter($productFilter = null): void
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-    }
-
-    /**
      * @return Version
      */
     public static function getShopDatabaseVersion(): Version
@@ -1850,22 +1663,6 @@ final class Shop
         }
 
         return Version::parse($version);
-    }
-
-    /**
-     * Return version of files
-     *
-     * @deprecated since 5.0.0
-     * @return string
-     */
-    public static function getVersion(): string
-    {
-        \trigger_error(
-            __METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::getApplicationVersion() instead',
-            \E_USER_DEPRECATED
-        );
-
-        return self::getApplicationVersion();
     }
 
     /**

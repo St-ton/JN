@@ -7,7 +7,6 @@ use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
 @ini_set('max_execution_time', '0');
 

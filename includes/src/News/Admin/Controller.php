@@ -326,7 +326,7 @@ final class Controller
             $author->clearAuthor('NEWS', $newsItemID);
             $newsData = $this->db->select('tnews', 'kNews', $newsItemID);
             $this->db->delete('tnews', 'kNews', $newsItemID);
-            \loescheNewsBilderDir($newsItemID, self::UPLOAD_DIR);
+            self::deleteImageDir($newsItemID);
             $this->db->delete('tnewskommentar', 'kNews', $newsItemID);
             $this->db->delete('tseo', ['cKey', 'kKey'], ['kNews', $newsItemID]);
             $this->db->delete('tnewskategorienews', 'kNews', $newsItemID);
@@ -896,6 +896,26 @@ final class Controller
     public function getImageType(): string
     {
         return Image::TYPE_NEWS;
+    }
+
+    /**
+     * @param int $newsID
+     * @return bool
+     */
+    public static function deleteImageDir(int $newsID): bool
+    {
+        if (!\is_dir(self::UPLOAD_DIR . $newsID)) {
+            return false;
+        }
+        $handle = \opendir(self::UPLOAD_DIR . $newsID);
+        while (($file = \readdir($handle)) !== false) {
+            if ($file !== '.' && $file !== '..') {
+                \unlink(self::UPLOAD_DIR . $newsID . '/' . $file);
+            }
+        }
+        \rmdir(self::UPLOAD_DIR . $newsID);
+
+        return true;
     }
 
     /**

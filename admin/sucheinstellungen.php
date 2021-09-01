@@ -11,7 +11,6 @@ use JTL\Shopsetting;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once __DIR__ . '/includes/einstellungen_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 

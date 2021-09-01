@@ -14,7 +14,6 @@ use JTL\CheckBox;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Versandart;
 use JTL\Customer\Customer;
-use JTL\Emailvorlage;
 use JTL\Firma;
 use JTL\IO\IO;
 
@@ -727,14 +726,13 @@ define('HOOK_LETZTERINCLUDE_INC', 99);
 /**
  * after template switch in sendeMail()
  *
- * @file mailTools.php
  * @param \JTL\Smarty\JTLSmarty mailsmarty
  * @param \JTL\Mail\Renderer\RendererInterface renderer - since 5.0.0
  * @param object mail - null since 5.0.0
  * @param int kEmailvorlage
  * @param int kSprache
  * @param string cPluginBody - empty string since 5.0.0
- * @param Emailvorlage
+ * @param \JTL\Mail\Template\Model Emailvorlage
  * @param \JTL\Mail\Template\TemplateInterface template - since 5.0.0
  * @param \JTL\Mail\Template\Model model - since 5.0.0
  */
@@ -1354,8 +1352,6 @@ define('HOOK_LETZTERINCLUDE_CSS_JS', 175);
 /**
  * before inserting newsletter recipients into the database
  *
- * @file newsletter.php
- * @file newsletter_inc.php
  * @param oNewsletterEmpfaengerHistory *
  */
 define('HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN', 176);

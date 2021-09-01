@@ -73,15 +73,4 @@ class KategorieArtikel
             $obj
         );
     }
-
-    /**
-     * setzt Daten aus Sync POST request.
-     *
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function setzePostDaten(): bool
-    {
-        return false;
-    }
 }

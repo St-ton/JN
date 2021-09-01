@@ -28,22 +28,6 @@ function holeAlleKampagnenDefinitionen(): array
 }
 
 /**
- * @param int $id
- * @return stdClass|null
- * @deprecated since 5.1.0
- */
-function holeKampagne(int $id): ?stdClass
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::Container()->getDB()->getSingleObject(
-        "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
-            FROM tkampagne
-            WHERE kKampagne = :cid",
-        ['cid' => $id]
-    );
-}
-
-/**
  * @param int $definitionID
  * @return mixed
  */
@@ -299,16 +283,15 @@ function holeKampagneDetailStats($campaignID, $definitions)
         $_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr = $tmpData;
     }
     // Gesamtstats
-    if (count($statsAssoc) > 0) {
-        foreach ($statsAssoc as $statDefinitionsAssoc) {
-            foreach ($statDefinitionsAssoc as $definitionID => $item) {
-                if ($definitionID !== 'cDatum') {
-                    if (!isset($statsAssoc['Gesamt'][$definitionID])) {
-                        $statsAssoc['Gesamt'][$definitionID] = $item;
-                    } else {
-                        $statsAssoc['Gesamt'][$definitionID] += $item;
-                    }
-                }
+    foreach ($statsAssoc as $statDefinitionsAssoc) {
+        foreach ($statDefinitionsAssoc as $definitionID => $item) {
+            if ($definitionID === 'cDatum') {
+                continue;
+            }
+            if (!isset($statsAssoc['Gesamt'][$definitionID])) {
+                $statsAssoc['Gesamt'][$definitionID] = $item;
+            } else {
+                $statsAssoc['Gesamt'][$definitionID] += $item;
             }
         }
     }

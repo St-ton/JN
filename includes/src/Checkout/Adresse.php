@@ -205,16 +205,6 @@ class Adresse
     /**
      * @param string $iso
      * @return string
-     * @deprecated since 4.06.16 - use static checkISOCountryCode instead
-     */
-    public function pruefeLandISO(string $iso): string
-    {
-        return self::checkISOCountryCode($iso);
-    }
-
-    /**
-     * @param string $iso
-     * @return string
      */
     public static function checkISOCountryCode(string $iso): string
     {

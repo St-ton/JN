@@ -646,7 +646,7 @@ class PriceRange extends AbstractFilter
     }
 
     /**
-     * has to be public for compatibility with filter_inc.php
+     * has to be public for compatibility
      *
      * @param float $fMax
      * @param float $fMin

@@ -793,62 +793,6 @@ function aktualisiereKomponenteLagerbestand(int $productID, float $stockLevel, b
 }
 
 /**
- * @param int       $productID
- * @param int|float $amount
- * @param null|int  $bomID
- * @deprecated since 4.06 - use aktualisiereStuecklistenLagerbestand instead
- */
-function AktualisiereAndereStuecklisten(int $productID, $amount, $bomID = null): void
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    if ($productID > 0) {
-        $prod = new Artikel();
-        $prod->fuelleArtikel($productID, Artikel::getDefaultOptions());
-        aktualisiereKomponenteLagerbestand($productID, $prod->fLagerbestand, $prod->cLagerKleinerNull === 'Y');
-    }
-}
-
-/**
- * @param int       $bomID
- * @param float     $fPackeinheitSt
- * @param float     $stockLevel
- * @param int|float $amount
- * @deprecated since 4.06 - dont use anymore
- */
-function AktualisiereStueckliste(int $bomID, $fPackeinheitSt, float $stockLevel, $amount): void
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    Shop::Container()->getDB()->update(
-        'tartikel',
-        'kStueckliste',
-        $bomID,
-        (object)['fLagerbestand' => $stockLevel]
-    );
-}
-
-/**
- * @param Artikel        $product
- * @param null|int|float $amount
- * @param bool           $isBom
- * @deprecated since 4.06 - use aktualisiereStuecklistenLagerbestand instead
- */
-function AktualisiereLagerStuecklisten($product, $amount = null, $isBom = false): void
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    if (isset($product->kArtikel) && $product->kArtikel > 0) {
-        if ($isBom) {
-            aktualisiereStuecklistenLagerbestand($product, $amount);
-        } else {
-            aktualisiereKomponenteLagerbestand(
-                $product->kArtikel,
-                $product->fLagerbestand,
-                $product->cLagerKleinerNull === 'Y'
-            );
-        }
-    }
-}
-
-/**
  * @param Bestellung $order
  */
 function KuponVerwendungen($order): void

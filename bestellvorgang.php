@@ -21,8 +21,6 @@ use JTL\Shopsetting;
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
 $_SESSION['deliveryCountryPrefLocked'] = true;
 
@@ -41,8 +39,6 @@ if (Request::postInt('login') === 1) {
     $controller->login($_POST['email'], $_POST['passwort']);
 }
 if (Request::verifyGPCDataInt('basket2Pers') === 1) {
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
-
     $controller->setzeWarenkorbPersInWarenkorb(Frontend::getCustomer()->getID());
     header('Location: bestellvorgang.php?wk=1');
     exit();

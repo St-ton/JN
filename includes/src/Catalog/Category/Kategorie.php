@@ -98,12 +98,6 @@ class Kategorie
     public $nBildVorhanden;
 
     /**
-     * @var array
-     * @deprecated since version 4.05 - use categoryFunctionAttributes instead
-     */
-    public $KategorieAttribute;
-
-    /**
      * @var array - value/key pair
      */
     public $categoryFunctionAttributes;
@@ -393,30 +387,6 @@ class Kategorie
     }
 
     /**
-     * add category into db
-     *
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function insertInDB(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * update category in db
-     *
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function updateInDB(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
      * set data from given object to category
      *
      * @param object $obj
@@ -503,18 +473,6 @@ class Kategorie
         );
 
         return $data !== null ? (int)$data->kOberKategorie : false;
-    }
-
-    /**
-     * set data from sync POST request
-     *
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function setzePostDaten(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return false;
     }
 
     /**

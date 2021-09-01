@@ -226,19 +226,6 @@ class CustomerGroup
     }
 
     /**
-     * @param int $id
-     * @return $this
-     * @deprecated since 4.06
-     */
-    public function setKundengruppe(int $id): self
-    {
-        \trigger_error(__METHOD__ . ' is deprecated - use setID() instead', \E_USER_DEPRECATED);
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
      * @param string $name
      * @return $this
      */
@@ -247,18 +234,6 @@ class CustomerGroup
         $this->name = $name;
 
         return $this;
-    }
-
-    /**
-     * @param float $fRabatt
-     * @return $this
-     * @deprecated since 4.06
-     */
-    public function setRabatt($fRabatt): self
-    {
-        \trigger_error(__METHOD__ . ' is deprecated - use setDiscount() instead', \E_USER_DEPRECATED);
-
-        return $this->setDiscount($fRabatt);
     }
 
     /**
@@ -278,18 +253,6 @@ class CustomerGroup
     public function getDiscount(): float
     {
         return $this->discount;
-    }
-
-    /**
-     * @param string $cStandard
-     * @return $this
-     * @deprecated since 4.06
-     */
-    public function setStandard($cStandard): self
-    {
-        \trigger_error(__METHOD__ . ' is deprecated - use setDefault() instead', \E_USER_DEPRECATED);
-
-        return $this->setDefault($cStandard);
     }
 
     /**
@@ -391,33 +354,11 @@ class CustomerGroup
     }
 
     /**
-     * @return int
-     * @deprecated since 4.06
-     */
-    public function getKundengruppe(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated - use getID() instead', \E_USER_DEPRECATED);
-
-        return $this->getID();
-    }
-
-    /**
      * @return string|null
      */
     public function getName(): ?string
     {
         return $this->name;
-    }
-
-    /**
-     * @return float
-     * @deprecated since 4.06
-     */
-    public function getRabatt(): float
-    {
-        \trigger_error(__METHOD__ . ' is deprecated - use getDiscount() instead', \E_USER_DEPRECATED);
-
-        return $this->getDiscount();
     }
 
     /**
@@ -626,28 +567,6 @@ class CustomerGroup
     public function getAttribute($attributeName)
     {
         return $this->Attribute[$attributeName] ?? null;
-    }
-
-    /**
-     * @param int $id
-     * @return array
-     * @deprecated since 4.06
-     */
-    public static function getAttributes(int $id): array
-    {
-        $attributes = [];
-        if ($id > 0) {
-            $attributes = Shop::Container()->getDB()->selectAll(
-                'tkundengruppenattribut',
-                'kKundengruppe',
-                $id
-            );
-            foreach ($attributes as $Att) {
-                $attributes[\mb_convert_case($Att->cName, \MB_CASE_LOWER)] = $Att->cWert;
-            }
-        }
-
-        return $attributes;
     }
 
     /**

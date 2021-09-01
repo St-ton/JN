@@ -404,31 +404,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Customer
-     * @deprecated since 5.0.0
-     */
-    public static function customer(): Customer
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCustomer();
-    }
-
-    /**
      * @return CustomerGroup
      */
     public static function getCustomerGroup(): CustomerGroup
     {
         return $_SESSION['Kundengruppe'] ?? (new CustomerGroup())->loadDefaultGroup();
-    }
-
-    /**
-     * @return CustomerGroup
-     * @deprecated since 5.0.0
-     */
-    public static function customerGroup(): CustomerGroup
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCustomerGroup();
     }
 
     /**
@@ -446,31 +426,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return LanguageHelper
-     * @deprecated since 5.0.0
-     */
-    public function language(): LanguageHelper
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getLanguage();
-    }
-
-    /**
      * @return LanguageModel[]
      */
     public static function getLanguages(): array
     {
         return $_SESSION['Sprachen'] ?? [];
-    }
-
-    /**
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public static function languages(): array
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getLanguages();
     }
 
     /**
@@ -482,41 +442,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function payments(): array
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getPaymentMethods();
-    }
-
-    /**
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function deliveryCountries(): array
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return [];
-    }
-
-    /**
      * @return Currency
      */
     public static function getCurrency(): Currency
     {
         return $_SESSION['Waehrung'] ?? (new Currency())->getDefault();
-    }
-
-    /**
-     * @return Currency
-     * @deprecated since 5.0.0
-     */
-    public static function currency(): Currency
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCurrency();
     }
 
     /**
@@ -528,41 +458,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Cart
-     * @deprecated since 5.0.0
-     */
-    public static function cart(): Cart
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCart();
-    }
-
-    /**
      * @return Currency[]
      */
     public static function getCurrencies(): array
     {
         return $_SESSION['Waehrungen'] ?? [];
-    }
-
-    /**
-     * @return Currency[]
-     * @deprecated since 5.0.0
-     */
-    public static function currencies(): array
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCurrencies();
-    }
-
-    /**
-     * @return Cart
-     * @deprecated since 5.0.0
-     */
-    public function basket(): Cart
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return $_SESSION['Warenkorb'] ?? new Cart();
     }
 
     /**
@@ -574,165 +474,10 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Wishlist
-     * @deprecated since 5.0.0
-     */
-    public static function wishList(): Wishlist
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getWishList();
-    }
-
-    /**
      * @return ComparisonList
      */
     public static function getCompareList(): ComparisonList
     {
         return $_SESSION['Vergleichsliste'] ?? new ComparisonList();
-    }
-
-    /**
-     * @return ComparisonList
-     * @deprecated since 5.0.0
-     */
-    public static function compareList(): ComparisonList
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCompareList();
-    }
-
-    /**
-     * @param string $langISO
-     * @former checkeSpracheWaehrung()
-     * @since 5.0.0
-     */
-    public static function checkReset($langISO = ''): void
-    {
-        if ($langISO !== '') {
-            if ($langISO !== Shop::getLanguageCode()) {
-                $_SESSION['oKategorie_arr']     = [];
-                $_SESSION['oKategorie_arr_new'] = [];
-            }
-            $lang = first(LanguageHelper::getAllLanguages(), static function ($l) use ($langISO) {
-                return $l->cISO === $langISO;
-            });
-            if ($lang === null) {
-                self::urlFallback();
-            }
-            $_SESSION['cISOSprache'] = $lang->cISO;
-            $_SESSION['kSprache']    = (int)$lang->kSprache;
-            Shop::setLanguage($lang->kSprache, $lang->cISO);
-            unset($_SESSION['Suche']);
-            self::setSpecialLinks();
-            if (isset($_SESSION['Wunschliste'])) {
-                self::getWishList()->umgebungsWechsel();
-            }
-            if (isset($_SESSION['Vergleichsliste'])) {
-                self::getCompareList()->umgebungsWechsel();
-            }
-            $_SESSION['currentLanguage'] = clone $lang;
-            unset($_SESSION['currentLanguage']->cURL);
-        }
-
-        $currencyCode = Request::verifyGPDataString('curr');
-        if ($currencyCode) {
-            $cart     = self::getCart();
-            $currency = first(self::getCurrencies(), static function (Currency $c) use ($currencyCode) {
-                return $c->getCode() === $currencyCode;
-            });
-            if ($currency !== null) {
-                $_SESSION['Waehrung']      = $currency;
-                $_SESSION['cWaehrungName'] = $currency->getName();
-                if (isset($_SESSION['Wunschliste'])) {
-                    self::getWishList()->umgebungsWechsel();
-                }
-                if (isset($_SESSION['Vergleichsliste'])) {
-                    self::getCompareList()->umgebungsWechsel();
-                }
-                if ($cart !== null && \count($cart->PositionenArr) > 0) {
-                    $cart->setzePositionsPreise();
-                }
-            }
-        }
-        LanguageHelper::getInstance()->autoload();
-    }
-
-    private static function urlFallback(): void
-    {
-        $productID             = Request::verifyGPCDataInt('a');
-        $categoryID            = Request::verifyGPCDataInt('k');
-        $pageID                = Request::verifyGPCDataInt('s');
-        $childProductID        = Request::verifyGPCDataInt('a2');
-        $manufacturerID        = Request::verifyGPCDataInt('h');
-        $searchQueryID         = Request::verifyGPCDataInt('l');
-        $kMerkmalWert          = Request::verifyGPCDataInt('m');
-        $kSuchspecial          = Request::verifyGPCDataInt('q');
-        $kNews                 = Request::verifyGPCDataInt('n');
-        $kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');
-        $kNewsKategorie        = Request::verifyGPCDataInt('nk');
-        $key                   = 'kArtikel';
-        $val                   = 0;
-        \http_response_code(301);
-        if ($productID > 0) {
-            $key = 'kArtikel';
-            $val = $productID;
-        } elseif ($categoryID > 0) {
-            $key = 'kKategorie';
-            $val = $categoryID;
-        } elseif ($pageID > 0) {
-            $key = 'kLink';
-            $val = $pageID;
-        } elseif ($childProductID > 0) {
-            $key = 'kArtikel';
-            $val = $childProductID;
-        } elseif ($manufacturerID > 0) {
-            $key = 'kHersteller';
-            $val = $manufacturerID;
-        } elseif ($searchQueryID > 0) {
-            $key = 'kSuchanfrage';
-            $val = $searchQueryID;
-        } elseif ($kMerkmalWert > 0) {
-            $key = 'kMerkmalWert';
-            $val = $kMerkmalWert;
-        } elseif ($kSuchspecial > 0) {
-            $key = 'kSuchspecial';
-            $val = $kSuchspecial;
-        } elseif ($kNews > 0) {
-            $key = 'kNews';
-            $val = $kNews;
-        } elseif ($kNewsMonatsUebersicht > 0) {
-            $key = 'kNewsMonatsUebersicht';
-            $val = $kNewsMonatsUebersicht;
-        } elseif ($kNewsKategorie > 0) {
-            $key = 'kNewsKategorie';
-            $val = $kNewsKategorie;
-        }
-        $dbRes = Shop::Container()->getDB()->select(
-            'tseo',
-            'cKey',
-            $key,
-            'kKey',
-            $val,
-            'kSprache',
-            Shop::getLanguageID()
-        );
-        $seo   = $dbRes->cSeo ?? '';
-        \header('Location: ' . Shop::getURL() . '/' . $seo, true, 301);
-        exit;
-    }
-
-    /**
-     * @return LinkGroupCollection
-     * @former setzeLinks()
-     * @since 5.0.0
-     */
-    public static function setSpecialLinks(): LinkGroupCollection
-    {
-        $linkGroups                    = Shop::Container()->getLinkService()->getLinkGroups();
-        $_SESSION['Link_Datenschutz']  = $linkGroups->Link_Datenschutz;
-        $_SESSION['Link_AGB']          = $linkGroups->Link_AGB;
-        $_SESSION['Link_Versandseite'] = $linkGroups->Link_Versandseite;
-
-        return $linkGroups;
     }
 }

@@ -378,17 +378,6 @@ class Preise
     }
 
     /**
-     * @return $this
-     * @deprecated since 5.0.0 - removed tpreise
-     */
-    public function loadFromDB(): self
-    {
-        \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return $this;
-    }
-
-    /**
      * @param float $discount
      * @param float $offset
      * @return $this
@@ -473,28 +462,6 @@ class Preise
         }
 
         return $this;
-    }
-
-    /**
-     * @retun int
-     * @deprecated since 5.0.0 - removed tpreise
-     */
-    public function insertInDB(): int
-    {
-        \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return 0;
-    }
-
-    /**
-     * setzt Daten aus Sync POST request.
-     *
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function setzePostDaten(): bool
-    {
-        return false;
     }
 
     /**

@@ -14,7 +14,6 @@ class SyncCronjob extends NetSyncHandler
     protected function request($request): void
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'smartyinclude.php';
-        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'exportformat_inc.php';
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'exportformat_queue_inc.php';
         switch ($request) {
             case NetSyncRequest::CRONJOBSTATUS:

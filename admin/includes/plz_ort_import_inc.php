@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -628,34 +627,4 @@ function plzimportReadSession($sessID)
     return !empty($dbSess->cSessionData)
         ? unserialize($dbSess->cSessionData)
         : [];
-}
-
-/**
- * @param mixed    $data
- * @param int|null $error
- * @deprecated since 5.0.0
- */
-function plzimportMakeResponse($data, $error = null)
-{
-    ob_end_clean();
-
-    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-    header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-    header('Cache-Control: no-cache, must-revalidate');
-    header('Pragma: no-cache');
-    header('Content-type: application/json');
-
-    if ($error !== null) {
-        header(Request::makeHTTPHeader(500), true, $error);
-    }
-
-    $result = (object)[
-        'error' => $error,
-        'data'  => $data
-    ];
-
-    $json = json_encode($result);
-
-    echo $json;
-    exit;
 }

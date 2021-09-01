@@ -299,7 +299,7 @@ function holeKampagneDetailStats($campaignID, $definitions)
         $_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr = $tmpData;
     }
     // Gesamtstats
-    if (is_array($statsAssoc) && count($statsAssoc) > 0) {
+    if (count($statsAssoc) > 0) {
         foreach ($statsAssoc as $statDefinitionsAssoc) {
             foreach ($statDefinitionsAssoc as $definitionID => $item) {
                 if ($definitionID !== 'cDatum') {

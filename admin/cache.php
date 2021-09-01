@@ -461,14 +461,11 @@ foreach ($allMethods as $name => $state) {
         $nonAvailableMethods[] = $name;
     }
 }
-$cachingGroups = [];
-if ($cache !== null) {
-    $cachingGroups = $cache->getCachingGroups();
-    foreach ($cachingGroups as &$cachingGroup) {
-        $cachingGroup['key_count'] = count($cache->getKeysByTag([constant($cachingGroup['name'])]));
-    }
-    unset($cachingGroup);
+$cachingGroups = $cache->getCachingGroups();
+foreach ($cachingGroups as &$cachingGroup) {
+    $cachingGroup['key_count'] = count($cache->getKeysByTag([constant($cachingGroup['name'])]));
 }
+unset($cachingGroup);
 if (!empty($cache->getError())) {
     $alertHelper->addAlert(Alert::TYPE_ERROR, $cache->getError(), 'errorCache');
 }

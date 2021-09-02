@@ -186,7 +186,7 @@ class Order extends CartHelper
             'cartTotal'      => $cartTotal,
             'customerCredit' => (float)$customer->fGuthaben
         ]);
-        $credit = 5.0;
+
         if ($order !== null) {
             $order->fGuthabenGenutzt   = $credit;
             $order->GutscheinLocalized = Preise::getLocalizedPriceString($credit);

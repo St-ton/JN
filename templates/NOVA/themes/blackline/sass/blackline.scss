@@ -7,14 +7,14 @@
 header {
   .dropdown-menu {
     background-color: $white;
-    color: $black;
+    color: $gray-darker;
     a {
-      color: $black;
+      color: $gray-darker;
     }
   }
   .nav-mobile-body .dropdown-menu {
     @include media-breakpoint-down(md) {
-      background: $black;
+      background: $gray-darker;
       color: $white;
       a {
         color: $white;
@@ -25,7 +25,7 @@ header {
 
 #jtl-nav-wrapper .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
   background-color: $white;
-  color: $black;
+  color: $gray-darker;
 }
 
 @include media-breakpoint-up(lg) {
@@ -353,9 +353,6 @@ header {
   top: map_get($spacers, 6);
 }
 
-.price_wrapper .price {
-  color: $black;
-}
 @include media-breakpoint-up(md) {
   .productlist-page-nav .displayoptions {
     width: 100%;
@@ -430,7 +427,7 @@ aside {
       border-bottom: $highlight-border-size solid $secondary;
     }
   }
-  .dropdown-toggle {
+  .dropdown-toggle:not(.btn-secondary) {
     &::after {
       color: $gray-dark;
     }
@@ -574,4 +571,9 @@ aside {
   .productlist-filter-headline {
     border-bottom: $hr-border-width solid $gray-light;
   }
+}
+
+.form-control {
+  font-family: $font-accent;
+  font-weight: $font-weight-light;
 }

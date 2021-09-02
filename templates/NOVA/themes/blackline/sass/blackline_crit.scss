@@ -41,6 +41,9 @@ h6, .h6 { @include font-size($h6-font-size); }
       display: none;
     }
   }
+  label {
+    color: $gray;
+  }
 }
 
 .modal {
@@ -221,7 +224,7 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
     .btn-secondary {
       @include media-breakpoint-up(lg) {
         background: $white;
-        border-color: $black;
+        border-color: $gray-darker;
         border-left-color: transparent;
       }
       border-color: $white;
@@ -342,9 +345,9 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
   width: 100%;
   height: $input-height;
   padding: $input-padding-y $input-padding-x;
-  font-family: $input-font-family;
+  font-family: $font-accent;
   @include font-size($input-font-size);
-  font-weight: $input-font-weight;
+  font-weight: $font-weight-light;
   line-height: $input-line-height;
   color: $input-color;
   background-color: $input-bg;

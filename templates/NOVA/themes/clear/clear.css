@@ -23763,6 +23763,15 @@ input.typeahead:-ms-input-placeholder {
   margin-bottom: 1rem;
 }
 
+.min-h-card {
+  min-height: 188px;
+}
+@media (min-width: 1300px) {
+  .min-h-card {
+    min-height: 168px;
+  }
+}
+
 /* utilities */
 .rounded-top-left {
   border-top-left-radius: 0.125rem !important;

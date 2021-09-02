@@ -347,18 +347,16 @@ class Starter
         }
         $this->setPostData($post);
         $this->setData($files['data']['tmp_name'] ?? null);
-
         if ($direction === self::DIRECTION_PULL) {
-            $res        = '';
-            $unzip      = $handler !== Brocken::class;
-            $fromHandle = $handler === Customer::class;
-            $return     = $this->init($post, $files, $unzip);
+            $res    = '';
+            $unzip  = $handler !== Brocken::class;
+            $return = $this->init($post, $files, $unzip);
             if ($return === self::OK) {
                 /** @var AbstractSync $sync */
                 $sync = new $handler($this->db, $this->cache, $this->logger);
                 $res  = $sync->handle($this);
             }
-            if ($fromHandle === false) {
+            if ($handledFile !== 'SetKunde_xml') {
                 echo $return;
                 exit();
             }

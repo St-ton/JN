@@ -8,7 +8,6 @@ Nach der Neuberechnung des Nettopreises
 
 Parameter
 """""""""
- ``,  `` ``,  `` ``,  ``float|string ``
 ``float|string`` **netPrice**
     **netPrice** Nettopreis
 

@@ -5,11 +5,13 @@ namespace JTL\Helpers;
 use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\Currency;
+use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 
@@ -166,5 +168,30 @@ class Order extends CartHelper
                 'kZahlungsart'      => 0,
                 'kVersandart'       => 0,
             ];
+    }
+
+    /**
+     * @param stdClass|Bestellung|null $order
+     * @return float
+     * @since 5.1.0
+     */
+    public static function getOrderCredit($order = null): float
+    {
+        $customer  = Frontend::getCustomer();
+        $cartTotal = (float)Frontend::getCart()->gibGesamtsummeWaren(true, false);
+        $credit    = \min((float)$customer->fGuthaben, $cartTotal);
+
+        \executeHook(\HOOK_BESTELLUNG_SETZEGUTHABEN, [
+            'creditToUse'    => &$credit,
+            'cartTotal'      => $cartTotal,
+            'customerCredit' => (float)$customer->fGuthaben
+        ]);
+
+        if ($order !== null) {
+            $order->fGuthabenGenutzt   = $credit;
+            $order->GutscheinLocalized = Preise::getLocalizedPriceString($credit);
+        }
+
+        return $credit;
     }
 }

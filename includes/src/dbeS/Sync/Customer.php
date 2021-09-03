@@ -246,7 +246,7 @@ final class Customer extends AbstractSync
             );
             if (isset($oldCustomer->kKunde) && $oldCustomer->kKunde > 0) {
                 // Email vergeben -> Kunde wird nicht neu angelegt, sondern der Kunde wird an Wawi zurückgegeben
-                return $this->notifyDuplicateCustomer($oldCustomer, $xml);
+                return $this->notifyDuplicateCustomer($oldCustomer);
             }
             // Email noch nicht belegt, der Kunde muss neu erstellt werden -> KUNDE WIRD NEU ERSTELLT
             $kInetKunde = $this->addNewCustomer($customer, $customerAttributes);
@@ -276,10 +276,9 @@ final class Customer extends AbstractSync
 
     /**
      * @param stdClass $oldCustomer
-     * @param array    $xml
      * @return array
      */
-    private function notifyDuplicateCustomer(stdClass $oldCustomer, array $xml): array
+    private function notifyDuplicateCustomer(stdClass $oldCustomer): array
     {
         $cstmr  = $this->db->getArrays(
             "SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
@@ -312,6 +311,7 @@ final class Customer extends AbstractSync
         foreach ($cstmr[0]['tkundenattribut'] as $o => $attr) {
             $cstmr[0]['tkundenattribut'][$o . ' attr'] = $this->buildAttributes($attr);
         }
+        $xml                          = [];
         $xml['kunden attr']['anzahl'] = 1;
         $xml['kunden']['tkunde']      = $cstmr;
         $this->logger->error('Dieser Kunde existiert: ' . XML::serialize($xml));

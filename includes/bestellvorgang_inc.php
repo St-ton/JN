@@ -16,6 +16,7 @@ use JTL\Customer\CustomerFields;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Order;
 use JTL\Helpers\PaymentMethod as Helper;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -299,10 +300,8 @@ function plausiGuthaben($post): void
             $_SESSION['Bestellung'] = new stdClass();
         }
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
-        $_SESSION['Bestellung']->fGuthabenGenutzt = min(
-            Frontend::getCustomer()->fGuthaben,
-            Frontend::getCart()->gibGesamtsummeWaren(true, false)
-        );
+        $_SESSION['Bestellung']->fGuthabenGenutzt = Order::getOrderCredit($_SESSION['Bestellung']);
+
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABENVERRECHNEN);
     }
 }
@@ -582,13 +581,7 @@ function pruefeZahlungsartwahlStep($post)
 function pruefeGuthabenNutzen(): void
 {
     if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen) {
-        $_SESSION['Bestellung']->fGuthabenGenutzt   = min(
-            Frontend::getCustomer()->fGuthaben,
-            Frontend::getCart()->gibGesamtsummeWaren(true, false)
-        );
-        $_SESSION['Bestellung']->GutscheinLocalized = Preise::getLocalizedPriceString(
-            $_SESSION['Bestellung']->fGuthabenGenutzt
-        );
+        $_SESSION['Bestellung']->fGuthabenGenutzt = Order::getOrderCredit($_SESSION['Bestellung']);
     }
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABEN_PLAUSI);

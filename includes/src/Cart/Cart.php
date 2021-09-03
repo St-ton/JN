@@ -13,6 +13,7 @@ use JTL\Checkout\Versandart;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Config\ItemLocalization;
 use JTL\Extensions\Download\Download;
+use JTL\Helpers\Order;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -1173,17 +1174,12 @@ class Cart
                 $_SESSION['Bestellung']->fGuthabenGenutzt,
                 $_SESSION['Kunde']->fGuthaben
             )
-            && $_SESSION['Bestellung']->GuthabenNutzen == 1
+            && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1
             && $_SESSION['Bestellung']->fGuthabenGenutzt > 0
             && $_SESSION['Kunde']->fGuthaben > 0
         ) {
             // check and correct the SESSION-values for "Guthaben"
-            $_SESSION['Bestellung']->GuthabenNutzen   = 1;
-            $_SESSION['Bestellung']->fGuthabenGenutzt = \min(
-                $_SESSION['Kunde']->fGuthaben,
-                Frontend::getCart()->gibGesamtsummeWaren(true, false)
-            );
-            $total                                   -= $_SESSION['Bestellung']->fGuthabenGenutzt * $conversionFactor;
+            $total -= Order::getOrderCredit() * $conversionFactor;
         }
         $total /= $conversionFactor;
         $this->useSummationRounding();

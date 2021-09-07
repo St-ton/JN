@@ -293,7 +293,7 @@ class Starter
                     $test = new Test($this->db);
                     echo $test->execute();
                 } else {
-                    \syncException('Falsche Login-Daten', $res);
+                    \syncException('', $res);
                 }
                 break;
             case 'bild':

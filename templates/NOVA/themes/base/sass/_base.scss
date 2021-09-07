@@ -504,3 +504,10 @@ input.typeahead {
 .link-content {
   margin-bottom: map-get($spacers, 3);
 }
+
+.min-h-card {
+  min-height: 188px;
+  @include media-breakpoint-up(xl) {
+    min-height: 168px;
+  }
+}

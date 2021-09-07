@@ -2,6 +2,7 @@
 
 namespace JTL\Plugin\Data;
 
+use JTL\DB\DbInterface;
 use JTL\MagicCompatibilityTrait;
 use JTL\Plugin\PluginInterface;
 use stdClass;
@@ -146,6 +147,7 @@ class PaymentMethod
         'kZahlungsart'                    => 'MethodID',
         'cName'                           => 'Name',
         'cModulId'                        => 'ModuleID',
+        'cKundengruppen'                  => 'CustomerGroups',
         'cPluginTemplate'                 => 'Template',
         'cZusatzschrittTemplate'          => 'AdditionalTemplate',
         'cBild'                           => 'Image',
@@ -178,6 +180,28 @@ class PaymentMethod
         if ($data !== null && \SAFE_MODE === false) {
             $this->mapData($data, $plugin);
         }
+    }
+
+    /**
+     * @param DbInterface $db
+     * @param string      $moduleId
+     * @return PaymentMethod
+     */
+    public static function load(DbInterface $db, string $moduleId): self
+    {
+        $data = $db->selectSingleRow('tzahlungsart', 'cModulId', $moduleId);
+        if ($data !== null) {
+            $data->kZahlungsart = (int)$data->kZahlungsart;
+            $data->nSort        = (int)$data->nSort;
+            $data->nMailSenden  = (int)$data->nMailSenden;
+            $data->nActive      = (int)$data->nActive;
+            $data->nCURL        = (int)$data->nCURL;
+            $data->nSOAP        = (int)$data->nSOAP;
+            $data->nSOCKETS     = (int)$data->nSOCKETS;
+            $data->nNutzbar     = (int)$data->nNutzbar;
+        }
+
+        return new self($data);
     }
 
     /**
@@ -273,11 +297,19 @@ class PaymentMethod
     }
 
     /**
-     * @param array $customerGroups
+     * @param array|string $customerGroups
      */
-    public function setCustomerGroups(array $customerGroups): void
+    public function setCustomerGroups($customerGroups): void
     {
-        $this->customerGroups = $customerGroups;
+        if (\is_array($customerGroups)) {
+            $this->customerGroups = $customerGroups;
+
+            return;
+        }
+
+        $this->customerGroups = \array_map(static function ($item) {
+            return (int)$item;
+        }, \array_filter(\explode(';', $customerGroups)));
     }
 
     /**

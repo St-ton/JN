@@ -7,10 +7,12 @@ use JTL\Cart\Cart;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\ZahlungsLog;
 use JTL\Customer\Customer;
+use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Plugin\Data\PaymentMethod;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -404,6 +406,12 @@ class Method implements MethodInterface
     public function isValid(object $customer, Cart $cart): bool
     {
         if (!$this->isValidIntern([$customer, $cart])) {
+            return false;
+        }
+
+        $customerGroups = PaymentMethod::load(Shop::Container()->getDB(), $this->moduleID)->getCustomerGroups();
+        $customerGroup  = (int)($customer->kKundengruppe ?? CustomerGroup::getCurrent());
+        if (count($customerGroups) > 0 && !\in_array($customerGroup, $customerGroups, true)) {
             return false;
         }
 

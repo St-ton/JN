@@ -293,13 +293,7 @@ class Starter
                     $test = new Test($this->db);
                     echo $test->execute();
                 } else {
-                    echo \sprintf(
-                        'Ihr JTL-Shop Version %s benötigt für den Datenabgleich mindestens JTL-Wawi '
-                        . 'Version %d. Eine aktuelle Version erhalten Sie unter: %s',
-                        \APPLICATION_VERSION,
-                        \JTL_MIN_WAWI_VERSION / 100000.0,
-                        'https://jtl-url.de/wawidownload'
-                    );
+                    \syncException('Falsche Login-Daten', $res);
                 }
                 break;
             case 'bild':

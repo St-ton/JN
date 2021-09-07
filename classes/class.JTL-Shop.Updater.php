@@ -125,7 +125,7 @@ class Updater
     {
         $v = Shop::DB()->query("SELECT * FROM tversion", 1);
         if ($v === null) {
-            throw new \Exception('Unable to identify application version');
+            throw new Exception('Unable to identify application version');
         }
 
         return $v;
@@ -285,7 +285,7 @@ class Updater
             try {
                 Shop::DB()->beginTransaction();
                 Shop::DB()->executeQuery($sql, 3);
-            } catch (\PDOException $e) {
+            } catch (PDOException $e) {
                 $code  = (int)$e->errorInfo[1];
                 $error = Shop::DB()->escape($e->errorInfo[2]);
 
@@ -303,7 +303,7 @@ class Updater
                         nTyp = '.$code.', cFehlerSQL = \''.$error.'\', dAktualisiert = now()', 3
                     );
 
-                    throw new \PDOException($e->getMessage().'\\nFile: \''.$this->getSqlUpdatePath($targetVersion)
+                    throw new PDOException($e->getMessage().'\\nFile: \''.$this->getSqlUpdatePath($targetVersion)
                         .'\' line: \''.($currentLine+1).'\'.', $e->getCode(), $e->getPrevious());
                 }
             }

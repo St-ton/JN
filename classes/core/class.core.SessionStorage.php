@@ -63,7 +63,7 @@ class SessionStorage
                 );
             }
         } else {
-            throw new \InvalidArgumentException('Must implement \SessionHandlerInterface.');
+            throw new InvalidArgumentException('Must implement \SessionHandlerInterface.');
         }
 
         if ($res === true) {
@@ -141,7 +141,7 @@ class SessionStorage
             }
             $this->_handler->sessionData = &$_SESSION;
         } else {
-            throw new \RuntimeException('Failed to start session');
+            throw new RuntimeException('Failed to start session');
         }
 
         return $this;

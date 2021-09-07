@@ -114,7 +114,7 @@ class Warenkorb
     {
         static $depAmount = null;
 
-        if (!isset($depAmount, $depAmount[$productID]) || $excludePos !== null) {
+        if (!isset($depAmount[$productID]) || $excludePos !== null) {
             $depAmount = $this->getAllDependentAmount($onlyStockRelevant, $excludePos);
         }
 
@@ -774,7 +774,6 @@ class Warenkorb
         foreach ($this->PositionenArr as $i => $Position) {
             if ($Position->kArtikel > 0 && $Position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
                 //kommt man in den Staffelpreisbereich?
-                /** @var $oArtikel Artikel */
                 $oArtikel = $Position->Artikel;
                 $anz      = $this->gibAnzahlEinesArtikels($oArtikel->kArtikel);
                 if ($anz > 1) {
@@ -1639,10 +1638,6 @@ class Warenkorb
      */
     public function hasDigitalProducts()
     {
-        if (class_exists('Download') && Download::hasDownloads($this)) {
-            return true;
-        }
-
-        return false;
+        return class_exists('Download') && Download::hasDownloads($this);
     }
 }

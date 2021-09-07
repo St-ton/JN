@@ -44,7 +44,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && vali
     for ($i = 0; $i < $configCount; $i++) {
         unset($aktWert);
         $aktWert                        = new stdClass();
-        $aktWert->cWert                 = $_POST[$oConfig_arr[$i]->cWertName];
+        $aktWert->cWert                 = StringHandler::filterXSS($_POST[$oConfig_arr[$i]->cWertName]);
         $aktWert->cName                 = $oConfig_arr[$i]->cWertName;
         $aktWert->kEinstellungenSektion = $oConfig_arr[$i]->kEinstellungenSektion;
         switch ($oConfig_arr[$i]->cInputTyp) {

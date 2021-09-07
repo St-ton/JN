@@ -5,7 +5,7 @@
  */
 require_once __DIR__ . '/includes/admininclude.php';
 
-$oAccount->redirectOnFailure();
+$oAccount->permission('DBCHECK_VIEW', true, true);
 
 $phpInfo = '';
 /** @global JTLSmarty $smarty */

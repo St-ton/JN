@@ -404,15 +404,13 @@ class Warenlager extends MainModel
      */
     public function delete()
     {
-        $nRows = Shop::DB()->query(
+        return Shop::DB()->query(
             "DELETE twarenlager, twarenlagersprache
                 FROM twarenlager
                 LEFT JOIN twarenlagersprache 
                     ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
                 WHERE twarenlager.kWarenlager = " . (int)$this->kWarenlager, 3
         );
-
-        return $nRows;
     }
 
     /**

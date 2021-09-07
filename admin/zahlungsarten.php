@@ -14,6 +14,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 $standardwaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
 $hinweis          = '';
 $step             = 'uebersicht';
+$postData         = StringHandler::filterXSS($_POST);
 // Check Nutzbar
 if (verifyGPCDataInteger('checkNutzbar') === 1) {
     pruefeZahlungsartNutzbarkeit();
@@ -45,16 +46,16 @@ if (verifyGPCDataInteger('kZahlungsart') > 0 && $action !== 'logreset' && valida
     }
 }
 
-if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart']) &&
-    (int)$_POST['einstellungen_bearbeiten'] === 1 && (int)$_POST['kZahlungsart'] > 0 && validateToken()) {
+if (isset($postData['einstellungen_bearbeiten'], $postData['kZahlungsart']) &&
+    (int)$postData['einstellungen_bearbeiten'] === 1 && (int)$postData['kZahlungsart'] > 0 && validateToken()) {
     $step              = 'uebersicht';
-    $zahlungsart       = Shop::DB()->select('tzahlungsart', 'kZahlungsart', (int)$_POST['kZahlungsart']);
-    $nMailSenden       = (int)$_POST['nMailSenden'];
-    $nMailSendenStorno = (int)$_POST['nMailSendenStorno'];
+    $zahlungsart       = Shop::DB()->select('tzahlungsart', 'kZahlungsart', (int)$postData['kZahlungsart']);
+    $nMailSenden       = (int)$postData['nMailSenden'];
+    $nMailSendenStorno = (int)$postData['nMailSendenStorno'];
     $nMailBits         = 0;
-    if (is_array($_POST['kKundengruppe'])) {
-        $cKundengruppen = StringHandler::createSSK($_POST['kKundengruppe']);
-        if (in_array(0, $_POST['kKundengruppe'])) {
+    if (is_array($postData['kKundengruppe'])) {
+        $cKundengruppen = StringHandler::createSSK($postData['kKundengruppe']);
+        if (in_array(0, $postData['kKundengruppe'])) {
             unset($cKundengruppen);
         }
     }
@@ -68,15 +69,15 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart']) &&
         $cKundengruppen = '';
     }
 
-    $nWaehrendBestellung = isset($_POST['nWaehrendBestellung'])
-        ? (int)$_POST['nWaehrendBestellung']
+    $nWaehrendBestellung = isset($postData['nWaehrendBestellung'])
+        ? (int)$postData['nWaehrendBestellung']
         : $zahlungsart->nWaehrendBestellung;
 
     $upd                      = new stdClass();
     $upd->cKundengruppen      = $cKundengruppen;
-    $upd->nSort               = (int)$_POST['nSort'];
+    $upd->nSort               = (int)$postData['nSort'];
     $upd->nMailSenden         = $nMailBits;
-    $upd->cBild               = $_POST['cBild'];
+    $upd->cBild               = $postData['cBild'];
     $upd->nWaehrendBestellung = $nWaehrendBestellung;
     Shop::DB()->update('tzahlungsart', 'kZahlungsart', (int)$zahlungsart->kZahlungsart, $upd);
     // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
@@ -94,7 +95,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart']) &&
             $aktWert          = new stdClass();
             $aktWert->kPlugin = $kPlugin;
             $aktWert->cName   = $Conf[$i]->cWertName;
-            $aktWert->cWert   = $_POST[$Conf[$i]->cWertName];
+            $aktWert->cWert   = $postData[$Conf[$i]->cWertName];
 
             switch ($Conf[$i]->cInputTyp) {
                 case 'kommazahl':
@@ -122,7 +123,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart']) &&
         $configCount = count($Conf);
         for ($i = 0; $i < $configCount; ++$i) {
             $aktWert                        = new stdClass();
-            $aktWert->cWert                 = $_POST[$Conf[$i]->cWertName];
+            $aktWert->cWert                 = $postData[$Conf[$i]->cWertName];
             $aktWert->cName                 = $Conf[$i]->cWertName;
             $aktWert->kEinstellungenSektion = CONF_ZAHLUNGSARTEN;
             $aktWert->cModulId              = $zahlungsart->cModulId;
@@ -152,21 +153,21 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart']) &&
     if (!isset($zahlungsartSprache)) {
         $zahlungsartSprache = new stdClass();
     }
-    $zahlungsartSprache->kZahlungsart = (int)$_POST['kZahlungsart'];
+    $zahlungsartSprache->kZahlungsart = (int)$postData['kZahlungsart'];
     foreach ($sprachen as $sprache) {
         $zahlungsartSprache->cISOSprache = $sprache->cISO;
         $zahlungsartSprache->cName       = $zahlungsart->cName;
-        if ($_POST['cName_' . $sprache->cISO]) {
-            $zahlungsartSprache->cName = $_POST['cName_' . $sprache->cISO];
+        if ($postData['cName_' . $sprache->cISO]) {
+            $zahlungsartSprache->cName = $postData['cName_' . $sprache->cISO];
         }
-        $zahlungsartSprache->cGebuehrname      = $_POST['cGebuehrname_' . $sprache->cISO];
-        $zahlungsartSprache->cHinweisText      = $_POST['cHinweisText_' . $sprache->cISO];
-        $zahlungsartSprache->cHinweisTextShop  = $_POST['cHinweisTextShop_' . $sprache->cISO];
+        $zahlungsartSprache->cGebuehrname      = $postData['cGebuehrname_' . $sprache->cISO];
+        $zahlungsartSprache->cHinweisText      = $postData['cHinweisText_' . $sprache->cISO];
+        $zahlungsartSprache->cHinweisTextShop  = $postData['cHinweisTextShop_' . $sprache->cISO];
 
         Shop::DB()->delete(
             'tzahlungsartsprache',
             ['kZahlungsart', 'cISOSprache'],
-            [(int)$_POST['kZahlungsart'],$sprache->cISO]
+            [(int)$postData['kZahlungsart'],$sprache->cISO]
         );
         Shop::DB()->insert('tzahlungsartsprache', $zahlungsartSprache);
     }
@@ -273,11 +274,11 @@ if ($step === 'einstellen') {
                ->assign('kZahlungsart', $kZahlungsart);
     }
 } elseif ($step === 'payments') {
-    if (isset($_POST['action'], $_POST['kEingang_arr']) &&
-        $_POST['action'] === 'paymentwawireset' &&
+    if (isset($postData['action'], $postData['kEingang_arr']) &&
+        $postData['action'] === 'paymentwawireset' &&
         validateToken()
     ) {
-        $kEingang_arr = $_POST['kEingang_arr'];
+        $kEingang_arr = $postData['kEingang_arr'];
         array_walk($kEingang_arr, function (&$i) {
             $i = (int)$i;
         });

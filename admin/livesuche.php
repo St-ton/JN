@@ -275,12 +275,12 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                                 Shop::DB()->insert('tsuchanfragemapping', $suchanfragemapping_obj);
                                 Shop::DB()->delete('tsuchanfrageerfolglos', 'kSuchanfrageErfolglos', (int)$oAlteSuche->kSuchanfrageErfolglos);
 
-                                $hinweis .= 'Die Suchanfrage "' . $suchanfragemapping_obj->cSuche .
+                                $hinweis .= 'Die Suchanfrage "' . StringHandler::filterXSS($suchanfragemapping_obj->cSuche) .
                                     '" wurde erfolgreich auf "' . $suchanfragemapping_obj->cSucheNeu . '" gemappt.<br />';
                             }
                         }
                     } else {
-                        $fehler .= 'Die Suchanfrage "' . $Suchanfrageerfolglos->cSuche .
+                        $fehler .= 'Die Suchanfrage "' . StringHandler::filterXSS($Suchanfrageerfolglos->cSuche) .
                             '" kann nicht auf den gleichen Suchbegriff gemappt werden.';
                     }
                 } elseif ((int)$_POST['nErfolglosEditieren'] === 1) {

@@ -19,7 +19,7 @@ abstract class FilterField
 
     /**
      * FilterField constructor.
-     * 
+     *
      * @param Filter $oFilter
      * @param string $cType
      * @param string|array $cTitle - either title-string for this field or a pair of short title and long title
@@ -40,6 +40,7 @@ abstract class FilterField
             $oFilter->hasSessionField($this->cId)                        ? $oFilter->getSessionField($this->cId) :
                                                                            $cDefValue
             ));
+        $this->cValue     = StringHandler::filterXSS($this->cValue);
     }
 
     /**

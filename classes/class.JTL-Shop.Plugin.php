@@ -720,27 +720,16 @@ class Plugin
             switch ($nStatus) {
                 case 1: // Deaktiviert
                     return 'Deaktiviert';
-                    break;
-
                 case 2: // Aktiviert
                     return 'Aktiviert';
-                    break;
-
                 case 3: // Fehlerhaft
                     return 'Fehlerhaft';
-                    break;
-
                 case 4: // Update fehlgeschlagen
                     return 'Update fehlgeschlagen';
-                    break;
-
                 case 5: // Lizenzschluessel fehlt
                     return 'Lizenzschl&uuml;ssel fehlt';
-                    break;
-
                 case 6: // Update ungueltig
                     return 'Lizenzschl&uuml;ssel ung&uuml;ltig';
-                    break;
             }
         }
 

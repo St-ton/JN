@@ -13,12 +13,13 @@ $cfehler       = '';
 setzeSprache();
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && validateToken()) {
-    saveAdminSectionSettings(CONF_METAANGABEN, $_POST);
+    $postData = StringHandler::filterXSS($_POST);
+    saveAdminSectionSettings(CONF_METAANGABEN, $postData);
 
-    $cTitle           = $_POST['Title'];
-    $cMetaDesc        = $_POST['Meta_Description'];
-    $cMetaKeys        = $_POST['Meta_Keywords'];
-    $cMetaDescPraefix = $_POST['Meta_Description_Praefix'];
+    $cTitle           = $postData['Title'];
+    $cMetaDesc        = $postData['Meta_Description'];
+    $cMetaKeys        = $postData['Meta_Keywords'];
+    $cMetaDescPraefix = $postData['Meta_Description_Praefix'];
     Shop::DB()->delete(
         'tglobalemetaangaben',
         ['kSprache', 'kEinstellungenSektion'],

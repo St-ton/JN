@@ -143,9 +143,7 @@ class VCard
         $encodedStr = str_replace(["\n ", "\n\t"], '-wrap-', $encodedStr);
 
         // das erste BASE64 final = sign aus der Maskierung wiederherstellen
-        $encodedStr = str_replace("-base64=-\n", "=\n", $encodedStr);
-
-        return $encodedStr;
+        return str_replace("-base64=-\n", "=\n", $encodedStr);
     }
 
     /**

@@ -17,11 +17,8 @@ class IOFile implements JsonSerializable
     public $mimetype = '';
 
     /**
-     * IOFile constructor.
-     *
-     * @param $message
-     * @param int $code
-     * @param array|null $errors
+     * @param $filename
+     * @param $mimetype
      */
     public function __construct($filename, $mimetype)
     {

@@ -46,7 +46,9 @@ $res = handleCsvImportAction('kupon', function ($obj, $importType = 2) {
     }
 
     unset($obj->dLastUse);
-    $kKupon = Shop::DB()->insert('tkupon', $obj);
+    $obj->cCode = StringHandler::filterXSS($obj->cCode);
+    $obj->cName = StringHandler::filterXSS($obj->cName);
+    $kKupon     = Shop::DB()->insert('tkupon', $obj);
 
     if ($kKupon === 0) {
         return false;
@@ -161,7 +163,7 @@ if ($action === 'bearbeiten') {
         foreach ($oSprache_arr as $oSprache) {
             $postVarName                     = 'cName_' . $oSprache->cISO;
             $oKuponName_arr[$oSprache->cISO] = (isset($_POST[$postVarName]) && $_POST[$postVarName] !== '')
-                ? $_POST[$postVarName]
+                ? StringHandler::filterXSS($_POST[$postVarName])
                 : $oKupon->cName;
         }
     }

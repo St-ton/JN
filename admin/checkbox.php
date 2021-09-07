@@ -40,16 +40,17 @@ if (isset($_POST['erstellenShowButton'])) {
     $cTab      = $cStep;
     $smarty->assign('oCheckBox', new CheckBox($kCheckBox, true));
 } elseif (verifyGPCDataInteger('erstellen') === 1 && validateToken()) { // Erstellen
+    $postData    = StringHandler::filterXSS($_POST);
     $cStep       = 'erstellen';
     $kCheckBox   = verifyGPCDataInteger('kCheckBox');
-    $cPlausi_arr = plausiCheckBox($_POST, $oSprach_arr);
+    $cPlausi_arr = plausiCheckBox($postData, $oSprach_arr);
     if (count($cPlausi_arr) === 0) {
-        $oCheckBox = speicherCheckBox($_POST, $oSprach_arr);
+        $oCheckBox = speicherCheckBox($postData, $oSprach_arr);
         $cStep     = 'uebersicht';
         $cHinweis  = 'Ihre Checkbox wurde erfolgreich erstellt.';
     } else {
         $cFehler = 'Fehler: Bitte f&uuml;llen Sie alle n&ouml;tigen Angaben aus!';
-        $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST))
+        $smarty->assign('cPost_arr', $postData)
                ->assign('cPlausi_arr', $cPlausi_arr);
         if ($kCheckBox > 0) {
             $smarty->assign('kCheckBox', $kCheckBox);

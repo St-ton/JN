@@ -36,7 +36,7 @@
             "type": "package",
             "package": {
                 "name": "jtlshop/shop4-systemcheck",
-                "version": "1.1.0",
+                "version": "2.0.0",
                 "source": {
                     "url": "https://gitlab.com/jtl-software/jtl-shop/tools/systemcheck.git",
                     "type": "git",

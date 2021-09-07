@@ -76,9 +76,9 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
 
             $oKundenfeld              = new stdClass();
             $oKundenfeld->kSprache    = (int)$_SESSION['kSprache'];
-            $oKundenfeld->cName       = $cName;
-            $oKundenfeld->cWawi       = $cWawi;
-            $oKundenfeld->cTyp        = $cTyp;
+            $oKundenfeld->cName       = StringHandler::filterXSS($cName);
+            $oKundenfeld->cWawi       = StringHandler::filterXSS($cWawi);
+            $oKundenfeld->cTyp        = StringHandler::filterXSS($cTyp);
             $oKundenfeld->nSort       = $nSort;
             $oKundenfeld->nPflicht    = (int)$nPflicht;
             $oKundenfeld->nEditierbar = (int)$nEdit;

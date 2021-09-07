@@ -64,12 +64,13 @@ if (verifyGPCDataInteger('neu') === 1 && validateToken()) {
     $cStamp       = verifyGPDataString('cStamp');
 } elseif (verifyGPCDataInteger('erstellen_speichern') === 1 && validateToken()) {
     // Speichern / Editieren
+    $postData              = StringHandler::filterXSS($_POST);
     $oKampagne             = new Kampagne();
-    $oKampagne->cName      = $_POST['cName'];
-    $oKampagne->cParameter = $_POST['cParameter'];
-    $oKampagne->cWert      = isset($_POST['cWert']) ? $_POST['cWert'] : null;
-    $oKampagne->nDynamisch = isset($_POST['nDynamisch']) ? $_POST['nDynamisch'] : 0;
-    $oKampagne->nAktiv     = $_POST['nAktiv'];
+    $oKampagne->cName      = $postData['cName'];
+    $oKampagne->cParameter = $postData['cParameter'];
+    $oKampagne->cWert      = isset($postData['cWert']) ? $postData['cWert'] : null;
+    $oKampagne->nDynamisch = isset($postData['nDynamisch']) ? $postData['nDynamisch'] : 0;
+    $oKampagne->nAktiv     = $postData['nAktiv'];
     $oKampagne->dErstellt  = 'now()';
 
     // Editieren

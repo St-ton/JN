@@ -51,30 +51,31 @@ if (isset($_POST['content']) && (int)$_POST['content'] === 1 && validateToken())
 }
 
 if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && validateToken()) {
-    if ($_POST['cName'] && $_POST['cMail']) {
+    $postData = StringHandler::filterXSS($_POST);
+    if ($postData['cName'] && $postData['cMail']) {
         $neuerBetreff        = new stdClass();
-        $neuerBetreff->cName = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-        $neuerBetreff->cMail = $_POST['cMail'];
-        if (is_array($_POST['cKundengruppen'])) {
-            $neuerBetreff->cKundengruppen = implode(';', $_POST['cKundengruppen']) . ';';
+        $neuerBetreff->cName = htmlspecialchars($postData['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $neuerBetreff->cMail = $postData['cMail'];
+        if (is_array($postData['cKundengruppen'])) {
+            $neuerBetreff->cKundengruppen = implode(';', $postData['cKundengruppen']) . ';';
         }
-        if (is_array($_POST['cKundengruppen']) && in_array(0, $_POST['cKundengruppen'])) {
+        if (is_array($postData['cKundengruppen']) && in_array(0, $postData['cKundengruppen'])) {
             $neuerBetreff->cKundengruppen = 0;
         }
         $neuerBetreff->nSort = 0;
-        if ((int)$_POST['nSort'] > 0) {
-            $neuerBetreff->nSort = (int)$_POST['nSort'];
+        if ((int)$postData['nSort'] > 0) {
+            $neuerBetreff->nSort = (int)$postData['nSort'];
         }
 
         $kKontaktBetreff = 0;
 
-        if ((int)$_POST['kKontaktBetreff'] === 0) {
+        if ((int)$postData['kKontaktBetreff'] === 0) {
             //einfuegen
             $kKontaktBetreff = Shop::DB()->insert('tkontaktbetreff', $neuerBetreff);
             $cHinweis .= 'Betreff wurde erfolgreich hinzugef&uuml;gt.';
         } else {
             //updaten
-            $kKontaktBetreff = (int)$_POST['kKontaktBetreff'];
+            $kKontaktBetreff = (int)$postData['kKontaktBetreff'];
             Shop::DB()->update('tkontaktbetreff', 'kKontaktBetreff', $kKontaktBetreff, $neuerBetreff);
             $cHinweis .= "Der Betreff <strong>$neuerBetreff->cName</strong> wurde erfolgreich ge&auml;ndert.";
         }
@@ -84,9 +85,9 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && validateToken())
         foreach ($sprachen as $sprache) {
             $neuerBetreffSprache->cISOSprache = $sprache->cISO;
             $neuerBetreffSprache->cName       = $neuerBetreff->cName;
-            if ($_POST['cName_' . $sprache->cISO]) {
+            if ($postData['cName_' . $sprache->cISO]) {
                 $neuerBetreffSprache->cName = htmlspecialchars(
-                    $_POST['cName_' . $sprache->cISO],
+                    $postData['cName_' . $sprache->cISO],
                     ENT_COMPAT | ENT_HTML401,
                     JTL_CHARSET
                 );

@@ -11,7 +11,8 @@ $oAccount->permission('WAREHOUSE_VIEW', true, true);
 $cStep    = 'uebersicht';
 $cHinweis = '';
 $cFehler  = '';
-$cAction  = (isset($_POST['a']) && validateToken()) ? $_POST['a'] : null;
+$postData = StringHandler::filterXSS($_POST);
+$cAction  = (isset($postData['a']) && validateToken()) ? $postData['a'] : null;
 
 switch ($cAction) {
     case 'update':

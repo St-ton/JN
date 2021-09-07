@@ -60,6 +60,9 @@ class Preisverlauf
         $nMonat        = (int)$nMonat;
         $cacheID       = 'gpv_' . $kArtikel . '_' . $kKundengruppe . '_' . $nMonat;
         if (($obj_arr = Shop::Cache()->get($cacheID)) === false) {
+            if (Shop::DB()->selectSingleRow('tartikel', 'kArtikel', $kArtikel) === null) {
+                return [];
+            }
             $obj_arr = Shop::DB()->query(
                 "SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
                     FROM tpreisverlauf 

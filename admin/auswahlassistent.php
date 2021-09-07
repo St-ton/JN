@@ -11,6 +11,7 @@ $cHinweis = '';
 $step     = '';
 $oNice    = Nice::getInstance();
 $cTab     = 'uebersicht';
+$postData = StringHandler::filterXSS($_POST);
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     $step = 'uebersicht';
     setzeSprache();
@@ -18,26 +19,26 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     if (strlen(verifyGPDataString('tab')) > 0) {
         $cTab = verifyGPDataString('tab');
     }
-    if (isset($_POST['a']) && validateToken()) {
-        if ($_POST['a'] === 'newGrp') {
+    if (isset($postData['a']) && validateToken()) {
+        if ($postData['a'] === 'newGrp') {
             $step = 'edit-group';
-        } elseif ($_POST['a'] === 'newQuest') {
+        } elseif ($postData['a'] === 'newQuest') {
             $step = 'edit-question';
-        } elseif ($_POST['a'] === 'addQuest') {
+        } elseif ($postData['a'] === 'addQuest') {
             $oAuswahlAssistentFrage                          = new AuswahlAssistentFrage();
             $oAuswahlAssistentFrage->cFrage                  = htmlspecialchars(
-                $_POST['cFrage'],
+                $postData['cFrage'],
                 ENT_COMPAT | ENT_HTML401,
                 JTL_CHARSET
             );
-            $oAuswahlAssistentFrage->kMerkmal                = (int)$_POST['kMerkmal'];
-            $oAuswahlAssistentFrage->kAuswahlAssistentGruppe = (int)$_POST['kAuswahlAssistentGruppe'];
-            $oAuswahlAssistentFrage->nSort                   = (int)$_POST['nSort'];
-            $oAuswahlAssistentFrage->nAktiv                  = (int)$_POST['nAktiv'];
+            $oAuswahlAssistentFrage->kMerkmal                = (int)$postData['kMerkmal'];
+            $oAuswahlAssistentFrage->kAuswahlAssistentGruppe = (int)$postData['kAuswahlAssistentGruppe'];
+            $oAuswahlAssistentFrage->nSort                   = (int)$postData['nSort'];
+            $oAuswahlAssistentFrage->nAktiv                  = (int)$postData['nAktiv'];
 
             $cPlausi_arr = [];
-            if (isset($_POST['kAuswahlAssistentFrage']) && (int)$_POST['kAuswahlAssistentFrage'] > 0) {
-                $oAuswahlAssistentFrage->kAuswahlAssistentFrage = (int)$_POST['kAuswahlAssistentFrage'];
+            if (isset($postData['kAuswahlAssistentFrage']) && (int)$postData['kAuswahlAssistentFrage'] > 0) {
+                $oAuswahlAssistentFrage->kAuswahlAssistentFrage = (int)$postData['kAuswahlAssistentFrage'];
                 $cPlausi_arr                                    = $oAuswahlAssistentFrage->updateQuestion();
             } else {
                 $cPlausi_arr = $oAuswahlAssistentFrage->saveQuestion();
@@ -48,10 +49,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $cTab     = 'uebersicht';
             } elseif (is_array($cPlausi_arr) && count($cPlausi_arr) > 0) {
                 $cFehler = 'Fehler: Bitte f&uuml;llen Sie alle Felder korrekt aus.';
-                $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST))
+                $smarty->assign('cPost_arr', $postData)
                        ->assign('cPlausi_arr', $cPlausi_arr)
                        ->assign('kAuswahlAssistentFrage',
-                           (isset($_POST['kAuswahlAssistentFrage']) ? (int)$_POST['kAuswahlAssistentFrage'] : 0));
+                           (isset($postData['kAuswahlAssistentFrage']) ? (int)$postData['kAuswahlAssistentFrage'] : 0));
             }
         }
     } elseif (isset($_GET['a'], $_GET['q']) && $_GET['a'] === 'delQuest' && (int)$_GET['q'] > 0 && validateToken()) {
@@ -65,21 +66,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $smarty->assign('oFrage', new AuswahlAssistentFrage((int)$_GET['q'], false));
     }
 
-    if (isset($_POST['a']) && validateToken()) {
-        if ($_POST['a'] === 'addGrp') {
+    if (isset($postData['a']) && validateToken()) {
+        if ($postData['a'] === 'addGrp') {
             $oAuswahlAssistentGruppe                = new AuswahlAssistentGruppe();
             $oAuswahlAssistentGruppe->kSprache      = (int)$_SESSION['kSprache'];
-            $oAuswahlAssistentGruppe->cName         = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401,
+            $oAuswahlAssistentGruppe->cName         = htmlspecialchars($postData['cName'], ENT_COMPAT | ENT_HTML401,
                 JTL_CHARSET);
-            $oAuswahlAssistentGruppe->cBeschreibung = $_POST['cBeschreibung'];
-            $oAuswahlAssistentGruppe->nAktiv        = (int)$_POST['nAktiv'];
+            $oAuswahlAssistentGruppe->cBeschreibung = $postData['cBeschreibung'];
+            $oAuswahlAssistentGruppe->nAktiv        = (int)$postData['nAktiv'];
 
             $cPlausi_arr = [];
-            if (isset($_POST['kAuswahlAssistentGruppe']) && (int)$_POST['kAuswahlAssistentGruppe'] > 0) {
-                $oAuswahlAssistentGruppe->kAuswahlAssistentGruppe = (int)$_POST['kAuswahlAssistentGruppe'];
-                $cPlausi_arr                                      = $oAuswahlAssistentGruppe->updateGroup($_POST);
+            if (isset($postData['kAuswahlAssistentGruppe']) && (int)$postData['kAuswahlAssistentGruppe'] > 0) {
+                $oAuswahlAssistentGruppe->kAuswahlAssistentGruppe = (int)$postData['kAuswahlAssistentGruppe'];
+                $cPlausi_arr                                      = $oAuswahlAssistentGruppe->updateGroup($postData);
             } else {
-                $cPlausi_arr = $oAuswahlAssistentGruppe->saveGroup($_POST);
+                $cPlausi_arr = $oAuswahlAssistentGruppe->saveGroup($postData);
             }
             if ((!is_array($cPlausi_arr) && $cPlausi_arr) || count($cPlausi_arr) === 0) {
                 $step     = 'uebersicht';
@@ -88,21 +89,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             } elseif (is_array($cPlausi_arr) && count($cPlausi_arr) > 0) {
                 $step    = 'edit-group';
                 $cFehler = 'Fehler: Bitte f&uuml;llen Sie alle Felder korrekt aus.';
-                $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST))
+                $smarty->assign('cPost_arr', $postData)
                        ->assign('cPlausi_arr', $cPlausi_arr)
-                       ->assign('kAuswahlAssistentGruppe', (isset($_POST['kAuswahlAssistentGruppe'])
-                           ? (int)$_POST['kAuswahlAssistentGruppe']
+                       ->assign('kAuswahlAssistentGruppe', (isset($postData['kAuswahlAssistentGruppe'])
+                           ? (int)$postData['kAuswahlAssistentGruppe']
                            : 0));
             }
-        } elseif ($_POST['a'] === 'delGrp') {
-            if (AuswahlAssistentGruppe::deleteGroup($_POST)) {
+        } elseif ($postData['a'] === 'delGrp') {
+            if (AuswahlAssistentGruppe::deleteGroup($postData)) {
                 $cHinweis = 'Ihre ausgew&auml;hlten Gruppen wurden erfolgreich gel&ouml;scht.';
             } else {
                 $cFehler = 'Fehler: Ihre ausgew&auml;hlten Gruppen konnten nicht gel&ouml;scht werden.';
             }
-        } elseif ($_POST['a'] === 'saveSettings') {
+        } elseif ($postData['a'] === 'saveSettings') {
             $step = 'uebersicht';
-            $cHinweis .= saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $_POST);
+            $cHinweis .= saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $postData);
         }
     } elseif (isset($_GET['a'], $_GET['g']) && $_GET['a'] === 'editGrp' && (int)$_GET['g'] > 0 && validateToken()) {
         $step = 'edit-group';

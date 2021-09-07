@@ -54,6 +54,7 @@ if ($step === 'systemlog_uebersicht') {
     /** @var Jtllog $oLog */
     foreach ($oLog_arr as &$oLog) {
         $cLog = $oLog->getcLog();
+        $cLog = StringHandler::filterXSS($cLog);
         $cLog = preg_replace('/\[(.*)\] => (.*)/', '<span class="hl_key">$1</span>: <span class="hl_value">$2</span>', $cLog);
         $cLog = str_replace(['(', ')'], ['<span class="hl_brace">(</span>', '<span class="hl_brace">)</span>'], $cLog);
 

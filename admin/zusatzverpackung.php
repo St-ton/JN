@@ -13,23 +13,24 @@ $cHinweis     = '';
 $cFehler      = '';
 $step         = 'zusatzverpackung';
 $oSprache_arr = gibAlleSprachen();
+$postData     = StringHandler::filterXSS($_POST);
 // Zusatzverpackung speichern
-if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToken()) {
-    $kVerpackung         = (int)$_POST['kVerpackung'];
-    $fBrutto             = isset($_POST['fBrutto']) ? (float)$_POST['fBrutto'] : 0;
-    $fMindestbestellwert = isset($_POST['fMindestbestellwert']) ? (float)$_POST['fMindestbestellwert'] : 0;
-    $fKostenfrei         = isset($_POST['fKostenfrei']) ? (float)$_POST['fKostenfrei'] : 0;
-    $kSteuerklasse       = isset($_POST['kSteuerklasse']) ? (int)$_POST['kSteuerklasse'] : 0;
-    $kKundengruppe_arr   = isset($_POST['kKundengruppe']) ? $_POST['kKundengruppe'] : null;
-    $nAktiv              = isset($_POST['nAktiv']) ? (int)$_POST['nAktiv'] : 0;
+if (isset($postData['eintragen']) && (int)$postData['eintragen'] === 1 && validateToken()) {
+    $kVerpackung         = (int)$postData['kVerpackung'];
+    $fBrutto             = isset($postData['fBrutto']) ? (float)$postData['fBrutto'] : 0;
+    $fMindestbestellwert = isset($postData['fMindestbestellwert']) ? (float)$postData['fMindestbestellwert'] : 0;
+    $fKostenfrei         = isset($postData['fKostenfrei']) ? (float)$postData['fKostenfrei'] : 0;
+    $kSteuerklasse       = isset($postData['kSteuerklasse']) ? (int)$postData['kSteuerklasse'] : 0;
+    $kKundengruppe_arr   = isset($postData['kKundengruppe']) ? $postData['kKundengruppe'] : null;
+    $nAktiv              = isset($postData['nAktiv']) ? (int)$postData['nAktiv'] : 0;
 
-    if (isset($_POST['cName_' . $oSprache_arr[0]->cISO]) && strlen($_POST['cName_' . $oSprache_arr[0]->cISO]) > 0) {
+    if (isset($postData['cName_' . $oSprache_arr[0]->cISO]) && strlen($postData['cName_' . $oSprache_arr[0]->cISO]) > 0) {
         if (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0) {
             if (!isset($oVerpackung)) {
                 $oVerpackung = new stdClass();
             }
             $oVerpackung->kSteuerklasse = $kSteuerklasse;
-            $oVerpackung->cName         = htmlspecialchars(strip_tags(trim($_POST['cName_' . $oSprache_arr[0]->cISO])), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $oVerpackung->cName         = htmlspecialchars(strip_tags(trim($postData['cName_' . $oSprache_arr[0]->cISO])), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
 
             if ($kKundengruppe_arr[0] == '-1') {
                 $oVerpackung->cKundengruppe = '-1';
@@ -61,18 +62,18 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToke
                     $oVerpackungSprache                = new stdClass();
                     $oVerpackungSprache->kVerpackung   = $kVerpackung;
                     $oVerpackungSprache->cISOSprache   = $oSprache->cISO;
-                    $oVerpackungSprache->cName         = (!empty($_POST['cName_' . $oSprache->cISO]))
-                        ? htmlspecialchars($_POST['cName_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
-                        : htmlspecialchars($_POST['cName_' . $oSprache_arr[0]->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-                    $oVerpackungSprache->cBeschreibung = (!empty($_POST['cBeschreibung_' . $oSprache->cISO]))
-                        ? htmlspecialchars($_POST['cBeschreibung_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
-                        : htmlspecialchars($_POST['cBeschreibung_' . $oSprache_arr[0]->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+                    $oVerpackungSprache->cName         = (!empty($postData['cName_' . $oSprache->cISO]))
+                        ? htmlspecialchars($postData['cName_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
+                        : htmlspecialchars($postData['cName_' . $oSprache_arr[0]->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+                    $oVerpackungSprache->cBeschreibung = (!empty($postData['cBeschreibung_' . $oSprache->cISO]))
+                        ? htmlspecialchars($postData['cBeschreibung_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
+                        : htmlspecialchars($postData['cBeschreibung_' . $oSprache_arr[0]->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
                     Shop::DB()->insert('tverpackungsprache', $oVerpackungSprache);
                 }
             }
 
             unset($oVerpackung);
-            $cHinweis .= 'Die Verpackung "' . $_POST['cName_' .
+            $cHinweis .= 'Die Verpackung "' . $postData['cName_' .
                 $oSprache_arr[0]->cISO] . '" wurde erfolgreich gespeichert.<br />';
         } else {
             $cFehler .= 'Fehler: Bitte w&auml;hlen Sie mindestens eine Kundengruppe aus.<br />';
@@ -80,13 +81,13 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToke
     } else {
         $cFehler .= 'Fehler: Bitte geben Sie der Verpackung einen Namen.<br />';
     }
-} elseif (isset($_POST['bearbeiten']) && (int)$_POST['bearbeiten'] === 1 && validateToken()) {
+} elseif (isset($postData['bearbeiten']) && (int)$postData['bearbeiten'] === 1 && validateToken()) {
     // Verpackungen bearbeiten (aktualisieren / loeschen)
-    if (isset($_POST['loeschen']) && ($_POST['loeschen'] === 'Löschen' ||
-            utf8_decode($_POST['loeschen'] === 'Löschen') ||
-            $_POST['loeschen'] === utf8_decode('Löschen'))) {
-        if (is_array($_POST['kVerpackung']) && count($_POST['kVerpackung']) > 0) {
-            foreach ($_POST['kVerpackung'] as $kVerpackung) {
+    if (isset($postData['loeschen']) && ($postData['loeschen'] === 'Löschen' ||
+            utf8_decode($postData['loeschen'] === 'Löschen') ||
+            $postData['loeschen'] === utf8_decode('Löschen'))) {
+        if (is_array($postData['kVerpackung']) && count($postData['kVerpackung']) > 0) {
+            foreach ($postData['kVerpackung'] as $kVerpackung) {
                 $kVerpackung = (int)$kVerpackung;
                 // tverpackung loeschen
                 Shop::DB()->delete('tverpackung', 'kVerpackung', $kVerpackung);
@@ -98,13 +99,13 @@ if (isset($_POST['eintragen']) && (int)$_POST['eintragen'] === 1 && validateToke
         } else {
             $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Verpackung.<br />';
         }
-    } elseif (isset($_POST['aktualisieren']) &&
-        $_POST['aktualisieren'] === 'Aktualisieren' && validateToken()) {
+    } elseif (isset($postData['aktualisieren']) &&
+        $postData['aktualisieren'] === 'Aktualisieren' && validateToken()) {
         // Aktualisieren
         // Alle Verpackungen deaktivieren
         Shop::DB()->query("UPDATE tverpackung SET nAktiv = 0", 3);
-        if (is_array($_POST['nAktiv']) && count($_POST['nAktiv']) > 0) {
-            foreach ($_POST['nAktiv'] as $kVerpackung) {
+        if (is_array($postData['nAktiv']) && count($postData['nAktiv']) > 0) {
+            foreach ($postData['nAktiv'] as $kVerpackung) {
                 $upd         = new stdClass();
                 $upd->nAktiv = 1;
                 Shop::DB()->update('tverpackung', 'kVerpackung', (int)$kVerpackung, $upd);

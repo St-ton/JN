@@ -40,7 +40,9 @@
                                 {if is_object($oLinkGruppe->oLink_arr)}
                                     <li id="dropdown-header-{$entryName}"
                                         class="nav-item {if $oLinkGruppe->key === $currentMenuPath[1]}active{/if}">
-                                        <a class="nav-link" href="{$oLinkGruppe->oLink_arr->cURL}">
+                                        <a class="nav-link" href="{$oLinkGruppe->oLink_arr->cURL}"
+                                            {if !empty($oLinkGruppe->oLink_arr->target)}
+                                                target="{$oLinkGruppe->oLink_arr->target}"{/if}>
                                             {$oLinkGruppe->cName}
                                         </a>
                                     </li>

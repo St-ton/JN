@@ -89,7 +89,7 @@
                             <span class="comparelist-label">{lang key='hideLabels' section='comparelist'}</span>
                         {/button}
                     {/block}
-                    {block name='comparelist-index-products-header-label'}
+                    {block name='comparelist-index-products-header-delete-all'}
                         {button class="comparelist-delete-all"
                             href="{get_static_route id='vergleichsliste.php'}?delete=all"
                             size="sm"

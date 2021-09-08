@@ -2121,10 +2121,10 @@ msgid "settingLogTitle"
 msgstr "Show Changelog"
 
 msgid "settingReset"
-msgstr "Reset setting."
+msgstr "Reset setting. (Default: %s)"
 
 msgid "confirmResetLog"
-msgstr "Reset setting - %s?"
+msgstr "Reset setting - %s? (Default: %s)"
 
 msgid "confirmResetLogTitle"
 msgstr "Confirm reset"

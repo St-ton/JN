@@ -37,6 +37,7 @@ final class Admin
     /**
      * Admin constructor.
      * @param DbInterface $db
+     * @param AlertServiceInterface $alertService
      */
     public function __construct(DbInterface $db, AlertServiceInterface $alertService)
     {
@@ -513,9 +514,7 @@ final class Admin
             $dbFromatted = $year . '-' . $month . '-' . $day . ' ' . $hour . ':' . $minute . ':00';
             $timeData    = $this->getDateData($dbFromatted);
 
-            $templateID       = isset($post['kNewsletterVorlage'])
-                ? (int)$post['kNewsletterVorlage']
-                : null;
+            $templateID       = (int)($post['kNewsletterVorlage'] ?? 0);
             $campaignID       = (int)$post['kKampagne'];
             $productIDs       = $post['cArtikel'];
             $manufacturerIDs  = $post['cHersteller'];
@@ -525,7 +524,7 @@ final class Admin
             $manufacturerIDs  = ';' . $manufacturerIDs . ';';
             $categoryIDs      = ';' . $categoryIDs . ';';
             $tpl              = new stdClass();
-            if ($templateID !== null) {
+            if ($templateID > 0) {
                 $tpl->kNewsletterVorlage = $templateID;
             }
             $tpl->kSprache      = (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache']);
@@ -545,7 +544,7 @@ final class Admin
             $tpl->dStartZeit = ($dt > $now)
                 ? $dt->format('Y-m-d H:i:s')
                 : $now->format('Y-m-d H:i:s');
-            if (isset($post['kNewsletterVorlage']) && (int)$post['kNewsletterVorlage'] > 0) {
+            if ((int)($post['kNewsletterVorlage'] ?? 0) > 0) {
                 $revision = new Revision($this->db);
                 $revision->addRevision('newsletter', $templateID, true);
                 $upd                = new stdClass();
@@ -1248,7 +1247,7 @@ final class Admin
             if ($tpl === null || $tpl->kNewsletterVorlage <= 0) {
                 continue;
             }
-            if (isset($tpl->kNewslettervorlageStd) && $tpl->kNewslettervorlageStd > 0) {
+            if (($tpl->kNewslettervorlageStd ?? 0) > 0) {
                 $this->db->queryPrepared(
                     'DELETE tnewslettervorlage, tnewslettervorlagestdvarinhalt
                             FROM tnewslettervorlage

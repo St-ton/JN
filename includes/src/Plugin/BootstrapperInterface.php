@@ -42,6 +42,11 @@ interface BootstrapperInterface
     public function disabled();
 
     /**
+     * @return bool - when FALSE is returned, the installation will be cancelled
+     */
+    public function preInstallCheck(): bool;
+
+    /**
      * @param string $oldVersion
      * @param string $newVersion
      */

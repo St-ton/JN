@@ -136,6 +136,7 @@ class CacheAdvancedfile implements ICachingMethod
     public function test(): bool
     {
         return $this->traitTest()
+            && \function_exists('symlink')
             && \touch($this->options['cache_dir'] . 'check')
             && \symlink($this->options['cache_dir'] . 'check', $this->options['cache_dir'] . 'link')
             && \readlink($this->options['cache_dir'] . 'link') === $this->options['cache_dir'] . 'check'

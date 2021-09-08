@@ -31,6 +31,9 @@
                                                             square=false
                                                             srcSize='xs'
                                                             sizes='40px'
+                                                            width='40'
+                                                            height='40'
+                                                            class='img-aspect-ratio'
                                                             alt=$characteristicValue->cWert}
                                                     {else}
                                                         {badge variant="primary"}{$characteristicValue->cWert|escape:'html'}{/badge}
@@ -61,7 +64,7 @@
                 {block name='productdetails-attributes-product-weight'}
                     <tr class="attr-weight">
                         <td class="h6">{lang key='productWeight'}:</td>
-                        <td class="weight-unit" itemprop="weight" itemscope itemtype="http://schema.org/QuantitativeValue">
+                        <td class="weight-unit" itemprop="weight" itemscope itemtype="https://schema.org/QuantitativeValue">
                             <span itemprop="value">{$Artikel->cArtikelgewicht}</span> <span itemprop="unitText">{lang key='weightUnit'}
                         </td>
                     </tr>

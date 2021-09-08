@@ -105,7 +105,7 @@
             {block name='snippets-categories-mega-manufacturers-inner'}
                 <li class="nav-item nav-scrollbar-item dropdown dropdown-full {if $nSeitenTyp === $smarty.const.PAGE_HERSTELLER}active{/if}">
                     {link href="{if $manufacturerOverview !== null}{$manufacturerOverview->getURL()}{else}#{/if}" title={lang key='manufacturers'} class="nav-link dropdown-toggle" target="_self"}
-                        <span class="text-truncate">
+                        <span class="text-truncate nav-mobile-heading">
                             {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}
                                 {$manufacturerOverview->getName()}
                             {else}

@@ -196,6 +196,7 @@ class GenericAdmin
     /**
      * @param array $ids
      * @param int   $state
+     * @return bool
      */
     protected function setState(array $ids, int $state): bool
     {

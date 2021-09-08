@@ -2,7 +2,7 @@
     {block name='snippets-comparelist-dropdown-products'}
         <div class="comparelist-dropdown-table table-responsive max-h-sm lg-max-h">
             {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}
-                <table class="table table-vertical-middle table-striped table-img">
+                <table class="table table-vertical-middle table-img">
                     <tbody>
                     {foreach $smarty.session.Vergleichsliste->oArtikel_arr as $product}
                         {block name='snippets-comparelist-dropdown-products-body'}

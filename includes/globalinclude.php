@@ -111,7 +111,6 @@ if (!JTL_INCLUDE_ONLY_DB && !defined('CLI_BATCHRUN')) {
 
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
     $pluginHooks    = Helper::getHookList();
     $globalMetaData = Metadata::getGlobalMetaData();

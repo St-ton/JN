@@ -29,11 +29,12 @@ class Category extends BaseCategory
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('kf')
-             ->setUrlParamSEO(\SEP_KAT)
-             ->setVisibility($this->getConfig('navigationsfilter')['allgemein_kategoriefilter_benutzen'])
-             ->setFrontendName(Shop::isAdmin() ? \__('filterCategory') : Shop::Lang()->get('allCategories'))
-             ->setType($this->getConfig('navigationsfilter')['category_filter_type'] === 'O'
+            ->setUrlParam('kf')
+            ->setUrlParamSEO(\SEP_KAT)
+            ->setVisibility($this->getConfig('navigationsfilter')['allgemein_kategoriefilter_benutzen'])
+            ->setFrontendName(Shop::isAdmin() ? \__('filterCategory') : Shop::Lang()->get('allCategories'))
+            ->setFilterName($this->getFrontendName())
+            ->setType($this->getConfig('navigationsfilter')['category_filter_type'] === 'O'
                 ? Type::OR
                 : Type::AND);
     }
@@ -102,7 +103,7 @@ class Category extends BaseCategory
             ->setComment('join from ' . __METHOD__)
             ->setType('JOIN');
         if ($this->getConfig('navigationsfilter')['kategoriefilter_anzeigen_als'] === 'HF') {
-            $join->setTable('(
+            return $join->setTable('(
                 SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
                     FROM tkategorieartikel
                         INNER JOIN tkategorie 

@@ -2024,6 +2024,13 @@ msgstr "Eine weitere Nutzung kann einen Lizenzverstoß darstellen!"
 msgid "Please purchase a licence in the JTL-Extension Store or contact the manufacturer of the extension for information on rights of use."
 msgstr "Bitte erwerben Sie eine Lizenz im JTL-Extension Store oder kontaktieren Sie den Hersteller der Extension zu Informationen bezüglich der Nutzungsrechte."
 
+msgid "btnExploreExtensionStore"
+msgstr "Zum JTL-Extension Store"
+
+msgid "btnAdditionalExtensionStore"
+msgstr "Weitere Extensions entdecken"
+
+
 msgid "Licensing problem detected"
 msgstr "Lizenzproblem festgestellt"
 
@@ -2121,10 +2128,10 @@ msgid "settingLogTitle"
 msgstr "Änderungslog anzeigen."
 
 msgid "settingReset"
-msgstr "Einstellung auf Werkseinstellung zurücksetzen."
+msgstr "Einstellung auf Werkseinstellung zurücksetzen. (Default: %s)"
 
 msgid "confirmResetLog"
-msgstr "Einstellung  - %s - auf Werkseinstellung zurücksetzen?"
+msgstr "Einstellung  - %s - auf Werkseinstellung zurücksetzen? (Default: %s)"
 
 msgid "confirmResetLogTitle"
 msgstr "Zurücksetzen bestätigen"

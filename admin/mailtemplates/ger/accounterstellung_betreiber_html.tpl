@@ -55,7 +55,7 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:<br>
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							{$Kunde->cTel}
+							{$Kunde->cTel|maskPrivate:2:4:'** ***'}
 						</font>
 					</td>
 				</tr>
@@ -81,7 +81,7 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:<br>
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							{$Kunde->cMobil}
+							{$Kunde->cMobil|maskPrivate:2:4:'** ***'}
 						</font>
 					</td>
 				</tr>
@@ -107,7 +107,7 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:<br>
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							{$Kunde->cFax}
+							{$Kunde->cFax|maskPrivate:2:4:'** ***'}
 						</font>
 					</td>
 				</tr>

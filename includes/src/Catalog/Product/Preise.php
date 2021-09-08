@@ -469,7 +469,9 @@ class Preise
             ];
         }
         if (!empty($this->alterVKNetto)) {
-            $this->discountPercentage = (int)((($this->alterVKNetto - $this->fVKNetto) * 100) / $this->alterVKNetto);
+            $this->discountPercentage = (int)\round(
+                (($this->alterVKNetto - $this->fVKNetto) * 100) / $this->alterVKNetto
+            );
         }
 
         return $this;

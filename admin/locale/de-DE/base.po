@@ -290,6 +290,9 @@ msgstr "Bitte überprüfen Sie Ihre Eingaben."
 msgid "lockForMinutes"
 msgstr "Gesperrt für %s Minuten"
 
+msgid "errorLoginDataExpired"
+msgstr "Anmeldedaten nicht mehr gültig."
+
 msgid "errorWrongPasswordUser"
 msgstr "Benutzername oder Passwort falsch"
 

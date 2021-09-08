@@ -293,6 +293,9 @@ msgstr "Please check your inputs."
 msgid "lockForMinutes"
 msgstr "Blocked for %s minutes"
 
+msgid "errorLoginDataExpired"
+msgstr "Login data expired."
+
 msgid "errorWrongPasswordUser"
 msgstr "Invalid user name or password"
 

@@ -74,9 +74,6 @@ msgstr "A field with this name already exists."
 msgid "errorLoginTemporaryNotPossible"
 msgstr "Login temporarily unavailable."
 
-msgid "errorLoginDataExpired"
-msgstr "Login data expired."
-
 msgid "errorFieldNeedsAtLeastOneValue"
 msgstr "Please enter at least one value into the field."
 

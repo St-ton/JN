@@ -61,7 +61,7 @@ final class LinkList implements LinkListInterface
                 tlink.cName AS displayName, loc.cName AS localizedName, loc.cTitle AS localizedTitle, 
                 loc.cContent AS content, loc.cSeo AS linkURL,
                 loc.cMetaDescription AS metaDescription, loc.cMetaKeywords AS metaKeywords, loc.cMetaTitle AS metaTitle,
-                tsprache.kSprache, tseo.kSprache AS languageID, tseo.cSeo AS localizedUrl,
+                tsprache.kSprache, tsprache.kSprache AS languageID, tseo.cSeo AS localizedUrl,
                 tspezialseite.cDateiname,
                 tplugin.nStatus AS pluginState,
                 pld.cDatei AS handler, pld.cTemplate AS template, pld.cFullscreenTemplate AS fullscreenTemplate,
@@ -71,7 +71,7 @@ final class LinkList implements LinkListInterface
                     ON tlink.kLink = loc.kLink
                 JOIN tsprache
                     ON tsprache.cISO = loc.cISOSprache
-                JOIN tseo
+                LEFT JOIN tseo
                     ON tseo.cKey = 'kLink'
                     AND tseo.kKey = loc.kLink
                     AND tseo.kSprache = tsprache.kSprache
@@ -85,7 +85,7 @@ final class LinkList implements LinkListInterface
                     ON tplugin.kPlugin = pld.kPlugin
                     AND tlink.kLink = pld.kLink
                 WHERE tlink.kLink IN (" . \implode(',', $realData) . ')
-                GROUP BY tlink.kLink, tseo.kSprache
+                GROUP BY tlink.kLink, tsprache.kSprache
                 ORDER BY tlink.nSort, tlink.cName'
         );
         $links         = map(group($linkLanguages, static function ($e) {

@@ -179,7 +179,7 @@ final class Model extends DataModel
      */
     public function getSanitizedFilepath(): string
     {
-        $base = \PFAD_ROOT . \PFAD_EXPORT;
+        $base = \realpath(\PFAD_ROOT . \PFAD_EXPORT) . '/';
         $abs  = $base . $this->getFilename();
         $real = \realpath(\pathinfo($abs, \PATHINFO_DIRNAME)) . '/';
         if (\strpos($real, $base) !== 0) {

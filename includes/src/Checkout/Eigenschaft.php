@@ -70,6 +70,9 @@ class Eigenschaft
         foreach (\get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
+        $this->kEigenschaft = (int)$this->kEigenschaft;
+        $this->kArtikel     = (int)$this->kArtikel;
+        $this->nSort        = (int)$this->nSort;
         \executeHook(\HOOK_EIGENSCHAFT_CLASS_LOADFROMDB);
 
         return $this;

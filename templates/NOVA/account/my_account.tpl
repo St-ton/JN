@@ -60,7 +60,7 @@
                                                 <td class="text-right-util">
                                                    {$order->Status}
                                                 </td>
-                                                <td class="text-right-util d-none d-md-block">
+                                                <td class="text-right-util d-none d-md-table-cell">
                                                     <i class="fa fa-eye"></i>
                                                 </td>
                                             </tr>

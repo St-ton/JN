@@ -75,7 +75,8 @@ class Nice
     {
         $cacheID = 'cbrocken';
         if (($brocken = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $data = Shop::Container()->getDB()->getSingleObject(
+            $brocken = '';
+            $data    = Shop::Container()->getDB()->getSingleObject(
                 'SELECT cBrocken 
                     FROM tbrocken 
                     LIMIT 1'

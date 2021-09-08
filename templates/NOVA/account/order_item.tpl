@@ -195,10 +195,10 @@
                         {/block}
                     {/block}
                 {/row}
+                {block name='account-order-item-last-hr'}
+                    <hr>
+                {/block}
             {/if}
-            {block name='account-order-item-last-hr'}
-                <hr>
-            {/block}
         {/foreach}
         {/block}
         {block name='account-order-items-total-wrapper'}

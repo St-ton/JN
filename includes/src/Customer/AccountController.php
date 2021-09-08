@@ -283,7 +283,7 @@ class AccountController
             $this->getCustomerFields();
         }
         if ($step === 'bewertungen') {
-            $ratings = $this->db->getObjects(
+            $ratings = $this->db->getCollection(
                 'SELECT tbewertung.kBewertung, fGuthabenBonus, nAktiv, kArtikel, cTitel, cText, 
                   tbewertung.dDatum, nSterne, cAntwort, dAntwortDatum
                   FROM tbewertung 
@@ -291,7 +291,9 @@ class AccountController
                       ON tbewertung.kBewertung = tbewertungguthabenbonus.kBewertung
                   WHERE tbewertung.kKunde = :customer',
                 ['customer' => $customerID]
-            );
+            )->each(static function ($item) {
+                $item->fGuthabenBonusLocalized = Preise::getLocalizedPriceString($item->fGuthabenBonus);
+            });
         }
         $_SESSION['Kunde']->cGuthabenLocalized = Preise::getLocalizedPriceString($_SESSION['Kunde']->fGuthaben);
         $this->smarty->assign('Kunde', $_SESSION['Kunde'])
@@ -958,7 +960,8 @@ class AccountController
         $_SESSION['Kunde']->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($_SESSION['Kunde']->cLand);
         $this->smarty->assign('Bestellung', $order)
             ->assign('billingAddress', $order->oRechnungsadresse)
-            ->assign('Lieferadresse', $order->Lieferadresse ?? null);
+            ->assign('Lieferadresse', $order->Lieferadresse ?? null)
+            ->assign('incommingPayments', $order->getIncommingPayments());
         if (isset($order->oEstimatedDelivery->longestMin, $order->oEstimatedDelivery->longestMax)) {
             $this->smarty->assign(
                 'cEstimatedDeliveryEx',

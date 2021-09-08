@@ -290,8 +290,7 @@ class Category implements CategoryInterface
                 JOIN tnewskategorie 
                     ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
             WHERE tnewskategorie.nAktiv = 1 AND tnews.dGueltigVon <= NOW() '
-                . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL,
-            ['cid' => $this->id]
+                . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL
         )), static function ($e) {
             return (int)$e;
         }));
@@ -317,7 +316,7 @@ class Category implements CategoryInterface
      * @param int $languageID
      * @return Collection
      */
-    public function filterAndSortItems(int $customerGroupID = 0, $languageID = 0): Collection
+    public function filterAndSortItems(int $customerGroupID = 0, int $languageID = 0): Collection
     {
         switch ($_SESSION['NewsNaviFilter']->nSort) {
             case -1:

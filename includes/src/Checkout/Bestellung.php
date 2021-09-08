@@ -2,6 +2,8 @@
 
 namespace JTL\Checkout;
 
+use DateTime;
+use Illuminate\Support\Collection;
 use JTL\Cart\CartHelper;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Category\Kategorie;
@@ -610,10 +612,7 @@ class Bestellung
                 );
             }
             if (!isset($item->kSteuerklasse)) {
-                $taxClass = $db->select('tsteuersatz', 'fSteuersatz', $item->fMwSt);
-                if ($taxClass !== null) {
-                    $item->kSteuerklasse = $taxClass->kSteuerklasse;
-                }
+                $item->kSteuerklasse = 0;
             }
             $summe += $item->fPreis * $item->nAnzahl;
             if ($this->kWarenkorb > 0) {
@@ -1135,5 +1134,33 @@ class Bestellung
                 'kampagneDef' => \KAMPAGNE_DEF_VERKAUF
             ]
         );
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getIncommingPayments(): Collection
+    {
+        if (($this->kBestellung ?? 0) === 0) {
+            return new Collection();
+        }
+
+        $result = Shop::Container()->getDB()->getCollection(
+            'SELECT kZahlungseingang, cZahlungsanbieter, fBetrag, cISO, dZeit
+                FROM tzahlungseingang
+                WHERE kBestellung = :orderId
+                ORDER BY cZahlungsanbieter, dZeit',
+            [
+                'orderId' => $this->kBestellung,
+            ]
+        )->map(static function ($item) {
+            $item->paymentLocalization = Preise::getLocalizedPriceString($item->fBetrag, $item->cISO)
+                . ' (' . Shop::Lang()->getTranslation('payedOn', 'login') . ' '
+                . (new DateTime($item->dZeit))->format('d.m.Y') . ')';
+
+            return $item;
+        });
+
+        return $result->groupBy('cZahlungsanbieter');
     }
 }

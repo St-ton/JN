@@ -1980,3 +1980,41 @@ define('HOOK_IO_HANDLE_REQUEST_ADMIN', 311);
  * @param Collection items - collection of JTL\Consent\ConsentModel\ConsentModel
  */
 define('CONSENT_MANAGER_GET_ACTIVE_ITEMS', 320);
+
+/**
+ * @since 5.1.0
+ * @file Preise.php
+ * @param float|string netPrice
+ * @param float|string defaultTax
+ * @param float|string conversionTax
+ * @param float|string newNetPrice
+ */
+define('HOOK_RECALCULATED_NET_PRICE', 321);
+
+/**
+ * @since 5.1.0
+ * @file Preise.php
+ * @param float|string $price
+ * @param mixed        $currency
+ * @param bool         $html
+ * @param int          $decimals
+ * @param string       $currencyName
+ * @param string       $localized
+ */
+define('HOOK_LOCALIZED_PRICE_STRING', 330);
+
+/**
+ * @since 5.1.0
+ * @file Cart.php
+ * @param array $sum
+ */
+define('HOOK_CART_GET_LOCALIZED_SUM', 331);
+
+/**
+ * @since 5.1.0
+ * @file includes/src/Helpers/Order.php
+ * @param float &$creditToUse
+ * @param float $cartTotal
+ * @param float $customerCredit
+ */
+define('HOOK_BESTELLUNG_SETZEGUTHABEN', 335);

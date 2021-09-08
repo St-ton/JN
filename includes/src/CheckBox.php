@@ -325,7 +325,7 @@ class CheckBox
                 switch ($checkbox->oCheckBoxFunktion->cID) {
                     case 'jtl_newsletter': // Newsletteranmeldung
                         $params['oKunde'] = GeneralObject::copyMembers($params['oKunde']);
-                        $this->sfCheckBoxNewsletter($params['oKunde']);
+                        $this->sfCheckBoxNewsletter($params['oKunde'], $location);
                         break;
 
                     case 'jtl_adminmail': // CheckBoxMail
@@ -614,12 +614,13 @@ class CheckBox
     }
 
     /**
-     * @param Customer|object $customer
+     * @param $customer
+     * @param int $location
      * @return bool
      * @throws Exceptions\CircularReferenceException
      * @throws Exceptions\ServiceNotFoundException
      */
-    private function sfCheckBoxNewsletter($customer): bool
+    private function sfCheckBoxNewsletter($customer, int $location): bool
     {
         if (!\is_object($customer)) {
             return false;
@@ -634,7 +635,7 @@ class CheckBox
         try {
             (new Optin(OptinNewsletter::class))
                 ->getOptinInstance()
-                ->createOptin($refData)
+                ->createOptin($refData, $location)
                 ->sendActivationMail();
         } catch (\Exception $e) {
             Shop::Container()->getLogService()->error($e->getMessage());

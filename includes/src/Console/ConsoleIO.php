@@ -96,7 +96,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @return InputInterface
      */
-    public function getInput()
+    public function getInput(): InputInterface
     {
         return $this->input;
     }
@@ -104,7 +104,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @return OutputInterface
      */
-    public function getOutput()
+    public function getOutput(): OutputInterface
     {
         return $this->output;
     }
@@ -112,7 +112,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @return HelperSet|null
      */
-    public function getHelperSet()
+    public function getHelperSet(): ?HelperSet
     {
         return $this->helperSet;
     }
@@ -161,12 +161,12 @@ class ConsoleIO extends OutputStyle
      * @param string $message
      * @return $this
      */
-    public function overwrite($message)
+    public function overwrite(string $message)
     {
         $lines = \explode("\n", $message);
         if ($this->lastMessagesLength !== null) {
             foreach ($lines as $i => $line) {
-                $len = Helper::strlenWithoutDecoration($this->bufferedOutput->getFormatter(), $line);
+                $len = Helper::width(Helper::removeDecoration($this->bufferedOutput->getFormatter(), $line));
                 if ($this->lastMessagesLength > $len) {
                     $lines[$i] = $line . \str_repeat("\x20", $this->lastMessagesLength - $len);
                 }
@@ -178,7 +178,7 @@ class ConsoleIO extends OutputStyle
 
         $this->lastMessagesLength = 0;
         foreach ($lines as $line) {
-            $len = Helper::strlenWithoutDecoration($this->bufferedOutput->getFormatter(), $line);
+            $len = Helper::width(Helper::removeDecoration($this->bufferedOutput->getFormatter(), $line));
             if ($len > $this->lineLength) {
                 $line = \substr($line, 0, $this->lineLength);
             }
@@ -322,7 +322,7 @@ class ConsoleIO extends OutputStyle
                 $lines,
                 \explode(
                     \PHP_EOL,
-                    \wordwrap($message, $this->lineLength - Helper::strlen($prefix), \PHP_EOL, true)
+                    \wordwrap($message, $this->lineLength - Helper::width($prefix), \PHP_EOL, true)
                 )
             );
 
@@ -339,7 +339,7 @@ class ConsoleIO extends OutputStyle
         $length = \max(
             \array_map(
                 function ($line) {
-                    return Helper::strlenWithoutDecoration($this->getFormatter(), $line);
+                    return Helper::width(Helper::removeDecoration($this->getFormatter(), $line));
                 },
                 $lines
             )
@@ -349,7 +349,7 @@ class ConsoleIO extends OutputStyle
 
         foreach ($lines as &$line) {
             $line  = \sprintf('%s%s', $prefix, $line);
-            $line .= \str_repeat(' ', $length - Helper::strlenWithoutDecoration($this->getFormatter(), $line));
+            $line .= \str_repeat(' ', $length - Helper::width(Helper::removeDecoration($this->getFormatter(), $line)));
 
             if ($style) {
                 $line = \sprintf('<%s>%s</>', $style, $line);
@@ -366,7 +366,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function title($message)
+    public function title(string $message)
     {
         $this->autoPrependBlock();
 
@@ -375,7 +375,7 @@ class ConsoleIO extends OutputStyle
                 \sprintf('<comment>%s</comment>', $message),
                 \sprintf(
                     '<comment>%s</comment>',
-                    \str_repeat('=', Helper::strlenWithoutDecoration($this->getFormatter(), $message))
+                    \str_repeat('=', Helper::width(Helper::removeDecoration($this->getFormatter(), $message)))
                 ),
             ]
         );
@@ -387,7 +387,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function section($message)
+    public function section(string $message)
     {
         $this->autoPrependBlock();
 
@@ -396,7 +396,7 @@ class ConsoleIO extends OutputStyle
                 \sprintf('<comment>%s</comment>', $message),
                 \sprintf(
                     '<comment>%s</comment>',
-                    \str_repeat('-', Helper::strlenWithoutDecoration($this->getFormatter(), $message))
+                    \str_repeat('-', Helper::width(Helper::removeDecoration($this->getFormatter(), $message)))
                 ),
             ]
         );
@@ -457,7 +457,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @param string $message
+     * @param string|array $message
      * @return $this
      */
     public function verbose($message)
@@ -538,7 +538,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function ask($question, $default = null, $validator = null)
+    public function ask(string $question, string $default = null, callable $validator = null)
     {
         $instance = new Question($question, $default);
         $instance->setValidator($validator);
@@ -549,7 +549,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function askHidden($question, $validator = null)
+    public function askHidden(string $question, callable $validator = null)
     {
         $instance = new Question($question);
 
@@ -562,7 +562,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function confirm($question, $default = true)
+    public function confirm(string $question, bool $default = true)
     {
         return $this->askQuestion(new ConfirmationQuestion($question, $default));
     }
@@ -570,7 +570,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function choice($question, array $choices, $default = null)
+    public function choice(string $question, array $choices, $default = null)
     {
         if ($default !== null) {
             $values  = \array_flip($choices);
@@ -583,7 +583,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function progressStart($max = 0)
+    public function progressStart(int $max = 0)
     {
         $this->progressBar = $this->createProgressBar($max);
         $this->progressBar->start();
@@ -594,7 +594,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function progressAdvance($step = 1)
+    public function progressAdvance(int $step = 1)
     {
         $this->getProgressBar()->advance($step);
 
@@ -616,7 +616,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function createProgressBar($max = 0)
+    public function createProgressBar(int $max = 0)
     {
         $progressBar = parent::createProgressBar($max);
 
@@ -655,7 +655,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function writeln($messages, $type = self::OUTPUT_NORMAL)
+    public function writeln($messages, int $type = self::OUTPUT_NORMAL)
     {
         parent::writeln($messages, $type);
         $this->bufferedOutput->writeln($this->reduceBuffer($messages), $type);
@@ -666,7 +666,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function write($messages, $newline = false, $type = self::OUTPUT_NORMAL)
+    public function write($messages, bool $newline = false, int $type = self::OUTPUT_NORMAL)
     {
         parent::write($messages, $newline, $type);
         $this->bufferedOutput->write($this->reduceBuffer($messages), $newline, $type);
@@ -677,7 +677,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function newLine($count = 1)
+    public function newLine(int $count = 1)
     {
         parent::newLine($count);
         $this->bufferedOutput->write(\str_repeat("\n", $count));
@@ -688,7 +688,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @return ProgressBar
      */
-    private function getProgressBar()
+    private function getProgressBar(): ProgressBar
     {
         if (!$this->progressBar) {
             throw new RuntimeException('The ProgressBar is not started.');
@@ -700,7 +700,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @return int
      */
-    private function getTerminalWidth()
+    private function getTerminalWidth(): int
     {
         $terminal   = new Terminal();
         $dimensions = [$terminal->getWidth(), $terminal->getHeight()];

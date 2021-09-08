@@ -338,7 +338,7 @@ class DBMigrationHelper
             'createFK' => [],
         ];
 
-        if (count($fkDefinitions) === 0) {
+        if (\count($fkDefinitions) === 0) {
             return $result;
         }
 

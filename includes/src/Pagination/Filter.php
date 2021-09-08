@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Pagination;
 
@@ -38,7 +38,7 @@ class Filter
      * Create a new empty filter object
      * @param string|null $id
      */
-    public function __construct($id = null)
+    public function __construct(?string $id = null)
     {
         if (\is_string($id)) {
             $this->id = $id;
@@ -83,10 +83,10 @@ class Filter
      *
      * @param string|array $title - either title-string for this field or a pair of short title and long title
      * @param string       $column - the column name to be compared
-     * @param int          $defaultOption
+     * @param mixed        $defaultOption
      * @return FilterSelectField
      */
-    public function addSelectfield($title, $column, $defaultOption = 0): FilterSelectField
+    public function addSelectfield($title, string $column, $defaultOption = 0): FilterSelectField
     {
         $field                              = new FilterSelectField($this, $title, $column, $defaultOption);
         $this->fields[]                     = $field;
@@ -98,14 +98,14 @@ class Filter
     /**
      * Add a DateRange field to the filter object.
      *
-     * @param string $cTitle
-     * @param string $cColumn
-     * @param string $cDefValue
+     * @param string|array $title
+     * @param string       $column
+     * @param mixed        $defaultValue
      * @return FilterDateRangeField
      */
-    public function addDaterangefield($cTitle, $cColumn, $cDefValue = ''): FilterDateRangeField
+    public function addDaterangefield($title, string $column, $defaultValue = ''): FilterDateRangeField
     {
-        $field                              = new FilterDateRangeField($this, $cTitle, $cColumn, $cDefValue);
+        $field                              = new FilterDateRangeField($this, $title, $column, $defaultValue);
         $this->fields[]                     = $field;
         $this->sessionData[$field->getID()] = $field->getValue();
 
@@ -120,8 +120,8 @@ class Filter
         $this->whereSQL = \implode(
             ' AND ',
             \array_filter(
-                \array_map(static function (FilterField $oField) {
-                    return $oField->getWhereClause();
+                \array_map(static function (FilterField $field) {
+                    return $field->getWhereClause();
                 }, $this->fields)
             )
         );
@@ -178,21 +178,21 @@ class Filter
     }
 
     /**
-     * @param string $cField
+     * @param string $field
      * @return bool
      */
-    public function hasSessionField($cField): bool
+    public function hasSessionField($field): bool
     {
-        return isset($this->sessionData[$cField]);
+        return isset($this->sessionData[$field]);
     }
 
     /**
-     * @param string $cField
+     * @param string $field
      * @return mixed
      */
-    public function getSessionField($cField)
+    public function getSessionField($field)
     {
-        return $this->sessionData[$cField];
+        return $this->sessionData[$field];
     }
 
     /**

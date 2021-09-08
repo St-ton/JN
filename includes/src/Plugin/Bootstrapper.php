@@ -84,6 +84,14 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @inheritdoc
      */
+    public function preInstallCheck(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function installed()
     {
     }

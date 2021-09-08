@@ -82,7 +82,7 @@ class CreateCommand extends Command
     {
         $smartyCli = Shop::Smarty(true, ContextType::CLI);
         $smartyCli->setCaching(JTLSmarty::CACHING_OFF);
-        $datetime  = new \DateTime('NOW');
+        $datetime  = new DateTime('NOW');
         $table     = \strtolower($table);
         $modelName = 'T' . \ucfirst(\ltrim($table, 't')) . 'Model';
         $relPath   = 'models';

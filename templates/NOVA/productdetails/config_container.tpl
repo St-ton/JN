@@ -28,7 +28,7 @@
                 }
                     <i class="fas fa-cart-plus"></i> <span class="nav-link-text">{lang key='yourConfiguration'}</span>
                 {/navitem}
-                {navitem href="#" disabled=true}
+                {navitem href="#" disabled=true class="cfg-tab-total"}
                     <strong id="cfg-price" class="price"></strong>&nbsp;<span class="footnote-reference">*</span>
                 {/navitem}
             {/nav}

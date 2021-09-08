@@ -64,7 +64,7 @@
                                                                 {col cols=12 sm=3}<small class="desc text-info">{$versandart->cLieferdauer|trans}</small>{/col}
                                                             {/block}
                                                             {block name='checkout-step3-shipping-options-shipping-option-price'}
-                                                                {col cols=12 sm=4 class='font-weight-bold-util'}
+                                                                {col cols=12 sm=4 class='font-weight-bold-util price-col'}
                                                                     {$versandart->cPreisLocalized}
                                                                     {if !empty($versandart->Zuschlag->fZuschlag)}
                                                                         <div>
@@ -137,7 +137,7 @@
                                                     <span class="checkout-shipping-form-packaging-title">
                                                         {$oVerpackung->cName}
                                                     </span>
-                                                    <span class="checkout-shipping-form-packaging-cost">
+                                                    <span class="checkout-shipping-form-packaging-cost price-col">
                                                         {if $oVerpackung->nKostenfrei == 1}{lang key='ExemptFromCharges'}{else}{$oVerpackung->fBruttoLocalized}{/if}
                                                     </span>
                                                     <span class="checkout-shipping-form-packaging-desc">

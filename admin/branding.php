@@ -77,7 +77,8 @@ function gibBranding(int $brandingID): ?stdClass
  */
 function speicherEinstellung(int $brandingID, array $post, array $files): bool
 {
-    if (!Image::isImageUpload($files['cBrandingBild'])) {
+    $hasNewImage = mb_strlen($files['cBrandingBild']['name'] ?? '') > 0;
+    if ($hasNewImage && !Image::isImageUpload($files['cBrandingBild'])) {
         return false;
     }
     $db                 = Shop::Container()->getDB();
@@ -89,7 +90,7 @@ function speicherEinstellung(int $brandingID, array $post, array $files): bool
     $conf->dTransparenz = $post['dTransparenz'];
     $conf->dGroesse     = $post['dGroesse'];
 
-    if (mb_strlen($files['cBrandingBild']['name']) > 0) {
+    if ($hasNewImage) {
         $conf->cBrandingBild = 'kBranding_' . $brandingID . mappeFileTyp($files['cBrandingBild']['type']);
     } else {
         $tmpConf             = $db->select(
@@ -105,7 +106,7 @@ function speicherEinstellung(int $brandingID, array $post, array $files): bool
     if ($conf->kBranding > 0 && mb_strlen($conf->cPosition) > 0 && mb_strlen($conf->cBrandingBild) > 0) {
         // Alte Einstellung loeschen
         $db->delete('tbrandingeinstellung', 'kBranding', $brandingID);
-        if (mb_strlen($files['cBrandingBild']['name']) > 0) {
+        if ($hasNewImage) {
             loescheBrandingBild($conf->kBranding);
             speicherBrandingBild($files, $conf->kBranding);
         }

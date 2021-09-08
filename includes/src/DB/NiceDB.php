@@ -179,7 +179,7 @@ class NiceDB implements DbInterface
         if (\ES_DB_LOGGING === true) {
             $this->logErrors = true;
         }
-        if (\NICEDB_EXCEPTION_BACKTRACE === true) {
+        if (\ES_DB_LOGGING === true || \NICEDB_EXCEPTION_BACKTRACE === true) {
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
     }

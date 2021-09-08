@@ -276,32 +276,45 @@ class Starter
      */
     private function handleSpecialCases(string $handledFile, array $post): void
     {
-        if ($handledFile === 'lastjobs') {
-            $this->init($post, [], false);
-            $lastjobs = new LastJob($this->db, $this->logger);
-            $lastjobs->execute();
-            echo self::OK;
-            exit();
+        if (!\in_array($handledFile, ['lastjobs', 'mytest', 'bild'], true)) {
+            return;
         }
-        if ($handledFile === 'mytest') {
-            $this->init($post, [], false);
-            $test = new Test($this->db);
-            echo $test->execute();
-            exit();
+        $res = $this->init($post, [], false);
+        switch ($handledFile) {
+            case 'lastjobs':
+                if ($res === self::OK) {
+                    $lastjobs = new LastJob($this->db, $this->logger);
+                    $lastjobs->execute();
+                }
+                echo $res;
+                break;
+            case 'mytest':
+                if ($res === self::OK) {
+                    $test = new Test($this->db);
+                    echo $test->execute();
+                } else {
+                    echo \sprintf(
+                        'Ihr JTL-Shop Version %s benötigt für den Datenabgleich mindestens JTL-Wawi '
+                        . 'Version %d. Eine aktuelle Version erhalten Sie unter: %s',
+                        \APPLICATION_VERSION,
+                        \JTL_MIN_WAWI_VERSION / 100000.0,
+                        'https://jtl-url.de/wawidownload'
+                    );
+                }
+                break;
+            case 'bild':
+                $conf = Shop::getConfigValue(\CONF_BILDER, 'bilder_externe_bildschnittstelle');
+                if ($conf === 'N') {
+                    exit(); // api disabled
+                }
+                if ($conf === 'W' && $res !== self::OK) {
+                    exit(); // api is wawi only
+                }
+                $api = new ImageAPI($this->db, $this->cache, $this->logger);
+                $api->getData();
+                break;
         }
-        if ($handledFile === 'bild') {
-            $conf = Shop::getSettings([\CONF_BILDER]);
-            if ($conf['bilder']['bilder_externe_bildschnittstelle'] === 'N') {
-                exit(); // api disabled
-            }
-            if ($conf['bilder']['bilder_externe_bildschnittstelle'] === 'W' && !$this->checkAuth($post)) {
-                exit(); // api is wawi only
-            }
-            $this->init($post, [], false);
-            $api = new ImageAPI($this->db, $this->cache, $this->logger);
-            $api->getData();
-            exit();
-        }
+        exit();
     }
 
     /**
@@ -313,6 +326,11 @@ class Starter
      */
     public function start(string $handledFile, array $post, array $files): int
     {
+        if (isset($post['uID'], $post['uPWD']) && !isset($post['userID'], $post['userPWD'])) {
+            // for some reason, wawi sometimes sends uID/uPWD and sometimes userID/userPWD
+            $post['userID']  = $post['uID'];
+            $post['userPWD'] = $post['uPWD'];
+        }
         $this->setVersionByUserAgent();
         $this->handleSpecialCases($handledFile, $post);
         $this->executeNetSync($handledFile);
@@ -329,18 +347,16 @@ class Starter
         }
         $this->setPostData($post);
         $this->setData($files['data']['tmp_name'] ?? null);
-
         if ($direction === self::DIRECTION_PULL) {
-            $res        = '';
-            $unzip      = $handler !== Brocken::class;
-            $fromHandle = $handler === Customer::class;
-            $return     = $this->init($post, $files, $unzip);
+            $res    = '';
+            $unzip  = $handler !== Brocken::class;
+            $return = $this->init($post, $files, $unzip);
             if ($return === self::OK) {
                 /** @var AbstractSync $sync */
                 $sync = new $handler($this->db, $this->cache, $this->logger);
                 $res  = $sync->handle($this);
             }
-            if ($fromHandle === false) {
+            if ($handledFile !== 'SetKunde_xml') {
                 echo $return;
                 exit();
             }
@@ -353,15 +369,16 @@ class Starter
                 echo $return . ';' . $res;
             }
         } else {
-            $this->init($post, [], false);
-            /** @var AbstractPush $pusher */
-            $pusher = new $handler($this->db, $this->cache, $this->logger);
-            $xml    = $pusher->getData();
-            if (\is_array($xml) && \count($xml) > 0) {
-                $pusher->zipRedirect(\time() . '.jtl', $xml, $this->getWawiVersion());
+            $res = $this->init($post, [], false);
+            if ($res === self::OK) {
+                /** @var AbstractPush $pusher */
+                $pusher = new $handler($this->db, $this->cache, $this->logger);
+                $xml    = $pusher->getData();
+                if (\is_array($xml) && \count($xml) > 0) {
+                    $pusher->zipRedirect(\time() . '.jtl', $xml, $this->getWawiVersion());
+                }
             }
-
-            echo self::OK;
+            echo $res;
         }
         exit();
     }
@@ -393,7 +410,6 @@ class Starter
 
         return self::OK;
     }
-
 
     /**
      * @param bool $string

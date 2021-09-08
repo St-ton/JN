@@ -63,12 +63,14 @@ class OptinNewsletter extends OptinBase implements OptinInterface
     /**
      * former "newsletterAnmeldungPlausi()"
      *
+     * @param int $location
      * @return array
      */
-    protected function checkCaptcha(): array
+    protected function checkCaptcha(int $location = \CHECKBOX_ORT_NEWSLETTERANMELDUNG): array
     {
         $res = [];
-        if (Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N'
+        if ($location === \CHECKBOX_ORT_NEWSLETTERANMELDUNG
+            && Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N'
             && !Form::validateCaptcha($_POST)) {
             $res['captcha'] = 2;
         }
@@ -94,7 +96,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
             $checks->nPlausi_arr = [];
             $nlCustomer          = null;
             if (Text::filterEmailAddress($this->refData->getEmail()) !== false) {
-                $checks->nPlausi_arr            = $this->checkCaptcha();
+                $checks->nPlausi_arr            = $this->checkCaptcha($location);
                 $kKundengruppe                  = Frontend::getCustomerGroup()->getID();
                 $checkBox                       = new CheckBox();
                 $checks->nPlausi_arr            = \array_merge(

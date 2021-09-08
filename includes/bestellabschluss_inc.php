@@ -822,7 +822,7 @@ function KuponVerwendungen($order): void
         ) {
             $couponGross = Tax::getGross(
                 $item->fPreisEinzelNetto,
-                Tax::getSalesTax($item->kSteuerklasse)
+                CartItem::getTaxRate($item)
             ) * (-1);
         }
     }

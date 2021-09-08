@@ -2005,3 +2005,12 @@ define('HOOK_LOCALIZED_PRICE_STRING', 330);
  * @param array $sum
  */
 define('HOOK_CART_GET_LOCALIZED_SUM', 331);
+
+/**
+ * @since 5.1.0
+ * @file includes/src/Helpers/Order.php
+ * @param float &$creditToUse
+ * @param float $cartTotal
+ * @param float $customerCredit
+ */
+define('HOOK_BESTELLUNG_SETZEGUTHABEN', 335);

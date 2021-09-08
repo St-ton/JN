@@ -293,13 +293,7 @@ class Starter
                     $test = new Test($this->db);
                     echo $test->execute();
                 } else {
-                    echo \sprintf(
-                        'Ihr JTL-Shop Version %s benötigt für den Datenabgleich mindestens JTL-Wawi '
-                        . 'Version %d. Eine aktuelle Version erhalten Sie unter: %s',
-                        \APPLICATION_VERSION,
-                        \JTL_MIN_WAWI_VERSION / 100000.0,
-                        'https://jtl-url.de/wawidownload'
-                    );
+                    \syncException(\APPLICATION_VERSION, $res);
                 }
                 break;
             case 'bild':
@@ -347,18 +341,16 @@ class Starter
         }
         $this->setPostData($post);
         $this->setData($files['data']['tmp_name'] ?? null);
-
         if ($direction === self::DIRECTION_PULL) {
-            $res        = '';
-            $unzip      = $handler !== Brocken::class;
-            $fromHandle = $handler === Customer::class;
-            $return     = $this->init($post, $files, $unzip);
+            $res    = '';
+            $unzip  = $handler !== Brocken::class;
+            $return = $this->init($post, $files, $unzip);
             if ($return === self::OK) {
                 /** @var AbstractSync $sync */
                 $sync = new $handler($this->db, $this->cache, $this->logger);
                 $res  = $sync->handle($this);
             }
-            if ($fromHandle === false) {
+            if ($handledFile !== 'SetKunde_xml') {
                 echo $return;
                 exit();
             }

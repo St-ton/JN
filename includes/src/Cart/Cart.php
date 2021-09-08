@@ -13,6 +13,7 @@ use JTL\Checkout\Versandart;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Config\ItemLocalization;
 use JTL\Extensions\Download\Download;
+use JTL\Helpers\Order;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -695,7 +696,7 @@ class Cart
             $cartItem->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
                 Tax::getGross(
                     $cartItem->fPreis * $cartItem->nAnzahl,
-                    Tax::getSalesTax($cartItem->kSteuerklasse)
+                    CartItem::getTaxRate($cartItem)
                 ),
                 $currency
             );
@@ -704,7 +705,7 @@ class Cart
                 $currency
             );
             $cartItem->cEinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
-                Tax::getGross($cartItem->fPreis, Tax::getSalesTax($cartItem->kSteuerklasse)),
+                Tax::getGross($cartItem->fPreis, CartItem::getTaxRate($cartItem)),
                 $currency
             );
             $cartItem->cEinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
@@ -726,7 +727,7 @@ class Cart
                         $net   += $item->fPreis * $item->nAnzahl;
                         $gross += Tax::getGross(
                             $item->fPreis * $item->nAnzahl,
-                            Tax::getSalesTax($item->kSteuerklasse)
+                            CartItem::getTaxRate($item)
                         );
 
                         if ((int)$item->kKonfigitem === 0
@@ -1149,7 +1150,7 @@ class Cart
             // Lokalisierte Preise addieren
             if ($gross) {
                 $total += $item->fPreis * $conversionFactor * $item->nAnzahl *
-                    ((100 + Tax::getSalesTax($item->kSteuerklasse)) / 100);
+                    ((100 + CartItem::getTaxRate($item)) / 100);
             } else {
                 $total += $item->fPreis * $conversionFactor * $item->nAnzahl;
             }
@@ -1163,17 +1164,12 @@ class Cart
                 $_SESSION['Bestellung']->fGuthabenGenutzt,
                 $_SESSION['Kunde']->fGuthaben
             )
-            && $_SESSION['Bestellung']->GuthabenNutzen == 1
+            && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1
             && $_SESSION['Bestellung']->fGuthabenGenutzt > 0
             && $_SESSION['Kunde']->fGuthaben > 0
         ) {
             // check and correct the SESSION-values for "Guthaben"
-            $_SESSION['Bestellung']->GuthabenNutzen   = 1;
-            $_SESSION['Bestellung']->fGuthabenGenutzt = \min(
-                $_SESSION['Kunde']->fGuthaben,
-                Frontend::getCart()->gibGesamtsummeWaren(true, false)
-            );
-            $total                                   -= $_SESSION['Bestellung']->fGuthabenGenutzt * $conversionFactor;
+            $total -= Order::getOrderCredit() * $conversionFactor;
         }
         $total /= $conversionFactor;
         $this->useSummationRounding();
@@ -1204,7 +1200,7 @@ class Cart
                 && $item->isUsedForShippingCostCalculation($iso, $excludeShippingCostAttributes)
             ) {
                 if ($gross) {
-                    $total += $item->fPreis * $item->nAnzahl * ((100 + Tax::getSalesTax($item->kSteuerklasse)) / 100);
+                    $total += $item->fPreis * $item->nAnzahl * ((100 + CartItem::getTaxRate($item)) / 100);
                 } else {
                     $total += $item->fPreis * $item->nAnzahl;
                 }
@@ -1236,7 +1232,7 @@ class Cart
             if (!\in_array($item->nPosTyp, $types)) {
                 if ($gross) {
                     $total += $item->fPreis * $factor * $item->nAnzahl *
-                        ((100 + Tax::getSalesTax($item->kSteuerklasse)) / 100);
+                        ((100 + CartItem::getTaxRate($item)) / 100);
                 } else {
                     $total += $item->fPreis * $factor * $item->nAnzahl;
                 }
@@ -1751,13 +1747,13 @@ class Cart
             foreach ($this->PositionenArr as $i => $item) {
                 $grossAmount        = Tax::getGross(
                     $item->fPreis * $item->nAnzahl,
-                    Tax::getSalesTax($item->kSteuerklasse),
+                    CartItem::getTaxRate($item),
                     12
                 );
                 $netAmount          = $item->fPreis * $item->nAnzahl;
                 $roundedGrossAmount = Tax::getGross(
                     $item->fPreis * $item->nAnzahl + $cumulatedDelta,
-                    Tax::getSalesTax($item->kSteuerklasse),
+                    CartItem::getTaxRate($item),
                     $precision
                 );
                 $roundedNetAmount   = \round($item->fPreis * $item->nAnzahl + $cumulatedDeltaNet, $precision);

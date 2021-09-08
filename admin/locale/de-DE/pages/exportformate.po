@@ -108,7 +108,7 @@ msgid "useCache"
 msgstr "Cache nutzen"
 
 msgid "Check syntax"
-msgstr "Exportformat-Sytnax prüfen"
+msgstr "Exportformat-Syntax prüfen"
 
 msgid "Syntax check fail"
 msgstr "Exportformat Syntaxprüfung fehlgeschlagen"

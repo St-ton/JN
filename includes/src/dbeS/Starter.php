@@ -293,7 +293,7 @@ class Starter
                     $test = new Test($this->db);
                     echo $test->execute();
                 } else {
-                    \syncException('', $res);
+                    \syncException(\APPLICATION_VERSION, $res);
                 }
                 break;
             case 'bild':

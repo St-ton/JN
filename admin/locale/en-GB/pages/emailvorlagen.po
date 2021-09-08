@@ -233,7 +233,7 @@ msgid "Empty mail body"
 msgstr "Empty email body"
 
 msgid "Check syntax"
-msgstr "Check email sytnax"
+msgstr "Check email syntax"
 
 msgid "Syntax check fail"
 msgstr "Email syntax check failed"

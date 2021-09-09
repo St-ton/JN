@@ -158,6 +158,7 @@ final class LanguageModel extends DataModel
             $attributes['default']     = DataAttribute::create('cStandard', 'char', self::cast('N', 'char'));
             $attributes['iso']         = DataAttribute::create('cISO', 'varchar', null, false);
             $attributes['shopDefault'] = DataAttribute::create('cShopStandard', 'char', self::cast('N', 'char'));
+            $attributes['active']      = DataAttribute::create('active', 'tinyint', self::cast('1', 'tinyint'));
 
             $iso = new DataAttribute();
             $iso->setName('cISO639')

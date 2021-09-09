@@ -6,7 +6,7 @@
     </div>
 {else}
     {$productlist = $portlet->getFilteredProducts($instance)}
-    
+
     {if $style === 'list' || $style === 'gallery'}
         {if $style === 'list'}
             {$grid = '12'}
@@ -23,12 +23,12 @@
         {row class=$style|cat:' '|cat:$eqHeightClasses|cat:' product-list opc-ProductStream opc-ProductStream-'|cat:$style|cat:' '|cat:$instance->getStyleClasses()
             itemprop="mainEntity"
             itemscope=true
-            itemtype="http://schema.org/ItemList"
+            itemtype="https://schema.org/ItemList"
             style="{$instance->getStyleString()}"}
             {foreach $productlist as $Artikel}
                 {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" xl="{if isset($gridxl)}{$gridxl}{/if}"
                      class="product-wrapper {if !($style === 'list' && $Artikel@last)}mb-4{/if}"
-                     itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
+                     itemprop="itemListElement" itemscope=true itemtype="https://schema.org/Product"}
                     {if $style === 'list'}
                         {include file='productlist/item_list.tpl' tplscope=$style isOPC=true}
                     {elseif $style === 'gallery'}

@@ -159,7 +159,10 @@ class Filesystem extends \League\Flysystem\Filesystem
     public function zipDir(string $source, string $archive): bool
     {
         $realSource = \realpath($source);
-        if ($realSource === false || \strpos($realSource, \PFAD_ROOT) !== 0 || \strpos($archive, '.zip') === false) {
+        if ($realSource === false
+            || \strpos($archive, '.zip') === false
+            || \strpos($realSource, \realpath(\PFAD_ROOT)) !== 0
+        ) {
             return false;
         }
         $manager = new MountManager([

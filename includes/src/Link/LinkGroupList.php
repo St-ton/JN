@@ -111,19 +111,12 @@ final class LinkGroupList implements LinkGroupListInterface
     {
         $unassigned = $this->db->getObjects(
             "SELECT tlink.*, tlinksprache.cISOSprache, 
-                tlink.cName AS displayName, 
-                tlinksprache.cName AS localizedName, 
-                tlinksprache.cTitle AS localizedTitle, 
-                tsprache.kSprache, 
-                tlinksprache.cContent AS content,
-                tlinksprache.cMetaDescription AS metaDescription,
-                tlinksprache.cMetaKeywords AS metaKeywords,
-                tlinksprache.cMetaTitle AS metaTitle,
-                tseo.kSprache AS languageID,
-                tseo.cSeo AS localizedUrl,
-                '' AS cDateiname,
-                '' AS linkGroups,
-                2 AS pluginState
+                tlink.cName AS displayName, tlinksprache.cName AS localizedName, 
+                tlinksprache.cTitle AS localizedTitle, tsprache.kSprache, 
+                tlinksprache.cSeo AS linkURL, tlinksprache.cContent AS content,
+                tlinksprache.cMetaDescription AS metaDescription, tlinksprache.cMetaKeywords AS metaKeywords,
+                tlinksprache.cMetaTitle AS metaTitle, tseo.kSprache AS languageID,
+                tseo.cSeo AS localizedUrl, '' AS cDateiname, '' AS linkGroups, 2 AS pluginState
                     FROM tlinksprache
                     JOIN tlink
                         ON tlink.kLink = tlinksprache.kLink
@@ -207,19 +200,12 @@ final class LinkGroupList implements LinkGroupListInterface
     {
         $specialPages = $this->db->getObjects(
             "SELECT tlink.*, tlinksprache.cISOSprache, 
-                tlink.cName AS displayName, 
-                tlinksprache.cName AS localizedName, 
-                tlinksprache.cTitle AS localizedTitle, 
-                tsprache.kSprache, 
-                tlinksprache.cContent AS content,
-                tlinksprache.cMetaDescription AS metaDescription,
-                tlinksprache.cMetaKeywords AS metaKeywords,
-                tlinksprache.cMetaTitle AS metaTitle,
-                tseo.kSprache AS languageID,
-                tseo.cSeo AS localizedUrl,
-                tspezialseite.cDateiname,
-                GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups,
-                2 AS pluginState
+                tlink.cName AS displayName, tlinksprache.cName AS localizedName, tlinksprache.cTitle AS localizedTitle, 
+                tsprache.kSprache, tlinksprache.cSeo AS linkURL, tlinksprache.cContent AS content,
+                tlinksprache.cMetaDescription AS metaDescription, tlinksprache.cMetaKeywords AS metaKeywords,
+                tlinksprache.cMetaTitle AS metaTitle, tseo.kSprache AS languageID,
+                tseo.cSeo AS localizedUrl, tspezialseite.cDateiname,
+                GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups, 2 AS pluginState
                     FROM tlinksprache
                     JOIN tlink
                         ON tlink.kLink = tlinksprache.kLink
@@ -280,12 +266,13 @@ final class LinkGroupList implements LinkGroupListInterface
         $staticRoutes = $this->db->getObjects(
             "SELECT tspezialseite.kSpezialseite, tspezialseite.cName AS baseName, tspezialseite.cDateiname, 
                 tspezialseite.nLinkart, tlink.kLink, tlink.cName AS displayName, tlink.reference,
-                tlinksprache.cName AS localizedName, tlinksprache.cTitle AS localizedTitle,
-                tlinksprache.cContent AS content, tlinksprache.cMetaDescription AS metaDescription,
-                tlinksprache.cMetaKeywords AS metaKeywords, tlinksprache.cMetaTitle AS metaTitle,
-                tlink.cKundengruppen,  tseo.cSeo AS localizedUrl,  tsprache.cISO AS cISOSprache, 
-                tsprache.kSprache AS languageID, tlink.kVaterLink, tspezialseite.kPlugin, tlink.cName, tlink.cNoFollow, 
-                tlink.cSichtbarNachLogin, tlink.cDruckButton, tlink.nSort, tlink.bIsActive, tlink.bIsFluid, tlink.bSSL,
+                tlinksprache.cName AS localizedName, tlinksprache.cTitle AS localizedTitle, 
+                tlinksprache.cSeo AS linkURL, tlinksprache.cContent AS content, 
+                tlinksprache.cMetaDescription AS metaDescription, tlinksprache.cMetaKeywords AS metaKeywords, 
+                tlinksprache.cMetaTitle AS metaTitle, tlink.cKundengruppen,  tseo.cSeo AS localizedUrl,  
+                tsprache.cISO AS cISOSprache, tsprache.kSprache AS languageID, tlink.kVaterLink, 
+                tspezialseite.kPlugin, tlink.cName, tlink.cNoFollow, tlink.cSichtbarNachLogin, 
+                tlink.cDruckButton, tlink.nSort, tlink.bIsActive, tlink.bIsFluid, tlink.bSSL,
                 GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups, 2 AS pluginState
             FROM tspezialseite
                 LEFT JOIN tlink 
@@ -380,7 +367,7 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @inheritdoc
      */
-    public function getLinkgroupByTemplate(string $name, $filtered = true): ?LinkGroupInterface
+    public function getLinkgroupByTemplate(string $name, bool $filtered = true): ?LinkGroupInterface
     {
         $source = $filtered ? $this->visibleLinkGroups : $this->linkGroups;
 
@@ -390,7 +377,7 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @inheritdoc
      */
-    public function getLinkgroupByID(int $id, $filtered = true): ?LinkGroupInterface
+    public function getLinkgroupByID(int $id, bool $filtered = true): ?LinkGroupInterface
     {
         $source = $filtered ? $this->visibleLinkGroups : $this->linkGroups;
 

@@ -109,7 +109,7 @@
 
             {col cols=12 md=6}
                 {block name='checkout-step5-confirmation-comment'}
-                    {card no-body=true id="panel-edit-comment"}
+                    {card no-body=true id="panel-edit-comment" class="min-h-card"}
                         {cardheader}
                             {block name='checkout-step5-confirmation-comment-header'}
                                 <span class="h3 checkout-confirmation-heading">{lang key='comment' section='product rating'}</span>
@@ -137,10 +137,10 @@
             {if $KuponMoeglich}
                 {col cols=12 md=6}
                     {block name='checkout-step5-confirmation-coupon'}
-                        {card no-body=true id="panel-edit-coupon"}
+                        {card no-body=true id="panel-edit-coupon" class="min-h-card"}
                             {cardheader}
                                 {block name='checkout-step5-confirmation-coupon-header'}
-                                    <span class="h3 checkout-confirmation-heading">{lang key='coupon' section='account data'}</span>
+                                    <span class="h3 checkout-confirmation-heading">{lang key='useCoupon' section='checkout'}</span>
                                 {/block}
                             {/cardheader}
                             {cardbody}

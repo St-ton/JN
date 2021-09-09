@@ -39,7 +39,8 @@ class Migration_20180115150800 extends Migration implements IMigration
 
         $values->kSynclogin = 1;
         $passInfo           = password_get_info($values->cPass);
-        if ($passInfo['algo'] === 0) {
+        // PHP7.3 => (int)0, PHP7.4++ => NULL
+        if (empty($passInfo['algo'])) {
             $values->cPass = password_hash($values->cPass, PASSWORD_DEFAULT);
         }
 

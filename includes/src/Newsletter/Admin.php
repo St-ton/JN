@@ -37,6 +37,7 @@ final class Admin
     /**
      * Admin constructor.
      * @param DbInterface $db
+     * @param AlertServiceInterface $alertService
      */
     public function __construct(DbInterface $db, AlertServiceInterface $alertService)
     {

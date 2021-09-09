@@ -27,6 +27,7 @@ class MailSmarty extends JTLSmarty
         parent::__construct(true, $context);
         $this->registerResource('db', new SmartyResourceNiceDB($db, $context))
              ->registerPlugin(\Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', [$this, 'includeMailTemplate'])
+             ->registerPlugin(\Smarty::PLUGIN_MODIFIER, 'maskPrivate', [$this, 'maskPrivate'])
              ->setCompileDir(\PFAD_ROOT . \PFAD_COMPILEDIR)
              ->setTemplateDir(\PFAD_ROOT . \PFAD_EMAILTEMPLATES)
              ->setDebugging(false)
@@ -68,5 +69,21 @@ class MailSmarty extends JTLSmarty
         }
 
         return '';
+    }
+
+    /**
+     * @param string $str
+     * @param int    $pre
+     * @param int    $post
+     * @param string $mask
+     * @return string
+     */
+    public function maskPrivate(string $str, int $pre = 0, int $post = 4, string $mask = '****'): string
+    {
+        if (\mb_strlen($str) <= $pre + $post) {
+            return $str;
+        }
+
+        return \mb_substr($str, 0, $pre) . $mask . \mb_substr($str, -$post);
     }
 }

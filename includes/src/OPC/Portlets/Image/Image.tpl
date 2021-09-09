@@ -36,6 +36,9 @@
             src=$imgAttribs.src
             srcset=$imgAttribs.srcset
             sizes=$imgAttribs.srcsizes
+            class='img-aspect-ratio'
+            width=$imgAttribs.realWidth
+            height=$imgAttribs.realHeight
             alt=$imgAttribs.alt|escape:'html'
             title=$imgAttribs.title
             style=$instance->getStyleString()

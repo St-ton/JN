@@ -3,7 +3,7 @@
         {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
             {block name='basket-cart-dropdown-cart-items-content'}
                 <div class="table-responsive max-h-sm lg-max-h">
-                    <table class="table table-striped dropdown-cart-items">
+                    <table class="table dropdown-cart-items">
                         <tbody>
                             {block name='basket-cart-dropdown-cart-item'}
                                 {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}

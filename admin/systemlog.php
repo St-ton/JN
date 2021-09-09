@@ -102,17 +102,17 @@ $settingLogsPagination = (new Pagination('settingsLog'))
     ->assemble();
 
 $smarty->assign('oFilter', $filter)
-       ->assign('pagination', $pagination)
-       ->assign('oLog_arr', $logData)
-       ->assign('minLogLevel', $minLogLevel)
-       ->assign('nTotalLogCount', $totalLogCount)
-       ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
-       ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)
-       ->assign('JTLLOG_LEVEL_DEBUG', JTLLOG_LEVEL_DEBUG)
-       ->assign('settingLogs', $settingManager->getAllSettingLogs(
-           $settingLogsFilter->getWhereSQL(),
-           $settingLogsPagination->getLimitSQL()
-       ))
-       ->assign('settingLogsPagination', $settingLogsPagination)
-       ->assign('settingLogsFilter', $settingLogsFilter)
-       ->display('systemlog.tpl');
+    ->assign('pagination', $pagination)
+    ->assign('oLog_arr', $logData)
+    ->assign('minLogLevel', $minLogLevel)
+    ->assign('nTotalLogCount', $totalLogCount)
+    ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
+    ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)
+    ->assign('JTLLOG_LEVEL_DEBUG', JTLLOG_LEVEL_DEBUG)
+    ->assign('settingLogs', $settingManager->getAllSettingLogs(
+        $settingLogsFilter->getWhereSQL(),
+        $settingLogsPagination->getLimitSQL()
+    ))
+    ->assign('settingLogsPagination', $settingLogsPagination)
+    ->assign('settingLogsFilter', $settingLogsFilter)
+    ->display('systemlog.tpl');

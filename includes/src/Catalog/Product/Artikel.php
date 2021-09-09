@@ -3191,7 +3191,7 @@ class Artikel
             return $this;
         }
         $this->sanitizeProductData($tmpProduct);
-        $this->addManufacturerData($tmpProduct);
+        $this->addManufacturerData();
         if ((int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
             && $this->getOption('bSimilar', false) === true
         ) {
@@ -3406,7 +3406,7 @@ class Artikel
             $return    = ($startDate > $today || $endDate < $today);
         }
         if ($return !== true) {
-            return null;
+            return false;
         }
         $this->cacheHit = true;
         $this->addVariationChildren($customerGroupID);
@@ -3522,11 +3522,6 @@ class Artikel
                 gpmes.cName AS cGrundpreisEinheitName,
                 ' . $seoSQL->cSELECT . '
                 ' . $localizationSQL->cSELECT . '
-                thersteller.cName AS cName_thersteller, thersteller.cHomepage,
-                thersteller.nSortNr AS nSortNr_thersteller, thersteller.cBildpfad AS manufImg,
-                therstellersprache.cMetaTitle AS cMetaTitle_spr, therstellersprache.cMetaKeywords AS cMetaKeywords_spr,
-                therstellersprache.cMetaDescription AS cMetaDescription_spr,
-                therstellersprache.cBeschreibung AS cBeschreibung_hst_spr,
                 tsonderpreise.fNettoPreis, tartikelext.fDurchschnittsBewertung,
                  tlieferstatus.cName AS cName_tlieferstatus, teinheit.cName AS teinheitcName,
                 tartikelsonderpreis.cAktiv AS cAktivSonderpreis, tartikelsonderpreis.dStart AS dStart_en,
@@ -3550,11 +3545,6 @@ class Artikel
                 ' . $localizationSQL->cJOIN . '
                 LEFT JOIN tbestseller
                 ON tbestseller.kArtikel = tartikel.kArtikel
-                LEFT JOIN thersteller
-                    ON thersteller.kHersteller = tartikel.kHersteller
-                LEFT JOIN therstellersprache
-                    ON therstellersprache.kHersteller = tartikel.kHersteller
-                    AND therstellersprache.kSprache = ' . $langID . '
                 LEFT JOIN tartikelext
                     ON tartikelext.kArtikel = tartikel.kArtikel
                 LEFT JOIN tlieferstatus
@@ -3583,10 +3573,10 @@ class Artikel
     }
 
     /**
-     * @param object $data
-     * @return object
+     * @param stdClass $data
+     * @return stdClass
      */
-    private function localizeData($data)
+    private function localizeData(stdClass $data): stdClass
     {
         if (!isset($data->cName_spr)) {
             return $data;
@@ -3605,9 +3595,9 @@ class Artikel
     }
 
     /**
-     * @param object $data
+     * @param stdClass $data
      */
-    private function sanitizeProductData($data): void
+    private function sanitizeProductData(stdClass $data): void
     {
         $this->originalName                      = $data->cName;
         $this->originalSeo                       = $data->originalSeo;
@@ -3774,36 +3764,30 @@ class Artikel
     }
 
     /**
-     * @param stdClass $data
      * @return Artikel
      */
-    private function addManufacturerData(stdClass $data): self
+    private function addManufacturerData(): self
     {
-        if ($this->kHersteller > 0) {
-            $manufacturer = new Hersteller($this->kHersteller, $this->kSprache);
+        if ($this->kHersteller <= 0) {
+            return $this;
+        }
+        $manufacturer = new Hersteller($this->kHersteller, $this->kSprache);
 
-            $this->cHersteller         = $data->cName_thersteller;
-            $this->cHerstellerSeo      = $manufacturer->cSeo;
-            $this->cHerstellerURL      = URL::buildURL($manufacturer, \URLART_HERSTELLER);
-            $this->cHerstellerHomepage = $data->cHomepage;
-            if (\filter_var($this->cHerstellerHomepage, \FILTER_VALIDATE_URL) === false) {
-                $this->cHerstellerHomepage = 'http://' . $data->cHomepage;
-                if (\filter_var($this->cHerstellerHomepage, \FILTER_VALIDATE_URL) === false) {
-                    $this->cHerstellerHomepage = $data->cHomepage;
-                }
-            }
-            $this->cHerstellerMetaTitle       = $data->cMetaTitle_spr;
-            $this->cHerstellerMetaKeywords    = $data->cMetaKeywords_spr;
-            $this->cHerstellerMetaDescription = $data->cMetaDescription_spr;
-            $this->cHerstellerBeschreibung    = $data->cBeschreibung_hst_spr;
-            $this->cHerstellerSortNr          = $data->nSortNr_thersteller;
-            if ($data->manufImg !== null && \mb_strlen($data->manufImg) > 0) {
-                $this->cBildpfad_thersteller    = $manufacturer->getImage(Image::SIZE_XS);
-                $this->cHerstellerBildKlein     = \PFAD_HERSTELLERBILDER_KLEIN . $data->manufImg;
-                $this->cHerstellerBildNormal    = \PFAD_HERSTELLERBILDER_NORMAL . $data->manufImg;
-                $this->cHerstellerBildURLKlein  = $manufacturer->getImage(Image::SIZE_XS);
-                $this->cHerstellerBildURLNormal = $manufacturer->getImage(Image::SIZE_MD);
-            }
+        $this->cHersteller                = $manufacturer->cName;
+        $this->cHerstellerSeo             = $manufacturer->cSeo;
+        $this->cHerstellerURL             = URL::buildURL($manufacturer, \URLART_HERSTELLER);
+        $this->cHerstellerHomepage        = $manufacturer->cHomepage;
+        $this->cHerstellerMetaTitle       = $manufacturer->cMetaTitle;
+        $this->cHerstellerMetaKeywords    = $manufacturer->cMetaKeywords;
+        $this->cHerstellerMetaDescription = $manufacturer->cMetaDescription;
+        $this->cHerstellerBeschreibung    = $manufacturer->cBeschreibung;
+        $this->cHerstellerSortNr          = $manufacturer->nSortNr;
+        if ($manufacturer->cBildpfad !== null && \mb_strlen($manufacturer->cBildpfad) > 0) {
+            $this->cHerstellerBildKlein     = \PFAD_HERSTELLERBILDER_KLEIN . $manufacturer->cBildpfad;
+            $this->cHerstellerBildNormal    = \PFAD_HERSTELLERBILDER_NORMAL . $manufacturer->cBildpfad;
+            $this->cBildpfad_thersteller    = $manufacturer->getImage(Image::SIZE_XS);
+            $this->cHerstellerBildURLKlein  = $this->cBildpfad_thersteller;
+            $this->cHerstellerBildURLNormal = $manufacturer->getImage(Image::SIZE_MD);
         }
 
         return $this;
@@ -4035,8 +4019,9 @@ class Artikel
         if (!$hasSupplyDate) {
             $this->dZulaufDatum_de = null;
         }
-        $this->cAktivSonderpreis = ($specialPriceStartDate <= $now
-            && ($this->dSonderpreisEnde_en === null || $specialPriceEndDate >= $now)) ? 'Y' : 'N';
+        $this->cAktivSonderpreis = $this->dSonderpreisStart_en !== null
+            && $specialPriceStartDate <= $now
+            && ($this->dSonderpreisEnde_en === null || $specialPriceEndDate >= $now) ? 'Y' : 'N';
 
         return $this->getSearchSpecialOverlay();
     }
@@ -4697,6 +4682,9 @@ class Artikel
         if ($this->fGewicht === null) {
             $this->fGewicht = 0;
         }
+        $hasProductShippingCost = $this->isUsedForShippingCostCalculation($countryCode) ? 'N' : 'Y';
+        $dep                    = " AND va.cNurAbhaengigeVersandart = '" . $hasProductShippingCost . "' ";
+
         // cheapest shipping except shippings that offer cash payment
         $shipping = Shop::Container()->getDB()->getSingleObject(
             'SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
@@ -4719,7 +4707,7 @@ class Artikel
                     OR ( va.kVersandberechnung = 3
                         AND vas.fBis = (SELECT MIN(fBis) FROM tversandartstaffel WHERE fBis > :net)
                         )
-                    )
+                    ) ' . $dep . '
                 ORDER BY minPrice, nSort ASC LIMIT 1',
             [
                 'ccode'  => '%' . $countryCode . '%',

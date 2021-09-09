@@ -4683,6 +4683,9 @@ class Artikel
         if ($this->fGewicht === null) {
             $this->fGewicht = 0;
         }
+        $hasProductShippingCost = $this->isUsedForShippingCostCalculation($countryCode) ? 'N' : 'Y';
+        $dep                    = " AND va.cNurAbhaengigeVersandart = '" . $hasProductShippingCost . "' ";
+
         // cheapest shipping except shippings that offer cash payment
         $shipping = Shop::Container()->getDB()->getSingleObject(
             'SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
@@ -4705,7 +4708,7 @@ class Artikel
                     OR ( va.kVersandberechnung = 3
                         AND vas.fBis = (SELECT MIN(fBis) FROM tversandartstaffel WHERE fBis > :net)
                         )
-                    )
+                    ) ' . $dep . '
                 ORDER BY minPrice, nSort ASC LIMIT 1',
             [
                 'ccode'  => '%' . $countryCode . '%',

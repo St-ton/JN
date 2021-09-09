@@ -75,61 +75,71 @@
     {/foreach}
 
     {if $corruptedPics}
-        <h3 class="top40">
-            {__('currentCorruptedPics')}
-        </h3>
-        <p class="small text-muted">{__('corruptedPicsNote')|sprintf:$smarty.const.MAX_CORRUPTED_IMAGES}</p>
-        <table class="list table table-condensed">
-            {foreach $corruptedImagesByType as $corruptedImages}
-                <thead>
-                <tr>
-                    <th>{__('articlePic')}</th>
-                    <th>{__('articlenr')}</th>
-                </tr>
-                </thead>
-                <tbody>
-                {foreach from=$corruptedImages key=key item='corruptedImage'}
-                    <tr>
-                        <td class="col-xs-7 word-break-all">{$corruptedImage->picture}</td>
-                        <td class="col-xs-5">
-                            {$moreCorruptedImages = false}
-                            <div class="input-group">
-                                {foreach $corruptedImage->article as $article}
-                                    {if $article@iteration <= 3}
-                                        <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
-                                            {$article->articleNr}
-                                        </a>
-                                        {if !$article@last && $article@iteration < 3} |{/if}
-                                    {else}
-                                        {$moreCorruptedImages = true}
-                                        {$moreCorruptedImage = $key}
-                                        {break}
-                                    {/if}
-                                {/foreach}
-                                {if $moreCorruptedImages}
-                                    <a class="btn btn-default btn-sm" data-toggle="collapse"
-                                        href="#dropdownCorruptedImages-{$moreCorruptedImage}"
-                                        aria-controls="dropdownCorruptedImages-{$moreCorruptedImage}">
-                                        {__('more')} <span class="caret"></span>
-                                    </a>
-                                    <div class="collapse" id="dropdownCorruptedImages-{$moreCorruptedImage}">
+        <div class="content-header">
+            <h1 class="content-header-headline  top40">
+                {__('currentCorruptedPics')}
+            </h1>
+            <div class="description ">
+                {__('corruptedPicsNote')|sprintf:$smarty.const.MAX_CORRUPTED_IMAGES}
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <table class="list table table-condensed">
+                    {$moreCounter = 0}
+                    {foreach $corruptedImagesByType as $corruptedImages}
+                        <thead>
+                        <tr>
+                            <th>{__('articlePic')}</th>
+                            <th>{__('articlenr')}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach $corruptedImages as $corruptedImage}
+                            <tr>
+                                <td class="col-xs-7 word-break-all">{$corruptedImage->picture}</td>
+                                <td class="col-xs-5">
+                                    {$moreCorruptedImages = false}
+                                    <div class="input-group">
                                         {foreach $corruptedImage->article as $article}
-                                            {if $article@iteration > 3}
+                                            {if $article@iteration <= 3}
                                                 <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
                                                     {$article->articleNr}
                                                 </a>
-                                                {if !$article@last} |{/if}
+                                                {if !$article@last && $article@iteration < 3} |{/if}
+                                            {else}
+                                                {$moreCorruptedImages = true}
+                                                {$moreCorruptedImage = $corruptedImage->picture}
+                                                {break}
                                             {/if}
                                         {/foreach}
+                                        {if $moreCorruptedImages}
+                                            {$moreCounter++}
+                                            <a class="btn btn-default btn-sm" data-toggle="collapse"
+                                                href="#dropdownCorruptedImages-{$moreCounter}"
+                                                aria-controls="dropdownCorruptedImages-{$moreCounter}">
+                                                {__('more')} <span class="caret"></span>
+                                            </a>
+                                            <div class="collapse" id="dropdownCorruptedImages-{$moreCounter}">
+                                                {foreach $corruptedImage->article as $article}
+                                                    {if $article@iteration > 3}
+                                                        <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
+                                                            {$article->articleNr}
+                                                        </a>
+                                                        {if !$article@last} |{/if}
+                                                    {/if}
+                                                {/foreach}
+                                            </div>
+                                        {/if}
                                     </div>
-                                {/if}
-                            </div>
-                        </td>
-                    </tr>
-                {/foreach}
-                </tbody>
-            {/foreach}
-        </table>
+                                </td>
+                            </tr>
+                        {/foreach}
+                        </tbody>
+                    {/foreach}
+                </table>
+            </div>
+        </div>
     {/if}
 </div>
 <script>

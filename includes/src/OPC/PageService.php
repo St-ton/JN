@@ -267,7 +267,7 @@ class PageService
             $pageIdObj->id   = $params['kHersteller'];
         } elseif ($params['kArtikel'] > 0) {
             $pageIdObj->type = 'product';
-            $pageIdObj->id   = $params['kVariKindArtikel'] > 0 ? $params['kVariKindArtikel'] : $params['kArtikel'];
+            $pageIdObj->id   = $params['kArtikel'];
         } elseif ($params['kLink'] > 0) {
             if (\in_array($params['nLinkart'], [\LINKTYP_BESTELLVORGANG, \LINKTYP_BESTELLABSCHLUSS], true)) {
                 return null;

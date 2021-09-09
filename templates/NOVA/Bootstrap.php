@@ -5,8 +5,10 @@ namespace Template\NOVA;
 use JTL\License\Struct\ExsLicense;
 use JTL\Shop;
 use JTL\Template\Bootstrapper;
+use scc\ComponentRegistratorInterface;
 use scc\DefaultComponentRegistrator;
 use scc\Renderer;
+use scc\RendererInterface;
 use Smarty;
 
 /**
@@ -15,6 +17,16 @@ use Smarty;
  */
 class Bootstrap extends Bootstrapper
 {
+    /**
+     * @var ComponentRegistratorInterface
+     */
+    protected $scc;
+
+    /**
+     * @var RendererInterface
+     */
+    protected $renderer;
+
     /**
      * @inheritdoc
      */
@@ -31,9 +43,10 @@ class Bootstrap extends Bootstrapper
             // this will never happen but it calms the IDE down
             return;
         }
-        $plugins = new Plugins($this->getDB(), $this->getCache());
-        $scc     = new DefaultComponentRegistrator(new Renderer($smarty));
-        $scc->registerComponents();
+        $plugins        = new Plugins($this->getDB(), $this->getCache());
+        $this->renderer = new Renderer($smarty);
+        $this->scc      = new DefaultComponentRegistrator($this->renderer);
+        $this->scc->registerComponents();
 
         if (isset($_GET['scc-demo']) && Shop::isAdmin()) {
             $smarty->display('demo.tpl');

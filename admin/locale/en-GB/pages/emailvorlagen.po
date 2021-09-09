@@ -237,3 +237,18 @@ msgstr "Check email syntax"
 
 msgid "Syntax check fail"
 msgstr "Email syntax check failed"
+
+msgid "emailAddAKZDesc"
+msgstr "Die Anbieterkennzeichnung unter dem restlichen Content der E-Mail angezeigt."
+
+msgid "emailAddAGBDesc"
+msgstr "Die Anbieterkennzeichnung unter dem restlichen Content der E-Mail angezeigt."
+
+msgid "emailAddWRBDesc"
+msgstr "Die Anbieterkennzeichnung unter dem restlichen Content der E-Mail angezeigt."
+
+msgid "emailAddWRBFormDesc"
+msgstr "Die Anbieterkennzeichnung unter dem restlichen Content der E-Mail angezeigt."
+
+msgid "emailAddDSEDesc"
+msgstr "Die Anbieterkennzeichnung unter dem restlichen Content der E-Mail angezeigt."

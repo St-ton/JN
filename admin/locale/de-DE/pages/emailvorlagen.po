@@ -39,19 +39,19 @@ msgid "currentFiles"
 msgstr "Aktuelle Anhänge"
 
 msgid "emailAddAKZ"
-msgstr "Anbieterkennzeichnung anhängen"
+msgstr "Anbieterkennzeichnung als Text direkt anhängen"
 
 msgid "emailAddAGB"
-msgstr "AGB anhängen"
+msgstr "AGB als Text direkt anhängen"
 
 msgid "emailAddWRB"
-msgstr "Widerrufsbelehrung anhängen"
+msgstr "Widerrufsbelehrung als Text direkt anhängen"
 
 msgid "emailAddWRBForm"
-msgstr "Muster-Widerrufsformular anhängen"
+msgstr "Muster-Widerrufsformular als Text direkt anhängen"
 
 msgid "emailAddDSE"
-msgstr "Datenschutzerklärung anhängen"
+msgstr "Datenschutzerklärung als Text direkt anhängen"
 
 msgid "emailActive"
 msgstr "E-Mail versenden"
@@ -237,3 +237,18 @@ msgstr "E-Mail-Syntax prüfen"
 
 msgid "Syntax check fail"
 msgstr "E-Mail Syntaxprüfung fehlgeschlagen"
+
+msgid "emailAddAKZDesc"
+msgstr "Die Anbieterkennzeichnung unter dem restlichen Content der E-Mail angezeigt."
+
+msgid "emailAddAGBDesc"
+msgstr "Die Anbieterkennzeichnung unter dem restlichen Content der E-Mail angezeigt."
+
+msgid "emailAddWRBDesc"
+msgstr "Die Anbieterkennzeichnung unter dem restlichen Content der E-Mail angezeigt."
+
+msgid "emailAddWRBFormDesc"
+msgstr "Die Anbieterkennzeichnung unter dem restlichen Content der E-Mail angezeigt."
+
+msgid "emailAddDSEDesc"
+msgstr "Die Anbieterkennzeichnung unter dem restlichen Content der E-Mail angezeigt."

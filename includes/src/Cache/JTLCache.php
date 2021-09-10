@@ -105,7 +105,8 @@ final class JTLCache implements JTLCacheInterface
             self::$instance = $this;
         }
         $this->setCachingGroups()
-             ->setOptions($options);
+            ->setOptions($options)
+            ->setMethod(CacheNull::getInstance($options));
     }
 
     /**

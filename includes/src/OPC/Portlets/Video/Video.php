@@ -27,7 +27,7 @@ class Video extends Portlet
         } elseif ($vendor === 'vimeo') {
             $videoID  = $instance->getProperty('video-vim-id');
             $videoXML = \json_decode(\file_get_contents('https://vimeo.com/api/v2/video/' . $videoID . '.json'));
-            $srcURL   = $videoXML[0]->thumbnail_large;
+            $srcURL   = $videoXML[0]->thumbnail_large ?? null;
         } else {
             return null;
         }

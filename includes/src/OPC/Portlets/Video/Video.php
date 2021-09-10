@@ -35,7 +35,7 @@ class Video extends Portlet
         $localPath = \PFAD_ROOT . \STORAGE_VIDEO_THUMBS . $videoID . '.jpg';
         $localUrl  = Shop::getURL() . '/' . \STORAGE_VIDEO_THUMBS . $videoID . '.jpg';
 
-        if (!\is_file($localPath) && $srcURL !== '') {
+        if (!\is_file($localPath) && !empty($srcURL)) {
             if (!\is_writable(\PFAD_ROOT . \STORAGE_VIDEO_THUMBS)) {
                 return null;
             }

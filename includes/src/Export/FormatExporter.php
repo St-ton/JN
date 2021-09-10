@@ -329,7 +329,21 @@ class FormatExporter
         if ((int)$this->queue->tasksExecuted === 0) {
             $this->fileWriter->deleteOldTempFile();
         }
-        $this->fileWriter->start();
+        try {
+            $this->fileWriter->start();
+        } catch (Exception $e) {
+            $this->logger->warning($e->getMessage());
+            if ($isAsync) {
+                $cb = new AsyncCallback();
+                $cb->setExportID($model->getId())
+                    ->setQueueID($this->queue->jobQueueID)
+                    ->setError($e->getMessage());
+                $this->finish($cb, $isAsync, $back, $model);
+                exit();
+            }
+
+            return false;
+        }
 
         $this->logger->notice('Starting exportformat "' . Text::convertUTF8($model->getName())
             . '" for language ' . $model->getLanguageID() . ' and customer group ' . $model->getCustomerGroupID()
@@ -443,14 +457,20 @@ class FormatExporter
         $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->foreignKeyID);
 
         $this->fileWriter->writeFooter();
-        if (!$this->fileWriter->finish()) {
-            $errorMessage = 'Konnte Export-Datei '
-                . $model->getSanitizedFilepath()
-                . ' nicht erstellen. Fehlende Schreibrechte?';
+        if ($this->fileWriter->finish()) {
+            // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
+            $this->fileWriter->splitFile();
+        } else {
+            try {
+                $errorMessage = \sprintf(
+                    \__('Cannot create export file %s. Missing write permissions?'),
+                    $model->getSanitizedFilepath()
+                );
+            } catch (Exception $e) {
+                $errorMessage = $e->getMessage();
+            }
             $cb->setError($errorMessage);
         }
-        // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
-        $this->fileWriter->splitFile();
         if ($back === true) {
             if ($isAsync) {
                 $cb->setIsFinished(true)

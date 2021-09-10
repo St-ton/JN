@@ -115,3 +115,12 @@ msgstr "Export format syntax check failed"
 
 msgid "File %s not found."
 msgstr "File %s not found."
+
+msgid "Cannot open export file %s."
+msgstr "Cannot open export file %s."
+
+msgid "Cannot create export file %s. Missing write permissions?"
+msgstr "Cannot create export file %s. Missing write permissions?"
+
+msgid "Directory traversal detected for export %d."
+msgstr "Directory traversal für Export %d entdeckt."

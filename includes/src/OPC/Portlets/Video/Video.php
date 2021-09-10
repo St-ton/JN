@@ -28,14 +28,14 @@ class Video extends Portlet
             $srcURL  = 'https://i3.ytimg.com/vi/' . $videoID . '/maxresdefault.jpg';
         } elseif ($vendor === 'vimeo') {
             $videoID  = $instance->getProperty('video-vim-id');
-            $videoXML = \unserialize(\file_get_contents('https://vimeo.com/api/v2/video/' . $videoID . '.php'));
-            $srcURL   = $videoXML[0]['thumbnail_large'];
+            $videoXML = \json_decode(\file_get_contents('https://vimeo.com/api/v2/video/' . $videoID . '.json'));
+            $srcURL   = $videoXML[0]->thumbnail_large;
         }
 
         $localPath = \PFAD_ROOT . \STORAGE_VIDEO_THUMBS . $videoID . '.jpg';
         $localUrl  = Shop::getURL() . '/' . \STORAGE_VIDEO_THUMBS . $videoID . '.jpg';
 
-        if (!\is_file($localPath)) {
+        if (!\is_file($localPath) && $srcURL !== '') {
             if (!\is_writable(\PFAD_ROOT . \STORAGE_VIDEO_THUMBS)) {
                 return null;
             }

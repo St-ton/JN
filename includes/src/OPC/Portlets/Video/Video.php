@@ -19,9 +19,7 @@ class Video extends Portlet
      */
     public function getPreviewImageUrl(PortletInstance $instance): ?string
     {
-        $vendor  = $instance->getProperty('video-vendor');
-        $srcURL  = '';
-        $videoID = '';
+        $vendor = $instance->getProperty('video-vendor');
 
         if ($vendor === 'youtube') {
             $videoID = $instance->getProperty('video-yt-id');
@@ -30,6 +28,8 @@ class Video extends Portlet
             $videoID  = $instance->getProperty('video-vim-id');
             $videoXML = \json_decode(\file_get_contents('https://vimeo.com/api/v2/video/' . $videoID . '.json'));
             $srcURL   = $videoXML[0]->thumbnail_large;
+        } else {
+            return null;
         }
 
         $localPath = \PFAD_ROOT . \STORAGE_VIDEO_THUMBS . $videoID . '.jpg';

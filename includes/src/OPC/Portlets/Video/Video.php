@@ -24,6 +24,9 @@ class Video extends Portlet
         if ($vendor === 'youtube') {
             $videoID = $instance->getProperty('video-yt-id');
             $srcURL  = 'https://i3.ytimg.com/vi/' . $videoID . '/maxresdefault.jpg';
+            if (\preg_match('/^[a-zA-Z0-9_-]$/', $videoID) !== 1) {
+                return null;
+            }
         } elseif ($vendor === 'vimeo') {
             $videoID  = $instance->getProperty('video-vim-id');
             $videoXML = \json_decode(\file_get_contents('https://vimeo.com/api/v2/video/' . $videoID . '.json'));

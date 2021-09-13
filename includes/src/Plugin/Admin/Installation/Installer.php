@@ -2,6 +2,8 @@
 
 namespace JTL\Plugin\Admin\Installation;
 
+use Exception;
+use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
@@ -58,22 +60,30 @@ final class Installer
     private $plugin;
 
     /**
+     * @var JTLCacheInterface
+     */
+    private $cache;
+
+    /**
      * Installer constructor.
-     * @param DbInterface        $db
-     * @param Uninstaller        $uninstaller
-     * @param ValidatorInterface $legacyValidator
-     * @param ValidatorInterface $pluginValidator
+     * @param DbInterface            $db
+     * @param Uninstaller            $uninstaller
+     * @param ValidatorInterface     $legacyValidator
+     * @param ValidatorInterface     $pluginValidator
+     * @param JTLCacheInterface|null $cache
      */
     public function __construct(
         DbInterface $db,
         Uninstaller $uninstaller,
         ValidatorInterface $legacyValidator,
-        ValidatorInterface $pluginValidator
+        ValidatorInterface $pluginValidator,
+        ?JTLCacheInterface $cache = null
     ) {
         $this->db              = $db;
         $this->uninstaller     = $uninstaller;
         $this->legacyValidator = $legacyValidator;
         $this->pluginValidator = $pluginValidator;
+        $this->cache           = $cache ?? Shop::Container()->getCache();
     }
 
     /**
@@ -164,7 +174,6 @@ final class Installer
         $basePath           = \PFAD_ROOT . \PFAD_PLUGIN . $baseDir . \DIRECTORY_SEPARATOR;
         $lastVersionKey     = null;
         $plugin             = new stdClass();
-        $cache              = Shop::Container()->getCache();
         $plugin->nStatus    = $this->plugin === null ? State::ACTIVATED : $this->plugin->getState();
         $plugin->bExtension = 0;
         if (\is_array($versionNode)) {
@@ -182,8 +191,8 @@ final class Installer
         }
         if ($this->plugin !== null) {
             $loader = $this->plugin->isExtension() === true
-                ? new PluginLoader($this->db, $cache)
-                : new LegacyPluginLoader($this->db, $cache);
+                ? new PluginLoader($this->db, $this->cache)
+                : new LegacyPluginLoader($this->db, $this->cache);
             if (($p = Helper::bootstrap($this->plugin->getID(), $loader)) !== null) {
                 $p->preUpdate($this->plugin->getMeta()->getVersion(), $version);
             }
@@ -215,7 +224,7 @@ final class Installer
         $continue = true;
         if ($this->plugin === null && $plugin->bBootstrap === 1 && $plugin->bExtension === 1) {
             $plugin->kPlugin = 0;
-            $loader          = new PluginLoader($this->db, $cache);
+            $loader          = new PluginLoader($this->db, $this->cache);
             if (($languageID = Shop::getLanguageID()) === 0) {
                 $languageID = Shop::Lang()->getDefaultLanguage()->kSprache;
             }
@@ -223,7 +232,7 @@ final class Installer
             $instance     = $loader->loadFromObject($plugin, $languageCode);
             $class        = \sprintf('Plugin\\%s\\%s', $plugin->cPluginID, 'Bootstrap');
             if (\class_exists($class)) {
-                $bootstrapper = new $class($instance, $loader->getDB(), $loader->getCache());
+                $bootstrapper = new $class($instance, $this->db, $this->cache);
                 if ($bootstrapper instanceof BootstrapperInterface) {
                     $continue = $bootstrapper->preInstallCheck();
                 }
@@ -247,7 +256,7 @@ final class Installer
             return $res;
         }
         $res = $this->installSQL($plugin, $versionNode, $version, $versionedDir);
-        $cache->flushTags([
+        $this->cache->flushTags([
             \CACHING_GROUP_CORE,
             \CACHING_GROUP_LICENSES,
             \CACHING_GROUP_LANGUAGE,
@@ -267,8 +276,8 @@ final class Installer
     private function installSQL(stdClass $plugin, array $versionNode, $version, string $versionedDir): int
     {
         $loader      = $plugin->bExtension === 1
-            ? new PluginLoader($this->db, Shop::Container()->getCache())
-            : new LegacyPluginLoader($this->db, Shop::Container()->getCache());
+            ? new PluginLoader($this->db, $this->cache)
+            : new LegacyPluginLoader($this->db, $this->cache);
         $hasSQLError = false;
         $code        = InstallCode::OK;
         foreach ($versionNode as $i => $versionData) {
@@ -297,7 +306,12 @@ final class Installer
             }
         }
         if ($plugin->bExtension === 1) {
-            $this->updateByMigration($plugin, $versionedDir, Version::parse($version));
+            try {
+                $this->updateByMigration($plugin, $versionedDir, Version::parse($version));
+            } catch (Exception $e) {
+                $hasSQLError = true;
+                $code        = InstallCode::SQL_ERROR;
+            }
         }
         // Ist ein SQL Fehler aufgetreten? Wenn ja, deinstalliere wieder alles
         if ($hasSQLError) {
@@ -355,7 +369,7 @@ final class Installer
             return \constant(\trim($e));
         });
         if (\count($tagsToFlush) > 0) {
-            Shop::Container()->getCache()->flushTags($tagsToFlush);
+            $this->cache->flushTags($tagsToFlush);
         }
     }
 
@@ -441,7 +455,7 @@ final class Installer
      * @param string   $pluginPath
      * @param Version  $targetVersion
      * @return array|Version
-     * @throws \Exception
+     * @throws Exception
      */
     private function updateByMigration(stdClass $plugin, string $pluginPath, Version $targetVersion)
     {

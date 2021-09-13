@@ -459,7 +459,11 @@ class FormatExporter
         $this->fileWriter->writeFooter();
         if ($this->fileWriter->finish()) {
             // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
-            $this->fileWriter->splitFile();
+            try {
+                $this->fileWriter->splitFile();
+            } catch (Exception $e) {
+                $cb->setError($e->getMessage());
+            }
         } else {
             try {
                 $errorMessage = \sprintf(

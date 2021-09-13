@@ -48,7 +48,7 @@ class FileWriter
         $this->smarty      = $smarty;
         $this->model       = $model;
         $this->config      = $config;
-        $this->tmpFileName = 'tmp_' . $this->model->getFilename();
+        $this->tmpFileName = 'tmp_' . \basename($this->model->getFilename());
     }
 
     /**

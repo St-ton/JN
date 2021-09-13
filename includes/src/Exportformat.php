@@ -1275,7 +1275,7 @@ class Exportformat
             $findTwo[]    = ';';
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
-        foreach ($this->db->getSingleObject($this->getExportSQL()) as $productData) {
+        foreach ($this->db->getObjects($this->getExportSQL()) as $productData) {
             $product = new Artikel();
             $product->fuelleArtikel(
                 (int)$productData->kArtikel,

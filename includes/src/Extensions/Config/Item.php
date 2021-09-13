@@ -331,9 +331,8 @@ class Item implements JsonSerializable
             ['groupID' => $groupID]
         )
             ->map(static function (stdClass $item) {
-                return (int)$item->kKonfigitem;
+                return new self((int)$item->kKonfigitem);
             })
-            ->mapInto(self::class)
             ->filter(static function (Item $item) {
                 return $item->isValid();
             })

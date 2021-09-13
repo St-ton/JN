@@ -1003,12 +1003,12 @@ class Artikel
     /**
      * @var array
      */
-    private $conf;
+    protected $conf;
 
     /**
      * @var stdClass
      */
-    private $options;
+    protected $options;
 
     /**
      *

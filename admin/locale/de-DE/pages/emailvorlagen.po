@@ -39,19 +39,19 @@ msgid "currentFiles"
 msgstr "Aktuelle Anhänge"
 
 msgid "emailAddAKZ"
-msgstr "Anbieterkennzeichnung als Text direkt anhängen"
+msgstr "Anbieterkennzeichnung an E-Mail-Text anhängen"
 
 msgid "emailAddAGB"
-msgstr "AGB als Text direkt anhängen"
+msgstr "AGB an E-Mail-Text anhängen"
 
 msgid "emailAddWRB"
-msgstr "Widerrufsbelehrung als Text direkt anhängen"
+msgstr "Widerrufsbelehrung an E-Mail-Text anhängen"
 
 msgid "emailAddWRBForm"
-msgstr "Muster-Widerrufsformular als Text direkt anhängen"
+msgstr "Muster-Widerrufsformular an E-Mail-Text anhängen"
 
 msgid "emailAddDSE"
-msgstr "Datenschutzerklärung als Text direkt anhängen"
+msgstr "Datenschutzerklärung an E-Mail-Text anhängen"
 
 msgid "emailActive"
 msgstr "E-Mail versenden"
@@ -239,16 +239,16 @@ msgid "Syntax check fail"
 msgstr "E-Mail Syntaxprüfung fehlgeschlagen"
 
 msgid "emailAddAKZDesc"
-msgstr "Die Anbieterkennzeichnung unter dem restlichen Content der E-Mail angezeigt."
+msgstr "Die Anbieterkennzeichnung werden direkt als Text in der E-Mail angefügt (nicht als PDF-Dokument). Damit der Text auch angezeigt wird, muss im E-Mail-Template für den Footer der Platzhalter [AKZ] vorhanden sein."
 
 msgid "emailAddAGBDesc"
-msgstr "Die Anbieterkennzeichnung unter dem restlichen Content der E-Mail angezeigt."
+msgstr "Die AGB werden direkt als Text in der E-Mail angefügt (nicht als PDF-Dokument). Damit der Text auch angezeigt wird, muss im E-Mail-Template für den Footer der Platzhalter [LEGAL_DATA] vorhanden sein."
 
 msgid "emailAddWRBDesc"
-msgstr "Die Anbieterkennzeichnung unter dem restlichen Content der E-Mail angezeigt."
+msgstr "Die Widerrufsbelehrung werden direkt als Text in der E-Mail angefügt (nicht als PDF-Dokument). Damit der Text auch angezeigt wird, muss im E-Mail-Template für den Footer der Platzhalter [LEGAL_DATA] vorhanden sein."
 
 msgid "emailAddWRBFormDesc"
-msgstr "Die Anbieterkennzeichnung unter dem restlichen Content der E-Mail angezeigt."
+msgstr "Die Muster-Widerrufsformular werden direkt als Text in der E-Mail angefügt (nicht als PDF-Dokument). Damit der Text auch angezeigt wird, muss im E-Mail-Template für den Footer der Platzhalter [LEGAL_DATA] vorhanden sein."
 
 msgid "emailAddDSEDesc"
-msgstr "Die Anbieterkennzeichnung unter dem restlichen Content der E-Mail angezeigt."
+msgstr "Die Datenschutzerklärung werden direkt als Text in der E-Mail angefügt (nicht als PDF-Dokument). Damit der Text auch angezeigt wird, muss im E-Mail-Template für den Footer der Platzhalter [LEGAL_DATA] vorhanden sein."

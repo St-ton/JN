@@ -52,7 +52,7 @@ if (Form::validateToken()) {
                                 continue;
                             }
                             $fileExtension = pathinfo($scaledFile, PATHINFO_EXTENSION);
-                            $fileBaseName = basename($scaledFile, '.' . $fileExtension);
+                            $fileBaseName  = basename($scaledFile, '.' . $fileExtension);
 
                             foreach ($fileTypes as $fileType) {
                                 $fileTemp = str_replace(

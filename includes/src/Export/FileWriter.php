@@ -2,6 +2,7 @@
 
 namespace JTL\Export;
 
+use Exception;
 use JTL\Helpers\Text;
 use JTL\Smarty\ExportSmarty;
 
@@ -47,12 +48,19 @@ class FileWriter
         $this->smarty      = $smarty;
         $this->model       = $model;
         $this->config      = $config;
-        $this->tmpFileName = 'tmp_' . $this->model->getFilename();
+        $this->tmpFileName = 'tmp_' . \basename($this->model->getFilename());
     }
 
+    /**
+     * @throws Exception
+     */
     public function start(): void
     {
-        $this->tmpFile = \fopen(\PFAD_ROOT . \PFAD_EXPORT . $this->tmpFileName, 'ab');
+        $file          = \PFAD_ROOT . \PFAD_EXPORT . $this->tmpFileName;
+        $this->tmpFile = @\fopen($file, 'ab');
+        if ($this->tmpFile === false) {
+            throw new Exception(\sprintf(\__('Cannot open export file %s.'), $file));
+        }
     }
 
     /**
@@ -125,7 +133,7 @@ class FileWriter
     {
         $handle = $handle ?? $this->tmpFile;
 
-        return \fclose($handle);
+        return $handle !== null && $handle !== false && \fclose($handle);
     }
 
     /**
@@ -135,11 +143,11 @@ class FileWriter
     public function finish($handle = null): bool
     {
         $handle = $handle ?? $this->tmpFile;
-        $this->close($handle);
-        if (\copy(
-            \PFAD_ROOT . \PFAD_EXPORT . $this->tmpFileName,
-            \PFAD_ROOT . \PFAD_EXPORT . $this->model->getFilename()
-        )
+        if ($this->close($handle) === true
+            && \copy(
+                \PFAD_ROOT . \PFAD_EXPORT . $this->tmpFileName,
+                \PFAD_ROOT . \PFAD_EXPORT . $this->model->getFilename()
+            )
         ) {
             \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->tmpFileName);
 
@@ -170,9 +178,12 @@ class FileWriter
 
     public function deleteOldExports(): void
     {
-        $path = $this->model->getSanitizedFilepath();
-        if (\file_exists($path)) {
-            \unlink($path);
+        try {
+            $path = $this->model->getSanitizedFilepath();
+            if (\file_exists($path)) {
+                \unlink($path);
+            }
+        } catch (Exception $e) {
         }
     }
 

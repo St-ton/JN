@@ -133,7 +133,9 @@ class PaymentMethod
         if ($paymentMethod->kZahlungsart > 0) {
             $paymentID = (int)$paymentMethod->kZahlungsart;
 
-            if (empty($paymentMethod->nSOAP) && empty($paymentMethod->nCURL) && empty($paymentMethod->nSOCKETS)) {
+            if (!empty($paymentMethod->cModulId) && $paymentMethod->cModulId === 'za_null_jtl') {
+                $isUsable = 0;
+            } elseif (empty($paymentMethod->nSOAP) && empty($paymentMethod->nCURL) && empty($paymentMethod->nSOCKETS)) {
                 $isUsable = 1;
             } elseif (!empty($paymentMethod->nSOAP) && PHPSettings::checkSOAP()) {
                 $isUsable = 1;
@@ -142,9 +144,6 @@ class PaymentMethod
             } elseif (!empty($paymentMethod->nSOCKETS) && PHPSettings::checkSockets()) {
                 $isUsable = 1;
             } else {
-                $isUsable = 0;
-            }
-            if (!empty($paymentMethod->cModulId) && $paymentMethod->cModulId === 'za_null_jtl') {
                 $isUsable = 0;
             }
 

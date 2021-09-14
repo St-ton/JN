@@ -1293,7 +1293,7 @@ msgid "pages"
 msgstr "Pages"
 
 msgid "manufacturers"
-msgstr "Manufacturer"
+msgstr "Manufacturers"
 
 msgid "transparency"
 msgstr "Transparency"

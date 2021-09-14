@@ -6,7 +6,7 @@ msgid "countryManager"
 msgstr "Länderverwaltung"
 
 msgid "countryManagerURL"
-msgstr ""
+msgstr "https://jtl-url.de/xiuvh"
 
 msgid "countryManagerDesc"
 msgstr "Hier können Sie die in JTL-Shop genutzten Länder unabhängig von JTL-Wawi verwalten. Der Name der Länder wird für Frontend und Backend automatisch über den ISO-Code in der entsprechenden Sprache generiert und ist daher nicht änderbar. Die Felder „Deutsch“ und „Englisch“ sollten mit den entsprechenden Namen in JTL-Wawi übereinstimmen."

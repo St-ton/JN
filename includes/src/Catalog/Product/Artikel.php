@@ -3939,7 +3939,8 @@ class Artikel
             // Normal Lagerbestand 0
             $specials[\SEARCHSPECIALS_OUTOFSTOCK] = ($this->fLagerbestand <= 0
                 && $this->cLagerBeachten === 'Y'
-                && $this->cLagerKleinerNull !== 'Y');
+                && $this->cLagerKleinerNull !== 'Y')
+                || ($this->inWarenkorbLegbar !== null && $this->inWarenkorbLegbar <= 0);
         }
         // Auf Lager
         $specials[\SEARCHSPECIALS_ONSTOCK] = ($this->fLagerbestand > 0 && $this->cLagerBeachten === 'Y');

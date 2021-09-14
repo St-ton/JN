@@ -109,7 +109,7 @@ export default {
                 leadMsg:             'Installation abgeschlossen'
             },
             en: {
-                h3wawi:              'Add webhop configuration to Wawi',
+                h3wawi:              'Add webshop configuration to Wawi',
                 textwawi:            'Add the following data at <code>Onlineshop -&gt; '
                                          + 'Onlineshop-Anbindung</code> to wawi:',
                 licenseKey:          'License key',
@@ -128,7 +128,7 @@ export default {
                 msgHaveFun:          'Have a good time with your new JTL-Shop!',
                 printPage:           'Print page',
                 gotoBackend:         'Go to backend',
-                gotoFrontend:        'Go to fronend',
+                gotoFrontend:        'Go to frontend',
                 headerMsg:           'Congratulations',
                 leadMsg:             'Installation finished'
             }

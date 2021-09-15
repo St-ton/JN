@@ -13,6 +13,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 if (Request::getInt('e') < 1 || !Form::validateToken()) {
     die('0');
 }
+Shop::Container()->getGetText()->loadAdminLocale('pages/exportformate');
 $db    = Shop::Container()->getDB();
 $queue = $db->select('texportqueue', 'kExportqueue', Request::getInt('e'));
 if (!isset($queue->kExportformat) || !$queue->kExportformat || !$queue->nLimit_m) {

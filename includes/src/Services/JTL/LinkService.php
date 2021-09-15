@@ -4,7 +4,9 @@ namespace JTL\Services\JTL;
 
 use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
+use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
 use JTL\Link\LinkGroupCollection;
 use JTL\Link\LinkGroupInterface;
@@ -539,7 +541,31 @@ final class LinkService implements LinkServiceInterface
             $langID
         );
         if (empty($data->kText)) {
-            $data = $this->db->select('ttext', 'nStandard', 1);
+            $data = $this->db->select(
+                'ttext',
+                'kKundengruppe',
+                (new CustomerGroup())->loadDefaultGroup()->getID(),
+                'kSprache',
+                $langID
+            );
+        }
+        if (empty($data->kText)) {
+            $data = $this->db->select(
+                'ttext',
+                'kKundengruppe',
+                $customerGroupID,
+                'kSprache',
+                LanguageHelper::getDefaultLanguage()->kSprache
+            );
+        }
+        if (empty($data->kText)) {
+            $data = $this->db->select(
+                'ttext',
+                'kKundengruppe',
+                (new CustomerGroup())->loadDefaultGroup()->getID(),
+                'kSprache',
+                LanguageHelper::getDefaultLanguage()->kSprache
+            );
         }
         if (empty($data->kText)) {
             return false;

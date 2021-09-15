@@ -1388,28 +1388,32 @@ final class Shop
     public static function getEntryPoint(): ?string
     {
         self::setPageType(\PAGE_UNBEKANNT);
-        if ((self::$kArtikel > 0 && !self::$kKategorie)
-            || (self::$kArtikel > 0 && self::$kKategorie > 0 && self::$show === 1)
-        ) {
+        if (self::$kArtikel > 0 && (!self::$kKategorie || (self::$kKategorie > 0 && self::$show === 1))) {
             $parentID = Product::getParent(self::$kArtikel);
-            if ($parentID > 0) {
-                $productID = $parentID;
-                // save data from child product POST and add to redirect
-                $cRP = '';
-                if (\is_array($_POST) && \count($_POST) > 0) {
-                    foreach (\array_keys($_POST) as $key) {
-                        $cRP .= '&' . $key . '=' . $_POST[$key];
+            if ($parentID === self::$kArtikel) {
+                self::$is404    = true;
+                self::$fileName = null;
+                self::setPageType(\PAGE_404);
+            } else {
+                if ($parentID > 0) {
+                    $productID = $parentID;
+                    // save data from child product POST and add to redirect
+                    $cRP = '';
+                    if (\is_array($_POST) && \count($_POST) > 0) {
+                        foreach (\array_keys($_POST) as $key) {
+                            $cRP .= '&' . $key . '=' . $_POST[$key];
+                        }
+                        // Redirect POST
+                        $cRP = '&cRP=' . \base64_encode($cRP);
                     }
-                    // Redirect POST
-                    $cRP = '&cRP=' . \base64_encode($cRP);
+                    \http_response_code(301);
+                    \header('Location: ' . self::getURL() . '/?a=' . $productID . $cRP);
+                    exit();
                 }
-                \http_response_code(301);
-                \header('Location: ' . self::getURL() . '/?a=' . $productID . $cRP);
-                exit();
-            }
 
-            self::setPageType(\PAGE_ARTIKEL);
-            self::$fileName = 'artikel.php';
+                self::setPageType(\PAGE_ARTIKEL);
+                self::$fileName = 'artikel.php';
+            }
         } elseif ((self::$bSEOMerkmalNotFound === null || self::$bSEOMerkmalNotFound === false)
             && (self::$bKatFilterNotFound === null || self::$bKatFilterNotFound === false)
             && (self::$bHerstellerFilterNotFound === null || self::$bHerstellerFilterNotFound === false)

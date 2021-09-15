@@ -196,6 +196,7 @@ class Exportformat
      */
     public function __construct(int $id = 0, DbInterface $db = null)
     {
+        \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         $this->db = $db ?? Shop::Container()->getDB();
         if ($id > 0) {
             $this->loadFromDB($id);
@@ -1649,6 +1650,7 @@ class Exportformat
      */
     public static function ioCheckSyntax(int $id): stdClass
     {
+        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         \ini_set('html_errors', '0');
         \ini_set('display_errors', '1');
         \ini_set('log_errors', '0');

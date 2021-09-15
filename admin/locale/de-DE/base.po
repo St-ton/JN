@@ -290,6 +290,9 @@ msgstr "Bitte überprüfen Sie Ihre Eingaben."
 msgid "lockForMinutes"
 msgstr "Gesperrt für %s Minuten"
 
+msgid "errorLoginDataExpired"
+msgstr "Anmeldedaten nicht mehr gültig."
+
 msgid "errorWrongPasswordUser"
 msgstr "Benutzername oder Passwort falsch"
 
@@ -2144,3 +2147,21 @@ msgstr "Einstellung konnte nicht zurückgesetzt werden, da kein passender Eintra
 
 msgid "defaultDeleteConfirmTitle"
 msgstr "Löschen bestätigen"
+
+msgid "pluginInstallXmlDoesNotExist"
+msgstr "info.xml existiert nicht: %s"
+
+msgid "pluginInstallDefinitionNotFound"
+msgstr "Plugindefinition kann in %s nicht gefunden werden."
+
+msgid "pluginInstallCannotMoveTo"
+msgstr "Verschieben nach %s fehlgeschlagen."
+
+msgid "pluginInstallTemplateDoesNotExist"
+msgstr "%s existiert nicht: %s"
+
+msgid "pluginInstallCannotOpenArchive"
+msgstr "Kann Archiv nicht öffnen."
+
+msgid "pluginInstallInvalidArchive"
+msgstr "Ungültiges Archiv."

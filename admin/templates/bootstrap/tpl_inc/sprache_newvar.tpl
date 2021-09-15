@@ -39,7 +39,7 @@
                             </label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input type="text" class="form-control" name="cWert_arr[{$langCode}]"
-                                       id="cWert_{$langCode}" value="{if !empty($oVariable->cWert_arr[$langCode])}{$oVariable->cWert_arr[$langCode]}{/if}">
+                                       id="cWert_{$langCode}" value="{if !empty($oVariable->cWert_arr[$langCode])}{$oVariable->cWert_arr[$langCode]|escape}{/if}">
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">
@@ -51,7 +51,7 @@
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input type="text" class="form-control" name="cWertAlt_arr[{$langCode}]" disabled
                                    id="cWertAlt_{$langCode}"
-                                   value="{if !empty($oVariable->cWertAlt_arr[$langCode])}{$oVariable->cWertAlt_arr[$langCode]}{/if}">
+                                   value="{if !empty($oVariable->cWertAlt_arr[$langCode])}{$oVariable->cWertAlt_arr[$langCode]|escape}{/if}">
                             </div>
                         </div>
                     {else}
@@ -61,7 +61,7 @@
                             </label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input type="text" class="form-control" name="cWert_arr[{$langCode}]"
-                                       id="cWert_{$langCode}" value="{$oVariable->cWert_arr[$langCode]|default:''}">
+                                       id="cWert_{$langCode}" value="{$oVariable->cWert_arr[$langCode]|default:''|escape}">
                             </div>
                         </div>
                     {/if}

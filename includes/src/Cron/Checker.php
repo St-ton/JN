@@ -90,7 +90,13 @@ class Checker
                           MONTH(tcron.lastStart) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH),
                           (NOW() > ADDDATE(tcron.lastStart, INTERVAL tcron.frequency HOUR))
                         )
-                    )
+                    OR (tcron.jobType = 'exportformat' 
+                        AND tjobqueue.jobQueueID IS NULL 
+                        AND (NOW() > ADDDATE(
+                            ADDTIME(DATE(tcron.lastStart), tcron.startTime), 
+                            INTERVAL tcron.frequency HOUR)
+                        )
+                    ))
                     AND tcron.startDate < NOW()
                     AND tjobqueue.jobQueueID IS NULL"
         );

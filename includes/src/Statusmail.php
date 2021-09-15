@@ -815,12 +815,12 @@ class Statusmail
      * @return bool
      * @throws SmartyException
      */
-    public function send($statusMail): bool
+    public function send(stdClass $statusMail): bool
     {
         $sent                    = false;
         $statusMail->nInhalt_arr = Text::parseSSKint($statusMail->cInhalt);
-        $intervall               = (int)$statusMail->nInterval;
-        switch ($intervall) {
+        $interval                = (int)$statusMail->nInterval;
+        switch ($interval) {
             case 1:
                 $startDate   = \date('Y-m-d', \strtotime('yesterday'));
                 $endDate     = \date('Y-m-d', \strtotime('today'));
@@ -837,10 +837,11 @@ class Statusmail
                 $intervalLoc = 'Monatliche';
                 break;
             default:
-                throw new InvalidArgumentException('Invalid interval type: ' . $intervall);
+                throw new InvalidArgumentException('Invalid interval type: ' . $interval);
         }
         $data = $this->generate($statusMail, $startDate, $endDate);
         if ($data) {
+            $data->interval   = $interval;
             $data->cIntervall = $intervalLoc . ' Status-Email';
 
             $mailer = Shop::Container()->get(Mailer::class);

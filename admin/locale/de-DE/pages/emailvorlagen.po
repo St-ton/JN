@@ -39,19 +39,19 @@ msgid "currentFiles"
 msgstr "Aktuelle Anhänge"
 
 msgid "emailAddAKZ"
-msgstr "Anbieterkennzeichnung anhängen"
+msgstr "Anbieterkennzeichnung an E-Mail-Text anhängen"
 
 msgid "emailAddAGB"
-msgstr "AGB anhängen"
+msgstr "AGB an E-Mail-Text anhängen"
 
 msgid "emailAddWRB"
-msgstr "Widerrufsbelehrung anhängen"
+msgstr "Widerrufsbelehrung an E-Mail-Text anhängen"
 
 msgid "emailAddWRBForm"
-msgstr "Muster-Widerrufsformular anhängen"
+msgstr "Muster-Widerrufsformular an E-Mail-Text anhängen"
 
 msgid "emailAddDSE"
-msgstr "Datenschutzerklärung anhängen"
+msgstr "Datenschutzerklärung an E-Mail-Text anhängen"
 
 msgid "emailActive"
 msgstr "E-Mail versenden"
@@ -237,3 +237,18 @@ msgstr "E-Mail-Syntax prüfen"
 
 msgid "Syntax check fail"
 msgstr "E-Mail Syntaxprüfung fehlgeschlagen"
+
+msgid "emailAddAKZDesc"
+msgstr "Die Anbieterkennzeichnung werden direkt als Text in der E-Mail angefügt (nicht als PDF-Dokument). Damit der Text auch angezeigt wird, muss im E-Mail-Template für den Footer der Platzhalter [AKZ] vorhanden sein."
+
+msgid "emailAddAGBDesc"
+msgstr "Die AGB werden direkt als Text in der E-Mail angefügt (nicht als PDF-Dokument). Damit der Text auch angezeigt wird, muss im E-Mail-Template für den Footer der Platzhalter [LEGAL_DATA] vorhanden sein."
+
+msgid "emailAddWRBDesc"
+msgstr "Die Widerrufsbelehrung werden direkt als Text in der E-Mail angefügt (nicht als PDF-Dokument). Damit der Text auch angezeigt wird, muss im E-Mail-Template für den Footer der Platzhalter [LEGAL_DATA] vorhanden sein."
+
+msgid "emailAddWRBFormDesc"
+msgstr "Die Muster-Widerrufsformular werden direkt als Text in der E-Mail angefügt (nicht als PDF-Dokument). Damit der Text auch angezeigt wird, muss im E-Mail-Template für den Footer der Platzhalter [LEGAL_DATA] vorhanden sein."
+
+msgid "emailAddDSEDesc"
+msgstr "Die Datenschutzerklärung werden direkt als Text in der E-Mail angefügt (nicht als PDF-Dokument). Damit der Text auch angezeigt wird, muss im E-Mail-Template für den Footer der Platzhalter [LEGAL_DATA] vorhanden sein."

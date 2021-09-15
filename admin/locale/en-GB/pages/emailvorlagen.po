@@ -39,19 +39,19 @@ msgid "currentFiles"
 msgstr "Current attachments"
 
 msgid "emailAddAKZ"
-msgstr "Attach legal disclosure"
+msgstr "Attach legal disclosure to email text"
 
 msgid "emailAddAGB"
-msgstr "Attach terms and conditions"
+msgstr "Attach terms and conditions to email text"
 
 msgid "emailAddWRB"
-msgstr "Attach withdrawal"
+msgstr "Attach withdrawal to email text"
 
 msgid "emailAddWRBForm"
-msgstr "Attach model withdrawal form"
+msgstr "Attach model withdrawal form to email text"
 
 msgid "emailAddDSE"
-msgstr "Attach data privacy notice"
+msgstr "Attach data privacy notice to email text"
 
 msgid "emailActive"
 msgstr "Send email"
@@ -237,3 +237,18 @@ msgstr "Check email syntax"
 
 msgid "Syntax check fail"
 msgstr "Email syntax check failed"
+
+msgid "emailAddAKZDesc"
+msgstr "The legal disclosure is directly attached to the email as text (not as a PDF file). For the text to be displayed, the placeholder [AKZ] must be present in the footer email template."
+
+msgid "emailAddAGBDesc"
+msgstr "The terms and conditions are directly attached to the email as text (not as a PDF file). For the text to be displayed, the placeholder [LEGAL_DATA] must be present in the footer email template."
+
+msgid "emailAddWRBDesc"
+msgstr "The withdrawal is directly attached to the email as text (not as a PDF file). For the text to be displayed, the placeholder [LEGAL_DATA] must be present in the footer email template."
+
+msgid "emailAddWRBFormDesc"
+msgstr "The model withdrawal form is directly attached to the email as text (not as a PDF file). For the text to be displayed, the placeholder [LEGAL_DATA] must be present in the footer email template."
+
+msgid "emailAddDSEDesc"
+msgstr "The data privacy notice is directly attached to the email as text (not as a PDF file). For the text to be displayed, the placeholder [LEGAL_DATA] must be present in the footer email template."

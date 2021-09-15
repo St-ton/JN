@@ -57,7 +57,7 @@ msgid "upTo"
 msgstr "up to"
 
 msgid "priceScale"
-msgstr "Price scales"
+msgstr "Price pieces"
 
 msgid "showShippingMethod"
 msgstr "Shipping method is available"
@@ -72,10 +72,10 @@ msgid "sortnr"
 msgstr "Sort number"
 
 msgid "minLiefertage"
-msgstr "Min. DeliveryDays"
+msgstr "Min. delivery days"
 
 msgid "maxLiefertage"
-msgstr "Max. DeliveryDays"
+msgstr "Max. delivery days"
 
 msgid "acceptedPaymentMethods"
 msgstr "Accepted payment methods"

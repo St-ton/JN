@@ -134,7 +134,7 @@ class Group implements JsonSerializable
             $this->nMax          = (int)$this->nMax;
             $this->nTyp          = (int)$this->nTyp;
             $this->oSprache      = new GroupLocalization($this->kKonfiggruppe, $languageID);
-            $this->oItem_arr     = Item::fetchAll($this->kKonfiggruppe);
+            $this->oItem_arr     = Item::fetchAll($this->kKonfiggruppe, $languageID);
         }
         $this->generateAllImageSizes(true, 1, $this->cBildPfad);
 

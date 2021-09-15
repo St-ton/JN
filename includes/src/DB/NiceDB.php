@@ -972,29 +972,52 @@ class NiceDB implements DbInterface
     {
         switch ($type) {
             case ReturnType::SINGLE_OBJECT:
-                $result = $statement->fetchObject();
+                try {
+                    $result = $statement->fetchObject();
+                } catch (Exception $e) {
+                    $this->logError($statement->queryString, $e);
+                    $result = false;
+                }
                 break;
             case ReturnType::ARRAY_OF_OBJECTS:
                 $result = [];
-                while (($row = $statement->fetchObject()) !== false) {
-                    $result[] = $row;
+                try {
+                    while (($row = $statement->fetchObject()) !== false) {
+                        $result[] = $row;
+                    }
+                } catch (Exception $e) {
+                    $this->logError($statement->queryString, $e);
                 }
                 break;
             case ReturnType::COLLECTION:
                 $result = new Collection();
-                while (($row = $statement->fetchObject()) !== false) {
-                    $result->push($row);
+                try {
+                    while (($row = $statement->fetchObject()) !== false) {
+                        $result->push($row);
+                    }
+                } catch (Exception $e) {
+                    $this->logError($statement->queryString, $e);
                 }
                 break;
             case ReturnType::AFFECTED_ROWS:
-                $result = $statement->rowCount();
+                try {
+                    $result = $statement->rowCount();
+                } catch (Exception $e) {
+                    $this->logError($statement->queryString, $e);
+                    $result = 0;
+                }
                 break;
             case ReturnType::LAST_INSERTED_ID:
                 $id     = $this->pdo->lastInsertId();
                 $result = ($id > 0) ? $id : 1;
                 break;
             case ReturnType::SINGLE_ASSOC_ARRAY:
-                $result = $statement->fetchAll(PDO::FETCH_NAMED);
+                try {
+                    $result = $statement->fetchAll(PDO::FETCH_NAMED);
+                } catch (Exception $e) {
+                    $this->logError($statement->queryString, $e);
+                    $result = null;
+                }
                 if (\is_array($result) && isset($result[0])) {
                     $result = $result[0];
                 } else {
@@ -1002,13 +1025,23 @@ class NiceDB implements DbInterface
                 }
                 break;
             case ReturnType::ARRAY_OF_ASSOC_ARRAYS:
-                $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+                try {
+                    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+                } catch (Exception $e) {
+                    $this->logError($statement->queryString, $e);
+                    $result = [];
+                }
                 break;
             case ReturnType::QUERYSINGLE:
                 $result = $statement;
                 break;
             case ReturnType::ARRAY_OF_BOTH_ARRAYS:
-                $result = $statement->fetchAll(PDO::FETCH_BOTH);
+                try {
+                    $result = $statement->fetchAll(PDO::FETCH_BOTH);
+                } catch (Exception $e) {
+                    $this->logError($statement->queryString, $e);
+                    $result = [];
+                }
                 break;
             default:
                 $result = true;

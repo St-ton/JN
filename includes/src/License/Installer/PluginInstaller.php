@@ -52,7 +52,7 @@ class PluginInstaller implements InstallerInterface
         $uninstaller      = new Uninstaller($this->db, $this->cache);
         $legacyValidator  = new LegacyPluginValidator($this->db, $parser);
         $pluginValidator  = new PluginValidator($this->db, $parser);
-        $installer        = new Installer($this->db, $uninstaller, $legacyValidator, $pluginValidator);
+        $installer        = new Installer($this->db, $uninstaller, $legacyValidator, $pluginValidator, $this->cache);
         $updater          = new Updater($this->db, $installer);
         $extractor        = new Extractor($parser);
         $installResponse  = $extractor->extractPlugin($zip);
@@ -76,7 +76,7 @@ class PluginInstaller implements InstallerInterface
         $uninstaller     = new Uninstaller($this->db, $this->cache);
         $legacyValidator = new LegacyPluginValidator($this->db, $parser);
         $pluginValidator = new PluginValidator($this->db, $parser);
-        $installer       = new Installer($this->db, $uninstaller, $legacyValidator, $pluginValidator);
+        $installer       = new Installer($this->db, $uninstaller, $legacyValidator, $pluginValidator, $this->cache);
         $installer->setDir($itemID);
         $extractor        = new Extractor($parser);
         $installResponse  = $extractor->extractPlugin($zip);
@@ -100,7 +100,7 @@ class PluginInstaller implements InstallerInterface
         $uninstaller      = new Uninstaller($this->db, $this->cache);
         $legacyValidator  = new LegacyPluginValidator($this->db, $parser);
         $pluginValidator  = new PluginValidator($this->db, $parser);
-        $installer        = new Installer($this->db, $uninstaller, $legacyValidator, $pluginValidator);
+        $installer        = new Installer($this->db, $uninstaller, $legacyValidator, $pluginValidator, $this->cache);
         $updater          = new Updater($this->db, $installer);
         $extractor        = new Extractor($parser);
         $installResponse  = $extractor->extractPlugin($zip);

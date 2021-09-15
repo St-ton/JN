@@ -422,6 +422,7 @@ final class Link extends AbstractLink
         $link->reference   = (int)$link->reference;
         $link->enabled     = $link->pluginState === null || (int)$link->pluginState === State::ACTIVATED;
         $link->cISOSprache = $link->cISOSprache ?? Shop::getLanguageCode();
+        $link->linkGroups  = $link->linkGroups ?? '';
         if ($link->languageID === 0) {
             $link->languageID = $this->currentLanguageID;
         }

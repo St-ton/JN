@@ -183,7 +183,7 @@ final class Model extends DataModel
         $abs  = $base . $this->getFilename();
         $real = \realpath(\pathinfo($abs, \PATHINFO_DIRNAME)) . '/';
         if (\strpos($real, $base) !== 0) {
-            throw new Exception('Directory traversal detected for export ' . $this->getId());
+            throw new Exception(\sprintf(\__('Directory traversal detected for export %d.'), $this->getId()));
         }
 
         return $abs;

@@ -414,7 +414,11 @@ class Helper
      */
     public static function getConfigByID(int $id): array
     {
-        $conf = [];
+        $conf    = [];
+        $cacheID = 'plgnh_cnfg_' . $id;
+        if (($data = Shop::Container()->getCache()->get($cacheID)) !== false) {
+            return $data;
+        }
         $data = Shop::Container()->getDB()->getObjects(
             'SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugin
@@ -431,6 +435,11 @@ class Helper
                 ? \unserialize($item->cWert, ['allowed_classes' => false])
                 : $item->cWert;
         }
+        Shop::Container()->getCache()->set(
+            $cacheID,
+            $conf,
+            [\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]
+        );
 
         return $conf;
     }

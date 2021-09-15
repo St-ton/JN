@@ -3163,7 +3163,7 @@ class Artikel
         if ($test !== false) {
             return $test;
         }
-        if ($tmpProduct === null) {
+        if ($tmpProduct === null || $tmpProduct->kArtikel === $tmpProduct->kVaterArtikel) {
             $cacheTags = [\CACHING_GROUP_ARTICLE . '_' . $productID, \CACHING_GROUP_ARTICLE];
             \executeHook(\HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [
                 'oArtikel'  => &$this,
@@ -3172,6 +3172,11 @@ class Artikel
             ]);
             if ($noCache === false) {
                 Shop::Container()->getCache()->set($this->cacheID, null, $cacheTags);
+            }
+            if ($tmpProduct->kArtikel === $tmpProduct->kVaterArtikel) {
+                Shop::Container()->getLogService()->warning(
+                    'Product ' . (int)$tmpProduct->kArtikel . ' has invalid parent.'
+                );
             }
 
             return null;
@@ -3939,7 +3944,8 @@ class Artikel
             // Normal Lagerbestand 0
             $specials[\SEARCHSPECIALS_OUTOFSTOCK] = ($this->fLagerbestand <= 0
                 && $this->cLagerBeachten === 'Y'
-                && $this->cLagerKleinerNull !== 'Y');
+                && $this->cLagerKleinerNull !== 'Y')
+                || ($this->inWarenkorbLegbar !== null && $this->inWarenkorbLegbar <= 0);
         }
         // Auf Lager
         $specials[\SEARCHSPECIALS_ONSTOCK] = ($this->fLagerbestand > 0 && $this->cLagerBeachten === 'Y');

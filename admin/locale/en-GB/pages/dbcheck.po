@@ -15,10 +15,10 @@ msgid "errorReadStructureFile"
 msgstr "Could not read structure file."
 
 msgid "errorNoInnoTable"
-msgstr "is no InnoDB table"
+msgstr "%s is no InnoDB table"
 
 msgid "errorWrongCollation"
-msgstr "has a wrong collation"
+msgstr "%s has a wrong collation"
 
 msgid "errorDataTypeTextInRow"
 msgstr "Data type text in column %s"

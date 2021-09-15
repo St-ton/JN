@@ -116,6 +116,7 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
             initialPreviewConfig: {if isset($fileInitialPreviewConfig)}{$fileInitialPreviewConfig}{else}[]{/if},
             initialPreview: {if isset($fileInitialPreview)}{$fileInitialPreview}{else}[]{/if},
             {/if}
+            showConsoleLogs: false,
         });
 
         {if $fileDefaultBrowseEvent|default:true}

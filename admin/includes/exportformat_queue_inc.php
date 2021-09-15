@@ -47,28 +47,27 @@ function holeExportformatCron(): array
         $export->nFehlerhaft        = (int)$export->nFehlerhaft;
         $export->cronID             = (int)$export->cronID;
         $export->frequency          = (int)$export->frequency;
-        $export->cAlleXStdToDays    = rechneUmAlleXStunden($export->frequency);
         $export->Sprache            = Shop::Lang()->getLanguageByID($export->kSprache);
         $export->frequencyLocalized = rechneUmAlleXStunden($export->frequency);
-        $export->Sprache            = Shop::Lang()->getLanguageByID($export->kSprache);
+        $export->cAlleXStdToDays    = $export->frequencyLocalized;
         $exporter->init($export->kExportformat);
-        $export->Waehrung           = $db->select(
+        $export->Waehrung     = $db->select(
             'twaehrung',
             'kWaehrung',
             $export->kWaehrung
         );
-        $export->Kundengruppe       = $db->select(
+        $export->Kundengruppe = $db->select(
             'tkundengruppe',
             'kKundengruppe',
             $export->kKundengruppe
         );
-        $export->oJobQueue          = $db->getSingleObject(
+        $export->oJobQueue    = $db->getSingleObject(
             "SELECT *, DATE_FORMAT(lastStart, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
                 FROM tjobqueue 
                 WHERE cronID = :id",
             ['id' => $export->cronID]
         );
-        $export->productCount       = $exporter->getExportProductCount();
+        $export->productCount = $exporter->getExportProductCount();
     }
 
     return $exports;

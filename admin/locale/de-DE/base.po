@@ -2115,6 +2115,9 @@ msgstr "Keine Änderungen dieser Einstellung vorhanden."
 msgid "settingChangedBy"
 msgstr "Geändert von"
 
+msgid "settingChangerIp"
+msgstr "IP-Adresse"
+
 msgid "settingValueNew"
 msgstr "Wert neu"
 

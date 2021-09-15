@@ -2108,6 +2108,9 @@ msgstr "No changes logged yet."
 msgid "settingChangedBy"
 msgstr "Changed by"
 
+msgid "settingChangerIp"
+msgstr "IP address"
+
 msgid "settingValueNew"
 msgstr "Value new"
 

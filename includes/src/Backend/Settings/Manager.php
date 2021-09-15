@@ -6,6 +6,7 @@ use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
 use JTL\Backend\AdminAccount;
 use JTL\DB\DbInterface;
+use JTL\GeneralDataProtection\IpAnonymizer;
 use JTL\L10n\GetText;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Smarty\JTLSmarty;
@@ -170,16 +171,19 @@ class Manager
         ) {
             return;
         }
+        $ip            = $_SERVER['HTTP_CLIENT_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
+        $anonIpAddress = (new IpAnonymizer($ip))->anonymize();
 
         $this->db->executeQueryPrepared(
-            'INSERT INTO teinstellungenlog (kAdminlogin, cAdminname, cEinstellungenName, cEinstellungenWertAlt,
+            'INSERT INTO teinstellungenlog (kAdminlogin, cAdminname, cIP, cEinstellungenName, cEinstellungenWertAlt,
                                cEinstellungenWertNeu, dDatum)
-                SELECT tadminlogin.kAdminlogin, tadminlogin.cName, :cEinstellungenName, :cEinstellungenWertAlt,
+                SELECT tadminlogin.kAdminlogin, tadminlogin.cName, :cIP, :cEinstellungenName, :cEinstellungenWertAlt,
                                :cEinstellungenWertNeu, NOW()
                 FROM tadminlogin
                 WHERE tadminlogin.kAdminlogin = :kAdminLogin',
             [
                 'kAdminLogin'           => $this->adminAccount->getID(),
+                'cIP'                   => $anonIpAddress,
                 'cEinstellungenName'    => $setting,
                 'cEinstellungenWertAlt' => $oldValue,
                 'cEinstellungenWertNeu' => $newValue,
@@ -224,7 +228,7 @@ class Manager
                     CONCAT(el.cAdminname, ' (', COALESCE(al.cName, :unknown), ')')
                 ) AS adminName , ec.cInputTyp as settingType
                 FROM teinstellungenlog AS el
-                LEFT JOIN tadminlogin AS al 
+                LEFT JOIN tadminlogin AS al
                     USING (kAdminlogin)
                 LEFT JOIN teinstellungenconf AS ec
                     ON ec.cWertName = el.cEinstellungenName
@@ -296,7 +300,7 @@ class Manager
                     CONCAT(el.cAdminname, ' (', COALESCE(al.cName, :unknown), ')')
                 ) AS adminName , ec.cInputTyp as settingType
                 FROM teinstellungenlog AS el
-                LEFT JOIN tadminlogin AS al 
+                LEFT JOIN tadminlogin AS al
                     USING (kAdminlogin)
                 LEFT JOIN teinstellungenconf AS ec
                     ON ec.cWertName = el.cEinstellungenName" .

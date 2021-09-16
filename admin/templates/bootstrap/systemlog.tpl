@@ -100,6 +100,7 @@
                     <tr>
                         <th>{__('nameValueNameId')}</th>
                         <th>{__('settingChangedBy')}</th>
+                        <th>{__('settingChangerIp')}</th>
                         <th>{__('settingValueOld')}</th>
                         <th>{__('settingValueNew')}</th>
                         <th>{__('date')}</th>
@@ -109,6 +110,7 @@
                         <tr class="text-vcenter">
                             <td><a href="{$adminURL}/searchresults.php?cSuche={__($settingLog->getSettingName()|cat:'_name')}">{__($settingLog->getSettingName()|cat:'_name')} | {$settingLog->getSettingName()} | {$settingLog->getId()}</a></td>
                             <td>{$settingLog->getAdminName()}</td>
+                            <td>{$settingLog->getChangerIp()}</td>
                             <td>
                                 {if $settingLog->getSettingType() === 'selectbox'}
                                     {__("{$settingLog->getSettingName()}_value({$settingLog->getValueOld()})")} ({$settingLog->getValueOld()})

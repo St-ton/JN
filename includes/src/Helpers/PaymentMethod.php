@@ -133,7 +133,7 @@ class PaymentMethod
         if ($paymentMethod->kZahlungsart > 0) {
             $paymentID = (int)$paymentMethod->kZahlungsart;
 
-            if (($paymentMethod->cModulIdi ?? $paymentMethod->cModulId) === 'za_null_jtl') {
+            if (($paymentMethod->cModulId ?? '') === 'za_null_jtl') {
                 $isUsable = 0;
             } elseif (empty($paymentMethod->nSOAP) && empty($paymentMethod->nCURL) && empty($paymentMethod->nSOCKETS)) {
                 $isUsable = 1;

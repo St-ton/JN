@@ -7,6 +7,7 @@ use JTL\Alert\Alert;
 use JTL\Backend\AdminAccount;
 use JTL\DB\DbInterface;
 use JTL\GeneralDataProtection\IpAnonymizer;
+use JTL\Helpers\Request;
 use JTL\L10n\GetText;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Smarty\JTLSmarty;
@@ -171,8 +172,6 @@ class Manager
         ) {
             return;
         }
-        $ip            = $_SERVER['HTTP_CLIENT_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
-        $anonIpAddress = (new IpAnonymizer($ip))->anonymize();
 
         $this->db->executeQueryPrepared(
             'INSERT INTO teinstellungenlog (kAdminlogin, cAdminname, cIP, cEinstellungenName, cEinstellungenWertAlt,
@@ -183,7 +182,7 @@ class Manager
                 WHERE tadminlogin.kAdminlogin = :kAdminLogin',
             [
                 'kAdminLogin'           => $this->adminAccount->getID(),
-                'cIP'                   => $anonIpAddress,
+                'cIP'                   => (new IpAnonymizer(Request::getRealIP()))->anonymize(),
                 'cEinstellungenName'    => $setting,
                 'cEinstellungenWertAlt' => $oldValue,
                 'cEinstellungenWertNeu' => $newValue,

@@ -4,7 +4,6 @@ namespace JTL\Plugin\Admin\Validation;
 
 use InvalidArgumentException;
 use JTL\Plugin\InstallCode;
-use JTL\Shop;
 use JTLShop\SemVer\Version;
 
 /**

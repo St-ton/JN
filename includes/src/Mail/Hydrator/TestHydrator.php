@@ -339,8 +339,8 @@ class TestHydrator extends DefaultsHydrator
         $order                   = new stdClass();
         $order->kWaehrung        = $languageID;
         $order->kSprache         = 1;
-        $order->fGuthaben        = 5;
-        $order->fGesamtsumme     = 433;
+        $order->fGuthaben        = '5.0000';
+        $order->fGesamtsumme     = '433.00';
         $order->cBestellNr       = 'Prefix-3432-Suffix';
         $order->cVersandInfo     = 'Optionale Information zum Versand';
         $order->cTracking        = 'Track232837';

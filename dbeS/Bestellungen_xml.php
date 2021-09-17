@@ -123,42 +123,32 @@ function gibZahlungsmodul($kBestellung)
 
 /**
  * @param array $xml
+ * @param bool  $delUpload
  */
-function bearbeiteDel($xml)
+function bearbeiteDel($xml, $delUpload = true)
 {
-    if (is_array($xml['del_bestellungen']['kBestellung'])) {
-        foreach ($xml['del_bestellungen']['kBestellung'] as $kBestellung) {
-            $kBestellung = (int)$kBestellung;
-            if ($kBestellung > 0) {
-                $oModule = gibZahlungsmodul($kBestellung);
-                if ($oModule) {
-                    $oModule->cancelOrder($kBestellung, true);
-                }
-                deleteOrder($kBestellung);
+    $source = is_array($xml['del_bestellungen']['kBestellung'])
+        ? $xml['del_bestellungen']['kBestellung']
+        : [$xml['del_bestellungen']['kBestellung']];
+    foreach ($source as $kBestellung) {
+        $kBestellung = (int)$kBestellung;
+        if ($kBestellung > 0) {
+            $customer = Shop::DB()->query("SELECT kKunde FROM tbestellung WHERE kBestellung = " . $kBestellung, 1);
+            $oModule  = gibZahlungsmodul($kBestellung);
+            if ($oModule) {
+                $oModule->cancelOrder($kBestellung, true);
+            }
+            deleteOrder($kBestellung);
+            if ($delUpload) {
                 //uploads (bestellungen)
                 Shop::DB()->delete('tuploadschema', ['kCustomID', 'nTyp'], [$kBestellung, 2]);
                 Shop::DB()->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$kBestellung, 2]);
                 //uploads (artikel der bestellung)
                 //todo...
-                //wenn unreg kunde, dann kunden auch löschen
-                $b = Shop::DB()->query("SELECT kKunde FROM tbestellung WHERE kBestellung = " . $kBestellung, 1);
-                if (isset($b->kKunde) && $b->kKunde > 0) {
-                    checkGuestAccount($b->kKunde);
-                }
             }
-        }
-    } else {
-        $kBestellung = (int)$xml['del_bestellungen']['kBestellung'];
-        if ($kBestellung > 0) {
-            $oModule = gibZahlungsmodul($kBestellung);
-            if ($oModule) {
-                $oModule->cancelOrder($kBestellung, true);
-            }
-            deleteOrder($kBestellung);
             //wenn unreg kunde, dann kunden auch löschen
-            $b = Shop::DB()->query("SELECT kKunde FROM tbestellung WHERE kBestellung = " . $kBestellung, 1);
-            if (isset($b->kKunde) && $b->kKunde > 0) {
-                checkGuestAccount($b->kKunde);
+            if (isset($customer->kKunde) && $customer->kKunde > 0) {
+                checkGuestAccount($customer->kKunde);
             }
         }
     }
@@ -169,27 +159,7 @@ function bearbeiteDel($xml)
  */
 function bearbeiteDelOnly($xml)
 {
-    if (is_array($xml['del_bestellungen']['kBestellung'])) {
-        foreach ($xml['del_bestellungen']['kBestellung'] as $kBestellung) {
-            $kBestellung = (int)$kBestellung;
-            if ($kBestellung > 0) {
-                $oModule = gibZahlungsmodul($kBestellung);
-                if ($oModule) {
-                    $oModule->cancelOrder($kBestellung, true);
-                }
-                deleteOrder($kBestellung);
-            }
-        }
-    } else {
-        $kBestellung = (int)$xml['del_bestellungen']['kBestellung'];
-        if ($kBestellung > 0) {
-            $oModule = gibZahlungsmodul($kBestellung);
-            if ($oModule) {
-                $oModule->cancelOrder($kBestellung, true);
-            }
-            deleteOrder($kBestellung);
-        }
-    }
+    bearbeiteDel($xml, false);
 }
 
 /**

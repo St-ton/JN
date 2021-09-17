@@ -572,9 +572,16 @@ class Bestellung
                     WarenkorbPos::setEstimatedDelivery($this->Positionen[$i], $this->Positionen[$i]->nLongestMinDelivery, $this->Positionen[$i]->nLongestMaxDelivery);
                 }
                 if (!isset($this->Positionen[$i]->kSteuerklasse)) {
-                    $taxClass = Shop::DB()->select('tsteuersatz', 'fSteuersatz', $this->Positionen[$i]->fMwSt);
-                    if ($taxClass !== null) {
-                        $this->Positionen[$i]->kSteuerklasse = $taxClass->kSteuerklasse;
+                    $taxClasses = $_SESSION['Steuersatz'];
+                    if (is_array($taxClasses)
+                        && ($taxClass = array_search($this->Positionen[$i]->fMwSt, $taxClasses)) !== false
+                    ) {
+                        $this->Positionen[$i]->kSteuerklasse = (int)$taxClass;
+                    } else {
+                        $taxClass = Shop::DB()->select('tsteuersatz', 'fSteuersatz', $this->Positionen[$i]->fMwSt);
+                        if ($taxClass !== null) {
+                            $this->Positionen[$i]->kSteuerklasse = $taxClass->kSteuerklasse;
+                        }
                     }
                 }
                 $summe += $this->Positionen[$i]->fPreis * $this->Positionen[$i]->nAnzahl;

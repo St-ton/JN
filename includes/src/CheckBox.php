@@ -583,9 +583,9 @@ class CheckBox
             return false;
         }
         $refData = (new OptinRefData())
-            ->setSalutation($customer->cAnrede)
-            ->setFirstName($customer->cVorname)
-            ->setLastName($customer->cNachname)
+            ->setSalutation($customer->cAnrede ?? '')
+            ->setFirstName($customer->cVorname ?? '')
+            ->setLastName($customer->cNachname ?? '')
             ->setEmail($customer->cMail)
             ->setLanguageID(Shop::getLanguageID())
             ->setRealIP(Request::getRealIP());

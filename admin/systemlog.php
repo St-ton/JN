@@ -3,6 +3,7 @@
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Jtllog;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Operation;
@@ -69,6 +70,7 @@ $systemlogFlag = Jtllog::getSytemlogFlag(false);
 foreach ($logData as $log) {
     $log->kLog   = (int)$log->kLog;
     $log->nLevel = (int)$log->nLevel;
+    $log->cLog   = Text::filterXSS($log->cLog);
     $log->cLog   = preg_replace(
         '/\[(.*)\] => (.*)/',
         '<span class="text-primary">$1</span>: <span class="text-success">$2</span>',

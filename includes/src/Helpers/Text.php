@@ -277,6 +277,9 @@ class Text
      */
     public static function unhtmlentities($input): string
     {
+        if (!\is_string($input)) {
+            return $input;
+        }
         // replace numeric entities
         $input = \preg_replace_callback(
             '~&#x([0-9a-fA-F]+);~i',

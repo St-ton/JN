@@ -3400,7 +3400,7 @@ class Artikel
             $return    = ($startDate > $today || $endDate < $today);
         }
         if ($return !== true) {
-            return null;
+            return false;
         }
         $this->cacheHit = true;
         $this->addVariationChildren($customerGroupID);

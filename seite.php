@@ -118,7 +118,8 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
 if (($pluginID = $link->getPluginID()) > 0 && $link->getPluginEnabled() === true) {
     Shop::setPageType(PAGE_PLUGIN);
     $loader = PluginHelper::getLoaderByPluginID($pluginID, $db, $cache);
-    if (!PluginHelper::bootstrap($pluginID, $loader)->prepareFrontend($link, $smarty)) {
+    $boot   = PluginHelper::bootstrap($pluginID, $loader);
+    if ($boot === null || !$boot->prepareFrontend($link, $smarty)) {
         executeHook(HOOK_SEITE_PAGE_IF_LINKART);
     }
 }

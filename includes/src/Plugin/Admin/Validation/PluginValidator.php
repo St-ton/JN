@@ -4,6 +4,7 @@ namespace JTL\Plugin\Admin\Validation;
 
 use InvalidArgumentException;
 use JTL\Plugin\InstallCode;
+use JTL\Shop;
 use JTLShop\SemVer\Version;
 
 /**
@@ -69,7 +70,7 @@ final class PluginValidator extends AbstractValidator
         $validation = new PluginValidationFactory();
         $checks     = $validation->getValidations($baseNode, $this->dir, $version, $baseNode['PluginID']);
         foreach ($checks as $check) {
-            $check->setDir($this->dir . \DIRECTORY_SEPARATOR); // override versioned dir from base validator
+            $check->setDir($this->dir . '/'); // override versioned dir from base validator
             $check->setContext(ValidationItemInterface::CONTEXT_PLUGIN);
             $res = $check->validate();
             if ($res !== InstallCode::OK) {

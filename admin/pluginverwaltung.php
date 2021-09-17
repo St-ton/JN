@@ -439,7 +439,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
 if ($step === 'pluginverwaltung_uebersicht') {
     foreach ($pluginsAvailable as $available) {
         /** @var ListingItem $available */
-        $baseDir = $available->getPath() . '/';
+        $baseDir = $available->getPath();
         $files   = [
             'license.md',
             'License.md',

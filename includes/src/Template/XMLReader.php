@@ -20,8 +20,8 @@ class XMLReader
     {
         $dirName = \basename($dirName);
         $xmlFile = $isAdmin === false
-            ? \PFAD_ROOT . \PFAD_TEMPLATES . $dirName . \DIRECTORY_SEPARATOR . \TEMPLATE_XML
-            : \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $dirName . \DIRECTORY_SEPARATOR . \TEMPLATE_XML;
+            ? \PFAD_ROOT . \PFAD_TEMPLATES . $dirName . '/' . \TEMPLATE_XML
+            : \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $dirName . '/' . \TEMPLATE_XML;
         if (!\file_exists($xmlFile)) {
             return null;
         }

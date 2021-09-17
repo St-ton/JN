@@ -4032,8 +4032,9 @@ class Artikel
         if (!$hasSupplyDate) {
             $this->dZulaufDatum_de = null;
         }
-        $this->cAktivSonderpreis = ($specialPriceStartDate <= $now
-            && ($this->dSonderpreisEnde_en === null || $specialPriceEndDate >= $now)) ? 'Y' : 'N';
+        $this->cAktivSonderpreis = $this->dSonderpreisStart_en !== null
+            && $specialPriceStartDate <= $now
+            && ($this->dSonderpreisEnde_en === null || $specialPriceEndDate >= $now) ? 'Y' : 'N';
 
         return $this->getSearchSpecialOverlay();
     }

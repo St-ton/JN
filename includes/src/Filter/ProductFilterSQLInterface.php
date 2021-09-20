@@ -20,5 +20,5 @@ interface ProductFilterSQLInterface
      * @param bool $withAnd
      * @return string
      */
-    public function getStockFilterSQL($withAnd = true): string;
+    public function getStockFilterSQL(bool $withAnd = true): string;
 }

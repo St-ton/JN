@@ -76,6 +76,7 @@ class Nice
     {
         $cacheID = 'cbrocken';
         if (($brocken = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $brocken = '';
             $data    = Shop::Container()->getDB()->query(
                 'SELECT cBrocken 
                     FROM tbrocken 

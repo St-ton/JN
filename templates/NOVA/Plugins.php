@@ -255,9 +255,9 @@ class Plugins
 
         $url   = $params['src'];
         $id    = isset($params['id']) ? ' id="' . $params['id'] . '"' : '';
-        $alt   = isset($params['alt']) ? ' alt="' . \truncate($params['alt'], 75) . '"' : '';
-        $title = isset($params['title']) ? ' title="' . \truncate($params['title'], 75) . '"' : '';
-        $class = isset($params['class']) ? ' class="' . \truncate($params['class'], 75) . '"' : '';
+        $alt   = isset($params['alt']) ? ' alt="' . $this->truncate($params['alt'], 75) . '"' : '';
+        $title = isset($params['title']) ? ' title="' . $this->truncate($params['title'], 75) . '"' : '';
+        $class = isset($params['class']) ? ' class="' . $this->truncate($params['class'], 75) . '"' : '';
         if (\strpos($url, 'http') !== 0) {
             $url = Shop::getImageBaseURL() . \ltrim($url, '/');
         }
@@ -281,13 +281,13 @@ class Plugins
 
     /**
      * @param string $text
-     * @param int    $numb
+     * @param int    $length
      * @return string
      */
-    public function truncate($text, $numb)
+    public function truncate($text, $length)
     {
-        if (\strlen($text) > $numb) {
-            $text = \substr($text, 0, $numb);
+        if (\strlen($text) > $length) {
+            $text = \substr($text, 0, $length);
             $text = \substr($text, 0, \strrpos($text, ' '));
             $text .= '...';
         }

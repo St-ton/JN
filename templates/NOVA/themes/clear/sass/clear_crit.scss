@@ -216,6 +216,7 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
     padding-bottom: $navbar-padding-y;
     img {
       height: $navbar-image-height;
+      width: auto;
     }
   }
 
@@ -317,16 +318,6 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 
   @include box-shadow($input-box-shadow);
   @include transition($input-transition);
-}
-
-.breadcrumb {
-  display: flex;
-  flex-wrap: wrap;
-  padding: .5rem 0;
-  margin-bottom: 1rem;
-  list-style: none;
-  background-color: transparent;
-  border-radius: 0;
 }
 
 .square {
@@ -460,11 +451,6 @@ hr {
 /* header logo position - start */
 .toggler-logo-wrapper {
   float: left;
-  @include media-breakpoint-up(lg) {
-    .logo-wrapper {
-      padding-left: map-get($spacers, 4);
-    }
-  }
   @include media-breakpoint-down(md) {
     position: absolute;
     .logo-wrapper {
@@ -480,4 +466,18 @@ hr {
 
 .navbar .container {
   display: block;
+}
+
+/* image loading indicator */
+
+.lazyloading {
+  color: transparent;
+  width: auto;
+  height: auto;
+  max-width: 40px;
+  max-height: 40px;
+}
+
+.lazyload {
+  opacity: 0 !important;
 }

@@ -38,30 +38,29 @@
                                 {$language->getLocalizedName()} ({__('new')}):
                             </label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input type="text" class="form-control" name="cWert_arr[{$langCode}]"
-                                       id="cWert_{$langCode}" value="{if !empty($oVariable->cWert_arr[$langCode])}{$oVariable->cWert_arr[$langCode]}{/if}">
+                                <textarea class="form-control" name="cWert_arr[{$langCode}]"
+                                          id="cWert_{$langCode}">{if !empty($oVariable->cWert_arr[$langCode])}{$oVariable->cWert_arr[$langCode]|escape}{/if}</textarea>
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="bOverwrite_{$langCode}_no">
-                                    <input type="radio" id="bOverwrite_{$langCode}_no"
-                                           name="bOverwrite_arr[{$langCode}]" value="0" checked>
-                                    {$language->getLocalizedName()} ({__('current')}):
-                                </label>
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input type="text" class="form-control" name="cWertAlt_arr[{$langCode}]" disabled
-                                       id="cWertAlt_{$langCode}"
-                                       value="{if !empty($oVariable->cWertAlt_arr[$langCode])}{$oVariable->cWertAlt_arr[$langCode]}{/if}">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="bOverwrite_{$langCode}_no">
+                                <input type="radio" id="bOverwrite_{$langCode}_no"
+                                       name="bOverwrite_arr[{$langCode}]" value="0" checked>
+                                {$language->getLocalizedName()} ({__('current')}):
+                            </label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <textarea class="form-control" name="cWertAlt_arr[{$langCode}]" disabled
+                                          id="cWertAlt_{$langCode}">{if !empty($oVariable->cWertAlt_arr[$langCode])}{$oVariable->cWertAlt_arr[$langCode]|escape}{/if}</textarea>
                             </div>
                         </div>
                     {else}
                         <div class="form-group form-row align-items-center">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="cWert_{$langCode}">
-                                    {$language->getLocalizedName()}:
-                                </label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cWert_{$langCode}">
+                                {$language->getLocalizedName()}:
+                            </label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input type="text" class="form-control" name="cWert_arr[{$langCode}]"
-                                       id="cWert_{$langCode}" value="{$oVariable->cWert_arr[$langCode]|default:''}">
+                                <textarea class="form-control" name="cWert_arr[{$langCode}]"
+                                          id="cWert_{$langCode}">{if !empty($oVariable->cWert_arr[$langCode])}{$oVariable->cWert_arr[$langCode]|default:''|escape}{/if}</textarea>
                             </div>
                         </div>
                     {/if}

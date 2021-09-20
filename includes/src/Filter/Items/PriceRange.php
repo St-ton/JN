@@ -4,7 +4,6 @@ namespace JTL\Filter\Items;
 
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Preise;
-use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
@@ -74,9 +73,10 @@ class PriceRange extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('pf')
-             ->setVisibility($this->getConfig('navigationsfilter')['preisspannenfilter_benutzen'])
-             ->setFrontendName(Shop::isAdmin() ? __('filterPriceRange') : Shop::Lang()->get('rangeOfPrices'));
+            ->setUrlParam('pf')
+            ->setVisibility($this->getConfig('navigationsfilter')['preisspannenfilter_benutzen'])
+            ->setFrontendName(Shop::isAdmin() ? \__('filterPriceRange') : Shop::Lang()->get('rangeOfPrices'))
+            ->setFilterName($this->getFrontendName());
     }
 
     /**
@@ -422,12 +422,11 @@ class PriceRange extends AbstractFilter
 
             return $this->options;
         }
-        $minMax = $this->productFilter->getDB()->query(
+        $minMax = $this->productFilter->getDB()->getSingleObject(
             'SELECT MAX(ssMerkmal.fMax) AS fMax, MIN(ssMerkmal.fMin) AS fMin 
-                    FROM (' . $baseQuery . ' ) AS ssMerkmal',
-            ReturnType::SINGLE_OBJECT
+                FROM (' . $baseQuery . ' ) AS ssMerkmal'
         );
-        if (isset($minMax->fMax) && $minMax->fMax > 0) {
+        if ($minMax !== null && $minMax->fMax > 0) {
             $selectSQL             = [];
             $steps                 = $this->calculateSteps(
                 $minMax->fMax * $factor,
@@ -444,13 +443,12 @@ class PriceRange extends AbstractFilter
             $sql->setGroupBy(['tartikel.kArtikel']);
 
             $baseQuery        = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
-            $dbRes            = $this->productFilter->getDB()->query(
+            $dbRes            = $this->productFilter->getDB()->getSingleObject(
                 'SELECT ' . \implode(',', $selectSQL) . ' FROM (' .
-                $baseQuery . ' ) AS ssMerkmal',
-                ReturnType::SINGLE_OBJECT
+                $baseQuery . ' ) AS ssMerkmal'
             );
             $priceRanges      = [];
-            $priceRangeCounts = \is_object($dbRes)
+            $priceRangeCounts = $dbRes !== null
                 ? \get_object_vars($dbRes)
                 : [];
             for ($i = 0; $i < $steps->nAnzahlSpannen; ++$i) {
@@ -509,10 +507,7 @@ class PriceRange extends AbstractFilter
         $currency  = Frontend::getCurrency();
         $options   = [];
         $selectSQL = [];
-        $ranges    = $this->productFilter->getDB()->query(
-            'SELECT * FROM tpreisspannenfilter',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $ranges    = $this->productFilter->getDB()->getObjects('SELECT * FROM tpreisspannenfilter');
         if (\count($ranges) === 0) {
             return $options;
         }
@@ -541,13 +536,12 @@ class PriceRange extends AbstractFilter
 
             return $this->options;
         }
-        $dbRes = $this->productFilter->getDB()->query(
-            'SELECT ' . \implode(',', $selectSQL) . ' FROM (' . $baseQuery . ' ) AS ssMerkmal',
-            ReturnType::SINGLE_OBJECT
+        $dbRes = $this->productFilter->getDB()->getSingleObject(
+            'SELECT ' . \implode(',', $selectSQL) . ' FROM (' . $baseQuery . ' ) AS ssMerkmal'
         );
 
         $additionalFilter = new self($this->productFilter);
-        $priceRangeCounts = $dbRes !== false ? \get_object_vars($dbRes) : [];
+        $priceRangeCounts = $dbRes !== null ? \get_object_vars($dbRes) : [];
         $priceRanges      = [];
         $count            = \count($priceRangeCounts);
         for ($i = 0; $i < $count; ++$i) {

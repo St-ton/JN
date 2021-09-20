@@ -31,6 +31,11 @@ abstract class AbstractImage implements IMedia
     public const REGEX = '';
 
     /**
+     * @var string
+     */
+    public const REGEX_ALLOWED_CHARS = 'a-zA-Z0-9 äööüÄÖÜß\$\-\_\.\+\!\*\\\'\(\)\,';
+
+    /**
      * @var array
      */
     protected static $imageExtensions = ['jpg', 'jpeg', 'webp', 'gif', 'png', 'bmp'];
@@ -379,6 +384,7 @@ abstract class AbstractImage implements IMedia
                 $res  = $res && $loop;
             }
             foreach ($directories as $directory) {
+                /** @var string $directory */
                 if ($directory !== $baseDir) {
                     $loop = \rmdir($directory);
                     $res  = $res && $loop;

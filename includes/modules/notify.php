@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Checkout\Bestellung;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Plugin\Helper;
@@ -47,11 +46,12 @@ if (strlen(Request::verifyGPDataString('key')) > 0 && strlen(Request::verifyGPDa
 }
 
 if (strlen($cSh) > 0) {
+    $cSh = Text::filterXSS($cSh);
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
-        $logger->debug('Notify SH: ' . print_r($_REQUEST, true));
+        $logger->debug('Notify SH: ' . print_r(Text::filterXSS($_REQUEST), true));
     }
     // Load from Session Hash / Session Hash starts with "_"
-    $sessionHash    = substr(Text::htmlentities(Text::filterXSS($cSh)), 1);
+    $sessionHash    = substr(Text::htmlentities($cSh), 1);
     $paymentSession = Shop::Container()->getDB()->select(
         'tzahlungsession',
         'cZahlungsID',
@@ -144,8 +144,8 @@ if (strlen($cSh) > 0) {
     } else {
         $order = new Bestellung($paymentSession->kBestellung);
         $order->fuelleBestellung(false);
-        $logger->debug('Session Hash ' . $cSh . ' hat kBestellung. Modul ' . $order->Zahlungsart->cModulId .
-            ' wird aufgerufen');
+        $logger->debug('Session Hash ' . $cSh . ' hat kBestellung. Modul ' . $order->Zahlungsart->cModulId
+            . ' wird aufgerufen');
 
         $paymentMethod = LegacyMethod::create($order->Zahlungsart->cModulId);
         $paymentMethod->handleNotification($order, '_' . $sessionHash, $_REQUEST);
@@ -162,20 +162,20 @@ if (strlen($cSh) > 0) {
 
 $session = Frontend::getInstance();
 if (strlen($cPh) > 0) {
+    $cPh = Text::filterXSS($cPh);
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
-        $logger->debug('Notify request:' . print_r($_REQUEST, true));
+        $logger->debug('Notify request:' . print_r(Text::filterXSS($_REQUEST), true));
     }
-    $paymentId = Shop::Container()->getDB()->queryPrepared(
+    $paymentId = Shop::Container()->getDB()->getSingleObject(
         'SELECT ZID.kBestellung, ZA.cModulId
             FROM tzahlungsid ZID
             LEFT JOIN tzahlungsart ZA
                 ON ZA.kZahlungsart = ZID.kZahlungsart
             WHERE ZID.cId = :hash',
-        ['hash' => Text::htmlentities(Text::filterXSS($cPh))],
-        ReturnType::SINGLE_OBJECT
+        ['hash' => Text::htmlentities($cPh)]
     );
 
-    if ($paymentId === false) {
+    if ($paymentId === null) {
         $logger->error('Payment Hash ' . $cPh . ' ergab keine Bestellung aus tzahlungsid.');
         die(); // Payment Hash does not exist
     }

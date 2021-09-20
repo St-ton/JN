@@ -9,6 +9,11 @@ namespace JTL\Smarty;
 class JTLSmartyTemplateClass extends \Smarty_Internal_Template
 {
     /**
+     * @var JTLSmarty
+     */
+    public $smarty;
+
+    /**
      * @inheritDoc
      */
     public function _subTemplateRender(
@@ -23,7 +28,7 @@ class JTLSmartyTemplateClass extends \Smarty_Internal_Template
         $uid = null,
         $content_func = null
     ) {
-        return parent::_subTemplateRender(
+        parent::_subTemplateRender(
             $this->smarty->getResourceName($template),
             $cache_id,
             $compile_id,

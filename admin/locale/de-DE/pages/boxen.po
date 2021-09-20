@@ -271,4 +271,7 @@ msgid "templateTypeExtension"
 msgstr "Plugin"
 
 msgid "warningNovaSidebar"
-msgstr "Boxen in der linken Seitenleiste werden bei aktiviertem NOVA-Template nur für den Seitentyp „Artikelübersicht“ unterstützt. Nutzen Sie ein individuell angepasstes Template, wenn Sie Boxen auch auf anderen Seiten in der linken Seitenleiste anzeigen möchten."
+msgstr "Wenn Sie die linken Seitenleist im Nova-Template außerhalb des Seitentyps „Artikelübersicht“ nutzen möchten, müssen Sie zusätzlich die Template-Einstellung „Linke Seitenleiste“ auf „Auf allen Seiten“ stellen."
+
+msgid "notAllowedForPage"
+msgstr "Diese Box kann auf der gewählten Seite nicht angezeigt werden."

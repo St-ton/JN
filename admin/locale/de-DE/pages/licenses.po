@@ -146,6 +146,9 @@ msgstr "Konto verknüpfen"
 msgid "unlink"
 msgstr "Kontoverknüpfung aufheben"
 
+msgid "unlink from %s"
+msgstr "Kontoverknüpfung mit %s aufheben"
+
 msgid "Validity"
 msgstr "Gültigkeit"
 
@@ -184,3 +187,9 @@ msgstr "Eine Lizenz für diese Extension wurde bereits an den aktuellen Shop geb
 
 msgid "btnExploreExtensionStore"
 msgstr "Zum JTL-Extension Store"
+
+msgid "Your shop version is not compatible with this plugin version"
+msgstr "Ihre Shop-Version ist für die neue Version zu niedrig"
+
+msgid "Key"
+msgstr "Key"

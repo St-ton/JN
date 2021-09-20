@@ -18,14 +18,13 @@ use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\MailSmarty;
 use function Functional\filter;
-use function Functional\first;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global JTLSmarty $smarty */
 
 $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
-Shop::Container()->getCache()->flushTags(Status::CACHE_ID_EMAIL_SYNTAX_CHECK);
+Shop::Container()->getCache()->flushTags([Status::CACHE_ID_EMAIL_SYNTAX_CHECK]);
 
 $mailTemplate        = null;
 $hasError            = false;
@@ -155,7 +154,7 @@ if ((($emailTemplateID > 0 && $continue === true)
         $configAssoc[$item->cKey] = $item->cValue;
     }
     $mailTemplate = $mailTemplate ?? $controller->getTemplateByID($emailTemplateID);
-    $smarty->assign('availableLanguages', LanguageHelper::getAllLanguages())
+    $smarty->assign('availableLanguages', LanguageHelper::getAllLanguages(0, true))
            ->assign('mailConfig', $configAssoc)
            ->assign('cUploadVerzeichnis', $uploadDir);
 }

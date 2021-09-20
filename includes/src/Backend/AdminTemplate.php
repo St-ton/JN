@@ -58,7 +58,7 @@ class AdminTemplate
     public $preview;
 
     /**
-     *
+     * AdminTemplate constructor.
      */
     public function __construct()
     {
@@ -67,7 +67,7 @@ class AdminTemplate
     }
 
     /**
-     * @return $this
+     * @return AdminTemplate
      */
     public static function getInstance(): self
     {
@@ -77,9 +77,9 @@ class AdminTemplate
     /**
      * get template configuration
      *
-     * @return array|bool
+     * @return bool
      */
-    public function getConfig()
+    public function getConfig(): bool
     {
         return false;
     }

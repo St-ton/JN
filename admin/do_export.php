@@ -1,7 +1,7 @@
 <?php
 
 use JTL\Cron\QueueEntry;
-use JTL\Exportformat;
+use JTL\Export\FormatExporter;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
@@ -14,15 +14,14 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 if (Request::getInt('e') < 1 || !Form::validateToken()) {
     die('0');
 }
+Shop::Container()->getGetText()->loadAdminLocale('pages/exportformate');
 $db    = Shop::Container()->getDB();
 $queue = $db->select('texportqueue', 'kExportqueue', Request::getInt('e'));
 if (!isset($queue->kExportformat) || !$queue->kExportformat || !$queue->nLimit_m) {
     die('1');
 }
-$ef = new Exportformat((int)$queue->kExportformat, $db);
-if (!$ef->isOK()) {
-    die('2');
-}
+$ef = new FormatExporter($db, Shop::Container()->getLogService());
+
 $queue->jobQueueID    = (int)$queue->kExportqueue;
 $queue->cronID        = 0;
 $queue->foreignKeyID  = 0;
@@ -34,10 +33,15 @@ $queue->tableName     = null;
 $queue->foreignKey    = 'kExportformat';
 $queue->foreignKeyID  = (int)$queue->kExportformat;
 
-$ef->startExport(
-    new QueueEntry($queue),
-    isset($_GET['ajax']),
-    Request::getVar('back') === 'admin',
-    false,
-    Request::getInt('max', null)
-);
+try {
+    $ef->startExport(
+        (int)$queue->kExportformat,
+        new QueueEntry($queue),
+        isset($_GET['ajax']),
+        Request::getVar('back') === 'admin',
+        false,
+        Request::getInt('max', null)
+    );
+} catch (InvalidArgumentException $e) {
+    die('2');
+}

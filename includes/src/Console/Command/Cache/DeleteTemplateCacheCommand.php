@@ -4,11 +4,13 @@ namespace JTL\Console\Command\Cache;
 
 use JTL\Console\Command\Command;
 use JTL\Filesystem\Filesystem;
+use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
-use League\Flysystem\Adapter\Local;
+use League\Flysystem\FileAttributes;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 /**
  * Class DeleteTemplateCacheCommand
@@ -23,7 +25,28 @@ class DeleteTemplateCacheCommand extends Command
     {
         $this->setName('cache:tpl:delete')
             ->setDescription('Delete template cache')
-            ->addOption('admin', 'a', InputOption::VALUE_NONE, 'Delete admin template cache');
+            ->addOption('admin', 'a', InputOption::VALUE_NONE, 'Also delete admin template cache');
+    }
+
+    /**
+     * @param Filesystem $filesystem
+     */
+    private function deleteAdminTplCache(Filesystem $filesystem): void
+    {
+        foreach ($filesystem->listContents(\PFAD_ADMIN . \PFAD_COMPILEDIR) as $item) {
+            /** @var FileAttributes $item */
+            if ($item->isDir()) {
+                try {
+                    $filesystem->deleteDirectory($item->path());
+                } catch (Throwable $e) {
+                }
+            } else {
+                try {
+                    $filesystem->delete($item->path());
+                } catch (Throwable $e) {
+                }
+            }
+        }
     }
 
     /**
@@ -33,15 +56,20 @@ class DeleteTemplateCacheCommand extends Command
     {
         $io             = $this->getIO();
         $adminTpl       = $this->getOption('admin');
-        $filesystem     = new Filesystem(new Local(\PFAD_ROOT));
+        $filesystem     = Shop::Container()->get(LocalFilesystem::class);
         $activeTemplate = Shop::Container()->getTemplateService()->getActiveTemplate(false);
         if ($adminTpl) {
-            $filesystem->deleteDir('/admin/templates_c/');
+            $this->deleteAdminTplCache($filesystem);
         }
-        if ($filesystem->deleteDir('/templates_c/' . $activeTemplate->getDir())) {
+        try {
+            $filesystem->deleteDirectory('/templates_c/' . $activeTemplate->getDir());
             $io->success('Template cache deleted.');
-        } else {
-            $io->warning('Nothing to delete.');
+
+            return 0;
+        } catch (Throwable $e) {
+            $io->warning('Could not delete: ' . $e->getMessage());
+
+            return 1;
         }
     }
 }

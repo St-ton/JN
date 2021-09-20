@@ -137,6 +137,9 @@ msgstr "Hinzufügen"
 msgid "freeShipping"
 msgstr "Versandkostenfrei ab"
 
+msgid "freeShippingBasketValue"
+msgstr "Versandkostenfrei nach letzter Staffel"
+
 msgid "maxCosts"
 msgstr "Deckelung"
 
@@ -195,7 +198,7 @@ msgid "always"
 msgstr "Immer"
 
 msgid "lowest"
-msgstr "Nur, wenn diese Versandart die günstigste ist"
+msgstr "Nur, wenn diese Versandart die Günstigste ist"
 
 msgid "discount"
 msgstr "Aufpreis / Rabatt"
@@ -281,9 +284,6 @@ msgstr "Bitte wählen Sie mindestens eine akzeptierte Zahlungsart aus."
 msgid "errorShippingMethodPriceMissing"
 msgstr "Bitte geben Sie mindestens einen Staffelpreis an."
 
-msgid "errorShippingFreeMax"
-msgstr "Der Versandkostenfrei-Wert darf maximal %s betragen."
-
 msgid "sendShippingNotification"
 msgstr "Versandbestätigung senden"
 
@@ -332,3 +332,12 @@ msgstr "ausgewählt"
 
 msgid "acceptedPaymentMethodsDesc"
 msgstr "Geben Sie für einen Rabatt einen negativen Wert ein."
+
+msgid "errorZIPsDoNotMatch"
+msgstr "Die beiden eingegebenen Postleitzahlen passen nicht zusammen."
+
+msgid "infoAllowedZipAreas"
+msgstr "Es werden nur numerische PLZ-Bereiche oder numerische PLZ-Bereiche mit gleichem Suffix bzw. Präfix unterstützt. <br> (z. B. 41836–41840, 9104BR–9112BR, BB9104–BB9112)"
+
+msgid "errorInvalidZipCode"
+msgstr "Die Postleitzahl stimmt nicht mit der Landesvorgabe überein: "

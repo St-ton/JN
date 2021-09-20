@@ -8,14 +8,15 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Lieferschein;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
+use JTL\GeneralDataProtection\Journal;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Shop;
 use stdClass;
+use DateTime;
 
 /**
  * Class Orders
@@ -29,7 +30,7 @@ final class Orders extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             if (\strpos($file, 'ack_bestellung.xml') !== false) {
                 $this->handleACK($xml);
@@ -80,18 +81,17 @@ final class Orders extends AbstractSync
      */
     private function getPaymentMethod(int $orderID)
     {
-        $order = $this->db->queryPrepared(
+        $order = $this->db->getSingleObject(
             'SELECT tbestellung.kBestellung, tzahlungsart.cModulId
-            FROM tbestellung
-            LEFT JOIN tzahlungsart 
-                ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
-            WHERE tbestellung.kBestellung = :oid
-            LIMIT 1',
-            ['oid' => $orderID],
-            ReturnType::SINGLE_OBJECT
+                FROM tbestellung
+                LEFT JOIN tzahlungsart 
+                    ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
+                WHERE tbestellung.kBestellung = :oid
+                LIMIT 1',
+            ['oid' => $orderID]
         );
 
-        return empty($order->cModulId) ? false : LegacyMethod::create($order->cModulId);
+        return ($order === null || empty($order->cModulId)) ? false : LegacyMethod::create($order->cModulId);
     }
 
     /**
@@ -116,13 +116,6 @@ final class Orders extends AbstractSync
             // uploads (bestellungen)
             $this->db->delete('tuploadschema', ['kCustomID', 'nTyp'], [$orderID, 2]);
             $this->db->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$orderID, 2]);
-            // uploads (artikel der bestellung)
-            // todo...
-            // wenn unreg kunde, dann kunden auch löschen
-            $this->db->query(
-                'SELECT kKunde FROM tbestellung WHERE kBestellung = ' . $orderID,
-                ReturnType::SINGLE_OBJECT
-            );
         }
     }
 
@@ -303,7 +296,7 @@ final class Orders extends AbstractSync
      * @param Rechnungsadresse $billingAddress
      * @param array            $xml
      */
-    private function updateAddresses($oldOrder, $billingAddress, array $xml)
+    private function updateAddresses($oldOrder, $billingAddress, array $xml): void
     {
         $deliveryAddress = new Lieferadresse($oldOrder->kLieferadresse);
         $this->mapper->mapObject($deliveryAddress, $xml['tbestellung']['tlieferadresse'], 'mLieferadresse');
@@ -328,11 +321,11 @@ final class Orders extends AbstractSync
             } else {
                 $deliveryAddress->kKunde         = $oldOrder->kKunde;
                 $deliveryAddress->kLieferadresse = $deliveryAddress->insertInDB();
-                $this->db->query(
-                    'UPDATE tbestellung
-                    SET kLieferadresse = ' . (int)$deliveryAddress->kLieferadresse . '
-                    WHERE kBestellung = ' . (int)$oldOrder->kBestellung,
-                    ReturnType::DEFAULT
+                $this->db->update(
+                    'tbestellung',
+                    'kBestellung',
+                    (int)$oldOrder->kBestellung,
+                    (object)['kLieferadresse' => (int)$deliveryAddress->kLieferadresse]
                 );
             }
         } elseif ($oldOrder->kLieferadresse > 0) {
@@ -350,7 +343,7 @@ final class Orders extends AbstractSync
      * @param stdClass $order
      * @return float
      */
-    private function applyCorrectionFactor($order): float
+    private function applyCorrectionFactor(stdClass $order): float
     {
         $correctionFactor = 1.0;
         if (isset($order->kWaehrung)) {
@@ -371,7 +364,7 @@ final class Orders extends AbstractSync
      * @param array    $xml
      * @return stdClass|null
      */
-    private function getPaymentMethodFromXML($order, array $xml): ?stdClass
+    private function getPaymentMethodFromXML(stdClass $order, array $xml): ?stdClass
     {
         if (empty($xml['tbestellung']['cZahlungsartName'])) {
             return null;
@@ -379,7 +372,8 @@ final class Orders extends AbstractSync
         // Von Wawi kommt in $xml['tbestellung']['cZahlungsartName'] nur der deutsche Wert,
         // deshalb immer Abfrage auf tzahlungsart.cName
         $paymentMethodName = $xml['tbestellung']['cZahlungsartName'];
-        $res               = $this->db->executeQueryPrepared(
+
+        return $this->db->getSingleObject(
             'SELECT tzahlungsart.kZahlungsart, IFNULL(tzahlungsartsprache.cName, tzahlungsart.cName) AS cName
             FROM tzahlungsart
             LEFT JOIN tzahlungsartsprache
@@ -397,11 +391,8 @@ final class Orders extends AbstractSync
                 'name1'  => $paymentMethodName,
                 'name2'  => $paymentMethodName . '%',
                 'name3'  => '%' . $paymentMethodName . '%',
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-
-        return isset($res->kZahlungsart) ? $res : null;
     }
 
     /**
@@ -453,8 +444,7 @@ final class Orders extends AbstractSync
                 'total' => $order->fGesamtsumme,
                 'cmt'   => $order->cKommentar,
                 'oid'   => $oldOrder->kBestellung
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 
@@ -616,14 +606,13 @@ final class Orders extends AbstractSync
         if ($order->cIdentCode !== null && \strlen($order->cIdentCode) > 0) {
             $trackingURL = $order->cLogistikURL;
             if ($shopOrder->kLieferadresse > 0) {
-                $deliveryAddress = $this->db->queryPrepared(
+                $deliveryAddress = $this->db->getSingleObject(
                     'SELECT cPLZ
                         FROM tlieferadresse 
                         WHERE kLieferadresse = :dai',
-                    ['dai' => $shopOrder->kLieferadresse],
-                    ReturnType::SINGLE_OBJECT
+                    ['dai' => $shopOrder->kLieferadresse]
                 );
-                if ($deliveryAddress->cPLZ) {
+                if ($deliveryAddress !== null && $deliveryAddress->cPLZ) {
                     $trackingURL = \str_replace('#PLZ#', $deliveryAddress->cPLZ, $trackingURL);
                 }
             } else {
@@ -687,8 +676,14 @@ final class Orders extends AbstractSync
                 break;
             }
         }
-        if (($state === \BESTELLUNG_STATUS_VERSANDT && $shopOrder->cStatus !== \BESTELLUNG_STATUS_VERSANDT)
-            || ($state === \BESTELLUNG_STATUS_TEILVERSANDT && $doSend === true)
+        $earlier = new DateTime(\date('Y-m-d', \strtotime($updatedOrder->dVersandDatum)));
+        $now     = new DateTime(\date('Y-m-d'));
+        $diff    = $now->diff($earlier)->format('%a');
+
+        if (($state === \BESTELLUNG_STATUS_VERSANDT &&
+                $shopOrder->cStatus !== \BESTELLUNG_STATUS_VERSANDT &&
+                $diff <= \BESTELLUNG_VERSANDBESTAETIGUNG_MAX_TAGE) ||
+            ($state === \BESTELLUNG_STATUS_TEILVERSANDT && $doSend === true)
         ) {
             $mailType = $state === \BESTELLUNG_STATUS_VERSANDT
                 ? \MAILTEMPLATE_BESTELLUNG_VERSANDT
@@ -723,7 +718,16 @@ final class Orders extends AbstractSync
      */
     private function sendPaymentMail(stdClass $shopOrder, stdClass $order, $customer): void
     {
+
         if (!$shopOrder->dBezahltDatum && $order->dBezahltDatum && $customer->kKunde > 0) {
+            $earlier = new DateTime(\date('Y-m-d', \strtotime($order->dBezahltDatum)));
+            $now     = new DateTime(\date('Y-m-d'));
+            $diff    = $now->diff($earlier)->format('%a');
+
+            if ($diff >= \BESTELLUNG_ZAHLUNGSBESTAETIGUNG_MAX_TAGE) {
+                return;
+            }
+
             $module = $this->getPaymentMethod($order->kBestellung);
             if ($module) {
                 $module->sendMail($order->kBestellung, \MAILTEMPLATE_BESTELLUNG_BEZAHLT);
@@ -767,11 +771,13 @@ final class Orders extends AbstractSync
             if ((!$shopOrder->dVersandDatum && $order->dVersandt)
                 || (!$shopOrder->dBezahltDatum && $order->dBezahltDatum)
             ) {
-                $tmp      = $this->db->query(
-                    'SELECT kKunde FROM tbestellung WHERE kBestellung = ' . $order->kBestellung,
-                    ReturnType::SINGLE_OBJECT
+                $tmp = $this->db->getSingleObject(
+                    'SELECT kKunde FROM tbestellung WHERE kBestellung = :oid',
+                    ['oid' => $order->kBestellung]
                 );
-                $customer = new Customer((int)$tmp->kKunde);
+                if ($tmp !== null) {
+                    $customer = new Customer((int)$tmp->kKunde);
+                }
             }
             if ($customer === null) {
                 $customer = new Customer($shopOrder->kKunde);
@@ -792,7 +798,15 @@ final class Orders extends AbstractSync
      */
     private function deleteOrder(int $orderID): void
     {
-        $cartID = (int)($this->db->select(
+        $customerID = (int)($this->db->getSingleObject(
+            'SELECT tbestellung.kKunde
+                FROM tbestellung
+                INNER JOIN tkunde ON tbestellung.kKunde = tkunde.kKunde
+                WHERE tbestellung.kBestellung = :oid
+                    AND tkunde.nRegistriert = 0',
+            ['oid' => $orderID]
+        )->kKunde ?? 0);
+        $cartID     = (int)($this->db->select(
             'tbestellung',
             'kBestellung',
             $orderID,
@@ -825,6 +839,9 @@ final class Orders extends AbstractSync
                 );
             }
         }
+        if ($customerID > 0) {
+            (new Customer($customerID))->deleteAccount(Journal::ISSUER_TYPE_DBES, $orderID);
+        }
     }
 
     /**
@@ -846,10 +863,10 @@ final class Orders extends AbstractSync
                     $this->db->update(
                         'tbestellattribut',
                         'kBestellattribut',
-                        $orderAttributeOld->kBestellattribut,
+                        (int)$orderAttributeOld->kBestellattribut,
                         (object)['cValue' => $orderAttribute->value]
                     );
-                    $updated[] = $orderAttributeOld->kBestellattribut;
+                    $updated[] = (int)$orderAttributeOld->kBestellattribut;
                 } else {
                     $updated[] = $this->db->insert('tbestellattribut', (object)[
                         'kBestellung' => $orderID,
@@ -861,11 +878,11 @@ final class Orders extends AbstractSync
         }
 
         if (\count($updated) > 0) {
-            $this->db->query(
+            $this->db->queryPrepared(
                 'DELETE FROM tbestellattribut
-                WHERE kBestellung = ' . $orderID . '
-                    AND kBestellattribut NOT IN (' . \implode(', ', $updated) . ')',
-                ReturnType::DEFAULT
+                    WHERE kBestellung = :oid
+                        AND kBestellattribut NOT IN (' . \implode(', ', $updated) . ')',
+                ['oid' => $orderID]
             );
         } else {
             $this->db->delete('tbestellattribut', 'kBestellung', $orderID);

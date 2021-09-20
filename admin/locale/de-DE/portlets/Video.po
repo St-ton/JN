@@ -18,7 +18,7 @@ msgid "youtubeNote"
 msgstr "Weisen Sie in Ihrer Datenschutzerklärung auf folgende Punkte hin:<br/>- YouTube-Videos werden im „erweiterten Datenschutzmodus“ in Ihre Seiten eingebettet.<br>- Der Aufruf der Seiten führt zur Verbindungsaufnahme mit YouTube und DoubleClick.<br>- Schon ein Klick auf das Video kann weitere Datenverarbeitungsvorgänge auslösen, auf die der Website-Betreiber keinen Einfluss mehr hat. "
 
 msgid "videoID"
-msgstr "Video-ID"
+msgstr "Video-ID / Video-URL"
 
 msgid "videoIDHelpYoutube"
 msgstr "Die Video-ID finden Sie in der YouTube-URL als letzten Teil nach der Zeichenfolge „?v=“: "

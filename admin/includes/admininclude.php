@@ -15,6 +15,9 @@ use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
 
 if (!isset($bExtern) || !$bExtern) {
+    if (isset($_REQUEST['safemode'])) {
+        $GLOBALS['plgSafeMode'] = in_array(strtolower($_REQUEST['safemode']), ['1', 'on', 'ein', 'true', 'wahr']);
+    }
     define('DEFINES_PFAD', __DIR__ . '/../../includes/');
     require DEFINES_PFAD . 'config.JTL-Shop.ini.php';
     require DEFINES_PFAD . 'defines.php';
@@ -27,7 +30,6 @@ if (!isset($bExtern) || !$bExtern) {
 
 require PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-require PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
@@ -66,6 +68,14 @@ $updater    = new Updater($db);
 $hasUpdates = $updater->hasPendingUpdates();
 $conf       = Shop::getSettings([CONF_GLOBAL]);
 
+if ($loggedIn && isset($GLOBALS['plgSafeMode'])) {
+    if ($GLOBALS['plgSafeMode']) {
+        touch(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck');
+    } elseif (file_exists(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck')) {
+        unlink(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck');
+    }
+}
+
 if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
     $adminToken   = $_SESSION['jtl_token'];
     $adminLangTag = $_SESSION['AdminAccount']->language;
@@ -80,8 +90,8 @@ if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
     session_write_close();
     session_name('eSIdAdm');
     session_id($eSIdAdm);
-    session_start();
-    $_SESSION['frontendUpToDate'] = true;
+    $session = new Backend();
+    $session::set('frontendUpToDate', true);
 }
 
 if ($loggedIn
@@ -125,11 +135,11 @@ if ($loggedIn) {
         if ($_POST['revision-action'] === 'restore') {
             $revision->restoreRevision(
                 $_POST['revision-type'],
-                $_POST['revision-id'],
+                (int)$_POST['revision-id'],
                 Request::postInt('revision-secondary') === 1
             );
         } elseif ($_POST['revision-action'] === 'delete') {
-            $revision->deleteRevision($_POST['revision-id']);
+            $revision->deleteRevision((int)$_POST['revision-id']);
         }
     }
 }

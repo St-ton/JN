@@ -1,8 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 
-{if 'DASHBOARD_VIEW'|permission}
-    <script type="text/javascript" src="{$templateBaseURL}js/html.sortable.js"></script>
-    <script type="text/javascript" src="{$templateBaseURL}js/dashboard.js"></script>
+{if !empty($oActiveWidget_arr) || !empty($oAvailableWidget_arr)}
     <script type="text/javascript">
 
     function addWidget(kWidget) {
@@ -18,7 +16,7 @@
     });
     </script>
 
-    <div id="content">
+    <div id="content" class="dashboard-wrapper">
         <div class="row p-2">
             <div class="col">
                 <h1 class="content-header-headline">{__('dashboard')}</h1>

@@ -45,19 +45,26 @@
                                                         {formrow class="content"}
                                                             {block name='checkout-step3-shipping-options-shipping-option-title'}
                                                                 {col cols=12 sm=5 class='title'}
-                                                                    {$versandart->angezeigterName|trans}
-                                                                    {if !empty($versandart->angezeigterHinweistext|trans)}
-                                                                        <div>
-                                                                            <small>{$versandart->angezeigterHinweistext|trans}</small>
-                                                                        </div>
-                                                                    {/if}
+                                                                    {block name='checkout-step3-shipping-options-shipping-option-title-image'}
+                                                                        {if $versandart->cBild}
+                                                                            {image fluid=true class="w-20" src=$versandart->cBild alt=$versandart->angezeigterName|trans}
+                                                                        {/if}
+                                                                    {/block}
+                                                                    {block name='checkout-step3-shipping-options-shipping-option-title-title'}
+                                                                        {$versandart->angezeigterName|trans}
+                                                                        {if !empty($versandart->angezeigterHinweistext|trans)}
+                                                                            <div>
+                                                                                <small>{$versandart->angezeigterHinweistext|trans}</small>
+                                                                            </div>
+                                                                        {/if}
+                                                                    {/block}
                                                                 {/col}
                                                             {/block}
                                                             {block name='checkout-step3-shipping-options-shipping-option-info'}
                                                                 {col cols=12 sm=3}<small class="desc text-info">{$versandart->cLieferdauer|trans}</small>{/col}
                                                             {/block}
                                                             {block name='checkout-step3-shipping-options-shipping-option-price'}
-                                                                {col cols=12 sm=4 class='font-weight-bold-util'}
+                                                                {col cols=12 sm=4 class='font-weight-bold-util price-col'}
                                                                     {$versandart->cPreisLocalized}
                                                                     {if !empty($versandart->Zuschlag->fZuschlag)}
                                                                         <div>
@@ -89,13 +96,6 @@
                                                                         {/row}
                                                                     {/block}
                                                                 {/foreach}
-                                                            {/if}
-                                                            {if !empty($versandart->cLieferdauer|trans) && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
-                                                                {block name='checkout-step3-shipping-options-shipping-option-shipping-time'}
-                                                                    <small>{lang key='shippingTimeLP'}
-                                                                        : {$versandart->cLieferdauer|trans}
-                                                                    </small>
-                                                                {/block}
                                                             {/if}
                                                         </span>
                                                     {/radio}
@@ -137,7 +137,7 @@
                                                     <span class="checkout-shipping-form-packaging-title">
                                                         {$oVerpackung->cName}
                                                     </span>
-                                                    <span class="checkout-shipping-form-packaging-cost">
+                                                    <span class="checkout-shipping-form-packaging-cost price-col">
                                                         {if $oVerpackung->nKostenfrei == 1}{lang key='ExemptFromCharges'}{else}{$oVerpackung->fBruttoLocalized}{/if}
                                                     </span>
                                                     <span class="checkout-shipping-form-packaging-desc">

@@ -1,6 +1,5 @@
 <?php
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\IO\IOResponse;
 use JTL\Network\JTLApi;
@@ -13,10 +12,17 @@ use JTL\Widgets\AbstractWidget;
 
 /**
  * @param bool $bActive
+ * @param bool $getAll
  * @return array
  */
-function getWidgets(bool $bActive = true): array
+function getWidgets(bool $bActive = true, bool $getAll = false): array
 {
+    global $oAccount;
+
+    if (!$getAll && !$oAccount->permission('DASHBOARD_VIEW')) {
+        return [];
+    }
+
     $cache        = Shop::Container()->getCache();
     $db           = Shop::Container()->getDB();
     $gettext      = Shop::Container()->getGetText();
@@ -24,7 +30,7 @@ function getWidgets(bool $bActive = true): array
     $loaderExt    = Helper::getLoader(true, $db, $cache);
     $plugins      = [];
 
-    $widgets = $db->queryPrepared(
+    $widgets = $db->getObjects(
         'SELECT tadminwidgets.*, tplugin.cPluginID, tplugin.bExtension
             FROM tadminwidgets
             LEFT JOIN tplugin 
@@ -32,8 +38,7 @@ function getWidgets(bool $bActive = true): array
             WHERE bActive = :active
                 AND (tplugin.nStatus IS NULL OR tplugin.nStatus = :activated)
             ORDER BY eContainer ASC, nPos ASC',
-        ['active' => (int)$bActive, 'activated' => State::ACTIVATED],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['active' => (int)$bActive, 'activated' => State::ACTIVATED]
     );
 
     foreach ($widgets as $widget) {
@@ -84,7 +89,7 @@ function getWidgets(bool $bActive = true): array
     if ($bActive) {
         $smarty = JTLSmarty::getInstance(false, ContextType::BACKEND);
 
-        foreach ($widgets as $widget) {
+        foreach ($widgets as $key => $widget) {
             $widget->cContent = '';
             $className        = '\JTL\Widgets\\' . $widget->cClass;
             $classPath        = null;
@@ -101,12 +106,18 @@ function getWidgets(bool $bActive = true): array
                     }
                 }
             }
-
             if (class_exists($className)) {
                 /** @var AbstractWidget $instance */
-                $instance         = new $className($smarty, $db, $widget->plugin);
-                $widget->cContent = $instance->getContent();
-                $widget->hasBody  = $instance->hasBody;
+                $instance = new $className($smarty, $db, $widget->plugin);
+                if ($getAll
+                    || in_array($instance->getPermission(), ['DASHBOARD_ALL', ''], true)
+                    || $oAccount->permission($instance->getPermission())
+                ) {
+                    $widget->cContent = $instance->getContent();
+                    $widget->hasBody  = $instance->hasBody;
+                } else {
+                    unset($widgets[$key]);
+                }
             }
         }
     }
@@ -115,16 +126,70 @@ function getWidgets(bool $bActive = true): array
 }
 
 /**
- * @param int    $kWidget
- * @param string $eContainer
+ * @param int    $widgetId
+ * @param string $container
  * @param int    $pos
  */
-function setWidgetPosition(int $kWidget, string $eContainer, int $pos): void
+function setWidgetPosition(int $widgetId, string $container, int $pos): void
 {
+    $db              = Shop::Container()->getDB();
     $upd             = new stdClass();
-    $upd->eContainer = $eContainer;
+    $upd->eContainer = $container;
     $upd->nPos       = $pos;
-    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', $kWidget, $upd);
+
+    $current = $db->select('tadminwidgets', 'kWidget', $widgetId);
+    if ($current->eContainer === $container) {
+        if ($current->nPos < $pos) {
+            $db->queryPrepared(
+                'UPDATE tadminwidgets
+                    SET nPos = nPos - 1
+                    WHERE eContainer = :currentContainer
+                      AND nPos > :currentPos
+                      AND nPos <= :newPos',
+                [
+                    'currentPos'       => $current->nPos,
+                    'newPos'           => $pos,
+                    'currentContainer' => $current->eContainer
+                ]
+            );
+        } else {
+            $db->queryPrepared(
+                'UPDATE tadminwidgets
+                    SET nPos = nPos + 1
+                    WHERE eContainer = :currentContainer
+                      AND nPos < :currentPos
+                      AND nPos >= :newPos',
+                [
+                    'currentPos'       => $current->nPos,
+                    'newPos'           => $pos,
+                    'currentContainer' => $current->eContainer
+                ]
+            );
+        }
+    } else {
+        $db->queryPrepared(
+            'UPDATE tadminwidgets
+                SET nPos = nPos - 1
+                WHERE eContainer = :currentContainer
+                  AND nPos > :currentPos',
+            [
+                'currentPos'       => $current->nPos,
+                'currentContainer' => $current->eContainer
+            ]
+        );
+        $db->queryPrepared(
+            'UPDATE tadminwidgets
+                SET nPos = nPos + 1
+                WHERE eContainer = :newContainer
+                  AND nPos >= :newPos',
+            [
+                'newPos'       => $pos,
+                'newContainer' => $container
+            ]
+        );
+    }
+
+    $db->update('tadminwidgets', 'kWidget', $widgetId, $upd);
 }
 
 /**
@@ -174,7 +239,7 @@ function getRemoteData(string $url, int $timeout = 15)
         $data = curl_exec($curl);
         curl_close($curl);
     } elseif (ini_get('allow_url_fopen')) {
-        @ini_set('default_socket_timeout', $timeout);
+        @ini_set('default_socket_timeout', (string)$timeout);
         $fileHandle = @fopen($url, 'r');
         if ($fileHandle) {
             @stream_set_timeout($fileHandle, $timeout);

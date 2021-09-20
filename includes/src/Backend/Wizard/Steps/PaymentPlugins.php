@@ -10,7 +10,6 @@ use JTL\Backend\Wizard\QuestionType;
 use JTL\Backend\Wizard\QuestionValidation;
 use JTL\Backend\Wizard\SelectOption;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Recommendation\Manager;
 use JTL\Recommendation\Recommendation;
 use JTL\Services\JTL\AlertServiceInterface;
@@ -31,16 +30,15 @@ final class PaymentPlugins extends AbstractStep
     {
         parent::__construct($db, $alertService);
         $collection = new Collection();
-        $this->setTitle(__('stepFour'));
+        $this->setTitle(\__('stepFour'));
 
-        $paymentMethods = map($db->query(
-            "SELECT cModulId FROM tzahlungsart WHERE nNutzbar = 1 AND cModulId LIKE 'za_%'",
-            ReturnType::ARRAY_OF_OBJECTS
+        $paymentMethods = map($db->getObjects(
+            "SELECT cModulId FROM tzahlungsart WHERE nNutzbar = 1 AND cModulId LIKE 'za_%'"
         ), static function ($e) {
-            return __($e->cModulId);
+            return \__($e->cModulId);
         });
 
-        $this->setDescription(\sprintf(__('stepFourDesc'), \implode(', ', $paymentMethods)));
+        $this->setDescription(\sprintf(\__('stepFourDesc'), \implode(', ', $paymentMethods)));
         $this->setID(4);
 
         $scope           = Manager::SCOPE_WIZARD_PAYMENT_PROVIDER;
@@ -48,9 +46,9 @@ final class PaymentPlugins extends AbstractStep
 
         $question = new Question($db);
         $question->setID(10);
-        $question->setSubheading(__('weRecommend') . ':');
-        $question->setSubheadingDescription(__('weRecommendPaymentDesc'));
-        $question->setSummaryText(__('paymentTypes'));
+        $question->setSubheading(\__('weRecommend') . ':');
+        $question->setSubheadingDescription(\__('weRecommendPaymentDesc'));
+        $question->setSummaryText(\__('paymentTypes'));
         $question->setType(QuestionType::PLUGIN);
         $question->setIsFullWidth(true);
         $question->setIsRequired(false);

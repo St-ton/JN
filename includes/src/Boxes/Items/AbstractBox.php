@@ -173,7 +173,7 @@ abstract class AbstractBox implements BoxInterface
     protected $isActive = true;
 
     /**
-     * @var Artikel[]
+     * @var ArtikelListe|Artikel[]
      */
     protected $products;
 
@@ -223,6 +223,11 @@ abstract class AbstractBox implements BoxInterface
     protected $sortByPageID = [];
 
     /**
+     * @var int
+     */
+    protected $availableForPage = 0;
+
+    /**
      * @inheritdoc
      */
     public function __construct(array $config)
@@ -266,6 +271,7 @@ abstract class AbstractBox implements BoxInterface
         $this->setContainerID((int)$data->kContainer);
         $this->setSort((int)$data->nSort);
         $this->setIsActive(true);
+        $this->setAvailableForPage((int)($data->cVerfuegbar ?? 0));
         if ($this->products === null) {
             $this->products = new ArtikelListe();
         }
@@ -289,13 +295,13 @@ abstract class AbstractBox implements BoxInterface
             $this->filter[$pageType] = false;
         }
         foreach ($boxData as $box) {
-            $pageIDs            = \array_map('\intval', \explode(',', $box->pageIDs));
+            $pageIDs            = \array_map('\intval', \explode(',', $box->pageIDs ?? ''));
             $sort               = \array_map('\intval', \explode(',', $box->sortBypageIDs ?? ''));
             $this->sortByPageID = \array_combine($pageIDs, $sort);
             if (!empty($box->cFilter)) {
                 $this->filter[(int)$box->kSeite] = \array_map('\intval', \explode(',', $box->cFilter));
             } else {
-                $pageVisibilities = \array_map('\intval', \explode(',', $box->pageVisibilities));
+                $pageVisibilities = \array_map('\intval', \explode(',', $box->pageVisibilities ?? ''));
                 $filter           = \array_combine($pageIDs, $pageVisibilities);
                 foreach ($filter as $pageID => $visibility) {
                     $this->filter[$pageID] = (bool)$visibility;
@@ -321,6 +327,7 @@ abstract class AbstractBox implements BoxInterface
             // may be overridden in concrete classes' __construct
             $this->setShow($this->isActive());
         }
+        $this->init();
     }
 
     /**
@@ -883,5 +890,28 @@ abstract class AbstractBox implements BoxInterface
         $res['config'] = '*truncated*';
 
         return $res;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function init(): void
+    {
+    }
+
+    /**
+     * @return int
+     */
+    public function getAvailableForPage(): int
+    {
+        return $this->availableForPage;
+    }
+
+    /**
+     * @param int $availableForPage
+     */
+    public function setAvailableForPage(int $availableForPage): void
+    {
+        $this->availableForPage = $availableForPage;
     }
 }

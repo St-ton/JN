@@ -3,7 +3,6 @@
 namespace JTL\Media\Image;
 
 use Generator;
-use JTL\DB\ReturnType;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use PDO;
@@ -20,8 +19,11 @@ class Manufacturer extends AbstractImage
     /**
      * @var string
      */
-    public const REGEX = '/^media\/image\/(?P<type>manufacturer)'
-    . '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg|xl)\/(?P<name>[a-zA-Z0-9\-_\.]+)'
+    public const REGEX = '/^media\/image'
+    . '\/(?P<type>manufacturer)'
+    . '\/(?P<id>\d+)'
+    . '\/(?P<size>xs|sm|md|lg|xl)'
+    . '\/(?P<name>[' . self::REGEX_ALLOWED_CHARS . ']+)'
     . '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif|webp)$/';
 
     /**
@@ -42,12 +44,11 @@ class Manufacturer extends AbstractImage
      */
     public function getImageNames(MediaImageRequest $req): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getCollection(
             'SELECT kHersteller, cName, cSeo AS seoPath, cSeo AS originalSeo, cBildpfad AS path
                 FROM thersteller
                 WHERE kHersteller = :mid',
-            ['mid' => $req->getID()],
-            ReturnType::COLLECTION
+            ['mid' => $req->getID()]
         )->each(static function ($item, $key) use ($req) {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath($item->path);
@@ -63,6 +64,7 @@ class Manufacturer extends AbstractImage
     {
         switch (Image::getSettings()['naming'][Image::TYPE_MANUFACTURER]) {
             case 2:
+                /** @var string|null $result */
                 $result = $mixed->path ?? $mixed->cBildpfad ?? null;
                 if ($result !== null) {
                     $result = \pathinfo($result)['filename'];
@@ -85,12 +87,11 @@ class Manufacturer extends AbstractImage
      */
     public function getPathByID($id, int $number = null): ?string
     {
-        return $this->db->queryPrepared(
+        return $this->db->getSingleObject(
             'SELECT cBildpfad AS path
                 FROM thersteller
                 WHERE kHersteller = :mid LIMIT 1',
-            ['mid' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['mid' => $id]
         )->path ?? null;
     }
 
@@ -107,11 +108,10 @@ class Manufacturer extends AbstractImage
      */
     public function getAllImages(int $offset = null, int $limit = null): Generator
     {
-        $images = $this->db->query(
+        $images = $this->db->getPDOStatement(
             'SELECT kHersteller AS id, cName, cSeo AS seoPath, cBildpfad AS path
                 FROM thersteller
-                WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\'' . self::getLimitStatement($offset, $limit),
-            ReturnType::QUERYSINGLE
+                WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\'' . self::getLimitStatement($offset, $limit)
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([
@@ -131,11 +131,10 @@ class Manufacturer extends AbstractImage
      */
     public function getTotalImageCount(): int
     {
-        return (int)$this->db->query(
+        return (int)$this->db->getSingleObject(
             'SELECT COUNT(kHersteller) AS cnt
                 FROM thersteller
-                WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\'',
-            ReturnType::SINGLE_OBJECT
+                WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\''
         )->cnt;
     }
 

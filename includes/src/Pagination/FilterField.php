@@ -1,6 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Pagination;
+
+use JTL\Helpers\Text;
 
 /**
  * Class FilterField
@@ -29,7 +31,7 @@ abstract class FilterField
     protected $titleLong = '';
 
     /**
-     * @var string
+     * @var string|array
      */
     protected $column = '';
 
@@ -50,7 +52,7 @@ abstract class FilterField
      * @param string       $type
      * @param string|array $title - either title-string for this field or a pair of short title and long title
      * @param string|array $column
-     * @param string       $defaultValue
+     * @param string|int   $defaultValue
      */
     public function __construct($filter, string $type, $title, $column, $defaultValue = '')
     {
@@ -60,12 +62,12 @@ abstract class FilterField
         $this->titleLong = \is_array($title) ? $title[1] : '';
         $this->column    = $column;
         $this->id        = \preg_replace('/[^a-zA-Z0-9_]+/', '', $this->title);
-        $this->value     =
-            $filter->getAction() === $filter->getID() . '_filter' ? $_GET[$filter->getID() . '_' . $this->id] : (
-            $filter->getAction() === $filter->getID() . '_resetfilter' ? $defaultValue : (
-            $filter->hasSessionField($this->id) ? $filter->getSessionField($this->id) :
-                $defaultValue
-            ));
+        $this->value     = Text::filterXSS(
+            $filter->getAction() === $filter->getID() . '_filter'
+                ? $_GET[$filter->getID() . '_' . $this->id]
+                : ($filter->getAction() === $filter->getID() . '_resetfilter' ? $defaultValue : (
+                $filter->hasSessionField($this->id) ? $filter->getSessionField($this->id) : $defaultValue))
+        );
     }
 
     /**

@@ -272,8 +272,7 @@ class ZipValidator
     public function getError(): string
     {
         if ($this->errorString !== '') {
-            return 'Postleitzahl stimmt nicht mit Landesvorgabe überein! '
-                . '(<span class="text-muted">' . $this->errorString . '</span>)';
+            return \__('errorInvalidZipCode') . '(<span class="text-muted">' . $this->errorString . '</span>)';
         }
 
         return '';

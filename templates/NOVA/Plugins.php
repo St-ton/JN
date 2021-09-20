@@ -23,6 +23,7 @@ use JTL\Media\Image\Product;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Staat;
+use Smarty_Internal_Data;
 
 /**
  * Class Plugins
@@ -52,8 +53,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params
+     * @param Smarty_Internal_Data $smarty
      * @return array|void
      */
     public function getProductList($params, $smarty)
@@ -119,8 +120,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params
+     * @param Smarty_Internal_Data $smarty
      * @return bool|string
      */
     public function getStaticRoute($params, $smarty)
@@ -147,8 +148,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params
+     * @param Smarty_Internal_Data $smarty
      * @return array|void
      */
     public function getManufacturers($params, $smarty)
@@ -164,8 +165,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params
+     * @param Smarty_Internal_Data $smarty
      * @return array|void
      */
     public function getBoxesByPosition($params, $smarty)
@@ -182,8 +183,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params - categoryId mainCategoryId. 0 for first level categories
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params - categoryId mainCategoryId. 0 for first level categories
+     * @param Smarty_Internal_Data $smarty
      * @return array|void
      */
     public function getCategoryArray($params, $smarty)
@@ -219,8 +220,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params
+     * @param Smarty_Internal_Data $smarty
      * @return array|void
      */
     public function getCategoryParents($params, $smarty)
@@ -242,8 +243,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params
+     * @param Smarty_Internal_Data $smarty
      * @return string
      */
     public function getImgTag($params, $smarty): string
@@ -255,9 +256,9 @@ class Plugins
 
         $url   = $params['src'];
         $id    = isset($params['id']) ? ' id="' . $params['id'] . '"' : '';
-        $alt   = isset($params['alt']) ? ' alt="' . \truncate($params['alt'], 75) . '"' : '';
-        $title = isset($params['title']) ? ' title="' . \truncate($params['title'], 75) . '"' : '';
-        $class = isset($params['class']) ? ' class="' . \truncate($params['class'], 75) . '"' : '';
+        $alt   = isset($params['alt']) ? ' alt="' . $this->truncate($params['alt'], 75) . '"' : '';
+        $title = isset($params['title']) ? ' title="' . $this->truncate($params['title'], 75) . '"' : '';
+        $class = isset($params['class']) ? ' class="' . $this->truncate($params['class'], 75) . '"' : '';
         if (\strpos($url, 'http') !== 0) {
             $url = Shop::getImageBaseURL() . \ltrim($url, '/');
         }
@@ -270,8 +271,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params
+     * @param Smarty_Internal_Data $smarty
      */
     public function hasBoxes($params, $smarty): void
     {
@@ -281,13 +282,13 @@ class Plugins
 
     /**
      * @param string $text
-     * @param int    $numb
+     * @param int    $length
      * @return string
      */
-    public function truncate($text, $numb)
+    public function truncate($text, $length)
     {
-        if (\strlen($text) > $numb) {
-            $text = \substr($text, 0, $numb);
+        if (\strlen($text) > $length) {
+            $text = \substr($text, 0, $length);
             $text = \substr($text, 0, \strrpos($text, ' '));
             $text .= '...';
         }
@@ -296,8 +297,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params
+     * @param Smarty_Internal_Data $smarty
      * @return mixed|string
      */
     public function getLocalizedPrice($params, $smarty)
@@ -382,8 +383,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params
+     * @param Smarty_Internal_Data $smarty
      */
     public function hasCheckBoxForLocation($params, $smarty): void
     {
@@ -394,8 +395,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params
+     * @param Smarty_Internal_Data $smarty
      */
     public function getCheckBoxForLocation($params, $smarty): void
     {
@@ -434,7 +435,7 @@ class Plugins
      */
     public function aaURLEncode($params): string
     {
-        $reset  = (isset($params['nReset']) && (int)$params['nReset'] === 1);
+        $reset  = (int)($params['nReset'] ?? 0) === 1;
         $url    = $_SERVER['REQUEST_URI'];
         $params = ['&aaParams', '?aaParams', '&aaReset', '?aaReset'];
         $exists = false;
@@ -466,8 +467,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params - ['type'] Templatename of link, ['assign'] array name to assign
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params - ['type'] Templatename of link, ['assign'] array name to assign
+     * @param Smarty_Internal_Data $smarty
      */
     public function getNavigation($params, $smarty): void
     {
@@ -594,8 +595,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params
+     * @param Smarty_Internal_Data $smarty
      * @return mixed
      */
     public function getCMSContent($params, $smarty)
@@ -615,8 +616,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params - variationen, maxVariationCount, maxWerteCount
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params - variationen, maxVariationCount, maxWerteCount
+     * @param Smarty_Internal_Data $smarty
      * @return int|null|bool
      * 0: no listable variations
      * 1: normal listable variations
@@ -706,8 +707,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params
+     * @param Smarty_Internal_Data $smarty
      * @return string
      */
     public function captchaMarkup($params, $smarty): string
@@ -720,8 +721,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params
+     * @param Smarty_Internal_Data $smarty
      * @return array|null|void
      */
     public function getStates($params, $smarty)
@@ -734,7 +735,7 @@ class Plugins
     }
 
     /**
-     * @param $params
+     * @param array $params
      * @return int
      */
     public function getDecimalLength($params): int
@@ -758,8 +759,8 @@ class Plugins
     }
 
     /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array                $params
+     * @param Smarty_Internal_Data $smarty
      * @return void
      */
     public function getUploaderLang($params, $smarty): void
@@ -771,5 +772,24 @@ class Plugins
         ];
 
         $smarty->assign($params['assign'], \in_array($params['iso'], $availableLocales, true) ? $params['iso'] : 'LANG');
+    }
+
+    /**
+     * @param array                         $params
+     * @param \Smarty_Internal_TemplateBase $smarty
+     * @return void
+     */
+    public function getCountry($params, $smarty): void
+    {
+        $smarty->assign($params['assign'], Shop::Container()->getCountryService()->getCountry($params['iso']));
+    }
+
+    /**
+     * @param $params
+     * @return string
+     */
+    public function sanitizeTitle($params): string
+    {
+        return \htmlspecialchars($params['title'], ENT_COMPAT, JTL_CHARSET, false);
     }
 }

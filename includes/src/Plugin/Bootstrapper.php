@@ -32,7 +32,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     private $notifications = [];
 
     /**
-     * @var LegacyPlugin
+     * @var PluginInterface
      */
     private $plugin;
 
@@ -52,7 +52,7 @@ abstract class Bootstrapper implements BootstrapperInterface
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    final public function __construct($plugin, DbInterface $db, JTLCacheInterface $cache)
+    final public function __construct(PluginInterface $plugin, DbInterface $db, JTLCacheInterface $cache)
     {
         $this->plugin   = $plugin;
         $this->pluginId = $plugin->getPluginID();
@@ -79,6 +79,14 @@ abstract class Bootstrapper implements BootstrapperInterface
     final public function addNotify($type, $title, $description = null): void
     {
         $this->notifications[] = (new NotificationEntry($type, $title, $description))->setPluginId($this->pluginId);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function preInstallCheck(): bool
+    {
+        return true;
     }
 
     /**
@@ -200,7 +208,7 @@ abstract class Bootstrapper implements BootstrapperInterface
         if (\PLUGIN_DEV_MODE !== true || $this->plugin === null) {
             return -1;
         }
-        $parser       = $parser = new XMLParser();
+        $parser       = new XMLParser();
         $stateChanger = new StateChanger(
             $this->db,
             $this->cache,

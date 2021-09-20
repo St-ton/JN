@@ -52,7 +52,7 @@ class Backend extends AbstractSession
         if (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === stdClass::class) {
             $_SESSION['Waehrung'] = new Currency($_SESSION['Waehrung']->kWaehrung);
         }
-        if (empty($_SESSION['Sprachen']) || \get_class($_SESSION['Sprachen'][0]) === stdClass::class) {
+        if (empty($_SESSION['Sprachen']) || \get_class(\array_values($_SESSION['Sprachen'])[0]) === stdClass::class) {
             $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
         }
         $this->initLanguageURLs();
@@ -61,9 +61,24 @@ class Backend extends AbstractSession
     private function setLanguage(): void
     {
         if (!isset($_SESSION['kSprache'], $_SESSION['cISOSprache'])) {
-            $set = $this->setLanguageByAdminAccount();
-            if ($set === false) {
-                $this->setLanguageFromDefault();
+            if (($this->setLanguageByAdminAccount() === false) && $this->setLanguageFromDefault() === false) {
+                // default shop language is not a backend language
+                $lang = first(
+                    LanguageHelper::getInstance()->gibInstallierteSprachen(),
+                    static function (LanguageModel $e) {
+                        return $e->isShopDefault() === true;
+                    }
+                );
+                if ($lang === null) {
+                    $lang = first(
+                        LanguageHelper::getAllLanguages(),
+                        static function (LanguageModel $e) {
+                            return $e->getIso() === 'ger';
+                        }
+                    );
+                }
+                $_SESSION['kSprache']    = $lang->getId();
+                $_SESSION['cISOSprache'] = $lang->getCode();
             }
             $_SESSION['kSprache']         = (int)($_SESSION['kSprache'] ?? 1);
             $_SESSION['cISOSprache']      = $_SESSION['cISOSprache'] ?? 'ger';

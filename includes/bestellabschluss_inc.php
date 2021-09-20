@@ -1,5 +1,6 @@
 <?php
 
+use JTL\Campaign;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
@@ -14,14 +15,12 @@ use JTL\Checkout\Nummern;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Checkout\ZahlungsInfo;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Date;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -163,7 +162,7 @@ function bestellungInDB($cleared = 0, $orderNo = '')
     }
     $conf = Shop::getSettings([CONF_GLOBAL]);
     //füge Warenkorb ein
-    executeHook(HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB, ['oWarenkorb' => &$cart]);
+    executeHook(HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB, ['oWarenkorb' => &$cart, 'oBestellung' => &$order]);
     $cart->kWarenkorb = $cart->insertInDB();
     //füge alle Warenkorbpositionen ein
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
@@ -307,8 +306,7 @@ function bestellungInDB($cleared = 0, $orderNo = '')
             [
                 'cred' => (float)$_SESSION['Bestellung']->fGuthabenGenutzt,
                 'cid'  => (int)$order->kKunde
-            ],
-            ReturnType::DEFAULT
+            ]
         );
         $customer->fGuthaben -= $_SESSION['Bestellung']->fGuthabenGenutzt;
     }
@@ -386,45 +384,24 @@ function bestellungInDB($cleared = 0, $orderNo = '')
  */
 function saveZahlungsInfo(int $customerID, int $orderID, bool $payAgain = false): bool
 {
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-
     if (!$customerID || !$orderID) {
         return false;
     }
+    $info = $_SESSION['Zahlungsart']->ZahlungsInfo;
+
     $_SESSION['ZahlungsInfo']               = new ZahlungsInfo();
     $_SESSION['ZahlungsInfo']->kBestellung  = $orderID;
     $_SESSION['ZahlungsInfo']->kKunde       = $customerID;
-    $_SESSION['ZahlungsInfo']->cKartenTyp   = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenTyp)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenTyp)
-        : null;
-    $_SESSION['ZahlungsInfo']->cGueltigkeit = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cGueltigkeit)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cGueltigkeit)
-        : null;
-    $_SESSION['ZahlungsInfo']->cBankName    = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cBankName)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cBankName)
-        : null;
-    $_SESSION['ZahlungsInfo']->cKartenNr    = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenNr)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenNr)
-        : null;
-    $_SESSION['ZahlungsInfo']->cCVV         = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cCVV)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cCVV)
-        : null;
-    $_SESSION['ZahlungsInfo']->cKontoNr     = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr)
-        : null;
-    $_SESSION['ZahlungsInfo']->cBLZ         = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ)
-        : null;
-    $_SESSION['ZahlungsInfo']->cIBAN        = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN)
-        : null;
-    $_SESSION['ZahlungsInfo']->cBIC         = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cBIC)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cBIC)
-        : null;
-    $_SESSION['ZahlungsInfo']->cInhaber     = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber)
-        : null;
-
+    $_SESSION['ZahlungsInfo']->cKartenTyp   = Text::unhtmlentities($info->cKartenTyp ?? null);
+    $_SESSION['ZahlungsInfo']->cGueltigkeit = Text::unhtmlentities($info->cGueltigkeit ?? null);
+    $_SESSION['ZahlungsInfo']->cBankName    = Text::unhtmlentities($info->cBankName ?? null);
+    $_SESSION['ZahlungsInfo']->cKartenNr    = Text::unhtmlentities($info->cKartenNr ?? null);
+    $_SESSION['ZahlungsInfo']->cCVV         = Text::unhtmlentities($info->cCVV ?? null);
+    $_SESSION['ZahlungsInfo']->cKontoNr     = Text::unhtmlentities($info->cKontoNr ?? null);
+    $_SESSION['ZahlungsInfo']->cBLZ         = Text::unhtmlentities($info->cBLZ ?? null);
+    $_SESSION['ZahlungsInfo']->cIBAN        = Text::unhtmlentities($info->cIBAN ?? null);
+    $_SESSION['ZahlungsInfo']->cBIC         = Text::unhtmlentities($info->cBIC ?? null);
+    $_SESSION['ZahlungsInfo']->cInhaber     = Text::unhtmlentities($info->cInhaber ?? null);
     if (!$payAgain) {
         $cart                = Frontend::getCart();
         $cart->kZahlungsInfo = $_SESSION['ZahlungsInfo']->insertInDB();
@@ -432,11 +409,9 @@ function saveZahlungsInfo(int $customerID, int $orderID, bool $payAgain = false)
     } else {
         $_SESSION['ZahlungsInfo']->insertInDB();
     }
-    if (isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr)
-        || isset($_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN)
-    ) {
+    if (isset($info->cKontoNr) || isset($info->cIBAN)) {
         Shop::Container()->getDB()->delete('tkundenkontodaten', 'kKunde', $customerID);
-        speicherKundenKontodaten($_SESSION['Zahlungsart']->ZahlungsInfo);
+        speicherKundenKontodaten($info);
     }
 
     return true;
@@ -573,8 +548,7 @@ function aktualisiereBestseller(int $productID, $amount): void
     if (isset($data->kArtikel) && $data->kArtikel > 0) {
         Shop::Container()->getDB()->queryPrepared(
             'UPDATE tbestseller SET fAnzahl = fAnzahl + :mnt WHERE kArtikel = :aid',
-            ['mnt' => $amount, 'aid' => $productID],
-            ReturnType::DEFAULT
+            ['mnt' => $amount, 'aid' => $productID]
         );
     } else {
         $bestseller           = new stdClass();
@@ -606,8 +580,7 @@ function aktualisiereXselling(int $productID, int $targetID): void
             [
                 'pid' => $productID,
                 'xs'  => $targetID
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     } else {
         $xs                = new stdClass();
@@ -648,8 +621,7 @@ function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, i
                 [
                     'aid' => (int)$value->kEigenschaftWert,
                     'inv' => $amount * $EigenschaftWert->fPackeinheit
-                ],
-                ReturnType::DEFAULT
+                ]
             );
         }
         updateStock($product->kArtikel, $amount, $product->fPackeinheit);
@@ -705,8 +677,7 @@ function updateStock(int $productID, $amount, $packeinheit)
         [
             'amountSubstract' => $amount * $packeinheit,
             'productID'       => $productID
-        ],
-        ReturnType::DEFAULT
+        ]
     );
 }
 
@@ -726,15 +697,14 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
         return $newStockLevel;
     }
     // Gibt es lagerrelevante Komponenten in der Stückliste?
-    $components = Shop::Container()->getDB()->queryPrepared(
+    $components = Shop::Container()->getDB()->getObjects(
         "SELECT tstueckliste.kArtikel, tstueckliste.fAnzahl
             FROM tstueckliste
             JOIN tartikel
               ON tartikel.kArtikel = tstueckliste.kArtikel
             WHERE tstueckliste.kStueckliste = :slid
                 AND tartikel.cLagerBeachten = 'Y'",
-        ['slid' => $bomID],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['slid' => $bomID]
     );
 
     if (is_array($components) && count($components) > 0) {
@@ -748,7 +718,7 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
                 aktualisiereLagerbestand(
                     $tmpArtikel,
                     $amount * $component->fAnzahl,
-                    null
+                    []
                 ) / $component->fAnzahl
             );
 
@@ -789,14 +759,14 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
 }
 
 /**
- * @param int       $productID
- * @param int|float $stockLevel
- * @param bool      $allowNegativeStock
+ * @param int   $productID
+ * @param float $stockLevel
+ * @param bool  $allowNegativeStock
  */
 function aktualisiereKomponenteLagerbestand(int $productID, float $stockLevel, bool $allowNegativeStock): void
 {
     $db   = Shop::Container()->getDB();
-    $boms = $db->queryPrepared(
+    $boms = $db->getObjects(
         "SELECT tstueckliste.kStueckliste, tstueckliste.fAnzahl,
                 tartikel.kArtikel, tartikel.fLagerbestand, tartikel.cLagerKleinerNull
             FROM tstueckliste
@@ -804,8 +774,7 @@ function aktualisiereKomponenteLagerbestand(int $productID, float $stockLevel, b
                 ON tartikel.kStueckliste = tstueckliste.kStueckliste
             WHERE tstueckliste.kArtikel = :cid
                 AND tartikel.cLagerBeachten = 'Y'",
-        ['cid' => $productID],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['cid' => $productID]
     );
     foreach ($boms as $bom) {
         // Ist der aktuelle Bestand der Stückliste größer als dies mit dem Bestand der Komponente möglich wäre?
@@ -833,9 +802,9 @@ function AktualisiereAndereStuecklisten(int $productID, $amount, $bomID = null):
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($productID > 0) {
-        $tmpArtikel = new Artikel();
-        $tmpArtikel->fuelleArtikel($productID, Artikel::getDefaultOptions());
-        aktualisiereKomponenteLagerbestand($productID, $tmpArtikel->fLagerbestand, $tmpArtikel->cLagerKleinerNull);
+        $prod = new Artikel();
+        $prod->fuelleArtikel($productID, Artikel::getDefaultOptions());
+        aktualisiereKomponenteLagerbestand($productID, $prod->fLagerbestand, $prod->cLagerKleinerNull === 'Y');
     }
 }
 
@@ -873,14 +842,14 @@ function AktualisiereLagerStuecklisten($product, $amount = null, $isBom = false)
             aktualisiereKomponenteLagerbestand(
                 $product->kArtikel,
                 $product->fLagerbestand,
-                $product->cLagerKleinerNull
+                $product->cLagerKleinerNull === 'Y'
             );
         }
     }
 }
 
 /**
- * @param $order
+ * @param Bestellung $order
  */
 function KuponVerwendungen($order): void
 {
@@ -909,7 +878,7 @@ function KuponVerwendungen($order): void
         ) {
             $couponGross = Tax::getGross(
                 $item->fPreisEinzelNetto,
-                Tax::getSalesTax($item->kSteuerklasse)
+                CartItem::getTaxRate($item)
             ) * (-1);
         }
     }
@@ -920,8 +889,7 @@ function KuponVerwendungen($order): void
         'UPDATE tkupon
           SET nVerwendungenBisher = nVerwendungenBisher + 1
           WHERE kKupon = :couponID',
-        ['couponID' => $couponID],
-        ReturnType::DEFAULT
+        ['couponID' => $couponID]
     );
 
     $db->queryPrepared(
@@ -933,8 +901,7 @@ function KuponVerwendungen($order): void
             'couponID' => $couponID,
             'email'    => Kupon::hash(Frontend::getCustomer()->cMail),
             'used'     => 1
-        ],
-        ReturnType::DEFAULT
+        ]
     );
 
     $db->insert('tkuponflag', (object)[
@@ -1054,7 +1021,6 @@ function setzeSmartyWeiterleitung(Bestellung $order): void
  */
 function fakeBestellung()
 {
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     if (isset($_POST['kommentar'])) {
         $_SESSION['kommentar'] = mb_substr(
             strip_tags(Shop::Container()->getDB()->escape($_POST['kommentar'])),
@@ -1111,7 +1077,13 @@ function fakeBestellung()
     if (mb_strlen(Frontend::getDeliveryAddress()->cVorname) > 0) {
         $order->Lieferadresse = gibLieferadresseAusSession();
     }
+    if (isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1) {
+        $order->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
+    }
     $order->cBestellNr = date('dmYHis') . mb_substr($order->cSession, 0, 4);
+    $order->cIP        = Request::getRealIP();
+    $order->fuelleBestellung(false, 1);
+
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
         $order->Positionen = [];
         foreach ($cart->PositionenArr as $i => $item) {
@@ -1127,12 +1099,8 @@ function fakeBestellung()
             $order->Positionen[$i]->setzeGesamtpreisLocalized();
         }
     }
-    if (isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1) {
-        $order->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
-    }
-    $order->cIP = Request::getRealIP();
 
-    return $order->fuelleBestellung(false, true);
+    return $order;
 }
 
 /**

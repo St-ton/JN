@@ -68,10 +68,10 @@
     {block name='productdetails-tabs-content'}
         {if useDescription || $useDownloads || $useDescriptionWithMediaGroup || $useVotes || $useQuestionOnItem || $usePriceFlow
         || $useAvailabilityNotification || $useMediaGroup || !empty($separatedTabs)}
+            {opcMountPoint id='opc_before_tabs' inContainer=false}
             {if $tabanzeige && !$isMobile}
                 {block name='productdetails-tabs-tabs'}
-                    {opcMountPoint id='opc_before_tabs' inContainer=false}
-                    {container}
+                    {container class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                         <nav class="tab-navigation">
                         {tabs id="product-tabs"}
                         {if $useDescription}
@@ -106,7 +106,9 @@
                         {if $useDownloads}
                             {block name='productdetails-tabs-tab-downloads'}
                                 {tab title="{lang section="productDownloads" key="downloadSection"}" active=$setActiveClass.downloads id="downloads"}
+                                    {opcMountPoint id='opc_before_download'}
                                     {include file='productdetails/download.tpl'}
+                                    {opcMountPoint id='opc_after_download'}
                                 {/tab}
                             {/block}
                         {/if}
@@ -115,7 +117,9 @@
                             {block name='productdetails-tabs-tab-separated-tabs'}
                                 {foreach $separatedTabs as $separatedTab}
                                     {tab title=$separatedTab.name active=$setActiveClass.separatedTabs && $separatedTab@first id="{$separatedTab.name|@seofy}"}
+                                        {opcMountPoint id='opc_before_separated_'|cat:$separatedTab.id}
                                         {$separatedTab.content}
+                                        {opcMountPoint id='opc_after_separated_'|cat:$separatedTab.id}
                                     {/tab}
                                 {/foreach}
                             {/block}
@@ -124,7 +128,9 @@
                         {if $useVotes}
                             {block name='productdetails-tabs-tab-votes'}
                                 {tab title="{lang key='Votes'}" active=$setActiveClass.votes id="votes"}
+                                    {opcMountPoint id='opc_before_tab_votes'}
                                     {include file='productdetails/reviews.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}
+                                    {opcMountPoint id='opc_after_tab_votes'}
                                 {/tab}
                             {/block}
                         {/if}
@@ -132,7 +138,9 @@
                         {if $useQuestionOnItem}
                             {block name='productdetails-tabs-tab-question-on-item'}
                                 {tab title="{lang key="productQuestion" section="productDetails"}" active=$setActiveClass.questionOnItem id="questionOnItem"}
+                                    {opcMountPoint id='opc_before_tab_question'}
                                     {include file='productdetails/question_on_item.tpl' position="tab"}
+                                    {opcMountPoint id='opc_after_tab_question'}
                                 {/tab}
                             {/block}
                         {/if}
@@ -140,15 +148,19 @@
                         {if $usePriceFlow}
                             {block name='productdetails-tabs-tab-price-flow'}
                                 {tab title="{lang key='priceFlow' section='productDetails'}" active=$setActiveClass.priceFlow id="priceFlow"}
+                                    {opcMountPoint id='opc_before_tab_price_history'}
                                     {include file='productdetails/price_history.tpl'}
+                                    {opcMountPoint id='opc_after_tab_price_history'}
                                 {/tab}
                             {/block}
                         {/if}
 
                         {if $useAvailabilityNotification}
                             {block name='productdetails-tabs-tab-availability-notification'}
-                                {tab title="{lang key='notifyMeWhenProductAvailableAgain'}" active=$setActiveClass.availabilityNotification id="tab-availabilityNotification"}
+                                {tab title="{lang key='notifyMeWhenProductAvailableAgain'}" active=$setActiveClass.availabilityNotification id="availabilityNotification"}
+                                    {opcMountPoint id='opc_before_tab_availability'}
                                     {include file='productdetails/availability_notification_form.tpl' position='tab' tplscope='artikeldetails'}
+                                    {opcMountPoint id='opc_after_tab_availability'}
                                 {/tab}
                             {/block}
                         {/if}
@@ -169,7 +181,7 @@
                 {/block}
             {else}
                 {block name='productdetails-tabs-no-tabs'}
-                    {container}
+                    {container class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                         <div class="accordion" id="tabAccordion">
                             {if $useDescription}
                                 {block name='productdetails-tabs-description'}
@@ -242,7 +254,9 @@
                                         }
                                             {cardbody}
                                                 {block name='productdetails-tabs-include-download'}
+                                                    {opcMountPoint id='opc_before_download'}
                                                     {include file='productdetails/download.tpl'}
+                                                    {opcMountPoint id='opc_after_download'}
                                                 {/block}
                                             {/cardbody}
                                         {/collapse}
@@ -270,7 +284,9 @@
                                                 aria=["labelledby"=>"tab-{$separatedTabId}-head"]
                                             }
                                                 {cardbody}
+                                                    {opcMountPoint id='opc_before_separated_'|cat:$separatedTab.id}
                                                     {$separatedTab.content}
+                                                    {opcMountPoint id='opc_after_separated_'|cat:$separatedTab.id}
                                                 {/cardbody}
                                             {/collapse}
                                         {/card}
@@ -297,7 +313,9 @@
                                         }
                                             {cardbody}
                                                 {block name='productdetails-tabs-include-reviews'}
+                                                    {opcMountPoint id='opc_before_tab_votes'}
                                                     {include file='productdetails/reviews.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}
+                                                    {opcMountPoint id='opc_after_tab_votes'}
                                                 {/block}
                                             {/cardbody}
                                         {/collapse}
@@ -310,21 +328,23 @@
                                     {card no-body=true}
                                         {cardheader id="tab-question-head"
                                             data=["toggle" => "collapse",
-                                                "target"=>"#tab-question"
+                                                "target"=>"#tab-questionOnItem"
                                             ]
                                             aria=["expanded" => "{if $setActiveClass.questionOnItem}true{else}false{/if}",
-                                                "controls" => "tab-question"
+                                                "controls" => "tab-questionOnItem"
                                             ]
                                         }
                                             {lang key='productQuestion' section='productDetails'}
                                         {/cardheader}
-                                        {collapse id="tab-question" visible=$setActiveClass.questionOnItem
+                                        {collapse id="tab-questionOnItem" visible=$setActiveClass.questionOnItem
                                             data=["parent"=>"#tabAccordion"]
                                             aria=["labelledby"=>"tab-question-head"]
                                         }
                                             {cardbody}
                                                 {block name='productdetails-tabs-include-question-on-item'}
+                                                    {opcMountPoint id='opc_before_tab_question'}
                                                     {include file='productdetails/question_on_item.tpl' position="tab"}
+                                                    {opcMountPoint id='opc_after_tab_question'}
                                                 {/block}
                                             {/cardbody}
                                         {/collapse}
@@ -351,7 +371,9 @@
                                         }
                                             {cardbody}
                                                 {block name='productdetails-tabs-include-price-history'}
+                                                    {opcMountPoint id='opc_before_tab_price_history'}
                                                     {include file='productdetails/price_history.tpl'}
+                                                    {opcMountPoint id='opc_after_tab_price_history'}
                                                 {/block}
                                             {/cardbody}
                                         {/collapse}
@@ -378,7 +400,9 @@
                                         }
                                             {cardbody}
                                                 {block name='productdetails-tabs-include-availability-notification-form'}
+                                                    {opcMountPoint id='opc_before_tab_availability'}
                                                     {include file='productdetails/availability_notification_form.tpl' position='tab' tplscope='artikeldetails'}
+                                                    {opcMountPoint id='opc_after_tab_availability'}
                                                 {/block}
                                             {/cardbody}
                                         {/collapse}

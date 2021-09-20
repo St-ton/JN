@@ -1,7 +1,7 @@
 {block name='productdetails-details'}
     {*{has_boxes position='left' assign='hasLeftBox'}*}
     {$hasLeftBox = false}
-    {container}
+    {container class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
         {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
             {block name='productdetails-details-include-pushed-success'}
                 {include file='productdetails/pushed_success.tpl' card=true}
@@ -14,7 +14,7 @@
     {/container}
     {block name='productdetails-details-form'}
         {opcMountPoint id='opc_before_buy_form' inContainer=false}
-        {container}
+        {container class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
             {form id="buy_form" action=$Artikel->cURLFull class="jtl-validate"}
                 {row id="product-offer" class="product-detail"}
                     {block name='productdetails-details-include-image'}
@@ -37,7 +37,7 @@
                             {if ($Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0) || isset($Artikel->cArtNr)}
                                 {if ($Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0)}
                                     {block name='productdetails-details-info-rating-wrapper'}
-                                        <div class="rating-wrapper" itemprop="aggregateRating" itemscope="true" itemtype="http://schema.org/AggregateRating">
+                                        <div class="rating-wrapper" itemprop="aggregateRating" itemscope="true" itemtype="https://schema.org/AggregateRating">
                                             <meta itemprop="ratingValue" content="{$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}"/>
                                             <meta itemprop="bestRating" content="5"/>
                                             <meta itemprop="worstRating" content="1"/>
@@ -110,15 +110,17 @@
                                         {block name='productdetails-details-info-manufacturer-wrapper'}
                                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'N' && isset($Artikel->cHersteller)}
                                                 {block name='productdetails-details-product-info-manufacturer'}
-                                                    <li  class="product-manufacturer" itemprop="brand" itemscope="true" itemtype="http://schema.org/Organization">
+                                                    <li  class="product-manufacturer" itemprop="brand" itemscope="true" itemtype="https://schema.org/Organization">
                                                         <strong>{lang key='manufacturers'}:</strong>
-                                                        <a href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
-                                                            {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'}
-                                                                data-toggle="tooltip"
-                                                                data-placement="left"
-                                                                title="{$Artikel->cHersteller}"
-                                                            {/if}
-                                                           itemprop="url">
+                                                        {if $Einstellungen.artikeldetails.artikel_weitere_artikel_hersteller_anzeigen === 'Y'}
+                                                            <a href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
+                                                                {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'}
+                                                                    data-toggle="tooltip"
+                                                                    data-placement="left"
+                                                                    title="{$Artikel->cHersteller}"
+                                                                {/if}
+                                                               itemprop="url">
+                                                        {/if}
                                                             {if ($Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'
                                                                 || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'BT')
                                                                 && !empty($Artikel->cHerstellerBildURLKlein)}
@@ -126,14 +128,15 @@
                                                                     webp=true
                                                                     src=$Artikel->cHerstellerBildURLKlein
                                                                     alt=$Artikel->cHersteller
-                                                                    width="35px"
                                                                 }
                                                                 <meta itemprop="image" content="{$Artikel->cHerstellerBildURLKlein}">
                                                             {/if}
                                                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'}
                                                                 <span itemprop="name">{$Artikel->cHersteller}</span>
                                                             {/if}
-                                                        </a>
+                                                        {if $Einstellungen.artikeldetails.artikel_weitere_artikel_hersteller_anzeigen === 'Y'}
+                                                            </a>
+                                                        {/if}
                                                     </li>
                                                 {/block}
                                             {/if}
@@ -172,7 +175,7 @@
                             {opcMountPoint id='opc_after_short_desc'}
                             {/block}
 
-                            <div class="product-offer"{if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')} itemprop="offers" itemscope itemtype="http://schema.org/Offer"{/if}>
+                            <div class="product-offer"{if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')} itemprop="offers" itemscope itemtype="https://schema.org/Offer"{/if}>
                                 {block name='productdetails-details-info-hidden'}
                                     {if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')}
                                         <meta itemprop="url" content="{$Artikel->cURLFull}">
@@ -201,9 +204,11 @@
 
                                 {row}
                                     {block name='productdetails-details-include-price'}
-                                        {col}
-                                            {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail' priceLarge=true}
-                                        {/col}
+                                        {if !($Artikel->Preise->fVKNetto == 0 && isset($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX]))}
+                                            {col}
+                                                {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail' priceLarge=true}
+                                            {/col}
+                                        {/if}
                                     {/block}
                                     {block name='productdetails-details-stock'}
                                         {col cols=12}
@@ -300,7 +305,7 @@
         || isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0
         || isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0
         || isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
-            {container fluid=true}
+            {container fluid=true class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                 {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0}
                     {block name='productdetails-details-include-product-slider-partslist'}
                         <div class="partslist">

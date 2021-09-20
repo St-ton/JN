@@ -101,6 +101,11 @@ class MenuItem
     public $customImgName;
 
     /**
+     * @var bool
+     */
+    public $orphaned = false;
+
+    /**
      * @return int
      */
     public function getID(): int
@@ -249,6 +254,15 @@ class MenuItem
     }
 
     /**
+     * @param string $name
+     * @return mixed|null
+     */
+    public function getFunctionalAttribute(string $name)
+    {
+        return $this->functionalAttributes[$name] ?? null;
+    }
+
+    /**
      * @param array $functionalAttributes
      */
     public function setFunctionalAttributes(array $functionalAttributes): void
@@ -326,6 +340,22 @@ class MenuItem
     public function setProductCount(int $productCount): void
     {
         $this->productCount = $productCount;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOrphaned(): bool
+    {
+        return $this->orphaned;
+    }
+
+    /**
+     * @param bool $orphaned
+     */
+    public function setOrphaned(bool $orphaned): void
+    {
+        $this->orphaned = $orphaned;
     }
 
     /**

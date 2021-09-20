@@ -3,7 +3,6 @@
 namespace JTL\Extensions\Config;
 
 use JsonSerializable;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
@@ -135,7 +134,7 @@ class Group implements JsonSerializable
             $this->nMax          = (int)$this->nMax;
             $this->nTyp          = (int)$this->nTyp;
             $this->oSprache      = new GroupLocalization($this->kKonfiggruppe, $languageID);
-            $this->oItem_arr     = Item::fetchAll($this->kKonfiggruppe);
+            $this->oItem_arr     = Item::fetchAll($this->kKonfiggruppe, $languageID);
         }
         $this->generateAllImageSizes(true, 1, $this->cBildPfad);
 
@@ -284,12 +283,12 @@ class Group implements JsonSerializable
      */
     public function getItemCount(): int
     {
-        return (int)Shop::Container()->getDB()->query(
-            'SELECT COUNT(*) AS nCount 
+        return (int)Shop::Container()->getDB()->getSingleObject(
+            'SELECT COUNT(*) AS cnt 
                 FROM tkonfigitem 
-                WHERE kKonfiggruppe = ' . (int)$this->kKonfiggruppe,
-            ReturnType::SINGLE_OBJECT
-        )->nCount;
+                WHERE kKonfiggruppe = :gid',
+            ['gid' => (int)$this->kKonfiggruppe]
+        )->cnt;
     }
 
     /**

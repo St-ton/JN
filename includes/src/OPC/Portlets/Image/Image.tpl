@@ -19,7 +19,7 @@
     {if $isPreview}
         <div class="opc-Image-with-image">
     {/if}
-    <div style="max-width: {$imgAttribs.realWidth}px; {$alignCSS}">
+    <div style="max-width: {$imgAttribs.realWidth}px; {$alignCSS}" class="{$instance->getStyleClasses()}">
         {$isLink = $instance->getProperty('is-link')}
         {$href = $instance->getProperty('url')}
 
@@ -36,13 +36,17 @@
             src=$imgAttribs.src
             srcset=$imgAttribs.srcset
             sizes=$imgAttribs.srcsizes
+            class='img-aspect-ratio'
+            width=$imgAttribs.realWidth
+            height=$imgAttribs.realHeight
             alt=$imgAttribs.alt|escape:'html'
             title=$imgAttribs.title
             style=$instance->getStyleString()
             rounded=$portlet->getRoundedProp($instance)
             thumbnail=$portlet->getThumbnailProp($instance)
-            class=$instance->getStyleClasses()
             fluid-grow=true
+            webp=true
+            attribs=['draggable'=>'false']
         }
         {if $isLink && !$isPreview && !empty($href)}
             </a>

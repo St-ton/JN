@@ -42,16 +42,26 @@
                                     <strong>{$oWarenlager->getName()}</strong>
                                 {/col}
                                 {col class="warehouse-right"}
-                                    <span>
+                                    <span class="signal_image">
                                          {if $anzeige !== 'nichts'
-                                         && ($Artikel->cLagerKleinerNull === 'N'
                                          && $oWarenlager->getBackorderString($Artikel) !== ''
-                                         || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
-                                             <span class="signal_image status-1"><span>{$oWarenlager->getBackorderString($Artikel)}</span></span>
+                                         && ($Artikel->cLagerKleinerNull === 'N'
+                                            || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
+                                             <span class="status-1">{$oWarenlager->getBackorderString($Artikel)}</span>
+                                        {elseif $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N'
+                                             && $Artikel->cLagerBeachten === 'Y'
+                                             && $Artikel->fLagerbestand <= 0
+                                             && $Artikel->fLieferantenlagerbestand > 0
+                                             && $Artikel->fLieferzeit > 0
+                                             && ($Artikel->cLagerKleinerNull === 'N'
+                                                 && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'I'
+                                                 || $Artikel->cLagerKleinerNull === 'Y'
+                                                 && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
+                                             <span class="status-1">{lang key='supplierStockNotice' printf=$Artikel->fLieferzeit}</span>
                                         {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
-                                            <span class="signal_image status-{$oWarenlager->oLageranzeige->nStatus}">{$oWarenlager->oLageranzeige->cLagerhinweis[$anzeige]}</span>
+                                            <span class="status-{$oWarenlager->oLageranzeige->nStatus}">{$oWarenlager->oLageranzeige->cLagerhinweis[$anzeige]}</span>
                                         {elseif $anzeige === 'ampel'}
-                                            <span><span class="signal_image status-{$oWarenlager->oLageranzeige->nStatus}">{$oWarenlager->oLageranzeige->AmpelText}</span></span>
+                                            <span class="status-{$oWarenlager->oLageranzeige->nStatus}">{$oWarenlager->oLageranzeige->AmpelText}</span>
                                          {/if}
                                     </span>
                                 {/col}

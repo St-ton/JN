@@ -32,9 +32,9 @@ class AbstractItem implements ValidationItemInterface
     protected $dir = '';
 
     /**
-     * @var int
+     * @var string
      */
-    protected $version = 100;
+    protected $version = '100';
 
     /**
      * @var string
@@ -58,7 +58,7 @@ class AbstractItem implements ValidationItemInterface
         $this->baseNode    = $baseNode;
         $this->installNode = $baseNode['Install'][0] ?? null;
         $this->baseDir     = $baseDir;
-        $this->dir         = $baseDir . \DIRECTORY_SEPARATOR . \PFAD_PLUGIN_VERSION . $version . \DIRECTORY_SEPARATOR;
+        $this->dir         = $baseDir . '/' . \PFAD_PLUGIN_VERSION . $version . '/';
         $this->version     = $version;
         $this->pluginID    = $pluginID;
         $this->context     = self::CONTEXT_LEGACY_PLUGIN;

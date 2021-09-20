@@ -9,7 +9,6 @@ use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferschein;
 use JTL\Checkout\Versand;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use JTL\Helpers\ShippingMethod;
 use JTL\Language\LanguageHelper;
@@ -59,6 +58,8 @@ class TestHydrator extends DefaultsHydrator
             ->assign('Neues_Passwort', 'geheim007')
             ->assign('passwordResetLink', Shop::getURL() . '/pass.php?fpwh=ca68b243f0c1e7e57162055f248218fd')
             ->assign('Gutschein', $this->getGift())
+            ->assign('interval', 720)
+            ->assign('intervalLoc', 'Monatliche Status-Email')
             ->assign('AGB', $oAGBWRB)
             ->assign('WRB', $oAGBWRB)
             ->assign('DSE', $oAGBWRB)
@@ -118,7 +119,7 @@ class TestHydrator extends DefaultsHydrator
      */
     private function getCheckbox(): CheckBox
     {
-        $id = $this->db->query('SELECT kCheckbox FROM tcheckbox LIMIT 1', ReturnType::SINGLE_OBJECT);
+        $id = $this->db->getSingleObject('SELECT kCheckbox FROM tcheckbox LIMIT 1');
 
         return new CheckBox((int)($id->kCheckbox ?? 0));
     }
@@ -141,8 +142,11 @@ class TestHydrator extends DefaultsHydrator
     private function getGift(): stdClass
     {
         $gift                 = new stdClass();
+        $gift->fWert          = 5.00;
         $gift->cLocalizedWert = '5,00 EUR';
         $gift->cGrund         = 'Geburtstag';
+        $gift->kGutschein     = 33;
+        $gift->kKunde         = 1;
 
         return $gift;
     }
@@ -249,6 +253,7 @@ class TestHydrator extends DefaultsHydrator
         $until                         = (new DateTime())->modify('+28 days')->format('Y-m-d H:i:s');
         $coupon                        = new stdClass();
         $coupon->cName                 = 'Kuponname';
+        $coupon->Hersteller            = [];
         $coupon->fWert                 = 5;
         $coupon->cWertTyp              = 'festpreis';
         $coupon->dGueltigAb            = $now;
@@ -307,7 +312,7 @@ class TestHydrator extends DefaultsHydrator
         $customer->cHausnummer       = '123';
         $customer->cPLZ              = '12345';
         $customer->cOrt              = 'Musterstadt';
-        $customer->cLand             = 'Musterland';
+        $customer->cLand             = 'Musterland ISO';
         $customer->cTel              = '12345678';
         $customer->cFax              = '98765432';
         $customer->cMail             = $this->settings['emails']['email_master_absender'];
@@ -320,6 +325,7 @@ class TestHydrator extends DefaultsHydrator
         $customer->kKundengruppe     = $customerGroupID;
         $customer->kSprache          = $langID;
         $customer->cPasswortKlartext = 'superGeheim';
+        $customer->angezeigtesLand   = 'Musterland';
 
         return $customer;
     }
@@ -472,11 +478,12 @@ class TestHydrator extends DefaultsHydrator
         $order->Lieferadresse->cPLZ             = '12345';
         $order->Lieferadresse->cOrt             = 'Musterlieferstadt';
         $order->Lieferadresse->cBundesland      = 'Lieferbundesland';
-        $order->Lieferadresse->cLand            = 'Lieferland';
+        $order->Lieferadresse->cLand            = 'Lieferland ISO';
         $order->Lieferadresse->cTel             = '112345678';
         $order->Lieferadresse->cMobil           = '123456789';
         $order->Lieferadresse->cFax             = '12345678909';
         $order->Lieferadresse->cMail            = 'john.doe@example.com';
+        $order->Lieferadresse->angezeigtesLand  = 'Lieferland';
 
         $order->fWaehrungsFaktor  = 1;
         $order->oLieferschein_arr = [];

@@ -4,6 +4,7 @@ namespace JTL\Plugin\Admin;
 
 use DateTime;
 use InvalidArgumentException;
+use JsonSerializable;
 use JTL\Helpers\GeneralObject;
 use JTL\Mapper\PluginValidation;
 use JTL\Plugin\InstallCode;
@@ -15,7 +16,7 @@ use JTLShop\SemVer\Version;
  * Class ListingItem
  * @package JTL\Plugin\Admin
  */
-class ListingItem
+class ListingItem implements JsonSerializable
 {
     /**
      * @var bool
@@ -81,6 +82,11 @@ class ListingItem
      * @var string
      */
     private $pluginID = '';
+
+    /**
+     * @var string|null
+     */
+    private $exsID;
 
     /**
      * @var int
@@ -200,6 +206,7 @@ class ListingItem
             $this->author      = $node['Author'] ?? '';
             $this->pluginID    = $node['PluginID'] ?? '';
             $this->icon        = $node['Icon'] ?? null;
+            $this->exsID       = $node['ExsID'] ?? null;
             if (isset($node['Install'][0]['Version']) && \is_array($node['Install'][0]['Version'])) {
                 $lastVersion = \count($node['Install'][0]['Version']) / 2 - 1;
                 $version     = (int)($node['Install'][0]['Version'][$lastVersion . ' attr']['nr'] ?? 0);
@@ -247,7 +254,7 @@ class ListingItem
         $this->setAuthor($meta->getAuthor());
         $this->setID($plugin->getID());
         $this->setPluginID($plugin->getPluginID());
-        $this->setPath($plugin->getPaths()->getVersionedPath());
+        $this->setPath($plugin->getPaths()->getBasePath());
         $this->setDir($plugin->getPaths()->getBaseDir());
         $this->setIsLegacy($plugin->isLegacy());
         $this->setIcon($meta->getIcon() ?? '');
@@ -266,8 +273,31 @@ class ListingItem
         $this->setUpdateAvailable($plugin->getMeta()->getUpdateAvailable());
         $this->setMinShopVersion(Version::parse('0.0.0'));
         $this->setMaxShopVersion(Version::parse('0.0.0'));
+        $license = $plugin->getLicense()->getExsLicense();
+        if ($license !== null) {
+            $this->setExsID($license->getExsID());
+        }
 
         return $this;
+    }
+
+    /**
+     * @param ListingItem $item
+     */
+    public function mergeWith(ListingItem $item): void
+    {
+        $this->setOptionsCount($item->getOptionsCount());
+        $this->setDateInstalled($item->getDateInstalled());
+        $this->setID($item->getID());
+        $this->setState($item->getState());
+        $this->setIsShop5Compatible($item->isShop5Compatible());
+        $this->setIsShop4Compatible($item->isShop4Compatible());
+        $this->setLangVarCount($item->getLangVarCount());
+        $this->setReadmeMD($item->getReadmeMD());
+        $this->setLicenseMD($item->getLicenseMD());
+        $this->setLinkCount($item->getLinkCount());
+        $this->setLicenseKey($item->getLicenseKey());
+        $this->setHasLicenseCheck($item->hasLicenseCheck());
     }
 
     /**
@@ -774,5 +804,34 @@ class ListingItem
     public function setLicenseMD(?string $licenseMD): void
     {
         $this->licenseMD = $licenseMD;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getExsID(): ?string
+    {
+        return $this->exsID;
+    }
+
+    /**
+     * @param string|null $exsID
+     */
+    public function setExsID(?string $exsID): void
+    {
+        $this->exsID = $exsID;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $res = [];
+        foreach (\get_object_vars($this) as $var => $val) {
+            $res[$var] = $val;
+        }
+
+        return $res;
     }
 }

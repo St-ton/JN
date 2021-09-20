@@ -6,7 +6,7 @@
     </div>
 {else}
     {$productlist = $portlet->getFilteredProducts($instance)}
-    
+
     {if $style === 'list' || $style === 'gallery'}
         {if $style === 'list'}
             {$grid = '12'}
@@ -14,6 +14,7 @@
         {else}
             {$grid   = '6'}
             {$gridmd = '4'}
+            {$gridxl = '3'}
             {$eqHeightClasses = 'row-eq-height row-eq-img-height'}
         {/if}
         {if $inContainer === false}
@@ -22,14 +23,14 @@
         {row class=$style|cat:' '|cat:$eqHeightClasses|cat:' product-list opc-ProductStream opc-ProductStream-'|cat:$style|cat:' '|cat:$instance->getStyleClasses()
             itemprop="mainEntity"
             itemscope=true
-            itemtype="http://schema.org/ItemList"
+            itemtype="https://schema.org/ItemList"
             style="{$instance->getStyleString()}"}
             {foreach $productlist as $Artikel}
-                {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}"
+                {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" xl="{if isset($gridxl)}{$gridxl}{/if}"
                      class="product-wrapper {if !($style === 'list' && $Artikel@last)}mb-4{/if}"
-                     itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
+                     itemprop="itemListElement" itemscope=true itemtype="https://schema.org/Product"}
                     {if $style === 'list'}
-                        {include file='productlist/item_list.tpl' tplscope=$style}
+                        {include file='productlist/item_list.tpl' tplscope=$style isOPC=true}
                     {elseif $style === 'gallery'}
                         {include file='productlist/item_box.tpl' tplscope=$style class='thumbnail'}
                     {/if}
@@ -42,7 +43,7 @@
     {elseif $style === 'simpleSlider'}
         <div id="{$instance->getUid()}"
              class="carousel carousel-arrows-inside evo-slider slick-lazy
-                    opc-ProductStream opc-ProductStream-slider slick-type-product"
+                    opc-ProductStream opc-ProductStream-{$style} slick-type-product"
              data-slick-type="product-slider"
              style="{$instance->getStyleString()}">
             {foreach $productlist as $Artikel}

@@ -58,4 +58,7 @@
 table.sortable thead {
 	cursor: pointer;
 }
+tfoot {
+	border-top: 2px solid $table-border-color;
+}
 

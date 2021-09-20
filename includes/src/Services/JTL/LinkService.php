@@ -4,7 +4,9 @@ namespace JTL\Services\JTL;
 
 use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
+use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
 use JTL\Link\LinkGroupCollection;
 use JTL\Link\LinkGroupInterface;
@@ -194,10 +196,10 @@ final class LinkService implements LinkServiceInterface
         if ($parentLinkID <= 0) {
             return false;
         }
+        /** @var LinkGroupInterface $linkGroup */
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
-            /** @var LinkGroupInterface $linkGroup */
+            /** @var LinkInterface $link */
             foreach ($linkGroup->getLinks() as $link) {
-                /** @var LinkInterface $link */
                 if ($link->getID() === $linkID && $link->getParent() === $parentLinkID) {
                     return true;
                 }
@@ -394,7 +396,6 @@ final class LinkService implements LinkServiceInterface
      */
     public function buildSpecialPageMeta(int $type): stdClass
     {
-        $first           = null;
         $meta            = new stdClass();
         $meta->cTitle    = '';
         $meta->cDesc     = '';
@@ -430,10 +431,10 @@ final class LinkService implements LinkServiceInterface
     public function activate(int $pageType): LinkGroupCollection
     {
         $linkGroups = $this->linkGroupList->getLinkGroups();
+        /** @var LinkGroupInterface $linkGroup */
         foreach ($linkGroups as $linkGroup) {
-            /** @var LinkGroupInterface $linkGroup */
+            /** @var LinkInterface $link */
             foreach ($linkGroup->getLinks() as $link) {
-                /** @var LinkInterface $link */
                 $link->setIsActive(false);
                 $linkType = $link->getLinkType();
                 $linkID   = $link->getID();
@@ -536,7 +537,31 @@ final class LinkService implements LinkServiceInterface
             $langID
         );
         if (empty($data->kText)) {
-            $data = $this->db->select('ttext', 'nStandard', 1);
+            $data = $this->db->select(
+                'ttext',
+                'kKundengruppe',
+                (new CustomerGroup())->loadDefaultGroup()->getID(),
+                'kSprache',
+                $langID
+            );
+        }
+        if (empty($data->kText)) {
+            $data = $this->db->select(
+                'ttext',
+                'kKundengruppe',
+                $customerGroupID,
+                'kSprache',
+                LanguageHelper::getDefaultLanguage()->kSprache
+            );
+        }
+        if (empty($data->kText)) {
+            $data = $this->db->select(
+                'ttext',
+                'kKundengruppe',
+                (new CustomerGroup())->loadDefaultGroup()->getID(),
+                'kSprache',
+                LanguageHelper::getDefaultLanguage()->kSprache
+            );
         }
         if (empty($data->kText)) {
             return false;

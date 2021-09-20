@@ -3,7 +3,6 @@
 use JTL\Catalog\Product\Preise;
 use JTL\Checkout\KuponBestellung;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
@@ -15,14 +14,8 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('STATS_COUPON_VIEW', true, true);
 $step      = 'kuponstatistik_uebersicht';
 $cWhere    = '';
-$coupons   = Shop::Container()->getDB()->query(
-    'SELECT kKupon, cName FROM tkupon ORDER BY cName DESC',
-    ReturnType::ARRAY_OF_ASSOC_ARRAYS
-);
-$oDateShop = Shop::Container()->getDB()->query(
-    'SELECT MIN(DATE(dZeit)) AS startDate FROM tbesucherarchiv',
-    ReturnType::SINGLE_OBJECT
-);
+$coupons   = Shop::Container()->getDB()->getArrays('SELECT kKupon, cName FROM tkupon ORDER BY cName DESC');
+$oDateShop = Shop::Container()->getDB()->getSingleObject('SELECT MIN(DATE(dZeit)) AS startDate FROM tbesucherarchiv');
 $startDate = DateTime::createFromFormat('Y-m-j', $oDateShop->startDate);
 $endDate   = DateTime::createFromFormat('Y-m-j', date('Y-m-j'));
 
@@ -74,13 +67,12 @@ $usedCouponsOrder = KuponBestellung::getOrdersWithUsedCoupons(
     (int)Request::verifyGPDataString('kKupon')
 );
 
-$orderCount            = (int)Shop::Container()->getDB()->query(
-    "SELECT COUNT(*) AS nCount
+$orderCount            = (int)Shop::Container()->getDB()->getSingleObject(
+    'SELECT COUNT(*) AS nCount
         FROM tbestellung
-        WHERE dErstellt BETWEEN '" . $dStart . "'
-            AND '" . $dEnd . "'
-            AND tbestellung.cStatus != " . BESTELLUNG_STATUS_STORNO,
-    ReturnType::SINGLE_OBJECT
+        WHERE dErstellt BETWEEN :strt AND :nd
+            AND cStatus != :stt',
+    ['strt' => $dStart, 'nd' => $dEnd, 'stt' => BESTELLUNG_STATUS_STORNO]
 )->nCount;
 $countUsedCouponsOrder = 0;
 $countCustomers        = 0;
@@ -97,14 +89,13 @@ foreach ($usedCouponsOrder as $key => $usedCouponOrder) {
         Preise::getLocalizedPriceWithoutFactor($usedCouponOrder['fKuponwertBrutto']);
     $usedCouponsOrder[$key]['nShoppingCartAmount'] =
         Preise::getLocalizedPriceWithoutFactor($usedCouponOrder['fGesamtsummeBrutto']);
-    $usedCouponsOrder[$key]['cOrderPos_arr']       = Shop::Container()->getDB()->query(
+    $usedCouponsOrder[$key]['cOrderPos_arr']       = Shop::Container()->getDB()->getArrays(
         "SELECT CONCAT_WS(' ',wk.cName,wk.cHinweis) AS cName,
             wk.fPreis+(wk.fPreis/100*wk.fMwSt) AS nPreis, wk.nAnzahl
             FROM twarenkorbpos AS wk
             LEFT JOIN tbestellung AS bs 
                 ON wk.kWarenkorb = bs.kWarenkorb
-            WHERE bs.kBestellung = " . (int)$usedCouponOrder['kBestellung'],
-        ReturnType::ARRAY_OF_ASSOC_ARRAYS
+            WHERE bs.kBestellung = " . (int)$usedCouponOrder['kBestellung']
     );
     foreach ($usedCouponsOrder[$key]['cOrderPos_arr'] as $posKey => $value) {
         $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nAnzahl']      =

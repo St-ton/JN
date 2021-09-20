@@ -3,6 +3,7 @@
 namespace JTL\Plugin;
 
 use DebugBar\DataCollector\TimeDataCollector;
+use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
@@ -45,6 +46,11 @@ class HookManager
      * @var Dispatcher
      */
     private $dispatcher;
+
+    /**
+     * @var int
+     */
+    private $lockedForPluginID = 0;
 
     /**
      * HookManager constructor.
@@ -94,7 +100,6 @@ class HookManager
         }
         global $smarty, $args_arr, $oPlugin;
 
-        $args_arr = $args;
         $this->timer->startMeasure('shop.hook.' . $hookID);
         $this->dispatcher->fire('shop.hook.' . $hookID, \array_merge((array)$hookID, $args));
         if (empty($this->hookList[$hookID])) {
@@ -103,10 +108,14 @@ class HookManager
             return;
         }
         foreach ($this->hookList[$hookID] as $item) {
+            if ($this->lockedForPluginID === $item->kPlugin) {
+                continue;
+            }
             $plugin = $this->getPluginInstance($item->kPlugin);
             if ($plugin === null) {
                 continue;
             }
+            $args_arr            = $args;
             $plugin->nCalledHook = $hookID;
             $oPlugin             = $plugin;
             $file                = $item->cDateiname;
@@ -147,8 +156,9 @@ class HookManager
         $plugin = Shop::get('oplugin_' . $id);
         if ($plugin === null) {
             $loader = Helper::getLoaderByPluginID($id, $this->db, $this->cache);
-            $plugin = $loader->init($id);
-            if ($plugin === null) {
+            try {
+                $plugin = $loader->init($id);
+            } catch (InvalidArgumentException $e) {
                 return null;
             }
             if (!Helper::licenseCheck($plugin)) {
@@ -161,5 +171,18 @@ class HookManager
         }
 
         return $plugin;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function lock(int $id): void
+    {
+        $this->lockedForPluginID = $id;
+    }
+
+    public function unlock(): void
+    {
+        $this->lockedForPluginID = 0;
     }
 }

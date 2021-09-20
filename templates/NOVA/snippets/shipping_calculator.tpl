@@ -9,13 +9,17 @@
                     <div class="form-row">
                         {block name='snippets-shipping-calculator-countries'}
                             {col cols=12 md=5 class="shipping-calculator-main-country"}
-                                {select name="land" id="country" class='custom-select' placeholder="" aria=["label"=>"{lang key='country' section='account data'}"]}
-                                    {foreach $laender as $land}
-                                        <option value="{$land->getISO()}" {if $shippingCountry === $land->getISO()}selected{/if}>
-                                            {$land->getName()}
-                                        </option>
-                                    {/foreach}
-                                {/select}
+                                {formgroup}
+                                    {select name="land" id="country" class='custom-select' placeholder="" aria=["label"=>"{lang key='country' section='account data'}"]}
+                                        {foreach $countries as $country}
+                                            {if $country->isShippingAvailable()}
+                                                <option value="{$country->getISO()}" {if $shippingCountry === $country->getISO()}selected{/if}>
+                                                    {$country->getName()}
+                                                </option>
+                                            {/if}
+                                        {/foreach}
+                                    {/select}
+                                {/formgroup}
                             {/col}
                         {/block}
                         {block name='snippets-shipping-calculator-submit'}
@@ -137,6 +141,8 @@
         </div>
     {/if}
     {block name='snippets-shipping-calculator-hr-end'}
-        <hr class="shipping-calculator-hr">
+        {if $hrAtEnd|default:true}
+            <hr class="shipping-calculator-hr">
+        {/if}
     {/block}
 {/block}

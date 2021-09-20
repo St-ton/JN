@@ -157,10 +157,15 @@ abstract class AbstractFilter implements FilterInterface
     protected $paramExclusive = false;
 
     /**
+     * @var string|null - localized name of the characteristic itself
+     */
+    protected $filterName;
+
+    /**
      * AbstractFilter constructor.
      * @param ProductFilter|null $productFilter
      */
-    public function __construct($productFilter = null)
+    public function __construct(ProductFilter $productFilter = null)
     {
         $this->type       = Type::AND;
         $this->visibility = Visibility::SHOW_ALWAYS;
@@ -820,6 +825,24 @@ abstract class AbstractFilter implements FilterInterface
     public function setParamExclusive(bool $paramExclusive): FilterInterface
     {
         $this->paramExclusive = $paramExclusive;
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getFilterName(): ?string
+    {
+        return $this->filterName;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setFilterName(?string $characteristic): FilterInterface
+    {
+        $this->filterName = $characteristic;
 
         return $this;
     }

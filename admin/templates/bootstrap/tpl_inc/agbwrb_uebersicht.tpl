@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('agbwrb') cDokuURL=__('agbwrbURL')}
-<div id="content" class="row">
-    <div class="{if $recommendations->getRecommendations()->isNotEmpty()}col-md-7{else}col-lg-9 col-xl-7{/if}">
+<div id="content" class="row mr-0">
+    <div class="{if $recommendations->getRecommendations()->isNotEmpty()}col-md-7{else}col-lg-9 col-xl-7{/if} pr-0 pr-md-4">
         <div class="card">
             <div class="card-body">
                 {include file='tpl_inc/language_switcher.tpl'}
@@ -45,7 +45,7 @@
         </div>
     </div>
     {if $recommendations->getRecommendations()->isNotEmpty()}
-        <div class="col-md-5">
+        <div class="col-md-5 pr-0 pr-md-4">
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
@@ -58,7 +58,11 @@
                             <tbody>
                             {foreach $recommendations->getRecommendations() as $recommendation}
                                 <tr>
-                                    <td><img src="{$recommendation->getPreviewImage()}" style="max-width: 120px;" alt="{$recommendation->getTitle()}" loading="lazy"></td>
+                                    <td>
+                                        <img src="{$recommendation->getPreviewImage()}"
+                                             style="max-width: 120px;"
+                                             alt="{$recommendation->getTitle()}" loading="lazy">
+                                    </td>
                                     <td>
                                         <p class="mb-1">{$recommendation->getTeaser()}</p>
                                         <a href="premiumplugin.php?scope={$recommendations->getScope()}&id={$recommendation->getId()}"
@@ -71,6 +75,14 @@
                             {/foreach}
                             </tbody>
                         </table>
+                    </div>
+                    <div class="row">
+                        <div class="col-auto mx-auto">
+                            <a href="{__('extensionStoreURL')}" class="btn btn-outline-primary my-3" target="_blank">
+                                <i class="fas fa-puzzle-piece"></i>
+                                {__('btnAdditionalExtensionStore')}
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

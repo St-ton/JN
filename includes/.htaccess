@@ -18,26 +18,6 @@
     </IfModule>
 </Files>
 
-<Files preisverlaufgraph.php>
-    <IfModule mod_authz_core.c>
-        Require all granted
-    </IfModule>
-    <IfModule !mod_authz_core.c>
-        Order Allow,Deny
-        Allow from all
-    </IfModule>
-</Files>
-
-<Files preisverlaufgraph_ofc.php>
-    <IfModule mod_authz_core.c>
-        Require all granted
-    </IfModule>
-    <IfModule !mod_authz_core.c>
-        Order Allow,Deny
-        Allow from all
-    </IfModule>
-</Files>
-
 <Files cron_inc.php>
     <IfModule mod_authz_core.c>
         Require all granted

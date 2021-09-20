@@ -10,6 +10,7 @@ use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Form;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
+use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
@@ -142,7 +143,8 @@ if ($AktuellerArtikel->Bewertungen === null || $ratingStars > 0) {
         $ratingPage,
         $ratingStars,
         $conf['bewertung']['bewertung_freischalten'],
-        $sorting
+        $sorting,
+        $conf['bewertung']['bewertung_alle_sprachen'] === 'Y'
     );
     $AktuellerArtikel->holehilfreichsteBewertung();
 }
@@ -192,6 +194,13 @@ $ratingNav    = Product::getRatingNavigation(
 );
 if (Request::hasGPCData('ek')) {
     Product::getEditConfigMode(Request::verifyGPCDataInt('ek'), $smarty);
+    $smarty->assign(
+        'voucherPrice',
+        Tax::getGross(
+            Frontend::getCart()->PositionenArr[Request::verifyGPCDataInt('ek')]->fPreis,
+            Tax::getSalesTax($AktuellerArtikel->kSteuerklasse)
+        )
+    );
 }
 foreach ($AktuellerArtikel->Variationen as $Variation) {
     if (!$Variation->Werte || $Variation->cTyp === 'FREIFELD' || $Variation->cTyp === 'PFLICHT-FREIFELD') {
@@ -231,7 +240,7 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
            )
        )
        ->assign('BlaetterNavi', $ratingNav)
-       ->assign('BewertungsTabAnzeigen', ($ratingPage || $ratingStars || $showRatings || $allLanguages) ? 1 : 0)
+       ->assign('BewertungsTabAnzeigen', (int)($ratingPage > 0 || $ratingStars > 0 || $showRatings > 0 || $allLanguages > 0))
        ->assign('alertNote', $alertHelper->alertTypeExists(Alert::TYPE_NOTE))
        ->assign('PFAD_MEDIAFILES', $shopURL . PFAD_MEDIAFILES)
        ->assign('PFAD_BILDER', PFAD_BILDER)

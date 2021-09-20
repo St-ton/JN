@@ -1967,6 +1967,8 @@ pre#debug b {
   opacity: 1;
 }
 .content-header .description a {
+  color: #5cbcf6;
+  font-weight: bold;
   text-decoration: underline;
 }
 .dropdown.avatar > a {
@@ -2524,6 +2526,9 @@ div.markdown thead tr td {
   margin: 0.75rem 0 0;
   padding: 0;
   border: 2px solid transparent;
+}
+.hide-fileinput-remove .fileinput-remove {
+  display: none;
 }
 #articlePicker-result-list .list-group-item {
   padding: 0.5rem;

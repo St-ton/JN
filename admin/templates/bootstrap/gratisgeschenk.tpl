@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 
-{assign var=cFunAttrib value=$ART_ATTRIBUT_GRATISGESCHENKAB}
+{assign var=cFunAttrib value=$smarty.const.ART_ATTRIBUT_GRATISGESCHENKAB}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('ggHeader') cDokuURL=__('ggURL')}
 <div id="content">
@@ -55,6 +55,7 @@
                             </tbody>
                         </table>
                     </div>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='aktivegeschenke' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
@@ -88,6 +89,7 @@
                             </tbody>
                         </table>
                     </div>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiHaeufig cAnchor='haeufigegeschenke' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
@@ -119,6 +121,7 @@
                             </tbody>
                         </table>
                     </div>
+                    {include file='tpl_inc/pagination.tpl' pagination=$oPagiLetzte100 cAnchor='letzten100geschenke' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}

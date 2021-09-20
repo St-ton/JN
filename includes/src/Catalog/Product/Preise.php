@@ -3,7 +3,6 @@
 namespace JTL\Catalog\Product;
 
 use JTL\Catalog\Currency;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -198,13 +197,12 @@ class Preise
         $this->kKundengruppe = $customerGroupID;
         $this->kKunde        = $customerID;
 
-        $prices = $db->query(
+        $prices = $db->getObjects(
             'SELECT *
                 FROM tpreis AS p
                 JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
                 WHERE p.kArtikel = ' . $productID . ' ' . $customerFilter . '
-                ORDER BY d.nAnzahlAb',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY d.nAnzahlAb'
         );
         if (\count($prices) > 0) {
             if ($taxClassID === 0) {
@@ -244,7 +242,7 @@ class Preise
                 // Standardpreis
                 if ($price->nAnzahlAb < 1) {
                     $this->fVKNetto = $this->getRecalculatedNetPrice($price->fVKNetto, $defaultTax, $currentTax);
-                    $specialPrice   = $db->queryPrepared(
+                    $specialPrice   = $db->getSingleObject(
                         "SELECT tsonderpreise.fNettoPreis, tartikelsonderpreis.dEnde AS dEnde_en,
                             DATE_FORMAT(tartikelsonderpreis.dEnde, '%d.%m.%Y') AS dEnde_de
                             FROM tsonderpreise
@@ -262,11 +260,10 @@ class Preise
                         [
                             'productID'     => $productID,
                             'customerGroup' => $customerGroupID,
-                        ],
-                        ReturnType::SINGLE_OBJECT
+                        ]
                     );
 
-                    if (isset($specialPrice->fNettoPreis)) {
+                    if ($specialPrice !== null && isset($specialPrice->fNettoPreis)) {
                         $specialPrice->fNettoPreis = $this->getRecalculatedNetPrice(
                             $specialPrice->fNettoPreis,
                             $defaultTax,
@@ -336,6 +333,13 @@ class Preise
             $newNetPrice = \round($netPrice * ($defaultTax + 100) / 100, 2) / ($conversionTax + 100) * 100;
         }
 
+        \executeHook(\HOOK_RECALCULATED_NET_PRICE, [
+            'netPrice'      => $netPrice,
+            'defaultTax'    => $defaultTax,
+            'conversionTax' => $conversionTax,
+            'newNetPrice'   => &$newNetPrice
+        ]);
+
         return (double)$newNetPrice;
     }
 
@@ -350,11 +354,11 @@ class Preise
         }
         $cacheID = 'custprice_' . $customerID;
         if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $data = Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->getSingleObject(
                 'SELECT COUNT(kPreis) AS nAnzahl 
                     FROM tpreis
-                    WHERE kKunde = ' . $customerID,
-                ReturnType::SINGLE_OBJECT
+                    WHERE kKunde = :cid',
+                ['cid' => $customerID]
             );
             if (\is_object($data)) {
                 $cacheTags = [\CACHING_GROUP_ARTICLE];
@@ -362,7 +366,7 @@ class Preise
             }
         }
 
-        return \is_object($data) && $data->nAnzahl > 0;
+        return $data !== null && $data->nAnzahl > 0;
     }
 
     /**
@@ -465,7 +469,9 @@ class Preise
             ];
         }
         if (!empty($this->alterVKNetto)) {
-            $this->discountPercentage = (int)((($this->alterVKNetto - $this->fVKNetto) * 100) / $this->alterVKNetto);
+            $this->discountPercentage = (int)\round(
+                (($this->alterVKNetto - $this->fVKNetto) * 100) / $this->alterVKNetto
+            );
         }
 
         return $this;
@@ -502,9 +508,9 @@ class Preise
      */
     public static function getPriceJoinSql(
         int $customerGroupID,
-        $priceAlias = 'tpreis',
-        $detailAlias = 'tpreisdetail',
-        $productAlias = 'tartikel'
+        string $priceAlias = 'tpreis',
+        string $detailAlias = 'tpreisdetail',
+        string $productAlias = 'tartikel'
     ): string {
         return 'JOIN tpreis AS ' . $priceAlias . ' ON ' . $priceAlias . '.kArtikel = ' . $productAlias . '.kArtikel
                     AND ' . $priceAlias . '.kKundengruppe = ' . $customerGroupID . '
@@ -541,19 +547,19 @@ class Preise
     }
 
     /**
-     * @param float         $preis
-     * @param Currency|null $waehrung
-     * @param bool          $html
+     * @param float|string           $price
+     * @param Currency|stdClass|null $currency
+     * @param bool                   $html
      * @return string
      * @former gibPreisLocalizedOhneFaktor()
      */
-    public static function getLocalizedPriceWithoutFactor($preis, $waehrung = null, bool $html = true): string
+    public static function getLocalizedPriceWithoutFactor($price, $currency = null, bool $html = true): string
     {
-        $currency = !$waehrung ? Frontend::getCurrency() : $waehrung;
+        $currency = $currency ?? Frontend::getCurrency();
         if ($currency !== null && \get_class($currency) === 'stdClass') {
             $currency = new Currency($currency->kWaehrung);
         }
-        $localized = \number_format($preis, 2, $currency->getDecimalSeparator(), $currency->getThousandsSeparator());
+        $localized = \number_format($price, 2, $currency->getDecimalSeparator(), $currency->getThousandsSeparator());
         $name      = $html ? $currency->getHtmlEntity() : $currency->getName();
 
         return $currency->getForcePlacementBeforeNumber()
@@ -563,7 +569,7 @@ class Preise
 
     /**
      * @param float|string $price
-     * @param object|null  $currency
+     * @param mixed        $currency
      * @param bool         $html
      * @param int          $decimals
      * @return string
@@ -589,6 +595,15 @@ class Preise
             $currency->getThousandsSeparator()
         );
         $currencyName = $html ? $currency->getHtmlEntity() : $currency->getName();
+
+        \executeHook(\HOOK_LOCALIZED_PRICE_STRING, [
+            'price'        => $price,
+            'currency'     => &$currency,
+            'html'         => $html,
+            'decimals'     => $decimals,
+            'currencyName' => &$currencyName,
+            'localized'    => &$localized
+        ]);
 
         return $currency->getForcePlacementBeforeNumber()
             ? ($currencyName . ' ' . $localized)

@@ -4,7 +4,7 @@
     {/block}
 
     {block name='basket-index-content'}
-        {container class="basket"}
+        {container fluid=$Link->getIsFluid() class="basket {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
             {row}
                 {block name='basket-index-main'}
                 {col cols=12 lg="{if ($Warenkorb->PositionenArr|@count > 0)}7{else}12{/if}"}
@@ -38,9 +38,9 @@
                                     {if $Einstellungen.kaufabwicklung.warenkorb_versandermittlung_anzeigen === 'Y'}
                                         {block name='basket-index-form-shipping-calc'}
                                             {opcMountPoint id='opc_before_shipping_calculator'}
-                                            {form id="basket-shipping-estimate-form" method="post" action="{get_static_route id='warenkorb.php'}#basket-shipping-estimate-form" slide=true}
+                                            {form id="basket-shipping-estimate-form" class="shipping-calculator-form" method="post" action="{get_static_route id='warenkorb.php'}#basket-shipping-estimate-form" slide=true}
                                                 {block name='basket-index-include-shipping-calculator'}
-                                                    {include file='snippets/shipping_calculator.tpl' checkout=true}
+                                                    {include file='snippets/shipping_calculator.tpl' checkout=true hrAtEnd=false}
                                                 {/block}
                                             {/form}
                                         {/block}
@@ -56,18 +56,18 @@
                                             {row class="basket-freegift"}
                                                 {col cols=12}
                                                     {block name='basket-index-freegifts-heading'}
-                                                        <div class="h3 basket-heading">{lang key='freeGiftFromOrderValueBasket'}</div>
+                                                        <div class="h2 basket-heading hr-sect">{lang key='freeGiftFromOrderValueBasket'}</div>
                                                     {/block}
                                                 {/col}
                                                 {col cols=12}
                                                     {block name='basket-index-form-freegift'}
                                                         {form method="post" name="freegift" action="{get_static_route id='warenkorb.php'}" class="text-center-util" slide=true}
                                                             {block name='basket-index-freegifts'}
-                                                                <div id="freegift"
-                                                                     class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-half"
-                                                                     data-slick-type="slider-half">
+                                                                {row id="freegift"
+                                                                     class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-half {if $oArtikelGeschenk_arr|count < 3}slider-no-preview{/if}"
+                                                                     data=["slick-type"=>"slider-half"]}
                                                                     {include file='snippets/slider_items.tpl' items=$oArtikelGeschenk_arr type='freegift'}
-                                                                </div>
+                                                                {/row}
                                                             {/block}
                                                             {block name='basket-index-freegifts-form-submit'}
                                                                 {input type="hidden" name="gratis_geschenk" value="1"}
@@ -119,26 +119,36 @@
                             {block name='basket-index-side-heading'}
                                 <div class="h2 basket-heading">{lang key="orderOverview" section="account data"}</div>
                             {/block}
-                            {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y' && $KuponMoeglich == 1}
+                            {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y'}
                                 {block name='basket-index-coupon'}
                                     {card class='card-gray' no-body=true}
-                                        {cardheader}
-                                        {block name='basket-index-coupon-heading'}
-                                            <strong class="font-size-lg" data-toggle="collapse" data-target="#coupon-form">{lang key='useCoupon' section='checkout'}</strong>
-                                        {/block}
-                                        {/cardheader}
-                                        {collapse id="coupon-form"}
-                                            {cardbody}
-                                            {block name='basket-index-coupon-form'}
-                                                {form class="jtl-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}" slide=true}
-                                                    {formgroup label-for="couponCode" label={lang key='couponCode' section='account data'} class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
-                                                        {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder=" " required=true}
-                                                    {/formgroup}
-                                                    {button type="submit" value=1 variant="outline-primary" block=true}{lang key='useCoupon' section='checkout'}{/button}
-                                                {/form}
+                                        {if $KuponMoeglich == 1}
+                                            {block name='basket-index-coupon-available'}
+                                                {cardheader}
+                                                {block name='basket-index-coupon-heading'}
+                                                    <strong class="font-size-lg" data-toggle="collapse" data-target="#coupon-form">{lang key='useCoupon' section='checkout'}</strong>
+                                                {/block}
+                                                {/cardheader}
+                                                {collapse id="coupon-form"}
+                                                    {cardbody}
+                                                    {block name='basket-index-coupon-form'}
+                                                        {form class="jtl-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}" slide=true}
+                                                            {formgroup label-for="couponCode" label={lang key='couponCodePlaceholder' section='checkout'} class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
+                                                                {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder=" " required=true}
+                                                            {/formgroup}
+                                                            {button type="submit" value=1 variant="outline-primary" block=true}{lang key='couponSubmit' section='checkout'}{/button}
+                                                        {/form}
+                                                    {/block}
+                                                    {/cardbody}
+                                                {/collapse}
                                             {/block}
-                                            {/cardbody}
-                                        {/collapse}
+                                        {else}
+                                            {block name='basket-index-coupon-unavailable'}
+                                                {cardheader}
+                                                    {lang key='couponUnavailable' section='checkout'}
+                                                {/cardheader}
+                                            {/block}
+                                        {/if}
                                     {/card}
                                 {/block}
                             {/if}
@@ -212,9 +222,19 @@
                             {/card}
                             {if !empty($WarenkorbVersandkostenfreiHinweis) && $Warenkorb->PositionenArr|@count > 0}
                                 {block name='basket-index-alert'}
-                                    {row class="basket-summary-notice"}
+                                    {row class="basket-summary-notice basket-summary-top"}
                                         {col cols=1}<i class="fas fa-truck"></i>{/col}
                                         {col cols=10 class="basket_notice"}{$WarenkorbVersandkostenfreiHinweis}{/col}
+                                    {/row}
+                                {/block}
+                            {/if}
+                            {if $Einstellungen.kaufabwicklung.warenkorb_gesamtgewicht_anzeigen === 'Y'}
+                                {block name='basket-index-notice-weight'}
+                                    {row class="basket-summary-notice-weight-wrapper {if empty($WarenkorbVersandkostenfreiHinweis)}basket-summary-top{/if}"}
+                                        {col cols=1}<i class="fas fa-weight-hanging"></i>{/col}
+                                        {col cols=10 class="basket-summary-notice-weight"}
+                                            {lang key='cartTotalWeight' section='basket' printf=$WarenkorbGesamtgewicht}
+                                        {/col}
                                     {/row}
                                 {/block}
                             {/if}

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * update tsynclogin table
  *
@@ -6,7 +6,6 @@
  * @created Mon, 15 Jan 2018 15:08:00 +0100
  */
 
-use JTL\DB\ReturnType;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -40,7 +39,8 @@ class Migration_20180115150800 extends Migration implements IMigration
 
         $values->kSynclogin = 1;
         $passInfo           = password_get_info($values->cPass);
-        if ($passInfo['algo'] === 0) {
+        // PHP7.3 => (int)0, PHP7.4++ => NULL
+        if (empty($passInfo['algo'])) {
             $values->cPass = password_hash($values->cPass, PASSWORD_DEFAULT);
         }
 
@@ -52,9 +52,8 @@ class Migration_20180115150800 extends Migration implements IMigration
      */
     public function down()
     {
-        $columns = $this->getDB()->query("SHOW COLUMNS FROM tsynclogin LIKE 'kSynclogin'", ReturnType::SINGLE_OBJECT);
-
-        if ($columns && $columns->Field === 'kSynclogin') {
+        $columns = $this->getDB()->getSingleObject("SHOW COLUMNS FROM tsynclogin LIKE 'kSynclogin'");
+        if ($columns !== null && $columns->Field === 'kSynclogin') {
             $this->execute(
                 'ALTER TABLE `tsynclogin`
                     DROP COLUMN `kSynclogin`,

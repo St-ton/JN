@@ -68,6 +68,9 @@
 }
 
 .sidepanel-left {
+	@include media-breakpoint-down(md) {
+		margin-top: map-get($spacers, 4);
+	}
 	@include media-breakpoint-up(lg) {
 		padding-right: map-get($spacers, 5);
 	}

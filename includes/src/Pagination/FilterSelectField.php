@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Pagination;
 
@@ -24,7 +24,7 @@ class FilterSelectField extends FilterField
      * FilterSelectField constructor.
      *
      * @param Filter $filter
-     * @param string $title
+     * @param string|array $title
      * @param string $column
      * @param int    $defaultOption
      */
@@ -41,7 +41,7 @@ class FilterSelectField extends FilterField
      * @param int        $testOp
      * @return FilterSelectOption
      */
-    public function addSelectOption($title, $value, int $testOp = Operation::CUSTOM): FilterSelectOption
+    public function addSelectOption(string $title, $value, int $testOp = Operation::CUSTOM): FilterSelectOption
     {
         $option          = new FilterSelectOption($title, $value, $testOp);
         $this->options[] = $option;
@@ -62,29 +62,29 @@ class FilterSelectField extends FilterField
      */
     public function getWhereClause(): ?string
     {
-        $value  = $this->options[(int)$this->value]->getValue();
         $testOp = $this->options[(int)$this->value]->getTestOp();
+        $value  = Shop::Container()->getDB()->escape($this->options[(int)$this->value]->getValue());
 
         if ($value !== '' || $testOp === Operation::EQUALS || $testOp === Operation::NOT_EQUAL) {
             switch ($testOp) {
                 case Operation::CONTAINS:
-                    return $this->column . " LIKE '%" . Shop::Container()->getDB()->escape($value) . "%'";
+                    return $this->column . " LIKE '%" . $value . "%'";
                 case Operation::BEGINS_WITH:
-                    return $this->column . " LIKE '" . Shop::Container()->getDB()->escape($value) . "%'";
+                    return $this->column . " LIKE '" . $value . "%'";
                 case Operation::ENDS_WITH:
-                    return $this->column . " LIKE '%" . Shop::Container()->getDB()->escape($value) . "'";
+                    return $this->column . " LIKE '%" . $value . "'";
                 case Operation::EQUALS:
-                    return $this->column . " = '" . Shop::Container()->getDB()->escape($value) . "'";
+                    return $this->column . " = '" . $value . "'";
                 case Operation::LOWER_THAN:
-                    return $this->column . " < '" . Shop::Container()->getDB()->escape($value) . "'";
+                    return $this->column . " < '" . $value . "'";
                 case Operation::GREATER_THAN:
-                    return $this->column . " > '" . Shop::Container()->getDB()->escape($value) . "'";
+                    return $this->column . " > '" . $value . "'";
                 case Operation::LOWER_THAN_EQUAL:
-                    return $this->column . " <= '" . Shop::Container()->getDB()->escape($value) . "'";
+                    return $this->column . " <= '" . $value . "'";
                 case Operation::GREATER_THAN_EQUAL:
-                    return $this->column . " >= '" . Shop::Container()->getDB()->escape($value) . "'";
+                    return $this->column . " >= '" . $value . "'";
                 case Operation::NOT_EQUAL:
-                    return $this->column . " != '" . Shop::Container()->getDB()->escape($value) . "'";
+                    return $this->column . " != '" . $value . "'";
             }
         }
 

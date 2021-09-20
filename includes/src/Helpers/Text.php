@@ -205,7 +205,7 @@ class Text
      * @param string $needle
      * @return bool
      */
-    public static function startsWith(string $haystack, string $needle)
+    public static function startsWith(string $haystack, string $needle): bool
     {
         return \mb_strpos($haystack, $needle) === 0;
     }
@@ -215,9 +215,10 @@ class Text
      * @param string $needle
      * @return bool
      */
-    public static function endsWith(string $haystack, string $needle)
+    public static function endsWith(string $haystack, string $needle): bool
     {
         $length = \mb_strlen($needle);
+
         return \mb_substr($haystack, -$length, $length) === $needle;
     }
 
@@ -272,11 +273,14 @@ class Text
     }
 
     /**
-     * @param string $input
-     * @return string
+     * @param string|mixed $input
+     * @return string|mixed
      */
-    public static function unhtmlentities($input): string
+    public static function unhtmlentities($input)
     {
+        if (!\is_string($input)) {
+            return $input;
+        }
         // replace numeric entities
         $input = \preg_replace_callback(
             '~&#x([0-9a-fA-F]+);~i',
@@ -598,16 +602,33 @@ class Text
     /**
      * @note PHP's FILTER_SANITIZE_URL cannot handle unicode -
      * without idn_to_ascii (PECL) this will fail with umlaut domains
-     * @param string $input
-     * @param bool   $validate
+     * @param mixed $input
+     * @param bool  $validate
+     * @param bool  $setHTTP
      * @return string|false - a filtered string or false if invalid
      */
-    public static function filterURL($input, bool $validate = true)
+    public static function filterURL($input, bool $validate = true, bool $setHTTP = false)
     {
+        if (!\is_string($input)) {
+            return false;
+        }
         if (\mb_detect_encoding($input) !== 'UTF-8' || !self::is_utf8($input)) {
             $input = self::convertUTF8($input);
         }
-        $input     = \idn_to_ascii($input, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46);
+        $parsed = \parse_url($input);
+        if ($parsed === false) {
+            return false;
+        }
+        $hasScheme = isset($parsed['scheme']);
+        $domain    = $parsed['host'] ?? $parsed['path'];
+
+        $idnDomain = \idn_to_ascii($domain, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46);
+        if ($idnDomain !== $domain) {
+            $input = \str_replace($domain, $idnDomain, $input);
+        }
+        if ($setHTTP && $hasScheme === false) {
+            $input = 'http://' . $input;
+        }
         $sanitized = \filter_var($input, \FILTER_SANITIZE_URL);
 
         return $validate
@@ -667,9 +688,9 @@ class Text
         if (!\preg_match('/^\d{1,2}\.\d{1,2}\.(\d{4})$/', $data)) {
             return 2;
         }
-        [$tag, $monat, $jahr] = \explode('.', $data);
+        [$day, $month, $year] = \explode('.', $data);
 
-        return !\checkdate($monat, $tag, $jahr) ? 3 : 0;
+        return !\checkdate((int)$month, (int)$day, (int)$year) ? 3 : 0;
     }
 
     /**
@@ -697,7 +718,7 @@ class Text
      * @param bool                $copy   false if objects should be changed, true if they should be cloned first
      * @return string|array|object converted data
      */
-    public static function utf8_convert_recursive($data, $encode = true, $copy = false)
+    public static function utf8_convert_recursive($data, bool $encode = true, bool $copy = false)
     {
         if (\is_string($data)) {
             $isUtf8 = \mb_detect_encoding($data, 'UTF-8', true) !== false;
@@ -757,12 +778,25 @@ class Text
      * @param string $string
      * @return string
      */
-    public static function removeNumerousWhitespaces($string): string
+    public static function removeNumerousWhitespaces(string $string): string
     {
-        while (\mb_strpos($string, '  ')) {
+        while (\mb_strpos($string, '  ') !== false) {
             $string = \str_replace('  ', ' ', $string);
         }
 
         return $string;
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    public static function replaceUmlauts(string $text): string
+    {
+        return \str_replace(
+            ['Ä', 'Ö', 'Ü', 'ß', 'ä', 'ö', 'ü', 'æ'],
+            ['Ae', 'Oe', 'Ue', 'ss', 'ae', 'oe', 'ue', 'ae'],
+            $text
+        );
     }
 }

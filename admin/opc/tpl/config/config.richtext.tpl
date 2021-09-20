@@ -1,8 +1,6 @@
 <div class='form-group'>
     <label for="config-{$propname}">{$propdesc.label}</label>
-    <textarea name="{$propname}" id="textarea-{$propname}" class="form-control" {if $required}required{/if}>
-        {$propval|htmlspecialchars}
-    </textarea>
+    <textarea name="{$propname}" id="textarea-{$propname}" class="form-control" {if $required}required{/if}>{$propval|htmlspecialchars}</textarea>
     <script>
         var adminLang = '{Shop::Container()->getGetText()->getLanguage()}'.toLowerCase();
 
@@ -18,6 +16,10 @@
                 filebrowserBrowseUrl: 'elfinder.php?ckeditor=1&token=' + JTL_TOKEN + '&mediafilesType=image',
             },
         );
+
+        $.each(CKEDITOR.dtd.$removeEmpty, key => {
+            CKEDITOR.dtd.$removeEmpty[key] = false;
+        });
 
         opc.once('save-config', () => {
             $('#textarea-{$propname}').val(CKEDITOR.instances['textarea-{$propname}'].getData());

@@ -1,12 +1,18 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Installation\VueInstaller;
 
 define('PFAD_ROOT', dirname(__DIR__) . '/');
-ini_set('error_reporting', E_ALL);
-ini_set('display_errors', 1);
+ini_set('error_reporting', (string)E_ALL);
+ini_set('display_errors', '1');
+
+if (PHP_VERSION_ID < 70300) {
+    echo json_encode(['error' => 'Invalid PHP version: ' . PHP_VERSION]);
+    exit;
+}
 
 $protocol   = (isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) === 'on' || (int)$_SERVER['HTTPS'] === 1))
+    || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
     ? 'https://'
     : 'http://';
 $port       = '';
@@ -29,6 +35,7 @@ $url    = $parsed['scheme'] . '://' . $parsed['host'] . $port . $path;
 define('URL_SHOP', $url);
 define('SHOP_LOG_LEVEL', E_ALL);
 define('SMARTY_LOG_LEVEL', E_ALL);
+define('ES_DB_LOGGING', false);
 
 require_once __DIR__ . '/vendor/autoload.php';
 require_once PFAD_ROOT . 'includes/defines.php';

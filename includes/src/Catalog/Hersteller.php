@@ -2,11 +2,11 @@
 
 namespace JTL\Catalog;
 
-use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
-use JTL\Session;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 
@@ -94,6 +94,11 @@ class Hersteller
     public $cBildURLNormal;
 
     /**
+     * @var string
+     */
+    public $cHomepage = '';
+
+    /**
      * Hersteller constructor.
      *
      * @param int  $id
@@ -122,6 +127,10 @@ class Hersteller
             $this->kHersteller = (int)$this->kHersteller;
             $this->nSortNr     = (int)$this->nSortNr;
         }
+        $this->cHomepage = Text::filterURL($this->cHomepage, true, true);
+        if ($this->cHomepage === false) {
+            $this->cHomepage = '';
+        }
         $this->loadImages($obj);
 
         return $this;
@@ -145,7 +154,7 @@ class Hersteller
         $cacheTags = [\CACHING_GROUP_MANUFACTURER];
         $cached    = true;
         if ($noCache === true || ($manufacturer = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $manufacturer = Shop::Container()->getDB()->queryPrepared(
+            $manufacturer = Shop::Container()->getDB()->getSingleObject(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                     thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                     therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
@@ -162,8 +171,7 @@ class Hersteller
                 [
                     'langID' => $languageID,
                     'manfID' => $id
-                ],
-                ReturnType::SINGLE_OBJECT
+                ]
             );
             $cached       = false;
             \executeHook(\HOOK_HERSTELLER_CLASS_LOADFROMDB, [
@@ -180,7 +188,7 @@ class Hersteller
                 'cacheTags'   => &$cacheTags
             ]);
         }
-        if ($manufacturer !== false) {
+        if ($manufacturer !== null) {
             $this->loadFromObject($manufacturer);
         }
 
@@ -232,25 +240,25 @@ class Hersteller
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                                     AND tartikelsichtbarkeit.kKundengruppe = ' .
-                Session\Frontend::getCustomerGroup()->getID() .
+                Frontend::getCustomerGroup()->getID() .
                 ')
                         )';
         }
-        $items   = Shop::Container()->getDB()->query(
-            'SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
+        $items   = Shop::Container()->getDB()->getObjects(
+            "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                 thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                 therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
                 tseo.cSeo, thersteller.cSeo AS originalSeo
                 FROM thersteller
                 LEFT JOIN therstellersprache 
                     ON therstellersprache.kHersteller = thersteller.kHersteller
-                    AND therstellersprache.kSprache = ' . $languageID . "
+                    AND therstellersprache.kSprache = :lid
                 LEFT JOIN tseo 
                     ON tseo.kKey = thersteller.kHersteller
                     AND tseo.cKey = 'kHersteller'
-                    AND tseo.kSprache = " . $languageID . $sqlWhere . '
+                    AND tseo.kSprache = :lid " . $sqlWhere . '
                 ORDER BY thersteller.nSortNr, thersteller.cName',
-            ReturnType::ARRAY_OF_OBJECTS
+            ['lid' => $languageID]
         );
         $results = [];
         foreach ($items as $item) {

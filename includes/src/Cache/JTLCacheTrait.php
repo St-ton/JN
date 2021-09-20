@@ -19,7 +19,7 @@ trait JTLCacheTrait
     public $journalID;
 
     /**
-     * @var array
+     * @var array|null
      */
     public $journal;
 
@@ -352,7 +352,7 @@ trait JTLCacheTrait
         $dtT = new \DateTime('@' . $seconds);
 
         return $dtF->diff($dtT)->format(
-            '%a ' . __('days') . ', %h' . __('hours') . ', %i ' . __('minutes') . ', %s ' . __('seconds')
+            '%a ' . \__('days') . ', %h' . \__('hours') . ', %i ' . \__('minutes') . ', %s ' . \__('seconds')
         );
     }
 

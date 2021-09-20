@@ -10,6 +10,7 @@ use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Type;
+use JTL\Helpers\Product;
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
@@ -27,30 +28,35 @@ class ProductStream extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'search' => [
-                'type'  => InputType::SEARCH,
-                'label' => 'Suche',
-                'placeholder' => __('search'),
-                'width' => 67,
-                'order' => 2,
-            ],
             'listStyle'    => [
                 'type'    => InputType::SELECT,
-                'label'   => __('presentation'),
-                'width'   => 34,
-                'order'   => 1,
+                'label'   => \__('presentation'),
+                'width'   => 66,
                 'options' => [
-                    'gallery'      => __('presentationGallery'),
-                    'list'         => __('presentationList'),
-                    'simpleSlider' => __('presentationSimpleSlider'),
-                    'slider'       => __('presentationSlider'),
-                    'box-slider'   => __('presentationBoxSlider'),
+                    'gallery'      => \__('presentationGallery'),
+                    'list'         => \__('presentationList'),
+                    'simpleSlider' => \__('presentationSimpleSlider'),
+                    'slider'       => \__('presentationSlider'),
+                    'box-slider'   => \__('presentationBoxSlider'),
                 ],
                 'default' => 'gallery',
             ],
+            'maxProducts' => [
+                'type'     => InputType::NUMBER,
+                'label'    => \__('maxProducts'),
+                'width'    => 33,
+                'default'  => 15,
+                'required' => true,
+            ],
+            'search' => [
+                'type'        => InputType::SEARCH,
+                'label'       => \__('search'),
+                'placeholder' => \__('search'),
+                'width'       => 50,
+            ],
             'filters'      => [
                 'type'     => InputType::FILTER,
-                'label'    => __('itemFilter'),
+                'label'    => \__('itemFilter'),
                 'default'  => [],
                 'searcher' => 'search',
             ],
@@ -63,7 +69,7 @@ class ProductStream extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            __('Styles') => 'styles',
+            \__('Styles') => 'styles',
         ];
     }
 
@@ -87,7 +93,7 @@ class ProductStream extends Portlet
             $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
         }
 
-        return $productFilter->getProductKeys();
+        return $productFilter->getProductKeys()->slice(0, $instance->getProperty('maxProducts'));
     }
 
     /**
@@ -104,6 +110,6 @@ class ProductStream extends Portlet
             $products[] = (new Artikel())->fuelleArtikel($productID, $defaultOptions);
         }
 
-        return $products;
+        return Product::separateByAvailability($products);
     }
 }

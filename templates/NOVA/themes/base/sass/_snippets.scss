@@ -146,11 +146,10 @@
 }
 
 /* shipping-calculator */
+.shipping-calculator-form {
+  margin-bottom: map-get($spacers, 6);
+}
 .shipping-calculator-main {
-  margin-bottom: map-get($spacers, 5);
-  .col {
-    margin-bottom: map-get($spacers, 3);
-  }
   .shipping-calculator-main-heading {
     margin-bottom: map-get($spacers, 4);
   }
@@ -164,6 +163,9 @@
 .vat_info {
   color: $text-muted;
   .shipping {
+    display: inline-block;
+  }
+  abbr {
     display: inline-block;
   }
 }
@@ -306,6 +308,11 @@
   .wishlist-count {
     margin-left: auto;
   }
+  .product-characteristics {
+    .col {
+      @include text-truncate;
+    }
+  }
 }
 
 /* mobile */
@@ -319,4 +326,9 @@
   padding-left: map-get($spacers, 3);
   padding-right: map-get($spacers, 3);
   margin-top: auto;
+}
+.snippets-suggestion {
+  a {
+    display: block;
+  }
 }

@@ -40,7 +40,7 @@ sortable.on('drag:start', (evt) => {
 
 	clearTimeout(to)
 
-	if($target.parents(`[${Data.ignore}]`).length > 0 || $target.is(`[${Data.ignore}]`)) {
+	if($target.parents(`[${Data.ignore}], a, select`).length > 0 || $target.is(`[${Data.ignore}], a, select`)) {
 		sortable.dragging = false
 		evt.cancel()
 	} else {
@@ -51,7 +51,11 @@ sortable.on('drag:start', (evt) => {
 sortable.on('sortable:stop', (evt) => {
 	to = setTimeout(() => {
 		$body.removeClass('draggable--show-grid')
-        // widget anordnung speichern
+        ioCall('setWidgetPosition', [
+            $(evt.data.dragEvent.data.originalSource).attr('ref'),
+            $(evt.data.newContainer).prop('id'),
+            evt.data.newIndex
+        ]);
     }, saveDelay)
 })
 
@@ -66,3 +70,45 @@ $(document).on('click', `[${Data.widgetRemove}]`, (e) => {
 	e.preventDefault()
 	// widget vom dashboard entfernen und zur liste hinzufügen
 })
+
+$(function () {
+    $('.widget').each(function (i, widget) {
+        var widgetId = $(widget).attr('ref');
+        var $widgetContent = $('.widget-content', widget);
+        var $widget = $(widget);
+        var hidden = $('.widget-hidden', widget).length > 0;
+
+        // add click handler for widgets collapse button
+        $('<a href="#" class="btn-sm"><i class="fa fa-chevron-' + (hidden ? 'down' : 'up') + '"></li></a>')
+            .on('click', function (e) {
+                if ($widgetContent.is(':hidden')) {
+                    ioCall('expandWidget', [widgetId, 1], undefined, undefined, undefined, true);
+                    $widgetContent.slideDown('fast');
+                    $('i', this).attr('class', 'fa fa-chevron-up');
+                } else {
+                    ioCall('expandWidget', [widgetId, 0], undefined, undefined, undefined, true);
+                    $widgetContent.slideUp('fast');
+                    $('i', this).attr('class', 'fa fa-chevron-down');
+                }
+                e.preventDefault();
+            })
+            .appendTo($('.options', widget));
+
+        // add click handler for widgets close button
+        $('<a href="#" class="ml-2 btn-sm"><i class="fal fa-times"></li></a>')
+            .on('click', function (e) {
+                e.preventDefault();
+                ioCall('closeWidget', [widgetId], function (result) {
+                    ioCall('getAvailableWidgets');
+                    $widget.slideUp('fast');
+                });
+            })
+            .appendTo($('.options', widget));
+    });
+})
+
+// no drag'n drop on touch devices
+$('.dashboard-wrapper').one('touchstart', function() {
+    sortable.destroy();
+});
+

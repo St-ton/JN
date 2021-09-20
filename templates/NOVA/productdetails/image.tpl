@@ -13,7 +13,8 @@
             {if !($Artikel->nIstVater && $Artikel->kVaterArtikel == 0)}
                 {block name='productdetails-image-actions'}
                     <div class="product-actions" data-toggle="product-actions">
-                        {if $Einstellungen.artikeldetails.artikeldetails_vergleichsliste_anzeigen === 'Y'}
+                        {if $Einstellungen.artikeldetails.artikeldetails_vergleichsliste_anzeigen === 'Y'
+                            && $Einstellungen.vergleichsliste.vergleichsliste_anzeigen === 'Y'}
                             {block name='productdetails-image-include-comparelist-button'}
                                 {include file='snippets/comparelist_button.tpl'}
                             {/block}
@@ -127,9 +128,20 @@
                 {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
                     {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                         {if $Variationswert->getImage() !== null}
-                            <div class="variation-image-preview d-none fade vt{$Variationswert->kEigenschaftWert}">
-                                {include file='snippets/image.tpl' item=$Variationswert sizes='100vw'}
-                            </div>
+                            {block name='productdetails-image-variation-preview-inner'}
+                                <div class="variation-image-preview d-none fade vt{$Variationswert->kEigenschaftWert}">
+                                    {block name='productdetails-image-variation-preview-title'}
+                                        {if $Variation->cTyp === 'IMGSWATCHES'}
+                                            <div class="variation-image-preview-title">
+                                                {$Variation->cName}: <span class="variation-image-preview-title-value">{$Variationswert->cName}</span>
+                                            </div>
+                                        {/if}
+                                    {/block}
+                                    {block name='productdetails-image-variation-preview-image'}
+                                        {include file='snippets/image.tpl' item=$Variationswert sizes='100vw'}
+                                    {/block}
+                                </div>
+                            {/block}
                         {/if}
                     {/foreach}
                 {/foreach}

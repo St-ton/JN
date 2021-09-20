@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Cart\CartItem;
 use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
 use JTL\Checkout\Kupon;
@@ -12,10 +13,10 @@ use JTL\Customer\CustomerAttribute;
 use JTL\Customer\CustomerAttributes;
 use JTL\Customer\CustomerField;
 use JTL\Customer\CustomerFields;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Order;
 use JTL\Helpers\PaymentMethod as Helper;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -86,17 +87,11 @@ function pruefeUnregistriertBestellen($post): int
     $cart = Frontend::getCart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
-    $missingInput       = checkKundenFormular(0);
     $Kunde              = getKundendaten($post, 0);
     $customerAttributes = getKundenattribute($post);
     $customerGroupID    = Frontend::getCustomerGroup()->getID();
     $checkBox           = new CheckBox();
-    $missingInput       = array_merge($missingInput, $checkBox->validateCheckBox(
-        CHECKBOX_ORT_REGISTRIERUNG,
-        $customerGroupID,
-        $post,
-        true
-    ));
+    $missingInput       = getMissingInput($post, $customerGroupID, $checkBox);
 
     $Kunde->getCustomerAttributes()->assign($customerAttributes);
     Frontend::set('customerAttributes', $customerAttributes);
@@ -105,10 +100,14 @@ function pruefeUnregistriertBestellen($post): int
             $post['kLieferadresse'] = 0;
             $post['lieferdaten']    = 1;
             pruefeLieferdaten($post);
+            $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand ?? $post['land'];
+            Tax::setTaxRates();
         } elseif (isset($post['kLieferadresse']) && (int)$post['kLieferadresse'] > 0) {
             pruefeLieferdaten($post);
+            $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand;
+            Tax::setTaxRates();
         } elseif (isset($post['register']['shipping_address'])) {
-            pruefeLieferdaten($post['register']['shipping_address'], $missingInput);
+            checkNewShippingAddress($post, $missingInput);
         }
     } elseif (isset($post['lieferdaten']) && (int)$post['lieferdaten'] === 1) {
         // compatibility with older template
@@ -165,6 +164,41 @@ function pruefeUnregistriertBestellen($post): int
 }
 
 /**
+ * Gibt mögliche fehlende Felder aus Formulareingaben zurück.
+ *
+ * @param array              $post
+ * @param int|null           $customerGroupId
+ * @param \JTL\CheckBox|null $checkBox
+ *
+ * @return array
+ */
+function getMissingInput(array $post, ?int $customerGroupId = null, ?CheckBox $checkBox = null): array
+{
+    $missingInput    = checkKundenFormular(0);
+    $customerGroupId = $customerGroupId ?? Frontend::getCustomerGroup()->getID();
+    $checkBox        = $checkBox ?? new CheckBox();
+    
+    return array_merge($missingInput, $checkBox->validateCheckBox(
+        CHECKBOX_ORT_REGISTRIERUNG,
+        $customerGroupId,
+        $post,
+        true
+    ));
+}
+
+/**
+ * Prüft, ob eine neue Lieferadresse gültig ist.
+ *
+ * @param array      $post
+ * @param array|null $missingInput
+ */
+function checkNewShippingAddress(array $post, ?array $missingInput = null): void
+{
+    $missingInput = $missingInput ?? getMissingInput($post);
+    pruefeLieferdaten($post['register']['shipping_address'], $missingInput);
+}
+
+/**
  * @param array $post
  * @param array|null $missingData
  */
@@ -186,6 +220,9 @@ function pruefeLieferdaten($post, &$missingData = null): void
         $Lieferadresse             = getLieferdaten($post);
         $ok                        = angabenKorrekt($missingData);
         $_SESSION['Lieferadresse'] = $Lieferadresse;
+
+        $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand;
+        Tax::setTaxRates();
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_NEUELIEFERADRESSE_PLAUSI, [
             'nReturnValue'    => &$ok,
             'fehlendeAngaben' => &$missingData
@@ -202,14 +239,14 @@ function pruefeLieferdaten($post, &$missingData = null): void
         }
     } elseif ((int)$post['kLieferadresse'] > 0) {
         // vorhandene lieferadresse
-        $addressData = Shop::Container()->getDB()->query(
+        $addressData = Shop::Container()->getDB()->getSingleObject(
             'SELECT kLieferadresse
                 FROM tlieferadresse
-                WHERE kKunde = ' . Frontend::getCustomer()->getID() . '
-                    AND kLieferadresse = ' . (int)$post['kLieferadresse'],
-            ReturnType::SINGLE_OBJECT
+                WHERE kKunde = :cid
+                    AND kLieferadresse = :daid',
+            ['cid' => Frontend::getCustomer()->getID(), 'daid' => (int)$post['kLieferadresse']]
         );
-        if ($addressData->kLieferadresse > 0) {
+        if ($addressData !== null && $addressData->kLieferadresse > 0) {
             $deliveryAddress           = new Lieferadresse((int)$addressData->kLieferadresse);
             $_SESSION['Lieferadresse'] = $deliveryAddress;
 
@@ -229,10 +266,11 @@ function pruefeLieferdaten($post, &$missingData = null): void
     ) {
         $delShip = mb_stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false;
         // ist die plz im zuschlagsbereich?
-        if (!empty((new Versandart((int)$_SESSION['Versandart']->kVersandart))->getShippingSurchargeForZip(
+        if ((new Versandart((int)$_SESSION['Versandart']->kVersandart))->getShippingSurchargeForZip(
             $_SESSION['Lieferadresse']->cPLZ,
             $_SESSION['Lieferadresse']->cLand
-        ))) {
+        ) !== null
+        ) {
             $delShip = true;
         }
         if ($delShip) {
@@ -262,10 +300,8 @@ function plausiGuthaben($post): void
             $_SESSION['Bestellung'] = new stdClass();
         }
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
-        $_SESSION['Bestellung']->fGuthabenGenutzt = min(
-            Frontend::getCustomer()->fGuthaben,
-            Frontend::getCart()->gibGesamtsummeWaren(true, false)
-        );
+        $_SESSION['Bestellung']->fGuthabenGenutzt = Order::getOrderCredit($_SESSION['Bestellung']);
+
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABENVERRECHNEN);
     }
 }
@@ -321,7 +357,7 @@ function pruefeBestaetigungStep(): void
         && mb_strlen($_SESSION['Zahlungsart']->cZusatzschrittTemplate) > 0
     ) {
         $paymentMethod = LegacyMethod::create($_SESSION['Zahlungsart']->cModulId);
-        if (is_object($paymentMethod) && !$paymentMethod->validateAdditional()) {
+        if ($paymentMethod !== null && is_object($paymentMethod) && !$paymentMethod->validateAdditional()) {
             $step = 'Zahlung';
         }
     }
@@ -401,7 +437,10 @@ function pruefeLieferadresseStep($get): void
     //sondersteps Lieferadresse ändern
     if (!empty($_SESSION['Lieferadresse'])) {
         $Lieferadresse = $_SESSION['Lieferadresse'];
-        if (isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1) {
+        if (isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1
+            || isset($_SESSION['preferredDeliveryCountryCode'])
+            && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand
+        ) {
             Kupon::resetNewCustomerCoupon();
             unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
             $step = 'Lieferadresse';
@@ -542,13 +581,7 @@ function pruefeZahlungsartwahlStep($post)
 function pruefeGuthabenNutzen(): void
 {
     if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen) {
-        $_SESSION['Bestellung']->fGuthabenGenutzt   = min(
-            Frontend::getCustomer()->fGuthaben,
-            Frontend::getCart()->gibGesamtsummeWaren(true, false)
-        );
-        $_SESSION['Bestellung']->GutscheinLocalized = Preise::getLocalizedPriceString(
-            $_SESSION['Bestellung']->fGuthabenGenutzt
-        );
+        $_SESSION['Bestellung']->fGuthabenGenutzt = Order::getOrderCredit($_SESSION['Bestellung']);
     }
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABEN_PLAUSI);
@@ -607,11 +640,10 @@ function gibStepUnregistriertBestellen(): void
 {
     /** @var Customer $Kunde */
     global $Kunde;
-    $origins         = Shop::Container()->getDB()->query(
+    $origins         = Shop::Container()->getDB()->getObjects(
         'SELECT *
             FROM tkundenherkunft
-            ORDER BY nSort',
-        ReturnType::ARRAY_OF_OBJECTS
+            ORDER BY nSort'
     );
     $customerGroupID = Frontend::getCustomerGroup()->getID();
     if ($Kunde !== null) {
@@ -663,11 +695,11 @@ function gibStepLieferadresse()
     $customerGroupID = Frontend::getCustomerGroup()->getID();
     if (Frontend::getCustomer()->kKunde > 0) {
         $addresses = [];
-        $data      = Shop::Container()->getDB()->query(
+        $data      = Shop::Container()->getDB()->getObjects(
             'SELECT DISTINCT(kLieferadresse)
                 FROM tlieferadresse
-                WHERE kKunde = ' . Frontend::getCustomer()->getID(),
-            ReturnType::ARRAY_OF_OBJECTS
+                WHERE kKunde = :cid',
+            ['cid' => Frontend::getCustomer()->getID()]
         );
         foreach ($data as $item) {
             if ($item->kLieferadresse > 0) {
@@ -979,15 +1011,14 @@ function plausiNeukundenKupon()
         }
         // not for already registered customers with order(s)
         if ($customer->getID() > 0) {
-            $order = Shop::Container()->getDB()->executeQueryPrepared(
+            $order = Shop::Container()->getDB()->getSingleObject(
                 'SELECT kBestellung
                     FROM tbestellung
                     WHERE kKunde = :customerID
                     LIMIT 1',
-                ['customerID' => $customer->getID()],
-                ReturnType::SINGLE_OBJECT
+                ['customerID' => $customer->getID()]
             );
-            if (!empty($order)) {
+            if ($order !== null) {
                 return;
             }
         }
@@ -1155,7 +1186,8 @@ function gibPostZahlungsInfo(): stdClass
  */
 function zahlungsartKorrekt(int $paymentMethodID): int
 {
-    $cart = Frontend::getCart();
+    $cart   = Frontend::getCart();
+    $zaInfo = $_SESSION['Zahlungsart']->ZahlungsInfo ?? null;
     unset($_SESSION['Zahlungsart']);
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
@@ -1165,7 +1197,7 @@ function zahlungsartKorrekt(int $paymentMethodID): int
         && isset($_SESSION['Versandart']->kVersandart)
         && (int)$_SESSION['Versandart']->kVersandart > 0
     ) {
-        $paymentMethod = Shop::Container()->getDB()->executeQueryPrepared(
+        $paymentMethod = Shop::Container()->getDB()->getSingleObject(
             'SELECT tversandartzahlungsart.*, tzahlungsart.*
                 FROM tversandartzahlungsart, tzahlungsart
                 WHERE tversandartzahlungsart.kVersandart = :session_kversandart
@@ -1174,10 +1206,9 @@ function zahlungsartKorrekt(int $paymentMethodID): int
             [
                 'session_kversandart' => (int)$_SESSION['Versandart']->kVersandart,
                 'kzahlungsart'        => $paymentMethodID
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
-        if (!$paymentMethod) {
+        if ($paymentMethod === null) {
             $paymentMethod = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
             // only the null-payment-method is allowed to go ahead in this case
             if ($paymentMethod->cModulId !== 'za_null_jtl') {
@@ -1248,13 +1279,9 @@ function zahlungsartKorrekt(int $paymentMethodID): int
                     // the null-paymentMethod did not has any additional-steps
                     break;
                 case 'za_kreditkarte_jtl':
-                    if (isset($_POST['kreditkartennr'])
-                        && $_POST['kreditkartennr']
-                        && $_POST['gueltigkeit']
-                        && $_POST['cvv']
-                        && $_POST['kartentyp']
-                        && $_POST['inhaber']
-                    ) {
+                    $fehlendeAngaben = checkAdditionalPayment($paymentMethod);
+
+                    if (count($fehlendeAngaben) === 0) {
                         $info->cKartenNr      = Text::htmlentities(
                             stripslashes($_POST['kreditkartennr']),
                             ENT_QUOTES
@@ -1275,6 +1302,9 @@ function zahlungsartKorrekt(int $paymentMethodID): int
                             stripslashes($_POST['inhaber']),
                             ENT_QUOTES
                         );
+                        $additionalInfoExists = true;
+                    } elseif ($zaInfo !== null && isset($zaInfo->cKartenNr)) {
+                        $info                 = $zaInfo;
                         $additionalInfoExists = true;
                     }
                     break;
@@ -1307,6 +1337,9 @@ function zahlungsartKorrekt(int $paymentMethodID): int
                             ENT_QUOTES
                         );
                         $additionalInfoExists = true;
+                    } elseif ($zaInfo !== null && (isset($zaInfo->cKontoNr) || isset($zaInfo->cIBAN))) {
+                        $info                 = $zaInfo;
+                        $additionalInfoExists = true;
                     }
                     break;
                 default:
@@ -1331,7 +1364,7 @@ function zahlungsartKorrekt(int $paymentMethodID): int
 }
 
 /**
- * @param $paymentMethod
+ * @param object $paymentMethod
  */
 function getPaymentSurchageDiscount($paymentMethod)
 {
@@ -1451,13 +1484,12 @@ function gibZahlungsart(int $paymentMethodID)
         );
         $method->angezeigterName[$language->cISO] = $localized->cName ?? null;
     }
-    $confData = Shop::Container()->getDB()->queryPrepared(
+    $confData = Shop::Container()->getDB()->getObjects(
         'SELECT *
             FROM teinstellungen
             WHERE kEinstellungenSektion = :sec
                 AND cModulId = :mod',
-        ['mod' => $method->cModulId, 'sec' => CONF_ZAHLUNGSARTEN],
-        ReturnType::ARRAY_OF_OBJECTS
+        ['mod' => $method->cModulId, 'sec' => CONF_ZAHLUNGSARTEN]
     );
     foreach ($confData as $conf) {
         $method->einstellungen[$conf->cName] = $conf->cWert;
@@ -1519,7 +1551,7 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
     $taxRate = 0.0;
     $methods = [];
     if ($shippingMethodID > 0) {
-        $methods = Shop::Container()->getDB()->queryPrepared(
+        $methods = Shop::Container()->getDB()->getObjects(
             "SELECT tversandartzahlungsart.*, tzahlungsart.*
                 FROM tversandartzahlungsart, tzahlungsart
                 WHERE tversandartzahlungsart.kVersandart = :sid
@@ -1529,8 +1561,7 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
                     AND tzahlungsart.nActive = 1
                     AND tzahlungsart.nNutzbar = 1
                 ORDER BY tzahlungsart.nSort",
-            ['sid' => $shippingMethodID, 'cgid' => $customerGroupID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['sid' => $shippingMethodID, 'cgid' => $customerGroupID]
         );
     }
     $valid = [];
@@ -1739,7 +1770,7 @@ function pruefeZahlungsartMinBestellungen(int $minOrders): bool
 
         return false;
     }
-    $count = Shop::Container()->getDB()->queryPrepared(
+    $count = Shop::Container()->getDB()->getSingleObject(
         'SELECT COUNT(*) AS anz
             FROM tbestellung
             WHERE kKunde = :cid
@@ -1748,13 +1779,12 @@ function pruefeZahlungsartMinBestellungen(int $minOrders): bool
             'cid' => Frontend::getCustomer()->getID(),
             's1'  => BESTELLUNG_STATUS_BEZAHLT,
             's2'  => BESTELLUNG_STATUS_VERSANDT
-        ],
-        ReturnType::SINGLE_OBJECT
+        ]
     );
-    if ($count->anz < $minOrders) {
+    if ($count !== null && $count->anz < $minOrders) {
         Shop::Container()->getLogService()->debug(
-            'pruefeZahlungsartMinBestellungen Bestellanzahl zu niedrig: Anzahl ' .
-            $count->anz . ' < ' . $minOrders
+            'pruefeZahlungsartMinBestellungen Bestellanzahl zu niedrig: Anzahl '
+            . (int)$count->anz . ' < ' . $minOrders
         );
 
         return false;
@@ -1822,7 +1852,7 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
         $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG);
         foreach ($packagingIDs as $packagingID) {
             $packagingID = (int)$packagingID;
-            $packagings  = $db->queryPrepared(
+            $packagings  = $db->getSingleObject(
                 "SELECT *
                     FROM tverpackung
                     WHERE kVerpackung = :pid
@@ -1834,14 +1864,13 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
                     'pid'  => $packagingID,
                     'cgid' => Frontend::getCustomerGroup()->getID(),
                     'sum'  => $cartTotal
-                ],
-                ReturnType::SINGLE_OBJECT
+                ]
             );
-
-            $packagings->kVerpackung = (int)$packagings->kVerpackung;
-            if (empty($packagings->kVerpackung)) {
+            if ($packagings === null) {
                 return false;
             }
+            $packagings->kVerpackung = (int)$packagings->kVerpackung;
+
             $localizedNames     = [];
             $localizedPackaging = $db->selectAll(
                 'tverpackungsprache',
@@ -1895,7 +1924,7 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
         $depending = 'Y';
     }
     $countryCode    = $deliveryCountry;
-    $shippingMethod = $db->queryPrepared(
+    $shippingMethod = $db->getSingleObject(
         "SELECT *
             FROM tversandart
             WHERE cLaender LIKE :iso
@@ -1907,11 +1936,10 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
             'dep' => $depending,
             'scl' => '^([0-9 -]* )?' . $shippingClasses,
             'sid' => $shippingMethodID
-        ],
-        ReturnType::SINGLE_OBJECT
+        ]
     );
 
-    if (!isset($shippingMethod->kVersandart) || $shippingMethod->kVersandart <= 0) {
+    if ($shippingMethod === null || $shippingMethod->kVersandart <= 0) {
         return false;
     }
     $shippingMethod->Zuschlag  = ShippingMethod::getAdditionalFees($shippingMethod, $countryCode, $poCode);
@@ -2047,7 +2075,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
         }
     }
 
-    if (!empty($data['www']) && !Text::filterURL($data['www'])) {
+    if (!empty($data['www']) && !Text::filterURL($data['www'], true, true)) {
         $ret['www'] = 2;
     }
 
@@ -2161,7 +2189,7 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
                         // if we have problems like "no module php_soap" we create a log entry
                         // (use case: the module and the vat-check was formerly activated yet
                         // but the php-module is disabled now)
-                        Shop::Container()->getLogService()->warn($resultVatCheck['errorinfo']);
+                        Shop::Container()->getLogService()->warning($resultVatCheck['errorinfo']);
                         break;
                 }
             }
@@ -2183,6 +2211,9 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
             }
             if (mb_strlen($data['pass']) < $conf['kunden']['kundenregistrierung_passwortlaenge']) {
                 $ret['pass_zu_kurz'] = 1;
+            }
+            if (mb_strlen($data['pass']) > 255) {
+                $ret['pass_zu_lang'] = 1;
             }
         }
         //existiert diese email bereits?
@@ -2336,7 +2367,7 @@ function gibGesamtsummeKuponartikelImWarenkorb($coupon, array $cartItems)
         ) {
             $total += $item->fPreis
                 * $item->nAnzahl
-                * ((100 + Tax::getSalesTax($item->kSteuerklasse)) / 100);
+                * ((100 + CartItem::getTaxRate($item)) / 100);
         }
     }
 
@@ -2406,16 +2437,15 @@ function warenkorbKuponFaehigKategorien($coupon, array $items): bool
         return false;
     }
     // check if at least one product is in at least one category valid for this coupon
-    $category = Shop::Container()->getDB()->query(
+    $category = Shop::Container()->getDB()->getSingleObject(
         'SELECT kKategorie
             FROM tkategorieartikel
               WHERE kArtikel IN (' . implode(',', $products) . ')
                 AND kKategorie IN (' . str_replace(';', ',', trim($coupon->cKategorien, ';')) . ')
-                LIMIT 1',
-        ReturnType::SINGLE_OBJECT
+                LIMIT 1'
     );
 
-    return !empty($category);
+    return $category !== null;
 }
 
 /**
@@ -2558,7 +2588,7 @@ function freeGiftStillValid(): bool
             continue;
         }
         // Prüfen ob der Artikel wirklich ein Gratisgeschenk ist und ob die Mindestsumme erreicht wird
-        $girft = Shop::Container()->getDB()->queryPrepared(
+        $gift = Shop::Container()->getDB()->getSingleObject(
             'SELECT kArtikel
                 FROM tartikelattribut
                 WHERE kArtikel = :pid
@@ -2568,11 +2598,10 @@ function freeGiftStillValid(): bool
                 'pid'  => $item->kArtikel,
                 'attr' => FKT_ATTRIBUT_GRATISGESCHENK,
                 'sum'  => $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
-        if (empty($girft->kArtikel)) {
+        if ($gift === null || empty($gift->kArtikel)) {
             $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK);
             $valid = false;
         }
@@ -2595,21 +2624,20 @@ function valid_plzort(string $poCode, string $city, string $country): bool
     if (!in_array(mb_convert_case($country, MB_CASE_UPPER), $supportedCountryCodes, true)) {
         return true;
     }
-    $obj = Shop::Container()->getDB()->executeQueryPrepared(
+    $obj = Shop::Container()->getDB()->getSingleObject(
         'SELECT kPLZ
-        FROM tplz
-        WHERE cPLZ = :plz
-            AND INSTR(cOrt COLLATE utf8_german2_ci, :ort)
-            AND cLandISO = :land',
+            FROM tplz
+            WHERE cPLZ = :plz
+                AND INSTR(cOrt COLLATE utf8_german2_ci, :ort)
+                AND cLandISO = :land',
         [
             'plz'  => $poCode,
             'ort'  => $city,
             'land' => $country
-        ],
-        ReturnType::SINGLE_OBJECT
+        ]
     );
 
-    return isset($obj->kPLZ) && $obj->kPLZ > 0;
+    return $obj !== null && $obj->kPLZ > 0;
 }
 
 /**
@@ -2716,7 +2744,7 @@ function pruefeAjaxEinKlick(): int
     }
     $customerGroupID = Frontend::getCustomerGroup()->getID();
     // Prüfe ob Kunde schon bestellt hat, falls ja --> Lieferdaten laden
-    $lastOrder = Shop::Container()->getDB()->queryPrepared(
+    $lastOrder = Shop::Container()->getDB()->getSingleObject(
         "SELECT tbestellung.kBestellung, tbestellung.kLieferadresse, tbestellung.kZahlungsart, tbestellung.kVersandart
             FROM tbestellung
             JOIN tzahlungsart
@@ -2734,23 +2762,22 @@ function pruefeAjaxEinKlick(): int
             WHERE tbestellung.kKunde = :cid
             ORDER BY tbestellung.dErstellt
             DESC LIMIT 1",
-        ['cgid' => $customerGroupID, 'cid' => $customerID],
-        ReturnType::SINGLE_OBJECT
+        ['cgid' => $customerGroupID, 'cid' => $customerID]
     );
 
-    if (!isset($lastOrder->kBestellung) || $lastOrder->kBestellung <= 0) {
+    if ($lastOrder === null || $lastOrder->kBestellung <= 0) {
         return 2;
     }
     // Hat der Kunde eine Lieferadresse angegeben?
     if ($lastOrder->kLieferadresse > 0) {
-        $addressData = Shop::Container()->getDB()->query(
+        $addressData = Shop::Container()->getDB()->getSingleObject(
             'SELECT kLieferadresse
                 FROM tlieferadresse
-                WHERE kKunde = ' . $customerID . '
-                    AND kLieferadresse = ' . (int)$lastOrder->kLieferadresse,
-            ReturnType::SINGLE_OBJECT
+                WHERE kKunde = :cid
+                    AND kLieferadresse = :daid',
+            ['cid' => $customerID, 'daid' => (int)$lastOrder->kLieferadresse]
         );
-        if ($addressData->kLieferadresse > 0) {
+        if ($addressData !== null && $addressData->kLieferadresse > 0) {
             $addressData               = new Lieferadresse((int)$addressData->kLieferadresse);
             $_SESSION['Lieferadresse'] = $addressData;
             if (!isset($_SESSION['Bestellung'])) {
@@ -2797,7 +2824,7 @@ function pruefeAjaxEinKlick(): int
 
 /**
  * @param array $missingData
- * @param null $context
+ * @param string|null $context
  */
 function setzeFehlendeAngaben(array $missingData, $context = null)
 {
@@ -2858,13 +2885,12 @@ function mappeBestellvorgangZahlungshinweis(int $noteCode)
  */
 function isEmailAvailable(string $email, int $customerID = 0): bool
 {
-    return Shop::Container()->getDB()->queryPrepared(
+    return Shop::Container()->getDB()->getSingleObject(
         'SELECT *
             FROM tkunde
             WHERE cmail = :email
               AND nRegistriert = 1
             AND kKunde != :customerID',
-        ['email' => $email, 'customerID' => $customerID],
-        ReturnType::SINGLE_OBJECT
-    ) === false;
+        ['email' => $email, 'customerID' => $customerID]
+    ) === null;
 }

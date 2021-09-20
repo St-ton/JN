@@ -6,7 +6,6 @@
 
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
-use JTL\Media\Image;
 
 /**
  * Class Migration_20191017110800

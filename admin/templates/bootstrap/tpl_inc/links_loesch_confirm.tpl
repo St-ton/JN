@@ -8,7 +8,7 @@
                 <input type="hidden" name="kLinkgruppe" value="{$linkGroup->getID()}" />
 
                 <div class="alert alert-danger">
-                    <p><strong>{__('danger')}</strong>: {__('dangerDeleteAllLinksInLinkGroup')}</p>
+                    <p><strong>{__('danger')}</strong></p>
                     {if $affectedLinkNames|count > 0}
                         <p>{__('dangerDeleteLinksAlso')}:</p>
                         <ul class="list">

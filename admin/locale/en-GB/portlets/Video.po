@@ -18,7 +18,7 @@ msgid "youtubeNote"
 msgstr "In your data privacy notice, point out the following:<br/>- YouTube videos are embedded in your pages in the \"Extended data privacy mode\".- Opening the pages establishes a connection with YouTube and DoubleClick.- Clicking on the video can lead to further data processing that cannot be influenced by the website owner."
 
 msgid "videoID"
-msgstr "Video ID"
+msgstr "Video ID / Video URL"
 
 msgid "videoIDHelpYoutube"
 msgstr "The video ID forms the last part of the YouTube URL after the characters \"?v=\": "
@@ -43,10 +43,10 @@ msgid "repeatVideo"
 msgstr "Repeat video once it has finished"
 
 msgid "muteVideo"
-msgstr "mute Video"
+msgstr "Mute Video"
 
 msgid "autoplayVideo"
-msgstr "start playing as soon as video is ready"
+msgstr "Use Auto-Play"
 
 msgid "showImage"
 msgstr "Show image"

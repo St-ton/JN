@@ -5,9 +5,9 @@ use JTL\IO\IOResponse;
 use JTL\Shop;
 
 /**
- * @return mixed
+ * @return stdClass[]
  */
-function holeAlleBanner()
+function holeAlleBanner(): array
 {
     $banner = new ImageMap(Shop::Container()->getDB());
 
@@ -15,43 +15,43 @@ function holeAlleBanner()
 }
 
 /**
- * @param int  $kImageMap
+ * @param int  $imageMapID
  * @param bool $fill
- * @return mixed
+ * @return bool|stdClass
  */
-function holeBanner(int $kImageMap, bool $fill = true)
+function holeBanner(int $imageMapID, bool $fill = true)
 {
     $banner = new ImageMap(Shop::Container()->getDB());
 
-    return $banner->fetch($kImageMap, true, $fill);
+    return $banner->fetch($imageMapID, true, $fill);
 }
 
 /**
- * @param int $kImageMap
+ * @param int $imageMapID
  * @return mixed
  */
-function holeExtension(int $kImageMap)
+function holeExtension(int $imageMapID)
 {
-    return Shop::Container()->getDB()->select('textensionpoint', 'cClass', 'ImageMap', 'kInitial', $kImageMap);
+    return Shop::Container()->getDB()->select('textensionpoint', 'cClass', 'ImageMap', 'kInitial', $imageMapID);
 }
 
 /**
- * @param int $kImageMap
- * @return mixed
+ * @param int $imageMapID
+ * @return bool
  */
-function entferneBanner(int $kImageMap)
+function entferneBanner(int $imageMapID): bool
 {
     $db     = Shop::Container()->getDB();
     $banner = new ImageMap($db);
-    $db->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
+    $db->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $imageMapID]);
 
-    return $banner->delete($kImageMap);
+    return $banner->delete($imageMapID);
 }
 
 /**
- * @return array
+ * @return string[]
  */
-function holeBannerDateien()
+function holeBannerDateien(): array
 {
     $files = [];
     if (($handle = opendir(PFAD_ROOT . PFAD_BILDER_BANNER)) !== false) {
@@ -70,7 +70,7 @@ function holeBannerDateien()
  * @param mixed $data
  * @return IOResponse
  */
-function saveBannerAreasIO($data)
+function saveBannerAreasIO($data): IOResponse
 {
     $banner   = new ImageMap(Shop::Container()->getDB());
     $response = new IOResponse();

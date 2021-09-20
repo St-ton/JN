@@ -27,7 +27,7 @@
                     {/if}
                     {assign var=moreLink value=$Box->cURL}
                     {block name='page-index-include-product-slider'}
-                        {container class="product-slider-wrapper" fluid=true}
+                        {container class="product-slider-wrapper product-slider-{$Box->name} {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}" fluid=true}
                             {include file='snippets/product_slider.tpl'
                                 productlist=$Box->Artikel->elemente
                                 title=$title
@@ -48,7 +48,7 @@
             {opcMountPoint id='opc_before_news' inContainer=false}
 
             <section class="index-news-wrapper">
-                {container fluid=true}
+                {container fluid=true class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                     {block name='page-index-subheading-news'}
                         <div class="blog-header">
                             <div class="hr-sect h2">
@@ -59,8 +59,8 @@
                     {block name='page-index-news'}
                         {row itemprop="about"
                              itemscope=true
-                             itemtype="http://schema.org/Blog"
-                             class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-news"
+                             itemtype="https://schema.org/Blog"
+                             class="slick-smooth-loading carousel carousel-arrows-inside slick-lazy slick-type-news {if $oNews_arr|count < 3}slider-no-preview{/if}"
                              data=["slick-type"=>"news-slider"]}
                             {include file='snippets/slider_items.tpl' items=$oNews_arr type='news'}
                         {/row}

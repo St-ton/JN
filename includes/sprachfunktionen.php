@@ -24,17 +24,17 @@ function lang_warenkorb_warenkorbEnthaeltXArtikel(Cart $cart): string
 
         return $ret;
     }
-    $nArtikel = $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]);
-    $nArtikel = str_replace('.', ',', $nArtikel);
-    if ($nArtikel === 1) {
-        return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' .
-            $nArtikel . ' ' . Shop::Lang()->get('product');
+    $count       = $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]);
+    $countString = str_replace('.', ',', (string)$count);
+    if ($count === 1) {
+        return Shop::Lang()->get('yourbasketcontains', 'checkout')
+            . ' ' . $countString . ' ' . Shop::Lang()->get('product');
     }
-    if ($nArtikel > 1) {
-        return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' .
-            $nArtikel . ' ' . Shop::Lang()->get('products');
+    if ($count > 1) {
+        return Shop::Lang()->get('yourbasketcontains', 'checkout')
+            . ' ' . $countString . ' ' . Shop::Lang()->get('products');
     }
-    if ($nArtikel === 0) {
+    if ($count === 0) {
         return Shop::Lang()->get('emptybasket', 'checkout');
     }
 
@@ -106,9 +106,10 @@ function lang_steuerposition($ust, $net)
     if ($ust == (int)$ust) {
         $ust = (int)$ust;
     }
-    return $net
-        ? Shop::Lang()->get('plus', 'productDetails') . ' ' . $ust . '% ' . Shop::Lang()->get('vat', 'productDetails')
-        : Shop::Lang()->get('incl', 'productDetails') . ' ' . $ust . '% ' . Shop::Lang()->get('vat', 'productDetails');
+    $showVat  = Shop::getSettingValue(\CONF_GLOBAL, 'global_ust_auszeichnung') === 'autoNoVat' ? '' : ($ust . '% ');
+    $inklexkl = Shop::Lang()->get($net === true ? 'excl' : 'incl', 'productDetails');
+
+    return $inklexkl . ' ' . $showVat . Shop::Lang()->get('vat', 'productDetails');
 }
 
 /**

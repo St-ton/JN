@@ -6,7 +6,7 @@
     {block name='account-index-content'}
         {if isset($smarty.get.reg)}
             {block name='account-index-alert'}
-                {container}
+                {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                     {alert variant="success"}{lang key='accountCreated' section='global'}{/alert}
                 {/container}
             {/block}
@@ -33,7 +33,7 @@
             {/block}
         {/if}
 
-        {container}
+        {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
             {opcMountPoint id='opc_before_account'}
             {row id="account"}
                 {col cols=12}

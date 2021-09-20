@@ -1,5 +1,5 @@
 {block name='boxes-box-manufacturers'}
-    {card class="box box-manufacturers box-normal dropdown-full-width" id="sidebox{$oBox->getID()}"}
+    <div class="box box-manufacturers box-normal dropdown-full-width" id="sidebox{$oBox->getID()}">
         {block name='boxes-box-manufacturers-content'}
             {block name='boxes-box-manufacturers-toggle-title'}
                 {link id="crd-hdr-{$oBox->getID()}"
@@ -26,7 +26,6 @@
                         {block name='boxes-box-manufacturers-dropdown'}
                             {dropdown class="w-100-util" variant="secondary btn-block" text="{lang key='selectManufacturer'}<span class='caret'></span>"}
                                 {foreach $oBox->getManufacturers() as $manufacturer}
-                                    {if $manufacturer@index === 10}{break}{/if}
                                     {dropdownitem href=$manufacturer->cSeo}
                                         {$manufacturer->cName|escape:'html'}
                                     {/dropdownitem}
@@ -37,7 +36,6 @@
                         {block name='boxes-box-manufacturers-link'}
                             {nav vertical=true}
                                 {foreach $oBox->getManufacturers() as $manufacturer}
-                                    {if $manufacturer@index === 10}{break}{/if}
                                     {navitem href=$manufacturer->cSeo title=$manufacturer->cName|escape:'html'}
                                         {$manufacturer->cName|escape:'html'}
                                     {/navitem}
@@ -51,5 +49,5 @@
                 <hr class="box-normal-hr">
             {/block}
         {/block}
-    {/card}
+    </div>
 {/block}

@@ -4,9 +4,9 @@ use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Boxes\Type;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Link\LinkGroupInterface;
 use JTL\Shop;
 use function Functional\map;
@@ -20,7 +20,8 @@ $oAccount->permission('BOXES_VIEW', true, true);
 
 $boxService  = Shop::Container()->getBoxService();
 $alertHelper = Shop::Container()->getAlertService();
-$boxAdmin    = new BoxAdmin(Shop::Container()->getDB());
+$db          = Shop::Container()->getDB();
+$boxAdmin    = new BoxAdmin($db);
 $pageID      = Request::verifyGPCDataInt('page');
 $linkID      = Request::verifyGPCDataInt('linkID');
 $boxID       = Request::verifyGPCDataInt('item');
@@ -37,9 +38,8 @@ if (Request::postInt('einstellungen') > 0) {
         case 'delete-invisible':
             if (!empty($_POST['kInvisibleBox']) && count($_POST['kInvisibleBox']) > 0) {
                 $cnt = 0;
-                foreach ($_POST['kInvisibleBox'] as $box) {
-                    $ok = $boxAdmin->delete((int)$box);
-                    if ($box) {
+                foreach ($_POST['kInvisibleBox'] as $boxID) {
+                    if ($boxAdmin->delete((int)$boxID)) {
                         ++$cnt;
                     }
                 }
@@ -48,7 +48,7 @@ if (Request::postInt('einstellungen') > 0) {
             break;
 
         case 'new':
-            $position    = $_REQUEST['position'];
+            $position    = Text::filterXSS($_REQUEST['position']);
             $containerID = $_REQUEST['container'] ?? 0;
             if ($boxID === 0) {
                 // Neuer Container
@@ -78,10 +78,10 @@ if (Request::postInt('einstellungen') > 0) {
             break;
 
         case 'edit_mode':
-            $oBox = $boxAdmin->getByID($boxID);
+            $box = $boxAdmin->getByID($boxID);
             // revisions need this as a different formatted array
             $revisionData = [];
-            foreach ($oBox->oSprache_arr as $lang) {
+            foreach ($box->oSprache_arr as $lang) {
                 $revisionData[$lang->cISO] = $lang;
             }
             $links = Shop::Container()->getLinkService()->getAllLinkGroups()->filter(
@@ -89,35 +89,35 @@ if (Request::postInt('einstellungen') > 0) {
                     return $e->isSpecial() === false;
                 }
             );
-            $smarty->assign('oEditBox', $oBox)
+            $smarty->assign('oEditBox', $box)
                 ->assign('revisionData', $revisionData)
                 ->assign('oLink_arr', $links);
             break;
 
         case 'edit':
-            $cTitel = $_REQUEST['boxtitle'];
-            $type   = $_REQUEST['typ'];
+            $title = Text::filterXSS($_REQUEST['boxtitle']);
+            $type  = Text::filterXSS($_REQUEST['typ']);
             if ($type === 'text') {
                 $oldBox = $boxAdmin->getByID($boxID);
                 if ($oldBox->supportsRevisions === true) {
-                    $revision = new Revision(Shop::Container()->getDB());
+                    $revision = new Revision($db);
                     $revision->addRevision('box', $boxID, true);
                 }
-                $ok = $boxAdmin->update($boxID, $cTitel);
+                $ok = $boxAdmin->update($boxID, $title);
                 if ($ok) {
-                    foreach ($_REQUEST['title'] as $cISO => $cTitel) {
-                        $cInhalt = $_REQUEST['text'][$cISO];
-                        $ok      = $boxAdmin->updateLanguage($boxID, $cISO, $cTitel, $cInhalt);
+                    foreach ($_REQUEST['title'] as $iso => $title) {
+                        $content = $_REQUEST['text'][$iso];
+                        $ok      = $boxAdmin->updateLanguage($boxID, $iso, $title, $content);
                         if (!$ok) {
                             break;
                         }
                     }
                 }
             } elseif (($type === Type::LINK && $linkID > 0) || $type === Type::CATBOX) {
-                $ok = $boxAdmin->update($boxID, $cTitel, $linkID);
+                $ok = $boxAdmin->update($boxID, $title, $linkID);
                 if ($ok) {
-                    foreach ($_REQUEST['title'] as $cISO => $cTitel) {
-                        $ok = $boxAdmin->updateLanguage($boxID, $cISO, $cTitel, '');
+                    foreach ($_REQUEST['title'] as $iso => $title) {
+                        $ok = $boxAdmin->updateLanguage($boxID, $iso, $title, '');
                         if (!$ok) {
                             break;
                         }
@@ -133,7 +133,7 @@ if (Request::postInt('einstellungen') > 0) {
             break;
 
         case 'resort':
-            $position = $_REQUEST['position'];
+            $position = Text::filterXSS($_REQUEST['position']);
             $boxes    = array_map('\intval', $_REQUEST['box'] ?? []);
             $sort     = array_map('\intval', $_REQUEST['sort'] ?? []);
             $active   = array_map('\intval', $_REQUEST['aktiv'] ?? []);
@@ -141,10 +141,16 @@ if (Request::postInt('einstellungen') > 0) {
             $boxCount = count($boxes);
             $show     = $_REQUEST['box_show'] ?? false;
             $ok       = $boxAdmin->setVisibility($pageID, $position, $show);
-            foreach ($boxes as $i => $box) {
-                $idx = 'box-filter-' . $box;
-                $boxAdmin->sort($box, $pageID, $sort[$i], in_array($box, $active, true), in_array($box, $ignore, true));
-                $boxAdmin->filterBoxVisibility((int)$box, $pageID, $_POST[$idx] ?? '');
+            foreach ($boxes as $i => $boxIDtoSort) {
+                $idx = 'box-filter-' . $boxIDtoSort;
+                $boxAdmin->sort(
+                    $boxIDtoSort,
+                    $pageID,
+                    $sort[$i],
+                    in_array($boxIDtoSort, $active, true),
+                    in_array($boxIDtoSort, $ignore, true)
+                );
+                $boxAdmin->filterBoxVisibility($boxIDtoSort, $pageID, $_POST[$idx] ?? '');
             }
             // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41
             if ($position !== 'left' || $pageID > 0) {
@@ -168,7 +174,7 @@ if (Request::postInt('einstellungen') > 0) {
             break;
 
         case 'container':
-            $position = $_REQUEST['position'];
+            $position = Text::filterXSS($_REQUEST['position']);
             $show     = (bool)$_GET['value'];
             $ok       = $boxAdmin->setVisibility(0, $position, $show);
             if ($ok) {
@@ -182,7 +188,7 @@ if (Request::postInt('einstellungen') > 0) {
             break;
     }
     $flushres = Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
-    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
 }
 $boxList       = $boxService->buildList($pageID, false);
 $boxTemplates  = $boxAdmin->getTemplates($pageID);
@@ -190,25 +196,13 @@ $model         = Shop::Container()->getTemplateService()->getActiveTemplate();
 $boxContainer  = $model->getBoxLayout();
 $filterMapping = [];
 if ($pageID === PAGE_ARTIKELLISTE) { //map category name
-    $filterMapping = Shop::Container()->getDB()->query(
-        'SELECT kKategorie AS id, cName AS name FROM tkategorie',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    $filterMapping = $db->getObjects('SELECT kKategorie AS id, cName AS name FROM tkategorie');
 } elseif ($pageID === PAGE_ARTIKEL) { //map article name
-    $filterMapping = Shop::Container()->getDB()->query(
-        'SELECT kArtikel AS id, cName AS name FROM tartikel',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    $filterMapping = $db->getObjects('SELECT kArtikel AS id, cName AS name FROM tartikel');
 } elseif ($pageID === PAGE_HERSTELLER) { //map manufacturer name
-    $filterMapping = Shop::Container()->getDB()->query(
-        'SELECT kHersteller AS id, cName AS name FROM thersteller',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    $filterMapping = $db->getObjects('SELECT kHersteller AS id, cName AS name FROM thersteller');
 } elseif ($pageID === PAGE_EIGENE) { //map page name
-    $filterMapping = Shop::Container()->getDB()->query(
-        'SELECT kLink AS id, cName AS name FROM tlink',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    $filterMapping = $db->getObjects('SELECT kLink AS id, cName AS name FROM tlink');
 }
 
 $filterMapping = reindex($filterMapping, static function ($e) {

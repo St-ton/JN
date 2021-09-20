@@ -1,10 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
 use JTL\Catalog\Hersteller;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 
@@ -35,7 +34,7 @@ class Manufacturer
     private static $langID;
 
     /**
-     * HerstellerHelper constructor.
+     * Manufacturer constructor.
      */
     public function __construct()
     {
@@ -44,12 +43,7 @@ class Manufacturer
             ($lagerfilter !== '' ? \md5($lagerfilter) : '');
         self::$langID  = Shop::getLanguageID();
         if (self::$langID <= 0) {
-            if (Shop::getLanguageID() > 0) {
-                self::$langID = Shop::getLanguageID();
-            } else {
-                $_lang        = LanguageHelper::getDefaultLanguage();
-                self::$langID = (int)$_lang->kSprache;
-            }
+            self::$langID = (int)LanguageHelper::getDefaultLanguage()->kSprache;
         }
         $this->manufacturers = $this->getManufacturers();
         self::$instance      = $this;
@@ -74,8 +68,8 @@ class Manufacturer
             return $this->manufacturers;
         }
         if (($manufacturers = Shop::Container()->getCache()->get($this->cacheID)) === false) {
-            $lagerfilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $manufacturers = Shop::Container()->getDB()->queryPrepared(
+            $stockFilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
+            $manufacturers = Shop::Container()->getDB()->getObjects(
                 'SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                         thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                         therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
@@ -91,7 +85,7 @@ class Manufacturer
                     WHERE EXISTS (
                         SELECT 1
                         FROM tartikel
-                        WHERE tartikel.kHersteller = thersteller.kHersteller ' . $lagerfilter . '
+                        WHERE tartikel.kHersteller = thersteller.kHersteller ' . $stockFilter . '
                             AND NOT EXISTS (
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
@@ -103,8 +97,7 @@ class Manufacturer
                     'skey' => 'kHersteller',
                     'lid'  => self::$langID,
                     'cgid' => CustomerGroup::getDefaultGroupID()
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
+                ]
             );
             $shopURL       = Shop::getURL() . '/';
             $imageBaseURL  = Shop::getImageBaseURL();

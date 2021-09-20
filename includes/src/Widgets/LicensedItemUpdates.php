@@ -50,6 +50,8 @@ class LicensedItemUpdates extends AbstractWidget
             ->assign('securityFixes', $securityFixes)
             ->assign('testLicenses', $testLicenses)
             ->assign('licenseItemUpdates', $updates);
+
+        $this->setPermission('LICENSE_MANAGER');
     }
 
     /**

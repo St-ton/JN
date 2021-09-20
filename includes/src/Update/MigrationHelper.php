@@ -4,12 +4,11 @@ namespace JTL\Update;
 
 use DateTime;
 use Exception;
-use JTL\DB\ReturnType;
+use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\Filesystem;
+use Throwable;
 
 /**
  * Class MigrationHelper
@@ -37,7 +36,7 @@ class MigrationHelper
      */
     public static function getMigrationPath(): string
     {
-        return \PFAD_ROOT . \PFAD_UPDATE . 'migrations' . \DIRECTORY_SEPARATOR;
+        return \PFAD_ROOT . \PFAD_UPDATE . 'migrations/';
     }
 
     /**
@@ -139,15 +138,14 @@ class MigrationHelper
      */
     public static function verifyIntegrity(): void
     {
-        if (Shop::Container()->getDB()->queryPrepared(
+        if (Shop::Container()->getDB()->getSingleObject(
                 "SELECT `table_name` 
                     FROM information_schema.tables 
                     WHERE `table_type` = 'base table'
                         AND `table_schema` = :sma
                         AND `table_name` = :tn",
-                ['sma' => DB_NAME, 'tn' => 'tmigration'],
-                ReturnType::SINGLE_OBJECT
-            ) === false
+                ['sma' => DB_NAME, 'tn' => 'tmigration']
+            ) === null
         ) {
             Shop::Container()->getDB()->query(
                 "CREATE TABLE IF NOT EXISTS tmigration 
@@ -156,8 +154,7 @@ class MigrationHelper
                 nVersion int(3) NOT NULL, 
                 dExecuted datetime NOT NULL,
                 PRIMARY KEY (kMigration)
-            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'",
-                ReturnType::DEFAULT
+            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'"
             );
             Shop::Container()->getDB()->query(
                 "CREATE TABLE IF NOT EXISTS tmigrationlog 
@@ -169,8 +166,7 @@ class MigrationHelper
                 cLog text NOT NULL, 
                 dCreated datetime NOT NULL, 
                 PRIMARY KEY (kMigrationlog)
-            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'",
-                ReturnType::DEFAULT
+            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'"
             );
         }
     }
@@ -182,10 +178,9 @@ class MigrationHelper
      */
     public static function indexColumns(string $idxTable, string $idxName): array
     {
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             "SHOW INDEXES FROM `$idxTable` WHERE Key_name = :idxName",
-            ['idxName' => $idxName],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['idxName' => $idxName]
         );
     }
 
@@ -207,7 +202,7 @@ class MigrationHelper
                 . ' INDEX `' . $idxName . '` ON `' . $idxTable . '` '
                 . '(`' . \implode('`, `', $idxColumns) . '`)';
 
-            return !Shop::Container()->getDB()->executeQuery($ddl, ReturnType::DEFAULT) ? false : true;
+            return !Shop::Container()->getDB()->query($ddl) ? false : true;
         }
 
         return false;
@@ -221,9 +216,8 @@ class MigrationHelper
     public static function dropIndex(string $idxTable, string $idxName): bool
     {
         if (\count(self::indexColumns($idxTable, $idxName)) > 0) {
-            return !Shop::Container()->getDB()->executeQuery(
-                'DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` ',
-                ReturnType::DEFAULT
+            return !Shop::Container()->getDB()->query(
+                'DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` '
             ) ? false : true;
         }
 
@@ -252,10 +246,11 @@ class MigrationHelper
         );
         $relPath       = 'update/migrations';
         $migrationPath = $relPath . '/' . $filePath . '.php';
-        $fileSystem    = new Filesystem(new Local(\PFAD_ROOT));
-
-        if (!$fileSystem->has($relPath)) {
-            throw new Exception('Migrations path doesn\'t exist!');
+        $fileSystem    = Shop::Container()->get(LocalFilesystem::class);
+        try {
+            $fileSystem->createDirectory($relPath);
+        } catch (Throwable $e) {
+            throw new Exception('Cannot create migrations path!');
         }
 
         $smartyCli  = Shop::Smarty(true, ContextType::CLI);
@@ -266,7 +261,7 @@ class MigrationHelper
             ->assign('timestamp', $timestamp)
             ->fetch(\PFAD_ROOT . 'includes/src/Console/Command/Migration/Template/migration.class.tpl');
 
-        $fileSystem->put($migrationPath, $content);
+        $fileSystem->write($migrationPath, $content);
 
         return $migrationPath;
     }

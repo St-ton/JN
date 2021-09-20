@@ -93,13 +93,15 @@ class Meta
      */
     public function loadDBMapping(stdClass $data): self
     {
-        $this->author         = __($data->cAutor);
-        $this->description    = __($data->cBeschreibung);
-        $this->name           = __($data->cName);
-        $this->url            = __($data->cURL);
+        $this->author         = \__($data->cAutor);
+        $this->description    = \__($data->cBeschreibung);
+        $this->name           = \__($data->cName);
+        $this->url            = \__($data->cURL);
         $this->icon           = $data->cIcon;
-        $this->dateInstalled  = new DateTime($data->dInstalliert);
-        $this->dateLastUpdate = new DateTime($data->dZuletztAktualisiert);
+        $this->dateInstalled  = new DateTime($data->dInstalliert === 'NOW()' ? 'now' : $data->dInstalliert);
+        $this->dateLastUpdate = new DateTime(
+            $data->dZuletztAktualisiert === 'NOW()' ? 'now' : $data->dZuletztAktualisiert
+        );
         $this->version        = $data->nVersion;
         $this->semVer         = Version::parse($this->version);
         $this->exsID          = $data->exsID;

@@ -2,7 +2,6 @@
 
 namespace JTL\Helpers;
 
-use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**
@@ -33,11 +32,12 @@ class Seo
         if ($exists === null) {
             return $url;
         }
-        Shop::Container()->getDB()->query('SET @IKEY := 0', ReturnType::QUERYSINGLE);
-        $obj = Shop::Container()->getDB()->query(
+        Shop::Container()->getDB()->query('SET @IKEY := 0');
+        $obj = Shop::Container()->getDB()->getSingleObject(
             "SELECT oseo.newSeo
                 FROM (
-                    SELECT CONCAT('{$url}', '_', @IKEY:=@IKEY+1) newSeo, @IKEY nOrder
+                    SELECT CONCAT('{$url}', '_', (CONVERT(@IKEY:=@IKEY+1 USING 'utf8') COLLATE utf8_unicode_ci)) newSeo,
+                        @IKEY nOrder
                     FROM tseo AS iseo
                     WHERE iseo.cSeo LIKE '{$url}%'
                         AND iseo.cSeo RLIKE '^{$url}(_[0-9]+)?$'
@@ -49,8 +49,7 @@ class Seo
                         AND iseo.cSeo RLIKE '^{$url}_[0-9]+$'
                 )
                 ORDER BY oseo.nOrder
-                LIMIT 1",
-            ReturnType::SINGLE_OBJECT
+                LIMIT 1"
         );
 
         return $obj->newSeo ?? $url;
@@ -58,26 +57,20 @@ class Seo
 
     /**
      * @param string $str
-     * @var mixed $convertedStr
-     * @return mixed
+     * @return string
      */
     public static function sanitizeSeoSlug(string $str): string
     {
-        // for better german slugs without using setlocale()
-        $a = ['Ä', 'Ö', 'Ü', 'ß', 'ä', 'ö', 'ü', 'æ'];
-        $b = ['Ae', 'Oe', 'Ue', 'ss', 'ae', 'oe', 'ue', 'ae'];
-
-        $str          = \preg_replace('/[^\pL\d\-\/_\s]+/u', '', \str_replace($a, $b, $str));
+        $str          = \preg_replace('/[^\pL\d\-\/_\s]+/u', '', Text::replaceUmlauts($str));
         $str          = \preg_replace('/[\/]+/u', '/', $str);
         $str          = \transliterator_transliterate(
             'Any-Latin; Latin-ASCII;' . (\SEO_SLUG_LOWERCASE ? ' Lower();' : ''),
             \trim($str, ' -_')
         );
-        $convertedStr = @\iconv('"UTF-8"', 'ASCII//TRANSLIT//IGNORE', $str);
+        $convertedStr = @\iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $str);
         $str          = $convertedStr === false ? \preg_replace('/[^a-zA-Z0-9\s]/', '', $str) : $convertedStr;
-        $str          = \preg_replace('/[\-_\s]+/u', '-', \trim($str));
 
-        return $str;
+        return \preg_replace('/[\-_\s]+/u', '-', \trim($str));
     }
 
     /**

@@ -231,7 +231,7 @@
                                         data-selected-text-format="count > 2"
                                         data-size="7"
                                         data-actions-box="true">
-                                    <option value="-1" {if $gesetzteKundengruppen.alle}selected{/if}>{__('all')}</option>
+                                    <option value="-1" {if empty($gesetzteKundengruppen) || isset($gesetzteKundengruppen.alle) && $gesetzteKundengruppen.alle}selected{/if}>{__('all')}</option>
                                     <option data-divider="true"></option>
                                     {foreach $customerGroups as $customerGroup}
                                         {assign var=classID value=$customerGroup->getID()}
@@ -323,7 +323,11 @@
                     {/if}
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right">
-                                {__('freeShipping')}:
+                                {if $versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl'}
+                                    {__('freeShippingBasketValue')}:
+                                {else}
+                                    {__('freeShipping')}:
+                                {/if}
                             </label>
                             <div class="col-sm-4 pl-sm-3 order-last order-sm-2">
                                 <select id="versandkostenfreiAktiv" name="versandkostenfreiAktiv" class="custom-select">
@@ -331,7 +335,7 @@
                                     <option value="1" {if isset($Versandart->fVersandkostenfreiAbX) && $Versandart->fVersandkostenfreiAbX > 0}selected{/if}>{__('yes')}</option>
                                 </select>
                             </div>
-                            <div class="col-sm pr-sm-5 order-last order-sm-2">
+                            <div class="col-sm pr-sm-5 order-last order-sm-2 {if $versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl'}d-none{/if}">
                                 <input type="text" id="fVersandkostenfreiAbX" name="fVersandkostenfreiAbX" class="form-control price_large" value="{if isset($Versandart->fVersandkostenfreiAbX)}{$Versandart->fVersandkostenfreiAbX}{/if}">{* onKeyUp="setzePreisAjax(false, 'ajaxversandkostenfrei', this)" /> <span id="ajaxversandkostenfrei"></span>*}
                             </div>
                         </div>
@@ -555,9 +559,9 @@
                                                    type="checkbox" name="land[]"
                                                    data-id="country_{$country->getISO()}"
                                                    value="{$country->getISO()}"
-                                                   id="country_{$country->getISO()}"
+                                                   id="country_{$country->getISO()}_{$continentKey}"
                                                     {if isset($gewaehlteLaender) && is_array($gewaehlteLaender) && in_array($country->getISO(),$gewaehlteLaender)} checked="checked"{/if} />
-                                            <label class="custom-control-label" for="country_{$country->getISO()}">{$country->getName()}</label>
+                                            <label class="custom-control-label" for="country_{$country->getISO()}_{$continentKey}">{$country->getName()}</label>
                                         </div>
                                     </div>
                                     {/foreach}

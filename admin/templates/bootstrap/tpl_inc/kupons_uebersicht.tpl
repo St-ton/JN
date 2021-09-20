@@ -147,6 +147,9 @@
                     </div>
                 </div>
             </form>
+            {if $oKupon_arr|@count > 0}
+                {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['tab'=>$cKuponTyp] isBottom=true}
+            {/if}
         </div>
     </div>
 {/function}

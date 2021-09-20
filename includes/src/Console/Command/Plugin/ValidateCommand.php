@@ -29,7 +29,12 @@ class ValidateCommand extends Command
             ->setDescription('Validate available plugin')
             ->setDefinition(
                 new InputDefinition([
-                    new InputOption('plugin-dir', null, InputOption::VALUE_REQUIRED, 'Plugin dir name relative to shop root'),
+                    new InputOption(
+                        'plugin-dir',
+                        null,
+                        InputOption::VALUE_REQUIRED,
+                        'Plugin dir name relative to shop root'
+                    ),
                     new InputOption('zipfile', null, InputOption::VALUE_OPTIONAL, 'Absolute path to zip file'),
                     new InputOption('delete', null, null, 'Delete zip and plugin dir after validating?'),
                 ])
@@ -96,7 +101,7 @@ class ValidateCommand extends Command
         }
         $this->cleanup($delete, $pluginDir, $zip);
 
-        return null;
+        return 0;
     }
 
     /**

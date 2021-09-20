@@ -7,11 +7,12 @@ use JTL\Cart\Cart;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\ZahlungsLog;
 use JTL\Customer\Customer;
-use JTL\DB\ReturnType;
+use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Plugin\Data\PaymentMethod;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -52,7 +53,7 @@ class Method implements MethodInterface
     public $caption;
 
     /**
-     * @var bool
+     * @var int
      */
     public $duringCheckout;
 
@@ -121,9 +122,9 @@ class Method implements MethodInterface
     public function getOrderHash(Bestellung $order): ?string
     {
         $orderId = isset($order->kBestellung)
-            ? Shop::Container()->getDB()->query(
-                'SELECT cId FROM tbestellid WHERE kBestellung = ' . (int)$order->kBestellung,
-                ReturnType::SINGLE_OBJECT
+            ? Shop::Container()->getDB()->getSingleObject(
+                'SELECT cId FROM tbestellid WHERE kBestellung = :oid',
+                ['oid' => (int)$order->kBestellung]
             )
             : null;
 
@@ -142,14 +143,14 @@ class Method implements MethodInterface
         }
         if (Shop::getSettings([\CONF_KAUFABWICKLUNG])['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') {
             // Abschlussseite
-            $oZahlungsID = Shop::Container()->getDB()->query(
+            $paymentID = Shop::Container()->getDB()->getSingleObject(
                 'SELECT cId
                     FROM tbestellid
-                    WHERE kBestellung = ' . (int)$order->kBestellung,
-                ReturnType::SINGLE_OBJECT
+                    WHERE kBestellung = :oid',
+                ['oid' => (int)$order->kBestellung]
             );
-            if (\is_object($oZahlungsID)) {
-                return Shop::getURL() . '/bestellabschluss.php?i=' . $oZahlungsID->cId;
+            if ($paymentID !== null) {
+                return Shop::getURL() . '/bestellabschluss.php?i=' . $paymentID->cId;
             }
         }
 
@@ -223,7 +224,6 @@ class Method implements MethodInterface
      */
     public function generateHash(Bestellung $order): string
     {
-        $hash = null;
         if ((int)$this->duringCheckout === 1) {
             if (!isset($_SESSION['IP'])) {
                 $_SESSION['IP'] = new stdClass();
@@ -366,17 +366,13 @@ class Method implements MethodInterface
     public function getCustomerOrderCount(int $customerID): int
     {
         if ($customerID > 0) {
-            $order = Shop::Container()->getDB()->query(
-                "SELECT COUNT(*) AS nAnzahl
+            return (int)Shop::Container()->getDB()->getSingleObject(
+                "SELECT COUNT(*) AS cnt
                     FROM tbestellung
                     WHERE (cStatus = '2' || cStatus = '3' || cStatus = '4')
-                        AND kKunde = " . $customerID,
-                ReturnType::SINGLE_OBJECT
-            );
-
-            if (isset($order->nAnzahl) && count($order->nAnzahl) > 0) {
-                return (int)$order->nAnzahl;
-            }
+                        AND kKunde = :cid",
+                ['cid' => $customerID]
+            )->cnt;
         }
 
         return 0;
@@ -413,9 +409,15 @@ class Method implements MethodInterface
             return false;
         }
 
+        $customerGroups = PaymentMethod::load(Shop::Container()->getDB(), $this->moduleID)->getCustomerGroups();
+        $customerGroup  = (int)($customer->kKundengruppe ?? CustomerGroup::getCurrent());
+        if (count($customerGroups) > 0 && !\in_array($customerGroup, $customerGroups, true)) {
+            return false;
+        }
+
         if ($this->getSetting('min_bestellungen') > 0) {
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
-                $res   = Shop::Container()->getDB()->executeQueryPrepared(
+                $count = (int)Shop::Container()->getDB()->getSingleObject(
                     'SELECT COUNT(*) AS cnt
                         FROM tbestellung
                         WHERE kKunde = :cid
@@ -424,10 +426,8 @@ class Method implements MethodInterface
                         'cid' => (int)$customer->kKunde,
                         'stp' => \BESTELLUNG_STATUS_BEZAHLT,
                         'sts' => \BESTELLUNG_STATUS_VERSANDT
-                    ],
-                    ReturnType::SINGLE_OBJECT
-                );
-                $count = (int)$res->cnt;
+                    ]
+                )->cnt;
                 if ($count < $this->getSetting('min_bestellungen')) {
                     ZahlungsLog::add(
                         $this->moduleID,

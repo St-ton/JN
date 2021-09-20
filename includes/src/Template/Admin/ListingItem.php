@@ -226,25 +226,25 @@ class ListingItem
                 $msg = '';
                 break;
             case TemplateValidator::RES_PARENT_NOT_FOUND:
-                $msg = __('errorParentNotFound');
+                $msg = \__('errorParentNotFound');
                 break;
             case TemplateValidator::RES_SHOP_VERSION_NOT_FOUND:
-                $msg = __('errorShopVersionNotFound');
+                $msg = \__('errorShopVersionNotFound');
                 break;
             case TemplateValidator::RES_XML_NOT_FOUND:
-                $msg = __('errorXmlNotFound');
+                $msg = \__('errorXmlNotFound');
                 break;
             case TemplateValidator::RES_XML_PARSE_ERROR:
-                $msg = __('errorXmlParse');
+                $msg = \__('errorXmlParse');
                 break;
             case TemplateValidator::RES_NAME_NOT_FOUND:
-                $msg = __('errorNameNotFound');
+                $msg = \__('errorNameNotFound');
                 break;
             case TemplateValidator::RES_INVALID_VERSION:
-                $msg = __('errorInvalidVersion');
+                $msg = \__('errorInvalidVersion');
                 break;
             default:
-                $msg = __('errorUnknown');
+                $msg = \__('errorUnknown');
                 break;
         }
         $this->setErrorMessage($msg);

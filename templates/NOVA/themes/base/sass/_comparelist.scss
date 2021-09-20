@@ -27,7 +27,6 @@
     }
   }
   .table {
-    width: 98%;
     thead th {
       &:first-child {
         z-index: $zindex-dropdown - 3;
@@ -60,6 +59,12 @@
     display: flex;
     flex-direction: column;
   }
+  .comparelist-label-button {
+    th {
+      padding: 0;
+      border: 0;
+    }
+  }
 }
 
 .custom-checkbox + .description {
@@ -82,4 +87,8 @@
   .comparelist-item-more {
     padding-left: 0;
   }
+}
+
+.comparelist-delete-all {
+  float: right;
 }

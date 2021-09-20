@@ -2,8 +2,8 @@
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
+use stdClass;
 
 /**
  * Class Jtllog
@@ -105,7 +105,7 @@ class Jtllog
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use the log service instead.', \E_USER_DEPRECATED);
 
-        return self::writeLog($cLog, $nLevel, $bForce, $cKey, $kKey);
+        return self::writeLog($cLog, $nLevel, $bForce, $cKey, (int)$kKey);
     }
 
     /**
@@ -175,14 +175,13 @@ class Jtllog
         $where = \count($conditions) > 0
             ? ' WHERE ' . \implode(' AND ', $conditions)
             : '';
-        $data  = Shop::Container()->getDB()->queryPrepared(
+        $data  = Shop::Container()->getDB()->getObjects(
             'SELECT kLog
                 FROM tjtllog
                 ' . $where . '
                 ORDER BY dErstellt DESC, kLog DESC
                 LIMIT :limitfrom, :limitto',
-            $values,
-            ReturnType::ARRAY_OF_OBJECTS
+            $values
         );
         foreach ($data as $oLog) {
             if (isset($oLog->kLog) && (int)$oLog->kLog > 0) {
@@ -200,14 +199,20 @@ class Jtllog
      */
     public static function getLogWhere(string $whereSQL = '', $limitSQL = ''): array
     {
-        return Shop::Container()->getDB()->query(
+        return Shop::Container()->getDB()->getCollection(
             'SELECT *
                 FROM tjtllog' .
             ($whereSQL !== '' ? ' WHERE ' . $whereSQL : '') .
             ' ORDER BY dErstellt DESC, kLog DESC ' .
-            ($limitSQL !== '' ? ' LIMIT ' . $limitSQL : ''),
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+            ($limitSQL !== '' ? ' LIMIT ' . $limitSQL : '')
+        )->map(static function (stdClass $log) {
+            $log->kLog   = (int)$log->kLog;
+            $log->nLevel = (int)$log->nLevel;
+            $log->kKey   = (int)$log->kKey;
+            $log->cLog   = Text::filterXSS($log->cLog);
+
+            return $log;
+        })->all();
     }
 
     /**
@@ -227,14 +232,12 @@ class Jtllog
                 $where .= " AND cLog LIKE '%" . $filter . "%'";
             }
         }
-        $data = Shop::Container()->getDB()->query(
-            'SELECT COUNT(*) AS nAnzahl 
-                FROM tjtllog' .
-            $where,
-            ReturnType::SINGLE_OBJECT
-        );
 
-        return (int)$data->nAnzahl;
+        return (int)Shop::Container()->getDB()->getSingleObject(
+            'SELECT COUNT(*) AS cnt 
+                FROM tjtllog' .
+            $where
+        )->cnt;
     }
 
     /**
@@ -245,20 +248,15 @@ class Jtllog
         $db = Shop::Container()->getDB();
         $db->query(
             'DELETE FROM tjtllog 
-                WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < NOW()',
-            ReturnType::AFFECTED_ROWS
+                WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < NOW()'
         );
-        $count = (int)$db->query(
+        $count = (int)$db->getSingleObject(
             'SELECT COUNT(*) AS cnt 
-                FROM tjtllog',
-            ReturnType::SINGLE_OBJECT
+                FROM tjtllog'
         )->cnt;
 
         if ($count > \JTLLOG_MAX_LOGSIZE) {
-            $db->query(
-                'DELETE FROM tjtllog ORDER BY dErstellt LIMIT ' . ($count - \JTLLOG_MAX_LOGSIZE),
-                ReturnType::DEFAULT
-            );
+            $db->query('DELETE FROM tjtllog ORDER BY dErstellt LIMIT ' . ($count - \JTLLOG_MAX_LOGSIZE));
         }
     }
 
@@ -268,9 +266,8 @@ class Jtllog
      */
     public static function deleteIDs(array $ids): int
     {
-        return Shop::Container()->getDB()->query(
-            'DELETE FROM tjtllog WHERE kLog IN (' . \implode(',', \array_map('\intval', $ids)) . ')',
-            ReturnType::AFFECTED_ROWS
+        return Shop::Container()->getDB()->getAffectedRows(
+            'DELETE FROM tjtllog WHERE kLog IN (' . \implode(',', \array_map('\intval', $ids)) . ')'
         );
     }
 
@@ -279,7 +276,7 @@ class Jtllog
      */
     public static function deleteAll(): int
     {
-        return Shop::Container()->getDB()->query('TRUNCATE TABLE tjtllog', ReturnType::AFFECTED_ROWS);
+        return Shop::Container()->getDB()->getAffectedRows('TRUNCATE TABLE tjtllog');
     }
 
     /**
@@ -453,13 +450,12 @@ class Jtllog
         if ($cache === true && isset($conf['global']['systemlog_flag'])) {
             return (int)$conf['global']['systemlog_flag'];
         }
-        $conf = Shop::Container()->getDB()->query(
+        $conf = Shop::Container()->getDB()->getSingleObject(
             "SELECT cWert 
                 FROM teinstellungen 
-                WHERE cName = 'systemlog_flag'",
-            ReturnType::SINGLE_OBJECT
+                WHERE cName = 'systemlog_flag'"
         );
 
-        return isset($conf->cWert) ? (int)$conf->cWert : 0;
+        return (int)($conf->cWert ?? 0);
     }
 }

@@ -7,8 +7,8 @@ use JTL\Campaign;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\Artikel;
+use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
@@ -58,13 +58,10 @@ class Newsletter
     {
         $this->smarty = new JTLSmarty(true, ContextType::NEWSLETTER);
         $this->smarty->setCaching(0)
-            ->setDebugging(0)
+            ->setDebugging(false)
             ->setCompileDir(\PFAD_ROOT . \PFAD_COMPILEDIR)
             ->registerResource('db', new SmartyResourceNiceDB($this->db, ContextType::NEWSLETTER))
-            ->assign('Firma', $this->db->query(
-                'SELECT *  FROM tfirma',
-                ReturnType::SINGLE_OBJECT
-            ))
+            ->assign('Firma', $this->db->getSingleObject('SELECT *  FROM tfirma'))
             ->assign('URL_SHOP', Shop::getURL())
             ->assign('Einstellungen', $this->config);
         if (\NEWSLETTER_USE_SECURITY) {
@@ -79,7 +76,7 @@ class Newsletter
      * @param array           $products
      * @param array           $manufacturers
      * @param array           $categories
-     * @param string          $campaign
+     * @param string|Campaign $campaign
      * @param stdClass|string $recipient
      * @param stdClass|string $customer
      * @return string
@@ -136,21 +133,20 @@ class Newsletter
             }
         }
 
-        $recipients = $this->db->query(
+        $recipients = $this->db->getSingleObject(
             'SELECT COUNT(*) AS nAnzahl
-            FROM tnewsletterempfaenger
-            LEFT JOIN tsprache
-                ON tsprache.kSprache = tnewsletterempfaenger.kSprache
-            LEFT JOIN tkunde
-                ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-            WHERE tnewsletterempfaenger.kSprache = ' . (int)$data->kSprache . '
-                AND tnewsletterempfaenger.nAktiv = 1 ' . $cSQL,
-            ReturnType::SINGLE_OBJECT
+                FROM tnewsletterempfaenger
+                LEFT JOIN tsprache
+                    ON tsprache.kSprache = tnewsletterempfaenger.kSprache
+                LEFT JOIN tkunde
+                    ON tkunde.kKunde = tnewsletterempfaenger.kKunde
+                WHERE tnewsletterempfaenger.kSprache = :lid
+                    AND tnewsletterempfaenger.nAktiv = 1 ' . $cSQL,
+            ['lid' => (int)$data->kSprache]
         );
         if ($this->db->getErrorCode() !== 0) {
             $recipients = new stdClass();
         }
-
         $recipients->cKundengruppe_arr = $tmpGroups;
 
         return $recipients;
@@ -227,13 +223,13 @@ class Newsletter
     }
 
     /**
-     * @param object   $newsletter
-     * @param stdClass $recipients
-     * @param array    $products
-     * @param array    $manufacturers
-     * @param array    $categories
-     * @param string   $campaign
-     * @param string   $oKunde
+     * @param object                   $newsletter
+     * @param stdClass                 $recipients
+     * @param array                    $products
+     * @param array                    $manufacturers
+     * @param array                    $categories
+     * @param Campaign|string          $campaign
+     * @param Customer|stdClass|string $customer
      * @return string|bool
      */
     public function send(
@@ -243,11 +239,11 @@ class Newsletter
         $manufacturers = [],
         $categories = [],
         $campaign = '',
-        $oKunde = ''
+        $customer = ''
     ) {
         $this->smarty->assign('oNewsletter', $newsletter)
             ->assign('Emailempfaenger', $recipients)
-            ->assign('Kunde', $oKunde)
+            ->assign('Kunde', $customer)
             ->assign('Artikelliste', $products)
             ->assign('Herstellerliste', $manufacturers)
             ->assign('Kategorieliste', $categories)
@@ -260,17 +256,17 @@ class Newsletter
             );
         $net      = 0;
         $bodyHtml = '';
-        if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
-            $oKundengruppe = $this->db->query(
+        if (isset($customer->kKunde) && $customer->kKunde > 0) {
+            $customergGroup = $this->db->getSingleObject(
                 'SELECT tkundengruppe.nNettoPreise
-                FROM tkunde
-                JOIN tkundengruppe
-                    ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
-                WHERE tkunde.kKunde = ' . (int)$oKunde->kKunde,
-                ReturnType::SINGLE_OBJECT
+                    FROM tkunde
+                    JOIN tkundengruppe
+                        ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
+                    WHERE tkunde.kKunde = :cid',
+                ['cid' => (int)$customer->kKunde]
             );
-            if (isset($oKundengruppe->nNettoPreise)) {
-                $net = $oKundengruppe->nNettoPreise;
+            if ($customergGroup !== null && isset($customergGroup->nNettoPreise)) {
+                $net = $customergGroup->nNettoPreise;
             }
         }
 
@@ -307,8 +303,8 @@ class Newsletter
             return $e->getMessage();
         }
         $toName = ($recipients->cVorname ?? '') . ' ' . ($recipients->cNachname ?? '');
-        if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
-            $toName = ($oKunde->cVorname ?? '') . ' ' . ($oKunde->cNachname ?? '');
+        if (isset($customer->kKunde) && $customer->kKunde > 0) {
+            $toName = ($customer->cVorname ?? '') . ' ' . ($customer->cNachname ?? '');
         }
         $mailer                 = Shop::Container()->get(Mailer::class);
         $config                 = [
@@ -351,7 +347,7 @@ class Newsletter
     {
         $res  = [];
         $keys = \explode(';', $keyString);
-        if (!\is_array($keys) || \count($keys) === 0) {
+        if (\count($keys) === 0) {
             return $res;
         }
         $res = \array_filter($keys, static function ($e) {
@@ -362,12 +358,11 @@ class Newsletter
                 return "'" . $e . "'";
             }, $res);
             if (\count($res) > 0) {
-                $artNoData = $this->db->query(
+                $artNoData = $this->db->getObjects(
                     'SELECT kArtikel
-                FROM tartikel
-                WHERE cArtNr IN (' . \implode(',', $res) . ')
-                    AND kEigenschaftKombi = 0',
-                    ReturnType::ARRAY_OF_OBJECTS
+                        FROM tartikel
+                        WHERE cArtNr IN (' . \implode(',', $res) . ')
+                            AND kEigenschaftKombi = 0'
                 );
                 $res       = \array_map(static function ($e) {
                     return $e->kArtikel;
@@ -437,7 +432,7 @@ class Newsletter
      *
      * @param array      $manufacturerIDs
      * @param int|object $campaign
-     * @param int|object $langID
+     * @param int        $langID
      * @return array
      */
     public function getManufacturers($manufacturerIDs, $campaign = 0, int $langID = 0): array

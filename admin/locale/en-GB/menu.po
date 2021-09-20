@@ -73,7 +73,7 @@ msgid "Terms / Withdrawal"
 msgstr "Terms/Withdrawal"
 
 msgid "Blog posts"
-msgstr "Blog postings"
+msgstr "Blog posts"
 
 msgid "Footer / Boxes"
 msgstr "Footers/Boxes"
@@ -299,6 +299,9 @@ msgstr "Overview"
 msgid "Plug-in manager"
 msgstr "Plug-in manager"
 
+msgid "JTL-Extension Store"
+msgstr "JTL-Extension Store"
+
 msgid "My purchases"
 msgstr "My purchases"
 
@@ -449,3 +452,6 @@ msgstr "Global"
 
 msgid "Availability notifications"
 msgstr "Availability requests"
+
+msgid "Country manager"
+msgstr "Country manager"

@@ -281,6 +281,7 @@
                         </div>
                     </div>
                 </form>
+                {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='redirects' isBottom=true}
             </div>
         </div>
         <div role="tabpanel" class="tab-pane fade{if $cTab === 'new_redirect'} active show{/if}" id="new_redirect">

@@ -23,6 +23,8 @@ class Serverinfo extends AbstractWidget
             ->assign('mySQLVersion', $this->oDB->getServerInfo())
             ->assign('mySQLStats', $this->oDB->getServerStats())
             ->assign('cShopHost', $parsed['scheme'] . '://' . $parsed['host']);
+
+        $this->setPermission('DIAGNOSTIC_VIEW');
     }
 
     /**

@@ -3,8 +3,8 @@
     <Name>NOVA</Name>
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
-    <MinShopVersion>5.0.0</MinShopVersion>
-    <Version>1.0.0</Version>
+    <MinShopVersion>5.1.0</MinShopVersion>
+    <Version>1.1.0</Version>
     <Preview>preview.png</Preview>
     <Description>JTL-Shop Responsive-Template</Description>
     <Framework>Bootstrap4</Framework>
@@ -21,6 +21,7 @@
             <Setting Description="Theme" Key="theme_default" Type="select" Value="clear">
                 <Option Value="clear">clear - Handgemacht mit <![CDATA[&hearts;]]> von JTL</Option>
                 <Option Value="midnight">midnight</Option>
+                <Option Value="blackline">blackline</Option>
             </Setting>
             <Setting Description="Animation für Schaltflächen beim Hovern" Key="button_animated" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
@@ -48,11 +49,17 @@
                 <Option Value="N">im Contentbereich</Option>
                 <Option Value="Y">zwischen Header und Content</Option>
             </Setting>
+            <Setting Description="Linke Seitenleiste anzeigen" Key="left_sidebar" Type="select" Value="N">
+                <Option Value="N">Nur auf Artikellisten</Option>
+                <Option Value="Y">Auf allen Seiten</Option>
+            </Setting>
             <Setting Description="Favicon" Key="favicon" Type="upload" Value="favicon.ico" maxFileSize="123456" showPreview="false" allowedFileExtensions="['ico','png']" accept="image/*" target="themes/base/images/" targetFileName="favicon.ico"/>
         </Section>
         <Section Name="Megamenu" Key="megamenu">
             <Setting Description="Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)" Key="show_categories" Type="select" Value="Y">
-                <Option Value="Y">Aktiv</Option>
+                <Option Value="Y">Auf Desktop und mobilen Geräten</Option>
+                <Option Value="mobile">Nur mobil</Option>
+                <Option Value="desktop">Nur Desktop</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
             <Setting Description="Kategoriebilder für erste Unterkategorie" Key="show_category_images" Type="select" Value="N">
@@ -85,6 +92,7 @@
                 <Option Value="sidebar">Seitenleiste (Einstellung einzelner Filter unter „Standardelemente > Footer /Boxen“ und „Standardansichten > Artikelübersicht“)</Option>
                 <Option Value="modal">Eigenes Fenster (Einstellung einzelner Filter unter „Standardansichten > Artikelübersicht“)</Option>
             </Setting>
+            <Setting Description="Suchfeld in Filtern anzeigen ab x Einträgen" Key="filter_search_count" Type="number" Value="20"/>
             <Setting Description="Schaltfläche „Warenkorb“ in Artikelübersicht (Listenansicht) anzeigen" Key="buy_productlist" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
@@ -152,6 +160,10 @@
         <CSS Name="midnight.css">
             <File Path="themes/midnight/midnight.css"/>
             <File Path="themes/midnight/custom.css"/>
+        </CSS>
+        <CSS Name="blackline.css">
+            <File Path="themes/blackline/blackline.css"/>
+            <File Path="themes/blackline/custom.css"/>
         </CSS>
         <JS Name="jtl3.js">
             <File Path="js/bootstrap-toolkit.js"/>

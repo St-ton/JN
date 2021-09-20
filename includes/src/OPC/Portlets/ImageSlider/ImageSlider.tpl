@@ -1,7 +1,7 @@
 {if $isPreview}
     {$slides = $instance->getProperty('slides')}
     {if $slides|count > 0}
-        {$imgAttribs = $instance->getImageAttributes($slides[0].url, '', '')}
+        {$imgAttribs = $instance->getImageAttributes($slides[0].url, $slides[0].alt, $slides[0].title)}
     {/if}
     <div class="text-center opc-ImageSlider {if $slides|count > 0}opc-ImageSlider-with-image{/if}"
          style="{if $slides|count > 0}background-image: url('{$imgAttribs.src}');{/if} {$instance->getStyleString()}">
@@ -25,7 +25,7 @@
                         {/if}
 
                         {if !empty($slide.url)}
-                            {$imgAttribs = $instance->getImageAttributes($slide.url, '', '')}
+                            {$imgAttribs = $instance->getImageAttributes($slide.url, $slide.alt, $slide.title)}
 
                             {if !empty($slide.link)}
                                 <a href="{$slide.link}"

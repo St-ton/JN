@@ -27,7 +27,7 @@ class Sort extends AbstractFilter
     /**
      * @var Collection
      */
-    private $sortingOptions = [];
+    private $sortingOptions;
 
     /**
      * @var SortingOptionInterface
@@ -46,10 +46,12 @@ class Sort extends AbstractFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
+        $this->sortingOptions = new Collection();
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('Sortierung')
-             ->setFrontendName(Shop::Lang()->get('sorting', 'productOverview'));
+            ->setUrlParam('Sortierung')
+            ->setFrontendName(Shop::Lang()->get('sorting', 'productOverview'))
+            ->setFilterName($this->getFrontendName());
         $this->activeSortingType = (int)$this->getConfig('artikeluebersicht')['artikeluebersicht_artikelsortierung'];
         if (isset($_SESSION['Usersortierung'])) {
             $mapper                  = new SortingType();

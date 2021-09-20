@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Pagination;
 
@@ -121,7 +121,7 @@ class Pagination
     private $orderSQL = '';
 
     /**
-     * @var array
+     * @var array|Collection
      */
     private $items;
 
@@ -261,24 +261,16 @@ class Pagination
     public function loadParameters(): self
     {
         $idx                = $this->id . '_nItemsPerPage';
-        $this->itemsPerPage =
-            $this->itemsPerPageExplicit ? $this->itemsPerPage : (
-            isset($_GET[$idx]) ? (int)$_GET[$idx] : (
-            isset($_POST[$idx]) ? (int)$_POST[$idx] : (
-            !empty($_SESSION[$idx]) ? (int)$_SESSION[$idx] : (
-            $this->defaultItemsPerPage === -1 ? $this->defaultItemsPerPage :
-                $this->itemsPerPageOptions[0]))));
+        $fb                 = $this->defaultItemsPerPage === -1
+            ? $this->defaultItemsPerPage
+            : $this->itemsPerPageOptions[0];
+        $this->itemsPerPage = $this->itemsPerPageExplicit
+            ? $this->itemsPerPage
+            : (int)($_GET[$idx] ?? $_POST[$idx] ?? $_SESSION[$idx] ?? $fb);
         $idx                = $this->id . '_nSortByDir';
-        $this->sortByDir    =
-            isset($_GET[$idx]) ? (int)$_GET[$idx] : (
-            isset($_POST[$idx]) ? (int)$_POST[$idx] : (
-            isset($_SESSION[$idx]) ? (int)$_SESSION[$idx] :
-                $this->defaultSortByDir));
+        $this->sortByDir    = (int)($_GET[$idx] ?? $_POST[$idx] ?? $_SESSION[$idx] ?? $this->defaultSortByDir);
         $idx                = $this->id . '_nPage';
-        $this->page         =
-            isset($_GET[$idx]) ? (int)$_GET[$idx] : (
-            isset($_POST[$idx]) ? (int)$_POST[$idx] : (
-            isset($_SESSION[$idx]) ? (int)$_SESSION[$idx] : 0));
+        $this->page         = (int)($_GET[$idx] ?? $_POST[$idx] ?? $_SESSION[$idx] ?? 0);
 
         return $this;
     }

@@ -11,9 +11,14 @@ use Exception;
 interface TemplateServiceInterface
 {
     /**
-     *
+     * save template data to object cache
      */
     public function save(): void;
+
+    /**
+     * reset currently active template
+     */
+    public function reset(): void;
 
     /**
      * @param bool $withLicense
@@ -29,4 +34,11 @@ interface TemplateServiceInterface
      * @throws Exception
      */
     public function loadFull(array $attributes, bool $withLicense = true): Model;
+
+    /**
+     * @param string $dir
+     * @param string $type
+     * @return bool
+     */
+    public function setActiveTemplate(string $dir, string $type = 'standard'): bool;
 }

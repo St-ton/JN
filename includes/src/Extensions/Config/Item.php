@@ -5,13 +5,13 @@ namespace JTL\Extensions\Config;
 use JsonSerializable;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Nice;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use stdClass;
 use function Functional\select;
 
 /**
@@ -91,17 +91,17 @@ class Item implements JsonSerializable
     protected $fInitial;
 
     /**
-     * @var ItemLocalization
+     * @var ItemLocalization|null
      */
     protected $oSprache;
 
     /**
-     * @var ItemPrice
+     * @var ItemPrice|null
      */
     protected $oPreis;
 
     /**
-     * @var Artikel
+     * @var Artikel|null
      */
     protected $oArtikel;
 
@@ -121,7 +121,7 @@ class Item implements JsonSerializable
     protected $nSort = 0;
 
     /**
-     * @var int|null
+     * @var int|float|null
      */
     public $fAnzahl;
 
@@ -319,27 +319,27 @@ class Item implements JsonSerializable
 
     /**
      * @param int $groupID
+     * @param int $languageID
      * @return Item[]
      */
-    public static function fetchAll(int $groupID): array
+    public static function fetchAll(int $groupID, int $languageID = 0): array
     {
-        $items = [];
-        $data  = Shop::Container()->getDB()->queryPrepared(
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+
+        return Shop::Container()->getDB()->getCollection(
             'SELECT kKonfigitem 
                 FROM tkonfigitem 
                 WHERE kKonfiggruppe = :groupID 
                 ORDER BY nSort ASC',
-            ['groupID' => $groupID],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($data as $id) {
-            $item = new self((int)$id->kKonfigitem);
-            if ($item->isValid()) {
-                $items[] = $item;
-            }
-        }
-
-        return $items;
+            ['groupID' => $groupID]
+        )
+            ->map(static function (stdClass $item) use ($languageID, $customerGroupID) {
+                return new self((int)$item->kKonfigitem, $languageID, $customerGroupID);
+            })
+            ->filter(static function (Item $item) {
+                return $item->isValid();
+            })
+            ->toArray();
     }
 
     /**
@@ -661,12 +661,12 @@ class Item implements JsonSerializable
      */
     public function getPreisLocalized(bool $html = true, bool $signed = true, bool $bForceNetto = false): string
     {
-        $cLocalized = Preise::getLocalizedPriceString($this->getPreis($bForceNetto), false, $html);
+        $localized = Preise::getLocalizedPriceString($this->getPreis($bForceNetto), false, $html);
         if ($signed && $this->getPreis() > 0) {
-            $cLocalized = '+' . $cLocalized;
+            $localized = '+' . $localized;
         }
 
-        return $cLocalized;
+        return $localized;
     }
 
     /**

@@ -7,6 +7,7 @@ use Imagick;
 use Intervention\Image\Constraint;
 use Intervention\Image\Image as InImage;
 use Intervention\Image\ImageManager;
+use JTL\Media\Image\AbstractImage;
 use JTL\Shop;
 
 /**
@@ -219,20 +220,20 @@ class Image
             ],
             self::TYPE_OPC                  => [
                 self::SIZE_XS => [
-                    'width'  => 480,
-                    'height' => 480
+                    'width'  => (int)$settings['bilder_opc_mini_breite'],
+                    'height' => (int)$settings['bilder_opc_mini_hoehe']
                 ],
                 self::SIZE_SM => [
-                    'width'  => 720,
-                    'height' => 720
+                    'width'  => (int)$settings['bilder_opc_klein_breite'],
+                    'height' => (int)$settings['bilder_opc_klein_hoehe']
                 ],
                 self::SIZE_MD => [
-                    'width'  => 1080,
-                    'height' => 1080
+                    'width'  => (int)$settings['bilder_opc_normal_breite'],
+                    'height' => (int)$settings['bilder_opc_normal_hoehe']
                 ],
                 self::SIZE_LG => [
-                    'width'  => 1440,
-                    'height' => 1440
+                    'width'  => (int)$settings['bilder_opc_gross_breite'],
+                    'height' => (int)$settings['bilder_opc_gross_hoehe']
                 ]
             ],
             self::TYPE_NEWS                 => [
@@ -315,7 +316,32 @@ class Image
         $replace  = ['-', '-', '-', 'ae', 'oe', 'ue', 'ss'];
         $filename = \str_replace($source, $replace, \mb_convert_case($filename, \MB_CASE_LOWER));
 
-        return \preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $filename);
+        return \preg_replace('/[^' . AbstractImage::REGEX_ALLOWED_CHARS . ']/', '', $filename);
+    }
+
+    /**
+     * @param array      $file
+     * @param array|null $allowed
+     * @return bool
+     */
+    public static function isImageUpload(array $file, ?array $allowed = null): bool
+    {
+        $allowed = $allowed ?? [
+                'image/jpeg',
+                'image/jpg',
+                'image/pjpeg',
+                'image/gif',
+                'image/x-png',
+                'image/png',
+                'image/bmp',
+                'image/webp'
+            ];
+        $finfo   = \finfo_open(\FILEINFO_MIME_TYPE);
+
+        return isset($file['type'], $file['error'], $file['tmp_name'])
+            && $file['error'] === \UPLOAD_ERR_OK
+            && \in_array($file['type'], $allowed, true)
+            && \in_array(\finfo_file($finfo, $file['tmp_name']), $allowed, true);
     }
 
     /**
@@ -333,21 +359,29 @@ class Image
         $thumbnail = $req->getThumb($req->getSize(), true);
         $manager   = new ImageManager(['driver' => self::getImageDriver()]);
         $img       = $manager->make($rawPath);
-        $canvas    = $manager->canvas($img->width(), $img->height(), $settings['background']);
-        $canvas->insert($img);
-        $img = $canvas;
+        $regExt    = $req->getExt();
+        if (($regExt === 'jpg' || $regExt === 'jpeg') && $settings['container'] === true) {
+            $canvas = $manager->canvas($img->width(), $img->height(), $settings['background']);
+            $canvas->insert($img);
+            $img = $canvas;
+        }
         self::checkDirectory($thumbnail);
         self::resize($req, $img, $settings);
         self::addBranding($manager, $req, $img);
-        self::optimizeImage($img, $req->getExt());
+        self::optimizeImage($img, $regExt);
         \executeHook(\HOOK_IMAGE_RENDER, [
             'image'    => $img,
             'settings' => $settings,
             'path'     => $thumbnail
         ]);
-        $img->save($thumbnail, $settings['quality'], $req->getExt());
+        $img->save($thumbnail, $settings['quality'], $regExt);
         if ($streamOutput) {
-            echo $img->response($req->getExt());
+            $response = $img->response($regExt);
+            if (\is_object($response) && \method_exists($response, 'send')) {
+                $response->send();
+            } else {
+                echo $response;
+            }
         }
     }
 

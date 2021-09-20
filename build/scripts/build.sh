@@ -27,29 +27,41 @@ build_create()
     git config diff.renames 0;
 
     echo "Create build info";
-#   create_version_string ${REPOSITORY_DIR} ${APPLICATION_VERSION} ${APPLICATION_BUILD_SHA};
 
-#   if [[ "$APPLICATION_VERSION"  == "master" ]]; then
-#       if [[ ! -z "${NEW_VERSION}" ]]; then
-#           export APPLICATION_VERSION_STR=${NEW_VERSION};
-#       fi
-#   else
-#       export APPLICATION_VERSION_STR=${APPLICATION_VERSION};
+	# extract version from defines_inc.php -> APPLICATION_VERSION
+	definesInc=`cat ${REPOSITORY_DIR}/includes/defines_inc.php`;
+	pattern=".*define\('APPLICATION_VERSION', '([0-9]\.[0-9].[0-9])(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?'\);";
 
-    export APPLICATION_VERSION_STR=`cat ${REPOSITORY_DIR}/VERSION`;
-    sed -i "s/'APPLICATION_VERSION', '.*'/'APPLICATION_VERSION', '${APPLICATION_VERSION_STR}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
+	if [[ $definesInc =~ $pattern ]];then
+		if [[ ! -z "${BASH_REMATCH[2]}" ]]; then
+			  #if string contains prerelease versions like alpha|beta|rc
+			  export APPLICATION_VERSION_STR="${BASH_REMATCH[1]}${BASH_REMATCH[2]}";
+		else
+			  export APPLICATION_VERSION_STR="${BASH_REMATCH[1]}";
+		fi
+	else
+		echo "version extraction pattern did not found a match"
+	fi
+
+	#if tag was created, check if defines_inc version matches the tag version, if not, abort.
+    if [[ ${APPLICATION_VERSION} =~ ${VERSION_REGEX} ]]; then
+		if [[ "v${APPLICATION_VERSION_STR}" != "${APPLICATION_VERSION}" ]]; then
+			echo "Tag creation aborted, please make sure the APPLICATION_VERSION (includes/defines_inc.php) and the tag version are the same (don't mind the leading 'v').";
+			echo "parsed APPLICATION_VERSION: v${APPLICATION_VERSION_STR}";
+			echo "tag version: ${APPLICATION_VERSION} ";
+			echo "\n\nPLEASE DELETE THE FAILED, LAST CREATED TAG BEFORE CREATING A NEW ONE!";
+			exit 1;
+		fi
+    fi
+
+	# insert git sha hash into defines_inc.php -> APPLICATION_BUILD_SHA
     sed -i "s/'APPLICATION_BUILD_SHA', '#DEV#'/'APPLICATION_BUILD_SHA', '${APPLICATION_BUILD_SHA}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
-    rm ${REPOSITORY_DIR}/VERSION
 
     echo "Executing composer";
     build_composer_execute;
 
     echo "Create delete files csv";
     build_create_deleted_files_csv;
-
-    echo "Create templates md5 csv files";
-    create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/Evo";
-    create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/NOVA";
 
     echo "Move class files";
     build_move_class_files;
@@ -72,6 +84,13 @@ build_create()
     echo "Writing config.JTL-Shop.ini.initial.php";
     build_create_config_file;
 
+    echo "Compile css from scss files";
+    build_compile_css_files;
+
+    echo "Create templates md5 csv files";
+    create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/Evo";
+    create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/NOVA";
+	
     echo "Executing migrations";
     build_migrate;
 
@@ -88,8 +107,8 @@ build_create()
     build_clean_up;
 
     if [[ ${APPLICATION_VERSION} =~ ${VERSION_REGEX} ]]; then
-        echo "Create patch(es)";
-        build_create_patches "${BASH_REMATCH[@]}";
+	    echo "Create patch(es)";
+	    build_create_patches "${BASH_REMATCH[@]}";
     fi
 
     # Activate git renameList
@@ -105,9 +124,7 @@ build_create_deleted_files_csv()
 {
     local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
     local VERSION="${VERSION//^[v]/}";
-    local CUR_PWD=$(pwd);
     local DELETE_FILES_CSV_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
-    local DELETE_FILES_CSV_FILENAME_TMP="${REPOSITORY_DIR}/admin/includes/shopmd5files/deleted_files_${VERSION}_tmp.csv";
     local BRANCH_REGEX="(master|release\\/([0-9]{1,})\\.([0-9]{1,}))";
     local REMOTE_STR="";
 
@@ -119,15 +136,7 @@ build_create_deleted_files_csv()
 
     cd ${REPOSITORY_DIR};
     git pull >/dev/null 2>&1;
-    git diff --name-status --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME_TMP};
-    cd ${CUR_PWD};
-
-    while read line; do
-        local LINEINPUT="${line//[D ]/}";
-        echo ${LINEINPUT} >> ${DELETE_FILES_CSV_FILENAME};
-    done < ${DELETE_FILES_CSV_FILENAME_TMP};
-
-    rm ${DELETE_FILES_CSV_FILENAME_TMP};
+    git diff --name-only --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME};
 
     echo "  Deleted files schema admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
 }
@@ -172,7 +181,7 @@ build_create_md5_hashfile()
     local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${VERSION}.csv";
 
     cd ${REPOSITORY_DIR};
-    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name ".travis.yml" -or -name "${VERSION}.csv" -or -name "composer.lock" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -vE ".git/|admin/gfx/|admin/includes/emailpdfs/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
+    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name ".travis.yml" -or -name "${VERSION}.csv" -or -name "composer.lock" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -v -f "${REPOSITORY_DIR}/build/scripts/md5_excludes.lst" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
     cd ${CUR_PWD};
 
     echo "  File checksums admin/includes/shopmd5files/${VERSION}.csv";
@@ -355,32 +364,14 @@ build_add_files_to_patch_dir()
     rsync -rR admin/classes/ ${PATCH_DIR};
     rsync -rR classes/ ${PATCH_DIR};
     rsync -rR includes/ext/ ${PATCH_DIR};
+    rsync -rR includes/vendor/ ${PATCH_DIR};
     rsync -rR templates/NOVA/checksums.csv ${PATCH_DIR};
-
-    if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then
-        mkdir "/tmp_composer-${PATCH_VERSION}";
-        mkdir "/tmp_composer-${PATCH_VERSION}/includes";
-        touch "/tmp_composer-${PATCH_VERSION}/includes/composer.json";
-        git show ${PATCH_VERSION}:includes/composer.json > /tmp_composer-${PATCH_VERSION}/includes/composer.json;
-        git show ${PATCH_VERSION}:includes/composer.lock > /tmp_composer-${PATCH_VERSION}/includes/composer.lock;
-        composer install --no-dev -o -q -d /tmp_composer-${PATCH_VERSION}/includes;
-
-        while read -r line;
-        do
-            path=$(echo "${line}" | grep "^Files.*differ$" | sed 's/^Files .* and \(.*\) differ$/\1/');
-            if [[ -z "${path}" ]]; then
-                filename=$(echo "${line}" | grep "^Only in includes\/vendor.*: .*$" | sed 's/^Only in \(includes\/vendor[\/]*.*\): \(.*\)$/\1\/\2/');
-                if [[ ! -z "${filename}" ]]; then
-                    path="${filename}";
-                    rsync -Ra -f"+ *" ${path} ${PATCH_DIR};
-                fi
-            else
-                rsync -R ${path} ${PATCH_DIR};
-            fi
-        done< <(diff -rq /tmp_composer-${PATCH_VERSION}/includes/vendor includes/vendor);
-    fi
 }
 
+build_compile_css_files()
+{
+	php ${REPOSITORY_DIR}/cli compile:sass;
+}
 build_reset_mailtemplates()
 {
     php ${REPOSITORY_DIR}/cli mailtemplates:reset

@@ -62,6 +62,9 @@ msgstr "Selected queues deleted successfully."
 msgid "errorCronStart"
 msgstr "Cron task(s) could not be started."
 
+msgid "errorCronLocked"
+msgstr "Cron is currently locked."
+
 msgid "successCronsStart"
 msgstr "%s Cron tasks started successfully."
 

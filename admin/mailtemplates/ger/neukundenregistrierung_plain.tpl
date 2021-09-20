@@ -11,10 +11,10 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:
 {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}
 {/if}{$Kunde->cPLZ} {$Kunde->cOrt}
 {if $Kunde->cBundesland}{$Kunde->cBundesland}
-{/if}{$Kunde->cLand}
-{if $Kunde->cTel}Tel.: {$Kunde->cTel}
-{/if}{if $Kunde->cMobil}Mobil: {$Kunde->cMobil}
-{/if}{if $Kunde->cFax}Fax: {$Kunde->cFax}
+{/if}{$Kunde->angezeigtesLand}
+{if $Kunde->cTel}Tel.: {$Kunde->cTel|maskPrivate:2:4:'** ***'}
+{/if}{if $Kunde->cMobil}Mobil: {$Kunde->cMobil|maskPrivate:2:4:'** ***'}
+{/if}{if $Kunde->cFax}Fax: {$Kunde->cFax|maskPrivate:2:4:'** ***'}
 {/if}
 E-Mail-Adresse: {$Kunde->cMail}
 {if $Kunde->cUSTID}Ust-ID: {$Kunde->cUSTID}

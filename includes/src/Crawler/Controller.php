@@ -5,7 +5,6 @@ namespace JTL\Crawler;
 use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Services\JTL\AlertServiceInterface;
@@ -52,10 +51,9 @@ class Controller
      */
     public function getCrawler(int $id): array
     {
-        $crawler = $this->db->queryPrepared(
+        $crawler = $this->db->getObjects(
             'SELECT * FROM tbesucherbot WHERE kBesucherBot = :id ',
-            ['id' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['id' => $id]
         );
         if (\count($crawler) === 0) {
             throw new \InvalidArgumentException('Provided crawler id ' . $id . ' not found.');
@@ -71,10 +69,7 @@ class Controller
     {
         $cacheID = 'crawler';
         if (($crawlers = $this->cache->get($cacheID)) === false) {
-            $crawlers = $this->db->query(
-                'SELECT * FROM tbesucherbot ORDER BY kBesucherBot DESC',
-                ReturnType::ARRAY_OF_OBJECTS
-            );
+            $crawlers = $this->db->getObjects('SELECT * FROM tbesucherbot ORDER BY kBesucherBot DESC');
             $this->cache->set($cacheID, $crawlers, [\CACHING_GROUP_CORE]);
         }
 
@@ -106,10 +101,9 @@ class Controller
     public function deleteCrawler(array $ids): bool
     {
         $where_in = '(' . \implode(',', \array_map('\intval', $ids)) . ')';
-        $this->db->executeQuery(
+        $this->db->query(
             'DELETE FROM tbesucherbot 
-                WHERE kBesucherBot IN ' . $where_in . ' ',
-            ReturnType::DEFAULT
+                WHERE kBesucherBot IN ' . $where_in . ' '
         );
         $this->cache->flush('crawler');
 
@@ -147,7 +141,7 @@ class Controller
         if (Form::validateToken() === false
             && (Request::postInt('save_crawler') || Request::postInt('delete_crawler'))
         ) {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorCSRF'), 'errorCSRF');
+            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorCSRF'), 'errorCSRF');
 
             return $crawler;
         }
@@ -165,14 +159,14 @@ class Controller
                 if ($result === -1) {
                     $this->alertService->addAlert(
                         Alert::TYPE_ERROR,
-                        __('missingCrawlerFields'),
+                        \__('missingCrawlerFields'),
                         'missingCrawlerFields'
                     );
                 } else {
                     \header('Location: statistik.php?s=3&tab=settings');
                 }
             } else {
-                $this->alertService->addAlert(Alert::TYPE_ERROR, __('missingCrawlerFields'), 'missingCrawlerFields');
+                $this->alertService->addAlert(Alert::TYPE_ERROR, \__('missingCrawlerFields'), 'missingCrawlerFields');
             }
         }
         if (Request::verifyGPCDataInt('edit') === 1 || Request::verifyGPCDataInt('new') === 1) {

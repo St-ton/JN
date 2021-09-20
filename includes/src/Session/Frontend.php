@@ -11,7 +11,6 @@ use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Lieferadresse;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
@@ -21,6 +20,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use JTL\Link\LinkGroupCollection;
 use JTL\Shop;
+use stdClass;
 use function Functional\first;
 
 /**
@@ -91,7 +91,6 @@ class Frontend extends AbstractSession
             $this->updateGlobals();
             if ($updateLanguage && isset($_SESSION['Kunde'])) {
                 // Kundensprache ändern, wenn im eingeloggten Zustand die Sprache geändert wird
-                /** @var array('Kunde' => \Kunde) $_SESSION */
                 $_SESSION['Kunde']->kSprache = $_SESSION['kSprache'];
                 $_SESSION['Kunde']->updateInDB();
             }
@@ -133,15 +132,14 @@ class Frontend extends AbstractSession
         if (empty($_SESSION['Kunde']->kKunde) || isset($_SESSION['kundendaten_aktualisiert'])) {
             return false;
         }
-        $data = Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT kKunde
                 FROM tkunde
                 WHERE kKunde = :cid
                     AND DATE_SUB(NOW(), INTERVAL 3 HOUR) < dVeraendert',
-            ['cid' => (int)$_SESSION['Kunde']->kKunde],
-            ReturnType::SINGLE_OBJECT
+            ['cid' => (int)$_SESSION['Kunde']->kKunde]
         );
-        if (isset($data->kKunde) && $data->kKunde > 0) {
+        if ($data !== null && $data->kKunde > 0) {
             Shop::setLanguage(
                 $_SESSION['kSprache'] ?? $_SESSION['Kunde']->kSprache ?? 0,
                 $_SESSION['cISOSprache'] ?? null
@@ -158,9 +156,10 @@ class Frontend extends AbstractSession
      */
     private function checkSessionUpdate(): bool
     {
-        return ((isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === 'stdClass')
-            || (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === 'stdClass')
-            || (isset($_SESSION['Sprachen']) && \get_class($_SESSION['Sprachen'][0]) === 'stdClass'));
+        return ((isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === stdClass::class)
+            || (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === stdClass::class)
+            || (isset($_SESSION['Sprachen'])
+                && \get_class(\array_values($_SESSION['Sprachen'])[0]) === stdClass::class));
     }
 
     /**
@@ -171,21 +170,19 @@ class Frontend extends AbstractSession
         $doUpdate = true;
         if (isset($_SESSION['Globals_TS'])) {
             $doUpdate = false;
-            $last     = Shop::Container()->getDB()->queryPrepared(
+            $last     = Shop::Container()->getDB()->getSingleObject(
                 'SELECT dLetzteAenderung 
                     FROM tglobals 
                     WHERE dLetzteAenderung > :ts',
-                ['ts' => $_SESSION['Globals_TS']],
-                ReturnType::SINGLE_OBJECT
+                ['ts' => $_SESSION['Globals_TS']]
             );
-            if (isset($last->dLetzteAenderung)) {
+            if ($last !== null) {
                 $_SESSION['Globals_TS'] = $last->dLetzteAenderung;
                 $doUpdate               = true;
             }
         } else {
-            $_SESSION['Globals_TS'] = Shop::Container()->getDB()->query(
-                'SELECT dLetzteAenderung  FROM tglobals',
-                ReturnType::SINGLE_OBJECT
+            $_SESSION['Globals_TS'] = Shop::Container()->getDB()->getSingleObject(
+                'SELECT dLetzteAenderung FROM tglobals'
             )->dLetzteAenderung;
         }
 
@@ -206,17 +203,15 @@ class Frontend extends AbstractSession
             $_SESSION['jtl_token'] = Shop::Container()->getCryptoService()->randomString(32);
         }
         $defaultLang = '';
-        $allowed     = [];
         foreach ($_SESSION['Sprachen'] as $language) {
             $iso = Text::convertISO2ISO639($language->getCode());
             $language->setIso639($iso);
-            $allowed[] = $iso;
             if ($language->isShopDefault()) {
                 $defaultLang = $iso;
             }
         }
         if (!isset($_SESSION['kSprache'])) {
-            $default = Text::convertISO6392ISO($this->getBrowserLanguage($allowed, $defaultLang));
+            $default = Text::convertISO6392ISO($defaultLang);
             foreach ($_SESSION['Sprachen'] as $lang) {
                 if ($lang->cISO === $default || (empty($default) && $lang->cShopStandard === 'Y')) {
                     $_SESSION['kSprache']    = $lang->kSprache;
@@ -228,7 +223,7 @@ class Frontend extends AbstractSession
             }
         }
         if (isset($_SESSION['Waehrung'])) {
-            if (\get_class($_SESSION['Waehrung']) === 'stdClass') {
+            if (\get_class($_SESSION['Waehrung']) === stdClass::class) {
                 $_SESSION['Waehrung'] = new Currency($_SESSION['Waehrung']->kWaehrung);
             }
             foreach ($_SESSION['Waehrungen'] as $currency) {
@@ -261,7 +256,7 @@ class Frontend extends AbstractSession
         }
         // EXPERIMENTAL_MULTILANG_SHOP END
         if (!isset($_SESSION['Kunde']->kKunde, $_SESSION['Kundengruppe']->kKundengruppe)
-            || \get_class($_SESSION['Kundengruppe']) === 'stdClass'
+            || \get_class($_SESSION['Kundengruppe']) === stdClass::class
         ) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())
                 ->setLanguageID((int)$_SESSION['kSprache'])
@@ -299,6 +294,13 @@ class Frontend extends AbstractSession
      */
     private function checkComparelistDeletes(): self
     {
+        if (Request::verifyGPDataString('delete') === 'all') {
+            unset($_SESSION['Vergleichsliste']);
+            \http_response_code(301);
+            \header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php'));
+            exit;
+        }
+
         $listID = Request::verifyGPCDataInt('vlplo');
         if ($listID !== 0 && GeneralObject::isCountable('oArtikel_arr', $_SESSION['Vergleichsliste'])) {
             // Wunschliste Position aus der Session löschen
@@ -434,6 +436,7 @@ class Frontend extends AbstractSession
         $lang                    = LanguageHelper::getInstance();
         $lang->kSprache          = (int)$_SESSION['kSprache'];
         $lang->currentLanguageID = (int)$_SESSION['kSprache'];
+        $lang->kSprachISO        = (int)$lang->mappekISO($_SESSION['cISOSprache']);
         $lang->cISOSprache       = $_SESSION['cISOSprache'];
 
         return $lang;

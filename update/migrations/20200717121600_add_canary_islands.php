@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Add canary islands
  *
@@ -6,7 +6,6 @@
  * @created Fr, 17 July 2020 12:16:00 +0100
  */
 
-use JTL\DB\ReturnType;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -23,8 +22,8 @@ class Migration_20200717121600 extends Migration implements IMigration
      */
     public function up()
     {
-       $isSet = $this->getDB()->query("SELECT `cISO` FROM `tland` WHERE cISO = 'IC'", ReturnType::ARRAY_OF_OBJECTS);
-       if (empty($isSet)) {
+       $isSet = $this->getDB()->getSingleObject("SELECT `cISO` FROM `tland` WHERE cISO = 'IC'");
+       if ($isSet === null) {
            $this->execute("INSERT INTO `tland` VALUES ('IC', 'Kanarische Inseln', 'Canary Islands', 1, 'Europa')");
        }
     }

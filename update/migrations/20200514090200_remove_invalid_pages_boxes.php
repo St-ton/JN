@@ -1,6 +1,5 @@
 <?php
 
-use JTL\DB\ReturnType;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 use JTL\Boxes\Admin\BoxAdmin;
@@ -21,11 +20,7 @@ class Migration_20200514090200 extends Migration implements IMigration
         $boxAdmin  = new BoxAdmin($this->db);
         $pageTypes = $boxAdmin->getValidPageTypes();
         $pageTypes = implode(',', $pageTypes);
-
-        $rows = $this->__execute(
-            "DELETE FROM tboxensichtbar WHERE kSeite NOT IN ($pageTypes)",
-            ReturnType::AFFECTED_ROWS
-        );
+        $this->execute("DELETE FROM tboxensichtbar WHERE kSeite NOT IN ($pageTypes)");
     }
 
     /**

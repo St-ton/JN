@@ -3,7 +3,6 @@
 namespace JTL\Checkout;
 
 use JTL\Catalog\Product\Preise;
-use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 use stdClass;
@@ -25,7 +24,8 @@ class ShippingSurcharge
         'cName'            => 'Title',
         'fZuschlag'        => 'Surcharge',
         'kVersandart'      => 'ShippingMethod',
-        'cPreisLocalized'  => 'PriceLocalized'
+        'cPreisLocalized'  => 'PriceLocalized',
+        'angezeigterName'  => 'Name'
     ];
 
     /**
@@ -59,12 +59,12 @@ class ShippingSurcharge
     public $ZIPCodes;
 
     /**
-     * @var array
+     * @var ShippingSurchargeArea[]
      */
     public $ZIPAreas = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     public $names;
 
@@ -74,14 +74,14 @@ class ShippingSurcharge
     public $priceLocalized;
 
     /**
-     * Surcharge constructor.
+     * ShippingSurcharge constructor.
      * @param int $id
      */
     public function __construct(int $id = 0)
     {
         if ($id > 0) {
             $this->setID($id)
-                 ->loadFromDB($id);
+                ->loadFromDB($id);
         }
     }
 
@@ -91,30 +91,28 @@ class ShippingSurcharge
     public function loadFromDB(int $id): void
     {
         $db        = Shop::Container()->getDB();
-        $surcharge = $db->queryPrepared(
+        $surcharge = $db->getSingleObject(
             'SELECT * 
                 FROM tversandzuschlag
                 WHERE kVersandzuschlag = :id',
-            ['id' => $id],
-            ReturnType::SINGLE_OBJECT
+            ['id' => $id]
         );
-        if (!\is_object($surcharge)) {
+        if ($surcharge === null) {
             return;
         }
 
         $this->setTitle($surcharge->cName)
-             ->setISO($surcharge->cISO)
-             ->setSurcharge((float)$surcharge->fZuschlag)
-             ->setShippingMethod((int)$surcharge->kVersandart)
-             ->setPriceLocalized();
+            ->setISO($surcharge->cISO)
+            ->setSurcharge((float)$surcharge->fZuschlag)
+            ->setShippingMethod((int)$surcharge->kVersandart)
+            ->setPriceLocalized();
 
-        $zips = $db->queryPrepared(
+        $zips = $db->getObjects(
             'SELECT vzp.cPLZ, vzp.cPLZAb, vzp.cPLZBis 
                 FROM tversandzuschlag AS vz
                 JOIN tversandzuschlagplz AS vzp USING(kVersandzuschlag) 
                 WHERE vz.kVersandzuschlag = :id',
-            ['id' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['id' => $id]
         );
         foreach ($zips as $zip) {
             if (!empty($zip->cPLZ)) {
@@ -124,14 +122,13 @@ class ShippingSurcharge
             }
         }
 
-        $names = $db->queryPrepared(
+        $names = $db->getObjects(
             'SELECT vzs.cName, s.kSprache 
                 FROM tversandzuschlag AS vz
                 JOIN tversandzuschlagsprache AS vzs USING(kVersandzuschlag) 
-                JOIN tsprache as s ON s.cISO = vzs.cISOSprache
+                JOIN tsprache AS s ON s.cISO = vzs.cISOSprache
                 WHERE vz.kVersandzuschlag = :id',
-            ['id' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['id' => $id]
         );
         foreach ($names as $name) {
             $this->setName($name->cName, (int)$name->kSprache);
@@ -171,6 +168,7 @@ class ShippingSurcharge
      */
     public function hasZIPCode(?string $zip): bool
     {
+        $zip = \str_replace(' ', '', $zip);
         if ($zip === null) {
             return false;
         }
@@ -200,7 +198,6 @@ class ShippingSurcharge
             return false;
         }
         $area = new ShippingSurchargeArea($zipFrom, $zipTo);
-
         foreach ($this->getZIPCodes() ?? [] as $zipTMP) {
             if ($area->isInArea($zipTMP)) {
                 return true;
@@ -330,13 +327,13 @@ class ShippingSurcharge
      */
     public function setZIPCode(string $ZIPCode): self
     {
-        $this->ZIPCodes[] = $ZIPCode;
+        $this->ZIPCodes[] = \str_replace(' ', '', $ZIPCode);
 
         return $this;
     }
 
     /**
-     * @return array|null
+     * @return ShippingSurchargeArea[]|null
      */
     public function getZIPAreas(): ?array
     {
@@ -344,7 +341,7 @@ class ShippingSurcharge
     }
 
     /**
-     * @param array $ZIPAreas
+     * @param ShippingSurchargeArea[] $ZIPAreas
      * @return ShippingSurcharge
      */
     public function setZIPAreas(array $ZIPAreas): self
@@ -373,13 +370,11 @@ class ShippingSurcharge
      */
     public function getName(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->names[$idx] ?? '';
+        return $this->names[$idx ?? Shop::getLanguageID()] ?? '';
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getNames(): array
     {
@@ -387,7 +382,7 @@ class ShippingSurcharge
     }
 
     /**
-     * @param string $name
+     * @param string   $name
      * @param int|null $idx
      */
     public function setName(string $name, int $idx = null): void
@@ -396,7 +391,7 @@ class ShippingSurcharge
     }
 
     /**
-     * @param array $names
+     * @param string[] $names
      */
     public function setNames(array $names): void
     {

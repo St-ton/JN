@@ -109,6 +109,12 @@ msgstr "Unchecked export template"
 msgid "getExportFormatErrorCountMessage"
 msgstr "%d export template(s) contain(s) syntax errors."
 
+msgid "Missing special pages"
+msgstr "Missing special pages"
+
+msgid "%d special pages are missing."
+msgstr "%d special pages are missing."
+
 msgid "getExportFormatUncheckedCountMessage"
 msgstr "%d export template(s) are without syntax check."
 
@@ -132,9 +138,6 @@ msgstr "Special page created multiple times"
 msgid "duplicateSpecialLinkDesc"
 msgstr "At least one special page was created several times for the same customer group(s)."
 
-msgid "Safe mode enabled."
-msgstr "Safe mode active. Some functions might not be available."
-
 msgid "ustIdMiasCheckTitle"
 msgstr "VAT ID check"
 
@@ -143,6 +146,12 @@ msgstr "If you want to use the European VAT check by the EU VAT Information Exch
 
 msgid "Missing translations"
 msgstr "Missing translations"
+
+msgid "defaultLangNotInstalledTitle"
+msgstr "Default language not installed"
+
+msgid "defaultLangNotInstalledMessage"
+msgstr "The default languags \"%s\" is not installed! Please install an appropriate language package or choose another default language via JTL-Wawi!"
 
 msgid "%d pages are not translated in all available languages."
 msgstr "%d pages are not translated in all available languages."

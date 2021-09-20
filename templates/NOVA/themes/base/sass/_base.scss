@@ -87,7 +87,7 @@ ul.partlist-items {
 }
 
 /* SIGNAL */
-.delivery-status {
+.delivery-status, .signal_image {
   .status-0 {
     color: $danger;
   }
@@ -449,20 +449,6 @@ input.typeahead {
   min-height: 140px
 }
 
-.lazyload {
-  opacity: 0;
-}
-
-.lazyloading {
-  color: transparent;
-  opacity: 1;
-  transition: opacity 300ms;
-}
-
-.lazyloaded {
-  transition: none;
-}
-
 .list-group-wrapper.disabled{
   cursor: not-allowed;
   .list-group-item {
@@ -517,4 +503,11 @@ input.typeahead {
 }
 .link-content {
   margin-bottom: map-get($spacers, 3);
+}
+
+.min-h-card {
+  min-height: 188px;
+  @include media-breakpoint-up(xl) {
+    min-height: 168px;
+  }
 }

@@ -3,7 +3,6 @@
 namespace JTL\Filter\Items;
 
 use JTL\Catalog\Category\Kategorie;
-use JTL\DB\ReturnType;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
 use JTL\Filter\Option;
@@ -71,7 +70,7 @@ class Characteristic extends BaseCharacteristic
             ->setUrlParam('mf')
             ->setUrlParamSEO(\SEP_MERKMAL)
             ->setFrontendName(Shop::isAdmin()
-                ? __('filterCharacteristics')
+                ? \__('filterCharacteristics')
                 : Shop::Lang()->get('characteristics', 'comparelist'))
             ->setVisibility($this->getConfig('navigationsfilter')['merkmalfilter_verwenden']);
     }
@@ -165,15 +164,18 @@ class Characteristic extends BaseCharacteristic
     {
         $value         = $this->getValue();
         $seoData       = $this->batchCharacteristicData[$value]
-            ?? $this->productFilter->getDB()->queryPrepared(
+            ?? $this->productFilter->getDB()->getObjects(
                 'SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal, 
-                    tmerkmalwertsprache.cSeo, tmerkmalwertsprache.kSprache
+                    tmerkmalwertsprache.cSeo, tmerkmalwertsprache.kSprache,
+                    tmerkmalsprache.cName AS characteristicName
                     FROM tmerkmalwertsprache
                     JOIN tmerkmalwert 
                         ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
+                    JOIN tmerkmalsprache
+                       ON tmerkmalsprache.kMerkmal = tmerkmalwert.kMerkmal
+                        AND tmerkmalsprache.kSprache = tmerkmalwertsprache.kSprache
                     WHERE tmerkmalwertsprache.kMerkmalWert = :val',
-                ['val' => $value],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['val' => $value]
             );
         $currentLangID = $this->productFilter->getFilterConfig()->getLanguageID();
         foreach ($languages as $language) {
@@ -185,6 +187,7 @@ class Characteristic extends BaseCharacteristic
                     if ($language->kSprache === $currentLangID) {
                         $this->setID((int)$seo->kMerkmal)
                             ->setName($seo->cWert)
+                            ->setFilterName($seo->characteristicName)
                             ->setFrontendName($seo->cWert);
                     }
                     break;
@@ -261,6 +264,7 @@ class Characteristic extends BaseCharacteristic
     {
         $base  = $this->productFilter->getCurrentStateData(self::class);
         $state = (new StateSQL())->from($base);
+        $conf  = $this->getConfig('navigationsfilter');
         $state->setOrderBy('');
         $state->setLimit('');
         $state->setGroupBy([]);
@@ -338,11 +342,13 @@ class Characteristic extends BaseCharacteristic
                     if (\is_array($values)) {
                         $activeOrFilterIDs = $values;
                     } else {
+                        /** @noinspection UnsupportedStringOffsetOperationsInspection */
                         $activeOrFilterIDs[] = $values;
                     }
                 } elseif (\is_array($values)) {
                     $activeAndFilterIDs = $values;
                 } else {
+                    /** @noinspection UnsupportedStringOffsetOperationsInspection */
                     $activeAndFilterIDs[] = $values;
                 }
             }
@@ -364,23 +370,30 @@ class Characteristic extends BaseCharacteristic
                     ->setOrigin(__CLASS__));
             }
             if (\count($activeOrFilterIDs) > 0) {
-                $state->addSelect(
-                    'IF(EXISTS (SELECT 1
-                     FROM tartikelmerkmal AS im1
-                     INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im1.kArtikel
-                        WHERE ' . $productFilter . ' AND im1.kMerkmalWert IN (' .
-                    \implode(', ', \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])) . ')
-                            AND im1.kArtikel = tartikel.kArtikel
-                        GROUP BY innerProduct.kArtikel
-                        HAVING COUNT(im1.kArtikel) = (SELECT COUNT(DISTINCT im2.kMerkmal)
-                           FROM tartikelmerkmal im2
-                           INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im2.kArtikel
-                           WHERE ' . $productFilter . ' AND im2.kMerkmalWert IN (' .
-                    \implode(
-                        ', ',
-                        \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])
-                    ) . '))), tartikel.kArtikel, NULL) AS kArtikel'
-                );
+                if ($conf['merkmalfilter_trefferanzahl_anzeigen'] === 'Y') {
+                    $state->addSelect(
+                        'IF(EXISTS (SELECT 1
+                             FROM tartikelmerkmal AS im1
+                             INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im1.kArtikel
+                                WHERE ' . $productFilter . ' AND im1.kMerkmalWert IN (' .
+                                \implode(', ', \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])) . ')
+                                    AND im1.kArtikel = tartikel.kArtikel
+                                GROUP BY innerProduct.kArtikel
+                                HAVING COUNT(im1.kArtikel) = (SELECT COUNT(DISTINCT im2.kMerkmal)
+                                   FROM tartikelmerkmal im2
+                                   INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im2.kArtikel
+                                   WHERE ' . $productFilter . ' AND im2.kMerkmalWert IN (' .
+                                \implode(
+                                    ', ',
+                                    \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])
+                                ) . '))), tartikel.kArtikel, NULL) AS kArtikel'
+                    );
+                } else {
+                    /* Der Kommentar mit den integrierten $activeOrFilterIDs ist hier notwendig,
+                       um bei aktiviertem Cache die Query unterscheidbar zu machen.
+                       Die Cache-ID wird als md5 über den Query-String ermittelt. */
+                    $state->addSelect('#' . \implode(',', $activeOrFilterIDs) . "\ntartikel.kArtikel AS kArtikel");
+                }
             } else {
                 $state->addSelect('tartikel.kArtikel AS kArtikel');
             }
@@ -445,14 +458,16 @@ class Characteristic extends BaseCharacteristic
 
             return $this->options;
         }
-        $qryRes           = $this->productFilter->getDB()->executeQuery(
+        $qryRes           = $this->productFilter->getDB()->getObjects(
             'SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
-            ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
+            ssMerkmal.cMMBildPfad, '
+            . ($conf['merkmalfilter_trefferanzahl_anzeigen'] !== 'N'
+                ? 'COUNT(DISTINCT ssMerkmal.kArtikel)'
+                : '1') . ' AS nAnzahl
                 FROM (' . $baseQuery . ') AS ssMerkmal
                 GROUP BY ssMerkmal.kMerkmalWert
-                ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert',
-            ReturnType::ARRAY_OF_OBJECTS
+                ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert'
         );
         $currentValue     = $this->productFilter->getCharacteristicValue()->getValue();
         $additionalFilter = new self($this->productFilter);
@@ -497,7 +512,8 @@ class Characteristic extends BaseCharacteristic
                 ->setData('cBildpfadKlein', $baseSrcSmall)
                 ->setData('cBildpfadNormal', $baseSrcNormal)
                 ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
-                ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal);
+                ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal)
+                ->setData('isMultiSelect', $filter->nMehrfachauswahl > 0);
             $option->setImageType(Image::TYPE_CHARACTERISTIC);
             $option->setID($filter->kMerkmal);
             $option->setParam($this->getUrlParam());
@@ -637,14 +653,16 @@ class Characteristic extends BaseCharacteristic
         $characteristicValueIDs = \implode(',', \array_map(static function ($row) {
             return (int)$row->kMerkmalWert;
         }, $characteristicValues));
-        $queryResult            = $this->productFilter->getDB()->query(
-            'SELECT tmerkmalwertsprache.cWert, tmerkmalwertsprache.kMerkmalWert, 
-            tmerkmalwertsprache.cSeo, tmerkmalwert.kMerkmal, tmerkmalwertsprache.kSprache
+        $queryResult            = $this->productFilter->getDB()->getObjects(
+            'SELECT tmerkmalwertsprache.cWert, tmerkmalwertsprache.kMerkmalWert, tmerkmalwertsprache.cSeo,
+            tmerkmalwert.kMerkmal, tmerkmalwertsprache.kSprache, tmerkmalsprache.cName AS characteristicName
                 FROM tmerkmalwertsprache
                 JOIN tmerkmalwert 
                     ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
-                WHERE tmerkmalwertsprache.kMerkmalWert IN (' . $characteristicValueIDs . ')',
-            ReturnType::ARRAY_OF_OBJECTS
+                JOIN tmerkmalsprache
+                    ON tmerkmalsprache.kMerkmal = tmerkmalwert.kMerkmal
+                    AND tmerkmalsprache.kSprache = tmerkmalwertsprache.kSprache
+                WHERE tmerkmalwertsprache.kMerkmalWert IN (' . $characteristicValueIDs . ')'
         );
         $result                 = [];
         foreach ($queryResult as $row) {

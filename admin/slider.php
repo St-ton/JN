@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
@@ -23,9 +22,7 @@ $redirectUrl = Shop::getAdminURL() . '/slider.php';
 $action      = isset($_REQUEST['action']) && Form::validateToken()
     ? $_REQUEST['action']
     : 'view';
-$kSlider     = isset($_REQUEST['id'])
-    ? (int)$_REQUEST['id']
-    : 0;
+$kSlider     = (int)($_REQUEST['id'] ?? 0);
 switch ($action) {
     case 'slide_set':
         $aSlideKey = array_keys((array)$_REQUEST['aSlide']);
@@ -49,6 +46,7 @@ switch ($action) {
             } else {
                 $slide->save();
             }
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
         }
         break;
     default:
@@ -116,6 +114,7 @@ switch ($action) {
                         'successSliderSave',
                         ['saveInSession' => true]
                     );
+                    Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
                     header('Location: ' . $redirectUrl);
                     exit;
                 }
@@ -174,6 +173,7 @@ switch ($action) {
         $slider = new Slider($db);
         $slider->load($kSlider, false);
         if ($slider->delete() === true) {
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
             header('Location: ' . $redirectUrl);
             exit;
         }
@@ -184,7 +184,7 @@ switch ($action) {
         break;
 }
 
-$sliders    = $db->query('SELECT * FROM tslider', ReturnType::ARRAY_OF_OBJECTS);
+$sliders    = $db->getObjects('SELECT * FROM tslider');
 $pagination = (new Pagination('sliders'))
     ->setRange(4)
     ->setItemArray($sliders)

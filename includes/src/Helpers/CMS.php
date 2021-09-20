@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -6,8 +6,7 @@ use Illuminate\Support\Collection;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\ArtikelListe;
 use JTL\Catalog\Product\Preise;
-use JTL\DB\ReturnType;
-use JTL\News;
+use JTL\News\ItemList;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -87,7 +86,7 @@ class CMS
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
                 $limit = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
             }
-            $newsIDs = Shop::Container()->getDB()->query(
+            $newsIDs = Shop::Container()->getDB()->getObjects(
                 "SELECT tnews.kNews
                     FROM tnews
                     JOIN tnewskategorienews 
@@ -100,18 +99,17 @@ class CMS
                     LEFT JOIN tseo 
                         ON tseo.cKey = 'kNews'
                         AND tseo.kKey = tnews.kNews
-                        AND tseo.kSprache = " . $langID . '
-                    WHERE t.languageID = ' . $langID . "
+                        AND tseo.kSprache = :lid
+                    WHERE t.languageID = :lid
                         AND tnews.nAktiv = 1
                         AND tnews.dGueltigVon <= NOW()
                         AND (tnews.cKundengruppe LIKE '%;-1;%' 
-                            OR FIND_IN_SET('" . $cgID . "', 
-                            REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
+                            OR FIND_IN_SET(:cgid, REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     GROUP BY tnews.kNews
                     ORDER BY tnews.dGueltigVon DESC" . $limit,
-                ReturnType::ARRAY_OF_OBJECTS
+                ['lid' => $langID, 'cgid' => $cgID]
             );
-            $items   = new News\ItemList(Shop::Container()->getDB());
+            $items   = new ItemList(Shop::Container()->getDB());
             $items->createItems(map($newsIDs, static function ($e) {
                 return (int)$e->kNews;
             }));
@@ -140,7 +138,7 @@ class CMS
      * @return array
      * @since 5.0.0
      */
-    private static function getHomeBoxList($conf): array
+    private static function getHomeBoxList(array $conf): array
     {
         $boxes       = [];
         $obj         = new stdClass();
@@ -185,7 +183,7 @@ class CMS
         $limit      = (int)$conf['sonstiges']['sonstiges_livesuche_all_top_count'] > 0
             ? (int)$conf['sonstiges']['sonstiges_livesuche_all_top_count']
             : 100;
-        $searchData = Shop::Container()->getDB()->queryPrepared(
+        $searchData = Shop::Container()->getDB()->getObjects(
             "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tseo.cSeo, 
             tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche, 
             DATE_FORMAT(tsuchanfrage.dZuletztGesucht, '%d.%m.%Y  %H:%i') AS dZuletztGesucht_de
@@ -198,8 +196,7 @@ class CMS
                     AND tsuchanfrage.nAktiv = 1
                 ORDER BY tsuchanfrage.nAnzahlGesuche DESC
                 LIMIT :lmt",
-            ['lid' => Shop::getLanguageID(), 'lmt' => $limit],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['lid' => Shop::getLanguageID(), 'lmt' => $limit]
         );
         $count      = \count($searchData);
         $search     = [];
@@ -208,7 +205,7 @@ class CMS
             : 0;
         foreach ($searchData as $item) {
             $item->Klasse   = $priority < 1
-                ? \rand(1, 10)
+                ? \random_int(1, 10)
                 : (\round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1);
             $item->cURL     = URL::buildURL($item, \URLART_LIVESUCHE);
             $item->cURLFull = URL::buildURL($item, \URLART_LIVESUCHE, true);
@@ -229,7 +226,7 @@ class CMS
         $limit      = (int)$conf['sonstiges']['sonstiges_livesuche_all_last_count'] > 0
             ? (int)$conf['sonstiges']['sonstiges_livesuche_all_last_count']
             : 100;
-        $searchData = Shop::Container()->getDB()->queryPrepared(
+        $searchData = Shop::Container()->getDB()->getObjects(
             "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tseo.cSeo, 
             tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche, 
             DATE_FORMAT(tsuchanfrage.dZuletztGesucht, '%d.%m.%Y  %H:%i') AS dZuletztGesucht_de
@@ -243,8 +240,7 @@ class CMS
                     AND tsuchanfrage.kSuchanfrage > 0
                 ORDER BY tsuchanfrage.dZuletztGesucht DESC
                 LIMIT :lmt",
-            ['lid' => Shop::getLanguageID(), 'lmt' => $limit],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['lid' => Shop::getLanguageID(), 'lmt' => $limit]
         );
         $count      = \count($searchData);
         $search     = [];
@@ -253,7 +249,7 @@ class CMS
             : 0;
         foreach ($searchData as $item) {
             $item->Klasse   = $priority < 1
-                ? \rand(1, 10)
+                ? \random_int(1, 10)
                 : \round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1;
             $item->cURL     = URL::buildURL($item, \URLART_LIVESUCHE);
             $item->cURLFull = URL::buildURL($item, \URLART_LIVESUCHE, true);
@@ -303,20 +299,18 @@ class CMS
         $limit    = ((int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
             ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
             : '';
-        $tmpGifts = Shop::Container()->getDB()->query(
+        $tmpGifts = Shop::Container()->getDB()->getObjects(
             'SELECT tartikel.kArtikel, tartikelattribut.cWert
                 FROM tartikel
                 JOIN tartikelattribut 
                     ON tartikelattribut.kArtikel = tartikel.kArtikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . Frontend::getCustomerGroup()->getID() .
-            " WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                AND tartikelattribut.cName = '" . \FKT_ATTRIBUT_GRATISGESCHENK . "' " .
-            Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() .
-            $sort .
-            $limit,
-            ReturnType::ARRAY_OF_OBJECTS
+                    AND tartikelsichtbarkeit.kKundengruppe = :cgid
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                    AND tartikelattribut.cName = :an'
+            . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . $sort . $limit,
+            ['cgid' => Frontend::getCustomerGroup()->getID(), 'an' => \FKT_ATTRIBUT_GRATISGESCHENK]
         );
 
         $defaultOptions = Artikel::getDefaultOptions();

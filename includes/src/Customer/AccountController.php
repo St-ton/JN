@@ -17,7 +17,6 @@ use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Download\Download;
 use JTL\Extensions\Upload\File;
@@ -284,16 +283,17 @@ class AccountController
             $this->getCustomerFields();
         }
         if ($step === 'bewertungen') {
-            $ratings = $this->db->queryPrepared(
+            $ratings = $this->db->getCollection(
                 'SELECT tbewertung.kBewertung, fGuthabenBonus, nAktiv, kArtikel, cTitel, cText, 
                   tbewertung.dDatum, nSterne, cAntwort, dAntwortDatum
                   FROM tbewertung 
                   LEFT JOIN tbewertungguthabenbonus 
                       ON tbewertung.kBewertung = tbewertungguthabenbonus.kBewertung
                   WHERE tbewertung.kKunde = :customer',
-                ['customer' => $customerID],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
+                ['customer' => $customerID]
+            )->each(static function ($item) {
+                $item->fGuthabenBonusLocalized = Preise::getLocalizedPriceString($item->fGuthabenBonus);
+            });
         }
         $_SESSION['Kunde']->cGuthabenLocalized = Preise::getLocalizedPriceString($_SESSION['Kunde']->fGuthaben);
         $this->smarty->assign('Kunde', $_SESSION['Kunde'])
@@ -476,7 +476,7 @@ class AccountController
     }
 
     /**
-     * @param array $coupons
+     * @param Kupon[] $coupons
      */
     private function checkCoupons(array $coupons): void
     {
@@ -531,7 +531,7 @@ class AccountController
             // Gratisgeschenk in Warenkorb legen
             if ((int)$item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $productID = (int)$item->kArtikel;
-                $present   = $this->db->queryPrepared(
+                $present   = $this->db->getSingleObject(
                     'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
                         tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                         FROM tartikelattribut
@@ -544,10 +544,9 @@ class AccountController
                         'pid' => $productID,
                         'atr' => \FKT_ATTRIBUT_GRATISGESCHENK,
                         'sum' => $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
-                    ],
-                    ReturnType::SINGLE_OBJECT
+                    ]
                 );
-                if ((isset($present->kArtikel) && $present->kArtikel > 0)
+                if ($present !== null && $present->kArtikel > 0
                     && ($present->fLagerbestand > 0
                         || $present->cLagerKleinerNull === 'Y'
                         || $present->cLagerBeachten === 'N')
@@ -607,26 +606,25 @@ class AccountController
             if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || !empty($item->cUnique)) {
                 continue;
             }
-            $visibility = $this->db->queryPrepared(
+            $visibility = $this->db->getSingleObject(
                 'SELECT kArtikel
-                FROM tartikelsichtbarkeit
-                WHERE kArtikel = :pid
-                    AND kKundengruppe = :cgid',
-                ['pid' => (int)$item->kArtikel, 'cgid' => $customerGroupID],
-                ReturnType::SINGLE_OBJECT
+                    FROM tartikelsichtbarkeit
+                    WHERE kArtikel = :pid
+                        AND kKundengruppe = :cgid',
+                ['pid' => (int)$item->kArtikel, 'cgid' => $customerGroupID]
             );
-            if (isset($visibility->kArtikel) && $visibility->kArtikel > 0 && (int)$item->kKonfigitem === 0) {
+            if ($visibility !== null && $visibility->kArtikel > 0 && (int)$item->kKonfigitem === 0) {
                 unset($cart->PositionenArr[$i]);
             }
-            $price = $this->db->queryPrepared(
+            $price = $this->db->getSingleObject(
                 'SELECT tpreisdetail.fVKNetto
-                FROM tpreis
-                INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
-                    AND tpreisdetail.nAnzahlAb = 0
-                WHERE tpreis.kArtikel = :productID
-                    AND tpreis.kKundengruppe = :customerGroup',
-                ['productID' => (int)$item->kArtikel, 'customerGroup' => $customerGroupID],
-                ReturnType::SINGLE_OBJECT
+                    FROM tpreis
+                    INNER JOIN tpreisdetail 
+                        ON tpreisdetail.kPreis = tpreis.kPreis
+                        AND tpreisdetail.nAnzahlAb = 0
+                    WHERE tpreis.kArtikel = :productID
+                        AND tpreis.kKundengruppe = :customerGroup',
+                ['productID' => (int)$item->kArtikel, 'customerGroup' => $customerGroupID]
             );
             if (!isset($price->fVKNetto)) {
                 unset($cart->PositionenArr[$i]);
@@ -647,24 +645,23 @@ class AccountController
         foreach ($cart->PositionenArr as $item) {
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $productID = (int)$item->kArtikel;
-                $present   = $this->db->queryPrepared(
+                $present   = $this->db->getSingleObject(
                     'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                        tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
-                    FROM tartikelattribut
-                    JOIN tartikel 
-                        ON tartikel.kArtikel = tartikelattribut.kArtikel
-                    WHERE tartikelattribut.kArtikel = :pid
-                        AND tartikelattribut.cName = :atr
-                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= :sum',
+                        FROM tartikelattribut
+                        JOIN tartikel 
+                            ON tartikel.kArtikel = tartikelattribut.kArtikel
+                        WHERE tartikelattribut.kArtikel = :pid
+                            AND tartikelattribut.cName = :atr
+                            AND CAST(tartikelattribut.cWert AS DECIMAL) <= :sum',
                     [
                         'pid' => $productID,
                         'atr' => \FKT_ATTRIBUT_GRATISGESCHENK,
                         'sum' => $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
-                    ],
-                    ReturnType::SINGLE_OBJECT
+                    ]
                 );
-                if (isset($present->kArtikel) && $present->kArtikel > 0) {
-                    PersistentCart::addToCheck($productID, 1, [], null, 0, \C_WARENKORBPOS_TYP_GRATISGESCHENK);
+                if ($present !== null && $present->kArtikel > 0) {
+                    PersistentCart::addToCheck($productID, 1, [], false, 0, \C_WARENKORBPOS_TYP_GRATISGESCHENK);
                 }
             } else {
                 PersistentCart::addToCheck(
@@ -685,23 +682,22 @@ class AccountController
         foreach ($persCart->oWarenkorbPersPos_arr as $item) {
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $productID = (int)$item->kArtikel;
-                $present   = $this->db->queryPrepared(
+                $present   = $this->db->getSingleObject(
                     'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                        tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
-                    FROM tartikelattribut
-                    JOIN tartikel 
-                        ON tartikel.kArtikel = tartikelattribut.kArtikel
-                    WHERE tartikelattribut.kArtikel = :pid
-                        AND tartikelattribut.cName = :atr
-                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= :sum',
+                        FROM tartikelattribut
+                        JOIN tartikel 
+                            ON tartikel.kArtikel = tartikelattribut.kArtikel
+                        WHERE tartikelattribut.kArtikel = :pid
+                            AND tartikelattribut.cName = :atr
+                            AND CAST(tartikelattribut.cWert AS DECIMAL) <= :sum',
                     [
                         'pid' => $productID,
                         'atr' => \FKT_ATTRIBUT_GRATISGESCHENK,
                         'sum' => $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
-                    ],
-                    ReturnType::SINGLE_OBJECT
+                    ]
                 );
-                if (isset($present->kArtikel) && $present->kArtikel > 0) {
+                if ($present !== null && $present->kArtikel > 0) {
                     if ($present->fLagerbestand <= 0
                         && $present->cLagerKleinerNull === 'N'
                         && $present->cLagerBeachten === 'Y'
@@ -914,7 +910,7 @@ class AccountController
                 'cPasswort, cMail'
             );
             if (isset($user->cPasswort, $user->cMail)) {
-                $ok = $customer->checkCredentials($user->cMail, $_POST['altesPasswort']);
+                $ok = $customer->checkCredentials($user->cMail, $_POST['altesPasswort'] ?? '');
                 if ($ok !== false) {
                     $customer->updatePassword($_POST['neuesPasswort1']);
                     $step = 'mein Konto';
@@ -964,7 +960,8 @@ class AccountController
         $_SESSION['Kunde']->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($_SESSION['Kunde']->cLand);
         $this->smarty->assign('Bestellung', $order)
             ->assign('billingAddress', $order->oRechnungsadresse)
-            ->assign('Lieferadresse', $order->Lieferadresse ?? null);
+            ->assign('Lieferadresse', $order->Lieferadresse ?? null)
+            ->assign('incommingPayments', $order->getIncommingPayments());
         if (isset($order->oEstimatedDelivery->longestMin, $order->oEstimatedDelivery->longestMax)) {
             $this->smarty->assign(
                 'cEstimatedDeliveryEx',

@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 use JTL\Backend\Revision;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageHelper;
@@ -97,8 +96,11 @@ final class LinkAdmin
      * @return Collection
      * @former build_navigation_subs_admin()
      */
-    private function buildNavigation(LinkGroupInterface $linkGroup, $service, int $parentID = 0): Collection
-    {
+    private function buildNavigation(
+        LinkGroupInterface $linkGroup,
+        LinkServiceInterface $service,
+        int $parentID = 0
+    ): Collection {
         $news = new Collection();
         foreach ($linkGroup->getLinks() as $link) {
             $link->setLevel(\count($service->getParentIDs($link->getID())));
@@ -133,7 +135,7 @@ final class LinkAdmin
         }
         $localized              = new stdClass();
         $localized->kLinkgruppe = $groupID;
-        foreach (LanguageHelper::getAllLanguages() as $language) {
+        foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
             $localized->cISOSprache = $language->getIso();
             $localized->cName       = $linkGroup->cName;
             $idx                    = 'cName_' . $language->getIso();
@@ -156,14 +158,13 @@ final class LinkAdmin
      */
     public function getLinkGroupCountForLinkIDs(): array
     {
-        $assocCount             = $this->db->query(
+        $assocCount             = $this->db->getObjects(
             'SELECT tlink.kLink, COUNT(*) AS cnt 
                 FROM tlink 
                 JOIN tlinkgroupassociations
                     ON tlinkgroupassociations.linkID = tlink.kLink
                 GROUP BY tlink.kLink
-                HAVING COUNT(*) > 1',
-            ReturnType::ARRAY_OF_OBJECTS
+                HAVING COUNT(*) > 1'
         );
         $linkGroupCountByLinkID = [];
         foreach ($assocCount as $item) {
@@ -220,7 +221,7 @@ final class LinkAdmin
      */
     public function deleteLink(int $linkID): int
     {
-        return $this->db->executeQueryPrepared(
+        return $this->db->getAffectedRows(
             "DELETE tlink, tlinksprache, tseo, tlinkgroupassociations
                 FROM tlink
                 LEFT JOIN tlinkgroupassociations
@@ -232,8 +233,7 @@ final class LinkAdmin
                     AND tseo.kKey = :lid
                 WHERE tlink.kLink = :lid
                     OR tlink.reference = :lid",
-            ['lid' => $linkID],
-            ReturnType::AFFECTED_ROWS
+            ['lid' => $linkID]
         );
     }
 
@@ -244,7 +244,7 @@ final class LinkAdmin
      */
     public function getPreDeletionLinks(int $linkGroupID, bool $names = true): array
     {
-        $links = $this->db->queryPrepared(
+        $links = $this->db->getObjects(
             'SELECT tlink.cName
                 FROM tlink
                 JOIN tlinkgroupassociations A
@@ -254,8 +254,7 @@ final class LinkAdmin
                 WHERE A.linkGroupID = :lgid
                 GROUP BY A.linkID
                 HAVING COUNT(A.linkID) > 1',
-            ['lgid' => $linkGroupID],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['lgid' => $linkGroupID]
         );
 
         return $names === true
@@ -267,11 +266,11 @@ final class LinkAdmin
 
     /**
      * @param int $id
-     * @return array
+     * @return stdClass[]
      */
     public function getMissingLinkTranslations(int $id): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getObjects(
             'SELECT tlink.*, tsprache.*
                 FROM tlink
                 JOIN tsprache
@@ -284,8 +283,7 @@ final class LinkAdmin
                 WHERE t2.cISO IS NULL
                     AND tlink.reference = 0
                     AND tlink.kLink = :lid',
-            ['lid' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['lid' => $id]
         );
     }
 
@@ -294,7 +292,7 @@ final class LinkAdmin
      */
     public function getUntranslatedPageIDs(): Collection
     {
-        return $this->db->query(
+        return $this->db->getCollection(
             'SELECT DISTINCT tlink.kLink AS id
                 FROM tlink
                 JOIN tsprache
@@ -305,20 +303,56 @@ final class LinkAdmin
                     ON t2.cISO = loc.cISOSprache
                     AND t2.cISO = tsprache.cISO
                 WHERE t2.cISO IS NULL
-                    AND tlink.reference = 0',
-            ReturnType::COLLECTION
-        )->map(function (stdClass $e) {
+                    AND tlink.reference = 0'
+        )->map(static function (stdClass $e) {
             return (int)$e->id;
         });
     }
 
+    public function getMissingSystemPages(): Collection
+    {
+        $all          = $this->db->getCollection(
+            'SELECT kLink, nLinkart
+                FROM tlink'
+        )->map(static function ($link) {
+            $link->kLink    = (int)$link->kLink;
+            $link->nLinkart = (int)$link->nLinkart;
+
+            return $link;
+        });
+        $missingTypes = new Collection();
+        foreach ($this->getSpecialPageTypes() as $specialPage) {
+            if (\in_array(
+                $specialPage->nLinkart,
+                [
+                    \LINKTYP_NEWSLETTERARCHIV,
+                    \LINKTYP_GRATISGESCHENK,
+                    \LINKTYP_AUSWAHLASSISTENT,
+                    \LINKTYP_BATTERIEGESETZ_HINWEISE,
+                    true
+                ],
+                true
+            )) {
+                continue;
+            }
+            $hit = $all->first(static function ($val, $key) use ($specialPage) {
+                return $val->nLinkart === $specialPage->nLinkart;
+            });
+            if ($hit === null) {
+                $missingTypes->add($specialPage);
+            }
+        }
+
+        return $missingTypes;
+    }
+
     /**
      * @param int $id
-     * @return array
+     * @return stdClass[]
      */
     public function getMissingLinkGroupTranslations(int $id): array
     {
-        return $this->db->queryPrepared(
+        return $this->db->getObjects(
             'SELECT tlinkgruppe.*, tsprache.* 
                 FROM tlinkgruppe
                 JOIN tsprache
@@ -330,8 +364,7 @@ final class LinkAdmin
                     AND t2.cISO = tsprache.cISO
                 WHERE t2.cISO IS NULL
                     AND tlinkgruppe.kLinkgruppe = :lgid',
-            ['lgid' => $id],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['lgid' => $id]
         );
     }
 
@@ -346,6 +379,9 @@ final class LinkAdmin
         $link->load($linkID);
         if ($link->getID() === 0) {
             return self::ERROR_LINK_NOT_FOUND;
+        }
+        if ($link->getReference() > 0) {
+            $linkID = $link->getReference();
         }
         $targetLinkGroup = $this->db->select('tlinkgruppe', 'kLinkgruppe', $targetLinkGroupID);
         if (!isset($targetLinkGroup->kLinkgruppe) || $targetLinkGroup->kLinkgruppe <= 0) {
@@ -362,8 +398,8 @@ final class LinkAdmin
         $ref            = new stdClass();
         $ref->kPlugin   = $link->getPluginID();
         $ref->nLinkart  = \LINKTYP_REFERENZ;
-        $ref->reference = $link->getID();
-        $ref->cName     = __('Referenz') . ' ' . $link->getID();
+        $ref->reference = $linkID;
+        $ref->cName     = \__('Referenz') . ' ' . $linkID;
         $linkID         = $this->db->insert('tlink', $ref);
 
         $ins              = new stdClass();
@@ -427,10 +463,7 @@ final class LinkAdmin
      */
     public function deleteLinkGroup(int $linkGroupID): int
     {
-        $linkIDs = $this->db->selectAll('tlinkgroupassociations', 'linkGroupID', $linkGroupID);
-        foreach ($linkIDs as $linkID) {
-            $this->deleteLink((int)$linkID->linkID);
-        }
+        $this->db->delete('tlinkgroupassociations', 'linkGroupID', $linkGroupID);
         $res = $this->db->delete('tlinkgruppe', 'kLinkgruppe', $linkGroupID);
         $this->db->delete('tlinkgruppesprache', 'kLinkgruppe', $linkGroupID);
 
@@ -520,6 +553,10 @@ final class LinkAdmin
         if ($link->nLinkart > 2 && isset($post['nSpezialseite']) && (int)$post['nSpezialseite'] > 0) {
             $link->nLinkart = (int)$post['nSpezialseite'];
         }
+        $type            = $link->nLinkart;
+        $link->bIsSystem = (int)$this->getSpecialPageTypes()->contains(static function ($value) use ($type) {
+            return $value->nLinkart === $type;
+        });
 
         return $link;
     }
@@ -545,7 +582,7 @@ final class LinkAdmin
         }
         $localized        = new stdClass();
         $localized->kLink = $kLink;
-        foreach (LanguageHelper::getAllLanguages() as $language) {
+        foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
             $code                   = $language->getIso();
             $localized->cISOSprache = $code;
             $localized->cName       = $link->cName;
@@ -569,13 +606,18 @@ final class LinkAdmin
             if (isset($post[$idx])) {
                 $localized->cMetaTitle = $this->specialChars($post[$idx]);
             }
-            $localized->cMetaKeywords    = $this->specialChars($post['cMetaKeywords_' . $code]);
-            $localized->cMetaDescription = $this->specialChars($post['cMetaDescription_' . $code]);
+            $localized->cMetaKeywords    = $this->specialChars($post['cMetaKeywords_' . $code] ?? '');
+            $localized->cMetaDescription = $this->specialChars($post['cMetaDescription_' . $code] ?? '');
             $this->db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $code]);
             $localized->cSeo = $link->nLinkart === \LINKTYP_EXTERNE_URL
                 ? $localized->cSeo
                 : Seo::getSeo($localized->cSeo);
             $this->db->insert('tlinksprache', $localized);
+            $prev = $this->db->select(
+                'tseo',
+                ['cKey', 'kKey', 'kSprache'],
+                ['kLink', $localized->kLink, $language->getId()]
+            );
             $this->db->delete(
                 'tseo',
                 ['cKey', 'kKey', 'kSprache'],
@@ -587,6 +629,9 @@ final class LinkAdmin
             $seo->cKey     = 'kLink';
             $seo->kSprache = $language->getId();
             $this->db->insert('tseo', $seo);
+            if ($prev !== null) {
+                $this->db->update('topcpage', 'cPageUrl', '/' . $prev->cSeo, (object)['cPageUrl' => '/' . $seo->cSeo]);
+            }
         }
         $linkInstance = new Link($this->db);
         $linkInstance->load($kLink);
@@ -599,7 +644,7 @@ final class LinkAdmin
      * @param int    $linkID
      * @return mixed
      */
-    private function parseText($text, int $linkID)
+    private function parseText(string $text, int $linkID)
     {
         $uploadDir = \PFAD_ROOT . \PFAD_BILDER . \PFAD_LINKBILDER;
         $baseURL   = Shop::getURL() . '/' . \PFAD_BILDER . \PFAD_LINKBILDER;
@@ -640,7 +685,7 @@ final class LinkAdmin
     public function clearCache(): bool
     {
         $this->cache->flushTags([\CACHING_GROUP_CORE]);
-        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
 
         return true;
     }
@@ -665,11 +710,10 @@ final class LinkAdmin
      */
     public function getSpecialPageTypes(): Collection
     {
-        return $this->db->query(
+        return $this->db->getCollection(
             'SELECT *
                 FROM tspezialseite
-                ORDER BY nSort',
-            ReturnType::COLLECTION
+                ORDER BY nSort'
         )->map(static function ($link) {
             $link->kSpezialseite = (int)$link->kSpezialseite;
             $link->kPlugin       = (int)$link->kPlugin;
@@ -713,6 +757,6 @@ final class LinkAdmin
      */
     private function specialChars(string $text): string
     {
-        return \htmlspecialchars($text, \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
+        return \htmlspecialchars($text, \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET, false);
     }
 }

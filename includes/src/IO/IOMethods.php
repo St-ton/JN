@@ -18,7 +18,6 @@ use JTL\Catalog\Separator;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Kupon;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\SelectionWizard\Wizard;
@@ -33,7 +32,7 @@ use JTL\Review\ReviewController;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Staat;
+use JTL\Smarty\JTLSmarty;
 use SmartyException;
 use stdClass;
 use function Functional\filter;
@@ -109,7 +108,7 @@ class IOMethods
         $maxResults = ($cnt = Shop::getSettingValue(\CONF_ARTIKELUEBERSICHT, 'suche_ajax_anzahl')) > 0
             ? $cnt
             : 10;
-        $results    = Shop::Container()->getDB()->queryPrepared(
+        $results    = Shop::Container()->getDB()->getObjects(
             "SELECT cSuche AS keyword, nAnzahlTreffer AS quantity
                 FROM tsuchanfrage
                 WHERE SOUNDEX(cSuche) LIKE CONCAT(TRIM(TRAILING '0' FROM SOUNDEX(:keyword)), '%')
@@ -126,9 +125,9 @@ class IOMethods
                 'keyword' => $keyword,
                 'maxres'  => $maxResults,
                 'lang'    => $language
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
+        $smarty->assign('shopURL', Shop::getURL());
         foreach ($results as $result) {
             $result->suggestion = $smarty->assign('result', $result)->fetch('snippets/suggestion.tpl');
         }
@@ -149,14 +148,13 @@ class IOMethods
         }
 
         return pluck(
-            Shop::Container()->getDB()->queryPrepared(
+            Shop::Container()->getDB()->getObjects(
                 'SELECT cOrt
                     FROM tplz
                     WHERE cLandISO = :country
                         AND cPLZ = :zip
                         AND cOrt LIKE :cityQuery',
-                ['country' => $country, 'zip' => $zip, 'cityQuery' => '%' . Text::filterXSS($cityQuery) . '%'],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['country' => $country, 'zip' => $zip, 'cityQuery' => '%' . Text::filterXSS($cityQuery) . '%']
             ),
             'cOrt'
         );
@@ -265,7 +263,8 @@ class IOMethods
                ->assign('Xselling', $xSelling)
                ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
                ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages())
-               ->assign('Steuerpositionen', $cart->gibSteuerpositionen());
+               ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
+               ->assign('favourableShippingString', $cart->favourableShippingString);
 
         $response->nType           = 2;
         $response->cWarenkorbText  = \lang_warenkorb_warenkorbEnthaeltXArtikel($cart);
@@ -387,15 +386,15 @@ class IOMethods
     }
 
     /**
-     * @param int   $type
-     * @param array $conf
-     * @param       $smarty
+     * @param int       $type
+     * @param array     $conf
+     * @param JTLSmarty $smarty
      * @return array
      */
     private function forceRenderBoxes(int $type, array $conf, $smarty): array
     {
         $res     = [];
-        $boxData = Shop::Container()->getDB()->queryPrepared(
+        $boxData = Shop::Container()->getDB()->getObjects(
             'SELECT *, 0 AS nSort, \'\' AS pageIDs, \'\' AS pageVisibilities,
                        GROUP_CONCAT(tboxensichtbar.nSort) AS sortBypageIDs,
                        GROUP_CONCAT(tboxensichtbar.kSeite) AS pageIDs,
@@ -407,8 +406,7 @@ class IOMethods
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
                 WHERE tboxen.kBoxvorlage = :type
                 GROUP BY tboxen.kBox',
-            ['type' => $type],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['type' => $type]
         );
         $factory = new Factory($conf);
         foreach ($boxData as $item) {
@@ -621,7 +619,8 @@ class IOMethods
                            $shippingFreeMin,
                            $cartValue
                        ))
-                       ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages());
+                       ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages())
+                       ->assign('favourableShippingString', $cart->favourableShippingString);
 
                 ShippingMethod::getShippingCosts($country, $plz, $error);
                 $response->cTemplate = $smarty->fetch('basket/cart_dropdown_label.tpl');
@@ -756,13 +755,19 @@ class IOMethods
         ));
         $config->errorMessages      = $itemErrors ?? [];
         $config->valid              = empty($config->invalidGroups) && empty($config->errorMessages);
+        $cartHelperErrors           = CartHelper::addToCartCheck(
+            $product,
+            1,
+            Product::getSelectedPropertiesForArticle($productID, false)
+        );
         $config->variationsSelected = $product->kVaterArtikel > 0 || !\in_array(
             \R_VARWAEHLEN,
-            CartHelper::addToCartCheck(
-                $product,
-                1,
-                Product::getSelectedPropertiesForArticle($productID, false)
-            ),
+            $cartHelperErrors,
+            true
+        );
+        $config->inStock            = !\in_array(
+            \R_LAGER,
+            $cartHelperErrors,
             true
         );
         $smarty->assign('oKonfig', $config)
@@ -1037,7 +1042,9 @@ class IOMethods
                 $set               = [$propertyID => $propertyValueID];
                 $invalidVariations = $product->getVariationsBySelection($set, true);
                 // Auswählter EigenschaftWert ist ebenfalls nicht vorhanden
-                if (\in_array($propertyValueID, $invalidVariations[$propertyID])) {
+                if (isset($invalidVariations[$propertyID])
+                    && \in_array($propertyValueID, $invalidVariations[$propertyID])
+                ) {
                     $set = [];
                     // Wir befinden uns im Kind-Artikel -> Weiterleitung auf Vater-Artikel
                     if ($childProductID > 0) {
@@ -1142,6 +1149,7 @@ class IOMethods
                                 $value->kEigenschaftWert,
                                 $stockInfo->status,
                                 $stockInfo->text,
+                                $value->notExists,
                                 $wrapper
                             );
                         }
@@ -1159,7 +1167,7 @@ class IOMethods
                 }
             }
         } else {
-            throw new Exception('Article not found ' . $parentProductID);
+            throw new Exception('Product not found ' . $parentProductID);
         }
         $objResponse->callEvoProductFunction('variationRefreshAll', $wrapper);
 
@@ -1169,7 +1177,7 @@ class IOMethods
     /**
      * @param int   $parentProductID
      * @param array $selectedVariationValues
-     * @return array
+     * @return stdClass[]
      */
     public function getArticleByVariations(int $parentProductID, $selectedVariationValues): array
     {
@@ -1178,19 +1186,15 @@ class IOMethods
         }
         $variationID    = 0;
         $variationValue = 0;
-        if (\count($selectedVariationValues) > 0) {
-            $combinations = [];
-            $i            = 0;
-            foreach ($selectedVariationValues as $id => $value) {
-                if ($i++ === 0) {
-                    $variationID    = $id;
-                    $variationValue = $value;
-                } else {
-                    $combinations[] = "($id, $value)";
-                }
+        $combinations   = [];
+        $i              = 0;
+        foreach ($selectedVariationValues as $id => $value) {
+            if ($i++ === 0) {
+                $variationID    = $id;
+                $variationValue = $value;
+            } else {
+                $combinations[] = "($id, $value)";
             }
-        } else {
-            $combinations = null;
         }
 
         $combinationSQL = ($combinations !== null && \count($combinations) > 0)
@@ -1206,7 +1210,7 @@ class IOMethods
                 AND '
             : '';
 
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             'SELECT tartikel.kArtikel,
                 tseo.kKey AS kSeoKey, COALESCE(tseo.cSeo, \'\') AS cSeo,
                 tartikel.fLagerbestand, tartikel.cLagerBeachten, tartikel.cLagerKleinerNull
@@ -1230,8 +1234,7 @@ class IOMethods
                 'parentProductID' => $parentProductID,
                 'variationID'     => $variationID,
                 'variationValue'  => $variationValue,
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
     }
 
@@ -1267,15 +1270,20 @@ class IOMethods
     }
 
     /**
-     * @param string $country
+     * @param string $iso
      * @return IOResponse
      */
-    public function getRegionsByCountry(string $country): IOResponse
+    public function getRegionsByCountry(string $iso): IOResponse
     {
         $response = new IOResponse();
-        if (\mb_strlen($country) === 2) {
-            $regions = Staat::getRegions($country);
-            $response->assignVar('response', $regions);
+        if (\mb_strlen($iso) === 2) {
+            $conf           = Shopsetting::getInstance();
+            $country        = Shop::Container()->getCountryService()->getCountry($iso);
+            $data           = new stdClass();
+            $data->states   = $country->getStates();
+            $data->required = $country->isRequireStateDefinition()
+                || $conf->getValue(\CONF_KUNDEN, 'kundenregistrierung_abfragen_bundesland') === 'Y';
+            $response->assignVar('response', $data);
         }
 
         return $response;
@@ -1333,7 +1341,7 @@ class IOMethods
      * @param string $curPageId
      * @param string $adminSessionToken
      * @param array  $languages
-     * @param $currentLanguage
+     * @param array  $currentLanguage
      * @return IOResponse
      * @throws SmartyException|Exception
      */
@@ -1391,6 +1399,11 @@ class IOMethods
      */
     public function setWishlistVisibility(int $wlID, bool $state, string $token): IOResponse
     {
+        $objResponse = new IOResponse();
+        $wl          = Wishlist::instanceByID($wlID);
+        if ($wl->isSelfControlled() === false) {
+            return $objResponse;
+        }
         if (Form::validateToken($token)) {
             if ($state) {
                 Wishlist::setPublic($wlID);
@@ -1398,7 +1411,6 @@ class IOMethods
                 Wishlist::setPrivate($wlID);
             }
         }
-        $objResponse     = new IOResponse();
         $response        = new stdClass();
         $response->wlID  = $wlID;
         $response->state = $state;
@@ -1416,7 +1428,8 @@ class IOMethods
      */
     public function updateWishlistItem(int $wlID, array $formData): IOResponse
     {
-        if (Form::validateToken($formData['jtl_token'])) {
+        $wl = Wishlist::instanceByID($wlID);
+        if ($wl->isSelfControlled() === true && Form::validateToken($formData['jtl_token'])) {
             Wishlist::update($wlID, $formData);
         }
 

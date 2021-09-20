@@ -109,6 +109,9 @@ abstract class AbstractTemplate implements TemplateInterface
      */
     public function load(int $languageID, int $customerGroupID): ?Model
     {
+        if ($this->model !== null && $languageID === $this->languageID && $customerGroupID === $this->customerGroupID) {
+            return $this->model;
+        }
         $this->model           = null;
         $this->languageID      = $languageID;
         $this->customerGroupID = $customerGroupID;

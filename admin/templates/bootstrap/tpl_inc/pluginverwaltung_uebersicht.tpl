@@ -50,9 +50,11 @@
                             {__('faulty')} <span class="badge">{$pluginsErroneous->count()}</span>
                         </a>
                     </li>
+                    {if $smarty.const.SAFE_MODE === false}
                     <li class="nav-item">
                         <a class="nav-link {if $cTab === 'upload'} active{/if}" data-toggle="tab" role="tab" href="#upload">{__('upload')}</a>
                     </li>
+                    {/if}
                 </ul>
             </nav>
             <div class="tab-content">
@@ -61,7 +63,10 @@
                 {include file='tpl_inc/pluginverwaltung_uebersicht_probleme.tpl'}
                 {include file='tpl_inc/pluginverwaltung_uebersicht_verfuegbar.tpl'}
                 {include file='tpl_inc/pluginverwaltung_uebersicht_fehlerhaft.tpl'}
+                {if $smarty.const.SAFE_MODE === false}
                 {include file='tpl_inc/pluginverwaltung_upload.tpl'}
+                {/if}
+                {include file='tpl_inc/pluginverwaltung_scripts.tpl'}
             </div>
         </div>
     </div>

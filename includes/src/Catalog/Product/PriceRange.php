@@ -2,7 +2,6 @@
 
 namespace JTL\Catalog\Product;
 
-use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Configurator;
 use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
@@ -31,7 +30,7 @@ class PriceRange
     private $customerID;
 
     /**
-     * @var int
+     * @var float|int
      */
     private $discount;
 
@@ -82,10 +81,10 @@ class PriceRange
             $customerID = Frontend::getCustomer()->kKunde ?? 0;
         }
 
-        $this->customerGroupID            = $customerGroupID;
-        $this->customerID                 = $customerID;
-        $this->discount                   = 0;
-        $this->productData                = Shop::Container()->getDB()->select(
+        $this->customerGroupID = $customerGroupID;
+        $this->customerID      = $customerID;
+        $this->discount        = 0;
+        $this->productData     = Shop::Container()->getDB()->selectSingleRow(
             'tartikel',
             'kArtikel',
             $productID,
@@ -96,10 +95,21 @@ class PriceRange
             false,
             'kArtikel, kSteuerklasse, fLagerbestand, fStandardpreisNetto fNettoPreis'
         );
-        $this->productData->kArtikel      = (int)$this->productData->kArtikel;
-        $this->productData->kSteuerklasse = (int)$this->productData->kSteuerklasse;
+        if ($this->productData !== null) {
+            $this->productData->kArtikel      = (int)$this->productData->kArtikel;
+            $this->productData->kSteuerklasse = (int)$this->productData->kSteuerklasse;
+            $this->productData->fLagerbestand = (float)$this->productData->fLagerbestand;
+            $this->productData->fNettoPreis   = (float)$this->productData->fNettoPreis;
 
-        $this->loadPriceRange();
+            $this->loadPriceRange();
+        } else {
+            $this->productData = (object)[
+                'kArtikel'            => 0,
+                'kSteuerklasse'       => 0,
+                'fLagerbestand'       => 0,
+                'fNettoPreis'         => 0.0,
+            ];
+        }
     }
 
     /**
@@ -107,7 +117,7 @@ class PriceRange
      */
     private function loadPriceRange(): void
     {
-        $priceRange = Shop::Container()->getDB()->queryPrepared(
+        $priceRange = Shop::Container()->getDB()->getSingleObject(
             "SELECT baseprice.kArtikel,
                     MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL,
                         COALESCE(baseprice.specialPrice, 999999999),
@@ -147,7 +157,10 @@ class PriceRange
                                 AND iPrice.kKundengruppe = 0
                                 AND iPrice.kArtikel = tartikel.kArtikel
                         )))
-                  AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) = :productID
+                  AND (
+                    (tartikel.kVaterartikel = 0 AND tartikel.kArtikel = :productID)
+                        OR tartikel.kVaterartikel = :productID
+                  )
             ) baseprice
             LEFT JOIN (
                       SELECT variations.kArtikel,
@@ -180,8 +193,7 @@ class PriceRange
                 'productID'     => (int)$this->productData->kArtikel,
                 'customerGroup' => $this->customerGroupID,
                 'customerID'    => $this->customerID
-            ],
-            ReturnType::SINGLE_OBJECT
+            ]
         );
 
         if ($priceRange) {
@@ -208,7 +220,7 @@ class PriceRange
 
     public function loadConfiguratorRange(): void
     {
-        $configItems = Shop::Container()->getDB()->queryPrepared(
+        $configItems = Shop::Container()->getDB()->getObjects(
             'SELECT tartikel.kArtikel,
                     tkonfiggruppe.kKonfiggruppe,
                     MIN(tkonfiggruppe.nMin) nMin,
@@ -224,20 +236,18 @@ class PriceRange
                 INNER JOIN tartikelkonfiggruppe ON tartikelkonfiggruppe.kArtikel = tartikel.kArtikel
                 INNER JOIN tkonfiggruppe ON tkonfiggruppe.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
                 INNER JOIN tkonfigitem ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
-                INNER JOIN tartikel tkonfigartikel ON tkonfigartikel.kArtikel = tkonfigitem.kArtikel
                 LEFT JOIN tkonfigitempreis ON tkonfigitempreis.kKonfigitem = tkonfigitem.kKonfigitem
                     AND tkonfigitempreis.kKundengruppe = :customerGroup
-                WHERE tartikel.kArtikel = :articleID
+                WHERE tartikel.kArtikel = :productID
                 GROUP BY tartikel.kArtikel,
                     tkonfiggruppe.kKonfiggruppe,
                     tkonfigitem.kArtikel,
                     tkonfigitem.bPreis,
                     IF(tkonfigitem.bPreis = 0, tkonfigitempreis.kSteuerklasse, tartikel.kSteuerklasse)',
             [
-                'articleID'     => $this->productData->kArtikel,
+                'productID'     => $this->productData->kArtikel,
                 'customerGroup' => $this->customerGroupID,
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ]
         );
 
         $configGroups = [];
@@ -463,5 +473,15 @@ class PriceRange
             Preise::getLocalizedPriceString($this->maxBruttoPrice, $currency),
             Preise::getLocalizedPriceString($this->maxNettoPrice, $currency),
         ];
+    }
+
+    /**
+     * get product data
+     *
+     * @return mixed|stdClass
+     */
+    public function getProductData()
+    {
+        return $this->productData;
     }
 }

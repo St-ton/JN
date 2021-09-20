@@ -7,7 +7,6 @@ use JTL\Backend\Wizard\Question;
 use JTL\Backend\Wizard\QuestionInterface;
 use JTL\Backend\Wizard\QuestionType;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
@@ -27,14 +26,14 @@ final class EmailSettings extends AbstractStep
     public function __construct(DbInterface $db, AlertServiceInterface $alertService, AdminAccount $adminAccount)
     {
         parent::__construct($db, $alertService);
-        $this->setTitle(__('stepTwo'));
-        $this->setDescription(__('stepTwoDesc'));
+        $this->setTitle(\__('stepTwo'));
+        $this->setDescription(\__('stepTwoDesc'));
         $this->setID(2);
 
         $question = new Question($db);
         $question->setID(11);
-        $question->setText(__('email_master_absender_name'));
-        $question->setDescription(__('email_master_absender_desc'));
+        $question->setText(\__('email_master_absender_name'));
+        $question->setDescription(\__('email_master_absender_desc'));
         $question->setType(QuestionType::EMAIL);
         $question->setValue(Shop::getSettingValue(\CONF_EMAILS, 'email_master_absender'));
         $question->setOnSave(function (QuestionInterface $question) {
@@ -44,8 +43,8 @@ final class EmailSettings extends AbstractStep
 
         $question = new Question($db);
         $question->setID(12);
-        $question->setText(__('email_master_absender_name_name'));
-        $question->setDescription(__('email_master_absender_name_desc'));
+        $question->setText(\__('email_master_absender_name_name'));
+        $question->setDescription(\__('email_master_absender_name_desc'));
         $question->setType(QuestionType::TEXT);
         $question->setValue(Shop::getSettingValue(\CONF_EMAILS, 'email_master_absender_name'));
         $question->setOnSave(function (QuestionInterface $question) {
@@ -59,8 +58,8 @@ final class EmailSettings extends AbstractStep
 
         $question = new Question($db);
         $question->setID(13);
-        $question->setText(__('orderConfirmationBCC'));
-        $question->setDescription(__('orderConfirmationBCCDesc'));
+        $question->setText(\__('orderConfirmationBCC'));
+        $question->setDescription(\__('orderConfirmationBCCDesc'));
         $question->setType(QuestionType::TEXT);
         $question->setValue(\implode(';', $template->getCopyTo()));
         $question->setIsFullWidth(true);
@@ -84,8 +83,7 @@ final class EmailSettings extends AbstractStep
                     [
                         'emailTemplateID' => $emailTemplateID,
                         'emailBCC'        => $question->getValue()
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
             } else {
                 $db->queryPrepared(
@@ -96,8 +94,7 @@ final class EmailSettings extends AbstractStep
                     [
                         'emailTemplateID' => $emailTemplateID,
                         'emailBCC'        => $question->getValue()
-                    ],
-                    ReturnType::DEFAULT
+                    ]
                 );
             }
         });
@@ -105,8 +102,8 @@ final class EmailSettings extends AbstractStep
 
         $question = new Question($db);
         $question->setID(14);
-        $question->setText(__('adminUserEmail'));
-        $question->setDescription(__('adminUserEmailDesc'));
+        $question->setText(\__('adminUserEmail'));
+        $question->setDescription(\__('adminUserEmailDesc'));
         $question->setType(QuestionType::EMAIL);
         $question->setIsFullWidth(true);
         $question->setValue($db->select(

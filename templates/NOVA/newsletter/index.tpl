@@ -7,7 +7,7 @@
         {block name='newsletter-index-heading'}
             {if !empty($Link->getTitle())}
                 {opcMountPoint id='opc_before_newsletter_heading' inContainer=false}
-                {container}
+                {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                     <h1>{$Link->getTitle()}</h1>
                 {/container}
             {/if}
@@ -21,7 +21,7 @@
         {block name='newsletter-index-link-content'}
             {if !empty($Link->getContent())}
                 {opcMountPoint id='opc_before_newsletter_content' inContainer=false}
-                {container class="newsletter-content"}
+                {container fluid=$Link->getIsFluid() class="newsletter-content {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                     {$Link->getContent()}
                 {/container}
             {/if}
@@ -30,7 +30,7 @@
             {if empty($bBereitsAbonnent)}
                 {block name='newsletter-index-newsletter-subscribe-form'}
                     {opcMountPoint id='opc_before_newsletter_subscribe' inContainer=false}
-                    {container}
+                    {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                         {row}
                             {col cols=12 lg=8}
                                 <div id="newsletter-subscribe" class="newsletter-subscribe">
@@ -100,7 +100,7 @@
 
             {block name='newsletter-index-newsletter-unsubscribe-form'}
                 {opcMountPoint id='opc_before_newsletter_unsubscribe' inContainer=false}
-                {container}
+                {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                     {row}
                         {col cols=12 lg=8}
                             <div id="newsletter-unsubscribe" class="newsletter-unsubscribe">
@@ -137,7 +137,7 @@
                 {/container}
             {/block}
         {elseif $cOption === 'anzeigen'}
-            {container}
+            {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                 {if isset($oNewsletterHistory) && $oNewsletterHistory->kNewsletterHistory > 0}
                     {block name='newsletter-index-newsletter-history'}
                         {block name='newsletter-index-newsletter-history-heading'}

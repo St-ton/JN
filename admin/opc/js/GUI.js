@@ -425,12 +425,11 @@ class GUI
 
     saveConfig()
     {
-        event.preventDefault();
 
         opc.emit('save-config');
 
         let portletData  = this.page.portletToJSON(this.curPortlet);
-        let configObject = $(event.target).serializeControls();
+        let configObject = this.configForm.serializeControls();
 
         for(let propname in configObject) {
             if(configObject.hasOwnProperty(propname)) {
@@ -448,6 +447,16 @@ class GUI
                         propval = propval === '1';
                     } else if (propInput[0].type === 'number') {
                         propval = parseInt(propval);
+                    } else if (propInput.prop('name') === 'video-yt-id') {
+                        let match = propval.match(/^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/);
+                        if (match && match[7] !== undefined) {
+                            propval = match[7];
+                        }
+                    } else if (propInput.prop('name') === 'video-vim-id') {
+                        let match = propval.match(/^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/))?([0-9]+)/);
+                        if (match && match[5] !== undefined) {
+                            propval = match[5];
+                        }
                     }
                 }
 
@@ -472,8 +481,6 @@ class GUI
 
     createBlueprint()
     {
-        event.preventDefault();
-
         if(this.selectedElm !== null) {
             let blueprintName = this.blueprintName.val();
             let blueprintData = this.page.portletToJSON(this.iframe.selectedElm);
@@ -530,8 +537,6 @@ class GUI
 
         this.io.deleteBlueprint(blueprintId).then(() => this.updateBlueprintList());
         this.blueprintDeleteModal.modal('hide');
-
-        event.preventDefault();
     }
 
     publishDraft()
@@ -578,9 +583,9 @@ class GUI
     {
         this.checkPublishNot.prop('checked', true);
         this.publishFrom.prop('disabled', true);
-        this.publishFrom.val('Unveröffentlicht');
+        this.publishFrom.val(opc.messages.notScheduled);
         this.publishTo.prop('disabled', true);
-        this.publishTo.val('Auf unbestimmte Zeit');
+        this.publishTo.val(opc.messages.indefinitePeriodOfTime);
         this.checkPublishInfinite.prop('checked', true);
         this.checkPublishInfinite.prop('disabled', true);
     }
@@ -589,9 +594,9 @@ class GUI
     {
         this.checkPublishNow.prop('checked', true);
         this.publishFrom.prop('disabled', true);
-        this.publishFrom.val('Jetzt');
+        this.publishFrom.val(opc.messages.now);
         this.publishTo.prop('disabled', true);
-        this.publishTo.val('Auf unbestimmte Zeit');
+        this.publishTo.val(opc.messages.indefinitePeriodOfTime);
         this.checkPublishInfinite.prop('checked', true);
         this.checkPublishInfinite.prop('disabled', true);
     }
@@ -608,7 +613,7 @@ class GUI
     {
         this.checkPublishInfinite.prop('checked', true);
         this.publishTo.prop('disabled', true);
-        this.publishTo.val('Auf unbestimmte Zeit');
+        this.publishTo.val(opc.messages.indefinitePeriodOfTime);
         this.publishFrom.datetimepicker('maxDate', false);
     }
 
@@ -621,8 +626,6 @@ class GUI
 
     publish()
     {
-        event.preventDefault();
-
         this.page.name = this.draftName.val();
         $('#footerDraftName span').text(this.page.name);
 
@@ -665,8 +668,8 @@ class GUI
 
     selectImageProp(propName)
     {
-        this.openElFinder(file => {
-            let url = file.url.slice(file.baseUrl.length);
+        this.openElFinder((file, mediafilesBaseUrlPath) => {
+            let url = file.url.slice(mediafilesBaseUrlPath.length);
             this.imageSelectCB(url, propName, file.url);
             this.configForm.find('[name="' + propName + '"]').val(url);
             this.configForm.find('#preview-img-' + propName).attr('src', file.url);
@@ -689,8 +692,6 @@ class GUI
 
     restoreUnsaved()
     {
-        event.preventDefault();
-
         this.unsavedRevision.click();
         this.restoreUnsavedModal.modal('hide');
     }

@@ -12,6 +12,13 @@
                         {lang key='incl' section='productDetails'}
                     {/if}
                     &nbsp;{$taxdata.tax}% {lang key='vat' section='productDetails'}
+                {elseif $Einstellungen.global.global_ust_auszeichnung === 'autoNoVat'}
+                    {if $taxdata.net}
+                        {lang key='excl' section='productDetails'}
+                    {else}
+                        {lang key='incl' section='productDetails'}
+                    {/if}
+                    &nbsp;{lang key='vat' section='productDetails'}
                 {elseif $Einstellungen.global.global_ust_auszeichnung === 'endpreis'}
                     {lang key='finalprice' section='productDetails'}
                 {/if}
@@ -27,7 +34,7 @@
                     {block name='snippets-shipping-tax-info-zzgl-show-shipping-free'}
                         {if $Einstellungen.global.global_versandkostenfrei_darstellung === 'D'}
                             {block name='snippets-shipping-tax-info-zzgl-show-shipping-free-D'}
-                                {$countries = "{foreach $taxdata.countries as $cISO => $country}<abbr title='{$country}'>{$cISO}</abbr>&nbsp;{/foreach}"}
+                                {$countries = "{foreach $taxdata.countries as $cISO => $country}<abbr title='{$country}'>{$cISO}</abbr>{if !$country@last}&nbsp;{/if}{/foreach}"}
                                 {lang key='noShippingcostsTo'} {lang key='noShippingCostsAtExtended' section='basket' printf=$countries}
                                 {link href="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}?shipping_calculator=0{/if}" rel="nofollow" class="shipment popup"}
                                     {lang key='shipping' section='basket'}{/link}

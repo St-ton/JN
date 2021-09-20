@@ -1,17 +1,19 @@
 <?php
 
 use JTL\Backend\AdminIO;
+use JTL\Backend\Settings\Manager as SettingsManager;
 use JTL\Backend\JSONAPI;
 use JTL\Backend\Notification;
 use JTL\Backend\TwoFA;
 use JTL\Backend\Wizard\WizardIO;
-use JTL\Exportformat;
+use JTL\Export\SyntaxChecker as ExportSyntaxChecker;
 use JTL\Helpers\Form;
 use JTL\IO\IOError;
 use JTL\Jtllog;
 use JTL\Link\Admin\LinkAdmin;
 use JTL\Mail\Validator\SyntaxChecker;
 use JTL\Media\Manager;
+use JTL\Plugin\Helper;
 use JTL\Shop;
 use JTL\Update\UpdateIO;
 
@@ -36,6 +38,7 @@ $io           = AdminIO::getInstance()->setAccount($oAccount);
 $images       = new Manager($db, $gettext);
 $updateIO     = new UpdateIO($db, $gettext);
 $wizardIO     = new WizardIO($db, $cache, $alertService, $gettext);
+$settings     = new SettingsManager($db, Shop::Smarty(), Shop::Container()->getAdminAccount(), $gettext, $alertService);
 
 try {
     Shop::Container()->getOPC()->registerAdminIOFunctions($io);
@@ -62,6 +65,7 @@ try {
        ->register('getCustomers', [$jsonApi, 'getCustomers'])
        ->register('getSeos', [$jsonApi, 'getSeos'])
        ->register('getAttributes', [$jsonApi, 'getAttributes'])
+       ->register('getSettingLog', [$settings, 'getSettingLog'])
        ->register('isDuplicateSpecialLink', [LinkAdmin::class, 'isDuplicateSpecialLink'])
        ->register('getCurrencyConversion', 'getCurrencyConversionIO')
        ->register('setCurrencyConversionTooltip', 'setCurrencyConversionTooltipIO')
@@ -110,9 +114,10 @@ try {
        ->register('deleteShippingSurchargeZIP', 'deleteShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
        ->register('createShippingSurchargeZIP', 'createShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
        ->register('getShippingSurcharge', 'getShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
-       ->register('exportformatSyntaxCheck', [Exportformat::class, 'ioCheckSyntax'], null, 'EXPORT_FORMATS_VIEW')
+       ->register('exportformatSyntaxCheck', [ExportSyntaxChecker::class, 'ioCheckSyntax'], null, 'EXPORT_FORMATS_VIEW')
        ->register('mailvorlageSyntaxCheck', [SyntaxChecker::class, 'ioCheckSyntax'], null, 'CONTENT_EMAIL_TEMPLATE_VIEW')
-       ->register('notificationAction', [Notification::class, 'ioNotification']);
+       ->register('notificationAction', [Notification::class, 'ioNotification'])
+       ->register('pluginTestLoading', [Helper::class, 'ioTestLoading']);
 } catch (Exception $e) {
     $io->respondAndExit(new IOError($e->getMessage(), $e->getCode()));
 }

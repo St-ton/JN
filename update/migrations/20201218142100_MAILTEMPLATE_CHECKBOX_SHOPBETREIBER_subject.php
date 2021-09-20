@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\DB\ReturnType;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -18,14 +17,13 @@ class Migration_20201218142100 extends Migration implements IMigration
      */
     public function up()
     {
-        $tplID = $this->getDB()->queryPrepared(
+        $tplID = $this->getDB()->getSingleObject(
             'SELECT kEmailvorlage AS id
                 FROM temailvorlage
                 WHERE cModulId = :nm',
-            ['nm' => MAILTEMPLATE_CHECKBOX_SHOPBETREIBER],
-            ReturnType::SINGLE_OBJECT
+            ['nm' => MAILTEMPLATE_CHECKBOX_SHOPBETREIBER]
         );
-        if ($tplID === false) {
+        if ($tplID === null) {
             return;
         }
         $tplID = (int)$tplID->id;

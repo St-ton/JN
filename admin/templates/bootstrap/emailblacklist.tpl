@@ -11,7 +11,7 @@
                 {if $configItem->cConf === 'Y'}
                     <div class="item form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$configItem->cWertName}">{$configItem->cName}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $configItem->cInputTyp === 'number'}config-type-number{/if}">
                             {if $configItem->cInputTyp === 'selectbox'}
                                 <select name="{$configItem->cWertName}" id="{$configItem->cWertName}" class="custom-select combo">
                                     {foreach $configItem->ConfWerte as $wert}
@@ -65,7 +65,7 @@
                 <hr class="mb-n3">
             </div>
             <div class="card-body">
-                <textarea class="form-control" name="cEmail" cols="50" rows="10">{foreach $blacklist as $item}{$item->cEmail}{if !$item@last};{/if}{/foreach}</textarea>
+                <textarea class="form-control" name="cEmail" cols="50" rows="10" placeholder="{__('emailblacklistPlaceholder')}">{foreach $blacklist as $item}{$item->cEmail}{if !$item@last};{/if}{/foreach}</textarea>
             </div>
         </div>
         <div class="save-wrapper">

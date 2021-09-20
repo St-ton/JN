@@ -3,10 +3,13 @@
 namespace JTL\Console\Command\Cache;
 
 use JTL\Console\Command\Command;
-use JTL\Filesystem\Filesystem;
-use League\Flysystem\Adapter\Local;
+use JTL\Filesystem\LocalFilesystem;
+use JTL\Shop;
+use League\Flysystem\FileAttributes;
+use League\Flysystem\Filesystem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 /**
  * Class DbesTmpCommand
@@ -29,11 +32,24 @@ class DbesTmpCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = $this->getIO();
-        $fs = new Filesystem(new Local(\PFAD_ROOT));
-        if ($fs->deleteDir('dbeS/tmp/')) {
+        $fs = Shop::Container()->get(LocalFilesystem::class);
+        try {
+            /** @var Filesystem $fs */
+            foreach ($fs->listContents('dbeS/tmp/')->toArray() as $item) {
+                /** @var FileAttributes $item */
+                if ($item->isDir()) {
+                    $fs->deleteDirectory($item->path());
+                } else {
+                    $fs->delete($item->path());
+                }
+            }
             $io->success('dbeS tmp cache deleted.');
-        } else {
-            $io->warning('Nothing to delete.');
+
+            return 0;
+        } catch (Throwable $e) {
+            $io->warning('Could not delete: ' . $e->getMessage());
+
+            return 1;
         }
     }
 }

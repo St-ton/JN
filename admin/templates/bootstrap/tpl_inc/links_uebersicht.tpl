@@ -1,7 +1,4 @@
 <script type="text/javascript">
-    function confirmDelete() {
-        return confirm('{__('sureDeleteLink')|replace:"\n":' '}');
-    }
     $(document).ready(function () {
         $('.duplicate-special-link').closest('.link-group-wrapper').find('.duplicate-special-page-warning')
             .removeClass('d-none');
@@ -10,9 +7,20 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('links') cBeschreibung=__('linksDesc') cDokuURL=__('linksUrl')}
 <div id="content">
+    {if $missingSystemPages->count() > 0}
+        <div class="alert alert-danger">
+            {__('The following special pages are missing:')}
+            <ul>
+                {foreach $missingSystemPages as $page}
+                    <li>{__($page->cName)}</li>
+                {/foreach}
+            </ul>
+            <p>{__('Please create the missing pages manually.')}</p>
+        </div>
+    {/if}
     <form action="links.php" method="post">
         {$jtl_token}
-        <div class="row">
+        <div class="row no-gutters">
             <div class="col-sm-6 col-xl-auto">
                 <button class="btn btn-primary add btn-block mb-4" name="action" value="create-linkgroup">
                     <i class="fa fa-share"></i> {__('newLinkGroup')}
@@ -60,7 +68,7 @@
                             {/if}
                             <div class="btn-group float-right">
                                 {if $linkgruppe->getID() > 0}
-                                    <button name="action" value="delete-linkgroup" class="btn btn-link px-2" title="{__('linkGroup')} {__('delete')}" data-toggle="tooltip">
+                                    <button name="action" value="delete-linkgroup" class="btn btn-link px-2" title="{__('linkGroup')} {__('delete')}" data-toggle="tooltip"{if $linkgruppe->isSystem()} disabled{/if}>
                                         <span class="icon-hover">
                                             <span class="fal fa-trash-alt"></span>
                                             <span class="fas fa-trash-alt"></span>
@@ -99,7 +107,7 @@
     </div>{* /accordion *}
     <form action="links.php" method="post">
         {$jtl_token}
-        <div class="row">
+        <div class="row no-gutters">
             <div class="col-sm-6 col-xl-auto mb-4">
                 <button class="btn btn-primary add btn-block" name="action" value="create-linkgroup">
                     <i class="fa fa-share"></i> {__('newLinkGroup')}

@@ -149,7 +149,7 @@
             {if $hasBody === false}<div class="card-body">{assign var=hasBody value=true}{/if}
                 <div class="form-group form-row align-items-center">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->cWertName}">{$cnf->cName}:</label>
-                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $cnf->cInputTyp === 'number'}config-type-number{/if}">
                     {if $cnf->cInputTyp === 'selectbox'}
                         <select name="{$cnf->cWertName}" id="{$cnf->cWertName}" class="custom-select combo">
                             {foreach $cnf->ConfWerte as $wert}
@@ -158,6 +158,24 @@
                         </select>
                     {elseif $cnf->cInputTyp === 'password'}
                         <input class="form-control" autocomplete="off" type="password" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" />
+                    {elseif $cnf->cInputTyp === 'number'}
+                        <div class="input-group form-counter">
+                            <div class="input-group-prepend">
+                                <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                    <span class="fas fa-minus"></span>
+                                </button>
+                            </div>
+                            <input class="form-control" type="number" name="{$cnf->cWertName}"
+                                   id="{$cnf->cWertName}"
+                                   value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}"/>
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                    <span class="fas fa-plus"></span>
+                                </button>
+                            </div>
+                        </div>
+                    {elseif $cnf->cInputTyp === 'textarea'}
+                        <textarea class="form-control" name="{$cnf->cWertName}" id="{$cnf->cWertName}">{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}</textarea>
                     {else}
                         <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" />
                         {if isset($cnf->kEinstellungenConf)}

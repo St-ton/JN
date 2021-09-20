@@ -21,8 +21,16 @@ class StatusMail extends AbstractTemplate
         if ($data === null) {
             return;
         }
-        $data->mail->toName = $data->tfirma->cName . ' ' . $data->cIntervall;
-        $this->setSubject($data->tfirma->cName . ' ' . $data->cIntervall);
+        $model = $this->getModel();
+        if ($model !== null && $model->getSubject() === 'Status Email') {
+            foreach ($model->getSubjects() as $langID => $subject) {
+                $model->setSubject($data->tfirma->cName . ' ' . $data->cIntervall, $langID);
+            }
+        }
+        if (isset($data->interval)) {
+            $smarty->assign('interval', $data->interval)
+                ->assign('intervalLoc', $data->cIntervall);
+        }
         $smarty->assign('oMailObjekt', $data);
     }
 }

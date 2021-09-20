@@ -5,12 +5,13 @@ namespace JTL\Helpers;
 use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\Currency;
+use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\ReturnType;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 
@@ -26,9 +27,10 @@ class Order extends CartHelper
     protected $order;
 
     /**
+     * Order constructor.
      * @param Bestellung $order
      */
-    public function __construct($order)
+    public function __construct(Bestellung $order)
     {
         $this->order = $order;
     }
@@ -114,7 +116,7 @@ class Order extends CartHelper
      */
     public function getLanguage(): string
     {
-        return Shop::Lang()->getIsoFromLangID($this->order->kSprache);
+        return Shop::Lang()->getIsoFromLangID($this->order->kSprache)->cISO;
     }
 
     /**
@@ -140,17 +142,16 @@ class Order extends CartHelper
      */
     public static function getLastOrderRefIDs(int $customerID): ?object
     {
-        $order = Shop::Container()->getDB()->queryPrepared(
+        $order = Shop::Container()->getDB()->getSingleObject(
             'SELECT kBestellung, kWarenkorb, kLieferadresse, kRechnungsadresse, kZahlungsart, kVersandart
                 FROM tbestellung
                 WHERE kKunde = :customerID
                 ORDER BY dErstellt DESC
                 LIMIT 1',
-            ['customerID' => $customerID],
-            ReturnType::SINGLE_OBJECT
+            ['customerID' => $customerID]
         );
 
-        return \is_object($order)
+        return $order !== null
             ? (object)[
                 'kBestellung'       => (int)$order->kBestellung,
                 'kWarenkorb'        => (int)$order->kWarenkorb,
@@ -167,5 +168,30 @@ class Order extends CartHelper
                 'kZahlungsart'      => 0,
                 'kVersandart'       => 0,
             ];
+    }
+
+    /**
+     * @param stdClass|Bestellung|null $order
+     * @return float
+     * @since 5.1.0
+     */
+    public static function getOrderCredit($order = null): float
+    {
+        $customer  = Frontend::getCustomer();
+        $cartTotal = (float)Frontend::getCart()->gibGesamtsummeWaren(true, false);
+        $credit    = \min((float)$customer->fGuthaben, $cartTotal);
+
+        \executeHook(\HOOK_BESTELLUNG_SETZEGUTHABEN, [
+            'creditToUse'    => &$credit,
+            'cartTotal'      => $cartTotal,
+            'customerCredit' => (float)$customer->fGuthaben
+        ]);
+
+        if ($order !== null) {
+            $order->fGuthabenGenutzt   = $credit;
+            $order->GutscheinLocalized = Preise::getLocalizedPriceString($credit);
+        }
+
+        return $credit;
     }
 }

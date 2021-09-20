@@ -22,7 +22,6 @@ final class PluginValidator extends AbstractValidator
         $baseNode       = $xml['jtlshopplugin'][0] ?? null;
         $shopVersion    = Version::parse(\APPLICATION_VERSION);
         $minShopVersion = null;
-        $maxShopVersion = null;
         if ($baseNode === null) {
             return InstallCode::MISSING_PLUGIN_NODE;
         }
@@ -70,7 +69,7 @@ final class PluginValidator extends AbstractValidator
         $validation = new PluginValidationFactory();
         $checks     = $validation->getValidations($baseNode, $this->dir, $version, $baseNode['PluginID']);
         foreach ($checks as $check) {
-            $check->setDir($this->dir . \DIRECTORY_SEPARATOR); // override versioned dir from base validator
+            $check->setDir($this->dir . '/'); // override versioned dir from base validator
             $check->setContext(ValidationItemInterface::CONTEXT_PLUGIN);
             $res = $check->validate();
             if ($res !== InstallCode::OK) {

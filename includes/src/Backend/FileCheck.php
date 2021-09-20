@@ -44,37 +44,38 @@ class FileCheck
             return self::ERROR_NO_HASHES_FOUND;
         }
         $shopFiles = \explode("\n", $hashes);
-        if (\is_array($shopFiles) && \count($shopFiles) > 0) {
-            $errors = 0;
-            \array_multisort($shopFiles);
-            foreach ($shopFiles as $shopFile) {
-                if (\mb_strlen($shopFile) === 0) {
-                    continue;
+        if (\count($shopFiles) === 0) {
+            return self::OK;
+        }
+        $errors = 0;
+        \array_multisort($shopFiles);
+        foreach ($shopFiles as $shopFile) {
+            if (\mb_strlen($shopFile) === 0) {
+                continue;
+            }
+            if (\count(\explode(';', $shopFile)) === 1) {
+                if (\file_exists($prefix . $shopFile)) {
+                    $mtime    = \filemtime($prefix . $shopFile);
+                    $result[] = (object)[
+                        'name'         => $shopFile,
+                        'lastModified' => \date('d.m.Y H:i:s', $mtime)
+                    ];
+                    $errors++;
                 }
-                if (\count(\explode(';', $shopFile)) === 1) {
-                    if (\file_exists($prefix . $shopFile)) {
-                        $mtime    = \filemtime($prefix . $shopFile);
-                        $result[] = (object)[
-                            'name'         => $shopFile,
-                            'lastModified' => \date('d.m.Y H:i:s', $mtime)
-                        ];
-                        $errors++;
-                    }
-                } else {
-                    [$hash, $file] = \explode(';', $shopFile);
-                    $currentHash   = '';
-                    $path          = $prefix . $file;
-                    if (\file_exists($path)) {
-                        $currentHash = \md5_file($path);
-                    }
-                    if ($currentHash !== $hash) {
-                        $mtime    = \file_exists($path) ? \filemtime($path) : 0;
-                        $result[] = (object)[
-                            'name'         => $file,
-                            'lastModified' => \date('d.m.Y H:i:s', $mtime)
-                        ];
-                        $errors++;
-                    }
+            } else {
+                [$hash, $file] = \explode(';', $shopFile);
+                $currentHash   = '';
+                $path          = $prefix . $file;
+                if (\file_exists($path)) {
+                    $currentHash = \md5_file($path);
+                }
+                if ($currentHash !== $hash) {
+                    $mtime    = \file_exists($path) ? \filemtime($path) : 0;
+                    $result[] = (object)[
+                        'name'         => $file,
+                        'lastModified' => \date('d.m.Y H:i:s', $mtime)
+                    ];
+                    $errors++;
                 }
             }
         }
@@ -118,10 +119,13 @@ class FileCheck
         } catch (Exception $e) {
             return -1;
         }
+        /** @var Filesystem $fs */
         foreach ($orphanedFiles as $i => $file) {
-            if ($fs->delete($file->name)) {
+            try {
+                $fs->delete($file->name);
                 unset($orphanedFiles[$i]);
                 ++$count;
+            } catch (Exception $e) {
             }
         }
 

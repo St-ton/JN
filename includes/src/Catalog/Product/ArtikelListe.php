@@ -4,8 +4,8 @@ namespace JTL\Catalog\Product;
 
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Category\MenuItem;
-use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Product;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use function Functional\map;
@@ -57,16 +57,16 @@ class ArtikelListe
             if (!$customerGroupID) {
                 $customerGroupID = Frontend::getCustomerGroup()->getID();
             }
-            $items = Shop::Container()->getDB()->query(
+            $items = Shop::Container()->getDB()->getObjects(
                 'SELECT tartikel.kArtikel
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND ' . $qry . '
                     ORDER BY rand() LIMIT ' . $limit,
-                ReturnType::ARRAY_OF_OBJECTS
+                ['cgid' => $customerGroupID]
             );
             Shop::Container()->getCache()->set($cacheID, $items, [\CACHING_GROUP_CATEGORY]);
         }
@@ -122,7 +122,7 @@ class ArtikelListe
                 $conditionSQL = ' AND tartikel.kHersteller = ' . $productFilter->getManufacturer()->getValue() . ' ';
             }
             $stockFilterSQL = $productFilter->getFilterSQL()->getStockFilterSQL();
-            $items          = Shop::Container()->getDB()->query(
+            $items          = Shop::Container()->getDB()->getObjects(
                 'SELECT tartikel.kArtikel
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
@@ -132,9 +132,8 @@ class ArtikelListe
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel ' . $conditionSQL . ' 
                         AND tkategorieartikel.kKategorie = ' . $categoryID . ' ' . $stockFilterSQL . '
-                    ORDER BY $order, nSort
-                    LIMIT ' . $limitStart . ', ' . $limitAnzahl,
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY ' . $order . ', nSort
+                    LIMIT ' . $limitStart . ', ' . $limitAnzahl
             );
             $defaultOptions = Artikel::getDefaultOptions();
             foreach ($items as $item) {
@@ -175,6 +174,7 @@ class ArtikelListe
                 break;
             }
         }
+        $this->elemente = Product::separateByAvailability($this->elemente, true);
 
         return $this->elemente;
     }
@@ -206,23 +206,21 @@ class ArtikelListe
         if ($items === false && \count($categoryIDs) > 0) {
             $conf            = Shop::getSettings([\CONF_ARTIKELUEBERSICHT]);
             $customerGroupID = Frontend::getCustomerGroup()->getID();
-            $limitSql        = isset($conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
-                ? ('LIMIT ' . (int)$conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
-                : 'LIMIT 6';
+            $limitSql        = 'LIMIT ' . (int)($conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'] ?? 6);
             $stockFilterSQL  = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $items           = Shop::Container()->getDB()->query(
+            $items           = Shop::Container()->getDB()->getObjects(
                 'SELECT DISTINCT (tartikel.kArtikel)
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
-                        ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . ' ' .
-                    Preise::getPriceJoinSql($customerGroupID) . " 
+                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid '
+                    . Preise::getPriceJoinSql($customerGroupID) . " 
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
                         AND tartikel.cTopArtikel = 'Y'
                         AND (tkategorieartikel.kKategorie IN (" . \implode(', ', $categoryIDs) . ')) ' .
                         $stockFilterSQL . '  ORDER BY rand() ' . $limitSql,
-                ReturnType::ARRAY_OF_OBJECTS
+                ['cgid' => $customerGroupID]
             );
             $cacheTags       = [\CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION];
             foreach ($categoryIDs as $id) {
@@ -285,24 +283,21 @@ class ArtikelListe
                     : '';
             }
             $conf           = Shop::getSettings([\CONF_ARTIKELUEBERSICHT]);
-            $limitSQL       = isset($conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
-                ? ('LIMIT ' . (int)$conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'])
-                : 'LIMIT 6';
+            $limitSQL       = 'LIMIT ' . (int)($conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'] ?? 6);
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $items          = Shop::Container()->getDB()->query(
+            $items          = Shop::Container()->getDB()->getObjects(
                 'SELECT DISTINCT (tartikel.kArtikel)
                     FROM tkategorieartikel, tbestseller, tartikel
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . ' ' .
-                    Preise::getPriceJoinSql($customerGroupID) . '
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid ' . Preise::getPriceJoinSql($customerGroupID) . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL' . $excludes . '
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
                         AND tartikel.kArtikel = tbestseller.kArtikel
                         AND (tkategorieartikel.kKategorie IN (' . \implode(', ', $categoryIDs) . ')) ' .
                         $stockFilterSQL . '
                     ORDER BY tbestseller.fAnzahl DESC ' . $limitSQL,
-                ReturnType::ARRAY_OF_OBJECTS
+                ['cgid' => $customerGroupID]
             );
             $cacheTags      = [\CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION];
             foreach ($categoryIDs as $id) {

@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Backend\Settings\Manager;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Jtllog;
@@ -17,15 +18,20 @@ use Monolog\Logger;
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SYSTEMLOG_VIEW', true, true);
 
-$alertHelper = Shop::Container()->getAlertService();
-$minLogLevel = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
+$alertHelper    = Shop::Container()->getAlertService();
+$db             = Shop::Container()->getDB();
+$getText        = Shop::Container()->getGetText();
+$adminAccount   = Shop::Container()->getAdminAccount();
+$minLogLevel    = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
+$settingManager = new Manager($db, $smarty, $adminAccount, $getText, $alertHelper);
+
 if (Form::validateToken()) {
     if (Request::verifyGPDataString('action') === 'clearsyslog') {
         Jtllog::deleteAll();
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSystemLogReset'), 'successSystemLogReset');
     } elseif (Request::verifyGPDataString('action') === 'save') {
         $minLogLevel = (int)($_POST['minLogLevel'] ?? 0);
-        Shop::Container()->getDB()->update(
+        $db->update(
             'teinstellungen',
             'cName',
             'systemlog_flag',
@@ -35,10 +41,10 @@ if (Form::validateToken()) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
         $smarty->assign('cTab', 'config');
     } elseif (Request::verifyGPDataString('action') === 'delselected') {
-        if (isset($_REQUEST['selected'])) {
+        if (isset($_POST['selected'])) {
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
-                Jtllog::deleteIDs($_REQUEST['selected']) . __('successEntriesDelete'),
+                Jtllog::deleteIDs($_POST['selected']) . __('successEntriesDelete'),
                 'successEntriesDelete'
             );
         }
@@ -83,12 +89,30 @@ foreach ($logData as $log) {
         );
     }
 }
+$settingLogsFilter = new Filter('settingsLog');
+$settingLogsFilter->addDaterangefield(
+    __('Zeitraum'),
+    'dDatum',
+    date_create()->modify('-1 month')->format('d.m.Y') . ' - ' . date('d.m.Y')
+);
+$settingLogsFilter->assemble();
+
+$settingLogsPagination = (new Pagination('settingsLog'))
+    ->setItemCount($settingManager->getAllSettingLogsCount($settingLogsFilter->getWhereSQL()))
+    ->assemble();
+
 $smarty->assign('oFilter', $filter)
-       ->assign('pagination', $pagination)
-       ->assign('oLog_arr', $logData)
-       ->assign('minLogLevel', $minLogLevel)
-       ->assign('nTotalLogCount', $totalLogCount)
-       ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
-       ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)
-       ->assign('JTLLOG_LEVEL_DEBUG', JTLLOG_LEVEL_DEBUG)
-       ->display('systemlog.tpl');
+    ->assign('pagination', $pagination)
+    ->assign('oLog_arr', $logData)
+    ->assign('minLogLevel', $minLogLevel)
+    ->assign('nTotalLogCount', $totalLogCount)
+    ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
+    ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)
+    ->assign('JTLLOG_LEVEL_DEBUG', JTLLOG_LEVEL_DEBUG)
+    ->assign('settingLogs', $settingManager->getAllSettingLogs(
+        $settingLogsFilter->getWhereSQL(),
+        $settingLogsPagination->getLimitSQL()
+    ))
+    ->assign('settingLogsPagination', $settingLogsPagination)
+    ->assign('settingLogsFilter', $settingLogsFilter)
+    ->display('systemlog.tpl');

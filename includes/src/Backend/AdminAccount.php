@@ -6,7 +6,6 @@ use DateTime;
 use Exception;
 use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\L10n\GetText;
 use JTL\Mail\Mail\Mail;
@@ -97,6 +96,7 @@ class AdminAccount
         $this->getText       = $getText;
         $this->alertService  = $alertService;
         Backend::getInstance();
+        Shop::setIsFrontend(false);
         $this->initDefaults();
         $this->validateSession();
     }
@@ -155,7 +155,7 @@ class AdminAccount
                 $createdAt = (new DateTime())->setTimestamp((int)$timeStamp);
                 $now       = new DateTime();
                 $diff      = $now->diff($createdAt);
-                $secs      = ($diff->format('%a') * (60 * 60 * 24)); // total days
+                $secs      = ((int)$diff->format('%a') * (60 * 60 * 24)); // total days
                 $secs     += (int)$diff->format('%h') * (60 * 60); // hours
                 $secs     += (int)$diff->format('%i') * 60; // minutes
                 $secs     += (int)$diff->format('%s'); // seconds
@@ -196,11 +196,11 @@ class AdminAccount
             $mail   = new Mail();
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ADMINLOGIN_PASSWORT_VERGESSEN, $obj));
 
-            $this->alertService->addAlert(Alert::TYPE_SUCCESS, __('successEmailSend'), 'successEmailSend');
+            $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successEmailSend'), 'successEmailSend');
 
             return true;
         }
-        $this->alertService->addAlert(Alert::TYPE_ERROR, __('errorEmailNotFound'), 'errorEmailNotFound');
+        $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorEmailNotFound'), 'errorEmailNotFound');
 
         return false;
     }
@@ -331,17 +331,17 @@ class AdminAccount
 
     /**
      * @param int $userID
-     * @return mixed
+     * @return array|null
      */
-    private function getAttributes(int $userID)
+    private function getAttributes(int $userID): ?array
     {
         // try, because of SHOP-4319
         try {
-            $attributes = reindex($this->db->queryPrepared(
-                'SELECT cName, cAttribText, cAttribValue FROM tadminloginattribut
+            $attributes = reindex($this->db->getObjects(
+                'SELECT cName, cAttribText, cAttribValue
+                    FROM tadminloginattribut
                     WHERE kAdminlogin = :userID',
-                ['userID' => $userID],
-                ReturnType::ARRAY_OF_OBJECTS
+                ['userID' => $userID]
             ), static function ($e) {
                 return $e->cName;
             });
@@ -469,7 +469,7 @@ class AdminAccount
      */
     public function redirectOnUrl(): void
     {
-        $url    = Shop::getURL() . '/' . \PFAD_ADMIN . 'index.php';
+        $url    = Shop::getAdminURL() . '/index.php';
         $parsed = \parse_url($url);
         $host   = $parsed['host'];
         if (!empty($parsed['port']) && (int)$parsed['port'] > 0) {
@@ -514,7 +514,7 @@ class AdminAccount
         if (isset($_SESSION['AdminAccount']->cLogin, $_POST['TwoFA_code'])) {
             $twoFA = new TwoFA($this->db);
             $twoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
-            $valid                                 = $twoFA->isCodeValid($_POST['TwoFA_code']);
+            $valid                                 = $twoFA->isCodeValid($_POST['TwoFA_code'] ?? '');
             $this->twoFaAuthenticated              = $valid;
             $_SESSION['AdminAccount']->TwoFA_valid = $valid;
 
@@ -538,7 +538,7 @@ class AdminAccount
      * @param stdClass $admin
      * @return $this
      */
-    private function toSession($admin): self
+    private function toSession(stdClass $admin): self
     {
         $group = $this->getPermissionsByGroup($admin->kAdminlogingruppe);
         if (\is_object($group) || (int)$admin->kAdminlogingruppe === \ADMINGROUP) {
@@ -567,28 +567,28 @@ class AdminAccount
     }
 
     /**
-     * @param string $cLogin
+     * @param string $login
      * @return $this
      */
-    private function setLastLogin($cLogin): self
+    private function setLastLogin(string $login): self
     {
-        $this->db->update('tadminlogin', 'cLogin', $cLogin, (object)['dLetzterLogin' => 'NOW()']);
+        $this->db->update('tadminlogin', 'cLogin', $login, (object)['dLetzterLogin' => 'NOW()']);
 
         return $this;
     }
 
     /**
-     * @param string $cLogin
-     * @param bool   $bReset
+     * @param string $login
+     * @param bool   $reset
      * @return $this
      */
-    private function setRetryCount(string $cLogin, bool $bReset = false): self
+    private function setRetryCount(string $login, bool $reset = false): self
     {
-        if ($bReset) {
+        if ($reset) {
             $this->db->update(
                 'tadminlogin',
                 'cLogin',
-                $cLogin,
+                $login,
                 (object)['nLoginVersuch' => 0, 'locked_at' => '_DBNULL_']
             );
 
@@ -598,13 +598,12 @@ class AdminAccount
             'UPDATE tadminlogin
                 SET nLoginVersuch = nLoginVersuch+1
                 WHERE cLogin = :login',
-            ['login' => $cLogin],
-            ReturnType::AFFECTED_ROWS
+            ['login' => $login]
         );
-        $data   = $this->db->select('tadminlogin', 'cLogin', $cLogin);
+        $data   = $this->db->select('tadminlogin', 'cLogin', $login);
         $locked = (int)$data->nLoginVersuch >= \MAX_LOGIN_ATTEMPTS;
         if ($locked === true && \array_key_exists('locked_at', (array)$data)) {
-            $this->db->update('tadminlogin', 'cLogin', $cLogin, (object)['locked_at' => 'NOW()']);
+            $this->db->update('tadminlogin', 'cLogin', $login, (object)['locked_at' => 'NOW()']);
         }
 
         return $this;

@@ -1,8 +1,8 @@
 {block name='layout-header'}
     {block name='layout-header-doctype'}<!DOCTYPE html>{/block}
-    <html {block name='layout-header-html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp === $smarty.const.URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
-          {elseif $nSeitenTyp === $smarty.const.URLART_KATEGORIE}itemtype="http://schema.org/CollectionPage"
-          {else}itemtype="http://schema.org/WebPage"{/if}{/block}>
+    <html {block name='layout-header-html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp === $smarty.const.URLART_ARTIKEL}itemtype="https://schema.org/ItemPage"
+          {elseif $nSeitenTyp === $smarty.const.URLART_KATEGORIE}itemtype="https://schema.org/CollectionPage"
+          {else}itemtype="https://schema.org/WebPage"{/if}{/block}>
     {block name='layout-header-head'}
     <head>
         {block name='layout-header-head-meta'}
@@ -57,7 +57,9 @@
                 {$templateDir = $parentTemplateDir}
             {/if}
             <style id="criticalCSS">
-                {file_get_contents("{$currentThemeDir}{$Einstellungen.template.theme.theme_default}_crit.css")}
+                {block name='layout-header-head-resources-crit'}
+                    {file_get_contents("{$currentThemeDir}{$Einstellungen.template.theme.theme_default}_crit.css")}
+                {/block}
             </style>
             {* css *}
             {if $Einstellungen.template.general.use_minify === 'N'}
@@ -89,7 +91,7 @@
                 </noscript>
             {/if}
 
-            {if $opc->isEditMode() === false && $opc->isPreviewMode() === false && \JTL\Shop::isAdmin(true)}
+            {if !$isMobile && !$opc->isEditMode() && !$opc->isPreviewMode() && \JTL\Shop::isAdmin(true)}
                 <link rel="preload" href="{$ShopURL}/admin/opc/css/startmenu.css" as="style"
                       onload="this.onload=null;this.rel='stylesheet'">
                 <noscript>
@@ -193,8 +195,10 @@
             {/if}
             {* Languages *}
             {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
-                {foreach item=oSprache from=$smarty.session.Sprachen}
-                    <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURLFull}">
+                {foreach $smarty.session.Sprachen as $language}
+                    <link rel="alternate"
+                          hreflang="{$language->getIso639()}"
+                          href="{if $language->getShopDefault() === 'Y' && isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}{$ShopURL}/{else}{$language->getUrl()}{/if}">
                 {/foreach}
             {/if}
         {/block}
@@ -240,19 +244,32 @@
             <script defer src="{$ShopURL}/{$currentTemplateDir}js/custom.js?v={$nTemplateVersion}"></script>
         {/if}
 
-        {getUploaderLang iso=$smarty.session.currentLanguage->cISO639|default:'' assign='uploaderLang'}
+        {getUploaderLang iso=$smarty.session.currentLanguage->getIso639()|default:'' assign='uploaderLang'}
 
-        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-solid-900.woff2" as="font" crossorigin/>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-regular-400.woff2" as="font" crossorigin/>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-600.woff2" as="font" crossorigin/>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-regular.woff2" as="font" crossorigin/>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin/>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/globals.js" as="script" crossorigin>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/snippets/form-counter.js" as="script" crossorigin>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/plugins/navscrollbar.js" as="script" crossorigin>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/plugins/tabdrop.js" as="script" crossorigin>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/views/header.js" as="script" crossorigin>
-        <link rel="preload" href="{$ShopURL}/{$templateDir}js/app/views/productdetails.js" as="script" crossorigin>
+        {block name='layout-header-head-resources-preload'}
+            {if $Einstellungen.template.theme.theme_default === 'dark'}
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/poppins/Poppins-Light.ttf" as="font" crossorigin/>
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/poppins/Poppins-Regular.ttf" as="font" crossorigin/>
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/poppins/Poppins-SemiBold.ttf" as="font" crossorigin/>
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/raleway/Raleway-Bold.ttf" as="font" crossorigin/>
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/raleway/Raleway-Medium.ttf" as="font" crossorigin/>
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/raleway/Raleway-Regular.ttf" as="font" crossorigin/>
+            {else}
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-600.woff2" as="font" crossorigin/>
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/opensans/open-sans-regular.woff2" as="font" crossorigin/>
+                <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fonts/montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin/>
+            {/if}
+            <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-solid-900.woff2" as="font" crossorigin/>
+            <link rel="preload" href="{$ShopURL}/{$templateDir}themes/base/fontawesome/webfonts/fa-regular-400.woff2" as="font" crossorigin/>
+        {/block}
+        {block name='layout-header-head-resources-modulepreload'}
+            <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/globals.js" as="script" crossorigin>
+            <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/snippets/form-counter.js" as="script" crossorigin>
+            <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/plugins/navscrollbar.js" as="script" crossorigin>
+            <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/plugins/tabdrop.js" as="script" crossorigin>
+            <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/views/header.js" as="script" crossorigin>
+            <link rel="modulepreload" href="{$ShopURL}/{$templateDir}js/app/views/productdetails.js" as="script" crossorigin>
+        {/block}
         {if !empty($oUploadSchema_arr)}
             <script defer src="{$ShopURL}/{$templateDir}js/fileinput/fileinput.min.js"></script>
             <script defer src="{$ShopURL}/{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
@@ -273,12 +290,14 @@
                      {if $Einstellungen.template.theme.wish_compare_animation === 'desktop'
                         || $Einstellungen.template.theme.wish_compare_animation === 'both'}wish-compare-animation-desktop{/if}
                      {if $isMobile}is-mobile{/if}
-                     {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG} is-checkout{/if}"
+                     {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG} is-checkout{/if} is-nova"
               data-page="{$nSeitenTyp}"
               {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
     {/block}
     {if !$bExclusive}
-        {include file=$opcDir|cat:'tpl/startmenu.tpl'}
+        {if !$isMobile}
+            {include file=$opcDir|cat:'tpl/startmenu.tpl'}
+        {/if}
 
         {if $bAdminWartungsmodus}
             {block name='layout-header-maintenance-alert'}
@@ -293,13 +312,11 @@
 
         {block name='layout-header-header'}
             {block name='layout-header-branding-top-bar'}
-                {if !$isMobile}
-                    <div id="header-top-bar" class="d-none topbar-wrapper {if $Einstellungen.template.megamenu.header_full_width === 'Y'}is-fullwidth{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
-                        <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
-                            {include file='layout/header_top_bar.tpl'}
-                        </div>
+                <div id="header-top-bar" class="d-none topbar-wrapper {if $Einstellungen.template.megamenu.header_full_width === 'Y'}is-fullwidth{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
+                    <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
+                        {include file='layout/header_top_bar.tpl'}
                     </div>
-                {/if}
+                </div>
             {/block}
             <header class="d-print-none {if !$isMobile || $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar" id="jtl-nav-wrapper">
                 {block name='layout-header-container-inner'}
@@ -313,15 +330,16 @@
                             {/block}
 
                             {block name='layout-header-logo'}
-                                <div id="logo" class="logo-wrapper" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+                                <div id="logo" class="logo-wrapper" itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
                                     <span itemprop="name" class="d-none">{$meta_publisher}</span>
-                                    <meta itemprop="url" content="{$ShopURL}">
+                                    <meta itemprop="url" content="{$ShopHomeURL}">
                                     <meta itemprop="logo" content="{$ShopLogoURL}">
-                                    {link class="navbar-brand" href=$ShopURL title=$Einstellungen.global.global_shopname}
+                                    {link class="navbar-brand" href=$ShopHomeURL title=$Einstellungen.global.global_shopname}
                                     {if isset($ShopLogoURL)}
-                                        {image src=$ShopLogoURL
-                                        alt=$Einstellungen.global.global_shopname
-                                        id="shop-logo"
+                                        {image width=180 height=50 src=$ShopLogoURL
+                                            alt=$Einstellungen.global.global_shopname
+                                            id="shop-logo"
+                                            class="img-aspect-ratio"
                                         }
                                     {else}
                                         <span class="h1">{$Einstellungen.global.global_shopname}</span>
@@ -438,12 +456,13 @@
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
             <div id="content-wrapper"
-                 class="{if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}is-item-list container-fluid container-fluid-xl{/if}
+                 class="{if ($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}has-left-sidebar container-fluid container-fluid-xl{/if}
+                 {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}is-item-list{/if}
                         {if $isFluidBanner || $isFluidSlider} has-fluid{/if}">
         {/block}
 
         {block name='layout-header-breadcrumb'}
-            {container fluid=($smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp) class="breadcrumb-container"}
+            {container fluid=(($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp || (isset($Link) && $Link->getIsFluid())) class="breadcrumb-container"}
                 {include file='layout/breadcrumb.tpl'}
             {/container}
         {/block}
@@ -452,7 +471,7 @@
             <div id="content">
         {/block}
 
-        {if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
+        {if !$bExclusive && !empty($boxes.left|strip_tags|trim) && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}
             {block name='layout-header-content-productlist-starttags'}
                 <div class="row">
                     <div class="col-lg-8 col-xl-9 ml-auto-util order-lg-1">

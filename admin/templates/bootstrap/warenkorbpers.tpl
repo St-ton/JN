@@ -56,7 +56,8 @@
                                 <td class="text-center">
                                     <div class="btn-group">
                                         <a href="warenkorbpers.php?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}"
-                                           class="btn btn-link px-2"
+                                           class="btn btn-link px-2 delete-confirm"
+                                           data-modal-body="{__('confirmDeleteBasket')|sprintf:$oKunde->cNachname:$oKunde->Datum}"
                                            data-toggle="tooltip"
                                             title="{__('delete')}">
                                             <span class="icon-hover">
@@ -80,6 +81,7 @@
                         </tbody>
                     </table>
                 </div>
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiKunden cParam_arr=$cParam_arr isBottom=true}
             </div>
         {else}
             <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
@@ -117,6 +119,7 @@
                         </tbody>
                     </table>
                 </div>
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarenkorb cParam_arr=['a'=>$kKunde] isBottom=true}
             </div>
             <div class="card-footer save-wrapper">
                 <div class="row">

@@ -2,7 +2,7 @@
 
 namespace JTL\Update;
 
-use JTL\DB\ReturnType;
+use DbInterface;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use stdClass;
@@ -33,67 +33,57 @@ class DBMigrationHelper
     {
         static $versionInfo = null;
 
-        if ($versionInfo === null) {
-            $db          = Shop::Container()->getDB();
-            $versionInfo = new stdClass();
-
-            $innodbSupport = $db->query(
-                "SELECT `SUPPORT`
-                    FROM information_schema.ENGINES
-                    WHERE `ENGINE` = 'InnoDB'",
-                ReturnType::SINGLE_OBJECT
-            );
-            $utf8Support   = $db->query(
-                "SELECT `IS_COMPILED` FROM information_schema.COLLATIONS
-                    WHERE `COLLATION_NAME` = 'utf8_unicode_ci'",
-                ReturnType::SINGLE_OBJECT
-            );
-            $innodbPath    = $db->query(
-                'SELECT @@innodb_data_file_path AS path',
-                ReturnType::SINGLE_OBJECT
-            );
-            $innodbSize    = 'auto';
-
-            if ($innodbPath && \mb_stripos($innodbPath->path, 'autoextend') === false) {
-                $innodbSize = 0;
-                $paths      = \explode(';', $innodbPath->path);
-                foreach ($paths as $path) {
-                    if (\preg_match('/:([0-9]+)([MGTKmgtk]+)/', $path, $hits)) {
-                        switch (\mb_convert_case($hits[2], \MB_CASE_UPPER)) {
-                            case 'T':
-                                $innodbSize += $hits[1] * 1024 * 1024 * 1024 * 1024;
-                                break;
-                            case 'G':
-                                $innodbSize += $hits[1] * 1024 * 1024 * 1024;
-                                break;
-                            case 'M':
-                                $innodbSize += $hits[1] * 1024 * 1024;
-                                break;
-                            case 'K':
-                                $innodbSize += $hits[1] * 1024;
-                                break;
-                            default:
-                                $innodbSize += $hits[1];
-                        }
+        if ($versionInfo !== null) {
+            return $versionInfo;
+        }
+        $db            = Shop::Container()->getDB();
+        $versionInfo   = new stdClass();
+        $innodbSupport = $db->getSingleObject(
+            "SELECT `SUPPORT`
+                FROM information_schema.ENGINES
+                WHERE `ENGINE` = 'InnoDB'"
+        );
+        $utf8Support   = $db->getSingleObject(
+            "SELECT `IS_COMPILED` FROM information_schema.COLLATIONS
+                WHERE `COLLATION_NAME` = 'utf8_unicode_ci'"
+        );
+        $innodbPath    = $db->getSingleObject('SELECT @@innodb_data_file_path AS path');
+        $innodbSize    = 'auto';
+        if ($innodbPath && \mb_stripos($innodbPath->path, 'autoextend') === false) {
+            $innodbSize = 0;
+            $paths      = \explode(';', $innodbPath->path);
+            foreach ($paths as $path) {
+                if (\preg_match('/:([0-9]+)([MGTKmgtk]+)/', $path, $hits)) {
+                    switch (\mb_convert_case($hits[2], \MB_CASE_UPPER)) {
+                        case 'T':
+                            $innodbSize += $hits[1] * 1024 * 1024 * 1024 * 1024;
+                            break;
+                        case 'G':
+                            $innodbSize += $hits[1] * 1024 * 1024 * 1024;
+                            break;
+                        case 'M':
+                            $innodbSize += $hits[1] * 1024 * 1024;
+                            break;
+                        case 'K':
+                            $innodbSize += $hits[1] * 1024;
+                            break;
+                        default:
+                            $innodbSize += $hits[1];
                     }
                 }
             }
-
-            $versionInfo->server = $db->info();
-            $versionInfo->innodb = new stdClass();
-
-            $versionInfo->innodb->support = $innodbSupport
-                && \in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
-            $versionInfo->innodb->version = $db->query(
-                "SHOW VARIABLES LIKE 'innodb_version'",
-                ReturnType::SINGLE_OBJECT
-            )->Value;
-            $versionInfo->innodb->size    = $innodbSize;
-            $versionInfo->collation_utf8  = $utf8Support && \mb_convert_case(
-                $utf8Support->IS_COMPILED,
-                \MB_CASE_LOWER
-            ) === 'yes';
         }
+
+        $versionInfo->server = $db->getServerInfo();
+        $versionInfo->innodb = new stdClass();
+
+        $versionInfo->innodb->support = $innodbSupport && \in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
+        $versionInfo->innodb->version = $db->getSingleObject("SHOW VARIABLES LIKE 'innodb_version'")->Value;
+        $versionInfo->innodb->size    = $innodbSize;
+        $versionInfo->collation_utf8  = $utf8Support && \mb_convert_case(
+            $utf8Support->IS_COMPILED,
+            \MB_CASE_LOWER
+        ) === 'yes';
 
         return $versionInfo;
     }
@@ -103,9 +93,7 @@ class DBMigrationHelper
      */
     public static function getTablesNeedMigration(): array
     {
-        $database = Shop::Container()->getDB()->getConfig()['database'];
-
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 , COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS
                 , COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS
@@ -125,21 +113,20 @@ class DBMigrationHelper
                     )
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 ORDER BY t.`TABLE_NAME`",
-            ['schema' => $database],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['schema' => Shop::Container()->getDB()->getConfig()['database']]
         );
     }
 
     /**
-     * @param string[] $excludeTables
+     * @param DbInterface $db
+     * @param string[]    $excludeTables
      * @return stdClass|null
      */
-    public static function getNextTableNeedMigration($excludeTables = []): ?stdClass
+    public static function getNextTableNeedMigration(DbInterface $db, array $excludeTables = []): ?stdClass
     {
-        $database   = Shop::Container()->getDB()->getConfig()['database'];
         $excludeStr = \implode("','", Text::filterXSS($excludeTables));
 
-        $result = Shop::Container()->getDB()->queryPrepared(
+        return $db->getSingleObject(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 , COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS
                 , COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS
@@ -160,22 +147,17 @@ class DBMigrationHelper
                     )
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`
                 ORDER BY t.`TABLE_NAME` LIMIT 1",
-            ['schema' => $database],
-            ReturnType::SINGLE_OBJECT
+            ['schema' => $db->getConfig()['database']]
         );
-
-        return \is_object($result) ? $result : null;
     }
 
     /**
      * @param string $table
      * @return stdClass|null
      */
-    public static function getTable($table): ?stdClass
+    public static function getTable(string $table): ?stdClass
     {
-        $database = Shop::Container()->getDB()->getConfig()['database'];
-
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getSingleObject(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 , COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS
                 , COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS
@@ -192,8 +174,7 @@ class DBMigrationHelper
                     AND t.`TABLE_NAME` = :table
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 ORDER BY t.`TABLE_NAME` LIMIT 1",
-            ['schema' => $database, 'table' => $table,],
-            ReturnType::SINGLE_OBJECT
+            ['schema' => Shop::Container()->getDB()->getConfig()['database'], 'table' => $table,]
         );
     }
 
@@ -201,7 +182,7 @@ class DBMigrationHelper
      * @param string|null $table
      * @return stdClass[]
      */
-    public static function getFulltextIndizes($table = null): array
+    public static function getFulltextIndizes(?string $table = null): array
     {
         $params = ['schema' => Shop::Container()->getDB()->getConfig()['database']];
         $filter = "AND `INDEX_NAME` NOT IN ('idx_tartikel_fulltext', 'idx_tartikelsprache_fulltext')";
@@ -211,14 +192,13 @@ class DBMigrationHelper
             $filter          = 'AND `TABLE_NAME` = :table';
         }
 
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             "SELECT DISTINCT `TABLE_NAME`, `INDEX_NAME`
                 FROM information_schema.STATISTICS
                 WHERE `TABLE_SCHEMA` = :schema
                     {$filter}
                     AND `INDEX_TYPE` = 'FULLTEXT'",
-            $params,
-            ReturnType::ARRAY_OF_OBJECTS
+            $params
         );
     }
 
@@ -256,29 +236,27 @@ class DBMigrationHelper
     }
 
     /**
-     * @param string $table
+     * @param DbInterface $db
+     * @param string      $table
      * @return bool
      */
-    public static function isTableInUse($table): bool
+    public static function isTableInUse(DbInterface $db, $table): bool
     {
         $mysqlVersion = self::getMySQLVersion();
-        $database     = Shop::Container()->getDB()->getConfig()['database'];
-
         if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
             $tableInfo = self::getTable($table);
 
             return $tableInfo !== null && \mb_strpos($tableInfo->TABLE_COMMENT, ':Migrating') !== false;
         }
 
-        $tableStatus = Shop::Container()->getDB()->queryPrepared(
+        $tableStatus = $db->getSingleObject(
             'SHOW OPEN TABLES
                 WHERE `Database` LIKE :schema
                     AND `Table` LIKE :table',
-            ['schema' => $database, 'table' => $table,],
-            ReturnType::SINGLE_OBJECT
+            ['schema' => $db->getConfig()['database'], 'table' => $table,]
         );
 
-        return \is_object($tableStatus) && (int)$tableStatus->In_use > 0;
+        return $tableStatus !== null && (int)$tableStatus->In_use > 0;
     }
 
     /**
@@ -287,9 +265,7 @@ class DBMigrationHelper
      */
     public static function getColumnsNeedMigration(string $table): array
     {
-        $database = Shop::Container()->getDB()->getConfig()['database'];
-
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             "SELECT `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_TYPE`, `COLUMN_DEFAULT`, `IS_NULLABLE`, `EXTRA`
                 FROM information_schema.COLUMNS
                 WHERE `TABLE_SCHEMA` = :schema
@@ -300,8 +276,7 @@ class DBMigrationHelper
                         OR (DATA_TYPE = 'tinyint' AND SUBSTRING(COLUMN_NAME, 1, 1) = 'k')
                     )
                 ORDER BY `ORDINAL_POSITION`",
-            ['schema' => $database, 'table' => $table],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['schema' => Shop::Container()->getDB()->getConfig()['database'], 'table' => $table]
         );
     }
 
@@ -311,9 +286,7 @@ class DBMigrationHelper
      */
     public static function getFKDefinitions(string $table): array
     {
-        $database = Shop::Container()->getDB()->getConfig()['database'];
-
-        return Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->getObjects(
             'SELECT rc.`CONSTRAINT_NAME`, rc.`TABLE_NAME`, rc.`UPDATE_RULE`, rc.`DELETE_RULE`,
                     rk.`COLUMN_NAME`, rk.`REFERENCED_TABLE_NAME`, rk.`REFERENCED_COLUMN_NAME`
                 FROM information_schema.REFERENTIAL_CONSTRAINTS rc
@@ -322,11 +295,7 @@ class DBMigrationHelper
                         AND rk.`CONSTRAINT_NAME` = rc.`CONSTRAINT_NAME`
                 WHERE rc.`CONSTRAINT_SCHEMA` = :schema
                     AND rc.`REFERENCED_TABLE_NAME` = :table',
-            [
-                'schema' => $database,
-                'table'  => $table
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['schema' => Shop::Container()->getDB()->getConfig()['database'], 'table'  => $table]
         );
     }
 
@@ -369,7 +338,7 @@ class DBMigrationHelper
             'createFK' => [],
         ];
 
-        if (count($fkDefinitions) === 0) {
+        if (\count($fkDefinitions) === 0) {
             return $result;
         }
 
@@ -473,26 +442,25 @@ class DBMigrationHelper
     public static function migrateToInnoDButf8(string $tableName): string
     {
         $table = self::getTable($tableName);
-
+        $db    = Shop::Container()->getDB();
         if ($table === null) {
             return self::FAILURE;
         }
-        if (self::isTableInUse($table->TABLE_NAME)) {
+        if (self::isTableInUse($db, $table->TABLE_NAME)) {
             return self::IN_USE;
         }
 
         $migration = self::isTableNeedMigration($table);
         if (($migration & self::MIGRATE_TABLE) !== self::MIGRATE_NONE) {
-            $db  = Shop::Container()->getDB();
             $sql = self::sqlMoveToInnoDB($table);
             if (!empty($sql)) {
                 $fkSQLs = self::sqlRecreateFKs($tableName);
                 foreach ($fkSQLs->dropFK as $fkSQL) {
-                    $db->executeQuery($fkSQL, ReturnType::DEFAULT);
+                    $db->query($fkSQL);
                 }
-                $res = $db->executeQuery($sql, ReturnType::DEFAULT);
+                $res = $db->query($sql);
                 foreach ($fkSQLs->createFK as $fkSQL) {
-                    $db->executeQuery($fkSQL, ReturnType::DEFAULT);
+                    $db->query($fkSQL);
                 }
 
                 if (!$res) {
@@ -502,7 +470,7 @@ class DBMigrationHelper
         }
         if (($migration & self::MIGRATE_COLUMN) !== self::MIGRATE_NONE) {
             $sql = self::sqlConvertUTF8($table);
-            if (!empty($sql) && !Shop::Container()->getDB()->executeQuery($sql, ReturnType::DEFAULT)) {
+            if (!empty($sql) && !$db->query($sql)) {
                 return self::FAILURE;
             }
         }

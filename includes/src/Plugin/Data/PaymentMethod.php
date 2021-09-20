@@ -2,6 +2,7 @@
 
 namespace JTL\Plugin\Data;
 
+use JTL\DB\DbInterface;
 use JTL\MagicCompatibilityTrait;
 use JTL\Plugin\PluginInterface;
 use stdClass;
@@ -146,6 +147,7 @@ class PaymentMethod
         'kZahlungsart'                    => 'MethodID',
         'cName'                           => 'Name',
         'cModulId'                        => 'ModuleID',
+        'cKundengruppen'                  => 'CustomerGroups',
         'cPluginTemplate'                 => 'Template',
         'cZusatzschrittTemplate'          => 'AdditionalTemplate',
         'cBild'                           => 'Image',
@@ -181,10 +183,32 @@ class PaymentMethod
     }
 
     /**
-     * @param stdClass        $data
-     * @param PluginInterface $plugin
+     * @param DbInterface $db
+     * @param string      $moduleId
+     * @return PaymentMethod
      */
-    public function mapData(stdClass $data, PluginInterface $plugin): void
+    public static function load(DbInterface $db, string $moduleId): self
+    {
+        $data = $db->selectSingleRow('tzahlungsart', 'cModulId', $moduleId);
+        if ($data !== null) {
+            $data->kZahlungsart = (int)$data->kZahlungsart;
+            $data->nSort        = (int)$data->nSort;
+            $data->nMailSenden  = (int)$data->nMailSenden;
+            $data->nActive      = (int)$data->nActive;
+            $data->nCURL        = (int)$data->nCURL;
+            $data->nSOAP        = (int)$data->nSOAP;
+            $data->nSOCKETS     = (int)$data->nSOCKETS;
+            $data->nNutzbar     = (int)$data->nNutzbar;
+        }
+
+        return new self($data);
+    }
+
+    /**
+     * @param stdClass             $data
+     * @param PluginInterface|null $plugin
+     */
+    public function mapData(stdClass $data, PluginInterface $plugin = null): void
     {
         foreach (\get_object_vars($data) as $item => $value) {
             $method = self::$mapping[$item] ?? null;
@@ -193,6 +217,9 @@ class PaymentMethod
             }
             $method = 'set' . $method;
             $this->$method($value);
+        }
+        if ($plugin === null) {
+            return;
         }
         $this->classFilePath = $plugin->getPaths()->getVersionedPath() . \PFAD_PLUGIN_PAYMENTMETHOD . $this->classFile;
         if (\file_exists($this->classFilePath)) {
@@ -270,11 +297,19 @@ class PaymentMethod
     }
 
     /**
-     * @param array $customerGroups
+     * @param array|string $customerGroups
      */
-    public function setCustomerGroups(array $customerGroups): void
+    public function setCustomerGroups($customerGroups): void
     {
-        $this->customerGroups = $customerGroups;
+        if (\is_array($customerGroups)) {
+            $this->customerGroups = $customerGroups;
+
+            return;
+        }
+
+        $this->customerGroups = \array_map(static function ($item) {
+            return (int)$item;
+        }, \array_filter(\explode(';', $customerGroups)));
     }
 
     /**

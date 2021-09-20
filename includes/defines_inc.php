@@ -1,7 +1,7 @@
 <?php
 
 // Version
-define('APPLICATION_VERSION', '5.0.0');
+define('APPLICATION_VERSION', '5.1.2-alpha');
 define('APPLICATION_BUILD_SHA', '#DEV#');
 define('JTL_MIN_WAWI_VERSION', 100000);
 define('JTL_MIN_SHOP_UPDATE_VERSION', '4.2.0');
@@ -34,19 +34,19 @@ define('CONF_EMAILBLACKLIST', 111);
 define('CONF_METAANGABEN', 112);
 define('CONF_NEWS', 113);
 define('CONF_SITEMAP', 114);
-/**
- * @deprecated
- */
-define('CONF_KUNDENWERBENKUNDEN', 116);
 define('CONF_SUCHSPECIAL', 119);
-define('CONF_CHECKBOX', 120);
 define('CONF_AUSWAHLASSISTENT', 121);
 define('CONF_CACHING', 124);
-define('CONF_LOGO', 125);
-define('CONF_PLUGINZAHLUNGSARTEN', 126);
 define('CONF_FS', 127);
 define('CONF_CRON', 128);
 define('CONF_CONSENTMANAGER', 129);
+/**
+ * @deprecated
+ */
+define('CONF_CHECKBOX', 120);
+define('CONF_KUNDENWERBENKUNDEN', 116);
+define('CONF_LOGO', 125);
+define('CONF_PLUGINZAHLUNGSARTEN', 126);
 //
 define('C_WARENKORBPOS_TYP_ARTIKEL', 1);
 define('C_WARENKORBPOS_TYP_VERSANDPOS', 2);
@@ -64,6 +64,8 @@ define('C_WARENKORBPOS_TYP_ZINSAUFSCHLAG', 13);
 define('C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR', 14);
 define('C_WARENKORBPOS_TYP_RESERVED1', 15); // reserviert für Wawi intern - SHOP-3545
 define('C_WARENKORBPOS_TYP_RESERVED2', 16); // reserviert für Retoure in POS - SHOP-3545
+define('C_WARENKORBPOS_TYP_RESERVED3', 17); // reserviert für Mehrzweckgutschein
+define('C_WARENKORBPOS_TYP_RESERVED4', 18); // reserviert für MehrzweckgutscheinDigital
 //
 define('KONFIG_ITEM_TYP_ARTIKEL', 0);
 define('KONFIG_ITEM_TYP_SPEZIAL', 1);
@@ -95,6 +97,8 @@ define('BESTELLUNG_STATUS_IN_BEARBEITUNG', 2);
 define('BESTELLUNG_STATUS_BEZAHLT', 3);
 define('BESTELLUNG_STATUS_VERSANDT', 4);
 define('BESTELLUNG_STATUS_TEILVERSANDT', 5);
+define('BESTELLUNG_VERSANDBESTAETIGUNG_MAX_TAGE', 7);
+define('BESTELLUNG_ZAHLUNGSBESTAETIGUNG_MAX_TAGE', 7);
 // zahlungsart mails
 define('ZAHLUNGSART_MAIL_EINGANG', 0x0001);
 define('ZAHLUNGSART_MAIL_STORNO', 0x0010);
@@ -264,6 +268,9 @@ define('FKT_ATTRIBUT_ATTRIBUTEANHAENGEN', 'attribute anhaengen');
 define('FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN', 'stuecklistenkomponenten');
 define('FKT_ATTRIBUT_INHALT', 'inhalt');
 define('FKT_ATTRIBUT_CANONICALURL_VARKOMBI', 'varkombi_canonicalurl');
+define('FKT_ATTRIBUT_VOUCHER', 'jtl_voucher');
+define('FKT_ATTRIBUT_VOUCHER_FLEX', 'jtl_voucher_flex');
+
 /**
  * @deprecated
  */
@@ -573,3 +580,4 @@ define('CACHING_GROUP_MANUFACTURER', 'mnf');
 define('CACHING_GROUP_FILTER', 'fltr');
 define('CACHING_GROUP_FILTER_CHARACTERISTIC', 'fltrchr');
 define('CACHING_GROUP_STATUS', 'status');
+define('CACHING_GROUP_OPC', 'opc');

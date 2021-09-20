@@ -1,12 +1,5 @@
 <script type="text/javascript">
     $(function () {
-        $('#lang').on('change', function () {
-            var iso = $('#lang option:selected').val();
-            $('.iso_wrapper').slideUp();
-            $('#iso_' + iso).slideDown();
-            return false;
-        });
-
         $('input[name="nLinkart"]').on('change', function () {
             var lnk = $('input[name="nLinkart"]:checked').val();
             if (lnk == '1') {
@@ -75,22 +68,25 @@
                             </p>
                         {else}
                             <p class="multi_input" style="margin-top: 10px;">
-                                <input type="radio" id="nLink1" name="nLinkart" value="1" tabindex="2" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 1}checked{elseif $Link->getLinkType() === 1}checked{/if} />
+                                <input type="radio" id="nLink1" name="nLinkart" value="1" tabindex="2" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 1}checked{elseif $Link->getLinkType() === 1}checked{/if}{if $Link->isSystem()} disabled{/if} />
                                 <label for="nLink1">{__('linkWithOwnContent')}:</label>
                             </p>
                             <p class="multi_input">
-                                <input type="radio" id="nLink2" name="nLinkart" value="2" onclick="$('#nLinkInput2').val('http://')" tabindex="3" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 2}checked{elseif $Link->getLinkType() === 2}checked{/if} />
+                                <input type="radio" id="nLink2" name="nLinkart" value="2" onclick="$('#nLinkInput2').val('http://')" tabindex="3" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 2}checked{elseif $Link->getLinkType() === 2}checked{/if}{if $Link->isSystem()} disabled{/if} />
                                 <label for="nLink2">{__('linkToExternalURL')} {__('createWithSearchEngineName')}:</label>
                             </p>
                             <p class="multi_input" style="margin-bottom: 10px;">
                                 <input type="radio" id="nLink3" name="nLinkart" value="3" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 3}checked{elseif $Link->getLinkType() > 2}checked{/if} />
                                 <label for="nLink3">{__('linkToSpecalPage')}:</label>
-                                <select class="custom-select" id="specialLinkType" name="nSpezialseite">
+                                <select class="custom-select" id="specialLinkType" name="nSpezialseite"{if $Link->isSystem()} disabled{/if}>
                                     <option value="0">{__('choose')}</option>
                                     {foreach $specialPages as $specialPage}
                                         <option value="{$specialPage->nLinkart}" {if isset($xPostVar_arr.nSpezialseite) && $xPostVar_arr.nSpezialseite === $specialPage->nLinkart}selected{elseif $Link->getLinkType() === $specialPage->nLinkart}selected{/if}>{__($specialPage->cName)}</option>
                                     {/foreach}
                                 </select>
+                                {if $Link->isSystem()}
+                                    <input type="hidden" name="nSpezialseite" value="{$Link->getLinkType()}">
+                                {/if}
                                 <span id="specialLinkType-error" class="hidden-soft error"> <i title="{__('isDuplicateSpecialLink')}" class="fal fa-exclamation-triangle error"></i></span>
                             </p>
                         {/if}
@@ -222,87 +218,141 @@
                             <input class="form-control" type="text" name="cIdentifier" id="cIdentifier" value="{if $Link->getIdentifier()}{$Link->getIdentifier()}{elseif isset($xPostVar_arr.bIsFluid)}$xPostVar_arr.bIsFluid{/if}" />
                         </div>
                     </div>
-                    <div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="lang">{__('language')}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <select class="custom-select" name="cISO" id="lang">
-                                {foreach $availableLanguages as $language}
-                                    <option value="{$language->getIso()}" {if $language->getShopDefault() === 'Y'}selected="selected"{/if}>{$language->getLocalizedName()} {if $language->getShopDefault() === 'Y'}({__('standard')}){/if}</option>
-                                {/foreach}
-                            </select>
-                        </div>
-                    </div>
                 </div>
             </div>
-
-            {foreach $availableLanguages as $language}
-                {assign var=cISO value=$language->getIso()}
-                {assign var=langID value=$language->getId()}
-                <div id="iso_{$cISO}" class="iso_wrapper{if !$language->isShopDefault()} hidden-soft{/if}">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="subheading1">{__('metaSeo')} ({$language->getLocalizedName()})</div>
-                            <hr class="mb-n3">
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group form-row align-items-center">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="cName_{$cISO}">{__('showedName')}:</label>
-                                {assign var=cName_ISO value='cName_'|cat:$cISO}
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input class="form-control" type="text" name="cName_{$cISO}" id="cName_{$cISO}" value="{if isset($xPostVar_arr.$cName_ISO) && $xPostVar_arr.$cName_ISO}{$xPostVar_arr.$cName_ISO}{elseif !empty($Link->getName($langID))}{$Link->getName($langID)}{/if}" tabindex="7" />
+            <nav class="tabs-nav">
+                <ul class="nav nav-tabs" role="tablist">
+                    {foreach $availableLanguages as $i => $language}
+                        <li class="nav-item">
+                            <a class="nav-link {if $i === 0}active{/if}" data-toggle="tab" role="tab"
+                               href="#lang_{$language->getIso()}" aria-expanded="false">
+                                {$language->getLocalizedName()}
+                                {if $language->getShopDefault() === 'Y'}({__('standard')}){/if}
+                            </a>
+                        </li>
+                    {/foreach}
+                </ul>
+            </nav>
+            <div class="tab-content">
+                {foreach $availableLanguages as $i => $language}
+                    <div id="lang_{$language->getIso()}"
+                         class="tab-pane fade {if $i === 0}active show{/if}">
+                        {$cISO   = $language->getIso()}
+                        {$langID = $language->getId()}
+                        <div id="iso_{$cISO}" class="iso_wrapper">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="subheading1">{__('metaSeo')} ({$language->getLocalizedName()})</div>
+                                    <hr class="mb-n3">
                                 </div>
-                            </div>
-                            <div class="form-group form-row align-items-center">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="cSeo_{$cISO}">{__('linkSeo')}:</label>
-                                {assign var=cSeo_ISO value="cSeo_"|cat:$cISO}
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input class="form-control" type="text" name="cSeo_{$cISO}" id="cSeo_{$cISO}" value="{if isset($xPostVar_arr.$cSeo_ISO) && $xPostVar_arr.$cSeo_ISO}{$xPostVar_arr.$cSeo_ISO}{elseif !empty($Link->getSEO($langID))}{$Link->getSEO($langID)}{/if}" tabindex="7" />
+                                <div class="card-body">
+                                    <div class="form-group form-row align-items-center">
+                                        <label class="col col-sm-4 col-form-label text-sm-right" for="cName_{$cISO}">
+                                            {__('showedName')}:
+                                        </label>
+                                        {assign var=cName_ISO value='cName_'|cat:$cISO}
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <input class="form-control" type="text" name="cName_{$cISO}"
+                                                   id="cName_{$cISO}"
+                                                   value="{if isset($xPostVar_arr.$cName_ISO) && $xPostVar_arr.$cName_ISO}{$xPostVar_arr.$cName_ISO}{elseif !empty($Link->getName($langID))}{$Link->getName($langID)}{/if}" tabindex="7" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-row align-items-center">
+                                        <label class="col col-sm-4 col-form-label text-sm-right" for="cSeo_{$cISO}">
+                                            {__('linkSeo')}:
+                                        </label>
+                                        {assign var=cSeo_ISO value="cSeo_"|cat:$cISO}
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <input class="form-control" type="text" name="cSeo_{$cISO}"
+                                                   id="cSeo_{$cISO}"
+                                                   value="{if isset($xPostVar_arr.$cSeo_ISO) && $xPostVar_arr.$cSeo_ISO}{$xPostVar_arr.$cSeo_ISO}{elseif !empty($Link->getSEO($langID))}{$Link->getSEO($langID)}{/if}"
+                                                   tabindex="7" />
+                                        </div>
+                                    </div>
+                                    {assign var=cTitle_ISO value='cTitle_'|cat:$cISO}
+                                    <div class="form-group form-row align-items-center">
+                                        <label class="col col-sm-4 col-form-label text-sm-right"
+                                               for="cTitle_{$cISO}">
+                                            {__('linkTitle')}:
+                                        </label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <input class="form-control" type="text" name="cTitle_{$cISO}"
+                                                   id="cTitle_{$cISO}"
+                                                   value="{if isset($xPostVar_arr.$cTitle_ISO) && $xPostVar_arr.$cTitle_ISO}{$xPostVar_arr.$cTitle_ISO}{elseif !empty($Link->getTitle($langID))}{$Link->getTitle($langID)}{/if}"
+                                                   tabindex="8" />
+                                        </div>
+                                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                                            {getHelpDesc cDesc=__('titleDesc')}
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-row align-items-center">
+                                        {assign var=cContent_ISO value='cContent_'|cat:$cISO}
+                                        <label class="col col-sm-4 col-form-label text-sm-right"
+                                               for="cContent_{$cISO}">
+                                            {__('content')}:
+                                        </label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <textarea class="form-control ckeditor" id="cContent_{$cISO}"
+                                                      name="cContent_{$cISO}" rows="10" cols="40">{if isset($xPostVar_arr.$cContent_ISO) && $xPostVar_arr.$cContent_ISO}{$xPostVar_arr.$cContent_ISO}{elseif !empty($Link->getContent($langID))}{$Link->getContent($langID)}{/if}</textarea>
+                                        </div>
+                                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                                            {getHelpDesc cDesc=__('titleDesc')}
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-row align-items-center">
+                                        {assign var=cMetaTitle_ISO value='cMetaTitle_'|cat:$cISO}
+                                        <label class="col col-sm-4 col-form-label text-sm-right"
+                                               for="cMetaTitle_{$cISO}">
+                                            {__('metaTitle')}:
+                                        </label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <input class="form-control" type="text" name="cMetaTitle_{$cISO}"
+                                                   id="cMetaTitle_{$cISO}"
+                                                   value="{if isset($xPostVar_arr.$cMetaTitle_ISO) && $xPostVar_arr.$cMetaTitle_ISO}{$xPostVar_arr.$cMetaTitle_ISO|@htmlspecialchars}{elseif !empty($Link->getMetaTitle($langID))}{$Link->getMetaTitle($langID)|@htmlspecialchars}{/if}"
+                                                   tabindex="9" />
+                                        </div>
+                                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                                            {getHelpDesc cDesc=__('metaTitleDesc')}
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-row align-items-center">
+                                        {assign var=cMetaKeywords_ISO value='cMetaKeywords_'|cat:$cISO}
+                                        <label class="col col-sm-4 col-form-label text-sm-right"
+                                               for="cMetaKeywords_{$cISO}">
+                                            {__('metaKeywords')}:
+                                        </label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <input class="form-control" type="text"
+                                                   name="cMetaKeywords_{$cISO}" id="cMetaKeywords_{$cISO}"
+                                                   value="{if isset($xPostVar_arr.$cMetaKeywords_ISO) && $xPostVar_arr.$cMetaKeywords_ISO}{$xPostVar_arr.$cMetaKeywords_ISO|@htmlspecialchars}{elseif !empty($Link->getMetaKeyword($langID))}{$Link->getMetaKeyword($langID)|@htmlspecialchars}{/if}"
+                                                   tabindex="9" />
+                                        </div>
+                                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                                            {getHelpDesc cDesc=__('metaKeywordsDesc')}
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-row align-items-center">
+                                        {assign var=cMetaDescription_ISO value='cMetaDescription_'|cat:$cISO}
+                                        <label class="col col-sm-4 col-form-label text-sm-right"
+                                               for="cMetaDescription_{$cISO}">
+                                            {__('metaDescription')}:
+                                        </label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <input class="form-control" type="text"
+                                                   name="cMetaDescription_{$cISO}" id="cMetaDescription_{$cISO}"
+                                                   value="{if isset($xPostVar_arr.$cMetaDescription_ISO) && $xPostVar_arr.$cMetaDescription_ISO}{$xPostVar_arr.$cMetaDescription_ISO|@htmlspecialchars}{elseif !empty($Link->getMetaDescription($langID))}{$Link->getMetaDescription($langID)|@htmlspecialchars}{/if}"
+                                                   tabindex="9" />
+                                        </div>
+                                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                                            {getHelpDesc cDesc=__('metaDescriptionDesc')}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            {assign var=cTitle_ISO value='cTitle_'|cat:$cISO}
-                            <div class="form-group form-row align-items-center">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="cTitle_{$cISO}">{__('linkTitle')}:</label>
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input class="form-control" type="text" name="cTitle_{$cISO}" id="cTitle_{$cISO}" value="{if isset($xPostVar_arr.$cTitle_ISO) && $xPostVar_arr.$cTitle_ISO}{$xPostVar_arr.$cTitle_ISO}{elseif !empty($Link->getTitle($langID))}{$Link->getTitle($langID)}{/if}" tabindex="8" />
-                                </div>
-                                <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('titleDesc')}</div>
-                            </div>
-                            <div class="form-group form-row align-items-center">
-                                {assign var=cContent_ISO value='cContent_'|cat:$cISO}
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="cContent_{$cISO}">{__('content')}:</label>
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <textarea class="form-control ckeditor" id="cContent_{$cISO}" name="cContent_{$cISO}" rows="10" cols="40">{if isset($xPostVar_arr.$cContent_ISO) && $xPostVar_arr.$cContent_ISO}{$xPostVar_arr.$cContent_ISO}{elseif !empty($Link->getContent($langID))}{$Link->getContent($langID)}{/if}</textarea>
-                                </div>
-                                <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('titleDesc')}</div>
-                            </div>
-                            <div class="form-group form-row align-items-center">
-                                {assign var=cMetaTitle_ISO value='cMetaTitle_'|cat:$cISO}
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="cMetaTitle_{$cISO}">{__('metaTitle')}:</label>
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input class="form-control" type="text" name="cMetaTitle_{$cISO}" id="cMetaTitle_{$cISO}" value="{if isset($xPostVar_arr.$cMetaTitle_ISO) && $xPostVar_arr.$cMetaTitle_ISO}{$xPostVar_arr.$cMetaTitle_ISO}{elseif !empty($Link->getMetaTitle($langID))}{$Link->getMetaTitle($langID)}{/if}" tabindex="9" />
-                                </div>
-                                <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('metaTitleDesc')}</div>
-                            </div>
-                            <div class="form-group form-row align-items-center">
-                            {assign var=cMetaKeywords_ISO value='cMetaKeywords_'|cat:$cISO}
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="cMetaKeywords_{$cISO}">{__('metaKeywords')}:</label>
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input class="form-control" type="text" name="cMetaKeywords_{$cISO}" id="cMetaKeywords_{$cISO}" value="{if isset($xPostVar_arr.$cMetaKeywords_ISO) && $xPostVar_arr.$cMetaKeywords_ISO}{$xPostVar_arr.$cMetaKeywords_ISO}{elseif !empty($Link->getMetaKeyword($langID))}{$Link->getMetaKeyword($langID)}{/if}" tabindex="9" />
-                                </div>
-                                <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('metaKeywordsDesc')}</div>
-                            </div>
-                            <div class="form-group form-row align-items-center">
-                                {assign var=cMetaDescription_ISO value='cMetaDescription_'|cat:$cISO}
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="cMetaDescription_{$cISO}">{__('metaDescription')}:</label>
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input class="form-control" type="text" name="cMetaDescription_{$cISO}" id="cMetaDescription_{$cISO}" value="{if isset($xPostVar_arr.$cMetaDescription_ISO) && $xPostVar_arr.$cMetaDescription_ISO}{$xPostVar_arr.$cMetaDescription_ISO}{elseif !empty($Link->getMetaDescription($langID))}{$Link->getMetaDescription($langID)}{/if}" tabindex="9" />
-                                </div>
-                                <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('metaDescriptionDesc')}</div>
                             </div>
                         </div>
                     </div>
-                </div>
-            {/foreach}
+                {/foreach}
+            </div>
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">

@@ -67,3 +67,9 @@ msgstr "Notice"
 
 msgid "logLevelDebug"
 msgstr "Debug"
+
+msgid "nameValueNameId"
+msgstr "Name | cWertName | Id"
+
+msgid "configLog"
+msgstr "Einstellungen-Log"

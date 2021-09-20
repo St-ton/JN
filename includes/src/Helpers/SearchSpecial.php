@@ -5,7 +5,6 @@ namespace JTL\Helpers;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Media\Image\Overlay;
 use JTL\Shop;
 use stdClass;
@@ -56,10 +55,9 @@ class SearchSpecial
         }
         if (($overlays = Shop::Container()->getCache()->get($cacheID)) === false) {
             $overlays = [];
-            $types    = Shop::Container()->getDB()->query(
+            $types    = Shop::Container()->getDB()->getObjects(
                 'SELECT kSuchspecialOverlay
-                    FROM tsuchspecialoverlay',
-                ReturnType::ARRAY_OF_OBJECTS
+                    FROM tsuchspecialoverlay'
             );
             foreach ($types as $type) {
                 $overlay = Overlay::getInstance((int)$type->kSuchspecialOverlay, $langID);
@@ -203,7 +201,7 @@ class SearchSpecial
         $cacheID = 'ssp_top_offers_' . $customerGroupID;
         $top     = $this->cache->get($cacheID);
         if ($top === false || !\is_countable($top)) {
-            $top = map($this->db->query(
+            $top = map($this->db->getObjects(
                 'SELECT tartikel.kArtikel
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit 
@@ -212,8 +210,7 @@ class SearchSpecial
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.cTopArtikel = 'Y'
                         " . self::getParentSQL() . '
-                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
-                ReturnType::ARRAY_OF_OBJECTS
+                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL()
             ), static function ($e) {
                 return (int)$e->kArtikel;
             });
@@ -235,14 +232,11 @@ class SearchSpecial
         if (!$customerGroupID) {
             $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
-        $config      = Shop::getSettings([\CONF_GLOBAL]);
-        $minAmount   = isset($config['global']['global_bestseller_minanzahl'])
-            ? (float)$config['global']['global_bestseller_minanzahl']
-            : 10;
+        $minAmount   = (float)(Shop::getSettingValue(\CONF_GLOBAL, 'global_bestseller_minanzahl') ?? 10);
         $cacheID     = 'ssp_bestsellers_' . $customerGroupID . '_' . $minAmount;
         $bestsellers = $this->cache->get($cacheID);
         if ($bestsellers === false || !\is_countable($bestsellers)) {
-            $bestsellers = map($this->db->query(
+            $bestsellers = map($this->db->getObjects(
                 'SELECT tartikel.kArtikel, tbestseller.fAnzahl
                     FROM tbestseller, tartikel
                     LEFT JOIN tartikelsichtbarkeit 
@@ -253,8 +247,7 @@ class SearchSpecial
                         AND ROUND(tbestseller.fAnzahl) >= ' . $minAmount . '
                         ' . self::getParentSQL() . '
                         ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
-                    ORDER BY fAnzahl DESC',
-                ReturnType::ARRAY_OF_OBJECTS
+                    ORDER BY fAnzahl DESC'
             ), static function ($e) {
                 return (int)$e->kArtikel;
             });
@@ -279,7 +272,7 @@ class SearchSpecial
         $cacheID       = 'ssp_special_offers_' . $customerGroupID;
         $specialOffers = $this->cache->get($cacheID);
         if ($specialOffers === false || !\is_countable($specialOffers)) {
-            $specialOffers = map($this->db->query(
+            $specialOffers = map($this->db->getObjects(
                 'SELECT tartikel.kArtikel, tsonderpreise.fNettoPreis
                     FROM tartikel
                     JOIN tartikelsonderpreis 
@@ -297,8 +290,7 @@ class SearchSpecial
                         AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
                         AND (tartikelsonderpreis.nAnzahl < tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
                         " . self::getParentSQL() . '
-                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
-                ReturnType::ARRAY_OF_OBJECTS
+                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL()
             ), static function ($e) {
                 return (int)$e->kArtikel;
             });
@@ -320,14 +312,12 @@ class SearchSpecial
         if (!$customerGroupID) {
             $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
-        $config  = Shop::getSettings([\CONF_BOXEN]);
-        $days    = ($config['boxen']['box_neuimsortiment_alter_tage'] > 0)
-            ? (int)$config['boxen']['box_neuimsortiment_alter_tage']
-            : 30;
+        $config  = Shop::getSettingValue(\CONF_BOXEN, 'box_neuimsortiment_alter_tage');
+        $days    = $config > 0 ? (int)$config : 30;
         $cacheID = 'ssp_new_' . $customerGroupID . '_days';
         $new     = $this->cache->get($cacheID);
         if ($new === false || !\is_countable($new)) {
-            $new = map($this->db->query(
+            $new = map($this->db->getObjects(
                 'SELECT tartikel.kArtikel
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit 
@@ -337,8 +327,7 @@ class SearchSpecial
                         AND tartikel.cNeu = 'Y'
                         AND DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < tartikel.dErstellt
                         ' . self::getParentSQL() . '
-                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
-                ReturnType::ARRAY_OF_OBJECTS
+                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL()
             ), static function ($e) {
                 return (int)$e->kArtikel;
             });

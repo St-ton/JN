@@ -1,6 +1,6 @@
 {block name='page-free-gift'}
     {opcMountPoint id='opc_before_free_gift' inContainer=false}
-    {container class="page-freegift"}
+    {container fluid=$Link->getIsFluid() class="page-freegift {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
         <p>{lang key='freeGiftFromOrderValue'}</p>
         {if !empty($oArtikelGeschenk_arr)}
             {opcMountPoint id='opc_before_free_gift_list'}

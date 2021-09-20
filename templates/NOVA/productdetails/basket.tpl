@@ -21,6 +21,29 @@
                 {if !$showMatrix}
                     {block name='productdetails-basket-form-inline'}
                         {row class="basket-form-inline"}
+                            {if $Artikel->Preise->fVKNetto == 0 && isset($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX])}
+                                {block name='productdetails-basket-voucher-flex'}
+                                    {col cols=12 sm=6}
+                                        {inputgroup class="form-counter"}
+                                            {input type="number"
+                                                step=".01"
+                                                value="{if isset($voucherPrice)}{$voucherPrice}{/if}"
+                                                name="{$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX}Value"
+                                                required=true
+                                                placeholder="{lang key='voucherFlexPlaceholder' section='productDetails' printf=$smarty.session.Waehrung->getName()}"}
+                                            {inputgroupappend}
+                                                {inputgrouptext class="form-control"}
+                                                    {$smarty.session.Waehrung->getName()}
+                                                {/inputgrouptext}
+                                            {/inputgroupappend}
+                                        {/inputgroup}
+                                    {/col}
+                                    {if isset($kEditKonfig)}
+                                        <input type="hidden" name="kEditKonfig" value="{$kEditKonfig}"/>
+                                    {/if}
+                                    {input type="hidden" id="quantity" class="quantity" name="anzahl" value="1"}
+                                {/block}
+                            {else}
                             {block name='productdetails-basket-quantity'}
                                 {col cols=12 sm=6}
                                     {inputgroup id="quantity-grp" class="form-counter choose_quantity"}
@@ -31,11 +54,11 @@
                                                 <span class="fas fa-minus"></span>
                                             {/button}
                                         {/inputgroupprepend}
-                                        {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                        {input type="number"
                                             min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
                                             max=$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
                                             required=($Artikel->fAbnahmeintervall > 0)
-                                            step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
+                                            step="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}any{elseif $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{else}1{/if}"
                                             id="quantity" class="quantity" name="anzahl"
                                             aria=["label"=>"{lang key='quantity'}"]
                                             value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
@@ -56,6 +79,7 @@
                                     {/inputgroup}
                                 {/col}
                             {/block}
+                            {/if}
                             {block name='productdetails-basket-add-to-cart'}
                                 {col cols=12 sm=6}
                                     {button aria=["label"=>"{lang key='addToCart'}"]
@@ -102,9 +126,9 @@
                             <p>{$minimumPurchase|replace:"%d":$Artikel->fMindestbestellmenge|replace:"%s":$units}</p>
                         {/if}
 
-                        {if $Artikel->fAbnahmeintervall > 0 && $Einstellungen.artikeldetails.artikeldetails_artikelintervall_anzeigen === 'Y'}
+                        {if $Artikel->fAbnahmeintervall > 0}
                             {lang key='takeHeedOfInterval' section='productDetails' assign='takeHeedOfInterval'}
-                            <p>{$takeHeedOfInterval|replace:"%d":$Artikel->fAbnahmeintervall|replace:"%s":$units}</p>
+                            <p id="intervall-notice" {if $Einstellungen.artikeldetails.artikeldetails_artikelintervall_anzeigen !== 'Y'}class="d-none"{/if}>{$takeHeedOfInterval|replace:"%d":$Artikel->fAbnahmeintervall|replace:"%s":$units}</p>
                         {/if}
 
                         {if $Artikel->cTeilbar === 'Y'}

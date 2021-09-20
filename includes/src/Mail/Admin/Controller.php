@@ -5,7 +5,6 @@ namespace JTL\Mail\Admin;
 use InvalidArgumentException;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
@@ -13,7 +12,6 @@ use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
-use JTL\Mail\Template\TemplateInterface;
 use PHPMailer\PHPMailer\Exception;
 use stdClass;
 
@@ -173,7 +171,7 @@ final class Controller
                         $filenames[$langID][] = $postIndex;
                         unset($postIndex);
                     } else {
-                        $this->addErrorMessage(\sprintf(__('errorFileName'), $postIndex));
+                        $this->addErrorMessage(\sprintf(\__('errorFileName'), $postIndex));
                         return self::ERROR_UPLOAD_FILE_NAME;
                     }
                 } else {
@@ -190,25 +188,32 @@ final class Controller
                         if (!\mb_strrpos($files['cPDFS_' . $langID]['name'][$i], ';')
                             && !\mb_strrpos($post['cPDFNames_' . $langID][$i], ';')
                         ) {
-                            $cPlugin = $model->getPluginID() > 0 ? '_' . $model->getPluginID() : '';
-                            $target  = self::UPLOAD_DIR . $model->getID() .
-                                '_' . $langID . '_' . ($i + 1) . $cPlugin . '.pdf';
+                            $finfo  = \finfo_open(\FILEINFO_MIME_TYPE);
+                            $mime   = \finfo_file($finfo, $files['cPDFS_' . $langID]['tmp_name'][$i]);
+                            $plugin = $model->getPluginID() > 0 ? '_' . $model->getPluginID() : '';
+                            $target = self::UPLOAD_DIR . $model->getID() .
+                                '_' . $langID . '_' . ($i + 1) . $plugin . '.pdf';
+                            if (!\in_array($mime, ['application/pdf', 'application/x-pdf'], true)) {
+                                $this->addErrorMessage(\__('errorFileSave'));
+
+                                return self::ERROR_UPLOAD_FILE_SAVE;
+                            }
                             if (!\move_uploaded_file($files['cPDFS_' . $langID]['tmp_name'][$i], $target)) {
-                                $this->addErrorMessage(__('errorFileSave'));
+                                $this->addErrorMessage(\__('errorFileSave'));
 
                                 return self::ERROR_UPLOAD_FILE_SAVE;
                             }
                             $filenames[$langID][] = $post['cPDFNames_' . $langID][$i];
                             $pdfFiles[$langID][]  = $model->getID()
                                 . '_' . $langID
-                                . '_' . ($i + 1) . $cPlugin . '.pdf';
+                                . '_' . ($i + 1) . $plugin . '.pdf';
                         } else {
-                            $this->addErrorMessage(__('errorFileNameMissing'));
+                            $this->addErrorMessage(\__('errorFileNameMissing'));
 
                             return self::ERROR_UPLOAD_FILE_NAME_MISSING;
                         }
                     } else {
-                        $this->addErrorMessage(__('errorFileSizeType'));
+                        $this->addErrorMessage(\__('errorFileSizeType'));
                         return self::ERROR_UPLOAD_FILE_SIZE;
                     }
                 } elseif (isset($files['cPDFS_' . $langID]['name'][$i], $post['cPDFNames_' . $langID][$i])
@@ -216,7 +221,7 @@ final class Controller
                     && \mb_strlen($post['cPDFNames_' . $langID][$i]) === 0
                 ) {
                     $attachmentErrors[$langID][$i] = 1;
-                    $this->addErrorMessage(__('errorFileNameMissing'));
+                    $this->addErrorMessage(\__('errorFileNameMissing'));
                     return self::ERROR_UPLOAD_FILE_SIZE;
                 }
             }
@@ -239,7 +244,7 @@ final class Controller
         if ($this->model === null) {
             throw new InvalidArgumentException('Cannot find model with ID ' . $templateID);
         }
-        $languages = LanguageHelper::getAllLanguages();
+        $languages = LanguageHelper::getAllLanguages(0, true);
         foreach ($languages as $lang) {
             $langID = $lang->getId();
             foreach ($this->model->getMapping() as $field => $method) {
@@ -273,7 +278,7 @@ final class Controller
     {
         $mailTpl = $this->getTemplateByID($templateID);
         if ($mailTpl === null) {
-            $this->addErrorMessage(__('errorTemplateMissing') . $templateID);
+            $this->addErrorMessage(\__('errorTemplateMissing') . $templateID);
 
             return self::ERROR_NO_TEMPLATE;
         }
@@ -283,17 +288,17 @@ final class Controller
         }
         $template = $this->factory->getTemplate($moduleID);
         if ($template === null) {
-            $this->addErrorMessage(__('errorTemplateMissing') . $moduleID);
+            $this->addErrorMessage(\__('errorTemplateMissing') . $moduleID);
 
             return self::ERROR_NO_TEMPLATE;
         }
-        $res  = true;
-        $mail = new Mail();
-        foreach (LanguageHelper::getAllLanguages() as $lang) {
+        $res = true;
+        foreach (LanguageHelper::getAllLanguages(0, true) as $lang) {
+            $mail = new Mail();
             try {
                 $mail = $mail->createFromTemplate($template, null, $lang);
             } catch (InvalidArgumentException $e) {
-                $this->addErrorMessage(__('errorTemplateMissing') . $lang->getLocalizedName());
+                $this->addErrorMessage(\__('errorTemplateMissing') . $lang->getLocalizedName());
                 $res = self::ERROR_NO_TEMPLATE;
                 continue;
             }
@@ -317,16 +322,14 @@ final class Controller
         $this->db->queryPrepared(
             'DELETE FROM temailvorlagesprache
                 WHERE kEmailvorlage = :tid',
-            ['tid' => $templateID],
-            ReturnType::DEFAULT
+            ['tid' => $templateID]
         );
         $this->db->queryPrepared(
             'INSERT INTO temailvorlagesprache
                 SELECT *
                 FROM temailvorlagespracheoriginal
                 WHERE temailvorlagespracheoriginal.kEmailvorlage = :tid',
-            ['tid' => $templateID],
-            ReturnType::DEFAULT
+            ['tid' => $templateID]
         );
         $data = $this->db->select(
             'temailvorlage',
@@ -348,7 +351,7 @@ final class Controller
     private function resetFromFile(int $templateID, stdClass $data): int
     {
         $affected = 0;
-        foreach (LanguageHelper::getAllLanguages() as $lang) {
+        foreach (LanguageHelper::getAllLanguages(0, true) as $lang) {
             $base      = \PFAD_ROOT . \PFAD_EMAILVORLAGEN . $lang->getIso() . '/' . $data->cDateiname;
             $fileHtml  = $base . '_html.tpl';
             $filePlain = $base . '_plain.tpl';
@@ -392,7 +395,7 @@ final class Controller
     }
 
     /**
-     * @return TemplateInterface[]
+     * @return Model[]
      */
     public function getAllTemplates(): array
     {

@@ -4,7 +4,6 @@ namespace JTL\Optin;
 
 use JTL\Alert\Alert;
 use JTL\CheckBox;
-use JTL\DB\ReturnType;
 use JTL\Exceptions\InvalidInputException;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -64,12 +63,14 @@ class OptinNewsletter extends OptinBase implements OptinInterface
     /**
      * former "newsletterAnmeldungPlausi()"
      *
+     * @param int $location
      * @return array
      */
-    protected function checkCaptcha(): array
+    protected function checkCaptcha(int $location = \CHECKBOX_ORT_NEWSLETTERANMELDUNG): array
     {
         $res = [];
-        if (Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N'
+        if ($location === \CHECKBOX_ORT_NEWSLETTERANMELDUNG
+            && Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N'
             && !Form::validateCaptcha($_POST)) {
             $res['captcha'] = 2;
         }
@@ -79,11 +80,14 @@ class OptinNewsletter extends OptinBase implements OptinInterface
 
     /**
      * @param OptinRefData $refData
+     * @param int $location
      * @return OptinInterface
      * @throws InvalidInputException
      */
-    public function createOptin(OptinRefData $refData): OptinInterface
-    {
+    public function createOptin(
+        OptinRefData $refData,
+        int $location = \CHECKBOX_ORT_NEWSLETTERANMELDUNG
+    ): OptinInterface {
         $this->refData = $refData;
         $this->optCode = $this->generateUniqOptinCode();
 
@@ -93,12 +97,12 @@ class OptinNewsletter extends OptinBase implements OptinInterface
             $checks->nPlausi_arr = [];
             $nlCustomer          = null;
             if (Text::filterEmailAddress($this->refData->getEmail()) !== false) {
-                $checks->nPlausi_arr            = $this->checkCaptcha();
+                $checks->nPlausi_arr            = $this->checkCaptcha($location);
                 $kKundengruppe                  = Frontend::getCustomerGroup()->getID();
                 $checkBox                       = new CheckBox();
                 $checks->nPlausi_arr            = \array_merge(
                     $checks->nPlausi_arr,
-                    $checkBox->validateCheckBox(\CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true)
+                    $checkBox->validateCheckBox($location, $kKundengruppe, $_POST, true)
                 );
                 $checks->cPost_arr['cAnrede']   = Text::filterXSS($this->refData->getSalutation());
                 $checks->cPost_arr['cVorname']  = Text::filterXSS($this->refData->getFirstName());
@@ -140,7 +144,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                         $customer->cAnrede   = $this->refData->getSalutation();
                         $customer->cVorname  = $this->refData->getFirstName();
                         $customer->cNachname = $this->refData->getLastName();
-                        $customer->cEmail    = $this->refData->getEmail();
+                        $customer->cMail     = $this->refData->getEmail();
                         $customer->cRegIp    = $this->refData->getRealIP();
                         $checkBox->triggerSpecialFunction(
                             \CHECKBOX_ORT_NEWSLETTERANMELDUNG,
@@ -320,8 +324,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                 'UPDATE tnewsletterempfaenger, tkunde
                 SET tnewsletterempfaenger.kKunde = tkunde.kKunde
                 WHERE tkunde.cMail = tnewsletterempfaenger.cEmail
-                    AND tnewsletterempfaenger.kKunde = 0',
-                ReturnType::DEFAULT
+                    AND tnewsletterempfaenger.kKunde = 0'
             );
             $upd           = new stdClass();
             $upd->dOptCode = 'NOW()';

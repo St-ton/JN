@@ -50,6 +50,10 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
             $cachesToClear[] = $media::getClass(Image::TYPE_CHARACTERISTIC);
             continue;
         }
+        if (strpos($item, 'opc') !== false) {
+            $cachesToClear[] = $media::getClass(Image::TYPE_OPC);
+            continue;
+        }
         if (strpos($item, 'konfiggruppe') !== false) {
             $cachesToClear[] = $media::getClass(Image::TYPE_CONFIGGROUP);
             continue;
@@ -85,6 +89,7 @@ $indices = [
     'hersteller'    => __('manufacturer'),
     'merkmal'       => __('attributes'),
     'merkmalwert'   => __('attributeValues'),
+    'opc'           => 'OPC',
     'konfiggruppe'  => __('configGroups'),
     'news'          => __('news'),
     'newskategorie' => __('newscategory')

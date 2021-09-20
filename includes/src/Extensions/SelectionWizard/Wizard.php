@@ -140,9 +140,9 @@ class Wizard
             if ($item === false) {
                 $item = null;
             }
-            $this->init($item, $activeOnly);
-            $cache->set($cacheID, $this, [\CACHING_GROUP_CORE]);
+            $cache->set($cacheID, $item, [\CACHING_GROUP_CORE]);
         }
+        $this->init($item, $activeOnly);
     }
 
     /**

@@ -38,7 +38,7 @@ function adminSearch($query, $standalonePage = false): ?string
             $setting->cName                   = highlightSearchTerm($setting->cName, $query);
             $currentGroup->oEinstellung_arr[] = $setting;
         }
-    }ni
+    }
 
     foreach ($shippings as $shipping) {
         $shipping->cName = highlightSearchTerm($shipping->cName, $query);

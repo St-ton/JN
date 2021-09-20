@@ -416,17 +416,8 @@ class Starter
                 continue;
             }
             $data = \file_get_contents($xmlFile);
-            $gen  = static function ($string, $data) {
-                $result = $string ? \simplexml_load_string($data) : XML::unserialize($data);
 
-                return \is_array($result)
-                    ? \array_map(static function ($item) {
-                        return !\is_array($item) ? [] : $item;
-                    }, $result)
-                    : $result;
-            };
-
-            yield [$xmlFile => $gen($string, $data)];
+            yield [$xmlFile => $string ? \simplexml_load_string($data) : XML::unserialize($data)];
         }
     }
 

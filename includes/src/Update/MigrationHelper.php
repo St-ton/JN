@@ -36,7 +36,7 @@ class MigrationHelper
      */
     public static function getMigrationPath(): string
     {
-        return \PFAD_ROOT . \PFAD_UPDATE . 'migrations' . \DIRECTORY_SEPARATOR;
+        return \PFAD_ROOT . \PFAD_UPDATE . 'migrations/';
     }
 
     /**

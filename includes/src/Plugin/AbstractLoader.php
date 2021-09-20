@@ -185,7 +185,7 @@ abstract class AbstractLoader implements LoaderInterface
     protected function loadPaths(string $pluginDir): Paths
     {
         $shopURL  = Shop::getURL(true) . '/';
-        $basePath = \PFAD_ROOT . \PLUGIN_DIR . $pluginDir . \DIRECTORY_SEPARATOR;
+        $basePath = \PFAD_ROOT . \PLUGIN_DIR . $pluginDir . '/';
         $baseURL  = $shopURL . \PLUGIN_DIR . $pluginDir . '/';
 
         $paths = new Paths();

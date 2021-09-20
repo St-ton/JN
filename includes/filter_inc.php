@@ -1930,18 +1930,16 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
             }
 
             if ($kSuchCache > 0) {
-                if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
-                    $cSQL = "SELECT '" . $kSuchCache . "', IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikelsprache.kArtikel) AS kArtikelTMP, ";
-                } else {
-                    $cSQL = "SELECT '" . $kSuchCache . "', IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, ";
-                }
+                $cSQL = "SELECT '" . $kSuchCache
+                    . "', IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, ";
                 // Shop2 Suche - mehr als 3 Suchwörter *
                 if (count($cSuch_arr) > 3) {
                     $cSQL .= " 1 ";
                     if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
-                        $cSQL .= "  FROM tartikelsprache
-                                        INNER JOIN tartikel 
+                        $cSQL .= "  FROM tartikel
+                                        LEFT JOIN tartikelsprache
                                             ON tartikelsprache.kArtikel = tartikel.kArtikel
+                                            AND tartikelsprache.kSprache = " . Shop::$kSprache . "
                                         LEFT JOIN tartikelsichtbarkeit 
                                             ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikelsprache.kArtikel)
                                             AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
@@ -1951,12 +1949,7 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                                             ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel)
                                             AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
                     }
-                    $cSQL .= " WHERE tartikelsichtbarkeit.kArtikel IS NULL " . gibLagerfilter() . " AND ";
-                    if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
-                        $cSQL .= " tartikelsprache.kSprache = " . Shop::$kSprache . " AND (";
-                    } else {
-                        $cSQL .= "(";
-                    }
+                    $cSQL .= " WHERE tartikelsichtbarkeit.kArtikel IS NULL " . gibLagerfilter() . " AND (";
 
                     foreach ($cSuchspalten_arr as $i => $cSuchspalten) {
                         if ($i > 0) {
@@ -2241,9 +2234,10 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                     }
 
                     if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
-                        $cSQL .= " FROM tartikelsprache
-                                        INNER JOIN tartikel 
+                        $cSQL .= " FROM tartikel
+                                        LEFT JOIN tartikelsprache
                                             ON tartikelsprache.kArtikel = tartikel.kArtikel
+                                            AND tartikelsprache.kSprache = " . Shop::$kSprache . "
                                         LEFT JOIN tartikelsichtbarkeit 
                                             ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikelsprache.kArtikel)
                                             AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
@@ -2254,12 +2248,7 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                                             AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
                     }
 
-                    $cSQL .= " WHERE tartikelsichtbarkeit.kArtikel IS NULL " . gibLagerfilter() . " AND ";
-                    if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
-                        $cSQL .= " tartikelsprache.kSprache = " . Shop::$kSprache . " AND (";
-                    } else {
-                        $cSQL .= "(";
-                    }
+                    $cSQL .= " WHERE tartikelsichtbarkeit.kArtikel IS NULL " . gibLagerfilter() . " AND (";
 
                     foreach ($cSuchspalten_arr as $i => $cSuchspalten) {
                         if ($i > 0) {

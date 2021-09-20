@@ -104,9 +104,9 @@ class History
                 WHERE kDownload = :dlid
                 ORDER BY dErstellt DESC',
             ['dlid' => $downloadID]
-        )->pluck('id')->transform(static function ($e) {
-            return (int)$e;
-        })->mapInto(self::class)->toArray();
+        )->map(static function ($e) {
+            return new self((int)$e->id);
+        })->toArray();
     }
 
     /**

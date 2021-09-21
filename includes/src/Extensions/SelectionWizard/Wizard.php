@@ -121,28 +121,32 @@ class Wizard
     {
         $cache   = Shop::Container()->getCache();
         $cacheID = 'jtl_sw_' . $keyName . '_' . $id . '_' . $languageID . '_' . (int)$activeOnly;
-        if (($item = $cache->get($cacheID)) === false) {
-            $item = Shop::Container()->getDB()->getSingleObject(
-                'SELECT *
-                    FROM tauswahlassistentort AS ao
-                        JOIN tauswahlassistentgruppe AS ag
-                            ON ao.kAuswahlAssistentGruppe = ag.kAuswahlAssistentGruppe
-                                AND ao.cKey = :ckey
-                                AND ao.kKey = :kkey
-                                AND ag.kSprache = :ksprache' .
-                ($activeOnly ? ' AND ag.nAktiv = 1' : ''),
-                [
-                    'ckey'     => $keyName,
-                    'kkey'     => $id,
-                    'ksprache' => $languageID
-                ]
-            );
-            if ($item === false) {
-                $item = null;
+        if (($item = $cache->get($cacheID)) !== false) {
+            foreach (\get_object_vars($item) as $name => $value) {
+                $this->$name = $value;
             }
-            $cache->set($cacheID, $item, [\CACHING_GROUP_CORE]);
+            return;
+        }
+        $item = Shop::Container()->getDB()->getSingleObject(
+            'SELECT *
+                FROM tauswahlassistentort AS ao
+                    JOIN tauswahlassistentgruppe AS ag
+                        ON ao.kAuswahlAssistentGruppe = ag.kAuswahlAssistentGruppe
+                            AND ao.cKey = :ckey
+                            AND ao.kKey = :kkey
+                            AND ag.kSprache = :ksprache' .
+            ($activeOnly ? ' AND ag.nAktiv = 1' : ''),
+            [
+                'ckey'     => $keyName,
+                'kkey'     => $id,
+                'ksprache' => $languageID
+            ]
+        );
+        if ($item === false) {
+            $item = null;
         }
         $this->init($item, $activeOnly);
+        $cache->set($cacheID, $this, [\CACHING_GROUP_CORE]);
     }
 
     /**

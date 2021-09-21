@@ -126,7 +126,12 @@ function gibSuchSpalten()
 {
     $cSuchspalten_arr = [];
     for ($i = 0; $i < 10; ++$i) {
-        $cSuchspalten_arr[] = gibMaxPrioSpalte($cSuchspalten_arr);
+        $columnName         = gibMaxPrioSpalte($cSuchspalten_arr);
+        $cSuchspalten_arr[] = $columnName;
+        if (\substr($columnName, 0, \strlen('tartikelsprache.')) === 'tartikelsprache.') {
+            $spalte             = 'tartikel.' . \substr($spalte, \strlen('tartikelsprache.'));
+            $cSuchspalten_arr[] = $columnName;
+        }
     }
     // Leere Spalten entfernen
     if (is_array($cSuchspalten_arr) && count($cSuchspalten_arr) > 0) {

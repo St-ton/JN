@@ -218,9 +218,6 @@ class Mail implements MailInterface
      */
     private function detectLanguage(): LanguageModel
     {
-        if ($this->language !== null) {
-            return $this->language;
-        }
         $allLanguages = LanguageHelper::getAllLanguages(1);
         if (isset($this->data->tkunde->kSprache) && $this->data->tkunde->kSprache > 0) {
             return $allLanguages[(int)$this->data->tkunde->kSprache];

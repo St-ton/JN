@@ -945,7 +945,7 @@ class NiceDB implements DbInterface
 
     /**
      * @param int $returnType
-     * @return array|Collection|int|stdClass
+     * @return array|bool|Collection|int|PDOStatement|stdClass
      */
     private function failExecute(int $returnType)
     {
@@ -955,9 +955,14 @@ class NiceDB implements DbInterface
             case ReturnType::ARRAY_OF_OBJECTS:
             case ReturnType::ARRAY_OF_ASSOC_ARRAYS:
             case ReturnType::ARRAY_OF_BOTH_ARRAYS:
+            case ReturnType::SINGLE_ASSOC_ARRAY:
                 return [];
             case ReturnType::SINGLE_OBJECT:
                 return new stdClass();
+            case ReturnType::QUERYSINGLE:
+                return new PDOStatement();
+            case ReturnType::DEFAULT:
+                return true;
             default:
                 return 0;
         }

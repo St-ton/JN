@@ -2,6 +2,8 @@
 
 namespace JTL\Pagination;
 
+use JTL\Helpers\Text;
+
 /**
  * Class FilterField
  * @package JTL\Pagination
@@ -66,6 +68,7 @@ abstract class FilterField
             $filter->hasSessionField($this->id) ? $filter->getSessionField($this->id) :
                 $defaultValue
             ));
+        $this->value     = Text::filterXSS($this->value);
     }
 
     /**

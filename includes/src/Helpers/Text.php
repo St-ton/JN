@@ -275,8 +275,11 @@ class Text
      * @param string $input
      * @return string
      */
-    public static function unhtmlentities($input): string
+    public static function unhtmlentities($input)
     {
+        if (!\is_string($input)) {
+            return $input;
+        }
         // replace numeric entities
         $input = \preg_replace_callback(
             '~&#x([0-9a-fA-F]+);~i',

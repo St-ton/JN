@@ -275,7 +275,7 @@ class Text
      * @param string $input
      * @return string
      */
-    public static function unhtmlentities($input): string
+    public static function unhtmlentities($input)
     {
         if (!\is_string($input)) {
             return $input;

@@ -19,6 +19,7 @@ stages:
   export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
   export BUILD_SCRIPT_PATH=build/scripts/build.sh
   export DEPLOY_SCRIPT_PATH=build/scripts/deploy.sh
+  # test comment
 
   function dockerLogin() {
     echo "Login to GitLab Container Registry with CI credentials..."

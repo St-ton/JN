@@ -42,7 +42,8 @@
                 entities_greek : false,
                 ignoreEmptyParagraph : false,
                 fillEmptyBlocks : false,
-                autoParagraph : false
+                autoParagraph : false,
+                removePlugins : 'exportpdf,language,iframe,flash'
                 /* custom config end */
             },
         );

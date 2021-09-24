@@ -2,6 +2,7 @@
 
 namespace JTL\Mail\Template;
 
+use JTL\Helpers\Text;
 use JTL\Smarty\JTLSmarty;
 
 /**
@@ -27,6 +28,7 @@ class ProductInquiry extends AbstractTemplate
         if ($data === null) {
             return;
         }
+        $data->tartikel->cName = Text::unhtmlentities($data->tartikel->cName);
         $smarty->assign('Nachricht', $data->tnachricht)
                ->assign('Artikel', $data->tartikel);
     }

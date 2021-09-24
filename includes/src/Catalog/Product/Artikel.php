@@ -3625,7 +3625,7 @@ class Artikel
         $this->fUVP                              = $data->fUVP;
         $this->fUVPBrutto                        = $data->fUVP;
         $this->fVPEWert                          = $data->fVPEWert;
-        $this->cName                             = $data->cName;
+        $this->cName                             = Text::htmlentitiesOnce($data->cName, \ENT_COMPAT | \ENT_HTML401);
         $this->cSeo                              = $data->cSeo;
         $this->cBeschreibung                     = $data->cBeschreibung;
         $this->cAnmerkung                        = $data->cAnmerkung;

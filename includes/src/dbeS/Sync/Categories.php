@@ -99,7 +99,7 @@ final class Categories extends AbstractSync
             if (!$categories[0]->cSeo) {
                 $categories[0]->cSeo = Seo::getFlatSeoPath($categories[0]->cName);
             }
-            $categories[0]->cSeo                  = Seo::checkSeo(Seo::getSeo($categories[0]->cSeo));
+            $categories[0]->cSeo                  = Seo::checkSeo(Seo::getSeo($categories[0]->cSeo, true));
             $categories[0]->dLetzteAktualisierung = 'NOW()';
             $categories[0]->lft                   = $oldData->lft ?? 0;
             $categories[0]->rght                  = $oldData->rght ?? 0;
@@ -161,7 +161,7 @@ final class Categories extends AbstractSync
             if (!$language->cSeo) {
                 $language->cSeo = $category->cName;
             }
-            $language->cSeo = Seo::checkSeo(Seo::getSeo($language->cSeo));
+            $language->cSeo = Seo::checkSeo(Seo::getSeo($language->cSeo, true));
             $this->insertOnExistUpdate('tkategoriesprache', [$language], ['kKategorie', 'kSprache']);
 
             $ins           = new stdClass();

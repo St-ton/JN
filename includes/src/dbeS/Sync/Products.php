@@ -239,7 +239,7 @@ final class Products extends AbstractSync
             // get seo path from productname, but replace slashes
             $products[0]->cSeo = Seo::getFlatSeoPath($products[0]->cName);
         }
-        $products[0]->cSeo = Seo::getSeo($products[0]->cSeo);
+        $products[0]->cSeo = Seo::getSeo($products[0]->cSeo, true);
         $products[0]->cSeo = Seo::checkSeo($products[0]->cSeo);
         // persistente werte
         $products[0]->dLetzteAktualisierung = 'NOW()';
@@ -346,7 +346,7 @@ final class Products extends AbstractSync
             if (!$item->cSeo) {
                 $item->cSeo = $products[0]->cName;
             }
-            $item->cSeo = Seo::checkSeo(Seo::getSeo($item->cSeo));
+            $item->cSeo = Seo::checkSeo(Seo::getSeo($item->cSeo, true));
 
             $this->upsert('tartikelsprache', [$item], 'kArtikel', 'kSprache');
             $this->db->delete(

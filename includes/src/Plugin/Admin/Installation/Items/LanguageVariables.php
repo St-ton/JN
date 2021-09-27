@@ -29,8 +29,9 @@ class LanguageVariables extends AbstractItem
     {
         $languages = LanguageHelper::getAllLanguages(2, true);
         foreach ($this->getNode() as $t => $langVar) {
-            $t = (string)$t;
-            \preg_match('/[0-9]+/', $t, $hits1);
+            $nonPluginLanguages = $languages;
+            $t                  = (string)$t;
+            \preg_match('/[\d]+/', $t, $hits1);
             if (\mb_strlen($hits1[0]) !== \mb_strlen($t)) {
                 continue;
             }
@@ -59,24 +60,23 @@ class LanguageVariables extends AbstractItem
                 $localized->kPluginSprachvariable = $id;
                 $localized->cISO                  = $langVar['VariableLocalized attr']['iso'];
                 $localized->cName                 = \preg_replace('/\s+/', ' ', $langVar['VariableLocalized']);
+                $isoKey                           = \mb_convert_case($localized->cISO, \MB_CASE_LOWER);
 
                 $this->db->insert('tpluginsprachvariablesprache', $localized);
 
                 // Erste PluginSprachVariableSprache vom Plugin als Standard setzen
-                if (!$isDefault) {
-                    $defaultVar = $localized;
-                    $isDefault  = true;
-                }
+                $defaultVar = $localized;
 
-                if (isset($languages[\mb_convert_case($localized->cISO, \MB_CASE_LOWER)])) {
+                if (isset($nonPluginLanguages[$isoKey])) {
                     // Resette aktuelle Sprache
-                    unset($languages[\mb_convert_case($localized->cISO, \MB_CASE_LOWER)]);
-                    $languages = \array_merge($languages);
+                    unset($nonPluginLanguages[$isoKey]);
+                } else {
+                    $nonPluginLanguages[$isoKey] = $languages[$isoKey];
                 }
             } elseif (GeneralObject::hasCount('VariableLocalized', $langVar)) {
                 foreach ($langVar['VariableLocalized'] as $i => $loc) {
                     $i = (string)$i;
-                    \preg_match('/[0-9]+\sattr/', $i, $hits1);
+                    \preg_match('/[\d]+\sattr/', $i, $hits1);
 
                     if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
                         $iso                              = $loc['iso'];
@@ -86,6 +86,7 @@ class LanguageVariables extends AbstractItem
                         $localized->kPluginSprachvariable = $id;
                         $localized->cISO                  = $iso;
                         $localized->cName                 = \preg_replace('/\s+/', ' ', $name);
+                        $isoKey                           = \mb_convert_case($localized->cISO, \MB_CASE_LOWER);
 
                         $this->db->insert('tpluginsprachvariablesprache', $localized);
                         // Erste PluginSprachVariableSprache vom Plugin als Standard setzen
@@ -94,14 +95,16 @@ class LanguageVariables extends AbstractItem
                             $isDefault  = true;
                         }
 
-                        if (isset($languages[\mb_convert_case($localized->cISO, \MB_CASE_LOWER)])) {
-                            unset($languages[\mb_convert_case($localized->cISO, \MB_CASE_LOWER)]);
-                            $languages = \array_merge($languages);
+                        if (isset($nonPluginLanguages[$isoKey])) {
+                            // Resette aktuelle Sprache
+                            unset($nonPluginLanguages[$isoKey]);
+                        } else {
+                            $nonPluginLanguages[$isoKey] = $languages[$isoKey];
                         }
                     }
                 }
             }
-            foreach ($languages as $language) {
+            foreach ($nonPluginLanguages as $language) {
                 $defaultVar->cISO = \mb_convert_case($language->cISO, \MB_CASE_UPPER);
                 if (!$this->db->insert('tpluginsprachvariablesprache', $defaultVar)) {
                     return InstallCode::SQL_CANNOT_SAVE_LANG_VAR_LOCALIZATION;

@@ -321,7 +321,7 @@ function pruefeRechnungsadresseStep($cGet_arr)
         $step  = 'edit_customer_address';
     }
 
-    if ($_SESSION['Kunde'] && count(gibBelieferbareLaender($_SESSION['Kundengruppe']->kKundengruppe, false, false, [$_SESSION['Kunde']->cLand])) === 0) {
+    if (isset($_SESSION['Kunde']) && count(gibBelieferbareLaender($_SESSION['Kundengruppe']->kKundengruppe, false, false, [$_SESSION['Kunde']->cLand])) === 0) {
         Shop::Smarty()->assign('forceDeliveryAddress', 1);
 
         if (!isset($_SESSION['Lieferadresse'])

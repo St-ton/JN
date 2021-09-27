@@ -6813,6 +6813,9 @@ class Artikel
         }
 
         /** @var static $item */
+        if ($this->oStueckliste_arr === null) {
+            return $depProducts;
+        }
         foreach ($this->oStueckliste_arr as $item) {
             if (!$onlyStockRelevant || ($item->cLagerBeachten === 'Y' && $item->cLagerKleinerNull !== 'Y')) {
                 $depProducts[$item->kArtikel] = (object)[

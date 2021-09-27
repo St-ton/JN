@@ -352,7 +352,7 @@ abstract class AbstractTemplate implements TemplateInterface
      */
     public function setSubject(?string $overrideSubject): void
     {
-        $this->overrideSubject = Text::unhtmlentities($overrideSubject);
+        $this->overrideSubject = $overrideSubject;
     }
 
     /**

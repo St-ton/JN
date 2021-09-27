@@ -2,10 +2,14 @@
 
 namespace JTL\Mail\Template;
 
+/**
+ * Class ProductTemplate
+ * @package JTL\Mail\Template
+ */
 class ProductTemplate extends AbstractTemplate
 {
     /**
-     * replace product-Name with original name from db.
+     * replace product name with original name from db.
      *
      * @param object $data
      *
@@ -13,12 +17,12 @@ class ProductTemplate extends AbstractTemplate
      */
     protected function useOriginalName(object $data): object
     {
-        if (\property_exists($data, 'tartikel') &&
-            \property_exists($data->tartikel, 'cName') &&
-            \property_exists($data->tartikel, 'originalName')) {
+        if (\property_exists($data, 'tartikel')
+            && \property_exists($data->tartikel, 'cName')
+            && \property_exists($data->tartikel, 'originalName')
+        ) {
             $data->tartikel->cName = $data->tartikel->originalName;
         }
-        
         return $data;
     }
 }

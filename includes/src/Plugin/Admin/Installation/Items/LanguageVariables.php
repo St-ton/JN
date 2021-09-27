@@ -70,7 +70,7 @@ class LanguageVariables extends AbstractItem
                 if (isset($nonPluginLanguages[$isoKey])) {
                     // Resette aktuelle Sprache
                     unset($nonPluginLanguages[$isoKey]);
-                } else {
+                } elseif (isset($languages[$isoKey])) {
                     $nonPluginLanguages[$isoKey] = $languages[$isoKey];
                 }
             } elseif (GeneralObject::hasCount('VariableLocalized', $langVar)) {
@@ -98,7 +98,7 @@ class LanguageVariables extends AbstractItem
                         if (isset($nonPluginLanguages[$isoKey])) {
                             // Resette aktuelle Sprache
                             unset($nonPluginLanguages[$isoKey]);
-                        } else {
+                        } elseif (isset($languages[$isoKey])) {
                             $nonPluginLanguages[$isoKey] = $languages[$isoKey];
                         }
                     }

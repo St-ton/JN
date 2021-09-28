@@ -4,6 +4,7 @@
         <thead>
         <tr>
             <th>{__('settingChangedBy')}</th>
+            <th>{__('settingChangerIp')}</th>
             <th>{__('settingValueOld')}</th>
             <th>{__('settingValueNew')}</th>
             <th>{__('date')}</th>
@@ -12,6 +13,7 @@
         {foreach $logs as $log}
             <tr class="text-vcenter">
                 <td>{$log->getAdminName()}</td>
+                <td>{$log->getChangerIp()}</td>
                 <td>
                     {if $log->getSettingType() === 'selectbox'}
                         {__("{$log->getSettingName()}_value({$log->getValueOld()})")}

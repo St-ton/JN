@@ -3173,7 +3173,7 @@ class Artikel
             if ($noCache === false) {
                 Shop::Container()->getCache()->set($this->cacheID, null, $cacheTags);
             }
-            if ($tmpProduct->kArtikel === $tmpProduct->kVaterArtikel) {
+            if ($tmpProduct !== null && $tmpProduct->kArtikel === $tmpProduct->kVaterArtikel) {
                 Shop::Container()->getLogService()->warning(
                     'Product ' . (int)$tmpProduct->kArtikel . ' has invalid parent.'
                 );

@@ -186,7 +186,7 @@ msgid "errorPluginUpload"
 msgstr "Das Plugin konnte nicht hochgeladen werden. Bitte wenden Sie sich an den Support."
 
 msgid "sureResetLangVar"
-msgstr "Möchten Sie diese Sprachvariable wirklich wieder auf den Installationszustand zurücksetzen?<br/><br/> Dabei gehen alle geänderten Übersetzungen der Variable verloren."
+msgstr "Möchten Sie diese Sprachvariable wirklich wieder auf den Installationszustand zurücksetzen? Dabei gehen alle geänderten Übersetzungen der Variable verloren."
 
 msgid "dangerPluginNotCompatibleShop5"
 msgstr "Bitte beachten Sie, dass dieses Plugin nicht vollständig mit JTL-Shop&nbsp;5 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."

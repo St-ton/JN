@@ -171,7 +171,7 @@ final class Installer
         $baseDir            = \basename($this->dir);
         $versionNode        = $baseNode['Install'][0]['Version'] ?? null;
         $xmlVersion         = (int)$baseNode['XMLVersion'];
-        $basePath           = \PFAD_ROOT . \PFAD_PLUGIN . $baseDir . \DIRECTORY_SEPARATOR;
+        $basePath           = \PFAD_ROOT . \PFAD_PLUGIN . $baseDir . '/';
         $lastVersionKey     = null;
         $plugin             = new stdClass();
         $plugin->nStatus    = $this->plugin === null ? State::ACTIVATED : $this->plugin->getState();
@@ -179,11 +179,11 @@ final class Installer
         if (\is_array($versionNode)) {
             $lastVersionKey = \count($versionNode) / 2 - 1;
             $version        = (int)$versionNode[$lastVersionKey . ' attr']['nr'];
-            $versionedDir   = $basePath . \PFAD_PLUGIN_VERSION . $version . \DIRECTORY_SEPARATOR;
+            $versionedDir   = $basePath . \PFAD_PLUGIN_VERSION . $version . '/';
             $bootstrapper   = $versionedDir . \OLD_BOOTSTRAPPER;
         } else {
             $version            = $baseNode['Version'];
-            $basePath           = \PFAD_ROOT . \PLUGIN_DIR . $baseDir . \DIRECTORY_SEPARATOR;
+            $basePath           = \PFAD_ROOT . \PLUGIN_DIR . $baseDir . '/';
             $versionedDir       = $basePath;
             $versionNode        = [];
             $bootstrapper       = $versionedDir . \PLUGIN_BOOTSTRAPPER;
@@ -459,7 +459,7 @@ final class Installer
      */
     private function updateByMigration(stdClass $plugin, string $pluginPath, Version $targetVersion)
     {
-        $path              = $pluginPath . \DIRECTORY_SEPARATOR . \PFAD_PLUGIN_MIGRATIONS;
+        $path              = $pluginPath . \PFAD_PLUGIN_MIGRATIONS;
         $manager           = new MigrationManager($this->db, $path, $plugin->cPluginID, $targetVersion);
         $pendingMigrations = $manager->getPendingMigrations();
         if (\count($pendingMigrations) === 0) {

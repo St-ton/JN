@@ -186,7 +186,7 @@ msgid "errorPluginUpload"
 msgstr "Could not upload plug-in. Please contact the Support team."
 
 msgid "sureResetLangVar"
-msgstr "Reset language variable to default settings?<br/><br/> All edited translations of the variable will be deleted."
+msgstr "Reset language variable to default settings? All edited translations of the variable will be deleted."
 
 msgid "dangerPluginNotCompatibleShop5"
 msgstr "Please note that the plug-in is not fully compatible with JTL-Shop&nbsp;5. This might lead to performance issues."

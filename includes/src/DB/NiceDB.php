@@ -779,7 +779,7 @@ class NiceDB implements DbInterface
         int $return = ReturnType::DEFAULT,
         bool $echo = false,
         ?callable $fnInfo = null
-    ){
+    ) {
         return $this->_execute(0, $stmt, [], $return, $echo, $fnInfo);
     }
 
@@ -894,7 +894,7 @@ class NiceDB implements DbInterface
         int $return,
         bool $echo = false,
         ?callable $fnInfo = null
-    ){
+    ) {
         if (!\in_array($type, [0, 1], true)) {
             throw new InvalidArgumentException('$type parameter must be 0 or 1, "' . $type . '" given');
         }

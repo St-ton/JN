@@ -40,7 +40,6 @@ use function Functional\filter;
 use function Functional\flatten;
 use function Functional\pluck;
 
-
 /**
  * Class IOMethods
  * @package JTL\IO

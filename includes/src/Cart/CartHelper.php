@@ -9,6 +9,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Product\VariationValue;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
@@ -781,12 +782,12 @@ class CartHelper
                 if ($productID <= 0) {
                     return true;
                 }
-                $wishlist = Frontend::getWishList();
-                if ($wishlist->kWunschliste <= 0) {
-                    $wishlist->schreibeDB();
+                if (empty($_SESSION['Wunschliste']->kWunschliste)) {
+                    $_SESSION['Wunschliste'] = new Wishlist();
+                    $_SESSION['Wunschliste']->schreibeDB();
                 }
                 $qty    = \max(1, $qty);
-                $itemID = $wishlist->fuegeEin(
+                $itemID = $_SESSION['Wunschliste']->fuegeEin(
                     $productID,
                     $productExists->cName,
                     $attributes,

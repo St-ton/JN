@@ -40,6 +40,7 @@ use function Functional\filter;
 use function Functional\flatten;
 use function Functional\pluck;
 
+
 /**
  * Class IOMethods
  * @package JTL\IO
@@ -329,6 +330,7 @@ class IOMethods
         }
         $alerts  = Shop::Container()->getAlertService();
         $content = $smarty->assign('alertList', $alerts)
+            ->assign('Einstellungen', $conf)
             ->fetch('snippets/alert_list.tpl');
 
         $response->cNotification = $smarty
@@ -340,8 +342,7 @@ class IOMethods
             ->assign('buttons', $buttons)
             ->fetch('snippets/notification.tpl');
 
-        $response->cNavBadge     = $smarty->assign('Einstellungen', $conf)
-            ->fetch('layout/header_shop_nav_compare.tpl');
+        $response->cNavBadge     = $smarty->fetch('layout/header_shop_nav_compare.tpl');
         $response->navDropdown   = $smarty->fetch('snippets/comparelist_dropdown.tpl');
         $response->cBoxContainer = [];
         foreach ($this->forceRenderBoxes(\BOX_VERGLEICHSLISTE, $conf, $smarty) as $id => $html) {
@@ -494,12 +495,12 @@ class IOMethods
         }
         $alerts = Shop::Container()->getAlertService();
         $body   = $smarty->assign('alertList', $alerts)
+            ->assign('Einstellungen', $conf)
             ->fetch('snippets/alert_list.tpl');
 
         $smarty->assign('type', $alerts->alertTypeExists(Alert::TYPE_ERROR) ? 'danger' : 'info')
             ->assign('body', $body)
-            ->assign('buttons', $buttons)
-            ->assign('Einstellungen', $conf);
+            ->assign('buttons', $buttons);
 
         $response->cNotification = $smarty->fetch('snippets/notification.tpl');
         $response->cNavBadge     = $smarty->fetch('layout/header_shop_nav_wish.tpl');
@@ -1197,7 +1198,7 @@ class IOMethods
             ? 'EXISTS (
                      SELECT 1
                      FROM teigenschaftkombiwert innerKombiwert
-                     WHERE (innerKombiwert.kEigenschaft, innerKombiwert.kEigenschaftWert) IN 
+                     WHERE (innerKombiwert.kEigenschaft, innerKombiwert.kEigenschaftWert) IN
                      (' . \implode(', ', $combinations) . ')
                         AND innerKombiwert.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                      GROUP BY innerKombiwert.kEigenschaftKombi
@@ -1211,13 +1212,13 @@ class IOMethods
                 tseo.kKey AS kSeoKey, COALESCE(tseo.cSeo, \'\') AS cSeo,
                 tartikel.fLagerbestand, tartikel.cLagerBeachten, tartikel.cLagerKleinerNull
                 FROM teigenschaftkombiwert
-                INNER JOIN tartikel 
+                INNER JOIN tartikel
                     ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                LEFT JOIN tseo 
+                LEFT JOIN tseo
                     ON tseo.cKey = \'kArtikel\'
                     AND tseo.kKey = tartikel.kArtikel
                     AND tseo.kSprache = :languageID
-                LEFT JOIN tartikelsichtbarkeit 
+                LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = :customergroupID
                 WHERE ' . $combinationSQL . 'tartikel.kVaterArtikel = :parentProductID

@@ -254,11 +254,11 @@ class Category
                     $visibilityJoin . '
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                 ORDER BY node.lft'
-        )->each(static function ($item) {
+        )->map(static function ($item) {
             $item->bUnterKategorien = false;
             $item->Unterkategorien  = [];
-        })->mapInto(MenuItem::class)
-            ->toArray();
+            return new MenuItem($item);
+        })->toArray();
     }
 
     /**
@@ -409,12 +409,12 @@ class Category
                     AND node.kKategorie = ' . $categoryID . $visibilityWhere . '                    
                 GROUP BY parent.kKategorie
                 ORDER BY parent.lft'
-        )->each(static function ($item) use ($functionAttributes, $localizedAttributes) {
+        )->map(static function ($item) use ($functionAttributes, $localizedAttributes) {
             $item->cSeo                = URL::buildURL($item, \URLART_KATEGORIE, true);
             $item->functionAttributes  = $functionAttributes;
             $item->localizedAttributes = $localizedAttributes;
-        })->mapInto(MenuItem::class)
-          ->toArray();
+            return new MenuItem($item);
+        })->toArray();
 
         if ($filterEmpty) {
             $nodes = $this->removeRelicts($this->filterEmpty($nodes));

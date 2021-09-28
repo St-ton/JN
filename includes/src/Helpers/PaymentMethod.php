@@ -114,14 +114,15 @@ class PaymentMethod
             'tzahlungsart',
             'nActive',
             1,
-            'kZahlungsart, nSOAP, nCURL, nSOCKETS, nNutzbar'
+            'kZahlungsart, cModulId, nSOAP, nCURL, nSOCKETS, nNutzbar'
         ) as $paymentMethod) {
             self::activatePaymentMethod($paymentMethod);
         }
     }
 
     /**
-     * Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
+     * Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen.
+     * Die Fallback-Zahlart 'za_null_jtl' wird immer auf nNutzbar = 0 (zurück-)gesetzt, falls nicht schon geschehen.
      *
      * @param Zahlungsart|PaymentMethod|object $paymentMethod
      * @return bool
@@ -132,7 +133,9 @@ class PaymentMethod
         if ($paymentMethod->kZahlungsart > 0) {
             $paymentID = (int)$paymentMethod->kZahlungsart;
 
-            if (empty($paymentMethod->nSOAP) && empty($paymentMethod->nCURL) && empty($paymentMethod->nSOCKETS)) {
+            if (($paymentMethod->cModulId ?? '') === 'za_null_jtl') {
+                $isUsable = 0;
+            } elseif (empty($paymentMethod->nSOAP) && empty($paymentMethod->nCURL) && empty($paymentMethod->nSOCKETS)) {
                 $isUsable = 1;
             } elseif (!empty($paymentMethod->nSOAP) && PHPSettings::checkSOAP()) {
                 $isUsable = 1;

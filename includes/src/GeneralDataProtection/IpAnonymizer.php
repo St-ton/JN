@@ -161,7 +161,7 @@ class IpAnonymizer
     }
 
     /**
-     * delivers am valid IP-string,
+     * delivers a valid IP-string,
      * (by conventions, with "0 summerized", for IPv6 addresses
      * use the "beautify-flag", during object construction, to get "0")
      *
@@ -203,7 +203,7 @@ class IpAnonymizer
 
     /**
      * delivers an IP the legacy way:
-     * not optimized (zeros summerized) and with atseriscs as obvuscation
+     * not optimized (zeros summerized) and with asteriscs as obvuscation
      *
      * @return string
      */

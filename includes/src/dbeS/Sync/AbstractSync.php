@@ -14,6 +14,7 @@ use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Optin\Optin;
@@ -250,6 +251,15 @@ abstract class AbstractSync
 
             $mailer = Shop::Container()->get(Mailer::class);
             $mail   = new Mail();
+            
+            // if original language was deleted between ActivationOptIn and now, try to send it in english,
+            // if there is no english, use the shop-default.
+            $mail->setLanguage(
+                LanguageHelper::getAllLanguages(1)[(int)$msg->kSprache] ??
+                LanguageHelper::getAllLanguages(2)['eng'] ??
+                LanguageHelper::getDefaultLanguage()
+            );
+            
             $mail->setToMail($tplMail->toEmail);
             $mail->setToName($tplMail->toName);
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $tplData));

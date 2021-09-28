@@ -694,7 +694,9 @@ class Kupon
                 WHERE cCode = :code
                 LIMIT 1',
             ['code' => $code]
-        )->pluck('id')->transform('\intval')->mapInto(self::class)->first() ?? false;
+        )->map(static function ($e) {
+            return new self((int)$e->id);
+        })->first() ?? false;
     }
 
     /**

@@ -314,8 +314,7 @@ class Status
         if ($template->isResponsive()) {
             $mobileTpl = $this->db->select('ttemplate', 'eTyp', 'mobil');
             if ($mobileTpl !== null) {
-                $xmlFile = \PFAD_ROOT . \PFAD_TEMPLATES . $mobileTpl->cTemplate .
-                    \DIRECTORY_SEPARATOR . \TEMPLATE_XML;
+                $xmlFile = \PFAD_ROOT . \PFAD_TEMPLATES . $mobileTpl->cTemplate . '/' . \TEMPLATE_XML;
                 if (\file_exists($xmlFile)) {
                     return true;
                 }

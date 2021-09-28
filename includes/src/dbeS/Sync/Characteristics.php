@@ -142,7 +142,7 @@ final class Characteristics extends AbstractSync
                         $seo       = \trim($loc->cSeo)
                             ? Seo::getFlatSeoPath($loc->cSeo)
                             : Seo::getFlatSeoPath($loc->cWert);
-                        $loc->cSeo = Seo::checkSeo(Seo::getSeo($seo));
+                        $loc->cSeo = Seo::checkSeo(Seo::getSeo($seo, true));
                         $this->upsert(
                             'tmerkmalwertsprache',
                             [$loc],
@@ -234,7 +234,7 @@ final class Characteristics extends AbstractSync
                     ? Seo::getFlatSeoPath($loc->cSeo)
                     : Seo::getFlatSeoPath($loc->cWert);
 
-                $loc->cSeo = Seo::checkSeo(Seo::getSeo($seo));
+                $loc->cSeo = Seo::checkSeo(Seo::getSeo($seo, true));
                 $this->upsert('tmerkmalwertsprache', [$loc], 'kMerkmalWert', 'kSprache');
                 $ins           = new stdClass();
                 $ins->cSeo     = $loc->cSeo;
@@ -289,7 +289,7 @@ final class Characteristics extends AbstractSync
                         }
                     }
                     // Sprache vom Shop wurde nicht von der Wawi mitgeschickt und muss somit in tseo nachgefüllt werden
-                    $slug = Seo::checkSeo(Seo::getSeo($characteristicValue->cNameSTD ?? ''));
+                    $slug = Seo::checkSeo(Seo::getSeo($characteristicValue->cNameSTD ?? '', true));
                     $this->db->queryPrepared(
                         "DELETE tmerkmalwertsprache, tseo FROM tmerkmalwertsprache
                             LEFT JOIN tseo

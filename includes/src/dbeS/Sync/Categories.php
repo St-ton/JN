@@ -97,9 +97,10 @@ final class Categories extends AbstractSync
         $categories = $this->mapper->mapArray($xml, 'tkategorie', 'mKategorie');
         if ($categories[0]->kKategorie > 0) {
             if (!$categories[0]->cSeo) {
-                $categories[0]->cSeo = Seo::getFlatSeoPath($categories[0]->cName);
+                $categories[0]->cSeo = Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($categories[0]->cName)));
+            } else {
+                $categories[0]->cSeo = Seo::checkSeo(Seo::getSeo($categories[0]->cSeo, true));
             }
-            $categories[0]->cSeo                  = Seo::checkSeo(Seo::getSeo($categories[0]->cSeo, true));
             $categories[0]->dLetzteAktualisierung = 'NOW()';
             $categories[0]->lft                   = $oldData->lft ?? 0;
             $categories[0]->rght                  = $oldData->rght ?? 0;
@@ -152,16 +153,18 @@ final class Categories extends AbstractSync
             if (!LanguageHelper::isShopLanguage($language->kSprache, $allLanguages)) {
                 continue;
             }
-            if (!$language->cSeo) {
+            if ($language->cSeo) {
+                $language->cSeo = Seo::checkSeo(Seo::getSeo($language->cSeo, true));
+            } else {
                 $language->cSeo = $language->cName;
+                if (!$language->cSeo) {
+                    $language->cSeo = $category->cSeo;
+                }
+                if (!$language->cSeo) {
+                    $language->cSeo = $category->cName;
+                }
+                $language->cSeo = Seo::checkSeo(Seo::getSeo($language->cSeo));
             }
-            if (!$language->cSeo) {
-                $language->cSeo = $category->cSeo;
-            }
-            if (!$language->cSeo) {
-                $language->cSeo = $category->cName;
-            }
-            $language->cSeo = Seo::checkSeo(Seo::getSeo($language->cSeo, true));
             $this->insertOnExistUpdate('tkategoriesprache', [$language], ['kKategorie', 'kSprache']);
 
             $ins           = new stdClass();

@@ -95,7 +95,7 @@ final class Manufacturers extends AbstractSync
                 ['mid' => $id]
             );
             $manufacturers[$i]->cBildPfad = $manufacturerImage->cBildPfad ?? '';
-            $manufacturers[$i]->cSeo      = Seo::getSeo($manufacturers[$i]->cSeo);
+            $manufacturers[$i]->cSeo      = Seo::getSeo($manufacturers[$i]->cSeo, true);
             $this->upsert('thersteller', [$manufacturers[$i]], 'kHersteller');
 
             $xmlLanguage = [];
@@ -146,7 +146,7 @@ final class Manufacturers extends AbstractSync
             $baseSeo = $slug;
             foreach ($mfSeo as $mf) {
                 if (isset($mf->kSprache) && !empty($mf->cSeo) && (int)$mf->kSprache === $language->getId()) {
-                    $baseSeo = Seo::getSeo($mf->cSeo);
+                    $baseSeo = Seo::getSeo($mf->cSeo, true);
                     break;
                 }
             }

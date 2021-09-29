@@ -12,7 +12,6 @@ class ProductTemplate extends AbstractTemplate
      * replace product name with original name from db.
      *
      * @param object $data
-     *
      * @return object
      */
     protected function useOriginalName(object $data): object
@@ -23,6 +22,7 @@ class ProductTemplate extends AbstractTemplate
         ) {
             $data->tartikel->cName = $data->tartikel->originalName;
         }
+
         return $data;
     }
 }

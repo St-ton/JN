@@ -85,7 +85,9 @@ final class Manufacturers extends AbstractSync
             $id               = (int)$manufacturers[$i]->kHersteller;
             $affectedProducts = $this->db->selectAll('tartikel', 'kHersteller', $id, 'kArtikel');
             if (!\trim($manufacturers[$i]->cSeo)) {
-                $manufacturers[$i]->cSeo = Seo::getFlatSeoPath($manufacturers[$i]->cName);
+                $manufacturers[$i]->cSeo = Seo::getSeo(Seo::getFlatSeoPath($manufacturers[$i]->cName));
+            } else {
+                $manufacturers[$i]->cSeo = Seo::getSeo($manufacturers[$i]->cSeo, true);
             }
             // alten Bildpfad merken
             $manufacturerImage            = $this->db->getSingleObject(
@@ -95,7 +97,6 @@ final class Manufacturers extends AbstractSync
                 ['mid' => $id]
             );
             $manufacturers[$i]->cBildPfad = $manufacturerImage->cBildPfad ?? '';
-            $manufacturers[$i]->cSeo      = Seo::getSeo($manufacturers[$i]->cSeo, true);
             $this->upsert('thersteller', [$manufacturers[$i]], 'kHersteller');
 
             $xmlLanguage = [];

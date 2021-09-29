@@ -237,10 +237,10 @@ final class Products extends AbstractSync
     {
         if (!$products[0]->cSeo) {
             // get seo path from productname, but replace slashes
-            $products[0]->cSeo = Seo::getFlatSeoPath($products[0]->cName);
+            $products[0]->cSeo = Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($products[0]->cName)));
+        } else {
+            $products[0]->cSeo = Seo::checkSeo(Seo::getSeo($products[0]->cSeo, true));
         }
-        $products[0]->cSeo = Seo::getSeo($products[0]->cSeo, true);
-        $products[0]->cSeo = Seo::checkSeo($products[0]->cSeo);
         // persistente werte
         $products[0]->dLetzteAktualisierung = 'NOW()';
         // mysql strict fixes
@@ -337,16 +337,18 @@ final class Products extends AbstractSync
             if (!LanguageHelper::isShopLanguage($item->kSprache, $allLanguages)) {
                 continue;
             }
-            if (!$item->cSeo) {
-                $item->cSeo = Seo::getFlatSeoPath($item->cName);
+            if ($item->cSeo) {
+                $item->cSeo = Seo::getSeo($item->cSeo, true);
+            } else {
+                $item->cSeo = Seo::getSeo(Seo::getFlatSeoPath($item->cName));
+                if (!$item->cSeo) {
+                    $item->cSeo = Seo::getSeo($products[0]->cSeo, true);
+                }
+                if (!$item->cSeo) {
+                    $item->cSeo = Seo::getSeo($products[0]->cName);
+                }
             }
-            if (!$item->cSeo) {
-                $item->cSeo = $products[0]->cSeo;
-            }
-            if (!$item->cSeo) {
-                $item->cSeo = $products[0]->cName;
-            }
-            $item->cSeo = Seo::checkSeo(Seo::getSeo($item->cSeo, true));
+            $item->cSeo = Seo::checkSeo($item->cSeo);
 
             $this->upsert('tartikelsprache', [$item], 'kArtikel', 'kSprache');
             $this->db->delete(

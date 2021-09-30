@@ -17,11 +17,6 @@ function speicherAGBWRB(int $customerGroupID, int $languageID, array $post, int 
             Shop::Container()->getDB()->delete('ttext', 'kText', $textID);
             $item->kText = $textID;
         }
-        // Soll Standard sein?
-        if (isset($post['nStandard']) && (int)$post['nStandard'] > 0) {
-            // Standard umsetzen
-            Shop::Container()->getDB()->query('UPDATE ttext SET nStandard = 0');
-        }
         $item->kSprache            = $languageID;
         $item->kKundengruppe       = $customerGroupID;
         $item->cAGBContentText     = $post['cAGBContentText'];
@@ -32,7 +27,8 @@ function speicherAGBWRB(int $customerGroupID, int $languageID, array $post, int 
         $item->cDSEContentHtml     = $post['cDSEContentHtml'];
         $item->cWRBFormContentText = $post['cWRBFormContentText'];
         $item->cWRBFormContentHtml = $post['cWRBFormContentHtml'];
-        $item->nStandard           = $post['nStandard'] ?? 0;
+        /* deprecated */
+        $item->nStandard = 0;
 
         Shop::Container()->getDB()->insert('ttext', $item);
 

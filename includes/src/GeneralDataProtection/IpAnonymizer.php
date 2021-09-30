@@ -2,8 +2,10 @@
 
 namespace JTL\GeneralDataProtection;
 
+use Exception;
 use JTL\Shop;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 /**
  * Class IpAnonymizer
@@ -18,7 +20,7 @@ use Psr\Log\LoggerInterface;
 class IpAnonymizer
 {
     /**
-     * IP-string, human readable
+     * IP-string, human-readable
      *
      * @var string
      */
@@ -56,7 +58,7 @@ class IpAnonymizer
     private $placeholderIP = '0.0.0.0';
 
     /**
-     * flag for old fashioned anonymization ("do not anonymize again")
+     * flag for old-fashioned anonymization ("do not anonymize again")
      *
      * @var bool
      */
@@ -82,7 +84,7 @@ class IpAnonymizer
     {
         try {
             $this->logger = Shop::Container()->getLogService();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger = null;
         }
 
@@ -93,7 +95,7 @@ class IpAnonymizer
             $this->ip = $ip;
             try {
                 $this->init();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // The current PHP-version did not support IPv6 addresses!
                 if ($this->logger !== null) {
                     $this->logger->notice($e->getMessage());
@@ -108,12 +110,12 @@ class IpAnonymizer
     /**
      * analyze the given IP and set the object-values
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     private function init(): void
     {
         if ($this->ip === '' || \mb_strpos($this->ip, '*') !== false) {
-            // if there is an old fashioned anonymization or
+            // if there is an old-fashioned anonymization or
             // an empty string, we do nothing (but set a flag)
             $this->oldFashionedAnon = true;
 
@@ -140,7 +142,7 @@ class IpAnonymizer
                 $this->ipMask        = $this->getMaskV6();
             } else {
                 // this should normally never happen! (wrong compile-time setting of PHP)
-                throw new \RuntimeException('PHP wurde mit der Option "--disable-ipv6" compiliert!');
+                throw new RuntimeException('PHP wurde mit der Option "--disable-ipv6" compiliert!');
             }
         }
     }
@@ -148,7 +150,7 @@ class IpAnonymizer
     /**
      * @param string $ip
      * @return self
-     * @throws \Exception
+     * @throws Exception
      */
     public function setIp(string $ip = ''): self
     {
@@ -161,7 +163,7 @@ class IpAnonymizer
     }
 
     /**
-     * delivers am valid IP-string,
+     * delivers a valid IP-string,
      * (by conventions, with "0 summerized", for IPv6 addresses
      * use the "beautify-flag", during object construction, to get "0")
      *
@@ -203,7 +205,7 @@ class IpAnonymizer
 
     /**
      * delivers an IP the legacy way:
-     * not optimized (zeros summerized) and with atseriscs as obvuscation
+     * not optimized (zeros summerized) and with asteriscs as obvuscation
      *
      * @return string
      */

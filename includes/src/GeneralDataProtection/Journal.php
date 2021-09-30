@@ -22,7 +22,7 @@ use stdClass;
 class Journal
 {
     /**
-     * object-wide date at the point of instanciating
+     * object-wide date at the point of instantiating
      *
      * @var object DateTime
      */

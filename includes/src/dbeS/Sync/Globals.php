@@ -50,7 +50,7 @@ final class Globals extends AbstractSync
     private function handleInserts(array $xml): void
     {
         $source = $xml['globals'] ?? null;
-        if ($source !== null) {
+        if (\is_array($source)) {
             $this->updateCompany($source);
             $this->updateLanguages($source);
             $this->xml2db($source, 'tlieferstatus', 'mLieferstatus');
@@ -64,6 +64,8 @@ final class Globals extends AbstractSync
             $this->updateCustomerGroups($source);
             $this->updateWarehouses($source);
             $this->updateUnits($source);
+        } elseif ($source !== null) {
+            $this->logger->error(__METHOD__ . ': XML for globals is not correctly formatted.');
         }
         if (isset($xml['globals_wg']['tWarengruppe']) && \is_array($xml['globals_wg']['tWarengruppe'])) {
             $groups = $this->mapper->mapArray($xml['globals_wg'], 'tWarengruppe', 'mWarengruppe');

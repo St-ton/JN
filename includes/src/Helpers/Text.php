@@ -285,7 +285,7 @@ class Text
         $input = \preg_replace_callback(
             '~&#x([0-9a-fA-F]+);~i',
             static function ($x) {
-                return \chr(\hexdec($x[1]));
+                return \mb_chr(\hexdec($x[1]));
             },
             $input
         );
@@ -293,7 +293,7 @@ class Text
         return self::htmlentitydecode(\preg_replace_callback(
             '~&#([0-9]+);~',
             static function ($x) {
-                return \chr((int)$x[1]);
+                return \mb_chr((int)$x[1]);
             },
             $input
         ));

@@ -2,7 +2,7 @@
     {if $wishlists->isNotEmpty()}
         {block name='snippets-wishlist-dropdown-wishlists'}
             <div class="wishlist-dropdown-items table-responsive max-h-sm lg-max-h">
-                <table class="table table-vertical-middle table-striped">
+                <table class="table table-vertical-middle">
                     <tbody>
                         {foreach $wishlists as $wishlist}
                             <tr class="clickable-row cursor-pointer" data-href="{get_static_route id='wunschliste.php'}?wl={$wishlist->kWunschliste}">

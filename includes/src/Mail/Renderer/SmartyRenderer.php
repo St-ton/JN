@@ -50,9 +50,6 @@ class SmartyRenderer implements RendererInterface
      */
     public function renderTemplate(TemplateInterface $template, int $languageID): void
     {
-        if ($template === null) {
-            return;
-        }
         $model = $template->getModel();
         if ($model === null) {
             return;

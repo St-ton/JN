@@ -235,11 +235,11 @@ if (Form::validateToken()) {
                 $option = 'editieren';
             }
         } elseif (isset($postData['speichern'])) { // Vorlage speichern
-            $checks = $admin->saveTemplate($postData);
+            $checks = $admin->saveTemplate($_POST);
             if (is_array($checks) && count($checks) > 0) {
                 $step = 'vorlage_erstellen';
                 $smarty->assign('cPlausiValue_arr', $checks)
-                    ->assign('cPostVar_arr', $postData)
+                    ->assign('cPostVar_arr', $_POST)
                     ->assign('oNewsletterVorlage', $newsletterTPL);
             }
         } elseif (isset($postData['speichern_und_senden'])) { // Vorlage speichern und senden

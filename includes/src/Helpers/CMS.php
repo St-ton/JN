@@ -316,7 +316,7 @@ class CMS
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($tmpGifts as $item) {
             $product = new Artikel();
-            $product->fuelleArtikel($item->kArtikel, $defaultOptions);
+            $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
             $product->cBestellwert = Preise::getLocalizedPriceString((float)$item->cWert);
 
             if ($product->kEigenschaftKombi > 0 || \count($product->Variationen) === 0) {

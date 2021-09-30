@@ -144,6 +144,15 @@ class PageService
     }
 
     /**
+     * @param string $id
+     * @return int
+     */
+    public function getDraftCount(string $id): int
+    {
+        return $this->pageDB->getDraftCount($id);
+    }
+
+    /**
      * @param int $revId
      * @return Page
      * @throws Exception
@@ -249,61 +258,74 @@ class PageService
     }
 
     /**
+     * @param string $type
+     * @param $id
+     * @param int $langID
+     * @param null $params
+     * @return string
+     */
+    public function createGenericPageId(string $type, $id, int $langID = 0, $params = null): string
+    {
+        if ($langID === 0) {
+            $langID = Shop::getLanguageID();
+        }
+        $pageIdObj = (object)[
+            'lang' => $langID,
+            'type' => $type,
+            'id'   => $id
+        ];
+        if ($params !== null) {
+            if (!empty($params['MerkmalFilter'])) {
+                $pageIdObj->attribs = $params['MerkmalFilter'];
+            }
+            if (!empty($params['cPreisspannenFilter'])) {
+                $pageIdObj->range = $params['cPreisspannenFilter'];
+            }
+            if (!empty($params['kHerstellerFilter'])) {
+                $pageIdObj->manufacturerFilter = $params['kHerstellerFilter'];
+            }
+        }
+        return \json_encode($pageIdObj);
+    }
+
+    /**
      * @param int $langID
      * @return string
      */
     public function createCurrentPageId(int $langID = 0): ?string
     {
-        if ($langID === 0) {
-            $langID = Shop::getLanguageID();
-        }
-        $params    = Shop::getParameters();
-        $pageIdObj = (object)['lang' => $langID];
+        $params = Shop::getParameters();
         if ($params['kKategorie'] > 0) {
-            $pageIdObj->type = 'category';
-            $pageIdObj->id   = $params['kKategorie'];
-        } elseif ($params['kHersteller'] > 0) {
-            $pageIdObj->type = 'manufacturer';
-            $pageIdObj->id   = $params['kHersteller'];
-        } elseif ($params['kArtikel'] > 0) {
-            $pageIdObj->type = 'product';
-            $pageIdObj->id   = $params['kArtikel'];
-        } elseif ($params['kLink'] > 0) {
+            return $this->createGenericPageId('category', $params['kKategorie'], $langID, $params);
+        }
+        if ($params['kHersteller'] > 0) {
+            return $this->createGenericPageId('manufacturer', $params['kHersteller'], $langID, $params);
+        }
+        if ($params['kArtikel'] > 0) {
+            return $this->createGenericPageId('product', $params['kArtikel'], $langID, $params);
+        }
+        if ($params['kLink'] > 0) {
             if (\in_array($params['nLinkart'], [\LINKTYP_BESTELLVORGANG, \LINKTYP_BESTELLABSCHLUSS], true)) {
                 return null;
             }
-            $pageIdObj->type = 'link';
-            $pageIdObj->id   = $params['kLink'];
-        } elseif ($params['kMerkmalWert'] > 0) {
-            $pageIdObj->type = 'attrib';
-            $pageIdObj->id   = $params['kMerkmalWert'];
-        } elseif ($params['kSuchspecial'] > 0) {
-            $pageIdObj->type = 'special';
-            $pageIdObj->id   = $params['kSuchspecial'];
-        } elseif ($params['kNews'] > 0) {
-            $pageIdObj->type = 'news';
-            $pageIdObj->id   = $params['kNews'];
-        } elseif ($params['kNewsKategorie'] > 0) {
-            $pageIdObj->type = 'newscat';
-            $pageIdObj->id   = $params['kNewsKategorie'];
-        } elseif (\mb_strlen($params['cSuche']) > 0) {
-            $pageIdObj->type = 'search';
-            $pageIdObj->id   = $params['cSuche'];
-        } else {
-            $pageIdObj->type = 'other';
-            $pageIdObj->id   = \md5(\serialize($params));
+            return $this->createGenericPageId('link', $params['kLink'], $langID, $params);
         }
-        if (!empty($params['MerkmalFilter'])) {
-            $pageIdObj->attribs = $params['MerkmalFilter'];
+        if ($params['kMerkmalWert'] > 0) {
+            return $this->createGenericPageId('attrib', $params['kMerkmalWert'], $langID, $params);
         }
-        if (!empty($params['cPreisspannenFilter'])) {
-            $pageIdObj->range = $params['cPreisspannenFilter'];
+        if ($params['kSuchspecial'] > 0) {
+            return $this->createGenericPageId('special', $params['kSuchspecial'], $langID, $params);
         }
-        if (!empty($params['kHerstellerFilter'])) {
-            $pageIdObj->manufacturerFilter = $params['kHerstellerFilter'];
+        if ($params['kNews'] > 0) {
+            return $this->createGenericPageId('news', $params['kNews'], $langID, $params);
         }
-
-        return \json_encode($pageIdObj);
+        if ($params['kNewsKategorie'] > 0) {
+            return $this->createGenericPageId('newscat', $params['kNewsKategorie'], $langID, $params);
+        }
+        if (\mb_strlen($params['cSuche']) > 0) {
+            return $this->createGenericPageId('search', $params['cSuche'], $langID, $params);
+        }
+        return $this->createGenericPageId('other', \md5(\serialize($params)), $langID, $params);
     }
 
     /**

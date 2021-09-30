@@ -1110,16 +1110,11 @@ final class Controller
      */
     public function hasOPCContent(array $languages, int $newsId): bool
     {
-        $opcPageDb = new PageDB($this->db);
-        $opcIdObj  = (object)[
-            'lang' => null,
-            'type' => 'news',
-            'id'   => $newsId,
-        ];
-
+        $pageService = Shop::Container()->getOPCPageService();
+        
         foreach ($languages as $language) {
-            $opcIdObj->lang = $language->getId();
-            if ($opcPageDb->getDraftCount(\json_encode($opcIdObj)) > 0) {
+            $pageID = $pageService->createGenericPageId('news', $newsId, $language->getId());
+            if ($pageService->getDraftCount($pageID) > 0) {
                 return true;
             }
         }

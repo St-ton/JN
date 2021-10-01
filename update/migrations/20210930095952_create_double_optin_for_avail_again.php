@@ -32,7 +32,7 @@ class Migration_20210930095952 extends Migration implements IMigration
                 vfb.cVorname, vfb.cNachname, vfb.cMail, vfb.dErstellt
                 FROM tverfuegbarkeitsbenachrichtigung AS vfb
                 INNER JOIN (
-                    SELECT MIN(tmigration.dExecuted) dDate
+                    SELECT MIN(tmigration.dExecuted) AS dDate
                     FROM tmigration
                     WHERE tmigration.nVersion >= 500) AS min500
                     ON min500.dDate > vfb.dErstellt
@@ -44,7 +44,7 @@ class Migration_20210930095952 extends Migration implements IMigration
             $options                             = Artikel::getDefaultOptions();
             $options->nKeineSichtbarkeitBeachten = 1;
 
-            $product = (new Artikel())->fuelleArtikel((int) $subscription->kArtikel, $options);
+            $product = (new Artikel())->fuelleArtikel((int)$subscription->kArtikel, $options);
             if ($product === null || empty($subscription->cMail)) {
                 continue;
             }

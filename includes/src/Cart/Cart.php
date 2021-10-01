@@ -413,7 +413,7 @@ class Cart
             $cartItem->cName[$lang->getCode()] = (isset($localized->cName) && \mb_strlen(\trim($localized->cName)) > 0)
                 ? $localized->cName
                 : $cartItem->Artikel->cName;
-            $lieferstatus_spr             = $db->select(
+            $lieferstatus_spr                  = $db->select(
                 'tlieferstatus',
                 'kLieferstatus',
                 (int)($cartItem->Artikel->kLieferstatus ?? 0),
@@ -1050,7 +1050,7 @@ class Cart
             }
             if ($name && $configItem->getUseOwnName()) {
                 foreach (Frontend::getLanguages() as $language) {
-                    $localized                    = new ItemLocalization(
+                    $localized                         = new ItemLocalization(
                         $configItem->getKonfigitem(),
                         $language->getId()
                     );
@@ -1731,7 +1731,7 @@ class Cart
         $specialPosition        = new stdClass();
         $specialPosition->cName = [];
         foreach (Frontend::getLanguages() as $language) {
-            $localized                               = Shop::Container()->getDB()->select(
+            $localized                                    = Shop::Container()->getDB()->select(
                 'tkuponsprache',
                 'kKupon',
                 (int)$coupon->kKupon,

@@ -708,7 +708,7 @@ class Kupon
         $translationList = [];
         $db              = Shop::Container()->getDB();
         foreach (Frontend::getLanguages() ?? [] as $language) {
-            $localized                        = $db->select(
+            $localized                             = $db->select(
                 'tkuponsprache',
                 'kKupon',
                 $id,

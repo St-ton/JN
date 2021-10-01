@@ -333,7 +333,7 @@ class LanguageHelper
             return true;
         });
         /** @var Collection $data */
-        $this->availableLanguages = $data->map(static function ($e) {
+        $this->availableLanguages = $data->map(static function (stdClass $e) {
             return (object)['kSprache' => (int)$e->kSprache];
         })->toArray();
 
@@ -1238,9 +1238,7 @@ class LanguageHelper
      */
     private function mappedGetIsoCodeByCountryName(string $country): string
     {
-        $iso = Shop::Container()->getCountryService()->getIsoByCountryName($country);
-
-        return $iso ?? 'noISO';
+        Shop::Container()->getCountryService()->getIsoByCountryName($country) ?? 'noISO';
     }
 
     /**

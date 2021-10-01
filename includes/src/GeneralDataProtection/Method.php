@@ -16,7 +16,7 @@ use Psr\Log\LoggerInterface;
 class Method
 {
     /**
-     * object wide date at the point of instanciating
+     * object wide date at the point of instantiating
      *
      * @var DateTime
      */
@@ -40,7 +40,7 @@ class Method
 
     /**
      * the last date we keep
-     * (depending from interval)
+     * (depends on interval)
      *
      * @var string
      */
@@ -59,7 +59,6 @@ class Method
     protected $db;
 
     /**
-     * Method constructor.
      * @param DateTime    $now
      * @param int         $interval
      * @param DbInterface $db

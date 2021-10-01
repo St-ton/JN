@@ -177,4 +177,10 @@ msgid "authorNotAvailable"
 msgstr "Nicht verfügbar"
 
 msgid "noNewsAuthor"
-msgstr "Kein Autor vorhanden. Kein Autor vorhanden. Falls Sie für den Beitrag einen verantwortlichen Autor angeben wollen, erstellen Sie bitte zuerst einen entsprechenden Benutzer mit Zugriffsrechten für den Blog."
+msgstr "Kein Autor vorhanden. Falls Sie für den Beitrag einen verantwortlichen Autor angeben wollen, erstellen Sie bitte zuerst einen entsprechenden Benutzer mit Zugriffsrechten für den Blog."
+
+msgid "All content is empty"
+msgstr "Text und Vorschautext für den Blogbeitrag sind in allen Sprachen leer!"
+
+msgid "OPC content available"
+msgstr "Für diesen Blogbeitrag gibt es gespeicherte OPC-Inhalte."

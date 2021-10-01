@@ -3,6 +3,7 @@
 namespace JTL\GeneralDataProtection;
 
 use DateTime;
+use Exception;
 use JTL\DB\DbInterface;
 use JTL\Shop;
 use Psr\Log\LoggerInterface;
@@ -40,25 +41,25 @@ class TableCleaner
      * @var array
      */
     private $methods = [
-        ['name' => 'AnonymizeIps', 'intervalDays' => 7],
-        ['name' => 'AnonymizeDeletedCustomer', 'intervalDays' => 7],
-        ['name' => 'CleanupCustomerRelicts', 'intervalDays' => 0],
-        ['name' => 'CleanupGuestAccountsWithoutOrders', 'intervalDays' => 0],
-        ['name' => 'CleanupNewsletterRecipients', 'intervalDays' => 30],
-        ['name' => 'CleanupLogs', 'intervalDays' => 90],
-        ['name' => 'CleanupService', 'intervalDays' => 0], // multiple own intervals
-        ['name' => 'CleanupForgottenOptins', 'intervalDays' => 1]  // same as 24 hours
+        ['name' => 'AnonymizeIps'                      , 'intervalDays' => 7],
+        ['name' => 'AnonymizeDeletedCustomer'          , 'intervalDays' => 7],
+        ['name' => 'CleanupCustomerRelicts'            , 'intervalDays' => 0],
+        ['name' => 'CleanupGuestAccountsWithoutOrders' , 'intervalDays' => 0],
+        ['name' => 'CleanupNewsletterRecipients'       , 'intervalDays' => 30],
+        ['name' => 'CleanupLogs'                       , 'intervalDays' => 90],
+        ['name' => 'CleanupService'                    , 'intervalDays' => 0], // multiple own intervals
+        ['name' => 'CleanupForgottenOptins'            , 'intervalDays' => 1]  // same as 24 hours
     ];
 
     /**
      * TableCleaner constructor.
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct()
     {
         try {
             $this->logger = Shop::Container()->getLogService();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger = null;
         }
         $this->db  = Shop::Container()->getDB();

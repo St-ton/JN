@@ -243,39 +243,38 @@ class ShippingMethod
                     : \round($shippingMethod->fEndpreis, 2);
                 $vatNote       = ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' .
                     Shop::Lang()->get('vat', 'productDetails');
+            } elseif ($gross) {
+                $shippingCosts = $shippingMethod->fEndpreis;
             } else {
-                if ($gross) {
-                    $shippingCosts = $shippingMethod->fEndpreis;
-                } else {
-                    $oldDeliveryCountryCode = $_SESSION['cLieferlandISO'];
-                    if ($oldDeliveryCountryCode !== $countryCode) {
-                        Tax::setTaxRates($countryCode, true);
-                    }
-                    $shippingCosts = \round(
-                        $shippingMethod->fEndpreis * (100 + Tax::getSalesTax($taxClassID)) / 100,
-                        2
-                    );
-                    if ($oldDeliveryCountryCode !== $countryCode) {
-                        Tax::setTaxRates($oldDeliveryCountryCode, true);
-                    }
+                $oldDeliveryCountryCode = $_SESSION['cLieferlandISO'];
+                if ($oldDeliveryCountryCode !== $countryCode) {
+                    Tax::setTaxRates($countryCode, true);
+                }
+                $shippingCosts = \round(
+                    $shippingMethod->fEndpreis * (100 + Tax::getSalesTax($taxClassID)) / 100,
+                    2
+                );
+                if ($oldDeliveryCountryCode !== $countryCode) {
+                    Tax::setTaxRates($oldDeliveryCountryCode, true);
                 }
             }
             $shippingMethod->angezeigterName           = [];
             $shippingMethod->angezeigterHinweistext    = [];
             $shippingMethod->cLieferdauer              = [];
             $shippingMethod->specificShippingcosts_arr = null;
-            foreach ($_SESSION['Sprachen'] as $language) {
+            foreach (Frontend::getLanguages() as $language) {
+                $code      = $language->getCode();
                 $localized = $db->select(
                     'tversandartsprache',
                     'kVersandart',
                     (int)$shippingMethod->kVersandart,
                     'cISOSprache',
-                    $language->cISO
+                    $code
                 );
                 if (isset($localized->cName)) {
-                    $shippingMethod->angezeigterName[$language->cISO]        = $localized->cName;
-                    $shippingMethod->angezeigterHinweistext[$language->cISO] = $localized->cHinweistextShop;
-                    $shippingMethod->cLieferdauer[$language->cISO]           = $localized->cLieferdauer;
+                    $shippingMethod->angezeigterName[$code]        = $localized->cName;
+                    $shippingMethod->angezeigterHinweistext[$code] = $localized->cHinweistextShop;
+                    $shippingMethod->cLieferdauer[$code]           = $localized->cLieferdauer;
                 }
             }
             if ($shippingMethod->fEndpreis < $minSum && $shippingMethod->cIgnoreShippingProposal !== 'Y') {
@@ -851,9 +850,9 @@ class ShippingMethod
                         if ($price >= 0 && $limit > 0 && $amount <= $limit) {
                             $item        = new stdClass();
                             $item->cName = [];
-                            foreach ($_SESSION['Sprachen'] as $language) {
-                                $item->cName[$language->cISO] = Shop::Lang()->get('shippingFor', 'checkout') .
-                                    ' ' . $product->cName . ' (' . $countries . ')';
+                            foreach (Frontend::getLanguages() as $language) {
+                                $item->cName[$language->getCode()] = Shop::Lang()->get('shippingFor', 'checkout')
+                                    . ' ' . $product->cName . ' (' . $countries . ')';
                             }
                             $item->fKosten = $price;
                             if ($netPricesActive === true) {
@@ -886,8 +885,8 @@ class ShippingMethod
                 $item = new stdClass();
                 //posname lokalisiert ablegen
                 $item->cName = [];
-                foreach ($_SESSION['Sprachen'] as $language) {
-                    $item->cName[$language->cISO] = Shop::Lang()->get('shippingFor', 'checkout')
+                foreach (Frontend::getLanguages() as $language) {
+                    $item->cName[$language->getCode()] = Shop::Lang()->get('shippingFor', 'checkout')
                         . ' ' . $product->cName . ' (' . $countries . ')';
                 }
                 $item->fKosten = (float)\str_replace(',', '.', $shippingCosts) * $amount;

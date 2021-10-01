@@ -555,7 +555,7 @@ final class LinkService implements LinkServiceInterface
                 'kKundengruppe',
                 $customerGroupID,
                 'kSprache',
-                LanguageHelper::getDefaultLanguage()->kSprache
+                LanguageHelper::getDefaultLanguage()->getId()
             );
         }
         if (empty($data->kText)) {
@@ -564,7 +564,7 @@ final class LinkService implements LinkServiceInterface
                 'kKundengruppe',
                 (new CustomerGroup())->loadDefaultGroup()->getID(),
                 'kSprache',
-                LanguageHelper::getDefaultLanguage()->kSprache
+                LanguageHelper::getDefaultLanguage()->getId()
             );
         }
         if (empty($data->kText)) {

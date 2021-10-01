@@ -182,7 +182,7 @@ class Kategorie
         }
         $languageID = $languageID ?: Shop::getLanguageID();
         if (!$languageID) {
-            $languageID = LanguageHelper::getDefaultLanguage()->kSprache;
+            $languageID = LanguageHelper::getDefaultLanguage()->getId();
         }
         $this->kSprache    = $languageID;
         $defaultLangActive = LanguageHelper::isDefaultLanguageActive(false, $languageID);
@@ -240,7 +240,7 @@ class Kategorie
         if ($item === null) {
             if (!$recall && !$defaultLangActive) {
                 if (\EXPERIMENTAL_MULTILANG_SHOP === true) {
-                    $defaultLangID = LanguageHelper::getDefaultLanguage()->kSprache;
+                    $defaultLangID = LanguageHelper::getDefaultLanguage()->getId();
                     if ($defaultLangID !== $languageID) {
                         return $this->loadFromDB($id, $defaultLangID, $customerGroupID, true);
                     }
@@ -292,7 +292,7 @@ class Kategorie
         if (!empty($item->cSeo) || \EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return;
         }
-        $defaultLangID = LanguageHelper::getDefaultLanguage()->kSprache;
+        $defaultLangID = LanguageHelper::getDefaultLanguage()->getId();
         if ($languageID !== $defaultLangID) {
             $seo = $db->select(
                 'tseo',

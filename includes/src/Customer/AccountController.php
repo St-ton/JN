@@ -407,7 +407,7 @@ class AccountController
             }
         }
         $this->checkCoupons($coupons);
-        $this->updateCustomerLanguage($customer->kSprache);
+        $this->updateCustomerLanguage($customer->getLanguageID());
         Shop::Container()->getLinkService()->reset();
     }
 

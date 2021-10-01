@@ -2972,12 +2972,14 @@ class Artikel
             ['kArtikel' => $this->kArtikel]
         );
         foreach (Frontend::getLanguages() as $language) {
-            $this->cSprachURL_arr[$language->cISO] = '?a=' . $this->kArtikel . '&amp;lang=' . $language->cISO;
+            $code = $language->getCode();
+
+            $this->cSprachURL_arr[$code] = '?a=' . $this->kArtikel . '&amp;lang=' . $code;
             foreach ($seoData as $item) {
                 $item->kSprache = (int)$item->kSprache;
-                if ($language->kSprache === $item->kSprache) {
+                if ($language->getId() === $item->kSprache) {
                     if ($item->cSeo !== '') {
-                        $this->cSprachURL_arr[$language->cISO] = $item->cSeo;
+                        $this->cSprachURL_arr[$code] = $item->cSeo;
                     }
                     break;
                 }
@@ -4749,7 +4751,7 @@ class Artikel
     ) {
         if (!isset($_SESSION['cISOSprache'])) {
             $defaultLanguage = LanguageHelper::getDefaultLanguage();
-            Shop::setLanguage($defaultLanguage->kSprache, $defaultLanguage->cISO);
+            Shop::setLanguage($defaultLanguage->getId(), $defaultLanguage->getCode());
         }
         if ($purchaseQuantity !== null) {
             $purchaseQuantity = (float)$purchaseQuantity;

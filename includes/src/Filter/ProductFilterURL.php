@@ -10,6 +10,7 @@ use JTL\Filter\Items\Rating;
 use JTL\Filter\Items\Search;
 use JTL\Filter\Items\SearchSpecial;
 use JTL\Filter\States\BaseSearchQuery;
+use JTL\Language\LanguageModel;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -214,8 +215,8 @@ class ProductFilterURL
             }
         }
         if (empty($seoFilterParams) && $languageID !== Shop::getLanguageID()) {
-            $language = first(Frontend::getLanguages(), static function ($l) use ($languageID) {
-                return $l->kSprache === $languageID;
+            $language = first(Frontend::getLanguages(), static function (LanguageModel $l) use ($languageID) {
+                return $l->getId() === $languageID;
             });
             if ($language !== null) {
                 $nonSeoFilterParams['lang'] = $language->cISO;

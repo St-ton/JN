@@ -148,7 +148,7 @@ abstract class AbstractLink implements LinkInterface
         $byCode    = [];
         $languages = LanguageHelper::getAllLanguages(1);
         foreach ($this->getNames() as $langID => $name) {
-            $byCode[$languages[$langID]->cISO] = $name;
+            $byCode[$languages[$langID]->getCode()] = $name;
         }
 
         return $byCode;

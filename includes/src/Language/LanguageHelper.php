@@ -399,8 +399,8 @@ class LanguageHelper
         } else {
             $language = $this->mappedGetDefaultLanguage();
             if (isset($language->cISO) && \mb_strlen($language->cISO) > 0) {
-                $this->currentISOCode = $language->cISO;
-                $this->kSprache       = $language->id;
+                $this->currentISOCode = $language->getCode();
+                $this->kSprache       = $language->getId();
             }
         }
         $this->currentLanguageID = $this->kSprache;

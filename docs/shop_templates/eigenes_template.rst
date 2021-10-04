@@ -215,7 +215,7 @@ Unterverzeichnis ``js/``.
         <Description>Mein erstes Child-Template</Description>
 
         <Minify>
-            <JS Name="mythememini.js">
+            <JS Name="jtl3.js">
                 <File Path="js/mytheme.js"/>
                 <File Path="js/jtl.evo.js" override="true"/>
             </JS>
@@ -226,8 +226,12 @@ Unterverzeichnis ``js/``.
     </Template>
 
 Dieses Beispiel würde bewirken, dass die Datei ``js/jtl.evo.js`` Ihres Child-Templates anstelle der originalen Datei
-des Evo-Templates eingebunden wird.  Ohne das **override**-Attribut würde die genannte Datei **zusätzlich**
-zur ``jtl.evo.js`` des Parent-Templates eingebunden werden.
+des Evo-Templates eingebunden wird. |br|
+Ohne das **override**-Attribut würde die genannte Datei **zusätzlich** zur ``jtl.evo.js`` des Parent-Templates
+eingebunden werden.
+
+Der Name des minifizierten und zum Browser übermittelten Javascripts (``jtl3.js``) ist eine feste Konstante und kann
+nicht angepaßt werden.
 
 Eigene Skripte nachladen
 ------------------------

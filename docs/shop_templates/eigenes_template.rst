@@ -231,7 +231,7 @@ Ohne das **override**-Attribut würde die genannte Datei **zusätzlich** zur ``j
 eingebunden werden.
 
 Der Name des minifizierten und zum Browser übermittelten Javascripts (``jtl3.js``) ist eine feste Konstante und kann
-nicht angepaßt werden.
+nicht angepasst werden.
 
 Eigene Skripte nachladen
 ------------------------

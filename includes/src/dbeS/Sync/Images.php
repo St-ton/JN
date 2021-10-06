@@ -1128,7 +1128,7 @@ final class Images extends AbstractSync
             $posX = ($containerWidth / 2) - ($width / 2);
             $posY = ($containerHeight / 2) - ($height / 2);
         }
-        \imagecopyresampled($newImg, $im, $posX, $posY, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
+        \imagecopyresampled($newImg, $im, (int)$posX, (int)$posY, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
 
         return $newImg;
     }

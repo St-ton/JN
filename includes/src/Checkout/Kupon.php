@@ -1052,7 +1052,7 @@ class Kupon
         $languageHelper = LanguageHelper::getInstance();
         $oldLangISO     = $languageHelper->getIso();
         foreach (Frontend::getLanguages() as $language) {
-            $code = $language->cISO;
+            $code = $language->getCode();
             if ($coupon->cWertTyp === 'prozent'
                 && $coupon->nGanzenWKRabattieren === 0
                 && $coupon->cKuponTyp !== self::TYPE_NEWCUSTOMER

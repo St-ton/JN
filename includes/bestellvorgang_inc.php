@@ -1476,13 +1476,13 @@ function gibZahlungsart(int $paymentMethodID)
             'kZahlungsart',
             $paymentMethodID,
             'cISOSprache',
-            $language->cISO,
+            $language->getCode(),
             null,
             null,
             false,
             'cName'
         );
-        $method->angezeigterName[$language->cISO] = $localized->cName ?? null;
+        $method->angezeigterName[$language->getCode()] = $localized->cName ?? null;
     }
     $confData = Shop::Container()->getDB()->getObjects(
         'SELECT *

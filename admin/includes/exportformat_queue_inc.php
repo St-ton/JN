@@ -48,9 +48,8 @@ function holeExportformatCron(): array
         $export->cronID             = (int)$export->cronID;
         $export->frequency          = (int)$export->frequency;
         $export->cAlleXStdToDays    = rechneUmAlleXStunden($export->frequency);
+        $export->frequencyLocalized = $export->cAlleXStdToDays;
         $export->Sprache            = Shop::Lang()->getLanguageByID($export->kSprache);
-        $export->frequencyLocalized = rechneUmAlleXStunden($export->frequency);
-        $export->cAlleXStdToDays    = $export->frequencyLocalized;
         $exporter->init($export->kExportformat);
         $export->Waehrung     = $db->select(
             'twaehrung',

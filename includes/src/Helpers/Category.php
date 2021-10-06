@@ -128,12 +128,13 @@ class Category
             }
             $nodes = $this->getNodes();
             foreach ($nodes as $cat) {
+                $id = $cat->getID();
                 $cat->setURL(URL::buildURL($cat, \URLART_KATEGORIE, true));
-                $cat->setFunctionalAttributes($functionAttributes[$cat->getID()] ?? []);
-                $cat->setAttributes($localizedAttributes[$cat->getID()] ?? []);
+                $cat->setFunctionalAttributes($functionAttributes[$id] ?? []);
+                $cat->setAttributes($localizedAttributes[$id] ?? []);
                 $cat->setShortName($cat->getAttribute(\ART_ATTRIBUT_SHORTNAME)->cWert ?? $cat->getName());
             }
-            $fullCats = $this->buildTree($nodes);
+            $fullCats = $this->buildTree2($nodes);
             $fullCats = $this->setOrphanedCategories($nodes, $fullCats);
 
             if ($filterEmpty) {
@@ -233,14 +234,14 @@ class Category
         }
 
         return self::$db->getCollection(
-            'SELECT node.kKategorie, node.kOberKategorie, tseo.cSeo' . $nameSelect .
+            'SELECT node.kKategorie, node.lft, node.rght, node.kOberKategorie, tseo.cSeo' . $nameSelect .
                 $descriptionSelect . $imageSelect . $countSelect . '
-                FROM (SELECT node.kKategorie, node.nLevel, node.kOberKategorie, node.cName, node.cBeschreibung, node.lft
+                FROM (SELECT node.kKategorie, node.nLevel, node.kOberKategorie, node.cName, node.cBeschreibung, node.lft, node.rght
                     FROM tkategorie AS node
                     INNER JOIN tkategorie AS parent ON node.lft BETWEEN parent.lft AND parent.rght
                     WHERE parent.kOberKategorie = 0 AND node.nLevel > 0 AND parent.nLevel > 0 ' . $depthWhere . '
                     UNION
-                    SELECT node.kKategorie, node.nLevel, node.kOberKategorie, node.cName, node.cBeschreibung, node.lft
+                    SELECT node.kKategorie, node.nLevel, node.kOberKategorie, node.cName, node.cBeschreibung, node.lft, node.rght
                     FROM tkategorie AS node
                     INNER JOIN tkategorie AS parent ON node.lft BETWEEN parent.lft AND parent.rght
                     WHERE node.nLevel > 0 AND parent.nLevel > 0 ' . $depthWhere . ' AND NOT EXISTS(
@@ -294,7 +295,7 @@ class Category
      * @param int        $parentID
      * @return array
      */
-    private function buildTree(array $elements, int $parentID = 0): array
+    private function buildTree(array &$elements, int $parentID = 0): array
     {
         $branch = [];
         foreach ($elements as $element) {
@@ -305,6 +306,31 @@ class Category
                     $element->setHasChildren(\count($children) > 0);
                 }
                 $branch[$element->getID()] = $element;
+            }
+        }
+
+        return $branch;
+    }
+
+    /**
+     * @param MenuItem[] $elements
+     * @param int        $parentID
+     * @return array
+     */
+    private function buildTree2(array &$elements, int $parentID = 0, int $rght = 0, int $depth = 0): array
+    {
+        $branch = [];
+        foreach ($elements as $j => $element) {
+            if ($element->getParentID() === $parentID) {
+                unset($elements[$j]);
+                $children = $this->buildTree2($elements, $element->getID(), $element->getRight(), ++$depth);
+                if ($children) {
+                    $element->setChildren($children);
+                    $element->setHasChildren(\count($children) > 0);
+                }
+                $branch[$element->getID()] = $element;
+            } elseif ($rght !== 0 && $element->getLeft() > $rght) {
+                break;
             }
         }
 
@@ -682,7 +708,7 @@ class Category
         });
 
         foreach ($orphanedCategories as $oCat) {
-            $children = $this->buildTree($nodes, $oCat->getID());
+            $children = $this->buildTree2($nodes, $oCat->getID());
             $oCat->setParentID(0);
             $oCat->setOrphaned(true);
             $oCat->setChildren($children);

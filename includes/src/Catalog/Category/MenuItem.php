@@ -106,6 +106,16 @@ class MenuItem
     public $orphaned = false;
 
     /**
+     * @var int
+     */
+    private $lft = 0;
+
+    /**
+     * @var int
+     */
+    private $rght = 0;
+
+    /**
      * @return int
      */
     public function getID(): int
@@ -359,11 +369,45 @@ class MenuItem
     }
 
     /**
+     * @return int
+     */
+    public function getLeft(): int
+    {
+        return $this->lft;
+    }
+
+    /**
+     * @param int $lft
+     */
+    public function setLeft(int $lft): void
+    {
+        $this->lft = $lft;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRight(): int
+    {
+        return $this->rght;
+    }
+
+    /**
+     * @param int $rght
+     */
+    public function setRight(int $rght): void
+    {
+        $this->rght = $rght;
+    }
+
+    /**
      * MenuItem constructor.
      * @param stdClass $data
      */
     public function __construct(stdClass $data)
     {
+        $this->setLeft((int)$data->lft);
+        $this->setRight((int)$data->rght);
         $this->setImageType(Image::TYPE_CATEGORY);
         $this->setID((int)$data->kKategorie);
         $this->setParentID((int)$data->kOberKategorie);

@@ -1471,7 +1471,7 @@ function gibZahlungsart(int $paymentMethodID)
 {
     $method = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
     foreach (Frontend::getLanguages() as $language) {
-        $localized                                = Shop::Container()->getDB()->select(
+        $localized                                     = Shop::Container()->getDB()->select(
             'tzahlungsartsprache',
             'kZahlungsart',
             $paymentMethodID,

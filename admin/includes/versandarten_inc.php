@@ -132,7 +132,7 @@ function gibGesetzteVersandklassen(string $shippingClasses): array
  * @param string $shippingClasses
  * @return array
  */
-function gibGesetzteVersandklassenUebersicht($shippingClasses)
+function gibGesetzteVersandklassenUebersicht($shippingClasses): array
 {
     if (trim($shippingClasses) === '-1') {
         return ['Alle'];

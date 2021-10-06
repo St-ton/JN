@@ -1465,28 +1465,27 @@ function GetKampTypeName($type)
 
 /**
  * @param array $stats
- * @param mixed $type
+ * @param int   $type
  * @return Linechart
  */
-function PrepareLineChartKamp($stats, $type)
+function PrepareLineChartKamp(array $stats, int $type)
 {
     $chart = new Linechart(['active' => false]);
-    if (!is_array($stats) || count($stats) === 0) {
+    if (count($stats) === 0) {
         return $chart;
     }
     $chart->setActive(true);
     $data = [];
-    foreach ($stats as $Date => $Dates) {
-        if (mb_strpos($Date, 'Gesamt') === false) {
+    foreach ($stats as $date => $dates) {
+        if (mb_strpos($date, 'Gesamt') === false) {
             $x = '';
-            foreach ($Dates as $Key => $Stat) {
-                if (mb_strpos($Key, 'cDatum') !== false) {
-                    $x = $Dates[$Key];
+            foreach ($dates as $key => $stat) {
+                if (is_string($key) && mb_strpos($key, 'cDatum') !== false) {
+                    $x = $dates[$key];
                 }
-
-                if ($Key == $type) {
+                if ($key === $type) {
                     $obj    = new stdClass();
-                    $obj->y = (float)$Stat;
+                    $obj->y = (float)$stat;
 
                     $chart->addAxis((string)$x);
                     $data[] = $obj;

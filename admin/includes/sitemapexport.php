@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Product\Artikel;

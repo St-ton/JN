@@ -127,12 +127,12 @@ class Queue
             $job                       = $this->factory->create($queueEntry);
             $queueEntry->tasksExecuted = $job->getExecuted();
             $queueEntry->taskLimit     = $job->getLimit();
-            $queueEntry->isRunning     = true;
+            $queueEntry->isRunning     = 1;
             $this->logger->notice('Got job ' . \get_class($job)
                 . ' (ID = ' . $job->getCronID()
                 . ', type = ' . $job->getType() . ')');
             $job->start($queueEntry);
-            $queueEntry->isRunning = false;
+            $queueEntry->isRunning = 0;
             $queueEntry->lastStart = new DateTime();
             $this->db->update(
                 'tcron',

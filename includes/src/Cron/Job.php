@@ -474,7 +474,7 @@ abstract class Job implements JobInterface
      */
     public function isRunning(): bool
     {
-        return $this->running;
+        return (int)$this->running === 1;
     }
 
     /**
@@ -482,7 +482,7 @@ abstract class Job implements JobInterface
      */
     public function setRunning(bool $running): void
     {
-        $this->running = $running;
+        $this->running = (int)$running;
     }
 
     /**

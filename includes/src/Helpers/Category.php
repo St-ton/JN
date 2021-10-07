@@ -8,6 +8,7 @@ use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class Category
@@ -126,23 +127,21 @@ class Category
                     $localizedAttributes[$catID][$idx] = $catAttribute;
                 }
             }
-            $nodes = $this->getNodes();
+            $prefix = Shop::getURL() . '/';
+            $nodes  = $this->getNodes();
             foreach ($nodes as $cat) {
                 $id = $cat->getID();
-                $cat->setURL(URL::buildURL($cat, \URLART_KATEGORIE, true));
+                $cat->setURL(URL::buildURL($cat, \URLART_KATEGORIE, true, $prefix));
                 $cat->setFunctionalAttributes($functionAttributes[$id] ?? []);
                 $cat->setAttributes($localizedAttributes[$id] ?? []);
                 $cat->setShortName($cat->getAttribute(\ART_ATTRIBUT_SHORTNAME)->cWert ?? $cat->getName());
             }
-            $fullCats = $this->buildTree2($nodes);
+            $fullCats = $this->buildTree($nodes);
             $fullCats = $this->setOrphanedCategories($nodes, $fullCats);
-
             if ($filterEmpty) {
                 $fullCats = $this->removeRelicts($this->filterEmpty($fullCats));
             }
-
             \executeHook(\HOOK_GET_ALL_CATEGORIES, ['categories' => &$fullCats]);
-
             if ($cache->set(self::$cacheID, $fullCats, [\CACHING_GROUP_CATEGORY, 'jtl_category_tree']) === false) {
                 $_SESSION['oKategorie_arr_new'] = $fullCats;
             }
@@ -233,15 +232,22 @@ class Category
             $visibilityJoin = '';
         }
 
-        return self::$db->getCollection(
-            'SELECT node.kKategorie, node.lft, node.rght, node.kOberKategorie, tseo.cSeo' . $nameSelect .
-                $descriptionSelect . $imageSelect . $countSelect . '
-                FROM (SELECT node.kKategorie, node.nLevel, node.kOberKategorie, node.cName, node.cBeschreibung, node.lft, node.rght
+        return \array_map(static function (stdClass $item) {
+            $item->bUnterKategorien = false;
+            $item->Unterkategorien  = [];
+
+            return new MenuItem($item);
+        }, self::$db->getObjects(
+            'SELECT node.kKategorie, node.lft, node.rght, node.kOberKategorie, tseo.cSeo'
+                . $nameSelect . $descriptionSelect . $imageSelect . $countSelect . '
+                FROM (SELECT node.kKategorie, node.nLevel, node.kOberKategorie, node.cName, node.cBeschreibung,
+                    node.lft, node.rght
                     FROM tkategorie AS node
                     INNER JOIN tkategorie AS parent ON node.lft BETWEEN parent.lft AND parent.rght
                     WHERE parent.kOberKategorie = 0 AND node.nLevel > 0 AND parent.nLevel > 0 ' . $depthWhere . '
                     UNION
-                    SELECT node.kKategorie, node.nLevel, node.kOberKategorie, node.cName, node.cBeschreibung, node.lft, node.rght
+                    SELECT node.kKategorie, node.nLevel, node.kOberKategorie, node.cName, node.cBeschreibung,
+                    node.lft, node.rght
                     FROM tkategorie AS node
                     INNER JOIN tkategorie AS parent ON node.lft BETWEEN parent.lft AND parent.rght
                     WHERE node.nLevel > 0 AND parent.nLevel > 0 ' . $depthWhere . ' AND NOT EXISTS(
@@ -251,15 +257,11 @@ class Category
                     ) AS node ' . $langJoin . $seoJoin . $imageJoin . '
                 LEFT JOIN tkategoriesichtbarkeit
                     ON node.kKategorie = tkategoriesichtbarkeit.kKategorie
-                    AND tkategoriesichtbarkeit.kKundengruppe = ' . self::$customerGroupID .
-                    $visibilityJoin . '
+                    AND tkategoriesichtbarkeit.kKundengruppe = ' . self::$customerGroupID
+                    . $visibilityJoin . '
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                 ORDER BY node.lft'
-        )->map(static function ($item) {
-            $item->bUnterKategorien = false;
-            $item->Unterkategorien  = [];
-            return new MenuItem($item);
-        })->toArray();
+        ));
     }
 
     /**
@@ -272,8 +274,16 @@ class Category
             ? ' WHERE tkategorieattribut.kKategorie = ' . $categoryID . ' '
             : '';
 
-        return self::$db->getCollection(
-            'SELECT tkategorieattribut.kKategorie, 
+        return \array_map(
+            static function (stdClass $e) {
+                $e->kKategorie            = (int)$e->kKategorie;
+                $e->bIstFunktionsAttribut = (bool)$e->bIstFunktionsAttribut;
+                $e->nSort                 = (int)$e->nSort;
+
+                return $e;
+            },
+            self::$db->getObjects(
+                'SELECT tkategorieattribut.kKategorie, 
                     COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName, 
                     COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
                     tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
@@ -282,12 +292,8 @@ class Category
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                     AND tkategorieattributsprache.kSprache = ' . self::$languageID . $condition . '
                 ORDER BY tkategorieattribut.kKategorie, tkategorieattribut.bIstFunktionsAttribut DESC, 
-                tkategorieattribut.nSort'
-        )->each(static function ($e) {
-            $e->kKategorie            = (int)$e->kKategorie;
-            $e->bIstFunktionsAttribut = (bool)$e->bIstFunktionsAttribut;
-            $e->nSort                 = (int)$e->nSort;
-        })->toArray();
+                tkategorieattribut.nSort')
+        );
     }
 
     /**
@@ -295,35 +301,13 @@ class Category
      * @param int        $parentID
      * @return array
      */
-    private function buildTree(array &$elements, int $parentID = 0): array
-    {
-        $branch = [];
-        foreach ($elements as $element) {
-            if ($element->getParentID() === $parentID) {
-                $children = $this->buildTree($elements, $element->getID());
-                if ($children) {
-                    $element->setChildren($children);
-                    $element->setHasChildren(\count($children) > 0);
-                }
-                $branch[$element->getID()] = $element;
-            }
-        }
-
-        return $branch;
-    }
-
-    /**
-     * @param MenuItem[] $elements
-     * @param int        $parentID
-     * @return array
-     */
-    private function buildTree2(array &$elements, int $parentID = 0, int $rght = 0, int $depth = 0): array
+    private function buildTree(array &$elements, int $parentID = 0, int $rght = 0, int $depth = 0): array
     {
         $branch = [];
         foreach ($elements as $j => $element) {
             if ($element->getParentID() === $parentID) {
                 unset($elements[$j]);
-                $children = $this->buildTree2($elements, $element->getID(), $element->getRight(), ++$depth);
+                $children = $this->buildTree($elements, $element->getID(), $element->getRight(), ++$depth);
                 if ($children) {
                     $element->setChildren($children);
                     $element->setHasChildren(\count($children) > 0);
@@ -421,26 +405,30 @@ class Category
                 $localizedAttributes[$catID][$idx] = $catAttribute;
             }
         }
+        $prefix = Shop::getURL() . '/';
+        $nodes  = \array_map(
+            static function ($item) use ($functionAttributes, $localizedAttributes, $prefix) {
+                $item->cSeo                = URL::buildURL($item, \URLART_KATEGORIE, true, $prefix);
+                $item->functionAttributes  = $functionAttributes;
+                $item->localizedAttributes = $localizedAttributes;
 
-        $nodes = self::$db->getCollection(
-            'SELECT parent.kKategorie, parent.kOberKategorie' . $nameSelect .
-            $descriptionSelect . $imageSelect . $seoSelect . $countSelect . '
-                FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
-                LEFT JOIN tkategoriesichtbarkeit
-                    ON node.kKategorie = tkategoriesichtbarkeit.kKategorie
-                    AND tkategoriesichtbarkeit.kKundengruppe = ' . self::$customerGroupID . $seoJoin . $imageJoin .
-            $hasProductssCheckJoin . $stockJoin . $visibilityJoin . '                     
-                WHERE node.nLevel > 0 AND parent.nLevel > 0
-                    AND tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght
-                    AND node.kKategorie = ' . $categoryID . $visibilityWhere . '                    
-                GROUP BY parent.kKategorie
-                ORDER BY parent.lft'
-        )->map(static function ($item) use ($functionAttributes, $localizedAttributes) {
-            $item->cSeo                = URL::buildURL($item, \URLART_KATEGORIE, true);
-            $item->functionAttributes  = $functionAttributes;
-            $item->localizedAttributes = $localizedAttributes;
-            return new MenuItem($item);
-        })->toArray();
+                return new MenuItem($item);
+            },
+            self::$db->getObjects(
+                'SELECT parent.kKategorie, parent.kOberKategorie' . $nameSelect .
+                $descriptionSelect . $imageSelect . $seoSelect . $countSelect . '
+                    FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
+                    LEFT JOIN tkategoriesichtbarkeit
+                        ON node.kKategorie = tkategoriesichtbarkeit.kKategorie
+                        AND tkategoriesichtbarkeit.kKundengruppe = ' . self::$customerGroupID
+                    . $seoJoin . $imageJoin . $hasProductssCheckJoin . $stockJoin . $visibilityJoin . '                     
+                    WHERE node.nLevel > 0 AND parent.nLevel > 0
+                        AND tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght
+                        AND node.kKategorie = ' . $categoryID . $visibilityWhere . '                    
+                    GROUP BY parent.kKategorie
+                    ORDER BY parent.lft'
+            )
+        );
 
         if ($filterEmpty) {
             $nodes = $this->removeRelicts($this->filterEmpty($nodes));
@@ -707,13 +695,13 @@ class Category
             return \in_array($e->getParentID(), $ids, true) === false;
         });
 
-        foreach ($orphanedCategories as $oCat) {
-            $children = $this->buildTree2($nodes, $oCat->getID());
-            $oCat->setParentID(0);
-            $oCat->setOrphaned(true);
-            $oCat->setChildren($children);
-            $oCat->setHasChildren(\count($children) > 0);
-            $fullCats[$oCat->getID()] = $oCat;
+        foreach ($orphanedCategories as $category) {
+            $children = $this->buildTree($nodes, $category->getID());
+            $category->setParentID(0);
+            $category->setOrphaned(true);
+            $category->setChildren($children);
+            $category->setHasChildren(\count($children) > 0);
+            $fullCats[$category->getID()] = $category;
         }
 
         return $fullCats;

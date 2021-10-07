@@ -149,10 +149,11 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
 }
 
 /**
- * @return array|mixed
+ * @return array
  */
-function getDBFileStruct()
+function getDBFileStruct(): array
 {
+    return [];
     $version    = Parser::parse(APPLICATION_VERSION);
     $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
     if ($version->hasPreRelease()) {
@@ -169,7 +170,7 @@ function getDBFileStruct()
     }
     $struct = json_decode(file_get_contents($fileList));
 
-    return is_object($struct) ? get_object_vars($struct) : $struct;
+    return is_object($struct) ? get_object_vars($struct) : [];
 }
 
 /**

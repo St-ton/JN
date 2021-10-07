@@ -77,13 +77,13 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                     t.`DATA_LENGTH` + t.`INDEX_LENGTH` AS DATA_SIZE,
                     COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS,
                     COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS,
-                    COUNT(IF(c.COLLATION_NAME = 'utf8_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
+                    COUNT(IF(c.COLLATION_NAME RLIKE 'utf8(mb3)?_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
                 FROM information_schema.TABLES t
                 LEFT JOIN information_schema.COLUMNS c ON c.TABLE_NAME = t.TABLE_NAME
                     AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
                     AND (c.DATA_TYPE = 'text'
                         OR (c.DATA_TYPE = 'tinyint' AND SUBSTRING(c.COLUMN_NAME, 1, 1) = 'k')
-                        OR c.COLLATION_NAME != 'utf8_unicode_ci')
+                        OR c.COLLATION_NAME NOT RLIKE 'utf8(mb3)?_unicode_ci')
                 WHERE t.`TABLE_SCHEMA` = :schema
                     AND t.`TABLE_NAME` NOT LIKE 'xplugin_%'
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
@@ -218,7 +218,10 @@ function compareDBStruct(array $dbFileStruct, array $dbStruct): array
 
             if (isset($dbStruct[$table]->Columns[$column])) {
                 if (!empty($dbStruct[$table]->Columns[$column]->COLLATION_NAME)
-                    && $dbStruct[$table]->Columns[$column]->COLLATION_NAME !== 'utf8_unicode_ci'
+                    && !in_array(
+                        $dbStruct[$table]->Columns[$column]->COLLATION_NAME,
+                        ['utf8_unicode_ci', 'utf8mb3_unicode_ci']
+                    )
                 ) {
                     $errors[$table] = createDBStructError(sprintf(__('errorWrongCollationRow'), $column));
                     break;

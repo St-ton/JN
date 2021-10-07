@@ -292,7 +292,8 @@ class Category
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                     AND tkategorieattributsprache.kSprache = ' . self::$languageID . $condition . '
                 ORDER BY tkategorieattribut.kKategorie, tkategorieattribut.bIstFunktionsAttribut DESC, 
-                tkategorieattribut.nSort')
+                tkategorieattribut.nSort'
+            )
         );
     }
 

@@ -183,7 +183,7 @@ msgid "errorNoInnoDBSupportDesc"
 msgstr "Your current database version %s does not support InnoDB tables—a structure migration is not possible.<br/> Please contact the database administrator or host to activate the InnoDB support."
 
 msgid "errorNoUTF8SupportDesc"
-msgstr "Your current database version {$DB_Version->server} does not support collation \"utf8_unicode_ci\"—a structure migration is not possible.<br/> Please contact the database administrator or host to activate collation \"utf8_unicode_ci\"."
+msgstr "Your current database version %s does not support collation \"utf8_unicode_ci\"—a structure migration is not possible.<br/> Please contact the database administrator or host to activate collation \"utf8_unicode_ci\"."
 
 msgid "startAutomaticMigration"
 msgstr "Starting automatic migration…"

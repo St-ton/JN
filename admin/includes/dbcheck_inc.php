@@ -153,7 +153,6 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
  */
 function getDBFileStruct(): array
 {
-    return [];
     $version    = Parser::parse(APPLICATION_VERSION);
     $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
     if ($version->hasPreRelease()) {

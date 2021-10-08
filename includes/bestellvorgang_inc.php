@@ -1681,7 +1681,7 @@ function gibAktiveZahlungsart($shippingMethods)
         $_SESSION['AktiveZahlungsart'] = $shippingMethods[0]->kZahlungsart;
     }
 
-    return $_SESSION['AktiveZahlungsart'];
+    return (int)$_SESSION['AktiveZahlungsart'];
 }
 
 /**

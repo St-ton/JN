@@ -5,6 +5,9 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Newsletter\Newsletter;
+use JTL\Optin\Optin;
+use JTL\Optin\OptinNewsletter;
+use JTL\Optin\OptinRefData;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -113,7 +116,7 @@ function processImport(array $fmt, array $data): string
         return sprintf(__('errorEmailInvalid'), $recipient->cEmail);
     }
     if (checkBlacklist($recipient->cEmail)) {
-        return __('errorEmailInvalidBlacklist');
+        return __('errorEmailInvalidBlacklist', $recipient->cEmail);
     }
     if (!$recipient->cNachname) {
         return __('errorSurnameMissing');
@@ -142,34 +145,46 @@ function processImport(array $fmt, array $data): string
         $recipient->kKunde   = (int)$customerData->kKunde;
         $recipient->kSprache = (int)$customerData->kSprache;
     }
-    $ins               = new stdClass();
-    $ins->cAnrede      = $recipient->cAnrede;
-    $ins->cVorname     = $recipient->cVorname;
-    $ins->cNachname    = $recipient->cNachname;
-    $ins->kKunde       = $recipient->kKunde;
-    $ins->cEmail       = $recipient->cEmail;
-    $ins->dEingetragen = $recipient->dEingetragen;
-    $ins->kSprache     = $recipient->kSprache;
-    $ins->cOptCode     = $recipient->cOptCode;
-    $ins->cLoeschCode  = $recipient->cLoeschCode;
-    $ins->nAktiv       = $recipient->nAktiv;
-    if ($db->insert('tnewsletterempfaenger', $ins)) {
-        $ins               = new stdClass();
-        $ins->cAnrede      = $recipient->cAnrede;
-        $ins->cVorname     = $recipient->cVorname;
-        $ins->cNachname    = $recipient->cNachname;
-        $ins->kKunde       = $recipient->kKunde;
-        $ins->cEmail       = $recipient->cEmail;
-        $ins->dEingetragen = $recipient->dEingetragen;
-        $ins->kSprache     = $recipient->kSprache;
-        $ins->cOptCode     = $recipient->cOptCode;
-        $ins->cLoeschCode  = $recipient->cLoeschCode;
-        $ins->cAktion      = 'Daten-Import';
-        $res               = $db->insert('tnewsletterempfaengerhistory', $ins);
+    $rowData               = new stdClass();
+    $rowData->cAnrede      = $recipient->cAnrede;
+    $rowData->cVorname     = $recipient->cVorname;
+    $rowData->cNachname    = $recipient->cNachname;
+    $rowData->kKunde       = $recipient->kKunde;
+    $rowData->cEmail       = $recipient->cEmail;
+    $rowData->dEingetragen = $recipient->dEingetragen;
+    $rowData->kSprache     = $recipient->kSprache;
+    $rowData->cOptCode     = $recipient->cOptCode;
+    $rowData->cLoeschCode  = $recipient->cLoeschCode;
+    $rowData->nAktiv       = $recipient->nAktiv;
+    if ($db->insert('tnewsletterempfaenger', $rowData)) {
+        unset($rowData->nAktiv);
+        $rowData->cAktion = 'Daten-Import';
+        $res              = $db->insert('tnewsletterempfaengerhistory', $rowData);
+
+        try {
+            $refData = (new OptinRefData())
+                ->setSalutation($rowData->cAnrede ?? '')
+                ->setFirstName($rowData->cVorname ?? '')
+                ->setLastName($rowData->cNachname ?? '')
+                ->setEmail($rowData->cEmail ?? '')
+                ->setLanguageID(Shop::getLanguageID())
+                ->setRealIP(Request::getRealIP());
+            /** @noinspection PhpPossiblePolymorphicInvocationInspection */
+            (new Optin(OptinNewsletter::class))
+                ->getOptinInstance()
+                ->bypassSendingPermission()
+                ->createOptin($refData)
+                ->activateOptin();
+        } catch (\Exception $e) {
+            Shop::Container()->getLogService()->notice('optin creation failed during import, for ' .
+                $rowData->cEmail .
+                $e->getMessage());
+        }
         if ($res) {
             return __('successImport') .
-                $recipient->cVorname . ' ' .
-                $recipient->cNachname;
+                $recipient->cVorname .
+                ' ' . $recipient->cNachname .
+                ' (' . $recipient->cEmail . ')';
         }
     }
 

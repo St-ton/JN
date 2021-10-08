@@ -1900,13 +1900,13 @@ class ProductFilter
         } elseif (isset($_SERVER['REQUEST_METHOD'])) {
             if ($_SERVER['REQUEST_METHOD'] === 'GET' && \count($_GET) > 0) {
                 foreach ($_GET as $key => $value) {
-                    if (\preg_match('/mf\d+/i', $key)) {
+                    if (\preg_match('/mf\d+/i', (string)$key)) {
                         $filter[] = (int)$value;
                     }
                 }
             } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && \count($_POST) > 0) {
                 foreach ($_POST as $key => $value) {
-                    if (\preg_match('/mf\d+/i', $key)) {
+                    if (\preg_match('/mf\d+/i', (string)$key)) {
                         $filter[] = (int)$value;
                     }
                 }

@@ -110,11 +110,11 @@ class Category
         }
         $cache = Shop::Container()->getCache();
         if (($fullCats = $cache->get(self::$cacheID)) === false) {
-            /*if (!empty($_SESSION['oKategorie_arr_new'])) {
+            if (!empty($_SESSION['oKategorie_arr_new'])) {
                 self::$fullCategories = $_SESSION['oKategorie_arr_new'];
 
                 return $_SESSION['oKategorie_arr_new'];
-            }*/
+            }
             $filterEmpty         = (int)self::$config['global']['kategorien_anzeigefilter'] ===
                 \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
             $functionAttributes  = [];
@@ -424,7 +424,7 @@ class Category
                 return new MenuItem($item);
             },
             self::$db->query(
-                'SELECT parent.kKategorie, parent.kOberKategorie' . $nameSelect .
+                'SELECT parent.kKategorie, node.lft, node.rght, parent.kOberKategorie' . $nameSelect .
                 $descriptionSelect . $imageSelect . $seoSelect . $countSelect . '
                 FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
                 LEFT JOIN tkategoriesichtbarkeit
@@ -509,7 +509,7 @@ class Category
      */
     public static function categoryExists(int $id): bool
     {
-        return self::getInstance()->getCategoryById($id) !== null;
+        return Shop::Container()->getDB()->select('tkategorie', 'kKategorie', $id) !== null;
     }
 
     /**

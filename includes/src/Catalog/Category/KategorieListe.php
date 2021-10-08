@@ -261,6 +261,7 @@ class KategorieListe
             self::$wasModified = true;
         }
         // ist nicht im cache, muss holen
+        $prefix                = Shop::getURL() . '/';
         $db                    = Shop::Container()->getDB();
         $defaultLanguageActive = LanguageHelper::isDefaultLanguageActive();
         $orderByName           = $defaultLanguageActive ? '' : 'tkategoriesprache.cName, ';
@@ -335,7 +336,7 @@ class KategorieListe
             //EXPERIMENTAL_MULTILANG_SHOP END
 
             $category->cURL     = URL::buildURL($category, \URLART_KATEGORIE);
-            $category->cURLFull = URL::buildURL($category, \URLART_KATEGORIE, true);
+            $category->cURLFull = URL::buildURL($category, \URLART_KATEGORIE, true, $prefix);
             if ($languageID > 0 && !$defaultLanguageActive && \mb_strlen($category->cName_spr) > 0) {
                 $category->cName         = $category->cName_spr;
                 $category->cBeschreibung = $category->cBeschreibung_spr;

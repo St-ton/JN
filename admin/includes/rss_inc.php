@@ -72,7 +72,7 @@ function generiereRSSXML()
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($products as $product) {
-            $url  = URL::buildURL($product, URLART_ARTIKEL, true);
+            $url  = URL::buildURL($product, URLART_ARTIKEL, true, $shopURL . '/');
             $xml .= '
         <item>
             <title>' . wandelXMLEntitiesUm($product->cName) . '</title>
@@ -97,7 +97,7 @@ function generiereRSSXML()
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($news as $item) {
-            $url  = URL::buildURL($item, URLART_NEWS);
+            $url  = URL::buildURL($item, URLART_NEWS, true, $shopURL . '/');
             $xml .= '
         <item>p
             <title>' . wandelXMLEntitiesUm($item->title) . '</title>
@@ -118,7 +118,7 @@ function generiereRSSXML()
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($reviews as $review) {
-            $url  = URL::buildURL($review, URLART_ARTIKEL, true);
+            $url  = URL::buildURL($review, URLART_ARTIKEL, true, $shopURL . '/');
             $xml .= '
         <item>
             <title>Bewertung ' . wandelXMLEntitiesUm($review->cTitel) . ' von ' .

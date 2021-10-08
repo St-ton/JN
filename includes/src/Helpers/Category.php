@@ -110,11 +110,11 @@ class Category
         }
         $cache = Shop::Container()->getCache();
         if (($fullCats = $cache->get(self::$cacheID)) === false) {
-            if (!empty($_SESSION['oKategorie_arr_new'])) {
+            /*if (!empty($_SESSION['oKategorie_arr_new'])) {
                 self::$fullCategories = $_SESSION['oKategorie_arr_new'];
 
                 return $_SESSION['oKategorie_arr_new'];
-            }
+            }*/
             $filterEmpty         = (int)self::$config['global']['kategorien_anzeigefilter'] ===
                 \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
             $functionAttributes  = [];

@@ -300,15 +300,16 @@ class Category
     /**
      * @param MenuItem[] $elements
      * @param int        $parentID
-     * @return array
+     * @param int        $rght
+     * @return MenuItem[]
      */
-    private function buildTree(array &$elements, int $parentID = 0, int $rght = 0, int $depth = 0): array
+    private function buildTree(array &$elements, int $parentID = 0, int $rght = 0): array
     {
         $branch = [];
         foreach ($elements as $j => $element) {
             if ($element->getParentID() === $parentID) {
                 unset($elements[$j]);
-                $children = $this->buildTree($elements, $element->getID(), $element->getRight(), ++$depth);
+                $children = $this->buildTree($elements, $element->getID(), $element->getRight());
                 if ($children) {
                     $element->setChildren($children);
                     $element->setHasChildren(\count($children) > 0);

@@ -416,7 +416,7 @@ class Category
                 return new MenuItem($item);
             },
             self::$db->getObjects(
-                'SELECT parent.kKategorie, parent.kOberKategorie' . $nameSelect .
+                'SELECT parent.kKategorie, node.lft, node.rght, parent.kOberKategorie' . $nameSelect .
                 $descriptionSelect . $imageSelect . $seoSelect . $countSelect . '
                     FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
                     LEFT JOIN tkategoriesichtbarkeit
@@ -500,7 +500,7 @@ class Category
      */
     public static function categoryExists(int $id): bool
     {
-        return self::getInstance()->getCategoryById($id) !== null;
+        return Shop::Container()->getDB()->select('tkategorie', 'kKategorie', $id) !== null;
     }
 
     /**

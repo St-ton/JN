@@ -150,6 +150,8 @@
         {* country *}
         {if isset($Lieferadresse->cLand)}
             {$countryISO=$Lieferadresse->cLand}
+        {elseif !empty($smarty.session.preferredDeliveryCountryCode)}
+            {$countryISO=$smarty.session.preferredDeliveryCountryCode}
         {elseif !empty($Kunde->cLand)}
             {$countryISO=$Kunde->cLand}
         {else}

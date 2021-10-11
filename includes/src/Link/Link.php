@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Link;
 
@@ -257,7 +257,7 @@ final class Link extends AbstractLink
         $realID   = $this->getRealID($id);
         $links    = $this->db->getObjects(
             "SELECT tlink.*, loc.cISOSprache, tlink.cName AS displayName,
-                loc.cName AS localizedName,  loc.cTitle AS localizedTitle,
+                loc.cName AS localizedName,  loc.cTitle AS localizedTitle, loc.cSeo AS linkURL,
                 loc.cContent AS content, loc.cMetaDescription AS metaDescription,
                 loc.cMetaKeywords AS metaKeywords, loc.cMetaTitle AS metaTitle,
                 tseo.kSprache AS languageID, tseo.cSeo AS localizedUrl,
@@ -381,16 +381,19 @@ final class Link extends AbstractLink
             $this->setName($link->localizedName ?? $link->cName, $link->languageID);
             $this->setTitle($link->localizedTitle ?? $link->cName, $link->languageID);
             $this->setLanguageID($link->languageID, $link->languageID);
-            $this->setSEO($link->localizedUrl ?? '', $link->languageID);
-            if ($this->getLinkType() === \LINKTYP_STARTSEITE && \EXPERIMENTAL_MULTILANG_SHOP === true) {
-                $this->setURL(Shop::getURL(true, $link->languageID) . '/', $link->languageID);
+            if ($this->getLinkType() === \LINKTYP_EXTERNE_URL) {
+                $this->setSEO($link->linkURL, $link->languageID);
+                $this->setURL($link->linkURL, $link->languageID);
             } else {
-                $this->setURL(
-                    $this->linkType === 2
-                        ? $link->localizedUrl
-                        : (Shop::getURL(true, $link->languageID) . '/' . $link->localizedUrl),
-                    $link->languageID
-                );
+                $this->setSEO($link->localizedUrl ?? '', $link->languageID);
+                if ($this->getLinkType() === \LINKTYP_STARTSEITE && \EXPERIMENTAL_MULTILANG_SHOP === true) {
+                    $this->setURL(Shop::getURL(true, $link->languageID) . '/', $link->languageID);
+                } else {
+                    $this->setURL(
+                        Shop::getURL(true, $link->languageID) . '/' . $link->localizedUrl,
+                        $link->languageID
+                    );
+                }
             }
             $this->setHandler($link->handler ?? '');
             $this->setTemplate($link->template ?? $link->fullscreenTemplate ?? '');
@@ -419,6 +422,7 @@ final class Link extends AbstractLink
         $link->reference   = (int)$link->reference;
         $link->enabled     = $link->pluginState === null || (int)$link->pluginState === State::ACTIVATED;
         $link->cISOSprache = $link->cISOSprache ?? Shop::getLanguageCode();
+        $link->linkGroups  = $link->linkGroups ?? '';
         if ($link->languageID === 0) {
             $link->languageID = $this->currentLanguageID;
         }
@@ -925,15 +929,15 @@ final class Link extends AbstractLink
     /**
      * @inheritdoc
      */
-    public function getIdentifier(): ?string
+    public function getIdentifier(): string
     {
-        return $this->identifier;
+        return $this->identifier ?? '';
     }
 
     /**
      * @inheritdoc
      */
-    public function setIdentifier($identifier): void
+    public function setIdentifier(string $identifier): void
     {
         $this->identifier = $identifier;
     }
@@ -973,7 +977,7 @@ final class Link extends AbstractLink
     /**
      * @inheritdoc
      */
-    public function addChildLink($link): void
+    public function addChildLink(LinkInterface $link): void
     {
         $this->childLinks->push($link);
     }

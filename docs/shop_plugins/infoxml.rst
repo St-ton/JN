@@ -1710,6 +1710,7 @@ Nutzung im Plugin
 Es sei folgendes Beispiel-XML gegeben:
 
 .. code-block:: xml
+
     <jtlshopplugin>
         ...
         <PluginID>jtl_example_plugin</PluginID>
@@ -1738,6 +1739,7 @@ JTL-Shop 4.x
 """"""""""""
 
 .. code-block:: php
+
     $test1 = $oPlugin->oPluginSprachvariableAssoc_arr['lang_var_one']; // hat Wert "Ich bin variabel!"
     $test2 = sprintf($oPlugin->oPluginSprachvariableAssoc_arr['lang_var_two'], "Peter"); // hat Wert "Hallo, mein Name ist Peter."
 
@@ -1745,6 +1747,7 @@ JTL-Shop 5.x
 """"""""""""
 
 .. code-block:: php
+
     // z.B. innerhalb der Bootstrap.php in der Boot-Methode:
     $plugin = $this->getPlugin();
     $test1  = $plugin->getLocalization()->getTranslation('lang_var_one');
@@ -1755,6 +1758,7 @@ Ab Shop 5.1.0 können Sprachvariablen direkt innerhalb von Templatedateien genut
 Nutzen Sie dafür die Syntax ``{lang key='variablen-name' section='meine-plugin-id'}`` - im Beispiel also
 
 .. code-block:: php
+
     {lang var='lang_var_one' section='jtl_example_plugin'}
     {lang key='lang_var_two' section='jtl_example_plugin' printf='Peter'}
 

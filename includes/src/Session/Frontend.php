@@ -20,6 +20,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use JTL\Link\LinkGroupCollection;
 use JTL\Shop;
+use stdClass;
 use function Functional\first;
 
 /**
@@ -155,9 +156,10 @@ class Frontend extends AbstractSession
      */
     private function checkSessionUpdate(): bool
     {
-        return ((isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === 'stdClass')
-            || (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === 'stdClass')
-            || (isset($_SESSION['Sprachen']) && \get_class($_SESSION['Sprachen'][0]) === 'stdClass'));
+        return ((isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === stdClass::class)
+            || (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === stdClass::class)
+            || (isset($_SESSION['Sprachen'])
+                && \get_class(\array_values($_SESSION['Sprachen'])[0]) === stdClass::class));
     }
 
     /**
@@ -221,7 +223,7 @@ class Frontend extends AbstractSession
             }
         }
         if (isset($_SESSION['Waehrung'])) {
-            if (\get_class($_SESSION['Waehrung']) === 'stdClass') {
+            if (\get_class($_SESSION['Waehrung']) === stdClass::class) {
                 $_SESSION['Waehrung'] = new Currency($_SESSION['Waehrung']->kWaehrung);
             }
             foreach ($_SESSION['Waehrungen'] as $currency) {
@@ -254,7 +256,7 @@ class Frontend extends AbstractSession
         }
         // EXPERIMENTAL_MULTILANG_SHOP END
         if (!isset($_SESSION['Kunde']->kKunde, $_SESSION['Kundengruppe']->kKundengruppe)
-            || \get_class($_SESSION['Kundengruppe']) === 'stdClass'
+            || \get_class($_SESSION['Kundengruppe']) === stdClass::class
         ) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())
                 ->setLanguageID((int)$_SESSION['kSprache'])

@@ -117,7 +117,11 @@
                         <tbody>
                             {foreach $recommendations->getRecommendations() as $recommendation}
                                 <tr>
-                                    <td><img src="{$recommendation->getPreviewImage()}" style="max-width: 120px;" alt="{$recommendation->getTitle()}" loading="lazy"></td>
+                                    <td>
+                                        <img src="{$recommendation->getPreviewImage()}"
+                                             style="max-width: 120px;"
+                                             alt="{$recommendation->getTitle()}" loading="lazy">
+                                    </td>
                                     <td>
                                         <p>{$recommendation->getTeaser()}</p>
                                         <a href="premiumplugin.php?scope={$recommendations->getScope()}&id={$recommendation->getId()}"
@@ -130,6 +134,14 @@
                             {/foreach}
                         </tbody>
                     </table>
+                </div>
+                <div class="row">
+                    <div class="col-auto mx-auto">
+                        <a href="{__('extensionStoreURL')}" class="btn btn-outline-primary my-3" target="_blank">
+                            <i class="fas fa-puzzle-piece"></i>
+                            {__('btnAdditionalExtensionStore')}
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

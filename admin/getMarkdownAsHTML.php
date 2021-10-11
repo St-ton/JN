@@ -17,11 +17,10 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 
 if (isset($_POST['path']) && Form::validateToken()) {
-    $path = realpath($_POST['path']);
-    if ($path !== false
-        && (mb_strpos($path . DIRECTORY_SEPARATOR, PFAD_ROOT . PLUGIN_DIR) === 0
-            || mb_strpos($path . DIRECTORY_SEPARATOR, PFAD_ROOT . PFAD_PLUGIN) === 0)
-    ) {
+    $path  = realpath($_POST['path']);
+    $base1 = realpath(PFAD_ROOT . PLUGIN_DIR);
+    $base2 = realpath(PFAD_ROOT . PFAD_PLUGIN);
+    if ($path !== false && (mb_strpos($path, $base1) === 0 || mb_strpos($path, $base2) === 0)) {
         $info = pathinfo($path);
         if (mb_convert_case($info['extension'], MB_CASE_LOWER) === 'md') {
             $parseDown      = new Parsedown();

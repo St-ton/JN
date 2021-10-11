@@ -78,7 +78,7 @@ class ReviewReminder
         if ($this->settings['bewertungserinnerung_nutzen'] !== 'Y'
             && $this->settings['bewertungserinnerung_nutzen'] !== 'B'
         ) {
-            return[];
+            return [];
         }
         $this->checkNlBundle();
 

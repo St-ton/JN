@@ -6,6 +6,8 @@ use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
 use JTL\Backend\AdminAccount;
 use JTL\DB\DbInterface;
+use JTL\GeneralDataProtection\IpAnonymizer;
+use JTL\Helpers\Request;
 use JTL\L10n\GetText;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Smarty\JTLSmarty;
@@ -170,14 +172,22 @@ class Manager
         ) {
             return;
         }
-        $log                        = new \stdClass();
-        $log->kAdminLogin           = $this->adminAccount->getID();
-        $log->cEinstellungenName    = $setting;
-        $log->cEinstellungenWertAlt = $oldValue;
-        $log->cEinstellungenWertNeu = $newValue;
-        $log->dDatum                = 'NOW()';
 
-        $this->db->insert('teinstellungenlog', $log);
+        $this->db->executeQueryPrepared(
+            'INSERT INTO teinstellungenlog (kAdminlogin, cAdminname, cIP, cEinstellungenName, cEinstellungenWertAlt,
+                               cEinstellungenWertNeu, dDatum)
+                SELECT tadminlogin.kAdminlogin, tadminlogin.cName, :cIP, :cEinstellungenName, :cEinstellungenWertAlt,
+                               :cEinstellungenWertNeu, NOW()
+                FROM tadminlogin
+                WHERE tadminlogin.kAdminlogin = :kAdminLogin',
+            [
+                'kAdminLogin'           => $this->adminAccount->getID(),
+                'cIP'                   => (new IpAnonymizer(Request::getRealIP()))->anonymize(),
+                'cEinstellungenName'    => $setting,
+                'cEinstellungenWertAlt' => $oldValue,
+                'cEinstellungenWertNeu' => $newValue,
+            ]
+        );
     }
 
     /**
@@ -211,15 +221,22 @@ class Manager
     {
         $logs = [];
         $data = $this->db->getObjects(
-            'SELECT el.*, al.cName AS adminName , ec.cInputTyp as settingType
+            "SELECT el.*, IF(
+                    al.cName = el.cAdminname,
+                    el.cAdminname,
+                    CONCAT(el.cAdminname, ' (', COALESCE(al.cName, :unknown), ')')
+                ) AS adminName , ec.cInputTyp as settingType
                 FROM teinstellungenlog AS el
-                LEFT JOIN tadminlogin AS al 
+                LEFT JOIN tadminlogin AS al
                     USING (kAdminlogin)
                 LEFT JOIN teinstellungenconf AS ec
                     ON ec.cWertName = el.cEinstellungenName
                 WHERE el.cEinstellungenName = :settingName
-                ORDER BY el.dDatum DESC',
-            ['settingName' => $settingName]
+                ORDER BY el.dDatum DESC",
+            [
+                'settingName' => $settingName,
+                'unknown'     => \__('unknown'),
+            ]
         );
         foreach ($data as $log) {
             $logs[] = (new Log())->init($log);
@@ -276,15 +293,22 @@ class Manager
         $this->getText->loadConfigLocales();
 
         return $this->db->getCollection(
-            'SELECT el.*, al.cName AS adminName , ec.cInputTyp as settingType
+            "SELECT el.*, IF(
+                    al.cName = el.cAdminname,
+                    el.cAdminname,
+                    CONCAT(el.cAdminname, ' (', COALESCE(al.cName, :unknown), ')')
+                ) AS adminName , ec.cInputTyp as settingType
                 FROM teinstellungenlog AS el
-                LEFT JOIN tadminlogin AS al 
+                LEFT JOIN tadminlogin AS al
                     USING (kAdminlogin)
                 LEFT JOIN teinstellungenconf AS ec
-                    ON ec.cWertName = el.cEinstellungenName' .
+                    ON ec.cWertName = el.cEinstellungenName" .
                 ($where !== '' ? ' WHERE ' . $where : '') .
                 ' ORDER BY dDatum DESC ' .
-                ($limit !== '' ? ' LIMIT ' . $limit : '')
+                ($limit !== '' ? ' LIMIT ' . $limit : ''),
+            [
+                'unknown' => \__('unknown'),
+            ]
         )->map(static function ($item) {
             return (new Log())->init($item);
         });

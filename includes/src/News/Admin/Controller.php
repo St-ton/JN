@@ -6,6 +6,7 @@ use DateTime;
 use DirectoryIterator;
 use Exception;
 use Illuminate\Support\Collection;
+use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\Cache\JTLCacheInterface;
 use JTL\ContentAuthor;
@@ -22,6 +23,7 @@ use JTL\News\CommentList;
 use JTL\News\Controller as FrontendController;
 use JTL\News\Item;
 use JTL\News\ItemList;
+use JTL\OPC\PageDB;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
@@ -75,6 +77,11 @@ final class Controller
     private $errorMsg = '';
 
     /**
+     * @var bool
+     */
+    private $allEmpty = false;
+
+    /**
      * Controller constructor.
      * @param DbInterface       $db
      * @param JTLSmarty         $smarty
@@ -111,7 +118,7 @@ final class Controller
         $dateValidFrom   = $post['dGueltigVon'];
         $previewImage    = $_FILES['previewImage']['name'] ?? '';
         $authorID        = (int)($post['kAuthor'] ?? 0);
-        $validation      = $this->pruefeNewsPost($customerGroups, $newsCategoryIDs);
+        $validation      = $this->pruefeNewsPost($customerGroups, $newsCategoryIDs, $post, $languages);
         if (\is_array($validation) && \count($validation) === 0) {
             $newsItem                = new stdClass();
             $newsItem->cKundengruppe = ';' . \implode(';', $customerGroups) . ';';
@@ -135,7 +142,8 @@ final class Controller
                 $contentAuthor->clearAuthor('NEWS', $newsItemID);
             }
             $this->db->delete('tnewssprache', 'kNews', $newsItemID);
-            $flags = \ENT_COMPAT | \ENT_HTML401;
+            $flags          = \ENT_COMPAT | \ENT_HTML401;
+            $this->allEmpty = true;
             foreach ($languages as $language) {
                 $iso                  = $language->getCode();
                 $langID               = (int)$post['lang_' . $iso];
@@ -149,11 +157,14 @@ final class Controller
                 $loc->metaTitle       = \htmlspecialchars($post['cMetaTitle_' . $iso], $flags, \JTL_CHARSET);
                 $loc->metaDescription = \htmlspecialchars($post['cMetaDescription_' . $iso], $flags, \JTL_CHARSET);
                 $loc->metaKeywords    = \htmlspecialchars($post['cMetaKeywords_' . $iso], $flags, \JTL_CHARSET);
-                if (empty($loc->content)) {
+                if (empty($loc->title)) {
                     // skip language without content
                     continue;
                 }
 
+                if (!empty($loc->content) || !empty($loc->preview)) {
+                    $this->allEmpty = false;
+                }
                 $seoData           = new stdClass();
                 $seoData->cKey     = 'kNews';
                 $seoData->kKey     = $newsItemID;
@@ -250,7 +261,7 @@ final class Controller
                 $this->continueWith = $newsItemID;
             } else {
                 $tab = Request::verifyGPDataString('tab');
-                $this->newsRedirect(empty($tab) ? 'aktiv' : $tab, $this->msg);
+                $this->newsRedirect(empty($tab) ? 'aktiv' : $tab, $this->getMsg());
             }
         } else {
             $newsItem   = new Item($this->db);
@@ -536,7 +547,7 @@ final class Controller
         $this->rebuildCategoryTree(0, 1);
         if ($error === false) {
             $this->msg .= \__('successNewsCatSave') . '<br />';
-            $this->newsRedirect('kategorien', $this->msg);
+            $this->newsRedirect('kategorien', $this->getMsg());
         }
         $newsCategory = new Category($this->db);
         $this->flushCache();
@@ -557,7 +568,7 @@ final class Controller
             && \file_exists(\PFAD_ROOT . $oldPreview)
         ) {
             $real = \realpath(\PFAD_ROOT . $oldPreview);
-            if (\strpos($real, self::UPLOAD_DIR_CATEGORY) === 0) {
+            if (\strpos($real, \realpath(self::UPLOAD_DIR_CATEGORY)) === 0) {
                 \unlink($real);
             }
         }
@@ -633,9 +644,11 @@ final class Controller
     /**
      * @param array|null $customerGroups
      * @param array|null $categories
+     * @param array|null $post
+     * @param LanguageModel[]|null $languages
      * @return array
      */
-    private function pruefeNewsPost(?array $customerGroups, ?array $categories): array
+    private function pruefeNewsPost(?array $customerGroups, ?array $categories, ?array $post, ?array $languages): array
     {
         $validation = [];
         if (!\is_array($customerGroups) || \count($customerGroups) === 0) {
@@ -643,6 +656,15 @@ final class Controller
         }
         if (!\is_array($categories) || \count($categories) === 0) {
             $validation['kNewsKategorie_arr'] = 1;
+        }
+        if (\is_array($languages)) {
+            $validation['cBetreff'] = 1;
+            foreach ($languages as $lang) {
+                if (!empty($post['cName_' . $lang->getIso()])) {
+                    unset($validation['cBetreff']);
+                    break;
+                }
+            }
         }
 
         return $validation;
@@ -858,17 +880,26 @@ final class Controller
      * @param string     $msg
      * @param array|null $urlParams
      */
-    public function newsRedirect($tab = '', $msg = '', $urlParams = null): void
+    public function newsRedirect(string $tab = '', string $msg = '', ?array $urlParams = null): void
     {
         $tabPageMapping = [
             'inaktiv'    => 's1',
             'aktiv'      => 's2',
             'kategorien' => 's3',
         ];
+        $alertService   = Shop::Container()->getAlertService();
         if (empty($msg)) {
-            unset($_SESSION['news.cHinweis']);
+            $alertService->removeAlertByKey('newsMessage');
         } else {
-            $_SESSION['news.cHinweis'] = $msg;
+            $alertService->addAlert(Alert::TYPE_NOTE, $msg, 'newsMessage', ['saveInSession' => true]);
+        }
+        if ($this->isAllEmpty()) {
+            $alertService->addAlert(
+                Alert::TYPE_WARNING,
+                \__('All content is empty'),
+                'newsAllEmpty',
+                ['saveInSession' => true]
+            );
         }
 
         if (!empty($tab)) {
@@ -1062,5 +1093,32 @@ final class Controller
     public function setContinueWith(int $continueWith): void
     {
         $this->continueWith = $continueWith;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAllEmpty(): bool
+    {
+        return $this->allEmpty;
+    }
+
+    /**
+     * @param LanguageModel[] $languages
+     * @param int             $newsId
+     * @return bool
+     */
+    public function hasOPCContent(array $languages, int $newsId): bool
+    {
+        $pageService = Shop::Container()->getOPCPageService();
+        
+        foreach ($languages as $language) {
+            $pageID = $pageService->createGenericPageId('news', $newsId, $language->getId());
+            if ($pageService->getDraftCount($pageID) > 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

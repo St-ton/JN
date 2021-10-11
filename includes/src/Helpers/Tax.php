@@ -39,9 +39,10 @@ class Tax
 
     /**
      * @param string|null $countryCode
-     * @since since 5.0.0
+     * @param bool $skipUpdateCart
+     * @since 5.0.0
      */
-    public static function setTaxRates($countryCode = null): void
+    public static function setTaxRates($countryCode = null, bool $skipUpdateCart = false): void
     {
         $_SESSION['Steuersatz'] = [];
         $billingCountryCode     = null;
@@ -59,15 +60,18 @@ class Tax
             $merchantCountryCode = $conf['kundenregistrierung_standardland'];
         }
         $deliveryCountryCode = $merchantCountryCode;
-        if ($countryCode) {
-            $deliveryCountryCode = $countryCode;
-        }
         if (!empty(Frontend::getCustomer()->cLand)) {
             $deliveryCountryCode = Frontend::getCustomer()->cLand;
             $billingCountryCode  = Frontend::getCustomer()->cLand;
         }
         if (!empty($_SESSION['Lieferadresse']->cLand)) {
             $deliveryCountryCode = $_SESSION['Lieferadresse']->cLand;
+        }
+        if (!empty($_SESSION['preferredDeliveryCountryCode'])) {
+            $deliveryCountryCode = $_SESSION['preferredDeliveryCountryCode'];
+        }
+        if ($countryCode) {
+            $deliveryCountryCode = $countryCode;
         }
         if ($billingCountryCode === null) {
             $billingCountryCode = $deliveryCountryCode;
@@ -167,7 +171,7 @@ class Tax
                 }
             }
         }
-        if (isset($_SESSION['Warenkorb']) && $_SESSION['Warenkorb'] instanceof Cart) {
+        if ($skipUpdateCart === false && isset($_SESSION['Warenkorb']) && $_SESSION['Warenkorb'] instanceof Cart) {
             Frontend::getCart()->setzePositionsPreise();
         }
     }
@@ -188,8 +192,7 @@ class Tax
         }
         $taxRates = [];
         $taxPos   = [];
-        $conf     = Shop::getSettings([\CONF_GLOBAL]);
-        if ($conf['global']['global_steuerpos_anzeigen'] === 'N') {
+        if (Shop::getSettingValue(\CONF_GLOBAL, 'global_steuerpos_anzeigen') === 'N') {
             return $taxPos;
         }
         foreach ($items as $item) {

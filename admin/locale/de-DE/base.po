@@ -290,6 +290,9 @@ msgstr "Bitte überprüfen Sie Ihre Eingaben."
 msgid "lockForMinutes"
 msgstr "Gesperrt für %s Minuten"
 
+msgid "errorLoginDataExpired"
+msgstr "Anmeldedaten nicht mehr gültig."
+
 msgid "errorWrongPasswordUser"
 msgstr "Benutzername oder Passwort falsch"
 
@@ -2024,6 +2027,13 @@ msgstr "Eine weitere Nutzung kann einen Lizenzverstoß darstellen!"
 msgid "Please purchase a licence in the JTL-Extension Store or contact the manufacturer of the extension for information on rights of use."
 msgstr "Bitte erwerben Sie eine Lizenz im JTL-Extension Store oder kontaktieren Sie den Hersteller der Extension zu Informationen bezüglich der Nutzungsrechte."
 
+msgid "btnExploreExtensionStore"
+msgstr "Zum JTL-Extension Store"
+
+msgid "btnAdditionalExtensionStore"
+msgstr "Weitere Extensions entdecken"
+
+
 msgid "Licensing problem detected"
 msgstr "Lizenzproblem festgestellt"
 
@@ -2108,6 +2118,9 @@ msgstr "Keine Änderungen dieser Einstellung vorhanden."
 msgid "settingChangedBy"
 msgstr "Geändert von"
 
+msgid "settingChangerIp"
+msgstr "IP-Adresse"
+
 msgid "settingValueNew"
 msgstr "Wert neu"
 
@@ -2121,10 +2134,10 @@ msgid "settingLogTitle"
 msgstr "Änderungslog anzeigen."
 
 msgid "settingReset"
-msgstr "Einstellung auf Werkseinstellung zurücksetzen."
+msgstr "Einstellung auf Werkseinstellung zurücksetzen. (Default: %s)"
 
 msgid "confirmResetLog"
-msgstr "Einstellung  - %s - auf Werkseinstellung zurücksetzen?"
+msgstr "Einstellung  - %s - auf Werkseinstellung zurücksetzen? (Default: %s)"
 
 msgid "confirmResetLogTitle"
 msgstr "Zurücksetzen bestätigen"
@@ -2134,3 +2147,21 @@ msgstr "Einstellung konnte nicht zurückgesetzt werden, da kein passender Eintra
 
 msgid "defaultDeleteConfirmTitle"
 msgstr "Löschen bestätigen"
+
+msgid "pluginInstallXmlDoesNotExist"
+msgstr "info.xml existiert nicht: %s"
+
+msgid "pluginInstallDefinitionNotFound"
+msgstr "Plugindefinition kann in %s nicht gefunden werden."
+
+msgid "pluginInstallCannotMoveTo"
+msgstr "Verschieben nach %s fehlgeschlagen."
+
+msgid "pluginInstallTemplateDoesNotExist"
+msgstr "%s existiert nicht: %s"
+
+msgid "pluginInstallCannotOpenArchive"
+msgstr "Kann Archiv nicht öffnen."
+
+msgid "pluginInstallInvalidArchive"
+msgstr "Ungültiges Archiv."

@@ -115,7 +115,9 @@ class Extractor
         $info = self::UNZIP_DIR . $dirName . \PLUGIN_INFO_FILE;
         $ok   = true;
         if (!\file_exists($info)) {
-            throw new InvalidArgumentException('info.xml does not exist: ' . $dirName . \PLUGIN_INFO_FILE);
+            throw new InvalidArgumentException(
+                \sprintf(\__('pluginInstallXmlDoesNotExist'), $dirName . \PLUGIN_INFO_FILE)
+            );
         }
         $parsed = $this->parser->parse($info);
         if (isset($parsed['jtlshopplugin']) && \is_array($parsed['jtlshopplugin'])) {
@@ -123,7 +125,7 @@ class Extractor
         } elseif (isset($parsed['jtlshop3plugin']) && \is_array($parsed['jtlshop3plugin'])) {
             $base = \PFAD_PLUGIN;
         } else {
-            throw new InvalidArgumentException('Cannot find plugin definition in ' . $info);
+            throw new InvalidArgumentException(\sprintf(\__('pluginInstallDefinitionNotFound'), $info));
         }
         try {
             $this->manager->createDirectory('plgn://' . $base . $dirName);
@@ -164,7 +166,7 @@ class Extractor
 
             return true;
         }
-        $this->handlExtractionErrors(0, 'Cannot move to ' . $base . $dirName);
+        $this->handlExtractionErrors(0, \sprintf(\__('pluginInstallCannotMoveTo'), $base . $dirName));
 
         return false;
     }
@@ -178,7 +180,9 @@ class Extractor
     {
         $info = self::UNZIP_DIR . $dirName . \TEMPLATE_XML;
         if (!\file_exists($info)) {
-            throw new InvalidArgumentException(\TEMPLATE_XML . ' does not exist: ' . $info);
+            throw new InvalidArgumentException(
+                \sprintf(\__('pluginInstallTemplateDoesNotExist'), \TEMPLATE_XML, $info)
+            );
         }
         $base = \PFAD_TEMPLATES;
         $ok   = true;
@@ -217,7 +221,7 @@ class Extractor
 
             return true;
         }
-        $this->handlExtractionErrors(0, 'Cannot move to ' . $base . $dirName);
+        $this->handlExtractionErrors(0, \sprintf(\__('pluginInstallCannotMoveTo'), $base . $dirName));
 
         return false;
     }
@@ -231,7 +235,7 @@ class Extractor
         $dirName = '';
         $zip     = new ZipArchive();
         if (!$zip->open($zipFile) || $zip->numFiles === 0) {
-            $this->handlExtractionErrors(0, 'Cannot open archive');
+            $this->handlExtractionErrors(0, \__('pluginInstallCannotOpenArchive'));
 
             return $dirName;
         }
@@ -239,7 +243,7 @@ class Extractor
             if ($i === 0) {
                 $dirName = $zip->getNameIndex($i);
                 if (\mb_strpos($dirName, '.') !== false) {
-                    $this->handlExtractionErrors(0, 'Invalid archive');
+                    $this->handlExtractionErrors(0, \__('pluginInstallInvalidArchive'));
 
                     return $dirName;
                 }

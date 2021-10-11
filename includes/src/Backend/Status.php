@@ -8,6 +8,8 @@ use JTL\Checkout\ZahlungsLog;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Export\SyntaxChecker;
+use JTL\Language\LanguageHelper;
+use JTL\Language\LanguageModel;
 use JTL\License\Manager;
 use JTL\License\Mapper;
 use JTL\Mail\Template\Model as MailTplModel;
@@ -312,8 +314,7 @@ class Status
         if ($template->isResponsive()) {
             $mobileTpl = $this->db->select('ttemplate', 'eTyp', 'mobil');
             if ($mobileTpl !== null) {
-                $xmlFile = \PFAD_ROOT . \PFAD_TEMPLATES . $mobileTpl->cTemplate .
-                    \DIRECTORY_SEPARATOR . \TEMPLATE_XML;
+                $xmlFile = \PFAD_ROOT . \PFAD_TEMPLATES . $mobileTpl->cTemplate . '/' . \TEMPLATE_XML;
                 if (\file_exists($xmlFile)) {
                     return true;
                 }
@@ -345,6 +346,20 @@ class Status
         $systemcheck->executeTestGroup('Shop5');
 
         return $systemcheck->getIsPassed();
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasInstalledStandardLang(): bool
+    {
+        $defaultID = LanguageHelper::getDefaultLanguage()->getId();
+        return some(
+            LanguageHelper::getInstance()->getInstalled(),
+            static function (LanguageModel $lang) use ($defaultID) {
+                return $lang->getId() === $defaultID;
+            }
+        );
     }
 
     /**

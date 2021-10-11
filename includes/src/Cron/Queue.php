@@ -56,7 +56,9 @@ class Queue
                 FROM tjobqueue
                 WHERE isRunning = 0
                     AND startTime <= NOW()'
-        )->mapInto(QueueEntry::class)->toArray();
+        )->map(static function ($e) {
+            return new QueueEntry($e);
+        })->toArray();
         $this->logger->debug(\sprintf('Loaded %d existing job(s).', \count($this->queueEntries)));
 
         return $this->queueEntries;

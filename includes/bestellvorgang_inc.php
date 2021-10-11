@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Cart\CartItem;
 use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
 use JTL\Checkout\Kupon;
@@ -15,6 +16,7 @@ use JTL\Customer\CustomerFields;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Order;
 use JTL\Helpers\PaymentMethod as Helper;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -98,8 +100,12 @@ function pruefeUnregistriertBestellen($post): int
             $post['kLieferadresse'] = 0;
             $post['lieferdaten']    = 1;
             pruefeLieferdaten($post);
+            $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand ?? $post['land'];
+            Tax::setTaxRates();
         } elseif (isset($post['kLieferadresse']) && (int)$post['kLieferadresse'] > 0) {
             pruefeLieferdaten($post);
+            $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand;
+            Tax::setTaxRates();
         } elseif (isset($post['register']['shipping_address'])) {
             checkNewShippingAddress($post, $missingInput);
         }
@@ -214,6 +220,9 @@ function pruefeLieferdaten($post, &$missingData = null): void
         $Lieferadresse             = getLieferdaten($post);
         $ok                        = angabenKorrekt($missingData);
         $_SESSION['Lieferadresse'] = $Lieferadresse;
+
+        $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand;
+        Tax::setTaxRates();
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_NEUELIEFERADRESSE_PLAUSI, [
             'nReturnValue'    => &$ok,
             'fehlendeAngaben' => &$missingData
@@ -291,10 +300,8 @@ function plausiGuthaben($post): void
             $_SESSION['Bestellung'] = new stdClass();
         }
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
-        $_SESSION['Bestellung']->fGuthabenGenutzt = min(
-            Frontend::getCustomer()->fGuthaben,
-            Frontend::getCart()->gibGesamtsummeWaren(true, false)
-        );
+        $_SESSION['Bestellung']->fGuthabenGenutzt = Order::getOrderCredit($_SESSION['Bestellung']);
+
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABENVERRECHNEN);
     }
 }
@@ -430,7 +437,10 @@ function pruefeLieferadresseStep($get): void
     //sondersteps Lieferadresse ändern
     if (!empty($_SESSION['Lieferadresse'])) {
         $Lieferadresse = $_SESSION['Lieferadresse'];
-        if (isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1) {
+        if (isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1
+            || isset($_SESSION['preferredDeliveryCountryCode'])
+            && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand
+        ) {
             Kupon::resetNewCustomerCoupon();
             unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
             $step = 'Lieferadresse';
@@ -571,13 +581,7 @@ function pruefeZahlungsartwahlStep($post)
 function pruefeGuthabenNutzen(): void
 {
     if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen) {
-        $_SESSION['Bestellung']->fGuthabenGenutzt   = min(
-            Frontend::getCustomer()->fGuthaben,
-            Frontend::getCart()->gibGesamtsummeWaren(true, false)
-        );
-        $_SESSION['Bestellung']->GutscheinLocalized = Preise::getLocalizedPriceString(
-            $_SESSION['Bestellung']->fGuthabenGenutzt
-        );
+        $_SESSION['Bestellung']->fGuthabenGenutzt = Order::getOrderCredit($_SESSION['Bestellung']);
     }
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABEN_PLAUSI);
@@ -1677,7 +1681,7 @@ function gibAktiveZahlungsart($shippingMethods)
         $_SESSION['AktiveZahlungsart'] = $shippingMethods[0]->kZahlungsart;
     }
 
-    return $_SESSION['AktiveZahlungsart'];
+    return (int)$_SESSION['AktiveZahlungsart'];
 }
 
 /**
@@ -2363,7 +2367,7 @@ function gibGesamtsummeKuponartikelImWarenkorb($coupon, array $cartItems)
         ) {
             $total += $item->fPreis
                 * $item->nAnzahl
-                * ((100 + Tax::getSalesTax($item->kSteuerklasse)) / 100);
+                * ((100 + CartItem::getTaxRate($item)) / 100);
         }
     }
 

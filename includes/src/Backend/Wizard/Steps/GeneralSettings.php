@@ -50,7 +50,10 @@ final class GeneralSettings extends AbstractStep
         $question->setSummaryText(\__('secureDefaultSettings'));
         $question->setType(QuestionType::BOOL);
         $question->setOnSave(function (QuestionInterface $question) {
-            if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' && $question->getValue() === true) {
+            if ($question->getValue() === true
+                && ((isset($_SERVER['HTTPS']) && \strtolower($_SERVER['HTTPS']) === 'on')
+                    || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https'))
+            ) {
                 $question->updateConfig('kaufabwicklung_ssl_nutzen', 'P');
                 $question->updateConfig('email_smtp_verschluesselung', 'tls');
                 $question->updateConfig('email_methode', 'smtp');

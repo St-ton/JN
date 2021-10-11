@@ -6,7 +6,7 @@ msgid "countryManager"
 msgstr "Country administration"
 
 msgid "countryManagerURL"
-msgstr ""
+msgstr "https://jtl-url.de/l87bq"
 
 msgid "countryManagerDesc"
 msgstr "Here you can manage all countries used in JTL-Shop independently of JTL-Wawi. The names of the countries are automatically generated in the respective language for front and back end using the ISO code. Therefore, the names cannot be changed. The fields \"German\" and \"English\" should be named like the respective countries in JTL-Wawi."

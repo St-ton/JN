@@ -333,6 +333,13 @@ class Preise
             $newNetPrice = \round($netPrice * ($defaultTax + 100) / 100, 2) / ($conversionTax + 100) * 100;
         }
 
+        \executeHook(\HOOK_RECALCULATED_NET_PRICE, [
+            'netPrice'      => $netPrice,
+            'defaultTax'    => $defaultTax,
+            'conversionTax' => $conversionTax,
+            'newNetPrice'   => &$newNetPrice
+        ]);
+
         return (double)$newNetPrice;
     }
 
@@ -462,7 +469,9 @@ class Preise
             ];
         }
         if (!empty($this->alterVKNetto)) {
-            $this->discountPercentage = (int)((($this->alterVKNetto - $this->fVKNetto) * 100) / $this->alterVKNetto);
+            $this->discountPercentage = (int)\round(
+                (($this->alterVKNetto - $this->fVKNetto) * 100) / $this->alterVKNetto
+            );
         }
 
         return $this;
@@ -499,9 +508,9 @@ class Preise
      */
     public static function getPriceJoinSql(
         int $customerGroupID,
-        $priceAlias = 'tpreis',
-        $detailAlias = 'tpreisdetail',
-        $productAlias = 'tartikel'
+        string $priceAlias = 'tpreis',
+        string $detailAlias = 'tpreisdetail',
+        string $productAlias = 'tartikel'
     ): string {
         return 'JOIN tpreis AS ' . $priceAlias . ' ON ' . $priceAlias . '.kArtikel = ' . $productAlias . '.kArtikel
                     AND ' . $priceAlias . '.kKundengruppe = ' . $customerGroupID . '
@@ -538,19 +547,19 @@ class Preise
     }
 
     /**
-     * @param float         $preis
-     * @param Currency|null $waehrung
-     * @param bool          $html
+     * @param float|string           $price
+     * @param Currency|stdClass|null $currency
+     * @param bool                   $html
      * @return string
      * @former gibPreisLocalizedOhneFaktor()
      */
-    public static function getLocalizedPriceWithoutFactor($preis, $waehrung = null, bool $html = true): string
+    public static function getLocalizedPriceWithoutFactor($price, $currency = null, bool $html = true): string
     {
-        $currency = !$waehrung ? Frontend::getCurrency() : $waehrung;
+        $currency = $currency ?? Frontend::getCurrency();
         if ($currency !== null && \get_class($currency) === 'stdClass') {
             $currency = new Currency($currency->kWaehrung);
         }
-        $localized = \number_format($preis, 2, $currency->getDecimalSeparator(), $currency->getThousandsSeparator());
+        $localized = \number_format($price, 2, $currency->getDecimalSeparator(), $currency->getThousandsSeparator());
         $name      = $html ? $currency->getHtmlEntity() : $currency->getName();
 
         return $currency->getForcePlacementBeforeNumber()

@@ -147,5 +147,11 @@ msgstr "If you want to use the European VAT check by the EU VAT Information Exch
 msgid "Missing translations"
 msgstr "Missing translations"
 
+msgid "defaultLangNotInstalledTitle"
+msgstr "Default language not installed"
+
+msgid "defaultLangNotInstalledMessage"
+msgstr "The default languags \"%s\" is not installed! Please install an appropriate language package or choose another default language via JTL-Wawi!"
+
 msgid "%d pages are not translated in all available languages."
 msgstr "%d pages are not translated in all available languages."

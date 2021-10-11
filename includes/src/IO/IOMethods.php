@@ -327,6 +327,7 @@ class IOMethods
         }
         $alerts  = Shop::Container()->getAlertService();
         $content = $smarty->assign('alertList', $alerts)
+                          ->assign('Einstellungen', $conf)
                           ->fetch('snippets/alert_list.tpl');
 
         $response->cNotification = $smarty
@@ -338,8 +339,7 @@ class IOMethods
             ->assign('buttons', $buttons)
             ->fetch('snippets/notification.tpl');
 
-        $response->cNavBadge     = $smarty->assign('Einstellungen', $conf)
-            ->fetch('layout/header_shop_nav_compare.tpl');
+        $response->cNavBadge     = $smarty->fetch('layout/header_shop_nav_compare.tpl');
         $response->navDropdown   = $smarty->fetch('snippets/comparelist_dropdown.tpl');
         $response->cBoxContainer = [];
         foreach ($this->forceRenderBoxes(\BOX_VERGLEICHSLISTE, $conf, $smarty) as $id => $html) {
@@ -493,12 +493,12 @@ class IOMethods
         }
         $alerts = Shop::Container()->getAlertService();
         $body   = $smarty->assign('alertList', $alerts)
+                         ->assign('Einstellungen', $conf)
                          ->fetch('snippets/alert_list.tpl');
 
         $smarty->assign('type', $alerts->alertTypeExists(Alert::TYPE_ERROR) ? 'danger' : 'info')
                ->assign('body', $body)
-               ->assign('buttons', $buttons)
-               ->assign('Einstellungen', $conf);
+               ->assign('buttons', $buttons);
 
         $response->cNotification = $smarty->fetch('snippets/notification.tpl');
         $response->cNavBadge     = $smarty->fetch('layout/header_shop_nav_wish.tpl');
@@ -749,19 +749,25 @@ class IOMethods
         }
 
         $errors                     = Configurator::validateCart($productID, $configItems ?? []);
-        $config->invalidGroups      = \array_unique(\array_merge(
+        $config->invalidGroups      = \array_values(\array_unique(\array_merge(
             $invalidGroups,
             \array_keys(\is_array($errors) ? $errors : [])
-        ));
+        )));
         $config->errorMessages      = $itemErrors ?? [];
         $config->valid              = empty($config->invalidGroups) && empty($config->errorMessages);
+        $cartHelperErrors           = CartHelper::addToCartCheck(
+            $product,
+            1,
+            Product::getSelectedPropertiesForArticle($productID, false)
+        );
         $config->variationsSelected = $product->kVaterArtikel > 0 || !\in_array(
             \R_VARWAEHLEN,
-            CartHelper::addToCartCheck(
-                $product,
-                1,
-                Product::getSelectedPropertiesForArticle($productID, false)
-            ),
+            $cartHelperErrors,
+            true
+        );
+        $config->inStock            = !\in_array(
+            \R_LAGER,
+            $cartHelperErrors,
             true
         );
         $smarty->assign('oKonfig', $config)
@@ -1036,7 +1042,9 @@ class IOMethods
                 $set               = [$propertyID => $propertyValueID];
                 $invalidVariations = $product->getVariationsBySelection($set, true);
                 // Auswählter EigenschaftWert ist ebenfalls nicht vorhanden
-                if (\in_array($propertyValueID, $invalidVariations[$propertyID])) {
+                if (isset($invalidVariations[$propertyID])
+                    && \in_array($propertyValueID, $invalidVariations[$propertyID])
+                ) {
                     $set = [];
                     // Wir befinden uns im Kind-Artikel -> Weiterleitung auf Vater-Artikel
                     if ($childProductID > 0) {
@@ -1391,6 +1399,11 @@ class IOMethods
      */
     public function setWishlistVisibility(int $wlID, bool $state, string $token): IOResponse
     {
+        $objResponse = new IOResponse();
+        $wl          = Wishlist::instanceByID($wlID);
+        if ($wl->isSelfControlled() === false) {
+            return $objResponse;
+        }
         if (Form::validateToken($token)) {
             if ($state) {
                 Wishlist::setPublic($wlID);
@@ -1398,7 +1411,6 @@ class IOMethods
                 Wishlist::setPrivate($wlID);
             }
         }
-        $objResponse     = new IOResponse();
         $response        = new stdClass();
         $response->wlID  = $wlID;
         $response->state = $state;
@@ -1416,7 +1428,8 @@ class IOMethods
      */
     public function updateWishlistItem(int $wlID, array $formData): IOResponse
     {
-        if (Form::validateToken($formData['jtl_token'])) {
+        $wl = Wishlist::instanceByID($wlID);
+        if ($wl->isSelfControlled() === true && Form::validateToken($formData['jtl_token'])) {
             Wishlist::update($wlID, $formData);
         }
 

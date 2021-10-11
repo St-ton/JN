@@ -182,7 +182,7 @@
                                         {/col}
                                         {col cols="12" md=6 class="ml-auto-util"}
                                             {block name='blog-details-include-pagination'}
-                                                {include file='snippets/pagination.tpl' oPagination=$oPagiComments cThisUrl=$articleURL cParam_arr=$cParam_arr}
+                                                {include file='snippets/pagination.tpl' oPagination=$oPagiComments cThisUrl=$articleURL cParam_arr=$cParam_arr noWrapper=true}
                                             {/block}
                                         {/col}
                                     {/row}

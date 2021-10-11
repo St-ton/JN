@@ -24,6 +24,8 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
+$_SESSION['deliveryCountryPrefLocked'] = true;
+
 Shop::setPageType(PAGE_BESTELLVORGANG);
 $conf         = Shopsetting::getInstance()->getAll();
 $step         = 'accountwahl';
@@ -78,6 +80,11 @@ if ($valid && Request::postInt('unreg_form') === 1) {
         pruefeUnregistriertBestellen($_POST);
     } elseif (isset($_POST['shipping_address'], $_POST['register']['shipping_address'])) {
         checkNewShippingAddress($_POST);
+    } elseif (Request::postInt('kLieferadresse') > 0) {
+        pruefeLieferdaten($_POST);
+    } elseif (Request::postInt('shipping_address') === 0) {
+        $missingInput = getMissingInput($_POST);
+        pruefeLieferdaten($_POST, $missingInput);
     }
 }
 if (isset($_GET['editLieferadresse'])) {
@@ -212,10 +219,7 @@ if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
         || Request::postInt('guthabenVerrechnen') === 1
     ) {
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
-        $_SESSION['Bestellung']->fGuthabenGenutzt = min(
-            $_SESSION['Kunde']->fGuthaben,
-            Frontend::getCart()->gibGesamtsummeWaren(true, false)
-        );
+        $_SESSION['Bestellung']->fGuthabenGenutzt = Order::getOrderCredit($_SESSION['Bestellung']);
     }
     Cart::refreshChecksum($cart);
     $_SESSION['AktiveZahlungsart'] = $savedPayment;

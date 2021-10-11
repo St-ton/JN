@@ -15,10 +15,10 @@ msgid "errorReadStructureFile"
 msgstr "Struktur-Datei konnte nicht gelesen werden."
 
 msgid "errorNoInnoTable"
-msgstr "ist keine InnoDB-Tabelle"
+msgstr "%s ist keine InnoDB-Tabelle"
 
 msgid "errorWrongCollation"
-msgstr "hat die falsche Kollation"
+msgstr "%s hat die falsche Kollation"
 
 msgid "errorDataTypeTextInRow"
 msgstr "Datentyp text in Spalte %s"
@@ -183,7 +183,7 @@ msgid "errorNoInnoDBSupportDesc"
 msgstr "Ihre aktuelle Datenbankversion %s unterstützt keine InnoDB-Tabellen – eine Struktur-Migration ist nicht möglich.<br/> Bitte setzen Sie sich mit Ihrem Datenbank-Administrator oder Ihrem Hoster zwecks Aktivierung der InnoDB-Unterstützung in Verbindung."
 
 msgid "errorNoUTF8SupportDesc"
-msgstr "Ihre aktuelle Datenbankversion {$DB_Version->server} unterstützt die Kollation „utf8_unicode_ci“ nicht – eine Struktur-Migration ist nicht möglich.<br/> Bitte setzen Sie sich mit Ihrem Datenbank-Administrator oder Ihrem Hoster zwecks Aktivierung der Kollation „utf8_unicode_ci“ in Verbindung."
+msgstr "Ihre aktuelle Datenbankversion %s unterstützt die Kollation „utf8_unicode_ci“ nicht – eine Struktur-Migration ist nicht möglich.<br/> Bitte setzen Sie sich mit Ihrem Datenbank-Administrator oder Ihrem Hoster zwecks Aktivierung der Kollation „utf8_unicode_ci“ in Verbindung."
 
 msgid "startAutomaticMigration"
 msgstr "Automatische Migration wird gestartet…"

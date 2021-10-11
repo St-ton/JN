@@ -280,33 +280,6 @@ class Redirect
     }
 
     /**
-     * @param int    $redirectedURLs
-     * @param string $query
-     * @return int
-     */
-    public function getCount($redirectedURLs, $query): int
-    {
-        $redirectedURLs = (int)$redirectedURLs;
-        $qry            = 'SELECT COUNT(*) AS nCount FROM tredirect ';
-        $prep           = [];
-        if ($redirectedURLs === 1 || !empty($query)) {
-            $qry .= 'WHERE ';
-        }
-        if ($redirectedURLs === 1) {
-            $qry .= ' cToUrl != ""';
-        }
-        if (!empty($query) && $redirectedURLs === 1) {
-            $qry .= ' AND ';
-        }
-        if (!empty($query)) {
-            $qry .= 'cFromUrl LIKE :search';
-            $prep = ['search' => '%' . $query . '%'];
-        }
-
-        return (int)Shop::Container()->getDB()->getSingleObject($qry, $prep)->nCount;
-    }
-
-    /**
      * @param string $whereSQL
      * @param string $orderSQL
      * @param string $limitSQL
@@ -539,5 +512,33 @@ class Redirect
                 }
             }
         }
+    }
+
+    /**
+     * @param int         $redirectedURLs
+     * @param string|null $query
+     * @return int
+     * @deprecated since 5.2.0
+     */
+    public function getCount(int $redirectedURLs, ?string $query): int
+    {
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        $qry  = 'SELECT COUNT(*) AS nCount FROM tredirect ';
+        $prep = [];
+        if ($redirectedURLs === 1 || !empty($query)) {
+            $qry .= 'WHERE ';
+        }
+        if ($redirectedURLs === 1) {
+            $qry .= ' cToUrl != ""';
+        }
+        if (!empty($query) && $redirectedURLs === 1) {
+            $qry .= ' AND ';
+        }
+        if (!empty($query)) {
+            $qry .= 'cFromUrl LIKE :search';
+            $prep = ['search' => '%' . $query . '%'];
+        }
+
+        return (int)Shop::Container()->getDB()->getSingleObject($qry, $prep)->nCount;
     }
 }

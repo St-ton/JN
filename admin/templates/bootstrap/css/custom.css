@@ -2646,4 +2646,16 @@ input[type=number] {
   top: 12px;
   display: none;
 }
+.exstore-banner {
+  width: 100%;
+  margin: auto;
+  margin-top: 2rem;
+  display: block;
+  max-width: 2000px;
+}
+@media (max-width: 768px) {
+  .exstore-banner {
+    max-width: 412px;
+  }
+}
 /*# sourceMappingURL=custom.css.map */

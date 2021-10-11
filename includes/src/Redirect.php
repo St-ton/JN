@@ -3,6 +3,7 @@
 namespace JTL;
 
 use JTL\Filter\FilterInterface;
+use JTL\Filter\ProductFilter;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
@@ -532,9 +533,9 @@ class Redirect
      * @param string $whereSQL
      * @param string $orderSQL
      * @param string $limitSQL
-     * @return array
+     * @return stdClass[]
      */
-    public static function getRedirects(string $whereSQL = '', string $orderSQL = '', $limitSQL = ''): array
+    public static function getRedirects(string $whereSQL = '', string $orderSQL = '', string $limitSQL = ''): array
     {
         $redirects = Shop::Container()->getDB()->getObjects(
             'SELECT *
@@ -561,7 +562,7 @@ class Redirect
      * @param string $whereSQL
      * @return int
      */
-    public static function getRedirectCount($whereSQL = ''): int
+    public static function getRedirectCount(string $whereSQL = ''): int
     {
         return (int)Shop::Container()->getDB()->getSingleObject(
             'SELECT COUNT(kRedirect) AS cnt
@@ -711,12 +712,17 @@ class Redirect
     }
 
     /**
-     * @param object $productFilter
-     * @param int    $count
-     * @param bool   $seo
+     * @param ProductFilter $productFilter
+     * @param int           $count
+     * @param bool          $seo
+     * @deprecated since 5.2.0
      */
-    public static function doMainwordRedirect($productFilter, int $count, bool $seo = false): void
+    public static function doMainwordRedirect(ProductFilter $productFilter, int $count, bool $seo = false): void
     {
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        if ($count !== 0 || $productFilter->getFilterCount() === 0) {
+            return;
+        }
         $main       = [
             'getCategory'            => [
                 'cKey'   => 'kKategorie',
@@ -740,21 +746,19 @@ class Redirect
             ]
         ];
         $languageID = Shop::getLanguageID();
-        if ($count === 0 && Shop::getProductFilter()->getFilterCount() > 0) {
-            foreach ($main as $function => $info) {
-                $data = \method_exists($productFilter, $function)
-                    ? $productFilter->$function()
-                    : null;
-                if ($data !== null && \method_exists($data, 'getValue') && $data->getValue() > 0) {
-                    /** @var FilterInterface $data */
-                    $url = '?' . $info['cParam'] . '=' . $data->getValue();
-                    if ($seo && !empty($data->getSeo($languageID))) {
-                        $url = $data->getSeo($languageID);
-                    }
-                    if (\mb_strlen($url) > 0) {
-                        \header('Location: ' . $url, true, 301);
-                        exit();
-                    }
+        foreach ($main as $function => $info) {
+            $data = \method_exists($productFilter, $function)
+                ? $productFilter->$function()
+                : null;
+            if ($data !== null && \method_exists($data, 'getValue') && $data->getValue() > 0) {
+                /** @var FilterInterface $data */
+                $url = '?' . $info['cParam'] . '=' . $data->getValue();
+                if ($seo && !empty($data->getSeo($languageID))) {
+                    $url = $data->getSeo($languageID);
+                }
+                if (\mb_strlen($url) > 0) {
+                    \header('Location: ' . $url, true, 301);
+                    exit();
                 }
             }
         }

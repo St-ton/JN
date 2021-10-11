@@ -2648,8 +2648,7 @@ input[type=number] {
 }
 .exstore-banner {
   width: 100%;
-  margin: auto;
-  margin-top: 2rem;
+  margin: 2rem auto;
   display: block;
   max-width: 2000px;
 }

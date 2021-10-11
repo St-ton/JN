@@ -125,7 +125,7 @@ class SASSCommand extends Command
         $compiler = new Compiler();
         $compiler->setSourceMap($critical ? Compiler::SOURCE_MAP_NONE : Compiler::SOURCE_MAP_FILE);
         $compiler->setSourceMapOptions([
-            'sourceMapURL' => basename($target) . '.map',
+            'sourceMapURL'      => \basename($target) . '.map',
             'sourceMapBasepath' => $directory,
         ]);
         $compiler->addImportPath($baseDir);

@@ -328,7 +328,7 @@
                                 <div class="form-group form-row align-items-center{if isset($cPlausi_arr.nSort)} form-error{/if}">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="nSort">{__('sortHigherBottom')}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <input id="nSort" name="nSort" type="text" class="form-control" value="{if isset($cPost_arr.nSort)}{$cPost_arr.nSort}{elseif isset($oCheckBox->nSort)}{$oCheckBox->nSort}{/if}" />
+                                        <input id="nSort" name="nSort" type="number" class="form-control" value="{if isset($cPost_arr.nSort)}{$cPost_arr.nSort}{elseif isset($oCheckBox->nSort)}{$oCheckBox->nSort}{/if}" />
                                     </div>
                                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('hintCheckboxOrder')}</div>
                                 </div>

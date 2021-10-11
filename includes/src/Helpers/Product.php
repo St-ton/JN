@@ -996,15 +996,18 @@ class Product
     }
 
     /**
-     * @param array   $notices
-     * @param array   $conf - product details config section
-     * @param Artikel $product
+     * @param array        $notices
+     * @param array        $conf - product details config section
+     * @param Artikel|null $product
      * @return array
      * @former bearbeiteFrageZumProdukt()
      * @since 5.0.0
      */
-    public static function checkProductQuestion(array $notices, array $conf, Artikel $product): array
+    public static function checkProductQuestion(array $notices, array $conf, ?Artikel $product = null): array
     {
+        if ($product === null) {
+            \trigger_error('Calling ' . __METHOD__ . ' without product instance is deprecated.', \E_USER_DEPRECATED);
+        }
         if ($conf['artikeldetails_fragezumprodukt_anzeigen'] === 'N') {
             $notices[] = Shop::Lang()->get('productquestionPleaseLogin', 'errorMessages');
 
@@ -1117,13 +1120,17 @@ class Product
     }
 
     /**
-     * @param Artikel $product
+     * @param Artikel|null $product - since 5.2.0
      * @return string
      * @former sendeProduktanfrage()
      * @since 5.0.0
      */
-    public static function sendProductQuestion(Artikel $product): string
+    public static function sendProductQuestion(?Artikel $product = null): string
     {
+        if ($product === null) {
+            $product = $GLOBALS['AktuellerArtikel'];
+            \trigger_error('Calling ' . __METHOD__ . ' without product instance is deprecated.', \E_USER_DEPRECATED);
+        }
         $conf             = Shop::getSettings([\CONF_EMAILS, \CONF_ARTIKELDETAILS, \CONF_GLOBAL]);
         $data             = new stdClass();
         $data->tartikel   = $product;

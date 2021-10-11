@@ -216,9 +216,9 @@ class Frontend extends AbstractSession
         if (!isset($_SESSION['kSprache'])) {
             $default = Text::convertISO6392ISO($defaultLang);
             foreach ($_SESSION['Sprachen'] as $lang) {
-                if ($lang->cISO === $default || (empty($default) && $lang->cShopStandard === 'Y')) {
-                    $_SESSION['kSprache']    = $lang->kSprache;
-                    $_SESSION['cISOSprache'] = \trim($lang->cISO);
+                if ($lang->getCode() === $default || (empty($default) && $lang->isShopDefault())) {
+                    $_SESSION['kSprache']    = $lang->getId();
+                    $_SESSION['cISOSprache'] = \trim($lang->getCode());
                     Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
                     $_SESSION['currentLanguage'] = clone $lang;
                     break;
@@ -493,15 +493,15 @@ class Frontend extends AbstractSession
                 $_SESSION['oKategorie_arr']     = [];
                 $_SESSION['oKategorie_arr_new'] = [];
             }
-            $lang = first(LanguageHelper::getAllLanguages(), static function ($l) use ($langISO) {
-                return $l->cISO === $langISO;
+            $lang = first(LanguageHelper::getAllLanguages(), static function (LanguageModel $l) use ($langISO) {
+                return $l->getCode() === $langISO;
             });
             if ($lang === null) {
                 self::urlFallback();
             }
-            $_SESSION['cISOSprache'] = $lang->cISO;
-            $_SESSION['kSprache']    = (int)$lang->kSprache;
-            Shop::setLanguage($lang->kSprache, $lang->cISO);
+            $_SESSION['cISOSprache'] = $lang->getCode();
+            $_SESSION['kSprache']    = $lang->getId();
+            Shop::setLanguage($lang->getId(), $lang->getCode());
             unset($_SESSION['Suche']);
             self::setSpecialLinks();
             if (isset($_SESSION['Wunschliste'])) {

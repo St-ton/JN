@@ -382,9 +382,9 @@ class Cart
         $db            = Shop::Container()->getDB();
         $deliveryState = $cartItem->Artikel->cLieferstatus;
         foreach (Frontend::getLanguages() as $lang) {
-            $cartItem->cName[$lang->cISO]         = $cartItem->Artikel->cName;
-            $cartItem->cLieferstatus[$lang->cISO] = $deliveryState;
-            if ($lang->cStandard === 'Y') {
+            $cartItem->cName[$lang->getCode()]         = $cartItem->Artikel->cName;
+            $cartItem->cLieferstatus[$lang->getCode()] = $deliveryState;
+            if ($lang->isDefault() === true) {
                 $localized = $db->select(
                     'tartikel',
                     'kArtikel',
@@ -402,7 +402,7 @@ class Cart
                     'kArtikel',
                     (int)$cartItem->kArtikel,
                     'kSprache',
-                    (int)$lang->kSprache,
+                    $lang->getId(),
                     null,
                     null,
                     false,
@@ -410,18 +410,18 @@ class Cart
                 );
             }
             //Wenn fuer die gewaehlte Sprache kein Name vorhanden ist dann StdSprache nehmen
-            $cartItem->cName[$lang->cISO] = (isset($localized->cName) && \mb_strlen(\trim($localized->cName)) > 0)
+            $cartItem->cName[$lang->getCode()] = (isset($localized->cName) && \mb_strlen(\trim($localized->cName)) > 0)
                 ? $localized->cName
                 : $cartItem->Artikel->cName;
-            $lieferstatus_spr             = $db->select(
+            $lieferstatus_spr                  = $db->select(
                 'tlieferstatus',
                 'kLieferstatus',
                 (int)($cartItem->Artikel->kLieferstatus ?? 0),
                 'kSprache',
-                (int)$lang->kSprache
+                $lang->getId()
             );
             if (!empty($lieferstatus_spr->cName)) {
-                $cartItem->cLieferstatus[$lang->cISO] = $lieferstatus_spr->cName;
+                $cartItem->cLieferstatus[$lang->getCode()] = $lieferstatus_spr->cName;
             }
         }
         // Grundpreise bei Staffelpreisen
@@ -1040,11 +1040,11 @@ class Cart
             }
             if ($name && $configItem->getUseOwnName()) {
                 foreach (Frontend::getLanguages() as $language) {
-                    $localized                    = new ItemLocalization(
+                    $localized                         = new ItemLocalization(
                         $configItem->getKonfigitem(),
-                        $language->kSprache
+                        $language->getId()
                     );
-                    $item->cName[$language->cISO] = $localized->getName();
+                    $item->cName[$language->getCode()] = $localized->getName();
                 }
             }
         }
@@ -1709,19 +1709,19 @@ class Cart
         }
         $specialPosition        = new stdClass();
         $specialPosition->cName = [];
-        foreach ($_SESSION['Sprachen'] as $language) {
-            $localized                               = Shop::Container()->getDB()->select(
+        foreach (Frontend::getLanguages() as $language) {
+            $localized                                    = Shop::Container()->getDB()->select(
                 'tkuponsprache',
                 'kKupon',
                 (int)$coupon->kKupon,
                 'cISOSprache',
-                $language->cISO,
+                $language->getCode(),
                 null,
                 null,
                 false,
                 'cName'
             );
-            $specialPosition->cName[$language->cISO] = $localized->cName;
+            $specialPosition->cName[$language->getCode()] = $localized->cName;
         }
         $this->loescheSpezialPos(\C_WARENKORBPOS_TYP_KUPON);
         $this->erstelleSpezialPos(

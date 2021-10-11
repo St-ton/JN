@@ -174,4 +174,10 @@ msgid "authorNotAvailable"
 msgstr "Not available"
 
 msgid "noNewsAuthor"
-msgstr "No author available. No author available. If you want to enter an author responsible for this blog post, please create a user with the required rights first."
+msgstr "No author available. If you want to enter an author responsible for this blog post, please create a user with the required rights first."
+
+msgid "All content is empty"
+msgstr "The text and preview for the blog post are empty for all languages!"
+
+msgid "OPC content available"
+msgstr "There is stored OPC content for this blog post."

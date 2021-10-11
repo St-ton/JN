@@ -336,7 +336,7 @@ class AdminAccountManager
         }
 
         foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
-            $useVita_ISO = 'useVita_' . $language->cISO;
+            $useVita_ISO = 'useVita_' . $language->getCode();
             if (!empty($attribs[$useVita_ISO])) {
                 $shortText = Text::filterXSS($attribs[$useVita_ISO]);
                 $longtText = $attribs[$useVita_ISO];

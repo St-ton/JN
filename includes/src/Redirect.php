@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
@@ -127,7 +127,7 @@ class Redirect
                 Shop::Container()->getDB()->delete('tredirect', ['cToUrl', 'cFromUrl'], [$source, $destination]);
             }
             $target = $this->getRedirectByTarget($source);
-            if (!empty($target)) {
+            if ($target !== null) {
                 $this->saveExt($target->cFromUrl, $destination);
                 $ins             = new stdClass();
                 $ins->cToUrl     = Text::convertUTF8($destination);
@@ -136,7 +136,7 @@ class Redirect
             }
 
             $redirect = $this->find($source);
-            if (empty($redirect)) {
+            if ($redirect === null) {
                 $ins             = new stdClass();
                 $ins->cFromUrl   = Text::convertUTF8($source);
                 $ins->cToUrl     = Text::convertUTF8($destination);
@@ -312,14 +312,14 @@ class Redirect
      * @param string $cLimitSQL
      * @return array
      */
-    public static function getRedirects($cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = ''): array
+    public static function getRedirects(string $whereSQL = '', string $orderSQL = '', $limitSQL = ''): array
     {
         $redirects = Shop::Container()->getDB()->getObjects(
             'SELECT *
                 FROM tredirect' .
-            ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '') .
-            ($cOrderSQL !== '' ? ' ORDER BY ' . $cOrderSQL : '') .
-            ($cLimitSQL !== '' ? ' LIMIT ' . $cLimitSQL : '')
+            ($whereSQL !== '' ? ' WHERE ' . $whereSQL : '') .
+            ($orderSQL !== '' ? ' ORDER BY ' . $orderSQL : '') .
+            ($limitSQL !== '' ? ' LIMIT ' . $limitSQL : '')
         );
         foreach ($redirects as $redirect) {
             $redirect->kRedirect            = (int)$redirect->kRedirect;
@@ -336,15 +336,15 @@ class Redirect
     }
 
     /**
-     * @param string $cWhereSQL
+     * @param string $whereSQL
      * @return int
      */
-    public static function getRedirectCount($cWhereSQL = ''): int
+    public static function getRedirectCount($whereSQL = ''): int
     {
         return (int)Shop::Container()->getDB()->getSingleObject(
             'SELECT COUNT(kRedirect) AS cnt
                 FROM tredirect' .
-            ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '')
+            ($whereSQL !== '' ? ' WHERE ' . $whereSQL : '')
         )->cnt;
     }
 
@@ -417,7 +417,7 @@ class Redirect
         } else {
             $fullUrlParts['query'] = 'notrack';
         }
-        $headers = \get_headers(Text::buildUrl($fullUrlParts));
+        $headers = \get_headers(URL::unparseURL($fullUrlParts));
         if ($headers !== false) {
             foreach ($headers as $header) {
                 if (\preg_match('/^HTTP\\/\\d+\\.\\d+\\s+2\\d\\d\\s+.*$/', $header)) {
@@ -461,7 +461,7 @@ class Redirect
     {
         $shopSubPath = \parse_url(Shop::getURL(), \PHP_URL_PATH) ?? '';
         $url         = \preg_replace('/^' . \preg_quote($shopSubPath, '/') . '/', '', $_SERVER['REQUEST_URI'] ?? '', 1);
-        $redirect    = new self;
+        $redirect    = new self();
         $redirectUrl = $redirect->test($url);
         if ($redirectUrl !== false && $redirectUrl !== $url && '/' . $redirectUrl !== $url) {
             if (!\array_key_exists('scheme', \parse_url($redirectUrl))) {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
@@ -171,7 +171,7 @@ if ($step === 'betreff') {
     $smarty->assign('Betreff', $newSubject)
         ->assign('kundengruppen', $db->getObjects('SELECT * FROM tkundengruppe ORDER BY cName'))
         ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($newSubject))
-        ->assign('Betreffname', ($newSubject !== null) ? getNames($newSubject->kKontaktBetreff) : null);
+        ->assign('Betreffname', ($newSubject !== null) ? getNames((int)$newSubject->kKontaktBetreff) : null);
 }
 if (isset($tab)) {
     $smarty->assign('cTab', $tab);

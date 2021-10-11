@@ -65,9 +65,9 @@ if (!empty($uid)) {
             'failedAttempts' => 0,
         ]);
         $smarty->assign('Kunde', new Customer($order->kKunde))
-               ->assign('Lieferadresse', $order->Lieferadresse)
-               ->assign('billingAddress', $order->oRechnungsadresse)
-               ->assign('incommingPayments', $order->getIncommingPayments());
+            ->assign('Lieferadresse', $order->Lieferadresse)
+            ->assign('billingAddress', $order->oRechnungsadresse)
+            ->assign('incommingPayments', $order->getIncommingPayments());
     }
 } else {
     Shop::Container()->getAlertService()->addAlert(
@@ -82,10 +82,10 @@ if (!empty($uid)) {
 
 $step = 'bestellung';
 $smarty->assign('step', $step)
-       ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
-       ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
-       ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)
-       ->assign('Link', $linkHelper->getPageLink($linkHelper->getSpecialPageID(PAGE_BESTELLSTATUS)));
+    ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
+    ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
+    ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)
+    ->assign('Link', $linkHelper->getPageLink($linkHelper->getSpecialPageID(LINKTYP_LOGIN)));
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

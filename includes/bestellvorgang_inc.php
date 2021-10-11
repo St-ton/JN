@@ -1469,18 +1469,18 @@ function gibZahlungsart(int $paymentMethodID)
 {
     $method = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
     foreach (Frontend::getLanguages() as $language) {
-        $localized                                = Shop::Container()->getDB()->select(
+        $localized                                     = Shop::Container()->getDB()->select(
             'tzahlungsartsprache',
             'kZahlungsart',
             $paymentMethodID,
             'cISOSprache',
-            $language->cISO,
+            $language->getCode(),
             null,
             null,
             false,
             'cName'
         );
-        $method->angezeigterName[$language->cISO] = $localized->cName ?? null;
+        $method->angezeigterName[$language->getCode()] = $localized->cName ?? null;
     }
     $confData = Shop::Container()->getDB()->getObjects(
         'SELECT *
@@ -1679,7 +1679,7 @@ function gibAktiveZahlungsart($shippingMethods)
         $_SESSION['AktiveZahlungsart'] = $shippingMethods[0]->kZahlungsart;
     }
 
-    return $_SESSION['AktiveZahlungsart'];
+    return (int)$_SESSION['AktiveZahlungsart'];
 }
 
 /**

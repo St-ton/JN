@@ -12,11 +12,12 @@ class Seo
 {
     /**
      * @param string|mixed $url
+     * @param bool         $keepUnderscore
      * @return string
      */
-    public static function getSeo($url): string
+    public static function getSeo($url, bool $keepUnderscore = false): string
     {
-        return \is_string($url) ? self::sanitizeSeoSlug($url) : '';
+        return \is_string($url) ? self::sanitizeSeoSlug($url, $keepUnderscore) : '';
     }
 
     /**
@@ -56,9 +57,10 @@ class Seo
 
     /**
      * @param string $str
+     * @param bool $keepUnderscore
      * @return string
      */
-    public static function sanitizeSeoSlug(string $str): string
+    public static function sanitizeSeoSlug(string $str, bool $keepUnderscore = false): string
     {
         $str          = \preg_replace('/[^\pL\d\-\/_\s]+/u', '', Text::replaceUmlauts($str));
         $str          = \preg_replace('/[\/]+/u', '/', $str);
@@ -69,7 +71,9 @@ class Seo
         $convertedStr = @\iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $str);
         $str          = $convertedStr === false ? \preg_replace('/[^a-zA-Z0-9\s]/', '', $str) : $convertedStr;
 
-        return \preg_replace('/[\-_\s]+/u', '-', \trim($str));
+        return $keepUnderscore === false ?
+            \preg_replace('/[\-_\s]+/u', '-', \trim($str)) :
+            \preg_replace('/[\-\s]+/u', '-', \trim($str));
     }
 
     /**

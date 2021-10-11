@@ -220,7 +220,7 @@ class KategorieListe
             if ((!isset($category->cSeo) || $category->cSeo === null || $category->cSeo === '')
                 && \EXPERIMENTAL_MULTILANG_SHOP === true
             ) {
-                $defaultLangID = (int)$defaultLanguage->kSprache;
+                $defaultLangID = $defaultLanguage->getId();
                 if ($languageID !== $defaultLangID) {
                     $localizedURL = $db->select(
                         'tseo',
@@ -301,7 +301,7 @@ class KategorieListe
         if ((int)$conf['kategorien_anzeigefilter'] === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_ALLE) {
             return true;
         }
-        $languageID = (int)LanguageHelper::getDefaultLanguage()->kSprache;
+        $languageID = LanguageHelper::getDefaultLanguage()->getId();
         if ((int)$conf['kategorien_anzeigefilter'] === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE) {
             $categoryList = self::getCategoryList($customerGroupID, $languageID);
             if (isset($categoryList['ks'][$categoryID])) {

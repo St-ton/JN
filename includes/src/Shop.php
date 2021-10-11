@@ -1364,7 +1364,7 @@ final class Shop
      */
     private static function updateLanguage(int $languageID): void
     {
-        $iso = self::Lang()->getIsoFromLangID($languageID)->cISO ?? null;
+        $iso = self::Lang()->getIsoFromLangID($languageID)->cISO ?? '';
         if ($iso !== $_SESSION['cISOSprache']) {
             Frontend::checkReset($iso);
             Tax::setTaxRates();

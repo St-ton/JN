@@ -45,7 +45,7 @@ class DBMigrationHelper
         );
         $utf8Support   = $db->getSingleObject(
             "SELECT `IS_COMPILED` FROM information_schema.COLLATIONS
-                WHERE `COLLATION_NAME` = 'utf8_unicode_ci'"
+                WHERE `COLLATION_NAME` RLIKE 'utf8(mb3)?_unicode_ci'"
         );
         $innodbPath    = $db->getSingleObject('SELECT @@innodb_data_file_path AS path');
         $innodbSize    = 'auto';
@@ -53,7 +53,7 @@ class DBMigrationHelper
             $innodbSize = 0;
             $paths      = \explode(';', $innodbPath->path);
             foreach ($paths as $path) {
-                if (\preg_match('/:([0-9]+)([MGTKmgtk]+)/', $path, $hits)) {
+                if (\preg_match('/:([\d]+)([MGTKmgtk]+)/', $path, $hits)) {
                     switch (\mb_convert_case($hits[2], \MB_CASE_UPPER)) {
                         case 'T':
                             $innodbSize += $hits[1] * 1024 * 1024 * 1024 * 1024;
@@ -97,17 +97,20 @@ class DBMigrationHelper
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 , COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS
                 , COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS
-                , COUNT(IF(c.COLLATION_NAME = 'utf8_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
+                , COUNT(IF(c.COLLATION_NAME RLIKE 'utf8(mb3)?_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
                 FROM information_schema.TABLES t
                 LEFT JOIN information_schema.COLUMNS c 
                     ON c.TABLE_NAME = t.TABLE_NAME
                     AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
-                    AND (c.DATA_TYPE = 'text' OR c.DATA_TYPE = 'tinyint' OR c.COLLATION_NAME != 'utf8_unicode_ci')
+                    AND (c.DATA_TYPE = 'text'
+                             OR c.DATA_TYPE = 'tinyint'
+                             OR c.COLLATION_NAME NOT RLIKE 'utf8(mb3)?_unicode_ci'
+                        )
                 WHERE t.`TABLE_SCHEMA` = :schema
                     AND t.`TABLE_NAME` NOT LIKE 'xplugin_%'
                     AND (t.`ENGINE` != 'InnoDB' 
-                           OR t.`TABLE_COLLATION` != 'utf8_unicode_ci' 
-                           OR c.COLLATION_NAME != 'utf8_unicode_ci' 
+                           OR t.`TABLE_COLLATION` NOT RLIKE 'utf8(mb3)?_unicode_ci'
+                           OR c.COLLATION_NAME NOT RLIKE 'utf8(mb3)?_unicode_ci'
                            OR c.DATA_TYPE = 'text'
                            OR (c.DATA_TYPE = 'tinyint' AND SUBSTRING(c.COLUMN_NAME, 1, 1) = 'k')
                     )
@@ -130,18 +133,21 @@ class DBMigrationHelper
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 , COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS
                 , COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS
-                , COUNT(IF(c.COLLATION_NAME = 'utf8_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
+                , COUNT(IF(c.COLLATION_NAME RLIKE 'utf8(mb3)?_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
                 FROM information_schema.TABLES t
                 LEFT JOIN information_schema.COLUMNS c 
                     ON c.TABLE_NAME = t.TABLE_NAME
                     AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
-                    AND (c.DATA_TYPE = 'text' OR c.DATA_TYPE = 'tinyint' OR c.COLLATION_NAME != 'utf8_unicode_ci')
+                    AND (c.DATA_TYPE = 'text'
+                             OR c.DATA_TYPE = 'tinyint'
+                             OR c.COLLATION_NAME NOT RLIKE 'utf8(mb3)?_unicode_ci'
+                        )
                 WHERE t.`TABLE_SCHEMA` = :schema
                     AND t.`TABLE_NAME` NOT LIKE 'xplugin_%'
                     " . (!empty($excludeStr) ? "AND t.`TABLE_NAME` NOT IN ('" . $excludeStr . "')" : '') . "
                     AND (t.`ENGINE` != 'InnoDB' 
-                        OR t.`TABLE_COLLATION` != 'utf8_unicode_ci' 
-                        OR c.COLLATION_NAME != 'utf8_unicode_ci' 
+                        OR t.`TABLE_COLLATION` NOT RLIKE 'utf8(mb3)?_unicode_ci'
+                        OR c.COLLATION_NAME NOT RLIKE 'utf8(mb3)?_unicode_ci'
                         OR c.DATA_TYPE = 'text'
                         OR (c.DATA_TYPE = 'tinyint' AND SUBSTRING(c.COLUMN_NAME, 1, 1) = 'k')
                     )
@@ -161,14 +167,14 @@ class DBMigrationHelper
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 , COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS
                 , COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS
-                , COUNT(IF(c.COLLATION_NAME = 'utf8_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
+                , COUNT(IF(c.COLLATION_NAME RLIKE 'utf8(mb3)?_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
                 FROM information_schema.TABLES t
                 LEFT JOIN information_schema.COLUMNS c 
                     ON c.TABLE_NAME = t.TABLE_NAME
                     AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
                     AND (c.DATA_TYPE = 'text'
                         OR (c.DATA_TYPE = 'tinyint' AND SUBSTRING(c.COLUMN_NAME, 1, 1) = 'k')
-                        OR c.COLLATION_NAME != 'utf8_unicode_ci'
+                        OR c.COLLATION_NAME NOT RLIKE 'utf8(mb3)?_unicode_ci'
                     )
                 WHERE t.`TABLE_SCHEMA` = :schema
                     AND t.`TABLE_NAME` = :table
@@ -218,7 +224,7 @@ class DBMigrationHelper
             if ($table->ENGINE !== 'InnoDB') {
                 $result |= self::MIGRATE_INNODB;
             }
-            if ($table->TABLE_COLLATION !== 'utf8_unicode_ci') {
+            if (!\in_array($table->TABLE_COLLATION, ['utf8_unicode_ci', 'utf8mb3_unicode_ci'])) {
                 $result |= self::MIGRATE_UTF8;
             }
             if (isset($table->TEXT_FIELDS) && (int)$table->TEXT_FIELDS > 0) {
@@ -270,8 +276,8 @@ class DBMigrationHelper
                 FROM information_schema.COLUMNS
                 WHERE `TABLE_SCHEMA` = :schema
                     AND `TABLE_NAME` = :table
-                    AND ((`CHARACTER_SET_NAME` IS NOT NULL AND `CHARACTER_SET_NAME` != 'utf8')
-                        OR `COLLATION_NAME` != 'utf8_unicode_ci'
+                    AND ((`CHARACTER_SET_NAME` IS NOT NULL AND `CHARACTER_SET_NAME` NOT RLIKE 'utf8(mb3)?')
+                        OR `COLLATION_NAME` NOT RLIKE 'utf8(mb3)?_unicode_ci'
                         OR DATA_TYPE = 'text'
                         OR (DATA_TYPE = 'tinyint' AND SUBSTRING(COLUMN_NAME, 1, 1) = 'k')
                     )

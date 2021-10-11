@@ -4,8 +4,10 @@ namespace JTL\Sitemap\Factories;
 
 use Generator;
 use JTL\Catalog\Category\KategorieListe;
+use JTL\Language\LanguageModel;
 use JTL\Sitemap\Items\Category as Item;
 use PDO;
+use Shop;
 use function Functional\first;
 use function Functional\map;
 
@@ -20,8 +22,8 @@ final class Category extends AbstractFactory
      */
     public function getCollection(array $languages, array $customerGroups): Generator
     {
-        $languageIDs    = map($languages, static function ($e) {
-            return (int)$e->kSprache;
+        $languageIDs    = map($languages, static function (LanguageModel $e) {
+            return $e->getId();
         });
         $customerGroup  = first($customerGroups);
         $categoryHelper = new KategorieListe();

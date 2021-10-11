@@ -3,6 +3,7 @@
 namespace JTL\Sitemap\Factories;
 
 use Generator;
+use JTL\Language\LanguageModel;
 use JTL\Link\Link;
 use JTL\Link\LinkList;
 use JTL\Sitemap\Items\Page as Item;
@@ -22,8 +23,8 @@ final class Page extends AbstractFactory
     public function getCollection(array $languages, array $customerGroups): Generator
     {
         $customerGroup = first($customerGroups);
-        $languageCodes = map($languages, static function ($e) {
-            return "'" . $e->cISO . "'";
+        $languageCodes = map($languages, static function (LanguageModel $e) {
+            return "'" . $e->getCode() . "'";
         });
         $linkIDs       = $this->db->getCollection(
             "SELECT DISTINCT tlink.kLink AS id

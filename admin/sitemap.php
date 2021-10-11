@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Customer\CustomerGroup;
 use JTL\Language\LanguageHelper;

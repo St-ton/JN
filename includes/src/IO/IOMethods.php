@@ -750,10 +750,10 @@ class IOMethods
         }
 
         $errors                     = Configurator::validateCart($productID, $configItems ?? []);
-        $config->invalidGroups      = \array_unique(\array_merge(
+        $config->invalidGroups      = \array_values(\array_unique(\array_merge(
             $invalidGroups,
             \array_keys(\is_array($errors) ? $errors : [])
-        ));
+        )));
         $config->errorMessages      = $itemErrors ?? [];
         $config->valid              = empty($config->invalidGroups) && empty($config->errorMessages);
         $cartHelperErrors           = CartHelper::addToCartCheck(

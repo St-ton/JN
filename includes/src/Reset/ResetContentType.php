@@ -6,6 +6,7 @@ use MyCLabs\Enum\Enum;
 
 /**
  * Class ResetContentType
+ * @package JTL\Reset
  * @extends Enum<string>
  * @method static self PRODUCTS()
  * @method static self TAXES()
@@ -16,7 +17,7 @@ use MyCLabs\Enum\Enum;
  * @method static self STATS_PRICES()
  * @method static self MESSAGES_AVAILABILITY()
  * @method static self SEARCH_REQUESTS()
- * @method static self RAITINGS()
+ * @method static self RATINGS()
  * @method static self WISHLIST()
  * @method static self COMPARELIST()
  * @method static self CUSTOMERS()
@@ -42,10 +43,9 @@ class ResetContentType extends Enum
     public const ORDERS                = 'bestellungen';
     public const COUPONS               = 'kupons';
     public const SETTINGS              = 'shopeinstellungen';
-    
+
     /**
      * ResetMethod constructor.
-     *
      * @param string $value
      */
     public function __construct(string $value)

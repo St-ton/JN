@@ -4,11 +4,21 @@ namespace JTL\Reset;
 
 use JTL\DB\DbInterface;
 
+/**
+ * Class Reset
+ * @package JTL\Reset
+ */
 class Reset
 {
-    /** @var DbInterface */
+    /**
+     * @var DbInterface
+     */
     private $db;
-    
+
+    /**
+     * Reset constructor.
+     * @param DbInterface $db
+     */
     public function __construct(DbInterface $db)
     {
         $this->db = $db;
@@ -16,7 +26,6 @@ class Reset
 
     /**
      * @param ResetContentType $contentType
-     *
      * @return $this
      */
     public function doReset(ResetContentType $contentType): self
@@ -50,8 +59,8 @@ class Reset
             case $contentType::SEARCH_REQUESTS():
                 $this->resetSearchRequests();
                 break;
-            case $contentType::RAITINGS():
-                $this->resetRaitings();
+            case $contentType::RATINGS():
+                $this->resetRatings();
                 break;
             case $contentType::WISHLIST():
                 $this->resetWishList();
@@ -75,218 +84,204 @@ class Reset
         }
 
         $this->db->query('SET FOREIGN_KEY_CHECKS = 1;');
-        
+
         return $this;
     }
-    
+
     private function resetProducts(): void
     {
-        $db = $this->db;
-        $db->query('TRUNCATE tartikel');
-        $db->query('TRUNCATE tartikelabnahme');
-        $db->query('TRUNCATE tartikelattribut');
-        $db->query('TRUNCATE tartikelkategorierabatt');
-        $db->query('TRUNCATE tartikelkonfiggruppe');
-        $db->query('TRUNCATE tartikelmerkmal');
-        $db->query('TRUNCATE tartikelpict');
-        $db->query('TRUNCATE tartikelsichtbarkeit');
-        $db->query('TRUNCATE tartikelsonderpreis');
-        $db->query('TRUNCATE tartikelsprache');
-        $db->query('TRUNCATE tartikelwarenlager');
-        $db->query('TRUNCATE tattribut');
-        $db->query('TRUNCATE tattributsprache');
-        $db->query('TRUNCATE tbild');
-        $db->query('TRUNCATE teigenschaft');
-        $db->query('TRUNCATE teigenschaftkombiwert');
-        $db->query('TRUNCATE teigenschaftsichtbarkeit');
-        $db->query('TRUNCATE teigenschaftsprache');
-        $db->query('TRUNCATE teigenschaftwert');
-        $db->query('TRUNCATE teigenschaftwertabhaengigkeit');
-        $db->query('TRUNCATE teigenschaftwertaufpreis');
-        $db->query('TRUNCATE teigenschaftwertpict');
-        $db->query('TRUNCATE teigenschaftwertsichtbarkeit');
-        $db->query('TRUNCATE teigenschaftwertsprache');
-        $db->query('TRUNCATE teinheit');
-        $db->query('TRUNCATE tkategorie');
-        $db->query('TRUNCATE tkategorieartikel');
-        $db->query('TRUNCATE tkategorieattribut');
-        $db->query('TRUNCATE tkategorieattributsprache');
-        $db->query('TRUNCATE tkategoriekundengruppe');
-        $db->query('TRUNCATE tkategoriemapping');
-        $db->query('TRUNCATE tkategoriepict');
-        $db->query('TRUNCATE tkategoriesichtbarkeit');
-        $db->query('TRUNCATE tkategoriesprache');
-        $db->query('TRUNCATE tmediendatei');
-        $db->query('TRUNCATE tmediendateiattribut');
-        $db->query('TRUNCATE tmediendateisprache');
-        $db->query('TRUNCATE tmerkmal');
-        $db->query('TRUNCATE tmerkmalsprache');
-        $db->query('TRUNCATE tmerkmalwert');
-        $db->query('TRUNCATE tmerkmalwertbild');
-        $db->query('TRUNCATE tmerkmalwertsprache');
-        $db->query('TRUNCATE tpreis');
-        $db->query('TRUNCATE tpreisdetail');
-        $db->query('TRUNCATE tsonderpreise');
-        $db->query('TRUNCATE txsell');
-        $db->query('TRUNCATE txsellgruppe');
-        $db->query('TRUNCATE thersteller');
-        $db->query('TRUNCATE therstellersprache');
-        $db->query('TRUNCATE tlieferstatus');
-        $db->query('TRUNCATE tkonfiggruppe');
-        $db->query('TRUNCATE tkonfigitem');
-        $db->query('TRUNCATE tkonfiggruppesprache');
-        $db->query('TRUNCATE tkonfigitempreis');
-        $db->query('TRUNCATE tkonfigitemsprache');
-        $db->query('TRUNCATE twarenlager');
-        $db->query('TRUNCATE twarenlagersprache');
-        $db->query('TRUNCATE tuploadschema');
-        $db->query('TRUNCATE tuploadschemasprache');
-        $db->query('TRUNCATE tmasseinheit');
-        $db->query('TRUNCATE tmasseinheitsprache');
-        $db->query(
+        $this->db->query('TRUNCATE tartikel');
+        $this->db->query('TRUNCATE tartikelabnahme');
+        $this->db->query('TRUNCATE tartikelattribut');
+        $this->db->query('TRUNCATE tartikelkategorierabatt');
+        $this->db->query('TRUNCATE tartikelkonfiggruppe');
+        $this->db->query('TRUNCATE tartikelmerkmal');
+        $this->db->query('TRUNCATE tartikelpict');
+        $this->db->query('TRUNCATE tartikelsichtbarkeit');
+        $this->db->query('TRUNCATE tartikelsonderpreis');
+        $this->db->query('TRUNCATE tartikelsprache');
+        $this->db->query('TRUNCATE tartikelwarenlager');
+        $this->db->query('TRUNCATE tattribut');
+        $this->db->query('TRUNCATE tattributsprache');
+        $this->db->query('TRUNCATE tbild');
+        $this->db->query('TRUNCATE teigenschaft');
+        $this->db->query('TRUNCATE teigenschaftkombiwert');
+        $this->db->query('TRUNCATE teigenschaftsichtbarkeit');
+        $this->db->query('TRUNCATE teigenschaftsprache');
+        $this->db->query('TRUNCATE teigenschaftwert');
+        $this->db->query('TRUNCATE teigenschaftwertabhaengigkeit');
+        $this->db->query('TRUNCATE teigenschaftwertaufpreis');
+        $this->db->query('TRUNCATE teigenschaftwertpict');
+        $this->db->query('TRUNCATE teigenschaftwertsichtbarkeit');
+        $this->db->query('TRUNCATE teigenschaftwertsprache');
+        $this->db->query('TRUNCATE teinheit');
+        $this->db->query('TRUNCATE tkategorie');
+        $this->db->query('TRUNCATE tkategorieartikel');
+        $this->db->query('TRUNCATE tkategorieattribut');
+        $this->db->query('TRUNCATE tkategorieattributsprache');
+        $this->db->query('TRUNCATE tkategoriekundengruppe');
+        $this->db->query('TRUNCATE tkategoriemapping');
+        $this->db->query('TRUNCATE tkategoriepict');
+        $this->db->query('TRUNCATE tkategoriesichtbarkeit');
+        $this->db->query('TRUNCATE tkategoriesprache');
+        $this->db->query('TRUNCATE tmediendatei');
+        $this->db->query('TRUNCATE tmediendateiattribut');
+        $this->db->query('TRUNCATE tmediendateisprache');
+        $this->db->query('TRUNCATE tmerkmal');
+        $this->db->query('TRUNCATE tmerkmalsprache');
+        $this->db->query('TRUNCATE tmerkmalwert');
+        $this->db->query('TRUNCATE tmerkmalwertbild');
+        $this->db->query('TRUNCATE tmerkmalwertsprache');
+        $this->db->query('TRUNCATE tpreis');
+        $this->db->query('TRUNCATE tpreisdetail');
+        $this->db->query('TRUNCATE tsonderpreise');
+        $this->db->query('TRUNCATE txsell');
+        $this->db->query('TRUNCATE txsellgruppe');
+        $this->db->query('TRUNCATE thersteller');
+        $this->db->query('TRUNCATE therstellersprache');
+        $this->db->query('TRUNCATE tlieferstatus');
+        $this->db->query('TRUNCATE tkonfiggruppe');
+        $this->db->query('TRUNCATE tkonfigitem');
+        $this->db->query('TRUNCATE tkonfiggruppesprache');
+        $this->db->query('TRUNCATE tkonfigitempreis');
+        $this->db->query('TRUNCATE tkonfigitemsprache');
+        $this->db->query('TRUNCATE twarenlager');
+        $this->db->query('TRUNCATE twarenlagersprache');
+        $this->db->query('TRUNCATE tuploadschema');
+        $this->db->query('TRUNCATE tuploadschemasprache');
+        $this->db->query('TRUNCATE tmasseinheit');
+        $this->db->query('TRUNCATE tmasseinheitsprache');
+        $this->db->query(
             "DELETE FROM tseo
-                            WHERE cKey = 'kArtikel'
-                            OR cKey = 'kKategorie'
-                            OR cKey = 'kMerkmalWert'
-                            OR cKey = 'kHersteller'"
+                WHERE cKey = 'kArtikel'
+                OR cKey = 'kKategorie'
+                OR cKey = 'kMerkmalWert'
+                OR cKey = 'kHersteller'"
         );
     }
-    
+
     private function resetTaxes(): void
     {
-        $db = $this->db;
-        $db->query('TRUNCATE tsteuerklasse');
-        $db->query('TRUNCATE tsteuersatz');
-        $db->query('TRUNCATE tsteuerzone');
-        $db->query('TRUNCATE tsteuerzoneland');
+        $this->db->query('TRUNCATE tsteuerklasse');
+        $this->db->query('TRUNCATE tsteuersatz');
+        $this->db->query('TRUNCATE tsteuerzone');
+        $this->db->query('TRUNCATE tsteuerzoneland');
     }
-    
+
     private function resetNews(): void
     {
-        $db = $this->db;
-        foreach ($db->getObjects('SELECT kNews FROM tnews') as $i) {
+        foreach ($this->db->getObjects('SELECT kNews FROM tnews') as $i) {
             \loescheNewsBilderDir($i->kNews, \PFAD_ROOT . \PFAD_NEWSBILDER);
         }
-        $db->query('TRUNCATE tnews');
-        $db->delete('trevisions', 'type', 'news');
-        $db->query('TRUNCATE tnewskategorie');
-        $db->query('TRUNCATE tnewskategorienews');
-        $db->query('TRUNCATE tnewskommentar');
-        $db->query('TRUNCATE tnewsmonatsuebersicht');
-        $db->query(
+        $this->db->query('TRUNCATE tnews');
+        $this->db->delete('trevisions', 'type', 'news');
+        $this->db->query('TRUNCATE tnewskategorie');
+        $this->db->query('TRUNCATE tnewskategorienews');
+        $this->db->query('TRUNCATE tnewskommentar');
+        $this->db->query('TRUNCATE tnewsmonatsuebersicht');
+        $this->db->query(
             "DELETE FROM tseo
-                            WHERE cKey = 'kNews'
-                              OR cKey = 'kNewsKategorie'
-                              OR cKey = 'kNewsMonatsUebersicht'"
+                WHERE cKey = 'kNews'
+                  OR cKey = 'kNewsKategorie'
+                  OR cKey = 'kNewsMonatsUebersicht'"
         );
     }
-    
+
     private function resetVisitorStats(): void
     {
-        $db = $this->db;
-        $db->query('TRUNCATE tbesucher');
-        $db->query('TRUNCATE tbesucherarchiv');
-        $db->query('TRUNCATE tbesuchteseiten');
+        $this->db->query('TRUNCATE tbesucher');
+        $this->db->query('TRUNCATE tbesucherarchiv');
+        $this->db->query('TRUNCATE tbesuchteseiten');
     }
-    
+
     private function resetSearchRequests(): void
     {
-        $db = $this->db;
-        $db->query('TRUNCATE tsuchanfrage');
-        $db->query('TRUNCATE tsuchanfrageerfolglos');
-        $db->query('TRUNCATE tsuchanfragemapping');
-        $db->query('TRUNCATE tsuchanfragencache');
-        $db->query('TRUNCATE tsuchcache');
-        $db->query('TRUNCATE tsuchcachetreffer');
-        $db->delete('tseo', 'cKey', 'kSuchanfrage');
+        $this->db->query('TRUNCATE tsuchanfrage');
+        $this->db->query('TRUNCATE tsuchanfrageerfolglos');
+        $this->db->query('TRUNCATE tsuchanfragemapping');
+        $this->db->query('TRUNCATE tsuchanfragencache');
+        $this->db->query('TRUNCATE tsuchcache');
+        $this->db->query('TRUNCATE tsuchcachetreffer');
+        $this->db->delete('tseo', 'cKey', 'kSuchanfrage');
     }
-    
-    private function resetRaitings(): void
+
+    private function resetRatings(): void
     {
-        $db = $this->db;
-        $db->query('TRUNCATE tartikelext');
-        $db->query('TRUNCATE tbewertung');
-        $db->query('TRUNCATE tbewertungguthabenbonus');
-        $db->query('TRUNCATE tbewertunghilfreich');
+        $this->db->query('TRUNCATE tartikelext');
+        $this->db->query('TRUNCATE tbewertung');
+        $this->db->query('TRUNCATE tbewertungguthabenbonus');
+        $this->db->query('TRUNCATE tbewertunghilfreich');
     }
-    
+
     private function resetWishList(): void
     {
-        $db = $this->db;
-        $db->query('TRUNCATE twunschliste');
-        $db->query('TRUNCATE twunschlistepos');
-        $db->query('TRUNCATE twunschlisteposeigenschaft');
-        $db->query('TRUNCATE twunschlisteversand');
+        $this->db->query('TRUNCATE twunschliste');
+        $this->db->query('TRUNCATE twunschlistepos');
+        $this->db->query('TRUNCATE twunschlisteposeigenschaft');
+        $this->db->query('TRUNCATE twunschlisteversand');
     }
-    
+
     private function resetCustomers(): void
     {
-        $db = $this->db;
-        $db->query('TRUNCATE tkunde');
-        $db->query('TRUNCATE tkundenattribut');
-        $db->query('TRUNCATE tkundendatenhistory');
-        $db->query('TRUNCATE tkundenfeld');
-        $db->query('TRUNCATE tkundenfeldwert');
-        $db->query('TRUNCATE tkundenherkunft');
-        $db->query('TRUNCATE tkundenkontodaten');
-        $db->query('TRUNCATE tlieferadresse');
-        $db->query('TRUNCATE twarenkorbpers');
-        $db->query('TRUNCATE twarenkorbperspos');
-        $db->query('TRUNCATE twarenkorbpersposeigenschaft');
+        $this->db->query('TRUNCATE tkunde');
+        $this->db->query('TRUNCATE tkundenattribut');
+        $this->db->query('TRUNCATE tkundendatenhistory');
+        $this->db->query('TRUNCATE tkundenfeld');
+        $this->db->query('TRUNCATE tkundenfeldwert');
+        $this->db->query('TRUNCATE tkundenherkunft');
+        $this->db->query('TRUNCATE tkundenkontodaten');
+        $this->db->query('TRUNCATE tlieferadresse');
+        $this->db->query('TRUNCATE twarenkorbpers');
+        $this->db->query('TRUNCATE twarenkorbperspos');
+        $this->db->query('TRUNCATE twarenkorbpersposeigenschaft');
         $this->resetWishList();
         $this->resetOrders();
     }
-    
+
     private function resetOrders(): void
     {
-        $db = $this->db;
-        $db->query('TRUNCATE tbestellid');
-        $db->query('TRUNCATE tbestellstatus');
-        $db->query('TRUNCATE tbestellung');
-        $db->query('TRUNCATE tlieferschein');
-        $db->query('TRUNCATE tlieferscheinpos');
-        $db->query('TRUNCATE tlieferscheinposinfo');
-        $db->query('TRUNCATE twarenkorb');
-        $db->query('TRUNCATE twarenkorbpers');
-        $db->query('TRUNCATE twarenkorbperspos');
-        $db->query('TRUNCATE twarenkorbpersposeigenschaft');
-        $db->query('TRUNCATE twarenkorbpos');
-        $db->query('TRUNCATE twarenkorbposeigenschaft');
-        $db->query('TRUNCATE tuploaddatei');
-        $db->query('TRUNCATE tuploadqueue');
-        
+        $this->db->query('TRUNCATE tbestellid');
+        $this->db->query('TRUNCATE tbestellstatus');
+        $this->db->query('TRUNCATE tbestellung');
+        $this->db->query('TRUNCATE tlieferschein');
+        $this->db->query('TRUNCATE tlieferscheinpos');
+        $this->db->query('TRUNCATE tlieferscheinposinfo');
+        $this->db->query('TRUNCATE twarenkorb');
+        $this->db->query('TRUNCATE twarenkorbpers');
+        $this->db->query('TRUNCATE twarenkorbperspos');
+        $this->db->query('TRUNCATE twarenkorbpersposeigenschaft');
+        $this->db->query('TRUNCATE twarenkorbpos');
+        $this->db->query('TRUNCATE twarenkorbposeigenschaft');
+        $this->db->query('TRUNCATE tuploaddatei');
+        $this->db->query('TRUNCATE tuploadqueue');
+
         $this->resetUploadFiles();
     }
-    
+
     private function resetUploadFiles(): void
     {
-        $uploadfiles = \glob(\PFAD_UPLOADS . '*');
-
-        foreach ($uploadfiles as $file) {
+        foreach (\glob(\PFAD_UPLOADS . '*') as $file) {
             if (\is_file($file) && \mb_strpos($file, '.') !== 0) {
                 \unlink($file);
             }
         }
     }
-    
+
     private function resetCoupons(): void
     {
-        $db = $this->db;
-        $db->query('TRUNCATE tkupon');
-        $db->query('TRUNCATE tkuponbestellung');
-        $db->query('TRUNCATE tkuponkunde');
-        $db->query('TRUNCATE tkuponsprache');
+        $this->db->query('TRUNCATE tkupon');
+        $this->db->query('TRUNCATE tkuponbestellung');
+        $this->db->query('TRUNCATE tkuponkunde');
+        $this->db->query('TRUNCATE tkuponsprache');
     }
-    
+
     private function resetSettings(): void
     {
-        $db = $this->db;
-        $db->query('TRUNCATE teinstellungenlog');
-        $db->query(
+        $this->db->query('TRUNCATE teinstellungenlog');
+        $this->db->query(
             'UPDATE teinstellungen
-                          INNER JOIN teinstellungen_default
-                            USING(cName)
-                          SET teinstellungen.cWert = teinstellungen_default.cWert'
+                  INNER JOIN teinstellungen_default USING(cName)
+                  SET teinstellungen.cWert = teinstellungen_default.cWert'
         );
     }
 }

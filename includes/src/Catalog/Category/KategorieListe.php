@@ -265,7 +265,7 @@ class KategorieListe
         $defaultLanguageActive = LanguageHelper::isDefaultLanguageActive();
         $orderByName           = $defaultLanguageActive ? '' : 'tkategoriesprache.cName, ';
         $categories            = $db->getObjects(
-            "SELECT tkategorie.kKategorie, tkategorie.cName, tkategorie.cBeschreibung, 
+            "SELECT tkategorie.kKategorie, tkategorie.lft, tkategorie.rght, tkategorie.cName, tkategorie.cBeschreibung,
                 tkategorie.kOberKategorie, tkategorie.nSort, tkategorie.dLetzteAktualisierung, 
                 tkategoriesprache.cName AS cName_spr, tkategoriesprache.cBeschreibung AS cBeschreibung_spr, 
                 tseo.cSeo, tkategoriepict.cPfad

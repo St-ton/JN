@@ -3,6 +3,7 @@
 namespace JTL\Helpers;
 
 use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Category\MenuItem;
 use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
@@ -82,7 +83,7 @@ class Category
         $customerGroupID = $customerGroupID === 0
             ? Frontend::getCustomerGroup()->getID()
             : $customerGroupID;
-        $config          = Shop::getSettings([\CONF_GLOBAL, \CONF_TEMPLATE]);
+        $config          = Shop::getSettings([\CONF_GLOBAL, \CONF_TEMPLATE, \CONF_NAVIGATIONSFILTER]);
         if (self::$instance !== null && self::$languageID !== $languageID) {
             // reset cached categories when language or depth was changed
             self::$fullCategories = null;
@@ -329,12 +330,13 @@ class Category
      *
      * it's a lot of code duplication but the queries differ
      *
-     * @param int $categoryID
+     * @param int       $categoryID
+     * @param bool|null $filterEmpty
      * @return MenuItem[]
      */
-    public function getFallBackFlatTree(int $categoryID): array
+    public function getFallBackFlatTree(int $categoryID, ?bool $filterEmpty = null): array
     {
-        $filterEmpty         = (int)self::$config['global']['kategorien_anzeigefilter'] ===
+        $filterEmpty         = $filterEmpty ?? (int)self::$config['global']['kategorien_anzeigefilter'] ===
             \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
         $showCategoryImages  = self::$config['template']['megamenu']['show_category_images'] ?? 'N';
         $stockFilter         = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
@@ -673,7 +675,33 @@ class Category
         if ($categoryID <= 0) {
             return [];
         }
-        $category = self::getInstance()->getCategoryById($categoryID);
+        $instance = self::getInstance();
+        $category = $instance->getCategoryById($categoryID);
+        $showCats = self::$config['navigationsfilter']['artikeluebersicht_bild_anzeigen'] ?? 'N';
+        if ($category === null && $showCats !== 'N' && self::categoryExists($categoryID)) {
+            $catTree  = $instance->getFallBackFlatTree($categoryID, false);
+            $category = $instance->findCategoryInList($categoryID, $catTree);
+            if ($category !== null) {
+                $catList  = new KategorieListe();
+                $children = \array_map(static function ($item) {
+                    $menuItem = new MenuItem($item);
+                    if ($item->bUnterKategorien) {
+                        $menuItem->setChildren(\array_map(static function ($item) {
+                            return new MenuItem($item);
+                        }, $item->Unterkategorien));
+                        $menuItem->setHasChildren(true);
+                    }
+
+                    return $menuItem;
+                }, $catList->getAllCategoriesOnLevel(
+                    $categoryID,
+                    self::$customerGroupID,
+                    self::$languageID
+                ));
+                $category->setChildren($children);
+                $category->setHasChildren(count($children) > 0);
+            }
+        }
 
         return $category === null ? [] : $category->getChildren();
     }

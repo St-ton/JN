@@ -427,7 +427,7 @@ class MenuItem
         $this->setURL($data->cSeo ?? '');
         $this->setImageURL($data->cPfad ?? '');
         $this->generateAllImageSizes(true, 1, $data->cPfad ?? null);
-        $this->setProductCount((int)$data->cnt);
+        $this->setProductCount((int)($data->cnt ?? 0));
         $this->setFunctionalAttributes($data->functionAttributes[$this->getID()] ?? []);
         $this->setAttributes($data->localizedAttributes[$this->getID()] ?? []);
         $this->setShortName($this->getAttribute(\ART_ATTRIBUT_SHORTNAME)->cWert ?? $this->getName());

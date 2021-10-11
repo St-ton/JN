@@ -910,7 +910,7 @@ class Kupon
             true
         )
             || ($coupon->cWertTyp === 'festpreis'
-                && $coupon->nGanzenWKRabattieren === '0'
+                && (int)$coupon->nGanzenWKRabattieren === 0
                 && $coupon->fMindestbestellwert > \gibGesamtsummeKuponartikelImWarenkorb(
                     $coupon,
                     Frontend::getCart()->PositionenArr

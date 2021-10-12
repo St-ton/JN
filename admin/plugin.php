@@ -35,7 +35,7 @@ $alertHelper     = Shop::Container()->getAlertService();
 $plugin          = null;
 $loader          = null;
 $activeTab       = -1;
-if ($step === 'plugin_uebersicht' && $pluginID > 0) {
+if ($pluginID > 0) {
     if (Request::verifyGPCDataInt('Setting') === 1) {
         $updated = true;
         if (!Form::validateToken()) {

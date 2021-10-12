@@ -305,7 +305,7 @@ class Versandart
      */
     private static function cloneShippingSection(array $objects, $table, $key, int $value, $unsetKey = null): void
     {
-        if ($value > 0 && \is_array($objects) && \count($objects) > 0 && \mb_strlen($key) > 0) {
+        if ($value > 0 && \count($objects) > 0 && \mb_strlen($key) > 0) {
             $db = Shop::Container()->getDB();
             foreach ($objects as $item) {
                 $primary = $item->$unsetKey;

@@ -41,21 +41,19 @@ function berechneVersandpreisNetto($price, $taxRate)
  * @param string $key
  * @return array
  */
-function reorganizeObjectArray($objects, $key): array
+function reorganizeObjectArray(array $objects, string $key): array
 {
     $res = [];
-    if (is_array($objects)) {
-        foreach ($objects as $obj) {
-            $arr  = get_object_vars($obj);
-            $keys = array_keys($arr);
-            if (in_array($key, $keys)) {
-                $res[$obj->$key]           = new stdClass();
-                $res[$obj->$key]->checked  = 'checked';
-                $res[$obj->$key]->selected = 'selected';
-                foreach ($keys as $k) {
-                    if ($key != $k) {
-                        $res[$obj->$key]->$k = $obj->$k;
-                    }
+    foreach ($objects as $obj) {
+        $arr  = get_object_vars($obj);
+        $keys = array_keys($arr);
+        if (in_array($key, $keys, true)) {
+            $res[$obj->$key]           = new stdClass();
+            $res[$obj->$key]->checked  = 'checked';
+            $res[$obj->$key]->selected = 'selected';
+            foreach ($keys as $k) {
+                if ($key !== $k) {
+                    $res[$obj->$key]->$k = $obj->$k;
                 }
             }
         }
@@ -134,7 +132,7 @@ function gibGesetzteVersandklassen(string $shippingClasses): array
  * @param string $shippingClasses
  * @return array
  */
-function gibGesetzteVersandklassenUebersicht($shippingClasses)
+function gibGesetzteVersandklassenUebersicht($shippingClasses): array
 {
     if (trim($shippingClasses) === '-1') {
         return ['Alle'];

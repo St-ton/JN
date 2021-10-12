@@ -271,7 +271,7 @@ function baueArtikelExportSQL($export)
  * @param object $export
  * @return mixed
  */
-function holeMaxExportArtikelAnzahl(&$export)
+function holeMaxExportArtikelAnzahl($export)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $data = baueArtikelExportSQL($export);

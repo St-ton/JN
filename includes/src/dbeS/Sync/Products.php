@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -230,8 +230,8 @@ final class Products extends AbstractSync
     }
 
     /**
-     * @param array $products
-     * @return array
+     * @param stdClass[] $products
+     * @return stdClass[]
      */
     private function addProduct(array $products): array
     {
@@ -858,7 +858,7 @@ final class Products extends AbstractSync
      * @param array $xml
      * @return int[] - list of product IDs to flush
      */
-    private function handleInserts($xml): array
+    private function handleInserts(array $xml): array
     {
         $res       = [];
         $productID = 0;
@@ -918,7 +918,7 @@ final class Products extends AbstractSync
      * @param array $xml
      * @return int[] - list of product IDs
      */
-    private function handleDeletes($xml): array
+    private function handleDeletes(array $xml): array
     {
         $res = [];
         if (!\is_array($xml['del_artikel'])) {

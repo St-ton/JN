@@ -822,18 +822,18 @@ abstract class AbstractBox implements BoxInterface
      * special json string for sidebar clouds
      *
      * @param array  $cloud
-     * @param string $nSpeed
-     * @param string $nOpacity
+     * @param string $speed
+     * @param string $opacity
      * @param bool   $color
-     * @param bool   $cColorHover
+     * @param bool   $colorHover
      * @return string
      */
     public static function getJSONString(
         $cloud,
-        $nSpeed = '1',
-        $nOpacity = '0.2',
+        $speed = '1',
+        $opacity = '0.2',
         $color = false,
-        $cColorHover = false
+        $colorHover = false
     ): string {
         $iCur = 0;
         $iMax = 15;
@@ -841,16 +841,16 @@ abstract class AbstractBox implements BoxInterface
             return '';
         }
         $tags                       = [];
-        $tags['options']['speed']   = $nSpeed;
-        $tags['options']['opacity'] = $nOpacity;
-        $gibTagFarbe                = static function () {
-            $cColor = '';
-            $cCodes = ['00', '33', '66', '99', 'CC', 'FF'];
+        $tags['options']['speed']   = $speed;
+        $tags['options']['opacity'] = $opacity;
+        $getTagColor                = static function () {
+            $color = '';
+            $codes = ['00', '33', '66', '99', 'CC', 'FF'];
             for ($i = 0; $i < 3; $i++) {
-                $cColor .= $cCodes[\rand(0, \count($cCodes) - 1)];
+                $color .= $codes[\random_int(0, \count($codes) - 1)];
             }
 
-            return '0x' . $cColor;
+            return '0x' . $color;
         };
 
         foreach ($cloud as $item) {
@@ -858,7 +858,7 @@ abstract class AbstractBox implements BoxInterface
                 break;
             }
             $name           = $item->cName ?? $item->cSuche;
-            $randomColor    = (!$color || !$cColorHover) ? $gibTagFarbe() : '';
+            $randomColor    = (!$color || !$colorHover) ? $getTagColor() : '';
             $name           = \urlencode($name);
             $name           = \str_replace('+', ' ', $name); /* fix :) */
             $tags['tags'][] = [
@@ -866,7 +866,7 @@ abstract class AbstractBox implements BoxInterface
                 'url'   => $item->cURL,
                 'size'  => (\count($cloud) <= 5) ? '100' : (string)($item->Klasse * 10), /* 10 bis 100 */
                 'color' => $color ?: $randomColor,
-                'hover' => $cColorHover ?: $randomColor
+                'hover' => $colorHover ?: $randomColor
             ];
         }
 

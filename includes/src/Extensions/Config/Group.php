@@ -48,7 +48,7 @@ class Group implements JsonSerializable
     public $cKommentar;
 
     /**
-     * @var object
+     * @var GroupLocalization|null
      */
     public $oSprache;
 
@@ -271,9 +271,9 @@ class Group implements JsonSerializable
     }
 
     /**
-     * @return object|null
+     * @return GroupLocalization|null
      */
-    public function getSprache()
+    public function getSprache(): ?GroupLocalization
     {
         return $this->oSprache;
     }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -6,6 +6,7 @@ use JTL\Alert\Alert;
 use JTL\Cart\Cart;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Preise;
+use JTL\Firma;
 use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
 use JTL\Session\Frontend;
@@ -31,7 +32,7 @@ class Tax
             self::setTaxRates();
         }
         if (GeneralObject::isCountable('Steuersatz', $_SESSION) && !isset($_SESSION['Steuersatz'][$taxID])) {
-            $taxID = \array_keys($_SESSION['Steuersatz'])[0];
+            $taxID = (int)(\array_keys($_SESSION['Steuersatz'])[0]);
         }
 
         return $_SESSION['Steuersatz'][$taxID];
@@ -42,22 +43,23 @@ class Tax
      * @param bool $skipUpdateCart
      * @since 5.0.0
      */
-    public static function setTaxRates($countryCode = null, bool $skipUpdateCart = false): void
+    public static function setTaxRates(?string $countryCode = null, bool $skipUpdateCart = false): void
     {
         $_SESSION['Steuersatz'] = [];
         $billingCountryCode     = null;
         $merchantCountryCode    = 'DE';
         $db                     = Shop::Container()->getDB();
-        $conf                   = Shop::getSettings([\CONF_KUNDEN])['kunden'];
-        $company                = $db->getSingleObject('SELECT cLand FROM tfirma');
-        if ($company !== null && !empty($company->cLand)) {
-            $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($company->cLand);
-        }
-        if (\defined('STEUERSATZ_STANDARD_LAND')) {
-            $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
-        }
-        if ($conf['kundenregistrierung_standardland'] !== '') {
-            $merchantCountryCode = $conf['kundenregistrierung_standardland'];
+        $conf                   = Shop::getConfigValue(\CONF_KUNDEN, 'kundenregistrierung_standardland');
+        if ($conf !== '') {
+            $merchantCountryCode = $conf;
+        } else {
+            $company = new Firma();
+            if (!empty($company->cLand)) {
+                $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($company->cLand);
+            }
+            if (\defined('STEUERSATZ_STANDARD_LAND')) {
+                $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
+            }
         }
         $deliveryCountryCode = $merchantCountryCode;
         if (!empty(Frontend::getCustomer()->cLand)) {
@@ -157,17 +159,18 @@ class Tax
             : '';
 
         if ($qry !== '') {
-            $taxClasses = $db->getObjects('SELECT * FROM tsteuerklasse');
-            foreach ($taxClasses as $taxClass) {
-                $rate                                             = $db->getSingleObject(
+            foreach ($db->getObjects('SELECT * FROM tsteuerklasse') as $taxClass) {
+                $taxClassID                          = (int)$taxClass->kSteuerklasse;
+                $rate                                = $db->getSingleObject(
                     'SELECT fSteuersatz
                         FROM tsteuersatz
-                        WHERE kSteuerklasse = ' . (int)$taxClass->kSteuerklasse . '
-                        AND (' . $qry . ') ORDER BY nPrio DESC'
+                        WHERE kSteuerklasse = :tcid
+                        AND (' . $qry . ') ORDER BY nPrio DESC',
+                    ['tcid' => $taxClassID]
                 );
-                $_SESSION['Steuersatz'][$taxClass->kSteuerklasse] = $rate->fSteuersatz ?? 0;
+                $_SESSION['Steuersatz'][$taxClassID] = $rate->fSteuersatz ?? 0;
                 if ($UstBefreiungIGL) {
-                    $_SESSION['Steuersatz'][$taxClass->kSteuerklasse] = 0;
+                    $_SESSION['Steuersatz'][$taxClassID] = 0;
                 }
             }
         }
@@ -185,7 +188,7 @@ class Tax
      * @former gibAlteSteuerpositionen()
      * @since since 5.0.0
      */
-    public static function getOldTaxItems(array $items, $net = -1, $html = true, $currency = null): array
+    public static function getOldTaxItems(array $items, $net = -1, bool $html = true, $currency = null): array
     {
         if ($net === -1) {
             $net = Frontend::getCustomerGroup()->isMerchant();

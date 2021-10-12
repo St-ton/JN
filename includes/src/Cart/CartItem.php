@@ -244,35 +244,35 @@ class CartItem
         //posname lokalisiert ablegen
         $newAttributes->cEigenschaftName     = [];
         $newAttributes->cEigenschaftWertName = [];
-        foreach ($_SESSION['Sprachen'] as $language) {
-            $newAttributes->cEigenschaftName[$language->cISO]     = $attribute->cName;
-            $newAttributes->cEigenschaftWertName[$language->cISO] = $attributeValue->cName;
+        foreach (Frontend::getLanguages() as $language) {
+            $code = $language->getCode();
 
-            if ($language->cStandard !== 'Y') {
-                $eigenschaft_spr = $db->select(
+            $newAttributes->cEigenschaftName[$code]     = $attribute->cName;
+            $newAttributes->cEigenschaftWertName[$code] = $attributeValue->cName;
+            if ($language->isDefault() === false) {
+                $localized = $db->select(
                     'teigenschaftsprache',
                     'kEigenschaft',
                     (int)$newAttributes->kEigenschaft,
                     'kSprache',
-                    (int)$language->kSprache
+                    $language->getId()
                 );
-                if (!empty($eigenschaft_spr->cName)) {
-                    $newAttributes->cEigenschaftName[$language->cISO] = $eigenschaft_spr->cName;
+                if (!empty($localized->cName)) {
+                    $newAttributes->cEigenschaftName[$code] = $localized->cName;
                 }
                 $eigenschaftwert_spr = $db->select(
                     'teigenschaftwertsprache',
                     'kEigenschaftWert',
                     (int)$newAttributes->kEigenschaftWert,
                     'kSprache',
-                    (int)$language->kSprache
+                    $language->getId()
                 );
                 if (!empty($eigenschaftwert_spr->cName)) {
-                    $newAttributes->cEigenschaftWertName[$language->cISO] = $eigenschaftwert_spr->cName;
+                    $newAttributes->cEigenschaftWertName[$code] = $eigenschaftwert_spr->cName;
                 }
             }
-
             if ($freeText || \mb_strlen(\trim($freeText)) > 0) {
-                $newAttributes->cEigenschaftWertName[$language->cISO] = $db->escape($freeText);
+                $newAttributes->cEigenschaftWertName[$code] = $db->escape($freeText);
             }
         }
         $this->WarenkorbPosEigenschaftArr[] = $newAttributes;

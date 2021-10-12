@@ -3,7 +3,6 @@
 namespace JTL;
 
 use InvalidArgumentException;
-use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;

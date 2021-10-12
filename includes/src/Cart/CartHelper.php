@@ -1125,7 +1125,7 @@ class CartHelper
         $categoryQRY = '';
         $customerQRY = '';
         $categoryIDs = [];
-        if ($item->Artikel->kArtikel > 0 && $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
+        if ($item->Artikel->kArtikel > 0) {
             $productID = (int)$item->Artikel->kArtikel;
             if (Product::isVariChild($productID)) {
                 $productID = Product::getParent($productID);
@@ -1234,7 +1234,7 @@ class CartHelper
         $categoryQRY = '';
         $customerQRY = '';
         $categoryIDs = [];
-        if ($cartItem->Artikel->kArtikel > 0 && $cartItem->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
+        if ($cartItem->Artikel->kArtikel > 0) {
             $productID = (int)$cartItem->Artikel->kArtikel;
             if (Product::isVariChild($productID)) {
                 $productID = Product::getParent($productID);

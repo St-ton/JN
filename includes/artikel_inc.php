@@ -22,7 +22,11 @@ function gibArtikelXSelling(int $productID, $isParent = null)
 function bearbeiteFrageZumProdukt()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    Product::checkProductQuestion([], Shop::getSettings([CONF_ARTIKELDETAILS, CONF_GLOBAL]));
+    Product::checkProductQuestion(
+        [],
+        Shop::getSettings([CONF_ARTIKELDETAILS])['artikeldetails'],
+        $GLOBALS['AktuellerArtikel']
+    );
 }
 
 /**
@@ -32,7 +36,7 @@ function bearbeiteFrageZumProdukt()
 function gibFehlendeEingabenProduktanfrageformular()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Product::getMissingProductQuestionFormData(Shop::getSettings([CONF_ARTIKELDETAILS, CONF_GLOBAL]));
+    return Product::getMissingProductQuestionFormData(Shop::getSettings([CONF_ARTIKELDETAILS])['artikeldetails']);
 }
 
 /**
@@ -51,7 +55,7 @@ function baueProduktanfrageFormularVorgaben()
 function sendeProduktanfrage()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    Product::sendProductQuestion();
+    Product::sendProductQuestion($GLOBALS['AktuellerArtikel']);
 }
 
 /**

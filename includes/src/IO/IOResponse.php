@@ -104,7 +104,7 @@ class IOResponse implements JsonSerializable
      * @param bool       $groupEnd
      * @return $this
      */
-    public function debugLog($msg, bool $groupHead = false, $groupEnd = false): self
+    public function debugLog($msg, bool $groupHead = false, bool $groupEnd = false): self
     {
         $this->debugLogLines[] = [$msg, $groupHead, $groupEnd];
 
@@ -137,12 +137,12 @@ class IOResponse implements JsonSerializable
             $orange = 'background: #e86c00; color: #fff;';
             $grey   = 'background: #e8e8e8; color: #333;';
 
-            $this->debugLog(['%c CALL %c ' . $name, $orange, $reset], false, false);
-            $this->debugLog(['%c PARAMS %c', $grey, $reset, $args], false, false);
-            $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset], true, false);
+            $this->debugLog(['%c CALL %c ' . $name, $orange, $reset]);
+            $this->debugLog(['%c PARAMS %c', $grey, $reset, $args]);
+            $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset], true);
 
             foreach ($this->generateCallTrace() as $trace) {
-                $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset, $trace], false, false);
+                $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset, $trace]);
             }
 
             $this->debugLog(null, false, true);
@@ -203,15 +203,13 @@ class IOResponse implements JsonSerializable
 
             $args = Text::utf8_convert_recursive($arguments);
 
-            $this->debugLog(['%c CALL %c {$function}()', $orange, $reset], false, false);
-            $this->debugLog(['%c METHOD %c {$function}()', $grey, $reset], false, false);
-            $this->debugLog(['%c PARAMS %c', $grey, $reset, $args], false, false);
-            $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset], true, false);
-
+            $this->debugLog(['%c CALL %c {$function}()', $orange, $reset]);
+            $this->debugLog(['%c METHOD %c {$function}()', $grey, $reset]);
+            $this->debugLog(['%c PARAMS %c', $grey, $reset, $args]);
+            $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset], true);
             foreach ($this->generateCallTrace() as $trace) {
-                $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset, $trace], false, false);
+                $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset, $trace]);
             }
-
             $this->debugLog(null, false, true);
             $this->debugLog(null, false, true);
         }

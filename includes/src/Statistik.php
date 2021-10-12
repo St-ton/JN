@@ -392,7 +392,7 @@ class Statistik
                         0,
                         0,
                         $monthTMP,
-                        \min($day, \cal_days_in_month(CAL_GREGORIAN, $monthTMP, $yearTMP)),
+                        \min($day, \cal_days_in_month(\CAL_GREGORIAN, $monthTMP, $yearTMP)),
                         $yearTMP
                     );
                     $oStat->nCount = 0;
@@ -455,7 +455,7 @@ class Statistik
                         59,
                         59,
                         $monthTo,
-                        \cal_days_in_month(CAL_GREGORIAN, $monthTo, $yearTo),
+                        \cal_days_in_month(\CAL_GREGORIAN, $monthTo, $yearTo),
                         $yearTo
                     );
                     break;

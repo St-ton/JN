@@ -918,14 +918,13 @@ class Customer
             if ($languageID > 0) { // Kundensprache, falls gesetzt und gültig
                 try {
                     $lang     = Shop::Lang()->getLanguageByID($languageID);
-                    $langCode = $lang->cISO;
-                } catch (\Exception $e) {
+                    $langCode = $lang->getCode();
+                } catch (Exception $e) {
                     $lang = null;
                 }
             }
             if ($lang === null) { // Ansonsten Standardsprache
-                $lang     = Shop::Lang()->getDefaultLanguage();
-                $langCode = $lang->cISO ?? '';
+                $langCode = Shop::Lang()->getDefaultLanguage()->getCode();
             }
             $value = Shop::Container()->getDB()->getSingleObject(
                 'SELECT tsprachwerte.cWert

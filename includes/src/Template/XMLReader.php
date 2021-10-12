@@ -178,9 +178,7 @@ class XMLReader
                 }
             }
             if (\is_string($setting->isEditable)) {
-                $setting->isEditable = \mb_strlen($setting->isEditable) === 0
-                    ? true
-                    : (bool)(int)$setting->isEditable;
+                $setting->isEditable = \mb_strlen($setting->isEditable) === 0 || (bool)(int)$setting->isEditable;
             }
             if (isset($XMLSetting->Option)) {
                 $setting->options = [];

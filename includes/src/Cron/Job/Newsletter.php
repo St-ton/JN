@@ -122,7 +122,7 @@ final class Newsletter extends Job
      * @param array      $customerGroups
      * @return array
      */
-    private function getRecipients($jobData, $queueEntry, array $customerGroups): array
+    private function getRecipients(stdClass $jobData, QueueEntry $queueEntry, array $customerGroups): array
     {
         $cgSQL = 'AND (tkunde.kKundengruppe IN (' . \implode(',', $customerGroups) . ') ';
         if (\in_array(0, $customerGroups, true)) {
@@ -139,10 +139,15 @@ final class Newsletter extends Job
                     ON tsprache.kSprache = tnewsletterempfaenger.kSprache
                 LEFT JOIN tkunde
                     ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-                WHERE tnewsletterempfaenger.kSprache = ' . (int)$jobData->kSprache . '
+                WHERE tnewsletterempfaenger.kSprache = :lid
                     AND tnewsletterempfaenger.nAktiv = 1 ' . $cgSQL . '
                 ORDER BY tnewsletterempfaenger.kKunde
-                LIMIT ' . $queueEntry->tasksExecuted . ', ' . $queueEntry->taskLimit
+                LIMIT :lmt, :ffst',
+            [
+                'lid'  => $jobData->kSprache,
+                'lmt'  => $queueEntry->tasksExecuted,
+                'ffst' => $queueEntry->taskLimit
+            ]
         );
     }
 }

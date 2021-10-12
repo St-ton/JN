@@ -2972,12 +2972,14 @@ class Artikel
             ['kArtikel' => $this->kArtikel]
         );
         foreach (Frontend::getLanguages() as $language) {
-            $this->cSprachURL_arr[$language->cISO] = '?a=' . $this->kArtikel . '&amp;lang=' . $language->cISO;
+            $code = $language->getCode();
+
+            $this->cSprachURL_arr[$code] = '?a=' . $this->kArtikel . '&amp;lang=' . $code;
             foreach ($seoData as $item) {
                 $item->kSprache = (int)$item->kSprache;
-                if ($language->kSprache === $item->kSprache) {
+                if ($language->getId() === $item->kSprache) {
                     if ($item->cSeo !== '') {
-                        $this->cSprachURL_arr[$language->cISO] = $item->cSeo;
+                        $this->cSprachURL_arr[$code] = $item->cSeo;
                     }
                     break;
                 }
@@ -4493,20 +4495,19 @@ class Artikel
     }
 
     /**
-     * @param object|null $product
-     * @return object
+     * @param Artikel|stdClass|null $product
+     * @return stdClass
      * @since 4.06.7
      */
-    public function getStockInfo($product = null)
+    public function getStockInfo($product = null): stdClass
     {
-        $conf    = Shop::getSettings([\CONF_GLOBAL]);
         $product = $product ?? $this;
         $result  = (object)[
             'inStock'   => false,
             'notExists' => false,
         ];
 
-        switch ((int)$conf['global']['artikel_artikelanzeigefilter']) {
+        switch ((int)$this->conf['global']['artikel_artikelanzeigefilter']) {
             case \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER:
                 if ((isset($product->cLagerVariation) && $product->cLagerVariation === 'Y')
                     || $product->fLagerbestand > 0
@@ -4750,7 +4751,7 @@ class Artikel
     ) {
         if (!isset($_SESSION['cISOSprache'])) {
             $defaultLanguage = LanguageHelper::getDefaultLanguage();
-            Shop::setLanguage($defaultLanguage->kSprache, $defaultLanguage->cISO);
+            Shop::setLanguage($defaultLanguage->getId(), $defaultLanguage->getCode());
         }
         if ($purchaseQuantity !== null) {
             $purchaseQuantity = (float)$purchaseQuantity;
@@ -5067,7 +5068,7 @@ class Artikel
         $return    = ['kArtikelXSellerKey_arr', 'oArtikelArr'];
         $limitSQL  = ' LIMIT 3';
         // Gibt es X-Seller? Aus der Artikelmenge der änhlichen Artikel, dann alle X-Seller rausfiltern
-        $xSeller  = ProductHelper::getXSelling($productID, $this->nIstVater > 0);
+        $xSeller  = ProductHelper::getXSelling($productID, $this->nIstVater > 0, $this->conf['artikeldetails']);
         $xSellIDs = [];
         if ($xSeller !== null) {
             foreach ($xSeller->Standard->XSellGruppen as $group) {

@@ -177,7 +177,7 @@ function getMissingInput(array $post, ?int $customerGroupId = null, ?CheckBox $c
     $missingInput    = checkKundenFormular(0);
     $customerGroupId = $customerGroupId ?? Frontend::getCustomerGroup()->getID();
     $checkBox        = $checkBox ?? new CheckBox();
-    
+
     return array_merge($missingInput, $checkBox->validateCheckBox(
         CHECKBOX_ORT_REGISTRIERUNG,
         $customerGroupId,
@@ -437,9 +437,9 @@ function pruefeLieferadresseStep($get): void
     //sondersteps Lieferadresse ändern
     if (!empty($_SESSION['Lieferadresse'])) {
         $Lieferadresse = $_SESSION['Lieferadresse'];
-        if (isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1
-            || isset($_SESSION['preferredDeliveryCountryCode'])
-            && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand
+        if ((isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1)
+            || (isset($_SESSION['preferredDeliveryCountryCode'])
+            && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand)
         ) {
             Kupon::resetNewCustomerCoupon();
             unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
@@ -1471,18 +1471,18 @@ function gibZahlungsart(int $paymentMethodID)
 {
     $method = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
     foreach (Frontend::getLanguages() as $language) {
-        $localized                                = Shop::Container()->getDB()->select(
+        $localized                                     = Shop::Container()->getDB()->select(
             'tzahlungsartsprache',
             'kZahlungsart',
             $paymentMethodID,
             'cISOSprache',
-            $language->cISO,
+            $language->getCode(),
             null,
             null,
             false,
             'cName'
         );
-        $method->angezeigterName[$language->cISO] = $localized->cName ?? null;
+        $method->angezeigterName[$language->getCode()] = $localized->cName ?? null;
     }
     $confData = Shop::Container()->getDB()->getObjects(
         'SELECT *
@@ -1942,8 +1942,13 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
     if ($shippingMethod === null || $shippingMethod->kVersandart <= 0) {
         return false;
     }
-    $shippingMethod->Zuschlag  = ShippingMethod::getAdditionalFees($shippingMethod, $countryCode, $poCode);
-    $shippingMethod->fEndpreis = ShippingMethod::calculateShippingFees($shippingMethod, $countryCode, null);
+    $shippingMethod->kVersandart        = (int)$shippingMethod->kVersandart;
+    $shippingMethod->kVersandberechnung = (int)$shippingMethod->kVersandberechnung;
+    $shippingMethod->nSort              = (int)$shippingMethod->nSort;
+    $shippingMethod->nMinLiefertage     = (int)$shippingMethod->nMinLiefertage;
+    $shippingMethod->nMaxLiefertage     = (int)$shippingMethod->nMaxLiefertage;
+    $shippingMethod->Zuschlag           = ShippingMethod::getAdditionalFees($shippingMethod, $countryCode, $poCode);
+    $shippingMethod->fEndpreis          = ShippingMethod::calculateShippingFees($shippingMethod, $countryCode, null);
     if ($shippingMethod->fEndpreis == -1) {
         return false;
     }

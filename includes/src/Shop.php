@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
@@ -657,7 +657,7 @@ final class Shop
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
 
-        return static::Container()->getDBServiceGC();
+        return self::Container()->getDBServiceGC();
     }
 
     /**
@@ -849,7 +849,7 @@ final class Shop
      * @param string $option
      * @return string|array|int|null
      */
-    public static function getSettingValue(int $section, $option)
+    public static function getSettingValue(int $section, string $option)
     {
         return self::getConfigValue($section, $option);
     }
@@ -859,7 +859,7 @@ final class Shop
      * @param string $option
      * @return string|array|int|null
      */
-    public static function getConfigValue(int $section, $option)
+    public static function getConfigValue(int $section, string $option)
     {
         return (self::$settings ?? Shopsetting::getInstance())->getValue($section, $option);
     }
@@ -1510,7 +1510,7 @@ final class Shop
      */
     private static function updateLanguage(int $languageID): void
     {
-        $iso = self::Lang()->getIsoFromLangID($languageID)->cISO ?? null;
+        $iso = self::Lang()->getIsoFromLangID($languageID)->cISO ?? '';
         if ($iso !== $_SESSION['cISOSprache']) {
             Frontend::checkReset($iso);
             Tax::setTaxRates();
@@ -2117,11 +2117,11 @@ final class Shop
      */
     public static function Container(): DefaultServicesInterface
     {
-        if (!static::$container) {
-            static::createContainer();
+        if (!self::$container) {
+            self::createContainer();
         }
 
-        return static::$container;
+        return self::$container;
     }
 
     /**
@@ -2139,8 +2139,8 @@ final class Shop
      */
     private static function createContainer(): void
     {
-        $container         = new Services\Container();
-        static::$container = $container;
+        $container       = new Services\Container();
+        self::$container = $container;
 
         $container->singleton(DbInterface::class, static function () {
             return new NiceDB(\DB_HOST, \DB_USER, \DB_PASS, \DB_NAME);

@@ -876,11 +876,11 @@ final class Controller
 
 
     /**
-     * @param string     $tab
-     * @param string     $msg
-     * @param array|null $urlParams
+     * @param string      $tab
+     * @param string|null $msg
+     * @param array|null  $urlParams
      */
-    public function newsRedirect(string $tab = '', string $msg = '', ?array $urlParams = null): void
+    public function newsRedirect(string $tab = '', ?string $msg = '', ?array $urlParams = null): void
     {
         $tabPageMapping = [
             'inaktiv'    => 's1',

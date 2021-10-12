@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
@@ -124,7 +124,7 @@ class AdminFavorite
      * @param int    $sort
      * @return bool
      */
-    public static function add(int $id, $title, $url, int $sort = -1): bool
+    public static function add(int $id, string $title, string $url, int $sort = -1): bool
     {
         $urlHelper = new URL($url);
         $url       = \str_replace(
@@ -161,7 +161,7 @@ class AdminFavorite
      * @param int $adminID
      * @param int $favID
      */
-    public static function remove($adminID, int $favID = 0): void
+    public static function remove(int $adminID, int $favID = 0): void
     {
         if ($favID > 0) {
             Shop::Container()->getDB()->delete('tadminfavs', ['kAdminfav', 'kAdminlogin'], [$favID, $adminID]);

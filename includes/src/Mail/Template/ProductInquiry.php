@@ -8,7 +8,7 @@ use JTL\Smarty\JTLSmarty;
  * Class ProductInquiry
  * @package JTL\Mail\Template
  */
-class ProductInquiry extends AbstractTemplate
+class ProductInquiry extends ProductTemplate
 {
     protected $id = \MAILTEMPLATE_PRODUKTANFRAGE;
 
@@ -27,6 +27,7 @@ class ProductInquiry extends AbstractTemplate
         if ($data === null) {
             return;
         }
+        $data = $this->useOriginalName($data);
         $smarty->assign('Nachricht', $data->tnachricht)
                ->assign('Artikel', $data->tartikel);
     }

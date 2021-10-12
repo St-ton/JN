@@ -209,8 +209,6 @@ switch ($action) {
                             $value->cWert = 'memcached';
                         } elseif (in_array('apc', $availableMethods, true)) {
                             $value->cWert = 'apc';
-                        } elseif (in_array('xcache', $availableMethods, true)) {
-                            $value->cWert = 'xcache';
                         } elseif (in_array('advancedfile', $availableMethods, true)) {
                             $value->cWert = 'advancedfile';
                         } elseif (in_array('file', $availableMethods, true)) {

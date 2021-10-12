@@ -178,7 +178,7 @@ function processImport(array $fmt, array $data): string
         } catch (\Exception $e) {
             Shop::Container()->getLogService()->notice('optin creation failed during import, for ' .
                 $rowData->cEmail .
-                $e->getMessage());
+                ' cause: ' . $e->getMessage());
         }
         if ($res) {
             return __('successImport') .

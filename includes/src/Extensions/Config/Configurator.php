@@ -142,7 +142,6 @@ class Configurator
                 );
             }
         }
-        Shop::dbg(Frontend::getCustomer()->getID(), false, 'kkunde:');
         if (\count($deletedItems) > 0) {
             CartHelper::deleteCartItems($deletedItems, false);
         }

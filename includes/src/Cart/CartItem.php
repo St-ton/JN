@@ -12,6 +12,7 @@ use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
+use function Functional\select;
 
 /**
  * Class CartItem
@@ -185,6 +186,11 @@ class CartItem
     public $discountForArticle;
 
     /**
+     * @var array
+     */
+    public $fVK;
+
+    /**
      * @var object {
      *      localized: string,
      *      longestMin: int,
@@ -192,6 +198,33 @@ class CartItem
      * }
      */
     public $oEstimatedDelivery;
+
+    /**
+     *
+     */
+    public function __wakeup()
+    {
+        if ($this->kArtikel > 0) {
+            $this->Artikel         = new Artikel();
+            $options               = Artikel::getDefaultOptions();
+            $options->nStueckliste = 1;
+            $options->nVariationen = 1;
+            if ($this->kKonfigitem > 0) {
+                $options->nKeineSichtbarkeitBeachten = 1;
+            }
+            $this->Artikel->fuelleArtikel($this->kArtikel, $options);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function __sleep()
+    {
+        return select(\array_keys(\get_object_vars($this)), static function ($e) {
+            return $e !== 'Artikel';
+        });
+    }
 
     /**
      * CartItem constructor.

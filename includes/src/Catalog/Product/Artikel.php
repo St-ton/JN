@@ -1173,7 +1173,7 @@ class Artikel
             $customerGroupID = Frontend::getCustomerGroup()->getID();
         }
         $customerID   = Frontend::getCustomer()->getID();
-        $this->Preise = new Preise($customerGroupID, $this->kArtikel, $customerID, (int)$this->kSteuerklasse);
+        $this->Preise = new Preise($customerGroupID, $this->kArtikel, $customerID, $this->kSteuerklasse);
         // Varkombi Kind?
         $productID = ($this->kEigenschaftKombi > 0 && $this->kVaterArtikel > 0)
             ? $this->kVaterArtikel
@@ -3317,7 +3317,7 @@ class Artikel
             $this->getScaleBasePrice();
         }
         // Versandkostenfrei-Länder aufgrund rabattierter Preise neu setzen
-        $this->taxData['shippingFreeCountries'] = $this->gibMwStVersandLaenderString();
+        $this->taxData['shippingFreeCountries'] = $this->gibMwStVersandLaenderString(true, $customerGroupID);
         \executeHook(\HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [
             'oArtikel'  => &$this,
             'cacheTags' => &$cacheTags,
@@ -5286,6 +5286,7 @@ class Artikel
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
             $net                      = Frontend::getCustomerGroup()->isMerchant();
         }
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
         if (!isset($_SESSION['Link_Versandseite'])) {
             Frontend::setSpecialLinks();
         }
@@ -5300,10 +5301,10 @@ class Artikel
         }
         if ($this->conf['global']['global_versandhinweis'] === 'zzgl') {
             $markup    = ', ';
-            $countries = $this->gibMwStVersandLaenderString();
+            $countries = $this->gibMwStVersandLaenderString(true, $customerGroupID);
             if ($countries && $this->conf['global']['global_versandfrei_anzeigen'] === 'Y') {
                 if ($this->conf['global']['global_versandkostenfrei_darstellung'] === 'D') {
-                    $countriesAssoc = $this->gibMwStVersandLaenderString(false);
+                    $countriesAssoc = $this->gibMwStVersandLaenderString(false, $customerGroupID);
                     $countryString  = '';
                     foreach ($countriesAssoc as $cISO => $countryName) {
                         $countryString .= '<abbr title="' . $countryName . '">' . $cISO . '</abbr> ';
@@ -5364,10 +5365,11 @@ class Artikel
     }
 
     /**
-     * @param bool $asString
+     * @param bool     $asString
+     * @param int|null $customerGroupID
      * @return array|string
      */
-    public function gibMwStVersandLaenderString($asString = true)
+    public function gibMwStVersandLaenderString(bool $asString = true, ?int $customerGroupID = null)
     {
         static $allCountries = [];
 
@@ -5377,9 +5379,9 @@ class Artikel
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
         }
-        $customerGroupID       = Frontend::getCustomer()->getGroupID() > 0
+        $customerGroupID       = $customerGroupID ?? (Frontend::getCustomer()->getGroupID() > 0
             ? Frontend::getCustomer()->getGroupID()
-            : Frontend::getCustomerGroup()->getID();
+            : Frontend::getCustomerGroup()->getID());
         $helper                = ShippingMethod::getInstance();
         $shippingFreeCountries = \is_array($this->Preise->fVK)
             ? $helper->getFreeShippingCountries($this->Preise->fVK, $customerGroupID, $this->kVersandklasse)
@@ -5675,7 +5677,7 @@ class Artikel
         if (!$taxText && $this->AttributeAssoc === null) {
             $taxText = $this->gibAttributWertNachName(\ART_ATTRIBUT_STEUERTEXT);
         }
-        $countries       = $this->gibMwStVersandLaenderString(false);
+        $countries       = $this->gibMwStVersandLaenderString(false, Frontend::getCustomerGroup()->getID());
         $countriesString = \count($countries) > 0
             ? Shop::Lang()->get('noShippingCostsAtExtended', 'basket', \implode(', ', $countries))
             : '';

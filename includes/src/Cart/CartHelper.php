@@ -1570,7 +1570,7 @@ class CartHelper
      * @former loescheWarenkorbPositionen()
      * @since 5.0.0
      */
-    public static function deleteCartItems(array $items, $removeShippingCoupon = true): void
+    public static function deleteCartItems(array $items, bool $removeShippingCoupon = true): void
     {
         $cart    = Frontend::getCart();
         $uniques = [];
@@ -1619,9 +1619,9 @@ class CartHelper
             $_SESSION['Warenkorb'] = new Cart();
         }
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
-        \freeGiftStillValid();
-        if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKunde > 0) {
-            (new PersistentCart($_SESSION['Kunde']->kKunde))->entferneAlles()->bauePersVonSession();
+        \freeGiftStillValid($cart);
+        if (Frontend::getCustomer()->getID() > 0) {
+            (new PersistentCart(Frontend::getCustomer()->getID()))->entferneAlles()->bauePersVonSession();
         }
     }
 
@@ -1663,7 +1663,7 @@ class CartHelper
         }
         if ($drop !== null) {
             self::deleteCartItem($drop);
-            \freeGiftStillValid();
+            \freeGiftStillValid($cart);
             if ($post) {
                 \header(
                     'Location: ' . Shop::Container()->getLinkService()->getStaticRoute(
@@ -1923,7 +1923,7 @@ class CartHelper
      * @former loescheAlleSpezialPos()
      * @since 5.0.0
      */
-    public static function deleteAllSpecialItems($removeShippingCoupon = true): void
+    public static function deleteAllSpecialItems(bool $removeShippingCoupon = true): void
     {
         Frontend::getCart()
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZAHLUNGSART)
@@ -2111,7 +2111,7 @@ class CartHelper
      */
     public static function validateCartConfig(): void
     {
-        Configurator::postcheckCart($_SESSION['Warenkorb']);
+        Configurator::postcheckCart(Frontend::getCart());
     }
 
     /**

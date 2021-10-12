@@ -1118,9 +1118,11 @@ class Kupon
     {
         unset($_SESSION['NeukundenKupon'], $_SESSION['NeukundenKuponAngenommen']);
         $cart = Frontend::getCart();
-        $cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_NEUKUNDENKUPON);
-        if ($priceRecalculation) {
-            $cart->setzePositionsPreise();
+        if ($cart->posTypEnthalten(\C_WARENKORBPOS_TYP_NEUKUNDENKUPON)) {
+            $cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_NEUKUNDENKUPON);
+            if ($priceRecalculation) {
+                $cart->setzePositionsPreise();
+            }
         }
     }
 

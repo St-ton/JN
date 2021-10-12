@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Cart\Cart;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
@@ -2582,11 +2583,12 @@ function guthabenMoeglich(): bool
 }
 
 /**
+ * @param Cart|null $cart
  * @return bool
  */
-function freeGiftStillValid(): bool
+function freeGiftStillValid(Cart $cart = null): bool
 {
-    $cart  = Frontend::getCart();
+    $cart  = $cart ?? Frontend::getCart();
     $valid = true;
     foreach ($cart->PositionenArr as $item) {
         if ($item->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK) {

@@ -50,6 +50,7 @@ class PersistentCart
      */
     public function __construct(int $customerID = 0, bool $addProducts = false)
     {
+        Shop::dbg($customerID, false, __CLASS__);
         if ($customerID > 0) {
             $this->kKunde = $customerID;
             $this->ladeWarenkorbPers($addProducts);

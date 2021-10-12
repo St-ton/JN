@@ -305,7 +305,7 @@ class Cart
         $iso = Shop::getLanguageCode();
         //toDo schaue, ob diese Pos nicht markiert werden muesste, wenn anzahl>lager gekauft wird
         //schaue, ob es nicht schon Positionen mit diesem Artikel gibt
-        foreach ($this->PositionenArr as $i => $item) {
+        foreach ($this->PositionenArr as $item) {
             if (!(isset($item->Artikel->kArtikel)
                 && (int)$item->Artikel->kArtikel === $productID
                 && (int)$item->nPosTyp === $type
@@ -378,6 +378,7 @@ class Cart
         $cartItem->setzeGesamtpreisLocalized();
         $cartItem->cName         = [];
         $cartItem->cLieferstatus = [];
+        $cartItem->fVK           = $cartItem->Artikel->Preise->fVK;
 
         $db            = Shop::Container()->getDB();
         $deliveryState = $cartItem->Artikel->cLieferstatus;
@@ -925,103 +926,74 @@ class Cart
      */
     public function setzePositionsPreise(): self
     {
-        $defaultOptions               = Artikel::getDefaultOptions();
-        $configOptions                = Artikel::getDefaultConfigOptions();
-        $defaultOptions->nStueckliste = 1;
-        $this->oFavourableShipping    = null;
+        $options               = Artikel::getDefaultOptions();
+        $options->nStueckliste = 1;
+        $options->nVariationen = 1;
 
-        foreach ($this->PositionenArr as $i => $item) {
-            if ($item->kArtikel > 0 && $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
-                $oldItem = clone $item;
-                $product = new Artikel();
-                if (!$product->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
-                    ? $defaultOptions
-                    : $configOptions)
-                ) {
-                    continue;
-                }
-                // Baue Variationspreise im Warenkorb neu, aber nur wenn es ein gültiger Artikel ist
-                if (\is_array($item->WarenkorbPosEigenschaftArr)) {
-                    foreach ($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr as $j => $posAttr) {
-                        if (!\is_array($product->Variationen)) {
-                            continue;
-                        }
-                        foreach ($product->Variationen as $variation) {
-                            if ($posAttr->kEigenschaft != $variation->kEigenschaft) {
-                                continue;
-                            }
-                            foreach ($variation->Werte as $oEigenschaftWert) {
-                                if ($posAttr->kEigenschaftWert == $oEigenschaftWert->kEigenschaftWert) {
-                                    $item->WarenkorbPosEigenschaftArr[$j]->fAufpreis          =
-                                        $oEigenschaftWert->fAufpreisNetto ?? null;
-                                    $item->WarenkorbPosEigenschaftArr[$j]->cAufpreisLocalized =
-                                        $oEigenschaftWert->cAufpreisLocalized[1] ?? null;
-                                    break;
-                                }
-                            }
+        $bulk            = $this->config['kaufabwicklung']['general_child_item_bulk_pricing'] === 'Y';
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $langID          = Shop::getLanguageID();
 
+        foreach ($this->PositionenArr as $item) {
+            if ($item->kArtikel <= 0 || $item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL) {
+                $this->setzeKonfig($item, true, false);
+                continue;
+            }
+            $oldItem                             = clone $item;
+            $product                             = new Artikel();
+            $options->nKeineSichtbarkeitBeachten = 1;
+            if ($item->kKonfigitem === 0) {
+                $options->nKeineSichtbarkeitBeachten = 0;
+            }
+            if (!$product->fuelleArtikel($item->kArtikel, $options, $customerGroupID, $langID)) {
+                continue;
+            }
+            // Baue Variationspreise im Warenkorb neu, aber nur wenn es ein gültiger Artikel ist
+            foreach ($item->WarenkorbPosEigenschaftArr ?? [] as $posAttr) {
+                foreach ($product->Variationen as $variation) {
+                    if ($posAttr->kEigenschaft !== $variation->kEigenschaft) {
+                        continue;
+                    }
+                    foreach ($variation->Werte as $oEigenschaftWert) {
+                        if ($posAttr->kEigenschaftWert === $oEigenschaftWert->kEigenschaftWert) {
+                            $posAttr->fAufpreis          = $oEigenschaftWert->fAufpreisNetto ?? null;
+                            $posAttr->cAufpreisLocalized = $oEigenschaftWert->cAufpreisLocalized[1] ?? null;
                             break;
                         }
                     }
-                }
-                if ($product->kVaterArtikel > 0
-                    && $this->config['kaufabwicklung']['general_child_item_bulk_pricing'] === 'Y'
-                ) {
-                    $qty = $this->gibAnzahlEinesArtikels($product->kVaterArtikel, -1, true);
-                } else {
-                    $qty = $this->gibAnzahlEinesArtikels($product->kArtikel);
-                }
-                $item->Artikel           = $product;
-                $item->fPreisEinzelNetto = $product->gibPreis($qty, [], 0, $item->cUnique);
-                $item->fPreis            = $product->gibPreis(
-                    $qty,
-                    $item->WarenkorbPosEigenschaftArr,
-                    0,
-                    $item->cUnique
-                );
-                $item->fGesamtgewicht    = $item->gibGesamtgewicht();
-                \executeHook(\HOOK_SETZTE_POSITIONSPREISE, [
-                    'position'    => $item,
-                    'oldPosition' => $oldItem
-                ]);
-                $item->setzeGesamtpreisLocalized();
-                //notify about price changes when the price difference is greater then .01
-                if ($oldItem->cGesamtpreisLocalized !== $item->cGesamtpreisLocalized
-                    && $oldItem->Artikel->Preise->fVK !== $item->Artikel->Preise->fVK
-                ) {
-                    $updated                           = new stdClass();
-                    $updated->cKonfigpreisLocalized    = $item->cKonfigpreisLocalized;
-                    $updated->cGesamtpreisLocalized    = $item->cGesamtpreisLocalized;
-                    $updated->cName                    = $item->cName;
-                    $updated->cKonfigpreisLocalizedOld = $oldItem->cKonfigpreisLocalized;
-                    $updated->cGesamtpreisLocalizedOld = $oldItem->cGesamtpreisLocalized;
-                    $updated->istKonfigVater           = $item->istKonfigVater();
-                    self::addUpdatedPosition($updated);
-                    Shop::Container()->getAlertService()->addAlert(
-                        Alert::TYPE_WARNING,
-                        \sprintf(
-                            Shop::Lang()->get('priceHasChanged', 'checkout'),
-                            \is_array($item->cName) ? $item->cName[Shop::getLanguageCode()] : $item->cName
-                        ),
-                        'priceHasChanged_' . $item->kArtikel,
-                        [
-                            'saveInSession' => true,
-                            'dismissable'   => false,
-                            'linkHref'      => Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php'),
-                            'linkText'      => Shop::Lang()->get('gotoBasket'),
-                        ]
-                    );
-                }
-                unset($item->cHinweis);
-                if (isset($_SESSION['Kupon']->kKupon)
-                    && $_SESSION['Kupon']->kKupon > 0
-                    && (int)$_SESSION['Kupon']->nGanzenWKRabattieren === 0
-                ) {
-                    $item = CartHelper::checkCouponCartItems($item, $_SESSION['Kupon']);
-                    $item->setzeGesamtpreisLocalized();
+                    break;
                 }
             }
-
+            if ($product->kVaterArtikel > 0 && $bulk) {
+                $qty = $this->gibAnzahlEinesArtikels($product->kVaterArtikel, -1, true);
+            } else {
+                $qty = $this->gibAnzahlEinesArtikels($product->kArtikel);
+            }
+            $item->Artikel           = $product;
+            $item->fPreisEinzelNetto = $product->gibPreis($qty, [], $customerGroupID, $item->cUnique);
+            $item->fPreis            = $product->gibPreis(
+                $qty,
+                $item->WarenkorbPosEigenschaftArr,
+                $customerGroupID,
+                $item->cUnique
+            );
+            $item->fGesamtgewicht    = $item->gibGesamtgewicht();
+            \executeHook(\HOOK_SETZTE_POSITIONSPREISE, [
+                'position'    => $item,
+                'oldPosition' => $oldItem
+            ]);
+            $item->setzeGesamtpreisLocalized();
+            // notify about price changes when the price difference is greater then .01
+            if ($oldItem->cGesamtpreisLocalized !== $item->cGesamtpreisLocalized
+                && $oldItem->fVK !== $item->fVK
+            ) {
+                $this->notifyPriceChange($item, $oldItem);
+            }
+            unset($item->cHinweis);
+            if (($_SESSION['Kupon']->kKupon ?? 0) > 0 && (int)$_SESSION['Kupon']->nGanzenWKRabattieren === 0) {
+                $item = CartHelper::checkCouponCartItems($item, $_SESSION['Kupon']);
+                $item->setzeGesamtpreisLocalized();
+            }
             $this->setzeKonfig($item, true, false);
         }
 
@@ -1029,12 +1001,42 @@ class Cart
     }
 
     /**
-     * @param object $item
-     * @param bool   $prices
-     * @param bool   $name
+     * @param CartItem $item
+     * @param CartItem $oldItem
+     */
+    private function notifyPriceChange(CartItem $item, CartItem $oldItem): void
+    {
+        $updated                           = new stdClass();
+        $updated->cKonfigpreisLocalized    = $item->cKonfigpreisLocalized;
+        $updated->cGesamtpreisLocalized    = $item->cGesamtpreisLocalized;
+        $updated->cName                    = $item->cName;
+        $updated->cKonfigpreisLocalizedOld = $oldItem->cKonfigpreisLocalized;
+        $updated->cGesamtpreisLocalizedOld = $oldItem->cGesamtpreisLocalized;
+        $updated->istKonfigVater           = $item->istKonfigVater();
+        self::addUpdatedPosition($updated);
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_WARNING,
+            \sprintf(
+                Shop::Lang()->get('priceHasChanged', 'checkout'),
+                \is_array($item->cName) ? $item->cName[Shop::getLanguageCode()] : $item->cName
+            ),
+            'priceHasChanged_' . $item->kArtikel,
+            [
+                'saveInSession' => true,
+                'dismissable'   => false,
+                'linkHref'      => Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php'),
+                'linkText'      => Shop::Lang()->get('gotoBasket'),
+            ]
+        );
+    }
+
+    /**
+     * @param CartItem $item
+     * @param bool     $prices
+     * @param bool     $name
      * @return $this
      */
-    public function setzeKonfig($item, bool $prices = true, bool $name = true): self
+    public function setzeKonfig(CartItem $item, bool $prices = true, bool $name = true): self
     {
         // Falls Konfigitem gesetzt Preise + Name ueberschreiben
         if ((int)$item->kKonfigitem <= 0 || !\class_exists('Konfigitem')) {

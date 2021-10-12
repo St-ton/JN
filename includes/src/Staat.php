@@ -145,7 +145,7 @@ class Staat
         $states = [];
         foreach ($countries as $country) {
             $options = [
-                'Staat'   => $country->kStaat,
+                'Staat'   => (int)$country->kStaat,
                 'LandIso' => $country->cLandIso,
                 'Name'    => $country->cName,
                 'Code'    => $country->cCode,
@@ -175,7 +175,7 @@ class Staat
             return null;
         }
         $options = [
-            'Staat'   => $data->kStaat,
+            'Staat'   => (int)$data->kStaat,
             'LandIso' => $data->cLandIso,
             'Name'    => $data->cName,
             'Code'    => $data->cCode,
@@ -195,7 +195,7 @@ class Staat
             return null;
         }
         $options = [
-            'Staat'   => $data->kStaat,
+            'Staat'   => (int)$data->kStaat,
             'LandIso' => $data->cLandIso,
             'Name'    => $data->cName,
             'Code'    => $data->cCode,

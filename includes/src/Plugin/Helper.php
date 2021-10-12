@@ -498,7 +498,7 @@ class Helper
     public static function updatePluginInstance(PluginInterface $plugin): void
     {
         if (($bootstrapper = self::$bootstrapper[$plugin->getID()] ?? null) !== null) {
-            $bootstrapper->setPlugin($plugin);
+            $bootstrapper->getPlugin()->updateInstance($plugin);
         }
     }
 

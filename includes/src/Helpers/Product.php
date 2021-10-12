@@ -1724,8 +1724,9 @@ class Product
     public static function combineParentAndChild(Artikel $parent, Artikel $child)
     {
         $product                              = $child;
+        $variChildID                          = (int)$child->kArtikel;
         $product->kArtikel                    = $parent->kArtikel;
-        $product->kVariKindArtikel            = $child->kArtikel;
+        $product->kVariKindArtikel            = $variChildID;
         $product->nIstVater                   = 1;
         $product->kVaterArtikel               = $parent->kArtikel;
         $product->kEigenschaftKombi           = $parent->kEigenschaftKombi;

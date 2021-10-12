@@ -748,57 +748,6 @@ class Exportformat
     }
 
     /**
-     * @param array $config
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function insertEinstellungen(array $config): bool
-    {
-        $ok = true;
-        foreach ($config as $item) {
-            $ins = new stdClass();
-            if (\is_array($item) && \count($item) > 0) {
-                foreach (\array_keys($item) as $cMember) {
-                    $ins->$cMember = $item[$cMember];
-                }
-                $ins->kExportformat = $this->getExportformat();
-            }
-            $ok = $ok && ($this->db->insert('texportformateinstellungen', $ins) > 0);
-        }
-
-        return $ok;
-    }
-
-    /**
-     * @param array $config
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function updateEinstellungen(array $config): bool
-    {
-        $ok = true;
-        foreach ($config as $conf) {
-            $import = [
-                'exportformate_semikolon',
-                'exportformate_equot',
-                'exportformate_quot'
-            ];
-            if (\in_array($conf['cName'], $import, true)) {
-                $_upd        = new stdClass();
-                $_upd->cWert = $conf['cWert'];
-                $ok          = $ok && ($this->db->update(
-                    'tboxensichtbar',
-                    ['kExportformat', 'cName'],
-                    [$this->getExportformat(), $conf['cName']],
-                    $_upd
-                ) >= 0);
-            }
-        }
-
-        return $ok;
-    }
-
-    /**
      * @return Exportformat
      */
     private function initSmarty(): self

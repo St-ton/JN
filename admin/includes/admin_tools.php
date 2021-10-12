@@ -17,7 +17,6 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
-use JTL\XMLParser;
 
 /**
  * @param int|array $configSectionID
@@ -395,20 +394,6 @@ function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true):
     }
 
     return $campaigns;
-}
-
-/**
- * @param array $xml
- * @param int   $level
- * @return array
- * @deprecated since 5.0.0
- */
-function getArrangedArray($xml, int $level = 1)
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $parser = new XMLParser();
-
-    return $parser->getArrangedArray($xml, $level);
 }
 
 /**

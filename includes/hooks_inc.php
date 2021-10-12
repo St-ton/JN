@@ -688,7 +688,7 @@ const HOOK_LETZTERINCLUDE_INC = 99;
  * @param int kEmailvorlage
  * @param int kSprache
  * @param string cPluginBody - empty string since 5.0.0
- * @param Emailvorlage
+ * @param \JTL\Mail\Template\Model Emailvorlage
  * @param \JTL\Mail\Template\TemplateInterface template - since 5.0.0
  * @param \JTL\Mail\Template\Model model - since 5.0.0
  */

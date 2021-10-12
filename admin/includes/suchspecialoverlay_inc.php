@@ -247,45 +247,6 @@ function speicherOverlay($im, $extension, $path, $quality = 80)
 }
 
 /**
- * @deprecated since 5.0.0
- * @param string $image
- * @param string $width
- * @param string $height
- * @param int    $size
- * @param int    $transparency
- * @param string $extension
- * @param string $path
- */
-function erstelleOverlay($image, $width, $height, $size, $transparency, $extension, $path)
-{
-    $conf   = Shop::getSettings([CONF_BILDER])['bilder'];
-    $width  = $conf[$width];
-    $height = $conf[$height];
-
-    [$overlayWidth, $overlayHight] = getimagesize($image);
-
-    $nOffY = 1;
-    $nOffX = 1;
-    if ($size > 0) {
-        $maxWidth  = $width * ($size / 100);
-        $maxHeight = $height * ($size / 100);
-
-        $nOffX = $overlayWidth / $maxWidth;
-        $nOffY = $overlayHight / $maxHeight;
-    }
-    if ($nOffY > $nOffX) {
-        $overlayWidth = round($overlayWidth * (1 / $nOffY));
-        $overlayHight = round($overlayHight * (1 / $nOffY));
-    } else {
-        $overlayWidth = round($overlayWidth * (1 / $nOffX));
-        $overlayHight = round($overlayHight * (1 / $nOffX));
-    }
-
-    $im = ladeOverlay($image, (int)$overlayWidth, (int)$overlayHight, $transparency);
-    speicherOverlay($im, $extension, $path);
-}
-
-/**
  * @param string $image
  * @param int    $size
  * @param int    $transparency

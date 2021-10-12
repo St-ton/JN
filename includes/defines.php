@@ -85,17 +85,7 @@ ifndef('PFAD_INCLUDES_EXT', PFAD_INCLUDES . 'ext/');
 ifndef('PFAD_INCLUDES_MODULES', PFAD_INCLUDES . 'modules/');
 ifndef('PFAD_SMARTY', PFAD_INCLUDES . 'vendor/smarty/smarty/libs/');
 ifndef('SMARTY_DIR', PFAD_ROOT . PFAD_SMARTY);
-/**
- * @deprecated since 5.0.0
- */
-ifndef('PFAD_PHPQUERY', PFAD_INCLUDES . 'vendor/jtlshop/phpquery/src/');
-ifndef('PFAD_PCLZIP', PFAD_INCLUDES . 'vendor/chamilo/pclzip/');
-ifndef('PFAD_PHPMAILER', PFAD_INCLUDES . 'vendor/phpmailer/phpmailer/');
-ifndef('PFAD_BLOWFISH', PFAD_INCLUDES_LIBS . 'vendor/jtlshop/xtea/');
-ifndef('PFAD_CLASSES_CORE', PFAD_CLASSES . 'core/');  // DEPRECATED
-ifndef('PFAD_OBJECT_CACHING', 'caching/');
 ifndef('PFAD_GFX', 'gfx/');
-ifndef('PFAD_GFX_AMPEL', PFAD_GFX . 'ampel/');
 ifndef('PFAD_DBES', 'dbeS/');
 ifndef('PFAD_DBES_TMP', PFAD_DBES . 'tmp/');
 ifndef('PFAD_BILDER', 'bilder/');
@@ -288,25 +278,6 @@ function ifndef(string $constant, $value)
 {
     defined($constant) || define($constant, $value);
 }
-
-/**
- * @deprecated
- * @return array
-function shop_writeable_paths()
-{
-    trigger_error('The function "shop_writeable_paths()" is removed in a future version!', E_USER_DEPRECATED);
-
-    global $shop_writeable_paths;
-
-    return array_map(function ($v) {
-        if (mb_strpos($v, PFAD_ROOT) === 0) {
-            $v = mb_substr($v, mb_strlen(PFAD_ROOT));
-        }
-
-        return trim($v, '/\\');
-    }, $paths);
-}
- */
 
 // Static defines (do not edit)
 require_once __DIR__ . '/defines_inc.php';

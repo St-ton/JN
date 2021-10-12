@@ -84,7 +84,6 @@ $shop = Shop::getInstance();
 error_reporting(SYNC_LOG_LEVEL);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
 if (!function_exists('Shop')) {
     /**

@@ -22,7 +22,6 @@ if (!defined('PFAD_ROOT')) {
     http_response_code(400);
     exit();
 }
-require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global JTLSmarty $smarty */
 /** @global ProductFilter $NaviFilter*/

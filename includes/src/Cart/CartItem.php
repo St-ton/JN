@@ -389,17 +389,6 @@ class CartItem
     }
 
     /**
-     * typo in function name - for compatibility reasons only
-     *
-     * @deprecated since 4.05
-     * @return $this
-     */
-    public function setzeGesamtpreisLoacalized(): self
-    {
-        return $this->setzeGesamtpreisLocalized();
-    }
-
-    /**
      * gibt Gesamtpreis inkl. aller Aufpreise * Positionsanzahl lokalisiert als String zurück
      *
      * @return $this

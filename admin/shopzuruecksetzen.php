@@ -3,10 +3,10 @@
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\News\Admin\Controller as NewsController;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
@@ -107,7 +107,7 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
                 // Shopinhalte
                 case 'news':
                     foreach ($db->getObjects('SELECT kNews FROM tnews') as $i) {
-                        loescheNewsBilderDir($i->kNews, PFAD_ROOT . PFAD_NEWSBILDER);
+                        NewsController::deleteImageDir($i->kNews);
                     }
                     $db->query('TRUNCATE tnews');
                     $db->delete('trevisions', 'type', 'news');

@@ -2342,9 +2342,6 @@ msgstr "Memcached"
 msgid "caching_method_value(memcache)"
 msgstr "Memcache"
 
-msgid "caching_method_value(xcache)"
-msgstr "XCache"
-
 msgid "caching_method_value(file)"
 msgstr "Files"
 

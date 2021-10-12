@@ -13,8 +13,6 @@ use JTL\Shop;
 use JTL\Shopsetting;
 
 require_once __DIR__ . '/includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'news_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 
 $NaviFilter       = Shop::run();
 $params           = Shop::getParameters();

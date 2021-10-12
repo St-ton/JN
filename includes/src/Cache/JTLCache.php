@@ -718,8 +718,7 @@ final class JTLCache implements JTLCacheInterface
             'null',
             'redis',
             'redisCluster',
-            'session',
-            'xcache'
+            'session'
         ];
     }
 

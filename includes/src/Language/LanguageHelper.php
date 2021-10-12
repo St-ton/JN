@@ -373,20 +373,6 @@ class LanguageHelper
     }
 
     /**
-     * @param int               $sectionID
-     * @param mixed|null|string $default
-     * @return string|null
-     * @deprecated since 5.0.0
-     */
-    public function getSectionName(int $sectionID, $default = null): ?string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        $section = $this->db->select('tsprachsektion', 'kSprachsektion', $sectionID);
-
-        return $section->cName ?? $default;
-    }
-
-    /**
      * @return $this
      */
     public function autoload(): self

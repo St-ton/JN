@@ -216,8 +216,6 @@ if (isset($breadCrumbName, $breadCrumbURL)) {
     $nav->setCustomNavigationEntry($breadCrumbEntry);
 }
 
-require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Visitor::generateData();
 Campaign::checkCampaignParameters();
 Shop::Lang()->generateLanguageAndCurrencyLinks();

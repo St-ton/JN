@@ -17,6 +17,7 @@ use JTL\Media\Image\ConfigGroup;
 use JTL\Media\Image\Manufacturer;
 use JTL\Media\Image\News;
 use JTL\Media\Image\NewsCategory;
+use JTL\Media\Image\OPC;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\StatsItem;
 use JTL\Media\Image\Variation;
@@ -98,6 +99,11 @@ class Manager
                 'name'  => \__('configgroup'),
                 'type'  => Image::TYPE_CONFIGGROUP,
                 'stats' => (new ConfigGroup($this->db))->getStats($filesize)
+            ],
+            Image::TYPE_OPC          => (object)[
+                'name'  => \__('OPC'),
+                'type'  => Image::TYPE_OPC,
+                'stats' => (new OPC($this->db))->getStats($filesize)
             ]
         ];
     }

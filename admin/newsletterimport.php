@@ -116,7 +116,7 @@ function processImport(array $fmt, array $data): string
         return sprintf(__('errorEmailInvalid'), $recipient->cEmail);
     }
     if (checkBlacklist($recipient->cEmail)) {
-        return __('errorEmailInvalidBlacklist', $recipient->cEmail);
+        return sprintf(__('errorEmailInvalidBlacklist'), $recipient->cEmail);
     }
     if (!$recipient->cNachname) {
         return __('errorSurnameMissing');

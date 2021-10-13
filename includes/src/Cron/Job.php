@@ -480,7 +480,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function setRunning(bool $running): void
+    public function setRunning($running): void
     {
         $this->running = (int)$running;
     }

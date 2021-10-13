@@ -196,9 +196,9 @@ interface JobInterface
     public function isRunning(): bool;
 
     /**
-     * @param bool $running
+     * @param bool|int $running
      */
-    public function setRunning(bool $running): void;
+    public function setRunning($running): void;
 
     /**
      * @return int

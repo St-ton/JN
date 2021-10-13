@@ -31,8 +31,8 @@ class DeprecatedVariable
      */
     public function __construct($value, string $name)
     {
-        $this->value   = $value;
-        $this->name    = $name;
+        $this->value = $value;
+        $this->name  = $name;
     }
 
     /**

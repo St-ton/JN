@@ -16,7 +16,6 @@ use RuntimeException;
 /**
  * Class JTLSmarty
  * @package \JTL\Smarty
- * @method JTLSmarty assign(string $variable, mixed $value)
  */
 class JTLSmarty extends BC
 {
@@ -515,5 +514,17 @@ class JTLSmarty extends BC
         }
 
         return $functions;
+    }
+
+    /**
+     * @param string $name
+     * @param mixed  $value
+     * @return $this
+     */
+    public function assignDeprecated(string $name, $value): self
+    {
+        $this->tpl_vars[$name] = new DeprecatedVariable($value, $name);
+
+        return $this;
     }
 }

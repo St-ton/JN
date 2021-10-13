@@ -53,6 +53,7 @@ class OPC extends AbstractImage
     {
         /** @var PortletInstance $mixed */
         $pathInfo = \pathinfo($mixed->currentImagePath);
+
         return (!empty($pathInfo['dirname']) && $pathInfo['dirname'] !== '.'
                 ? $pathInfo['dirname'] . '/'
                 : '') . $pathInfo['filename'];
@@ -63,7 +64,7 @@ class OPC extends AbstractImage
      */
     public function getPathByID($id, int $number = null): ?string
     {
-        return $id;
+        return $id === null ? null : (string)$id;
     }
 
     /**

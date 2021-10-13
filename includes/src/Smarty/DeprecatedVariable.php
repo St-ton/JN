@@ -33,12 +33,9 @@ class DeprecatedVariable
     {
         $this->value   = $value;
         $this->name    = $name;
-        $this->nocache = false;
     }
 
     /**
-     * <<magic>> String conversion
-     *
      * @return string
      */
     public function __toString()
@@ -46,12 +43,18 @@ class DeprecatedVariable
         return (string)$this->value;
     }
 
+    /**
+     * @param string $name
+     * @return mixed
+     */
     public function __get($name)
     {
         if ($name === 'value') {
             \trigger_error('Smarty variable ' . $this->name . ' is deprecated.', \E_USER_DEPRECATED);
+
+            return $this->value;
         }
 
-        return $this->value;
+        return null;
     }
 }

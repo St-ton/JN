@@ -872,15 +872,32 @@ class Product
      */
     public static function getXSelling(int $productID, bool $isParent = null, ?array $conf = null): ?stdClass
     {
+        $data = self::getXSellingIDs($productID, $isParent, $conf);
+        if ($data === null) {
+            return null;
+        }
+
+        return self::buildXSellersFromIDs($data, $productID);
+    }
+
+    /**
+     * @param int        $productID
+     * @param bool|null  $isParent
+     * @param array|null $conf
+     * @return stdClass|null
+     * @since 5.2.0
+     */
+    public static function getXSellingIDs(int $productID, bool $isParent = null, ?array $conf = null): ?stdClass
+    {
         if ($productID <= 0) {
             return null;
         }
-        $defaultOptions                   = Artikel::getDefaultOptions();
         $xSelling                         = new stdClass();
         $xSelling->Standard               = new stdClass();
         $xSelling->Kauf                   = new stdClass();
         $xSelling->Standard->XSellGruppen = [];
         $xSelling->Kauf->Artikel          = [];
+        $xSelling->Kauf->productIDs       = [];
         $conf                             = $conf ?? Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
         if ($conf['artikeldetails_xselling_standard_anzeigen'] === 'Y') {
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
@@ -897,22 +914,17 @@ class Product
                 ['lid' => Shop::getLanguageID(), 'aid' => $productID]
             );
             if (\count($xsell) > 0) {
-                $xsellgruppen   = group($xsell, static function ($e) {
+                $xsellgruppen = group($xsell, static function ($e) {
                     return $e->kXSellGruppe;
                 });
-                $defaultOptions = Artikel::getDefaultOptions();
-                foreach ($xsellgruppen as $groupID => $products) {
-                    $group          = new stdClass();
-                    $group->Artikel = [];
+                foreach ($xsellgruppen as $products) {
+                    $group             = new stdClass();
+                    $group->productIDs = [];
                     foreach ($products as $xs) {
                         $group->Name         = $xs->cName;
                         $group->Beschreibung = $xs->cBeschreibung;
-                        $product             = (new Artikel())->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
-                        if ($product !== null && (int)$product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
-                            $group->Artikel[] = $product;
-                        }
+                        $group->productIDs[] = (int)$xs->kXSellArtikel;
                     }
-                    $group->Artikel                     = self::separateByAvailability($group->Artikel);
                     $xSelling->Standard->XSellGruppen[] = $group;
                 }
             }
@@ -978,15 +990,46 @@ class Product
             $xsellCount2 = \is_array($xsell) ? \count($xsell) : 0;
             if ($xsellCount2 > 0) {
                 foreach ($xsell as $xs) {
-                    $product = new Artikel();
-                    $product->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
-                    if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
-                        $xSelling->Kauf->Artikel[] = $product;
-                    }
+                    $xSelling->Kauf->productIDs[] = (int)$xs->kXSellArtikel;
                 }
-                $xSelling->Kauf->Artikel = self::separateByAvailability($xSelling->Kauf->Artikel);
             }
         }
+
+        return $xSelling;
+    }
+
+    /**
+     * @param array|object $xSelling
+     * @param int          $productID
+     * @return stdClass
+     * @since 5.2.0
+     */
+    public static function buildXSellersFromIDs($xSelling, int $productID): stdClass
+    {
+        $xSelling       = (object)$xSelling;
+        $defaultOptions = Artikel::getDefaultOptions();
+        foreach ($xSelling->Standard->XSellGruppen as $group) {
+            $group->Artikel = [];
+            foreach ($group->productIDs as $id) {
+                $product = new Artikel();
+                $product->fuelleArtikel($id, $defaultOptions);
+                if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
+                    $group->Artikel[] = $product;
+                }
+            }
+            $group->Artikel = self::separateByAvailability($group->Artikel);
+            unset($group->productIDs);
+        }
+        foreach ($xSelling->Kauf->productIDs as $id) {
+            $product = new Artikel();
+            $product->fuelleArtikel($id, $defaultOptions);
+            if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
+                $xSelling->Kauf->Artikel[] = $product;
+            }
+        }
+        $xSelling->Kauf->Artikel = self::separateByAvailability($xSelling->Kauf->Artikel);
+        unset($xSelling->Kauf->productIDs);
+
         \executeHook(\HOOK_ARTIKEL_INC_XSELLING, [
             'kArtikel' => $productID,
             'xSelling' => &$xSelling

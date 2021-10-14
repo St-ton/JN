@@ -458,9 +458,9 @@ class Metadata implements MetadataInterface
         // Kategorieattribut?
         if ($this->productFilter->hasCategory()) {
             $category = $category ?? new Kategorie(
-                    $this->productFilter->getCategory()->getValue(),
-                    $this->productFilter->getFilterConfig()->getLanguageID()
-                );
+                $this->productFilter->getCategory()->getValue(),
+                $this->productFilter->getFilterConfig()->getLanguageID()
+            );
             if (!empty($category->cMetaKeywords)) {
                 // meta keywords via new method
                 return \strip_tags($category->cMetaKeywords);

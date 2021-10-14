@@ -5322,6 +5322,7 @@ class Artikel
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
         }
+        $languageID            = $this->kSprache;
         $customerGroupID       = $customerGroupID ?? (Frontend::getCustomer()->getGroupID() > 0
             ? Frontend::getCustomer()->getGroupID()
             : Frontend::getCustomerGroup()->getID());
@@ -5335,11 +5336,11 @@ class Artikel
         $codes   = \array_filter(map(\explode(',', $shippingFreeCountries), static function ($e) {
             return \trim($e);
         }));
-        $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries);
+        $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries) . '_' . $languageID;
         if (($countries = $allCountries[$cacheID] ?? Shop::Container()->getCache()->get($cacheID)) === false) {
             $countries = Shop::Container()->getCountryService()->getFilteredCountryList($codes)->mapWithKeys(
-                static function (Country $country) {
-                    return [$country->getISO() => $country->getName()];
+                static function (Country $country) use ($languageID) {
+                    return [$country->getISO() => $country->getName($languageID)];
                 }
             )->toArray();
 

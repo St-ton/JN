@@ -681,26 +681,29 @@ class Category
         if ($category === null && $showCats !== 'N' && self::categoryExists($categoryID)) {
             $catTree  = $instance->getFallBackFlatTree($categoryID, false);
             $category = $instance->findCategoryInList($categoryID, $catTree);
-            if ($category !== null) {
-                $catList  = new KategorieListe();
-                $children = \array_map(static function ($item) {
-                    $menuItem = new MenuItem($item);
-                    if ($item->bUnterKategorien) {
-                        $menuItem->setChildren(\array_map(static function ($item) {
-                            return new MenuItem($item);
-                        }, $item->Unterkategorien));
-                        $menuItem->setHasChildren(true);
-                    }
+        }
+        if (($category !== null)
+            && (new Kategorie($category->getID(), self::$languageID, self::$customerGroupID))
+                ->existierenUnterkategorien()
+        ) {
+            $catList  = new KategorieListe();
+            $children = \array_map(static function ($item) {
+                $menuItem = new MenuItem($item);
+                if ($item->bUnterKategorien) {
+                    $menuItem->setChildren(\array_map(static function ($item) {
+                        return new MenuItem($item);
+                    }, $item->Unterkategorien));
+                    $menuItem->setHasChildren(true);
+                }
 
-                    return $menuItem;
-                }, $catList->getAllCategoriesOnLevel(
-                    $categoryID,
-                    self::$customerGroupID,
-                    self::$languageID
-                ));
-                $category->setChildren($children);
-                $category->setHasChildren(count($children) > 0);
-            }
+                return $menuItem;
+            }, $catList->getAllCategoriesOnLevel(
+                $categoryID,
+                self::$customerGroupID,
+                self::$languageID
+            ));
+            $category->setChildren($children);
+            $category->setHasChildren(count($children) > 0);
         }
 
         return $category === null ? [] : $category->getChildren();

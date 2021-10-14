@@ -283,7 +283,8 @@ class AccountController
             $this->getCustomerFields();
         }
         if ($step === 'bewertungen') {
-            $ratings = $this->db->getCollection(
+            $currency = Frontend::getCurrency();
+            $ratings  = $this->db->getCollection(
                 'SELECT tbewertung.kBewertung, fGuthabenBonus, nAktiv, kArtikel, cTitel, cText, 
                   tbewertung.dDatum, nSterne, cAntwort, dAntwortDatum
                   FROM tbewertung 
@@ -291,8 +292,8 @@ class AccountController
                       ON tbewertung.kBewertung = tbewertungguthabenbonus.kBewertung
                   WHERE tbewertung.kKunde = :customer',
                 ['customer' => $customerID]
-            )->each(static function ($item) {
-                $item->fGuthabenBonusLocalized = Preise::getLocalizedPriceString($item->fGuthabenBonus);
+            )->each(static function ($item) use ($currency) {
+                $item->fGuthabenBonusLocalized = Preise::getLocalizedPriceString($item->fGuthabenBonus, $currency);
             });
         }
         $_SESSION['Kunde']->cGuthabenLocalized = Preise::getLocalizedPriceString($_SESSION['Kunde']->fGuthaben);
@@ -524,6 +525,8 @@ class AccountController
         if (\count($persCart->oWarenkorbPersPos_arr) === 0) {
             return false;
         }
+        $languageID      = Shop::getLanguageID();
+        $customerGroupID = $customer->getGroupID();
         foreach ($persCart->oWarenkorbPersPos_arr as $item) {
             if (!empty($item->Artikel->bHasKonfig)) {
                 continue;
@@ -557,7 +560,7 @@ class AccountController
                 }
                 // Konfigitems ohne Artikelbezug
             } elseif ($item->kArtikel === 0 && !empty($item->kKonfigitem)) {
-                $configItem = new Item($item->kKonfigitem);
+                $configItem = new Item($item->kKonfigitem, $languageID, $customerGroupID);
                 $cart->erstelleSpezialPos(
                     $configItem->getName(),
                     $item->fAnzahl,

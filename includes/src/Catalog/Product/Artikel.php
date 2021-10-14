@@ -1590,7 +1590,7 @@ class Artikel
             $options->nKeineSichtbarkeitBeachten = $getInvisibleParts ? 1 : 0;
             foreach ($parts as $i => $partList) {
                 $product = new self();
-                $product->fuelleArtikel((int)$partList->kArtikel, $options);
+                $product->fuelleArtikel((int)$partList->kArtikel, $options, 0, $this->kSprache);
                 $product->holeBewertungDurchschnitt();
                 $this->oStueckliste_arr[$i]                      = $product;
                 $this->oStueckliste_arr[$i]->fAnzahl_stueckliste = $partList->fAnzahl;
@@ -1629,7 +1629,7 @@ class Artikel
             $options                             = self::getDefaultOptions();
             $options->nKeineSichtbarkeitBeachten = 1;
             $options->nStueckliste               = 1;
-            $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $options);
+            $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $options, 0, $this->kSprache);
 
             $currency                            = Frontend::getCurrency();
             $bundles                             = Shop::Container()->getDB()->selectAll(
@@ -1641,7 +1641,7 @@ class Artikel
             $options->nKeineSichtbarkeitBeachten = 0;
             foreach ($bundles as $bundle) {
                 $product = new self();
-                $product->fuelleArtikel((int)$bundle->kArtikel, $options);
+                $product->fuelleArtikel((int)$bundle->kArtikel, $options, 0, $this->kSprache);
 
                 if ($product->kArtikel > 0) {
                     $this->oProduktBundle_arr[]           = $product;
@@ -2690,7 +2690,7 @@ class Artikel
                     $varCombChildren[$i] = $tmp[$productID];
                 } else {
                     $product = new self();
-                    $product->fuelleArtikel($productID, $options);
+                    $product->fuelleArtikel($productID, $options, 0, $this->kSprache);
 
                     $tmp[$productID]     = $product;
                     $varCombChildren[$i] = $product;
@@ -4150,7 +4150,7 @@ class Artikel
     {
         if ($this->kVaterArtikel > 0 && empty($this->AttributeAssoc[$stockTextConstant])) {
             $parentProduct = new self();
-            $parentProduct->fuelleArtikel($this->kVaterArtikel, self::getDefaultOptions());
+            $parentProduct->fuelleArtikel($this->kVaterArtikel, self::getDefaultOptions(), 0, $this->kSprache);
             $this->Lageranzeige->AmpelText = (!empty($parentProduct->AttributeAssoc[$stockTextConstant]))
                 ? $parentProduct->AttributeAssoc[$stockTextConstant]
                 : Shop::Lang()->get($stockTextLangVar, 'global');

@@ -1313,6 +1313,7 @@ class Cart
     {
         $taxRates = [];
         $taxItems = [];
+        $currency = Frontend::getCurrency();
         foreach ($this->PositionenArr as $item) {
             if ($item->kSteuerklasse > 0) {
                 $ust = Tax::getSalesTax($item->kSteuerklasse);
@@ -1337,10 +1338,16 @@ class Cart
                     );
                     $taxItems[$idx]->fUst            = $ust;
                     $taxItems[$idx]->fBetrag         = ($item->fPreis * $item->nAnzahl * $ust) / 100.0;
-                    $taxItems[$idx]->cPreisLocalized = Preise::getLocalizedPriceString($taxItems[$idx]->fBetrag);
+                    $taxItems[$idx]->cPreisLocalized = Preise::getLocalizedPriceString(
+                        $taxItems[$idx]->fBetrag,
+                        $currency
+                    );
                 } else {
                     $taxItems[$idx]->fBetrag        += ($item->fPreis * $item->nAnzahl * $ust) / 100.0;
-                    $taxItems[$idx]->cPreisLocalized = Preise::getLocalizedPriceString($taxItems[$idx]->fBetrag);
+                    $taxItems[$idx]->cPreisLocalized = Preise::getLocalizedPriceString(
+                        $taxItems[$idx]->fBetrag,
+                        $currency
+                    );
                 }
             }
         }

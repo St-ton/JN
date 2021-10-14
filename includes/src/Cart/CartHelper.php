@@ -504,7 +504,8 @@ class CartHelper
             ? $_POST['item_quantity']
             : false;
         $ignoreLimits      = isset($_POST['konfig_ignore_limits']);
-
+        $languageID        = Shop::getLanguageID();
+        $customerGroupID   = Frontend::getCustomerGroup()->getID();
         foreach ($configGroups as $itemList) {
             foreach ($itemList as $configItemID) {
                 $configItemID = (int)$configItemID;
@@ -512,7 +513,7 @@ class CartHelper
                 if ($configItemID <= 0) {
                     continue;
                 }
-                $configItem          = new Item($configItemID);
+                $configItem          = new Item($configItemID, $languageID, $customerGroupID);
                 $configItem->fAnzahl = (float)($configItemCounts[$configItemID]
                     ?? $configGroupCounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial());
                 if ($configItemCounts && isset($configItemCounts[$configItem->getKonfigitem()])) {
@@ -1686,6 +1687,7 @@ class CartHelper
         $updated     = false;
         $freeGiftID  = 0;
         $cartNotices = $_SESSION['Warenkorbhinweise'] ?? [];
+        $options     = Artikel::getDefaultOptions();
         foreach ($cart->PositionenArr as $i => $item) {
             $item->kArtikel = (int)$item->kArtikel;
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
@@ -1696,7 +1698,7 @@ class CartHelper
                 if (isset($_POST['anzahl'][$i])) {
                     $product = new Artikel();
                     $valid   = true;
-                    $product->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
+                    $product->fuelleArtikel($item->kArtikel, $options);
                     $quantity = (float)\str_replace(',', '.', $_POST['anzahl'][$i]);
                     if ($product->cTeilbar !== 'Y' && (int)$quantity !== $quantity) {
                         $quantity = \max((int)$quantity, 1);

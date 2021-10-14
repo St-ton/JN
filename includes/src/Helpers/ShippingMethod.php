@@ -406,7 +406,7 @@ class ShippingMethod
             if ($nArtikelAssoc !== 1) {
                 continue;
             }
-            $tmpProduct = (new Artikel())->fuelleArtikel($productID, $defaultOptions);
+            $tmpProduct = (new Artikel())->fuelleArtikel($productID, $defaultOptions, $cgroupID);
             // Normaler Variationsartikel
             if ($tmpProduct !== null
                 && $tmpProduct->nIstVater === 0
@@ -434,7 +434,7 @@ class ShippingMethod
             $products = \array_merge($products);
         }
         foreach ($products as $product) {
-            $tmpProduct = (new Artikel())->fuelleArtikel($product['kArtikel'], $defaultOptions);
+            $tmpProduct = (new Artikel())->fuelleArtikel($product['kArtikel'], $defaultOptions, $cgroupID);
             if ($tmpProduct === null || $tmpProduct->kArtikel <= 0) {
                 continue;
             }
@@ -531,7 +531,7 @@ class ShippingMethod
                         (int)$property0,
                         (int)$propertyValue0
                     );
-                    $child->fuelleArtikel($childProductID, $defaultOptions);
+                    $child->fuelleArtikel($childProductID, $defaultOptions, $cgroupID);
                     // Summen pro Steuerklasse summieren
                     if (!\array_key_exists($child->kSteuerklasse, $perTaxClass)) {
                         $perTaxClass[$child->kSteuerklasse] = 0;
@@ -564,7 +564,7 @@ class ShippingMethod
                         (int)$property1,
                         (int)$propertyValue1
                     );
-                    $child->fuelleArtikel($childProductID, $defaultOptions);
+                    $child->fuelleArtikel($childProductID, $defaultOptions, $cgroupID);
                     // Summen pro Steuerklasse summieren
                     if (!\array_key_exists($child->kSteuerklasse, $perTaxClass)) {
                         $perTaxClass[$child->kSteuerklasse] = 0;

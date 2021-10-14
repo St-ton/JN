@@ -1265,7 +1265,7 @@ class Product
                 $inquiry->nStatus   = 0;
                 $inquiry->cNachname = $inquiry->cNachname ?? '';
                 $inquiry->cVorname  = $inquiry->cVorname ?? '';
-                $checkBox           = new CheckBox();
+                $checkBox           = new CheckBox(0, $dbHandler);
                 $customerGroupID    = Frontend::getCustomerGroup()->getID();
                 $checkBox->triggerSpecialFunction(
                     \CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT,

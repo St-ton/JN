@@ -310,7 +310,10 @@ class Metadata implements MetadataInterface
             $this->setName($this->category->getName() ?? '');
             $this->setImageURL($category->getImage());
         } elseif ($this->productFilter->hasManufacturer()) {
-            $this->manufacturer = new Hersteller($this->productFilter->getManufacturer()->getValue());
+            $this->manufacturer = new Hersteller(
+                $this->productFilter->getManufacturer()->getValue(),
+                $this->productFilter->getFilterConfig()->getLanguageID()
+            );
             if ($this->manufacturer->getID() > 0) {
                 $this->setName($this->manufacturer->getName() ?? '')
                     ->setImageURL($this->manufacturer->getImage())
@@ -356,7 +359,7 @@ class Metadata implements MetadataInterface
         $catDescription = '';
         $languageID     = $this->productFilter->getFilterConfig()->getLanguageID();
         if ($this->productFilter->hasCategory()) {
-            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue());
+            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue(), $languageID);
             if (!empty($category->cMetaDescription)) {
                 // meta description via new method
                 return self::prepareMeta(
@@ -454,7 +457,10 @@ class Metadata implements MetadataInterface
         }
         // Kategorieattribut?
         if ($this->productFilter->hasCategory()) {
-            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue());
+            $category = $category ?? new Kategorie(
+                    $this->productFilter->getCategory()->getValue(),
+                    $this->productFilter->getFilterConfig()->getLanguageID()
+                );
             if (!empty($category->cMetaKeywords)) {
                 // meta keywords via new method
                 return \strip_tags($category->cMetaKeywords);
@@ -492,7 +498,7 @@ class Metadata implements MetadataInterface
         $metaTitle = \str_replace('"', "'", $metaTitle);
         $metaTitle = Text::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
         if ($this->productFilter->hasCategory()) {
-            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue());
+            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue(), $languageID);
             if (!empty($category->cTitleTag)) {
                 // meta title via new method
                 $metaTitle = \strip_tags($category->cTitleTag);
@@ -667,7 +673,10 @@ class Metadata implements MetadataInterface
             $extendedView->nAnzahlArtikel = \ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
 
             if ($this->productFilter->hasCategory()) {
-                $category = new Kategorie($this->productFilter->getCategory()->getValue());
+                $category = new Kategorie(
+                    $this->productFilter->getCategory()->getValue(),
+                    $this->productFilter->getFilterConfig()->getLanguageID()
+                );
                 if (!empty($category->categoryFunctionAttributes[\KAT_ATTRIBUT_DARSTELLUNG])) {
                     $defaultViewType = (int)$category->categoryFunctionAttributes[\KAT_ATTRIBUT_DARSTELLUNG];
                 }

@@ -155,7 +155,8 @@ class KategorieListe
         $subCategories   = $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID] ?? null;
         if ($subCategories !== null && \is_array($subCategories)) {
             foreach ($subCategories as $subCatID) {
-                $categories[$subCatID] = $categoryList['oKategorie_arr'][$subCatID] ?? new Kategorie($subCatID);
+                $categories[$subCatID] = $categoryList['oKategorie_arr'][$subCatID]
+                    ?? new Kategorie($subCatID, $languageID, $customerGroupID);
             }
 
             return $categories;

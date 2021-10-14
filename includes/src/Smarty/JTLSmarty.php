@@ -518,12 +518,13 @@ class JTLSmarty extends BC
 
     /**
      * @param string $name
-     * @param mixed  $value
-     * @return $this
+     * @param $value
+     * @param string $version
+     * @return JTLSmarty
      */
-    public function assignDeprecated(string $name, $value): self
+    public function assignDeprecated(string $name, $value, string $version): self
     {
-        $this->tpl_vars[$name] = new DeprecatedVariable($value, $name);
+        $this->tpl_vars[$name] = new DeprecatedVariable($value, $name, $version);
 
         return $this;
     }

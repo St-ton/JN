@@ -2,8 +2,6 @@
 
 namespace JTL\Smarty;
 
-use Shop;
-
 /**
  * Class DeprecatedVariable
  * @package \JTL\Smarty
@@ -21,18 +19,26 @@ class DeprecatedVariable
     private $name;
 
     /**
+     * @var string
+     */
+    private $version;
+
+    /**
      * @var bool
      */
     public $nocache = false;
 
     /**
+     * DeprecatedVariable constructor.
      * @param mixed  $value
      * @param string $name
+     * @param string $version
      */
-    public function __construct($value, string $name)
+    public function __construct($value, string $name, string $version)
     {
-        $this->value = $value;
-        $this->name  = $name;
+        $this->value   = $value;
+        $this->name    = $name;
+        $this->version = $version;
     }
 
     /**
@@ -50,7 +56,10 @@ class DeprecatedVariable
     public function __get($name)
     {
         if ($name === 'value') {
-            \trigger_error('Smarty variable ' . $this->name . ' is deprecated.', \E_USER_DEPRECATED);
+            \trigger_error(
+                'Smarty variable ' . $this->name . ' is deprecated since JTL-Shop version '. $this->version . '.',
+                \E_USER_DEPRECATED
+            );
 
             return $this->value;
         }

@@ -287,7 +287,7 @@ class Customer
             );
 
             if ($data !== null && isset($data->kKunde) && $data->kKunde > 0) {
-                return new self($data->kKunde);
+                return new self((int)$data->kKunde);
             }
         }
 

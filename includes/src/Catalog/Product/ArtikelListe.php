@@ -211,10 +211,10 @@ class ArtikelListe
         $items           = Shop::Container()->getCache()->get($cacheID);
         $customerGroupID = Frontend::getCustomerGroup()->getID();
         if ($items === false && \count($categoryIDs) > 0) {
-            $conf            = Shop::getSettings([\CONF_ARTIKELUEBERSICHT]);
-            $limitSql        = 'LIMIT ' . (int)($conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'] ?? 6);
-            $stockFilterSQL  = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $items           = Shop::Container()->getDB()->getObjects(
+            $conf           = Shop::getSettings([\CONF_ARTIKELUEBERSICHT]);
+            $limitSql       = 'LIMIT ' . (int)($conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'] ?? 6);
+            $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
+            $items          = Shop::Container()->getDB()->getObjects(
                 'SELECT DISTINCT (tartikel.kArtikel)
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
@@ -228,7 +228,7 @@ class ArtikelListe
                         $stockFilterSQL . '  ORDER BY rand() ' . $limitSql,
                 ['cgid' => $customerGroupID]
             );
-            $cacheTags       = [\CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION];
+            $cacheTags      = [\CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION];
             foreach ($categoryIDs as $id) {
                 $cacheTags[] = \CACHING_GROUP_CATEGORY . '_' . $id;
             }

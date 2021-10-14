@@ -34,8 +34,6 @@ class CountryService implements CountryServiceInterface
      */
     private $cache;
 
-    public const CACHE_ID = 'serviceCountryList';
-
     /**
      * CountryService constructor.
      * @param DbInterface $db
@@ -52,7 +50,8 @@ class CountryService implements CountryServiceInterface
     public function init(): void
     {
         $languageID = Shop::getLanguageID();
-        if (($countries = $this->cache->get(self::CACHE_ID)) !== false) {
+        $cacheID    = 'serviceCountryList_' . $languageID;
+        if (($countries = $this->cache->get($cacheID)) !== false) {
             $this->countryList = $countries->sortBy(static function (Country $country) use ($languageID) {
                 return Text::replaceUmlauts($country->getName($languageID));
             });
@@ -89,7 +88,7 @@ class CountryService implements CountryServiceInterface
             return Text::replaceUmlauts($country->getName($languageID));
         });
 
-        $this->cache->set(self::CACHE_ID, $this->countryList, [\CACHING_GROUP_OBJECT]);
+        $this->cache->set($cacheID, $this->countryList, [\CACHING_GROUP_OBJECT]);
     }
 
     /**

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Checkout\Bestellung;
 use JTL\Shop;
@@ -10,16 +10,19 @@ use JTL\Shop;
  */
 function gibBestellungsUebersicht(string $limitSQL, string $query): array
 {
+    $params       = [];
     $orders       = [];
     $searchFilter = '';
     if (mb_strlen($query)) {
-        $searchFilter = " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($query) . "%'";
+        $searchFilter = ' WHERE cBestellNr LIKE :qry';
+        $params       = ['qry' => '%' . $query . '%'];
     }
     $items = Shop::Container()->getDB()->getObjects(
         'SELECT kBestellung
             FROM tbestellung
             ' . $searchFilter . '
-            ORDER BY dErstellt DESC' . $limitSQL
+            ORDER BY dErstellt DESC' . $limitSQL,
+        $params
     );
     foreach ($items as $item) {
         if (isset($item->kBestellung) && $item->kBestellung > 0) {
@@ -38,13 +41,17 @@ function gibBestellungsUebersicht(string $limitSQL, string $query): array
  */
 function gibAnzahlBestellungen(string $query): int
 {
-    $filterSQL = (mb_strlen($query) > 0)
-        ? " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($query) . "%'"
-        : '';
+    $filterSQL = '';
+    $params    = [];
+    if (mb_strlen($query) > 0) {
+        $filterSQL .= ' WHERE cBestellNr LIKE :qry';
+        $params     = ['qry' => '%' . $query . '%'];
+    }
 
     return (int)Shop::Container()->getDB()->getSingleObject(
         'SELECT COUNT(*) AS cnt
-            FROM tbestellung' . $filterSQL
+            FROM tbestellung' . $filterSQL,
+        $params
     )->cnt;
 }
 

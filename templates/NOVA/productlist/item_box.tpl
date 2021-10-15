@@ -8,7 +8,7 @@
             maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist
             assign='hasOnlyListableVariations'}
     {/if}
-    <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true"
+    <div id="{$idPrefix|default:''}result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true"
          class="productbox productbox-column {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($class)} {$class}{/if}">
         <div class="productbox-inner">
             {row}

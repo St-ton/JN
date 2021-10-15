@@ -126,6 +126,8 @@
     {else}
         <div class="alert alert-default" role="alert">{__('storeNotLinkedDesc')}</div>
     {/if}
-{include file='tpl_inc/exstore_banner.tpl' useExstoreWidgetBanner=true}
+{if !$hasAuth || !$licenses->count()}
+    {include file='tpl_inc/exstore_banner.tpl' useExstoreWidgetBanner=true}
+{/if}
 <hr class="mb-3">
 <p class="text-right"><small>{__('last update')} {$lastUpdate|date_format:'%d.%m.%Y %H:%M:%S'}</small></p>

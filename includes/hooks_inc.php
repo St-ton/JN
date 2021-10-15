@@ -1282,7 +1282,12 @@ const HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN = 176;
 const HOOK_FILTER_INC_BAUEARTIKELANZAHL = 177;
 
 /**
- * @deprecated since 5.0.0
+ * @param array                    oArtikelKey_arr
+ * @param stdClass                 FilterSQL
+ * @param JTL\Filter\ProductFilter NaviFilter
+ * @param stdClass                 orderData
+ * @param bool                     bExtendedJTLSearch
+ * @param null|stdClass            oExtendedJTLSearchResponse
  */
 const HOOK_FILTER_INC_GIBARTIKELKEYS = 178;
 
@@ -1532,7 +1537,7 @@ const HOOK_BACKEND_ACCOUNT_EDIT = 222;
 const HOOK_BACKEND_ACCOUNT_PREPARE_EDIT = 223;
 
 /**
- * @deprecated since 5.0.0
+ * @parem array boxes
  */
 const HOOK_BOXEN_HOME = 224;
 

@@ -200,11 +200,11 @@ class Log
     }
 
     /**
-     * @param $cIp
+     * @param string $ip
      */
-    public function setChangerIp($cIP): void
+    public function setChangerIp($ip): void
     {
-        $this->changerIp = $cIP;
+        $this->changerIp = $ip;
     }
 
     /**

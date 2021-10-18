@@ -1960,7 +1960,7 @@ class Product
         array $configItemAmounts,
         bool $singleProductOutput = false
     ): ?stdClass {
-        $config                  = new stdClass;
+        $config                  = new stdClass();
         $config->fAnzahl         = $amount;
         $config->fGesamtpreis    = [0.0, 0.0];
         $config->cPreisLocalized = [];

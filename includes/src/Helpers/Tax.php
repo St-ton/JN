@@ -49,8 +49,8 @@ class Tax
         $billingCountryCode     = null;
         $merchantCountryCode    = 'DE';
         $db                     = Shop::Container()->getDB();
-        $company                = $db->getSingleObject('SELECT cLand FROM tfirma');
-        if ($company !== null && !empty($company->cLand)) {
+        $company                = new Firma();
+        if (!empty($company->cLand)) {
             $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($company->cLand);
         }
         if (\defined('STEUERSATZ_STANDARD_LAND')) {

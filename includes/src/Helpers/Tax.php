@@ -49,17 +49,12 @@ class Tax
         $billingCountryCode     = null;
         $merchantCountryCode    = 'DE';
         $db                     = Shop::Container()->getDB();
-        $conf                   = Shop::getConfigValue(\CONF_KUNDEN, 'kundenregistrierung_standardland');
-        if ($conf !== '') {
-            $merchantCountryCode = $conf;
-        } else {
-            $company = new Firma();
-            if (!empty($company->cLand)) {
-                $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($company->cLand);
-            }
-            if (\defined('STEUERSATZ_STANDARD_LAND')) {
-                $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
-            }
+        $company                = $db->getSingleObject('SELECT cLand FROM tfirma');
+        if ($company !== null && !empty($company->cLand)) {
+            $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($company->cLand);
+        }
+        if (\defined('STEUERSATZ_STANDARD_LAND')) {
+            $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
         }
         $deliveryCountryCode = $merchantCountryCode;
         if (!empty(Frontend::getCustomer()->cLand)) {

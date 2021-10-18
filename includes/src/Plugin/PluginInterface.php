@@ -220,6 +220,11 @@ interface PluginInterface
     public function getCurrentVersion(): Version;
 
     /**
+     * @param PluginInterface $plugin
+     */
+    public function updateInstance(PluginInterface $plugin): void;
+
+    /**
      * @param int                    $newState
      * @param DbInterface|null       $db
      * @param JTLCacheInterface|null $cache

@@ -138,7 +138,7 @@ if ($valid && Request::postInt('fragezumprodukt') === 1) {
 foreach ($productNotices as $productNoticeKey => $productNotice) {
     $alertHelper->addAlert(Alert::TYPE_DANGER, $productNotice, 'productNotice' . $productNoticeKey);
 }
-$AktuelleKategorie  = new Kategorie($AktuellerArtikel->gibKategorie(), $languageID, $customerGroupID);
+$AktuelleKategorie  = new Kategorie($AktuellerArtikel->gibKategorie($customerGroupID), $languageID, $customerGroupID);
 $expandedCategories = new KategorieListe();
 $expandedCategories->getOpenCategories($AktuelleKategorie);
 $ratingPage   = Request::verifyGPCDataInt('btgseite');

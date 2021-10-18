@@ -1305,7 +1305,7 @@ class Exportformat
                 ++$cacheMisses;
             }
             $product           = $this->augmentProduct($product, $findTwo, $replaceTwo);
-            $productCategoryID = $product->gibKategorie();
+            $productCategoryID = $product->gibKategorie($this->kKundengruppe);
             if ($categoryFallback === true) {
                 // since 4.05 the product class only stores category IDs in Artikel::oKategorie_arr
                 // but old google base exports rely on category attributes that wouldn't be available anymore

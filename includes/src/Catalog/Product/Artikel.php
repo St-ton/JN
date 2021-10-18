@@ -2247,6 +2247,8 @@ class Artikel
             : 2;
         $per         = ' ' . Shop::Lang()->get('vpePer') . ' ' . $this->cVPEEinheit;
         $taxRate     = $_SESSION['Steuersatz'][$this->kSteuerklasse];
+        $matrixConf  = $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y';
+        $prodFilter  = (int)$this->conf['global']['artikel_artikelanzeigefilter'];
 
         $cntVariationen = $exportWorkaround
             ? 0
@@ -2337,23 +2339,19 @@ class Artikel
                         }
                         // Lagerbestand beachten?
                         if ($oVariationsWert->oVariationsKombi->cLagerBeachten === 'Y'
-                            && $oVariationsWert->oVariationsKombi->cLagerKleinerNull === 'N'
-                            && ($oVariationsWert->oVariationsKombi->tartikel_fLagerbestand <= 0
-                                || (int)$this->conf['global']['artikel_artikelanzeigefilter'] ===
-                                \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
-                            )
-                            && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y'
+                            && ($oVariationsWert->oVariationsKombi->cLagerKleinerNull === 'N'
+                                || $prodFilter === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER)
+                            && $oVariationsWert->oVariationsKombi->tartikel_fLagerbestand <= 0
+                            && $matrixConf === true
                         ) {
                             $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
                         }
                     } elseif ($this->cLagerVariation === 'Y'
                         && $this->cLagerBeachten === 'Y'
-                        && $this->cLagerKleinerNull === 'N'
-                        && ($oVariationsWert->fLagerbestand <= 0
-                            || (int)$this->conf['global']['artikel_artikelanzeigefilter'] ===
-                            \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
-                        )
-                        && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y'
+                        && ($this->cLagerKleinerNull === 'N'
+                            || $prodFilter === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER)
+                        && $oVariationsWert->fLagerbestand <= 0
+                        && $matrixConf === true
                     ) {
                         $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
                     }

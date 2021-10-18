@@ -1,4 +1,4 @@
-{if $useExstoreWidgetBanner === true}
+{if $useExstoreWidgetBanner|default:false === true}
     <a href="{__('extensionStoreURL')}" target="_blank">
         <img src="gfx/exstore-banner-dashboard-{$language}.jpg"
              alt="Extensions entdecken!" class="exstore-banner">

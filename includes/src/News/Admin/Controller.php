@@ -145,12 +145,7 @@ final class Controller
             $flags          = \ENT_COMPAT | \ENT_HTML401;
             $this->allEmpty = true;
             foreach ($languages as $language) {
-                $iso = $language->getCode();
-                if (!isset($post['lang_' . $iso]) || (bool)$language->active === false) {
-                    // skip language if lang_code isn't set.
-                    continue;
-                }
-
+                $iso                  = $language->getCode();
                 $langID               = (int)$post['lang_' . $iso];
                 $loc                  = new stdClass();
                 $loc->kNews           = $newsItemID;

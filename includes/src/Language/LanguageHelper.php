@@ -1219,7 +1219,7 @@ class LanguageHelper
      */
     private function mappedGetIsoCodeByCountryName(string $country): string
     {
-        Shop::Container()->getCountryService()->getIsoByCountryName($country) ?? 'noISO';
+        return Shop::Container()->getCountryService()->getIsoByCountryName($country) ?? 'noISO';
     }
 
     /**

@@ -11,6 +11,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\ExtensionPoint;
+use JTL\Filter\Items\Availability;
 use JTL\Filter\Metadata;
 use JTL\Filter\SearchResults;
 use JTL\Firma;
@@ -28,6 +29,7 @@ use JTL\Shopsetting;
 use JTL\Visitor;
 
 $smarty     = Shop::Smarty();
+$db         = Shop::Container()->getDB();
 $tplService = Shop::Container()->getTemplateService();
 $template   = $tplService->getActiveTemplate();
 $tplDir     = PFAD_TEMPLATES . $template->getDir() . '/';
@@ -36,6 +38,7 @@ $cart       = $_SESSION['Warenkorb'] ?? new Cart();
 $conf       = Shopsetting::getInstance()->getAll();
 $linkHelper = Shop::Container()->getLinkService();
 $link       = $linkHelper->getLinkByID(Shop::$kLink ?? 0);
+$languageID = Shop::getLanguageID();
 $themeDir   = empty($conf['template']['theme']['theme_default'])
     ? 'evo'
     : $conf['template']['theme']['theme_default'];
@@ -47,7 +50,7 @@ $debugbarRenderer   = $debugbar->getJavascriptRenderer();
 $customerGroupID    = ($id = Frontend::getCustomer()->kKundengruppe) > 0
     ? $id
     : Frontend::getCustomerGroup()->getID();
-$globalMetaData     = $globalMetaData[Shop::getLanguageID()] ?? null;
+$globalMetaData     = $globalMetaData[$languageID] ?? null;
 $pageType           = Shop::getPageType();
 $specialPageTypes   = [
     PAGE_REGISTRIERUNG,
@@ -82,16 +85,16 @@ if (is_object($globalMetaData)) {
     );
 }
 if (!isset($AktuelleKategorie)) {
-    $AktuelleKategorie = new Kategorie(Request::verifyGPCDataInt('kategorie'));
+    $AktuelleKategorie = new Kategorie(Request::verifyGPCDataInt('kategorie'), $languageID, $customerGroupID);
 }
 $expandedCategories->getOpenCategories($AktuelleKategorie);
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
-//put availability on top
+// put availability on top
 $filters = $NaviFilter->getAvailableContentFilters();
 foreach ($filters as $key => $filter) {
-    if ($filter->getClassName() === 'JTL\Filter\Items\Availability') {
+    if ($filter->getClassName() === Availability::class) {
         unset($filters[$key]);
         array_unshift($filters, $filter);
         break;
@@ -175,7 +178,7 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('deletedPositions', Cart::$deletedPositions)
     ->assign('updatedPositions', Cart::$updatedPositions)
     ->assign('cCanonicalURL', $cCanonicalURL ?? null)
-    ->assign('Firma', new Firma())
+    ->assign('Firma', new Firma(true, $db))
     ->assign('AktuelleKategorie', $AktuelleKategorie)
     ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
     ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
@@ -195,7 +198,7 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('countries', Shop::Container()->getCountryService()->getCountrylist());
 
 if ($smarty->getTemplateVars('Link') === null) {
-    $smarty->assign('Link', $link ?? new Link(Shop::Container()->getDB()));
+    $smarty->assign('Link', $link ?? new Link($db));
 }
 
 $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
@@ -219,7 +222,7 @@ if (isset($breadCrumbName, $breadCrumbURL)) {
 Visitor::generateData();
 Campaign::checkCampaignParameters();
 Shop::Lang()->generateLanguageAndCurrencyLinks();
-$ep = new ExtensionPoint($pageType, Shop::getParameters(), Shop::getLanguageID(), $customerGroupID);
+$ep = new ExtensionPoint($pageType, Shop::getParameters(), $languageID, $customerGroupID);
 $ep->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Shop::Container()->getBoxService();
@@ -229,7 +232,7 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
 $visitorCount = $conf['global']['global_zaehler_anzeigen'] === 'Y'
-    ? (int)Shop::Container()->getDB()->getSingleObject('SELECT nZaehler FROM tbesucherzaehler')->nZaehler
+    ? (int)$db->getSingleObject('SELECT nZaehler FROM tbesucherzaehler')->nZaehler
     : 0;
 $debugbar->getTimer()->stopMeasure('init');
 
@@ -254,7 +257,7 @@ $smarty->assign('bCookieErlaubt', isset($_COOKIE[Frontend::getSessionName()]))
     ->assign('nIsSSL', Request::checkSSL())
     ->assign('boxes', $boxesToShow)
     ->assign('boxesLeftActive', !empty($boxesToShow['left']))
-    ->assign('consentItems', Shop::Container()->getConsentManager()->getActiveItems(Shop::getLanguageID()))
+    ->assign('consentItems', Shop::Container()->getConsentManager()->getActiveItems($languageID))
     ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
     ->assign('Besucherzaehler', $visitorCount)
     ->assign('alertList', Shop::Container()->getAlertService())

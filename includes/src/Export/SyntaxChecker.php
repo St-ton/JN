@@ -68,11 +68,12 @@ class SyntaxChecker
         }
         $pathinfo           = \pathinfo(\PFAD_ROOT . \PFAD_EXPORT . $post['cDateiname']);
         $extensionWhitelist = \array_map('\strtolower', \explode(',', \EXPORTFORMAT_ALLOWED_FORMATS));
+        $realpath           = \realpath($pathinfo['dirname']);
         if (empty($post['cDateiname'])) {
             $validation['cDateiname'] = 1;
         } elseif (\mb_strpos($post['cDateiname'], '.') === false) { // Dateiendung fehlt
             $validation['cDateiname'] = 2;
-        } elseif (\mb_strpos(\realpath($pathinfo['dirname']), \realpath(\PFAD_ROOT)) === false) {
+        } elseif ($realpath === false || \mb_strpos($realpath, \realpath(\PFAD_ROOT)) === false) {
             $validation['cDateiname'] = 3;
         } elseif (!\in_array(\mb_convert_case($pathinfo['extension'], \MB_CASE_LOWER), $extensionWhitelist, true)) {
             $validation['cDateiname'] = 4;

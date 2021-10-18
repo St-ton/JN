@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Simple function to demonstrate how to control file access using "accessControl" callback.

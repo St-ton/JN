@@ -29,9 +29,9 @@ function holeAlleKampagnenDefinitionen(): array
 
 /**
  * @param int $definitionID
- * @return mixed
+ * @return stdClass|null
  */
-function holeKampagneDef(int $definitionID)
+function holeKampagneDef(int $definitionID): ?stdClass
 {
     return Shop::Container()->getDB()->select('tkampagnedef', 'kKampagneDef', $definitionID);
 }
@@ -41,7 +41,7 @@ function holeKampagneDef(int $definitionID)
  * @param array $definitions
  * @return array
  */
-function holeKampagneGesamtStats($campaigns, $definitions)
+function holeKampagneGesamtStats(array $campaigns, array $definitions): array
 {
     $stats = [];
     $sql   = '';
@@ -108,7 +108,7 @@ function holeKampagneGesamtStats($campaigns, $definitions)
  * @param int $b
  * @return int
  */
-function kampagneSortDESC($a, $b)
+function kampagneSortDESC($a, $b): int
 {
     if ($a == $b) {
         return 0;
@@ -122,7 +122,7 @@ function kampagneSortDESC($a, $b)
  * @param int $b
  * @return int
  */
-function kampagneSortASC($a, $b)
+function kampagneSortASC($a, $b): int
 {
     if ($a == $b) {
         return 0;
@@ -136,7 +136,7 @@ function kampagneSortASC($a, $b)
  * @param array $definitions
  * @return array
  */
-function holeKampagneDetailStats($campaignID, $definitions)
+function holeKampagneDetailStats(int $campaignID, array $definitions): array
 {
     // Zeitraum
     $whereSQL     = '';
@@ -232,11 +232,7 @@ function holeKampagneDetailStats($campaignID, $definitions)
     );
     // Vorbelegen
     $statsAssoc = [];
-    if (is_array($definitions)
-        && is_array($timeSpans['cDatum'])
-        && count($definitions) > 0
-        && count($timeSpans['cDatum']) > 0
-    ) {
+    if (is_array($timeSpans['cDatum']) && count($definitions) > 0 && count($timeSpans['cDatum']) > 0) {
         foreach ($timeSpans['cDatum'] as $i => $timeSpan) {
             if (!isset($statsAssoc[$timeSpan]['cDatum'])) {
                 $statsAssoc[$timeSpan]['cDatum'] = $timeSpans['cDatumFull'][$i];
@@ -308,11 +304,11 @@ function holeKampagneDetailStats($campaignID, $definitions)
  * @param string $sql
  * @return array
  */
-function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &$members, $sql)
+function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$text, &$members, $sql): array
 {
     $cryptoService = Shop::Container()->getCryptoService();
     $data          = [];
-    if ((int)$campaignID <= 0 || (int)$definition->kKampagneDef <= 0 || mb_strlen($cStamp) === 0) {
+    if ($campaignID <= 0 || (int)$definition->kKampagneDef <= 0 || mb_strlen($cStamp) === 0) {
         return $data;
     }
     $select = '';
@@ -323,7 +319,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
         'SELECT kKampagne, kKampagneDef, kKey ' . $select . '
             FROM tkampagnevorgang
             ' . $where . '
-                AND kKampagne = ' . (int)$campaignID . '
+                AND kKampagne = ' . $campaignID . '
                 AND kKampagneDef = ' . (int)$definition->kKampagneDef . $sql
     );
     if (count($stats) > 0) {
@@ -370,7 +366,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     LEFT JOIN tbesucherarchiv ON tbesucherarchiv.kBesucher = tkampagnevorgang.kKey
                     LEFT JOIN tbesucherbot ON tbesucherbot.kBesucherBot = tbesucher.kBesucherBot
                     " . $where . '
-                        AND kKampagne = ' . (int)$campaignID . '
+                        AND kKampagne = ' . $campaignID . '
                         AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
                     ORDER BY tkampagnevorgang.dErstellt DESC' . $sql
             );
@@ -422,7 +418,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     LEFT JOIN tbestellung ON tbestellung.kBestellung = tkampagnevorgang.kKey
                     LEFT JOIN tkunde ON tkunde.kKunde = tbestellung.kKunde
                     " . $where . '
-                        AND kKampagne = ' . (int)$campaignID . '
+                        AND kKampagne = ' . $campaignID . '
                         AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
                     ORDER BY tkampagnevorgang.dErstellt DESC'
             );
@@ -477,7 +473,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     FROM tkampagnevorgang
                     LEFT JOIN tkunde ON tkunde.kKunde = tkampagnevorgang.kKey
                     " . $where . '
-                        AND kKampagne = ' . (int)$campaignID . '
+                        AND kKampagne = ' . $campaignID . '
                         AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
                     ORDER BY tkampagnevorgang.dErstellt DESC'
             );
@@ -532,7 +528,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     LEFT JOIN tbestellung ON tbestellung.kBestellung = tkampagnevorgang.kKey
                     LEFT JOIN tkunde ON tkunde.kKunde = tbestellung.kKunde
                     " . $where . '
-                        AND kKampagne = ' . (int)$campaignID . '
+                        AND kKampagne = ' . $campaignID . '
                         AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
                     ORDER BY tkampagnevorgang.dErstellt DESC'
             );
@@ -600,7 +596,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                         ON tproduktanfragehistory.kProduktanfrageHistory = tkampagnevorgang.kKey
                     LEFT JOIN tartikel ON tartikel.kArtikel = tproduktanfragehistory.kArtikel
                     " . $where . '
-                        AND kKampagne = ' . (int)$campaignID . '
+                        AND kKampagne = ' . $campaignID . '
                         AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
                     ORDER BY tkampagnevorgang.dErstellt DESC'
             );
@@ -652,7 +648,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     LEFT JOIN tartikel 
                             ON tartikel.kArtikel = tverfuegbarkeitsbenachrichtigung.kArtikel
                     " . $where . '
-                        AND kKampagne = ' . (int)$campaignID . '
+                        AND kKampagne = ' . $campaignID . '
                         AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
                     ORDER BY tkampagnevorgang.dErstellt DESC'
             );
@@ -686,7 +682,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     LEFT JOIN tkunde 
                             ON tkunde.kKunde = tkampagnevorgang.kKey
                     " . $where . '
-                        AND kKampagne = ' . (int)$campaignID . '
+                        AND kKampagne = ' . $campaignID . '
                         AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
                     ORDER BY tkampagnevorgang.dErstellt DESC'
             );
@@ -737,7 +733,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     LEFT JOIN tkunde ON tkunde.kKunde = twunschliste.kKunde
                     LEFT JOIN tartikel ON tartikel.kArtikel = twunschlistepos.kArtikel
                     " . $where . '
-                        AND kKampagne = ' . (int)$campaignID . '
+                        AND kKampagne = ' . $campaignID . '
                         AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
                     ORDER BY tkampagnevorgang.dErstellt DESC'
             );
@@ -792,7 +788,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     LEFT JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
                         AND tpreisdetail.nAnzahlAb = 0
                     ' . $where . '
-                        AND tkampagnevorgang.kKampagne = ' . (int)$campaignID . '
+                        AND tkampagnevorgang.kKampagne = ' . $campaignID . '
                         AND tkampagnevorgang.kKampagneDef = ' . (int)$definition->kKampagneDef . '
                     ORDER BY tkampagnevorgang.dErstellt DESC'
             );
@@ -839,7 +835,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     LEFT JOIN tnewsletterempfaenger
                         ON tnewsletterempfaenger.kNewsletterEmpfaenger = tnewslettertrack.kNewsletterEmpfaenger
                     " . $where . '
-                        AND tkampagnevorgang.kKampagne = ' . (int)$campaignID . '
+                        AND tkampagnevorgang.kKampagne = ' . $campaignID . '
                         AND tkampagnevorgang.kKampagneDef = ' . (int)$definition->kKampagneDef . '
                     ORDER BY tkampagnevorgang.dErstellt DESC'
             );
@@ -894,7 +890,7 @@ function baueDefDetailSELECTWHERE(&$select, &$where, $stamp)
 /**
  * @return array
  */
-function gibDetailDatumZeitraum()
+function gibDetailDatumZeitraum(): array
 {
     $timeSpan               = [];
     $timeSpan['cDatum']     = [];
@@ -1115,7 +1111,7 @@ function gibStamp($oldStamp, int $direction, int $view): string
  * 6 = Kampagnennamen schon vergeben
  * 7 = Kampagnenparameter schon vergeben
  */
-function speicherKampagne($campaign)
+function speicherKampagne($campaign): int
 {
     // Standardkampagnen (Interne) Werte herstellen
     if (isset($campaign->kKampagne) && ($campaign->kKampagne < 1000 && $campaign->kKampagne > 0)) {
@@ -1185,7 +1181,7 @@ function speicherKampagne($campaign)
  * @param int $code
  * @return string
  */
-function mappeFehlerCodeSpeichern(int $code)
+function mappeFehlerCodeSpeichern(int $code): string
 {
     $msg = '';
     switch ($code) {
@@ -1218,7 +1214,7 @@ function mappeFehlerCodeSpeichern(int $code)
  * @param array $campaignIDs
  * @return int
  */
-function loescheGewaehlteKampagnen(array $campaignIDs)
+function loescheGewaehlteKampagnen(array $campaignIDs): int
 {
     if (count($campaignIDs) === 0) {
         return 0;
@@ -1369,7 +1365,7 @@ function checkGesamtStatZeitParam()
  * @param string $month
  * @return string
  */
-function mappeENGMonat($month)
+function mappeENGMonat($month): string
 {
     $translation = '';
     if (mb_strlen($month) > 0) {
@@ -1419,7 +1415,7 @@ function mappeENGMonat($month)
 /**
  * @return array
  */
-function GetTypes()
+function GetTypes(): array
 {
     return [
         1  => __('Hit'),
@@ -1439,7 +1435,7 @@ function GetTypes()
  * @param int $type
  * @return string
  */
-function GetKampTypeName($type)
+function GetKampTypeName(int $type): string
 {
     $types = GetTypes();
 
@@ -1451,7 +1447,7 @@ function GetKampTypeName($type)
  * @param int   $type
  * @return Linechart
  */
-function PrepareLineChartKamp(array $stats, int $type)
+function PrepareLineChartKamp(array $stats, int $type): Linechart
 {
     $chart = new Linechart(['active' => false]);
     if (count($stats) === 0) {

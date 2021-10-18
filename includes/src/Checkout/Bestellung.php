@@ -6,8 +6,6 @@ use DateTime;
 use Illuminate\Support\Collection;
 use JTL\Cart\CartHelper;
 use JTL\Cart\CartItem;
-use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;

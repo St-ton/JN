@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Checkout\ShippingSurcharge;
@@ -17,7 +17,7 @@ use JTL\Smarty\JTLSmarty;
  * @param float|string $taxRate
  * @return float
  */
-function berechneVersandpreisBrutto($price, $taxRate)
+function berechneVersandpreisBrutto($price, $taxRate): float
 {
     return $price > 0
         ? round((float)($price * ((100 + $taxRate) / 100)), 2)
@@ -29,7 +29,7 @@ function berechneVersandpreisBrutto($price, $taxRate)
  * @param float|string $taxRate
  * @return float
  */
-function berechneVersandpreisNetto($price, $taxRate)
+function berechneVersandpreisNetto($price, $taxRate): float
 {
     return $price > 0
         ? round($price * ((100 / (100 + $taxRate)) * 100) / 100, 2)
@@ -383,7 +383,7 @@ function saveShippingSurcharge(array $data): stdClass
             $surchargeTMP = (new ShippingSurcharge())
                 ->setISO($post['cISO'])
                 ->setSurcharge($surcharge)
-                ->setShippingMethod($post['kVersandart'])
+                ->setShippingMethod((int)$post['kVersandart'])
                 ->setTitle($post['cName']);
         } else {
             $surchargeTMP = (new ShippingSurcharge((int)$post['kVersandzuschlag']))

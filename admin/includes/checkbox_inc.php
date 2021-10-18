@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\CheckBox;
 use JTL\Helpers\Text;
@@ -6,7 +6,7 @@ use JTL\Language\LanguageModel;
 use JTL\Shop;
 
 /**
- * @param array $post
+ * @param array           $post
  * @param LanguageModel[] $languages
  * @return array
  */

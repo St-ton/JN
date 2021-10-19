@@ -1916,8 +1916,11 @@ function setzeSteuersaetze($steuerland = 0)
                 AND tsteuerzoneland.kSteuerzone = tsteuerzone.kSteuerzone", 2
     );
     if (count($steuerzonen) === 0) {
+        global $cHinweis;
+
         Jtllog::writeLog('Keine Steuerzone fuer "' . $deliveryCountryCode . '" hinterlegt!');
-        unset($_SESSION['Lieferadresse']);
+        $cHinweis = Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages');
+        unset($_SESSION['Lieferadresse']->cLand);
         setzeSteuersaetze($merchantCountryCode);
 
         return;

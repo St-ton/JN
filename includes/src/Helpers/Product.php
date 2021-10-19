@@ -1724,8 +1724,9 @@ class Product
     public static function combineParentAndChild(Artikel $parent, Artikel $child)
     {
         $product                              = $child;
+        $variChildID                          = (int)$child->kArtikel;
         $product->kArtikel                    = $parent->kArtikel;
-        $product->kVariKindArtikel            = $child->kArtikel;
+        $product->kVariKindArtikel            = $variChildID;
         $product->nIstVater                   = 1;
         $product->kVaterArtikel               = $parent->kArtikel;
         $product->kEigenschaftKombi           = $parent->kEigenschaftKombi;
@@ -1916,7 +1917,7 @@ class Product
         array $configItemAmounts,
         bool $singleProductOutput = false
     ): ?stdClass {
-        $config                  = new stdClass;
+        $config                  = new stdClass();
         $config->fAnzahl         = $amount;
         $config->fGesamtpreis    = [0.0, 0.0];
         $config->cPreisLocalized = [];

@@ -218,40 +218,6 @@ function expandWidget(int $kWidget, int $bExpand): void
 }
 
 /**
- * @param string $url
- * @param int    $timeout
- * @return mixed|string
- * @deprecated since 4.06
- */
-function getRemoteData(string $url, int $timeout = 15)
-{
-    $data = '';
-    if (function_exists('curl_init')) {
-        $curl = curl_init();
-
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
-        curl_setopt($curl, CURLOPT_MAXREDIRS, 5);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
-        curl_setopt($curl, CURLOPT_REFERER, Shop::getURL());
-
-        $data = curl_exec($curl);
-        curl_close($curl);
-    } elseif (ini_get('allow_url_fopen')) {
-        @ini_set('default_socket_timeout', (string)$timeout);
-        $fileHandle = @fopen($url, 'r');
-        if ($fileHandle) {
-            @stream_set_timeout($fileHandle, $timeout);
-            $data = fgets($fileHandle);
-            fclose($fileHandle);
-        }
-    }
-
-    return $data;
-}
-
-/**
  * @param string      $url
  * @param string      $dataName
  * @param string      $tpl

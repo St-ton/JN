@@ -287,7 +287,7 @@ class Customer
             );
 
             if ($data !== null && isset($data->kKunde) && $data->kKunde > 0) {
-                return new self($data->kKunde);
+                return new self((int)$data->kKunde);
             }
         }
 
@@ -658,19 +658,6 @@ class Customer
     }
 
     /**
-     * get customer attributes
-     *
-     * @return $this
-     * @deprecated since 5.0.0 - use getCustomerAttributes instead
-     */
-    public function holeKundenattribute(): self
-    {
-        \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return $this;
-    }
-
-    /**
      * check country ISO code
      *
      * @param string $iso
@@ -787,28 +774,6 @@ class Customer
         }
 
         return $this;
-    }
-
-    /**
-     * @param int $length
-     * @return bool|string
-     * @deprecated since 5.0.0
-     * @throws Exception
-     */
-    public function generatePassword(int $length = 12)
-    {
-        return Shop::Container()->getPasswordService()->generate($length);
-    }
-
-    /**
-     * @param string $password
-     * @return false|string
-     * @deprecated since 5.0.0
-     * @throws Exception
-     */
-    public function generatePasswordHash($password)
-    {
-        return Shop::Container()->getPasswordService()->hash($password);
     }
 
     /**

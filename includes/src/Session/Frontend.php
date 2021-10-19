@@ -406,31 +406,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Customer
-     * @deprecated since 5.0.0
-     */
-    public static function customer(): Customer
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCustomer();
-    }
-
-    /**
      * @return CustomerGroup
      */
     public static function getCustomerGroup(): CustomerGroup
     {
         return $_SESSION['Kundengruppe'] ?? (new CustomerGroup())->loadDefaultGroup();
-    }
-
-    /**
-     * @return CustomerGroup
-     * @deprecated since 5.0.0
-     */
-    public static function customerGroup(): CustomerGroup
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCustomerGroup();
     }
 
     /**
@@ -448,31 +428,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return LanguageHelper
-     * @deprecated since 5.0.0
-     */
-    public function language(): LanguageHelper
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getLanguage();
-    }
-
-    /**
      * @return LanguageModel[]
      */
     public static function getLanguages(): array
     {
         return $_SESSION['Sprachen'] ?? [];
-    }
-
-    /**
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public static function languages(): array
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getLanguages();
     }
 
     /**
@@ -484,41 +444,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function payments(): array
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getPaymentMethods();
-    }
-
-    /**
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function deliveryCountries(): array
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return [];
-    }
-
-    /**
      * @return Currency
      */
     public static function getCurrency(): Currency
     {
         return $_SESSION['Waehrung'] ?? (new Currency())->getDefault();
-    }
-
-    /**
-     * @return Currency
-     * @deprecated since 5.0.0
-     */
-    public static function currency(): Currency
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCurrency();
     }
 
     /**
@@ -530,41 +460,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Cart
-     * @deprecated since 5.0.0
-     */
-    public static function cart(): Cart
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCart();
-    }
-
-    /**
      * @return Currency[]
      */
     public static function getCurrencies(): array
     {
         return $_SESSION['Waehrungen'] ?? [];
-    }
-
-    /**
-     * @return Currency[]
-     * @deprecated since 5.0.0
-     */
-    public static function currencies(): array
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCurrencies();
-    }
-
-    /**
-     * @return Cart
-     * @deprecated since 5.0.0
-     */
-    public function basket(): Cart
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return $_SESSION['Warenkorb'] ?? new Cart();
     }
 
     /**
@@ -576,31 +476,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Wishlist
-     * @deprecated since 5.0.0
-     */
-    public static function wishList(): Wishlist
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getWishList();
-    }
-
-    /**
      * @return ComparisonList
      */
     public static function getCompareList(): ComparisonList
     {
         return $_SESSION['Vergleichsliste'] ?? new ComparisonList();
-    }
-
-    /**
-     * @return ComparisonList
-     * @deprecated since 5.0.0
-     */
-    public static function compareList(): ComparisonList
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCompareList();
     }
 
     /**
@@ -668,6 +548,9 @@ class Frontend extends AbstractSession
         LanguageHelper::getInstance()->autoload();
     }
 
+    /**
+     * @since 5.0.0
+     */
     private static function urlFallback(): void
     {
         $productID             = Request::verifyGPCDataInt('a');

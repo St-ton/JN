@@ -102,16 +102,6 @@ class Configurator
 
     /**
      * @param object $cart
-     * @deprecated since 5.0.0
-     */
-    public static function postcheckBasket($cart): void
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        self::postcheckCart($cart);
-    }
-
-    /**
-     * @param object $cart
      */
     public static function postcheckCart($cart): void
     {
@@ -151,18 +141,6 @@ class Configurator
             }
         }
         CartHelper::deleteCartItems($deletedItems, false);
-    }
-
-    /**
-     * @param int   $productID
-     * @param array $configItems
-     * @return array|bool
-     * @deprecated since 5.0.0
-     */
-    public static function validateBasket(int $productID, $configItems)
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return self::validateCart($productID, $configItems);
     }
 
     /**

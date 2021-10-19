@@ -13,7 +13,6 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 
 Shop::run();
 $conf             = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);

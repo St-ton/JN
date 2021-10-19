@@ -1801,16 +1801,6 @@ class Artikel
     }
 
     /**
-     * @param object $mediaFile
-     * @return $this
-     * @deprecated since 5.0.0
-     */
-    public function buildYoutubeEmbed($mediaFile): self
-    {
-        return $this;
-    }
-
-    /**
      * @param string $attributeName
      * @return bool
      */
@@ -4570,41 +4560,6 @@ class Artikel
     }
 
     /**
-     * @param object $obj
-     * @return $this
-     * @deprecated since 5.0.0
-     */
-    public function mapData($obj): self
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        foreach (\array_keys(\get_object_vars($obj)) as $member) {
-            $this->$member = $obj->$member;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function insertInDB(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * @return $this
-     * @deprecated since 5.0.0
-     */
-    public function updateInDB(): self
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return $this;
-    }
-
-    /**
      * @param int $show
      * @return $this
      */
@@ -4646,16 +4601,6 @@ class Artikel
         }
 
         return $this;
-    }
-
-    /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function setzePostDaten(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return false;
     }
 
     /**
@@ -5620,19 +5565,6 @@ class Artikel
         }
 
         return Metadata::truncateMetaDescription($description);
-    }
-
-    /**
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function getTags(): array
-    {
-        \trigger_error(
-            __FUNCTION__ . ' is deprecated. Functionality of product tags was removed in 5.0.0',
-            \E_USER_DEPRECATED
-        );
-        return [];
     }
 
     /**

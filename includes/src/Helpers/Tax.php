@@ -49,7 +49,7 @@ class Tax
         $billingCountryCode     = null;
         $merchantCountryCode    = 'DE';
         $db                     = Shop::Container()->getDB();
-        $company                = new Firma();
+        $company                = new Firma(true, $db);
         if (!empty($company->cLand)) {
             $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($company->cLand);
         }

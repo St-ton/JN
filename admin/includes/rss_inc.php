@@ -7,7 +7,7 @@ use JTL\Shop;
 /**
  * @return bool
  */
-function generiereRSSXML()
+function generiereRSSXML(): bool
 {
     Shop::Container()->getLogService()->debug('RSS wird erstellt');
     if (!is_writable(PFAD_ROOT . FILE_RSS_FEED)) {

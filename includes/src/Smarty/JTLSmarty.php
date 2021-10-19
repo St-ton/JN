@@ -312,16 +312,6 @@ class JTLSmarty extends BC
     }
 
     /**
-     * @param string $filename
-     * @return string
-     * @deprecated since 5.0.0
-     */
-    public function getFallbackFile(string $filename): string
-    {
-        return $filename;
-    }
-
-    /**
      * fetches a rendered Smarty template
      *
      * @param string|null $template the resource handle of the template file or template object

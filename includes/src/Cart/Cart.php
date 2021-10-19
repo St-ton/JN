@@ -584,16 +584,6 @@ class Cart
 
     /**
      * @param int $type
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function enthaltenSpezialPos(int $type): bool
-    {
-        return $this->posTypEnthalten($type);
-    }
-
-    /**
-     * @param int $type
      * @param bool $force
      * @return $this
      */
@@ -1253,17 +1243,6 @@ class Cart
         }
 
         return $total / $factor;
-    }
-
-    /**
-     * @deprecated since 5.0.0 - use WarenkorbHelper::roundOptionalCurrency instead
-     * @param float|int $total
-     * @return float
-     */
-    public function optionaleRundung($total)
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return CartHelper::roundOptionalCurrency($total, $this->Waehrung ?? Frontend::getCurrency());
     }
 
     /**

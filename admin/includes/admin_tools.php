@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Backend\AdminFavorite;
@@ -17,7 +17,6 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
-use JTL\XMLParser;
 
 /**
  * @param int|array $configSectionID
@@ -147,7 +146,7 @@ function saveAdminSettings(
         'SELECT ec.*, e.cWert AS currentValue
             FROM teinstellungenconf AS ec
             LEFT JOIN teinstellungen AS e 
-                ON e.cName=ec.cWertName
+                ON e.cName = ec.cWertName
             ' . $where . "
             AND ec.cConf = 'Y'
             ORDER BY ec.nSort"
@@ -395,20 +394,6 @@ function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true):
     }
 
     return $campaigns;
-}
-
-/**
- * @param array $xml
- * @param int   $level
- * @return array
- * @deprecated since 5.0.0
- */
-function getArrangedArray($xml, int $level = 1)
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $parser = new XMLParser();
-
-    return $parser->getArrangedArray($xml, $level);
 }
 
 /**

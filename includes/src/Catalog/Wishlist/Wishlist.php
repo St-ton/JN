@@ -18,6 +18,7 @@ use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
+use Kunde;
 use stdClass;
 
 /**
@@ -75,6 +76,49 @@ class Wishlist
      * @var Customer
      */
     public $oKunde;
+
+    /**
+     * @param array $data
+     */
+    public function __unserialize(array $data): void
+    {
+        foreach ($data as $name => $value) {
+            $this->$name = $value;
+        }
+        if ($this->kKunde > 0) {
+            $this->oKunde = new Kunde($this->kKunde);
+        }
+        $options = Artikel::getDefaultOptions();
+        foreach ($this->CWunschlistePos_arr as $item) {
+            if ($item->kArtikel > 0) {
+                try {
+                    $item->Artikel = new Artikel();
+                    $item->Artikel->fuelleArtikel($item->kArtikel, $options);
+                } catch (Exception $e) {
+                    continue;
+                }
+            }
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function __serialize(): array
+    {
+        foreach ($this->CWunschlistePos_arr as $item) {
+            if ($item->kArtikel > 0) {
+                unset($item->Artikel);
+            }
+        }
+        $res          = [];
+        $this->oKunde = null;
+        foreach (\get_object_vars($this) as $name => $value) {
+            $res[$name] = $value;
+        }
+
+        return $res;
+    }
 
     /**
      * Wishlist constructor.
@@ -421,7 +465,7 @@ class Wishlist
             } else {
                 $price = (int)$item->fAnzahl
                     * ($item->Artikel->Preise->fVKNetto
-                       * (100 + $_SESSION['Steuersatz'][$item->Artikel->kSteuerklasse]) / 100);
+                        * (100 + $_SESSION['Steuersatz'][$item->Artikel->kSteuerklasse]) / 100);
             }
 
             $item->cPreis      = Preise::getLocalizedPriceString($price, Frontend::getCurrency());
@@ -705,7 +749,7 @@ class Wishlist
     }
 
     /**
-     * @param int $id
+     * @param int  $id
      * @param bool $force
      * @return string
      */
@@ -765,7 +809,7 @@ class Wishlist
     }
 
     /**
-     * @param int $id
+     * @param int        $id
      * @param array|null $post
      * @return string
      */
@@ -1209,6 +1253,11 @@ class Wishlist
         $upd->nOeffentlich = 0;
         $upd->cURLID       = '';
         Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $id, $upd);
+        $current = Frontend::getWishList();
+        if ($current->kWunschliste === $id) {
+            $current->nOeffentlich = 0;
+            $current->cURLID       = '';
+        }
     }
 
     /**
@@ -1225,6 +1274,11 @@ class Wishlist
         $upd->nOeffentlich = 1;
         $upd->cURLID       = $urlID;
         Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $id, $upd);
+        $current = Frontend::getWishList();
+        if ($current->kWunschliste === $id) {
+            $current->nOeffentlich = 1;
+            $current->cURLID       = $urlID;
+        }
     }
 
     /**

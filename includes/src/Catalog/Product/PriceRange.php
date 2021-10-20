@@ -2,8 +2,6 @@
 
 namespace JTL\Catalog\Product;
 
-use JTL\DB\ReturnType;
-use JTL\Extensions\Config\Configurator;
 use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -83,7 +81,7 @@ class PriceRange
         $this->customerGroupID = $customerGroupID;
         $this->customerID      = $customerID;
         $this->discount        = 0;
-        $this->productData     = Shop::Container()->getDB()->queryPrepared(
+        $this->productData     = Shop::Container()->getDB()->getSingleObject(
             'SELECT tartikel.kArtikel, kSteuerklasse, fLagerbestand, fStandardpreisNetto fNettoPreis,
                 tartikelkonfiggruppe.kKonfiggruppe g1, tkonfigitem.kKonfiggruppe g2
                 FROM tartikel
@@ -93,8 +91,7 @@ class PriceRange
                     ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
                         AND tartikelkonfiggruppe.kArtikel = :pid
                 WHERE tartikel.kArtikel = :pid',
-            ['pid' => $productID],
-            ReturnType::SINGLE_OBJECT
+            ['pid' => $productID]
         );
         if ($this->productData !== null) {
             $this->productData->kArtikel      = (int)$this->productData->kArtikel;

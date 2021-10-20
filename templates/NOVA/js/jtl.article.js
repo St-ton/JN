@@ -382,7 +382,7 @@
                                 .removeClass('show d-md-block');
                     });
                 })
-                .on('hide.bs.select', function () { 
+                .on('hide.bs.select', function () {
                     $(this).parent().find('li .variation').off('mouseenter mouseleave');
                     $('.variation-image-preview').removeClass('show');
                 });
@@ -971,7 +971,11 @@
                 case this.options.action.compareListRemove:
                     return this.removeFromCompareList(data);
                 case this.options.action.wishList:
-                    data[this.options.input.quantity] = $('#buy_form_'+data.a+' '+this.options.selector.quantity).val();
+                    var qty = $('#buy_form_' + data.a + ' ' + this.options.selector.quantity);
+                    if (qty.length === 0) {
+                        qty = $('#buy_form ' + this.options.selector.quantity);
+                    }
+                    data[this.options.input.quantity] = qty.val();
                     if ($action.hasClass('on-list')) {
                         $action.removeClass("on-list");
                         $action.next().removeClass("press");

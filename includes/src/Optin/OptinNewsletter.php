@@ -475,4 +475,16 @@ class OptinNewsletter extends OptinBase implements OptinInterface
             );
         }
     }
+
+    /**
+     * only for FILE IMPORTS of newsletter receivers without sending optin-mails!
+     *
+     * @return OptinInterface
+     */
+    public function bypassSendingPermission(): OptinInterface
+    {
+        $this->hasSendingPermission = true;
+
+        return $this;
+    }
 }

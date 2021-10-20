@@ -36,7 +36,7 @@ $alertHelper      = Shop::Container()->getAlertService();
 if ($kWunschliste === 0 && $customerID > 0 && empty($_SESSION['Wunschliste']->kWunschliste)) {
     $_SESSION['Wunschliste'] = new Wishlist();
     $_SESSION['Wunschliste']->schreibeDB();
-    $kWunschliste = (int)$_SESSION['Wunschliste']->kWunschliste;
+    $kWunschliste = $_SESSION['Wunschliste']->getID();
 }
 
 Shop::setPageType(PAGE_WUNSCHLISTE);
@@ -161,8 +161,9 @@ if ($action !== null && Form::validateToken()) {
                 break;
 
             case 'setPublic':
-                if ($wishlistTargetID !== 0 && Wishlist::instanceByID($wishlistTargetID)->isSelfControlled()) {
-                    Wishlist::setPublic($wishlistTargetID);
+                $list = Wishlist::instanceByID($wishlistTargetID);
+                if ($wishlistTargetID !== 0 && $list->isSelfControlled()) {
+                    $list->setVisibility(true);
                     $alertHelper->addAlert(
                         Alert::TYPE_NOTE,
                         Shop::Lang()->get('wishlistSetPublic', 'messages'),
@@ -172,8 +173,9 @@ if ($action !== null && Form::validateToken()) {
                 break;
 
             case 'setPrivate':
-                if ($wishlistTargetID !== 0 && Wishlist::instanceByID($wishlistTargetID)->isSelfControlled()) {
-                    Wishlist::setPrivate($wishlistTargetID);
+                $list = Wishlist::instanceByID($wishlistTargetID);
+                if ($wishlistTargetID !== 0 && $list->isSelfControlled()) {
+                    $list->setVisibility(false);
                     $alertHelper->addAlert(
                         Alert::TYPE_NOTE,
                         Shop::Lang()->get('wishlistSetPrivate', 'messages'),
@@ -209,11 +211,11 @@ if ($action !== null && Form::validateToken()) {
                                 'setDefaultWL'
                             );
                             $wishlist = new Wishlist($kWunschliste);
-                        } elseif (empty($_SESSION['Wunschliste']->kWunschliste)) {
+                        } elseif (Frontend::getWishList()->getID() > 0) {
                             // the only existing wishlist was deleted, create a new one
                             $wishlist = new Wishlist();
                             $wishlist->schreibeDB();
-                            $kWunschliste = $wishlist->kWunschliste;
+                            $kWunschliste = $wishlist->getID();
                         }
 
                         $_SESSION['Wunschliste'] = $wishlist;
@@ -271,7 +273,7 @@ if (Request::verifyGPCDataInt('error') === 1) {
 } elseif (!$kWunschliste) {
     if ($customerID > 0) {
         $wishlist     = Wishlist::buildPrice(Wishlist::instanceByCustomerID($customerID));
-        $kWunschliste = $wishlist->kWunschliste;
+        $kWunschliste = $wishlist->getID();
     }
     if (!$kWunschliste) {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '&r=' . R_LOGIN_WUNSCHLISTE);

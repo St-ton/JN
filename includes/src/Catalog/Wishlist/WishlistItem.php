@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Catalog\Wishlist;
 
@@ -150,5 +150,173 @@ class WishlistItem
                 return (int)$e->kEigenschaft === $propertyID && (int)$e->kEigenschaftWert === $propertyValueID;
             }
         );
+    }
+
+    /**
+     * @return int
+     */
+    public function getID(): int
+    {
+        return $this->kWunschlistePos;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setID(int $id): void
+    {
+        $this->kWunschlistePos = $id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWishlistID(): int
+    {
+        return $this->kWunschliste;
+    }
+
+    /**
+     * @param int $wishlistID
+     */
+    public function setWishlistID(int $wishlistID): void
+    {
+        $this->kWunschliste = $wishlistID;
+    }
+
+    /**
+     * @return int
+     */
+    public function getProductID(): int
+    {
+        return $this->kArtikel;
+    }
+
+    /**
+     * @param int $productID
+     */
+    public function setProductID(int $productID): void
+    {
+        $this->kArtikel = $productID;
+    }
+
+    /**
+     * @return float|int|string
+     */
+    public function getQty()
+    {
+        return $this->fAnzahl;
+    }
+
+    /**
+     * @param float|int|string $qty
+     */
+    public function setQty($qty): void
+    {
+        $this->fAnzahl = $qty;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProductName(): string
+    {
+        return $this->cArtikelName;
+    }
+
+    /**
+     * @param string $productName
+     */
+    public function setProductName(string $productName): void
+    {
+        $this->cArtikelName = $productName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getComment(): string
+    {
+        return $this->cKommentar;
+    }
+
+    /**
+     * @param string $comment
+     */
+    public function setComment(string $comment): void
+    {
+        $this->cKommentar = $comment;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDateAdded(): string
+    {
+        return $this->dHinzugefuegt;
+    }
+
+    /**
+     * @param string $date
+     */
+    public function setDateAdded(string $date): void
+    {
+        $this->dHinzugefuegt = $date;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDateAddedLocalized(): string
+    {
+        return $this->dHinzugefuegt_de;
+    }
+
+    /**
+     * @param string $date
+     */
+    public function setDateAddedLocalized(string $date): void
+    {
+        $this->dHinzugefuegt_de = $date;
+    }
+
+    /**
+     * @return WishlistItemProperty[]
+     */
+    public function getProperties(): array
+    {
+        return $this->CWunschlistePosEigenschaft_arr;
+    }
+
+    /**
+     * @param WishlistItemProperty[] $properties
+     */
+    public function setProperties(array $properties): void
+    {
+        $this->CWunschlistePosEigenschaft_arr = $properties;
+    }
+
+    /**
+     * @param WishlistItemProperty $property
+     */
+    public function addProperty(WishlistItemProperty $property): void
+    {
+        $this->CWunschlistePosEigenschaft_arr[] = $property;
+    }
+
+    /**
+     * @return Artikel
+     */
+    public function getProduct(): Artikel
+    {
+        return $this->Artikel;
+    }
+
+    /**
+     * @param Artikel $product
+     */
+    public function setProduct(Artikel $product): void
+    {
+        $this->Artikel = $product;
     }
 }

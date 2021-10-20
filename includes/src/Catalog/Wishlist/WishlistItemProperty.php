@@ -83,4 +83,116 @@ class WishlistItemProperty
 
         return $this;
     }
+
+    /**
+     * @return int
+     */
+    public function getID(): int
+    {
+        return $this->kWunschlistePosEigenschaft;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setID(int $id): void
+    {
+        $this->kWunschlistePosEigenschaft = $id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getItemID(): int
+    {
+        return $this->kWunschlistePos;
+    }
+
+    /**
+     * @param int $itemID
+     */
+    public function setItemID(int $itemID): void
+    {
+        $this->kWunschlistePos = $itemID;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPropertyID(): int
+    {
+        return $this->kEigenschaft;
+    }
+
+    /**
+     * @param int $propertyID
+     */
+    public function setPropertyID(int $propertyID): void
+    {
+        $this->kEigenschaft = $propertyID;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPropertyValueID(): ?int
+    {
+        return $this->kEigenschaftWert;
+    }
+
+    /**
+     * @param int $propertyValueID
+     */
+    public function setPropertyValueID(?int $propertyValueID): void
+    {
+        $this->kEigenschaftWert = $propertyValueID;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFreeTextValue(): string
+    {
+        return $this->cFreifeldWert;
+    }
+
+    /**
+     * @param string $value
+     */
+    public function setFreeTextValue(string $value): void
+    {
+        $this->cFreifeldWert = $value;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPropertyName(): string
+    {
+        return $this->cEigenschaftName;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setPropertyName(string $name): void
+    {
+        $this->cEigenschaftName = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPropertyValueName(): string
+    {
+        return $this->cEigenschaftWertName;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setPropertyValueName(string $name): void
+    {
+        $this->cEigenschaftWertName = $name;
+    }
 }

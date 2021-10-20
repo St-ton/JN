@@ -1388,11 +1388,7 @@ class IOMethods
             return $ioResponse;
         }
         if (Form::validateToken($token)) {
-            if ($state) {
-                Wishlist::setPublic($wlID);
-            } else {
-                Wishlist::setPrivate($wlID);
-            }
+            $wl->setVisibility($state);
         }
         $response        = new stdClass();
         $response->wlID  = $wlID;

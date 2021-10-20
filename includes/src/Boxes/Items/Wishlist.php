@@ -28,8 +28,8 @@ final class Wishlist extends AbstractBox
         $this->addMapping('nBilderAnzeigen', 'ShowImages');
         $this->addMapping('CWunschlistePos_arr', 'Items');
         $this->setShow($config['global']['global_wunschliste_anzeigen'] === 'Y');
-        if (!empty(Frontend::getWishList()->kWunschliste)) {
-            $this->setWishListID(Frontend::getWishList()->kWunschliste);
+        if (!empty(Frontend::getWishList()->getID())) {
+            $this->setWishListID(Frontend::getWishList()->getID());
             $requestURI       = $_SERVER['REQUEST_URI'] ?? $_SERVER['SCRIPT_NAME'] ?? '';
             $additionalParams = [];
             $parsed           = \parse_url($requestURI);

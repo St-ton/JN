@@ -65,6 +65,7 @@
                                                     "toggle"=>"product-actions",
                                                     "value"=>['a'=>$wishlistItem->kWunschlistePos]|json_encode|escape:'html'
                                                     ]
+                                                    title="{lang section='login' key='wishlistremoveItem'}"
                                                     aria=["label"=>"{lang section='login' key='wishlistremoveItem'}"]}
                                                     <span class="fas fa-times"></span>
                                                 {/link}

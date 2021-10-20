@@ -296,15 +296,16 @@ class Wishlist
             // Die Posiotion mit ID $kWunschlistePos löschen
             Shop::Container()->getDB()->delete('twunschlistepos', 'kWunschlistePos', $itemID);
             // Wunschliste Position aus der Session löschen
-            foreach ($_SESSION['Wunschliste']->CWunschlistePos_arr as $i => $wlPosition) {
+            foreach ($this->CWunschlistePos_arr as $i => $wlPosition) {
                 if ((int)$wlPosition->kWunschlistePos === $itemID) {
-                    unset($_SESSION['Wunschliste']->CWunschlistePos_arr[$i]);
+                    unset($this->CWunschlistePos_arr[$i]);
                 }
             }
 
             // Positionen Array in der Wunschliste neu nummerieren
-            $_SESSION['Wunschliste']->CWunschlistePos_arr = \array_merge($_SESSION['Wunschliste']->CWunschlistePos_arr);
+            $this->CWunschlistePos_arr = \array_merge($this->CWunschlistePos_arr);
         }
+        self::updateInSesssion($this->kWunschliste);
 
         return $this;
     }
@@ -735,14 +736,14 @@ class Wishlist
      */
     public static function persistInSession(): void
     {
-        if (!empty($_SESSION['Kunde']->kKunde)) {
+        if (Frontend::getCustomer()->getID() > 0) {
             $data = Shop::Container()->getDB()->select(
                 'twunschliste',
                 ['kKunde', 'nStandard'],
-                [(int)$_SESSION['Kunde']->kKunde, 1]
+                [Frontend::getCustomer()->getID(), 1]
             );
             if (isset($data->kWunschliste)) {
-                $_SESSION['Wunschliste'] = new Wishlist((int)$data->kWunschliste);
+                $_SESSION['Wunschliste'] = new self((int)$data->kWunschliste);
                 $_SESSION['Wunschliste']->ueberpruefePositionen();
             }
         }
@@ -834,27 +835,28 @@ class Wishlist
             return '';
         }
         foreach ($items as $item) {
-            $id  = (int)$item->kWunschlistePos;
-            $idx = 'Kommentar_' . $id;
+            $itemID = (int)$item->kWunschlistePos;
+            $idx    = 'Kommentar_' . $itemID;
             if (isset($post[$idx])) {
                 $upd             = new stdClass();
                 $upd->cKommentar = Text::htmlentities(Text::filterXSS(\mb_substr($post[$idx], 0, 254)));
-                $db->update('twunschlistepos', 'kWunschlistePos', $id, $upd);
+                $db->update('twunschlistepos', 'kWunschlistePos', $itemID, $upd);
             }
 
-            $idx = 'Anzahl_' . $id;
+            $idx = 'Anzahl_' . $itemID;
             if (isset($post[$idx])) {
                 $quantity = \str_replace(',', '.', $post[$idx]);
                 if ((float)$quantity > 0) {
                     $db->update(
                         'twunschlistepos',
                         'kWunschlistePos',
-                        $id,
+                        $itemID,
                         (object)['fAnzahl' => (float)$quantity]
                     );
                 }
             }
         }
+        self::updateInSesssion($id);
 
         return Shop::Lang()->get('wishlistUpdate', 'messages');
     }
@@ -876,7 +878,7 @@ class Wishlist
             Shop::Container()->getDB()->update(
                 'twunschliste',
                 'kKunde',
-                (int)$_SESSION['Kunde']->kKunde,
+                Frontend::getCustomer()->getID(),
                 (object)['nStandard' => 0]
             );
             Shop::Container()->getDB()->update(
@@ -902,8 +904,8 @@ class Wishlist
     public static function save(string $name): string
     {
         $msg = '';
-        if ($_SESSION['Kunde']->kKunde > 0 && !empty($name)) {
-            $list            = new Wishlist();
+        if (Frontend::getCustomer()->getID() > 0 && !empty($name)) {
+            $list            = new self();
             $list->cName     = $name;
             $list->nStandard = 0;
             unset(
@@ -934,7 +936,7 @@ class Wishlist
         $msg                        = '';
         $conf                       = Shop::getSettings([\CONF_GLOBAL]);
         $data                       = new stdClass();
-        $data->tkunde               = $_SESSION['Kunde'];
+        $data->tkunde               = Frontend::getCustomer();
         $data->twunschliste         = self::buildPrice(new Wishlist($id));
         $history                    = new stdClass();
         $history->kWunschliste      = $id;
@@ -1253,11 +1255,7 @@ class Wishlist
         $upd->nOeffentlich = 0;
         $upd->cURLID       = '';
         Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $id, $upd);
-        $current = Frontend::getWishList();
-        if ($current->kWunschliste === $id) {
-            $current->nOeffentlich = 0;
-            $current->cURLID       = '';
-        }
+        self::updateInSesssion($id);
     }
 
     /**
@@ -1274,11 +1272,7 @@ class Wishlist
         $upd->nOeffentlich = 1;
         $upd->cURLID       = $urlID;
         Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $id, $upd);
-        $current = Frontend::getWishList();
-        if ($current->kWunschliste === $id) {
-            $current->nOeffentlich = 1;
-            $current->cURLID       = $urlID;
-        }
+        self::updateInSesssion($id);
     }
 
     /**
@@ -1355,5 +1349,17 @@ class Wishlist
         }
 
         return 0;
+    }
+
+    /**
+     * @param int $id
+     */
+    private static function updateInSesssion(int $id): void
+    {
+        if (Frontend::getWishList()->kWunschliste === $id) {
+            unset($_SESSION['Wunschliste']);
+            $_SESSION['Wunschliste'] = new Wishlist($id);
+            $_SESSION['Wunschliste']->ueberpruefePositionen();
+        }
     }
 }

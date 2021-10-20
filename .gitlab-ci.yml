@@ -57,7 +57,7 @@ stages:
     export DB_HOST_NET=$(docker network inspect -f '{{range .Containers}}{{if eq .Name "mysql-5-5-container"}}{{.IPv4Address}}{{end}}{{end}}' mysql-php-network)
     export DB_HOST="${DB_HOST_NET::-3}"
 
-    echo "Building projekt in PHP 5.6 and mysql server 5.5 docker image..."
+    echo "Building projekt in PHP 7.3 and mysql server 5.5 docker image..."
     docker run \
       -d -it \
       -w '/creation' \
@@ -148,7 +148,7 @@ stages:
     fi
   }
 
-test_PHP_5.6:
+.test_PHP_5.6:
   stage: test
   image: docker:19.03.1
   services:
@@ -166,7 +166,7 @@ test_PHP_5.6:
     - master
     - /^release\/.*$/
 
-test_PHP_7.1:
+.test_PHP_7.1:
   stage: test
   image: docker:19.03.1
   services:
@@ -184,7 +184,7 @@ test_PHP_7.1:
     - master
     - /^release\/.*$/
 
-test_PHP_7.2:
+.test_PHP_7.2:
   stage: test
   image: docker:19.03.1
   services:
@@ -220,7 +220,7 @@ test_PHP_7.3:
     - master
     - /^release\/.*$/
 
-removeContainerPHP5.6:
+.removeContainerPHP5.6:
   stage: cleanUpTest
   image: docker:19.03.1
   services:
@@ -240,7 +240,7 @@ removeContainerPHP5.6:
     - /^release\/.*$/
   when: on_failure
 
-removeContainerPHP7.1:
+.removeContainerPHP7.1:
   stage: cleanUpTest
   image: docker:19.03.1
   services:
@@ -260,7 +260,7 @@ removeContainerPHP7.1:
     - /^release\/.*$/
   when: on_failure
 
-removeContainerPHP7.2:
+.removeContainerPHP7.2:
   stage: cleanUpTest
   image: docker:19.03.1
   services:
@@ -351,7 +351,7 @@ removeContainer:
   tags:
     - build
 
-tagsDeployment:
+.tagsDeployment:
   stage: tagsDeployment
   variables:
     GIT_STRATEGY: none
@@ -364,7 +364,7 @@ tagsDeployment:
   tags:
     - build
 
-stagingPreDeploy:
+.stagingPreDeploy:
   stage: stagingPre
   variables:
     GIT_STRATEGY: none
@@ -376,7 +376,7 @@ stagingPreDeploy:
   tags:
     - dev-checkout
 
-stagingDevPhp56:
+.stagingDevPhp56:
   stage: staging
   variables:
     GIT_STRATEGY: none
@@ -391,7 +391,7 @@ stagingDevPhp56:
   tags:
     - dev-checkout
 
-stagingDevPhp71:
+.stagingDevPhp71:
   stage: staging
   variables:
     GIT_STRATEGY: none
@@ -406,7 +406,7 @@ stagingDevPhp71:
   tags:
     - dev-checkout
 
-stagingDevPhp72:
+.stagingDevPhp72:
   stage: staging
   variables:
     GIT_STRATEGY: none
@@ -421,7 +421,7 @@ stagingDevPhp72:
   tags:
     - dev-checkout
 
-stagingDevPhp73:
+.stagingDevPhp73:
   stage: staging
   variables:
     GIT_STRATEGY: none

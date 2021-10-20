@@ -46,10 +46,9 @@ if (!is_writable(PFAD_ROOT . PFAD_COMPILEDIR)) {
     Schreibrechte k&ouml;nnen Sie mit Ihrem FTP-Programm setzen. Rufen Sie danach diese Seite erneut auf.');
 }
 
-// if anyone goes lower than PHP 5.4, we abort here and warn him!
 require_once PFAD_ROOT . PFAD_SMARTY . 'SmartyBC.class.php';
 $szPhpVersion = PHP_VERSION;
-if(!version_compare($szPhpVersion, '5.4.0', '>='))
+if(version_compare($szPhpVersion, '7.3.0', '<'))
 {
     $smarty = new Smarty();
     $smarty->setCaching(0);
@@ -61,7 +60,7 @@ if(!version_compare($szPhpVersion, '5.4.0', '>='))
            ->assign('PFAD_ROOT', PFAD_ROOT);
 
     $cHinweis = 'Der Installer kann nicht gestartet werden. Sie verwenden aktuell die PHP-Version <b>' . $szPhpVersion . '</b>.<br />' .
-        'JTL-Shop4 setzt mindestens die PHP-Version <b>5.4</b> voraus.';
+        'JTL-Shop4 setzt mindestens die PHP-Version <b>7.3</b> voraus.';
     $smarty->assign('URL_SHOP', URL_SHOP)
            ->assign('PFAD_INSTALL', PFAD_INSTALL)
            ->assign('PFAD_ADMIN_TEMPLATE', PFAD_ADMIN . PFAD_TEMPLATES . 'bootstrap/')

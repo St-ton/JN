@@ -40,7 +40,7 @@
                 "source": {
                     "url": "https://gitlab.com/jtl-software/jtl-shop/tools/systemcheck.git",
                     "type": "git",
-                    "reference": "1.1.0"
+                    "reference": "2.0.0"
                 }
             }
         },

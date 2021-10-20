@@ -287,7 +287,7 @@ class Frontend extends AbstractSession
     {
         $index = Request::verifyGPCDataInt('wlplo');
         if ($index !== 0) {
-            $wl = new Wishlist(self::getWishList()->kWunschliste);
+            $wl = self::getWishList();
             $wl->entfernePos($index);
         }
 

@@ -689,8 +689,8 @@ class Cart
         }
         $cartItem->nPosTyp  = $type;
         $cartItem->cHinweis = $message;
-        $nOffset            = \array_push($this->PositionenArr, $cartItem);
-        $cartItem           = $this->PositionenArr[$nOffset - 1];
+        $offset             = \array_push($this->PositionenArr, $cartItem);
+        $cartItem           = $this->PositionenArr[$offset - 1];
         foreach (Frontend::getCurrencies() as $currency) {
             $currencyName = $currency->getName();
             // Standardartikel
@@ -713,12 +713,7 @@ class Cart
                 $cartItem->fPreis,
                 $currency
             );
-
-            // Konfigurationsartikel: mapto: 9a87wdgad
-            if ((int)$cartItem->kKonfigitem > 0
-                && \is_string($cartItem->cUnique)
-                && !empty($cartItem->cUnique)
-            ) {
+            if ($cartItem->kKonfigitem > 0 && \is_string($cartItem->cUnique) && !empty($cartItem->cUnique)) {
                 $net       = 0;
                 $gross     = 0;
                 $parentIdx = null;
@@ -730,11 +725,7 @@ class Cart
                             $item->fPreis * $item->nAnzahl,
                             CartItem::getTaxRate($item)
                         );
-
-                        if ((int)$item->kKonfigitem === 0
-                            && \is_string($item->cUnique)
-                            && !empty($item->cUnique)
-                        ) {
+                        if ($item->kKonfigitem === 0 && \is_string($item->cUnique) && !empty($item->cUnique)) {
                             $parentIdx = $idx;
                         }
                     }
@@ -845,7 +836,7 @@ class Cart
     /**
      * gibt Anzahl der Positionen des Warenkorbs zurueck
      *
-     * @param int[] $itemTypes
+     * @param int[]|mixed $itemTypes
      * @return int
      */
     public function gibAnzahlPositionenExt($itemTypes): int
@@ -855,8 +846,8 @@ class Cart
         }
         $count = 0;
         foreach ($this->PositionenArr as $item) {
-            if (\in_array($item->nPosTyp, $itemTypes)
-                && (empty($item->cUnique) || (\mb_strlen($item->cUnique) > 0 && $item->kKonfigitem == 0))
+            if (\in_array($item->nPosTyp, $itemTypes, true)
+                && (empty($item->cUnique) || (\mb_strlen($item->cUnique) > 0 && $item->kKonfigitem === 0))
             ) {
                 ++$count;
             }
@@ -871,11 +862,7 @@ class Cart
     public function hatTeilbareArtikel(): bool
     {
         foreach ($this->PositionenArr as $item) {
-            $item->nPosTyp = (int)$item->nPosTyp;
-            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
-                && isset($item->Artikel->cTeilbar)
-                && $item->Artikel->cTeilbar === 'Y'
-            ) {
+            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && ($item->Artikel->cTeilbar ?? 'N') === 'Y') {
                 return true;
             }
         }
@@ -901,8 +888,8 @@ class Cart
                 continue;
             }
             $compareID = $countParentProducts && isset($item->Artikel) && $item->Artikel->kVaterArtikel > 0
-                ? (int)$item->Artikel->kVaterArtikel
-                : (int)$item->kArtikel;
+                ? $item->Artikel->kVaterArtikel
+                : $item->kArtikel;
             if ($compareID === $productID) {
                 $qty += $item->nAnzahl;
             }
@@ -923,7 +910,6 @@ class Cart
         $bulk            = $this->config['kaufabwicklung']['general_child_item_bulk_pricing'] === 'Y';
         $customerGroupID = Frontend::getCustomerGroup()->getID();
         $langID          = Shop::getLanguageID();
-
         foreach ($this->PositionenArr as $item) {
             if ($item->kArtikel <= 0 || $item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL) {
                 $this->setzeKonfig($item, true, false);
@@ -944,10 +930,10 @@ class Cart
                     if ($posAttr->kEigenschaft !== $variation->kEigenschaft) {
                         continue;
                     }
-                    foreach ($variation->Werte as $oEigenschaftWert) {
-                        if ($posAttr->kEigenschaftWert === $oEigenschaftWert->kEigenschaftWert) {
-                            $posAttr->fAufpreis          = $oEigenschaftWert->fAufpreisNetto ?? null;
-                            $posAttr->cAufpreisLocalized = $oEigenschaftWert->cAufpreisLocalized[1] ?? null;
+                    foreach ($variation->Werte as $attrVal) {
+                        if ($posAttr->kEigenschaftWert === $attrVal->kEigenschaftWert) {
+                            $posAttr->fAufpreis          = $attrVal->fAufpreisNetto ?? null;
+                            $posAttr->cAufpreisLocalized = $attrVal->cAufpreisLocalized[1] ?? null;
                             break;
                         }
                     }
@@ -968,15 +954,14 @@ class Cart
                 $item->cUnique
             );
             $item->fGesamtgewicht    = $item->gibGesamtgewicht();
+            $item->fVK               = $product->Preise->fVK;
             \executeHook(\HOOK_SETZTE_POSITIONSPREISE, [
                 'position'    => $item,
                 'oldPosition' => $oldItem
             ]);
             $item->setzeGesamtpreisLocalized();
             // notify about price changes when the price difference is greater then .01
-            if ($oldItem->cGesamtpreisLocalized !== $item->cGesamtpreisLocalized
-                && $oldItem->fVK !== $item->fVK
-            ) {
+            if ($oldItem->cGesamtpreisLocalized !== $item->cGesamtpreisLocalized && $oldItem->fVK !== $item->fVK) {
                 $this->notifyPriceChange($item, $oldItem);
             }
             unset($item->cHinweis);
@@ -1029,7 +1014,7 @@ class Cart
     public function setzeKonfig(CartItem $item, bool $prices = true, bool $name = true): self
     {
         // Falls Konfigitem gesetzt Preise + Name ueberschreiben
-        if ((int)$item->kKonfigitem <= 0 || !\class_exists('Konfigitem')) {
+        if ($item->kKonfigitem <= 0 || !\class_exists('Konfigitem')) {
             return $this;
         }
         $configItem = new Item($item->kKonfigitem);
@@ -2020,5 +2005,16 @@ class Cart
             ?? Frontend::get('Lieferadresse')->cLand
             ?? Frontend::getCustomer()->cLand
             ?? Frontend::get('cLieferlandISO');
+    }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        $res           = \get_object_vars($this);
+        $res['config'] = '*truncated*';
+
+        return $res;
     }
 }

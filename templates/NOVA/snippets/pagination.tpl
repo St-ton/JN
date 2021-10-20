@@ -96,7 +96,7 @@
                 {/if}
             {else}
                 {block name='snippets-pagination-page-count-one'}
-                    {col cols="auto" class="pagination-entries"}
+                    {col class="pagination-entries"}
                         {lang key='paginationTotalEntries'} {$oPagination->getItemCount()}
                     {/col}
                 {/block}

@@ -324,7 +324,7 @@ if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0) {
         $event               = new stdClass();
         $event->kKampagne    = $campaign->kKampagne;
         $event->kKampagneDef = KAMPAGNE_DEF_HIT;
-        $event->kKey         = $_SESSION['oBesucher']->kBesucher;
+        $event->kKey         = $_SESSION['oBesucher']->kBesucher ?? 0;
         $event->fWert        = 1.0;
         $event->cParamWert   = $campaign->cWert;
         $event->dErstellt    = 'NOW()';

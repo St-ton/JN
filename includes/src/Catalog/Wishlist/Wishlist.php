@@ -633,15 +633,15 @@ class Wishlist
     {
         if (\count($_SESSION['Wunschliste']->CWunschlistePos_arr) > 0) {
             $defaultOptions = Artikel::getDefaultOptions();
-            foreach ($_SESSION['Wunschliste']->CWunschlistePos_arr as $item) {
+            foreach ($_SESSION['Wunschliste']->CWunschlistePos_arr as $i => $item) {
                 $product = new Artikel();
                 try {
                     $product->fuelleArtikel($item->kArtikel, $defaultOptions);
                 } catch (Exception $e) {
                     continue;
                 }
-                $item->Artikel      = $product;
-                $item->cArtikelName = $product->cName;
+                $_SESSION['Wunschliste']->CWunschlistePos_arr[$i]->Artikel      = $product;
+                $_SESSION['Wunschliste']->CWunschlistePos_arr[$i]->cArtikelName = $product->cName;
             }
         }
 

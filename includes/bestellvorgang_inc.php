@@ -177,7 +177,7 @@ function getMissingInput(array $post, ?int $customerGroupId = null, ?CheckBox $c
     $missingInput    = checkKundenFormular(0);
     $customerGroupId = $customerGroupId ?? Frontend::getCustomerGroup()->getID();
     $checkBox        = $checkBox ?? new CheckBox();
-    
+
     return array_merge($missingInput, $checkBox->validateCheckBox(
         CHECKBOX_ORT_REGISTRIERUNG,
         $customerGroupId,
@@ -2487,7 +2487,7 @@ function getKundendaten(array $post, $customerAccount, $htmlentities = 1)
     $customer   = new Customer($customerID);
     foreach ($mapping as $external => $internal) {
         if (isset($post[$external])) {
-            $val = Text::filterXSS($post[$external]);
+            $val = $external === 'pass' ? $post[$external] : Text::filterXSS($post[$external]);
             if ($htmlentities) {
                 $val = Text::htmlentities($val);
             }

@@ -256,20 +256,20 @@ class CartItem
         $newAttributes->kEigenschaftWert   = $valueID;
         $newAttributes->fGewichtsdifferenz = $attributeValue->fGewichtDiff;
         $newAttributes->fAufpreis          = $attributeValue->fAufpreisNetto;
-        $Aufpreis_obj                      = $db->select(
+        $surcharge                         = $db->select(
             'teigenschaftwertaufpreis',
             'kEigenschaftWert',
             (int)$newAttributes->kEigenschaftWert,
             'kKundengruppe',
             Frontend::getCustomerGroup()->getID()
         );
-        if (!empty($Aufpreis_obj->fAufpreisNetto)) {
+        if (!empty($surcharge->fAufpreisNetto)) {
             if ($this->Artikel->Preise->rabatt > 0) {
-                $newAttributes->fAufpreis     = $Aufpreis_obj->fAufpreisNetto -
-                    (($this->Artikel->Preise->rabatt / 100) * $Aufpreis_obj->fAufpreisNetto);
-                $Aufpreis_obj->fAufpreisNetto = $newAttributes->fAufpreis;
+                $newAttributes->fAufpreis  = $surcharge->fAufpreisNetto -
+                    (($this->Artikel->Preise->rabatt / 100) * $surcharge->fAufpreisNetto);
+                $surcharge->fAufpreisNetto = $newAttributes->fAufpreis;
             } else {
-                $newAttributes->fAufpreis = $Aufpreis_obj->fAufpreisNetto;
+                $newAttributes->fAufpreis = $surcharge->fAufpreisNetto;
             }
         }
         $newAttributes->cTyp               = $attribute->cTyp;
@@ -503,6 +503,12 @@ class CartItem
             $this->$member = $obj->$member;
         }
         $this->kSteuerklasse = 0;
+        $this->kWarenkorbPos = (int)$this->kWarenkorbPos;
+        $this->kWarenkorb    = (int)$this->kWarenkorb;
+        $this->kArtikel      = (int)$this->kArtikel;
+        $this->nPosTyp       = (int)$this->nPosTyp;
+        $this->kKonfigitem   = (int)$this->kKonfigitem;
+        $this->kBestellpos   = (int)$this->kBestellpos;
         if (isset($this->nLongestMinDelivery, $this->nLongestMaxDelivery)) {
             self::setEstimatedDelivery($this, $this->nLongestMinDelivery, $this->nLongestMaxDelivery);
             unset($this->nLongestMinDelivery, $this->nLongestMaxDelivery);
@@ -562,7 +568,7 @@ class CartItem
      */
     public function istKonfigVater(): bool
     {
-        return \is_string($this->cUnique) && !empty($this->cUnique) && (int)$this->kKonfigitem === 0;
+        return \is_string($this->cUnique) && !empty($this->cUnique) && $this->kKonfigitem === 0;
     }
 
     /**
@@ -570,7 +576,7 @@ class CartItem
      */
     public function istKonfigKind(): bool
     {
-        return \is_string($this->cUnique) && !empty($this->cUnique) && (int)$this->kKonfigitem > 0;
+        return \is_string($this->cUnique) && !empty($this->cUnique) && $this->kKonfigitem > 0;
     }
 
     /**
@@ -660,5 +666,16 @@ class CartItem
         }
 
         return (float)$taxRate;
+    }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        $res            = \get_object_vars($this);
+        $res['Artikel'] = '*truncated*';
+
+        return $res;
     }
 }

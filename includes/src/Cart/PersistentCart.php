@@ -50,7 +50,6 @@ class PersistentCart
      */
     public function __construct(int $customerID = 0, bool $addProducts = false)
     {
-        Shop::dbg($customerID, false, __CLASS__);
         if ($customerID > 0) {
             $this->kKunde = $customerID;
             $this->ladeWarenkorbPers($addProducts);
@@ -60,14 +59,14 @@ class PersistentCart
     /**
      * fügt eine Position zur WarenkorbPers hinzu
      *
-     * @param int    $productID
-     * @param string $productName
-     * @param array  $properties
-     * @param float  $qty
-     * @param string $unique
-     * @param int    $configItemID
-     * @param int    $type
-     * @param string $responsibility
+     * @param int         $productID
+     * @param string|null $productName
+     * @param array       $properties
+     * @param float       $qty
+     * @param string      $unique
+     * @param int         $configItemID
+     * @param int         $type
+     * @param string      $responsibility
      * @return $this
      */
     public function fuegeEin(
@@ -497,8 +496,7 @@ class PersistentCart
         if (!Frontend::getCustomer()->isLoggedIn()) {
             return;
         }
-        $conf = Shop::getSettings([\CONF_KAUFABWICKLUNG]);
-        if ($conf['kaufabwicklung']['warenkorbpers_nutzen'] !== 'Y') {
+        if (Shop::getSettingValue(\CONF_KAUFABWICKLUNG, 'warenkorbpers_nutzen') !== 'Y') {
             return;
         }
         // Persistenter Warenkorb

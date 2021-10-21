@@ -259,12 +259,12 @@ class Product
         if ($productID <= 0) {
             return [];
         }
+        $parentID       = 0;
         $customerGroup  = Frontend::getCustomerGroup()->getID();
         $db             = Shop::Container()->getDB();
         $properties     = [];
         $propertyValues = self::getPropertiesForVarCombiArticle($productID, $parentID);
         $exists         = true;
-
         if (\count($propertyValues) === 0) {
             return [];
         }

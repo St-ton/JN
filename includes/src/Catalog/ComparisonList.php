@@ -47,9 +47,13 @@ class ComparisonList
         if ($compareList !== null) {
             $defaultOptions = Artikel::getDefaultOptions();
             $baseURL        = Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php');
-            foreach ($compareList->oArtikel_arr as $item) {
+            foreach ($compareList->oArtikel_arr as $key => $item) {
                 $product = new Artikel();
                 $product->fuelleArtikel($item->kArtikel, $defaultOptions);
+                if ($product->getID() === null) {
+                    unset($compareList->oArtikel_arr[$key]);
+                    continue;
+                }
                 $product->cURLDEL = $baseURL . '?vlplo=' . $item->kArtikel;
                 if (isset($item->oVariationen_arr) && \count($item->oVariationen_arr) > 0) {
                     $product->Variationen = $item->oVariationen_arr;

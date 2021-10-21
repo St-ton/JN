@@ -484,13 +484,21 @@ class Helper
     }
 
     /**
+     * @return BootstrapperInterface[]
+     * @since 5.1.2
+     */
+    public static function getBootstrappedPlugins(): array
+    {
+        return self::$bootstrapper;
+    }
+
+    /**
      * @param PluginInterface $plugin
      */
     public static function updatePluginInstance(PluginInterface $plugin): void
     {
-        $bootstrapper = self::$bootstrapper[$plugin->getID()] ?? null;
-        if ($bootstrapper !== null) {
-            $bootstrapper->setPlugin($plugin);
+        if (($bootstrapper = self::$bootstrapper[$plugin->getID()] ?? null) !== null) {
+            $bootstrapper->getPlugin()->updateInstance($plugin);
         }
     }
 

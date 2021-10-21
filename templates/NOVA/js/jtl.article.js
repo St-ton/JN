@@ -809,7 +809,7 @@
         addToWishlist: function(data, $action) {
             let productId = parseInt(data[this.options.input.id]),
                 childId = parseInt(data[this.options.input.childId]),
-                qty =  parseInt(data[this.options.input.quantity]);
+                qty =  parseFloat(data[this.options.input.quantity]);
             if (childId > 0) {
                 productId = childId;
             }
@@ -971,11 +971,8 @@
                 case this.options.action.compareListRemove:
                     return this.removeFromCompareList(data);
                 case this.options.action.wishList:
-                    var qty = $('#buy_form_' + data.a + ' ' + this.options.selector.quantity);
-                    if (qty.length === 0) {
-                        qty = $('#buy_form ' + this.options.selector.quantity);
-                    }
-                    data[this.options.input.quantity] = qty.val();
+                    data[this.options.input.quantity] = $('#buy_form_'+data.a+' '+this.options.selector.quantity).val()
+                        || $('#quantity').val();
                     if ($action.hasClass('on-list')) {
                         $action.removeClass("on-list");
                         $action.next().removeClass("press");

@@ -1010,11 +1010,9 @@ class LanguageHelper
     {
         $languages = Frontend::getLanguages();
         if ($forceLoad || \count($languages) === 0) {
-            $languages = LanguageModel::loadAll($this->db, [], []);
-            $languages = $onlyActive === true ? $languages->filter(static function (LanguageModel $lang) {
-                return (bool)$lang->active === true;
-            })->toArray() :
-            $languages->toArray();
+            $languages = $onlyActive === true
+                ? LanguageModel::loadAll($this->db, ['active'], [1])->toArray()
+                : LanguageModel::loadAll($this->db, [], [])->toArray();
         }
         switch ($returnType) {
             case 2:

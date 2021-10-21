@@ -923,6 +923,7 @@ class Wishlist
                 $list->CWunschlistePos_arr,
                 $list->oKunde,
                 $list->kWunschliste,
+                $list->productCount,
                 $list->dErstellt_DE
             );
 

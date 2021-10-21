@@ -32,8 +32,7 @@ $wishlists        = [];
 $linkHelper       = Shop::Container()->getLinkService();
 $customerID       = Frontend::getCustomer()->getID();
 $alertHelper      = Shop::Container()->getAlertService();
-
-if ($kWunschliste === 0 && $customerID > 0 && empty($_SESSION['Wunschliste']->kWunschliste)) {
+if ($kWunschliste === 0 && $customerID > 0 && Frontend::getWishList()->getID() <= 0) {
     $_SESSION['Wunschliste'] = new Wishlist();
     $_SESSION['Wunschliste']->schreibeDB();
     $kWunschliste = $_SESSION['Wunschliste']->getID();
@@ -57,7 +56,7 @@ if ($action !== null && Form::validateToken()) {
             case 'addToCart':
                 $wishlistPosition = Wishlist::getWishListPositionDataByID($kWunschlistePos);
                 if (isset($wishlistPosition->kArtikel) && $wishlistPosition->kArtikel > 0
-                    && (int)$wishlistPosition->kWunschliste === $wl->kWunschliste
+                    && (int)$wishlistPosition->kWunschliste === $wl->getID()
                 ) {
                     $attributeValues = Product::isVariChild($wishlistPosition->kArtikel)
                         ? Product::getVarCombiAttributeValues($wishlistPosition->kArtikel)
@@ -78,7 +77,7 @@ if ($action !== null && Form::validateToken()) {
                 break;
 
             case 'sendViaMail':
-                if ($wl->cURLID !== '' && $wl->nOeffentlich && $wl->isSelfControlled()) {
+                if ($wl->getURL() !== '' && $wl->isPublic() && $wl->isSelfControlled()) {
                     $step = 'wunschliste anzeigen';
                     if (Request::postInt('send') === 1) {
                         if ($conf['global']['global_wunschliste_anzeigen'] === 'Y') {
@@ -99,18 +98,18 @@ if ($action !== null && Form::validateToken()) {
                 break;
 
             case 'addAllToCart':
-                if (count($wl->CWunschlistePos_arr) > 0) {
-                    foreach ($wl->CWunschlistePos_arr as $wishlistPosition) {
-                        $attributeValues = Product::isVariChild($wishlistPosition->kArtikel)
-                            ? Product::getVarCombiAttributeValues($wishlistPosition->kArtikel)
-                            : Wishlist::getAttributesByID($kWunschliste, (int)$wishlistPosition->kWunschlistePos);
-                        if (!$wishlistPosition->Artikel->bHasKonfig && empty($wishlistPosition->bKonfig)
-                            && isset($wishlistPosition->Artikel->inWarenkorbLegbar)
-                            && $wishlistPosition->Artikel->inWarenkorbLegbar > 0
+                if (count($wl->getItems()) > 0) {
+                    foreach ($wl->getItems() as $wishlistPosition) {
+                        $attributeValues = Product::isVariChild($wishlistPosition->getProductID())
+                            ? Product::getVarCombiAttributeValues($wishlistPosition->getProductID())
+                            : Wishlist::getAttributesByID($kWunschliste, $wishlistPosition->getID());
+                        if (!$wishlistPosition->getProduct()->bHasKonfig && empty($wishlistPosition->bKonfig)
+                            && isset($wishlistPosition->getProduct()->inWarenkorbLegbar)
+                            && $wishlistPosition->getProduct()->inWarenkorbLegbar > 0
                         ) {
                             CartHelper::addProductIDToCart(
-                                $wishlistPosition->kArtikel,
-                                $wishlistPosition->fAnzahl,
+                                $wishlistPosition->getProductID(),
+                                $wishlistPosition->getQty(),
                                 $attributeValues
                             );
                         }
@@ -137,8 +136,8 @@ if ($action !== null && Form::validateToken()) {
             case 'removeAll':
                 if ($wl->isSelfControlled()) {
                     $wl->entferneAllePos();
-                    if ((int)$_SESSION['Wunschliste']->kWunschliste === $wl->kWunschliste) {
-                        $_SESSION['Wunschliste']->CWunschlistePos_arr = [];
+                    if (Frontend::getWishList()->getID() === $wl->getID()) {
+                        Frontend::getWishList()->setItems([]);
                     }
                     $alertHelper->addAlert(
                         Alert::TYPE_NOTE,
@@ -203,14 +202,14 @@ if ($action !== null && Form::validateToken()) {
                     if ($wishlistTargetID === $kWunschliste) {
                         // the currently active one was deleted, search for a new one
                         $newWishlist = Wishlist::getWishlists()->first();
-                        if (isset($newWishlist->kWunschliste)) {
-                            $kWunschliste = (int)$newWishlist->kWunschliste;
+                        if ($newWishlist !== null) {
+                            $kWunschliste = $newWishlist->getID();
                             $alertHelper->addAlert(
                                 Alert::TYPE_NOTE,
                                 Wishlist::setDefault($kWunschliste),
                                 'setDefaultWL'
                             );
-                            $wishlist = new Wishlist($kWunschliste);
+                            $wishlist = $newWishlist->ladeWunschliste($kWunschliste);
                         } elseif (Frontend::getWishList()->getID() > 0) {
                             // the only existing wishlist was deleted, create a new one
                             $wishlist = new Wishlist();
@@ -254,7 +253,7 @@ if (Request::verifyGPCDataInt('wlidmsg') > 0) {
 if (Request::verifyGPCDataInt('error') === 1) {
     if (mb_strlen($cURLID) > 0) {
         $wl = Wishlist::instanceByURLID($cURLID);
-        if ($wl->nOeffentlich !== 1) {
+        if ($wl->isPublic()) {
             $alertHelper->addAlert(
                 Alert::TYPE_ERROR,
                 sprintf(Shop::Lang()->get('nowlidWishlist', 'messages'), $cURLID),
@@ -285,7 +284,7 @@ if ($wishlist === null) {
     $wishlist = Wishlist::buildPrice(Wishlist::instanceByID($kWunschliste)->filterPositions($searchQuery));
 }
 if ($customerID > 0) {
-    $wishlists = Wishlist::getWishlists()->toArray();
+    $wishlists = Wishlist::getWishlists();
     if (($invisibleItemCount = Wishlist::getInvisibleItemCount($wishlists, $wishlist, $kWunschliste)) > 0) {
         $alertHelper->addAlert(
             Alert::TYPE_WARNING,
@@ -293,14 +292,15 @@ if ($customerID > 0) {
             'warningInvisibleItems'
         );
     }
-} elseif ($wishlist->kWunschliste === 0) {
+} elseif ($wishlist->getID() === 0) {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '&r=' . R_LOGIN_WUNSCHLISTE);
     exit;
 }
+$wishListItems = $wishlist->getItems();
 
 $pagination = (new Pagination())
-    ->setItemArray($wishlist->CWunschlistePos_arr)
-    ->setItemCount(count($wishlist->CWunschlistePos_arr))
+    ->setItemArray($wishListItems)
+    ->setItemCount(count($wishListItems))
     ->assemble();
 
 Shop::Smarty()->assign('CWunschliste', $wishlist)
@@ -310,14 +310,14 @@ Shop::Smarty()->assign('CWunschliste', $wishlist)
     ->assign('newWL', Request::verifyGPCDataInt('newWL'))
     ->assign('wlsearch', $searchQuery)
     ->assign('Link', $link)
-    ->assign('hasItems', !empty($wishlist->CWunschlistePos_arr))
-    ->assign('isCurrenctCustomer', isset($wishlist->kKunde) && (int)$wishlist->kKunde === $customerID)
+    ->assign('hasItems', count($wishListItems) > 0)
+    ->assign('isCurrenctCustomer', $wishlist->getCustomerID() > 0 && $wishlist->getCustomerID() === $customerID)
     ->assign('cURLID', $cURLID)
     ->assign('step', $step);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 
-if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0) {
+if ($wishlist->getID() > 0) {
     $campaign = new Campaign(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
     if (isset($campaign->kKampagne, $campaign->cWert)
         && mb_convert_case($campaign->cWert, MB_CASE_LOWER) ===

@@ -423,19 +423,19 @@ class IOMethods
     }
 
     /**
-     * @param int   $productID
-     * @param int   $qty
-     * @param array $data
+     * @param int       $productID
+     * @param float|int $qty
+     * @param array     $data
      * @return IOResponse
      * @throws SmartyException
      */
-    public function pushToWishlist(int $productID, int $qty, array $data): IOResponse
+    public function pushToWishlist(int $productID, $qty, array $data): IOResponse
     {
         $_POST      = $data;
         $conf       = Shopsetting::getInstance()->getAll();
         $response   = new stdClass();
         $ioResponse = new IOResponse();
-        $qty        = $qty === 0 ? 1 : $qty;
+        $qty        = empty($qty) ? 1 : $qty;
         $smarty     = Shop::Smarty();
         if (Frontend::getCustomer()->getID() === 0) {
             $response->nType     = 1;
@@ -466,13 +466,13 @@ class IOMethods
 
         CartHelper::checkAdditions();
 
-        foreach ($_SESSION['Wunschliste']->CWunschlistePos_arr as $wlPos) {
-            if ($wlPos->kArtikel === $productID) {
-                $response->wlPosAdd = $wlPos->kWunschlistePos;
+        foreach (Frontend::getWishList()->getItems() as $wlPos) {
+            if ($wlPos->getProductID() === $productID) {
+                $response->wlPosAdd = $wlPos->getID();
             }
         }
         $response->nType     = 2;
-        $response->nCount    = \count($_SESSION['Wunschliste']->CWunschlistePos_arr);
+        $response->nCount    = \count(Frontend::getWishList()->getItems());
         $response->productID = $productID;
         $response->cTitle    = Shop::Lang()->get('goToWishlist');
         $buttons             = [
@@ -536,7 +536,7 @@ class IOMethods
         Frontend::getInstance()->setStandardSessionVars();
         $response->nType         = 2;
         $response->wlPosRemove   = $productID;
-        $response->nCount        = \count($_SESSION['Wunschliste']->CWunschlistePos_arr);
+        $response->nCount        = \count(Frontend::getWishList()->getItems());
         $response->cTitle        = Shop::Lang()->get('goToWishlist');
         $response->cBoxContainer = [];
         $response->cNavBadge     = $smarty->assign('Einstellungen', $conf)
@@ -562,7 +562,7 @@ class IOMethods
 
         $response->content         = $smarty->assign('wishlists', Wishlist::getWishlists())
             ->fetch('snippets/wishlist_dropdown.tpl');
-        $response->currentPosCount = \count(Frontend::getWishList()->CWunschlistePos_arr);
+        $response->currentPosCount = \count(Frontend::getWishList()->getItems());
 
         $ioResponse->assignVar('response', $response);
 
@@ -1393,7 +1393,7 @@ class IOMethods
         $response        = new stdClass();
         $response->wlID  = $wlID;
         $response->state = $state;
-        $response->url   = $wl->cURLID;
+        $response->url   = $wl->getURL();
 
         $ioResponse->assignVar('response', $response);
 

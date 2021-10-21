@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Catalog\Wishlist;
 
@@ -11,6 +11,19 @@ use JTL\Shop;
  */
 class WishlistItemProperty
 {
+    /**
+     * @var string[]
+     */
+    private static $mapping = [
+        'kWunschlistePosEigenschaft' => 'ID',
+        'kWunschlistePos'            => 'ItemID',
+        'kEigenschaft'               => 'PropertyID',
+        'kEigenschaftWert'           => 'PropertyValueID',
+        'cFreifeldWert'              => 'FreeTextValue',
+        'cEigenschaftName'           => 'PropertyName',
+        'cEigenschaftWertName'       => 'PropertyValueName'
+    ];
+
     /**
      * @var int
      */
@@ -32,35 +45,35 @@ class WishlistItemProperty
     public $kEigenschaftWert;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $cFreifeldWert;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $cEigenschaftName;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $cEigenschaftWertName;
 
     /**
      * WishlistItemProperty constructor.
-     * @param int    $propertyID
+     * @param int         $propertyID
      * @param null|int    $propertyValueID
-     * @param string $freeText
-     * @param string $propertyName
-     * @param string $propertyValueName
-     * @param int    $wishlistItemID
+     * @param string|null $freeText
+     * @param string|null $propertyName
+     * @param string|null $propertyValueName
+     * @param int         $wishlistItemID
      */
     public function __construct(
         int $propertyID,
         ?int $propertyValueID,
-        $freeText,
-        $propertyName,
-        $propertyValueName,
+        ?string $freeText,
+        ?string $propertyName,
+        ?string $propertyValueName,
         int $wishlistItemID
     ) {
         $this->kEigenschaft         = $propertyID;
@@ -141,7 +154,7 @@ class WishlistItemProperty
     }
 
     /**
-     * @param int $propertyValueID
+     * @param int|null $propertyValueID
      */
     public function setPropertyValueID(?int $propertyValueID): void
     {
@@ -149,9 +162,9 @@ class WishlistItemProperty
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getFreeTextValue(): string
+    public function getFreeTextValue(): ?string
     {
         return $this->cFreifeldWert;
     }
@@ -165,9 +178,9 @@ class WishlistItemProperty
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPropertyName(): string
+    public function getPropertyName(): ?string
     {
         return $this->cEigenschaftName;
     }
@@ -181,9 +194,9 @@ class WishlistItemProperty
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPropertyValueName(): string
+    public function getPropertyValueName(): ?string
     {
         return $this->cEigenschaftWertName;
     }

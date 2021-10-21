@@ -5,6 +5,7 @@ namespace JTL\Catalog\Wishlist;
 use JTL\Catalog\Product\Artikel;
 use JTL\Shop;
 use stdClass;
+use function Functional\select;
 use function Functional\some;
 
 /**
@@ -13,6 +14,24 @@ use function Functional\some;
  */
 class WishlistItem
 {
+    /**
+     * @var string[]
+     */
+    private static $mapping = [
+        'kWunschliste'                   => 'ishlistID',
+        'kWunschlistePos'                => 'ID',
+        'kArtikel'                       => 'ProductID',
+        'fAnzahl'                        => 'Qty',
+        'cArtikelName'                   => 'ProductName',
+        'cKommentar'                     => 'Comment',
+        'dHinzugefuegt'                  => 'DateAdded',
+        'dHinzugefuegt_de'               => 'DateAddedLocalized',
+        'CWunschlistePosEigenschaft_arr' => 'Properties',
+        'Artikel'                        => 'Product',
+        'cPreis'                         => 'Price',
+        'cURL'                           => 'URL'
+    ];
+
     /**
      * @var int
      */
@@ -36,7 +55,7 @@ class WishlistItem
     /**
      * @var string
      */
-    public $cArtikelName = '';
+    public $cArtikelName;
 
     /**
      * @var string
@@ -59,9 +78,38 @@ class WishlistItem
     public $CWunschlistePosEigenschaft_arr = [];
 
     /**
-     * @var Artikel
+     * @var Artikel|null
      */
     public $Artikel;
+
+    /**
+     * @var string
+     */
+    public $cPreis = '';
+
+    /**
+     * @var string
+     */
+    public $cURL = '';
+
+    public function __wakeup(): void
+    {
+        if ($this->kArtikel === null) {
+            return;
+        }
+        $this->Artikel = new Artikel();
+        $this->Artikel->fuelleArtikel($this->kArtikel, Artikel::getDefaultOptions());
+    }
+
+    /**
+     * @return array
+     */
+    public function __sleep(): array
+    {
+        return select(\array_keys(\get_object_vars($this)), static function ($e) {
+            return $e !== 'Artikel';
+        });
+    }
 
     /**
      * WishlistItem constructor.
@@ -305,9 +353,9 @@ class WishlistItem
     }
 
     /**
-     * @return Artikel
+     * @return Artikel|null
      */
-    public function getProduct(): Artikel
+    public function getProduct(): ?Artikel
     {
         return $this->Artikel;
     }
@@ -318,5 +366,42 @@ class WishlistItem
     public function setProduct(Artikel $product): void
     {
         $this->Artikel = $product;
+    }
+
+    public function unsetProduct(): void
+    {
+        unset($this->Artikel);
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrice(): string
+    {
+        return $this->cPreis;
+    }
+
+    /**
+     * @param string $price
+     */
+    public function setPrice(string $price): void
+    {
+        $this->cPreis = $price;
+    }
+
+    /**
+     * @return string
+     */
+    public function getURL(): string
+    {
+        return $this->cURL;
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setURL(string $url): void
+    {
+        $this->cURL = $url;
     }
 }

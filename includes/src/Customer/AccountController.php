@@ -1109,7 +1109,7 @@ class AccountController
     {
         $step     = 'mein Konto';
         $wishlist = new Wishlist($wishlistID);
-        if ($wishlist->kKunde !== $customerID) {
+        if ($wishlist->getCustomerID() !== $customerID) {
             return $step;
         }
         if (isset($_REQUEST['wlAction']) && Form::validateToken()) {

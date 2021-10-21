@@ -337,7 +337,6 @@ class Frontend extends AbstractSession
     public function cleanUp(): self
     {
         if (isset($_SESSION['Kunde']->nRegistriert) && (int)$_SESSION['Kunde']->nRegistriert === 0) {
-
             unset($_SESSION['Kunde']);
         }
 

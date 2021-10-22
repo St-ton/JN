@@ -1876,8 +1876,7 @@ function setzeSteuersaetze($steuerland = 0)
     $deliveryCountryCode = $merchantCountryCode;
     if ($steuerland) {
         $deliveryCountryCode = $steuerland;
-    }
-    if (!empty($_SESSION['Kunde']->cLand)) {
+    } elseif (!empty($_SESSION['Kunde']->cLand)) {
         $deliveryCountryCode = $_SESSION['Kunde']->cLand;
         $billingCountryCode  = $_SESSION['Kunde']->cLand;
     }
@@ -1899,8 +1898,10 @@ function setzeSteuersaetze($steuerland = 0)
         $merchantCountryCode !== $deliveryCountryCode &&
         $merchantCountryCode !== $billingCountryCode &&
         strlen($_SESSION['Kunde']->cUSTID) > 0 &&
-        strcasecmp($billingCountryCode, substr($_SESSION['Kunde']->cUSTID, 0, 2)) === 0 ||
-        (strcasecmp($billingCountryCode, 'GR') === 0 && strcasecmp(substr($_SESSION['Kunde']->cUSTID, 0, 2), 'EL') === 0)
+        (strcasecmp($billingCountryCode, substr($_SESSION['Kunde']->cUSTID, 0, 2)) === 0 || (
+            strcasecmp($billingCountryCode, 'GR') === 0 &&
+            strcasecmp(substr($_SESSION['Kunde']->cUSTID, 0, 2), 'EL') === 0)
+        )
     ) {
         $deliveryCountry = Shop::DB()->select('tland', 'cISO', $deliveryCountryCode);
         $shopCountry     = Shop::DB()->select('tland', 'cISO', $merchantCountryCode);
@@ -1914,6 +1915,17 @@ function setzeSteuersaetze($steuerland = 0)
             WHERE tsteuerzoneland.cISO = '" . $deliveryCountryCode . "'
                 AND tsteuerzoneland.kSteuerzone = tsteuerzone.kSteuerzone", 2
     );
+    if (count($steuerzonen) === 0) {
+        global $cHinweis;
+
+        Jtllog::writeLog('Keine Steuerzone fuer "' . $deliveryCountryCode . '" hinterlegt!');
+        $cHinweis = Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages');
+        unset($_SESSION['Lieferadresse']->cLand);
+        setzeSteuersaetze($merchantCountryCode);
+
+        return;
+    }
+
     $steuerklassen = Shop::DB()->query("SELECT * FROM tsteuerklasse", 2);
     $qry           = '';
     foreach ($steuerzonen as $i => $steuerzone) {

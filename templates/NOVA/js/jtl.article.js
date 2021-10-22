@@ -971,7 +971,8 @@
                 case this.options.action.compareListRemove:
                     return this.removeFromCompareList(data);
                 case this.options.action.wishList:
-                    data[this.options.input.quantity] = $('#buy_form_'+data.a+' '+this.options.selector.quantity).val()
+                    data[this.options.input.quantity] = $('input[data-product-id="' + data.a + '"]').val()
+                        || $('#buy_form_'+data.a+' '+this.options.selector.quantity).val()
                         || $('#quantity').val();
                     if ($action.hasClass('on-list')) {
                         $action.removeClass("on-list");

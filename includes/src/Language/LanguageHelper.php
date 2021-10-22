@@ -997,13 +997,13 @@ class LanguageHelper
         }
         switch ($returnType) {
             case 2:
-                return reindex($languages, static function ($e) {
-                    return $e->cISO;
+                return reindex($languages, static function (LanguageModel $e) {
+                    return $e->getCode();
                 });
 
             case 1:
-                return reindex($languages, static function ($e) {
-                    return $e->kSprache;
+                return reindex($languages, static function (LanguageModel $e) {
+                    return $e->getId();
                 });
 
             case 0:

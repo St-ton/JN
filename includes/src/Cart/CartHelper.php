@@ -782,12 +782,13 @@ class CartHelper
                 if ($productID <= 0) {
                     return true;
                 }
-                if (empty($_SESSION['Wunschliste']->kWunschliste)) {
-                    $_SESSION['Wunschliste'] = new Wishlist();
-                    $_SESSION['Wunschliste']->schreibeDB();
+                $wishlist = Frontend::getWishList();
+                if ($wishlist->getID() === 0) {
+                    $wishlist = new Wishlist();
+                    $wishlist->schreibeDB();
+                    $_SESSION['Wunschliste'] = $wishlist;
                 }
-                $qty    = \max(1, $qty);
-                $itemID = $_SESSION['Wunschliste']->fuegeEin(
+                $itemID = $wishlist->fuegeEin(
                     $productID,
                     $productExists->cName,
                     $attributes,

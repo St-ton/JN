@@ -296,6 +296,8 @@ class KategorieListe
             $category->kKategorie     = (int)$category->kKategorie;
             $category->kOberKategorie = (int)$category->kOberKategorie;
             $category->nSort          = (int)$category->nSort;
+            $category->lft            = (int)$category->lft;
+            $category->rght           = (int)$category->rght;
             // Leere Kategorien ausblenden?
             if (!$this->nichtLeer($category->kKategorie, $customerGroupID)) {
                 $categoryList['ks'][$category->kKategorie] = 2;

@@ -703,7 +703,7 @@ class Category
                 self::$languageID
             ));
             $category->setChildren($children);
-            $category->setHasChildren(count($children) > 0);
+            $category->setHasChildren(\count($children) > 0);
         }
 
         return $category === null ? [] : $category->getChildren();

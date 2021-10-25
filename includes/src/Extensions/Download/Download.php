@@ -323,7 +323,7 @@ class Download
         }
         $order = new Bestellung($orderID);
         // Existiert die Bestellung und wurde Sie bezahlt?
-        if ($order->kBestellung <= 0 || empty($order->dBezahltDatum)) {
+        if ($order->kBestellung <= 0 || (empty($order->dBezahltDatum) && $order->fGesamtsumme > 0)) {
             return self::ERROR_ORDER_NOT_FOUND;
         }
         // Stimmt der Kunde?

@@ -40,7 +40,11 @@
                             || ((isset($activeParent)
                                 && isset($activeParent->kKategorie))
                                 && $activeParent->kKategorie == $category->getID())} active{/if}">
-                                {link href=$category->getURL() title=$category->getName()|@seofy class="nav-link dropdown-toggle" target="_self"}
+                                {link href=$category->getURL()
+                                    title=$category->getName()|@seofy
+                                    class="nav-link dropdown-toggle"
+                                    target="_self"
+                                    data=["category-id"=>$category->getID()]}
                                     <span class="nav-mobile-heading">{$category->getShortName()}</span>
                                 {/link}
                                 <div class="dropdown-menu">
@@ -79,7 +83,8 @@
                             {navitem href=$category->getURL() title=$category->getName()|@seofy
                                 class="nav-scrollbar-item {if $Einstellungen.template.megamenu.show_categories === 'mobile'} d-lg-none
                                     {elseif $Einstellungen.template.megamenu.show_categories === 'desktop'} d-none d-lg-inline-block {/if}
-                                    {if $category->getID() === $activeId}active{/if}"}
+                                    {if $category->getID() === $activeId}active{/if}"
+                                data=["category-id"=>$category->getID()]}
                                 <span class="text-truncate d-block">{$category->getShortName()}</span>
                             {/navitem}
                         {/block}
@@ -172,7 +177,7 @@
         {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
             {navitem href="{get_static_route id='wunschliste.php'}" class="wl-nav-scrollbar-item nav-scrollbar-item"}
                 {badge id="badge-wl-count" variant="primary" class="product-count"}
-                    {if $smarty.session.Wunschliste->getID() > 0}
+                    {if isset($smarty.session.Wunschliste) && $smarty.session.Wunschliste->getID() > 0}
                         {$smarty.session.Wunschliste->getItems()|count}
                     {else}
                         0

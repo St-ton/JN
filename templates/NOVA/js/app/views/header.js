@@ -192,7 +192,7 @@ $document.on('show.bs.collapse', mainNavigation, () => {
 $document.on('shown.bs.collapse', mainNavigation, () => {
     $backdropMobileNav.addClass('show')
     $(`${mainNavigation} .nav-mobile-body`).scrollTop(0)
-    if (categoryID > 0) {
+    if (categoryID > 0 && mobileLevels.length === 0) {
         openCurrentCategory();
     }
 })

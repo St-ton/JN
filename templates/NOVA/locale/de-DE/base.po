@@ -189,3 +189,6 @@ msgstr "Auf allen Seiten"
 
 msgid "Suchfeld in Filtern anzeigen ab x Einträgen"
 msgstr "Suchfeld in Filtern anzeigen ab x Einträgen"
+
+msgid "Mobiles Menü bei aktiver Kategorie öffnen"
+msgstr "Mobiles Menü bei aktiver Kategorie öffnen"

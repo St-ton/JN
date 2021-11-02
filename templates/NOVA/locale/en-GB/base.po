@@ -189,3 +189,6 @@ msgstr "On all pages"
 
 msgid "Suchfeld in Filtern anzeigen ab x Einträgen"
 msgstr "Show search in filters if filter has more than x items"
+
+msgid "Mobiles Menü bei aktiver Kategorie öffnen"
+msgstr "Open mobile menu at current category"

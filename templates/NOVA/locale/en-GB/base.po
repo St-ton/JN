@@ -26,7 +26,7 @@ msgid "Animation für Schaltflächen beim Hovern"
 msgstr "Animated buttons when hovering"
 
 msgid "Anzeige der Suche auf mobilen Geräten"
-msgstr "Display of search on mobile devices"
+msgstr "Mobile devices: Display of search"
 
 msgid "Schaltfläche „Nach oben scrollen“ anzeigen"
 msgstr "Show button \"Scroll to top\""
@@ -190,5 +190,5 @@ msgstr "On all pages"
 msgid "Suchfeld in Filtern anzeigen ab x Einträgen"
 msgstr "Show search in filters if filter has more than x items"
 
-msgid "Mobiles Menü bei aktiver Kategorie öffnen"
-msgstr "Open mobile menu at current category"
+msgid "Mobile Geräte: Menü in aktueller Kategorie öffnen"
+msgstr "Mobile devices: Open menu in current category"

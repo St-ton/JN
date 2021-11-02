@@ -62,7 +62,7 @@
                 <Option Value="desktop">Nur Desktop</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
-            <Setting Description="Mobiles Menü bei aktiver Kategorie öffnen" Key="mobile_start_category" Type="select" Value="N">
+            <Setting Description="Mobile Geräte: Menü in aktueller Kategorie öffnen" Key="mobile_start_category" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>

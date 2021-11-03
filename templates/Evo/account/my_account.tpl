@@ -14,7 +14,7 @@
                 </div>
                 <div class="panel-body">
                     {block name="account-billing-address-body"}
-                        <p>
+                        <p class="word-break">
                             {include file='checkout/inc_billing_address.tpl' additional=false}
                         </p>
                         <a class="small edit top15" href="{get_static_route id='jtl.php' params=['editRechnungsadresse' => 1]}">

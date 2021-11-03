@@ -27,7 +27,7 @@
                                 <p class="title">
                                     <strong>{lang key="billingAdress" section="account data"}</strong>
                                 </p>
-                                <p>
+                                <p class="word-break">
                                     {include file='checkout/inc_billing_address.tpl'}
                                 </p>
                                 <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1">
@@ -40,7 +40,7 @@
                                 <p class="title">
                                     <strong>{lang key="shippingAdress" section="account data"}</strong>
                                 </p>
-                                <p>
+                                <p class="word-break">
                                     {include file='checkout/inc_delivery_address.tpl'}
                                 </p>
                                 <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editLieferadresse=1">

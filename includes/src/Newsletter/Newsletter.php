@@ -392,6 +392,7 @@ class Newsletter
         $products       = [];
         $shopURL        = Shop::getURL() . '/';
         $imageBaseURL   = Shop::getImageBaseURL();
+        $db             = Shop::Container()->getDB();
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($productIDs as $id) {
             $id = (int)$id;
@@ -399,7 +400,7 @@ class Newsletter
                 continue;
             }
             Frontend::getCustomerGroup()->setMayViewPrices(1);
-            $product = new Artikel();
+            $product = new Artikel($db);
             $product->fuelleArtikel($id, $defaultOptions, $customerGroupID, $langID);
             if (!($product->kArtikel > 0)) {
                 Shop::Container()->getLogService()->notice(

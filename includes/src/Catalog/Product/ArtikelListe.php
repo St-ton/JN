@@ -50,6 +50,7 @@ class ArtikelListe
             '_' . $languageID .
             '_' . $customerGroupID;
         $items   = Shop::Container()->getCache()->get($cacheID);
+        $db      = Shop::Container()->getDB();
         if ($items === false) {
             $qry = ($topneu === 'neu')
                 ? "cNeu = 'Y'"
@@ -57,7 +58,7 @@ class ArtikelListe
             if (!$customerGroupID) {
                 $customerGroupID = Frontend::getCustomerGroup()->getID();
             }
-            $items = Shop::Container()->getDB()->getObjects(
+            $items = $db->getObjects(
                 'SELECT tartikel.kArtikel
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit 
@@ -73,7 +74,7 @@ class ArtikelListe
         if (\is_array($items)) {
             $defaultOptions = Artikel::getDefaultOptions();
             foreach ($items as $item) {
-                $product = new Artikel();
+                $product = new Artikel($db);
                 $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
                 $this->elemente[] = $product;
             }
@@ -116,13 +117,14 @@ class ArtikelListe
         if (($res = Shop::Container()->getCache()->get($cacheID)) !== false) {
             $this->elemente = $res;
         } else {
+            $db            = Shop::Container()->getDB();
             $productFilter = Shop::getProductFilter();
             $conditionSQL  = '';
             if ($productFilter !== null && $productFilter->hasManufacturer()) {
                 $conditionSQL = ' AND tartikel.kHersteller = ' . $productFilter->getManufacturer()->getValue() . ' ';
             }
             $stockFilterSQL = $productFilter->getFilterSQL()->getStockFilterSQL();
-            $items          = Shop::Container()->getDB()->getObjects(
+            $items          = $db->getObjects(
                 'SELECT tartikel.kArtikel
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
@@ -137,7 +139,7 @@ class ArtikelListe
             );
             $defaultOptions = Artikel::getDefaultOptions();
             foreach ($items as $item) {
-                $this->elemente[] = (new Artikel())->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
+                $this->elemente[] = (new Artikel($db))->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
             }
             Shop::Container()->getCache()->set(
                 $cacheID,
@@ -164,8 +166,9 @@ class ArtikelListe
         $cnt            = \count($productIDs);
         $total          = 0;
         $defaultOptions = Artikel::getDefaultOptions();
+        $db             = Shop::Container()->getDB();
         for ($i = $start; $i < $cnt; $i++) {
-            $product = (new Artikel())->fuelleArtikel($productIDs[$i], $defaultOptions);
+            $product = (new Artikel($db))->fuelleArtikel($productIDs[$i], $defaultOptions);
             if ($product !== null && $product->kArtikel > 0) {
                 ++$total;
                 $this->elemente[] = $product;
@@ -203,12 +206,13 @@ class ArtikelListe
         }
         $cacheID = 'hTA_' . \md5(\json_encode($categoryIDs));
         $items   = Shop::Container()->getCache()->get($cacheID);
+        $db      = Shop::Container()->getDB();
         if ($items === false && \count($categoryIDs) > 0) {
             $conf            = Shop::getSettings([\CONF_ARTIKELUEBERSICHT]);
             $customerGroupID = Frontend::getCustomerGroup()->getID();
             $limitSql        = 'LIMIT ' . (int)($conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'] ?? 6);
             $stockFilterSQL  = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $items           = Shop::Container()->getDB()->getObjects(
+            $items           = $db->getObjects(
                 'SELECT DISTINCT (tartikel.kArtikel)
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
@@ -233,7 +237,7 @@ class ArtikelListe
         }
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($items as $obj) {
-            $this->elemente[] = (new Artikel())->fuelleArtikel((int)$obj->kArtikel, $defaultOptions);
+            $this->elemente[] = (new Artikel($db))->fuelleArtikel((int)$obj->kArtikel, $defaultOptions);
         }
 
         return $this->elemente;
@@ -270,6 +274,7 @@ class ArtikelListe
         }
         $cacheID = 'hBsA_' . \md5(\json_encode($categoryIDs) . \json_encode($keys));
         $items   = Shop::Container()->getCache()->get($cacheID);
+        $db      = Shop::Container()->getDB();
         if ($items === false && \count($categoryIDs) > 0) {
             $customerGroupID = Frontend::getCustomerGroup()->getID();
             // top artikel nicht nochmal in den bestsellen vorkommen lassen
@@ -285,7 +290,7 @@ class ArtikelListe
             $conf           = Shop::getSettings([\CONF_ARTIKELUEBERSICHT]);
             $limitSQL       = 'LIMIT ' . (int)($conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'] ?? 6);
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $items          = Shop::Container()->getDB()->getObjects(
+            $items          = $db->getObjects(
                 'SELECT DISTINCT (tartikel.kArtikel)
                     FROM tkategorieartikel, tbestseller, tartikel
                     LEFT JOIN tartikelsichtbarkeit
@@ -308,7 +313,7 @@ class ArtikelListe
         if (\is_array($items)) {
             $defaultOptions = Artikel::getDefaultOptions();
             foreach ($items as $item) {
-                $this->elemente[] = (new Artikel())->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
+                $this->elemente[] = (new Artikel($db))->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
             }
         }
 

@@ -265,8 +265,9 @@ class PersistentCart
         if ($this->kWarenkorbPers <= 0) {
             return $this;
         }
+        $db = Shop::Container()->getDB();
         // Hole alle Positionen für eine WarenkorbPers
-        $cartItems = Shop::Container()->getDB()->selectAll(
+        $cartItems = $db->selectAll(
             'twarenkorbperspos',
             'kWarenkorbPers',
             (int)$this->kWarenkorbPers,
@@ -305,7 +306,7 @@ class PersistentCart
             $persItem->dHinzugefuegt     = $item->dHinzugefuegt;
             $persItem->dHinzugefuegt_de  = $item->dHinzugefuegt_de;
 
-            $attributes = Shop::Container()->getDB()->selectAll(
+            $attributes = $db->selectAll(
                 'twarenkorbpersposeigenschaft',
                 'kWarenkorbPersPos',
                 (int)$item->kWarenkorbPersPos
@@ -321,7 +322,7 @@ class PersistentCart
                 );
             }
             if ($addProducts) {
-                $persItem->Artikel = new Artikel();
+                $persItem->Artikel = new Artikel($db);
                 $persItem->Artikel->fuelleArtikel($persItem->kArtikel, $defaultOptions);
                 $persItem->cArtikelName = $persItem->Artikel->cName;
 

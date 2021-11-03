@@ -383,6 +383,7 @@ class ShippingMethod
         $iso      = $_SESSION['cLieferlandISO'] ?? 'DE';
         $cart     = Frontend::getCart();
         $cgroupID = Frontend::getCustomerGroup()->getID();
+        $db       = Shop::Container()->getDB();
         // Baue ZusatzArtikel
         $additionalProduct                  = new stdClass();
         $additionalProduct->fAnzahl         = 0;
@@ -406,7 +407,7 @@ class ShippingMethod
             if ($nArtikelAssoc !== 1) {
                 continue;
             }
-            $tmpProduct = (new Artikel())->fuelleArtikel($productID, $defaultOptions);
+            $tmpProduct = (new Artikel($db))->fuelleArtikel($productID, $defaultOptions);
             // Normaler Variationsartikel
             if ($tmpProduct !== null
                 && $tmpProduct->nIstVater === 0
@@ -434,7 +435,7 @@ class ShippingMethod
             $products = \array_merge($products);
         }
         foreach ($products as $product) {
-            $tmpProduct = (new Artikel())->fuelleArtikel($product['kArtikel'], $defaultOptions);
+            $tmpProduct = (new Artikel($db))->fuelleArtikel($product['kArtikel'], $defaultOptions);
             if ($tmpProduct === null || $tmpProduct->kArtikel <= 0) {
                 continue;
             }
@@ -521,7 +522,7 @@ class ShippingMethod
                     $shippingClasses = $tmpProduct->kVersandklasse;
                 }
             } elseif ($tmpProduct->nIstVater > 0) { // Variationskombination (Vater)
-                $child = new Artikel();
+                $child = new Artikel($db);
                 if (\mb_strpos($product['cInputData'], '_') === 0) {
                     // 1D
                     $cVariation0                  = \mb_substr($product['cInputData'], 1);

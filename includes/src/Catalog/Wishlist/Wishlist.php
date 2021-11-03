@@ -458,7 +458,7 @@ class Wishlist
                 $item->addProperty($wlAttribute);
             }
 
-            $product = new Artikel();
+            $product = new Artikel($db);
             try {
                 $product->fuelleArtikel($result->kArtikel, Artikel::getDefaultOptions());
             } catch (Exception $e) {
@@ -691,8 +691,9 @@ class Wishlist
     {
         if (\count(Frontend::getWishList()->getItems()) > 0) {
             $defaultOptions = Artikel::getDefaultOptions();
+            $db             = Shop::Container()->getDB();
             foreach (Frontend::getWishList()->getItems() as $item) {
-                $product = new Artikel();
+                $product = new Artikel($db);
                 try {
                     $product->fuelleArtikel($item->getProductID(), $defaultOptions);
                 } catch (Exception $e) {
@@ -1038,15 +1039,16 @@ class Wishlist
         if ($itemID <= 0) {
             return false;
         }
-        $item = Shop::Container()->getDB()->select('twunschlistepos', 'kWunschlistePos', $itemID);
+        $db   = Shop::Container()->getDB();
+        $item = $db->select('twunschlistepos', 'kWunschlistePos', $itemID);
         if ($item === null) {
             return false;
         }
         $item->kWunschlistePos = (int)$item->kWunschlistePos;
         $item->kWunschliste    = (int)$item->kWunschliste;
         $item->kArtikel        = (int)$item->kArtikel;
-        $product               = new Artikel();
         try {
+            $product = new Artikel($db);
             $product->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
         } catch (Exception $e) {
             return false;
@@ -1172,7 +1174,7 @@ class Wishlist
             $item->kArtikel        = (int)$item->kArtikel;
 
             try {
-                $product = (new Artikel())->fuelleArtikel($item->kArtikel, $defaultOptions);
+                $product = (new Artikel($db))->fuelleArtikel($item->kArtikel, $defaultOptions);
             } catch (Exception $e) {
                 continue;
             }

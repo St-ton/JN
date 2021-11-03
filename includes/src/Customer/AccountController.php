@@ -709,7 +709,7 @@ class AccountController
                         ->fuegeEin($productID, 1, [], \C_WARENKORBPOS_TYP_GRATISGESCHENK);
                 }
             } else {
-                $tmpProduct = new Artikel();
+                $tmpProduct = new Artikel($this->db);
                 $tmpProduct->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
                     ? Artikel::getDefaultOptions()
                     : Artikel::getDefaultConfigOptions());

@@ -29,7 +29,6 @@ class TestHydrator extends DefaultsHydrator
     {
         parent::hydrate($data, $language);
         Shop::Lang()->setzeSprache($language->getCode());
-
         $langID        = $language->getId();
         $msg           = $this->getMessage();
         $customerBonus = $this->getBonus();

@@ -33,6 +33,7 @@ $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 $startKat             = new Kategorie();
 $startKat->kKategorie = -1;
 $smarty->assign('Navigation', createNavigation($AktuelleSeite, 0, 0))
+       ->assign('linkHelper', LinkHelper::getInstance())
        ->assign('Einstellungen', $Einstellungen);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

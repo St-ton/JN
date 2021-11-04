@@ -396,13 +396,17 @@ class Redirect
             }
             $cIP = getRealIp();
             // Eintrag für diese IP bereits vorhanden?
-            $oEntry = Shop::DB()->query(
+            $oEntry = Shop::DB()->queryPrepared(
                 "SELECT *
                     FROM tredirectreferer tr
                     LEFT JOIN tredirect t 
                         ON t.kRedirect = tr.kRedirect
-                    WHERE tr.cIP = '{$cIP}'
-                    AND t.cFromUrl = '{$cUrl}' LIMIT 1", 1
+                    WHERE tr.cIP = :cIP
+                        AND t.cFromUrl = :cURL LIMIT 1",
+                [
+                    'cIP'  => $cIP,
+                    'cURL' => $cUrl
+                ], 1
             );
             if ($oEntry === false || $oEntry === null || (is_object($oEntry) && (int)$oEntry->nCount === 0)) {
                 $oReferer               = new stdClass();

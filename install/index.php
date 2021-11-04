@@ -144,7 +144,7 @@ switch ($step) {
         } elseif ($nCon === 2) {
             $cHinweis = 'Der angegebene Benutzername hat auf dem angegebenem Server keine Rechte f&uuml;r die Datenbank ' . $_POST['DBname'];
         } elseif ($nCon === 4) {
-            $cHinweis = 'JTL Shop ist bereits installiert!';
+            $cHinweis = 'JTL Shop ist bereits installiert! Eventuell muss die Datenbank neu angelegt werden.';
         } elseif ($nCon === 5) {
             $cHinweis = $dbError;
         }

@@ -35,9 +35,10 @@ class DBManager
     public static function getColumns(string $table): array
     {
         $list    = [];
+        $table   = Shop::Container()->getDB()->escape($table);
         $columns = Shop::Container()->getDB()->getObjects(
-            'SHOW FULL COLUMNS FROM :tbl',
-            ['tbl' => $table]
+            "SHOW FULL COLUMNS 
+                FROM `{$table}`"
         );
         foreach ($columns as $column) {
             $column->Type_info    = self::parseType($column->Type);
@@ -54,8 +55,10 @@ class DBManager
     public static function getIndexes(string $table): array
     {
         $list    = [];
+        $table   = Shop::Container()->getDB()->escape($table);
         $indexes = Shop::Container()->getDB()->getObjects(
-            'SHOW INDEX FROM :tbl', ['tbl' => $table]
+            "SHOW INDEX 
+                FROM `{$table}`"
         );
         foreach ($indexes as $index) {
             $container = (object)[

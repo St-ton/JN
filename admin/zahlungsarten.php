@@ -36,7 +36,6 @@ if (Request::verifyGPCDataInt('checkNutzbar') === 1) {
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPaymentMethodCheck'), 'successPaymentMethodCheck');
 }
 $res = ZahlungsLog::getLog(['x1', 'x2']);
-Shop::dbg($res, true);
 // reset log
 if (($action = Request::verifyGPDataString('a')) !== ''
     && $action === 'logreset'

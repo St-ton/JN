@@ -66,6 +66,8 @@ if (Request::postVar('resetSetting') !== null) {
             case 'text':
                 $currentValue->cWert = mb_substr($currentValue->cWert, 0, 255);
                 break;
+            default:
+                break;
         }
         $db->delete(
             'teinstellungen',

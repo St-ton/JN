@@ -130,6 +130,8 @@ if (Request::postVar('resetSetting') !== null) {
                 case 'pass':
                     $value->cWert = $_POST[$confData[$i]->cWertName];
                     break;
+                default:
+                    break;
             }
             if ($sectionItem->validate($confData[$i], $postData[$confData[$i]->cWertName])) {
                 if (is_array($postData[$confData[$i]->cWertName])) {

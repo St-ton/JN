@@ -189,6 +189,8 @@ switch ($action) {
                     case 'listbox':
                         bearbeiteListBox($value->cWert, $settings[$i]->cWertName, CONF_CACHING);
                         break;
+                    default:
+                        break;
                 }
                 if ($value->cName === 'caching_method' && $value->cWert === 'auto') {
                     $availableMethods = [];

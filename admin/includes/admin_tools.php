@@ -174,6 +174,8 @@ function saveAdminSettings(
             case 'listbox':
                 bearbeiteListBox($val->cWert, $val->cName, $val->kEinstellungenSektion);
                 break;
+            default:
+                break;
         }
         if ($config->cInputTyp !== 'listbox') {
             $db->delete(
@@ -296,6 +298,8 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
             case 'listbox':
             case 'selectkdngrp':
                 bearbeiteListBox($val->cWert, $config->cWertName, $configSectionID);
+                break;
+            default:
                 break;
         }
         if ($valid && $config->cInputTyp !== 'listbox' && $config->cInputTyp !== 'selectkdngrp') {

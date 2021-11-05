@@ -173,6 +173,9 @@ switch ($action) {
                 $value->cName                 = $settings[$i]->cWertName;
                 $value->kEinstellungenSektion = CONF_CACHING;
                 switch ($settings[$i]->cInputTyp) {
+                    case 'pass':
+                        $value->cWert = $_POST[$settings[$i]->cWertName];
+                        break;
                     case 'kommazahl':
                         $value->cWert = (float)$value->cWert;
                         break;

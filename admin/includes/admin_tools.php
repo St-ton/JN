@@ -298,7 +298,6 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
                 bearbeiteListBox($val->cWert, $config->cWertName, $configSectionID);
                 break;
         }
-
         if ($valid && $config->cInputTyp !== 'listbox' && $config->cInputTyp !== 'selectkdngrp') {
             $db->delete(
                 'teinstellungen',

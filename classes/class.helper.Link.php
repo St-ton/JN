@@ -864,7 +864,7 @@ class LinkHelper
                         ON tseo.cKey = 'kLink'
                         AND tseo.kKey = " . $kLink . "
                     LEFT JOIN tsprache
-						ON tsprache.kSprache = tseo.kSprache
+                        ON tsprache.kSprache = tseo.kSprache
                     WHERE tlink.bIsActive = 1 
                         AND tlink.kLink = " . $kLink .
                         $loginSichtbarkeit . "

@@ -108,12 +108,6 @@ class Profiler
             }
             if (self::$method !== null) {
                 self::$functional = true;
-                if ($flags === -1) {
-                    $flags = (self::$method === 'xhprof') ?
-                        (XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY) :
-                        (TIDEWAYS_FLAGS_CPU | TIDEWAYS_FLAGS_MEMORY | TIDEWAYS_FLAGS_NO_SPANS);
-                }
-                self::$flags   = $flags;
                 self::$options = $options;
                 self::$dataDir = $dir;
             }
@@ -457,30 +451,33 @@ class Profiler
     {
         if (defined('PROFILE_SHOP') && PROFILE_SHOP === true) {
             self::$enabled = true;
+            self::$flags   = $flags;
             if (function_exists('xhprof_enable')) {
                 self::$method = 'xhprof';
+                if (self::$flags === -1) {
+                    self::$flags = XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY;
+                }
+                xhprof_enable(self::$flags, self::$options);
             } elseif (function_exists('tideways_enable')) {
                 self::$method = 'tideways';
+                if (self::$flags === -1) {
+                    self::$flags = \TIDEWAYS_FLAGS_CPU | \TIDEWAYS_FLAGS_MEMORY | \TIDEWAYS_FLAGS_NO_SPANS;
+                }
+            } elseif (\function_exists('tideways_xhprof_enable')) {
+                self::$method = 'tideways5';
+                if (self::$flags === -1) {
+                    self::$flags = TIDEWAYS_XHPROF_FLAGS_MEMORY | TIDEWAYS_XHPROF_FLAGS_CPU;
+                }
+                tideways_xhprof_enable(self::$flags);
             }
             if (self::$method !== null) {
                 self::$functional = true;
-                if ($flags === -1) {
-                    $flags = (self::$method === 'xhprof')
-                        ? (XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY)
-                        : (TIDEWAYS_FLAGS_CPU | TIDEWAYS_FLAGS_MEMORY | TIDEWAYS_FLAGS_NO_SPANS);
-                }
-                self::$flags   = $flags;
                 self::$options = $options;
                 self::$dataDir = $dir;
             }
         }
         if (self::$enabled === true && self::$functional === true) {
             self::$started = true;
-            if (self::$method === 'xhprof') {
-                xhprof_enable(self::$flags, self::$options);
-            } else {
-                tideways_enable(self::$flags);
-            }
 
             return true;
         }
@@ -502,9 +499,11 @@ class Profiler
     public static function finish()
     {
         if (self::$enabled === true && self::$functional === true) {
-            self::$data = (self::$method === 'xhprof')
+            self::$data = self::$method === 'xhprof'
                 ? xhprof_disable()
-                : tideways_disable();
+                : (self::$method === 'tideways'
+                    ? tideways_disable()
+                    : tideways_xhprof_disable());
 
             return true;
         }

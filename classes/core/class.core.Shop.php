@@ -636,7 +636,7 @@ final class Shop
     {
         $cacheID = 'plgnbtsrp';
         if (($plugins = self::Cache()->get($cacheID)) === false) {
-            $plugins = self::DB()->executeQuery("
+            $plugins = self::DB()->query("
                 SELECT kPlugin 
                   FROM tplugin 
                   WHERE nStatus = 2 

@@ -238,30 +238,31 @@ class Jtllog
      * Get Logcount from the database
      *
      * @access public
-     * @param string $cFilter
-     * @param int    $nLevel
+     * @param string $filter
+     * @param int    $level
      * @return int
      */
-    public static function getLogCount($cFilter, $nLevel = 0)
+    public static function getLogCount($filter, $level = 0)
     {
-        $cSQLWhere = '';
-        if ((int)$nLevel > 0) {
-            $cSQLWhere = " WHERE nLevel = " . (int)$nLevel;
+        $level      = (int)$level;
+        $conditions = [];
+        $prep       = [];
+        if ($level > 0) {
+            $prep['lvl']  = $level;
+            $conditions[] = 'nLevel = :lvl';
         }
-
-        if (strlen($cFilter) > 0 && strlen($cSQLWhere) === 0) {
-            $cSQLWhere .= " WHERE cLog LIKE '%" . $cFilter . "%'";
-        } elseif (strlen($cFilter) > 0 && strlen($cSQLWhere) > 0) {
-            $cSQLWhere .= " AND cLog LIKE '%" . $cFilter . "%'";
+        if (strlen($filter) > 0) {
+            $prep['fltr'] = '%' . $filter . '%';
+            $conditions[] = 'cLog LIKE :fltr';
         }
+        $where = count($conditions) > 0 ? ' WHERE ' . \implode(' AND ', $conditions) : '';
 
-        $oLog = Shop::DB()->query("SELECT count(*) AS nAnzahl FROM tjtllog" . $cSQLWhere, 1);
-
-        if (isset($oLog->nAnzahl) && $oLog->nAnzahl > 0) {
-            return (int)$oLog->nAnzahl;
-        }
-
-        return 0;
+        return (int)Shop::DB()->queryPrepared(
+            'SELECT COUNT(*) AS cnt 
+                FROM tjtllog' . $where,
+            $prep,
+            1
+        )->cnt;
     }
 
     /**

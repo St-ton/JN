@@ -237,13 +237,15 @@ function sendeMail($ModulId, $Object, $mail = null)
                 strlen($Object->tbestellung->Zahlungsart->cModulId) > 0
             ) {
                 $cModulId         = $Object->tbestellung->Zahlungsart->cModulId;
-                $oZahlungsartConf = Shop::DB()->query(
+                $oZahlungsartConf = Shop::DB()->queryPrepared(
                     "SELECT tzahlungsartsprache.*
                         FROM tzahlungsartsprache
                         JOIN tzahlungsart 
                             ON tzahlungsart.kZahlungsart = tzahlungsartsprache.kZahlungsart
-                            AND tzahlungsart.cModulId = '" . $cModulId . "'
-                        WHERE tzahlungsartsprache.cISOSprache = '" . $Sprache->cISO . "'", 1
+                            AND tzahlungsart.cModulId = :mid
+                        WHERE tzahlungsartsprache.cISOSprache = :iso",
+                    ['mid' => $cModulId, 'iso' => $Sprache->cISO],
+                    1
                 );
                 if (isset($oZahlungsartConf->kZahlungsart) && $oZahlungsartConf->kZahlungsart > 0) {
                     $mailSmarty->assign('Zahlungsart', $oZahlungsartConf);
@@ -276,13 +278,15 @@ function sendeMail($ModulId, $Object, $mail = null)
                 strlen($Object->tbestellung->Zahlungsart->cModulId) > 0
             ) {
                 $cModulId         = $Object->tbestellung->Zahlungsart->cModulId;
-                $oZahlungsartConf = Shop::DB()->query(
+                $oZahlungsartConf = Shop::DB()->queryPrepared(
                     "SELECT tzahlungsartsprache.*
                         FROM tzahlungsartsprache
                         JOIN tzahlungsart 
                             ON tzahlungsart.kZahlungsart = tzahlungsartsprache.kZahlungsart
-                            AND tzahlungsart.cModulId = '" . $cModulId . "'
-                        WHERE tzahlungsartsprache.cISOSprache = '" . $Sprache->cISO . "'", 1
+                            AND tzahlungsart.cModulId = :mid
+                        WHERE tzahlungsartsprache.cISOSprache = :iso",
+                    ['mid' => $cModulId, 'iso' => $Sprache->cISO],
+                    1
                 );
 
                 if (isset($oZahlungsartConf->kZahlungsart) && $oZahlungsartConf->kZahlungsart > 0) {

@@ -54,14 +54,14 @@ function erstelleStatusemailCron($nAlleXStunden)
         );
 
         $oCron = new Cron(
-            0, 
-            1, 
-            $nAlleXStunden, 
-            'statusemail', 
-            'statusemail', 
-            'tstatusemail', 
-            'nAktiv', 
-            date('Y-m-d', time() + 3600 * 24) . 
+            0,
+            1,
+            $nAlleXStunden,
+            'statusemail',
+            'statusemail',
+            'tstatusemail',
+            'nAktiv',
+            date('Y-m-d', time() + 3600 * 24) .
                 ' 00:00:00', '00:00:00', '0000-00-00 00:00:00'
         );
         $oCron->speicherInDB();
@@ -84,10 +84,10 @@ function ladeStatusemailEinstellungen()
     $oStatusemailEinstellungen->cIntervallMoeglich_arr = gibIntervallMoeglichkeiten();
     $oStatusemailEinstellungen->cInhaltMoeglich_arr    = gibInhaltMoeglichkeiten();
     $oStatusemailEinstellungen->nIntervall_arr         = isset($oStatusemailEinstellungen->cIntervall)
-        ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cIntervall, ';') 
+        ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cIntervall, ';')
         : [];
     $oStatusemailEinstellungen->nInhalt_arr            = isset($oStatusemailEinstellungen->cInhalt)
-        ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cInhalt, ';') 
+        ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cInhalt, ';')
         : [];
 
     return $oStatusemailEinstellungen;
@@ -182,16 +182,15 @@ function gibAnzahlArtikelProKundengruppe()
  */
 function gibAnzahlNeukunden($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oKunde = Shop::DB()->query(
+        $oKunde = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tkunde
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'
-                    AND nRegistriert = 1", 1
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to
+                    AND nRegistriert = 1",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         if (isset($oKunde->nAnzahl) && $oKunde->nAnzahl > 0) {
@@ -209,20 +208,19 @@ function gibAnzahlNeukunden($dVon, $dBis)
  */
 function gibAnzahlNeukundenGekauft($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oKunde = Shop::DB()->query(
+        $oKunde = Shop::DB()->queryPrepared(
             "SELECT count(DISTINCT(tkunde.kKunde)) AS nAnzahl
                 FROM tkunde
                 JOIN tbestellung 
                     ON tbestellung.kKunde = tkunde.kKunde
-                WHERE tbestellung.dErstellt >= '" . $dVon . "'
-                    AND tbestellung.dErstellt < '" . $dBis . "'
-                    AND tkunde.dErstellt >= '" . $dVon . "'
-                    AND tkunde.dErstellt < '" . $dBis . "'
-                    AND tkunde.nRegistriert = 1", 1
+                WHERE tbestellung.dErstellt >= :from
+                    AND tbestellung.dErstellt < :to
+                    AND tkunde.dErstellt >= :from
+                    AND tkunde.dErstellt < :to
+                    AND tkunde.nRegistriert = 1",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oKunde->nAnzahl) && $oKunde->nAnzahl > 0) ?
@@ -242,15 +240,14 @@ function gibAnzahlNeukundenGekauft($dVon, $dBis)
  */
 function gibAnzahlBestellungen($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBestellung = Shop::DB()->query(
+        $oBestellung = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbestellung
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'", 1
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oBestellung->nAnzahl) && $oBestellung->nAnzahl > 0) ?
@@ -270,18 +267,17 @@ function gibAnzahlBestellungen($dVon, $dBis)
  */
 function gibAnzahlBestellungenNeukunden($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBestellung = Shop::DB()->query(
+        $oBestellung = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbestellung
                 JOIN tkunde 
                     ON tkunde.kKunde = tbestellung.kKunde
-                WHERE tbestellung.dErstellt >= '" . $dVon . "'
-                    AND tbestellung.dErstellt < '" . $dBis . "'
-                    AND tkunde.nRegistriert = 1", 1
+                WHERE tbestellung.dErstellt >= :from
+                    AND tbestellung.dErstellt < :to
+                    AND tkunde.nRegistriert = 1",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oBestellung->nAnzahl) && $oBestellung->nAnzahl > 0) ?
@@ -301,16 +297,15 @@ function gibAnzahlBestellungenNeukunden($dVon, $dBis)
  */
 function gibAnzahlZahlungseingaengeVonBestellungen($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBestellung = Shop::DB()->query(
+        $oBestellung = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbestellung
-                WHERE tbestellung.dErstellt >= '" . $dVon . "'
-                    AND tbestellung.dErstellt < '" . $dBis . "'
-                    AND tbestellung.dBezahltDatum != '0000-00-00'", 1
+                WHERE tbestellung.dErstellt >= :from
+                    AND tbestellung.dErstellt < :to
+                    AND tbestellung.dBezahltDatum != '0000-00-00'",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oBestellung->nAnzahl) && $oBestellung->nAnzahl > 0) ?
@@ -330,16 +325,15 @@ function gibAnzahlZahlungseingaengeVonBestellungen($dVon, $dBis)
  */
 function gibAnzahlVersendeterBestellungen($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBestellung = Shop::DB()->query(
+        $oBestellung = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbestellung
-                WHERE tbestellung.dErstellt >= '" . $dVon . "'
-                    AND tbestellung.dErstellt < '" . $dBis . "'
-                    AND tbestellung.dVersandDatum != '0000-00-00'", 1
+                WHERE tbestellung.dErstellt >= :from
+                    AND tbestellung.dErstellt < :to
+                    AND tbestellung.dVersandDatum != '0000-00-00'",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oBestellung->nAnzahl) && $oBestellung->nAnzahl > 0)
@@ -359,15 +353,15 @@ function gibAnzahlVersendeterBestellungen($dVon, $dBis)
  */
 function gibAnzahlBesucher($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBesucher = Shop::DB()->query(
+        $oBesucher = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbesucherarchiv
-                WHERE dZeit >= '" . $dVon . "'
-                    AND dZeit < '" . $dBis . "' AND kBesucherBot = 0", 1
+                WHERE dZeit >= :from
+                    AND dZeit < :to
+                    AND kBesucherBot = 0",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oBesucher->nAnzahl) && $oBesucher->nAnzahl > 0)
@@ -387,16 +381,15 @@ function gibAnzahlBesucher($dVon, $dBis)
  */
 function gibAnzahlBesucherSuchmaschine($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBesucher = Shop::DB()->query(
+        $oBesucher = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbesucherarchiv
-                WHERE dZeit >= '" . $dVon . "'
-                    AND dZeit < '" . $dBis . "'
-                    AND cReferer != ''", 1
+                WHERE dZeit >= :from
+                    AND dZeit < :to
+                    AND cReferer != ''",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oBesucher->nAnzahl) && $oBesucher->nAnzahl > 0)
@@ -416,16 +409,15 @@ function gibAnzahlBesucherSuchmaschine($dVon, $dBis)
  */
 function gibAnzahlBewertungen($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBewertung = Shop::DB()->query(
+        $oBewertung = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbewertung
-                WHERE dDatum >= '" . $dVon . "'
-                    AND dDatum < '" . $dBis . "'
-                    AND nAktiv = 1", 1
+                WHERE dDatum >= :from
+                    AND dDatum < :to
+                    AND nAktiv = 1",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oBewertung->nAnzahl) && $oBewertung->nAnzahl > 0)
@@ -445,16 +437,15 @@ function gibAnzahlBewertungen($dVon, $dBis)
  */
 function gibAnzahlBewertungenNichtFreigeschaltet($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBewertung = Shop::DB()->query(
+        $oBewertung = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tbewertung
-                WHERE dDatum >= '" . $dVon . "'
-                    AND dDatum < '" . $dBis . "'
-                    AND nAktiv = 0", 1
+                WHERE dDatum >= :from
+                    AND dDatum < :to
+                    AND nAktiv = 0",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oBewertung->nAnzahl) && $oBewertung->nAnzahl > 0)
@@ -474,18 +465,18 @@ function gibAnzahlBewertungenNichtFreigeschaltet($dVon, $dBis)
  */
 function gibAnzahlGezahltesGuthaben($dVon, $dBis)
 {
-    $dVon                 = Shop::DB()->escape($dVon);
-    $dBis                 = Shop::DB()->escape($dBis);
     $oTMP                 = new stdClass();
     $oTMP->nAnzahl        = 0;
     $oTMP->fSummeGuthaben = 0;
 
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oBewertung = Shop::DB()->query(
+        $oBewertung = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl, sum(fGuthabenBonus) AS fSummeGuthaben
                 FROM tbewertungguthabenbonus
-                WHERE dDatum >= '" . $dVon . "'
-                    AND dDatum < '" . $dBis . "'", 1
+                WHERE dDatum >= :from
+                    AND dDatum < :to",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         if (isset($oBewertung->nAnzahl) && $oBewertung->nAnzahl > 0) {
@@ -509,18 +500,17 @@ function gibAnzahlGezahltesGuthaben($dVon, $dBis)
  */
 function gibAnzahlTags($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oTag = Shop::DB()->query(
+        $oTag = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM ttagkunde
                 JOIN ttag 
                     ON ttag.kTag = ttagkunde.kTag
                     AND ttag.nAktiv = 1
-                WHERE ttagkunde.dZeit >= '" . $dVon . "'
-                    AND ttagkunde.dZeit < '" . $dBis . "'", 1
+                WHERE ttagkunde.dZeit >= :from
+                    AND ttagkunde.dZeit < :to",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oTag->nAnzahl) && $oTag->nAnzahl > 0)
@@ -540,17 +530,16 @@ function gibAnzahlTags($dVon, $dBis)
  */
 function gibAnzahlTagsNichtFreigeschaltet($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oTag = Shop::DB()->query(
+        $oTag = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM ttagkunde
                 JOIN ttag ON ttag.kTag = ttagkunde.kTag
                     AND ttag.nAktiv = 0
-                WHERE ttagkunde.dZeit >= '" . $dVon . "'
-                    AND ttagkunde.dZeit < '" . $dBis . "'", 1
+                WHERE ttagkunde.dZeit >= :from
+                    AND ttagkunde.dZeit < :to",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oTag->nAnzahl) && $oTag->nAnzahl > 0)
@@ -570,15 +559,14 @@ function gibAnzahlTagsNichtFreigeschaltet($dVon, $dBis)
  */
 function gibAnzahlGeworbenerKunden($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oKwK = Shop::DB()->query(
+        $oKwK = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tkundenwerbenkunden
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'", 1
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oKwK->nAnzahl) && $oKwK->nAnzahl > 0)
@@ -598,17 +586,16 @@ function gibAnzahlGeworbenerKunden($dVon, $dBis)
  */
 function gibAnzahlErfolgreichGeworbenerKunden($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oKwK = Shop::DB()->query(
+        $oKwK = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tkundenwerbenkunden
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to
                     AND nRegistriert = 1
-                    AND nGuthabenVergeben = 1", 1
+                    AND nGuthabenVergeben = 1",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oKwK->nAnzahl) && $oKwK->nAnzahl > 0)
@@ -628,15 +615,14 @@ function gibAnzahlErfolgreichGeworbenerKunden($dVon, $dBis)
  */
 function gibAnzahlVersendeterWunschlisten($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oWunschliste = Shop::DB()->query(
+        $oWunschliste = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM twunschlisteversand
-                WHERE dZeit >= '" . $dVon . "'
-                    AND dZeit < '" . $dBis . "'", 1
+                WHERE dZeit >= :from
+                    AND dZeit < :to",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oWunschliste->nAnzahl) && $oWunschliste->nAnzahl > 0)
@@ -656,15 +642,13 @@ function gibAnzahlVersendeterWunschlisten($dVon, $dBis)
  */
 function gibAnzahlDurchgefuehrteUmfragen($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oUmfrage = Shop::DB()->query(
+        $oUmfrage = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tumfragedurchfuehrung
-                WHERE dDurchgefuehrt >= '" . $dVon . "'
-                    AND dDurchgefuehrt < '" . $dBis . "'", 1
+                WHERE dDurchgefuehrt >= :from
+                    AND dDurchgefuehrt < :to",
+            ['from' => $dVon, 'to' => $dBis],1
         );
 
         return (isset($oUmfrage->nAnzahl) && $oUmfrage->nAnzahl > 0)
@@ -684,16 +668,15 @@ function gibAnzahlDurchgefuehrteUmfragen($dVon, $dBis)
  */
 function gibAnzahlNewskommentare($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oNewskommentar = Shop::DB()->query(
+        $oNewskommentar = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tnewskommentar
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'
-                    AND nAktiv = 1", 1
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to
+                    AND nAktiv = 1",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oNewskommentar->nAnzahl) && $oNewskommentar->nAnzahl > 0)
@@ -713,16 +696,15 @@ function gibAnzahlNewskommentare($dVon, $dBis)
  */
 function gibAnzahlNewskommentareNichtFreigeschaltet($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oNewskommentar = Shop::DB()->query(
+        $oNewskommentar = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tnewskommentar
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'
-                    AND nAktiv = 0", 1
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to
+                    AND nAktiv = 0",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oNewskommentar->nAnzahl) && $oNewskommentar->nAnzahl > 0)
@@ -742,15 +724,14 @@ function gibAnzahlNewskommentareNichtFreigeschaltet($dVon, $dBis)
  */
 function gibAnzahlProduktanfrageVerfuegbarkeit($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oVerfuegbarkeit = Shop::DB()->query(
+        $oVerfuegbarkeit = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tverfuegbarkeitsbenachrichtigung
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'", 1
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oVerfuegbarkeit->nAnzahl) && $oVerfuegbarkeit->nAnzahl > 0)
@@ -770,15 +751,14 @@ function gibAnzahlProduktanfrageVerfuegbarkeit($dVon, $dBis)
  */
 function gibAnzahlProduktanfrageArtikel($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oFrageProdukt = Shop::DB()->query(
+        $oFrageProdukt = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tproduktanfragehistory
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'", 1
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oFrageProdukt->nAnzahl) && $oFrageProdukt->nAnzahl > 0)
@@ -798,15 +778,14 @@ function gibAnzahlProduktanfrageArtikel($dVon, $dBis)
  */
 function gibAnzahlVergleiche($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oVergleich = Shop::DB()->query(
+        $oVergleich = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tvergleichsliste
-                WHERE dDate >= '" . $dVon . "'
-                    AND dDate < '" . $dBis . "'", 1
+                WHERE dDate >= :from
+                    AND dDate < :to",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oVergleich->nAnzahl) && $oVergleich->nAnzahl > 0)
@@ -826,15 +805,14 @@ function gibAnzahlVergleiche($dVon, $dBis)
  */
 function gibAnzahlGenutzteKupons($dVon, $dBis)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oKupon = Shop::DB()->query(
+        $oKupon = Shop::DB()->queryPrepared(
             "SELECT count(*) AS nAnzahl
                 FROM tkuponkunde
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'", 1
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to",
+            ['from' => $dVon, 'to' => $dBis],
+            1
         );
 
         return (isset($oKupon->nAnzahl) && $oKupon->nAnzahl > 0)
@@ -853,17 +831,16 @@ function gibAnzahlGenutzteKupons($dVon, $dBis)
  */
 function getLogEntries($dVon, $dBis, $nLogLevel_arr)
 {
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
     if (strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $oLog_arr = Shop::DB()->query(
+        $oLog_arr = Shop::DB()->queryPrepared(
             "SELECT *
                 FROM tjtllog
-                WHERE dErstellt >= '" . $dVon . "'
-                    AND dErstellt < '" . $dBis . "'
-                    AND nLevel IN (" . implode(',', $nLogLevel_arr) . ")
-                ORDER BY dErstellt DESC", 2
+                WHERE dErstellt >= :from
+                    AND dErstellt < :to
+                    AND nLevel IN (" . implode(',', array_map('\intval', $nLogLevel_arr)) . ")
+                ORDER BY dErstellt DESC",
+            ['from' => $dVon, 'to' => $dBis],
+            2
         );
 
         return $oLog_arr;

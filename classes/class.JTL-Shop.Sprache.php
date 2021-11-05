@@ -284,7 +284,7 @@ class Sprache
                     FROM tsprachwerte 
                     LEFT JOIN tsprachsektion
                         ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
-                    WHERE tsprachwerte.kSprachISO = " . $this->kSprachISO, 2
+                    WHERE tsprachwerte.kSprachISO = " . (int)$this->kSprachISO, 2
             );
             $this->langVars[$this->cISOSprache] = [];
             foreach ($allLangVars as $_langVar) {

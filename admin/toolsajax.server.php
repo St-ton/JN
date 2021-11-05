@@ -269,19 +269,22 @@ function getArticleListFromString($cArray)
     $oArticle_arr   = [];
     $oResponse      = new xajaxResponse();
     if (count($cArticleID_arr) && $oAccount->logged()) {
-        $cSQL = '';
+        $artnos = [];
+        $prep   = [];
+        $i      = 0;
         foreach ($cArticleID_arr as $cArticleID) {
-            if (strlen($cSQL) > 0) {
-                $cSQL .= " OR ";
-            }
-            $cSQL .= " cArtNr = '" . Shop::DB()->escape($cArticleID) . "' ";
+            $idx        = 'prd' . $i++;
+            $artnos[]   = 'cArtNr = :' . $idx;
+            $prep[$idx] = $cArticleID;
         }
 
-        $oArticle_arr = Shop::DB()->query("
+        $oArticle_arr = Shop::DB()->queryPrepared("
             SELECT kArtikel AS kPrimary, cArtNr AS cBase, kArtikel, cName
                 FROM tartikel
-                WHERE " . $cSQL . "
-                LIMIT 50", 2
+                WHERE " . implode(' OR ', $artnos) . "
+                LIMIT 50",
+            $prep,
+            2
         );
         foreach ($oArticle_arr as &$oArticle) {
             $oArticle->cName = utf8_encode($oArticle->cName);

@@ -1909,11 +1909,13 @@ function setzeSteuersaetze($steuerland = 0)
             $UstBefreiungIGL = true;
         }
     }
-    $steuerzonen   = Shop::DB()->query(
+    $steuerzonen   = Shop::DB()->queryPrepared(
         "SELECT tsteuerzone.kSteuerzone
             FROM tsteuerzone, tsteuerzoneland
-            WHERE tsteuerzoneland.cISO = '" . $deliveryCountryCode . "'
-                AND tsteuerzoneland.kSteuerzone = tsteuerzone.kSteuerzone", 2
+            WHERE tsteuerzoneland.cISO = :iso
+                AND tsteuerzoneland.kSteuerzone = tsteuerzone.kSteuerzone",
+        ['iso' => $deliveryCountryCode],
+        2
     );
     if (count($steuerzonen) === 0) {
         global $cHinweis;
@@ -2213,14 +2215,16 @@ function baueSprachURLS($obj, $art)
 
                     case URLART_SEITE:
                         //@deprecated since 4.05 - this is now done within the link helper
-                        $seoobj = Shop::DB()->query(
+                        $seoobj = Shop::DB()->queryPrepared(
                             "SELECT tseo.cSeo
                                 FROM tlinksprache
                                 LEFT JOIN tseo ON tseo.cKey = 'kLink'
                                     AND tseo.kKey = tlinksprache.kLink
-                                    AND tseo.kSprache = " . (int)$Sprache->kSprache . "
-                                WHERE tlinksprache.kLink = " . (int)$obj->kLink . "
-                                    AND tlinksprache.cISOSprache = '" . $Sprache->cISO . "'", 1
+                                    AND tseo.kSprache = :lid
+                                WHERE tlinksprache.kLink = :lnk
+                                    AND tlinksprache.cISOSprache = :iso",
+                            ['iso' => $Sprache->cISO, 'lid' => (int)$Sprache->kSprache, 'lnk' => (int)$obj->kLink],
+                            1
                         );
                         $url    = (isset($seoobj->cSeo) && $seoobj->cSeo)
                             ? $seoobj->cSeo
@@ -2778,16 +2782,18 @@ function gibMoeglicheVerpackungen($kKundengruppe)
 {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $fSummeWarenkorb = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
-    $oVerpackung_arr = Shop::DB()->query(
+    $oVerpackung_arr = Shop::DB()->queryPrepared(
         "SELECT * FROM tverpackung
             JOIN tverpackungsprache 
                 ON tverpackung.kVerpackung = tverpackungsprache.kVerpackung
-            WHERE tverpackungsprache.cISOSprache = '" . $_SESSION['cISOSprache'] . "'
+            WHERE tverpackungsprache.cISOSprache = :iso
             AND (tverpackung.cKundengruppe = '-1' 
-                OR FIND_IN_SET('" . (int)$kKundengruppe . "', REPLACE(tverpackung.cKundengruppe, ';', ',')) > 0)
-            AND " . $fSummeWarenkorb . " >= tverpackung.fMindestbestellwert
+                OR FIND_IN_SET(:cgid, REPLACE(tverpackung.cKundengruppe, ';', ',')) > 0)
+            AND :csum >= tverpackung.fMindestbestellwert
             AND tverpackung.nAktiv = 1
-            ORDER BY tverpackung.kVerpackung", 2
+            ORDER BY tverpackung.kVerpackung",
+        ['csum' => $fSummeWarenkorb, 'iso' => $_SESSION['cISOSprache'], 'cgid' => (int)$kKundengruppe],
+        2
     );
     // Array bearbeiten
     if ($oVerpackung_arr !== false && count($oVerpackung_arr) > 0) {
@@ -3030,18 +3036,26 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
     $query = "SELECT *
             FROM tversandart
             WHERE cIgnoreShippingProposal != 'Y' 
-                AND cLaender LIKE '%" . $cISO . "%'
+                AND cLaender LIKE :iso
                 AND (cVersandklassen = '-1' 
-                    OR cVersandklassen RLIKE '^([0-9 -]* )?" . $Artikel->kVersandklasse . " ')
+                    OR cVersandklassen RLIKE :scls)
                 AND (cKundengruppen = '-1' 
-                    OR FIND_IN_SET('{$kKundengruppe}', REPLACE(cKundengruppen, ';', ',')) > 0)";
+                    OR FIND_IN_SET(:cgid REPLACE(cKundengruppen, ';', ',')) > 0)";
     // artikelabhaengige Versandarten nur laden und prüfen wenn der Artikel das entsprechende Funktionasattribut hat
     if (empty($Artikel->FunktionsAttribute['versandkosten'])
         && empty($Artikel->FunktionsAttribute['versandkosten gestaffelt'])
     ) {
         $query .= " AND cNurAbhaengigeVersandart = 'N'";
     }
-    $versandarten = Shop::DB()->query($query, 2);
+    $versandarten = Shop::DB()->queryPrepared(
+        $query,
+        [
+            'iso'  => '%' . $cISO . '%',
+            'scls' => '^([0-9 -]* )?' . $Artikel->kVersandklasse,
+            'cgid' => $kKundengruppe
+        ],
+        2
+    );
     $cnt          = count($versandarten);
     for ($i = 0; $i < $cnt; ++$i) {
         if (!$barzahlungZulassen) {

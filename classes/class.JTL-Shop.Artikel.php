@@ -2032,7 +2032,7 @@ class Artikel
                 if (!$exportWorkaround) {
                     $scoreSelect    = ', COALESCE(ek.score, 0) nMatched';
                     $scoreJoin      = "LEFT JOIN (
-	                        SELECT teigenschaftkombiwert.kEigenschaftKombi, COUNT(teigenschaftkombiwert.kEigenschaftWert) AS score
+                            SELECT teigenschaftkombiwert.kEigenschaftKombi, COUNT(teigenschaftkombiwert.kEigenschaftWert) AS score
                             FROM teigenschaftkombiwert
                             INNER JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                             LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
@@ -4404,10 +4404,7 @@ class Artikel
         if ($kArtikel > 0) {
             $kArtikelKey = (int)$kArtikel;
         }
-        $kKdgKey = $_SESSION['Kundengruppe']->kKundengruppe;
-        if ($kKundengruppe > 0) {
-            $kKdgKey = (int)$kKundengruppe;
-        }
+        $kKdgKey  = $_SESSION['Kundengruppe']->kKundengruppe;
         $oKat_arr = Shop::DB()->query(
             "SELECT tkategorieartikel.kKategorie
                 FROM tkategorieartikel
@@ -5371,27 +5368,35 @@ class Artikel
             $this->fGewicht = 0;
         }
         // cheapest shipping except shippings that offer cash payment
-        $shipping = Shop::DB()->query(
+        $shipping = Shop::DB()->queryPrepared(
             "SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
                 FROM tversandart va
                 LEFT JOIN tversandartstaffel vas
                     ON vas.kVersandart = va.kVersandart
                 WHERE va.cIgnoreShippingProposal != 'Y'
-                AND va.cLaender LIKE '%{$countryCode}%'
+                AND va.cLaender LIKE :ccode
                 AND (va.cVersandklassen = '-1'
-                    OR va.cVersandklassen RLIKE '^([0-9 -]* )?{$this->kVersandklasse} ')
+                    OR va.cVersandklassen RLIKE :sclass)
                 AND (va.cKundengruppen = '-1'
-                    OR FIND_IN_SET('{$_SESSION['Kundengruppe']->kKundengruppe}', REPLACE(va.cKundengruppen, ';', ',')) > 0)
+                    OR FIND_IN_SET(:cgid, REPLACE(va.cKundengruppen, ';', ',')) > 0)
                 AND va.kVersandart NOT IN (
                     SELECT vaza.kVersandart
                         FROM tversandartzahlungsart vaza
                         WHERE kZahlungsart = 6)
                 AND (
                     va.kVersandberechnung = 1 OR va.kVersandberechnung = 4
-                    OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND {$this->fGewicht} <= vas.fBis )
-                    OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND {$this->Preise->fVKNetto} <= vas.fBis )
+                    OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND :wght <= vas.fBis )
+                    OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND :net <= vas.fBis )
                     )
-                ORDER BY minPrice, nSort ASC LIMIT 1", 1
+                ORDER BY minPrice, nSort ASC LIMIT 1",
+            [
+                'ccode'  => '%' . $countryCode . '%',
+                'cgid'   => $_SESSION['Kundengruppe']->kKundengruppe,
+                'sclass' => '^([0-9 -]* )?' . $this->kVersandklasse,
+                'wght'   => $this->fGewicht,
+                'net'    => $this->Preise->fVKNetto
+            ],
+            1
         );
         if (isset($shipping->kVersandart)) {
             $this->oFavourableShipping = new Versandart($shipping->kVersandart);

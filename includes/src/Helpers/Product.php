@@ -756,8 +756,9 @@ class Product
             $product = Shop::Container()->getDB()->getSingleObject(
                 'SELECT kArtikel
                     FROM tartikel' . $join . '
-                    WHERE tartikel.kVaterArtikel = ' . $productID . '
-                    GROUP BY teigenschaftkombiwert.kEigenschaftKombi' . $having
+                    WHERE tartikel.kVaterArtikel = :pid
+                    GROUP BY teigenschaftkombiwert.kEigenschaftKombi' . $having,
+                ['pid' => $productID]
             );
             if ($product !== null && \count($product->kArtikel) > 0) {
                 return (int)$product->kArtikel;

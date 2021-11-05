@@ -147,7 +147,7 @@ function saveAdminSettings(
         'SELECT ec.*, e.cWert AS currentValue
             FROM teinstellungenconf AS ec
             LEFT JOIN teinstellungen AS e 
-                ON e.cName=ec.cWertName
+                ON e.cName = ec.cWertName
             ' . $where . "
             AND ec.cConf = 'Y'
             ORDER BY ec.nSort"

@@ -227,9 +227,9 @@ class Download
      */
     public static function getDownloads(array $keys = [], int $languageID = 0): array
     {
-        $productID  = isset($keys['kArtikel']) ? (int)$keys['kArtikel'] : 0;
-        $orderID    = isset($keys['kBestellung']) ? (int)$keys['kBestellung'] : 0;
-        $customerID = isset($keys['kKunde']) ? (int)$keys['kKunde'] : 0;
+        $productID  = (int)($keys['kArtikel'] ?? 0);
+        $orderID    = (int)($keys['kBestellung'] ?? 0);
+        $customerID = (int)($keys['kKunde'] ?? 0);
         $downloads  = [];
         if (($productID > 0 || $orderID > 0 || $customerID > 0) && $languageID > 0 && self::checkLicense()) {
             $select = 'tartikeldownload.kDownload';

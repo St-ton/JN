@@ -35,10 +35,9 @@ class DBManager
     public static function getColumns(string $table): array
     {
         $list    = [];
-        $table   = Shop::Container()->getDB()->escape($table);
         $columns = Shop::Container()->getDB()->getObjects(
-            "SHOW FULL COLUMNS 
-                FROM `{$table}`"
+            'SHOW FULL COLUMNS FROM :tbl',
+            ['tbl' => $table]
         );
         foreach ($columns as $column) {
             $column->Type_info    = self::parseType($column->Type);
@@ -55,10 +54,8 @@ class DBManager
     public static function getIndexes(string $table): array
     {
         $list    = [];
-        $table   = Shop::Container()->getDB()->escape($table);
         $indexes = Shop::Container()->getDB()->getObjects(
-            "SHOW INDEX 
-                FROM `{$table}`"
+            'SHOW INDEX FROM :tbl', ['tbl' => $table]
         );
         foreach ($indexes as $index) {
             $container = (object)[
@@ -93,17 +90,16 @@ class DBManager
      * @param string|null $table
      * @return array|stdClass
      */
-    public static function getStatus(string $database, $table = null)
+    public static function getStatus(string $database, ?string $table = null)
     {
         $database = Shop::Container()->getDB()->escape($database);
 
         if ($table !== null) {
-            $table = Shop::Container()->getDB()->escape($table);
-
             return Shop::Container()->getDB()->getSingleObject(
                 "SHOW TABLE STATUS 
                     FROM `{$database}` 
-                    WHERE name='{$table}'"
+                    WHERE name = :tbl",
+                ['tbl' => $table]
             );
         }
 

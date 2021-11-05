@@ -35,6 +35,8 @@ if (Request::verifyGPCDataInt('checkNutzbar') === 1) {
     PaymentMethod::checkPaymentMethodAvailability();
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPaymentMethodCheck'), 'successPaymentMethodCheck');
 }
+$res = ZahlungsLog::getLog(['x1', 'x2']);
+Shop::dbg($res, true);
 // reset log
 if (($action = Request::verifyGPDataString('a')) !== ''
     && $action === 'logreset'
@@ -279,15 +281,15 @@ if ($step === 'einstellen') {
                 ORDER BY cName'
         );
         $smarty->assign('Conf', $conf)
-               ->assign('zahlungsart', $paymentMethod)
-               ->assign('kundengruppen', $customerGroups)
-               ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($paymentMethod))
-               ->assign('Zahlungsartname', getNames($paymentMethod->kZahlungsart))
-               ->assign('Gebuehrname', getshippingTimeNames($paymentMethod->kZahlungsart))
-               ->assign('cHinweisTexte_arr', getHinweisTexte($paymentMethod->kZahlungsart))
-               ->assign('cHinweisTexteShop_arr', getHinweisTexteShop($paymentMethod->kZahlungsart))
-               ->assign('ZAHLUNGSART_MAIL_EINGANG', ZAHLUNGSART_MAIL_EINGANG)
-               ->assign('ZAHLUNGSART_MAIL_STORNO', ZAHLUNGSART_MAIL_STORNO);
+            ->assign('zahlungsart', $paymentMethod)
+            ->assign('kundengruppen', $customerGroups)
+            ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($paymentMethod))
+            ->assign('Zahlungsartname', getNames($paymentMethod->kZahlungsart))
+            ->assign('Gebuehrname', getshippingTimeNames($paymentMethod->kZahlungsart))
+            ->assign('cHinweisTexte_arr', getHinweisTexte($paymentMethod->kZahlungsart))
+            ->assign('cHinweisTexteShop_arr', getHinweisTexteShop($paymentMethod->kZahlungsart))
+            ->assign('ZAHLUNGSART_MAIL_EINGANG', ZAHLUNGSART_MAIL_EINGANG)
+            ->assign('ZAHLUNGSART_MAIL_STORNO', ZAHLUNGSART_MAIL_STORNO);
     }
 } elseif ($step === 'log') {
     $paymentMethodID = Request::verifyGPCDataInt('kZahlungsart');
@@ -308,9 +310,9 @@ if ($step === 'einstellen') {
         );
 
         $smarty->assign('paymentLogs', $paymentLogs)
-               ->assign('paymentData', $method)
-               ->assign('filterStandard', $filterStandard)
-               ->assign('paginationPaymentLog', $paginationPaymentLog);
+            ->assign('paymentData', $method)
+            ->assign('filterStandard', $filterStandard)
+            ->assign('paginationPaymentLog', $paginationPaymentLog);
     }
 } elseif ($step === 'payments') {
     if (isset($filteredPost['action'], $filteredPost['kEingang_arr'])
@@ -342,9 +344,10 @@ if ($step === 'einstellen') {
                     ON ze.kBestellung = b.kBestellung
                 JOIN tkunde AS k
                     ON b.kKunde = k.kKunde
-            WHERE b.kZahlungsart = ' . $paymentMethodID . ' ' .
+            WHERE b.kZahlungsart = :pmid ' .
         ($filter->getWhereSQL() !== '' ? 'AND ' . $filter->getWhereSQL() : '') . '
-            ORDER BY dZeit DESC'
+            ORDER BY dZeit DESC',
+        ['pmid' => $paymentMethodID]
     );
     $pagination    = (new Pagination('payments' . $paymentMethodID))
         ->setItemArray($incoming)
@@ -355,9 +358,9 @@ if ($step === 'einstellen') {
         $item->dZeit     = date_create($item->dZeit)->format('d.m.Y\<\b\r\>H:i');
     }
     $smarty->assign('oZahlungsart', $method)
-           ->assign('oZahlunseingang_arr', $pagination->getPageItems())
-           ->assign('pagination', $pagination)
-           ->assign('oFilter', $filter);
+        ->assign('oZahlunseingang_arr', $pagination->getPageItems())
+        ->assign('pagination', $pagination)
+        ->assign('oFilter', $filter);
 } elseif ($step === 'delete') {
     $paymentMethodID = Request::verifyGPCDataInt('kZahlungsart');
     $method          = $db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
@@ -433,6 +436,6 @@ if ($step === 'uebersicht') {
     $smarty->assign('zahlungsarten', $methods);
 }
 $smarty->assign('step', $step)
-       ->assign('waehrung', $defaultCurrency->cName)
-       ->assign('recommendations', $recommendations)
-       ->display('zahlungsarten.tpl');
+    ->assign('waehrung', $defaultCurrency->cName)
+    ->assign('recommendations', $recommendations)
+    ->display('zahlungsarten.tpl');

@@ -413,7 +413,6 @@ class Metadata implements MetadataInterface
         // Keine eingestellten Metas vorhanden => generiere Standard Metas
         $metaDescription = '';
         if (\is_array($products) && \count($products) > 0) {
-            \shuffle($products);
             $maxIdx      = \min(12, \count($products));
             $productName = '';
             for ($i = 0; $i < $maxIdx; ++$i) {

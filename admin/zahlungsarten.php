@@ -134,6 +134,11 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
                 case 'text':
                     $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
+                case 'pass':
+                    $aktWert->cWert = $_POST[$conf[$i]->cWertName];
+                    break;
+                default:
+                    break;
             }
             $db->delete(
                 'tplugineinstellungen',
@@ -168,6 +173,8 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
                     break;
                 case 'text':
                     $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
+                    break;
+                default:
                     break;
             }
             $db->delete(

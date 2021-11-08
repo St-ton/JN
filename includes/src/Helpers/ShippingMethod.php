@@ -1449,7 +1449,7 @@ class ShippingMethod
                     $items[]    = ':' . $idx;
                     $prep[$idx] = $item;
                 }
-                $cond  = 'AND tland.cISO IN (' . \implode(',', $items) . ')';
+                $cond = 'AND tland.cISO IN (' . \implode(',', $items) . ')';
             }
 
             $countryISOFilter = Shop::Container()->getDB()->getObjects(

@@ -156,7 +156,19 @@
                 </div>
             </div>
         </div>
-
-
+{/block}
+{block name='snippets-maintenance-content-imprint'}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3 text-center">
+            <h2 class="mt-2">
+                {$linkHelper->getPageLinkLanguage($oSpezialseiten_arr[$smarty.const.LINKTYP_IMPRESSUM]->kLink)->cTitle}
+            </h2>
+            <p>
+                {$linkHelper->getPageLinkLanguage($oSpezialseiten_arr[$smarty.const.LINKTYP_IMPRESSUM]->kLink)->cContent}
+            </p>
+            </div>
+        </div>
+    </div>
 {/block}
 </body>

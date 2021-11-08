@@ -35,7 +35,6 @@ if (Request::verifyGPCDataInt('checkNutzbar') === 1) {
     PaymentMethod::checkPaymentMethodAvailability();
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPaymentMethodCheck'), 'successPaymentMethodCheck');
 }
-$res = ZahlungsLog::getLog(['x1', 'x2']);
 // reset log
 if (($action = Request::verifyGPDataString('a')) !== ''
     && $action === 'logreset'

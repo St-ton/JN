@@ -1241,8 +1241,11 @@ final class Products extends AbstractSync
         if ($data !== null && !empty($data->cArtNr)) {
             $artNo = $data->cArtNr;
             $this->db->queryPrepared(
-                "UPDATE tkupon SET cArtikel = REPLACE(cArtikel, ';" . $artNo . ";', ';') WHERE cArtikel LIKE :artno",
-                ['artno' => '%;' . $artNo . ';%']
+                "UPDATE tkupon SET cArtikel = REPLACE(cArtikel, :rep, ';') WHERE cArtikel LIKE :artno",
+                [
+                    'rep'   => ';' . $artNo . ';',
+                    'artno' => '%;' . $artNo . ';%'
+                ]
             );
             $this->db->query("UPDATE tkupon SET cArtikel = '' WHERE cArtikel = ';'");
         }

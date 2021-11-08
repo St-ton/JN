@@ -301,16 +301,17 @@ class Product
                 FROM teigenschaftwert
                 LEFT JOIN teigenschaftwertsichtbarkeit
                     ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                    AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroup . '
+                    AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgid
                 JOIN teigenschaft ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
                 LEFT JOIN teigenschaftsichtbarkeit ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                    AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroup . '
+                    AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
                 ' . $attr->cJOIN . '
                 ' . $attrVal->cJOIN . '
                 WHERE teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                     AND teigenschaftwert.kEigenschaft IN (' . \implode(',', $attributes) . ')
-                    AND teigenschaftwert.kEigenschaftWert IN (' . \implode(',', $attributeValues) . ')'
+                    AND teigenschaftwert.kEigenschaftWert IN (' . \implode(',', $attributeValues) . ')',
+            ['cgid' => $customerGroup]
         );
 
 
@@ -1905,7 +1906,7 @@ class Product
         $configItemAmounts,
         $singleProductOutput = false
     ): ?stdClass {
-        $config                  = new stdClass;
+        $config                  = new stdClass();
         $config->fAnzahl         = $amount;
         $config->fGesamtpreis    = [0.0, 0.0];
         $config->cPreisLocalized = [];

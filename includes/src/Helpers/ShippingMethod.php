@@ -1439,15 +1439,26 @@ class ShippingMethod
         if (!$force && ($ignoreConf
                 || Shop::getSettingValue(\CONF_KUNDEN, 'kundenregistrierung_nur_lieferlaender') === 'Y')
         ) {
+            $prep = ['cgid' => $customerGroupID];
+            $cond = '';
+            if (\count($filterISO) > 0) {
+                $items = [];
+                $i     = 0;
+                foreach ($filterISO as $item) {
+                    $idx        = 'i' . $i++;
+                    $items[]    = ':' . $idx;
+                    $prep[$idx] = $item;
+                }
+                $cond  = 'AND tland.cISO IN (' . \implode(',', $items) . ')';
+            }
+
             $countryISOFilter = Shop::Container()->getDB()->getObjects(
                 "SELECT DISTINCT tland.cISO
                     FROM tland
                     INNER JOIN tversandart ON FIND_IN_SET(tland.cISO, REPLACE(tversandart.cLaender, ' ', ','))
                     WHERE (tversandart.cKundengruppen = '-1'
-                        OR FIND_IN_SET('" . $customerGroupID . "', REPLACE(cKundengruppen, ';', ',')) > 0)
-                        " . (\count($filterISO) > 0
-                    ? "AND tland.cISO IN ('" . \implode("','", $filterISO) . "')"
-                    : '')
+                        OR FIND_IN_SET(:cgid, REPLACE(cKundengruppen, ';', ',')) > 0)" . $cond,
+                $prep
             );
             $countries        = $countryHelper->getFilteredCountryList(
                 map($countryISOFilter, static function ($country) {

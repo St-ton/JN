@@ -174,7 +174,7 @@
                         </div>
                     </form>
                 {/if}
-                {if !is_array($oBoxenContainer) || $oBoxenContainer|@count == 0}
+                {if !is_array($oBoxenContainer) || $oBoxenContainer|count == 0}
                     <div class="alert alert-danger">{__('noTemplateConfig')}</div>
                 {elseif !$oBoxenContainer.left && !$oBoxenContainer.right && !$oBoxenContainer.top && !$oBoxenContainer.bottom}
                     <div class="alert alert-danger">{__('noBoxActivated')}</div>

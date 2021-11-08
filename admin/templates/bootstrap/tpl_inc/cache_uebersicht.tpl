@@ -143,7 +143,7 @@
                 </form>
             </div>
             <div id="stats" class="tab-pane fade {if isset($tab) && $tab === 'stats'} active show{/if}">
-                {if is_array($stats) && $stats|@count > 0}
+                {if is_array($stats) && $stats|count > 0}
                     <div>
                         <div class="subheading1 mb-3">{__('objectcache')}</div>
                         <div>
@@ -199,7 +199,7 @@
                         <div>
                             <div class="subheading1 mt-5 mb-3">{__('slowlog')}</div>
                             <div>
-                            {if $stats.slow|@count > 0}
+                            {if $stats.slow|count > 0}
                                 <table class="table">
                                     {foreach $stats.slow as $slow}
                                         <tr>
@@ -327,7 +327,7 @@
                 {/if}
             </div>
             <div id="benchmark" class="tab-pane fade {if isset($tab) && $tab === 'benchmark'} active show{/if}">
-                {if !empty($all_methods) && $all_methods|@count > 0}
+                {if !empty($all_methods) && $all_methods|count > 0}
                     <div class="settings">
                         <div class="subheading1">{__('settings')}</div>
                         <hr class="mb-3">

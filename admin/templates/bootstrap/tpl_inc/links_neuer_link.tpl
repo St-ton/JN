@@ -308,7 +308,7 @@
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             <input class="form-control" type="text" name="cMetaTitle_{$cISO}"
                                                    id="cMetaTitle_{$cISO}"
-                                                   value="{if isset($xPostVar_arr.$cMetaTitle_ISO) && $xPostVar_arr.$cMetaTitle_ISO}{$xPostVar_arr.$cMetaTitle_ISO|@htmlspecialchars}{elseif !empty($Link->getMetaTitle($langID))}{$Link->getMetaTitle($langID)|@htmlspecialchars}{/if}"
+                                                   value="{if isset($xPostVar_arr.$cMetaTitle_ISO) && $xPostVar_arr.$cMetaTitle_ISO}{$xPostVar_arr.$cMetaTitle_ISO|htmlspecialchars}{elseif !empty($Link->getMetaTitle($langID))}{$Link->getMetaTitle($langID)|htmlspecialchars}{/if}"
                                                    tabindex="9" />
                                         </div>
                                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
@@ -324,7 +324,7 @@
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             <input class="form-control" type="text"
                                                    name="cMetaKeywords_{$cISO}" id="cMetaKeywords_{$cISO}"
-                                                   value="{if isset($xPostVar_arr.$cMetaKeywords_ISO) && $xPostVar_arr.$cMetaKeywords_ISO}{$xPostVar_arr.$cMetaKeywords_ISO|@htmlspecialchars}{elseif !empty($Link->getMetaKeyword($langID))}{$Link->getMetaKeyword($langID)|@htmlspecialchars}{/if}"
+                                                   value="{if isset($xPostVar_arr.$cMetaKeywords_ISO) && $xPostVar_arr.$cMetaKeywords_ISO}{$xPostVar_arr.$cMetaKeywords_ISO|htmlspecialchars}{elseif !empty($Link->getMetaKeyword($langID))}{$Link->getMetaKeyword($langID)|htmlspecialchars}{/if}"
                                                    tabindex="9" />
                                         </div>
                                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
@@ -340,7 +340,7 @@
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             <input class="form-control" type="text"
                                                    name="cMetaDescription_{$cISO}" id="cMetaDescription_{$cISO}"
-                                                   value="{if isset($xPostVar_arr.$cMetaDescription_ISO) && $xPostVar_arr.$cMetaDescription_ISO}{$xPostVar_arr.$cMetaDescription_ISO|@htmlspecialchars}{elseif !empty($Link->getMetaDescription($langID))}{$Link->getMetaDescription($langID)|@htmlspecialchars}{/if}"
+                                                   value="{if isset($xPostVar_arr.$cMetaDescription_ISO) && $xPostVar_arr.$cMetaDescription_ISO}{$xPostVar_arr.$cMetaDescription_ISO|htmlspecialchars}{elseif !empty($Link->getMetaDescription($langID))}{$Link->getMetaDescription($langID)|htmlspecialchars}{/if}"
                                                    tabindex="9" />
                                         </div>
                                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">

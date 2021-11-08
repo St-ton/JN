@@ -4404,7 +4404,10 @@ class Artikel
         if ($kArtikel > 0) {
             $kArtikelKey = (int)$kArtikel;
         }
-        $kKdgKey  = $_SESSION['Kundengruppe']->kKundengruppe;
+        $kKdgKey = $_SESSION['Kundengruppe']->kKundengruppe;
+        if ($kKundengruppe > 0) {
+            $kKdgKey = (int)$kKundengruppe;
+        }
         $oKat_arr = Shop::DB()->query(
             "SELECT tkategorieartikel.kKategorie
                 FROM tkategorieartikel

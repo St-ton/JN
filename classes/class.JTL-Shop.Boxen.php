@@ -1706,8 +1706,8 @@ class Boxen
                 ORDER BY tboxensichtbar.nSort DESC LIMIT 1",
             [
                 'pos'   => $ePosition,
-                'pge'   => $nSeite,
-                'cntnr' => $kContainer
+                'pge'   => (int)$nSeite,
+                'cntnr' => (int)$kContainer
             ],
             1
         );

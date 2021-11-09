@@ -1,0 +1,7 @@
+{
+  "name": "Shop5 Installation",
+  "short_name": "Shop5 Installation",
+  "lang": "de-DE",
+  "start_url": "/",
+  "display": "standalone"
+}

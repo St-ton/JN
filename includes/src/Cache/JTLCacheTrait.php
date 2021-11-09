@@ -2,6 +2,8 @@
 
 namespace JTL\Cache;
 
+use DateTime;
+
 /**
  * Trait JTLCacheTrait
  * @package Cache
@@ -42,7 +44,7 @@ trait JTLCacheTrait
      * @param array $options
      * @return JTLCacheTrait
      */
-    public static function getInstance($options)
+    public static function getInstance(array $options)
     {
         return self::$instance ?? new self($options);
     }
@@ -69,7 +71,7 @@ trait JTLCacheTrait
     /**
      * @param string $id
      */
-    public function setJournalID($id): void
+    public function setJournalID(string $id): void
     {
         $this->journalID = $id;
     }
@@ -99,7 +101,7 @@ trait JTLCacheTrait
     /**
      * check if string was serialized before
      *
-     * @param string $data
+     * @param mixed $data
      * @return bool
      */
     public function is_serialized($data): bool
@@ -151,7 +153,7 @@ trait JTLCacheTrait
      * write meta data to journal - for use of cache tags
      *
      * @param string|array $tags
-     * @param string       $cacheID - not prefixed
+     * @param string|int   $cacheID - not prefixed
      * @return bool
      */
     public function writeJournal($tags, $cacheID): bool
@@ -266,20 +268,20 @@ trait JTLCacheTrait
             }
         }
         $this->getJournal();
-        //avoid infinite loops
+        // avoid infinite loops
         if ($tags !== $this->journalID && $this->journal !== false) {
             //load meta data
             foreach ($this->journal as $tagName => $value) {
-                //search for key in meta values
+                // search for key in meta values
                 if (($index = \array_search($tags, $value, true)) !== false) {
                     unset($this->journal[$tagName][$index]);
                     if (\count($this->journal[$tagName]) === 0) {
-                        //remove empty tag nodes
+                        // remove empty tag nodes
                         unset($this->journal[$tagName]);
                     }
                 }
             }
-            //write back journal
+            // write back journal
             $this->journalHasChanged = true;
 
             return true;
@@ -341,13 +343,13 @@ trait JTLCacheTrait
     /**
      * more readable output for uptime stats
      *
-     * @param int $seconds
+     * @param int|string $seconds
      * @return string
      */
     protected function secondsToTime($seconds): string
     {
-        $dtF = new \DateTime('@0');
-        $dtT = new \DateTime('@' . $seconds);
+        $dtF = new DateTime('@0');
+        $dtT = new DateTime('@' . $seconds);
 
         return $dtF->diff($dtT)->format(
             '%a ' . \__('days') . ', %h' . \__('hours') . ', %i ' . \__('minutes') . ', %s ' . \__('seconds')
@@ -373,10 +375,8 @@ trait JTLCacheTrait
     /**
      * @inheritdoc
      */
-    public function setError(string $error)
+    public function setError(string $error): void
     {
         $this->error = $error;
-
-        return $this;
     }
 }

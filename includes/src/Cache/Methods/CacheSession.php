@@ -22,7 +22,7 @@ class CacheSession implements ICachingMethod
     /**
      * @param array $options
      */
-    public function __construct($options)
+    public function __construct(array $options)
     {
         $this->isInitialized = true;
         $this->journalID     = 'session_journal';
@@ -32,7 +32,7 @@ class CacheSession implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null): bool
+    public function store($cacheID, $content, int $expiration = null): bool
     {
         $_SESSION[$this->options['prefix'] . $cacheID] = [
             'value'     => $content,
@@ -46,7 +46,7 @@ class CacheSession implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($idContent, $expiration = null): bool
+    public function storeMulti(array $idContent, int $expiration = null): bool
     {
         foreach ($idContent as $_key => $_value) {
             $this->store($_key, $_value, $expiration);

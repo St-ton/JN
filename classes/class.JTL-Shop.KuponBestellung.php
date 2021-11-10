@@ -368,7 +368,7 @@ class KuponBestellung
      */
     public static function getOrdersWithUsedCoupons($dStart, $dEnd, $kKupon = 0)
     {
-        return Shop::DB()->query(
+        return Shop::DB()->queryPrepared(
             "SELECT kbs.*, wkp.cName, kp.kKupon
                 FROM tkuponbestellung AS kbs
                 LEFT JOIN tbestellung AS bs 
@@ -377,12 +377,13 @@ class KuponBestellung
                     ON bs.kWarenkorb = wkp.kWarenkorb
                 LEFT JOIN tkupon AS kp 
                     ON kbs.kKupon = kp.kKupon
-                WHERE kbs.dErstellt BETWEEN '" . $dStart . "'
-                    AND '" . $dEnd . "'
-                    AND bs.cStatus != " . BESTELLUNG_STATUS_STORNO . "
+                WHERE kbs.dErstellt BETWEEN :strt AND :nd
+                    AND bs.cStatus != :stt
                     AND (wkp.nPosTyp = 3 OR wkp.nPosTyp = 7) " .
                 ((int)$kKupon > 0 ? " AND kp.kKupon = " . (int)$kKupon : '') . "
-                ORDER BY kbs.dErstellt DESC", 9
+                ORDER BY kbs.dErstellt DESC",
+            ['strt' => $dStart, 'nd' => $dEnd, 'stt' => BESTELLUNG_STATUS_STORNO],
+            9
         );
     }
 }

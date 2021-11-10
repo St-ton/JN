@@ -225,10 +225,16 @@ function generateSitemapXML()
     //  YYYY-MM-DD (eg 1997-07-16)
     //  YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
     $stdKundengruppe         = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
+
+    $stdKundengruppe->kKundengruppe = (int)$stdKundengruppe->kKundengruppe;
+
     $Sprachen                = gibAlleSprachen();
     $oSpracheAssoc_arr       = gibAlleSprachenAssoc($Sprachen);
     $seoAktiv                = true;
     $Sprache                 = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
+
+    $Sprache->kSprache = (int)$Sprache->kSprache;
+
     $_SESSION['kSprache']    = $Sprache->kSprache;
     $_SESSION['cISOSprache'] = $Sprache->cISO;
     if (!isset($_SESSION['Kundengruppe'])) {
@@ -366,6 +372,7 @@ function generateSitemapXML()
     }
     //Artikel sonstige Sprachen
     foreach ($Sprachen as $SpracheTMP) {
+        $SpracheTMP->kSprache = (int)$SpracheTMP->kSprache;
         if ($SpracheTMP->kSprache == $Sprache->kSprache) {
             continue;
         }
@@ -621,8 +628,8 @@ function generateSitemapXML()
                       LEFT JOIN tseo 
                           ON tseo.cKey = 'kTag'
                           AND tseo.kKey = ttag.kTag
-                          AND tseo.kSprache = " . (int) $SpracheTMP->kSprache . '
-                      WHERE ttag.kSprache = ' . (int) $SpracheTMP->kSprache . '
+                          AND tseo.kSprache = " . (int)$SpracheTMP->kSprache . '
+                      WHERE ttag.kSprache = ' . (int)$SpracheTMP->kSprache . '
                           AND ttag.nAktiv = 1
                       ORDER BY ttag.kTag', 10
             );
@@ -738,8 +745,8 @@ function generateSitemapXML()
                      FROM tsuchanfrage
                      LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
                         AND tseo.kKey = tsuchanfrage.kSuchanfrage
-                        AND tseo.kSprache = " . (int) $SpracheTMP->kSprache . '
-                     WHERE tsuchanfrage.kSprache = ' . (int) $SpracheTMP->kSprache . '
+                        AND tseo.kSprache = " . (int)$SpracheTMP->kSprache . '
+                     WHERE tsuchanfrage.kSprache = ' . (int)$SpracheTMP->kSprache . '
                         AND tsuchanfrage.nAktiv = 1
                      ORDER BY tsuchanfrage.kSuchanfrage', 10
             );
@@ -837,7 +844,7 @@ function generateSitemapXML()
                             AND tseo.kKey = tmerkmalwert.kMerkmalWert
                             AND tseo.kSprache = tmerkmalsprache.kSprache
                         WHERE tmerkmal.nGlobal = 1
-                            AND tmerkmalsprache.kSprache = " . (int) $SpracheTMP->kSprache . '
+                            AND tmerkmalsprache.kSprache = " . (int)$SpracheTMP->kSprache . '
                         GROUP BY tmerkmalwert.kMerkmalWert
                         ORDER BY tmerkmal.kMerkmal, tmerkmal.cName', 10
             );
@@ -1003,16 +1010,17 @@ function holeGoogleImage($artikel)
     if (isset($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]) &&
         strlen($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]) > 0
     ) {
-        $cArtNr = StringHandler::filterXSS($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]);
-        $oBild  = Shop::DB()->query(
+        $oBild  = Shop::DB()->queryPrepared(
             "SELECT tartikelpict.cPfad
                 FROM tartikelpict
                 JOIN tartikel 
-                    ON tartikel.cArtNr = '" . $cArtNr . "'
+                    ON tartikel.cArtNr = :artno
                 WHERE tartikelpict.kArtikel = tartikel.kArtikel
                 GROUP BY tartikelpict.cPfad
                 ORDER BY tartikelpict.nNr
-                LIMIT 1", 1
+                LIMIT 1",
+            ['artno' => $oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]],
+            1
         );
     }
 
@@ -1020,7 +1028,7 @@ function holeGoogleImage($artikel)
         $oBild = Shop::DB()->query('
             SELECT cPfad 
                 FROM tartikelpict 
-                WHERE kArtikel = ' . (int) $oArtikel->kArtikel . ' 
+                WHERE kArtikel = ' . (int)$oArtikel->kArtikel . ' 
                 GROUP BY cPfad 
                 ORDER BY nNr 
                 LIMIT 1', 1

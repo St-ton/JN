@@ -190,7 +190,7 @@ class Slide
                 $oSort = Shop::DB()->query("
                 SELECT nSort
                     FROM tslide
-                    WHERE kSlider = " . $this->kSlider . "
+                    WHERE kSlider = " . (int)$this->kSlider . "
                     ORDER BY nSort DESC LIMIT 1", 1
                 );
                 $oSlide->nSort = (!is_object($oSort) || $oSort->nSort == 0) ? 1 : ($oSort->nSort + 1);

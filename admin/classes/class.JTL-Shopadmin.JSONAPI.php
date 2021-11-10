@@ -303,34 +303,30 @@ class JSONAPI
 
             foreach ($searchIn as $i => $column) {
                 $colsToCheck[] = $column;
-                $conditions[]  = $db->escape($column) . " LIKE '%" . $searchFor . "%'";
+                $conditions[]  = $db->escape($column) . ' LIKE :val ';
             }
 
+            $qry = 'SELECT ' . \implode(',', $columns) . '
+                        FROM ' . $table . '
+                        WHERE ' . \implode(' OR ', $conditions) . ($limit > 0 ? ' LIMIT ' . $limit : '');
+
             $result = $this->validateColumnNames($table, $colsToCheck)
-                ? $db->query(
-                    "SELECT " . implode(',', $columns) . "
-                        FROM " . $table . "
-                        WHERE " . implode(' OR ', $conditions) . "
-                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
-                    2
-                )
+                ? $db->queryPrepared($qry, ['val' => '%' . $searchFor . '%'], 2)
                 : [];
         } elseif (is_string($searchIn) && is_array($searchFor)) {
             // key array select
-            $searchIn = $db->escape($searchIn);
-
-            foreach ($searchFor as $i => $key) {
-                $searchFor[$i] = "'" . $db->escape($key) . "'";
+            $bindValues = [];
+            $count      = 1;
+            foreach ($searchFor as $t) {
+                $bindValues[$count] = $t;
+                ++$count;
             }
-
+            $qry    = 'SELECT ' . \implode(',', $columns) . '
+                    FROM ' . $table . '
+                    WHERE ' . $searchIn . ' IN (' . \implode(',', \array_fill(0, $count - 1, '?')) . ')
+                    ' . ($limit > 0 ? 'LIMIT ' . $limit : '');
             $result = $this->validateColumnNames($table, [$searchIn])
-                ? $db->query(
-                    "SELECT " . implode(',', $columns) . "
-                        FROM " . $table . "
-                        WHERE " . $searchIn . " IN (" . implode(',', $searchFor) . ")
-                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
-                    2
-                )
+                ? $db->queryPrepared($qry, $bindValues, 2)
                 : [];
         } elseif ($searchIn === null && $searchFor === null) {
             // select all

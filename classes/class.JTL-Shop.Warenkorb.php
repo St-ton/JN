@@ -1256,10 +1256,15 @@ class Warenkorb
                     foreach ($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
                         if ($oWarenkorbPosEigenschaft->kEigenschaftWert > 0 && $this->PositionenArr[$i]->nAnzahl > 0) {
                             //schaue in DB, ob Lagerbestand ausreichend
-                            $oEigenschaftLagerbestand = Shop::DB()->query(
-                                "SELECT kEigenschaftWert, fLagerbestand >= " . $this->PositionenArr[$i]->nAnzahl . " AS bAusreichend, fLagerbestand
+                            $oEigenschaftLagerbestand = Shop::DB()->queryPrepared(
+                                "SELECT kEigenschaftWert, fLagerbestand >= :cnt AS bAusreichend, fLagerbestand
                                     FROM teigenschaftwert
-                                    WHERE kEigenschaftWert = " . (int)$oWarenkorbPosEigenschaft->kEigenschaftWert, 1
+                                    WHERE kEigenschaftWert = :vid",
+                                [
+                                    'cnt' => $this->PositionenArr[$i]->nAnzahl,
+                                    'vid' => (int)$oWarenkorbPosEigenschaft->kEigenschaftWert
+                                ],
+                                1
                             );
 
                             if ($oEigenschaftLagerbestand->kEigenschaftWert > 0 && !$oEigenschaftLagerbestand->bAusreichend) {

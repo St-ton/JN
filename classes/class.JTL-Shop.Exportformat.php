@@ -1075,7 +1075,7 @@ class Exportformat
         }
         $datei = fopen(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, 'a');
         if ($max === null) {
-            $maxObj = Shop::DB()->executeQuery($this->getExportSQL(true), 1);
+            $maxObj = Shop::DB()->query($this->getExportSQL(true), 1);
             $max    = (int)$maxObj->nAnzahl;
         } else {
             $max = (int)$max;

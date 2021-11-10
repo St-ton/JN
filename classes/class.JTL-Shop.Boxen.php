@@ -1695,15 +1695,21 @@ class Boxen
         if ($kContainer === null) {
             $kContainer = 0;
         }
-        $oBox = Shop::DB()->query(
+        $oBox = Shop::DB()->queryPrepared(
             "SELECT tboxensichtbar.nSort, tboxen.ePosition
                 FROM tboxensichtbar
                 LEFT JOIN tboxen
                     ON tboxensichtbar.kBox = tboxen.kBox
-                    WHERE tboxensichtbar.kSeite = " . (int)$nSeite . "
-                        AND tboxen.ePosition = '" . $ePosition . "'
-                        AND tboxen.kContainer = " . (int)$kContainer . "
-                ORDER BY tboxensichtbar.nSort DESC LIMIT 1", 1
+                    WHERE tboxensichtbar.kSeite = :pge
+                        AND tboxen.ePosition = :pos
+                        AND tboxen.kContainer = :cntnr
+                ORDER BY tboxensichtbar.nSort DESC LIMIT 1",
+            [
+                'pos'   => $ePosition,
+                'pge'   => (int)$nSeite,
+                'cntnr' => (int)$kContainer
+            ],
+            1
         );
 
         return $oBox ? ++$oBox->nSort : 0;
@@ -1740,6 +1746,7 @@ class Boxen
         $bAktiv         = (int)$bAktiv;
         $kBox           = (int)$kBox;
         $nSeite         = (int)$nSeite;
+        $nSort          = (int)$nSort;
         $validPageTypes = $this->getValidPageTypes();
         if ($nSeite === 0) {
             $bOk = true;
@@ -2010,12 +2017,14 @@ class Boxen
             if ($isAvailable === false) {
                 $box = Shop::DB()->select('tboxen', 'ePosition', $position);
                 if ($box !== null && isset($box->kBox)) {
-                    $boxes = Shop::DB()->query("
+                    $boxes = Shop::DB()->queryPrepared("
                         SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
                             FROM tboxen 
                                 LEFT JOIN tboxvorlage
                                 ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                            WHERE ePosition = '" . $position . "'", 2
+                            WHERE ePosition = :pos",
+                        ['pos' => $position],
+                        2
                     );
                     foreach ($boxes as $box) {
                         $invisibleBoxes[] = $box;

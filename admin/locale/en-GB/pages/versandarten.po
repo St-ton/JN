@@ -165,7 +165,7 @@ msgid "pictureURL"
 msgstr "Image URL"
 
 msgid "pictureDesc"
-msgstr "Here you can save a path or URL to an image, e.g. the logo of a shipping service provider. The image will be displayed instead of the name of the shipping method during the checkout."
+msgstr "Here you can save a path or URL to an image, e.g. the logo of a shipping service provider. The image will be displayed during the checkout. Leave the \"displayed name\" empty, to show only this image."
 
 msgid "shippingclass"
 msgstr "Shipping class"

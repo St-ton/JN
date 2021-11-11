@@ -220,7 +220,7 @@ final class Link extends AbstractLink
     /**
      * @var string
      */
-    private $target;
+    private $target = '_self';
 
     /**
      * Link constructor.
@@ -387,7 +387,7 @@ final class Link extends AbstractLink
             $this->setName($link->localizedName ?? $link->cName, $link->languageID);
             $this->setTitle($link->localizedTitle ?? $link->cName, $link->languageID);
             $this->setLanguageID($link->languageID, $link->languageID);
-            $this->setTarget('_blank');
+            $this->setTarget($link->target ?? '_self');
             if ($this->getLinkType() === \LINKTYP_EXTERNE_URL) {
                 $this->setSEO($link->linkURL, $link->languageID);
                 $this->setURL($link->linkURL, $link->languageID);

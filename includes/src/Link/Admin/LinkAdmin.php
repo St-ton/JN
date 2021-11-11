@@ -535,6 +535,7 @@ final class LinkAdmin
         $link->cNoFollow          = 'N';
         $link->cIdentifier        = $post['cIdentifier'];
         $link->bIsFluid           = (isset($post['bIsFluid']) && $post['bIsFluid'] === '1') ? 1 : 0;
+        $link->target             = $post['linkTarget'] ?? '_self';
         if (GeneralObject::isCountable('cKundengruppen', $post)) {
             $link->cKundengruppen = \implode(';', $post['cKundengruppen']) . ';';
             if (\in_array('-1', $post['cKundengruppen'], true)) {

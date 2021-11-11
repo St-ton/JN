@@ -28,7 +28,7 @@
                                             {row class="lg-row-lg nav"}
                                                 {col lg=4 xl=3 class="nav-item-lg-m nav-item dropdown d-lg-none"}
                                                     {block name='snippets-linkgroup-list-links-header'}
-                                                        {link href=$li->getURL() title=$li->getName()}
+                                                        {link href=$li->getURL() title=$li->getName() target=$li->getTarget()}
                                                             <strong class="nav-mobile-heading">{lang key='menuShow' printf=$li->getName()}</strong>
                                                         {/link}
                                                     {/block}

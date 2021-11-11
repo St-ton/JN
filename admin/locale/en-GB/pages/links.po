@@ -253,3 +253,12 @@ msgstr "The following special pages are missing:"
 
 msgid "Please create the missing pages manually."
 msgstr "Please create the missing pages manually."
+
+msgid "linkTarget"
+msgstr "Open in"
+
+msgid "targetSelf"
+msgstr "in same window/tab"
+
+msgid "targetBlank"
+msgstr "in new window/tab"

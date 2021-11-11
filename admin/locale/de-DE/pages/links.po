@@ -253,3 +253,12 @@ msgstr "Die folgenden Spezialseiten fehlen:"
 
 msgid "Please create the missing pages manually."
 msgstr "Legen Sie die fehlenden Seitentypen bitte manuell an."
+
+msgid "linkTarget"
+msgstr "Öffnen in"
+
+msgid "targetSelf"
+msgstr "im selben Fenster/Tab"
+
+msgid "targetBlank"
+msgstr "in neuem Fenster/Tab"

@@ -143,8 +143,8 @@
                         <label class="col col-sm-4 col-form-label text-sm-right" for="linkTarget">{__('linkTarget')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <select class="custom-select" type="selectbox" name="linkTarget" id="linkTarget">
-                                <option value="_self" {if $Link->getTarget() === '_self' || (isset($xPostVar_arr.linkTarget) && $xPostVar_arr.linkTarget === '_self')}selected{/if}>{__('targetSelf')}</option>
-                                <option value="_blank" {if $Link->getTarget() === '_blank' || (isset($xPostVar_arr.linkTarget) && $xPostVar_arr.linkTarget === '_blank')}selected{/if}>{__('targetBlank')}</option>
+                                <option value="_self" {if (!isset($xPostVar_arr.linkTarget) && $Link->getTarget() === '_self') || (isset($xPostVar_arr.linkTarget) && $xPostVar_arr.linkTarget === '_self')}selected{/if}>{__('targetSelf')}</option>
+                                <option value="_blank" {if (!isset($xPostVar_arr.linkTarget) && $Link->getTarget() === '_blank') || (isset($xPostVar_arr.linkTarget) && $xPostVar_arr.linkTarget === '_blank')}selected{/if}>{__('targetBlank')}</option>
                             </select>
                         </div>
                     </div>

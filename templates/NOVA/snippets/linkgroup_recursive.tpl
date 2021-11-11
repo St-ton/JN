@@ -87,7 +87,7 @@
                                     {nav}
                                     {block name='snippets-linkgroup-recursive-mega-child-header'}
                                         <li class="nav-item d-lg-none">
-                                            {link href=$mainLink->getURL() nofollow=true}
+                                            {link href=$mainLink->getURL() nofollow=true target=$mainLink->getTarget()}
                                                 <strong class="nav-mobile-heading">
                                                     {lang key='menuShow' printf=$mainLink->getName()}
                                                 </strong>

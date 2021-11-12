@@ -29,7 +29,7 @@ class CacheAdvancedfile implements ICachingMethod
     /**
      * @param array $options
      */
-    public function __construct($options)
+    public function __construct(array $options)
     {
         $this->journalID     = 'advancedfile_journal';
         $this->options       = $options;
@@ -38,7 +38,7 @@ class CacheAdvancedfile implements ICachingMethod
     }
 
     /**
-     * @param string $cacheID
+     * @param string|mixed $cacheID
      * @return bool|string
      */
     private function getFileName($cacheID)
@@ -51,7 +51,7 @@ class CacheAdvancedfile implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null): bool
+    public function store($cacheID, $content, int $expiration = null): bool
     {
         $fileName = $this->getFileName($cacheID);
         $dir      = $this->options['cache_dir'];
@@ -76,7 +76,7 @@ class CacheAdvancedfile implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($idContent, $expiration = null): bool
+    public function storeMulti(array $idContent, int $expiration = null): bool
     {
         foreach ($idContent as $_key => $_value) {
             $this->store($_key, $_value, $expiration);

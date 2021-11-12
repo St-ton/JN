@@ -181,8 +181,22 @@ build_create_md5_hashfile()
     local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${VERSION}.csv";
 
     cd ${REPOSITORY_DIR};
-    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".php_cs" -or -name ".travis.yml" -or -name "${VERSION}.csv" -or -name "composer.lock" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -v -f "${REPOSITORY_DIR}/build/scripts/md5_excludes.lst" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
-    cd ${CUR_PWD};
+    find -type f -not \( -name ".asset_cs" \
+      -or -name ".git*" -or -name ".idea*" \
+      -or -name ".php_cs" -or -name ".travis.yml" \
+      -or -name ".htaccess" \
+      -or -name "${VERSION}.csv" -or -name "composer.lock" \
+      -or -name "config.JTL-Shop.ini.initial.php" \
+      -or -name "phpunit.xml" -or -name "robots.txt" \
+      -or -name "rss.xml" -or -name "shopinfo.xml" \
+      -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" \
+    | grep -v -f "${REPOSITORY_DIR}/build/scripts/md5_excludes.lst" \
+    | xargs md5sum | awk '{ print $1";"$2; }' \
+    | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
+    
+    find -type f -name '.htaccess' -and -not -regex './.htaccess' -printf "'%P'\n" \
+    | xargs md5sum | awk '{ print $1";"$2; }' \
+    | sort --field-separator=';' -k2 -k1 >> ${MD5_HASH_FILENAME};
 
     echo "  File checksums admin/includes/shopmd5files/${VERSION}.csv";
 }

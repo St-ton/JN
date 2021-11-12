@@ -90,7 +90,7 @@ build_create()
     echo "Create templates md5 csv files";
     create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/Evo";
     create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/NOVA";
-	
+
     echo "Executing migrations";
     build_migrate;
 
@@ -193,8 +193,11 @@ build_create_md5_hashfile()
     | grep -v -f "${REPOSITORY_DIR}/build/scripts/md5_excludes.lst" \
     | xargs md5sum | awk '{ print $1";"$2; }' \
     | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
-    
-    find -type f -name '.htaccess' -and -not -regex './.htaccess' -printf "'%P'\n" \
+
+    find -type f -name '.htaccess' \
+	  -and \( \
+		-not -regex './.htaccess' \
+		-not -regex './build/.*' \)  -printf "'%P'\n" \
     | xargs md5sum | awk '{ print $1";"$2; }' \
     | sort --field-separator=';' -k2 -k1 >> ${MD5_HASH_FILENAME};
 

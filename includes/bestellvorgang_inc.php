@@ -177,7 +177,7 @@ function getMissingInput(array $post, ?int $customerGroupId = null, ?CheckBox $c
     $missingInput    = checkKundenFormular(0);
     $customerGroupId = $customerGroupId ?? Frontend::getCustomerGroup()->getID();
     $checkBox        = $checkBox ?? new CheckBox();
-    
+
     return array_merge($missingInput, $checkBox->validateCheckBox(
         CHECKBOX_ORT_REGISTRIERUNG,
         $customerGroupId,
@@ -1556,7 +1556,7 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
                 FROM tversandartzahlungsart, tzahlungsart
                 WHERE tversandartzahlungsart.kVersandart = :sid
                     AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
-                    AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen=''
+                    AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen = ''
                     OR FIND_IN_SET(:cgid, REPLACE(tzahlungsart.cKundengruppen, ';', ',')) > 0)
                     AND tzahlungsart.nActive = 1
                     AND tzahlungsart.nNutzbar = 1
@@ -1681,7 +1681,7 @@ function gibAktiveZahlungsart($shippingMethods)
         $_SESSION['AktiveZahlungsart'] = $shippingMethods[0]->kZahlungsart;
     }
 
-    return $_SESSION['AktiveZahlungsart'];
+    return (int)$_SESSION['AktiveZahlungsart'];
 }
 
 /**
@@ -2487,7 +2487,7 @@ function getKundendaten(array $post, $customerAccount, $htmlentities = 1)
     $customer   = new Customer($customerID);
     foreach ($mapping as $external => $internal) {
         if (isset($post[$external])) {
-            $val = Text::filterXSS($post[$external]);
+            $val = $external === 'pass' ? $post[$external] : Text::filterXSS($post[$external]);
             if ($htmlentities) {
                 $val = Text::htmlentities($val);
             }

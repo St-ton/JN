@@ -591,8 +591,13 @@ class Text
         if (\mb_detect_encoding($input) !== 'UTF-8' || !self::is_utf8($input)) {
             $input = self::convertUTF8($input);
         }
-        $input     = \idn_to_ascii($input, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46);
-        $sanitized = \filter_var($input, \FILTER_SANITIZE_EMAIL);
+        $inputParts = \explode('@', $input);
+        if (\count($inputParts) !== 2) {
+            return false;
+        }
+        $inputParts[1] = \idn_to_ascii($inputParts[1], \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46);
+        $input         = \implode('@', $inputParts);
+        $sanitized     = \filter_var($input, \FILTER_SANITIZE_EMAIL);
 
         return $validate
             ? \filter_var($sanitized, \FILTER_VALIDATE_EMAIL)

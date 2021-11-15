@@ -814,9 +814,9 @@ final class Admin
                       AND tnewsletterempfaengerhistory.cAktion = 'Eingetragen'
                 LEFT JOIN toptin
                     ON toptin.cMail = tnewsletterempfaenger.cEmail
-                WHERE tnewsletterempfaenger.kSprache = " . (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])
-            . $searchSQL->cWHERE . '
-                ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL
+                WHERE tnewsletterempfaenger.kSprache =:lid " . $searchSQL->cWHERE . '
+                ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL,
+            ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])]
         )->map(static function (stdClass $item) {
             $item->cVorname  = Text::filterXSS($item->cVorname);
             $item->cNachname = Text::filterXSS($item->cNachname);

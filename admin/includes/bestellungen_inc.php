@@ -11,18 +11,21 @@ use JTL\Shop;
 function gibBestellungsUebersicht(string $limitSQL, string $query): array
 {
     $orders       = [];
+    $prep         = [];
     $searchFilter = '';
-    if (mb_strlen($query)) {
-        $searchFilter = " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($query) . "%'";
+    if (mb_strlen($query) > 0) {
+        $searchFilter = ' WHERE cBestellNr LIKE :fltr';
+        $prep['fltr'] = '%' . $query . '%';
     }
     $items = Shop::Container()->getDB()->getObjects(
         'SELECT kBestellung
             FROM tbestellung
             ' . $searchFilter . '
-            ORDER BY dErstellt DESC' . $limitSQL
+            ORDER BY dErstellt DESC' . $limitSQL,
+        $prep
     );
     foreach ($items as $item) {
-        if (isset($item->kBestellung) && $item->kBestellung > 0) {
+        if ($item->kBestellung > 0) {
             $order = new Bestellung((int)$item->kBestellung);
             $order->fuelleBestellung(true, 0, false);
             $orders[] = $order;
@@ -38,13 +41,17 @@ function gibBestellungsUebersicht(string $limitSQL, string $query): array
  */
 function gibAnzahlBestellungen(string $query): int
 {
-    $filterSQL = (mb_strlen($query) > 0)
-        ? " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($query) . "%'"
-        : '';
+    $prep         = [];
+    $searchFilter = '';
+    if (mb_strlen($query) > 0) {
+        $searchFilter = ' WHERE cBestellNr LIKE :fltr';
+        $prep['fltr'] = '%' . $query . '%';
+    }
 
     return (int)Shop::Container()->getDB()->getSingleObject(
         'SELECT COUNT(*) AS cnt
-            FROM tbestellung' . $filterSQL
+            FROM tbestellung' . $searchFilter,
+        $prep
     )->cnt;
 }
 

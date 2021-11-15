@@ -158,12 +158,16 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                     $mapping->cSuche         = $sucheanfrage->cSuche;
                     $mapping->cSucheNeu      = $_POST[$index];
                     $mapping->nAnzahlGesuche = $sucheanfrage->nAnzahlGesuche;
-                    $Neuesuche               = $db->select(
-                        'tsuchanfrage',
-                        'cSuche',
-                        $mapping->cSucheNeu
+                    $mappedSearch            = $db->getSingleObject(
+                        'SELECT tsuchanfrage.kSuchanfrage, IF(:mapped = :cSuche, 1, 0) isEqual
+                            FROM tsuchanfrage
+                            WHERE cSuche = :cSuche',
+                        [
+                            'cSuche' => $mapping->cSucheNeu,
+                            'mapped' => $mapping->cSuche,
+                        ]
                     );
-                    if (isset($Neuesuche->kSuchanfrage) && $Neuesuche->kSuchanfrage > 0) {
+                    if ((int)($mappedSearch->kSuchanfrage ?? 0) > 0 && (int)($mappedSearch->isEqual ?? 0) === 0) {
                         $db->insert('tsuchanfragemapping', $mapping);
                         $db->queryPrepared(
                             'UPDATE tsuchanfrage
@@ -182,7 +186,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                             (int)$sucheanfrage->kSuchanfrage
                         );
                         $upd       = new stdClass();
-                        $upd->kKey = (int)$Neuesuche->kSuchanfrage;
+                        $upd->kKey = (int)$mappedSearch->kSuchanfrage;
                         $db->update(
                             'tseo',
                             ['cKey', 'kKey'],
@@ -194,6 +198,11 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                             __('successSearchMap'),
                             $mapping->cSuche,
                             $mapping->cSucheNeu
+                        ) . '<br />';
+                    } else {
+                        $errorMapMessage .= ((int)($mappedSearch->isEqual ?? 0) === 1
+                            ? sprintf(__('errorSearchMapLoop'), $mapping->cSuche, $mapping->cSucheNeu)
+                            : __('errorSearchMapToNotExist')
                         ) . '<br />';
                     }
                 }
@@ -216,8 +225,18 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                         if (mb_convert_case($query->cSuche, MB_CASE_LOWER) !==
                             mb_convert_case($mapping, MB_CASE_LOWER)
                         ) {
-                            $oSuchanfrageNeu = $db->select('tsuchanfrage', 'cSuche', $mapping);
-                            if (isset($oSuchanfrageNeu->kSuchanfrage) && $oSuchanfrageNeu->kSuchanfrage > 0) {
+                            $mappedSearch = $db->getSingleObject(
+                                'SELECT tsuchanfrage.kSuchanfrage, IF(:mapped = :cSuche, 1, 0) isEqual
+                                    FROM tsuchanfrage
+                                    WHERE cSuche = :cSuche',
+                                [
+                                    'cSuche' => $mapping,
+                                    'mapped' => $query->cSuche,
+                                ]
+                            );
+                            if ((int)($mappedSearch->kSuchanfrage ?? 0) > 0
+                                && (int)($mappedSearch->isEqual ?? 0) === 0
+                            ) {
                                 $queryMapping                 = new stdClass();
                                 $queryMapping->kSprache       = $languageID;
                                 $queryMapping->cSuche         = $query->cSuche;
@@ -237,7 +256,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                                         [
                                             'cnt' => $query->nAnzahlGesuche,
                                             'lid' => $languageID,
-                                            'sid' => $oSuchanfrageNeu->kSuchanfrage
+                                            'sid' => $mappedSearch->kSuchanfrage
                                         ]
                                     );
                                     $db->delete(
@@ -251,7 +270,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                                             WHERE cKey = 'kSuchanfrage'
                                                 AND kKey = :sid",
                                         [
-                                            'kid' => (int)$oSuchanfrageNeu->kSuchanfrage,
+                                            'kid' => (int)$mappedSearch->kSuchanfrage,
                                             'sid' => (int)$query->kSuchanfrage
                                         ]
                                     );
@@ -263,11 +282,19 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                                     );
                                 }
                             } else {
-                                $alertHelper->addAlert(
-                                    Alert::TYPE_ERROR,
-                                    __('errorSearchMapToNotExist'),
-                                    'errorSearchMapToNotExist'
-                                );
+                                if ((int)($mappedSearch->isEqual ?? 0) === 1) {
+                                    $alertHelper->addAlert(
+                                        Alert::TYPE_ERROR,
+                                        sprintf(__('errorSearchMapLoop'), $query->cSuche, $mapping),
+                                        'errorSearchMapToNotExist'
+                                    );
+                                } else {
+                                    $alertHelper->addAlert(
+                                        Alert::TYPE_ERROR,
+                                        __('errorSearchMapToNotExist'),
+                                        'errorSearchMapToNotExist'
+                                    );
+                                }
                                 break;
                             }
                         } else {
@@ -344,26 +371,35 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                     $mapping->cSucheNeu      = $_POST[$idx];
                     $mapping->nAnzahlGesuche = $failedQuery->nAnzahlGesuche;
 
-                    $oldQuery = $db->select(
-                        'tsuchanfrageerfolglos',
-                        'cSuche',
-                        $mapping->cSuche
+                    $oldQuery = $db->getSingleObject(
+                        'SELECT tsuchanfrageerfolglos.kSuchanfrageErfolglos, IF(:mapped = :cSuche, 1, 0) isEqual
+                            FROM tsuchanfrageerfolglos
+                            WHERE cSuche = :cSuche',
+                        [
+                            'cSuche' => $mapping->cSuche,
+                            'mapped' => $mapping->cSucheNeu,
+                        ]
                     );
                     //check if loops would be created with mapping
-                    $bIsLoop           = false;
+                    $bIsLoop           = (int)($oldQuery->isEqual ?? 0) > 0;
                     $sSearchMappingTMP = $mapping->cSucheNeu;
-                    while (!empty($sSearchMappingTMP)) {
-                        if ($sSearchMappingTMP === $mapping->cSuche) {
+                    while (!empty($sSearchMappingTMP) && !$bIsLoop) {
+                        $oSearchMappingNextTMP = $db->getSingleObject(
+                            'SELECT tsuchanfragemapping.cSucheNeu,
+                                IF(:mapped = tsuchanfragemapping.cSucheNeu, 1, 0) isEqual
+                                FROM tsuchanfragemapping
+                                WHERE tsuchanfragemapping.cSuche = :cSuche
+                                    AND tsuchanfragemapping.kSprache = :languageID',
+                            [
+                                'languageID' => $languageID,
+                                'cSuche'     => $sSearchMappingTMP,
+                                'mapped'     => $mapping->cSuche,
+                            ]
+                        );
+                        if ((int)($oSearchMappingNextTMP->isEqual ?? 0) === 1) {
                             $bIsLoop = true;
                             break;
                         }
-                        $oSearchMappingNextTMP = $db->select(
-                            'tsuchanfragemapping',
-                            'kSprache',
-                            $languageID,
-                            'cSuche',
-                            $sSearchMappingTMP
-                        );
                         if (!empty($oSearchMappingNextTMP->cSucheNeu)) {
                             $sSearchMappingTMP = $oSearchMappingNextTMP->cSucheNeu;
                         } else {

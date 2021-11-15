@@ -50,11 +50,11 @@ class ZahlungsLog
         $condition = $level >= 0 ? ('AND nLevel = ' . $level) : '';
 
         return Shop::Container()->getDB()->getObjects(
-            "SELECT * FROM tzahlungslog
-                WHERE cModulId = '" . $this->cModulId . "' " .
-            $condition . ($whereSQL !== '' ? ' AND ' . $whereSQL : '') . '
+            'SELECT * FROM tzahlungslog
+                WHERE cModulId = :mid' . $condition . ($whereSQL !== '' ? ' AND ' . $whereSQL : '') . '
                 ORDER BY dDatum DESC, kZahlunglog DESC 
-                LIMIT ' . $limit
+                LIMIT :lmt',
+            ['mid' => $this->cModulId, 'lmt' => $limit]
         );
     }
 
@@ -123,17 +123,25 @@ class ZahlungsLog
         if (!\is_array($moduleIDs)) {
             $moduleIDs = (array)$moduleIDs;
         }
-        \array_walk($moduleIDs, static function (&$value) {
-            $value = \sprintf("'%s'", $value);
-        });
-        $moduleIDlist = \implode(',', $moduleIDs);
+        if (\count($moduleIDs) === 0) {
+            return [];
+        }
         $where        = ($level >= 0) ? ('AND nLevel = ' . $level) : '';
+        $prep         = ['lmts' => $offset, 'lmte' => $limit];
+        $i            = 0;
+        $moduleIDlist = [];
+        foreach ($moduleIDs as $moduleID) {
+            $idx            = 'mid' . $i++;
+            $prep[$idx]     = $moduleID;
+            $moduleIDlist[] = ':' . $idx;
+        }
 
         return Shop::Container()->getDB()->getObjects(
             'SELECT * FROM tzahlungslog
-                WHERE cModulId IN(' . $moduleIDlist . ') ' . $where . '
+                WHERE cModulId IN(' . \implode(', ', $moduleIDlist) . ') ' . $where . '
                 ORDER BY dDatum DESC, kZahlunglog DESC 
-                LIMIT ' . $offset . ', ' . $limit
+                LIMIT :lmts, :lmte',
+            $prep
         );
     }
 

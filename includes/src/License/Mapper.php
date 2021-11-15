@@ -46,6 +46,16 @@ class Mapper
             $exsLicense->setQueryDate($data->timestamp);
             if ($exsLicense->getState() === ExsLicense::STATE_ACTIVE) {
                 $this->setReference($exsLicense, $extension);
+                if ($exsLicense->getLicense()->getSubscription()->isExpired()) {
+                    $avail = $exsLicense->getReleases()->getAvailable();
+                    if ($avail !== null) {
+                        $releaseDate    = $avail->getReleaseDate();
+                        $expirationDate = $exsLicense->getLicense()->getSubscription()->getValidUntil();
+                        if ($releaseDate <= $expirationDate) {
+                            $exsLicense->getLicense()->getSubscription()->setCanBeUsed(true);
+                        }
+                    }
+                }
             }
             $collection->push($exsLicense);
         }

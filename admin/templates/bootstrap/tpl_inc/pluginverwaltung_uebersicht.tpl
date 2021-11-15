@@ -71,3 +71,4 @@
         </div>
     </div>
 </div>
+{include file='tpl_inc/exstore_banner.tpl'}

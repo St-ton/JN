@@ -87,18 +87,18 @@ class SASSCommand extends Command
             if (\file_exists($cacheDir)) {
                 \array_map('\unlink', \glob($cacheDir . '/lessphp*'));
             } elseif (!\mkdir($cacheDir, 0777) && !\is_dir($cacheDir)) {
-                throw new \RuntimeException(\sprintf('Directory "%s" was not created', $cacheDir));
+                throw new \RuntimeException(\sprintf('Directory "%s" was not created.', $cacheDir));
             }
         }
         $input = $directory . 'sass/' . $theme . '.scss';
         if (!\file_exists($input)) {
-            $io->error("Theme scss file: $input does not exist. ");
+            $io->error(\sprintf('Theme scss file "%s" does not exist.', $input));
 
             return false;
         }
         try {
             $this->compileSass($input, $directory . $theme . '.css', $directory);
-            $critical = $input = $directory . 'sass/' . $theme . '_crit.scss';
+            $critical = $directory . 'sass/' . $theme . '_crit.scss';
             if (\file_exists($critical)) {
                 $this->compileSass($critical, $directory . $theme . '_crit.css', $directory);
                 $io->writeln('<info>' . $theme . '_crit.css was compiled successfully.</info>');
@@ -124,6 +124,10 @@ class SASSCommand extends Command
         $critical = \strpos($file, '_crit') !== false;
         $compiler = new Compiler();
         $compiler->setSourceMap($critical ? Compiler::SOURCE_MAP_NONE : Compiler::SOURCE_MAP_FILE);
+        $compiler->setSourceMapOptions([
+            'sourceMapURL'      => \basename($target) . '.map',
+            'sourceMapBasepath' => $directory,
+        ]);
         $compiler->addImportPath($baseDir);
         $result = $compiler->compileString(\file_get_contents($file));
         \file_put_contents($target, $result->getCss());

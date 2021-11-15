@@ -20,7 +20,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 
 $uploadDir      = PFAD_ROOT . PFAD_NEWSBILDER;
 $uploadDirCat   = PFAD_ROOT . PFAD_NEWSKATEGORIEBILDER;
@@ -29,7 +28,7 @@ $db             = Shop::Container()->getDB();
 $author         = ContentAuthor::getInstance();
 $controller     = new Controller($db, $smarty, Shop::Container()->getCache());
 $newsCategory   = new Category($db);
-$languages      = LanguageHelper::getAllLanguages(0, true);
+$languages      = LanguageHelper::getAllLanguages(0, true, true);
 $adminID        = (int)$_SESSION['AdminAccount']->kAdminlogin;
 $adminName      = $db->select('tadminlogin', 'kAdminlogin', $adminID)->cName;
 
@@ -232,16 +231,19 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
 
         if ($newsItemID > 0 && count($newsCategories) > 0) {
             $smarty->assign('oNewsKategorie_arr', $controller->getAllNewsCategories())
-                   ->assign('oAuthor', $author->getAuthor('NEWS', $newsItemID))
-                   ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
+                ->assign('oAuthor', $author->getAuthor('NEWS', $newsItemID))
+                ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
             $controller->setStep('news_editieren');
             $newsItem = new Item($db);
             $newsItem->load($newsItemID);
 
             if ($newsItem->getID() > 0) {
+                if ($controller->hasOPCContent($languages, $newsItem->getID())) {
+                    $controller->setMsg(__('OPC content available'));
+                }
                 $smarty->assign('oNewsKategorie_arr', $controller->getAllNewsCategories())
-                       ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
-                       ->assign('oNews', $newsItem);
+                    ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
+                    ->assign('oNews', $newsItem);
             }
         } else {
             $controller->setErrorMsg(__('errorNewsCatFirst'));
@@ -305,16 +307,12 @@ if ($controller->getStep() === 'news_uebersicht') {
            ->assign('oNewsKategorie', $newsCategory);
 }
 
-if (!empty($_SESSION['news.cHinweis'])) {
-    $controller->setMsg($controller->getMsg() . $_SESSION['news.cHinweis']);
-    unset($_SESSION['news.cHinweis']);
-}
-
-$maxFileSize = getMaxFileSize(ini_get('upload_max_filesize'));
-Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $controller->getMsg(), 'newsMessage');
-Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'newsError');
+$maxFileSize  = getMaxFileSize(ini_get('upload_max_filesize'));
+$alertService = Shop::Container()->getAlertService();
+$alertService->addAlert(Alert::TYPE_NOTE, $controller->getMsg(), 'newsMessage');
+$alertService->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'newsError');
 
 $smarty->assign('customerGroups', CustomerGroup::getGroups())
-       ->assign('step', $controller->getStep())
-       ->assign('nMaxFileSize', $maxFileSize)
-       ->display('news.tpl');
+    ->assign('step', $controller->getStep())
+    ->assign('nMaxFileSize', $maxFileSize)
+    ->display('news.tpl');

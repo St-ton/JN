@@ -83,18 +83,6 @@ class History
     /**
      * @param int $downloadID
      * @return array
-     * @deprecated since 5.0.0
-     */
-    public static function getHistorys(int $downloadID): array
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return self::getHistory($downloadID);
-    }
-
-    /**
-     * @param int $downloadID
-     * @return array
      */
     public static function getHistory(int $downloadID): array
     {
@@ -104,9 +92,9 @@ class History
                 WHERE kDownload = :dlid
                 ORDER BY dErstellt DESC',
             ['dlid' => $downloadID]
-        )->pluck('id')->transform(static function ($e) {
-            return (int)$e;
-        })->mapInto(self::class)->toArray();
+        )->map(static function ($e) {
+            return new self((int)$e->id);
+        })->toArray();
     }
 
     /**

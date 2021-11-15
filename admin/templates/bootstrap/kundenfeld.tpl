@@ -167,9 +167,9 @@
                                     <td>
                                         {if !empty($nHighestSortValue)}
                                             {assign var=nNextHighestSort value=$nHighestSortValue|intval + $nHighestSortDiff|intval}
-                                            <input id="nSort" name="nSort" type="text" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{else}{$nNextHighestSort}{/if}"/>
+                                            <input id="nSort" name="nSort" type="number" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{else}{$nNextHighestSort}{/if}"/>
                                         {else}
-                                            <input id="nSort" name="nSort" type="text" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{/if}" placeholder="{__('kundenfeldSortDesc')}"/>
+                                            <input id="nSort" name="nSort" type="number" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{/if}" placeholder="{__('kundenfeldSortDesc')}"/>
                                         {/if}
                                     </td>
                                 </tr>
@@ -223,8 +223,8 @@
                                         {/if}
                                     </td>
                                 </tr>
-                                {if isset($oKundenfeld->oKundenfeldWert_arr) && $oKundenfeld->oKundenfeldWert_arr|@count > 0}
-                                    {foreach name=kundenfeldwerte from=$oKundenfeld->oKundenfeldWert_arr key=key item=oKundenfeldWert}
+                                {if isset($oKundenfeld->oKundenfeldWert_arr) && $oKundenfeld->oKundenfeldWert_arr|count > 0}
+                                    {foreach $oKundenfeld->oKundenfeldWert_arr as $key => $oKundenfeldWert}
                                         {assign var=i value=$key+1}
                                         {assign var=j value=$key+6}
                                         <tr class="kundenfeld_wert">
@@ -245,8 +245,8 @@
                                             </td>
                                         </tr>
                                     {/foreach}
-                                {elseif isset($xPostVar_arr.cfValues) && $xPostVar_arr.cfValues|@count > 0}
-                                    {foreach name=kundenfeldwerte from=$xPostVar_arr.cfValues key=key item=cKundenfeldWert}
+                                {elseif isset($xPostVar_arr.cfValues) && $xPostVar_arr.cfValues|count > 0}
+                                    {foreach $xPostVar_arr.cfValues as $key => $cKundenfeldWert}
                                         {assign var=i value=$key+1}
                                         {assign var=j value=$key+6}
                                         <tr class="kundenfeld_wert">
@@ -286,7 +286,7 @@
                     <div class="subheading1">{__('kundenfeldExistingDesc')}</div>
                     <hr class="mb-3">
                     <div>
-                    {if isset($oKundenfeld_arr) && $oKundenfeld_arr|@count > 0}
+                    {if isset($oKundenfeld_arr) && $oKundenfeld_arr|count > 0}
                         <form method="post" action="kundenfeld.php">
                             {$jtl_token}
                             <input name="kundenfelder" type="hidden" value="1">

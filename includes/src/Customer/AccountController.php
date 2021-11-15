@@ -407,7 +407,7 @@ class AccountController
             }
         }
         $this->checkCoupons($coupons);
-        $this->updateCustomerLanguage($customer->kSprache);
+        $this->updateCustomerLanguage($customer->getLanguageID());
         Shop::Container()->getLinkService()->reset();
     }
 
@@ -1109,20 +1109,20 @@ class AccountController
     {
         $step     = 'mein Konto';
         $wishlist = new Wishlist($wishlistID);
-        if ($wishlist->kKunde !== $customerID) {
+        if ($wishlist->getCustomerID() !== $customerID) {
             return $step;
         }
         if (isset($_REQUEST['wlAction']) && Form::validateToken()) {
             $action = Request::verifyGPDataString('wlAction');
             if ($action === 'setPrivate') {
-                Wishlist::setPrivate($wishlist->kWunschliste);
+                $wishlist->setVisibility(false);
                 $this->alertService->addAlert(
                     Alert::TYPE_NOTE,
                     Shop::Lang()->get('wishlistSetPrivate', 'messages'),
                     'wishlistSetPrivate'
                 );
             } elseif ($action === 'setPublic') {
-                Wishlist::setPublic($wishlist->kWunschliste);
+                $wishlist->setVisibility(true);
                 $this->alertService->addAlert(
                     Alert::TYPE_NOTE,
                     Shop::Lang()->get('wishlistSetPublic', 'messages'),

@@ -66,8 +66,8 @@ function handleError($output)
  * 8: HTTP_CUSTOMERR
  * 9: HTTP_EBAYERROR
  *
- * @param string $msg Exception Message
- * @param int    $wawiExceptionCode int code (0-9)
+ * @param string   $msg - Exception Message
+ * @param int|null $wawiExceptionCode - code (0-9)
  */
 function syncException(string $msg, int $wawiExceptionCode = null)
 {
@@ -84,7 +84,6 @@ $shop = Shop::getInstance();
 error_reporting(SYNC_LOG_LEVEL);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
 if (!function_exists('Shop')) {
     /**

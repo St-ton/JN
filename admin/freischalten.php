@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
@@ -15,7 +15,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('UNLOCK_CENTRAL_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'freischalten_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 setzeSprache();
 
 $step                  = 'freischalten_uebersicht';
@@ -251,15 +250,15 @@ if ($step === 'freischalten_uebersicht') {
     $newsComments = gibNewskommentarFreischalten(' LIMIT ' . $pagiComments->getLimitSQL(), $commentsSQL);
     $recipients   = gibNewsletterEmpfaengerFreischalten(' LIMIT ' . $pagiRecipients->getLimitSQL(), $recipientsSQL);
     $smarty->assign('ratings', $reviews)
-           ->assign('searchQueries', $queries)
-           ->assign('comments', $newsComments)
-           ->assign('recipients', $recipients)
-           ->assign('oPagiBewertungen', $pagiRatings)
-           ->assign('oPagiSuchanfragen', $pagiQueries)
-           ->assign('oPagiNewskommentare', $pagiComments)
-           ->assign('oPagiNewsletterEmpfaenger', $pagiRecipients);
+        ->assign('searchQueries', $queries)
+        ->assign('comments', $newsComments)
+        ->assign('recipients', $recipients)
+        ->assign('oPagiBewertungen', $pagiRatings)
+        ->assign('oPagiSuchanfragen', $pagiQueries)
+        ->assign('oPagiNewskommentare', $pagiComments)
+        ->assign('oPagiNewsletterEmpfaenger', $pagiRecipients);
 }
 
 $smarty->assign('step', $step)
-       ->assign('cTab', $tab)
-       ->display('freischalten.tpl');
+    ->assign('cTab', $tab)
+    ->display('freischalten.tpl');

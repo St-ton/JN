@@ -11,7 +11,6 @@ use JTL\Shopsetting;
 
 require_once __DIR__ . '/../../includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 define('NO_MODE', 0);
 define('NO_PFAD', PFAD_LOGFILES . 'notify.log');

@@ -31,7 +31,7 @@ class PluginLoader extends AbstractLoader
     public function init(int $id, bool $invalidateCache = false, int $languageID = null): PluginInterface
     {
         if (($languageID = $languageID ?? Shop::getLanguageID()) === 0) {
-            $languageID = Shop::Lang()->getDefaultLanguage()->kSprache;
+            $languageID = Shop::Lang()->getDefaultLanguage()->getId();
         }
         $getText       = Shop::Container()->getGetText();
         $languageCode  = Shop::Lang()->getIsoFromLangID($languageID)->cISO;

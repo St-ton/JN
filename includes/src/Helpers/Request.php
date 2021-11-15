@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -94,7 +94,7 @@ class Request
 
     /**
      * @param string $var
-     * @return string|array
+     * @return string|array|mixed
      * @since 5.0.0
      */
     public static function verifyGPDataString(string $var)
@@ -118,7 +118,6 @@ class Request
         } elseif (!empty($_SERVER['REMOTE_ADDR'])) {
             $ip = $_SERVER['REMOTE_ADDR'];
         }
-
         // if the given IP is not valid, we return placeholders (note: placeholders are the "legacy way")
         if (!\filter_var($ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4 | \FILTER_FLAG_IPV6)) {
             return (new IpAnonymizer($ip ?? ''))->getPlaceholder();

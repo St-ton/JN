@@ -43,12 +43,12 @@ final class BestsellingProducts extends AbstractBox
                         FROM tbestseller, tartikel
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                            AND tartikelsichtbarkeit.kKundengruppe = :cgid
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tbestseller.kArtikel = tartikel.kArtikel
-                            AND ROUND(tbestseller.fAnzahl) >= ' . $minCount . ' ' .
-                            $parentSQL . $stockFilterSQL . '
-                        ORDER BY fAnzahl DESC LIMIT ' . $limit
+                            AND ROUND(tbestseller.fAnzahl) >= :ms ' . $parentSQL . $stockFilterSQL . '
+                        ORDER BY fAnzahl DESC LIMIT :lmt ',
+                    ['cgid' => $customerGroupID, 'ms' => $minCount, 'lmt' => $limit]
                 );
                 Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }

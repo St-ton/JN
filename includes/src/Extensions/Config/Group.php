@@ -48,7 +48,7 @@ class Group implements JsonSerializable
     public $cKommentar;
 
     /**
-     * @var object
+     * @var GroupLocalization|null
      */
     public $oSprache;
 
@@ -139,36 +139,6 @@ class Group implements JsonSerializable
         $this->generateAllImageSizes(true, 1, $this->cBildPfad);
 
         return $this;
-    }
-
-    /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function save(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return false;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function update(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function delete(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
     }
 
     /**
@@ -271,9 +241,9 @@ class Group implements JsonSerializable
     }
 
     /**
-     * @return object|null
+     * @return GroupLocalization|null
      */
-    public function getSprache()
+    public function getSprache(): ?GroupLocalization
     {
         return $this->oSprache;
     }

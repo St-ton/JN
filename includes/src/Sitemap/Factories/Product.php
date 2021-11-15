@@ -4,6 +4,7 @@ namespace JTL\Sitemap\Factories;
 
 use Generator;
 use JTL\Language\LanguageHelper;
+use JTL\Language\LanguageModel;
 use JTL\Sitemap\Items\Product as Item;
 use PDO;
 use function Functional\first;
@@ -22,14 +23,14 @@ final class Product extends AbstractFactory
     {
         $defaultCustomerGroupID  = first($customerGroups);
         $defaultLang             = LanguageHelper::getDefaultLanguage();
-        $defaultLangID           = (int)$defaultLang->kSprache;
+        $defaultLangID           = $defaultLang->getId();
         $_SESSION['kSprache']    = $defaultLangID;
-        $_SESSION['cISOSprache'] = $defaultLang->cISO;
+        $_SESSION['cISOSprache'] = $defaultLang->getCode();
         $andWhere                = '';
         $filterConf              = (int)$this->config['global']['artikel_artikelanzeigefilter'];
 
-        $languageIDs = map($languages, static function ($e) {
-            return (int)$e->kSprache;
+        $languageIDs = map($languages, static function (LanguageModel $e) {
+            return $e->getId();
         });
         if ($this->config['sitemap']['sitemap_varkombi_children_export'] !== 'Y') {
             $andWhere .= ' AND tartikel.kVaterArtikel = 0';

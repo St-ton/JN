@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
@@ -16,7 +16,7 @@ setzeSprache();
 $languageID = (int)$_SESSION['editLanguageID'];
 if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
     $postData = Text::filterXSS($_POST);
-    saveAdminSectionSettings(CONF_METAANGABEN, $postData);
+    saveAdminSectionSettings(CONF_METAANGABEN, $_POST);
     $title     = $postData['Title'];
     $desc      = $postData['Meta_Description'];
     $metaDescr = $postData['Meta_Description_Praefix'];

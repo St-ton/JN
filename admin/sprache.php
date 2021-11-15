@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @global \JTL\Smarty\JTLSmarty $smarty
  */
@@ -229,8 +229,8 @@ if ($step === 'newvar') {
             FROM tsprachwerte AS sw
             JOIN tsprachsektion AS ss
                 ON ss.kSprachsektion = sw.kSprachsektion
-            WHERE sw.kSprachISO = ' . $langIsoID . '
-                ' . ($filterSQL !== '' ? 'AND ' . $filterSQL : '')
+            WHERE sw.kSprachISO = :liso ' . ($filterSQL !== '' ? 'AND ' . $filterSQL : ''),
+        ['liso' => $langIsoID]
     );
 
     handleCsvExportAction(

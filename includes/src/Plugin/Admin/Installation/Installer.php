@@ -171,7 +171,7 @@ final class Installer
         $baseDir            = \basename($this->dir);
         $versionNode        = $baseNode['Install'][0]['Version'] ?? null;
         $xmlVersion         = (int)$baseNode['XMLVersion'];
-        $basePath           = \PFAD_ROOT . \PFAD_PLUGIN . $baseDir . \DIRECTORY_SEPARATOR;
+        $basePath           = \PFAD_ROOT . \PFAD_PLUGIN . $baseDir . '/';
         $lastVersionKey     = null;
         $plugin             = new stdClass();
         $plugin->nStatus    = $this->plugin === null ? State::ACTIVATED : $this->plugin->getState();
@@ -179,11 +179,11 @@ final class Installer
         if (\is_array($versionNode)) {
             $lastVersionKey = \count($versionNode) / 2 - 1;
             $version        = (int)$versionNode[$lastVersionKey . ' attr']['nr'];
-            $versionedDir   = $basePath . \PFAD_PLUGIN_VERSION . $version . \DIRECTORY_SEPARATOR;
+            $versionedDir   = $basePath . \PFAD_PLUGIN_VERSION . $version . '/';
             $bootstrapper   = $versionedDir . \OLD_BOOTSTRAPPER;
         } else {
             $version            = $baseNode['Version'];
-            $basePath           = \PFAD_ROOT . \PLUGIN_DIR . $baseDir . \DIRECTORY_SEPARATOR;
+            $basePath           = \PFAD_ROOT . \PLUGIN_DIR . $baseDir . '/';
             $versionedDir       = $basePath;
             $versionNode        = [];
             $bootstrapper       = $versionedDir . \PLUGIN_BOOTSTRAPPER;
@@ -226,7 +226,7 @@ final class Installer
             $plugin->kPlugin = 0;
             $loader          = new PluginLoader($this->db, $this->cache);
             if (($languageID = Shop::getLanguageID()) === 0) {
-                $languageID = Shop::Lang()->getDefaultLanguage()->kSprache;
+                $languageID = Shop::Lang()->getDefaultLanguage()->getId();
             }
             $languageCode = Shop::Lang()->getIsoFromLangID($languageID)->cISO;
             $instance     = $loader->loadFromObject($plugin, $languageCode);
@@ -459,7 +459,7 @@ final class Installer
      */
     private function updateByMigration(stdClass $plugin, string $pluginPath, Version $targetVersion)
     {
-        $path              = $pluginPath . \DIRECTORY_SEPARATOR . \PFAD_PLUGIN_MIGRATIONS;
+        $path              = $pluginPath . \PFAD_PLUGIN_MIGRATIONS;
         $manager           = new MigrationManager($this->db, $path, $plugin->cPluginID, $targetVersion);
         $pendingMigrations = $manager->getPendingMigrations();
         if (\count($pendingMigrations) === 0) {
@@ -860,7 +860,7 @@ final class Installer
             ]
         );
         $oldPaymentMethods = $this->db->getObjects(
-            'SELECT kZahlungsart, cModulId
+            'SELECT kZahlungsart, cModulId, cBild, nSort, nMailSenden, nWaehrendBestellung
                 FROM tzahlungsart
                 WHERE cModulId LIKE :newID',
             ['newID' => 'kPlugin\_' . $oldPluginID . '\_%']
@@ -887,6 +887,18 @@ final class Installer
             $setSQL           = '';
             if ($newPaymentMethod !== null && isset($method->kZahlungsart, $newPaymentMethod->kZahlungsart)) {
                 $this->db->queryPrepared(
+                    'INSERT INTO tzahlungsartsprache
+                        SELECT :newID, cISOSprache, cName, cGebuehrname, cHinweisText, cHinweisTextShop
+                        FROM tzahlungsartsprache AS told
+                        WHERE kZahlungsart = :oldID
+                        ON DUPLICATE KEY UPDATE
+                            cName            = told.cName,
+                            cGebuehrname     = told.cGebuehrname,
+                            cHinweisText     = told.cHinweisText,
+                            cHinweisTextShop = told.cHinweisTextShop',
+                    ['newID' => $newPaymentMethod->kZahlungsart, 'oldID' => $method->kZahlungsart]
+                );
+                $this->db->queryPrepared(
                     'DELETE tzahlungsart, tzahlungsartsprache
                         FROM tzahlungsart
                         JOIN tzahlungsartsprache
@@ -894,9 +906,16 @@ final class Installer
                         WHERE tzahlungsart.kZahlungsart = :pmid',
                     ['pmid' => $method->kZahlungsart]
                 );
-                $setSQL = ' , kZahlungsart = ' . $method->kZahlungsart;
-                $upd    = (object)['kZahlungsart' => $method->kZahlungsart];
+                $upd = (object)[
+                    'cBild'               => $method->cBild,
+                    'nSort'               => (int)$method->nSort,
+                    'nMailSenden'         => (int)$method->nMailSenden,
+                    'nWaehrendBestellung' => (int)$method->nWaehrendBestellung,
+                ];
+                $this->db->update('tzahlungsart', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
+                $upd = (object)['kZahlungsart' => (int)$method->kZahlungsart];
                 $this->db->update('tzahlungsartsprache', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
+                $setSQL = ' , kZahlungsart = ' . (int)$method->kZahlungsart;
             }
             $this->db->queryPrepared(
                 'UPDATE tzahlungsart

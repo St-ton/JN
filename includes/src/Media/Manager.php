@@ -17,6 +17,7 @@ use JTL\Media\Image\ConfigGroup;
 use JTL\Media\Image\Manufacturer;
 use JTL\Media\Image\News;
 use JTL\Media\Image\NewsCategory;
+use JTL\Media\Image\OPC;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\StatsItem;
 use JTL\Media\Image\Variation;
@@ -98,6 +99,11 @@ class Manager
                 'name'  => \__('configgroup'),
                 'type'  => Image::TYPE_CONFIGGROUP,
                 'stats' => (new ConfigGroup($this->db))->getStats($filesize)
+            ],
+            Image::TYPE_OPC          => (object)[
+                'name'  => \__('OPC'),
+                'type'  => Image::TYPE_OPC,
+                'stats' => (new OPC($this->db))->getStats($filesize)
             ]
         ];
     }
@@ -109,12 +115,12 @@ class Manager
      */
     public function loadStats(string $type)
     {
-        /* attention: this will parallelize async io stats */
+        // attention: this will parallelize async io stats
         \session_write_close();
-        /* but there should not be any session operations after this point */
+        // but there should not be any session operations after this point
         $items = $this->getItems(true);
 
-        return ($type === null || \in_array($type, $items, true))
+        return !\array_key_exists($type, $items)
             ? new IOError('Invalid argument request', 500)
             : $items[$type]->stats;
     }
@@ -192,7 +198,7 @@ class Manager
      */
     public function clearImageCache(string $type, bool $isAjax = false): array
     {
-        if ($type !== null && \preg_match('/[a-z]*/', $type)) {
+        if (\preg_match('/[a-z]*/', $type)) {
             $instance = Media::getClass($type);
             /** @var IMedia $instance */
             $res = $instance::clearCache();

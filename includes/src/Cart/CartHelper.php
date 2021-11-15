@@ -9,6 +9,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Product\VariationValue;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
@@ -782,10 +783,11 @@ class CartHelper
                     return true;
                 }
                 $wishlist = Frontend::getWishList();
-                if ($wishlist->kWunschliste <= 0) {
+                if ($wishlist->getID() === 0) {
+                    $wishlist = new Wishlist();
                     $wishlist->schreibeDB();
+                    $_SESSION['Wunschliste'] = $wishlist;
                 }
-                $qty    = \max(1, $qty);
                 $itemID = $wishlist->fuegeEin(
                     $productID,
                     $productExists->cName,
@@ -1124,7 +1126,7 @@ class CartHelper
         $categoryQRY = '';
         $customerQRY = '';
         $categoryIDs = [];
-        if ($item->Artikel->kArtikel > 0 && $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
+        if ($item->Artikel->kArtikel > 0) {
             $productID = (int)$item->Artikel->kArtikel;
             if (Product::isVariChild($productID)) {
                 $productID = Product::getParent($productID);
@@ -1233,7 +1235,7 @@ class CartHelper
         $categoryQRY = '';
         $customerQRY = '';
         $categoryIDs = [];
-        if ($cartItem->Artikel->kArtikel > 0 && $cartItem->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
+        if ($cartItem->Artikel->kArtikel > 0) {
             $productID = (int)$cartItem->Artikel->kArtikel;
             if (Product::isVariChild($productID)) {
                 $productID = Product::getParent($productID);
@@ -2025,8 +2027,9 @@ class CartHelper
             } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
                 $sqlSort = ' ORDER BY tartikel.fLagerbestand DESC';
             }
-            $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0 ?
-                    ' LIMIT ' . $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] : '';
+            $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0
+                ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
+                : '';
             $giftsTmp = Shop::Container()->getDB()->getObjects(
                 "SELECT tartikel.kArtikel, tartikelattribut.cWert
                     FROM tartikel
@@ -2035,10 +2038,12 @@ class CartHelper
                     WHERE (tartikel.fLagerbestand > 0 ||
                           (tartikel.fLagerbestand <= 0 &&
                           (tartikel.cLagerBeachten = 'N' || tartikel.cLagerKleinerNull = 'Y')))
-                        AND tartikelattribut.cName = '" . \FKT_ATTRIBUT_GRATISGESCHENK . "'
-                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-                Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true) .
-                $sqlSort . $limit
+                        AND tartikelattribut.cName = :atr
+                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= :csum " . $sqlSort . $limit,
+                [
+                    'atr'  => \FKT_ATTRIBUT_GRATISGESCHENK,
+                    'csum' => Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
+                ]
             );
 
             foreach ($giftsTmp as $gift) {

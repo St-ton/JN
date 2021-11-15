@@ -1010,6 +1010,7 @@
             $searchWrapper.each((i, itemWrapper) => {
                 $(itemWrapper).find(searchInput).on('input', function () {
                     filterSearch($(itemWrapper));
+                    $(itemWrapper).find('.collapse').collapse('show');
                 }).on('keydown', e => {
                     if (e.key === 'Escape') {
                         e.stopPropagation();

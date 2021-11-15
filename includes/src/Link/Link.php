@@ -322,7 +322,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getData(): array
     {
@@ -331,6 +331,7 @@ final class Link extends AbstractLink
             $languageCode          = $this->getLanguageCode($languageID);
             $data                  = new stdClass();
             $data->content         = $this->getContent($languageID);
+            $data->cContent        = $data->content;
             $data->url             = $this->getURL($languageID);
             $data->languageID      = $languageID;
             $data->languageCode    = $languageCode;

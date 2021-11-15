@@ -114,27 +114,19 @@ class Emailhistory
      */
     public function update(): int
     {
-        $sql     = 'UPDATE temailhistory SET ';
-        $set     = [];
         $members = \array_keys(\get_object_vars($this));
-        if (\is_array($members) && \count($members) > 0) {
-            $db = Shop::Container()->getDB();
-            foreach ($members as $member) {
-                $methodName = 'get' . \mb_substr($member, 1);
-                if (\method_exists($this, $methodName)) {
-                    $val    = $this->$methodName();
-                    $mValue = $val === null
-                        ? 'NULL'
-                        : ("'" . $db->escape($val) . "'");
-                    $set[]  = $member . ' = ' . $mValue;
-                }
-            }
-            $sql .= \implode(', ', $set);
-            $sql .= ' WHERE kEmailhistory = ' . $this->getEmailhistory();
-
-            return $db->getAffectedRows($sql);
+        if (!\is_array($members) || \count($members) === 0) {
+            throw new Exception('ERROR: Object has no members!');
         }
-        throw new Exception('ERROR: Object has no members!');
+        $upd = new stdClass();
+        foreach ($members as $member) {
+            $methodName = 'get' . \mb_substr($member, 1);
+            if (\method_exists($this, $methodName)) {
+                $upd->$member = $this->$methodName();
+            }
+        }
+
+        return Shop::Container()->getDB()->updateRow('temailhistory', 'kEmailhistory', $this->getEmailhistory(), $upd);
     }
 
     /**

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -45,7 +45,7 @@ final class Images extends AbstractSync
         $this->brandingConfig = $this->initBrandingConfig();
         $this->config         = Shop::getSettings([\CONF_BILDER])['bilder'];
         $this->db->query('START TRANSACTION');
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             switch (\pathinfo($file)['basename']) {
                 case 'bilder_ka.xml':
@@ -112,7 +112,7 @@ final class Images extends AbstractSync
      * @param array  $xml
      * @param string $unzipPath
      */
-    private function handleInserts($xml, string $unzipPath): void
+    private function handleInserts(array $xml, string $unzipPath): void
     {
         if (!\is_array($xml['bilder'])) {
             return;
@@ -441,11 +441,11 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param object $image
-     * @param string $extension
+     * @param stdClass $image
+     * @param string   $extension
      * @return string
      */
-    private function getPropertiesImageName($image, string $extension): string
+    private function getPropertiesImageName(stdClass $image, string $extension): string
     {
         if (empty($image->kEigenschaftWert) || !$this->config['bilder_variation_namen']) {
             return (\stripos(\strrev($image->cPfad), \strrev($extension)) === 0)
@@ -847,10 +847,10 @@ final class Images extends AbstractSync
 
     /**
      * @param resource|\GdImage $im
-     * @param object|null      $config
+     * @param stdClass|null     $config
      * @return mixed
      */
-    private function brandImage($im, $config)
+    private function brandImage($im, ?stdClass $config)
     {
         if ($config === null
             || (isset($config->nAktiv) && (int)$config->nAktiv === 0)
@@ -1000,7 +1000,6 @@ final class Images extends AbstractSync
         $h = \imagesy($srcImg);
         // Turn alpha blending off
         \imagealphablending($srcImg, false);
-        $minalpha = 0;
         // loop through image pixels and modify alpha
         for ($x = 0; $x < $w; $x++) {
             for ($y = 0; $y < $h; $y++) {
@@ -1008,11 +1007,7 @@ final class Images extends AbstractSync
                 $colorxy = \imagecolorat($srcImg, $x, $y);
                 $alpha   = ($colorxy >> 24) & 0xFF;
                 // calculate new alpha
-                if ($minalpha !== 127) {
-                    $alpha = 127 + 127 * $pct * ($alpha - 127) / (127 - $minalpha);
-                } else {
-                    $alpha += 127 * $pct;
-                }
+                $alpha = 127 + 127 * $pct * ($alpha - 127) / 127;
                 // get the color index with new alpha
                 $alphacolorxy = \imagecolorallocatealpha(
                     $srcImg,
@@ -1133,7 +1128,7 @@ final class Images extends AbstractSync
             $posX = ($containerWidth / 2) - ($width / 2);
             $posY = ($containerHeight / 2) - ($height / 2);
         }
-        \imagecopyresampled($newImg, $im, $posX, $posY, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
+        \imagecopyresampled($newImg, $im, (int)$posX, (int)$posY, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
 
         return $newImg;
     }

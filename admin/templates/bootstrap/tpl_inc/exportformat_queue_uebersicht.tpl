@@ -22,7 +22,7 @@
                     <div>
                         <div class="subheading1">{__('exportformatQueue')}</div>
                         <hr class="mb-3">
-                        {if $oExportformatCron_arr && $oExportformatCron_arr|@count > 0}
+                        {if $oExportformatCron_arr && $oExportformatCron_arr|count > 0}
                             <div id="tabellenLivesuche" class="table-responsive">
                                 <table class="table table-striped table-align-top">
                                     <thead>
@@ -50,9 +50,9 @@
                                             <td class="text-left"><label for="kCron-{$oExportformatCron->cronID}">{$oExportformatCron->cName}</label></td>
                                             <td class="text-left">{$oExportformatCron->Sprache->getLocalizedName()}/{$oExportformatCron->Waehrung->cName}/{$oExportformatCron->Kundengruppe->cName}</td>
                                             <td class="text-center">{$oExportformatCron->dStart_de}</td>
-                                            <td class="text-center">{$oExportformatCron->cAlleXStdToDays}</td>
+                                            <td class="text-center">{$oExportformatCron->frequencyLocalized}</td>
                                             <td class="text-center">
-                                                {$oExportformatCron->oJobQueue->tasksExecuted|default:0}/{$oExportformatCron->nAnzahlArtikel->nAnzahl}
+                                                {$oExportformatCron->oJobQueue->tasksExecuted|default:0}/{$oExportformatCron->productCount}
                                             </td>
                                             <td class="text-center">{if $oExportformatCron->dLetzterStart_de === '00.00.0000 00:00'}-{else}{$oExportformatCron->dLetzterStart_de}{/if}</td>
                                             <td class="text-center">{if $oExportformatCron->dNaechsterStart_de === null}{__('immediately')}{else}{$oExportformatCron->dNaechsterStart_de}{/if}</td>
@@ -145,7 +145,7 @@
                     <div class="subheading1">{__('exportformatTodaysWork')}</div>
                     <hr class="mb-3">
                     <div>
-                    {if $oExportformatQueueBearbeitet_arr && $oExportformatQueueBearbeitet_arr|@count > 0}
+                    {if $oExportformatQueueBearbeitet_arr && $oExportformatQueueBearbeitet_arr|count > 0}
                         <div id="tabellenLivesuche" class="table-responsive">
                             <table class="table table-striped table-align-top">
                                 <thead>

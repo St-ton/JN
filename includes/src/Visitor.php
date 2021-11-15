@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
@@ -78,7 +78,7 @@ class Visitor
     {
         $interval = 3;
         Shop::Container()->getDB()->queryPrepared(
-            'INSERT INTO tbesucherarchiv
+            'INSERT IGNORE INTO tbesucherarchiv
             (kBesucher, cIP, kKunde, kBestellung, cReferer, cEinstiegsseite, cBrowser,
               cAusstiegsseite, nBesuchsdauer, kBesucherBot, dZeit)
             SELECT kBesucher, cIP, kKunde, kBestellung, cReferer, cEinstiegsseite, cBrowser, cAusstiegsseite,
@@ -341,12 +341,12 @@ class Visitor
     }
 
     /**
-     * @param string $referer
+     * @param string|null $referer
      * @return int
      * @former istSuchmaschine()
      * @since  5.0.0
      */
-    public static function isSearchEngine($referer): int
+    public static function isSearchEngine(?string $referer): int
     {
         if (!$referer) {
             return 0;
@@ -486,7 +486,7 @@ class Visitor
      * @param null|string $userAgent
      * @return stdClass
      */
-    public static function getBrowserForUserAgent($userAgent = null): stdClass
+    public static function getBrowserForUserAgent(?string $userAgent = null): stdClass
     {
         $userAgent          = $userAgent ?? $_SERVER['HTTP_USER_AGENT'] ?? '';
         $browser            = new stdClass();

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -17,7 +17,7 @@ final class Globals extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             if (\strpos($file, 'del_globals.xml') !== false) {
                 $this->handleDeletes($xml);
@@ -50,7 +50,7 @@ final class Globals extends AbstractSync
     private function handleInserts(array $xml): void
     {
         $source = $xml['globals'] ?? null;
-        if ($source !== null) {
+        if (\is_array($source)) {
             $this->updateCompany($source);
             $this->updateLanguages($source);
             $this->xml2db($source, 'tlieferstatus', 'mLieferstatus');
@@ -64,6 +64,8 @@ final class Globals extends AbstractSync
             $this->updateCustomerGroups($source);
             $this->updateWarehouses($source);
             $this->updateUnits($source);
+        } elseif ($source !== null) {
+            $this->logger->error(__METHOD__ . ': XML for globals is not correctly formatted.');
         }
         if (isset($xml['globals_wg']['tWarengruppe']) && \is_array($xml['globals_wg']['tWarengruppe'])) {
             $groups = $this->mapper->mapArray($xml['globals_wg'], 'tWarengruppe', 'mWarengruppe');
@@ -203,7 +205,7 @@ final class Globals extends AbstractSync
      * @param string $toMap
      * @param bool   $del
      */
-    private function xml2db($xml, string $table, string $toMap, bool $del = true): void
+    private function xml2db(array $xml, string $table, string $toMap, bool $del = true): void
     {
         if (GeneralObject::isCountable($table, $xml)) {
             $objects = $this->mapper->mapArray($xml, $table, $toMap);
@@ -216,11 +218,8 @@ final class Globals extends AbstractSync
      * @param array    $objects
      * @param int|bool $del
      */
-    private function dbDelInsert(string $tablename, $objects, $del): void
+    private function dbDelInsert(string $tablename, array $objects, bool $del): void
     {
-        if (!\is_array($objects)) {
-            return;
-        }
         if ($del) {
             if ($tablename === 'tsprache') {
                 $this->db->query("DELETE FROM tsprache WHERE cISO != 'ger' AND cISO != 'eng'");

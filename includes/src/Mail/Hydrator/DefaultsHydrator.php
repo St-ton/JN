@@ -9,6 +9,7 @@ use JTL\Firma;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageModel;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
@@ -59,7 +60,7 @@ class DefaultsHydrator implements HydratorInterface
     /**
      * @inheritdoc
      */
-    public function hydrate(?object $data, object $language): void
+    public function hydrate(?object $data, LanguageModel $language): void
     {
         $data         = $data ?? new stdClass();
         $data->tkunde = $data->tkunde ?? new Customer();
@@ -67,7 +68,7 @@ class DefaultsHydrator implements HydratorInterface
         if (!isset($data->tkunde->kKundengruppe) || !$data->tkunde->kKundengruppe) {
             $data->tkunde->kKundengruppe = CustomerGroup::getDefaultGroupID();
         }
-        $data->tfirma        = new Firma();
+        $data->tfirma        = new Firma(true, $this->db);
         $data->tkundengruppe = new CustomerGroup($data->tkunde->kKundengruppe);
         $customer            = $data->tkunde instanceof Customer
             ? $data->tkunde->localize($language)
@@ -133,15 +134,15 @@ class DefaultsHydrator implements HydratorInterface
     }
 
     /**
-     * @param object            $lang
+     * @param LanguageModel     $lang
      * @param stdClass|Customer $customer
      * @return mixed
      */
-    private function localizeCustomer($lang, $customer)
+    private function localizeCustomer(LanguageModel $lang, $customer)
     {
         $language = Shop::Lang();
-        if ($language->gibISO() !== $lang->cISO) {
-            $language->setzeSprache($lang->cISO);
+        if ($language->gibISO() !== $lang->getCode()) {
+            $language->setzeSprache($lang->getCode());
             $language->autoload();
         }
         if (isset($customer->cAnrede)) {
@@ -159,7 +160,7 @@ class DefaultsHydrator implements HydratorInterface
                 $_SESSION['Kunde']->cLand = $customer->cLand;
             }
             if (($country = Shop::Container()->getCountryService()->getCountry($customer->cLand)) !== null) {
-                $customer->angezeigtesLand = $country->getName($lang->id);
+                $customer->angezeigtesLand = $country->getName($lang->getId());
             }
         }
 

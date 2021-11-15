@@ -126,7 +126,7 @@ class ReviewController extends BaseController
      * @param int    $stars
      * @return string
      */
-    private function save(int $productID, int $customerID, int $langID, $title, $text, int $stars): string
+    private function save(int $productID, int $customerID, int $langID, string $title, string $text, int $stars): string
     {
         $url = $this->getProductURL($productID);
         if ($stars < 1 || $stars > 5) {

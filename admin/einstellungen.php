@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Backend\Settings\Manager;
@@ -128,6 +128,9 @@ if (Request::postVar('resetSetting') !== null) {
                     $value->cWert = mb_substr($value->cWert, 0, 255);
                     break;
                 case 'pass':
+                    $value->cWert = $_POST[$confData[$i]->cWertName];
+                    break;
+                default:
                     break;
             }
             if ($sectionItem->validate($confData[$i], $postData[$confData[$i]->cWertName])) {

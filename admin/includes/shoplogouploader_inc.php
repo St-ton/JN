@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Shop;
 
@@ -63,27 +63,6 @@ function saveShopLogo(array $files): int
 function deleteShopLogo(string $logo): bool
 {
     return is_file(PFAD_ROOT . $logo) && unlink(PFAD_ROOT . $logo);
-}
-
-/**
- * @return bool
- * @deprecated since 5.0.0
- */
-function loescheAlleShopBilder(): bool
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    if (is_dir(PFAD_ROOT . PFAD_SHOPLOGO) && $dh = opendir(PFAD_ROOT . PFAD_SHOPLOGO)) {
-        while (($file = readdir($dh)) !== false) {
-            if ($file !== '.' && $file !== '..' && $file !== '.gitkeep') {
-                @unlink(PFAD_ROOT . PFAD_SHOPLOGO . $file);
-            }
-        }
-        closedir($dh);
-
-        return true;
-    }
-
-    return false;
 }
 
 /**

@@ -458,14 +458,14 @@ class Controller
     {
         $dateData = $this->db->getObjects(
             'SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
-                FROM tnews 
-                JOIN tnewskategorienews 
+                FROM tnews
+                JOIN tnewskategorienews
                     ON tnewskategorienews.kNews = tnews.kNews' . $sql->cNewsKatSQL . "
                 JOIN tnewssprache
                     ON tnewssprache.kNews = tnews.kNews
                 WHERE tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= NOW()
-                    AND (tnews.cKundengruppe LIKE '%;-1;%' 
+                    AND (tnews.cKundengruppe LIKE '%;-1;%'
                         OR FIND_IN_SET(:cgid, REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     AND tnewssprache.languageID = :lid
                 GROUP BY nJahr, nMonat
@@ -557,11 +557,11 @@ class Controller
                 tnewskategorie.cPreviewImage, tseo.cSeo,
                 DATE_FORMAT(tnewskategorie.dLetzteAktualisierung, \'%d.%m.%Y %H:%i\') AS dLetzteAktualisierung_de
                     FROM tnewskategorie
-                    JOIN tnewskategoriesprache t 
+                    JOIN tnewskategoriesprache t
                         ON tnewskategorie.kNewsKategorie = t.kNewsKategorie
-                    LEFT JOIN tnewskategorienews 
+                    LEFT JOIN tnewskategorienews
                         ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
-                    LEFT JOIN tseo 
+                    LEFT JOIN tseo
                         ON tseo.cKey = \'kNewsKategorie\'
                         AND tseo.kKey = tnewskategorie.kNewsKategorie
                         AND tseo.kSprache = :lid

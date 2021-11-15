@@ -44,7 +44,7 @@ if (Form::validateToken()) {
             $step = 'uebersicht';
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
-                saveAdminSectionSettings(CONF_NEWSLETTER, $postData),
+                saveAdminSectionSettings(CONF_NEWSLETTER, $_POST),
                 'saveSettings'
             );
             $admin->setNewsletterCheckboxStatus();

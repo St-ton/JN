@@ -14,7 +14,6 @@ use JTL\SimpleMail;
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
 $conf       = Shopsetting::getInstance()->getAll();

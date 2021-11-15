@@ -82,7 +82,7 @@ class Bestseller
     /**
      * @return int
      */
-    public function getCustomergroup()
+    public function getCustomergroup(): int
     {
         return $this->customergrp;
     }
@@ -157,12 +157,13 @@ class Bestseller
                     ON tbestseller.kArtikel = tartikel.kArtikel
                 LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $this->customergrp . '
+                    AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND ROUND(tbestseller.fAnzahl) >= ' . $this->minsales . ' ' . $storagesql .  $productsql . '
+                    AND ROUND(tbestseller.fAnzahl) >= :ms ' . $storagesql .  $productsql . '
                 GROUP BY tartikel.kArtikel
                 ORDER BY tbestseller.fAnzahl DESC
-                LIMIT ' . $this->limit
+                LIMIT :lmt',
+            ['cgid' => $this->customergrp, 'ms' => $this->minsales, 'lmt' => $this->limit]
         );
         foreach ($data as $item) {
             $products[] = (int)$item->kArtikel;
@@ -223,20 +224,21 @@ class Bestseller
      * @param array $bestsellers
      * @return int[]
      */
-    public static function ignoreProducts(&$products, $bestsellers): array
+    public static function ignoreProducts(array &$products, array $bestsellers): array
     {
         $ignoredkeys = [];
-        if (\is_array($products) && \is_array($bestsellers) && \count($products) > 0 && \count($bestsellers) > 0) {
-            foreach ($products as $i => $product) {
-                if (\count($products) === 1) {
+        if (\count($products) === 0 || \count($bestsellers) === 0) {
+            return $ignoredkeys;
+        }
+        foreach ($products as $i => $product) {
+            if (\count($products) === 1) {
+                break;
+            }
+            foreach ($bestsellers as $bestseller) {
+                if ($product->kArtikel === $bestseller->kArtikel) {
+                    unset($products[$i]);
+                    $ignoredkeys[] = $bestseller->kArtikel;
                     break;
-                }
-                foreach ($bestsellers as $bestseller) {
-                    if ($product->kArtikel === $bestseller->kArtikel) {
-                        unset($products[$i]);
-                        $ignoredkeys[] = $bestseller->kArtikel;
-                        break;
-                    }
                 }
             }
         }

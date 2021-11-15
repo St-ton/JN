@@ -20,8 +20,8 @@ class XMLReader
     {
         $dirName = \basename($dirName);
         $xmlFile = $isAdmin === false
-            ? \PFAD_ROOT . \PFAD_TEMPLATES . $dirName . \DIRECTORY_SEPARATOR . \TEMPLATE_XML
-            : \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $dirName . \DIRECTORY_SEPARATOR . \TEMPLATE_XML;
+            ? \PFAD_ROOT . \PFAD_TEMPLATES . $dirName . '/' . \TEMPLATE_XML
+            : \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $dirName . '/' . \TEMPLATE_XML;
         if (!\file_exists($xmlFile)) {
             return null;
         }
@@ -178,9 +178,7 @@ class XMLReader
                 }
             }
             if (\is_string($setting->isEditable)) {
-                $setting->isEditable = \mb_strlen($setting->isEditable) === 0
-                    ? true
-                    : (bool)(int)$setting->isEditable;
+                $setting->isEditable = \mb_strlen($setting->isEditable) === 0 || (bool)(int)$setting->isEditable;
             }
             if (isset($XMLSetting->Option)) {
                 $setting->options = [];

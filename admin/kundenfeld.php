@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Backend\CustomerFields;
@@ -18,7 +18,7 @@ $languageID  = (int)$_SESSION['editLanguageID'];
 $cf          = CustomerFields::getInstance($languageID);
 $step        = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
-$smarty->assign('cTab', $step ?? null);
+$smarty->assign('cTab', $step);
 
 if (Request::postInt('einstellungen') > 0) {
     $alertHelper->addAlert(

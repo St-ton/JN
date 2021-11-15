@@ -76,12 +76,12 @@ class IO
      * @return IOError|mixed
      * @throws Exception
      */
-    public function handleRequest($reqString)
+    public function handleRequest(string $reqString)
     {
         $request = \json_decode($reqString, true);
 
         if (($errno = \json_last_error()) !== \JSON_ERROR_NONE) {
-            return new IOError("Error {$errno} while decoding data");
+            return new IOError('Error ' . $errno . ' while decoding data');
         }
 
         if (!isset($request['name'], $request['params'])) {
@@ -104,7 +104,7 @@ class IO
      * @param object $data
      * @throws Exception
      */
-    public function respondAndExit($data)
+    public function respondAndExit($data): void
     {
         // respond with an error?
         if (\is_object($data)) {

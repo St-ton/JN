@@ -4,6 +4,7 @@ namespace JTL\Checkout;
 
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class Adresse
@@ -154,9 +155,9 @@ class Adresse
     }
 
     /**
-     * @return object
+     * @return stdClass
      */
-    public function toObject()
+    public function toObject(): stdClass
     {
         return (object)$this->toArray();
     }
@@ -199,16 +200,6 @@ class Adresse
             default:
                 return '';
         }
-    }
-
-    /**
-     * @param string $iso
-     * @return string
-     * @deprecated since 4.06.16 - use static checkISOCountryCode instead
-     */
-    public function pruefeLandISO(string $iso): string
-    {
-        return self::checkISOCountryCode($iso);
     }
 
     /**

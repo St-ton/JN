@@ -151,7 +151,7 @@ final class LastJob
      * @param string|null $name
      * @return stdClass
      */
-    public function run(int $jobID, $name = null): stdClass
+    public function run(int $jobID, string $name = null): stdClass
     {
         $job = $this->getJob($jobID);
         if ($job === null) {

@@ -19,7 +19,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plugin_inc.php';
 
 $notice          = '';
 $errorMsg        = '';
@@ -35,7 +34,7 @@ $alertHelper     = Shop::Container()->getAlertService();
 $plugin          = null;
 $loader          = null;
 $activeTab       = -1;
-if ($step === 'plugin_uebersicht' && $pluginID > 0) {
+if ($pluginID > 0) {
     if (Request::verifyGPCDataInt('Setting') === 1) {
         $updated = true;
         if (!Form::validateToken()) {

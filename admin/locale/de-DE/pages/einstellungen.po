@@ -108,4 +108,4 @@ msgid "buttonSaveAnyway"
 msgstr "Trotzdem speichern!"
 
 msgid "saveWithconfigTest"
-msgstr "Speicher und Konfiguration testen"
+msgstr "Speichern und Konfiguration testen"

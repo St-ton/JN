@@ -1380,10 +1380,10 @@ class Cart
                     if ($oWarenkorbPosEigenschaft->kEigenschaftWert > 0 && $item->nAnzahl > 0) {
                         //schaue in DB, ob Lagerbestand ausreichend
                         $stock = Shop::Container()->getDB()->getSingleObject(
-                            'SELECT kEigenschaftWert, fLagerbestand >= ' . $item->nAnzahl .
-                            ' AS bAusreichend, fLagerbestand
+                            'SELECT kEigenschaftWert, fLagerbestand >= :cnt AS bAusreichend, fLagerbestand
                                 FROM teigenschaftwert
-                                WHERE kEigenschaftWert = ' . (int)$oWarenkorbPosEigenschaft->kEigenschaftWert
+                                WHERE kEigenschaftWert = :vid',
+                            ['cnt' => $item->nAnzahl, 'vid' => (int)$oWarenkorbPosEigenschaft->kEigenschaftWert]
                         );
                         if ($stock !== null && $stock->kEigenschaftWert > 0 && !$stock->bAusreichend) {
                             if ($stock->fLagerbestand > 0) {

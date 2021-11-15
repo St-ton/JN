@@ -272,7 +272,7 @@ class PersistentCart
             'kWarenkorbPers',
             (int)$this->kWarenkorbPers,
             '*, date_format(dHinzugefuegt, \'%d.%m.%Y %H:%i\') AS dHinzugefuegt_de',
-            'kKonfigitem, kWarenkorbPersPos'
+            'kWarenkorbPersPos'
         );
         // Wenn Positionen vorhanden sind
         if (!\is_array($cartItems) || \count($cartItems) === 0) {

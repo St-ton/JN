@@ -71,7 +71,7 @@
         </nav>
         <div class="tab-content">
             <div id="inaktiv" class="tab-pane fade{if $cTab === '' || $cTab === 'inaktiv'} active show{/if}">
-                {if $comments && $comments|@count > 0}
+                {if $comments && $comments|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiKommentar cAnchor='inaktiv'}
                     <form method="post" action="news.php">
                         {$jtl_token}
@@ -182,7 +182,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {if $oNews_arr|@count > 0}
+                                {if $oNews_arr|count > 0}
                                     {foreach $oNews_arr as $oNews}
                                         <tr>
                                             <td class="check">
@@ -296,7 +296,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {if $oNewsKategorie_arr|@count}
+                                {if $oNewsKategorie_arr|count}
                                     {foreach $oNewsKategorie_arr as $oNewsKategorie}
                                         <tr scope="row" class="tab_bg{$oNewsKategorie@iteration % 2}{if $oNewsKategorie->getLevel() > 1} hidden-soft{/if}" data-level="{$oNewsKategorie->getLevel()}">
                                             <th class="check">

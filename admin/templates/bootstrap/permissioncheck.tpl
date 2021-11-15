@@ -1,14 +1,14 @@
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('permissioncheck') cBeschreibung=__('permissioncheckDesc') cDokuURL=__('permissioncheckURL')}
 <div id="content">
-    {if isset($cDirAssoc_arr) && $cDirAssoc_arr|@count > 0}
+    {if isset($cDirAssoc_arr) && $cDirAssoc_arr|count > 0}
         <div class="alert alert-info">
             <strong>{__('dirCount')}</strong> {$oStat->nCount}<br />
             <strong>{__('dirCountNotWriteable')}</strong> {$oStat->nCountInValid}
         </div>
         <ul class="list-group">
-            {foreach name=dirs from=$cDirAssoc_arr key=cDir item=isValid}
-                <li class="filestate list-group-item mod{$smarty.foreach.dirs.iteration%2} {if $isValid}unmodified{else}modified{/if}">
+            {foreach $cDirAssoc_arr as $cDir => $isValid}
+                <li class="filestate list-group-item {if $isValid}unmodified{else}modified{/if}">
                     {if $isValid}
                         <i class="fal fa-check text-success"></i>
                     {else}

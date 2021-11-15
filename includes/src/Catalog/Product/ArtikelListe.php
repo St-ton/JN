@@ -129,13 +129,19 @@ class ArtikelListe
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . ' ' .
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid' .
                     Preise::getPriceJoinSql($customerGroupID) . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel ' . $conditionSQL . ' 
-                        AND tkategorieartikel.kKategorie = ' . $categoryID . ' ' . $stockFilterSQL . '
+                        AND tkategorieartikel.kKategorie = :cid ' . $stockFilterSQL . '
                     ORDER BY ' . $order . ', nSort
-                    LIMIT ' . $limitStart . ', ' . $limitAnzahl
+                    LIMIT :lmts, :lmte',
+                [
+                    'cgid' => $customerGroupID,
+                    'cid'  => $categoryID,
+                    'lmts' => $limitStart,
+                    'lmte' => $limitAnzahl
+                ]
             );
             $defaultOptions = Artikel::getDefaultOptions();
             foreach ($items as $item) {

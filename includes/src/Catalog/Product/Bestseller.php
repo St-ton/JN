@@ -157,12 +157,13 @@ class Bestseller
                     ON tbestseller.kArtikel = tartikel.kArtikel
                 LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $this->customergrp . '
+                    AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND ROUND(tbestseller.fAnzahl) >= ' . $this->minsales . ' ' . $storagesql .  $productsql . '
+                    AND ROUND(tbestseller.fAnzahl) >= :ms ' . $storagesql .  $productsql . '
                 GROUP BY tartikel.kArtikel
                 ORDER BY tbestseller.fAnzahl DESC
-                LIMIT ' . $this->limit
+                LIMIT :lmt',
+            ['cgid' => $this->customergrp, 'ms' => $this->minsales, 'lmt' => $this->limit]
         );
         foreach ($data as $item) {
             $products[] = (int)$item->kArtikel;

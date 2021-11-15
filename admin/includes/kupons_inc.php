@@ -133,14 +133,15 @@ function normalizeDate($string): ?string
 function getRawCoupons($type = Kupon::TYPE_STANDARD, $whereSQL = '', $orderSQL = '', $limitSQL = '')
 {
     return Shop::Container()->getDB()->getObjects(
-        "SELECT k.*, max(kk.dErstellt) AS dLastUse
+        'SELECT k.*, MAX(kk.dErstellt) AS dLastUse
             FROM tkupon AS k
             LEFT JOIN tkuponkunde AS kk ON kk.kKupon = k.kKupon
-            WHERE cKuponTyp = '" . Shop::Container()->getDB()->escape($type) . "' " .
+            WHERE cKuponTyp = :type ' .
             ($whereSQL !== '' ? ' AND ' . $whereSQL : '') .
             'GROUP BY k.kKupon' .
             ($orderSQL !== '' ? ' ORDER BY ' . $orderSQL : '') .
-            ($limitSQL !== '' ? ' LIMIT ' . $limitSQL : '')
+            ($limitSQL !== '' ? ' LIMIT ' . $limitSQL : ''),
+        ['type' => $type]
     );
 }
 

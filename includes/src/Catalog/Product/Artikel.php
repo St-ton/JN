@@ -1577,29 +1577,30 @@ class Artikel
      */
     public function holeStueckliste(int $customerGroupID = 0, bool $getInvisibleParts = false): self
     {
-        if ($this->kArtikel > 0 && $this->kStueckliste > 0) {
-            $query = 'SELECT tartikel.kArtikel, tstueckliste.fAnzahl
-                          FROM tartikel
-                          JOIN tstueckliste 
-                              ON tstueckliste.kArtikel = tartikel.kArtikel 
-                              AND tstueckliste.kStueckliste = ' . (int)$this->kStueckliste . '
-                          LEFT JOIN tartikelsichtbarkeit 
-                              ON tstueckliste.kArtikel = tartikelsichtbarkeit.kArtikel 
-                              AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID;
-            if (!$getInvisibleParts) {
-                $query .= ' WHERE tartikelsichtbarkeit.kArtikel IS NULL';
-            }
-            $parts = $this->db->getObjects($query);
+        if ($this->kArtikel <= 0 || $this->kStueckliste <= 0) {
+            return $this;
+        }
+        $cond  = $getInvisibleParts ? '' : ' WHERE tartikelsichtbarkeit.kArtikel IS NULL';
+        $parts = Shop::Container()->getDB()->getObjects(
+            'SELECT tartikel.kArtikel, tstueckliste.fAnzahl
+                  FROM tartikel
+                  JOIN tstueckliste 
+                      ON tstueckliste.kArtikel = tartikel.kArtikel 
+                      AND tstueckliste.kStueckliste = :plid
+                  LEFT JOIN tartikelsichtbarkeit 
+                      ON tstueckliste.kArtikel = tartikelsichtbarkeit.kArtikel 
+                      AND tartikelsichtbarkeit.kKundengruppe = :cgid' . $cond,
+            ['plid' => $this->kStueckliste, 'cgid' => $customerGroupID]
+        );
 
-            $options                             = self::getDefaultOptions();
-            $options->nKeineSichtbarkeitBeachten = $getInvisibleParts ? 1 : 0;
-            foreach ($parts as $i => $partList) {
-                $product = new self($this->db);
-                $product->fuelleArtikel((int)$partList->kArtikel, $options);
-                $product->holeBewertungDurchschnitt();
-                $this->oStueckliste_arr[$i]                      = $product;
-                $this->oStueckliste_arr[$i]->fAnzahl_stueckliste = $partList->fAnzahl;
-            }
+        $options                             = self::getDefaultOptions();
+        $options->nKeineSichtbarkeitBeachten = $getInvisibleParts ? 1 : 0;
+        foreach ($parts as $i => $partList) {
+            $product = new self($this->db);
+            $product->fuelleArtikel((int)$partList->kArtikel, $options);
+            $product->holeBewertungDurchschnitt();
+            $this->oStueckliste_arr[$i]                      = $product;
+            $this->oStueckliste_arr[$i]->fAnzahl_stueckliste = $partList->fAnzahl;
         }
 
         return $this;
@@ -1721,14 +1722,15 @@ class Artikel
                                         ON deflang.kMedienDatei = lang.kMedienDatei 
                                         AND lang.kSprache = ' . $this->kSprache;
         }
-        $sql = 'SELECT tmediendatei.kMedienDatei, tmediendatei.cPfad, tmediendatei.cURL, tmediendatei.cTyp, 
-                        tmediendatei.nSort, ' . $conditionalFields . '
-                    FROM tmediendatei
-                    ' . $conditionalLeftJoin . '
-                    WHERE tmediendatei.kArtikel = ' . (int)$this->kArtikel . '
-                    ORDER BY tmediendatei.nSort ASC';
-
-        $this->oMedienDatei_arr = $this->db->getObjects($sql);
+        $this->oMedienDatei_arr = $db->getObjects(
+            'SELECT tmediendatei.kMedienDatei, tmediendatei.cPfad, tmediendatei.cURL, tmediendatei.cTyp, 
+            tmediendatei.nSort, ' . $conditionalFields . '
+                FROM tmediendatei
+                ' . $conditionalLeftJoin . '
+                WHERE tmediendatei.kArtikel = :pid
+                ORDER BY tmediendatei.nSort ASC',
+            ['pid' => $this->kArtikel]
+        );
         foreach ($this->oMedienDatei_arr as $mediaFile) {
             $mediaFile->kMedienDatei             = (int)$mediaFile->kMedienDatei;
             $mediaFile->kSprache                 = (int)$mediaFile->kSprache;
@@ -2150,8 +2152,9 @@ class Artikel
                 'SELECT teigenschaftkombiwert.*
                     FROM teigenschaftkombiwert
                     JOIN tartikel 
-                      ON tartikel.kArtikel = ' . (int)$this->kArtikel . '
-                      AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi'
+                      ON tartikel.kArtikel = :pid
+                      AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi',
+                ['pid' => $this->kArtikel]
             );
             $this->holeVariationDetailPreisKind(); // Baut die Variationspreise für ein Variationskombkind
             // String für javascript Funktion vorbereiten um Variationen auszufüllen
@@ -2170,10 +2173,9 @@ class Artikel
         } else {
             $variations = $this->db->getObjects(
                 'SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
-                    teigenschaft.cTyp, teigenschaft.nSort, ' .
-                $propertySQL->cSELECT . '
+                    teigenschaft.cTyp, teigenschaft.nSort, ' . $propertySQL->cSELECT . '
                     teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName AS cName_teigenschaftwert, ' .
-                $propValueSQL->cSELECT . '
+                    $propValueSQL->cSELECT . '
                     teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff, teigenschaftwert.cArtNr, 
                     teigenschaftwert.nSort AS teigenschaftwert_nSort, teigenschaftwert.fLagerbestand, 
                     teigenschaftwert.fPackeinheit, teigenschaftwertpict.kEigenschaftWertPict, 
@@ -2186,20 +2188,21 @@ class Artikel
                     ' . $propValueSQL->cJOIN . '
                     LEFT JOIN teigenschaftsichtbarkeit 
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                        AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
                     LEFT JOIN teigenschaftwertsichtbarkeit 
                         ON teigenschaftwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
-                        AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgid
                     LEFT JOIN teigenschaftwertpict 
                         ON teigenschaftwertpict.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                     LEFT JOIN teigenschaftwertaufpreis 
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                        AND teigenschaftwertaufpreis.kKundengruppe = ' . $customerGroupID . '
-                    WHERE teigenschaft.kArtikel = ' . (int)$this->kArtikel . '
+                        AND teigenschaftwertaufpreis.kKundengruppe = :cgid
+                    WHERE teigenschaft.kArtikel = :pid
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     ORDER BY teigenschaft.nSort ASC, teigenschaft.cName, 
-                    teigenschaftwert.nSort ASC, teigenschaftwert.cName'
+                    teigenschaftwert.nSort ASC, teigenschaftwert.cName',
+                ['pid' => $this->kArtikel, 'cgid' => $customerGroupID]
             );
         }
 

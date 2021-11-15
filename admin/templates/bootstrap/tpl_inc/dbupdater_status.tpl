@@ -19,7 +19,7 @@
                     <tbody>
                       {$migrationIndex = 1}
                       {$executedMigrations = $manager->getExecutedMigrations()}
-                      {foreach $manager->getMigrations()|@array_reverse as $m}
+                      {foreach $manager->getMigrations()|array_reverse as $m}
                           {$executed = $m->getId()|in_array:$executedMigrations}
                           {if $filter === 0 || ($filter === 1 && $executed) || ($filter === 2 && !$executed)}
                               <tr>

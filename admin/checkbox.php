@@ -71,11 +71,6 @@ $pagination = (new Pagination())
 $smarty->assign('oCheckBox_arr', $checkbox->getAll('LIMIT ' . $pagination->getLimitSQL()))
     ->assign('pagination', $pagination)
     ->assign('cAnzeigeOrt_arr', CheckBox::gibCheckBoxAnzeigeOrte())
-    ->assign('CHECKBOX_ORT_REGISTRIERUNG', CHECKBOX_ORT_REGISTRIERUNG)
-    ->assign('CHECKBOX_ORT_BESTELLABSCHLUSS', CHECKBOX_ORT_BESTELLABSCHLUSS)
-    ->assign('CHECKBOX_ORT_NEWSLETTERANMELDUNG', CHECKBOX_ORT_NEWSLETTERANMELDUNG)
-    ->assign('CHECKBOX_ORT_KUNDENDATENEDITIEREN', CHECKBOX_ORT_KUNDENDATENEDITIEREN)
-    ->assign('CHECKBOX_ORT_KONTAKT', CHECKBOX_ORT_KONTAKT)
     ->assign('customerGroups', CustomerGroup::getGroups())
     ->assign('oLink_arr', $db->getObjects(
         'SELECT * 

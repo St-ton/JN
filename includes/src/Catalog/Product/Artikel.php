@@ -5098,6 +5098,10 @@ class Artikel
                 ['pid' => $productID, 'cgid' => $customerGroupID]
             );
         }
+        foreach ($return['oArtikelArr'] as $item) {
+            $item->kArtikel      = (int)$item->kArtikel;
+            $item->kVaterArtikel = (int)$item->kVaterArtikel;
+        }
 
         return $return;
     }

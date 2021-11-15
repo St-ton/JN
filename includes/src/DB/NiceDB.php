@@ -1281,13 +1281,13 @@ class NiceDB implements DbInterface
 
     /**
      * @param PDOStatement $stmt
-     * @param string       $parameter
+     * @param string|int   $parameter
      * @param mixed        $value
      * @param int|null     $type
      */
-    protected function _bind(PDOStatement $stmt, string $parameter, $value, ?int $type = null): void
+    protected function _bind(PDOStatement $stmt, $parameter, $value, ?int $type = null): void
     {
-        $parameter = $this->_bindName($parameter);
+        $parameter = \is_string($parameter) ? $this->_bindName($parameter) : $parameter;
 
         if ($type === null) {
             switch (true) {

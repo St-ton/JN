@@ -66,18 +66,24 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
     && Request::postInt('kZahlungsart') > 0
     && Form::validateToken()
 ) {
-    $step              = 'uebersicht';
-    $paymentMethod     = $db->select(
+    $step          = 'uebersicht';
+    $paymentMethod = $db->select(
         'tzahlungsart',
         'kZahlungsart',
         Request::postInt('kZahlungsart')
     );
+    if ($paymentMethod !== null) {
+        $paymentMethod->kZahlungsart        = (int)$paymentMethod->kZahlungsart;
+        $paymentMethod->nSort               = (int)$paymentMethod->nSort;
+        $paymentMethod->nWaehrendBestellung = (int)$paymentMethod->nWaehrendBestellung;
+    }
     $nMailSenden       = Request::postInt('nMailSenden');
     $nMailSendenStorno = Request::postInt('nMailSendenStorno');
     $nMailBits         = 0;
     if (is_array($filteredPost['kKundengruppe'])) {
-        $cKundengruppen = Text::createSSK($filteredPost['kKundengruppe']);
-        if (in_array(0, $filteredPost['kKundengruppe'])) {
+        $filteredPost['kKundengruppe'] = \array_map('\intval', $filteredPost['kKundengruppe']);
+        $cKundengruppen                = Text::createSSK($filteredPost['kKundengruppe']);
+        if (in_array(0, $filteredPost['kKundengruppe'], true)) {
             unset($cKundengruppen);
         }
     }
@@ -99,7 +105,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
     $upd->nMailSenden         = $nMailBits;
     $upd->cBild               = $filteredPost['cBild'];
     $upd->nWaehrendBestellung = $duringCheckout;
-    $db->update('tzahlungsart', 'kZahlungsart', (int)$paymentMethod->kZahlungsart, $upd);
+    $db->update('tzahlungsart', 'kZahlungsart', $paymentMethod->kZahlungsart, $upd);
     // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
     if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
         $kPlugin     = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
@@ -127,6 +133,11 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
                     break;
                 case 'text':
                     $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
+                    break;
+                case 'pass':
+                    $aktWert->cWert = $_POST[$conf[$i]->cWertName];
+                    break;
+                default:
                     break;
             }
             $db->delete(
@@ -162,6 +173,8 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
                     break;
                 case 'text':
                     $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
+                    break;
+                default:
                     break;
             }
             $db->delete(
@@ -279,15 +292,15 @@ if ($step === 'einstellen') {
                 ORDER BY cName'
         );
         $smarty->assign('Conf', $conf)
-               ->assign('zahlungsart', $paymentMethod)
-               ->assign('kundengruppen', $customerGroups)
-               ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($paymentMethod))
-               ->assign('Zahlungsartname', getNames($paymentMethod->kZahlungsart))
-               ->assign('Gebuehrname', getshippingTimeNames($paymentMethod->kZahlungsart))
-               ->assign('cHinweisTexte_arr', getHinweisTexte($paymentMethod->kZahlungsart))
-               ->assign('cHinweisTexteShop_arr', getHinweisTexteShop($paymentMethod->kZahlungsart))
-               ->assign('ZAHLUNGSART_MAIL_EINGANG', ZAHLUNGSART_MAIL_EINGANG)
-               ->assign('ZAHLUNGSART_MAIL_STORNO', ZAHLUNGSART_MAIL_STORNO);
+            ->assign('zahlungsart', $paymentMethod)
+            ->assign('kundengruppen', $customerGroups)
+            ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($paymentMethod))
+            ->assign('Zahlungsartname', getNames($paymentMethod->kZahlungsart))
+            ->assign('Gebuehrname', getshippingTimeNames($paymentMethod->kZahlungsart))
+            ->assign('cHinweisTexte_arr', getHinweisTexte($paymentMethod->kZahlungsart))
+            ->assign('cHinweisTexteShop_arr', getHinweisTexteShop($paymentMethod->kZahlungsart))
+            ->assign('ZAHLUNGSART_MAIL_EINGANG', ZAHLUNGSART_MAIL_EINGANG)
+            ->assign('ZAHLUNGSART_MAIL_STORNO', ZAHLUNGSART_MAIL_STORNO);
     }
 } elseif ($step === 'log') {
     $paymentMethodID = Request::verifyGPCDataInt('kZahlungsart');
@@ -308,9 +321,9 @@ if ($step === 'einstellen') {
         );
 
         $smarty->assign('paymentLogs', $paymentLogs)
-               ->assign('paymentData', $method)
-               ->assign('filterStandard', $filterStandard)
-               ->assign('paginationPaymentLog', $paginationPaymentLog);
+            ->assign('paymentData', $method)
+            ->assign('filterStandard', $filterStandard)
+            ->assign('paginationPaymentLog', $paginationPaymentLog);
     }
 } elseif ($step === 'payments') {
     if (isset($filteredPost['action'], $filteredPost['kEingang_arr'])
@@ -342,9 +355,10 @@ if ($step === 'einstellen') {
                     ON ze.kBestellung = b.kBestellung
                 JOIN tkunde AS k
                     ON b.kKunde = k.kKunde
-            WHERE b.kZahlungsart = ' . $paymentMethodID . ' ' .
+            WHERE b.kZahlungsart = :pmid ' .
         ($filter->getWhereSQL() !== '' ? 'AND ' . $filter->getWhereSQL() : '') . '
-            ORDER BY dZeit DESC'
+            ORDER BY dZeit DESC',
+        ['pmid' => $paymentMethodID]
     );
     $pagination    = (new Pagination('payments' . $paymentMethodID))
         ->setItemArray($incoming)
@@ -355,9 +369,9 @@ if ($step === 'einstellen') {
         $item->dZeit     = date_create($item->dZeit)->format('d.m.Y\<\b\r\>H:i');
     }
     $smarty->assign('oZahlungsart', $method)
-           ->assign('oZahlunseingang_arr', $pagination->getPageItems())
-           ->assign('pagination', $pagination)
-           ->assign('oFilter', $filter);
+        ->assign('oZahlunseingang_arr', $pagination->getPageItems())
+        ->assign('pagination', $pagination)
+        ->assign('oFilter', $filter);
 } elseif ($step === 'delete') {
     $paymentMethodID = Request::verifyGPCDataInt('kZahlungsart');
     $method          = $db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
@@ -433,6 +447,6 @@ if ($step === 'uebersicht') {
     $smarty->assign('zahlungsarten', $methods);
 }
 $smarty->assign('step', $step)
-       ->assign('waehrung', $defaultCurrency->cName)
-       ->assign('recommendations', $recommendations)
-       ->display('zahlungsarten.tpl');
+    ->assign('waehrung', $defaultCurrency->cName)
+    ->assign('recommendations', $recommendations)
+    ->display('zahlungsarten.tpl');

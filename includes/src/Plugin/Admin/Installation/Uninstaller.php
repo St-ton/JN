@@ -252,8 +252,9 @@ final class Uninstaller
             $links = $this->db->getObjects(
                 'SELECT kLink
                     FROM tlink
-                    WHERE kPlugin IN (' . $pluginID . ', ' . $newPluginID . ')
-                        ORDER BY kLink'
+                    WHERE kPlugin IN (:pid, :npid)
+                        ORDER BY kLink',
+                ['pid' => $pluginID, 'npid' => $newPluginID]
             );
         }
         if (\count($links) === 2) {

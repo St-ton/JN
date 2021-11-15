@@ -15,7 +15,7 @@
 {/literal}
 
 <div id="content">
-    {if $warehouses|@count > 0}
+    {if $warehouses|count > 0}
         <form method="post" action="warenlager.php">
             {$jtl_token}
             <input name="a" type="hidden" value="update" />

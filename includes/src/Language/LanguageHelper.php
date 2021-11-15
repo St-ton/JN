@@ -46,7 +46,7 @@ use function Functional\reindex;
  * @method static string getIsoCodeByCountryName(string $country)
  * @method static string getCountryCodeByCountryName(string $iso)
  * @method static LanguageModel getDefaultLanguage(bool $shop = true)
- * @method static LanguageModel[] getAllLanguages(int $returnType = 0, bool $forceLoad = false)
+ * @method static LanguageModel[] getAllLanguages(int $returnType = 0, bool $forceLoad = false, bool $onlyActive = false)
  * @method static bool isShopLanguage(int $languageID, array $languages = [])
  */
 class LanguageHelper
@@ -981,16 +981,19 @@ class LanguageHelper
      * 1 = Gib ein Assoc mit Key = kSprache
      * 2 = Gib ein Assoc mit Key = cISO
      * @param bool $forceLoad
+     * @param bool $onlyActive
      * @return LanguageModel[]
      * @throws \Exception
      * @former gibAlleSprachen()
      * @since  5.0.0
      */
-    private function mappedGetAllLanguages(int $returnType = 0, bool $forceLoad = false): array
+    private function mappedGetAllLanguages(int $returnType = 0, bool $forceLoad = false, bool $onlyActive = false)
     {
         $languages = Frontend::getLanguages();
         if ($forceLoad || \count($languages) === 0) {
-            $languages = LanguageModel::loadAll($this->db, [], [])->toArray();
+            $languages = $onlyActive === true
+                ? LanguageModel::loadAll($this->db, ['active'], [1])->toArray()
+                : LanguageModel::loadAll($this->db, [], [])->toArray();
         }
         switch ($returnType) {
             case 2:
@@ -1219,7 +1222,7 @@ class LanguageHelper
      */
     private function mappedGetIsoCodeByCountryName(string $country): string
     {
-        Shop::Container()->getCountryService()->getIsoByCountryName($country) ?? 'noISO';
+        return Shop::Container()->getCountryService()->getIsoByCountryName($country) ?? 'noISO';
     }
 
     /**

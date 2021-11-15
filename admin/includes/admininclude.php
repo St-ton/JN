@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Backend\AdminLoginStatus;
 use JTL\Backend\Revision;
@@ -48,7 +48,7 @@ if (!function_exists('Shop')) {
     /**
      * @return Shop
      */
-    function Shop()
+    function Shop(): Shop
     {
         return Shop::getInstance();
     }

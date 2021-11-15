@@ -244,11 +244,11 @@
                         {if isset($cArtNr) && $cArtNr|strlen > 0}
                             <div class="alert alert-info">{__('ratingSearchedFor')}: {$cArtNr}</div>
                         {/if}
-                        {if !(isset($filteredReviews) && $filteredReviews|@count > 0)}
+                        {if !(isset($filteredReviews) && $filteredReviews|count > 0)}
                             <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                         {/if}
                     </div>
-                    {if isset($filteredReviews) && $filteredReviews|@count > 0}
+                    {if isset($filteredReviews) && $filteredReviews|count > 0}
                         <div>
                             <div class="subheading1">{$cArtNr}</div>
                             <hr class="mb-3">

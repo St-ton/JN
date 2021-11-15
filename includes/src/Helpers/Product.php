@@ -259,12 +259,12 @@ class Product
         if ($productID <= 0) {
             return [];
         }
+        $parentID       = 0;
         $customerGroup  = Frontend::getCustomerGroup()->getID();
         $db             = Shop::Container()->getDB();
         $properties     = [];
         $propertyValues = self::getPropertiesForVarCombiArticle($productID, $parentID);
         $exists         = true;
-
         if (\count($propertyValues) === 0) {
             return [];
         }
@@ -301,16 +301,17 @@ class Product
                 FROM teigenschaftwert
                 LEFT JOIN teigenschaftwertsichtbarkeit
                     ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                    AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroup . '
+                    AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgid
                 JOIN teigenschaft ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
                 LEFT JOIN teigenschaftsichtbarkeit ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                    AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroup . '
+                    AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
                 ' . $attr->cJOIN . '
                 ' . $attrVal->cJOIN . '
                 WHERE teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                     AND teigenschaftwert.kEigenschaft IN (' . \implode(',', $attributes) . ')
-                    AND teigenschaftwert.kEigenschaftWert IN (' . \implode(',', $attributeValues) . ')'
+                    AND teigenschaftwert.kEigenschaftWert IN (' . \implode(',', $attributeValues) . ')',
+            ['cgid' => $customerGroup]
         );
 
 
@@ -757,8 +758,9 @@ class Product
             $product = Shop::Container()->getDB()->getSingleObject(
                 'SELECT kArtikel
                     FROM tartikel' . $join . '
-                    WHERE tartikel.kVaterArtikel = ' . $productID . '
-                    GROUP BY teigenschaftkombiwert.kEigenschaftKombi' . $having
+                    WHERE tartikel.kVaterArtikel = :pid
+                    GROUP BY teigenschaftkombiwert.kEigenschaftKombi' . $having,
+                ['pid' => $productID]
             );
             if ($product !== null && \count($product->kArtikel) > 0) {
                 return (int)$product->kArtikel;
@@ -1917,7 +1919,7 @@ class Product
         array $configItemAmounts,
         bool $singleProductOutput = false
     ): ?stdClass {
-        $config                  = new stdClass;
+        $config                  = new stdClass();
         $config->fAnzahl         = $amount;
         $config->fGesamtpreis    = [0.0, 0.0];
         $config->cPreisLocalized = [];

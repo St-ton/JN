@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Checkout\Zahlungsart;
 use JTL\Shop;
@@ -121,18 +121,14 @@ function getPaymentMethodsByName(string $query): array
                         ON zs.kZahlungsart = za.kZahlungsart
                         AND zs.cName LIKE :search
                     WHERE za.cName LIKE :search 
-                    OR zs.cName LIKE :search',
+                    OR zs.cName LIKE :search
+                    GROUP BY za.kZahlungsart',
                 ['search' => '%' . $string . '%']
             );
-            // Berücksichtige keine fehlerhaften Eingaben
-            if (!empty($data)) {
-                if (count($data) > 1) {
-                    foreach ($data as $paymentMethodByName) {
-                        $paymentMethodsByName[$paymentMethodByName->kZahlungsart] = $paymentMethodByName;
-                    }
-                } else {
-                    $paymentMethodsByName[$data[0]->kZahlungsart] = $data[0];
-                }
+            foreach ($data as $paymentMethodByName) {
+                $paymentMethodByName->kZahlungsart = (int)$paymentMethodByName->kZahlungsart;
+
+                $paymentMethodsByName[$paymentMethodByName->kZahlungsart] = $paymentMethodByName;
             }
         }
     }

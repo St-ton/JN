@@ -60,8 +60,9 @@ class MailSmarty extends JTLSmarty
             $res  = $this->db->getSingleObject(
                 'SELECT ' . $row . ' AS content
                     FROM temailvorlagesprache
-                    WHERE kSprache = ' . (int)$lang->kSprache .
-                ' AND kEmailvorlage = ' . (int)$tpl->kEmailvorlage
+                    WHERE kSprache = :lid
+                 AND kEmailvorlage = :tid',
+                ['lid' => $lang->kSprache, 'tid' => $tpl->kEmailvorlage]
             );
             if (isset($res->content)) {
                 return $smarty->fetch('db:' . $params['type'] . '_' . $tpl->kEmailvorlage . '_' . $lang->kSprache);

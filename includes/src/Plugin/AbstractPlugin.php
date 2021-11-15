@@ -436,4 +436,14 @@ abstract class AbstractPlugin implements PluginInterface
 
         return $stateChanger->deactivate($this->getID(), $newState);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function updateInstance(PluginInterface $plugin): void
+    {
+        foreach (\get_object_vars($plugin) as $key => $val) {
+            $this->$key = $val;
+        }
+    }
 }

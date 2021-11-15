@@ -61,8 +61,12 @@ class CacheRedisCluster implements ICachingMethod
      * @param string|null $pass
      * @return bool
      */
-    private function setRedisCluster($hosts = null, $persist = false, $strategy = 0, string $pass = null): bool
-    {
+    private function setRedisCluster(
+        ?string $hosts = null,
+        bool $persist = false,
+        int $strategy = 0,
+        ?string $pass = null
+    ): bool {
         try {
             $pass  = $pass !== null && \strlen($pass) > 0 ? $pass : null;
             $redis = new RedisCluster(null, \explode(',', $hosts), 1.5, 1.5, $persist, $pass);
@@ -96,7 +100,7 @@ class CacheRedisCluster implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null): bool
+    public function store($cacheID, $content, int $expiration = null): bool
     {
         try {
             $exp = $expiration ?? $this->options['lifetime'];
@@ -112,7 +116,7 @@ class CacheRedisCluster implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($idContent, $expiration = null): bool
+    public function storeMulti(array $idContent, int $expiration = null): bool
     {
         try {
             $res = $this->redis->mset($idContent);
@@ -198,7 +202,7 @@ class CacheRedisCluster implements ICachingMethod
     /**
      * custom prefix for tag IDs
      *
-     * @param string $tagName
+     * @param string|int $tagName
      * @return string
      */
     private static function _keyFromTagName($tagName): string
@@ -211,7 +215,12 @@ class CacheRedisCluster implements ICachingMethod
      */
     public function flushTags($tags): int
     {
-        return $this->flush(\array_unique($this->getKeysByTag($tags))) ? \count($tags) : 0;
+        $tagged = \array_unique($this->getKeysByTag($tags));
+        $tags   = \is_string($tags)
+            ? [self::_keyFromTagName($tags)]
+            : \array_map('self::_keyFromTagName', $tags);
+
+        return $this->flush(\array_merge($tags, $tagged)) ? \count($tags) : 0;
     }
 
     /**
@@ -233,7 +242,7 @@ class CacheRedisCluster implements ICachingMethod
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map('JTL\Cache\Methods\CacheRedisCluster::_keyFromTagName', $tags);
+            : \array_map('self::_keyFromTagName', $tags);
         $res       = \count($tags) === 1
             ? $this->redis->sMembers($matchTags[0])
             : $this->redis->sUnion($matchTags);

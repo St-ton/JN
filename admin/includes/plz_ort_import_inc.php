@@ -519,7 +519,7 @@ function countryPreventXss($country): stdClass
  * @param stdClass[] $countries
  * @return stdClass[]
  */
-function countriesPreventXss($countries)
+function countriesPreventXss($countries): array
 {
     if (Shop::Smarty()->escape_html) {
         return $countries;

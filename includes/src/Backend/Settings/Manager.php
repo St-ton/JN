@@ -173,7 +173,7 @@ class Manager
             return;
         }
 
-        $this->db->executeQueryPrepared(
+        $this->db->queryPrepared(
             'INSERT INTO teinstellungenlog (kAdminlogin, cAdminname, cIP, cEinstellungenName, cEinstellungenWertAlt,
                                cEinstellungenWertNeu, dDatum)
                 SELECT tadminlogin.kAdminlogin, tadminlogin.cName, :cIP, :cEinstellungenName, :cEinstellungenWertAlt,

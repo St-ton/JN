@@ -1,8 +1,8 @@
 {block name='layout-header-shop-nav-wish'}
     {if !empty($wishlists) && $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
         {$wlCount = 0}
-        {if isset($smarty.session.Wunschliste->CWunschlistePos_arr)}
-            {$wlCount = $smarty.session.Wunschliste->CWunschlistePos_arr|count}
+        {if isset($smarty.session.Wunschliste) && $smarty.session.Wunschliste->getID() > 0}
+            {$wlCount = $smarty.session.Wunschliste->getItems()|count}
         {/if}
         <li id='shop-nav-wish'
             class="nav-item dropdown {if $nSeitenTyp === $smarty.const.PAGE_WUNSCHLISTE} active{/if}">

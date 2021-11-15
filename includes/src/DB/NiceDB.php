@@ -74,39 +74,6 @@ class NiceDB implements DbInterface
     private $transactionCount = 0;
 
     /**
-     * @deprecated Use ReturnType::SINGLE_OBJECT instead
-     */
-    public const RET_SINGLE_OBJECT = ReturnType::SINGLE_OBJECT;
-    /**
-     * @deprecated Use ReturnType::ARRAY_OF_OBJECTS instead
-     */
-    public const RET_ARRAY_OF_OBJECTS = ReturnType::ARRAY_OF_OBJECTS;
-    /**
-     * @deprecated Use ReturnType::AFFECTED_ROWS instead
-     */
-    public const RET_AFFECTED_ROWS = ReturnType::AFFECTED_ROWS;
-    /**
-     * @deprecated Use ReturnType::LAST_INSERTED_ID instead
-     */
-    public const RET_LAST_INSERTED_ID = ReturnType::LAST_INSERTED_ID;
-    /**
-     * @deprecated Use ReturnType::SINGLE_ASSOC_ARRAY instead
-     */
-    public const RET_SINGLE_ASSOC_ARRAY = ReturnType::SINGLE_ASSOC_ARRAY;
-    /**
-     * @deprecated Use ReturnType::SINGLE_ASSOC_ARRAY instead
-     */
-    public const RET_ARRAY_OF_ASSOC_ARRAYS = ReturnType::ARRAY_OF_ASSOC_ARRAYS;
-    /**
-     * @deprecated Use ReturnType::QUERYSINGLE instead
-     */
-    public const RET_QUERYSINGLE = ReturnType::QUERYSINGLE;
-    /**
-     * @deprecated Use ReturnType::ARRAY_OF_BOTH_ARRAYS instead
-     */
-    public const RET_ARRAY_OF_BOTH_ARRAYS = ReturnType::ARRAY_OF_BOTH_ARRAYS;
-
-    /**
      * create DB Connection with default parameters
      *
      * @param string $host
@@ -182,25 +149,6 @@ class NiceDB implements DbInterface
         if (\ES_DB_LOGGING === true || \NICEDB_EXCEPTION_BACKTRACE === true) {
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
-    }
-
-    /**
-     * @param null|string $host
-     * @param null|string $user
-     * @param null|string $pass
-     * @param null|string $db
-     * @return NiceDB
-     * @throws Exception
-     * @deprecated since 5.0.0 use Shop::Container()->getDB() instead
-     */
-    public static function getInstance(
-        string $host = null,
-        string $user = null,
-        string $pass = null,
-        string $db = null
-    ): DbInterface {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return self::$instance ?? new self($host, $user, $pass, $db);
     }
 
     /**
@@ -1333,13 +1281,13 @@ class NiceDB implements DbInterface
 
     /**
      * @param PDOStatement $stmt
-     * @param string       $parameter
+     * @param string|int   $parameter
      * @param mixed        $value
      * @param int|null     $type
      */
-    protected function _bind(PDOStatement $stmt, string $parameter, $value, ?int $type = null): void
+    protected function _bind(PDOStatement $stmt, $parameter, $value, ?int $type = null): void
     {
-        $parameter = $this->_bindName($parameter);
+        $parameter = \is_string($parameter) ? $this->_bindName($parameter) : $parameter;
 
         if ($type === null) {
             switch (true) {

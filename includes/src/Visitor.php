@@ -78,7 +78,7 @@ class Visitor
     {
         $interval = 3;
         Shop::Container()->getDB()->queryPrepared(
-            'INSERT INTO tbesucherarchiv
+            'INSERT IGNORE INTO tbesucherarchiv
             (kBesucher, cIP, kKunde, kBestellung, cReferer, cEinstiegsseite, cBrowser,
               cAusstiegsseite, nBesuchsdauer, kBesucherBot, dZeit)
             SELECT kBesucher, cIP, kKunde, kBestellung, cReferer, cEinstiegsseite, cBrowser, cAusstiegsseite,

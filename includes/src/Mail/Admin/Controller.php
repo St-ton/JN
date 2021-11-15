@@ -294,7 +294,7 @@ final class Controller
             return self::ERROR_NO_TEMPLATE;
         }
         $res = true;
-        foreach (LanguageHelper::getAllLanguages(0, true) as $lang) {
+        foreach (LanguageHelper::getAllLanguages(0, true, true) as $lang) {
             $mail = new Mail();
             try {
                 $mail = $mail->createFromTemplate($template, null, $lang);

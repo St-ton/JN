@@ -273,7 +273,10 @@
                                                 id="quantity[{$oPosition@index}]" class="quantity" name="anzahl[{$oPosition@index}]"
                                                 aria=["label"=>"{lang key='quantity'}"]
                                                 value=$oPosition->nAnzahl
-                                                data=["decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall}]
+                                                data=[
+                                                    "decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall},
+                                                    "product-id"=>"{if isset($oPosition->Artikel->kVariKindArtikel)}{$oPosition->Artikel->kVariKindArtikel}{else}{$oPosition->Artikel->kArtikel}{/if}"
+                                                ]
                                             }
                                             {inputgroupappend}
                                                 {button variant="" class="btn-increment"

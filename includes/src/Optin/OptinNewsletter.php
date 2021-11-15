@@ -92,7 +92,6 @@ class OptinNewsletter extends OptinBase implements OptinInterface
         $this->optCode = $this->generateUniqOptinCode();
 
         if (!SimpleMail::checkBlacklist($this->refData->getEmail())) {
-            // the following code replaces the function from "newsletter_inc.php"
             $checks              = new stdClass();
             $checks->nPlausi_arr = [];
             $nlCustomer          = null;
@@ -475,5 +474,17 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                 $upd
             );
         }
+    }
+
+    /**
+     * only for FILE IMPORTS of newsletter receivers without sending optin-mails!
+     *
+     * @return OptinInterface
+     */
+    public function bypassSendingPermission(): OptinInterface
+    {
+        $this->hasSendingPermission = true;
+
+        return $this;
     }
 }

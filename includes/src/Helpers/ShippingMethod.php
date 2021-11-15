@@ -1302,20 +1302,20 @@ class ShippingMethod
      */
     public static function getShippingFreeDifference($method, $cartSum): float
     {
-        $db                     = Shop::Container()->getDB();
         $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX - (float)$cartSum;
         // check if vkfreiabx is calculated net or gross
-        if ($method->eSteuer === 'netto') {
-            // calculate net with default tax class
-            $defaultTaxClass = $db->select('tsteuerklasse', 'cStandard', 'Y');
-            if ($defaultTaxClass !== null && isset($defaultTaxClass->kSteuerklasse)) {
-                $taxClasss  = (int)$defaultTaxClass->kSteuerklasse;
-                $defaultTax = $db->select('tsteuersatz', 'kSteuerklasse', $taxClasss);
-                if ($defaultTax !== null) {
-                    $defaultTaxValue        = $defaultTax->fSteuersatz;
-                    $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX -
-                        Tax::getNet((float)$cartSum, $defaultTaxValue);
-                }
+        if ($method->eSteuer !== 'netto') {
+            return $shippingFreeDifference;
+        }
+        $db = Shop::Container()->getDB();
+        // calculate net with default tax class
+        $defaultTaxClass = $db->select('tsteuerklasse', 'cStandard', 'Y');
+        if ($defaultTaxClass !== null && isset($defaultTaxClass->kSteuerklasse)) {
+            $defaultTax = $db->select('tsteuersatz', 'kSteuerklasse', (int)$defaultTaxClass->kSteuerklasse);
+            if ($defaultTax !== null) {
+                $defaultTaxValue        = $defaultTax->fSteuersatz;
+                $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX -
+                    Tax::getNet((float)$cartSum, $defaultTaxValue);
             }
         }
 
@@ -1441,15 +1441,26 @@ class ShippingMethod
         if (!$force && ($ignoreConf
                 || Shop::getSettingValue(\CONF_KUNDEN, 'kundenregistrierung_nur_lieferlaender') === 'Y')
         ) {
+            $prep = ['cgid' => $customerGroupID];
+            $cond = '';
+            if (\count($filterISO) > 0) {
+                $items = [];
+                $i     = 0;
+                foreach ($filterISO as $item) {
+                    $idx        = 'i' . $i++;
+                    $items[]    = ':' . $idx;
+                    $prep[$idx] = $item;
+                }
+                $cond = 'AND tland.cISO IN (' . \implode(',', $items) . ')';
+            }
+
             $countryISOFilter = Shop::Container()->getDB()->getObjects(
                 "SELECT DISTINCT tland.cISO
                     FROM tland
                     INNER JOIN tversandart ON FIND_IN_SET(tland.cISO, REPLACE(tversandart.cLaender, ' ', ','))
                     WHERE (tversandart.cKundengruppen = '-1'
-                        OR FIND_IN_SET('" . $customerGroupID . "', REPLACE(cKundengruppen, ';', ',')) > 0)
-                        " . (\count($filterISO) > 0
-                    ? "AND tland.cISO IN ('" . \implode("','", $filterISO) . "')"
-                    : '')
+                        OR FIND_IN_SET(:cgid, REPLACE(cKundengruppen, ';', ',')) > 0)" . $cond,
+                $prep
             );
             $countries        = $countryHelper->getFilteredCountryList(
                 map($countryISOFilter, static function ($country) {

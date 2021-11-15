@@ -598,46 +598,6 @@ class Overlay
     }
 
     /**
-     * @return string
-     * @deprecated since 5.0.0
-     */
-    public function getURLKlein(): string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getURL(\IMAGE_SIZE_XS);
-    }
-
-    /**
-     * @return string
-     * @deprecated since 5.0.0
-     */
-    public function getURLNormal(): string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getURL(\IMAGE_SIZE_SM);
-    }
-
-    /**
-     * @return string
-     * @deprecated since 5.0.0
-     */
-    public function getURLGross(): string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getURL(\IMAGE_SIZE_MD);
-    }
-
-    /**
-     * @return string
-     * @deprecated since 5.0.0
-     */
-    public function getURLRetina(): string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getURL(\IMAGE_SIZE_LG);
-    }
-
-    /**
      * @param string $path
      */
     public function setPathKlein(string $path): void

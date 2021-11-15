@@ -335,31 +335,6 @@ class ProductFilter
     }
 
     /**
-     * for compatibility reasons only - called when oSprache_arr is directly read from ProductFilter instance
-     *
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function getLanguages(): array
-    {
-        return $this->filterConfig->getLanguages();
-    }
-
-    /**
-     * for compatibility reasons only - called when oSprache_arr is directly set on ProductFilter instance
-     *
-     * @param array $languages
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function setLanguages(array $languages): array
-    {
-        $this->filterConfig->setLanguages($languages);
-
-        return $languages;
-    }
-
-    /**
      * @return ProductFilterSQLInterface
      */
     public function getFilterSQL(): ProductFilterSQLInterface
@@ -1894,13 +1869,13 @@ class ProductFilter
         } elseif (isset($_SERVER['REQUEST_METHOD'])) {
             if ($_SERVER['REQUEST_METHOD'] === 'GET' && \count($_GET) > 0) {
                 foreach ($_GET as $key => $value) {
-                    if (\preg_match('/mf\d+/i', $key)) {
+                    if (\preg_match('/mf\d+/i', (string)$key)) {
                         $filter[] = (int)$value;
                     }
                 }
             } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && \count($_POST) > 0) {
                 foreach ($_POST as $key => $value) {
-                    if (\preg_match('/mf\d+/i', $key)) {
+                    if (\preg_match('/mf\d+/i', (string)$key)) {
                         $filter[] = (int)$value;
                     }
                 }

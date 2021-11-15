@@ -186,36 +186,6 @@ class Download
     }
 
     /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function save(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return false;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function update(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function delete(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
      * @param array $keys
      * @param int   $languageID
      * @return array
@@ -227,24 +197,31 @@ class Download
         $customerID = (int)($keys['kKunde'] ?? 0);
         $downloads  = [];
         if (($productID > 0 || $orderID > 0 || $customerID > 0) && $languageID > 0 && self::checkLicense()) {
+            $prep   = ['pid' => $productID];
             $select = 'tartikeldownload.kDownload';
-            $where  = 'kArtikel = ' . $productID;
+            $where  = 'kArtikel = :pid';
             $join   = 'LEFT JOIN tdownload ON tartikeldownload.kDownload = tdownload.kDownload';
             if ($orderID > 0) {
+                $prep['oid'] = $orderID;
+                $prep['pos'] = \C_WARENKORBPOS_TYP_ARTIKEL;
+
                 $select = 'tbestellung.kBestellung, tbestellung.kKunde, tartikeldownload.kDownload';
                 $where  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
-                $join   = 'JOIN tbestellung ON tbestellung.kBestellung = ' . $orderID . '
+                $join   = 'JOIN tbestellung ON tbestellung.kBestellung = :oid
                                JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload
                                JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
-                                    AND twarenkorbpos.nPosTyp = ' . \C_WARENKORBPOS_TYP_ARTIKEL;
+                                    AND twarenkorbpos.nPosTyp = :pos';
             } elseif ($customerID > 0) {
+                $prep['cid'] = $customerID;
+                $prep['pos'] = \C_WARENKORBPOS_TYP_ARTIKEL;
+
                 $select = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, 
                     tartikeldownload.kDownload';
                 $where  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
-                $join   = 'JOIN tbestellung ON tbestellung.kKunde = ' . $customerID . '
+                $join   = 'JOIN tbestellung ON tbestellung.kKunde = :cid
                                JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload
                                JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
-                                    AND twarenkorbpos.nPosTyp = ' . \C_WARENKORBPOS_TYP_ARTIKEL;
+                                    AND twarenkorbpos.nPosTyp = :pos';
             }
             $items = Shop::Container()->getDB()->getObjects(
                 'SELECT ' . $select . '
@@ -252,7 +229,8 @@ class Download
                     ' . $join . '
                     WHERE ' . $where . '
                     GROUP BY tartikeldownload.kDownload
-                    ORDER BY tdownload.nSort, tdownload.dErstellt DESC'
+                    ORDER BY tdownload.nSort, tdownload.dErstellt DESC',
+                $prep
             );
             foreach ($items as $i => $download) {
                 $download->kDownload = (int)$download->kDownload;
@@ -353,7 +331,7 @@ class Download
         }
         $order = new Bestellung($orderID);
         // Existiert die Bestellung und wurde Sie bezahlt?
-        if ($order->kBestellung <= 0 || empty($order->dBezahltDatum)) {
+        if ($order->kBestellung <= 0 || (empty($order->dBezahltDatum) && $order->fGesamtsumme > 0)) {
             return self::ERROR_ORDER_NOT_FOUND;
         }
         // Stimmt der Kunde?

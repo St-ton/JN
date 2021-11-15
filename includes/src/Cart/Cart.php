@@ -584,16 +584,6 @@ class Cart
 
     /**
      * @param int $type
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function enthaltenSpezialPos(int $type): bool
-    {
-        return $this->posTypEnthalten($type);
-    }
-
-    /**
-     * @param int $type
      * @param bool $force
      * @return $this
      */
@@ -1256,17 +1246,6 @@ class Cart
     }
 
     /**
-     * @deprecated since 5.0.0 - use WarenkorbHelper::roundOptionalCurrency instead
-     * @param float|int $total
-     * @return float
-     */
-    public function optionaleRundung($total)
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return CartHelper::roundOptionalCurrency($total, $this->Waehrung ?? Frontend::getCurrency());
-    }
-
-    /**
      * @return $this
      */
     public function berechnePositionenUst(): self
@@ -1414,10 +1393,10 @@ class Cart
                     if ($oWarenkorbPosEigenschaft->kEigenschaftWert > 0 && $item->nAnzahl > 0) {
                         //schaue in DB, ob Lagerbestand ausreichend
                         $stock = Shop::Container()->getDB()->getSingleObject(
-                            'SELECT kEigenschaftWert, fLagerbestand >= ' . $item->nAnzahl .
-                            ' AS bAusreichend, fLagerbestand
+                            'SELECT kEigenschaftWert, fLagerbestand >= :cnt AS bAusreichend, fLagerbestand
                                 FROM teigenschaftwert
-                                WHERE kEigenschaftWert = ' . (int)$oWarenkorbPosEigenschaft->kEigenschaftWert
+                                WHERE kEigenschaftWert = :vid',
+                            ['cnt' => $item->nAnzahl, 'vid' => (int)$oWarenkorbPosEigenschaft->kEigenschaftWert]
                         );
                         if ($stock !== null && $stock->kEigenschaftWert > 0 && !$stock->bAusreichend) {
                             if ($stock->fLagerbestand > 0) {

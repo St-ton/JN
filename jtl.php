@@ -5,8 +5,6 @@ use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'kundenwerbenkeunden_inc.php';
 
 $linkService   = Shop::Container()->getLinkService();
 $smarty        = Shop::Smarty();

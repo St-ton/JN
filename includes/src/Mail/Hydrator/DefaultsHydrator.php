@@ -68,7 +68,7 @@ class DefaultsHydrator implements HydratorInterface
         if (!isset($data->tkunde->kKundengruppe) || !$data->tkunde->kKundengruppe) {
             $data->tkunde->kKundengruppe = CustomerGroup::getDefaultGroupID();
         }
-        $data->tfirma        = new Firma();
+        $data->tfirma        = new Firma(true, $this->db);
         $data->tkundengruppe = new CustomerGroup($data->tkunde->kKundengruppe);
         $customer            = $data->tkunde instanceof Customer
             ? $data->tkunde->localize($language)

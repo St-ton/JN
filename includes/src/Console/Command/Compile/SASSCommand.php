@@ -124,6 +124,10 @@ class SASSCommand extends Command
         $critical = \strpos($file, '_crit') !== false;
         $compiler = new Compiler();
         $compiler->setSourceMap($critical ? Compiler::SOURCE_MAP_NONE : Compiler::SOURCE_MAP_FILE);
+        $compiler->setSourceMapOptions([
+            'sourceMapURL'      => \basename($target) . '.map',
+            'sourceMapBasepath' => $directory,
+        ]);
         $compiler->addImportPath($baseDir);
         $result = $compiler->compileString(\file_get_contents($file));
         \file_put_contents($target, $result->getCss());

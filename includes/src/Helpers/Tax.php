@@ -32,10 +32,10 @@ class Tax
             self::setTaxRates();
         }
         if (GeneralObject::isCountable('Steuersatz', $_SESSION) && !isset($_SESSION['Steuersatz'][$taxID])) {
-            $taxID = (int)(\array_keys($_SESSION['Steuersatz'])[0]);
+            $taxID = (int)(\array_keys($_SESSION['Steuersatz'])[0] ?? 0);
         }
 
-        return $_SESSION['Steuersatz'][$taxID];
+        return $_SESSION['Steuersatz'][$taxID] ?? 0;
     }
 
     /**
@@ -49,17 +49,12 @@ class Tax
         $billingCountryCode     = null;
         $merchantCountryCode    = 'DE';
         $db                     = Shop::Container()->getDB();
-        $conf                   = Shop::getConfigValue(\CONF_KUNDEN, 'kundenregistrierung_standardland');
-        if ($conf !== '') {
-            $merchantCountryCode = $conf;
-        } else {
-            $company = new Firma();
-            if (!empty($company->cLand)) {
-                $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($company->cLand);
-            }
-            if (\defined('STEUERSATZ_STANDARD_LAND')) {
-                $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
-            }
+        $company                = new Firma(true, $db);
+        if (!empty($company->cLand)) {
+            $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($company->cLand);
+        }
+        if (\defined('STEUERSATZ_STANDARD_LAND')) {
+            $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
         }
         $deliveryCountryCode = $merchantCountryCode;
         if (!empty(Frontend::getCustomer()->cLand)) {
@@ -113,11 +108,13 @@ class Tax
         );
         if (\count($taxZones) === 0) {
             // Keine Steuerzone für $deliveryCountryCode hinterlegt - das ist fatal!
-            $redirURL  = Frontend::getCustomer()->isLoggedIn()
-                ? Shop::Container()->getLinkService()->getStaticRoute('jtl.php') . '?editRechnungsadresse=1'
-                : Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1';
-            $urlHelper = new URL(Shop::getURL() . $_SERVER['REQUEST_URI']);
-            $country   = LanguageHelper::getCountryCodeByCountryName($deliveryCountryCode);
+            $linkService = Shop::Container()->getLinkService();
+            $logoutURL   = $linkService->getStaticRoute('jtl.php') . '?logout=1';
+            $redirURL    = Frontend::getCustomer()->isLoggedIn()
+                ? $linkService->getStaticRoute('jtl.php') . '?editRechnungsadresse=1'
+                : $linkService->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1';
+            $currentURL  = (new URL(Shop::getURL() . $_SERVER['REQUEST_URI']))->normalize();
+            $country     = LanguageHelper::getCountryCodeByCountryName($deliveryCountryCode);
 
             Shop::Container()->getLogService()->error('Keine Steuerzone für "' . $country . '" hinterlegt!');
 
@@ -137,7 +134,7 @@ class Tax
                 exit;
             }
 
-            if ($redirURL === $urlHelper->normalize()) {
+            if (\in_array($currentURL, [$redirURL, $logoutURL])) {
                 Shop::Container()->getAlertService()->addAlert(
                     Alert::TYPE_ERROR,
                     Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages') . '<br/>'

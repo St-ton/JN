@@ -294,7 +294,7 @@ class AdminAccount
             }
         } elseif (\mb_strlen($admin->cPass) === 40) {
             // default login until Shop4
-            $crypted = \cryptPasswort($cPass, $admin->cPass);
+            $crypted = Shop::Container()->getPasswordService()->cryptOldPasswort($cPass, $admin->cPass);
         } else {
             // new default login from 4.0 on
             $verified = \password_verify($cPass, $admin->cPass);
@@ -637,17 +637,6 @@ class AdminAccount
         }
 
         return false;
-    }
-
-    /**
-     * @param string $password
-     * @return string
-     * @deprecated since 5.0
-     * @throws Exception
-     */
-    public static function generatePasswordHash(string $password): string
-    {
-        return Shop::Container()->getPasswordService()->hash($password);
     }
 
     /**

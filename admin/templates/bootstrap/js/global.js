@@ -25,49 +25,6 @@ jQuery.fn.center = function () {
 };
 
 /**
- * @deprecated since 4.06
- * @param type
- * @param id
- * @returns {*}
- */
-function get_list_callback(type, id) {
-    switch (type) {
-        case 'article':
-            return (id == 0) ? 'getArticleList' :
-                'getArticleListFromString';
-
-        case 'manufacturer':
-            return (id == 0) ? 'getManufacturerList' :
-                'getManufacturerListFromString';
-
-        case 'categories':
-            return (id == 0) ? 'getCategoryList' :
-                'getCategoryListFromString';
-
-        case 'attribute':
-            return (id == 0) ? 'getAttributeList' :
-                'getAttributeListFromString';
-        case 'link':
-            return (id == 0) ? 'getLinkList' :
-                'getLinkListFromString';
-    }
-    return false;
-}
-
-/**
- * @deprecated since 4.06 the functionality of this component can simply be covered with a twitter typeahead. See
- *      the function enableTypeahead() in global.js to turn a text input into a suggestion input.
- * @param type
- */
-function show_simple_search(type) {
-    var browser = $('.single_search_browser');
-    browser.attr('type', type);
-    browser.center().fadeIn(850);
-    browser.find('select').empty();
-    browser.find('input').val('').focus();
-}
-
-/**
  * @param form
  * @constructor
  */
@@ -165,51 +122,6 @@ function retract(elemID, picExpandID, picRetractID) {
             }
         }
     }
-}
-
-/**
- * @deprecated since 4.06
- * @param url
- * @param params
- * @param callback
- * @returns {*}
- */
-function ajaxCall(url, params, callback) {
-    return $.ajax({
-        type: "GET",
-        dataType: "json",
-        cache: false,
-        url: url,
-        data: params,
-        success: function (data, textStatus, jqXHR) {
-            if (typeof callback === 'function') {
-                callback(data);
-            }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            if (typeof callback === 'function' && jqXHR.responseJSON) {
-                callback(jqXHR.responseJSON, jqXHR);
-            }
-        }
-    });
-}
-
-var _queryTimeout = null;
-
-/**
- * @deprecated since 4.06
- * @param url
- * @param params
- * @param callback
- * @returns {*}
- */
-function ajaxCallV2(url, params, callback) {
-    if (_queryTimeout) {
-        window.clearTimeout(_queryTimeout);
-    }
-    _queryTimeout = window.setTimeout(function() {
-        ajaxCall(url, params, callback);
-    }, 300);
 }
 
 /**
@@ -340,31 +252,6 @@ function massCreationCoupons() {
     $("#singleCouponCode").toggleClass("hidden", checkboxCreationCoupons);
     $("#limitedByCustomers").toggleClass("hidden", checkboxCreationCoupons);
     $("#informCustomers").toggleClass("hidden", checkboxCreationCoupons);
-}
-
-/**
- * @deprecated since 4.06
- */
-function addFav(title, url, success) {
-    ajaxCallV2('favs.php?action=add', { title: title, url: url }, function(result, error) {
-        if (!error) {
-            reloadFavs();
-            if (typeof success == 'function') {
-                success();
-            }
-        }
-    });
-}
-
-/**
- * @deprecated since 4.06
- */
-function reloadFavs() {
-    ajaxCallV2('favs.php?action=list', {}, function(result, error) {
-        if (!error) {
-            $('#favs-drop').html(result.data.tpl);
-        }
-    });
 }
 
 function switchCouponTooltipVisibility() {

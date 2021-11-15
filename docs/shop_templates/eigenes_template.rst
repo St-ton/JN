@@ -40,7 +40,7 @@ Mit Hilfe des *Templates* wird die Anordnung sämtlicher Elemente aller Shop-Sei
 
     Das *Template* ist nicht zu verwechseln, mit dem *Theme*!
 
-    Das *Theme* ist eine Teil des *Templates*, welches eine noch feinere Anpassung der Shop-Seiten ermöglicht.
+    Das *Theme* ist ein Teil des *Templates*, welches eine noch feinere Anpassung der Shop-Seiten ermöglicht.
 
 
 Der bevorzugte Weg zum eigenen Template: Child-Templates

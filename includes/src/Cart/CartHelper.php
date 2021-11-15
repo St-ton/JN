@@ -782,12 +782,13 @@ class CartHelper
                 if ($productID <= 0) {
                     return true;
                 }
-                if (empty($_SESSION['Wunschliste']->kWunschliste)) {
-                    $_SESSION['Wunschliste'] = new Wishlist();
-                    $_SESSION['Wunschliste']->schreibeDB();
+                $wishlist = Frontend::getWishList();
+                if ($wishlist->getID() === 0) {
+                    $wishlist = new Wishlist();
+                    $wishlist->schreibeDB();
+                    $_SESSION['Wunschliste'] = $wishlist;
                 }
-                $qty    = \max(1, $qty);
-                $itemID = $_SESSION['Wunschliste']->fuegeEin(
+                $itemID = $wishlist->fuegeEin(
                     $productID,
                     $productExists->cName,
                     $attributes,
@@ -2026,8 +2027,9 @@ class CartHelper
             } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
                 $sqlSort = ' ORDER BY tartikel.fLagerbestand DESC';
             }
-            $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0 ?
-                    ' LIMIT ' . $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] : '';
+            $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0
+                ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
+                : '';
             $giftsTmp = Shop::Container()->getDB()->getObjects(
                 "SELECT tartikel.kArtikel, tartikelattribut.cWert
                     FROM tartikel
@@ -2036,10 +2038,12 @@ class CartHelper
                     WHERE (tartikel.fLagerbestand > 0 ||
                           (tartikel.fLagerbestand <= 0 &&
                           (tartikel.cLagerBeachten = 'N' || tartikel.cLagerKleinerNull = 'Y')))
-                        AND tartikelattribut.cName = '" . \FKT_ATTRIBUT_GRATISGESCHENK . "'
-                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-                Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true) .
-                $sqlSort . $limit
+                        AND tartikelattribut.cName = :atr
+                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= :csum " . $sqlSort . $limit,
+                [
+                    'atr'  => \FKT_ATTRIBUT_GRATISGESCHENK,
+                    'csum' => Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
+                ]
             );
 
             foreach ($giftsTmp as $gift) {

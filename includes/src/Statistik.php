@@ -257,8 +257,8 @@ class Statistik
     {
         if (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0) {
             $dateDiff = Shop::Container()->getDB()->getSingleObject(
-                "SELECT DATEDIFF('" . $this->cDatumBis_arr['cDatum'] . "', '" .
-                $this->cDatumVon_arr['cDatum'] . "') AS nTage"
+                'SELECT DATEDIFF(:to, :from) AS nTage',
+                ['from' => $this->cDatumVon_arr['cDatum'], 'to' => $this->cDatumBis_arr['cDatum']]
             );
             if ($dateDiff !== null) {
                 $this->nTage = (int)$dateDiff->nTage + 1;

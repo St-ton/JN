@@ -2,6 +2,7 @@
 
 namespace JTL\dbeS\Sync;
 
+use DateTime;
 use JTL\Checkout\Adresse;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Lieferadresse;
@@ -16,7 +17,6 @@ use JTL\Mail\Mailer;
 use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Shop;
 use stdClass;
-use DateTime;
 
 /**
  * Class Orders
@@ -428,10 +428,17 @@ final class Orders extends AbstractSync
      */
     private function updateOrderData(stdClass $oldOrder, stdClass $order, ?stdClass $paymentMethod): void
     {
+        $params    = [
+            'fg'    => $order->fGuthaben,
+            'total' => $order->fGesamtsumme,
+            'cmt'   => $order->cKommentar,
+            'oid'   => $oldOrder->kBestellung
+        ];
         $updateSql = '';
         if ($paymentMethod !== null && $paymentMethod->kZahlungsart > 0) {
-            $updateSql = ' , kZahlungsart = ' . (int)$paymentMethod->kZahlungsart .
-                ", cZahlungsartName = '" . $paymentMethod->cName . "' ";
+            $params['pmid'] = (int)$paymentMethod->kZahlungsart;
+            $params['pmnm'] = $paymentMethod->cName;
+            $updateSql      = ' , kZahlungsart = :pmid, cZahlungsartName = :pmnm ';
         }
         $this->db->queryPrepared(
             'UPDATE tbestellung SET
@@ -439,12 +446,7 @@ final class Orders extends AbstractSync
             fGesamtsumme = :total,
             cKommentar = :cmt ' . $updateSql . '
             WHERE kBestellung = :oid',
-            [
-                'fg'    => $order->fGuthaben,
-                'total' => $order->fGesamtsumme,
-                'cmt'   => $order->cKommentar,
-                'oid'   => $oldOrder->kBestellung
-            ]
+            $params
         );
     }
 

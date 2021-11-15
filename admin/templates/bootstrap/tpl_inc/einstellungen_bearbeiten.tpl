@@ -25,7 +25,7 @@
 {/if}
 <div id="content">
     <div id="settings">
-        {if isset($Conf) && $Conf|@count > 0}
+        {if isset($Conf) && $Conf|count > 0}
         <form name="einstellen" method="post" action="{$action|default:''}" class="settings navbar-form">
             {$jtl_token}
             <input type="hidden" name="einstellungen_bearbeiten" value="1" />

@@ -1744,7 +1744,7 @@ class Artikel
                                         ON deflang.kMedienDatei = lang.kMedienDatei 
                                         AND lang.kSprache = ' . $this->kSprache;
         }
-        $this->oMedienDatei_arr = $db->getObjects(
+        $this->oMedienDatei_arr = $this->getDB()->getObjects(
             'SELECT tmediendatei.kMedienDatei, tmediendatei.cPfad, tmediendatei.cURL, tmediendatei.cTyp, 
             tmediendatei.nSort, ' . $conditionalFields . '
                 FROM tmediendatei

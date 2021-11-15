@@ -157,11 +157,13 @@ class Tax
         if ($qry !== '') {
             $taxClasses = $db->getObjects('SELECT * FROM tsteuerklasse');
             foreach ($taxClasses as $taxClass) {
+                $taxClass->kSteuerklasse                          = (int)$taxClass->kSteuerklasse;
                 $rate                                             = $db->getSingleObject(
                     'SELECT fSteuersatz
                         FROM tsteuersatz
-                        WHERE kSteuerklasse = ' . (int)$taxClass->kSteuerklasse . '
-                        AND (' . $qry . ') ORDER BY nPrio DESC'
+                        WHERE kSteuerklasse = :tcid
+                        AND (' . $qry . ') ORDER BY nPrio DESC',
+                    ['tcid' => $taxClass->kSteuerklasse]
                 );
                 $_SESSION['Steuersatz'][$taxClass->kSteuerklasse] = $rate->fSteuersatz ?? 0;
                 if ($UstBefreiungIGL) {

@@ -120,7 +120,7 @@ function handleCsvImportAction(
         $obj = new stdClass();
 
         foreach ($fields as $i => $field) {
-            $obj->$field = Shop::Container()->getDB()->escape($row[$i]);
+            $obj->$field = $row[$i];
         }
 
         if ($oldRedirectFormat) {

@@ -1377,12 +1377,12 @@ class Product
     {
         $nav             = new stdClass();
         $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $db              = Shop::Container()->getDB();
         // Wurde der Artikel von der Artikelübersicht aus angeklickt?
         if ($productID > 0
             && isset($_SESSION['oArtikelUebersichtKey_arr'])
             && \count($_SESSION['oArtikelUebersichtKey_arr']) > 0
         ) {
-            $db         = Shop::Container()->getDB();
             $collection = $_SESSION['oArtikelUebersichtKey_arr'];
             if (!($collection instanceof Collection)) {
                 \collect($collection);

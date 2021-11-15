@@ -10,6 +10,7 @@ use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTLShop\SemVer\Version;
 use PDOException;
+use stdClass;
 
 /**
  * Class MigrationManager
@@ -321,16 +322,13 @@ class MigrationManager
      */
     public function log(IMigration $migration, string $direction, $state, $message): void
     {
-        $sql = \sprintf(
-            "INSERT INTO tmigrationlog (kMigration, cDir, cState, cLog, dCreated) 
-                VALUES ('%s', '%s', '%s', '%s', '%s');",
-            $migration->getId(),
-            $this->db->escape($direction),
-            $this->db->escape($state),
-            $this->db->escape($message),
-            (new DateTime('now'))->format('Y-m-d H:i:s')
-        );
-        $this->db->query($sql);
+        $ins             = new stdClass();
+        $ins->kMigration = $migration->getId();
+        $ins->cDir       = $direction;
+        $ins->cState     = $state;
+        $ins->cLog       = $message;
+        $ins->dCreated   = (new DateTime('now'))->format('Y-m-d H:i:s');
+        $this->db->insert('tmigrationlog', $ins);
     }
 
     /**

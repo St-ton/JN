@@ -142,11 +142,11 @@ final class Newsletter extends Job
                 WHERE tnewsletterempfaenger.kSprache = :lid
                     AND tnewsletterempfaenger.nAktiv = 1 ' . $cgSQL . '
                 ORDER BY tnewsletterempfaenger.kKunde
-                LIMIT :lmt, :ffst',
+                LIMIT :lmts, :lmte',
             [
                 'lid'  => $jobData->kSprache,
-                'lmt'  => $queueEntry->tasksExecuted,
-                'ffst' => $queueEntry->taskLimit
+                'lmts' => $queueEntry->tasksExecuted,
+                'lmte' => $queueEntry->taskLimit
             ]
         );
     }

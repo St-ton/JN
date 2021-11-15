@@ -105,7 +105,7 @@
                                 }
                             </div>
                         </div>
-                        {if $files|@count > 0}
+                        {if $files|count > 0}
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right">{__('newsPics')}:</label>
                                 <div>

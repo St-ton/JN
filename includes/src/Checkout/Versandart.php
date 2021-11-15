@@ -232,14 +232,15 @@ class Versandart
         $db->delete('tversandartsprache', 'kVersandart', $id);
         $db->delete('tversandartzahlungsart', 'kVersandart', $id);
         $db->delete('tversandartstaffel', 'kVersandart', $id);
-        $db->query(
+        $db->queryPrepared(
             'DELETE tversandzuschlag, tversandzuschlagplz, tversandzuschlagsprache
                 FROM tversandzuschlag
                 LEFT JOIN tversandzuschlagplz 
                     ON tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
                 LEFT JOIN tversandzuschlagsprache 
                     ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                WHERE tversandzuschlag.kVersandart = ' . $id
+                WHERE tversandzuschlag.kVersandart = :fid',
+            ['fid' => $id]
         );
 
         return true;

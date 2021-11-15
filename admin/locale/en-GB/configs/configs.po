@@ -1134,7 +1134,7 @@ msgid "kundenregistrierung_nur_lieferlaender_name"
 msgstr "Offer only countries with shipping method for selection"
 
 msgid "kundenregistrierung_nur_lieferlaender_desc"
-msgstr "Specify whether only countries for which there is at least one shipping method can be selected for the invoice and shipping address. We recommend settings this option to \"Yes\"."
+msgstr "(This setting currently has no use and will be removed in the next vesion) Specify whether only countries for which there is at least one shipping method can be selected for the invoice and shipping address. We recommend settings this option to \"Yes\"."
 
 msgid "kundenregistrierung_abgleichen_plz_name"
 msgstr "Check postal codes"

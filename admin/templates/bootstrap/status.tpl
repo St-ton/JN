@@ -308,7 +308,7 @@
                                 <tr class="text-vcenter">
                                     <td>
                                         <div class="test-name">
-                                            {if $test->getDescription()|@count_characters > 0}
+                                            {if $test->getDescription()|count_characters > 0}
                                                 <abbr title="{$test->getDescription()|escape:'html'}">{$test->getName()}</abbr>
                                             {else}
                                                 {$test->getName()}

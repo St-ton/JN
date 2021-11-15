@@ -877,6 +877,7 @@ class Product
         if ($productID <= 0) {
             return null;
         }
+        $languageID                       = Shop::getLanguageID();
         $defaultOptions                   = Artikel::getDefaultOptions();
         $xSelling                         = new stdClass();
         $xSelling->Standard               = new stdClass();
@@ -897,7 +898,7 @@ class Product
                         AND txsellgruppe.kSprache = :lid
                     WHERE txsell.kArtikel = :aid' . $stockFilterSQL . '
                     ORDER BY tartikel.cName',
-                ['lid' => Shop::getLanguageID(), 'aid' => $productID]
+                ['lid' => $languageID, 'aid' => $productID]
             );
             if (\count($xsell) > 0) {
                 $xsellgruppen   = group($xsell, static function ($e) {
@@ -910,8 +911,13 @@ class Product
                     foreach ($products as $xs) {
                         $group->Name         = $xs->cName;
                         $group->Beschreibung = $xs->cBeschreibung;
-                        $product             = (new Artikel($db))->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
-                        if ($product !== null && (int)$product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
+                        $product             = (new Artikel($db))->fuelleArtikel(
+                            (int)$xs->kXSellArtikel,
+                            $defaultOptions,
+                            0,
+                            $languageID
+                        );
+                        if ($product !== null && $product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                             $group->Artikel[] = $product;
                         }
                     }
@@ -982,7 +988,7 @@ class Product
             if ($xsellCount2 > 0) {
                 foreach ($xsell as $xs) {
                     $product = new Artikel();
-                    $product->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
+                    $product->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions, 0, $languageID);
                     if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                         $xSelling->Kauf->Artikel[] = $product;
                     }
@@ -1262,7 +1268,7 @@ class Product
                 $inquiry->nStatus   = 0;
                 $inquiry->cNachname = $inquiry->cNachname ?? '';
                 $inquiry->cVorname  = $inquiry->cVorname ?? '';
-                $checkBox           = new CheckBox();
+                $checkBox           = new CheckBox(0, $dbHandler);
                 $customerGroupID    = Frontend::getCustomerGroup()->getID();
                 $checkBox->triggerSpecialFunction(
                     \CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT,
@@ -1828,7 +1834,7 @@ class Product
                     $id      = $productAttribute->kVaterArtikel > 0
                         ? $productAttribute->kVaterArtikel
                         : $productAttribute->kArtikel;
-                    $product->fuelleArtikel($id, $defaultOptions);
+                    $product->fuelleArtikel($id, $defaultOptions, $customerGroupID);
                     if ($product->kArtikel > 0) {
                         $products[] = $product;
                     }
@@ -1864,7 +1870,7 @@ class Product
                         $id      = ($hit->kVaterArtikel > 0)
                             ? $hit->kVaterArtikel
                             : $hit->kArtikel;
-                        $product->fuelleArtikel($id, $defaultOptions);
+                        $product->fuelleArtikel($id, $defaultOptions, $customerGroupID);
                         if ($product->kArtikel > 0) {
                             $products[] = $product;
                         }
@@ -2037,6 +2043,8 @@ class Product
         }
         $baseItem = $cart->PositionenArr[$configID];
         if ($baseItem->istKonfigVater()) {
+            $customerGroupID    = Frontend::getCustomerGroup()->getID();
+            $languageID         = Shop::getLanguageID();
             $configItems        = [];
             $configItemAmounts  = [];
             $configGroupAmounts = [];
@@ -2044,7 +2052,8 @@ class Product
                 if ($item->cUnique !== $baseItem->cUnique || !$item->istKonfigKind()) {
                     continue;
                 }
-                $configItem                                      = new Item($item->kKonfigitem);
+                $configItem = new Item($item->kKonfigitem, $languageID, $customerGroupID);
+
                 $configItems[]                                   = $configItem->getKonfigitem();
                 $configItemAmounts[$configItem->getKonfigitem()] = $item->nAnzahl / $baseItem->nAnzahl;
                 if ($configItem->ignoreMultiplier()) {

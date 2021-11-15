@@ -1068,17 +1068,18 @@ class Artikel
     }
 
     /**
+     * @param int|null $customerGroupID
      * @return int
      */
-    public function gibKategorie(): int
+    public function gibKategorie(?int $customerGroupID = null): int
     {
         if ($this->kArtikel <= 0) {
             return 0;
         }
-        $id = (int)$this->kArtikel;
+        $id = $this->kArtikel;
         // Ist der Artikel in Variationskombi Kind? Falls ja, hol den Vater und die Kategorie von ihm
         if ($this->kEigenschaftKombi > 0) {
-            $id = (int)$this->kVaterArtikel;
+            $id = $this->kVaterArtikel;
         } elseif (!empty($this->oKategorie_arr)) {
             // oKategorie_arr already has all categories for this product in it
             if (isset($_SESSION['LetzteKategorie'])) {
@@ -1090,6 +1091,7 @@ class Artikel
 
             return (int)$this->oKategorie_arr[0];
         }
+        $customerGroupID  = $customerGroupID ?? Frontend::getCustomerGroup()->getID();
         $categoryFilter   = isset($_SESSION['LetzteKategorie'])
             ? ' AND tkategorieartikel.kKategorie = ' . (int)$_SESSION['LetzteKategorie']
             : '';
@@ -1098,14 +1100,14 @@ class Artikel
                 FROM tkategorieartikel
                 LEFT JOIN tkategoriesichtbarkeit 
                     ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
-                    AND tkategoriesichtbarkeit.kKundengruppe = ' .
-            Frontend::getCustomerGroup()->getID() . '
+                    AND tkategoriesichtbarkeit.kKundengruppe = :cgid
                 JOIN tkategorie 
                     ON tkategorie.kKategorie = tkategorieartikel.kKategorie
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                    AND kArtikel = ' . $id . $categoryFilter . '
+                    AND kArtikel = :pid' . $categoryFilter . '
                 ORDER BY tkategorie.nSort
-                LIMIT 1'
+                LIMIT 1',
+            ['cgid' => $customerGroupID, 'pid' => $id]
         );
 
         return (int)($categoryProducts->kKategorie ?? 0);
@@ -1597,7 +1599,7 @@ class Artikel
         $options->nKeineSichtbarkeitBeachten = $getInvisibleParts ? 1 : 0;
         foreach ($parts as $i => $partList) {
             $product = new self($this->db);
-            $product->fuelleArtikel((int)$partList->kArtikel, $options);
+            $product->fuelleArtikel((int)$partList->kArtikel, $options, 0, $this->kSprache);
             $product->holeBewertungDurchschnitt();
             $this->oStueckliste_arr[$i]                      = $product;
             $this->oStueckliste_arr[$i]->fAnzahl_stueckliste = $partList->fAnzahl;
@@ -1635,7 +1637,7 @@ class Artikel
             $options                             = self::getDefaultOptions();
             $options->nKeineSichtbarkeitBeachten = 1;
             $options->nStueckliste               = 1;
-            $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $options);
+            $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $options, 0, $this->kSprache);
 
             $currency                            = Frontend::getCurrency();
             $bundles                             = $this->db->selectAll(
@@ -1647,7 +1649,7 @@ class Artikel
             $options->nKeineSichtbarkeitBeachten = 0;
             foreach ($bundles as $bundle) {
                 $product = new self();
-                $product->fuelleArtikel((int)$bundle->kArtikel, $options);
+                $product->fuelleArtikel((int)$bundle->kArtikel, $options, 0, $this->kSprache);
 
                 if ($product->kArtikel > 0) {
                     $this->oProduktBundle_arr[]           = $product;
@@ -2025,7 +2027,7 @@ class Artikel
                     FROM teigenschaftkombiwert
                     INNER JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                     LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . Frontend::getCustomerGroup()->getID() . '
+                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     WHERE (kEigenschaft, kEigenschaftWert) IN (
                         SELECT kEigenschaft, kEigenschaftWert
                             FROM teigenschaftkombiwert
@@ -2094,8 +2096,7 @@ class Artikel
                                 ON art.kEigenschaftKombi = ek.kEigenschaftKombi
                             LEFT JOIN tartikelsichtbarkeit 
                                 ON tartikelsichtbarkeit.kArtikel = art.kArtikel
-                                AND tartikelsichtbarkeit.kKundengruppe = '
-                                . Frontend::getCustomerGroup()->getID() . '
+                                AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                             WHERE tartikel.kVaterArtikel = ' . (int)$this->kVaterArtikel . '
                                 AND tartikelsichtbarkeit.kArtikel IS NULL
                             GROUP BY teigenschaftkombiwert.kEigenschaftKombi, teigenschaftkombiwert.kEigenschaftWert
@@ -2695,7 +2696,7 @@ class Artikel
                     $varCombChildren[$i] = $tmp[$productID];
                 } else {
                     $product = new self();
-                    $product->fuelleArtikel($productID, $options);
+                    $product->fuelleArtikel($productID, $options, 0, $this->kSprache);
 
                     $tmp[$productID]     = $product;
                     $varCombChildren[$i] = $product;
@@ -4153,7 +4154,7 @@ class Artikel
     {
         if ($this->kVaterArtikel > 0 && empty($this->AttributeAssoc[$stockTextConstant])) {
             $parentProduct = new self();
-            $parentProduct->fuelleArtikel($this->kVaterArtikel, self::getDefaultOptions());
+            $parentProduct->fuelleArtikel($this->kVaterArtikel, self::getDefaultOptions(), 0, $this->kSprache);
             $this->Lageranzeige->AmpelText = (!empty($parentProduct->AttributeAssoc[$stockTextConstant]))
                 ? $parentProduct->AttributeAssoc[$stockTextConstant]
                 : Shop::Lang()->get($stockTextLangVar, 'global');
@@ -5327,6 +5328,7 @@ class Artikel
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
         }
+        $languageID            = $this->kSprache;
         $customerGroupID       = $customerGroupID ?? (Frontend::getCustomer()->getGroupID() > 0
             ? Frontend::getCustomer()->getGroupID()
             : Frontend::getCustomerGroup()->getID());
@@ -5340,11 +5342,11 @@ class Artikel
         $codes   = \array_filter(map(\explode(',', $shippingFreeCountries), static function ($e) {
             return \trim($e);
         }));
-        $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries);
+        $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries) . '_' . $languageID;
         if (($countries = $allCountries[$cacheID] ?? Shop::Container()->getCache()->get($cacheID)) === false) {
             $countries = Shop::Container()->getCountryService()->getFilteredCountryList($codes)->mapWithKeys(
-                static function (Country $country) {
-                    return [$country->getISO() => $country->getName()];
+                static function (Country $country) use ($languageID) {
+                    return [$country->getISO() => $country->getName($languageID)];
                 }
             )->toArray();
 

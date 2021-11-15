@@ -656,6 +656,8 @@ class IOMethods
         $amount             = $aValues['anzahl'] ?? 1;
         $invalidGroups      = [];
         $configItems        = [];
+        $customerGroupID    = Frontend::getCustomerGroup()->getID();
+        $languageID         = Shop::getLanguageID();
         $config             = Product::buildConfig(
             $productID,
             $amount,
@@ -669,7 +671,7 @@ class IOMethods
 
         $options               = Artikel::getDefaultOptions();
         $options->nVariationen = 1;
-        $product->fuelleArtikel($productID, $options);
+        $product->fuelleArtikel($productID, $options, $customerGroupID, $languageID);
         $fVKNetto                      = $product->gibPreis($amount, [], Frontend::getCustomerGroup()->getID());
         $fVK                           = [
             Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$product->kSteuerklasse]),
@@ -690,7 +692,7 @@ class IOMethods
                 if ($configItemID <= 0) {
                     continue;
                 }
-                $configItem          = new Item($configItemID);
+                $configItem          = new Item($configItemID, $languageID, $customerGroupID);
                 $configItem->fAnzahl = (float)($configItemCounts[$configItemID]
                     ?? $configGroupCounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial());
                 if ($configItemCounts && isset($configItemCounts[$configItem->getKonfigitem()])) {

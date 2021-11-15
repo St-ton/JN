@@ -1174,7 +1174,7 @@ class Wishlist
             $item->kArtikel        = (int)$item->kArtikel;
 
             try {
-                $product = (new Artikel($db))->fuelleArtikel($item->kArtikel, $defaultOptions);
+                $product = (new Artikel($db))->fuelleArtikel($item->kArtikel, $defaultOptions, 0, $langID);
             } catch (Exception $e) {
                 continue;
             }

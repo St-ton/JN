@@ -64,9 +64,10 @@ function getManufacturers($selectedManufacturers = ''): array
 {
     $selected = Text::parseSSKint($selectedManufacturers);
     $items    = Shop::Container()->getDB()->getObjects('SELECT kHersteller, cName FROM thersteller');
+    $langID   = Shop::getLanguageID();
     foreach ($items as $item) {
         $item->kHersteller = (int)$item->kHersteller;
-        $manufacturer      = new Hersteller($item->kHersteller);
+        $manufacturer      = new Hersteller($item->kHersteller, $langID);
         $item->cName       = $manufacturer->cName;
         $item->selected    = in_array($item->kHersteller, $selected, true);
         unset($manufacturer);

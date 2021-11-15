@@ -407,7 +407,7 @@ class ShippingMethod
             if ($nArtikelAssoc !== 1) {
                 continue;
             }
-            $tmpProduct = (new Artikel($db))->fuelleArtikel($productID, $defaultOptions);
+            $tmpProduct = (new Artikel($db))->fuelleArtikel($productID, $defaultOptions, $cgroupID);
             // Normaler Variationsartikel
             if ($tmpProduct !== null
                 && $tmpProduct->nIstVater === 0
@@ -435,7 +435,7 @@ class ShippingMethod
             $products = \array_merge($products);
         }
         foreach ($products as $product) {
-            $tmpProduct = (new Artikel($db))->fuelleArtikel($product['kArtikel'], $defaultOptions);
+            $tmpProduct = (new Artikel($db))->fuelleArtikel($product['kArtikel'], $defaultOptions, $cgroupID);
             if ($tmpProduct === null || $tmpProduct->kArtikel <= 0) {
                 continue;
             }
@@ -532,7 +532,7 @@ class ShippingMethod
                         (int)$property0,
                         (int)$propertyValue0
                     );
-                    $child->fuelleArtikel($childProductID, $defaultOptions);
+                    $child->fuelleArtikel($childProductID, $defaultOptions, $cgroupID);
                     // Summen pro Steuerklasse summieren
                     if (!\array_key_exists($child->kSteuerklasse, $perTaxClass)) {
                         $perTaxClass[$child->kSteuerklasse] = 0;
@@ -565,7 +565,7 @@ class ShippingMethod
                         (int)$property1,
                         (int)$propertyValue1
                     );
-                    $child->fuelleArtikel($childProductID, $defaultOptions);
+                    $child->fuelleArtikel($childProductID, $defaultOptions, $cgroupID);
                     // Summen pro Steuerklasse summieren
                     if (!\array_key_exists($child->kSteuerklasse, $perTaxClass)) {
                         $perTaxClass[$child->kSteuerklasse] = 0;
@@ -1333,11 +1333,12 @@ class ShippingMethod
         if (!\is_object($shippingMethod) || (float)$shippingMethod->fVersandkostenfreiAbX <= 0) {
             return '';
         }
-        $cacheID = 'bvkfls_' . $shippingMethod->fVersandkostenfreiAbX . \mb_strlen($shippingMethod->cLaender) . '_' .
-            Shop::getLanguageID();
+        $langID  = Shop::getLanguageID();
+        $cacheID = 'bvkfls_' . $shippingMethod->fVersandkostenfreiAbX . \mb_strlen($shippingMethod->cLaender)
+            . '_' . $langID;
         if (($shippingFreeCountries = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $shippingFreeCountries = \implode(', ', \array_map(static function (Country $e) {
-                return $e->getName();
+            $shippingFreeCountries = \implode(', ', \array_map(static function (Country $e) use ($langID) {
+                return $e->getName($langID);
             }, Shop::Container()->getCountryService()->getFilteredCountryList(
                 \array_filter(\explode(' ', $shippingMethod->cLaender))
             )->toArray()));

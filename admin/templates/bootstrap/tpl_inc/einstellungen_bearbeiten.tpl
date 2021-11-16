@@ -5,7 +5,6 @@
     {include file='tpl_inc/seite_header.tpl' cTitel=$title cBeschreibung=$cPrefDesc cDokuURL=$cPrefURL}
 {/if}
 {$search = isset($cSuche) && !empty($cSuche)}
-
 {if $search}
     <script>
         $(function() {
@@ -25,6 +24,13 @@
 {/if}
 <div id="content">
     <div id="settings">
+        {if $testResult !== null}
+            <div class="card">
+                <div class="card-body">
+                    <pre>{$testResult}</pre>
+                </div>
+            </div>
+        {/if}
         {if isset($Conf) && $Conf|count > 0}
         <form name="einstellen" method="post" action="{$action|default:''}" class="settings navbar-form">
             {$jtl_token}
@@ -115,6 +121,28 @@
             <div class="save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
+                        {if $Sektion->kEinstellungenSektion === $smarty.const.CONF_EMAILS}
+                            <script>
+                            $(function() {
+                                if ($('#email_methode').val() !== 'smtp') {
+                                    $('#configTest').hide();
+                                }
+                                $('#email_methode').on('change', function () {
+                                    var currentVal = $(this).val();
+                                    if (currentVal === 'smtp') {
+                                        $('#configTest').show();
+                                    } else {
+                                        $('#configTest').hide();
+                                    }
+                                });
+                            });
+                            </script>
+                            <button type="submit" name="test_emails" value="1" class="btn btn-secondary btn-block" id="configTest">
+                                {__('saveWithconfigTest')}
+                            </button>
+                        {/if}
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
                         <button type="submit" value="{__('savePreferences')}" class="btn btn-primary btn-block">
                             {__('saveWithIcon')}
                         </button>

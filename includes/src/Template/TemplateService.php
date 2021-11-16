@@ -7,6 +7,9 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\License\Manager;
 use JTL\License\Struct\ExpiredExsLicense;
+use JTL\Plugin\InstallCode;
+use JTL\Shop;
+use JTL\Template\Admin\Installation\TemplateInstallerFactory;
 use SimpleXMLElement;
 
 /**
@@ -59,38 +62,43 @@ class TemplateService implements TemplateServiceInterface
         $this->db->delete('ttemplate', 'eTyp', $type);
         $this->db->delete('ttemplate', 'cTemplate', $dir);
         $reader       = new XMLReader();
-        $tplConfig    = $reader->getXML($dir);
+        $xml          = $reader->getXML($dir);
         $parentConfig = false;
-        if ($tplConfig !== null && !empty($tplConfig->Parent)) {
-            if (!\is_dir(\PFAD_ROOT . \PFAD_TEMPLATES . $tplConfig->Parent)) {
+        if ($xml !== null && !empty($xml->Parent)) {
+            if (!\is_dir(\PFAD_ROOT . \PFAD_TEMPLATES . $xml->Parent)) {
                 return false;
             }
-            $parent       = (string)$tplConfig->Parent;
+            $parent       = (string)$xml->Parent;
             $parentConfig = $reader->getXML($parent);
         }
         $model = new Model($this->db);
-        if (isset($tplConfig->ExsID)) {
-            $model->setExsID((string)$tplConfig->ExsID);
+        if (isset($xml->ExsID)) {
+            $model->setExsID((string)$xml->ExsID);
         }
         $model->setCTemplate($dir);
         $model->setType($type);
-        if (!empty($tplConfig->Parent)) {
-            $model->setParent((string)$tplConfig->Parent);
+        if (!empty($xml->Parent)) {
+            $model->setParent((string)$xml->Parent);
         }
-        $model->setName((string)$tplConfig->Name);
-        $model->setAuthor((string)$tplConfig->Author);
-        $model->setUrl((string)$tplConfig->URL);
-        $model->setPreview((string)$tplConfig->Preview);
-        $version = empty($tplConfig->Version) && $parentConfig
+        $model->setName((string)$xml->Name);
+        $model->setAuthor((string)$xml->Author);
+        $model->setUrl((string)$xml->URL);
+        $model->setPreview((string)$xml->Preview);
+        $version = empty($xml->Version) && $parentConfig
             ? (string)$parentConfig->Version
-            : (string)$tplConfig->Version;
+            : (string)$xml->Version;
         $model->setVersion($version);
-        if (!empty($tplConfig->Framework)) {
-            $model->setFramework((string)$tplConfig->Framework);
+        if (!empty($xml->Framework)) {
+            $model->setFramework((string)$xml->Framework);
         }
         $model->setBootstrap((int)\file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $dir . '/Bootstrap.php'));
         $save = $model->save();
         if ($save === true) {
+            $installer = new TemplateInstallerFactory($this->db, $xml, $model);
+            $res       = $installer->install();
+            if ($res !== InstallCode::OK) {
+                return false;
+            }
             if (!$dh = \opendir(\PFAD_ROOT . \PFAD_COMPILEDIR)) {
                 return false;
             }
@@ -103,7 +111,7 @@ class TemplateService implements TemplateServiceInterface
                 }
             }
         }
-        $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
+        $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE, \CACHING_GROUP_CORE]);
 
         return $save;
     }

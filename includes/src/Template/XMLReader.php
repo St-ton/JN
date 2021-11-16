@@ -34,7 +34,6 @@ class XMLReader
         if ($xml === false) {
             $xml = \simplexml_load_string(\file_get_contents($xmlFile));
         }
-
         if (\is_a($xml, SimpleXMLElement::class)) {
             $xml->dir = $dirName;
         } else {

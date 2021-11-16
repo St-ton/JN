@@ -168,7 +168,9 @@ if ($pluginID > 0) {
             } elseif ($menu->configurable === true) {
                 $hidden = true;
                 foreach ($plugin->getConfig()->getOptions() as $confItem) {
-                    if ($confItem->inputType !== InputType::NONE && $confItem->confType === 'Y') {
+                    if ($confItem->inputType !== InputType::NONE
+                        && $confItem->confType !== Config::TYPE_NOT_CONFIGURABLE
+                    ) {
                         $hidden = false;
                         break;
                     }

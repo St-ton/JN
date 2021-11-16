@@ -10,11 +10,11 @@
                 {block name='layout-footer-content-productlist-col-closingtag'}
                     </div>{* /col *}
                 {/block}
-                {block name='layout-footer-sidepanel-left'}
+                {*{block name='layout-footer-sidepanel-left'}
                     <aside id="sidepanel_left" class="sidepanel-left d-print-none col-12 col-lg-4 col-xl-3 order-lg-0 dropdown-full-width">
                         {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
                     </aside>
-                {/block}
+                {/block}*}
                 {block name='layout-footer-content-productlist-row-closingtag'}
                     </div>{* /row *}
                 {/block}

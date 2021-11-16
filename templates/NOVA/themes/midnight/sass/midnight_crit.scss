@@ -131,6 +131,12 @@ html {
 /* nav end */
 
 /* bootstrap */
+.has-left-sidebar {
+  .breadcrumb-container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
 .breadcrumb {
   display: flex;
   flex-wrap: wrap;

@@ -106,7 +106,9 @@
                                     {link href=$subCategory->getURL()}
                                         {$imgAlt = $subCategory->getAttribute('img_alt')}
                                         <div class="subcategories-image d-none d-md-flex">
-                                            {image fluid=true lazy=true webp=true
+                                            {image fluid=true lazy=true webp=true class='img-aspect-ratio'
+                                                width='150px'
+                                                height='150px'
                                                 src=$subCategory->getImage(\JTL\Media\Image::SIZE_SM)
                                                 alt="{if empty($imgAlt->cWert)}{$subCategory->getName()}{else}{$imgAlt->cWert}{/if}"}
                                         </div>

@@ -232,9 +232,7 @@ class Download
         $customerID = (int)($keys['kKunde'] ?? 0);
         $downloads  = [];
         if (($productID > 0 || $orderID > 0 || $customerID > 0) && $languageID > 0 && self::checkLicense()) {
-            $prep   = ['pid' => $productID];
             $select = 'tartikeldownload.kDownload';
-            $where  = 'kArtikel = :pid';
             $join   = 'LEFT JOIN tdownload ON tartikeldownload.kDownload = tdownload.kDownload';
             if ($orderID > 0) {
                 $prep['oid'] = $orderID;
@@ -257,6 +255,9 @@ class Download
                                JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload
                                JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                                     AND twarenkorbpos.nPosTyp = :pos';
+            } else {
+                $prep  = ['pid' => $productID];
+                $where = 'kArtikel = :pid';
             }
             $items = Shop::Container()->getDB()->getObjects(
                 'SELECT ' . $select . '

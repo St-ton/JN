@@ -24,7 +24,7 @@
 {/if}
 <div id="content">
     <div id="settings">
-        {if $testResult !== null}
+        {if $testResult|default:null !== null}
             <div class="card">
                 <div class="card-body">
                     <pre>{$testResult}</pre>

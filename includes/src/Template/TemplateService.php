@@ -94,7 +94,7 @@ class TemplateService implements TemplateServiceInterface
         $model->setBootstrap((int)\file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $dir . '/Bootstrap.php'));
         $save = $model->save();
         if ($save === true) {
-            $installer = new TemplateInstallerFactory($this->db, $xml, $model);
+            $installer = new TemplateInstallerFactory($this->db, $xml, $parentConfig, $model);
             $res       = $installer->install();
             if ($res !== InstallCode::OK) {
                 return false;
@@ -178,6 +178,14 @@ class TemplateService implements TemplateServiceInterface
             }
             $template->setExsLicense($exsLicense);
         }
+        $config = $template->getConfig();
+        $paths  = new Paths(
+            $dir,
+            Shop::getURL(),
+            $template->getParent(),
+            $config->loadConfigFromDB()['theme']['theme_default']
+        );
+        $template->setPaths($paths);
         $template->setBoxLayout($this->getBoxLayout($tplXML, $parentXML));
         $template->setResources(new Resources($this->db, $tplXML, $parentXML));
 

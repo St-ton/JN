@@ -13,17 +13,17 @@ class Paths
     /**
      * @var string - like '/var/www/shop/templates/'
      */
-    private $rootPath = \PFAD_ROOT . \PFAD_TEMPLATES;
+    private $rootDir = \PFAD_ROOT . \PFAD_TEMPLATES;
 
     /**
      * @var string
      */
-    private $compilePath;
+    private $compileDir;
 
     /**
      * @var string
      */
-    private $cachePath;
+    private $cacheDir;
 
     /**
      * @var string - like 'https://example.com/templates/'
@@ -33,17 +33,17 @@ class Paths
     /**
      * @var string - like '/var/www/shop/templates/mytemplate/'
      */
-    private $basePath;
+    private $baseDir;
 
     /**
      * @var string - like 'templates/mytemplate/'
      */
-    private $baseRelPath;
+    private $baseRelDir;
 
     /**
      * @var string - like 'mytemplate'
      */
-    private $baseDir;
+    private $baseDirName;
 
     /**
      * @var string - like 'https://example.com/templates/mytemplate/'
@@ -53,17 +53,17 @@ class Paths
     /**
      * @var string|null - like '/var/www/shop/templates/NOVA/'
      */
-    private $parentPath;
+    private $parentDir;
 
     /**
      * @var string|null - like 'templates/NOVA/'
      */
-    private $parentRelPath;
+    private $parentRelDir;
 
     /**
      * @var string|null - like 'NOVA'
      */
-    private $parentDir;
+    private $parentDirName;
 
     /**
      * @var string - like 'https://example.com/templates/NOVA/'
@@ -73,17 +73,17 @@ class Paths
     /**
      * @var string - like '/var/www/shop/templates/mytemplate/themes/mytheme'
      */
-    private $themePath = '';
+    private $themeDir = '';
 
     /**
      * @var string - like 'templates/mytemplate/themes/mytheme'
      */
-    private $themeRelPath = '';
+    private $themeRelDir = '';
 
     /**
      * @var string - like 'mytheme'
      */
-    private $themeDir = '';
+    private $themeDirName = '';
 
     /**
      * @var string - like 'https://example.com/templates/mytemplate/themes/mytheme/'
@@ -93,17 +93,17 @@ class Paths
     /**
      * @var string - like 'mytheme' if realThemeDir exists - parent theme dir otherwise
      */
-    private $realThemeDir;
+    private $realThemeDirName;
 
     /**
      * @var string - like '/var/www/shop/templates/mytemplate/themes/mytheme' if exists - parent otherwise
      */
-    private $realThemePath;
+    private $realThemeDir;
 
     /**
      * @var string - like 'templates/mytemplate/themes/mytheme' if exists - parent otherwise
      */
-    private $realRelThemePath;
+    private $realRelThemeDir;
 
     /**
      * @var string - like 'https://example.com/templates/mytemplate/themes/mytheme/' if exists - parent otherwise
@@ -120,39 +120,39 @@ class Paths
     {
         $shopURL           = \rtrim($shopURL, '/') . '/';
         $this->rootURL     = $shopURL . \PFAD_TEMPLATES;
-        $this->compilePath = \PFAD_ROOT . \PFAD_COMPILEDIR . $themeBaseDir . '/';
-        $this->cachePath   = $this->compilePath . 'page_cache/';
-        $this->baseDir     = $themeBaseDir;
-        $this->baseRelPath = \PFAD_TEMPLATES . $this->baseDir . '/';
-        $this->basePath    = $this->rootPath . $this->baseDir . '/';
-        $this->baseURL     = $shopURL . $this->baseRelPath;
+        $this->compileDir  = \PFAD_ROOT . \PFAD_COMPILEDIR . $themeBaseDir . '/';
+        $this->cacheDir    = $this->compileDir . 'page_cache/';
+        $this->baseDirName = $themeBaseDir;
+        $this->baseRelDir  = \PFAD_TEMPLATES . $this->baseDirName . '/';
+        $this->baseDir     = $this->rootDir . $this->baseDirName . '/';
+        $this->baseURL     = $shopURL . $this->baseRelDir;
         if ($parentDir !== null) {
-            $this->parentDir     = $parentDir;
-            $this->parentRelPath = \PFAD_TEMPLATES . $parentDir . '/';
-            $this->parentPath    = $this->rootPath . $parentDir . '/';
-            $this->parentURL     = $shopURL . $this->parentRelPath;
-            if (!\is_dir($this->parentPath)) {
-                throw new InvalidArgumentException('Parent path does not exist: ' . $this->parentPath);
+            $this->parentDirName = $parentDir;
+            $this->parentRelDir  = \PFAD_TEMPLATES . $parentDir . '/';
+            $this->parentDir     = $this->rootDir . $parentDir . '/';
+            $this->parentURL     = $shopURL . $this->parentRelDir;
+            if (!\is_dir($this->parentDir)) {
+                throw new InvalidArgumentException('Parent path does not exist: ' . $this->parentDir);
             }
         }
         if ($themeName !== null) {
-            $this->themeDir     = $themeName;
-            $this->themePath    = $this->basePath . 'themes/' . $themeName . '/';
-            $this->themeRelPath = $this->baseRelPath . 'themes/' . $themeName . '/';
-            $this->themeURL     = $shopURL . $this->themeRelPath;
+            $this->themeDirName = $themeName;
+            $this->themeDir     = $this->baseDir . 'themes/' . $themeName . '/';
+            $this->themeRelDir  = $this->baseRelDir . 'themes/' . $themeName . '/';
+            $this->themeURL     = $shopURL . $this->themeRelDir;
 
+            $this->realThemeDirName = $this->themeDirName;
             $this->realThemeDir     = $this->themeDir;
-            $this->realThemePath    = $this->themePath;
-            $this->realRelThemePath = $this->themeRelPath;
+            $this->realRelThemeDir  = $this->themeRelDir;
 
-            $parentThemePath = $this->parentPath . 'themes/' . $themeName . '/';
-            if ($parentDir !== null && !\is_dir($this->themePath) && \is_dir($parentThemePath)) {
-                $this->realThemePath    = $parentThemePath;
-                $this->realRelThemePath = $this->parentRelPath . 'themes/' . $themeName . '/';
+            $parentThemePath = $this->parentDir . 'themes/' . $themeName . '/';
+            if ($parentDir !== null && !\is_dir($this->themeDir) && \is_dir($parentThemePath)) {
+                $this->realThemeDir    = $parentThemePath;
+                $this->realRelThemeDir = $this->parentRelDir . 'themes/' . $themeName . '/';
             }
-            $this->realThemeURL = $shopURL . $this->realRelThemePath;
-            if (!\is_dir($this->realThemePath)) {
-                throw new InvalidArgumentException('Theme path does not exist: ' . $this->realThemePath);
+            $this->realThemeURL = $shopURL . $this->realRelThemeDir;
+            if (!\is_dir($this->realThemeDir)) {
+                throw new InvalidArgumentException('Theme path does not exist: ' . $this->realThemeDir);
             }
         }
     }
@@ -160,49 +160,49 @@ class Paths
     /**
      * @return string
      */
-    public function getRootPath(): string
+    public function getRootDir(): string
     {
-        return $this->rootPath;
+        return $this->rootDir;
     }
 
     /**
-     * @param string $rootPath
+     * @param string $rootDir
      */
-    public function setRootPath(string $rootPath): void
+    public function setRootDir(string $rootDir): void
     {
-        $this->rootPath = $rootPath;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCompilePath(): string
-    {
-        return $this->compilePath;
-    }
-
-    /**
-     * @param string $compilePath
-     */
-    public function setCompilePath(string $compilePath): void
-    {
-        $this->compilePath = $compilePath;
+        $this->rootDir = $rootDir;
     }
 
     /**
      * @return string
      */
-    public function getCachePath(): string
+    public function getCompileDir(): string
     {
-        return $this->cachePath;
+        return $this->compileDir;
     }
 
     /**
-     * @param string $cachePath
+     * @param string $compileDir
      */
-    public function setCachePath(string $cachePath): void
+    public function setCompileDir(string $compileDir): void
     {
-        $this->cachePath = $cachePath;
+        $this->compileDir = $compileDir;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCacheDir(): string
+    {
+        return $this->cacheDir;
+    }
+
+    /**
+     * @param string $cacheDir
+     */
+    public function setCacheDir(string $cacheDir): void
+    {
+        $this->cacheDir = $cacheDir;
     }
 
     /**
@@ -224,38 +224,6 @@ class Paths
     /**
      * @return string
      */
-    public function getBasePath(): string
-    {
-        return $this->basePath;
-    }
-
-    /**
-     * @param string $basePath
-     */
-    public function setBasePath(string $basePath): void
-    {
-        $this->basePath = $basePath;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBaseRelPath(): string
-    {
-        return $this->baseRelPath;
-    }
-
-    /**
-     * @param string $baseRelPath
-     */
-    public function setBaseRelPath(string $baseRelPath): void
-    {
-        $this->baseRelPath = $baseRelPath;
-    }
-
-    /**
-     * @return string
-     */
     public function getBaseDir(): string
     {
         return $this->baseDir;
@@ -267,6 +235,38 @@ class Paths
     public function setBaseDir(string $baseDir): void
     {
         $this->baseDir = $baseDir;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseRelDir(): string
+    {
+        return $this->baseRelDir;
+    }
+
+    /**
+     * @param string $baseRelDir
+     */
+    public function setBaseRelDir(string $baseRelDir): void
+    {
+        $this->baseRelDir = $baseRelDir;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseDirName(): string
+    {
+        return $this->baseDirName;
+    }
+
+    /**
+     * @param string $baseDirName
+     */
+    public function setBaseDirName(string $baseDirName): void
+    {
+        $this->baseDirName = $baseDirName;
     }
 
     /**
@@ -288,38 +288,6 @@ class Paths
     /**
      * @return string|null
      */
-    public function getParentPath(): ?string
-    {
-        return $this->parentPath;
-    }
-
-    /**
-     * @param string|null $parentPath
-     */
-    public function setParentPath(?string $parentPath): void
-    {
-        $this->parentPath = $parentPath;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getParentRelPath(): ?string
-    {
-        return $this->parentRelPath;
-    }
-
-    /**
-     * @param string|null $parentRelPath
-     */
-    public function setParentRelPath(?string $parentRelPath): void
-    {
-        $this->parentRelPath = $parentRelPath;
-    }
-
-    /**
-     * @return string|null
-     */
     public function getParentDir(): ?string
     {
         return $this->parentDir;
@@ -331,6 +299,38 @@ class Paths
     public function setParentDir(?string $parentDir): void
     {
         $this->parentDir = $parentDir;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getParentRelDir(): ?string
+    {
+        return $this->parentRelDir;
+    }
+
+    /**
+     * @param string|null $parentRelDir
+     */
+    public function setParentRelDir(?string $parentRelDir): void
+    {
+        $this->parentRelDir = $parentRelDir;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getParentDirName(): ?string
+    {
+        return $this->parentDirName;
+    }
+
+    /**
+     * @param string|null $parentDirName
+     */
+    public function setParentDirName(?string $parentDirName): void
+    {
+        $this->parentDirName = $parentDirName;
     }
 
     /**
@@ -352,38 +352,6 @@ class Paths
     /**
      * @return string
      */
-    public function getThemePath(): string
-    {
-        return $this->themePath;
-    }
-
-    /**
-     * @param string $themePath
-     */
-    public function setThemePath(string $themePath): void
-    {
-        $this->themePath = $themePath;
-    }
-
-    /**
-     * @return string
-     */
-    public function getThemeRelPath(): string
-    {
-        return $this->themeRelPath;
-    }
-
-    /**
-     * @param string $themeRelPath
-     */
-    public function setThemeRelPath(string $themeRelPath): void
-    {
-        $this->themeRelPath = $themeRelPath;
-    }
-
-    /**
-     * @return string
-     */
     public function getThemeDir(): string
     {
         return $this->themeDir;
@@ -395,6 +363,38 @@ class Paths
     public function setThemeDir(string $themeDir): void
     {
         $this->themeDir = $themeDir;
+    }
+
+    /**
+     * @return string
+     */
+    public function getThemeRelDir(): string
+    {
+        return $this->themeRelDir;
+    }
+
+    /**
+     * @param string $themeRelDir
+     */
+    public function setThemeRelDir(string $themeRelDir): void
+    {
+        $this->themeRelDir = $themeRelDir;
+    }
+
+    /**
+     * @return string
+     */
+    public function getThemeDirName(): string
+    {
+        return $this->themeDirName;
+    }
+
+    /**
+     * @param string $themeDirName
+     */
+    public function setThemeDirName(string $themeDirName): void
+    {
+        $this->themeDirName = $themeDirName;
     }
 
     /**
@@ -416,6 +416,22 @@ class Paths
     /**
      * @return string
      */
+    public function getRealThemeDirName(): string
+    {
+        return $this->realThemeDirName;
+    }
+
+    /**
+     * @param string $realThemeDirName
+     */
+    public function setRealThemeDirName(string $realThemeDirName): void
+    {
+        $this->realThemeDirName = $realThemeDirName;
+    }
+
+    /**
+     * @return string
+     */
     public function getRealThemeDir(): string
     {
         return $this->realThemeDir;
@@ -432,33 +448,17 @@ class Paths
     /**
      * @return string
      */
-    public function getRealThemePath(): string
+    public function getRealRelThemeDir(): string
     {
-        return $this->realThemePath;
+        return $this->realRelThemeDir;
     }
 
     /**
-     * @param string $realThemePath
+     * @param string $realRelThemeDir
      */
-    public function setRealThemePath(string $realThemePath): void
+    public function setRealRelThemeDir(string $realRelThemeDir): void
     {
-        $this->realThemePath = $realThemePath;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRealRelThemePath(): string
-    {
-        return $this->realRelThemePath;
-    }
-
-    /**
-     * @param string $realRelThemePath
-     */
-    public function setRealRelThemePath(string $realRelThemePath): void
-    {
-        $this->realRelThemePath = $realRelThemePath;
+        $this->realRelThemeDir = $realRelThemeDir;
     }
 
     /**

@@ -33,7 +33,7 @@ $db         = Shop::Container()->getDB();
 $tplService = Shop::Container()->getTemplateService();
 $template   = $tplService->getActiveTemplate();
 $paths      = $template->getPaths();
-$tplDir     = $paths->getBaseRelPath();
+$tplDir     = $paths->getBaseRelDir();
 $shopURL    = Shop::getURL();
 $cart       = $_SESSION['Warenkorb'] ?? new Cart();
 $conf       = Shopsetting::getInstance()->getAll();
@@ -119,8 +119,8 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('nTemplateVersion', $template->getVersion())
     ->assign('currentTemplateDir', $tplDir)
     ->assign('currentTemplateDirFull', $paths->getBaseURL())
-    ->assign('currentTemplateDirFullPath', $paths->getBasePath())
-    ->assign('currentThemeDir', $paths->getRealRelThemePath())
+    ->assign('currentTemplateDirFullPath', $paths->getBaseDir())
+    ->assign('currentThemeDir', $paths->getRealRelThemeDir())
     ->assign('currentThemeDirFull', $paths->getRealThemeURL())
     ->assign('opcDir', PFAD_ROOT . PFAD_ADMIN . 'opc/')
     ->assign('session_name', session_name())

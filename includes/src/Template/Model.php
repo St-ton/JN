@@ -13,6 +13,7 @@ use JTL\Model\DataModel;
  * @package JTL\Template
  * @property string $cTemplate
  * @property ExsLicense|null $license
+ * @property Paths|null $paths
  * @method string getCTemplate()
  * @method void setCTemplate(string $value)
  * @property string $type
@@ -224,6 +225,22 @@ final class Model extends DataModel
     }
 
     /**
+     * @return Paths|null
+     */
+    public function getPaths(): ?Paths
+    {
+        return $this->paths;
+    }
+
+    /**
+     * @param Paths|null $paths
+     */
+    public function setPaths(?Paths $paths): void
+    {
+        $this->paths = $paths;
+    }
+
+    /**
      * @inheritdoc
      */
     public function getAttributes(): array
@@ -357,6 +374,14 @@ final class Model extends DataModel
                 ->setNullable(true)
                 ->setDynamic(true);
             $attributes['license'] = $license;
+
+            $paths = new DataAttribute();
+            $paths->setName('paths')
+                ->setDataType('object')
+                ->setDefault(null)
+                ->setNullable(true)
+                ->setDynamic(true);
+            $attributes['paths'] = $paths;
         }
 
         return $attributes;

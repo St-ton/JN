@@ -16,6 +16,16 @@ class Paths
     private $rootPath = \PFAD_ROOT . \PFAD_TEMPLATES;
 
     /**
+     * @var string
+     */
+    private $compilePath;
+
+    /**
+     * @var string
+     */
+    private $cachePath;
+
+    /**
      * @var string - like 'https://example.com/templates/'
      */
     private $rootURL;
@@ -110,6 +120,8 @@ class Paths
     {
         $shopURL           = \rtrim($shopURL, '/') . '/';
         $this->rootURL     = $shopURL . \PFAD_TEMPLATES;
+        $this->compilePath = \PFAD_ROOT . \PFAD_COMPILEDIR . $themeBaseDir . '/';
+        $this->cachePath   = $this->compilePath . 'page_cache/';
         $this->baseDir     = $themeBaseDir;
         $this->baseRelPath = \PFAD_TEMPLATES . $this->baseDir . '/';
         $this->basePath    = $this->rootPath . $this->baseDir . '/';
@@ -120,7 +132,7 @@ class Paths
             $this->parentPath    = $this->rootPath . $parentDir . '/';
             $this->parentURL     = $shopURL . $this->parentRelPath;
             if (!\is_dir($this->parentPath)) {
-                throw new InvalidArgumentException('Theme dir does not exist: ' . $this->themeDir);
+                throw new InvalidArgumentException('Parent path does not exist: ' . $this->parentPath);
             }
         }
         if ($themeName !== null) {
@@ -140,7 +152,7 @@ class Paths
             }
             $this->realThemeURL = $shopURL . $this->realRelThemePath;
             if (!\is_dir($this->realThemePath)) {
-                throw new InvalidArgumentException('Theme dir for ' . $this->themeDir . ' does not exist: ' . $this->realThemePath);
+                throw new InvalidArgumentException('Theme path does not exist: ' . $this->realThemePath);
             }
         }
     }
@@ -159,6 +171,38 @@ class Paths
     public function setRootPath(string $rootPath): void
     {
         $this->rootPath = $rootPath;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCompilePath(): string
+    {
+        return $this->compilePath;
+    }
+
+    /**
+     * @param string $compilePath
+     */
+    public function setCompilePath(string $compilePath): void
+    {
+        $this->compilePath = $compilePath;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCachePath(): string
+    {
+        return $this->cachePath;
+    }
+
+    /**
+     * @param string $cachePath
+     */
+    public function setCachePath(string $cachePath): void
+    {
+        $this->cachePath = $cachePath;
     }
 
     /**

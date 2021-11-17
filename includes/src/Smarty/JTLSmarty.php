@@ -100,7 +100,8 @@ class JTLSmarty extends BC
             $this->setCompileDir($compileDir)
                 ->setCacheDir(\PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/' . 'page_cache/')
                 ->setPluginsDir(\SMARTY_PLUGINS_DIR)
-                ->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/');
+                ->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/')
+                ->assign('parentTemplateDir', null);
             if ($parent !== null) {
                 self::$isChildTemplate = true;
                 $this->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')

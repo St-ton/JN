@@ -13,7 +13,7 @@ use JTL\Model\DataModel;
  * @package JTL\Template
  * @property string $cTemplate
  * @property ExsLicense|null $license
- * @property Paths|null $paths
+ * @property Paths $paths
  * @method string getCTemplate()
  * @method void setCTemplate(string $value)
  * @property string $type
@@ -225,17 +225,17 @@ final class Model extends DataModel
     }
 
     /**
-     * @return Paths|null
+     * @return Paths
      */
-    public function getPaths(): ?Paths
+    public function getPaths(): Paths
     {
         return $this->paths;
     }
 
     /**
-     * @param Paths|null $paths
+     * @param Paths $paths
      */
-    public function setPaths(?Paths $paths): void
+    public function setPaths(Paths $paths): void
     {
         $this->paths = $paths;
     }

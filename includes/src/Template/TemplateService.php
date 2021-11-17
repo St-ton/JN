@@ -7,6 +7,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\License\Manager;
 use JTL\License\Struct\ExpiredExsLicense;
+use JTL\Shop;
 use SimpleXMLElement;
 
 /**
@@ -170,6 +171,14 @@ class TemplateService implements TemplateServiceInterface
             }
             $template->setExsLicense($exsLicense);
         }
+        $config = $template->getConfig();
+        $paths  = new Paths(
+            $dir,
+            Shop::getURL(),
+            $template->getParent(),
+            $config->loadConfigFromDB()['theme']['theme_default']
+        );
+        $template->setPaths($paths);
         $template->setBoxLayout($this->getBoxLayout($tplXML, $parentXML));
         $template->setResources(new Resources($this->db, $tplXML, $parentXML));
 

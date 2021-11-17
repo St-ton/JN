@@ -16,12 +16,12 @@ class Paths
     private $rootDir = \PFAD_ROOT . \PFAD_TEMPLATES;
 
     /**
-     * @var string
+     * @var string - like '/var/www/shop/templates_c/mytemplate/'
      */
     private $compileDir;
 
     /**
-     * @var string
+     * @var string - like '/var/www/shop/templates_c/mytemplate/page_cache/'
      */
     private $cacheDir;
 

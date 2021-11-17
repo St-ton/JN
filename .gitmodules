@@ -1,30 +1,30 @@
 [submodule "includes/plugins/jtl_debug"]
 	path = includes/plugins/jtl_debug
-	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/debug.git
+	url = git@gitlab.com:jtl-software/jtl-shop/legacy-plugins/debug.git
 [submodule "includes/plugins/jtl_widgets"]
 	path = includes/plugins/jtl_widgets
-	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/widgets.git
+	url = git@gitlab.com:jtl-software/jtl-shop/legacy-plugins/widgets.git
 [submodule "includes/plugins/jtl_haendlerbund"]
 	path = includes/plugins/jtl_haendlerbund
-	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/haendlerbund.git
+	url = git@gitlab.com:jtl-software/jtl-shop/legacy-plugins/haendlerbund.git
 [submodule "includes/plugins/jtl_search"]
 	path = includes/plugins/jtl_search
-	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/Search.git
+	url = git@gitlab.com:jtl-software/jtl-shop/legacy-plugins/Search.git
 [submodule "includes/plugins/jtl_google_shopping"]
 	path = includes/plugins/jtl_google_shopping
-	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/google-shopping.git
+	url = git@gitlab.com:jtl-software/jtl-shop/legacy-plugins/google-shopping.git
 [submodule "includes/plugins/evo_editor"]
 	path = includes/plugins/evo_editor
-	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/evo-editor.git
+	url = git@gitlab.com:jtl-software/jtl-shop/legacy-plugins/evo-editor.git
 [submodule "includes/plugins/s360_amazon_lpa_shop4"]
 	path = includes/plugins/s360_amazon_lpa_shop4
-	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/s360-amazon-payments.git
+	url = git@gitlab.com:jtl-software/jtl-shop/legacy-plugins/s360-amazon-payments.git
 [submodule "includes/plugins/agws_ts_features"]
 	path = includes/plugins/agws_ts_features
 	url = https://git.lilfoot.de/plugins/agws_ts_features.git
 [submodule "includes/plugins/jtl_themebar"]
 	path = includes/plugins/jtl_themebar
-	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/themebar.git
+	url = git@gitlab.com:jtl-software/jtl-shop/legacy-plugins/themebar.git
 [submodule "includes/plugins/jtl_paypal"]
 	path = includes/plugins/jtl_paypal
-	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/paypal.git
+	url = git@gitlab.com:jtl-software/jtl-shop/legacy-plugins/paypal.git

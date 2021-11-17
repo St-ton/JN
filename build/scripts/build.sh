@@ -75,7 +75,7 @@ build_composer_execute()
 
 build_git_submodule_init()
 {
-    git config http.sslverify false;
+    git config --global http.sslverify false;
     git submodule init -- ${REPOSITORY_DIR};
     git submodule update -- ${REPOSITORY_DIR};
 }

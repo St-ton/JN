@@ -129,8 +129,8 @@ function gibSuchSpalten()
         $columnName         = gibMaxPrioSpalte($cSuchspalten_arr);
         $cSuchspalten_arr[] = $columnName;
         if (\substr($columnName, 0, \strlen('tartikelsprache.')) === 'tartikelsprache.') {
-            $spalte             = 'tartikel.' . \substr($spalte, \strlen('tartikelsprache.'));
-            $cSuchspalten_arr[] = $columnName;
+            $spalte             = 'tartikel.' . \substr($columnName, \strlen('tartikelsprache.'));
+            $cSuchspalten_arr[] = $spalte;
         }
     }
     // Leere Spalten entfernen

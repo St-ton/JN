@@ -89,22 +89,25 @@ class Resources
                     $groups[$name] = [];
                 }
                 foreach ($css->File as $cssFile) {
-                    $file     = (string)$cssFile->attributes()->Path;
+                    $attributes = $cssFile->attributes();
+                    if ($attributes === null) {
+                        continue;
+                    }
+                    $file     = (string)$attributes->Path;
                     $filePath = \PFAD_ROOT . \PFAD_TEMPLATES . $currentBaseDir . '/' . $file;
                     if (\file_exists($filePath)
-                        && (empty($cssFile->attributes()->DependsOnSetting)
-                            || $this->checkCondition($cssFile) === true)
+                        && (empty($attributes->DependsOnSetting) || $this->checkCondition($cssFile) === true)
                     ) {
-                        $_file      = \PFAD_TEMPLATES . $currentBaseDir . '/' . $cssFile->attributes()->Path;
+                        $_file      = \PFAD_TEMPLATES . $currentBaseDir . '/' . $attributes->Path;
                         $customFile = \str_replace('.css', '_custom.css', $filePath);
                         if (\file_exists($customFile)) { //add _custom file if existing
                             $_file           = \str_replace(
                                 '.css',
                                 '_custom.css',
-                                \PFAD_TEMPLATES . $currentBaseDir . '/' . $cssFile->attributes()->Path
+                                \PFAD_TEMPLATES . $currentBaseDir . '/' . $attributes->Path
                             );
                             $groups[$name][] = [
-                                'idx' => \str_replace('.css', '_custom.css', $cssFile->attributes()->Path),
+                                'idx' => \str_replace('.css', '_custom.css', $attributes->Path),
                                 'abs' => \realpath(\PFAD_ROOT . $_file),
                                 'rel' => $_file
                             ];
@@ -125,20 +128,22 @@ class Resources
                     $groups[$name] = [];
                 }
                 foreach ($js->File as $jsFile) {
-                    if (!empty($jsFile->attributes()->DependsOnSetting) && $this->checkCondition($jsFile) !== true) {
+                    $attributes = $jsFile->attributes();
+                    if ($attributes === null) {
                         continue;
                     }
-                    $_file    = \PFAD_TEMPLATES . $currentBaseDir . '/' . $jsFile->attributes()->Path;
+                    if (!empty($attributes->DependsOnSetting) && $this->checkCondition($jsFile) !== true) {
+                        continue;
+                    }
+                    $_file    = \PFAD_TEMPLATES . $currentBaseDir . '/' . $attributes->Path;
                     $newEntry = [
-                        'idx' => (string)$jsFile->attributes()->Path,
+                        'idx' => (string)$attributes->Path,
                         'abs' => \PFAD_ROOT . $_file,
                         'rel' => $_file
                     ];
                     $found    = false;
-                    if (!empty($jsFile->attributes()->override)
-                        && (string)$jsFile->attributes()->override === 'true'
-                    ) {
-                        $idxToOverride = (string)$jsFile->attributes()->Path;
+                    if ((string)($attributes->override ?? '') === 'true') {
+                        $idxToOverride = (string)$attributes->Path;
                         $max           = \count($groups[$name]);
                         for ($i = 0; $i < $max; $i++) {
                             if ($groups[$name][$i]['idx'] === $idxToOverride) {
@@ -257,7 +262,10 @@ class Resources
      */
     private function checkCondition(SimpleXMLElement $node): bool
     {
-        $attrs         = $node->attributes();
+        $attrs = $node->attributes();
+        if ($attrs === null) {
+            return false;
+        }
         $settingsGroup = \constant((string)$attrs->DependsOnSettingGroup);
         $settingValue  = (string)$attrs->DependsOnSettingValue;
         $comparator    = (string)$attrs->DependsOnSettingComparison;

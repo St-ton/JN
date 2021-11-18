@@ -63,7 +63,7 @@ class TemplateService implements TemplateServiceInterface
         $this->db->delete('ttemplate', 'cTemplate', $dir);
         $reader       = new XMLReader();
         $xml          = $reader->getXML($dir);
-        $parentConfig = false;
+        $parentConfig = null;
         if ($xml !== null && !empty($xml->Parent)) {
             if (!\is_dir(\PFAD_ROOT . \PFAD_TEMPLATES . $xml->Parent)) {
                 return false;
@@ -84,7 +84,7 @@ class TemplateService implements TemplateServiceInterface
         $model->setAuthor((string)$xml->Author);
         $model->setUrl((string)$xml->URL);
         $model->setPreview((string)$xml->Preview);
-        $version = empty($xml->Version) && $parentConfig
+        $version = $parentConfig !== null && empty($xml->Version)
             ? (string)$parentConfig->Version
             : (string)$xml->Version;
         $model->setVersion($version);
@@ -159,7 +159,7 @@ class TemplateService implements TemplateServiceInterface
             $template->setTemplate('no-template');
         }
         $reader    = new XMLReader();
-        $tplXML    = $reader->getXML($template->getTemplate(), $template->getType() === 'admin');
+        $tplXML    = $reader->getXML($template->getTemplate(), $template->getTemplateType() === 'admin');
         $parentXML = ($tplXML === null || empty($tplXML->Parent)) ? null : $reader->getXML((string)$tplXML->Parent);
         $dir       = $template->getTemplate();
         if ($dir === null || $tplXML === null) {
@@ -178,12 +178,11 @@ class TemplateService implements TemplateServiceInterface
             }
             $template->setExsLicense($exsLicense);
         }
-        $config = $template->getConfig();
-        $paths  = new Paths(
+        $paths = new Paths(
             $dir,
             Shop::getURL(),
             $template->getParent(),
-            $config->loadConfigFromDB()['theme']['theme_default']
+            $template->getConfig()->loadConfigFromDB()['theme']['theme_default']
         );
         $template->setPaths($paths);
         $template->setBoxLayout($this->getBoxLayout($tplXML, $parentXML));
@@ -218,8 +217,7 @@ class TemplateService implements TemplateServiceInterface
         $template->setDocumentationURL(\trim((string)$xml->DokuURL));
         $template->setIsChild(!empty($xml->Parent));
         $template->setParent(!empty($xml->Parent) ? \trim((string)$xml->Parent) : null);
-        $template->setIsResponsive(!empty($xml['isFullResponsive'])
-            && \strtolower((string)$xml['isFullResponsive']) === 'true');
+        $template->setIsResponsive(\strtolower((string)($xml['isFullResponsive'] ?? '')) === 'true');
         $template->setHasError(false);
         $template->setDescription(!empty($xml->Description) ? \trim((string)$xml->Description) : '');
         if ($parentXML !== null && !empty($xml->Parent)) {
@@ -244,8 +242,7 @@ class TemplateService implements TemplateServiceInterface
         if (\mb_strlen($template->getName()) === 0) {
             $template->setName($dir);
         }
-        $config = new Config($template->getDir(), $this->db);
-        $template->setConfig($config);
+        $template->setConfig(new Config($template->getDir(), $this->db));
 
         return $template;
     }

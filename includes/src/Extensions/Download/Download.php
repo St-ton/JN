@@ -197,14 +197,11 @@ class Download
         $customerID = (int)($keys['kKunde'] ?? 0);
         $downloads  = [];
         if (($productID > 0 || $orderID > 0 || $customerID > 0) && $languageID > 0 && self::checkLicense()) {
-            $prep   = ['pid' => $productID];
-            $select = 'tartikeldownload.kDownload';
-            $where  = 'kArtikel = :pid';
-            $join   = 'LEFT JOIN tdownload ON tartikeldownload.kDownload = tdownload.kDownload';
             if ($orderID > 0) {
-                $prep['oid'] = $orderID;
-                $prep['pos'] = \C_WARENKORBPOS_TYP_ARTIKEL;
-
+                $prep   = [
+                    'oid' => $orderID,
+                    'pos' => \C_WARENKORBPOS_TYP_ARTIKEL
+                ];
                 $select = 'tbestellung.kBestellung, tbestellung.kKunde, tartikeldownload.kDownload';
                 $where  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
                 $join   = 'JOIN tbestellung ON tbestellung.kBestellung = :oid
@@ -212,9 +209,10 @@ class Download
                                JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                                     AND twarenkorbpos.nPosTyp = :pos';
             } elseif ($customerID > 0) {
-                $prep['cid'] = $customerID;
-                $prep['pos'] = \C_WARENKORBPOS_TYP_ARTIKEL;
-
+                $prep   = [
+                    'cid' => $customerID,
+                    'pos' => \C_WARENKORBPOS_TYP_ARTIKEL
+                ];
                 $select = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, 
                     tartikeldownload.kDownload';
                 $where  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
@@ -222,6 +220,11 @@ class Download
                                JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload
                                JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                                     AND twarenkorbpos.nPosTyp = :pos';
+            } else {
+                $prep   = ['pid' => $productID];
+                $select = 'tartikeldownload.kDownload';
+                $where  = 'kArtikel = :pid';
+                $join   = 'LEFT JOIN tdownload ON tartikeldownload.kDownload = tdownload.kDownload';
             }
             $items = Shop::Container()->getDB()->getObjects(
                 'SELECT ' . $select . '

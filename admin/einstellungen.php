@@ -6,6 +6,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
+use JTL\Mail\SmtpTest;
 use JTL\Shop;
 use JTL\Shopsetting;
 
@@ -67,12 +68,16 @@ $alertHelper     = Shop::Container()->getAlertService();
 if ($sectionID > 0) {
     $step    = 'einstellungen bearbeiten';
     $section = $db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
-    $smarty->assign('kEinstellungenSektion', $section->kEinstellungenSektion);
+    $smarty->assign('kEinstellungenSektion', (int)($section->kEinstellungenSektion ?? 0));
 } else {
     $section = $db->select('teinstellungensektion', 'kEinstellungenSektion', CONF_GLOBAL);
     $smarty->assign('kEinstellungenSektion', CONF_GLOBAL);
 }
-
+if ($section !== null) {
+    $section->kAdminmenueGruppe     = (int)$section->kAdminmenueGruppe;
+    $section->kEinstellungenSektion = (int)$section->kEinstellungenSektion;
+}
+$smarty->assign('testResult', null);
 $getText->localizeConfigSection($section);
 
 if ($isSearch) {
@@ -95,8 +100,10 @@ if (Request::postVar('resetSetting') !== null) {
         $confData = $sql->oEinstellung_arr;
         $smarty->assign('cSearch', $sql->cSearch);
     } else {
-        $section  = $db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
-        $confData = $db->getObjects(
+        $section                        = $db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
+        $section->kAdminmenueGruppe     = (int)$section->kAdminmenueGruppe;
+        $section->kEinstellungenSektion = (int)$section->kEinstellungenSektion;
+        $confData                       = $db->getObjects(
             "SELECT ec.*, e.cWert AS currentValue
                 FROM teinstellungenconf AS ec
                 LEFT JOIN teinstellungen AS e
@@ -106,7 +113,7 @@ if (Request::postVar('resetSetting') !== null) {
                     AND ec.nModul = 0
                     AND ec.nStandardanzeigen = 1 " . $sql->cWHERE . '
                 ORDER BY ec.nSort',
-            ['sid' => (int)$section->kEinstellungenSektion]
+            ['sid' => $section->kEinstellungenSektion]
         );
     }
     foreach ($confData as $i => $sectionData) {
@@ -172,6 +179,13 @@ if (Request::postVar('resetSetting') !== null) {
     }
     Shop::Container()->getCache()->flushTags($tagsToFlush);
     Shopsetting::getInstance()->reset();
+    if (isset($postData['test_emails']) && (int)$postData['test_emails'] === 1) {
+        ob_start();
+        $test = new SmtpTest();
+        $test->run(Shop::getSettings([CONF_EMAILS])['emails']);
+        $result = ob_get_clean();
+        $smarty->assign('testResult', $result);
+    }
 }
 
 if ($step === 'uebersicht') {
@@ -273,24 +287,23 @@ if ($step === 'einstellungen bearbeiten') {
         $sectionItem->setValue($config, $setValue);
         $oSections[(int)$config->kEinstellungenSektion] = $sectionItem;
     }
-
     $smarty->assign('Sektion', $section)
-           ->assign('Conf', mb_strlen($search) > 0
-               ? $confData
-               : filteredConfData($confData, Request::verifyGPDataString('group')))
-           ->assign(
-               'title',
-               __('settings') . ': ' . (Request::verifyGPDataString('group') !== ''
-                   ? __(Request::verifyGPDataString('group'))
-                   : __($section->cName)
-               )
-           )
-           ->assign('oSections', $oSections);
+        ->assign('Conf', mb_strlen($search) > 0
+            ? $confData
+            : filteredConfData($confData, Request::verifyGPDataString('group')))
+        ->assign(
+            'title',
+            __('settings') . ': ' . (Request::verifyGPDataString('group') !== ''
+                ? __(Request::verifyGPDataString('group'))
+                : __($section->cName)
+            )
+        )
+        ->assign('oSections', $oSections);
 }
 
 $smarty->assign('cPrefDesc', filteredConfDescription($sectionID))
-       ->assign('cPrefURL', __('prefURL' . $sectionID))
-       ->assign('step', $step)
-       ->assign('countries', ShippingMethod::getPossibleShippingCountries())
-       ->assign('waehrung', $defaultCurrency->cName)
-       ->display('einstellungen.tpl');
+    ->assign('cPrefURL', __('prefURL' . $sectionID))
+    ->assign('step', $step)
+    ->assign('countries', ShippingMethod::getPossibleShippingCountries())
+    ->assign('waehrung', $defaultCurrency->cName)
+    ->display('einstellungen.tpl');

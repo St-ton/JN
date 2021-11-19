@@ -336,7 +336,7 @@ class AccountController
             $returnCode = Customer::ERROR_CAPTCHA;
             $tries      = $captchaState;
         }
-        if ($customer->getID() > 0) {
+        if ($returnCode === Customer::OK && $customer->getID() > 0) {
             $this->initCustomer($customer);
         } elseif ($returnCode === Customer::ERROR_LOCKED) {
             $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountLocked'), 'accountLocked');

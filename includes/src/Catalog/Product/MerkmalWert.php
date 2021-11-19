@@ -154,18 +154,19 @@ class MerkmalWert
                             AND standardSprache.kSprache = ' . $defaultLanguageID . '
                         LEFT JOIN tmerkmalwertsprache AS fremdSprache 
                             ON fremdSprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                            AND fremdSprache.kSprache = ' . $languageID;
+                            AND fremdSprache.kSprache = :lid';
         } else {
             $selectSQL = 'tmerkmalwertsprache.kSprache, tmerkmalwertsprache.cWert, tmerkmalwertsprache.cMetaTitle,
                         tmerkmalwertsprache.cMetaKeywords, tmerkmalwertsprache.cMetaDescription,
                         tmerkmalwertsprache.cBeschreibung, tmerkmalwertsprache.cSeo';
             $joinSQL   = 'INNER JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                            AND tmerkmalwertsprache.kSprache = ' . $languageID;
+                            AND tmerkmalwertsprache.kSprache = :lid';
         }
         $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT tmerkmalwert.*, ' . $selectSQL . '
                 FROM tmerkmalwert ' .  $joinSQL . '
-                WHERE tmerkmalwert.kMerkmalWert = ' . $id
+                WHERE tmerkmalwert.kMerkmalWert = :mid',
+            ['mid' => $id, 'lid' => $languageID]
         );
         if ($data !== null && $data->kMerkmalWert > 0) {
             foreach (\array_keys(\get_object_vars($data)) as $member) {

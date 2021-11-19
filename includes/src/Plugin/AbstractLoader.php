@@ -490,11 +490,12 @@ abstract class AbstractLoader implements LoaderInterface
     protected function loadPaymentMethods(PluginInterface $plugin): PaymentMethods
     {
         $methods = $this->db->getObjects(
-            "SELECT *
+            'SELECT *
                 FROM tzahlungsart
                 JOIN tpluginzahlungsartklasse
                     ON tpluginzahlungsartklasse.cModulID = tzahlungsart.cModulId
-                WHERE tzahlungsart.cModulId LIKE 'kPlugin\_" . $plugin->getID() . "\_%'"
+                WHERE tzahlungsart.cModulId LIKE :pid',
+            ['pid' => 'kPlugin\_' . $plugin->getID() . '\_%']
         );
         foreach ($methods as $method) {
             $moduleID                                = Helper::getModuleIDByPluginID(

@@ -167,7 +167,7 @@ class Separator
      *
      * @param int $unitID
      * @param int $languageID
-     * @return mixed|bool
+     * @return int|bool
      */
     public static function insertMissingRow(int $unitID, int $languageID)
     {
@@ -200,15 +200,14 @@ class Separator
                 ];
             }
             Shop::Container()->getCache()->flushTags([\CACHING_GROUP_CORE]);
+            $ins                    = new stdClass();
+            $ins->kSprache          = $languageID;
+            $ins->nEinheit          = $unitID;
+            $ins->nDezimalstellen   = $rows[$languageID][$unitID]['nDezimalstellen'];
+            $ins->cDezimalZeichen   = $rows[$languageID][$unitID]['cDezimalZeichen'];
+            $ins->cTausenderZeichen = $rows[$languageID][$unitID]['cTausenderZeichen'];
 
-            return Shop::Container()->getDB()->getAffectedRows(
-                "INSERT INTO `ttrennzeichen` 
-                    (`kTrennzeichen`, `kSprache`, `nEinheit`, `nDezimalstellen`, `cDezimalZeichen`, `cTausenderZeichen`)
-                    VALUES (
-                      NULL, {$languageID}, {$unitID}, {$rows[$languageID][$unitID]['nDezimalstellen']}, 
-                      '{$rows[$languageID][$unitID]['cDezimalZeichen']}',
-                    '{$rows[$languageID][$unitID]['cTausenderZeichen']}')"
-            );
+            return Shop::Container()->getDB()->insert('ttrennzeichen', $ins);
         }
 
         return false;

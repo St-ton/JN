@@ -59,7 +59,6 @@ $parser          = new XMLParser();
 $uninstaller     = new Uninstaller($db, $cache);
 $legacyValidator = new LegacyPluginValidator($db, $parser);
 $pluginValidator = new PluginValidator($db, $parser);
-$listing         = new Listing($db, $cache, $legacyValidator, $pluginValidator);
 $installer       = new Installer($db, $uninstaller, $legacyValidator, $pluginValidator, $cache);
 $updater         = new Updater($db, $installer);
 $extractor       = new Extractor($parser);
@@ -79,6 +78,7 @@ if (!empty($_FILES['plugin-install-upload']) && Form::validateToken()) {
     $response       = $extractor->extractPlugin($_FILES['plugin-install-upload']['tmp_name']);
     $pluginUploaded = true;
 }
+$listing            = new Listing($db, $cache, $legacyValidator, $pluginValidator);
 $pluginsAll         = $listing->getAll();
 $pluginsInstalled   = $listing->getInstalled();
 $pluginsDisabled    = $listing->getDisabled()->each(function (ListingItem $item) use ($licenses, $stateChanger) {

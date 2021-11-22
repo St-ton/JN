@@ -16,7 +16,7 @@
         {/if}
     {/if}
     <div id="pageCheck">
-        {if isset($cDBFileStruct_arr) && $cDBFileStruct_arr|@count > 0}
+        {if isset($cDBFileStruct_arr) && is_array($cDBFileStruct_arr) && $cDBFileStruct_arr|@count > 0}
             <div class="alert alert-info"><strong>Anzahl Tabellen:</strong> {$cDBFileStruct_arr|@count}<br /><strong>Anzahl modifizierter Tabellen:</strong> {$cDBError_arr|@count}</div>
             {if $cDBError_arr|@count > 0}
                 <p>

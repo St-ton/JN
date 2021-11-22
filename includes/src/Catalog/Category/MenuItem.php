@@ -402,9 +402,9 @@ class MenuItem
 
     /**
      * MenuItem constructor.
-     * @param stdClass $data
+     * @param stdClass|Kategorie $data
      */
-    public function __construct(stdClass $data)
+    public function __construct($data)
     {
         $this->setLeft((int)$data->lft);
         $this->setRight((int)$data->rght);

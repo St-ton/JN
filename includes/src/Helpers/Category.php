@@ -63,6 +63,11 @@ class Category
     private static $db;
 
     /**
+     * @var array|null
+     */
+    private static $prodCatAssociations;
+
+    /**
      * Category constructor.
      */
     protected function __construct()
@@ -510,13 +515,13 @@ class Category
      * @param int $id
      * @return MenuItem|null
      */
-    public function getCategoryById(int $id): ?MenuItem
+    public function getCategoryById(int $id, int $lft = -1, int $rght = -1): ?MenuItem
     {
         if (self::$fullCategories === null) {
             self::$fullCategories = $this->combinedGetAll();
         }
 
-        return $this->findCategoryInList($id, self::$fullCategories);
+        return $this->findCategoryInList($id, self::$fullCategories, $lft, $rght);
     }
 
     /**
@@ -560,7 +565,7 @@ class Category
             }
             $tree[] = $cat;
             while (!empty($next->getParentID())) {
-                $next = $this->getCategoryById($next->getParentID());
+                $next = $this->getCategoryById($next->getParentID(), $next->getLeft(), $next->getRight());
                 if ($next !== null) {
                     if ($noChildren === true) {
                         $cat = clone $next;
@@ -581,11 +586,11 @@ class Category
      * @param MenuItem[]|MenuItem $haystack
      * @return MenuItem|null
      */
-    private function findCategoryInList(int $id, $haystack): ?MenuItem
+    private function findCategoryInList(int $id, $haystack, int $lft = -1, int $rght = -1): ?MenuItem
     {
         if (\is_array($haystack)) {
             foreach ($haystack as $category) {
-                if (($result = $this->findCategoryInList($id, $category)) !== null) {
+                if (($result = $this->findCategoryInList($id, $category, $lft, $rght)) !== null) {
                     return $result;
                 }
             }
@@ -595,7 +600,10 @@ class Category
                 return $haystack;
             }
             if ($haystack->hasChildren()) {
-                return $this->findCategoryInList($id, $haystack->getChildren());
+                if ($lft > -1 && $rght > -1 && ($haystack->getLeft() > $lft || $haystack->getRight() < $rght)) {
+                    return null;
+                }
+                return $this->findCategoryInList($id, $haystack->getChildren(), $lft, $rght);
             }
         }
 
@@ -666,46 +674,19 @@ class Category
 
     /**
      * @param int $categoryID
+     * @param int $left
+     * @param int $right
      * @return array
      * @since 5.0.0
      * @former baueUnterkategorieListeHTML()
      */
-    public static function getSubcategoryList(int $categoryID): array
+    public static function getSubcategoryList(int $categoryID, int $left = -1, int $right = -1): array
     {
         if ($categoryID <= 0) {
             return [];
         }
-        $instance = self::getInstance();
-        $category = $instance->getCategoryById($categoryID);
-        $showCats = self::$config['navigationsfilter']['artikeluebersicht_bild_anzeigen'] ?? 'N';
-        if ($category === null && $showCats !== 'N' && self::categoryExists($categoryID)) {
-            $catTree  = $instance->getFallBackFlatTree($categoryID, false);
-            $category = $instance->findCategoryInList($categoryID, $catTree);
-        }
-        if (($category !== null)
-            && (new Kategorie($category->getID(), self::$languageID, self::$customerGroupID))
-                ->existierenUnterkategorien()
-        ) {
-            $catList  = new KategorieListe();
-            $children = \array_map(static function ($item) {
-                $menuItem = new MenuItem($item);
-                if ($item->bUnterKategorien) {
-                    $menuItem->setChildren(\array_map(static function ($item) {
-                        return new MenuItem($item);
-                    }, $item->Unterkategorien));
-                    $menuItem->setHasChildren(true);
-                }
-
-                return $menuItem;
-            }, $catList->getAllCategoriesOnLevel(
-                $categoryID,
-                self::$customerGroupID,
-                self::$languageID
-            ));
-            $category->setChildren($children);
-            $category->setHasChildren(\count($children) > 0);
-        }
-
+        $category = self::getInstance()->getCategoryById($categoryID, $left, $right);
+        //@todo!
         return $category === null ? [] : $category->getChildren();
     }
 
@@ -738,5 +719,33 @@ class Category
         }
 
         return $fullCats;
+    }
+
+    /**
+     * @param int $categoryID
+     * @return bool
+     */
+    public function categoryHasProducts(int $categoryID): bool
+    {
+        if (self::$prodCatAssociations === null) {
+            self::$prodCatAssociations = [];
+            $data                      = Shop::Container()->getDB()->getObjects(
+                'SELECT tartikel.kArtikel, tkategorieartikel.kKategorie
+                    FROM tkategorieartikel, tartikel
+                    LEFT JOIN tartikelsichtbarkeit 
+                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid
+                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                        AND tartikel.kArtikel = tkategorieartikel.kArtikel '
+                . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL()
+                . ' GROUP BY tkategorieartikel.kKategorie',
+                ['cgid' => self::$customerGroupID]
+            );
+            foreach ($data as $item) {
+                self::$prodCatAssociations[(int)$item->kKategorie] = 1;
+            }
+        }
+
+        return isset(self::$prodCatAssociations[$categoryID]);
     }
 }

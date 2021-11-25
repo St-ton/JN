@@ -566,7 +566,15 @@ function checkDependencies($aValues)
 
         // Freifeldpositionen gesondert zwischenspeichern
         foreach ($valueID_arr as $kKey => $cVal) {
-            if (!isset($nKeyValueVariation_arr[$kKey])) {
+            if (isset($nKeyValueVariation_arr[$kKey])) {
+                $objResponse->jsfunc(
+                    '$.evo.article().variationActive',
+                    $kKey,
+                    addslashes($cVal),
+                    null,
+                    $wrapper
+                );
+            } else {
                 unset($valueID_arr[$kKey]);
                 $kFreifeldEigeschaftWert_arr[$kKey] = $cVal;
             }

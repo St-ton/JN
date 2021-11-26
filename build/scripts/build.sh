@@ -172,7 +172,7 @@ build_create_md5_hashfile()
     local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${VERSION}.csv";
 
     cd ${REPOSITORY_DIR};
-    
+
     find -type f -not \( -name ".asset_cs" \
       -or -name ".git*" -or -name ".idea*" \
       -or -name ".php_cs" -or -name ".travis.yml" \
@@ -376,6 +376,7 @@ build_add_files_to_patch_dir()
     rsync -rR classes/ ${PATCH_DIR};
     rsync -rR includes/ext/ ${PATCH_DIR};
     rsync -rR templates/NOVA/checksums.csv ${PATCH_DIR};
+    rsync -rR templates_c/ ${PATCH_DIR};
 
     if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then
         mkdir "/tmp_composer-${PATCH_VERSION}";

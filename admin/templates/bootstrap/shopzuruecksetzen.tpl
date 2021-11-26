@@ -2,6 +2,10 @@
 {config_load file="$lang.conf" section="shopzuruecksetzen"}
 {include file='tpl_inc/seite_header.tpl' cTitel=#shopReset# cBeschreibung=#shopResetDesc# cDokuURL=#shopResetURL#}
 <div id="content" class="container-fluid settings">
+    <div class="alert alert-warning">
+        <div class="card-title">Achtung</div>
+        Das Zur&uuml;cksetzen einzelner Teilbereiche kann zu inkonsistenten Daten f&uuml;hren. Das Zur&uuml;cksetzen von Wawi-Inhalten kann auch das Zur&uuml;cksetzen der Shop-Anbindung in der JTL-Wawi erforderlich machen.
+    </div>
     <form name="login" method="post" action="shopzuruecksetzen.php">
         {$jtl_token}
         <input type="hidden" name="zuruecksetzen" value="1" />

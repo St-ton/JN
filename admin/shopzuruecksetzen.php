@@ -175,46 +175,86 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && vali
                 case 'bestellungen':
                 case 'shopkunden':
                     if ($cOption === 'shopkunden') {
-                        Shop::DB()->query("TRUNCATE tkunde", 4);
-                        Shop::DB()->query("TRUNCATE tkundenattribut", 4);
-                        Shop::DB()->query("TRUNCATE tkundendatenhistory", 4);
-                        Shop::DB()->query("TRUNCATE tkundenfeld", 4);
-                        Shop::DB()->query("TRUNCATE tkundenfeldwert", 4);
-                        Shop::DB()->query("TRUNCATE tkundenherkunft", 4);
-                        Shop::DB()->query("TRUNCATE tkundenkontodaten", 4);
-                        Shop::DB()->query("TRUNCATE tkundenwerbenkunden", 4);
-                        Shop::DB()->query("TRUNCATE tlieferadresse", 4);
-                        Shop::DB()->query("TRUNCATE twarenkorbpers", 4);
-                        Shop::DB()->query("TRUNCATE twarenkorbperspos", 4);
-                        Shop::DB()->query("TRUNCATE twarenkorbpersposeigenschaft", 4);
-                        Shop::DB()->query("TRUNCATE twunschliste", 4);
-                        Shop::DB()->query("TRUNCATE twunschlistepos", 4);
-                        Shop::DB()->query("TRUNCATE twunschlisteposeigenschaft", 4);
+                        Shop::DB()->query('TRUNCATE tkunde', 4);
+                        Shop::DB()->query('TRUNCATE tkundenattribut', 4);
+                        Shop::DB()->query('TRUNCATE tkundendatenhistory', 4);
+                        Shop::DB()->query('TRUNCATE tkundenfeld', 4);
+                        Shop::DB()->query('TRUNCATE tkundenfeldwert', 4);
+                        Shop::DB()->query('TRUNCATE tkundenherkunft', 4);
+                        Shop::DB()->query('TRUNCATE tkundenkontodaten', 4);
+                        Shop::DB()->query('TRUNCATE tkundenwerbenkunden', 4);
+                        Shop::DB()->query('TRUNCATE tlieferadresse', 4);
+                        Shop::DB()->query('TRUNCATE trechnungsadresse', 4);
+                        Shop::DB()->query('TRUNCATE twarenkorbpers', 4);
+                        Shop::DB()->query('TRUNCATE twarenkorbperspos', 4);
+                        Shop::DB()->query('TRUNCATE twarenkorbpersposeigenschaft', 4);
+                        Shop::DB()->query('TRUNCATE twunschliste', 4);
+                        Shop::DB()->query('TRUNCATE twunschlistepos', 4);
+                        Shop::DB()->query('TRUNCATE twunschlisteposeigenschaft', 4);
+                        Shop::DB()->query('TRUNCATE tpasswordreset', 4);
+                        Shop::DB()->query('DELETE FROM tbesucher WHERE kKunde > 0', 4);
+                        Shop::DB()->query('DELETE FROM tbesucherarchiv WHERE kKunde > 0', 4);
+                        Shop::DB()->query(
+                            'DELETE tbewertung, tbewertunghilfreich, tbewertungguthabenbonus
+                                FROM tbewertung
+                                LEFT JOIN tbewertunghilfreich
+                                    ON tbewertunghilfreich.kBewertung = tbewertung.kBewertung
+                                LEFT JOIN tbewertungguthabenbonus
+                                    ON tbewertungguthabenbonus.kBewertung = tbewertung.kBewertung
+                                WHERE tbewertung.kKunde > 0',
+                            4
+                        );
+                        Shop::DB()->query('DELETE FROM tgutschein WHERE kKunde > 0', 4);
+                        Shop::DB()->query('DELETE FROM tnewskommentar WHERE kKunde > 0', 4);
+                        Shop::DB()->query('DELETE FROM tnewsletterempfaenger WHERE kKunde > 0', 4);
+                        Shop::DB()->query('DELETE FROM tnewsletterempfaengerhistory WHERE kKunde > 0', 4);
+                        Shop::DB()->query(
+                            'DELETE tpreis, tpreisdetail
+                                FROM tpreis
+                                LEFT JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                                WHERE kKunde > 0',
+                            4
+                        );
                     }
-                    Shop::DB()->query("TRUNCATE tbestellid", 4);
-                    Shop::DB()->query("TRUNCATE tbestellstatus", 4);
-                    Shop::DB()->query("TRUNCATE tbestellung", 4);
-                    Shop::DB()->query("TRUNCATE tlieferschein", 4);
-                    Shop::DB()->query("TRUNCATE tlieferscheinpos", 4);
-                    Shop::DB()->query("TRUNCATE tlieferscheinposinfo", 4);
-                    Shop::DB()->query("TRUNCATE twarenkorb", 4);
-                    Shop::DB()->query("TRUNCATE twarenkorbpers", 4);
-                    Shop::DB()->query("TRUNCATE twarenkorbperspos", 4);
-                    Shop::DB()->query("TRUNCATE twarenkorbpersposeigenschaft", 4);
-                    Shop::DB()->query("TRUNCATE twarenkorbpos", 4);
-                    Shop::DB()->query("TRUNCATE twarenkorbposeigenschaft", 4);
+                    Shop::DB()->query('TRUNCATE tbestellid', 4);
+                    Shop::DB()->query('TRUNCATE tbestellstatus', 4);
+                    Shop::DB()->query('TRUNCATE tbestellung', 4);
+                    Shop::DB()->query('TRUNCATE tlieferschein', 4);
+                    Shop::DB()->query('TRUNCATE tlieferscheinpos', 4);
+                    Shop::DB()->query('TRUNCATE tlieferscheinposinfo', 4);
+                    Shop::DB()->query('TRUNCATE twarenkorb', 4);
+                    Shop::DB()->query('TRUNCATE twarenkorbpers', 4);
+                    Shop::DB()->query('TRUNCATE twarenkorbperspos', 4);
+                    Shop::DB()->query('TRUNCATE twarenkorbpersposeigenschaft', 4);
+                    Shop::DB()->query('TRUNCATE twarenkorbpos', 4);
+                    Shop::DB()->query('TRUNCATE twarenkorbposeigenschaft', 4);
+                    Shop::DB()->query('TRUNCATE tuploaddatei', 4);
+                    Shop::DB()->query('TRUNCATE tuploadqueue', 4);
+                    Shop::DB()->query('TRUNCATE tzahlungsinfo', 4);
+                    Shop::DB()->query('TRUNCATE trma', 4);
+                    Shop::DB()->query('TRUNCATE trmaartikel', 4);
+                    Shop::DB()->query('TRUNCATE tkuponbestellung', 4);
+                    Shop::DB()->query('TRUNCATE tdownloadhistory', 4);
+                    Shop::DB()->query('TRUNCATE tbestellattribut', 4);
+                    Shop::DB()->query('TRUNCATE tzahlungseingang', 4);
+                    Shop::DB()->query('TRUNCATE tzahlungsession', 4);
+                    Shop::DB()->query('TRUNCATE tzahlungsid', 4);
+                    Shop::DB()->query('TRUNCATE tzahlungslog', 4);
+                    Shop::DB()->query('DELETE FROM tbesucher WHERE kBestellung > 0', 4);
+                    Shop::DB()->query('DELETE FROM tbesucherarchiv WHERE kBestellung > 0', 4);
+                    Shop::DB()->query('DELETE FROM tcheckboxlogging WHERE kBestellung > 0', 4);
                     break;
                 case 'kupons':
-                    Shop::DB()->query("TRUNCATE tkupon", 4);
-                    Shop::DB()->query("TRUNCATE tkuponbestellung", 4);
-                    Shop::DB()->query("TRUNCATE tkuponkunde", 4);
-                    Shop::DB()->query("TRUNCATE tkuponneukunde", 4);
-                    Shop::DB()->query("TRUNCATE tkuponsprache", 4);
+                    Shop::DB()->query('TRUNCATE tkupon', 4);
+                    Shop::DB()->query('TRUNCATE tkuponbestellung', 4);
+                    Shop::DB()->query('TRUNCATE tkuponkunde', 4);
+                    Shop::DB()->query('TRUNCATE tkuponneukunde', 4);
+                    Shop::DB()->query('TRUNCATE tkuponsprache', 4);
                     break;
             }
         }
         Shop::Cache()->flushAll();
-        Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
+        Shop::DB()->query('UPDATE tglobals SET dLetzteAenderung = now()', 4);
         $cHinweis = 'Der Shop wurde mit Ihren gew&auml;hlten Optionen zur&uuml;ckgesetzt.';
     } else {
         $cFehler = 'Bitte w&auml;hlen Sie mindestens eine Option aus.';

@@ -13,7 +13,7 @@ echo "] create zip of build '${TAG}'...";
 #zip -r -q ${ARCHIVE_PATH} . -x@/creation/build/scripts/archive_main_excludes.lst;
 # second, add additional files to the previous created MAIN archive
 zip -r -q ${ARCHIVE_PATH} . -x \*.git* \*.idea* \*build/* \*docs/* \*patch-dir-* \*templates_c/* \*tests/* \*.asset_cs \*.php_cs \*.travis.yml \*phpunit.xml;
-zip -r -q ${ARCHIVE_PATH} . -i \*templates_c/.htaccess \*templates_c/min/.htaccess admin/templates_c/.gitkeep
+zip -r -q ${ARCHIVE_PATH} . -i templates_c/.htaccess templates_c/min/.htaccess admin/templates_c/.gitkeep
 
 chmod g+w ${ARCHIVE_PATH}
 echo "  ${FILENAME}";
@@ -35,10 +35,10 @@ if [[ ! -z $(find . -maxdepth 1 -type d -regex '^./patch-dir-.*') ]]; then
         echo "] patch: '${LOWER_VERSION}' to '${HIGHER_VERSION}'";
         cd ${path};
 		ls -la
-        zip -r -q ${PATCH_ARCHIVE_PATH} . -x \*.git* \*.idea* \*build/* \*docs/* \*install/* \*patch-dir-* \*templates_c/* \*tests/* \*.asset_cs \*.php_cs \*.travis.yml \*phpunit.xml; 
+        zip -r -q ${PATCH_ARCHIVE_PATH} . -x \*.git* \*.idea* \*build/* \*docs/* \*install/* \*patch-dir-* \*templates_c/* \*tests/* \*.asset_cs \*.php_cs \*.travis.yml \*phpunit.xml;
 		# zip -r -q ${PATCH_ARCHIVE_PATH} . -x@/creation/build/scripts/archive_patch_excludes.lst;
-		zip -r -q ${PATCH_ARCHIVE_PATH} . -i \*templates_c/.htaccess \*templates_c/min/.htaccess;
-		
+		zip -r -q ${PATCH_ARCHIVE_PATH} . -i templates_c/.htaccess templates_c/min/.htaccess;
+
         chmod g+w ${PATCH_ARCHIVE_PATH}
         echo "] filename: ${PATCH_FILENAME}";
         cd ${CUR_PWD};

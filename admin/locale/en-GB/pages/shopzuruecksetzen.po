@@ -91,3 +91,6 @@ msgstr "Would you like to continue?"
 
 msgid "deleteShopSettings"
 msgstr "Shopeigene Einstellungen auf Werkseinstellungen zurücksetzen."
+
+msgid "generalresetwarning"
+msgstr "Partial resetting can result in inconsistent data. Resetting Wawi content may also require resetting the Shop connection in JTL-Wawi."

@@ -189,6 +189,7 @@ build_create_md5_hashfile()
     find -type f -name '.htaccess' \
 	  -and \( \
 		-not -regex './.htaccess' \
+		-not -regex './install/.*' \
 		-not -regex './build/.*' \)  -printf "'%P'\n" \
     | xargs md5sum | awk '{ print $1";"$2; }' \
     | sort --field-separator=';' -k2 -k1 >> ${MD5_HASH_FILENAME};

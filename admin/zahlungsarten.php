@@ -355,9 +355,10 @@ if ($step === 'einstellen') {
                     ON ze.kBestellung = b.kBestellung
                 JOIN tkunde AS k
                     ON b.kKunde = k.kKunde
-            WHERE b.kZahlungsart = ' . $paymentMethodID . ' ' .
+            WHERE b.kZahlungsart = :pmid ' .
         ($filter->getWhereSQL() !== '' ? 'AND ' . $filter->getWhereSQL() : '') . '
-            ORDER BY dZeit DESC'
+            ORDER BY dZeit DESC',
+        ['pmid' => $paymentMethodID]
     );
     $pagination    = (new Pagination('payments' . $paymentMethodID))
         ->setItemArray($incoming)
@@ -368,9 +369,9 @@ if ($step === 'einstellen') {
         $item->dZeit     = date_create($item->dZeit)->format('d.m.Y\<\b\r\>H:i');
     }
     $smarty->assign('oZahlungsart', $method)
-           ->assign('oZahlunseingang_arr', $pagination->getPageItems())
-           ->assign('pagination', $pagination)
-           ->assign('oFilter', $filter);
+        ->assign('oZahlunseingang_arr', $pagination->getPageItems())
+        ->assign('pagination', $pagination)
+        ->assign('oFilter', $filter);
 } elseif ($step === 'delete') {
     $paymentMethodID = Request::verifyGPCDataInt('kZahlungsart');
     $method          = $db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);

@@ -85,6 +85,13 @@
                                 </span>
                             {/block}
 
+                            {block name='productdetails-price-min-value-info'}
+                                {$mwb = $smarty.session.Kundengruppe->getAttribute('mindestbestellwert')}
+                                {if $mwb > $Artikel->Preise->fVKBrutto}
+                                    <div class="min-value-wrapper">{lang key='minValueInfo' section='productDetails' printf=$mwb|cat:':::'|cat:$smarty.session.Waehrung->getName()}</div>
+                                {/if}
+                            {/block}
+
                             {block name='productdetails-price-special-prices-detail'}
                                 {if $Artikel->Preise->Sonderpreis_aktiv && $Einstellungen.artikeldetails.artikeldetails_sonderpreisanzeige == 2}
                                     <div class="text-danger text-stroke text-nowrap-util">

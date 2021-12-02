@@ -42,7 +42,7 @@ build_create()
 	else
 		echo "version extraction pattern did not found a match"
 	fi
-	
+
 	#if tag was created, check if defines_inc version matches the tag version, if not, abort.
     if [[ ${APPLICATION_VERSION} =~ ${VERSION_REGEX} ]]; then
 		if [[ "v${APPLICATION_VERSION_STR}" != "${APPLICATION_VERSION}" ]]; then
@@ -53,7 +53,7 @@ build_create()
 			exit 1;
 		fi
     fi
-	
+
 	# insert git sha hash into defines_inc.php -> APPLICATION_BUILD_SHA
     sed -i "s/'APPLICATION_BUILD_SHA', '#DEV#'/'APPLICATION_BUILD_SHA', '${APPLICATION_BUILD_SHA}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
 
@@ -62,10 +62,6 @@ build_create()
 
     echo "Create delete files csv";
     build_create_deleted_files_csv;
-
-    echo "Create templates md5 csv files";
-    create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/Evo";
-    create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/NOVA";
 
     echo "Move class files";
     build_move_class_files;
@@ -87,10 +83,14 @@ build_create()
 
     echo "Writing config.JTL-Shop.ini.initial.php";
     build_create_config_file;
-	
+
     echo "Compile css from scss files";
     build_compile_css_files;
-	
+
+    echo "Create templates md5 csv files";
+    create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/Evo";
+    create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/NOVA";
+
     echo "Executing migrations";
     build_migrate;
 
@@ -137,8 +137,6 @@ build_create_deleted_files_csv()
     cd ${REPOSITORY_DIR};
     git pull >/dev/null 2>&1;
     git diff --name-only --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME};
-	#get all modified files with content: // removed in x.x.x and concat it to the csv file
-	git diff --name-only --diff-filter M -S'<?php // removed in ' tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} >> ${DELETE_FILES_CSV_FILENAME};
 
     echo "  Deleted files schema admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
 }
@@ -172,7 +170,7 @@ build_add_old_files()
 }
 
 build_create_shop_installer() {
-    composer install --no-dev -o -q -d ${REPOSITORY_DIR}/build/components/vue-installer;
+    npm --prefix ${REPOSITORY_DIR}/build/components/vue-installer install && npm --prefix ${REPOSITORY_DIR}/build/components/vue-installer run build;
 }
 
 build_create_md5_hashfile()
@@ -183,8 +181,25 @@ build_create_md5_hashfile()
     local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${VERSION}.csv";
 
     cd ${REPOSITORY_DIR};
-    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name ".travis.yml" -or -name "${VERSION}.csv" -or -name "composer.lock" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -vE ".git/|admin/gfx/|admin/includes/emailpdfs/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
-    cd ${CUR_PWD};
+    find -type f -not \( -name ".asset_cs" \
+      -or -name ".git*" -or -name ".idea*" \
+      -or -name ".php_cs" -or -name ".travis.yml" \
+      -or -name ".htaccess" \
+      -or -name "${VERSION}.csv" -or -name "composer.lock" \
+      -or -name "config.JTL-Shop.ini.initial.php" \
+      -or -name "phpunit.xml" -or -name "robots.txt" \
+      -or -name "rss.xml" -or -name "shopinfo.xml" \
+      -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" \
+    | grep -v -f "${REPOSITORY_DIR}/build/scripts/md5_excludes.lst" \
+    | xargs md5sum | awk '{ print $1";"$2; }' \
+    | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
+
+    find -type f -name '.htaccess' \
+	  -and \( \
+		-not -regex './.htaccess' \
+		-not -regex './build/.*' \)  -printf "'%P'\n" \
+    | xargs md5sum | awk '{ print $1";"$2; }' \
+    | sort --field-separator=';' -k2 -k1 >> ${MD5_HASH_FILENAME};
 
     echo "  File checksums admin/includes/shopmd5files/${VERSION}.csv";
 }

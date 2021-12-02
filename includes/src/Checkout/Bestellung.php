@@ -612,10 +612,7 @@ class Bestellung
                 );
             }
             if (!isset($item->kSteuerklasse)) {
-                $taxClass = $db->select('tsteuersatz', 'fSteuersatz', $item->fMwSt);
-                if ($taxClass !== null) {
-                    $item->kSteuerklasse = $taxClass->kSteuerklasse;
-                }
+                $item->kSteuerklasse = 0;
             }
             $summe += $item->fPreis * $item->nAnzahl;
             if ($this->kWarenkorb > 0) {

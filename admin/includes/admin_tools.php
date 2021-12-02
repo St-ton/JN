@@ -147,7 +147,7 @@ function saveAdminSettings(
         'SELECT ec.*, e.cWert AS currentValue
             FROM teinstellungenconf AS ec
             LEFT JOIN teinstellungen AS e 
-                ON e.cName=ec.cWertName
+                ON e.cName = ec.cWertName
             ' . $where . "
             AND ec.cConf = 'Y'
             ORDER BY ec.nSort"
@@ -173,6 +173,8 @@ function saveAdminSettings(
                 break;
             case 'listbox':
                 bearbeiteListBox($val->cWert, $val->cName, $val->kEinstellungenSektion);
+                break;
+            default:
                 break;
         }
         if ($config->cInputTyp !== 'listbox') {
@@ -297,8 +299,9 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
             case 'selectkdngrp':
                 bearbeiteListBox($val->cWert, $config->cWertName, $configSectionID);
                 break;
+            default:
+                break;
         }
-
         if ($valid && $config->cInputTyp !== 'listbox' && $config->cInputTyp !== 'selectkdngrp') {
             $db->delete(
                 'teinstellungen',

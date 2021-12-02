@@ -139,10 +139,9 @@ final class Characteristics extends AbstractSync
                                 $loc->kSprache
                             ]
                         );
-                        $seo       = \trim($loc->cSeo)
-                            ? Seo::getFlatSeoPath($loc->cSeo)
-                            : Seo::getFlatSeoPath($loc->cWert);
-                        $loc->cSeo = Seo::checkSeo(Seo::getSeo($seo));
+                        $loc->cSeo = \trim($loc->cSeo)
+                            ? Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($loc->cSeo), true))
+                            : Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($loc->cWert)));
                         $this->upsert(
                             'tmerkmalwertsprache',
                             [$loc],
@@ -230,11 +229,10 @@ final class Characteristics extends AbstractSync
                         $loc->kSprache
                     ]
                 );
-                $seo = \trim($loc->cSeo)
-                    ? Seo::getFlatSeoPath($loc->cSeo)
-                    : Seo::getFlatSeoPath($loc->cWert);
+                $loc->cSeo = \trim($loc->cSeo)
+                    ? Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($loc->cSeo), true))
+                    : Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($loc->cWert)));
 
-                $loc->cSeo = Seo::checkSeo(Seo::getSeo($seo));
                 $this->upsert('tmerkmalwertsprache', [$loc], 'kMerkmalWert', 'kSprache');
                 $ins           = new stdClass();
                 $ins->cSeo     = $loc->cSeo;

@@ -2,6 +2,8 @@
 
 namespace JTL\Plugin\Admin\Installation;
 
+use Exception;
+use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
@@ -58,22 +60,30 @@ final class Installer
     private $plugin;
 
     /**
+     * @var JTLCacheInterface
+     */
+    private $cache;
+
+    /**
      * Installer constructor.
-     * @param DbInterface        $db
-     * @param Uninstaller        $uninstaller
-     * @param ValidatorInterface $legacyValidator
-     * @param ValidatorInterface $pluginValidator
+     * @param DbInterface            $db
+     * @param Uninstaller            $uninstaller
+     * @param ValidatorInterface     $legacyValidator
+     * @param ValidatorInterface     $pluginValidator
+     * @param JTLCacheInterface|null $cache
      */
     public function __construct(
         DbInterface $db,
         Uninstaller $uninstaller,
         ValidatorInterface $legacyValidator,
-        ValidatorInterface $pluginValidator
+        ValidatorInterface $pluginValidator,
+        ?JTLCacheInterface $cache = null
     ) {
         $this->db              = $db;
         $this->uninstaller     = $uninstaller;
         $this->legacyValidator = $legacyValidator;
         $this->pluginValidator = $pluginValidator;
+        $this->cache           = $cache ?? Shop::Container()->getCache();
     }
 
     /**
@@ -161,20 +171,19 @@ final class Installer
         $baseDir            = \basename($this->dir);
         $versionNode        = $baseNode['Install'][0]['Version'] ?? null;
         $xmlVersion         = (int)$baseNode['XMLVersion'];
-        $basePath           = \PFAD_ROOT . \PFAD_PLUGIN . $baseDir . \DIRECTORY_SEPARATOR;
+        $basePath           = \PFAD_ROOT . \PFAD_PLUGIN . $baseDir . '/';
         $lastVersionKey     = null;
         $plugin             = new stdClass();
-        $cache              = Shop::Container()->getCache();
         $plugin->nStatus    = $this->plugin === null ? State::ACTIVATED : $this->plugin->getState();
         $plugin->bExtension = 0;
         if (\is_array($versionNode)) {
             $lastVersionKey = \count($versionNode) / 2 - 1;
             $version        = (int)$versionNode[$lastVersionKey . ' attr']['nr'];
-            $versionedDir   = $basePath . \PFAD_PLUGIN_VERSION . $version . \DIRECTORY_SEPARATOR;
+            $versionedDir   = $basePath . \PFAD_PLUGIN_VERSION . $version . '/';
             $bootstrapper   = $versionedDir . \OLD_BOOTSTRAPPER;
         } else {
             $version            = $baseNode['Version'];
-            $basePath           = \PFAD_ROOT . \PLUGIN_DIR . $baseDir . \DIRECTORY_SEPARATOR;
+            $basePath           = \PFAD_ROOT . \PLUGIN_DIR . $baseDir . '/';
             $versionedDir       = $basePath;
             $versionNode        = [];
             $bootstrapper       = $versionedDir . \PLUGIN_BOOTSTRAPPER;
@@ -182,8 +191,8 @@ final class Installer
         }
         if ($this->plugin !== null) {
             $loader = $this->plugin->isExtension() === true
-                ? new PluginLoader($this->db, $cache)
-                : new LegacyPluginLoader($this->db, $cache);
+                ? new PluginLoader($this->db, $this->cache)
+                : new LegacyPluginLoader($this->db, $this->cache);
             if (($p = Helper::bootstrap($this->plugin->getID(), $loader)) !== null) {
                 $p->preUpdate($this->plugin->getMeta()->getVersion(), $version);
             }
@@ -215,7 +224,7 @@ final class Installer
         $continue = true;
         if ($this->plugin === null && $plugin->bBootstrap === 1 && $plugin->bExtension === 1) {
             $plugin->kPlugin = 0;
-            $loader          = new PluginLoader($this->db, $cache);
+            $loader          = new PluginLoader($this->db, $this->cache);
             if (($languageID = Shop::getLanguageID()) === 0) {
                 $languageID = Shop::Lang()->getDefaultLanguage()->kSprache;
             }
@@ -223,7 +232,7 @@ final class Installer
             $instance     = $loader->loadFromObject($plugin, $languageCode);
             $class        = \sprintf('Plugin\\%s\\%s', $plugin->cPluginID, 'Bootstrap');
             if (\class_exists($class)) {
-                $bootstrapper = new $class($instance, $loader->getDB(), $loader->getCache());
+                $bootstrapper = new $class($instance, $this->db, $this->cache);
                 if ($bootstrapper instanceof BootstrapperInterface) {
                     $continue = $bootstrapper->preInstallCheck();
                 }
@@ -247,7 +256,7 @@ final class Installer
             return $res;
         }
         $res = $this->installSQL($plugin, $versionNode, $version, $versionedDir);
-        $cache->flushTags([
+        $this->cache->flushTags([
             \CACHING_GROUP_CORE,
             \CACHING_GROUP_LICENSES,
             \CACHING_GROUP_LANGUAGE,
@@ -267,8 +276,8 @@ final class Installer
     private function installSQL(stdClass $plugin, array $versionNode, $version, string $versionedDir): int
     {
         $loader      = $plugin->bExtension === 1
-            ? new PluginLoader($this->db, Shop::Container()->getCache())
-            : new LegacyPluginLoader($this->db, Shop::Container()->getCache());
+            ? new PluginLoader($this->db, $this->cache)
+            : new LegacyPluginLoader($this->db, $this->cache);
         $hasSQLError = false;
         $code        = InstallCode::OK;
         foreach ($versionNode as $i => $versionData) {
@@ -297,7 +306,12 @@ final class Installer
             }
         }
         if ($plugin->bExtension === 1) {
-            $this->updateByMigration($plugin, $versionedDir, Version::parse($version));
+            try {
+                $this->updateByMigration($plugin, $versionedDir, Version::parse($version));
+            } catch (Exception $e) {
+                $hasSQLError = true;
+                $code        = InstallCode::SQL_ERROR;
+            }
         }
         // Ist ein SQL Fehler aufgetreten? Wenn ja, deinstalliere wieder alles
         if ($hasSQLError) {
@@ -355,7 +369,7 @@ final class Installer
             return \constant(\trim($e));
         });
         if (\count($tagsToFlush) > 0) {
-            Shop::Container()->getCache()->flushTags($tagsToFlush);
+            $this->cache->flushTags($tagsToFlush);
         }
     }
 
@@ -441,11 +455,11 @@ final class Installer
      * @param string   $pluginPath
      * @param Version  $targetVersion
      * @return array|Version
-     * @throws \Exception
+     * @throws Exception
      */
     private function updateByMigration(stdClass $plugin, string $pluginPath, Version $targetVersion)
     {
-        $path              = $pluginPath . \DIRECTORY_SEPARATOR . \PFAD_PLUGIN_MIGRATIONS;
+        $path              = $pluginPath . \PFAD_PLUGIN_MIGRATIONS;
         $manager           = new MigrationManager($this->db, $path, $plugin->cPluginID, $targetVersion);
         $pendingMigrations = $manager->getPendingMigrations();
         if (\count($pendingMigrations) === 0) {
@@ -846,7 +860,7 @@ final class Installer
             ]
         );
         $oldPaymentMethods = $this->db->getObjects(
-            'SELECT kZahlungsart, cModulId
+            'SELECT kZahlungsart, cModulId, cBild, nSort, nMailSenden, nWaehrendBestellung
                 FROM tzahlungsart
                 WHERE cModulId LIKE :newID',
             ['newID' => 'kPlugin\_' . $oldPluginID . '\_%']
@@ -873,6 +887,18 @@ final class Installer
             $setSQL           = '';
             if ($newPaymentMethod !== null && isset($method->kZahlungsart, $newPaymentMethod->kZahlungsart)) {
                 $this->db->queryPrepared(
+                    'INSERT INTO tzahlungsartsprache
+                        SELECT :newID, cISOSprache, cName, cGebuehrname, cHinweisText, cHinweisTextShop
+                        FROM tzahlungsartsprache AS told
+                        WHERE kZahlungsart = :oldID
+                        ON DUPLICATE KEY UPDATE
+                            cName            = told.cName,
+                            cGebuehrname     = told.cGebuehrname,
+                            cHinweisText     = told.cHinweisText,
+                            cHinweisTextShop = told.cHinweisTextShop',
+                    ['newID' => $newPaymentMethod->kZahlungsart, 'oldID' => $method->kZahlungsart]
+                );
+                $this->db->queryPrepared(
                     'DELETE tzahlungsart, tzahlungsartsprache
                         FROM tzahlungsart
                         JOIN tzahlungsartsprache
@@ -880,9 +906,16 @@ final class Installer
                         WHERE tzahlungsart.kZahlungsart = :pmid',
                     ['pmid' => $method->kZahlungsart]
                 );
-                $setSQL = ' , kZahlungsart = ' . $method->kZahlungsart;
-                $upd    = (object)['kZahlungsart' => $method->kZahlungsart];
+                $upd = (object)[
+                    'cBild'               => $method->cBild,
+                    'nSort'               => (int)$method->nSort,
+                    'nMailSenden'         => (int)$method->nMailSenden,
+                    'nWaehrendBestellung' => (int)$method->nWaehrendBestellung,
+                ];
+                $this->db->update('tzahlungsart', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
+                $upd = (object)['kZahlungsart' => (int)$method->kZahlungsart];
                 $this->db->update('tzahlungsartsprache', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
+                $setSQL = ' , kZahlungsart = ' . (int)$method->kZahlungsart;
             }
             $this->db->queryPrepared(
                 'UPDATE tzahlungsart

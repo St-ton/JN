@@ -44,7 +44,7 @@ if (Form::validateToken()) {
             $step = 'uebersicht';
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
-                saveAdminSectionSettings(CONF_NEWSLETTER, $postData),
+                saveAdminSectionSettings(CONF_NEWSLETTER, $_POST),
                 'saveSettings'
             );
             $admin->setNewsletterCheckboxStatus();
@@ -235,11 +235,11 @@ if (Form::validateToken()) {
                 $option = 'editieren';
             }
         } elseif (isset($postData['speichern'])) { // Vorlage speichern
-            $checks = $admin->saveTemplate($postData);
+            $checks = $admin->saveTemplate($_POST);
             if (is_array($checks) && count($checks) > 0) {
                 $step = 'vorlage_erstellen';
                 $smarty->assign('cPlausiValue_arr', $checks)
-                    ->assign('cPostVar_arr', $postData)
+                    ->assign('cPostVar_arr', $_POST)
                     ->assign('oNewsletterVorlage', $newsletterTPL);
             }
         } elseif (isset($postData['speichern_und_senden'])) { // Vorlage speichern und senden

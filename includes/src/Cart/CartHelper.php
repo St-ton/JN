@@ -9,6 +9,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Product\VariationValue;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
@@ -158,7 +159,7 @@ class CartHelper
             $amount      = $amountItem * $info->currency->getConversionFactor();
             $amountGross = Tax::getGross(
                 $amount,
-                Tax::getSalesTax((int)$item->kSteuerklasse),
+                CartItem::getTaxRate($item),
                 $decimals > 0 ? $decimals : 2
             );
 
@@ -781,12 +782,12 @@ class CartHelper
                 if ($productID <= 0) {
                     return true;
                 }
-                $wishlist = Frontend::getWishList();
-                if ($wishlist->kWunschliste <= 0) {
-                    $wishlist->schreibeDB();
+                if (empty($_SESSION['Wunschliste']->kWunschliste)) {
+                    $_SESSION['Wunschliste'] = new Wishlist();
+                    $_SESSION['Wunschliste']->schreibeDB();
                 }
                 $qty    = \max(1, $qty);
-                $itemID = $wishlist->fuegeEin(
+                $itemID = $_SESSION['Wunschliste']->fuegeEin(
                     $productID,
                     $productExists->cName,
                     $attributes,
@@ -1192,7 +1193,7 @@ class CartHelper
                 $item->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
                     Tax::getGross(
                         $item->fPreis * $item->nAnzahl,
-                        Tax::getSalesTax($item->kSteuerklasse)
+                        CartItem::getTaxRate($item)
                     ),
                     $currency
                 );
@@ -1201,7 +1202,7 @@ class CartHelper
                     $currency
                 );
                 $item->cEinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
-                    Tax::getGross($item->fPreis, Tax::getSalesTax($item->kSteuerklasse)),
+                    Tax::getGross($item->fPreis, CartItem::getTaxRate($item)),
                     $currency
                 );
                 $item->cEinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
@@ -1286,7 +1287,7 @@ class CartHelper
             $item->fPreis = $cartItem->fPreis *
                 Frontend::getCurrency()->getConversionFactor() *
                 $cartItem->nAnzahl *
-                ((100 + Tax::getSalesTax($cartItem->kSteuerklasse)) / 100);
+                ((100 + CartItem::getTaxRate($cartItem)) / 100);
             $item->cName  = $cartItem->cName;
         }
 
@@ -2025,8 +2026,9 @@ class CartHelper
             } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
                 $sqlSort = ' ORDER BY tartikel.fLagerbestand DESC';
             }
-            $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0 ?
-                    ' LIMIT ' . $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] : '';
+            $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0
+                ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
+                : '';
             $giftsTmp = Shop::Container()->getDB()->getObjects(
                 "SELECT tartikel.kArtikel, tartikelattribut.cWert
                     FROM tartikel
@@ -2035,10 +2037,12 @@ class CartHelper
                     WHERE (tartikel.fLagerbestand > 0 ||
                           (tartikel.fLagerbestand <= 0 &&
                           (tartikel.cLagerBeachten = 'N' || tartikel.cLagerKleinerNull = 'Y')))
-                        AND tartikelattribut.cName = '" . \FKT_ATTRIBUT_GRATISGESCHENK . "'
-                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-                Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true) .
-                $sqlSort . $limit
+                        AND tartikelattribut.cName = :atr
+                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= :csum " . $sqlSort . $limit,
+                [
+                    'atr'  => \FKT_ATTRIBUT_GRATISGESCHENK,
+                    'csum' => Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
+                ]
             );
 
             foreach ($giftsTmp as $gift) {

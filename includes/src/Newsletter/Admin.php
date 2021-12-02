@@ -814,9 +814,9 @@ final class Admin
                       AND tnewsletterempfaengerhistory.cAktion = 'Eingetragen'
                 LEFT JOIN toptin
                     ON toptin.cMail = tnewsletterempfaenger.cEmail
-                WHERE tnewsletterempfaenger.kSprache = " . (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])
-            . $searchSQL->cWHERE . '
-                ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL
+                WHERE tnewsletterempfaenger.kSprache =:lid " . $searchSQL->cWHERE . '
+                ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL,
+            ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])]
         )->map(static function (stdClass $item) {
             $item->cVorname  = Text::filterXSS($item->cVorname);
             $item->cNachname = Text::filterXSS($item->cNachname);
@@ -952,7 +952,7 @@ final class Admin
         if ($defaultTplID <= 0) {
             return $step;
         }
-        $filteredPost = Text::filterXSS($_POST);
+        $filteredPost = $_POST;
         $step         = 'vorlage_std_erstellen';
         $templateID   = 0;
         if (Request::verifyGPCDataInt('kNewsletterVorlage') > 0) {
@@ -1032,7 +1032,7 @@ final class Admin
     {
         $conf         = Shop::getSettings([\CONF_NEWSLETTER]);
         $instance     = new Newsletter($this->db, $conf);
-        $filteredPost = Text::filterXSS($_POST);
+        $filteredPost = $_POST;
         $checks       = $this->saveTemplate($filteredPost);
         if (\is_array($checks) && \count($checks) > 0) {
             $smarty->assign('cPlausiValue_arr', $checks)
@@ -1170,7 +1170,7 @@ final class Admin
         $conf     = Shop::getSettings([\CONF_NEWSLETTER]);
         $instance = new Newsletter($this->db, $conf);
         $instance->initSmarty();
-        $filteredPost = Text::filterXSS($_POST);
+        $filteredPost = $_POST;
         $checks       = $this->saveTemplate($filteredPost);
         if (\is_array($checks) && \count($checks) > 0) {
             $smarty->assign('cPlausiValue_arr', $checks)

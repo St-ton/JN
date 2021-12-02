@@ -219,10 +219,7 @@ if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
         || Request::postInt('guthabenVerrechnen') === 1
     ) {
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
-        $_SESSION['Bestellung']->fGuthabenGenutzt = min(
-            $_SESSION['Kunde']->fGuthaben,
-            Frontend::getCart()->gibGesamtsummeWaren(true, false)
-        );
+        $_SESSION['Bestellung']->fGuthabenGenutzt = Order::getOrderCredit($_SESSION['Bestellung']);
     }
     Cart::refreshChecksum($cart);
     $_SESSION['AktiveZahlungsart'] = $savedPayment;
@@ -242,7 +239,10 @@ Shop::Smarty()->assign(
     ->assign('Link', $link)
     ->assign('alertNote', $alertService->alertTypeExists(Alert::TYPE_NOTE))
     ->assign('step', $step)
-    ->assign('editRechnungsadresse', Request::verifyGPCDataInt('editRechnungsadresse'))
+    ->assign(
+        'editRechnungsadresse',
+        Frontend::getCustomer()->nRegistriert === 1 ? 1 : Request::verifyGPCDataInt('editRechnungsadresse')
+    )
     ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
     ->assign('Warensumme', $cart->gibGesamtsummeWaren())
     ->assign('Steuerpositionen', $cart->gibSteuerpositionen())

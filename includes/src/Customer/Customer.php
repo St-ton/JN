@@ -36,6 +36,8 @@ class Customer
 
     public const ERROR_CAPTCHA = 4;
 
+    public const ERROR_NOT_ACTIVATED_YET = 5;
+
     public const ERROR_INVALID_DATA = 0;
 
     public const ERROR_DO_TWO_FA = 5;
@@ -421,7 +423,7 @@ class Customer
             return self::ERROR_LOCKED;
         }
         if ($user->cAktiv === 'N') {
-            return self::ERROR_INACTIVE;
+            return $user->cAbgeholt === 'Y' ? self::ERROR_INACTIVE : self::ERROR_NOT_ACTIVATED_YET;
         }
 
         return self::OK;

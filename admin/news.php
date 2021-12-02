@@ -29,7 +29,7 @@ $db             = Shop::Container()->getDB();
 $author         = ContentAuthor::getInstance();
 $controller     = new Controller($db, $smarty, Shop::Container()->getCache());
 $newsCategory   = new Category($db);
-$languages      = LanguageHelper::getAllLanguages(0, true);
+$languages      = LanguageHelper::getAllLanguages(0, true, true);
 $adminID        = (int)$_SESSION['AdminAccount']->kAdminlogin;
 $adminName      = $db->select('tadminlogin', 'kAdminlogin', $adminID)->cName;
 
@@ -239,6 +239,9 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $newsItem->load($newsItemID);
 
             if ($newsItem->getID() > 0) {
+                if ($controller->hasOPCContent($languages, $newsItem->getID())) {
+                    $controller->setMsg(__('OPC content available'));
+                }
                 $smarty->assign('oNewsKategorie_arr', $controller->getAllNewsCategories())
                        ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
                        ->assign('oNews', $newsItem);
@@ -305,14 +308,10 @@ if ($controller->getStep() === 'news_uebersicht') {
            ->assign('oNewsKategorie', $newsCategory);
 }
 
-if (!empty($_SESSION['news.cHinweis'])) {
-    $controller->setMsg($controller->getMsg() . $_SESSION['news.cHinweis']);
-    unset($_SESSION['news.cHinweis']);
-}
-
-$maxFileSize = getMaxFileSize(ini_get('upload_max_filesize'));
-Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $controller->getMsg(), 'newsMessage');
-Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'newsError');
+$maxFileSize  = getMaxFileSize(ini_get('upload_max_filesize'));
+$alertService = Shop::Container()->getAlertService();
+$alertService->addAlert(Alert::TYPE_NOTE, $controller->getMsg(), 'newsMessage');
+$alertService->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'newsError');
 
 $smarty->assign('customerGroups', CustomerGroup::getGroups())
        ->assign('step', $controller->getStep())

@@ -77,17 +77,18 @@ class BaseCharacteristic extends AbstractFilter
             $select = 'tmerkmalsprache.cName, tmerkmal.cName AS cMMName';
             $join   = ' JOIN tmerkmalsprache 
                              ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                             AND tmerkmalsprache.kSprache = ' . Shop::getLanguageID();
+                             AND tmerkmalsprache.kSprache = :lid';
         }
         $characteristicValues = $this->productFilter->getDB()->getObjects(
             'SELECT tmerkmalwertsprache.cWert, ' . $select . '
                 FROM tmerkmalwert
                 JOIN tmerkmalwertsprache 
                     ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                    AND kSprache = ' . Shop::getLanguageID() . '
+                    AND kSprache = :lid
                 JOIN tmerkmal ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                 ' . $join . '
-                WHERE tmerkmalwert.kMerkmalWert = ' . $this->getValue()
+                WHERE tmerkmalwert.kMerkmalWert = :mmw',
+            ['mmw' => $this->getValue(), 'lid' => Shop::getLanguageID()]
         );
         if (\count($characteristicValues) > 0) {
             $characteristicValue = $characteristicValues[0];

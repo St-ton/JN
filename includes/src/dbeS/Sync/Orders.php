@@ -2,6 +2,7 @@
 
 namespace JTL\dbeS\Sync;
 
+use DateTime;
 use JTL\Checkout\Adresse;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Lieferadresse;
@@ -16,7 +17,6 @@ use JTL\Mail\Mailer;
 use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Shop;
 use stdClass;
-use DateTime;
 
 /**
  * Class Orders
@@ -112,22 +112,10 @@ final class Orders extends AbstractSync
             if ($module) {
                 $module->cancelOrder($orderID, true);
             }
-            $customerId = (int)($this->db->getSingleObject(
-                'SELECT tbestellung.kKunde 
-                    FROM tbestellung
-                    INNER JOIN tkunde ON tbestellung.kKunde = tkunde.kKunde
-                    WHERE tbestellung.kBestellung = :oid
-                        AND tkunde.nRegistriert = 0',
-                ['oid' => $orderID]
-            )->kKunde ?? 0);
             $this->deleteOrder($orderID);
             // uploads (bestellungen)
             $this->db->delete('tuploadschema', ['kCustomID', 'nTyp'], [$orderID, 2]);
             $this->db->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$orderID, 2]);
-
-            if ($customerId > 0) {
-                (new Customer($customerId))->deleteAccount(Journal::ISSUER_TYPE_DBES, $orderID);
-            }
         }
     }
 
@@ -166,7 +154,7 @@ final class Orders extends AbstractSync
                 $module->cancelOrder($orderID);
             } else {
                 if (!empty($customer->cMail) && ($tmpOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO)) {
-                    $data              = new stdClass;
+                    $data              = new stdClass();
                     $data->tkunde      = $customer;
                     $data->tbestellung = $tmpOrder;
 
@@ -207,7 +195,7 @@ final class Orders extends AbstractSync
                 $customer = new Customer($tmpOrder->kKunde);
                 $tmpOrder->fuelleBestellung();
                 if (($tmpOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO) && \strlen($customer->cMail) > 0) {
-                    $data              = new stdClass;
+                    $data              = new stdClass();
                     $data->tkunde      = $customer;
                     $data->tbestellung = $tmpOrder;
 
@@ -249,7 +237,7 @@ final class Orders extends AbstractSync
      */
     private function handleUpdate(array $xml): void
     {
-        $order  = new stdClass;
+        $order  = new stdClass();
         $orders = $this->mapper->mapArray($xml, 'tbestellung', 'mBestellung');
         if (\count($orders) === 1) {
             $order = $orders[0];
@@ -440,24 +428,15 @@ final class Orders extends AbstractSync
      */
     private function updateOrderData($oldOrder, $order, $paymentMethod): void
     {
-        $updateSql = '';
+        $upd               = new stdClass();
+        $upd->fGuthaben    = $order->fGuthaben;
+        $upd->fGesamtsumme = $order->fGesamtsumme;
+        $upd->cKommentar   = $order->cKommentar;
         if (isset($paymentMethod->kZahlungsart) && $paymentMethod->kZahlungsart > 0) {
-            $updateSql = ' , kZahlungsart = ' . (int)$paymentMethod->kZahlungsart .
-                ", cZahlungsartName = '" . $paymentMethod->cName . "' ";
+            $upd->kZahlungsart     = (int)$paymentMethod->kZahlungsart;
+            $upd->cZahlungsartName = $paymentMethod->cName;
         }
-        $this->db->queryPrepared(
-            'UPDATE tbestellung SET
-            fGuthaben = :fg,
-            fGesamtsumme = :total,
-            cKommentar = :cmt ' . $updateSql . '
-            WHERE kBestellung = :oid',
-            [
-                'fg'    => $order->fGuthaben,
-                'total' => $order->fGesamtsumme,
-                'cmt'   => $order->cKommentar,
-                'oid'   => $oldOrder->kBestellung
-            ]
-        );
+        $this->db->update('tbestellung', 'kBestellung', $oldOrder->kBestellung, $upd);
     }
 
     /**
@@ -479,7 +458,7 @@ final class Orders extends AbstractSync
             if ($module) {
                 $module->sendMail($oldOrder->kBestellung, \MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
             } else {
-                $data              = new stdClass;
+                $data              = new stdClass();
                 $data->tkunde      = $customer;
                 $data->tbestellung = new Bestellung((int)$oldOrder->kBestellung, true);
 
@@ -653,7 +632,7 @@ final class Orders extends AbstractSync
             $shippedDate = '_DBNULL_';
         }
 
-        $upd                = new stdClass;
+        $upd                = new stdClass();
         $upd->dVersandDatum = $shippedDate;
         $upd->cTracking     = $this->db->escape($order->cIdentCode);
         $upd->cLogistiker   = $this->db->escape($order->cLogistik);
@@ -707,7 +686,7 @@ final class Orders extends AbstractSync
                 if ($module) {
                     $module->sendMail($shopOrder->kBestellung, $mailType);
                 } else {
-                    $data              = new stdClass;
+                    $data              = new stdClass();
                     $data->tkunde      = $customer;
                     $data->tbestellung = $updatedOrder;
 
@@ -748,7 +727,7 @@ final class Orders extends AbstractSync
                 if (($updatedOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_EINGANG)
                     && \strlen($customer->cMail) > 0
                 ) {
-                    $data              = new stdClass;
+                    $data              = new stdClass();
                     $data->tkunde      = $customer;
                     $data->tbestellung = $updatedOrder;
 
@@ -810,7 +789,15 @@ final class Orders extends AbstractSync
      */
     private function deleteOrder(int $orderID): void
     {
-        $cartID = (int)($this->db->select(
+        $customerID = (int)($this->db->getSingleObject(
+            'SELECT tbestellung.kKunde
+                FROM tbestellung
+                INNER JOIN tkunde ON tbestellung.kKunde = tkunde.kKunde
+                WHERE tbestellung.kBestellung = :oid
+                    AND tkunde.nRegistriert = 0',
+            ['oid' => $orderID]
+        )->kKunde ?? 0);
+        $cartID     = (int)($this->db->select(
             'tbestellung',
             'kBestellung',
             $orderID,
@@ -842,6 +829,9 @@ final class Orders extends AbstractSync
                     (int)$item->kWarenkorbPos
                 );
             }
+        }
+        if ($customerID > 0) {
+            (new Customer($customerID))->deleteAccount(Journal::ISSUER_TYPE_DBES, $orderID);
         }
     }
 

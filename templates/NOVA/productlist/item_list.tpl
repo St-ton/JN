@@ -11,7 +11,7 @@
         {$isOPC=$isOPC|default:false}
     {/block}
     {block name='productlist-item-list-productbox-outer'}
-    <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true"
+    <div id="{$idPrefix|default:''}result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true"
          class="productbox productbox-row productbox-show-variations {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($listStyle) && $listStyle === 'list'} active{/if}">
         <div class="productbox-inner">
             {block name='productlist-item-list-productbox-inner'}
@@ -98,7 +98,7 @@
                         {/if}
                     {/block}
                     {block name='productlist-item-list-buy-form'}
-                        {form id="buy_form_{$Artikel->kArtikel}"
+                        {form id="{$idPrefix|default:''}buy_form_{$Artikel->kArtikel}"
                             action=$ShopURL class="form form-basket jtl-validate"
                             data=["toggle" => "basket-add"]}
                             {row}
@@ -164,7 +164,7 @@
                                                                     step="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}any{elseif $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{else}1{/if}"
                                                                     min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
                                                                     max=$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
-                                                                    id="quantity{$Artikel->kArtikel}"
+                                                                    id="{$idPrefix|default:''}quantity{$Artikel->kArtikel}"
                                                                     class="quantity"
                                                                     name="anzahl"
                                                                     autocomplete="off"
@@ -185,7 +185,7 @@
                                                         {block name='productlist-item-list-basket-details-add-to-cart'}
                                                             {button type="submit"
                                                                 variant="primary"
-                                                                block=true id="submit{$Artikel->kArtikel}"
+                                                                block=true id="{$idPrefix|default:''}submit{$Artikel->kArtikel}"
                                                                 title="{lang key='addToCart'}"
                                                                 class="basket-details-add-to-cart"
                                                                 aria=["label"=>{lang key='addToCart'}]}

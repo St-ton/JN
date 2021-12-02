@@ -37,7 +37,7 @@ class CartItem
     /**
      * @var int
      */
-    public $kSteuerklasse;
+    public $kSteuerklasse = 0;
 
     /**
      * @var int
@@ -376,7 +376,7 @@ class CartItem
         if (!\is_array($_SESSION['Waehrungen'])) {
             return $this;
         }
-        $tax = Tax::getSalesTax($this->kSteuerklasse);
+        $tax = self::getTaxRate($this);
         foreach (Frontend::getCurrencies() as $currency) {
             $currencyName = $currency->getName();
             // Standardartikel
@@ -480,6 +480,7 @@ class CartItem
         foreach ($members as $member) {
             $this->$member = $obj->$member;
         }
+        $this->kSteuerklasse = 0;
         if (isset($this->nLongestMinDelivery, $this->nLongestMaxDelivery)) {
             self::setEstimatedDelivery($this, $this->nLongestMinDelivery, $this->nLongestMaxDelivery);
             unset($this->nLongestMinDelivery, $this->nLongestMaxDelivery);
@@ -615,5 +616,27 @@ class CartItem
             || $this->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL
             || ($this->Artikel && $this->Artikel->isUsedForShippingCostCalculation($isoCode))
         );
+    }
+
+    /**
+     * @param object $item
+     * @return float
+     */
+    public static function getTaxRate(object $item): float
+    {
+        $taxRate = Tax::getSalesTax(0);
+        if (($item->kSteuerklasse ?? 0) === 0) {
+            if (isset($item->fMwSt)) {
+                $taxRate = $item->fMwSt;
+            } elseif (isset($item->Artikel)) {
+                $taxRate = ($item->Artikel->kSteuerklasse ?? 0) > 0
+                    ? Tax::getSalesTax($item->Artikel->kSteuerklasse)
+                    : $item->Artikel->fMwSt;
+            }
+        } else {
+            $taxRate = Tax::getSalesTax($item->kSteuerklasse);
+        }
+
+        return (float)$taxRate;
     }
 }

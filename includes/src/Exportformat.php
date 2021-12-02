@@ -169,6 +169,11 @@ class Exportformat
     private $tempFileName;
 
     /**
+     * @var string
+     */
+    private $tempFile;
+
+    /**
      * @var LoggerInterface|null
      */
     private $logger;
@@ -274,7 +279,8 @@ class Exportformat
                 $this->setKundengruppe(CustomerGroup::getDefaultGroupID());
             }
             $this->isOk            = true;
-            $this->tempFileName    = 'tmp_' . $this->cDateiname;
+            $this->tempFileName    = 'tmp_' . \basename($this->cDateiname);
+            $this->tempFile        = \PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName;
             $this->kWaehrung       = (int)$this->kWaehrung;
             $this->kSprache        = (int)$this->kSprache;
             $this->kKundengruppe   = (int)$this->kKundengruppe;
@@ -397,7 +403,8 @@ class Exportformat
      */
     public function setTempFileName(string $name): self
     {
-        $this->tempFileName = $name;
+        $this->tempFileName = \basename($name);
+        $this->tempFile     = \PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName;
 
         return $this;
     }
@@ -1277,10 +1284,10 @@ class Exportformat
         $cacheMisses  = 0;
         $output       = '';
         $errorMessage = '';
-        if ((int)$this->queue->tasksExecuted === 0 && \file_exists(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName)) {
-            \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName);
+        if ((int)$this->queue->tasksExecuted === 0 && \file_exists($this->tempFile)) {
+            \unlink($this->tempFile);
         }
-        $tmpFile = \fopen(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName, 'a');
+        $tmpFile = \fopen($this->tempFile, 'a');
         if ($max === null) {
             $max = (int)$this->db->getSingleObject($this->getExportSQL(true))->nAnzahl;
         }
@@ -1326,7 +1333,7 @@ class Exportformat
             $findTwo[]    = ';';
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
-        foreach ($this->db->getSingleObject($this->getExportSQL()) as $productData) {
+        foreach ($this->db->getObjects($this->getExportSQL()) as $productData) {
             $product = new Artikel();
             $product->fuelleArtikel(
                 (int)$productData->kArtikel,
@@ -1443,12 +1450,8 @@ class Exportformat
 
                 $this->writeFooter($tmpFile);
                 \fclose($tmpFile);
-                if (\copy(
-                    \PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName,
-                    \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname
-                )
-                ) {
-                    \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName);
+                if (\copy($this->tempFile, \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname)) {
+                    \unlink($this->tempFile);
                 } else {
                     $errorMessage = 'Konnte Export-Datei ' .
                         \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname .
@@ -1497,12 +1500,8 @@ class Exportformat
                 // Schreibe Fusszeile
                 $this->writeFooter($tmpFile);
                 \fclose($tmpFile);
-                if (\copy(
-                    \PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName,
-                    \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname
-                )
-                ) {
-                    \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName);
+                if (\copy($this->tempFile, \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname)) {
+                    \unlink($this->tempFile);
                 }
                 // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
                 $this->splitFile();

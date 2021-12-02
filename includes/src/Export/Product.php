@@ -92,16 +92,6 @@ class Product extends Artikel
     public $Artikelbild;
 
     /**
-     * @var array
-     */
-    protected $conf;
-
-    /**
-     * @var stdClass
-     */
-    protected $options;
-
-    /**
      * @param array $config
      * @return $this
      */

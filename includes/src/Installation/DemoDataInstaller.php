@@ -225,7 +225,7 @@ class DemoDataInstaller
         $this->db->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
             `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`)
-                VALUES (102,0,9,0,'Beispiel',1,'N',NULL,'N','N',0,0,0,'');"
+                VALUES (102,0,0,'Beispiel',1,'N',NULL,'N','N',0,0,0,'');"
         );
         $this->db->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,

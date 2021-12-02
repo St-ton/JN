@@ -184,13 +184,13 @@ class Preise
     public function __construct(int $customerGroupID, int $productID, int $customerID = 0, int $taxClassID = 0)
     {
         $db             = Shop::Container()->getDB();
-        $customerFilter = 'AND p.kKundengruppe = ' . $customerGroupID;
+        $customerFilter = ' AND p.kKundengruppe = :cgid';
         if ($customerID > 0 && $this->hasCustomPrice($customerID)) {
-            $customerFilter = 'AND (p.kKundengruppe, COALESCE(p.kKunde, 0)) = (
-                            SELECT min(IFNULL(p1.kKundengruppe, ' . $customerGroupID . ')), max(IFNULL(p1.kKunde, 0))
+            $customerFilter = ' AND (p.kKundengruppe, COALESCE(p.kKunde, 0)) = (
+                            SELECT min(IFNULL(p1.kKundengruppe, :cgid)), max(IFNULL(p1.kKunde, 0))
                             FROM tpreis AS p1
-                            WHERE p1.kArtikel = ' . $productID . '
-                                AND (p1.kKundengruppe = 0 OR p1.kKundengruppe = ' . $customerGroupID . ')
+                            WHERE p1.kArtikel = :pid
+                                AND (p1.kKundengruppe = 0 OR p1.kKundengruppe = :cgid)
                                 AND (p1.kKunde = 0 OR p1.kKunde = ' . $customerID . '))';
         }
         $this->kArtikel      = $productID;
@@ -201,8 +201,9 @@ class Preise
             'SELECT *
                 FROM tpreis AS p
                 JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
-                WHERE p.kArtikel = ' . $productID . ' ' . $customerFilter . '
-                ORDER BY d.nAnzahlAb'
+                WHERE p.kArtikel = :pid' . $customerFilter . '
+                ORDER BY d.nAnzahlAb',
+            ['pid' => $productID, 'cgid' => $customerGroupID]
         );
         if (\count($prices) > 0) {
             if ($taxClassID === 0) {
@@ -469,7 +470,9 @@ class Preise
             ];
         }
         if (!empty($this->alterVKNetto)) {
-            $this->discountPercentage = (int)((($this->alterVKNetto - $this->fVKNetto) * 100) / $this->alterVKNetto);
+            $this->discountPercentage = (int)\round(
+                (($this->alterVKNetto - $this->fVKNetto) * 100) / $this->alterVKNetto
+            );
         }
 
         return $this;

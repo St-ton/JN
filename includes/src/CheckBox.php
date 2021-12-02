@@ -181,7 +181,10 @@ class CheckBox
                 (int)$this->kCheckBoxFunktion
             );
             if (isset($func->kCheckBoxFunktion) && $func->kCheckBoxFunktion > 0) {
-                $func->cName             = \__($func->cName);
+                if (Shop::isAdmin()) {
+                    Shop::Container()->getGetText()->loadAdminLocale('pages/checkbox');
+                    $func->cName = \__($func->cName);
+                }
                 $this->oCheckBoxFunktion = $func;
             } else {
                 $this->kCheckBoxFunktion = 0;
@@ -258,11 +261,9 @@ class CheckBox
                     " . $sql . '
                 ORDER BY nSort'
         )
-            ->pluck('id')
             ->map(static function ($e) {
-                return (int)$e;
+                return new self((int)$e->id);
             })
-            ->mapInto(self::class)
             ->all();
         \executeHook(\HOOK_CHECKBOX_CLASS_GETCHECKBOXFRONTEND, [
             'oCheckBox_arr' => &$checkboxes,
@@ -411,11 +412,9 @@ class CheckBox
                 FROM tcheckbox' . ($active ? ' WHERE nAktiv = 1' : '') . '
                 ORDER BY nSort ' . $limitSQL
         )
-            ->pluck('id')
             ->map(static function ($e) {
-                return (int)$e;
-            })
-            ->mapInto(self::class)->all();
+                return new self((int)$e->id);
+            })->all();
     }
 
     /**

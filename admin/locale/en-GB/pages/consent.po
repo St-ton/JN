@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "docURL"
-msgstr "https://jtl-devguide.readthedocs.io/projects/jtl-shop/de/latest/shop_privacy/consentmanager.html"
+msgstr "https://jtl-url.de/eu6kz"
 
 msgid "pageTitle"
 msgstr "Consent manager"

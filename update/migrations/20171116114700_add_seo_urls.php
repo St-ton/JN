@@ -115,7 +115,6 @@ class Migration_20171116114700 extends Migration implements IMigration
                         $seo->cSeo = Seo::checkSeo(Seo::getSeo($seoGER));
                         $this->getDB()->insert('tseo', $seo);
                         if (empty($linkLanguage)) {
-                            $langObj->kSprache    = $language->kSprache;
                             $langObj->cISOSprache = $language->cISO;
                             $langObj->cSeo        = $seo->cSeo;
                             $this->getDB()->insert('tlinksprache', $langObj);
@@ -124,7 +123,6 @@ class Migration_20171116114700 extends Migration implements IMigration
                         $seo->cSeo = Seo::checkSeo(Seo::getSeo($seoENG));
                         $this->getDB()->insert('tseo', $seo);
                         if (empty($linkLanguage)) {
-                            $langObj->kSprache    = $language->kSprache;
                             $langObj->cISOSprache = $language->cISO;
                             $langObj->cSeo        = $seo->cSeo;
                             $this->getDB()->insert('tlinksprache', $langObj);

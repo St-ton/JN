@@ -2,6 +2,13 @@
 {config_load file="$lang.conf" section="shopzuruecksetzen"}
 {include file='tpl_inc/seite_header.tpl' cTitel=#shopReset# cBeschreibung=#shopResetDesc# cDokuURL=#shopResetURL#}
 <div id="content" class="container-fluid settings">
+    <div class="alert alert-warning">
+        <div class="card-title">Achtung</div>
+        Das Zur&uuml;cksetzen von Kunden- und/oder Bestelldaten kann zu Asynchronit&auml;t mit JTL-Wawi f&uuml;hren.
+        Achten Sie darauf, dass Sie den Wartungsmodus aktiv haben und bevor Sie diesen beenden (aber nach dem Zur&uuml;cksetzen)
+        ein Abgleich mit JTL-Wawi durchgef&uuml;hrt wurde. Hierdurch wird vermieden, dass neue Kunden/Bestellungen
+        zu falschen Datens&auml;tzen in JTL-Wawi zugeordnet werden.
+    </div>
     <form name="login" method="post" action="shopzuruecksetzen.php">
         {$jtl_token}
         <input type="hidden" name="zuruecksetzen" value="1" />

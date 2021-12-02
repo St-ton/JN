@@ -4,7 +4,10 @@
 <div id="content" class="container-fluid settings">
     <div class="alert alert-warning">
         <div class="card-title">Achtung</div>
-        Das Zur&uuml;cksetzen einzelner Teilbereiche kann zu inkonsistenten Daten f&uuml;hren. Das Zur&uuml;cksetzen von Wawi-Inhalten kann auch das Zur&uuml;cksetzen der Shop-Anbindung in der JTL-Wawi erforderlich machen.
+        Das Zur&uuml;cksetzen von Kunden- und/oder Bestelldaten kann zu Asynchronit&auml;t mit JTL-Wawi f&uuml;hren.
+        Achten Sie darauf, dass Sie den Wartungsmodus aktiv haben und bevor Sie diesen beenden (aber nach dem Zur&uuml;cksetzen)
+        ein Abgleich mit JTL-Wawi durchgef&uuml;hrt wurde. Hierdurch wird vermieden, dass neue Kunden/Bestellungen
+        zu falschen Datens&auml;tzen in JTL-Wawi zugeordnet werden.
     </div>
     <form name="login" method="post" action="shopzuruecksetzen.php">
         {$jtl_token}

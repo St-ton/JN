@@ -1017,6 +1017,7 @@ final class Products extends AbstractSync
         $this->deleteProductMediaFiles($id);
         if ($force === true) {
             $this->deleteProductDownloads($id);
+            $this->deleteProductUploads($id);
             $this->db->delete('tartikelkategorierabatt', 'kArtikel', $id);
             $this->db->delete('tartikelpicthistory', 'kArtikel', $id);
             $this->db->delete('tsuchcachetreffer', 'kArtikel', $id);
@@ -1026,7 +1027,6 @@ final class Products extends AbstractSync
         } else {
             $this->deleteDownload($id);
         }
-        $this->deleteProductUploads($id);
         $this->deleteConfigGroup($id);
 
         return $id;

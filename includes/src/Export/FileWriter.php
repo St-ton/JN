@@ -35,7 +35,7 @@ class FileWriter
     /**
      * @var resource
      */
-    private $tmpFile;
+    private $currentHandle;
 
     /**
      * FileWriter constructor.
@@ -56,9 +56,9 @@ class FileWriter
      */
     public function start(): void
     {
-        $file          = \PFAD_ROOT . \PFAD_EXPORT . $this->tmpFileName;
-        $this->tmpFile = @\fopen($file, 'ab');
-        if ($this->tmpFile === false) {
+        $file                = \PFAD_ROOT . \PFAD_EXPORT . $this->tmpFileName;
+        $this->currentHandle = @\fopen($file, 'ab');
+        if ($this->currentHandle === false) {
             throw new Exception(\sprintf(\__('Cannot open export file %s.'), $file));
         }
     }
@@ -77,7 +77,7 @@ class FileWriter
      */
     public function writeHeader($handle = null): int
     {
-        $handle = $handle ?? $this->tmpFile;
+        $handle = $handle ?? $this->currentHandle;
         $header = $this->smarty->fetch('string:' . $this->model->getHeader());
         if (\mb_strlen($header) === 0) {
             return 0;
@@ -100,7 +100,7 @@ class FileWriter
      */
     public function writeFooter($handle = null): int
     {
-        $handle = $handle ?? $this->tmpFile;
+        $handle = $handle ?? $this->currentHandle;
         $footer = $this->smarty->fetch('string:' . $this->model->getFooter());
         if (\mb_strlen($footer) === 0) {
             return 0;
@@ -114,36 +114,30 @@ class FileWriter
     }
 
     /**
-     * @param string        $data
-     * @param resource|null $handle
+     * @param string $data
      * @return int
      */
-    public function writeContent(string $data, $handle = null): int
+    public function writeContent(string $data): int
     {
         $utf8 = ($this->model->getEncoding() === 'UTF-8' || $this->model->getEncoding() === 'UTF-8noBOM');
 
-        return \fwrite($handle ?? $this->tmpFile, ($utf8 ? Text::convertUTF8($data) : $data));
+        return \fwrite($this->currentHandle, ($utf8 ? Text::convertUTF8($data) : $data));
     }
 
     /**
-     * @param resource|null $handle
      * @return bool
      */
-    public function close($handle = null): bool
+    public function close(): bool
     {
-        $handle = $handle ?? $this->tmpFile;
-
-        return $handle !== null && $handle !== false && \fclose($handle);
+        return $this->currentHandle !== null && $this->currentHandle !== false && \fclose($this->currentHandle);
     }
 
     /**
-     * @param resource|null $handle
      * @return bool
      */
-    public function finish($handle = null): bool
+    public function finish(): bool
     {
-        $handle = $handle ?? $this->tmpFile;
-        if ($this->close($handle) === true
+        if ($this->close() === true
             && \copy(
                 \PFAD_ROOT . \PFAD_EXPORT . $this->tmpFileName,
                 \PFAD_ROOT . \PFAD_EXPORT . $this->model->getFilename()
@@ -211,7 +205,7 @@ class FileWriter
     /**
      * @return $this
      */
-    public function splitFile(): self
+    public function split(): self
     {
         $path = $this->model->getSanitizedFilepath();
         $file = $this->model->getFilename();
@@ -230,38 +224,37 @@ class FileWriter
         }
         // Ist die angelegte Datei größer als die Einstellung im Exportformat?
         \clearstatcache();
-        if (\filesize(\PFAD_ROOT . \PFAD_EXPORT . $file) >= ($this->model->getSplitSize() * 1024 * 1024 - 102400)) {
+        $maxFileSize = $this->model->getSplitSize() * 1024 * 1024 - 102400;
+        if (\filesize(\PFAD_ROOT . \PFAD_EXPORT . $file) >= $maxFileSize) {
             \sleep(2);
             $this->cleanupFiles($file, $splits[0]);
-            $handle    = \fopen($path, 'rb');
-            $row       = 1;
-            $newHandle = \fopen($this->getFileName($splits, $fileCounter), 'wb');
-            $filesize  = 0;
+            $handle              = \fopen($path, 'rb');
+            $row                 = 1;
+            $filesize            = 0;
+            $this->currentHandle = \fopen($this->getFileName($splits, $fileCounter), 'wb');
             while (($content = \fgets($handle)) !== false) {
                 if ($row > 1) {
-                    $nSizeZeile = \mb_strlen($content) + 2;
+                    $rowLen = \mb_strlen($content) + 2;
                     // Schwelle erreicht?
-                    if ($filesize <= ($this->model->getSplitSize() * 1024 * 1024 - 102400)) {
-                        // Schreibe Content
-                        \fwrite($newHandle, $content);
-                        $filesize += $nSizeZeile;
+                    if ($filesize <= $maxFileSize) {
+                        $this->writeContent($content);
+                        $filesize += $rowLen;
                     } else {
                         // neue Datei
-                        $this->writeFooter($newHandle);
-                        \fclose($newHandle);
+                        $this->writeFooter();
+                        $this->close();
                         ++$fileCounter;
-                        $newHandle = \fopen($this->getFileName($splits, $fileCounter), 'wb');
-                        $this->writeHeader($newHandle);
-                        // Schreibe Content
-                        \fwrite($newHandle, $content);
-                        $filesize = $nSizeZeile;
+                        $this->currentHandle = \fopen($this->getFileName($splits, $fileCounter), 'wb');
+                        $this->writeHeader();
+                        $this->writeContent($content);
+                        $filesize = $rowLen;
                     }
                 } elseif ($row === 1) {
-                    $this->writeHeader($newHandle);
+                    $this->writeHeader();
                 }
                 ++$row;
             }
-            \fclose($newHandle);
+            $this->close();
             \fclose($handle);
             \unlink($path);
         }

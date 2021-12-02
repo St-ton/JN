@@ -87,7 +87,7 @@ class FormatExporter
         } catch (Exception $e) {
             throw new InvalidArgumentException('Cannot find export with id ' . $exportID);
         }
-        $this->setConfig($exportID);
+        $this->initConfig($exportID);
     }
 
     /**
@@ -99,6 +99,14 @@ class FormatExporter
     }
 
     /**
+     * @return LoggerInterface
+     */
+    public function getLogger(): LoggerInterface
+    {
+        return $this->logger;
+    }
+
+    /**
      * @return array
      */
     public function getConfig(): array
@@ -107,10 +115,18 @@ class FormatExporter
     }
 
     /**
+     * @param array $config
+     */
+    public function setConfig(array $config): void
+    {
+        $this->config = $config;
+    }
+
+    /**
      * @param int $exportID
      * @return $this
      */
-    private function setConfig(int $exportID): self
+    private function initConfig(int $exportID): self
     {
         $confObj = $this->db->selectAll(
             'texportformateinstellungen',
@@ -315,7 +331,16 @@ class FormatExporter
         $pseudoSession = new Session();
         $pseudoSession->initSession($this->model, $this->db);
         $this->initSmarty();
-        if ($this->model->getPluginID() > 0 && \mb_strpos($this->model->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
+        \executeHook(\HOOK_EXPORT_START, [
+            'exporter' => $this,
+            'exportID' => $exportID,
+            'isAsync'  => $isAsync,
+            'isCron'   => $isCron,
+            'max'      => &$max
+        ]);
+        if ($this->model->getPluginID() > 0
+            && \mb_strpos($this->model->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
+        ) {
             $this->startPluginExport($isCron, $isAsync, $queueEntry, $max);
             if ($queueEntry->jobQueueID > 0 && empty($queueEntry->cronID)) {
                 $this->db->delete('texportqueue', 'kExportqueue', $queueEntry->jobQueueID);
@@ -400,6 +425,11 @@ class FormatExporter
             $product->Artikelbild   = $product->Bilder[0]->cPfadGross
                 ? $imageBaseURL . $product->Bilder[0]->cPfadGross
                 : '';
+            \executeHook(\HOOK_EXPORT_PRE_RENDER, [
+                'product'  => $product,
+                'exporter' => $this,
+                'exportID' => $exportID
+            ]);
 
             $_out = $this->smarty->assign('Artikel', $product)->fetch('db:' . $this->model->getId());
             if (!empty($_out)) {
@@ -466,7 +496,7 @@ class FormatExporter
         if ($this->fileWriter->finish()) {
             // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
             try {
-                $this->fileWriter->splitFile();
+                $this->fileWriter->split();
             } catch (Exception $e) {
                 $cb->setError($e->getMessage());
             }
@@ -548,7 +578,7 @@ class FormatExporter
             $this->fileWriter->deleteOldExports();
             $this->fileWriter->writeFooter();
             $this->fileWriter->finish();
-            $this->fileWriter->splitFile();
+            $this->fileWriter->split();
         }
         $this->logger->notice('Finished after ' . \round(\microtime(true) - $this->startedAt, 4)
             . 's. Product cache hits: ' . $cacheHits
@@ -643,5 +673,85 @@ class FormatExporter
         }
         \header($location);
         exit;
+    }
+
+    /**
+     * @return ExportSmarty
+     */
+    public function getSmarty(): ExportSmarty
+    {
+        return $this->smarty;
+    }
+
+    /**
+     * @param ExportSmarty $smarty
+     */
+    public function setSmarty(ExportSmarty $smarty): void
+    {
+        $this->smarty = $smarty;
+    }
+
+    /**
+     * @return Model
+     */
+    public function getModel(): Model
+    {
+        return $this->model;
+    }
+
+    /**
+     * @param Model $model
+     */
+    public function setModel(Model $model): void
+    {
+        $this->model = $model;
+    }
+
+    /**
+     * @return DbInterface
+     */
+    public function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @return ExportWriterInterface
+     */
+    public function getFileWriter(): ExportWriterInterface
+    {
+        return $this->fileWriter;
+    }
+
+    /**
+     * @param ExportWriterInterface $fileWriter
+     */
+    public function setFileWriter(ExportWriterInterface $fileWriter): void
+    {
+        $this->fileWriter = $fileWriter;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getStartedAt(): ?float
+    {
+        return $this->startedAt;
+    }
+
+    /**
+     * @param float $startedAt
+     */
+    public function setStartedAt(float $startedAt): void
+    {
+        $this->startedAt = $startedAt;
     }
 }

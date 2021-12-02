@@ -1877,3 +1877,22 @@ const HOOK_CART_GET_LOCALIZED_SUM = 331;
  * @param float $customerCredit
  */
 const HOOK_BESTELLUNG_SETZEGUTHABEN = 335;
+
+/**
+ * @since 5.2.0
+ * @param JTL\Export\Product        $product
+ * @param JTL\Export\FormatExporter $exporter
+ * @param int                       $exportID
+ */
+const HOOK_EXPORT_PRE_RENDER = 340;
+
+/**
+ * @since 5.2.0
+ * @param JTL\Export\FormatExporter $exporter
+ * @param int                       $exportID
+ * @param int                       $max
+ * @param bool                      $isAsync
+ * @param bool                      $isCron
+ */
+const HOOK_EXPORT_START = 341;
+

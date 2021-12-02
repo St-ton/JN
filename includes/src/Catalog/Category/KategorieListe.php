@@ -340,7 +340,7 @@ class KategorieListe
                     'SELECT tkategorie.kKategorie
                         FROM tkategorie
                         LEFT JOIN tkategoriesichtbarkeit 
-                            ON tkategorie.kKategorie=tkategoriesichtbarkeit.kKategorie
+                            ON tkategorie.kKategorie = tkategoriesichtbarkeit.kKategorie
                             AND tkategoriesichtbarkeit.kKundengruppe = :cgid
                         WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                             AND tkategorie.kOberKategorie = :pcid

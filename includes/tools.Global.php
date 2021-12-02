@@ -3040,7 +3040,7 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
                 AND (cVersandklassen = '-1' 
                     OR cVersandklassen RLIKE :scls)
                 AND (cKundengruppen = '-1' 
-                    OR FIND_IN_SET(:cgid REPLACE(cKundengruppen, ';', ',')) > 0)";
+                    OR FIND_IN_SET(:cgid, REPLACE(cKundengruppen, ';', ',')) > 0)";
     // artikelabhaengige Versandarten nur laden und prüfen wenn der Artikel das entsprechende Funktionasattribut hat
     if (empty($Artikel->FunktionsAttribute['versandkosten'])
         && empty($Artikel->FunktionsAttribute['versandkosten gestaffelt'])

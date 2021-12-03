@@ -1896,5 +1896,9 @@ const HOOK_EXPORT_PRE_RENDER = 340;
  */
 const HOOK_EXPORT_START = 341;
 
+/**
+ * @since 5.2.0
+ * @param JTL\Export\FormatExporter $exporter
+ * @param int                       $exportID
+ */
 const HOOK_EXPORT_FACTORY_GET_EXPORTER = 342;
-

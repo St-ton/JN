@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Cron\QueueEntry;
+use JTL\Export\ExporterFactory;
 use JTL\Export\FormatExporter;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -19,7 +20,8 @@ $queue = $db->select('texportqueue', 'kExportqueue', Request::getInt('e'));
 if (!isset($queue->kExportformat) || !$queue->kExportformat || !$queue->nLimit_m) {
     die('1');
 }
-$ef = new FormatExporter($db, Shop::Container()->getLogService());
+$factory = new ExporterFactory($db, Shop::Container()->getLogService());
+$ef      = $factory->getExporter((int)$queue->kExportformat);
 
 $queue->jobQueueID    = (int)$queue->kExportqueue;
 $queue->cronID        = 0;

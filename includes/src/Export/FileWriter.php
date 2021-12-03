@@ -10,7 +10,7 @@ use JTL\Smarty\ExportSmarty;
  * Class FileWriter
  * @package JTL\Export
  */
-class FileWriter
+class FileWriter implements ExportWriterInterface
 {
     /**
      * @var ExportSmarty
@@ -38,10 +38,7 @@ class FileWriter
     private $currentHandle;
 
     /**
-     * FileWriter constructor.
-     * @param ExportSmarty $smarty
-     * @param Model        $model
-     * @param array        $config
+     * @inheritdoc
      */
     public function __construct(ExportSmarty $smarty, Model $model, array $config)
     {
@@ -51,9 +48,6 @@ class FileWriter
         $this->tmpFileName = 'tmp_' . \basename($this->model->getFilename());
     }
 
-    /**
-     * @throws Exception
-     */
     public function start(): void
     {
         $file                = \PFAD_ROOT . \PFAD_EXPORT . $this->tmpFileName;
@@ -64,43 +58,30 @@ class FileWriter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    private function getNewLine(): string
+    public function writeHeader(): int
     {
-        return ($this->config['exportformate_line_ending'] ?? 'LF') === 'LF' ? "\n" : "\r\n";
-    }
-
-    /**
-     * @param resource $handle
-     * @return int
-     */
-    public function writeHeader($handle = null): int
-    {
-        $handle = $handle ?? $this->currentHandle;
         $header = $this->smarty->fetch('string:' . $this->model->getHeader());
         if (\mb_strlen($header) === 0) {
             return 0;
         }
         $encoding = $this->model->getEncoding();
         if ($encoding === 'UTF-8') {
-            \fwrite($handle, "\xEF\xBB\xBF");
+            \fwrite($this->currentHandle, "\xEF\xBB\xBF");
         }
         if ($encoding === 'UTF-8' || $encoding === 'UTF-8noBOM') {
             $header = Text::convertUTF8($header);
         }
 
-        return \fwrite($handle, $header . $this->getNewLine());
+        return \fwrite($this->currentHandle, $header . $this->getNewLine());
     }
 
     /**
-     * @param resource|null $handle
-     * @return int
-     * @throws \SmartyException
+     * @inheritdoc
      */
-    public function writeFooter($handle = null): int
+    public function writeFooter(): int
     {
-        $handle = $handle ?? $this->currentHandle;
         $footer = $this->smarty->fetch('string:' . $this->model->getFooter());
         if (\mb_strlen($footer) === 0) {
             return 0;
@@ -110,12 +91,11 @@ class FileWriter
             $footer = Text::convertUTF8($footer);
         }
 
-        return \fwrite($handle, $footer);
+        return \fwrite($this->currentHandle, $footer);
     }
 
     /**
-     * @param string $data
-     * @return int
+     * @inheritdoc
      */
     public function writeContent(string $data): int
     {
@@ -125,7 +105,7 @@ class FileWriter
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
     public function close(): bool
     {
@@ -133,7 +113,7 @@ class FileWriter
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
     public function finish(): bool
     {
@@ -154,9 +134,9 @@ class FileWriter
     /**
      * @param string $fileName
      * @param string $fileNameSplit
-     * @return $this
+     * @return ExportWriterInterface
      */
-    private function cleanupFiles(string $fileName, string $fileNameSplit): self
+    private function cleanupFiles(string $fileName, string $fileNameSplit): ExportWriterInterface
     {
         if (\is_dir(\PFAD_ROOT . \PFAD_EXPORT) && ($dir = \opendir(\PFAD_ROOT . \PFAD_EXPORT)) !== false) {
             while (($fdir = \readdir($dir)) !== false) {
@@ -189,23 +169,9 @@ class FileWriter
     }
 
     /**
-     * @param array $splits
-     * @param int   $fileCounter
-     * @return string
+     * @inheritdoc
      */
-    private function getFileName(array $splits, int $fileCounter): string
-    {
-        $fn = \count($splits) > 1
-            ? $splits[0] . $fileCounter . $splits[1]
-            : $splits[0] . $fileCounter;
-
-        return \PFAD_ROOT . \PFAD_EXPORT . $fn;
-    }
-
-    /**
-     * @return $this
-     */
-    public function split(): self
+    public function split(): ExportWriterInterface
     {
         $path = $this->model->getSanitizedFilepath();
         $file = $this->model->getFilename();
@@ -260,5 +226,27 @@ class FileWriter
         }
 
         return $this;
+    }
+
+    /**
+     * @param array $splits
+     * @param int   $fileCounter
+     * @return string
+     */
+    private function getFileName(array $splits, int $fileCounter): string
+    {
+        $fn = \count($splits) > 1
+            ? $splits[0] . $fileCounter . $splits[1]
+            : $splits[0] . $fileCounter;
+
+        return \PFAD_ROOT . \PFAD_EXPORT . $fn;
+    }
+
+    /**
+     * @return string
+     */
+    private function getNewLine(): string
+    {
+        return ($this->config['exportformate_line_ending'] ?? 'LF') === 'LF' ? "\n" : "\r\n";
     }
 }

@@ -2461,3 +2461,9 @@ msgstr "Beim zweiten Seitenaufruf (2)"
 
 msgid "consent_manager_show_banner_value(3)"
 msgstr "Beim dritten Seitenaufruf (3)"
+
+msgid "forgot_password_captcha_value(N)"
+msgstr "Nein"
+
+msgid "forgot_password_captcha_value(Y)"
+msgstr "Ja"

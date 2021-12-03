@@ -16,7 +16,13 @@ $step        = 'formular';
 $alertHelper = Shop::Container()->getAlertService();
 $smarty      = Shop::Smarty();
 $valid       = Form::validateToken();
+$missing     = ['captcha' => false];
 if ($valid && isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
+    $validRecaptcha = true;
+    if (Shop::getSettingValue(CONF_KUNDEN, 'forgot_password_captcha') === 'Y' && !Form::validateCaptcha($_POST)) {
+        $validRecaptcha     = false;
+        $missing['captcha'] = true;
+    }
     $kunde = Shop::Container()->getDB()->select(
         'tkunde',
         'cMail',
@@ -28,7 +34,9 @@ if ($valid && isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POS
         false,
         'kKunde, cSperre'
     );
-    if (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre !== 'Y') {
+    if ($validRecaptcha === false) {
+        $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('accountLocked'), 'accountLocked');
+    } elseif (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre !== 'Y') {
         $step     = 'passwort versenden';
         $customer = new Customer((int)$kunde->kKunde);
         $customer->prepareResetPassword();
@@ -114,8 +122,9 @@ if (!$alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
 }
 
 $smarty->assign('step', $step)
-       ->assign('presetEmail', Text::filterXSS(Request::verifyGPDataString('email')))
-       ->assign('Link', $link);
+    ->assign('fehlendeAngaben', $missing)
+    ->assign('presetEmail', Text::filterXSS(Request::verifyGPDataString('email')))
+    ->assign('Link', $link);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 $smarty->display('account/password.tpl');

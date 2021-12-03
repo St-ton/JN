@@ -3034,3 +3034,9 @@ msgstr "Cookie-Banner anzeigen"
 
 msgid "consent_manager_show_banner_desc"
 msgstr "Legen Sie fest, wann das Banner zum Erteilen oder Ablehnen einer globalen Einwilligung dem Besucher im Onlineshop angezeigt werden soll."
+
+msgid "forgot_password_captcha_name"
+msgstr "Spamschutz aktivieren"
+
+msgid "forgot_password_captcha_desc"
+msgstr "Hier legen Sie fest, ob für das Passwort-Vergessen-Formular der Spamschutz aktiviert werden soll. Dazu müssen Sie ggf. zuerst den Spamschutz von JTL-Shop in den globalen Einstellungen konfigurieren."

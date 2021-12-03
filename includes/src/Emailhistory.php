@@ -55,9 +55,9 @@ class Emailhistory
      * @param null|int    $id
      * @param null|object $data
      */
-    public function __construct($id = null, $data = null)
+    public function __construct(int $id = null, $data = null)
     {
-        if ((int)$id > 0) {
+        if ($id > 0) {
             $this->loadFromDB($id);
         } elseif ($data !== null && \is_object($data)) {
             foreach (\array_keys(\get_object_vars($data)) as $member) {
@@ -115,7 +115,7 @@ class Emailhistory
     public function update(): int
     {
         $members = \array_keys(\get_object_vars($this));
-        if (!\is_array($members) || \count($members) === 0) {
+        if (\count($members) === 0) {
             throw new Exception('ERROR: Object has no members!');
         }
         $upd = new stdClass();
@@ -163,7 +163,7 @@ class Emailhistory
      */
     public function getCount(): int
     {
-        return (int)Shop::Container()->getDB()->getSingleObject('SELECT COUNT(*) AS nCount FROM temailhistory')->nCount;
+        return (int)Shop::Container()->getDB()->getSingleObject('SELECT COUNT(*) AS cnt FROM temailhistory')->cnt;
     }
 
     /**

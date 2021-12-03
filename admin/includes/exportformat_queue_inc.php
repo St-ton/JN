@@ -33,7 +33,7 @@ function holeExportformatCron(): array
             ORDER BY tcron.startDate DESC"
     );
 
-    $factory  = new ExporterFactory($db, Shop::Container()->getLogService());
+    $factory = new ExporterFactory($db, Shop::Container()->getLogService());
     foreach ($exports as $export) {
         $export->kExportformat      = (int)$export->kExportformat;
         $export->kKundengruppe      = (int)$export->kKundengruppe;

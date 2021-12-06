@@ -1900,5 +1900,6 @@ const HOOK_EXPORT_START = 341;
  * @since 5.2.0
  * @param JTL\Export\FormatExporter $exporter
  * @param int                       $exportID
+ * @param JTL\Export\Model          $model
  */
 const HOOK_EXPORT_FACTORY_GET_EXPORTER = 342;

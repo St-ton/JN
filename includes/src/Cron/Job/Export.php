@@ -63,7 +63,7 @@ final class Export extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
-        $factory  = new ExporterFactory($this->db, $this->logger);
+        $factory  = new ExporterFactory($this->db, $this->logger, $this->cache);
         $ef       = $factory->getExporter($this->getForeignKeyID());
         $finished = false;
         try {

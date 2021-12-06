@@ -40,11 +40,11 @@ class FileWriter implements ExportWriterInterface
     /**
      * @inheritdoc
      */
-    public function __construct(ExportSmarty $smarty, Model $model, array $config)
+    public function __construct(Model $model, array $config, ExportSmarty $smarty = null)
     {
-        $this->smarty      = $smarty;
         $this->model       = $model;
         $this->config      = $config;
+        $this->smarty      = $smarty;
         $this->tmpFileName = 'tmp_' . \basename($this->model->getFilename());
     }
 

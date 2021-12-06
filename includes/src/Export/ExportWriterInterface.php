@@ -12,11 +12,11 @@ use JTL\Smarty\ExportSmarty;
 interface ExportWriterInterface
 {
     /**
-     * @param ExportSmarty $smarty
-     * @param Model        $model
-     * @param array        $config
+     * @param Model             $model
+     * @param array             $config
+     * @param ExportSmarty|null $smarty
      */
-    public function __construct(ExportSmarty $smarty, Model $model, array $config);
+    public function __construct(Model $model, array $config, ?ExportSmarty $smarty = null);
 
     /**
      * @throws Exception

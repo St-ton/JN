@@ -2,6 +2,7 @@
 
 namespace JTL\Export;
 
+use JTL\Cache\JTLCacheInterface;
 use JTL\Cron\QueueEntry;
 use JTL\DB\DbInterface;
 use JTL\Shop;
@@ -45,6 +46,11 @@ abstract class AbstractExporter implements ExporterInterface
     protected $logger;
 
     /**
+     * @var JTLCacheInterface
+     */
+    protected $cache;
+
+    /**
      * @var ExportWriterInterface
      */
     protected $writer;
@@ -58,13 +64,27 @@ abstract class AbstractExporter implements ExporterInterface
      * FormatExporter constructor.
      * @param DbInterface                $db
      * @param LoggerInterface            $logger
+     * @param JTLCacheInterface          $cache
      * @param ExportWriterInterface|null $writer
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger, ?ExportWriterInterface $writer = null)
-    {
+    public function __construct(
+        DbInterface $db,
+        LoggerInterface $logger,
+        JTLCacheInterface $cache,
+        ?ExportWriterInterface $writer = null
+    ) {
         $this->db     = $db;
         $this->logger = $logger;
+        $this->cache  = $cache;
         $this->writer = $writer;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFileWriterClass(): string
+    {
+        return FileWriter::class;
     }
 
     /**
@@ -174,6 +194,30 @@ abstract class AbstractExporter implements ExporterInterface
      */
     public function init(int $exportID): void
     {
+        $this->startedAt = \microtime(true);
+        $this->initConfig($exportID);
+    }
+
+    /**
+     * @param int $exportID
+     */
+    protected function initConfig(int $exportID): void
+    {
+        $confObj = $this->db->selectAll(
+            'texportformateinstellungen',
+            'kExportformat',
+            $exportID
+        );
+        foreach ($confObj as $conf) {
+            $this->config[$conf->cName] = $conf->cWert;
+        }
+        $this->config['exportformate_lager_ueber_null'] = $this->config['exportformate_lager_ueber_null'] ?? 'N';
+        $this->config['exportformate_preis_ueber_null'] = $this->config['exportformate_preis_ueber_null'] ?? 'N';
+        $this->config['exportformate_beschreibung']     = $this->config['exportformate_beschreibung'] ?? 'N';
+        $this->config['exportformate_quot']             = $this->config['exportformate_quot'] ?? 'N';
+        $this->config['exportformate_equot']            = $this->config['exportformate_equot'] ?? 'N';
+        $this->config['exportformate_semikolon']        = $this->config['exportformate_semikolon'] ?? 'N';
+        $this->config['exportformate_line_ending']      = $this->config['exportformate_line_ending'] ?? 'LF';
     }
 
     /**
@@ -270,6 +314,22 @@ abstract class AbstractExporter implements ExporterInterface
     public function setDB(DbInterface $db): void
     {
         $this->db = $db;
+    }
+
+    /**
+     * @return JTLCacheInterface
+     */
+    public function getCache(): JTLCacheInterface
+    {
+        return $this->cache;
+    }
+
+    /**
+     * @param JTLCacheInterface $cache
+     */
+    public function setCache(JTLCacheInterface $cache): void
+    {
+        $this->cache = $cache;
     }
 
     /**

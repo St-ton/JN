@@ -23,40 +23,6 @@ use stdClass;
 class FormatExporter extends AbstractExporter
 {
     /**
-     * @inheritdoc
-     */
-    public function init(int $exportID): void
-    {
-        $this->startedAt = \microtime(true);
-        $this->initConfig($exportID);
-    }
-
-    /**
-     * @param int $exportID
-     * @return $this
-     */
-    private function initConfig(int $exportID): self
-    {
-        $confObj = $this->db->selectAll(
-            'texportformateinstellungen',
-            'kExportformat',
-            $exportID
-        );
-        foreach ($confObj as $conf) {
-            $this->config[$conf->cName] = $conf->cWert;
-        }
-        $this->config['exportformate_lager_ueber_null'] = $this->config['exportformate_lager_ueber_null'] ?? 'N';
-        $this->config['exportformate_preis_ueber_null'] = $this->config['exportformate_preis_ueber_null'] ?? 'N';
-        $this->config['exportformate_beschreibung']     = $this->config['exportformate_beschreibung'] ?? 'N';
-        $this->config['exportformate_quot']             = $this->config['exportformate_quot'] ?? 'N';
-        $this->config['exportformate_equot']            = $this->config['exportformate_equot'] ?? 'N';
-        $this->config['exportformate_semikolon']        = $this->config['exportformate_semikolon'] ?? 'N';
-        $this->config['exportformate_line_ending']      = $this->config['exportformate_line_ending'] ?? 'LF';
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     private function getNewLine(): string
@@ -84,11 +50,11 @@ class FormatExporter extends AbstractExporter
     {
         $sql = $this->getExportSQL(true);
         $cid = 'xp_' . \md5($sql);
-        if (($count = Shop::Container()->getCache()->get($cid)) !== false) {
+        if (($count = $this->getCache()->get($cid)) !== false) {
             return $count ?? 0;
         }
         $count = (int)$this->db->getSingleObject($sql)->nAnzahl;
-        Shop::Container()->getCache()->set($cid, $count, [\CACHING_GROUP_CORE], 120);
+        $this->getCache()->set($cid, $count, [\CACHING_GROUP_CORE], 120);
 
         return $count;
     }
@@ -144,7 +110,8 @@ class FormatExporter extends AbstractExporter
             'isCron'   => $isCron,
             'max'      => &$max
         ]);
-        $this->writer = $this->writer ?? new FileWriter($this->smarty, $this->model, $this->config);
+        $fileWriterClass = $this->getFileWriterClass();
+        $this->writer    = $this->writer ?? new $fileWriterClass($this->model, $this->config, $this->smarty);
         if ($this->model->getPluginID() > 0
             && \mb_strpos($this->model->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
         ) {
@@ -184,7 +151,7 @@ class FormatExporter extends AbstractExporter
         $this->logger->notice('Starting exportformat "' . $this->model->getName()
             . '" for language ' . $this->model->getLanguageID()
             . ' and customer group ' . $this->model->getCustomerGroupID()
-            . ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->model->getUseCache())
+            . ' with caching ' . (($this->getCache()->isActive() && $this->model->getUseCache())
                 ? 'enabled'
                 : 'disabled')
             . ' - ' . $queueEntry->tasksExecuted . '/' . $max . ' products exported');
@@ -391,7 +358,7 @@ class FormatExporter extends AbstractExporter
         $this->logger->notice('Starting plugin exportformat "' . $this->model->getName()
             . '" for language ' . $this->model->getLanguageID()
             . ' and customer group ' . $this->model->getCustomerGroupID()
-            . ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->model->getUseCache())
+            . ' with caching ' . (($this->getCache()->isActive() && $this->model->getUseCache())
                 ? 'enabled'
                 : 'disabled'));
         $loader = PluginHelper::getLoaderByPluginID($this->model->getPluginID(), $this->db);

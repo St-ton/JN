@@ -137,4 +137,9 @@ interface ExporterInterface
      * @param QueueEntry $queue
      */
     public function setQueue(QueueEntry $queue): void;
+
+    /**
+     * @return string
+     */
+    public function getFileWriterClass(): string;
 }

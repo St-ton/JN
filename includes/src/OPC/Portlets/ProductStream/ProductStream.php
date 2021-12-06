@@ -6,8 +6,15 @@ use Illuminate\Support\Collection;
 use JTL\Catalog\Product\Artikel;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
-use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Items\Category;
+use JTL\Filter\Items\Characteristic;
+use JTL\Filter\Items\Manufacturer;
+use JTL\Filter\Items\PriceRange;
+use JTL\Filter\Items\Rating;
+use JTL\Filter\Items\Search;
+use JTL\Filter\Items\SearchSpecial;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Type;
 use JTL\Helpers\Product;
@@ -74,26 +81,69 @@ class ProductStream extends Portlet
     }
 
     /**
+     * @param string        $filterClass
+     * @param array         $params
+     * @param mixed         $value
+     * @param ProductFilter $pf
+     * @return void
+     */
+    private function getFilterClassParamMapping(string $filterClass, array &$params, $value, ProductFilter $pf): void
+    {
+        switch ($filterClass) {
+            case Category::class:
+                $params['kKategorie'] = $value;
+                break;
+            case Characteristic::class:
+                $params['MerkmalFilter_arr'][] = $value;
+                break;
+            case PriceRange::class:
+                $params['cPreisspannenFilter'] = $value;
+                break;
+            case Manufacturer::class:
+                $params['kHersteller'] = $value;
+                break;
+            case Rating::class:
+                $params['nBewertungSterneFilter'] = $value;
+                break;
+            case SearchSpecial::class:
+                $params['kSuchspecialFilter'] = $value;
+                break;
+            case Search::class:
+                $params['kSuchFilter']      = $value;
+                $params['SuchFilter'][]     = $value;
+                $params['SuchFilter_arr'][] = $value;
+                break;
+            default:
+                /** @var FilterInterface $instance */
+                $instance                       = new $filterClass($pf);
+                $_GET[$instance->getUrlParam()] = $value;
+                break;
+        }
+    }
+
+    /**
      * @param PortletInstance $instance
      * @return Collection
      */
     public function getFilteredProductIds(PortletInstance $instance): Collection
     {
+        $params         = ['MerkmalFilter_arr' => [], 'SuchFilter_arr' => [], 'SuchFilter' => []];
         $enabledFilters = $instance->getProperty('filters');
-        $productFilter  = new ProductFilter(
+        $pf             = new ProductFilter(
             Config::getDefault(),
             Shop::Container()->getDB(),
             Shop::Container()->getCache()
         );
 
         foreach ($enabledFilters as $enabledFilter) {
-            /** @var AbstractFilter $newFilter * */
-            $newFilter = new $enabledFilter['class']($productFilter);
-            $newFilter->setType(Type::AND);
-            $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
+            $this->getFilterClassParamMapping($enabledFilter['class'], $params, $enabledFilter['value'], $pf);
+        }
+        $pf->initStates($params);
+        foreach ($pf->getActiveFilters() as $filter) {
+            $filter->setType(Type::AND);
         }
 
-        return $productFilter->getProductKeys()->slice(0, $instance->getProperty('maxProducts'));
+        return $pf->getProductKeys()->slice(0, $instance->getProperty('maxProducts'));
     }
 
     /**

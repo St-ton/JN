@@ -11,6 +11,7 @@ use JTL\Filter\Items\Characteristic;
 use JTL\Filter\Items\Manufacturer;
 use JTL\Filter\Items\PriceRange;
 use JTL\Filter\Items\Rating;
+use JTL\Filter\Items\Search;
 use JTL\Filter\Items\SearchSpecial;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
@@ -355,7 +356,6 @@ class Service
         return Request::verifyGPCDataInt('opcEditedPageKey');
     }
 
-
     /**
      * @param string $propname
      * @param array  $enabledFilters
@@ -399,6 +399,11 @@ class Service
             case SearchSpecial::class:
                 $params['kSuchspecialFilter'] = $value;
                 break;
+            case Search::class:
+                $params['kSuchFilter']      = $value;
+                $params['SuchFilter'][]     = $value;
+                $params['SuchFilter_arr'][] = $value;
+                break;
             default:
                 /** @var FilterInterface $instance */
                 $instance                       = new $filterClass($pf);
@@ -421,7 +426,7 @@ class Service
         );
         $results    = [];
         $enabledMap = [];
-        $params     = ['MerkmalFilter_arr' => []];
+        $params     = ['MerkmalFilter_arr' => [], 'SuchFilter_arr' => [], 'SuchFilter' => []];
         foreach ($enabledFilters as $enabledFilter) {
             $this->getFilterClassParamMapping($enabledFilter['class'], $params, $enabledFilter['value'], $pf);
             $enabledMap[$enabledFilter['class'] . ':' . $enabledFilter['value']] = true;

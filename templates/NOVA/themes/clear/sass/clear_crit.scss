@@ -82,6 +82,11 @@ html {
   }
 }
 
+.list-unstyled, .list-icons {
+  padding-left: 0;
+  list-style: none;
+}
+
 .input-group {
   position: relative;
   display: flex;
@@ -128,14 +133,11 @@ html {
       padding-right: map_get($spacers, 3) * 0.75
     }
   }
-  .account-icon-dropdown,
-  #shop-nav-compare,
-  #shop-nav-wish {
-    width: 44px;
-    height: 69px;
-  }
-
 }
+.search-wrapper {
+  width: 100%;
+}
+
 /* nav end */
 
 /* bootstrap */
@@ -185,6 +187,14 @@ html {
 
 .breadcrumb-back { padding-right: map-get($spacers, 3); margin-right: map-get($spacers, 3); border-right: $border-width solid $gray-medium; }
 
+.breadcrumb-item {
+  display: none;
+  @include media-breakpoint-up(md) { display: flex;}
+}
+
+.breadcrumb-arrow {
+  @include media-breakpoint-up(md) { display: none;}
+}
 /* end breadcrumb */
 
 #header-top-bar {
@@ -345,6 +355,68 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 }
 
 /* spacing end */
+/* product details */
+#product-offer .product-info ul.info-essential {
+  margin: 2rem 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.price_wrapper {
+  margin-bottom: map_get($spacers, 4);
+  .price {
+    display: inline-block;
+  }
+  .bulk-prices {
+    margin-top: map_get($spacers, 3);
+    .bulk-price {
+      margin-right: map_get($spacers, 1);
+    }
+  }
+}
+
+#product-offer {
+  .product-info {
+    border: 0;
+    .bordered-top-bottom {
+      padding: ($grid-gutter-width / 2);
+      border-top: 1px solid $gray-lighter;
+      border-bottom: 1px solid $gray-lighter;
+    }
+    ul.info-essential {
+      margin: map_get($spacers, 5) 0;
+    }
+    .shortdesc {
+      margin-bottom: map_get($spacers, 3);
+    }
+    .product-offer {
+      margin-bottom: map_get($spacers, 5);
+      > .row {
+        margin-bottom: map_get($spacers, 4);
+      }
+    }
+    .stock-information {
+      border-top: $border-width solid $border-color;
+      border-bottom: $border-width solid $border-color;
+      align-items: flex-end;
+      &.stock-information-p {
+        padding-top: map_get($spacers, 3);
+        padding-bottom: map_get($spacers, 3);
+      }
+      @include media-breakpoint-down(sm) {
+        margin-top: map_get($spacers, 3);
+      }
+    }
+    .question-on-item {
+      margin-left: auto;
+      .question {
+        padding: 0;
+      }
+    }
+  }
+}
+
+/* productdetails end */
 
 .flex-row-reverse {
   flex-direction: row-reverse !important;

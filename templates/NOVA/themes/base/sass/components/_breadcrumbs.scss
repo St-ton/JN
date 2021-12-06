@@ -27,7 +27,6 @@
 
 .breadcrumb-arrow {
 	display: flex;
-	@include media-breakpoint-up(md) { display: none;}
 	&::before {
 		@include fas('f104');
 		margin-right: 6px;

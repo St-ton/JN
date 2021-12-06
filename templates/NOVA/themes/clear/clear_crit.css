@@ -2241,6 +2241,11 @@ html {
   display: inline-block;
 }
 
+.list-unstyled, .list-icons {
+  padding-left: 0;
+  list-style: none;
+}
+
 .input-group {
   position: relative;
   display: flex;
@@ -2308,11 +2313,9 @@ html {
     padding-right: 0.75rem;
   }
 }
-#shop-nav .account-icon-dropdown,
-#shop-nav #shop-nav-compare,
-#shop-nav #shop-nav-wish {
-  width: 44px;
-  height: 69px;
+
+.search-wrapper {
+  width: 100%;
 }
 
 /* nav end */
@@ -2371,6 +2374,21 @@ html {
   padding-right: 1rem;
   margin-right: 1rem;
   border-right: 1px solid #ebebeb;
+}
+
+.breadcrumb-item {
+  display: none;
+}
+@media (min-width: 768px) {
+  .breadcrumb-item {
+    display: flex;
+  }
+}
+
+@media (min-width: 768px) {
+  .breadcrumb-arrow {
+    display: none;
+  }
 }
 
 /* end breadcrumb */
@@ -2539,6 +2557,68 @@ header .nav-right .dropdown-menu {
 }
 
 /* spacing end */
+/* product details */
+#product-offer .product-info ul.info-essential {
+  margin: 2rem 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.price_wrapper {
+  margin-bottom: 1.5rem;
+}
+.price_wrapper .price {
+  display: inline-block;
+}
+.price_wrapper .bulk-prices {
+  margin-top: 1rem;
+}
+.price_wrapper .bulk-prices .bulk-price {
+  margin-right: 0.25rem;
+}
+
+#product-offer .product-info {
+  border: 0;
+}
+#product-offer .product-info .bordered-top-bottom {
+  padding: 1rem;
+  border-top: 1px solid #f5f7fa;
+  border-bottom: 1px solid #f5f7fa;
+}
+#product-offer .product-info ul.info-essential {
+  margin: 2rem 0;
+}
+#product-offer .product-info .shortdesc {
+  margin-bottom: 1rem;
+}
+#product-offer .product-info .product-offer {
+  margin-bottom: 2rem;
+}
+#product-offer .product-info .product-offer > .row {
+  margin-bottom: 1.5rem;
+}
+#product-offer .product-info .stock-information {
+  border-top: 1px solid #ebebeb;
+  border-bottom: 1px solid #ebebeb;
+  align-items: flex-end;
+}
+#product-offer .product-info .stock-information.stock-information-p {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+@media (max-width: 767.98px) {
+  #product-offer .product-info .stock-information {
+    margin-top: 1rem;
+  }
+}
+#product-offer .product-info .question-on-item {
+  margin-left: auto;
+}
+#product-offer .product-info .question-on-item .question {
+  padding: 0;
+}
+
+/* productdetails end */
 .flex-row-reverse {
   flex-direction: row-reverse !important;
 }

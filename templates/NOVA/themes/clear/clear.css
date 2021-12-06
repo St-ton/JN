@@ -25299,60 +25299,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   padding: 0.2rem 0.45rem;
 }
 
-#product-offer .product-info {
-  border: 0;
-}
-#product-offer .product-info .bordered-top-bottom {
-  padding: 1rem;
-  border-top: 1px solid #f5f7fa;
-  border-bottom: 1px solid #f5f7fa;
-}
-#product-offer .product-info ul.info-essential {
-  margin: 2rem 0;
-}
-#product-offer .product-info .shortdesc {
-  margin-bottom: 1rem;
-}
-#product-offer .product-info .product-offer {
-  margin-bottom: 2rem;
-}
-#product-offer .product-info .product-offer > .row {
-  margin-bottom: 1.5rem;
-}
-#product-offer .product-info .stock-information {
-  border-top: 1px solid #ebebeb;
-  border-bottom: 1px solid #ebebeb;
-  align-items: flex-end;
-}
-#product-offer .product-info .stock-information.stock-information-p {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-@media (max-width: 767.98px) {
-  #product-offer .product-info .stock-information {
-    margin-top: 1rem;
-  }
-}
-#product-offer .product-info .question-on-item {
-  margin-left: auto;
-}
-#product-offer .product-info .question-on-item .question {
-  padding: 0;
-}
-
-.price_wrapper {
-  margin-bottom: 1.5rem;
-}
-.price_wrapper .price {
-  display: inline-block;
-}
-.price_wrapper .bulk-prices {
-  margin-top: 1rem;
-}
-.price_wrapper .bulk-prices .bulk-price {
-  margin-right: 0.25rem;
-}
-
 .start-configuration i {
   margin-left: 0.25rem;
 }

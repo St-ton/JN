@@ -357,8 +357,8 @@ header {
   .productlist-page-nav .displayoptions {
     width: 100%;
     text-align: right;
-    padding-bottom: map_get($spacers, 3);
-    margin-bottom: - map_get($spacers, 2);;
+    padding-bottom: map_get($spacers, 2);
+    margin-bottom:  map_get($spacers, 2);
     border-bottom: $hr-border-width solid $hr-border-color;
   }
 }

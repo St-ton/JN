@@ -28,7 +28,7 @@ class TestHydrator extends DefaultsHydrator
     {
         parent::hydrate($data, $language);
         $lang = Shop::Lang();
-        $all  = LanguageHelper::getAllLanguages(1);
+        $all  = LanguageHelper::getAllLanguages(1, true, true);
         $lang->setzeSprache($all[$language->kSprache]->cISO);
 
         $langID        = (int)$language->kSprache;

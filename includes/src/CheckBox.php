@@ -181,7 +181,10 @@ class CheckBox
                 (int)$this->kCheckBoxFunktion
             );
             if (isset($func->kCheckBoxFunktion) && $func->kCheckBoxFunktion > 0) {
-                $func->cName             = \__($func->cName);
+                if (Shop::isAdmin()) {
+                    Shop::Container()->getGetText()->loadAdminLocale('pages/checkbox');
+                    $func->cName = \__($func->cName);
+                }
                 $this->oCheckBoxFunktion = $func;
             } else {
                 $this->kCheckBoxFunktion = 0;

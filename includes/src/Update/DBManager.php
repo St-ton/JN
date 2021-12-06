@@ -93,17 +93,16 @@ class DBManager
      * @param string|null $table
      * @return array|stdClass
      */
-    public static function getStatus(string $database, $table = null)
+    public static function getStatus(string $database, ?string $table = null)
     {
         $database = Shop::Container()->getDB()->escape($database);
 
         if ($table !== null) {
-            $table = Shop::Container()->getDB()->escape($table);
-
             return Shop::Container()->getDB()->getSingleObject(
                 "SHOW TABLE STATUS 
                     FROM `{$database}` 
-                    WHERE name='{$table}'"
+                    WHERE name = :tbl",
+                ['tbl' => $table]
             );
         }
 

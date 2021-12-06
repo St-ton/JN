@@ -692,25 +692,22 @@ class LegacyLink extends MainModel
      */
     public function update(): int
     {
-        $sql     = 'UPDATE tlink SET ';
-        $set     = [];
         $members = \array_keys(\get_object_vars($this));
         if (\is_array($members) && \count($members) > 0) {
+            $upd = new stdClass();
             foreach ($members as $cMember) {
-                $cMethod = 'get' . \mb_substr($cMember, 1);
-                if (\method_exists($this, $cMethod)) {
-                    $val    = $this->$cMethod();
-                    $mValue = $val === null
-                        ? 'NULL'
-                        : ("'" . Shop::Container()->getDB()->escape($val) . "'");
-                    $set[]  = $cMember . ' = ' . $mValue;
+                $method = 'get' . \mb_substr($cMember, 1);
+                if (\method_exists($this, $method)) {
+                    $upd->$cMember = $this->$method();
                 }
             }
 
-            $sql .= \implode(', ', $set);
-            $sql .= ' WHERE kLink = ' . $this->getLink() . ' AND klinkgruppe = ' . $this->getLinkgruppe();
-
-            return Shop::Container()->getDB()->getAffectedRows($sql);
+            return Shop::Container()->getDB()->updateRow(
+                'tlink',
+                ['kLink', 'klinkgruppe'],
+                [$this->getLink(), $this->getLinkgruppe()],
+                $upd
+            );
         }
         throw new Exception('ERROR: Object has no members!');
     }

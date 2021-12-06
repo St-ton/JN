@@ -19,6 +19,8 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use JTL\Link\LinkGroupCollection;
+use JTL\Plugin\Helper;
+use JTL\Plugin\PluginLoader;
 use JTL\Shop;
 use stdClass;
 use function Functional\first;
@@ -603,22 +605,31 @@ class Frontend extends AbstractSession
      * @former checkeSpracheWaehrung()
      * @since 5.0.0
      */
-    public static function checkReset($langISO = ''): void
+    public static function checkReset(string $langISO = ''): void
     {
         if ($langISO !== '') {
             if ($langISO !== Shop::getLanguageCode()) {
                 $_SESSION['oKategorie_arr']     = [];
                 $_SESSION['oKategorie_arr_new'] = [];
             }
-            $lang = first(LanguageHelper::getAllLanguages(), static function ($l) use ($langISO) {
-                return $l->cISO === $langISO;
+            $lang = first(LanguageHelper::getAllLanguages(), static function (LanguageModel $l) use ($langISO) {
+                return $l->getIso() === $langISO;
             });
             if ($lang === null) {
                 self::urlFallback();
             }
-            $_SESSION['cISOSprache'] = $lang->cISO;
-            $_SESSION['kSprache']    = (int)$lang->kSprache;
-            Shop::setLanguage($lang->kSprache, $lang->cISO);
+            $langCode                = $lang->getIso();
+            $langID                  = $lang->getId();
+            $_SESSION['cISOSprache'] = $langCode;
+            $_SESSION['kSprache']    = $langID;
+            $oldCode                 = Shop::getLanguageCode();
+            Shop::setLanguage($langID, $langCode);
+            if ($oldCode !== null && $oldCode !== $langCode) {
+                $loader = new PluginLoader(Shop::Container()->getDB(), Shop::Container()->getCache());
+                foreach (Helper::getBootstrappedPlugins() as $bsp) {
+                    Helper::updatePluginInstance($loader->init($bsp->getPlugin()->getID(), false, $langID));
+                }
+            }
             unset($_SESSION['Suche']);
             self::setSpecialLinks();
             if (isset($_SESSION['Wunschliste'])) {
@@ -633,7 +644,6 @@ class Frontend extends AbstractSession
 
         $currencyCode = Request::verifyGPDataString('curr');
         if ($currencyCode) {
-            $cart     = self::getCart();
             $currency = first(self::getCurrencies(), static function (Currency $c) use ($currencyCode) {
                 return $c->getCode() === $currencyCode;
             });
@@ -646,7 +656,8 @@ class Frontend extends AbstractSession
                 if (isset($_SESSION['Vergleichsliste'])) {
                     self::getCompareList()->umgebungsWechsel();
                 }
-                if ($cart !== null && \count($cart->PositionenArr) > 0) {
+                $cart = self::getCart();
+                if (\count($cart->PositionenArr) > 0) {
                     $cart->setzePositionsPreise();
                 }
             }

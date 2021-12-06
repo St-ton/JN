@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Cron\QueueEntry;
 use JTL\Export\ExporterFactory;
@@ -20,9 +20,6 @@ $queue = $db->select('texportqueue', 'kExportqueue', Request::getInt('e'));
 if (!isset($queue->kExportformat) || !$queue->kExportformat || !$queue->nLimit_m) {
     die('1');
 }
-$factory = new ExporterFactory($db, Shop::Container()->getLogService());
-$ef      = $factory->getExporter((int)$queue->kExportformat);
-
 $queue->jobQueueID    = (int)$queue->kExportqueue;
 $queue->cronID        = 0;
 $queue->foreignKeyID  = 0;
@@ -32,11 +29,14 @@ $queue->lastProductID = (int)$queue->nLastArticleID;
 $queue->jobType       = 'exportformat';
 $queue->tableName     = null;
 $queue->foreignKey    = 'kExportformat';
-$queue->foreignKeyID  = (int)$queue->kExportformat;
+$queue->kExportformat = (int)$queue->kExportformat;
+$queue->foreignKeyID  = $queue->kExportformat;
 
+$factory = new ExporterFactory($db, Shop::Container()->getLogService(), Shop::Container()->getCache());
+$ef      = $factory->getExporter($queue->kExportformat);
 try {
     $ef->startExport(
-        (int)$queue->kExportformat,
+        $queue->kExportformat,
         new QueueEntry($queue),
         isset($_GET['ajax']),
         Request::getVar('back') === 'admin',

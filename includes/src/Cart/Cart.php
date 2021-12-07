@@ -133,12 +133,12 @@ class Cart
      * @param null|int[] $excludePos
      * @return float[]
      */
-    public function getAllDependentAmount(bool $onlyStockRelevant = false, $excludePos = null): array
+    public function getAllDependentAmount(bool $onlyStockRelevant = false, array $excludePos = null): array
     {
         $depAmount = [];
 
         foreach ($this->PositionenArr as $key => $cartItem) {
-            if (\is_array($excludePos) && \in_array($key, $excludePos)) {
+            if (\is_array($excludePos) && \in_array($key, $excludePos, true)) {
                 continue;
             }
 
@@ -168,7 +168,7 @@ class Cart
      * @param null|int[] $excludePos
      * @return float
      */
-    public function getDependentAmount(int $productID, bool $onlyStockRelevant = false, $excludePos = null): float
+    public function getDependentAmount(int $productID, bool $onlyStockRelevant = false, array $excludePos = null): float
     {
         static $depAmount = null;
 
@@ -302,7 +302,8 @@ class Cart
         bool $setzePositionsPreise = true,
         string $responsibility = 'core'
     ): self {
-        $iso = Shop::getLanguageCode();
+        $iso           = Shop::getLanguageCode();
+        $currentLangID = Shop::getLanguageID();
         //toDo schaue, ob diese Pos nicht markiert werden muesste, wenn anzahl>lager gekauft wird
         //schaue, ob es nicht schon Positionen mit diesem Artikel gibt
         foreach ($this->PositionenArr as $item) {
@@ -362,7 +363,7 @@ class Cart
         }
         $cartItem          = new CartItem();
         $cartItem->Artikel = new Artikel();
-        $cartItem->Artikel->fuelleArtikel($productID, $options);
+        $cartItem->Artikel->fuelleArtikel($productID, $options, 0, $currentLangID);
         $cartItem->nAnzahl           = $qty;
         $cartItem->kArtikel          = $cartItem->Artikel->kArtikel;
         $cartItem->kVersandklasse    = $cartItem->Artikel->kVersandklasse;
@@ -380,49 +381,40 @@ class Cart
         $cartItem->cLieferstatus = [];
         $cartItem->fVK           = $cartItem->Artikel->Preise->fVK;
 
-        $db            = Shop::Container()->getDB();
-        $deliveryState = $cartItem->Artikel->cLieferstatus;
+        $db = Shop::Container()->getDB();
         foreach (Frontend::getLanguages() as $lang) {
-            $cartItem->cName[$lang->getCode()]         = $cartItem->Artikel->cName;
-            $cartItem->cLieferstatus[$lang->getCode()] = $deliveryState;
+            $code                           = $lang->getCode();
+            $cartItem->cName[$code]         = $cartItem->Artikel->cName;
+            $cartItem->cLieferstatus[$code] = $cartItem->Artikel->cLieferstatus;
+            if ($lang->getId() === $currentLangID) {
+                continue;
+            }
             if ($lang->isDefault() === true) {
-                $localized = $db->select(
-                    'tartikel',
-                    'kArtikel',
-                    (int)$cartItem->kArtikel,
-                    null,
-                    null,
-                    null,
-                    null,
-                    false,
-                    'cName'
+                $localized = $db->getSingleObject(
+                    'SELECT cName
+                        FROM tartikel
+                        WHERE kArtikel = :pid',
+                    ['pid' => $cartItem->kArtikel]
                 );
             } else {
-                $localized = $db->select(
-                    'tartikelsprache',
-                    'kArtikel',
-                    (int)$cartItem->kArtikel,
-                    'kSprache',
-                    $lang->getId(),
-                    null,
-                    null,
-                    false,
-                    'cName'
+                $localized = $db->getSingleObject(
+                    'SELECT cName
+                        FROM tartikelsprache
+                        WHERE kArtikel = :pid
+                            AND kSprache = :lid',
+                    ['pid' => $cartItem->kArtikel, 'lid' => $lang->getId()]
                 );
             }
-            //Wenn fuer die gewaehlte Sprache kein Name vorhanden ist dann StdSprache nehmen
-            $cartItem->cName[$lang->getCode()] = (isset($localized->cName) && \mb_strlen(\trim($localized->cName)) > 0)
-                ? $localized->cName
-                : $cartItem->Artikel->cName;
-            $lieferstatus_spr                  = $db->select(
+            $cartItem->cName[$code] = $localized->cName ?? $cartItem->Artikel->cName;
+            $stateLocalized         = $db->select(
                 'tlieferstatus',
                 'kLieferstatus',
                 (int)($cartItem->Artikel->kLieferstatus ?? 0),
                 'kSprache',
                 $lang->getId()
             );
-            if (!empty($lieferstatus_spr->cName)) {
-                $cartItem->cLieferstatus[$lang->getCode()] = $lieferstatus_spr->cName;
+            if (!empty($stateLocalized->cName)) {
+                $cartItem->cLieferstatus[$code] = $stateLocalized->cName;
             }
         }
         // Grundpreise bei Staffelpreisen

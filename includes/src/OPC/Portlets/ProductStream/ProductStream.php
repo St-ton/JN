@@ -81,47 +81,6 @@ class ProductStream extends Portlet
     }
 
     /**
-     * @param string        $filterClass
-     * @param array         $params
-     * @param mixed         $value
-     * @param ProductFilter $pf
-     * @return void
-     */
-    private function getFilterClassParamMapping(string $filterClass, array &$params, $value, ProductFilter $pf): void
-    {
-        switch ($filterClass) {
-            case Category::class:
-                $params['kKategorie'] = $value;
-                break;
-            case Characteristic::class:
-                $params['MerkmalFilter_arr'][] = $value;
-                break;
-            case PriceRange::class:
-                $params['cPreisspannenFilter'] = $value;
-                break;
-            case Manufacturer::class:
-                $params['kHersteller'] = $value;
-                break;
-            case Rating::class:
-                $params['nBewertungSterneFilter'] = $value;
-                break;
-            case SearchSpecial::class:
-                $params['kSuchspecialFilter'] = $value;
-                break;
-            case Search::class:
-                $params['kSuchFilter']      = $value;
-                $params['SuchFilter'][]     = $value;
-                $params['SuchFilter_arr'][] = $value;
-                break;
-            default:
-                /** @var FilterInterface $instance */
-                $instance                       = new $filterClass($pf);
-                $_GET[$instance->getUrlParam()] = $value;
-                break;
-        }
-    }
-
-    /**
      * @param PortletInstance $instance
      * @return Collection
      */
@@ -134,9 +93,9 @@ class ProductStream extends Portlet
             Shop::Container()->getDB(),
             Shop::Container()->getCache()
         );
-
+        $service = Shop::Container()->getOPC();
         foreach ($enabledFilters as $enabledFilter) {
-            $this->getFilterClassParamMapping($enabledFilter['class'], $params, $enabledFilter['value'], $pf);
+            $service->getFilterClassParamMapping($enabledFilter['class'], $params, $enabledFilter['value'], $pf);
         }
         $pf->initStates($params);
         foreach ($pf->getActiveFilters() as $filter) {

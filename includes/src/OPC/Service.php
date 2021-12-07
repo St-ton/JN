@@ -378,7 +378,7 @@ class Service
      * @param ProductFilter $pf
      * @return void
      */
-    private function getFilterClassParamMapping(string $filterClass, array &$params, $value, ProductFilter $pf): void
+    public function getFilterClassParamMapping(string $filterClass, array &$params, $value, ProductFilter $pf): void
     {
         switch ($filterClass) {
             case Category::class:

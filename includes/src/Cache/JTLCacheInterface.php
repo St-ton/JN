@@ -234,10 +234,10 @@ interface JTLCacheInterface
      */
     public function getBaseID(
         bool $hash = false,
-        bool $customerID = false,
-        bool $customerGroup = true,
-        bool $languageID = true,
-        bool $currencyID = true,
+        $customerID = false,
+        $customerGroup = true,
+        $languageID = true,
+        $currencyID = true,
         bool $sslStatus = true
     ): string;
 

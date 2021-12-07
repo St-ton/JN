@@ -93,7 +93,7 @@ class ProductStream extends Portlet
             Shop::Container()->getDB(),
             Shop::Container()->getCache()
         );
-        $service = Shop::Container()->getOPC();
+        $service        = Shop::Container()->getOPC();
         foreach ($enabledFilters as $enabledFilter) {
             $service->getFilterClassParamMapping($enabledFilter['class'], $params, $enabledFilter['value'], $pf);
         }

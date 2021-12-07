@@ -126,6 +126,7 @@ if (!JTL_INCLUDE_ONLY_DB && !defined('CLI_BATCHRUN')) {
         $bAdminWartungsmodus = true;
     }
     Shop::bootstrap();
+    $session->deferredUpdate();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
     $debugbar->addCollector(new Smarty(Shop::Smarty()));
 }

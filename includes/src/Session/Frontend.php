@@ -39,6 +39,11 @@ class Frontend extends AbstractSession
     protected static $instance;
 
     /**
+     * @var bool
+     */
+    private $mustUpdate = false;
+
+    /**
      * @param bool   $start       - call session_start()?
      * @param bool   $force       - force new instance?
      * @param string $sessionName - if null, then default to current session name
@@ -69,6 +74,20 @@ class Frontend extends AbstractSession
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
 
         \executeHook(\HOOK_CORE_SESSION_CONSTRUCTOR);
+    }
+
+    /**
+     * this method is split from updateGlobals() to allow a later execution after the plugin bootstrapper
+     * was initialized. otherwise the hooks executed by these method calls could not be handled with the
+     * event dispatcher
+     */
+    public function deferredUpdate(): void
+    {
+        if ($this->mustUpdate !== true) {
+            return;
+        }
+        self::getCart()->loescheDeaktiviertePositionen();
+        Tax::setTaxRates();
     }
 
     /**
@@ -275,8 +294,7 @@ class Frontend extends AbstractSession
             $_SESSION['Hersteller']  = Manufacturer::getInstance()->getManufacturers();
         }
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
-        self::getCart()->loescheDeaktiviertePositionen();
-        Tax::setTaxRates();
+        $this->mustUpdate = true;
         Shop::Lang()->reset();
     }
 

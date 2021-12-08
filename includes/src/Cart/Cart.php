@@ -406,15 +406,17 @@ class Cart
                 );
             }
             $cartItem->cName[$code] = $localized->cName ?? $cartItem->Artikel->cName;
-            $stateLocalized         = $db->select(
-                'tlieferstatus',
-                'kLieferstatus',
-                (int)($cartItem->Artikel->kLieferstatus ?? 0),
-                'kSprache',
-                $lang->getId()
-            );
-            if (!empty($stateLocalized->cName)) {
-                $cartItem->cLieferstatus[$code] = $stateLocalized->cName;
+            if (($cartItem->Artikel->kLieferstatus ?? 0) > 0) {
+                $stateLocalized         = $db->select(
+                    'tlieferstatus',
+                    'kLieferstatus',
+                    $cartItem->Artikel->kLieferstatus ?? 0,
+                    'kSprache',
+                    $lang->getId()
+                );
+                if (!empty($stateLocalized->cName)) {
+                    $cartItem->cLieferstatus[$code] = $stateLocalized->cName;
+                }
             }
         }
         // Grundpreise bei Staffelpreisen

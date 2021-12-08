@@ -407,7 +407,7 @@ class Cart
             }
             $cartItem->cName[$code] = $localized->cName ?? $cartItem->Artikel->cName;
             if (($cartItem->Artikel->kLieferstatus ?? 0) > 0) {
-                $stateLocalized         = $db->select(
+                $stateLocalized = $db->select(
                     'tlieferstatus',
                     'kLieferstatus',
                     $cartItem->Artikel->kLieferstatus ?? 0,

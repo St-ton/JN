@@ -1999,7 +1999,7 @@ class Artikel
                     FROM teigenschaftkombiwert
                     JOIN tartikel 
                         ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                        AND tartikel.kVaterArtikel = ' . (int)$this->kArtikel . '
+                        AND tartikel.kVaterArtikel = :pid
                     LEFT JOIN teigenschaft 
                             ON teigenschaft.kEigenschaft = teigenschaftkombiwert.kEigenschaft
                     LEFT JOIN teigenschaftwert 
@@ -2008,19 +2008,20 @@ class Artikel
                     ' . $propValueSQL->cJOIN . '
                     LEFT JOIN teigenschaftsichtbarkeit 
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                        AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
                     LEFT JOIN teigenschaftwertsichtbarkeit 
                         ON teigenschaftwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
-                        AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgid
                     LEFT JOIN teigenschaftwertpict 
                         ON teigenschaftwertpict.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                     LEFT JOIN teigenschaftwertaufpreis 
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                        AND teigenschaftwertaufpreis.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftwertaufpreis.kKundengruppe = :cgid
                     WHERE teigenschaftsichtbarkeit.kEigenschaft IS NULL
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     GROUP BY teigenschaftkombiwert.kEigenschaftWert
-                    ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName'
+                    ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName',
+                ['cgid' => $customerGroupID, 'pid' => $this->kArtikel]
             );
 
             $tmpVariationsParent = Shop::Container()->getDB()->getObjects(
@@ -2038,11 +2039,12 @@ class Artikel
                     ' . $propertySQL->cJOIN . '
                     LEFT JOIN teigenschaftsichtbarkeit 
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                        AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                    WHERE teigenschaft.kArtikel = ' . $this->kArtikel . '
+                        AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
+                    WHERE teigenschaft.kArtikel = :pid
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                         AND teigenschaft.cTyp IN (\'FREIFELD\', \'PFLICHT-FREIFELD\')
-                        ORDER BY teigenschaft.nSort, teigenschaft.cName'
+                        ORDER BY teigenschaft.nSort, teigenschaft.cName',
+                ['pid' => $this->kArtikel, 'cgid' => $customerGroupID]
             );
 
             $variations = \array_merge($variations, $tmpVariationsParent);
@@ -2057,8 +2059,7 @@ class Artikel
                     FROM teigenschaftkombiwert
                     INNER JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                     LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = '
-                    . $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID() . '
+                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                     WHERE (kEigenschaft, kEigenschaftWert) IN (
                         SELECT kEigenschaft, kEigenschaftWert
                             FROM teigenschaftkombiwert
@@ -2121,19 +2122,23 @@ class Artikel
                                 AND ek.kEigenschaftWert IN (
                                     SELECT kEigenschaftWert 
                                         FROM teigenschaftkombiwert 
-                                        WHERE kEigenschaftKombi = ' . $this->kEigenschaftKombi . '
+                                        WHERE kEigenschaftKombi = :kek
                                 )
                             LEFT JOIN tartikel art 
                                 ON art.kEigenschaftKombi = ek.kEigenschaftKombi
                             LEFT JOIN tartikelsichtbarkeit 
                                 ON tartikelsichtbarkeit.kArtikel = art.kArtikel
-                                AND tartikelsichtbarkeit.kKundengruppe = '
-                                . $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID() . '
-                            WHERE tartikel.kVaterArtikel = ' . (int)$this->kVaterArtikel . '
+                                AND tartikelsichtbarkeit.kKundengruppe = :cid
+                            WHERE tartikel.kVaterArtikel = :ppid
                                 AND tartikelsichtbarkeit.kArtikel IS NULL
                             GROUP BY teigenschaftkombiwert.kEigenschaftKombi, teigenschaftkombiwert.kEigenschaftWert
                         ) pref
-                        GROUP BY pref.kEigenschaftWert'
+                        GROUP BY pref.kEigenschaftWert',
+                    [
+                        'kek'  => $this->kEigenschaftKombi,
+                        'cid'  => $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID(),
+                        'ppid' => (int)$this->kVaterArtikel
+                    ]
                 );
                 $combinations    = \array_reduce($allCombinations, static function ($cArry, $item) {
                     return (empty($cArry) ? '' : $cArry . ', ') . $item->combine;
@@ -2171,12 +2176,13 @@ class Artikel
                     ' . $propertySQL->cJOIN . '
                     LEFT JOIN teigenschaftsichtbarkeit 
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                        AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                    WHERE (teigenschaft.kArtikel = ' . $this->kVaterArtikel . '
-                            OR teigenschaft.kArtikel = ' . $this->kArtikel . ')
+                        AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
+                    WHERE (teigenschaft.kArtikel = :ppid
+                            OR teigenschaft.kArtikel = :pid)
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                         AND teigenschaft.cTyp IN (\'FREIFELD\', \'PFLICHT-FREIFELD\')
-                        ORDER BY teigenschaft.nSort, teigenschaft.cName'
+                        ORDER BY teigenschaft.nSort, teigenschaft.cName',
+                ['pid' => $this->kArtikel, 'ppid' => $this->kVaterArtikel, 'cgid' => $customerGroupID]
             );
 
             $variations = \array_merge($variations, $tmpVariationsParent);

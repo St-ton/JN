@@ -101,9 +101,9 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             'DELETE FROM tzahlungslog
-            WHERE dDatum <= :pDateLimit
-            ORDER BY dDatum ASC
-            LIMIT :pLimit',
+                WHERE dDatum <= :pDateLimit
+                ORDER BY dDatum ASC
+                LIMIT :pLimit',
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
@@ -119,9 +119,9 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             'DELETE FROM tproduktanfragehistory
-            WHERE dErstellt <= :pDateLimit
-            ORDER BY dErstellt ASC
-            LIMIT :pLimit',
+                WHERE dErstellt <= :pDateLimit
+                ORDER BY dErstellt ASC
+                LIMIT :pLimit',
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
@@ -137,9 +137,9 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             'DELETE FROM tverfuegbarkeitsbenachrichtigung
-            WHERE dErstellt <= :pDateLimit
-            ORDER BY dErstellt ASC
-            LIMIT :pLimit',
+                WHERE dErstellt <= :pDateLimit
+                ORDER BY dErstellt ASC
+                LIMIT :pLimit',
             [
                 'pDateLimit' => $this->dateLimit,
                 'pLimit'     => $this->workLimit
@@ -155,7 +155,8 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             "DELETE FROM tjtllog
-                WHERE (cLog LIKE '%@%' OR cLog LIKE '%kKunde%')
+                WHERE 
+                    (cLog LIKE '%@%' OR cLog LIKE '%kKunde%')
                     AND dErstellt <= :pDateLimit
                 ORDER BY dErstellt ASC
                 LIMIT :pLimit",
@@ -174,7 +175,8 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             "DELETE FROM tzahlungseingang
-                WHERE cAbgeholt != 'Y'
+                WHERE 
+                    cAbgeholt != 'Y'
                     AND dZeit <= :pDateLimit
                 ORDER BY dZeit ASC
                 LIMIT :pLimit",

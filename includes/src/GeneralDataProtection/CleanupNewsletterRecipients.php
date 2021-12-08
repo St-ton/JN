@@ -36,7 +36,8 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
                     JOIN tnewsletterempfaengerhistory h
                         ON h.cOptCode = e.cOptCode
                         AND h.cEmail = e.cEmail
-                WHERE e.nAktiv = 0
+                WHERE 
+                    e.nAktiv = 0
                     AND h.cAktion = 'Eingetragen'
                     AND (h.dOptCode = '0000-00-00 00:00:00' OR h.dOptCode IS NULL)
                     AND h.dEingetragen <= :pDateLimit

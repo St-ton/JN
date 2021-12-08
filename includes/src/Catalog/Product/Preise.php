@@ -348,7 +348,7 @@ class Preise
      * @param int $customerID
      * @return bool
      */
-    protected function hasCustomPrice(int $customerID): bool
+    public function hasCustomPrice(int $customerID): bool
     {
         if ($customerID <= 0) {
             return false;

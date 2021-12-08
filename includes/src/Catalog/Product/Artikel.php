@@ -1001,6 +1001,11 @@ class Artikel
     private $kSprache;
 
     /**
+     * @var int
+     */
+    private $kKundengruppe;
+
+    /**
      * @var array
      */
     protected $conf;
@@ -1091,14 +1096,14 @@ class Artikel
                 FROM tkategorieartikel
                 LEFT JOIN tkategoriesichtbarkeit 
                     ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
-                    AND tkategoriesichtbarkeit.kKundengruppe = ' .
-            Frontend::getCustomerGroup()->getID() . '
+                    AND tkategoriesichtbarkeit.kKundengruppe = :cgid
                 JOIN tkategorie 
                     ON tkategorie.kKategorie = tkategorieartikel.kKategorie
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                    AND kArtikel = ' . $id . $categoryFilter . '
+                    AND kArtikel = :pid' . $categoryFilter . '
                 ORDER BY tkategorie.nSort
-                LIMIT 1'
+                LIMIT 1',
+            ['cgid' => $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID(), 'pid' => $id]
         );
 
         return (int)($categoryProducts->kKategorie ?? 0);
@@ -1170,10 +1175,15 @@ class Artikel
             return 0;
         }
         if (!$customerGroupID) {
-            $customerGroupID = Frontend::getCustomerGroup()->getID();
+            $customerGroupID = $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
         }
-        $customerID   = Frontend::getCustomer()->getID();
-        $this->Preise = new Preise($customerGroupID, $this->kArtikel, $customerID, $this->kSteuerklasse);
+        $customerID = Frontend::getCustomer()->getID();
+        if ($this->Preise === null
+            || $this->Preise->kKundengruppe !== $customerGroupID
+            || ($this->Preise->kKunde !== $customerID && $this->Preise->hasCustomPrice($customerID))
+        ) {
+            $this->Preise = new Preise($customerGroupID, $this->kArtikel, $customerID, $this->kSteuerklasse);
+        }
         // Varkombi Kind?
         $productID = ($this->kEigenschaftKombi > 0 && $this->kVaterArtikel > 0)
             ? $this->kVaterArtikel
@@ -2021,7 +2031,8 @@ class Artikel
                     FROM teigenschaftkombiwert
                     INNER JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                     LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . Frontend::getCustomerGroup()->getID() . '
+                        AND tartikelsichtbarkeit.kKundengruppe = '
+                    . $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID() . '
                     WHERE (kEigenschaft, kEigenschaftWert) IN (
                         SELECT kEigenschaft, kEigenschaftWert
                             FROM teigenschaftkombiwert
@@ -2091,7 +2102,7 @@ class Artikel
                             LEFT JOIN tartikelsichtbarkeit 
                                 ON tartikelsichtbarkeit.kArtikel = art.kArtikel
                                 AND tartikelsichtbarkeit.kKundengruppe = '
-                                . Frontend::getCustomerGroup()->getID() . '
+                                . $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID() . '
                             WHERE tartikel.kVaterArtikel = ' . (int)$this->kVaterArtikel . '
                                 AND tartikelsichtbarkeit.kArtikel IS NULL
                             GROUP BY teigenschaftkombiwert.kEigenschaftKombi, teigenschaftkombiwert.kEigenschaftWert
@@ -2216,7 +2227,7 @@ class Artikel
             return $this;
         }
         if (!$customerGroupID) {
-            $customerGroupID = Frontend::getCustomerGroup()->getID();
+            $customerGroupID = $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
         }
         $this->nVariationsAufpreisVorhanden = 0;
         $this->Variationen                  = [];
@@ -2882,10 +2893,6 @@ class Artikel
             } elseif ($tmpProduct->Preise->fVK[0] < $this->Preise->fVK[0]) {
                 $prefix = '- ';
             }
-
-            if (!$customerGroupID) {
-                $customerGroupID = Frontend::getCustomerGroup()->getID();
-            }
             $discount = $this->Preise->isDiscountable() ? $this->getDiscount($customerGroupID, $this->kArtikel) : 0;
 
             if ($tmpProduct->Preise->fVK[0] > $this->Preise->fVK[0]
@@ -3139,8 +3146,9 @@ class Artikel
         if (!$langID) {
             $langID = LanguageHelper::getDefaultLanguage()->kSprache;
         }
-        $this->kSprache = $langID;
-        $this->options  = (object)\array_merge((array)$this->options, (array)$options);
+        $this->kKundengruppe = $customerGroupID;
+        $this->kSprache      = $langID;
+        $this->options       = (object)\array_merge((array)$this->options, (array)$options);
         if ($noCache === false) {
             $product = $this->loadFromCache($productID, $customerGroupID);
             if ($product === null || $product instanceof self) {
@@ -3369,8 +3377,8 @@ class Artikel
         $options       = $this->options;
         $baseID        = Shop::Container()->getCache()->getBaseID(false, false, $customerGroupID, $langID);
         $taxClass      = isset($_SESSION['Steuersatz']) ? \implode('_', $_SESSION['Steuersatz']) : '';
-        $customerID    = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
-        $productHash   = \md5($baseID . $this->getOptionsHash($options) . $taxClass . $customerID);
+        $customerID    = Frontend::getCustomer()->getID();
+        $productHash   = \md5($baseID . $this->getOptionsHash($options) . $taxClass);
         $this->cacheID = 'fa_' . $productID . '_' . $productHash;
         $product       = Shop::Container()->getCache()->get($this->cacheID);
         if ($product === false) {
@@ -3384,6 +3392,9 @@ class Artikel
         }
         $maxDiscount = $this->getDiscount($customerGroupID, $this->kArtikel);
         if ($this->Preise === null || !\method_exists($this->Preise, 'rabbatierePreise')) {
+            $this->holPreise($customerGroupID, $this);
+        }
+        if ($customerID > 0 && $this->Preise->hasCustomPrice($customerID)) {
             $this->holPreise($customerGroupID, $this);
         }
         if ($maxDiscount > 0) {
@@ -3848,7 +3859,9 @@ class Artikel
     private function getCategories(int $productID = 0, int $customerGroupID = 0): array
     {
         $productID       = $productID > 0 ? $productID : (int)$this->kArtikel;
-        $customerGroupID = $customerGroupID > 0 ? $customerGroupID : Frontend::getCustomerGroup()->getID();
+        $customerGroupID = $customerGroupID > 0
+            ? $customerGroupID
+            : ($this->kKundengruppe ?? Frontend::getCustomerGroup()->getID());
 
         return \array_map(static function ($e) {
             return (int)$e->kKategorie;
@@ -4664,7 +4677,7 @@ class Artikel
                 ORDER BY minPrice, nSort ASC LIMIT 1',
             [
                 'ccode'  => '%' . $countryCode . '%',
-                'cgid'   => Frontend::getCustomerGroup()->getID(),
+                'cgid'   => $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID(),
                 'sclass' => '^([0-9 -]* )?' . $this->kVersandklasse,
                 'wght'   => $this->fGewicht,
                 'net'    => $this->Preise->fVKNetto
@@ -4735,7 +4748,7 @@ class Artikel
             $resetArray             = true;
             $partList               = $this->oStueckliste_arr;
             $this->oStueckliste_arr = [];
-            $this->holeStueckliste(Frontend::getCustomerGroup()->getID(), true);
+            $this->holeStueckliste($this->kKundengruppe ?? Frontend::getCustomerGroup()->getID(), true);
         }
         $isPartsList = !empty($this->oStueckliste_arr) && !empty($this->kStueckliste);
         if ($isPartsList) {
@@ -5030,10 +5043,10 @@ class Artikel
             ? ' AND tartikel.kArtikel NOT IN (' . \implode(',', $xSellIDs) . ') '
             : '';
         $return['kArtikelXSellerKey_arr'] = $xSellIDs;
-        if ($productID === 0 || $productID === null) {
+        if ($productID === 0) {
             return $return;
         }
-        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $customerGroupID = $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
         if ((int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
             $limitSQL = ' LIMIT ' . (int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
         }
@@ -5138,7 +5151,7 @@ class Artikel
             $productID = (int)$this->kArtikel;
         }
         if (!$customerGroupID) {
-            $customerGroupID = Frontend::getCustomerGroup()->getID();
+            $customerGroupID = $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
         }
         $discounts   = [];
         $maxDiscount = 0;
@@ -5232,7 +5245,7 @@ class Artikel
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
             $net                      = Frontend::getCustomerGroup()->isMerchant();
         }
-        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $customerGroupID = $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
         if (!isset($_SESSION['Link_Versandseite'])) {
             Frontend::setSpecialLinks();
         }
@@ -5325,7 +5338,7 @@ class Artikel
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
         }
-        $customerGroupID       = $customerGroupID ?? (Frontend::getCustomer()->getGroupID() > 0
+        $customerGroupID       = $customerGroupID ?? $this->kKundengruppe ?? (Frontend::getCustomer()->getGroupID() > 0
             ? Frontend::getCustomer()->getGroupID()
             : Frontend::getCustomerGroup()->getID());
         $helper                = ShippingMethod::getInstance();
@@ -5610,7 +5623,7 @@ class Artikel
         if (!$taxText && $this->AttributeAssoc === null) {
             $taxText = $this->gibAttributWertNachName(\ART_ATTRIBUT_STEUERTEXT);
         }
-        $countries       = $this->gibMwStVersandLaenderString(false, Frontend::getCustomerGroup()->getID());
+        $countries       = $this->gibMwStVersandLaenderString(false);
         $countriesString = \count($countries) > 0
             ? Shop::Lang()->get('noShippingCostsAtExtended', 'basket', \implode(', ', $countries))
             : '';
@@ -5711,7 +5724,7 @@ class Artikel
             $queries    = [];
             $propertyID = (int)$propertyID;
             $prepvalues = [
-                'customerGroupID' => Frontend::getCustomerGroup()->getID(),
+                'customerGroupID' => $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID(),
                 'where'           => $propertyID
             ];
             foreach ($setData as $setPropertyID => $propertyValue) {

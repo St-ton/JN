@@ -5538,9 +5538,8 @@ class Artikel
         }
         $idx = Frontend::getCustomerGroup()->getIsMerchant();
         if (isset(
-            $_SESSION['Kundengruppe']->nNettoPreise,
             $this->Preise->fVK[$idx],
-            $this->Preise->cVKLocalized[Frontend::getCustomerGroup()->isMerchant()]
+            $this->Preise->cVKLocalized[$idx]
         )
             && $this->Preise->fVK[$idx] > 0
             && $this->conf['metaangaben']['global_meta_title_preis'] === 'Y'

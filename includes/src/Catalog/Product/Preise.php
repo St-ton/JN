@@ -358,7 +358,8 @@ class Preise
         return Shop::Container()->getDB()->getSingleObject(
             'SELECT COUNT(kPreis) AS cnt 
                 FROM tpreis
-                WHERE kKunde = :cid AND kArtikel = :pid',
+                WHERE kKunde = :cid 
+                  AND (kArtikel = :pid OR kArtikel IN (SELECT kArtikel FROM tartikel WHERE kVaterArtikel = :pid))',
             ['cid' => $customerID, 'pid' => $productID]
         )->cnt > 0;
     }

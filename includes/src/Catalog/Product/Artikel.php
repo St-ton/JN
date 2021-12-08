@@ -1107,14 +1107,15 @@ class Artikel
     /**
      * @param int            $customerGroupID
      * @param Artikel|object $tmpProduct
+     * @param int            $customerID - always keep at 0 when saving the result to cache
      * @return $this
      */
-    public function holPreise(int $customerGroupID, $tmpProduct): self
+    public function holPreise(int $customerGroupID, $tmpProduct, int $customerID = 0): self
     {
         $this->Preise = new Preise(
             $customerGroupID,
             (int)$tmpProduct->kArtikel,
-            0,
+            $customerID,
             (int)$tmpProduct->kSteuerklasse
         );
         if ($this->getOption('nHidePrices', 0) === 1 || !Frontend::getCustomerGroup()->mayViewPrices()) {
@@ -1130,7 +1131,7 @@ class Artikel
      * @param int $customerID
      * @return $this
      */
-    public function getCustomerPrice(int $customerGroupID, int $customerID): self
+    protected function getCustomerPrice(int $customerGroupID, int $customerID): self
     {
         if (!$this->Preise->customerHasCustomPriceForProduct($customerID, $this->kArtikel)) {
             return $this;
@@ -1145,6 +1146,7 @@ class Artikel
             $this->Preise->setPricesToZero();
         }
         $this->Preise->localizePreise();
+        $this->getVariationDetailPrice($customerGroupID, $customerID);
 
         return $this;
     }
@@ -2858,9 +2860,10 @@ class Artikel
      * Wichtig fuer die Anzeige von Aufpreisen
      *
      * @param int $customerGroupID
+     * @param int $customerID - always keep at 0 when saving the result to cache
      * @return $this
      */
-    private function getVariationDetailPrice(int $customerGroupID): self
+    private function getVariationDetailPrice(int $customerGroupID, int $customerID = 0): self
     {
         $this->oVariationDetailPreis_arr = [];
         if ($this->nVariationOhneFreifeldAnzahl !== 1) {
@@ -2903,7 +2906,7 @@ class Artikel
             if ($varDetailPrice->kArtikel !== $lastProduct) {
                 $lastProduct = $varDetailPrice->kArtikel;
                 $tmpProduct  = new self();
-                $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID);
+                $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID, $customerID);
             }
             if (!isset($this->oVariationDetailPreis_arr[$idx])) {
                 $this->oVariationDetailPreis_arr[$idx] = new stdClass();
@@ -3761,9 +3764,10 @@ class Artikel
     /**
      * @param int $productID
      * @param int $customerGroupID
+     * @param int $customerID
      * @return $this
      */
-    private function getPriceData(int $productID, int $customerGroupID): self
+    private function getPriceData(int $productID, int $customerGroupID, int $customerID = 0): self
     {
         $tmp = Shop::Container()->getDB()->getSingleObject(
             'SELECT tartikel.kArtikel, tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kSteuerklasse,
@@ -3781,7 +3785,7 @@ class Artikel
             foreach (\get_object_vars($tmp) as $k => $v) {
                 $this->$k = $v;
             }
-            $this->holPreise($customerGroupID, $this);
+            $this->holPreise($customerGroupID, $this, $customerID);
         }
 
         return $this;

@@ -175,6 +175,21 @@ class Preise
     public $discountPercentage = 0;
 
     /**
+     * @var array
+     */
+    public $cAufpreisLocalized = [];
+
+    /**
+     * @var array
+     */
+    public $cPreisVPEWertInklAufpreis = [];
+
+    /**
+     * @var array - probably a typo? but it is used in templates..
+     */
+    public $PreisecPreisVPEWertInklAufpreis = [];
+
+    /**
      * Preise constructor.
      * @param int $customerGroupID
      * @param int $productID

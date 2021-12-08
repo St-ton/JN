@@ -1016,6 +1016,26 @@ class Artikel
     protected $options;
 
     /**
+     * @var stdClass|null
+     */
+    public $SieSparenX;
+
+    /**
+     * @var string|null
+     */
+    public $cVaterURL;
+
+    /**
+     * @var array|null
+     */
+    public $VaterFunktionsAttribute;
+
+    /**
+     * @var float|null
+     */
+    public $fAnzahl_stueckliste;
+
+    /**
      *
      */
     public function __wakeup()
@@ -1388,7 +1408,7 @@ class Artikel
      * @param bool     $json
      * @return mixed|object|string
      */
-    private function prepareImageDetails($image, bool $json = true)
+    private function prepareImageDetails(stdClass $image, bool $json = true)
     {
         $result = (object)[
             'xs' => $this->getProductImageSize($image, 'xs'),
@@ -1405,7 +1425,7 @@ class Artikel
      * @param string   $size
      * @return object|null
      */
-    private function getProductImageSize($image, string $size)
+    private function getProductImageSize(stdClass $image, string $size)
     {
         switch ($size) {
             case 'xs':
@@ -1475,7 +1495,7 @@ class Artikel
      * @param stdClass $image
      * @return string
      */
-    public function getArtikelImageJSON($image): string
+    public function getArtikelImageJSON(stdClass $image): string
     {
         return $this->prepareImageDetails($image);
     }
@@ -1793,11 +1813,9 @@ class Artikel
             );
             // pruefen, ob ein Attribut mit "tab" gesetzt wurde => falls ja, den Reiter anlegen
             $mediaFile->cAttributTab = '';
-            if (\is_array($mediaFile->oMedienDateiAttribut_arr) && \count($mediaFile->oMedienDateiAttribut_arr) > 0) {
-                foreach ($mediaFile->oMedienDateiAttribut_arr as $oMedienDateiAttribut) {
-                    if ($oMedienDateiAttribut->cName === 'tab') {
-                        $mediaFile->cAttributTab = $oMedienDateiAttribut->cWert;
-                    }
+            foreach ($mediaFile->oMedienDateiAttribut_arr as $oMedienDateiAttribut) {
+                if ($oMedienDateiAttribut->cName === 'tab') {
+                    $mediaFile->cAttributTab = $oMedienDateiAttribut->cWert;
                 }
             }
             $mediaTypeName = \mb_strlen($mediaFile->cAttributTab) > 0
@@ -1842,7 +1860,7 @@ class Artikel
      * @param string $attributeName
      * @return bool
      */
-    public function filterAttribut($attributeName): bool
+    public function filterAttribut(string $attributeName): bool
     {
         $sub = \mb_substr($attributeName, 0, 7);
         if ($sub === 'intern_' || $sub === 'img_alt') {
@@ -1883,8 +1901,8 @@ class Artikel
         int $perPage = 10,
         int $page = 1,
         int $stars = 0,
-        $unlock = 'N',
-        $opt = 0,
+        string $unlock = 'N',
+        int $opt = 0,
         bool $allLanguages = false
     ): self {
         $this->Bewertungen = new Bewertung(
@@ -1933,7 +1951,7 @@ class Artikel
      * @param string $unlock
      * @return $this
      */
-    public function holehilfreichsteBewertung($unlock = 'N'): self
+    public function holehilfreichsteBewertung(string $unlock = 'N'): self
     {
         $this->HilfreichsteBewertung = new Bewertung(
             $this->kArtikel,
@@ -2440,8 +2458,6 @@ class Artikel
                         'kKundengruppe' => $customerGroupID,
                     ]
                 );
-
-                $error = false;
                 foreach ($variBoxMatrixImages as $image) {
                     $req          = Product::getRequest(
                         Image::TYPE_PRODUCT,
@@ -2454,7 +2470,7 @@ class Artikel
                 }
                 $variBoxMatrixImages = \array_merge($variBoxMatrixImages);
 
-                $this->oVariBoxMatrixBild_arr = $error ? [] : $variBoxMatrixImages;
+                $this->oVariBoxMatrixBild_arr = $variBoxMatrixImages;
             } elseif (\count($this->VariationenOhneFreifeld) === 2) {
                 // Gibt es 2 Variationen?
                 // Baue Warenkorbmatrix Bildvorschau
@@ -2644,14 +2660,12 @@ class Artikel
                 );
             }
             $error = false;
-            if (\is_array($variBoxMatrixImages) && \count($variBoxMatrixImages) > 0) {
+            if (\count($variBoxMatrixImages) > 0) {
                 $attributeIDs = [];
                 // Gleiche Farben entfernen + komplette Vorschau nicht anzeigen
                 foreach ($variBoxMatrixImages as $image) {
                     $image->kEigenschaft = (int)$image->kEigenschaft;
-                    $image->cBild        = $imageBaseURL .
-                        \PFAD_VARIATIONSBILDER_MINI .
-                        $image->cPfad;
+                    $image->cBild        = $imageBaseURL . \PFAD_VARIATIONSBILDER_MINI . $image->cPfad;
                     if (!\in_array($image->kEigenschaft, $attributeIDs, true) && \count($attributeIDs) > 0) {
                         $error = true;
                         break;
@@ -2785,7 +2799,7 @@ class Artikel
      * @param array        $array
      * @param string|array $properties
      */
-    public function sortVarCombinationArray(&$array, $properties): void
+    public function sortVarCombinationArray(array &$array, $properties): void
     {
         if (\is_string($properties)) {
             $properties = [$properties => \SORT_ASC];
@@ -3051,16 +3065,14 @@ class Artikel
      * create a bitmask that is indepentend from the order of submitted options to generate cacheID
      * without this there could potentially be redundant cache entries with the same content
      *
-     * @param stdClass $options
+     * @param stdClass|null $options
      * @return string
      */
-    private function getOptionsHash($options): string
+    private function getOptionsHash(?stdClass $options): string
     {
-        if (!\is_object($options)) {
-            $options = self::getDefaultOptions();
-        }
-        $given = \get_object_vars($options);
-        $mask  = '';
+        $options = $options ?? self::getDefaultOptions();
+        $given   = \get_object_vars($options);
+        $mask    = '';
         if (isset($options->nDownload) && $options->nDownload === 1 && !Download::checkLicense()) {
             // unset download-option if there is no license for the download module
             $options->nDownload = 0;
@@ -3156,7 +3168,7 @@ class Artikel
      */
     public function fuelleArtikel(
         int $productID,
-        $options = null,
+        ?stdClass $options = null,
         int $customerGroupID = 0,
         int $langID = 0,
         bool $noCache = false
@@ -3164,9 +3176,7 @@ class Artikel
         if (!$productID) {
             return null;
         }
-        if ($options === null) {
-            $options = self::getDefaultOptions();
-        }
+        $options = $options ?? self::getDefaultOptions();
         if ($customerGroupID) {
             CustomerGroup::reset($customerGroupID);
         } else {
@@ -4497,7 +4507,7 @@ class Artikel
     }
 
     /**
-     * @param Artikel|null $product
+     * @param Artikel|object|null $product
      * @return bool
      */
     public function aufLagerSichtbarkeit($product = null): bool
@@ -4607,14 +4617,12 @@ class Artikel
      * @param int $show
      * @return $this
      */
-    public function berechneSieSparenX($show = 1): self
+    public function berechneSieSparenX(int $show = 1): self
     {
         if ($this->fUVP <= 0) {
             return $this;
         }
-        if (!isset($this->SieSparenX)) {
-            $this->SieSparenX = new stdClass();
-        }
+        $this->SieSparenX = new stdClass();
         if (!Frontend::getCustomerGroup()->mayViewPrices()) {
             return $this;
         }
@@ -4721,7 +4729,7 @@ class Artikel
     }
 
     /**
-     * @param string         $countryCode - ISO Alpha-2 Country-Code e.g. DE
+     * @param string|null    $countryCode - ISO Alpha-2 Country-Code e.g. DE
      * @param null|int|float $purchaseQuantity
      * @param null|int|float $stockLevel
      * @param null|string    $languageISO
@@ -4730,14 +4738,22 @@ class Artikel
      * @throws \Exception
      */
     public function getDeliveryTime(
-        $countryCode,
+        ?string $countryCode,
         $purchaseQuantity = null,
         $stockLevel = null,
-        $languageISO = null,
-        $shippingID = null
+        ?string $languageISO = null,
+        ?int $shippingID = null
     ) {
         if (!isset($_SESSION['cISOSprache'])) {
             $defaultLanguage = LanguageHelper::getDefaultLanguage();
+            if ($languageISO !== null) {
+                foreach (LanguageHelper::getAllLanguages() as $language) {
+                    if ($language->getCode() === $languageISO) {
+                        $defaultLanguage = $language;
+                        break;
+                    }
+                }
+            }
             Shop::setLanguage($defaultLanguage->getId(), $defaultLanguage->getCode());
         }
         if ($purchaseQuantity !== null) {
@@ -5105,7 +5121,7 @@ class Artikel
                 'customerGroupID' => $customerGroupID
             ]
         );
-        if (!\is_array($return['oArtikelArr']) || \count($return['oArtikelArr']) < 1) {
+        if (\count($return['oArtikelArr']) < 1) {
             // Falls es keine Merkmale gibt, in tsuchcachetreffer und ttagartikel suchen
             $return['oArtikelArr'] = Shop::Container()->getDB()->getObjects(
                 'SELECT tsuchcachetreffer.kArtikel, tartikel.kVaterArtikel
@@ -5194,7 +5210,7 @@ class Artikel
         }
         // Existiert für diese Kundengruppe ein Kategorierabatt?
         if (Shop::get('checkCategoryDiscount')) {
-            if ($this->kEigenschaftKombi != 0) {
+            if ($this->kEigenschaftKombi > 0) {
                 $categoryDiscount = Shop::Container()->getDB()->select(
                     'tartikelkategorierabatt',
                     'kArtikel',
@@ -5302,23 +5318,23 @@ class Artikel
                         '" rel="nofollow" class="shipment">' .
                         Shop::Lang()->get('shipping', 'basket') . '</a>';
                 } else {
-                    $markup .= '<a href="' .
-                        $_SESSION['Link_Versandseite'][$langCode] .
-                        '" rel="nofollow" class="shipment" data-toggle="tooltip" data-placement="left" title="' .
-                        $countries . ', ' . Shop::Lang()->get('else') . ' ' .
-                        Shop::Lang()->get('plus', 'basket') . ' ' . Shop::Lang()->get('shipping', 'basket') . '">' .
-                        Shop::Lang()->get('noShippingcostsTo') . '</a>';
+                    $markup .= '<a href="'
+                        . $_SESSION['Link_Versandseite'][$langCode]
+                        . '" rel="nofollow" class="shipment" data-toggle="tooltip" data-placement="left" title="'
+                        . $countries . ', ' . Shop::Lang()->get('else') . ' '
+                        . Shop::Lang()->get('plus', 'basket') . ' ' . Shop::Lang()->get('shipping', 'basket') . '">'
+                        . Shop::Lang()->get('noShippingcostsTo') . '</a>';
                 }
-            } elseif (isset($_SESSION['Link_Versandseite'][$langCode])) {
-                $markup .= Shop::Lang()->get('plus', 'basket') .
-                    ' <a href="' . $_SESSION['Link_Versandseite'][$langCode] .
-                    '" rel="nofollow" class="shipment">' .
-                    Shop::Lang()->get('shipping', 'basket') . '</a>';
+            } else {
+                $markup .= Shop::Lang()->get('plus', 'basket')
+                    . ' <a href="' . $_SESSION['Link_Versandseite'][$langCode]
+                    . '" rel="nofollow" class="shipment">'
+                    . Shop::Lang()->get('shipping', 'basket') . '</a>';
             }
         } elseif ($this->conf['global']['global_versandhinweis'] === 'inkl') {
             $markup = ', ' . Shop::Lang()->get('incl', 'productDetails')
-                . ' <a href="' . $_SESSION['Link_Versandseite'][$langCode] .
-                '" rel="nofollow" class="shipment">'
+                . ' <a href="' . $_SESSION['Link_Versandseite'][$langCode]
+                . '" rel="nofollow" class="shipment">'
                 . Shop::Lang()->get('shipping', 'basket') . '</a>';
         }
         //versandklasse
@@ -5403,7 +5419,7 @@ class Artikel
      * @return float|int
      * @throws \Exception
      */
-    private function calculateDaysBetween($date1, $date2)
+    private function calculateDaysBetween(string $date1, string $date2)
     {
         $match = '/^\d{4}-\d{1,2}\-\d{1,2}$/';
         if (!\preg_match($match, $date1) || !\preg_match($match, $date2)) {
@@ -5425,7 +5441,7 @@ class Artikel
      * @param bool    $isCanonical
      * @return string
      */
-    public function baueVariKombiKindCanonicalURL($childProduct, $isCanonical = true): string
+    public function baueVariKombiKindCanonicalURL(Artikel $childProduct, bool $isCanonical = true): string
     {
         $url = '';
         // Beachte Vater FunktionsAttribute
@@ -5879,7 +5895,7 @@ class Artikel
      * @param mixed|null $default
      * @return mixed|null
      */
-    public function getOption($option, $default = null)
+    public function getOption(string $option, $default = null)
     {
         return $this->options->$option ?? $default;
     }
@@ -5894,9 +5910,7 @@ class Artikel
 
         foreach ($excludedAttributes as $excludedAttribute) {
             if (isset($this->FunktionsAttribute[$excludedAttribute])
-                && ($cISO === ''
-                    || (\strpos($this->FunktionsAttribute[$excludedAttribute], $cISO) !== false)
-                )
+                && ($cISO === '' || (\strpos($this->FunktionsAttribute[$excludedAttribute], $cISO) !== false))
             ) {
                 return false;
             }
@@ -5939,10 +5953,10 @@ class Artikel
     /**
      * prepares a string optimized for SEO
      *
-     * @param String $optStr
-     * @return String SEO optimized String
+     * @param string $optStr
+     * @return string - SEO optimized string
      */
-    private function getSeoString($optStr = ''): string
+    private function getSeoString(string $optStr = ''): string
     {
         $optStr = \preg_replace('/[^\\pL\d_]+/u', '-', $optStr);
         $optStr = \trim($optStr, '-');

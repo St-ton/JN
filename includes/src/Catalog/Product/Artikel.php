@@ -3883,10 +3883,8 @@ class Artikel
      * @param int $customerGroupID
      * @return int[]
      */
-    private function getCategories(int $productID = 0, int $customerGroupID): array
+    private function getCategories(int $productID, int $customerGroupID): array
     {
-        $productID = $productID > 0 ? $productID : (int)$this->kArtikel;
-
         return \array_map(static function ($e) {
             return (int)$e->kKategorie;
         }, Shop::Container()->getDB()->getObjects(

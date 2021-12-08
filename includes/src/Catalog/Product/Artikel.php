@@ -1114,8 +1114,32 @@ class Artikel
         $this->Preise = new Preise(
             $customerGroupID,
             (int)$tmpProduct->kArtikel,
-            Frontend::getCustomer()->getID(),
+            0,
             (int)$tmpProduct->kSteuerklasse
+        );
+        if ($this->getOption('nHidePrices', 0) === 1 || !Frontend::getCustomerGroup()->mayViewPrices()) {
+            $this->Preise->setPricesToZero();
+        }
+        $this->Preise->localizePreise();
+
+        return $this;
+    }
+
+    /**
+     * @param int $customerGroupID
+     * @param int $customerID
+     * @return $this
+     */
+    public function getCustomerPrice(int $customerGroupID, int $customerID): self
+    {
+        if (!$this->Preise->customerHasCustomPriceForProduct($customerID, $this->kArtikel)) {
+            return $this;
+        }
+        $this->Preise = new Preise(
+            $customerGroupID,
+            $this->kArtikel,
+            $customerID,
+            $this->kSteuerklasse
         );
         if ($this->getOption('nHidePrices', 0) === 1 || !Frontend::getCustomerGroup()->mayViewPrices()) {
             $this->Preise->setPricesToZero();
@@ -1147,10 +1171,10 @@ class Artikel
      */
     public function gibKundenRabatt($maxDiscount)
     {
-        return (isset($_SESSION['Kunde']->kKunde, $_SESSION['Kunde']->fRabatt)
-            && (int)$_SESSION['Kunde']->kKunde > 0
-            && (double)$_SESSION['Kunde']->fRabatt > $maxDiscount)
-            ? (double)$_SESSION['Kunde']->fRabatt
+        $customer = Frontend::getCustomer();
+
+        return ($customer->getID() > 0 && (double)$customer->fRabatt > $maxDiscount)
+            ? (double)$customer->fRabatt
             : $maxDiscount;
     }
 
@@ -3331,6 +3355,7 @@ class Artikel
             $toSave->Preise                         = $basePrice;
             Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
         }
+        $this->getCustomerPrice($customerGroupID, Frontend::getCustomer()->getID());
 
         return $this;
     }
@@ -3377,8 +3402,8 @@ class Artikel
         $options       = $this->options;
         $baseID        = Shop::Container()->getCache()->getBaseID(false, false, $customerGroupID, $langID);
         $taxClass      = isset($_SESSION['Steuersatz']) ? \implode('_', $_SESSION['Steuersatz']) : '';
-        $customerID    = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
-        $productHash   = \md5($baseID . $this->getOptionsHash($options) . $taxClass . $customerID);
+        $customerID    = Frontend::getCustomer()->getID();
+        $productHash   = \md5($baseID . $this->getOptionsHash($options) . $taxClass);
         $this->cacheID = 'fa_' . $productID . '_' . $productHash;
         $product       = Shop::Container()->getCache()->get($this->cacheID);
         if ($product === false) {
@@ -3394,6 +3419,7 @@ class Artikel
         if ($this->Preise === null || !\method_exists($this->Preise, 'rabbatierePreise')) {
             $this->holPreise($customerGroupID, $this);
         }
+        $this->getCustomerPrice($customerGroupID, $customerID);
         if ($maxDiscount > 0) {
             $this->rabattierePreise($customerGroupID);
         }
@@ -5240,12 +5266,9 @@ class Artikel
             $discounts[] = $customerGroup->getDiscount();
         }
         // Existiert für diesen Kunden ein Rabatt?
-        if (\array_key_exists('Kunde', $_SESSION)
-            && isset($_SESSION['Kunde']->kKunde)
-            && $_SESSION['Kunde']->kKunde > 0
-            && $_SESSION['Kunde']->fRabatt != 0
-        ) {
-            $discounts[] = $_SESSION['Kunde']->fRabatt;
+        $customer = Frontend::getCustomer();
+        if ($customer->getID() > 0 && $customer->fRabatt != 0) {
+            $discounts[] = $customer->fRabatt;
         }
         // Maximalen Rabatt setzen
         if (\count($discounts) > 0) {

@@ -195,14 +195,21 @@ class ArtikelListe
             return $this->elemente;
         }
         $categoryIDs = [];
+        $i           = 0;
         if (!empty($categoryList->elemente)) {
-            foreach ($categoryList->elemente as $i => $category) {
+            foreach ($categoryList->elemente as $category) {
                 /** @var MenuItem $category */
                 $categoryIDs[] = $category->getID();
+                if (++$i > \PRODUCT_LIST_CATEGORY_LIMIT) {
+                    break;
+                }
                 if ($category->hasChildren()) {
                     foreach ($category->getChildren() as $level2) {
                         /** @var MenuItem $level2 */
                         $categoryIDs[] = $level2->getID();
+                        if (++$i > \PRODUCT_LIST_CATEGORY_LIMIT) {
+                            break;
+                        }
                     }
                 }
             }
@@ -257,13 +264,20 @@ class ArtikelListe
         }
         $categoryIDs = [];
         if (GeneralObject::isCountable('elemente', $categoryList)) {
-            foreach ($categoryList->elemente as $i => $category) {
+            $i = 0;
+            foreach ($categoryList->elemente as $category) {
                 /** @var MenuItem $category */
                 $categoryIDs[] = $category->getID();
+                if (++$i > \PRODUCT_LIST_CATEGORY_LIMIT) {
+                    break;
+                }
                 if ($category->hasChildren()) {
                     foreach ($category->getChildren() as $level2) {
                         /** @var MenuItem $level2 */
                         $categoryIDs[] = $level2->getID();
+                        if (++$i > \PRODUCT_LIST_CATEGORY_LIMIT) {
+                            break;
+                        }
                     }
                 }
             }

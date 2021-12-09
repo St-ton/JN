@@ -1,7 +1,7 @@
 <div id="content">
     <div class="card">
-        <div class="card-body">
-            <table class="table table-responsive table-align-top">
+        <div class="card-body table-responsive ">
+            <table class="table table-align-top table-sticky-head">
                 <thead>
                     <tr>
                         <th>{__('ISO')}</th>

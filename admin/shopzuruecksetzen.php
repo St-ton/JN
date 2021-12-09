@@ -187,12 +187,35 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
                         $db->query('TRUNCATE tkundenherkunft');
                         $db->query('TRUNCATE tkundenkontodaten');
                         $db->query('TRUNCATE tlieferadresse');
+                        $db->query('TRUNCATE trechnungsadresse');
                         $db->query('TRUNCATE twarenkorbpers');
                         $db->query('TRUNCATE twarenkorbperspos');
                         $db->query('TRUNCATE twarenkorbpersposeigenschaft');
                         $db->query('TRUNCATE twunschliste');
                         $db->query('TRUNCATE twunschlistepos');
                         $db->query('TRUNCATE twunschlisteposeigenschaft');
+                        $db->query('TRUNCATE tpasswordreset');
+                        $db->query('DELETE FROM tbesucher WHERE kKunde > 0');
+                        $db->query('DELETE FROM tbesucherarchiv WHERE kKunde > 0');
+                        $db->query(
+                            'DELETE tbewertung, tbewertunghilfreich, tbewertungguthabenbonus
+                                FROM tbewertung
+                                LEFT JOIN tbewertunghilfreich
+                                    ON tbewertunghilfreich.kBewertung = tbewertung.kBewertung
+                                LEFT JOIN tbewertungguthabenbonus
+                                    ON tbewertungguthabenbonus.kBewertung = tbewertung.kBewertung
+                                WHERE tbewertung.kKunde > 0'
+                        );
+                        $db->query('DELETE FROM tgutschein WHERE kKunde > 0');
+                        $db->query('DELETE FROM tnewskommentar WHERE kKunde > 0');
+                        $db->query('DELETE FROM tnewsletterempfaenger WHERE kKunde > 0');
+                        $db->query('DELETE FROM tnewsletterempfaengerhistory WHERE kKunde > 0');
+                        $db->query(
+                            'DELETE tpreis, tpreisdetail
+                                FROM tpreis
+                                LEFT JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                                WHERE kKunde > 0'
+                        );
                     }
                     $db->query('TRUNCATE tbestellid');
                     $db->query('TRUNCATE tbestellstatus');
@@ -208,6 +231,19 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
                     $db->query('TRUNCATE twarenkorbposeigenschaft');
                     $db->query('TRUNCATE tuploaddatei');
                     $db->query('TRUNCATE tuploadqueue');
+                    $db->query('TRUNCATE tzahlungsinfo');
+                    $db->query('TRUNCATE trma');
+                    $db->query('TRUNCATE trmaartikel');
+                    $db->query('TRUNCATE tkuponbestellung');
+                    $db->query('TRUNCATE tdownloadhistory');
+                    $db->query('TRUNCATE tbestellattribut');
+                    $db->query('TRUNCATE tzahlungseingang');
+                    $db->query('TRUNCATE tzahlungsession');
+                    $db->query('TRUNCATE tzahlungsid');
+                    $db->query('TRUNCATE tzahlungslog');
+                    $db->query('DELETE FROM tbesucher WHERE kBestellung > 0');
+                    $db->query('DELETE FROM tbesucherarchiv WHERE kBestellung > 0');
+                    $db->query('DELETE FROM tcheckboxlogging WHERE kBestellung > 0');
 
                     $uploadfiles = glob(PFAD_UPLOADS . '*');
 

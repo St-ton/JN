@@ -1140,7 +1140,7 @@ msgid "kundenregistrierung_nur_lieferlaender_name"
 msgstr "Nur belieferbare Länder in Auswahl"
 
 msgid "kundenregistrierung_nur_lieferlaender_desc"
-msgstr "Hier legen Sie fest, ob bei Rechnungs- und Lieferadresse nur Länder ausgewählt werden können, für die es auch mindestens eine Versandart gibt. Wir empfehlen, diese Einstellung auf „Ja“ zu setzen."
+msgstr "(Diese Funktion hat keine Auswirkung mehr und wird in der nächsten Version entfernt) Hier legen Sie fest, ob bei Rechnungs- und Lieferadresse nur Länder ausgewählt werden können, für die es auch mindestens eine Versandart gibt. Wir empfehlen, diese Einstellung auf „Ja“ zu setzen."
 
 msgid "kundenregistrierung_abgleichen_plz_name"
 msgstr "Postleitzahlen prüfen"

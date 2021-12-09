@@ -138,6 +138,26 @@ class Kategorie
     public $cKurzbezeichnung = '';
 
     /**
+     * @var int
+     */
+    public $lft = 0;
+
+    /**
+     * @var int
+     */
+    public $rght = 0;
+
+    /**
+     * @var array|null
+     */
+    public $Unterkategorien;
+
+    /**
+     * @var bool|null
+     */
+    public $bAktiv = true;
+
+    /**
      * @param int  $id
      * @param int  $languageID
      * @param int  $customerGroupID
@@ -214,7 +234,7 @@ class Kategorie
             'SELECT tkategorie.kKategorie, ' . $catSQL->cSELECT . ' tkategorie.kOberKategorie, 
                 tkategorie.nSort, tkategorie.dLetzteAktualisierung,
                 tkategorie.cName, tkategorie.cBeschreibung, tseo.cSeo, tkategoriepict.cPfad, tkategoriepict.cType,
-                atr.cWert AS customImgName
+                atr.cWert AS customImgName, tkategorie.lft, tkategorie.rght
                 FROM tkategorie
                 ' . $catSQL->cJOIN . '
                 LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie
@@ -318,6 +338,7 @@ class Kategorie
             $this->cBildpfad      = $item->cPfad;
             $this->cBildURL       = \PFAD_KATEGORIEBILDER . $item->cPfad;
             $this->cBild          = $imageBaseURL . \PFAD_KATEGORIEBILDER . $item->cPfad;
+            $this->imageURL       = $imageBaseURL . \PFAD_KATEGORIEBILDER . $item->cPfad;
             $this->nBildVorhanden = 1;
             $this->generateAllImageSizes(true, 1, $this->cBildpfad);
         }
@@ -403,6 +424,8 @@ class Kategorie
             $this->kOberKategorie = (int)$this->kOberKategorie;
             $this->nSort          = (int)$this->nSort;
             $this->kSprache       = (int)$this->kSprache;
+            $this->lft            = (int)$this->lft;
+            $this->rght           = (int)$this->rght;
         }
 
         return $this;

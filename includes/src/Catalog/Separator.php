@@ -167,7 +167,7 @@ class Separator
      *
      * @param int $unitID
      * @param int $languageID
-     * @return mixed|bool
+     * @return int|bool
      */
     public static function insertMissingRow(int $unitID, int $languageID)
     {

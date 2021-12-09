@@ -1554,7 +1554,7 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
                 FROM tversandartzahlungsart, tzahlungsart
                 WHERE tversandartzahlungsart.kVersandart = :sid
                     AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
-                    AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen=''
+                    AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen = ''
                     OR FIND_IN_SET(:cgid, REPLACE(tzahlungsart.cKundengruppen, ';', ',')) > 0)
                     AND tzahlungsart.nActive = 1
                     AND tzahlungsart.nNutzbar = 1
@@ -2490,7 +2490,7 @@ function getKundendaten(array $post, $customerAccount, $htmlentities = 1)
     $customer   = new Customer($customerID);
     foreach ($mapping as $external => $internal) {
         if (isset($post[$external])) {
-            $val = Text::filterXSS($post[$external]);
+            $val = $external === 'pass' ? $post[$external] : Text::filterXSS($post[$external]);
             if ($htmlentities) {
                 $val = Text::htmlentities($val);
             }

@@ -106,3 +106,6 @@ msgstr "possible!"
 
 msgid "buttonSaveAnyway"
 msgstr "Save anyway!"
+
+msgid "saveWithconfigTest"
+msgstr "Save and test config"

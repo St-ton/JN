@@ -38,15 +38,16 @@ final class NewProducts extends AbstractBox
             if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached     = false;
                 $productIDs = Shop::Container()->getDB()->getObjects(
-                    'SELECT tartikel.kArtikel
+                    "SELECT tartikel.kArtikel
                         FROM tartikel
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . "
+                            AND tartikelsichtbarkeit.kKundengruppe = :cgid
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.cNeu = 'Y' " . $stockFilterSQL . $parentSQL . '
-                            AND DATE_SUB(NOW(), INTERVAL ' . $days . ' DAY) < dErstellt
-                        LIMIT ' . $limit
+                            AND DATE_SUB(NOW(), INTERVAL :dys DAY) < dErstellt
+                        LIMIT :lmt',
+                    ['lmt' => $limit, 'dys' => $days, 'cgid' => $customerGroupID]
                 );
                 Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }

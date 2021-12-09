@@ -850,13 +850,14 @@ class AccountController
             $params['httponly']
         );
         \session_destroy();
-        new Frontend();
+        $session = new Frontend();
         \session_regenerate_id(true);
 
         $_SESSION['kSprache']    = $languageID;
         $_SESSION['cISOSprache'] = $languageCode;
         $_SESSION['Waehrung']    = $currency;
         Shop::setLanguage($languageID, $languageCode);
+        $session->deferredUpdate();
 
         \header('Location: ' . $this->linkService->getStaticRoute('jtl.php') . '?loggedout=1', true, 303);
         exit();

@@ -330,10 +330,7 @@ class Product
             ['pid' => $productID, 'ppid' => $parentID, 'cgid' => $customerGroup]
         );
 
-        if (\is_array($tmpAttr)) {
-            $attrs = \array_merge($attrs, $tmpAttr);
-        }
-
+        $attrs = \array_merge($attrs, $tmpAttr);
         foreach ($attrs as $attr2) {
             $attr2->kEigenschaftWert = (int)$attr2->kEigenschaftWert;
             $attr2->kEigenschaft     = (int)$attr2->kEigenschaft;
@@ -456,7 +453,7 @@ class Product
         );
         $properties      = [];
         $exists          = true;
-        if (!\is_array($propData) || \count($propData) === 0) {
+        if (\count($propData) === 0) {
             return [];
         }
         foreach ($propData as $prop) {
@@ -977,8 +974,7 @@ class Product
                     $limit
                 );
             }
-            $xsellCount2 = \is_array($xsell) ? \count($xsell) : 0;
-            if ($xsellCount2 > 0) {
+            if (\count($xsell) > 0) {
                 foreach ($xsell as $xs) {
                     $product = new Artikel();
                     $product->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
@@ -1623,15 +1619,13 @@ class Product
                     $start = 1;
                     $nVon  = ($ratingPage - $max) + 1;
                 } else {
-                    $start = 0;
-                    $nVon  = 1;
+                    $nVon = 1;
                 }
                 // Ist die aktuelle Seite nach dem addieren der Begrenzung kleiner als die maximale Anzahl der Seiten
                 if (($ratingPage + $max) < $pages) {
                     $end  = $pages;
                     $nBis = ($ratingPage + $max) - 1;
                 } else {
-                    $end  = 0;
                     $nBis = $pages;
                 }
                 // Baue die Seiten für die Navigation
@@ -1818,7 +1812,7 @@ class Product
                     'customerGroupID' => $customerGroupID
                 ]
             );
-            if (\is_array($productAttributes) && \count($productAttributes) > 0) {
+            if (\count($productAttributes) > 0) {
                 $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($productAttributes as $productAttribute) {
                     $product = new Artikel();
@@ -1966,11 +1960,11 @@ class Product
             $configGroups[$i] = (array)$data;
         }
         /** @var Group $configGroup */
-        foreach ($config->oKonfig_arr as $i => $configGroup) {
+        foreach ($config->oKonfig_arr as $configGroup) {
             $configGroup->bAktiv = false;
             $configGroupID       = $configGroup->getKonfiggruppe();
             $configItems         = $configGroups[$configGroupID] ?? [];
-            foreach ($configGroup->oItem_arr as $j => $configItem) {
+            foreach ($configGroup->oItem_arr as $configItem) {
                 $configItemID        = $configItem->getKonfigitem();
                 $configItem->fAnzahl = (float)(
                     $configGroupAmounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial()

@@ -1142,7 +1142,7 @@ class Artikel
             $categoryFilter = ' AND tkategorieartikel.kKategorie = :fcid';
             $params['fcid'] = $_SESSION['LetzteKategorie'];
         }
-        $category = Shop::Container()->getDB()->getSingleObject(
+        $category = $this->getDB()->getSingleObject(
             'SELECT tkategorieartikel.kKategorie
                 FROM tkategorieartikel
                 LEFT JOIN tkategoriesichtbarkeit 

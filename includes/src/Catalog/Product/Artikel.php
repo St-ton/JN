@@ -1109,11 +1109,13 @@ class Artikel
 
             return (int)$this->oKategorie_arr[0];
         }
-        $customerGroupID  = $customerGroupID ?? Frontend::getCustomerGroup()->getID();
-        $categoryFilter   = isset($_SESSION['LetzteKategorie'])
-            ? ' AND tkategorieartikel.kKategorie = ' . (int)$_SESSION['LetzteKategorie']
-            : '';
-        $categoryProducts = Shop::Container()->getDB()->getSingleObject(
+        $params         = ['cgid' => $customerGroupID ?? $this->kKundengruppe, 'pid' => $id];
+        $categoryFilter = '';
+        if (isset($_SESSION['LetzteKategorie']) && \is_numeric($_SESSION['LetzteKategorie'])) {
+            $categoryFilter = ' AND tkategorieartikel.kKategorie = :fcid';
+            $params['fcid'] = $_SESSION['LetzteKategorie'];
+        }
+        $category = Shop::Container()->getDB()->getSingleObject(
             'SELECT tkategorieartikel.kKategorie
                 FROM tkategorieartikel
                 LEFT JOIN tkategoriesichtbarkeit 
@@ -1125,10 +1127,10 @@ class Artikel
                     AND kArtikel = :pid' . $categoryFilter . '
                 ORDER BY tkategorie.nSort
                 LIMIT 1',
-            ['cgid' => $customerGroupID, 'pid' => $id]
+            $params
         );
 
-        return (int)($categoryProducts->kKategorie ?? 0);
+        return (int)($category->kKategorie ?? 0);
     }
 
     /**
@@ -5381,7 +5383,6 @@ class Artikel
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
         }
-        $languageID            = $this->kSprache;
         $customerGroupID       = $customerGroupID ?? $this->kKundengruppe ?? (Frontend::getCustomer()->getGroupID() > 0
             ? Frontend::getCustomer()->getGroupID()
             : Frontend::getCustomerGroup()->getID());
@@ -5395,11 +5396,11 @@ class Artikel
         $codes   = \array_filter(map(\explode(',', $shippingFreeCountries), static function ($e) {
             return \trim($e);
         }));
-        $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries) . '_' . $languageID;
+        $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries) . '_' . $this->kSprache;
         if (($countries = $allCountries[$cacheID] ?? Shop::Container()->getCache()->get($cacheID)) === false) {
             $countries = Shop::Container()->getCountryService()->getFilteredCountryList($codes)->mapWithKeys(
-                static function (Country $country) use ($languageID) {
-                    return [$country->getISO() => $country->getName($languageID)];
+                function (Country $country) {
+                    return [$country->getISO() => $country->getName($this->kSprache)];
                 }
             )->toArray();
 

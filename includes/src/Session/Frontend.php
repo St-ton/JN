@@ -11,6 +11,7 @@ use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Lieferadresse;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
+use JTL\Firma;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
@@ -218,6 +219,7 @@ class Frontend extends AbstractSession
      */
     private function updateGlobals(): void
     {
+
         unset($_SESSION['oKategorie_arr_new']);
         $_SESSION['ks']       = [];
         $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
@@ -293,6 +295,16 @@ class Frontend extends AbstractSession
             $_SESSION['Linkgruppen'] = Shop::Container()->getLinkService()->getLinkGroups();
             $_SESSION['Hersteller']  = Manufacturer::getInstance()->getManufacturers();
         }
+        if (\defined('STEUERSATZ_STANDARD_LAND')) {
+            $merchantCountryCode = \STEUERSATZ_STANDARD_LAND;
+        } else {
+            $company = new Firma(true, Shop::Container()->getDB());
+            if (!empty($company->cLand)) {
+                $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($company->cLand);
+            }
+        }
+        $_SESSION['Steuerland']     = $merchantCountryCode ?? 'DE';
+        $_SESSION['cLieferlandISO'] = $_SESSION['Steuerland'];
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
         $this->mustUpdate = true;
         Shop::Lang()->reset();

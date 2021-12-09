@@ -130,19 +130,20 @@ class Merkmal
                             AND standardSprache.kSprache = ' . $defaultLanguageID . '
                         LEFT JOIN tmerkmalsprache AS fremdSprache 
                             ON fremdSprache.kMerkmal = tmerkmal.kMerkmal
-                            AND fremdSprache.kSprache = ' . $languageID;
+                            AND fremdSprache.kSprache = :lid';
         } else {
             $selectSQL = 'tmerkmalsprache.cName';
             $joinSQL   = 'INNER JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                            AND tmerkmalsprache.kSprache = ' . $languageID;
+                            AND tmerkmalsprache.kSprache = :lid';
         }
         $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.cBildpfad, tmerkmal.cTyp, ' .
                 $selectSQL . '
                 FROM tmerkmal ' .
                 $joinSQL . '
-                WHERE tmerkmal.kMerkmal = ' . $id . '
-                ORDER BY tmerkmal.nSort'
+                WHERE tmerkmal.kMerkmal = :mid
+                ORDER BY tmerkmal.nSort',
+            ['mid' => $id, 'lid' => $languageID]
         );
         if ($data !== null && $data->kMerkmal > 0) {
             foreach (\array_keys(\get_object_vars($data)) as $cMember) {
@@ -158,18 +159,19 @@ class Merkmal
                                         AND standardSprache.kSprache = ' . $defaultLanguageID . '
                                     LEFT JOIN tmerkmalwertsprache AS fremdSprache 
                                         ON fremdSprache.kMerkmalWert = tmw.kMerkmalWert
-                                        AND fremdSprache.kSprache = ' . $languageID;
+                                        AND fremdSprache.kSprache = :lid';
                 $orderSQL     = ' ORDER BY tmw.nSort, COALESCE(fremdSprache.cWert, standardSprache.cWert)';
             } else {
                 $joinValueSQL = 'INNER JOIN tmerkmalwertsprache AS standardSprache
                                         ON standardSprache.kMerkmalWert = tmw.kMerkmalWert
-                                        AND standardSprache.kSprache = ' . $languageID;
+                                        AND standardSprache.kSprache = :lid';
                 $orderSQL     = ' ORDER BY tmw.nSort, standardSprache.cWert';
             }
             $tmpAttributes          = Shop::Container()->getDB()->getObjects(
                 'SELECT tmw.kMerkmalWert
                     FROM tmerkmalwert tmw ' .  $joinValueSQL . '
-                    WHERE kMerkmal = ' . $this->kMerkmal . $orderSQL
+                    WHERE kMerkmal = :mid' . $orderSQL,
+                ['mid' => $this->kMerkmal, 'lid' => $languageID]
             );
             $this->oMerkmalWert_arr = [];
             foreach ($tmpAttributes as $oMerkmalWertTMP) {

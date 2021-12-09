@@ -21,7 +21,7 @@ Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 if (!empty($_POST) && Form::validateToken()) {
     $postData = Text::filterXSS($_POST);
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSectionSettings(CONF_FS, $postData), 'saveSettings');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSectionSettings(CONF_FS, $_POST), 'saveSettings');
     $shopSettings->reset();
 
     if (isset($postData['test'])) {

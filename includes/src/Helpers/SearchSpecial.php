@@ -245,11 +245,11 @@ class SearchSpecial
                         AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tbestseller.kArtikel = tartikel.kArtikel
-                        AND ROUND(tbestseller.fAnzahl) >= :mina'
-                        . self::getParentSQL() . ' '
-                        . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL()
-                        . ' ORDER BY fAnzahl DESC',
-                ['cgid' => $customerGroupID, 'mina' => $minAmount]
+                        AND ROUND(tbestseller.fAnzahl) >= :mnt
+                        ' . self::getParentSQL() . '
+                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
+                    ORDER BY fAnzahl DESC',
+                ['cgid' => $customerGroupID, 'mnt' => $minAmount]
             ), static function ($e) {
                 return (int)$e->kArtikel;
             });
@@ -328,10 +328,9 @@ class SearchSpecial
                         AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.cNeu = 'Y'
-                        AND DATE_SUB(NOW(), INTERVAL :ds DAY) < tartikel.dErstellt"
-                        . self::getParentSQL() . ' '
-                        . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
-                ['cgid' => $customerGroupID, 'ds' => $days]
+                        AND DATE_SUB(NOW(), INTERVAL :dys DAY) < tartikel.dErstellt
+                        " . self::getParentSQL() . ' ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
+                ['cgid' => $customerGroupID, 'dys' => $days]
             ), static function ($e) {
                 return (int)$e->kArtikel;
             });

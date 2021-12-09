@@ -1017,6 +1017,7 @@ final class Products extends AbstractSync
         $this->deleteProductMediaFiles($id);
         if ($force === true) {
             $this->deleteProductDownloads($id);
+            $this->deleteProductUploads($id);
             $this->db->delete('tartikelkategorierabatt', 'kArtikel', $id);
             $this->db->delete('tartikelpicthistory', 'kArtikel', $id);
             $this->db->delete('tsuchcachetreffer', 'kArtikel', $id);
@@ -1026,7 +1027,6 @@ final class Products extends AbstractSync
         } else {
             $this->deleteDownload($id);
         }
-        $this->deleteProductUploads($id);
         $this->deleteConfigGroup($id);
 
         return $id;
@@ -1241,8 +1241,11 @@ final class Products extends AbstractSync
         if ($data !== null && !empty($data->cArtNr)) {
             $artNo = $data->cArtNr;
             $this->db->queryPrepared(
-                "UPDATE tkupon SET cArtikel = REPLACE(cArtikel, ';" . $artNo . ";', ';') WHERE cArtikel LIKE :artno",
-                ['artno' => '%;' . $artNo . ';%']
+                "UPDATE tkupon SET cArtikel = REPLACE(cArtikel, :rep, ';') WHERE cArtikel LIKE :artno",
+                [
+                    'rep'   => ';' . $artNo . ';',
+                    'artno' => '%;' . $artNo . ';%'
+                ]
             );
             $this->db->query("UPDATE tkupon SET cArtikel = '' WHERE cArtikel = ';'");
         }

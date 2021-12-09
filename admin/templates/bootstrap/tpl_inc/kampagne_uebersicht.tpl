@@ -195,7 +195,7 @@
                         </div>
                     </div>
                 </div>
-                {if isset($oKampagne_arr) && $oKampagne_arr|@count > 0 && isset($oKampagneDef_arr) && $oKampagneDef_arr|@count > 0}
+                {if isset($oKampagne_arr) && $oKampagne_arr|count > 0 && isset($oKampagneDef_arr) && $oKampagneDef_arr|count > 0}
                     <div class="table-responsive">
                         <table class="table table-striped table-align-top">
                             <thead>
@@ -212,13 +212,13 @@
                                 </tr>
                             </thead>
                             <tbody>
-                            {foreach name='kampagnenstats' from=$oKampagneStat_arr key=kKampagne item=oKampagneStatDef_arr}
+                            {foreach $oKampagneStat_arr as $kKampagne => $oKampagneStatDef_arr}
                                 {if $kKampagne !== 'Gesamt'}
                                     <tr>
                                         <td>
                                             <a href="kampagne.php?detail=1&kKampagne={$oKampagne_arr[$kKampagne]->kKampagne}&cZeitParam={$cZeitraumParam}&token={$smarty.session.jtl_token}">{$oKampagne_arr[$kKampagne]->getName()}</a>
                                         </td>
-                                        {foreach name='kampagnendefs' from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef}
+                                        {foreach $oKampagneStatDef_arr as $kKampagneDef => $oKampagneStatDef}
                                             <td>
                                                 <a href="kampagne.php?kKampagne={$kKampagne}&defdetail=1&kKampagneDef={$kKampagneDef}&cZeitParam={$cZeitraumParam}&token={$smarty.session.jtl_token}">{$oKampagneStat_arr[$kKampagne][$kKampagneDef]}</a>
                                             </td>
@@ -230,7 +230,7 @@
                             <tfoot>
                                 <tr>
                                     <td>{__('kampagneOverall')}</td>
-                                    {foreach name='kampagnendefs' from=$oKampagneDef_arr key=kKampagneDef item=oKampagneDef}
+                                    {foreach $oKampagneDef_arr as $kKampagneDef => $oKampagneDef}
                                         <td>
                                             {$oKampagneStat_arr.Gesamt[$kKampagneDef]}
                                         </td>

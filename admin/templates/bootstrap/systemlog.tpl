@@ -33,7 +33,7 @@
                     {$jtl_token}
                     {if $nTotalLogCount === 0}
                         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
-                    {elseif $oLog_arr|@count === 0}
+                    {elseif $oLog_arr|count === 0}
                         <div class="alert alert-info" role="alert">{__('noFilterResults')}</div>
                     {else}
                         <div class="listgroup">

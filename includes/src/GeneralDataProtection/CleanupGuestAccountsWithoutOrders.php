@@ -32,14 +32,14 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
         $guestAccounts = $this->db->getObjects(
             "SELECT kKunde
                 FROM tkunde
-                WHERE 
+                WHERE
                     nRegistriert = 0
                     AND cAbgeholt ='Y'
                     AND cKundenNr != 'Anonym'
                     AND cVorname != 'Anonym'
                     AND cNachname != 'Anonym'
-                LIMIT :pLimit",
-            ['pLimit' => $this->workLimit]
+                LIMIT :workLimit",
+            ['workLimit' => $this->workLimit]
         );
 
         foreach ($guestAccounts as $guestAccount) {

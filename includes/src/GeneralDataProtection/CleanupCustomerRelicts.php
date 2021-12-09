@@ -56,9 +56,9 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                         AND tkunde.cNachname != :anonString
                         AND tkunde.cKundenNr != :anonString
                 )
-                LIMIT :pLimit',
+                LIMIT :workLimit',
             [
-                'pLimit'     => $this->workLimit,
+                'workLimit'  => $this->workLimit,
                 'anonString' => Customer::CUSTOMER_ANONYM
             ]
         );
@@ -82,9 +82,9 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                         AND tkunde.cNachname != :anonString
                         AND tkunde.cKundenNr != :anonString
                 )
-            LIMIT :pLimit',
+            LIMIT :workLimit',
             [
-                'pLimit'     => $this->workLimit,
+                'workLimit'  => $this->workLimit,
                 'anonString' => Customer::CUSTOMER_ANONYM
             ]
         );
@@ -109,9 +109,9 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                         AND tkunde.cNachname != :anonString
                         AND tkunde.cKundenNr != :anonString
                 )
-            LIMIT :pLimit',
+            LIMIT :workLimit',
             [
-                'pLimit'     => $this->workLimit,
+                'workLimit'  => $this->workLimit,
                 'anonString' => Customer::CUSTOMER_ANONYM
             ]
         );
@@ -136,9 +136,9 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                         AND tkunde.cNachname != :anonString
                         AND tkunde.cKundenNr != :anonString
                 )
-            LIMIT :pLimit',
+            LIMIT :workLimit',
             [
-                'pLimit'     => $this->workLimit,
+                'workLimit'  => $this->workLimit,
                 'anonString' => Customer::CUSTOMER_ANONYM
             ]
         );
@@ -193,7 +193,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                 AND NOT EXISTS (
                     SELECT kKunde
                     FROM tkunde
-                    WHERE 
+                    WHERE
                         tkunde.kKunde = k.kKunde
                         AND tkunde.cVorname != :anonString
                         AND tkunde.cNachname != :anonString

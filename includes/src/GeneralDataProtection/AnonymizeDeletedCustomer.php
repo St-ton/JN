@@ -2,6 +2,8 @@
 
 namespace JTL\GeneralDataProtection;
 
+use JTL\Customer\Customer;
+
 /**
  * Class AnonymizeDeletedCustomer
  * @package JTL\GeneralDataProtection
@@ -25,19 +27,28 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
     private function anonymizeRatings(): void
     {
         $this->db->queryPrepared(
-            "UPDATE tbewertung b
+            'UPDATE tbewertung b
             SET
-                b.cName  = 'Anonym',
+                b.cName  = :anonString,
                 b.kKunde = 0
             WHERE
-                b.cName != 'Anonym'
+                b.cName != :anonString
                 AND b.kKunde > 0
-                AND dDatum <= :pDateLimit
-                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = b.kKunde)
-            LIMIT :pLimit",
+                AND dDatum <= :dateLimit
+                AND NOT EXISTS (
+                    SELECT kKunde
+                    FROM tkunde
+                    WHERE
+                        tkunde.kKunde = b.kKunde
+                        AND tkunde.cVorname != :anonString
+                        AND tkunde.cNachname != :anonString
+                        AND tkunde.cKundenNr != :anonString
+                )
+            LIMIT :workLimit',
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
+                'dateLimit'  => $this->dateLimit,
+                'workLimit'  => $this->workLimit,
+                'anonString' => Customer::CUSTOMER_ANONYM
             ]
         );
     }
@@ -60,12 +71,12 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
                     FROM tkunde k INNER JOIN tbestellung b ON k.kKunde = b.kKunde
                     WHERE b.kBestellung = z.kBestellung
                 )
-                AND z.dZeit <= :pDateLimit
+                AND z.dZeit <= :dateLimit
             ORDER BY z.dZeit ASC
-            LIMIT :pLimit",
+            LIMIT :workLimit",
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
             ]
         );
     }
@@ -79,18 +90,29 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
     private function anonymizeNewsComments(): void
     {
         $this->db->queryPrepared(
-            "UPDATE tnewskommentar n
+            'UPDATE tnewskommentar n
             SET
-                n.cName = 'Anonym',
-                n.cEmail = 'Anonym',
+                n.cName = :anonString,
+                n.cEmail = :anonString,
                 n.kKunde = 0
             WHERE
-                n.cName != 'Anonym'
-                AND n.cEmail != 'Anonym'
+                n.cName != :anonString
+                AND n.cEmail != :anonString
                 AND n.kKunde > 0
-                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = n.kKunde)
-            LIMIT :pLimit",
-            ['pLimit' => $this->workLimit]
+                AND NOT EXISTS (
+                    SELECT kKunde
+                    FROM tkunde
+                    WHERE
+                        tkunde.kKunde = n.kKunde
+                        AND tkunde.cVorname != :anonString
+                        AND tkunde.cNachname != :anonString
+                        AND tkunde.cKundenNr != :anonString
+                )
+            LIMIT :workLimit',
+            [
+                'workLimit'  => $this->workLimit,
+                'anonString' => Customer::CUSTOMER_ANONYM
+            ]
         );
     }
 }

@@ -121,7 +121,7 @@ if ($conf['preisverlauf']['preisverlauf_anzeigen'] === 'Y' && Frontend::getCusto
 if (empty($cCanonicalURL)) {
     $cCanonicalURL = $shopURL . $AktuellerArtikel->cSeo;
 }
-$AktuellerArtikel->berechneSieSparenX($conf['artikeldetails']['sie_sparen_x_anzeigen']);
+$AktuellerArtikel->berechneSieSparenX((int)$conf['artikeldetails']['sie_sparen_x_anzeigen']);
 $productNotices = Product::getProductMessages();
 
 if ($conf['artikeldetails']['artikeldetails_fragezumprodukt_anzeigen'] !== 'N') {

@@ -39,7 +39,7 @@ class TemplateService implements TemplateServiceInterface
     /**
      * @var string
      */
-    private $cacheID = 'active_tpl';
+    private $cacheID = 'active_tpl_default';
 
     /**
      * TemplateService constructor.
@@ -53,7 +53,7 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function setActiveTemplate(string $dir, string $type = 'standard'): bool
     {
@@ -129,11 +129,12 @@ class TemplateService implements TemplateServiceInterface
     public function getActiveTemplate(bool $withLicense = true): Model
     {
         if ($this->activeTemplate === null) {
-            if (($this->activeTemplate = $this->cache->get($this->cacheID)) === false) {
-                $this->activeTemplate = $this->loadFull(['type' => 'standard'], $withLicense);
-            } else {
-                $this->loaded = true;
-            }
+            $attributes = ['type' => 'standard'];
+            \executeHook(\HOOK_TPL_LOAD_PRE, [
+                'attributes' => &$attributes,
+                'service'    => $this
+            ]);
+            $this->activeTemplate = $this->loadFull($attributes, $withLicense);
         }
         $_SESSION['cTemplate'] = $this->activeTemplate->getTemplate();
 
@@ -145,6 +146,12 @@ class TemplateService implements TemplateServiceInterface
      */
     public function loadFull(array $attributes, bool $withLicense = true): Model
     {
+        $this->cacheID = 'active_tpl_' . ($attributes['type'] ?? 'default');
+        if (($model = $this->cache->get($this->cacheID)) !== false) {
+            $this->loaded = true;
+
+            return $model;
+        }
         try {
             $template = Model::loadByAttributes($attributes, $this->db);
         } catch (Exception $e) {
@@ -152,7 +159,7 @@ class TemplateService implements TemplateServiceInterface
             $template->setTemplate('no-template');
         }
         $reader    = new XMLReader();
-        $tplXML    = $reader->getXML($template->getTemplate(), $template->getType() === 'admin');
+        $tplXML    = $reader->getXML($template->getTemplate(), $template->getTemplateType() === 'admin');
         $parentXML = ($tplXML === null || empty($tplXML->Parent)) ? null : $reader->getXML((string)$tplXML->Parent);
         $dir       = $template->getTemplate();
         if ($dir === null || $tplXML === null) {
@@ -271,5 +278,69 @@ class TemplateService implements TemplateServiceInterface
     public function reset(): void
     {
         $this->activeTemplate = null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCache(): JTLCacheInterface
+    {
+        return $this->cache;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setCache(JTLCacheInterface $cache): void
+    {
+        $this->cache = $cache;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isLoaded(): bool
+    {
+        return $this->loaded;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setLoaded(bool $loaded): void
+    {
+        $this->loaded = $loaded;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCacheID(): string
+    {
+        return $this->cacheID;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setCacheID(string $cacheID): void
+    {
+        $this->cacheID = $cacheID;
     }
 }

@@ -165,6 +165,14 @@ class Notification implements IteratorAggregate, Countable
                 $hash
             );
         }
+        $times = $status->hasMysqlPhpTimeMismatch();
+        if ($times['diff'] > 1) {
+            $this->add(
+                NotificationEntry::TYPE_WARNING,
+                \__('mysqlTimeErrorTitle'),
+                \sprintf(\__('mysqlTimeErrorMessage', $times['db'], $times['php']))
+            );
+        }
 
         if ($status->hasInstallDir()) {
             $this->add(

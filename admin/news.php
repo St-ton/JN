@@ -29,7 +29,7 @@ $db             = Shop::Container()->getDB();
 $author         = ContentAuthor::getInstance();
 $controller     = new Controller($db, $smarty, Shop::Container()->getCache());
 $newsCategory   = new Category($db);
-$languages      = LanguageHelper::getAllLanguages(0, true);
+$languages      = LanguageHelper::getAllLanguages(0, true, true);
 $adminID        = (int)$_SESSION['AdminAccount']->kAdminlogin;
 $adminName      = $db->select('tadminlogin', 'kAdminlogin', $adminID)->cName;
 

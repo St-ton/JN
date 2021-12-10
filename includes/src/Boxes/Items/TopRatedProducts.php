@@ -34,9 +34,10 @@ final class TopRatedProducts extends AbstractBox
                     FROM tartikel
                     JOIN tartikelext 
                         ON tartikel.kArtikel = tartikelext.kArtikel
-                    WHERE ROUND(fDurchschnittsBewertung) >= ' . (int)$config['boxen']['boxen_topbewertet_minsterne'] .
-                    ' ' . $parentSQL . ' ORDER BY tartikelext.fDurchschnittsBewertung DESC
-                    LIMIT ' . $limit
+                    WHERE ROUND(fDurchschnittsBewertung) >= :mnr ' . $parentSQL . ' 
+                    ORDER BY tartikelext.fDurchschnittsBewertung DESC
+                    LIMIT :lmt',
+                ['lmt' => $limit, 'mnr' => (int)$config['boxen']['boxen_topbewertet_minsterne']]
             );
             Shop::Container()->getCache()->set($cacheID, $topRated, $cacheTags);
         }

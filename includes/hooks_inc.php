@@ -1877,3 +1877,10 @@ const HOOK_CART_GET_LOCALIZED_SUM = 331;
  * @param float $customerCredit
  */
 const HOOK_BESTELLUNG_SETZEGUTHABEN = 335;
+
+/**
+ * @since 5.2.0
+ * @param JTL\Template\TemplateServiceInterface $service
+ * @param array $arguments
+ */
+const HOOK_TPL_LOAD_PRE = 350;

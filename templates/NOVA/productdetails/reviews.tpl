@@ -53,11 +53,10 @@
                                             {/foreach}
                                             {if isset($bewertungSterneSelected) && $bewertungSterneSelected > 0}
                                                 {block name='productdetails-reviews-note-all-ratings'}
-                                                    <p>
-                                                        {link href="{$Artikel->cURLFull}#tab-votes" class="btn btn-outline-primary "}
+                                                    <hr>
+                                                    {link href="{$Artikel->cURLFull}#tab-votes" class="btn btn-outline-primary btn-sm btn-block"}
                                                         {lang key='allRatings'}
-                                                        {/link}
-                                                    </p>
+                                                    {/link}
                                                 {/block}
                                             {/if}
                                         {/block}

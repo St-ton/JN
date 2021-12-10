@@ -141,6 +141,16 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
+     * @param string $section
+     * @param array  $value
+     */
+    public function overrideSection(string $section, array $value): void
+    {
+        $this->container[$section]   = $value;
+        $this->allSettings[$section] = $value;
+    }
+
+    /**
      * @param mixed $offset
      * @return mixed|null
      */

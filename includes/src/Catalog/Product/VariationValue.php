@@ -7,6 +7,7 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
+use JTL\Session\Frontend;
 use stdClass;
 
 /**
@@ -210,13 +211,11 @@ class VariationValue
         $this->fAufpreisNetto = $data->fAufpreisNetto;
         $this->fGewichtDiff   = $data->fGewichtDiff;
         $this->cArtNr         = $data->cArtNr;
-        $this->nSort          = $data->teigenschaftwert_nSort;
+        $this->nSort          = (int)$data->teigenschaftwert_nSort;
         $this->fLagerbestand  = $data->fLagerbestand;
         $this->fPackeinheit   = $data->fPackeinheit;
         $this->inStock        = true;
-        $this->notExists      = isset($data->nMatched)
-            && (int)$data->nMatched < $cntVariationen - 1;
-
+        $this->notExists      = isset($data->nMatched) && (int)$data->nMatched < $cntVariationen - 1;
         if (isset($data->fVPEWert) && $data->fVPEWert > 0) {
             $this->fVPEWert = $data->fVPEWert;
         }
@@ -301,11 +300,17 @@ class VariationValue
      * @param int|float $taxRate
      * @param Currency  $currency
      * @param bool|int  $mayViewPrices
-     * @param int       $precision
-     * @param string    $per
+     * @param int $precision
+     * @param string $per
      */
-    public function addPrices(Artikel $product, $taxRate, Currency $currency, $mayViewPrices, $precision, $per): void
-    {
+    public function addPrices(
+        Artikel $product,
+        $taxRate,
+        Currency $currency,
+        $mayViewPrices,
+        int $precision,
+        string $per
+    ): void {
         if ($mayViewPrices && isset($this->fVPEWert) && $this->fVPEWert > 0) {
             $base                           = $this->fAufpreisNetto / $this->fVPEWert;
             $this->cPreisVPEWertAufpreis[0] = Preise::getLocalizedPriceString(
@@ -344,13 +349,21 @@ class VariationValue
                 $currency
             );
             $this->cAufpreisLocalized[1] = Preise::getLocalizedPriceString($surcharge, $currency);
-            // Wenn der Artikel ein VarikombiKind ist, rechne nicht nochmal die Variationsaufpreise drauf
+            // Wenn der Artikel ein VarkombiKind ist
             if ($product->kVaterArtikel > 0) {
+                $customer           = Frontend::getCustomer();
+                $variationBasePrice = new Preise(
+                    $customer->getGroupID() ?? Frontend::getCustomerGroup()->getID(),
+                    (int)$this->oVariationsKombi->kArtikel,
+                    $customer->getID() ?? 0
+                );
+
+                $VariationVKNetto            = $variationBasePrice->oPriceRange->getProductData()->fNettoPreis;
                 $this->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
-                    Tax::getGross($product->Preise->fVKNetto, $taxRate),
+                    Tax::getGross($VariationVKNetto, $taxRate),
                     $currency
                 );
-                $this->cPreisInklAufpreis[1] = Preise::getLocalizedPriceString($product->Preise->fVKNetto, $currency);
+                $this->cPreisInklAufpreis[1] = Preise::getLocalizedPriceString($VariationVKNetto, $currency);
             } else {
                 $this->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
                     Tax::getGross($surcharge + $product->Preise->fVKNetto, $taxRate),

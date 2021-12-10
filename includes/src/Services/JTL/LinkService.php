@@ -1,10 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Services\JTL;
 
 use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
+use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
 use JTL\Link\LinkGroupCollection;
 use JTL\Link\LinkGroupInterface;
@@ -279,8 +281,12 @@ final class LinkService implements LinkServiceInterface
     /**
      * @inheritdoc
      */
-    public function getStaticRoute($id = 'kontakt.php', $full = true, $secure = true, $langISO = null): string
-    {
+    public function getStaticRoute(
+        string $id = 'kontakt.php',
+        bool $full = true,
+        bool $secure = false,
+        string $langISO = null
+    ): string {
         $idx = null;
         $lg  = $this->getLinkGroupByName('staticroutes');
         if ($lg !== null) {
@@ -535,7 +541,31 @@ final class LinkService implements LinkServiceInterface
             $langID
         );
         if (empty($data->kText)) {
-            $data = $this->db->select('ttext', 'nStandard', 1);
+            $data = $this->db->select(
+                'ttext',
+                'kKundengruppe',
+                (new CustomerGroup())->loadDefaultGroup()->getID(),
+                'kSprache',
+                $langID
+            );
+        }
+        if (empty($data->kText)) {
+            $data = $this->db->select(
+                'ttext',
+                'kKundengruppe',
+                $customerGroupID,
+                'kSprache',
+                LanguageHelper::getDefaultLanguage()->getId()
+            );
+        }
+        if (empty($data->kText)) {
+            $data = $this->db->select(
+                'ttext',
+                'kKundengruppe',
+                (new CustomerGroup())->loadDefaultGroup()->getID(),
+                'kSprache',
+                LanguageHelper::getDefaultLanguage()->getId()
+            );
         }
         if (empty($data->kText)) {
             return false;

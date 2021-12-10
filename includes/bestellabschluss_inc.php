@@ -242,9 +242,9 @@ function bestellungInDB($cleared = 0, $orderNo = '')
         }
         // Falls die Einstellung global_wunschliste_artikel_loeschen_nach_kauf auf Y (Ja) steht und
         // Artikel vom aktuellen Wunschzettel gekauft wurden, sollen diese vom Wunschzettel geloescht werden
-        if (isset($_SESSION['Wunschliste']->kWunschliste) && $_SESSION['Wunschliste']->kWunschliste > 0) {
+        if (Frontend::getWishList()->getID() > 0) {
             Wishlist::pruefeArtikelnachBestellungLoeschen(
-                $_SESSION['Wunschliste']->kWunschliste,
+                Frontend::getWishList()->getID(),
                 $cartItems
             );
         }
@@ -387,40 +387,21 @@ function saveZahlungsInfo(int $customerID, int $orderID, bool $payAgain = false)
     if (!$customerID || !$orderID) {
         return false;
     }
+    $info = $_SESSION['Zahlungsart']->ZahlungsInfo;
+
     $_SESSION['ZahlungsInfo']               = new ZahlungsInfo();
     $_SESSION['ZahlungsInfo']->kBestellung  = $orderID;
     $_SESSION['ZahlungsInfo']->kKunde       = $customerID;
-    $_SESSION['ZahlungsInfo']->cKartenTyp   = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenTyp)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenTyp)
-        : null;
-    $_SESSION['ZahlungsInfo']->cGueltigkeit = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cGueltigkeit)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cGueltigkeit)
-        : null;
-    $_SESSION['ZahlungsInfo']->cBankName    = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cBankName)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cBankName)
-        : null;
-    $_SESSION['ZahlungsInfo']->cKartenNr    = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenNr)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenNr)
-        : null;
-    $_SESSION['ZahlungsInfo']->cCVV         = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cCVV)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cCVV)
-        : null;
-    $_SESSION['ZahlungsInfo']->cKontoNr     = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr)
-        : null;
-    $_SESSION['ZahlungsInfo']->cBLZ         = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ)
-        : null;
-    $_SESSION['ZahlungsInfo']->cIBAN        = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN)
-        : null;
-    $_SESSION['ZahlungsInfo']->cBIC         = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cBIC)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cBIC)
-        : null;
-    $_SESSION['ZahlungsInfo']->cInhaber     = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber)
-        ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber)
-        : null;
-
+    $_SESSION['ZahlungsInfo']->cKartenTyp   = Text::unhtmlentities($info->cKartenTyp ?? null);
+    $_SESSION['ZahlungsInfo']->cGueltigkeit = Text::unhtmlentities($info->cGueltigkeit ?? null);
+    $_SESSION['ZahlungsInfo']->cBankName    = Text::unhtmlentities($info->cBankName ?? null);
+    $_SESSION['ZahlungsInfo']->cKartenNr    = Text::unhtmlentities($info->cKartenNr ?? null);
+    $_SESSION['ZahlungsInfo']->cCVV         = Text::unhtmlentities($info->cCVV ?? null);
+    $_SESSION['ZahlungsInfo']->cKontoNr     = Text::unhtmlentities($info->cKontoNr ?? null);
+    $_SESSION['ZahlungsInfo']->cBLZ         = Text::unhtmlentities($info->cBLZ ?? null);
+    $_SESSION['ZahlungsInfo']->cIBAN        = Text::unhtmlentities($info->cIBAN ?? null);
+    $_SESSION['ZahlungsInfo']->cBIC         = Text::unhtmlentities($info->cBIC ?? null);
+    $_SESSION['ZahlungsInfo']->cInhaber     = Text::unhtmlentities($info->cInhaber ?? null);
     if (!$payAgain) {
         $cart                = Frontend::getCart();
         $cart->kZahlungsInfo = $_SESSION['ZahlungsInfo']->insertInDB();
@@ -428,11 +409,9 @@ function saveZahlungsInfo(int $customerID, int $orderID, bool $payAgain = false)
     } else {
         $_SESSION['ZahlungsInfo']->insertInDB();
     }
-    if (isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr)
-        || isset($_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN)
-    ) {
+    if (isset($info->cKontoNr) || isset($info->cIBAN)) {
         Shop::Container()->getDB()->delete('tkundenkontodaten', 'kKunde', $customerID);
-        speicherKundenKontodaten($_SESSION['Zahlungsart']->ZahlungsInfo);
+        speicherKundenKontodaten($info);
     }
 
     return true;
@@ -814,62 +793,6 @@ function aktualisiereKomponenteLagerbestand(int $productID, float $stockLevel, b
 }
 
 /**
- * @param int       $productID
- * @param int|float $amount
- * @param null|int  $bomID
- * @deprecated since 4.06 - use aktualisiereStuecklistenLagerbestand instead
- */
-function AktualisiereAndereStuecklisten(int $productID, $amount, $bomID = null): void
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    if ($productID > 0) {
-        $prod = new Artikel();
-        $prod->fuelleArtikel($productID, Artikel::getDefaultOptions());
-        aktualisiereKomponenteLagerbestand($productID, $prod->fLagerbestand, $prod->cLagerKleinerNull === 'Y');
-    }
-}
-
-/**
- * @param int       $bomID
- * @param float     $fPackeinheitSt
- * @param float     $stockLevel
- * @param int|float $amount
- * @deprecated since 4.06 - dont use anymore
- */
-function AktualisiereStueckliste(int $bomID, $fPackeinheitSt, float $stockLevel, $amount): void
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    Shop::Container()->getDB()->update(
-        'tartikel',
-        'kStueckliste',
-        $bomID,
-        (object)['fLagerbestand' => $stockLevel]
-    );
-}
-
-/**
- * @param Artikel        $product
- * @param null|int|float $amount
- * @param bool           $isBom
- * @deprecated since 4.06 - use aktualisiereStuecklistenLagerbestand instead
- */
-function AktualisiereLagerStuecklisten($product, $amount = null, $isBom = false): void
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    if (isset($product->kArtikel) && $product->kArtikel > 0) {
-        if ($isBom) {
-            aktualisiereStuecklistenLagerbestand($product, $amount);
-        } else {
-            aktualisiereKomponenteLagerbestand(
-                $product->kArtikel,
-                $product->fLagerbestand,
-                $product->cLagerKleinerNull === 'Y'
-            );
-        }
-    }
-}
-
-/**
  * @param Bestellung $order
  */
 function KuponVerwendungen($order): void
@@ -899,7 +822,7 @@ function KuponVerwendungen($order): void
         ) {
             $couponGross = Tax::getGross(
                 $item->fPreisEinzelNetto,
-                Tax::getSalesTax($item->kSteuerklasse)
+                CartItem::getTaxRate($item)
             ) * (-1);
         }
     }
@@ -1098,7 +1021,13 @@ function fakeBestellung()
     if (mb_strlen(Frontend::getDeliveryAddress()->cVorname) > 0) {
         $order->Lieferadresse = gibLieferadresseAusSession();
     }
+    if (isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1) {
+        $order->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
+    }
     $order->cBestellNr = date('dmYHis') . mb_substr($order->cSession, 0, 4);
+    $order->cIP        = Request::getRealIP();
+    $order->fuelleBestellung(false, 1);
+
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
         $order->Positionen = [];
         foreach ($cart->PositionenArr as $i => $item) {
@@ -1114,12 +1043,8 @@ function fakeBestellung()
             $order->Positionen[$i]->setzeGesamtpreisLocalized();
         }
     }
-    if (isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1) {
-        $order->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
-    }
-    $order->cIP = Request::getRealIP();
 
-    return $order->fuelleBestellung(false, 1);
+    return $order;
 }
 
 /**

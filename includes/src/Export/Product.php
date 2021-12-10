@@ -92,16 +92,6 @@ class Product extends Artikel
     public $Artikelbild;
 
     /**
-     * @var array
-     */
-    protected $conf;
-
-    /**
-     * @var stdClass
-     */
-    protected $options;
-
-    /**
      * @param array $config
      * @return $this
      */
@@ -181,7 +171,7 @@ class Product extends Artikel
         $this->Versandkosten         = ShippingMethod::getLowestShippingFees(
             $config['exportformate_lieferland'] ?? '',
             $this,
-            0,
+            false,
             $this->kKundengruppe
         );
         if ($this->Versandkosten !== -1) {

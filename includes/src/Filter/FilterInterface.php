@@ -419,6 +419,16 @@ interface FilterInterface
     public function setParamExclusive(bool $paramExclusive): FilterInterface;
 
     /**
+     * @return string|null
+     */
+    public function getFilterName(): ?string;
+
+    /**
+     * @param string|null $characteristic
+     */
+    public function setFilterName(?string $characteristic): FilterInterface;
+
+    /**
      * @param string $query
      * @return string
      */

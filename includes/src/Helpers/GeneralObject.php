@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -13,7 +13,7 @@ class GeneralObject
 {
     /**
      * @param int|string|array $index
-     * @param mixed  $source
+     * @param mixed            $source
      * @return bool
      */
     public static function isCountable($index, $source = null): bool
@@ -29,7 +29,7 @@ class GeneralObject
 
     /**
      * @param string|int|array $index
-     * @param mixed      $source
+     * @param mixed            $source
      * @return bool
      */
     public static function hasCount($index, $source = null): bool
@@ -46,11 +46,11 @@ class GeneralObject
     /**
      * @param array  $data
      * @param string $key
-     * @param bool   $bStringToLower
+     * @param bool   $toLower
      * @former objectSort()
      * @since 5.0.0
      */
-    public static function sortBy(&$data, $key, $bStringToLower = false): void
+    public static function sortBy(&$data, $key, bool $toLower = false): void
     {
         $dataCount = \count($data);
         for ($i = $dataCount - 1; $i >= 0; $i--) {
@@ -58,7 +58,7 @@ class GeneralObject
             for ($j = 0; $j < $i; $j++) {
                 $dataJ  = $data[$j]->$key;
                 $dataJ1 = $data[$j + 1]->$key;
-                if ($bStringToLower) {
+                if ($toLower) {
                     $dataJ  = \mb_convert_case($dataJ, \MB_CASE_LOWER);
                     $dataJ1 = \mb_convert_case($dataJ1, \MB_CASE_LOWER);
                 }
@@ -112,7 +112,7 @@ class GeneralObject
     }
 
     /**
-     * @param object $object
+     * @param mixed $object
      * @return mixed
      * @since 5.0.0
      */

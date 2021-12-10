@@ -96,8 +96,11 @@ final class LinkAdmin
      * @return Collection
      * @former build_navigation_subs_admin()
      */
-    private function buildNavigation(LinkGroupInterface $linkGroup, $service, int $parentID = 0): Collection
-    {
+    private function buildNavigation(
+        LinkGroupInterface $linkGroup,
+        LinkServiceInterface $service,
+        int $parentID = 0
+    ): Collection {
         $news = new Collection();
         foreach ($linkGroup->getLinks() as $link) {
             $link->setLevel(\count($service->getParentIDs($link->getID())));
@@ -301,7 +304,7 @@ final class LinkAdmin
                     AND t2.cISO = tsprache.cISO
                 WHERE t2.cISO IS NULL
                     AND tlink.reference = 0'
-        )->map(function (stdClass $e) {
+        )->map(static function (stdClass $e) {
             return (int)$e->id;
         });
     }
@@ -311,7 +314,7 @@ final class LinkAdmin
         $all          = $this->db->getCollection(
             'SELECT kLink, nLinkart
                 FROM tlink'
-        )->map(function ($link) {
+        )->map(static function ($link) {
             $link->kLink    = (int)$link->kLink;
             $link->nLinkart = (int)$link->nLinkart;
 
@@ -321,12 +324,18 @@ final class LinkAdmin
         foreach ($this->getSpecialPageTypes() as $specialPage) {
             if (\in_array(
                 $specialPage->nLinkart,
-                [\LINKTYP_NEWSLETTERARCHIV, \LINKTYP_GRATISGESCHENK, \LINKTYP_AUSWAHLASSISTENT, true],
+                [
+                    \LINKTYP_NEWSLETTERARCHIV,
+                    \LINKTYP_GRATISGESCHENK,
+                    \LINKTYP_AUSWAHLASSISTENT,
+                    \LINKTYP_BATTERIEGESETZ_HINWEISE,
+                    true
+                ],
                 true
             )) {
                 continue;
             }
-            $hit = $all->first(function ($val, $key) use ($specialPage) {
+            $hit = $all->first(static function ($val, $key) use ($specialPage) {
                 return $val->nLinkart === $specialPage->nLinkart;
             });
             if ($hit === null) {
@@ -545,7 +554,7 @@ final class LinkAdmin
             $link->nLinkart = (int)$post['nSpezialseite'];
         }
         $type            = $link->nLinkart;
-        $link->bIsSystem = (int)$this->getSpecialPageTypes()->contains(function ($value) use ($type) {
+        $link->bIsSystem = (int)$this->getSpecialPageTypes()->contains(static function ($value) use ($type) {
             return $value->nLinkart === $type;
         });
 
@@ -604,7 +613,7 @@ final class LinkAdmin
                 ? $localized->cSeo
                 : Seo::getSeo($localized->cSeo);
             $this->db->insert('tlinksprache', $localized);
-            $oldSeo = $this->db->select(
+            $prev = $this->db->select(
                 'tseo',
                 ['cKey', 'kKey', 'kSprache'],
                 ['kLink', $localized->kLink, $language->getId()]
@@ -620,10 +629,9 @@ final class LinkAdmin
             $seo->cKey     = 'kLink';
             $seo->kSprache = $language->getId();
             $this->db->insert('tseo', $seo);
-
-            $upd           = new stdClass();
-            $upd->cPageUrl = '/' . $seo->cSeo;
-            $this->db->update('topcpage', 'cPageUrl', '/' . $oldSeo->cSeo, $upd);
+            if ($prev !== null) {
+                $this->db->update('topcpage', 'cPageUrl', '/' . $prev->cSeo, (object)['cPageUrl' => '/' . $seo->cSeo]);
+            }
         }
         $linkInstance = new Link($this->db);
         $linkInstance->load($kLink);
@@ -636,7 +644,7 @@ final class LinkAdmin
      * @param int    $linkID
      * @return mixed
      */
-    private function parseText($text, int $linkID)
+    private function parseText(string $text, int $linkID)
     {
         $uploadDir = \PFAD_ROOT . \PFAD_BILDER . \PFAD_LINKBILDER;
         $baseURL   = Shop::getURL() . '/' . \PFAD_BILDER . \PFAD_LINKBILDER;

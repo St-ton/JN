@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
@@ -9,6 +9,7 @@ use IteratorAggregate;
 use JTL\DB\DbInterface;
 use JTL\Export\SyntaxChecker;
 use JTL\IO\IOResponse;
+use JTL\Language\LanguageHelper;
 use JTL\Link\Admin\LinkAdmin;
 use JTL\Mail\Template\Model;
 use JTL\Shop;
@@ -396,6 +397,16 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
+        if (!$status->hasInstalledStandardLang()) {
+            $this->add(
+                NotificationEntry::TYPE_DANGER,
+                \__('defaultLangNotInstalledTitle'),
+                \sprintf(
+                    \__('defaultLangNotInstalledMessage'),
+                    LanguageHelper::getDefaultLanguage()->getNameDE()
+                )
+            );
+        }
 
         return $this;
     }

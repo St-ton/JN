@@ -382,7 +382,7 @@
                                 .removeClass('show d-md-block');
                     });
                 })
-                .on('hide.bs.select', function () { 
+                .on('hide.bs.select', function () {
                     $(this).parent().find('li .variation').off('mouseenter mouseleave');
                     $('.variation-image-preview').removeClass('show');
                 });
@@ -809,7 +809,7 @@
         addToWishlist: function(data, $action) {
             let productId = parseInt(data[this.options.input.id]),
                 childId = parseInt(data[this.options.input.childId]),
-                qty =  parseInt(data[this.options.input.quantity]);
+                qty =  parseFloat(data[this.options.input.quantity]);
             if (childId > 0) {
                 productId = childId;
             }
@@ -925,6 +925,7 @@
                 }
                 $navContainerWish.html(data.response.content);
                 $navBadgeWish.html(data.response.currentPosCount);
+                setClickableRow();
             });
 
             for (var ind in data.cBoxContainer) {
@@ -970,7 +971,9 @@
                 case this.options.action.compareListRemove:
                     return this.removeFromCompareList(data);
                 case this.options.action.wishList:
-                    data[this.options.input.quantity] = $('#buy_form_'+data.a+' '+this.options.selector.quantity).val();
+                    data[this.options.input.quantity] = $('input[data-product-id="' + data.a + '"]').val()
+                        || $('#buy_form_'+data.a+' '+this.options.selector.quantity).val()
+                        || $('#quantity').val();
                     if ($action.hasClass('on-list')) {
                         $action.removeClass("on-list");
                         $action.next().removeClass("press");
@@ -1025,7 +1028,7 @@
                         enableQuantity,
                         nNetto,
                         quantityInput;
-                    $('.js-start-configuration').prop('disabled', !data.response.variationsSelected);
+                    $('.js-start-configuration').prop('disabled', !(data.response.variationsSelected && data.response.inStock));
                     $('.js-choose-variations-wrapper').toggleClass('d-none', data.response.variationsSelected);
                     $('.js-cfg-group').each(function (i, item) {
                         let iconChecked     = $(this).find('.js-group-checked'),

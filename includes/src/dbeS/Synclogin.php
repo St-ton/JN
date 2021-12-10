@@ -50,7 +50,7 @@ class Synclogin
      * @return bool
      * @throws \Exception
      */
-    public function checkLogin($user, $pass): bool
+    public function checkLogin(string $user, string $pass): bool
     {
         return $this->cName !== null
             && $this->cPass !== null

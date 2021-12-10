@@ -2,10 +2,10 @@
 
 namespace JTL\Checkout;
 
+use DateTime;
+use Illuminate\Support\Collection;
 use JTL\Cart\CartHelper;
 use JTL\Cart\CartItem;
-use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
@@ -544,7 +544,7 @@ class Bestellung
             $languageID           = (int)$language->kSprache;
             $_SESSION['kSprache'] = $languageID;
         }
-        foreach ($this->Positionen as $i => $item) {
+        foreach ($this->Positionen as $item) {
             $item->kArtikel            = (int)$item->kArtikel;
             $item->nPosTyp             = (int)$item->nPosTyp;
             $item->kWarenkorbPos       = (int)$item->kWarenkorbPos;
@@ -610,10 +610,7 @@ class Bestellung
                 );
             }
             if (!isset($item->kSteuerklasse)) {
-                $taxClass = $db->select('tsteuersatz', 'fSteuersatz', $item->fMwSt);
-                if ($taxClass !== null) {
-                    $item->kSteuerklasse = $taxClass->kSteuerklasse;
-                }
+                $item->kSteuerklasse = 0;
             }
             $summe += $item->fPreis * $item->nAnzahl;
             if ($this->kWarenkorb > 0) {
@@ -848,35 +845,6 @@ class Bestellung
     }
 
     /**
-     * @return $this
-     * @deprecated since 5.0.0
-     */
-    public function machGoogleAnalyticsReady(): self
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        foreach ($this->Positionen as $item) {
-            $item->nPosTyp = (int)$item->nPosTyp;
-            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && $item->kArtikel > 0) {
-                $product            = new Artikel();
-                $product->kArtikel  = $item->kArtikel;
-                $expandedCategories = new KategorieListe();
-                $category           = new Kategorie($product->gibKategorie());
-                $expandedCategories->getOpenCategories($category);
-                $item->Category = '';
-                $elemCount      = \count($expandedCategories->elemente) - 1;
-                for ($o = $elemCount; $o >= 0; $o--) {
-                    $item->Category = $expandedCategories->elemente[$o]->cName;
-                    if ($o > 0) {
-                        $item->Category .= ' / ';
-                    }
-                }
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return int
      */
     public function insertInDB(): int
@@ -1105,19 +1073,6 @@ class Bestellung
     }
 
     /**
-     * @return string
-     * @deprecated since 4.06
-     */
-    public function getEstimatedDeliveryTime(): string
-    {
-        if (empty($this->oEstimatedDelivery->localized)) {
-            $this->berechneEstimatedDelivery();
-        }
-
-        return $this->oEstimatedDelivery->localized;
-    }
-
-    /**
      * set Kampagne
      */
     public function setKampagne(): void
@@ -1135,5 +1090,33 @@ class Bestellung
                 'kampagneDef' => \KAMPAGNE_DEF_VERKAUF
             ]
         );
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getIncommingPayments(): Collection
+    {
+        if (($this->kBestellung ?? 0) === 0) {
+            return new Collection();
+        }
+
+        $result = Shop::Container()->getDB()->getCollection(
+            'SELECT kZahlungseingang, cZahlungsanbieter, fBetrag, cISO, dZeit
+                FROM tzahlungseingang
+                WHERE kBestellung = :orderId
+                ORDER BY cZahlungsanbieter, dZeit',
+            [
+                'orderId' => $this->kBestellung,
+            ]
+        )->map(static function ($item) {
+            $item->paymentLocalization = Preise::getLocalizedPriceString($item->fBetrag, $item->cISO)
+                . ' (' . Shop::Lang()->getTranslation('payedOn', 'login') . ' '
+                . (new DateTime($item->dZeit))->format('d.m.Y') . ')';
+
+            return $item;
+        });
+
+        return $result->groupBy('cZahlungsanbieter');
     }
 }

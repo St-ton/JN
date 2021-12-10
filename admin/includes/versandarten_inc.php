@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Checkout\ShippingSurcharge;
+use JTL\Checkout\ShippingSurchargeArea;
 use JTL\Checkout\Versandart;
 use JTL\Checkout\ZipValidator;
 use JTL\Helpers\Text;
@@ -16,7 +17,7 @@ use JTL\Smarty\JTLSmarty;
  * @param float|string $taxRate
  * @return float
  */
-function berechneVersandpreisBrutto($price, $taxRate)
+function berechneVersandpreisBrutto($price, $taxRate): float
 {
     return $price > 0
         ? round((float)($price * ((100 + $taxRate) / 100)), 2)
@@ -28,7 +29,7 @@ function berechneVersandpreisBrutto($price, $taxRate)
  * @param float|string $taxRate
  * @return float
  */
-function berechneVersandpreisNetto($price, $taxRate)
+function berechneVersandpreisNetto($price, $taxRate): float
 {
     return $price > 0
         ? round($price * ((100 / (100 + $taxRate)) * 100) / 100, 2)
@@ -40,21 +41,19 @@ function berechneVersandpreisNetto($price, $taxRate)
  * @param string $key
  * @return array
  */
-function reorganizeObjectArray($objects, $key): array
+function reorganizeObjectArray(array $objects, string $key): array
 {
     $res = [];
-    if (is_array($objects)) {
-        foreach ($objects as $obj) {
-            $arr  = get_object_vars($obj);
-            $keys = array_keys($arr);
-            if (in_array($key, $keys)) {
-                $res[$obj->$key]           = new stdClass();
-                $res[$obj->$key]->checked  = 'checked';
-                $res[$obj->$key]->selected = 'selected';
-                foreach ($keys as $k) {
-                    if ($key != $k) {
-                        $res[$obj->$key]->$k = $obj->$k;
-                    }
+    foreach ($objects as $obj) {
+        $arr  = get_object_vars($obj);
+        $keys = array_keys($arr);
+        if (in_array($key, $keys, true)) {
+            $res[$obj->$key]           = new stdClass();
+            $res[$obj->$key]->checked  = 'checked';
+            $res[$obj->$key]->selected = 'selected';
+            foreach ($keys as $k) {
+                if ($key !== $k) {
+                    $res[$obj->$key]->$k = $obj->$k;
                 }
             }
         }
@@ -133,7 +132,7 @@ function gibGesetzteVersandklassen(string $shippingClasses): array
  * @param string $shippingClasses
  * @return array
  */
-function gibGesetzteVersandklassenUebersicht($shippingClasses)
+function gibGesetzteVersandklassenUebersicht($shippingClasses): array
 {
     if (trim($shippingClasses) === '-1') {
         return ['Alle'];
@@ -384,7 +383,7 @@ function saveShippingSurcharge(array $data): stdClass
             $surchargeTMP = (new ShippingSurcharge())
                 ->setISO($post['cISO'])
                 ->setSurcharge($surcharge)
-                ->setShippingMethod($post['kVersandart'])
+                ->setShippingMethod((int)$post['kVersandart'])
                 ->setTitle($post['cName']);
         } else {
             $surchargeTMP = (new ShippingSurcharge((int)$post['kVersandzuschlag']))
@@ -497,18 +496,17 @@ function createShippingSurchargeZIP(array $data): stdClass
     $surchargeZip->cPLZ             = '';
     $surchargeZip->cPLZAb           = '';
     $surchargeZip->cPLZBis          = '';
+    $area                           = null;
 
     if (!empty($post['cPLZ'])) {
         $surchargeZip->cPLZ = $zipValidator->validateZip($post['cPLZ']);
     } elseif (!empty($post['cPLZAb']) && !empty($post['cPLZBis'])) {
-        if ($post['cPLZAb'] === $post['cPLZBis']) {
-            $surchargeZip->cPLZ = $zipValidator->validateZip($post['cPLZBis']);
-        } elseif ($post['cPLZAb'] > $post['cPLZBis']) {
-            $surchargeZip->cPLZAb  = $zipValidator->validateZip($post['cPLZBis']);
-            $surchargeZip->cPLZBis = $zipValidator->validateZip($post['cPLZAb']);
+        $area = new ShippingSurchargeArea($post['cPLZAb'], $post['cPLZBis']);
+        if ($area->getZIPFrom() === $area->getZIPTo()) {
+            $surchargeZip->cPLZ = $zipValidator->validateZip($area->getZIPFrom());
         } else {
-            $surchargeZip->cPLZAb  = $zipValidator->validateZip($post['cPLZAb']);
-            $surchargeZip->cPLZBis = $zipValidator->validateZip($post['cPLZBis']);
+            $surchargeZip->cPLZAb  = $zipValidator->validateZip($area->getZIPFrom());
+            $surchargeZip->cPLZBis = $zipValidator->validateZip($area->getZIPTo());
         }
     }
 
@@ -520,7 +518,9 @@ function createShippingSurchargeZIP(array $data): stdClass
                 || $surchargeTMP->areaOverlapsWithZIPCode($surchargeZip->cPLZAb, $surchargeZip->cPLZBis)
             );
         });
-    if (empty($surchargeZip->cPLZ) && empty($surchargeZip->cPLZAb)) {
+    if ($area !== null && !$area->lettersMatch()) {
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorZIPsDoNotMatch'), 'errorZIPsDoNotMatch');
+    } elseif (empty($surchargeZip->cPLZ) && empty($surchargeZip->cPLZAb)) {
         $error = $zipValidator->getError();
         if ($error !== '') {
             $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'errorZIPValidator');

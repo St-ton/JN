@@ -38,8 +38,8 @@
                                 {$language->getLocalizedName()} ({__('new')}):
                             </label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input type="text" class="form-control" name="cWert_arr[{$langCode}]"
-                                       id="cWert_{$langCode}" value="{if !empty($oVariable->cWert_arr[$langCode])}{$oVariable->cWert_arr[$langCode]}{/if}">
+                                <textarea class="form-control" name="cWert_arr[{$langCode}]"
+                                          id="cWert_{$langCode}">{if !empty($oVariable->cWert_arr[$langCode])}{$oVariable->cWert_arr[$langCode]|escape}{/if}</textarea>
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">
@@ -49,9 +49,8 @@
                                 {$language->getLocalizedName()} ({__('current')}):
                             </label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input type="text" class="form-control" name="cWertAlt_arr[{$langCode}]" disabled
-                                   id="cWertAlt_{$langCode}"
-                                   value="{if !empty($oVariable->cWertAlt_arr[$langCode])}{$oVariable->cWertAlt_arr[$langCode]}{/if}">
+                                <textarea class="form-control" name="cWertAlt_arr[{$langCode}]" disabled
+                                          id="cWertAlt_{$langCode}">{if !empty($oVariable->cWertAlt_arr[$langCode])}{$oVariable->cWertAlt_arr[$langCode]|escape}{/if}</textarea>
                             </div>
                         </div>
                     {else}
@@ -60,8 +59,8 @@
                                 {$language->getLocalizedName()}:
                             </label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input type="text" class="form-control" name="cWert_arr[{$langCode}]"
-                                       id="cWert_{$langCode}" value="{$oVariable->cWert_arr[$langCode]|default:''}">
+                                <textarea class="form-control" name="cWert_arr[{$langCode}]"
+                                          id="cWert_{$langCode}">{if !empty($oVariable->cWert_arr[$langCode])}{$oVariable->cWert_arr[$langCode]|default:''|escape}{/if}</textarea>
                             </div>
                         </div>
                     {/if}

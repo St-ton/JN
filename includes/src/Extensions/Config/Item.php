@@ -288,41 +288,14 @@ class Item implements JsonSerializable
     }
 
     /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function save(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return false;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function update(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function delete(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
      * @param int $groupID
+     * @param int $languageID
      * @return Item[]
      */
-    public static function fetchAll(int $groupID): array
+    public static function fetchAll(int $groupID, int $languageID = 0): array
     {
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+
         return Shop::Container()->getDB()->getCollection(
             'SELECT kKonfigitem 
                 FROM tkonfigitem 
@@ -330,10 +303,9 @@ class Item implements JsonSerializable
                 ORDER BY nSort ASC',
             ['groupID' => $groupID]
         )
-            ->map(static function (stdClass $item) {
-                return (int)$item->kKonfigitem;
+            ->map(static function (stdClass $item) use ($languageID, $customerGroupID) {
+                return new self((int)$item->kKonfigitem, $languageID, $customerGroupID);
             })
-            ->mapInto(self::class)
             ->filter(static function (Item $item) {
                 return $item->isValid();
             })

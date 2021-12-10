@@ -169,6 +169,11 @@ class Exportformat
     private $tempFileName;
 
     /**
+     * @var string
+     */
+    private $tempFile;
+
+    /**
      * @var LoggerInterface|null
      */
     private $logger;
@@ -191,6 +196,7 @@ class Exportformat
      */
     public function __construct(int $id = 0, DbInterface $db = null)
     {
+        \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         $this->db = $db ?? Shop::Container()->getDB();
         if ($id > 0) {
             $this->loadFromDB($id);
@@ -274,7 +280,8 @@ class Exportformat
                 $this->setKundengruppe(CustomerGroup::getDefaultGroupID());
             }
             $this->isOk            = true;
-            $this->tempFileName    = 'tmp_' . $this->cDateiname;
+            $this->tempFileName    = 'tmp_' . \basename($this->cDateiname);
+            $this->tempFile        = \PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName;
             $this->kWaehrung       = (int)$this->kWaehrung;
             $this->kSprache        = (int)$this->kSprache;
             $this->kKundengruppe   = (int)$this->kKundengruppe;
@@ -397,7 +404,8 @@ class Exportformat
      */
     public function setTempFileName(string $name): self
     {
-        $this->tempFileName = $name;
+        $this->tempFileName = \basename($name);
+        $this->tempFile     = \PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName;
 
         return $this;
     }
@@ -740,57 +748,6 @@ class Exportformat
     }
 
     /**
-     * @param array $config
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function insertEinstellungen(array $config): bool
-    {
-        $ok = true;
-        foreach ($config as $item) {
-            $ins = new stdClass();
-            if (\is_array($item) && \count($item) > 0) {
-                foreach (\array_keys($item) as $cMember) {
-                    $ins->$cMember = $item[$cMember];
-                }
-                $ins->kExportformat = $this->getExportformat();
-            }
-            $ok = $ok && ($this->db->insert('texportformateinstellungen', $ins) > 0);
-        }
-
-        return $ok;
-    }
-
-    /**
-     * @param array $config
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function updateEinstellungen(array $config): bool
-    {
-        $ok = true;
-        foreach ($config as $conf) {
-            $import = [
-                'exportformate_semikolon',
-                'exportformate_equot',
-                'exportformate_quot'
-            ];
-            if (\in_array($conf['cName'], $import, true)) {
-                $_upd        = new stdClass();
-                $_upd->cWert = $conf['cWert'];
-                $ok          = $ok && ($this->db->update(
-                    'tboxensichtbar',
-                    ['kExportformat', 'cName'],
-                    [$this->getExportformat(), $conf['cName']],
-                    $_upd
-                ) >= 0);
-            }
-        }
-
-        return $ok;
-    }
-
-    /**
      * @return Exportformat
      */
     private function initSmarty(): self
@@ -944,9 +901,9 @@ class Exportformat
     }
 
     /**
-     * @return QueueEntry
+     * @return QueueEntry|null
      */
-    public function getQueue()
+    public function getQueue(): ?QueueEntry
     {
         return $this->queue;
     }
@@ -1165,7 +1122,7 @@ class Exportformat
         $product->Versandkosten         = ShippingMethod::getLowestShippingFees(
             $this->config['exportformate_lieferland'] ?? '',
             $product,
-            0,
+            false,
             $this->kKundengruppe
         );
         if ($product->Versandkosten !== -1) {
@@ -1277,10 +1234,10 @@ class Exportformat
         $cacheMisses  = 0;
         $output       = '';
         $errorMessage = '';
-        if ((int)$this->queue->tasksExecuted === 0 && \file_exists(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName)) {
-            \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName);
+        if ((int)$this->queue->tasksExecuted === 0 && \file_exists($this->tempFile)) {
+            \unlink($this->tempFile);
         }
-        $tmpFile = \fopen(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName, 'a');
+        $tmpFile = \fopen($this->tempFile, 'a');
         if ($max === null) {
             $max = (int)$this->db->getSingleObject($this->getExportSQL(true))->nAnzahl;
         }
@@ -1326,7 +1283,7 @@ class Exportformat
             $findTwo[]    = ';';
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
-        foreach ($this->db->getSingleObject($this->getExportSQL()) as $productData) {
+        foreach ($this->db->getObjects($this->getExportSQL()) as $productData) {
             $product = new Artikel();
             $product->fuelleArtikel(
                 (int)$productData->kArtikel,
@@ -1443,12 +1400,8 @@ class Exportformat
 
                 $this->writeFooter($tmpFile);
                 \fclose($tmpFile);
-                if (\copy(
-                    \PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName,
-                    \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname
-                )
-                ) {
-                    \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName);
+                if (\copy($this->tempFile, \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname)) {
+                    \unlink($this->tempFile);
                 } else {
                     $errorMessage = 'Konnte Export-Datei ' .
                         \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname .
@@ -1497,12 +1450,8 @@ class Exportformat
                 // Schreibe Fusszeile
                 $this->writeFooter($tmpFile);
                 \fclose($tmpFile);
-                if (\copy(
-                    \PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName,
-                    \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname
-                )
-                ) {
-                    \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName);
+                if (\copy($this->tempFile, \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname)) {
+                    \unlink($this->tempFile);
                 }
                 // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
                 $this->splitFile();
@@ -1701,6 +1650,7 @@ class Exportformat
      */
     public static function ioCheckSyntax(int $id): stdClass
     {
+        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         \ini_set('html_errors', '0');
         \ini_set('display_errors', '1');
         \ini_set('log_errors', '0');

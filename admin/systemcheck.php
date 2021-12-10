@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\phpQuery\phpQuery;
 use Systemcheck\Environment;
@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
-$oAccount->redirectOnFailure();
+$oAccount->permission('DIAGNOSTIC_VIEW', true, true);
 
 $phpInfo = '';
 if (isset($_GET['phpinfo'])) {
@@ -28,7 +28,7 @@ $systemcheck = new Environment();
 $platform    = new Hosting();
 
 $smarty->assign('tests', $systemcheck->executeTestGroup('Shop5'))
-       ->assign('platform', $platform)
-       ->assign('passed', $systemcheck->getIsPassed())
-       ->assign('phpinfo', $phpInfo)
-       ->display('systemcheck.tpl');
+    ->assign('platform', $platform)
+    ->assign('passed', $systemcheck->getIsPassed())
+    ->assign('phpinfo', $phpInfo)
+    ->display('systemcheck.tpl');

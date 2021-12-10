@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -34,7 +34,7 @@ class Manufacturer
     private static $langID;
 
     /**
-     * HerstellerHelper constructor.
+     * Manufacturer constructor.
      */
     public function __construct()
     {
@@ -43,12 +43,7 @@ class Manufacturer
             ($lagerfilter !== '' ? \md5($lagerfilter) : '');
         self::$langID  = Shop::getLanguageID();
         if (self::$langID <= 0) {
-            if (Shop::getLanguageID() > 0) {
-                self::$langID = Shop::getLanguageID();
-            } else {
-                $_lang        = LanguageHelper::getDefaultLanguage();
-                self::$langID = (int)$_lang->kSprache;
-            }
+            self::$langID = LanguageHelper::getDefaultLanguage()->getId();
         }
         $this->manufacturers = $this->getManufacturers();
         self::$instance      = $this;
@@ -73,7 +68,7 @@ class Manufacturer
             return $this->manufacturers;
         }
         if (($manufacturers = Shop::Container()->getCache()->get($this->cacheID)) === false) {
-            $lagerfilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
+            $stockFilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $manufacturers = Shop::Container()->getDB()->getObjects(
                 'SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                         thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
@@ -90,7 +85,7 @@ class Manufacturer
                     WHERE EXISTS (
                         SELECT 1
                         FROM tartikel
-                        WHERE tartikel.kHersteller = thersteller.kHersteller ' . $lagerfilter . '
+                        WHERE tartikel.kHersteller = thersteller.kHersteller ' . $stockFilter . '
                             AND NOT EXISTS (
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel

@@ -38,12 +38,13 @@ class SearchSpecial extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('qf')
-             ->setFrontendName(Shop::isAdmin() ? \__('filterSearchSpecial') : Shop::Lang()->get('specificProducts'))
-             ->setVisibility($this->getConfig('navigationsfilter')['allgemein_suchspecialfilter_benutzen'])
-             ->setType($this->getConfig('navigationsfilter')['search_special_filter_type'] === 'O'
-                 ? Type::OR
-                 : Type::AND);
+            ->setUrlParam('qf')
+            ->setFrontendName(Shop::isAdmin() ? \__('filterSearchSpecial') : Shop::Lang()->get('specificProducts'))
+            ->setFilterName($this->getFrontendName())
+            ->setVisibility($this->getConfig('navigationsfilter')['allgemein_suchspecialfilter_benutzen'])
+            ->setType($this->getConfig('navigationsfilter')['search_special_filter_type'] === 'O'
+                ? Type::OR
+                : Type::AND);
     }
 
     /**
@@ -310,7 +311,8 @@ class SearchSpecial extends AbstractFilter
             ? $this->getClassName()
             : null;
         $state            = (new StateSQL())->from($this->productFilter->getCurrentStateData($ignore));
-        $cacheID          = $this->getCacheID($this->productFilter->getFilterSQL()->getBaseQuery($state));
+        $cacheID          = $this->getCacheID($this->productFilter->getFilterSQL()->getBaseQuery($state))
+            . '_' . $this->productFilter->getFilterConfig()->getLanguageID();
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 

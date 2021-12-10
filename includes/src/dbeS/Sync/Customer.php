@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -34,7 +34,7 @@ final class Customer extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             $fileName     = \pathinfo($file)['basename'];
             // the first 5 cases come from Kunden_xml.php
@@ -246,7 +246,7 @@ final class Customer extends AbstractSync
             );
             if (isset($oldCustomer->kKunde) && $oldCustomer->kKunde > 0) {
                 // Email vergeben -> Kunde wird nicht neu angelegt, sondern der Kunde wird an Wawi zurückgegeben
-                return $this->notifyDuplicateCustomer($oldCustomer, $xml);
+                return $this->notifyDuplicateCustomer($oldCustomer);
             }
             // Email noch nicht belegt, der Kunde muss neu erstellt werden -> KUNDE WIRD NEU ERSTELLT
             $kInetKunde = $this->addNewCustomer($customer, $customerAttributes);
@@ -276,10 +276,9 @@ final class Customer extends AbstractSync
 
     /**
      * @param stdClass $oldCustomer
-     * @param array    $xml
      * @return array
      */
-    private function notifyDuplicateCustomer(stdClass $oldCustomer, array $xml): array
+    private function notifyDuplicateCustomer(stdClass $oldCustomer): array
     {
         $cstmr  = $this->db->getArrays(
             "SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
@@ -288,7 +287,8 @@ final class Customer extends AbstractSync
                     cHerkunft, dErstellt, dVeraendert, cAktiv, cAbgeholt,
                     date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag_formatted, nRegistriert
                 FROM tkunde
-                WHERE kKunde = " . (int)$oldCustomer->kKunde
+                WHERE kKunde = :cid",
+            ['cid' => (int)$oldCustomer->kKunde]
         );
         $crypto = Shop::Container()->getCryptoService();
 
@@ -307,11 +307,13 @@ final class Customer extends AbstractSync
         $cstmr[0]['tkundenattribut'] = $this->db->getArrays(
             'SELECT *
                 FROM tkundenattribut
-                 WHERE kKunde = ' . (int)$cstmr['0 attr']['kKunde']
+                 WHERE kKunde = :cid',
+            ['cid' => (int)$cstmr['0 attr']['kKunde']]
         );
         foreach ($cstmr[0]['tkundenattribut'] as $o => $attr) {
             $cstmr[0]['tkundenattribut'][$o . ' attr'] = $this->buildAttributes($attr);
         }
+        $xml                          = [];
         $xml['kunden attr']['anzahl'] = 1;
         $xml['kunden']['tkunde']      = $cstmr;
         $this->logger->error('Dieser Kunde existiert: ' . XML::serialize($xml));
@@ -328,7 +330,7 @@ final class Customer extends AbstractSync
         $customerAttributes = [];
         if (GeneralObject::hasCount('tkundenattribut', $source)) {
             $members = \array_keys($source['tkundenattribut']);
-            if ($members[0] == '0') {
+            if ($members[0] === 0) {
                 foreach ($source['tkundenattribut'] as $data) {
                     $customerAttribute        = new stdClass();
                     $customerAttribute->cName = $data['cName'];
@@ -524,11 +526,11 @@ final class Customer extends AbstractSync
     }
 
     /**
-     * @param object                 $address
+     * @param stdClass               $address
      * @param CryptoServiceInterface $crypto
      * @return object
      */
-    private function getDeliveryAddress($address, CryptoServiceInterface $crypto)
+    private function getDeliveryAddress(stdClass $address, CryptoServiceInterface $crypto)
     {
         $this->extractStreet($address);
         $address->cNachname = $crypto->encryptXTEA(\trim($address->cNachname));
@@ -547,9 +549,9 @@ final class Customer extends AbstractSync
      * @param int   $languageID
      * @param array $attributes
      */
-    private function saveAttribute(int $customerID, int $languageID, $attributes): void
+    private function saveAttribute(int $customerID, int $languageID, array $attributes): void
     {
-        if ($customerID <= 0 || $languageID <= 0 || !\is_array($attributes) || \count($attributes) === 0) {
+        if ($customerID <= 0 || $languageID <= 0) {
             return;
         }
         foreach ($attributes as $attribute) {

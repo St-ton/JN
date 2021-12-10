@@ -42,9 +42,10 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
 
     /**
      * @param OptinRefData $refData
-     * @return OptinAvailAgain
+     * @param int $location
+     * @return OptinInterface
      */
-    public function createOptin(OptinRefData $refData): OptinInterface
+    public function createOptin(OptinRefData $refData, int $location = 0): OptinInterface
     {
         $this->refData                       = $refData;
         $options                             = Artikel::getDefaultOptions();

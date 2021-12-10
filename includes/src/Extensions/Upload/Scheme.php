@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\Upload;
 
@@ -91,40 +91,9 @@ final class Scheme
                 'uid' => $id
             ]
         );
-
         if ($upload !== null && (int)$upload->kUploadSchema > 0) {
-            self::copyMembers($upload, $this);
+            $this->copyMembers($upload);
         }
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function save(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function update(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function delete(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
     }
 
     /**
@@ -141,34 +110,44 @@ final class Scheme
             ? ' AND kCustomID = ' . $kCustomID
             : '';
 
-        return Shop::Container()->getDB()->getObjects(
-            'SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
-                tuploadschema.cDateiTyp, tuploadschema.nPflicht, 
-                IFNULL(tuploadschemasprache.cName,tuploadschema.cName ) cName,
-                IFNULL(tuploadschemasprache.cBeschreibung, tuploadschema.cBeschreibung) cBeschreibung
-                FROM tuploadschema
-                LEFT JOIN tuploadschemasprache
-                    ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
-                    AND tuploadschemasprache.kSprache = :lid
-                WHERE nTyp = :tpe' . $sql,
-            ['tpe' => $type, 'lid' => Shop::getLanguageID()]
+        return \array_map(
+            static function (stdClass $item) {
+                $item->kUploadSchema = (int)$item->kUploadSchema;
+                $item->kCustomID     = (int)$item->kCustomID;
+                $item->nTyp          = (int)$item->nTyp;
+                $item->nPflicht      = (int)$item->nPflicht;
+
+                return $item;
+            },
+            Shop::Container()->getDB()->getObjects(
+                'SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
+                    tuploadschema.cDateiTyp, tuploadschema.nPflicht, 
+                    IFNULL(tuploadschemasprache.cName,tuploadschema.cName ) cName,
+                    IFNULL(tuploadschemasprache.cBeschreibung, tuploadschema.cBeschreibung) cBeschreibung
+                    FROM tuploadschema
+                    LEFT JOIN tuploadschemasprache
+                        ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
+                        AND tuploadschemasprache.kSprache = :lid
+                    WHERE nTyp = :tpe' . $sql,
+                ['tpe' => $type, 'lid' => Shop::getLanguageID()]
+            )
         );
     }
 
     /**
-     * @param mixed       $objFrom
-     * @param object|null $objTo
-     * @return stdClass
+     * @param stdClass $from
+     * @return $this
      */
-    private static function copyMembers($objFrom, &$objTo = null)
+    private function copyMembers(stdClass $from): self
     {
-        if (!\is_object($objTo)) {
-            $objTo = new stdClass();
+        foreach (\array_keys(\get_object_vars($from)) as $member) {
+            $this->$member = $from->$member;
         }
-        foreach (\array_keys(\get_object_vars($objFrom)) as $member) {
-            $objTo->$member = $objFrom->$member;
-        }
+        $this->kUploadSchema = (int)$this->kUploadSchema;
+        $this->kCustomID     = (int)$this->kCustomID;
+        $this->nTyp          = (int)$this->nTyp;
+        $this->nPflicht      = (int)$this->nPflicht;
 
-        return $objTo;
+        return $this;
     }
 }

@@ -13,6 +13,7 @@ use JTL\Checkout\Versandart;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Config\ItemLocalization;
 use JTL\Extensions\Download\Download;
+use JTL\Helpers\Order;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -381,9 +382,9 @@ class Cart
         $db            = Shop::Container()->getDB();
         $deliveryState = $cartItem->Artikel->cLieferstatus;
         foreach (Frontend::getLanguages() as $lang) {
-            $cartItem->cName[$lang->cISO]         = $cartItem->Artikel->cName;
-            $cartItem->cLieferstatus[$lang->cISO] = $deliveryState;
-            if ($lang->cStandard === 'Y') {
+            $cartItem->cName[$lang->getCode()]         = $cartItem->Artikel->cName;
+            $cartItem->cLieferstatus[$lang->getCode()] = $deliveryState;
+            if ($lang->isDefault() === true) {
                 $localized = $db->select(
                     'tartikel',
                     'kArtikel',
@@ -401,7 +402,7 @@ class Cart
                     'kArtikel',
                     (int)$cartItem->kArtikel,
                     'kSprache',
-                    (int)$lang->kSprache,
+                    $lang->getId(),
                     null,
                     null,
                     false,
@@ -409,18 +410,18 @@ class Cart
                 );
             }
             //Wenn fuer die gewaehlte Sprache kein Name vorhanden ist dann StdSprache nehmen
-            $cartItem->cName[$lang->cISO] = (isset($localized->cName) && \mb_strlen(\trim($localized->cName)) > 0)
+            $cartItem->cName[$lang->getCode()] = (isset($localized->cName) && \mb_strlen(\trim($localized->cName)) > 0)
                 ? $localized->cName
                 : $cartItem->Artikel->cName;
-            $lieferstatus_spr             = $db->select(
+            $lieferstatus_spr                  = $db->select(
                 'tlieferstatus',
                 'kLieferstatus',
                 (int)($cartItem->Artikel->kLieferstatus ?? 0),
                 'kSprache',
-                (int)$lang->kSprache
+                $lang->getId()
             );
             if (!empty($lieferstatus_spr->cName)) {
-                $cartItem->cLieferstatus[$lang->cISO] = $lieferstatus_spr->cName;
+                $cartItem->cLieferstatus[$lang->getCode()] = $lieferstatus_spr->cName;
             }
         }
         // Grundpreise bei Staffelpreisen
@@ -583,16 +584,6 @@ class Cart
 
     /**
      * @param int $type
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function enthaltenSpezialPos(int $type): bool
-    {
-        return $this->posTypEnthalten($type);
-    }
-
-    /**
-     * @param int $type
      * @param bool $force
      * @return $this
      */
@@ -642,7 +633,7 @@ class Cart
         $name,
         $qty,
         $price,
-        $taxClassID,
+        int $taxClassID,
         int $type,
         bool $delSamePosType = true,
         bool $grossPrice = true,
@@ -705,7 +696,7 @@ class Cart
             $cartItem->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
                 Tax::getGross(
                     $cartItem->fPreis * $cartItem->nAnzahl,
-                    Tax::getSalesTax($cartItem->kSteuerklasse)
+                    CartItem::getTaxRate($cartItem)
                 ),
                 $currency
             );
@@ -714,7 +705,7 @@ class Cart
                 $currency
             );
             $cartItem->cEinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
-                Tax::getGross($cartItem->fPreis, Tax::getSalesTax($cartItem->kSteuerklasse)),
+                Tax::getGross($cartItem->fPreis, CartItem::getTaxRate($cartItem)),
                 $currency
             );
             $cartItem->cEinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
@@ -736,7 +727,7 @@ class Cart
                         $net   += $item->fPreis * $item->nAnzahl;
                         $gross += Tax::getGross(
                             $item->fPreis * $item->nAnzahl,
-                            Tax::getSalesTax($item->kSteuerklasse)
+                            CartItem::getTaxRate($item)
                         );
 
                         if ((int)$item->kKonfigitem === 0
@@ -1049,11 +1040,11 @@ class Cart
             }
             if ($name && $configItem->getUseOwnName()) {
                 foreach (Frontend::getLanguages() as $language) {
-                    $localized                    = new ItemLocalization(
+                    $localized                         = new ItemLocalization(
                         $configItem->getKonfigitem(),
-                        $language->kSprache
+                        $language->getId()
                     );
-                    $item->cName[$language->cISO] = $localized->getName();
+                    $item->cName[$language->getCode()] = $localized->getName();
                 }
             }
         }
@@ -1159,7 +1150,7 @@ class Cart
             // Lokalisierte Preise addieren
             if ($gross) {
                 $total += $item->fPreis * $conversionFactor * $item->nAnzahl *
-                    ((100 + Tax::getSalesTax($item->kSteuerklasse)) / 100);
+                    ((100 + CartItem::getTaxRate($item)) / 100);
             } else {
                 $total += $item->fPreis * $conversionFactor * $item->nAnzahl;
             }
@@ -1173,17 +1164,12 @@ class Cart
                 $_SESSION['Bestellung']->fGuthabenGenutzt,
                 $_SESSION['Kunde']->fGuthaben
             )
-            && $_SESSION['Bestellung']->GuthabenNutzen == 1
+            && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1
             && $_SESSION['Bestellung']->fGuthabenGenutzt > 0
             && $_SESSION['Kunde']->fGuthaben > 0
         ) {
             // check and correct the SESSION-values for "Guthaben"
-            $_SESSION['Bestellung']->GuthabenNutzen   = 1;
-            $_SESSION['Bestellung']->fGuthabenGenutzt = \min(
-                $_SESSION['Kunde']->fGuthaben,
-                Frontend::getCart()->gibGesamtsummeWaren(true, false)
-            );
-            $total                                   -= $_SESSION['Bestellung']->fGuthabenGenutzt * $conversionFactor;
+            $total -= Order::getOrderCredit() * $conversionFactor;
         }
         $total /= $conversionFactor;
         $this->useSummationRounding();
@@ -1214,7 +1200,7 @@ class Cart
                 && $item->isUsedForShippingCostCalculation($iso, $excludeShippingCostAttributes)
             ) {
                 if ($gross) {
-                    $total += $item->fPreis * $item->nAnzahl * ((100 + Tax::getSalesTax($item->kSteuerklasse)) / 100);
+                    $total += $item->fPreis * $item->nAnzahl * ((100 + CartItem::getTaxRate($item)) / 100);
                 } else {
                     $total += $item->fPreis * $item->nAnzahl;
                 }
@@ -1246,7 +1232,7 @@ class Cart
             if (!\in_array($item->nPosTyp, $types)) {
                 if ($gross) {
                     $total += $item->fPreis * $factor * $item->nAnzahl *
-                        ((100 + Tax::getSalesTax($item->kSteuerklasse)) / 100);
+                        ((100 + CartItem::getTaxRate($item)) / 100);
                 } else {
                     $total += $item->fPreis * $factor * $item->nAnzahl;
                 }
@@ -1257,17 +1243,6 @@ class Cart
         }
 
         return $total / $factor;
-    }
-
-    /**
-     * @deprecated since 5.0.0 - use WarenkorbHelper::roundOptionalCurrency instead
-     * @param float|int $total
-     * @return float
-     */
-    public function optionaleRundung($total)
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return CartHelper::roundOptionalCurrency($total, $this->Waehrung ?? Frontend::getCurrency());
     }
 
     /**
@@ -1292,6 +1267,9 @@ class Cart
         $sum    = [];
         $sum[0] = Preise::getLocalizedPriceString($this->gibGesamtsummeWaren(true));
         $sum[1] = Preise::getLocalizedPriceString($this->gibGesamtsummeWaren());
+        \executeHook(\HOOK_CART_GET_LOCALIZED_SUM, [
+            'sum' => &$sum
+        ]);
 
         return $sum;
     }
@@ -1415,10 +1393,10 @@ class Cart
                     if ($oWarenkorbPosEigenschaft->kEigenschaftWert > 0 && $item->nAnzahl > 0) {
                         //schaue in DB, ob Lagerbestand ausreichend
                         $stock = Shop::Container()->getDB()->getSingleObject(
-                            'SELECT kEigenschaftWert, fLagerbestand >= ' . $item->nAnzahl .
-                            ' AS bAusreichend, fLagerbestand
+                            'SELECT kEigenschaftWert, fLagerbestand >= :cnt AS bAusreichend, fLagerbestand
                                 FROM teigenschaftwert
-                                WHERE kEigenschaftWert = ' . (int)$oWarenkorbPosEigenschaft->kEigenschaftWert
+                                WHERE kEigenschaftWert = :vid',
+                            ['cnt' => $item->nAnzahl, 'vid' => (int)$oWarenkorbPosEigenschaft->kEigenschaftWert]
                         );
                         if ($stock !== null && $stock->kEigenschaftWert > 0 && !$stock->bAusreichend) {
                             if ($stock->fLagerbestand > 0) {
@@ -1583,7 +1561,7 @@ class Cart
     }
 
     /**
-     * @return object|null
+     * @return Artikel|null
      */
     public function gibLetztenWKArtikel()
     {
@@ -1626,8 +1604,8 @@ class Cart
     }
 
     /**
-     * @param bool $isRedirect
-     * @param bool $unique
+     * @param bool        $isRedirect
+     * @param bool|string $unique
      */
     public function redirectTo(bool $isRedirect = false, $unique = false): void
     {
@@ -1731,19 +1709,19 @@ class Cart
         }
         $specialPosition        = new stdClass();
         $specialPosition->cName = [];
-        foreach ($_SESSION['Sprachen'] as $language) {
-            $localized                               = Shop::Container()->getDB()->select(
+        foreach (Frontend::getLanguages() as $language) {
+            $localized                                    = Shop::Container()->getDB()->select(
                 'tkuponsprache',
                 'kKupon',
                 (int)$coupon->kKupon,
                 'cISOSprache',
-                $language->cISO,
+                $language->getCode(),
                 null,
                 null,
                 false,
                 'cName'
             );
-            $specialPosition->cName[$language->cISO] = $localized->cName;
+            $specialPosition->cName[$language->getCode()] = $localized->cName;
         }
         $this->loescheSpezialPos(\C_WARENKORBPOS_TYP_KUPON);
         $this->erstelleSpezialPos(
@@ -1769,13 +1747,13 @@ class Cart
             foreach ($this->PositionenArr as $i => $item) {
                 $grossAmount        = Tax::getGross(
                     $item->fPreis * $item->nAnzahl,
-                    Tax::getSalesTax($item->kSteuerklasse),
+                    CartItem::getTaxRate($item),
                     12
                 );
                 $netAmount          = $item->fPreis * $item->nAnzahl;
                 $roundedGrossAmount = Tax::getGross(
                     $item->fPreis * $item->nAnzahl + $cumulatedDelta,
-                    Tax::getSalesTax($item->kSteuerklasse),
+                    CartItem::getTaxRate($item),
                     $precision
                 );
                 $roundedNetAmount   = \round($item->fPreis * $item->nAnzahl + $cumulatedDeltaNet, $precision);
@@ -1869,7 +1847,7 @@ class Cart
         $customerGroupSQL = $customerGroupID > 0
             ? " OR FIND_IN_SET('" . $customerGroupID . "', REPLACE(va.cKundengruppen, ';', ',')) > 0"
             : '';
-        $countryCode      = $this->getShippingCountry();
+        $countryCode      = $_SESSION['cLieferlandISO'];
         // if nothing changed, return cached shipping-object
         if ($this->oFavourableShipping !== null
             && $this->oFavourableShipping->getCountryCode() === $_SESSION['cLieferlandISO']

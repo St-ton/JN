@@ -13,7 +13,7 @@
                         {block name='productdetails-matrix-list-coming-soon'}
                             {col cols=6 md=5}
                                 <div >
-                                    {link href=$child->cSeo}<span itemprop="name">{$child->cName}</span>{/link}
+                                    {link href=$child->cURLFull}<span itemprop="name">{$child->cName}</span>{/link}
                                 </div>
                                 <div class="small">
                                     {if $child->nErscheinendesProdukt}

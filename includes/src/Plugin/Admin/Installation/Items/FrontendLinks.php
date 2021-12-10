@@ -96,9 +96,12 @@ class FrontendLinks extends AbstractItem
                         $this->db->queryPrepared(
                             "DELETE FROM tseo
                                 WHERE cKey = 'kLink'
-                                    AND (kKey = " . $linkID . $or . ')
+                                    AND (kKey = :lnk" . $or . ')
                                     AND kSprache = :lid',
-                            ['lid' => (int)$allLanguages[$linkLang->cISOSprache]->kSprache]
+                            [
+                                'lid' => (int)$allLanguages[$linkLang->cISOSprache]->kSprache,
+                                'lnk' => $linkID
+                            ]
                         );
                         $seo           = new stdClass();
                         $seo->cSeo     = Seo::checkSeo(Seo::getSeo($localized['Seo']));
@@ -186,7 +189,7 @@ class FrontendLinks extends AbstractItem
         $link->cDruckButton       = $links['PrintButton'] ?? 'N';
         $link->cNoFollow          = $links['NoFollow'] ?? 'N';
         $link->cIdentifier        = $links['Identifier'] ?? '';
-        $link->nSort              = \LINKTYP_PLUGIN;
+        $link->nSort              = 0;
         $link->bSSL               = (int)($links['SSL'] ?? 0);
 
         return $this->db->insert('tlink', $link);

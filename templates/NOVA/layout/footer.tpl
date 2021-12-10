@@ -223,7 +223,7 @@
                                 {/block}
                                 {if !$isBrandFree}
                                     {block name='layout-footer-copyright-brand'}
-                                        {col class="col-auto ml-auto-util{if $Einstellungen.template.theme.button_scroll_top === 'Y'} pr-8{/if}" id="system-credits"}
+                                        {col cols=12 md="auto" class="ml-auto-util{if $Einstellungen.template.theme.button_scroll_top === 'Y'} pr-md-8{/if}" id="system-credits"}
                                             Powered by {link href="https://jtl-url.de/jtlshop" class="text-white text-decoration-underline" title="JTL-Shop" target="_blank" rel="noopener nofollow"}JTL-Shop{/link}
                                         {/col}
                                     {/block}
@@ -260,6 +260,20 @@
                     setTimeout(function() {
                         $('#consent-manager, #consent-settings-btn').removeClass('d-none');
                     }, 100)
+                    document.addEventListener('consent.updated', function(e) {
+                        $.post('{$ShopURLSSL}/', {
+                                'action': 'updateconsent',
+                                'jtl_token': '{$smarty.session.jtl_token}',
+                                'data': e.detail
+                            }
+                        );
+                    });
+                    {if !isset($smarty.session.consents)}
+                        document.addEventListener('consent.ready', function(e) {
+                            document.dispatchEvent(new CustomEvent('consent.updated', { detail: e.detail }));
+                        });
+                    {/if}
+
                     window.CM = new ConsentManager({
                         version: 1
                     });
@@ -281,14 +295,6 @@
                     for(let i = 0; i < trigger.length; ++i) {
                         trigger[i].addEventListener('click', triggerCall)
                     }
-                    document.addEventListener('consent.updated', function(e) {
-                        $.post('{$ShopURLSSL}/', {
-                                'action': 'updateconsent',
-                                'jtl_token': '{$smarty.session.jtl_token}',
-                                'data': e.detail
-                            }
-                        );
-                    });
                 </script>
             {/inline_script}
         {/if}

@@ -105,7 +105,7 @@
             {block name='snippets-categories-mega-manufacturers-inner'}
                 <li class="nav-item nav-scrollbar-item dropdown dropdown-full {if $nSeitenTyp === $smarty.const.PAGE_HERSTELLER}active{/if}">
                     {link href="{if $manufacturerOverview !== null}{$manufacturerOverview->getURL()}{else}#{/if}" title={lang key='manufacturers'} class="nav-link dropdown-toggle" target="_self"}
-                        <span class="text-truncate">
+                        <span class="text-truncate nav-mobile-heading">
                             {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}
                                 {$manufacturerOverview->getName()}
                             {else}
@@ -171,10 +171,9 @@
         {/block}
         {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
             {navitem href="{get_static_route id='wunschliste.php'}" class="wl-nav-scrollbar-item nav-scrollbar-item"}
-                {lang key='wishlist'}
                 {badge id="badge-wl-count" variant="primary" class="product-count"}
-                    {if isset($smarty.session.Wunschliste) && !empty($smarty.session.Wunschliste->CWunschlistePos_arr|count)}
-                        {$smarty.session.Wunschliste->CWunschlistePos_arr|count}
+                    {if $smarty.session.Wunschliste->getID() > 0}
+                        {$smarty.session.Wunschliste->getItems()|count}
                     {else}
                         0
                     {/if}

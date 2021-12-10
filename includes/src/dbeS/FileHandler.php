@@ -165,7 +165,7 @@ class FileHandler
      * @param array|null $data
      * @return string
      */
-    public function checkFile($data = null): string
+    public function checkFile(?array $data = null): string
     {
         $files = $data ?? $_FILES;
 

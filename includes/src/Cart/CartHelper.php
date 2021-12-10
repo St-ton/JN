@@ -9,6 +9,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Product\VariationValue;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
@@ -156,7 +157,11 @@ class CartHelper
                 }
             }
             $amount      = $amountItem * $info->currency->getConversionFactor();
-            $amountGross = Tax::getGross($amount, Tax::getSalesTax((int)$item->kSteuerklasse));
+            $amountGross = Tax::getGross(
+                $amount,
+                CartItem::getTaxRate($item),
+                $decimals > 0 ? $decimals : 2
+            );
 
             switch ((int)$item->nPosTyp) {
                 case \C_WARENKORBPOS_TYP_ARTIKEL:
@@ -778,10 +783,11 @@ class CartHelper
                     return true;
                 }
                 $wishlist = Frontend::getWishList();
-                if ($wishlist->kWunschliste <= 0) {
+                if ($wishlist->getID() === 0) {
+                    $wishlist = new Wishlist();
                     $wishlist->schreibeDB();
+                    $_SESSION['Wunschliste'] = $wishlist;
                 }
-                $qty    = \max(1, $qty);
                 $itemID = $wishlist->fuegeEin(
                     $productID,
                     $productExists->cName,
@@ -904,7 +910,7 @@ class CartHelper
         }
         // fehlen zu einer Variation werte?
         foreach ($product->Variationen as $var) {
-            if (\count($redirectParam) > 0) {
+            if (\in_array(\R_VARWAEHLEN, $redirectParam, true)) {
                 break;
             }
             if ($var->cTyp === 'FREIFELD') {
@@ -1120,7 +1126,7 @@ class CartHelper
         $categoryQRY = '';
         $customerQRY = '';
         $categoryIDs = [];
-        if ($item->Artikel->kArtikel > 0 && $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
+        if ($item->Artikel->kArtikel > 0) {
             $productID = (int)$item->Artikel->kArtikel;
             if (Product::isVariChild($productID)) {
                 $productID = Product::getParent($productID);
@@ -1188,7 +1194,7 @@ class CartHelper
                 $item->cGesamtpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
                     Tax::getGross(
                         $item->fPreis * $item->nAnzahl,
-                        Tax::getSalesTax($item->kSteuerklasse)
+                        CartItem::getTaxRate($item)
                     ),
                     $currency
                 );
@@ -1197,7 +1203,7 @@ class CartHelper
                     $currency
                 );
                 $item->cEinzelpreisLocalized[0][$currencyName] = Preise::getLocalizedPriceString(
-                    Tax::getGross($item->fPreis, Tax::getSalesTax($item->kSteuerklasse)),
+                    Tax::getGross($item->fPreis, CartItem::getTaxRate($item)),
                     $currency
                 );
                 $item->cEinzelpreisLocalized[1][$currencyName] = Preise::getLocalizedPriceString(
@@ -1229,7 +1235,7 @@ class CartHelper
         $categoryQRY = '';
         $customerQRY = '';
         $categoryIDs = [];
-        if ($cartItem->Artikel->kArtikel > 0 && $cartItem->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
+        if ($cartItem->Artikel->kArtikel > 0) {
             $productID = (int)$cartItem->Artikel->kArtikel;
             if (Product::isVariChild($productID)) {
                 $productID = Product::getParent($productID);
@@ -1282,7 +1288,7 @@ class CartHelper
             $item->fPreis = $cartItem->fPreis *
                 Frontend::getCurrency()->getConversionFactor() *
                 $cartItem->nAnzahl *
-                ((100 + Tax::getSalesTax($cartItem->kSteuerklasse)) / 100);
+                ((100 + CartItem::getTaxRate($cartItem)) / 100);
             $item->cName  = $cartItem->cName;
         }
 
@@ -2021,8 +2027,9 @@ class CartHelper
             } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
                 $sqlSort = ' ORDER BY tartikel.fLagerbestand DESC';
             }
-            $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0 ?
-                    ' LIMIT ' . $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] : '';
+            $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0
+                ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
+                : '';
             $giftsTmp = Shop::Container()->getDB()->getObjects(
                 "SELECT tartikel.kArtikel, tartikelattribut.cWert
                     FROM tartikel
@@ -2031,10 +2038,12 @@ class CartHelper
                     WHERE (tartikel.fLagerbestand > 0 ||
                           (tartikel.fLagerbestand <= 0 &&
                           (tartikel.cLagerBeachten = 'N' || tartikel.cLagerKleinerNull = 'Y')))
-                        AND tartikelattribut.cName = '" . \FKT_ATTRIBUT_GRATISGESCHENK . "'
-                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
-                Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true) .
-                $sqlSort . $limit
+                        AND tartikelattribut.cName = :atr
+                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= :csum " . $sqlSort . $limit,
+                [
+                    'atr'  => \FKT_ATTRIBUT_GRATISGESCHENK,
+                    'csum' => Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
+                ]
             );
 
             foreach ($giftsTmp as $gift) {
@@ -2085,7 +2094,15 @@ class CartHelper
         }
         $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
         if ($exists) {
-            $notice = \sprintf(Shop::Lang()->get('orderExpandInventory', 'basket'), '<ul>' . $name . '</ul>');
+            $notice  = \sprintf(
+                Shop::Lang()->get('orderExpandInventory', 'basket'),
+                '<ul>' . $name . '</ul>'
+            );
+            $notice .= '<strong>' .
+                Shop::Lang()->get('shippingTime', 'global') .
+                ': ' .
+                $cart->cEstimatedDelivery .
+                '</strong>';
         }
 
         return $notice;

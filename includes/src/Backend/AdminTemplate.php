@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
@@ -58,7 +58,7 @@ class AdminTemplate
     public $preview;
 
     /**
-     *
+     * AdminTemplate constructor.
      */
     public function __construct()
     {
@@ -77,9 +77,9 @@ class AdminTemplate
     /**
      * get template configuration
      *
-     * @return array|bool
+     * @return bool
      */
-    public function getConfig()
+    public function getConfig(): bool
     {
         return false;
     }

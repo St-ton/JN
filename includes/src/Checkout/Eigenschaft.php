@@ -70,6 +70,9 @@ class Eigenschaft
         foreach (\get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
+        $this->kEigenschaft = (int)$this->kEigenschaft;
+        $this->kArtikel     = (int)$this->kArtikel;
+        $this->nSort        = (int)$this->nSort;
         \executeHook(\HOOK_EIGENSCHAFT_CLASS_LOADFROMDB);
 
         return $this;
@@ -94,14 +97,5 @@ class Eigenschaft
         $obj = GeneralObject::copyMembers($this);
 
         return Shop::Container()->getDB()->update('teigenschaft', 'kEigenschaft', $obj->kEigenschaft, $obj);
-    }
-
-    /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function setzePostDaten(): bool
-    {
-        return false;
     }
 }

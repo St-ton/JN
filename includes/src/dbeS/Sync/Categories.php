@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -23,7 +23,7 @@ final class Categories extends AbstractSync
     {
         $categoryIDs = [];
         $this->db->query('START TRANSACTION');
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             if (isset($xml['tkategorie attr']['nGesamt']) || isset($xml['tkategorie attr']['nAktuell'])) {
                 unset($xml['tkategorie attr']['nGesamt'], $xml['tkategorie attr']['nAktuell']);
@@ -97,9 +97,10 @@ final class Categories extends AbstractSync
         $categories = $this->mapper->mapArray($xml, 'tkategorie', 'mKategorie');
         if ($categories[0]->kKategorie > 0) {
             if (!$categories[0]->cSeo) {
-                $categories[0]->cSeo = Seo::getFlatSeoPath($categories[0]->cName);
+                $categories[0]->cSeo = Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($categories[0]->cName)));
+            } else {
+                $categories[0]->cSeo = Seo::checkSeo(Seo::getSeo($categories[0]->cSeo, true));
             }
-            $categories[0]->cSeo                  = Seo::checkSeo(Seo::getSeo($categories[0]->cSeo));
             $categories[0]->dLetzteAktualisierung = 'NOW()';
             $categories[0]->lft                   = $oldData->lft ?? 0;
             $categories[0]->rght                  = $oldData->rght ?? 0;
@@ -137,11 +138,11 @@ final class Categories extends AbstractSync
     }
 
     /**
-     * @param array  $xml
-     * @param int    $categoryID
-     * @param object $category
+     * @param array    $xml
+     * @param int      $categoryID
+     * @param stdClass $category
      */
-    private function setLanguages(array $xml, int $categoryID, $category): void
+    private function setLanguages(array $xml, int $categoryID, stdClass $category): void
     {
         $seoData      = $this->getSeoFromDB($categoryID, 'kKategorie', null, 'kSprache');
         $catLanguages = $this->mapper->mapArray($xml['tkategorie'], 'tkategoriesprache', 'mKategorieSprache');
@@ -152,16 +153,18 @@ final class Categories extends AbstractSync
             if (!LanguageHelper::isShopLanguage($language->kSprache, $allLanguages)) {
                 continue;
             }
-            if (!$language->cSeo) {
+            if ($language->cSeo) {
+                $language->cSeo = Seo::checkSeo(Seo::getSeo($language->cSeo, true));
+            } else {
                 $language->cSeo = $language->cName;
+                if (!$language->cSeo) {
+                    $language->cSeo = $category->cSeo;
+                }
+                if (!$language->cSeo) {
+                    $language->cSeo = $category->cName;
+                }
+                $language->cSeo = Seo::checkSeo(Seo::getSeo($language->cSeo));
             }
-            if (!$language->cSeo) {
-                $language->cSeo = $category->cSeo;
-            }
-            if (!$language->cSeo) {
-                $language->cSeo = $category->cName;
-            }
-            $language->cSeo = Seo::checkSeo(Seo::getSeo($language->cSeo));
             $this->insertOnExistUpdate('tkategoriesprache', [$language], ['kKategorie', 'kSprache']);
 
             $ins           = new stdClass();
@@ -281,11 +284,11 @@ final class Categories extends AbstractSync
     }
 
     /**
-     * @param array  $xmlParent
-     * @param object $attribute
+     * @param array    $xmlParent
+     * @param stdClass $attribute
      * @return int
      */
-    private function saveAttribute($xmlParent, $attribute): int
+    private function saveAttribute(array $xmlParent, stdClass $attribute): int
     {
         // Fix: die Wawi überträgt für die normalen Attribute die ID in kAttribut statt in kKategorieAttribut
         if (!isset($attribute->kKategorieAttribut) && isset($attribute->kAttribut)) {

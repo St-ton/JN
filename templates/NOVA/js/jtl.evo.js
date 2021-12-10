@@ -94,23 +94,30 @@
                     ]
                 },
                 'slider-half' : {
-                    arrows:       true,
+                    arrows:       false,
                     lazyLoad:     'ondemand',
                     mobileFirst:    true,
                     slidesToShow: 2,
                     slidesToScroll: 2,
                     responsive:   [
                         {
+                            breakpoint: 992,
+                            settings: {
+                                arrows: true,
+                            }
+                        },
+                        {
                             breakpoint: 1300,
                             settings: {
                                 slidesToShow: 3,
                                 slidesToScroll: 3,
+                                arrows: true,
                             }
                         }
                     ]
                 },
                 'slider-three' : {
-                    arrows:       true,
+                    arrows:       false,
                     lazyLoad:     'ondemand',
                     mobileFirst:    true,
                     slidesToShow: 1,
@@ -124,8 +131,15 @@
                             }
                         },
                         {
+                            breakpoint: 992,
+                            settings: {
+                                arrows: true,
+                            }
+                        },
+                        {
                             breakpoint: 1300,
                             settings: {
+                                arrows: true,
                                 slidesToShow: 3,
                                 slidesToScroll: 3,
                             }
@@ -202,6 +216,7 @@
                 'freegift' : {
                     slidesToShow:   3,
                     slidesToScroll: 3,
+                    arrows:   false,
                     infinite: false,
                     responsive: [
                         {
@@ -209,6 +224,12 @@
                             settings: {
                                 slidesToShow: 2,
                                 slidesToScroll: 2,
+                            }
+                        },
+                        {
+                            breakpoint: 992,
+                            settings: {
+                                arrows: true
                             }
                         }
                     ]
@@ -956,8 +977,14 @@
                 $('.js-update-wl').on('change', function () {
                     $.evo.extended().updateWishlistItem($(this).closest('.productbox-inner'));
                 });
+                $(window).on('resize', function () {
+                    setWishlistItemheights();
+                });
+                setWishlistItemheights();
+            }
+            function setWishlistItemheights() {
                 $('.product-list').children().each(function() {
-                    $(this).css('height', $(this).height());
+                    $(this).css('height', window.innerWidth > globals.breakpoints.xl ? $(this).height() : 'unset');
                 });
             }
         },
@@ -983,6 +1010,7 @@
             $searchWrapper.each((i, itemWrapper) => {
                 $(itemWrapper).find(searchInput).on('input', function () {
                     filterSearch($(itemWrapper));
+                    $(itemWrapper).find('.collapse').collapse('show');
                 }).on('keydown', e => {
                     if (e.key === 'Escape') {
                         e.stopPropagation();

@@ -24,11 +24,11 @@
                         {* rich snippet availability *}
                         {block name='productdetails-stock-rich-availability'}
                             {if $Artikel->cLagerBeachten === 'N' || $Artikel->fLagerbestand > 0 || $Artikel->cLagerKleinerNull === 'Y'}
-                                <link itemprop="availability" href="http://schema.org/InStock" />
+                                <link itemprop="availability" href="https://schema.org/InStock" />
                             {elseif $Artikel->nErscheinendesProdukt && $Artikel->Erscheinungsdatum_de !== '00.00.0000' && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'}
-                                <link itemprop="availability" href="http://schema.org/PreOrder" />
+                                <link itemprop="availability" href="https://schema.org/PreOrder" />
                             {elseif $Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull === 'N' && $Artikel->fLagerbestand <= 0}
-                                <link itemprop="availability" href="http://schema.org/OutOfStock" />
+                                <link itemprop="availability" href="https://schema.org/OutOfStock" />
                             {/if}
                         {/block}
                         {if isset($Artikel->cLieferstatus) && ($Einstellungen.artikeldetails.artikeldetails_lieferstatus_anzeigen === 'Y' ||

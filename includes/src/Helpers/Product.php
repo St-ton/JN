@@ -184,7 +184,7 @@ class Product
         if (!$customerGroupID) {
             $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
-        $cGroupBy = $group ? 'GROUP BY teigenschaftkombiwert.kEigenschaftWert ' : '';
+        $groupBy = $group ? 'GROUP BY teigenschaftkombiwert.kEigenschaftWert ' : '';
 
         return \array_map(
             static function ($e) {
@@ -203,7 +203,7 @@ class Product
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = :cgid
-                    WHERE tartikelsichtbarkeit.kArtikel IS NULL ' . $cGroupBy .
+                    WHERE tartikelsichtbarkeit.kArtikel IS NULL ' . $groupBy .
                 'ORDER BY teigenschaftkombiwert.kEigenschaftWert',
                 ['pid' => $parentID, 'cgid' => $customerGroupID]
             )
@@ -215,7 +215,7 @@ class Product
      * @param int $parentID
      * @return array
      */
-    public static function getPropertiesForVarCombiArticle(int $productID, &$parentID): array
+    public static function getPropertiesForVarCombiArticle(int $productID, int &$parentID): array
     {
         $result   = [];
         $parentID = 0;
@@ -241,10 +241,7 @@ class Product
         }
 
         foreach ($children as $child) {
-            $id = (int)$child->kEigenschaft;
-            if (!isset($result[$id]) || !\is_array($result[$id])) {
-                $result[$id] = (int)$child->kEigenschaftWert;
-            }
+            $result[(int)$child->kEigenschaft] = (int)$child->kEigenschaftWert;
         }
         $parentID = (int)$children[0]->kVaterArtikel;
 
@@ -262,12 +259,12 @@ class Product
         if ($productID <= 0) {
             return [];
         }
+        $parentID       = 0;
         $customerGroup  = Frontend::getCustomerGroup()->getID();
         $db             = Shop::Container()->getDB();
         $properties     = [];
         $propertyValues = self::getPropertiesForVarCombiArticle($productID, $parentID);
         $exists         = true;
-
         if (\count($propertyValues) === 0) {
             return [];
         }
@@ -304,16 +301,17 @@ class Product
                 FROM teigenschaftwert
                 LEFT JOIN teigenschaftwertsichtbarkeit
                     ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                    AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroup . '
+                    AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgid
                 JOIN teigenschaft ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
                 LEFT JOIN teigenschaftsichtbarkeit ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                    AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroup . '
+                    AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
                 ' . $attr->cJOIN . '
                 ' . $attrVal->cJOIN . '
                 WHERE teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                     AND teigenschaftwert.kEigenschaft IN (' . \implode(',', $attributes) . ')
-                    AND teigenschaftwert.kEigenschaftWert IN (' . \implode(',', $attributeValues) . ')'
+                    AND teigenschaftwert.kEigenschaftWert IN (' . \implode(',', $attributeValues) . ')',
+            ['cgid' => $customerGroup]
         );
 
 
@@ -348,10 +346,11 @@ class Product
                             FROM teigenschaftwert
                             LEFT JOIN teigenschaftwertsichtbarkeit
                                 ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                                AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroup . '
-                            WHERE teigenschaftwert.kEigenschaftWert = ' . $attr2->kEigenschaftWert . '
+                                AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgid
+                            WHERE teigenschaftwert.kEigenschaftWert = :avid
                                 AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
-                                AND teigenschaftwert.kEigenschaft = ' . $attr2->kEigenschaft
+                                AND teigenschaftwert.kEigenschaft = :aid',
+                        ['cgid' => $customerGroup, 'aid' => $attr2->kEigenschaft, 'avid' => $attr2->kEigenschaftWert]
                     );
 
                     if ($valueExists !== null && $valueExists->kEigenschaftWert) {
@@ -393,9 +392,7 @@ class Product
                     exit();
                 }
                 $propValue                = new stdClass();
-                $propValue->cFreifeldWert = Text::filterXSS(
-                    self::getSelectedVariationValue($attr2->kEigenschaft)
-                );
+                $propValue->cFreifeldWert = Text::filterXSS(self::getSelectedVariationValue($attr2->kEigenschaft));
                 $propValue->kEigenschaft  = $attr2->kEigenschaft;
                 $propValue->cTyp          = $attr2->cTyp;
                 $properties[]             = $propValue;
@@ -619,27 +616,28 @@ class Product
 
     /**
      * @param Artikel  $product
-     * @param object[] $variationPicturesArr
+     * @param object[] $variationImages
      */
-    public static function addVariationPictures(Artikel $product, $variationPicturesArr): void
+    public static function addVariationPictures(Artikel $product, array $variationImages): void
     {
-        if (\is_array($variationPicturesArr) && \count($variationPicturesArr) > 0) {
-            $product->Bilder = \array_filter($product->Bilder, static function ($item) {
-                return !(isset($item->isVariation) && $item->isVariation);
-            });
-            if (\count($variationPicturesArr) === 1) {
-                \array_unshift($product->Bilder, $variationPicturesArr[0]);
-            } else {
-                $product->Bilder = \array_merge($product->Bilder, $variationPicturesArr);
-            }
-
-            $nNr = 1;
-            foreach (\array_keys($product->Bilder) as $key) {
-                $product->Bilder[$key]->nNr = $nNr++;
-            }
-
-            $product->cVorschaubild = $product->Bilder[0]->cURLKlein;
+        if (\count($variationImages) === 0) {
+            return;
         }
+        $product->Bilder = \array_filter($product->Bilder, static function ($item) {
+            return !(isset($item->isVariation) && $item->isVariation);
+        });
+        if (\count($variationImages) === 1) {
+            \array_unshift($product->Bilder, $variationImages[0]);
+        } else {
+            $product->Bilder = \array_merge($product->Bilder, $variationImages);
+        }
+
+        $nNr = 1;
+        foreach (\array_keys($product->Bilder) as $key) {
+            $product->Bilder[$key]->nNr = $nNr++;
+        }
+
+        $product->cVorschaubild = $product->Bilder[0]->cURLKlein;
     }
 
     /**
@@ -671,14 +669,14 @@ class Product
         $massUnit = UnitsOfMeasure::getUnit($product->kMassEinheit);
 
         if (isset($gpUnit, $massUnit, $unitMappings[$gpUnit->cCode], $unitMappings[$massUnit->cCode])) {
-            $fFactor    = UnitsOfMeasure::getConversionFaktor($unitMappings[$massUnit->cCode], $massUnit->cCode);
-            $threshold  = 250 * $fFactor / 1000;
+            $factor     = UnitsOfMeasure::getConversionFaktor($unitMappings[$massUnit->cCode], $massUnit->cCode);
+            $threshold  = 250 * $factor / 1000;
             $nAmount    = 1;
             $mappedCode = $unitMappings[$massUnit->cCode];
 
             if ($threshold > 0 && $result->fMassMenge > $threshold) {
                 $result->fGrundpreisMenge = $nAmount;
-                $result->fMassMenge      /= $fFactor;
+                $result->fMassMenge      /= $factor;
                 $result->fVPEWert         = $result->fMassMenge / $amount / $result->fGrundpreisMenge;
                 $result->fBasePreis       = $price / $result->fVPEWert;
                 $result->cVPEEinheit      = $result->fGrundpreisMenge . ' ' .
@@ -707,12 +705,12 @@ class Product
 
     /**
      * @param string        $attribute
-     * @param string        $value
+     * @param string|int    $value
      * @param callable|null $callback
      * @return mixed
      * @since 5.0.0
      */
-    public static function getProductByAttribute($attribute, $value, callable $callback = null)
+    public static function getProductByAttribute(string $attribute, $value, callable $callback = null)
     {
         $art = ($res = self::getDataByAttribute($attribute, $value)) !== null
             ? (new Artikel())->fuelleArtikel($res->kArtikel, Artikel::getDefaultOptions())
@@ -760,8 +758,9 @@ class Product
             $product = Shop::Container()->getDB()->getSingleObject(
                 'SELECT kArtikel
                     FROM tartikel' . $join . '
-                    WHERE tartikel.kVaterArtikel = ' . $productID . '
-                    GROUP BY teigenschaftkombiwert.kEigenschaftKombi' . $having
+                    WHERE tartikel.kVaterArtikel = :pid
+                    GROUP BY teigenschaftkombiwert.kEigenschaftKombi' . $having,
+                ['pid' => $productID]
             );
             if ($product !== null && \count($product->kArtikel) > 0) {
                 return (int)$product->kArtikel;
@@ -866,13 +865,14 @@ class Product
     }
 
     /**
-     * @param int       $productID
-     * @param bool|null $isParent
+     * @param int        $productID
+     * @param bool|null  $isParent
+     * @param array|null $conf
      * @return stdClass|null
      * @former gibArtikelXSelling()
      * @since 5.0.0
      */
-    public static function getXSelling(int $productID, $isParent = null): ?stdClass
+    public static function getXSelling(int $productID, bool $isParent = null, ?array $conf = null): ?stdClass
     {
         if ($productID <= 0) {
             return null;
@@ -883,8 +883,8 @@ class Product
         $xSelling->Kauf                   = new stdClass();
         $xSelling->Standard->XSellGruppen = [];
         $xSelling->Kauf->Artikel          = [];
-        $config                           = Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
-        if ($config['artikeldetails_xselling_standard_anzeigen'] === 'Y') {
+        $conf                             = $conf ?? Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
+        if ($conf['artikeldetails_xselling_standard_anzeigen'] === 'Y') {
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $xsell          = Shop::Container()->getDB()->getObjects(
                 'SELECT txsell.*, txsellgruppe.cName, txsellgruppe.cBeschreibung
@@ -920,15 +920,15 @@ class Product
             }
         }
 
-        if ($config['artikeldetails_xselling_kauf_anzeigen'] === 'Y') {
-            $limit = (int)$config['artikeldetails_xselling_kauf_anzahl'];
+        if ($conf['artikeldetails_xselling_kauf_anzeigen'] === 'Y') {
+            $limit = (int)$conf['artikeldetails_xselling_kauf_anzahl'];
             if ($isParent === null) {
                 $isParent = self::isParent($productID);
             }
             if ($isParent === true) {
                 $selectSQL = 'txsellkauf.kXSellArtikel';
                 $filterSQL = 'tartikel.kVaterArtikel';
-                if ($config['artikeldetails_xselling_kauf_parent'] === 'Y') {
+                if ($conf['artikeldetails_xselling_kauf_parent'] === 'Y') {
                     $selectSQL = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
                     $filterSQL = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
                 }
@@ -940,14 +940,15 @@ class Product
                         WHERE (txsellkauf.kArtikel IN (
                                 SELECT tartikel.kArtikel
                                 FROM tartikel
-                                WHERE tartikel.kVaterArtikel = ' . $productID . '
-                            ) OR txsellkauf.kArtikel = ' . $productID . ')
-                            AND ' . $filterSQL . ' != ' . $productID . '
+                                WHERE tartikel.kVaterArtikel = :pid
+                            ) OR txsellkauf.kArtikel = :pid)
+                            AND ' . $filterSQL . ' != :pid
                         GROUP BY 1, 2
                         ORDER BY SUM(txsellkauf.nAnzahl) DESC
-                        LIMIT ' . $limit
+                        LIMIT :lmt',
+                    ['pid' => $productID, 'lmt' => $limit]
                 );
-            } elseif ($config['artikeldetails_xselling_kauf_parent'] === 'Y') {
+            } elseif ($conf['artikeldetails_xselling_kauf_parent'] === 'Y') {
                 $xsell = Shop::Container()->getDB()->getObjects(
                     'SELECT txsellkauf.kArtikel,
                     IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
@@ -997,60 +998,63 @@ class Product
     }
 
     /**
-     * @param array $notices
-     * @param array $conf
+     * @param array        $notices
+     * @param array        $conf - product details config section
+     * @param Artikel|null $product
      * @return array
      * @former bearbeiteFrageZumProdukt()
      * @since 5.0.0
      */
-    public static function checkProductQuestion(array $notices, array $conf): array
+    public static function checkProductQuestion(array $notices, array $conf, ?Artikel $product = null): array
     {
-        if ($conf['artikeldetails']['artikeldetails_fragezumprodukt_anzeigen'] !== 'N') {
-            $missingData = self::getMissingProductQuestionFormData($conf);
-            Shop::Smarty()->assign('fehlendeAngaben_fragezumprodukt', $missingData);
-            $resultCode = Form::eingabenKorrekt($missingData);
-
-            \executeHook(\HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT_PLAUSI);
-            if ($resultCode) {
-                if (!self::checkProductQuestionFloodProtection(
-                    (int)$conf['artikeldetails']['produktfrage_sperre_minuten']
-                )) {
-                    $checkbox        = new CheckBox();
-                    $customerGroupID = Frontend::getCustomerGroup()->getID();
-                    $inquiry         = self::getProductQuestionFormDefaults();
-
-                    \executeHook(\HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT);
-                    if (empty($inquiry->cNachname)) {
-                        $inquiry->cNachname = '';
-                    }
-                    if (empty($inquiry->cVorname)) {
-                        $inquiry->cVorname = '';
-                    }
-                    $checkbox->triggerSpecialFunction(
-                        \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT,
-                        $customerGroupID,
-                        true,
-                        $_POST,
-                        ['oKunde' => $inquiry, 'oNachricht' => $inquiry]
-                    )->checkLogging(\CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $customerGroupID, $_POST, true);
-                    Shop::Smarty()->assign('PositiveFeedback', self::sendProductQuestion());
-                } else {
-                    $notices[] = Shop::Lang()->get('questionNotPossible', 'messages');
-                }
-            } elseif (isset($missingData['email']) && $missingData['email'] === 3) {
-                $notices[] = Shop::Lang()->get('blockedEmail');
-            } else {
-                $notices[] = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
-            }
-        } else {
+        if ($product === null) {
+            \trigger_error('Calling ' . __METHOD__ . ' without product instance is deprecated.', \E_USER_DEPRECATED);
+        }
+        if ($conf['artikeldetails_fragezumprodukt_anzeigen'] === 'N') {
             $notices[] = Shop::Lang()->get('productquestionPleaseLogin', 'errorMessages');
+
+            return $notices;
+        }
+        $missingData = self::getMissingProductQuestionFormData($conf);
+        Shop::Smarty()->assign('fehlendeAngaben_fragezumprodukt', $missingData);
+        $resultCode = Form::eingabenKorrekt($missingData);
+
+        \executeHook(\HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT_PLAUSI);
+        if ($resultCode) {
+            if (!self::checkProductQuestionFloodProtection((int)$conf['produktfrage_sperre_minuten'])) {
+                $checkbox        = new CheckBox();
+                $customerGroupID = Frontend::getCustomerGroup()->getID();
+                $inquiry         = self::getProductQuestionFormDefaults();
+
+                \executeHook(\HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT);
+                if (empty($inquiry->cNachname)) {
+                    $inquiry->cNachname = '';
+                }
+                if (empty($inquiry->cVorname)) {
+                    $inquiry->cVorname = '';
+                }
+                $checkbox->triggerSpecialFunction(
+                    \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT,
+                    $customerGroupID,
+                    true,
+                    $_POST,
+                    ['oKunde' => $inquiry, 'oNachricht' => $inquiry]
+                )->checkLogging(\CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $customerGroupID, $_POST, true);
+                Shop::Smarty()->assign('PositiveFeedback', self::sendProductQuestion($product));
+            } else {
+                $notices[] = Shop::Lang()->get('questionNotPossible', 'messages');
+            }
+        } elseif (isset($missingData['email']) && $missingData['email'] === 3) {
+            $notices[] = Shop::Lang()->get('blockedEmail');
+        } else {
+            $notices[] = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
         }
 
         return $notices;
     }
 
     /**
-     * @param array $conf
+     * @param array $conf - product details config section
      * @return array
      * @former gibFehlendeEingabenProduktanfrageformular()
      * @since 5.0.0
@@ -1070,25 +1074,25 @@ class Product
         if (!$_POST['email']) {
             $ret['email'] = 1;
         }
-        if ($conf['artikeldetails']['produktfrage_abfragen_vorname'] === 'Y' && !$_POST['vorname']) {
+        if ($conf['produktfrage_abfragen_vorname'] === 'Y' && !$_POST['vorname']) {
             $ret['vorname'] = 1;
         }
-        if ($conf['artikeldetails']['produktfrage_abfragen_nachname'] === 'Y' && !$_POST['nachname']) {
+        if ($conf['produktfrage_abfragen_nachname'] === 'Y' && !$_POST['nachname']) {
             $ret['nachname'] = 1;
         }
-        if ($conf['artikeldetails']['produktfrage_abfragen_firma'] === 'Y' && !$_POST['firma']) {
+        if ($conf['produktfrage_abfragen_firma'] === 'Y' && !$_POST['firma']) {
             $ret['firma'] = 1;
         }
-        if ($conf['artikeldetails']['produktfrage_abfragen_fax'] === 'Y' && !$_POST['fax']) {
+        if ($conf['produktfrage_abfragen_fax'] === 'Y' && !$_POST['fax']) {
             $ret['fax'] = 1;
         }
-        if ($conf['artikeldetails']['produktfrage_abfragen_tel'] === 'Y' && !$_POST['tel']) {
+        if ($conf['produktfrage_abfragen_tel'] === 'Y' && !$_POST['tel']) {
             $ret['tel'] = 1;
         }
-        if ($conf['artikeldetails']['produktfrage_abfragen_mobil'] === 'Y' && !$_POST['mobil']) {
+        if ($conf['produktfrage_abfragen_mobil'] === 'Y' && !$_POST['mobil']) {
             $ret['mobil'] = 1;
         }
-        if ($conf['artikeldetails']['produktfrage_abfragen_captcha'] !== 'N' && !Form::validateCaptcha($_POST)) {
+        if ($conf['produktfrage_abfragen_captcha'] !== 'N' && !Form::validateCaptcha($_POST)) {
             $ret['captcha'] = 2;
         }
         $checkBox = new CheckBox();
@@ -1118,15 +1122,20 @@ class Product
     }
 
     /**
+     * @param Artikel|null $product - since 5.2.0
      * @return string
      * @former sendeProduktanfrage()
      * @since 5.0.0
      */
-    public static function sendProductQuestion(): string
+    public static function sendProductQuestion(?Artikel $product = null): string
     {
+        if ($product === null) {
+            $product = $GLOBALS['AktuellerArtikel'];
+            \trigger_error('Calling ' . __METHOD__ . ' without product instance is deprecated.', \E_USER_DEPRECATED);
+        }
         $conf             = Shop::getSettings([\CONF_EMAILS, \CONF_ARTIKELDETAILS, \CONF_GLOBAL]);
         $data             = new stdClass();
-        $data->tartikel   = $GLOBALS['AktuellerArtikel'];
+        $data->tartikel   = $product;
         $data->tnachricht = self::getProductQuestionFormDefaults();
         $replyToName      = '';
         if ($data->tnachricht->cVorname) {
@@ -1212,32 +1221,33 @@ class Product
     }
 
     /**
-     * @param array $notices
+     * @param array      $notices
+     * @param array|null $conf - product details config section
      * @return array
      * @former bearbeiteBenachrichtigung()
      * @since 5.0.0
      */
-    public static function checkAvailabilityMessage(array $notices): array
+    public static function checkAvailabilityMessage(array $notices, ?array $conf = null): array
     {
-        $conf = Shop::getSettings([\CONF_ARTIKELDETAILS]);
-        if (!isset($_POST['a'], $conf['artikeldetails']['benachrichtigung_nutzen'])
+        $conf = $conf ?? Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
+        if (!isset($_POST['a'], $conf['benachrichtigung_nutzen'])
             || (int)$_POST['a'] <= 0
-            || $conf['artikeldetails']['benachrichtigung_nutzen'] === 'N'
+            || $conf['benachrichtigung_nutzen'] === 'N'
         ) {
             return $notices;
         }
-        $missingData = self::getMissingAvailibilityFormData();
+        $missingData = self::getMissingAvailibilityFormData($conf);
         Shop::Smarty()->assign('fehlendeAngaben_benachrichtigung', $missingData);
         $resultCode = Form::eingabenKorrekt($missingData);
 
         \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG_PLAUSI);
         if ($resultCode) {
-            if (!self::checkAvailibityFormFloodProtection($conf['artikeldetails']['benachrichtigung_sperre_minuten'])) {
+            if (!self::checkAvailibityFormFloodProtection($conf['benachrichtigung_sperre_minuten'])) {
                 $dbHandler = Shop::Container()->getDB();
                 $refData   = (new OptinRefData())
                     ->setSalutation('')
-                    ->setFirstName(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['vorname']))) ?: '')
-                    ->setLastName(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['nachname']))) ?: '')
+                    ->setFirstName(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['vorname'] ?? ''))) ?: '')
+                    ->setLastName(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['nachname'] ?? ''))) ?: '')
                     ->setProductId(Request::postInt('a'))
                     ->setEmail(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['email']))) ?: '')
                     ->setLanguageID(Shop::getLanguageID())
@@ -1281,14 +1291,15 @@ class Product
     }
 
     /**
+     * @param array|null $conf - product details config section
      * @return array
      * @former gibFehlendeEingabenBenachrichtigungsformular()
      * @since 5.0.0
      */
-    public static function getMissingAvailibilityFormData(): array
+    public static function getMissingAvailibilityFormData(?array $conf = null): array
     {
         $ret  = [];
-        $conf = Shop::getSettings([\CONF_ARTIKELDETAILS, \CONF_GLOBAL]);
+        $conf = $conf ?? Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
         if (!$_POST['email']) {
             $ret['email'] = 1;
         } elseif (Text::filterEmailAddress($_POST['email']) === false) {
@@ -1297,15 +1308,13 @@ class Product
         if (SimpleMail::checkBlacklist($_POST['email'])) {
             $ret['email'] = 3;
         }
-        if (empty($_POST['vorname']) && $conf['artikeldetails']['benachrichtigung_abfragen_vorname'] === 'Y') {
+        if (empty($_POST['vorname']) && $conf['benachrichtigung_abfragen_vorname'] === 'Y') {
             $ret['vorname'] = 1;
         }
-        if (empty($_POST['nachname']) && $conf['artikeldetails']['benachrichtigung_abfragen_nachname'] === 'Y') {
+        if (empty($_POST['nachname']) && $conf['benachrichtigung_abfragen_nachname'] === 'Y') {
             $ret['nachname'] = 1;
         }
-        if ($conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N'
-            && !Form::validateCaptcha($_POST)
-        ) {
+        if ($conf['benachrichtigung_abfragen_captcha'] !== 'N' && !Form::validateCaptcha($_POST)) {
             $ret['captcha'] = 2;
         }
         // CheckBox Plausi
@@ -1392,7 +1401,7 @@ class Product
             }
             if ($prevID > 0) {
                 $nav->vorherigerArtikel = (new Artikel())->fuelleArtikel($prevID, Artikel::getDefaultOptions());
-                if ($nav->vorherigerArtikel->kArtikel === null) {
+                if ($nav->vorherigerArtikel === null) {
                     unset($nav->vorherigerArtikel);
                 }
             }
@@ -1472,7 +1481,7 @@ class Product
      * @param null|string|array $redirectParam
      * @param bool              $renew
      * @param null|Artikel      $product
-     * @param null|float        $amount
+     * @param null|float|int    $amount
      * @param int               $configItemID
      * @param array             $notices
      * @return array
@@ -1481,10 +1490,10 @@ class Product
      */
     public static function getProductMessages(
         $redirectParam = null,
-        $renew = false,
-        $product = null,
+        bool $renew = false,
+        ?Artikel $product = null,
         $amount = null,
-        $configItemID = 0,
+        int $configItemID = 0,
         array $notices = []
     ): array {
         if ($redirectParam === null && isset($_GET['r'])) {
@@ -1660,13 +1669,13 @@ class Product
     /**
      * Mappt den Fehlercode für Bewertungen
      *
-     * @param string $code
-     * @param float  $fGuthaben
+     * @param string           $code
+     * @param float|int|string $credit
      * @return string
      * @former mappingFehlerCode()
      * @since 5.0.0
      */
-    public static function mapErrorCode($code, $fGuthaben = 0.0): string
+    public static function mapErrorCode(string $code, $credit = 0.0): string
     {
         switch ($code) {
             case 'f01':
@@ -1694,7 +1703,7 @@ class Product
                 $error = Shop::Lang()->get('bewertungHilfchange', 'messages');
                 break;
             case 'h04':
-                $error = \sprintf(Shop::Lang()->get('bewertungBewaddCredits', 'messages'), (string)$fGuthaben);
+                $error = \sprintf(Shop::Lang()->get('bewertungBewaddCredits', 'messages'), (string)$credit);
                 break;
             case 'h05':
                 $error = Shop::Lang()->get('bewertungBewaddacitvate', 'messages');
@@ -1714,14 +1723,14 @@ class Product
      * @former fasseVariVaterUndKindZusammen()
      * @since 5.0.0
      */
-    public static function combineParentAndChild($parent, $child)
+    public static function combineParentAndChild(Artikel $parent, Artikel $child)
     {
         $product                              = $child;
-        $kVariKindArtikel                     = (int)$child->kArtikel;
-        $product->kArtikel                    = (int)$parent->kArtikel;
-        $product->kVariKindArtikel            = $kVariKindArtikel;
+        $variChildID                          = (int)$child->kArtikel;
+        $product->kArtikel                    = $parent->kArtikel;
+        $product->kVariKindArtikel            = $variChildID;
         $product->nIstVater                   = 1;
-        $product->kVaterArtikel               = (int)$parent->kArtikel;
+        $product->kVaterArtikel               = $parent->kArtikel;
         $product->kEigenschaftKombi           = $parent->kEigenschaftKombi;
         $product->kEigenschaftKombi_arr       = $parent->kEigenschaftKombi_arr;
         $product->fDurchschnittsBewertung     = $parent->fDurchschnittsBewertung;
@@ -1748,29 +1757,31 @@ class Product
     {
         $products        = [];
         $limit           = ' LIMIT 3';
-        $conf            = Shop::getSettings([\CONF_ARTIKELDETAILS]);
-        $xSeller         = self::getXSelling($productID);
+        $conf            = Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
+        $xSeller         = self::getXSelling($productID, null, $conf);
         $xsellProductIDs = [];
         if ($xSeller !== null && GeneralObject::hasCount('XSellGruppen', $xSeller->Standard)) {
             foreach ($xSeller->Standard->XSellGruppen as $xSeller) {
-                if (GeneralObject::hasCount('Artikel', $xSeller)) {
-                    foreach ($xSeller->Artikel as $product) {
-                        $product->kArtikel = (int)$product->kArtikel;
-                        if (!\in_array($product->kArtikel, $xsellProductIDs, true)) {
-                            $xsellProductIDs[] = $product->kArtikel;
-                        }
+                if (!GeneralObject::hasCount('Artikel', $xSeller)) {
+                    continue;
+                }
+                foreach ($xSeller->Artikel as $product) {
+                    $product->kArtikel = (int)$product->kArtikel;
+                    if (!\in_array($product->kArtikel, $xsellProductIDs, true)) {
+                        $xsellProductIDs[] = $product->kArtikel;
                     }
                 }
             }
         }
         if (isset($xSeller->Kauf) && GeneralObject::hasCount('XSellGruppen', $xSeller->Kauf)) {
             foreach ($xSeller->Kauf->XSellGruppen as $xSeller) {
-                if (GeneralObject::hasCount('Artikel', $xSeller)) {
-                    foreach ($xSeller->Artikel as $product) {
-                        $product->kArtikel = (int)$product->kArtikel;
-                        if (!\in_array($product->kArtikel, $xsellProductIDs, true)) {
-                            $xsellProductIDs[] = $product->kArtikel;
-                        }
+                if (!GeneralObject::hasCount('Artikel', $xSeller)) {
+                    continue;
+                }
+                foreach ($xSeller->Artikel as $product) {
+                    $product->kArtikel = (int)$product->kArtikel;
+                    if (!\in_array($product->kArtikel, $xsellProductIDs, true)) {
+                        $xsellProductIDs[] = $product->kArtikel;
                     }
                 }
             }
@@ -1781,8 +1792,8 @@ class Product
             : '';
 
         if ($productID > 0) {
-            if ((int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
-                $limit = ' LIMIT ' . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
+            if ((int)$conf['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
+                $limit = ' LIMIT ' . (int)$conf['artikeldetails_aehnlicheartikel_anzahl'];
             }
             $stockFilterSQL    = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $customerGroupID   = Frontend::getCustomerGroup()->getID();
@@ -1902,13 +1913,13 @@ class Product
     public static function buildConfig(
         int $productID,
         $amount,
-        $variations,
-        $configGroups,
-        $configGroupAmounts,
-        $configItemAmounts,
-        $singleProductOutput = false
+        array $variations,
+        array $configGroups,
+        array $configGroupAmounts,
+        array $configItemAmounts,
+        bool $singleProductOutput = false
     ): ?stdClass {
-        $config                  = new stdClass;
+        $config                  = new stdClass();
         $config->fAnzahl         = $amount;
         $config->fGesamtpreis    = [0.0, 0.0];
         $config->cPreisLocalized = [];
@@ -2015,7 +2026,7 @@ class Product
      * @former holeKonfigBearbeitenModus()
      * @since  5.0.0
      */
-    public static function getEditConfigMode($configID, $smarty): void
+    public static function getEditConfigMode(int $configID, JTLSmarty $smarty): void
     {
         $cart = Frontend::getCart();
         if (!isset($cart->PositionenArr[$configID]) || !Item::checkLicense()) {
@@ -2040,10 +2051,10 @@ class Product
                 }
             }
             $smarty->assign('fAnzahl', $baseItem->nAnzahl)
-                   ->assign('kEditKonfig', $configID)
-                   ->assign('nKonfigitem_arr', $configItems)
-                   ->assign('nKonfigitemAnzahl_arr', $configItemAmounts)
-                   ->assign('nKonfiggruppeAnzahl_arr', $configGroupAmounts);
+                ->assign('kEditKonfig', $configID)
+                ->assign('nKonfigitem_arr', $configItems)
+                ->assign('nKonfigitemAnzahl_arr', $configItemAmounts)
+                ->assign('nKonfiggruppeAnzahl_arr', $configGroupAmounts);
         }
         if (isset($baseItem->WarenkorbPosEigenschaftArr)) {
             $attrValues = [];

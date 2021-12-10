@@ -2370,6 +2370,8 @@ pre#debug b {
     }
     .description {
         a {
+            color: @brand-primary-color;
+            font-weight: bold;
             text-decoration: underline;
         }
     }
@@ -3177,4 +3179,14 @@ input[type=number] {
     right: 42px;
     top: 12px;
     display: none;
+}
+
+.exstore-banner {
+    width: 100%;
+    margin: 2rem auto;
+    display: block;
+    max-width: 2000px;
+    @media (max-width: 768px) {
+        max-width: 412px;
+    }
 }

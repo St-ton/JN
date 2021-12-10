@@ -165,7 +165,7 @@ final class Controller
                 $cron->foreignKeyID = (int)$cron->foreignKeyID;
             }
             $cron->frequency = (int)$cron->frequency;
-            $cron->isRunning = (bool)$cron->isRunning;
+            $cron->isRunning = (int)$cron->isRunning;
             $mapper          = new JobTypeToJob();
             try {
                 $class = $mapper->map($cron->jobType);

@@ -15,7 +15,7 @@
         <ul class="nav categories">
             {foreach $oLinkOberGruppe_arr as $oLinkOberGruppe}
                 {assign var=rootEntryName value=$oLinkOberGruppe->cName|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}
-                {if $oLinkOberGruppe->oLinkGruppe_arr|@count === 0 && $oLinkOberGruppe->oLink_arr|@count === 1}
+                {if $oLinkOberGruppe->oLinkGruppe_arr|count === 0 && $oLinkOberGruppe->oLink_arr|count === 1}
                     <li class="nav-item {if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if}
                                {if $oLinkOberGruppe->key === $currentMenuPath[0]}active{/if}">
                         <a href="{$oLinkOberGruppe->oLink_arr[0]->cURL}" class="nav-link">
@@ -40,11 +40,13 @@
                                 {if is_object($oLinkGruppe->oLink_arr)}
                                     <li id="dropdown-header-{$entryName}"
                                         class="nav-item {if $oLinkGruppe->key === $currentMenuPath[1]}active{/if}">
-                                        <a class="nav-link" href="{$oLinkGruppe->oLink_arr->cURL}">
+                                        <a class="nav-link" href="{$oLinkGruppe->oLink_arr->cURL}"
+                                            {if !empty($oLinkGruppe->oLink_arr->target)}
+                                                target="{$oLinkGruppe->oLink_arr->target}"{/if}>
                                             {$oLinkGruppe->cName}
                                         </a>
                                     </li>
-                                {elseif $oLinkGruppe->oLink_arr|@count > 0}
+                                {elseif $oLinkGruppe->oLink_arr|count > 0}
                                     <li id="dropdown-header-{$entryName}"
                                         class="nav-item {if $oLinkGruppe->key === $currentMenuPath[1]} active{/if}">
                                         <a class="nav-link {if !($oLinkGruppe->key === $currentMenuPath[1])}collapsed{/if}"

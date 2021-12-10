@@ -232,14 +232,15 @@ class Versandart
         $db->delete('tversandartsprache', 'kVersandart', $id);
         $db->delete('tversandartzahlungsart', 'kVersandart', $id);
         $db->delete('tversandartstaffel', 'kVersandart', $id);
-        $db->query(
+        $db->queryPrepared(
             'DELETE tversandzuschlag, tversandzuschlagplz, tversandzuschlagsprache
                 FROM tversandzuschlag
                 LEFT JOIN tversandzuschlagplz 
                     ON tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
                 LEFT JOIN tversandzuschlagsprache 
                     ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                WHERE tversandzuschlag.kVersandart = ' . $id
+                WHERE tversandzuschlag.kVersandart = :fid',
+            ['fid' => $id]
         );
 
         return true;
@@ -305,7 +306,7 @@ class Versandart
      */
     private static function cloneShippingSection(array $objects, $table, $key, int $value, $unsetKey = null): void
     {
-        if ($value > 0 && \is_array($objects) && \count($objects) > 0 && \mb_strlen($key) > 0) {
+        if ($value > 0 && \count($objects) > 0 && \mb_strlen($key) > 0) {
             $db = Shop::Container()->getDB();
             foreach ($objects as $item) {
                 $primary = $item->$unsetKey;

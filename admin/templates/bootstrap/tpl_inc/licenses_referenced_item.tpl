@@ -11,7 +11,7 @@
     {elseif $referencedItem !== null}
         {$licData = $license->getLicense()}
         {$subscription = $licData->getSubscription()}
-        {$disabled = $licData->isExpired() || $subscription->isExpired() || $referencedItem->canBeUpdated() === false}
+        {$disabled = $licData->isExpired() || ($subscription->isExpired() && !$subscription->canBeUsed()) || $referencedItem->canBeUpdated() === false}
         {if isset($licenseErrorMessage)}
             <div class="alert alert-danger">
                 {__($licenseErrorMessage)}

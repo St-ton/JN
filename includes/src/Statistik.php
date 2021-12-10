@@ -81,31 +81,28 @@ class Statistik
             }
             $dateSQL = $this->baueDatumSQL('dZeit');
             $stats   = Shop::Container()->getDB()->getObjects(
-                "SELECT * , sum( t.nCount ) AS nCount
+                "SELECT * , COUNT(t.dZeit) AS nCount
                     FROM (
-                    SELECT dZeit, DATE_FORMAT( dZeit, '%d.%m.%Y' ) AS dTime, 
-                        DATE_FORMAT( dZeit, '%m' ) AS nMonth, 
-                        DATE_FORMAT( dZeit, '%H' ) AS nHour,
-                        DATE_FORMAT( dZeit, '%d' ) AS nDay, 
-                        DATE_FORMAT( dZeit, '%Y' ) AS nYear, 
-                        COUNT( dZeit ) AS nCount
-                    FROM tbesucherarchiv
-                    " . $dateSQL->cWhere . '
-                        AND kBesucherBot = 0
-                        ' . $dateSQL->cGroupBy . "
-                        UNION SELECT dZeit, DATE_FORMAT( dZeit, '%d.%m.%Y' ) AS dTime, 
-                            DATE_FORMAT( dZeit, '%m' ) AS nMonth, 
+                        SELECT dZeit, DATE_FORMAT(dZeit, '%d.%m.%Y') AS dTime,
+                            DATE_FORMAT(dZeit, '%m') AS nMonth,
+                            DATE_FORMAT(dZeit, '%H') AS nHour,
+                            DATE_FORMAT(dZeit, '%d') AS nDay,
+                            DATE_FORMAT(dZeit, '%Y') AS nYear
+                        FROM tbesucherarchiv
+                        " . $dateSQL->cWhere . "
+                            AND kBesucherBot = 0
+                        UNION ALL
+                        SELECT dZeit, DATE_FORMAT( dZeit, '%d.%m.%Y' ) AS dTime,
+                            DATE_FORMAT( dZeit, '%m' ) AS nMonth,
                             DATE_FORMAT( dZeit, '%H' ) AS nHour,
-                            DATE_FORMAT( dZeit, '%d' ) AS nDay, 
-                            DATE_FORMAT( dZeit, '%Y' ) AS nYear, 
-                            COUNT( dZeit ) AS nCount
+                            DATE_FORMAT( dZeit, '%d' ) AS nDay,
+                            DATE_FORMAT( dZeit, '%Y' ) AS nYear
                         FROM tbesucher
                         " . $dateSQL->cWhere . '
                             AND kBesucherBot = 0
-                        ' . $dateSQL->cGroupBy . '
-                        ) AS t
-                        ' . $dateSQL->cGroupBy . '
-                        ORDER BY dTime ASC'
+                    ) AS t
+                    ' . $dateSQL->cGroupBy . '
+                    ORDER BY dTime ASC'
             );
 
             return $this->mergeDaten($stats);
@@ -128,15 +125,16 @@ class Statistik
             $dateSQL = $this->baueDatumSQL('dZeit');
 
             return Shop::Container()->getDB()->getObjects(
-                "SELECT * , SUM(t.nCount) AS nCount
+                "SELECT t.cReferer, SUM(t.nCount) AS nCount
                     FROM (
-                        SELECT IF(cReferer = '', :directEntry, cReferer) AS cReferer, 
+                        SELECT IF(cReferer = '', :directEntry, cReferer) AS cReferer,
                         COUNT(dZeit) AS nCount
                         FROM tbesucher
                         " . $dateSQL->cWhere . "
                         AND kBesucherBot = 0
                         GROUP BY cReferer
-                        UNION SELECT IF(cReferer = '', :directEntry, cReferer) AS cReferer, 
+                        UNION ALL
+                        SELECT IF(cReferer = '', :directEntry, cReferer) AS cReferer,
                         COUNT(dZeit) AS nCount
                         FROM tbesucherarchiv
                         " . $dateSQL->cWhere . '
@@ -167,20 +165,19 @@ class Statistik
             $dateSQL = $this->baueDatumSQL('dZeit');
 
             return Shop::Container()->getDB()->getObjects(
-                'SELECT tbesucherbot.cUserAgent, SUM(t.nCount) AS nCount
+                'SELECT tbesucherbot.cUserAgent, COUNT(tbesucherbot.kBesucherBot) AS nCount
                     FROM
-                    (
-                        SELECT kBesucherBot, COUNT(dZeit) AS nCount
-                        FROM tbesucherarchiv
-                        ' . $dateSQL->cWhere . '
-                        GROUP BY kBesucherBot
-                        UNION SELECT kBesucherBot, COUNT(dZeit) AS nCount
-                        FROM tbesucher
-                        ' . $dateSQL->cWhere . '
-                        GROUP BY kBesucherBot
-                    ) AS t
-                    JOIN tbesucherbot ON tbesucherbot.kBesucherBot = t.kBesucherBot
-                    GROUP BY t.kBesucherBot
+                        (
+                            SELECT kBesucherBot
+                            FROM tbesucherarchiv
+                            ' . $dateSQL->cWhere . ' AND kBesucherBot > 0
+                            UNION ALL
+                            SELECT kBesucherBot
+                            FROM tbesucher
+                            ' . $dateSQL->cWhere . ' AND kBesucherBot > 0
+                        ) AS t
+                        JOIN tbesucherbot ON tbesucherbot.kBesucherBot = t.kBesucherBot
+                    GROUP BY tbesucherbot.cUserAgent
                     ORDER BY nCount DESC ' . ($limit > -1 ? 'LIMIT ' . $limit : '')
             );
         }
@@ -203,7 +200,7 @@ class Statistik
 
             return $this->mergeDaten(Shop::Container()->getDB()->getObjects(
                 "SELECT tbestellung.dErstellt AS dZeit, SUM(tbestellung.fGesamtsumme) AS nCount,
-                    DATE_FORMAT(tbestellung.dErstellt, '%m') AS nMonth, 
+                    DATE_FORMAT(tbestellung.dErstellt, '%m') AS nMonth,
                     DATE_FORMAT(tbestellung.dErstellt, '%H') AS nHour,
                     DATE_FORMAT(tbestellung.dErstellt, '%d') AS nDay,
                     DATE_FORMAT(tbestellung.dErstellt, '%Y') AS nYear
@@ -232,17 +229,18 @@ class Statistik
             $dateSQL = $this->baueDatumSQL('dZeit');
 
             return Shop::Container()->getDB()->getObjects(
-                'SELECT *, SUM(t.nCount) AS nCount
+                'SELECT t.cEinstiegsseite, COUNT(t.cEinstiegsseite) AS nCount
                     FROM
                     (
-                        SELECT cEinstiegsseite, COUNT(dZeit) AS nCount
-                        FROM tbesucher ' .  $dateSQL->cWhere . '
+                        SELECT cEinstiegsseite
+                        FROM tbesucher
+                        ' .  $dateSQL->cWhere . '
                             AND kBesucherBot = 0
-                        GROUP BY cEinstiegsseite
-                        UNION SELECT cEinstiegsseite, COUNT(dZeit) AS nCount
-                        FROM tbesucherarchiv ' . $dateSQL->cWhere . '
+                        UNION ALL
+                        SELECT cEinstiegsseite
+                        FROM tbesucherarchiv
+                        ' . $dateSQL->cWhere . '
                             AND kBesucherBot = 0
-                        GROUP BY cEinstiegsseite
                     ) AS t
                     GROUP BY t.cEinstiegsseite
                     ORDER BY nCount DESC'
@@ -259,8 +257,8 @@ class Statistik
     {
         if (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0) {
             $dateDiff = Shop::Container()->getDB()->getSingleObject(
-                "SELECT DATEDIFF('" . $this->cDatumBis_arr['cDatum'] . "', '" .
-                $this->cDatumVon_arr['cDatum'] . "') AS nTage"
+                'SELECT DATEDIFF(:to, :from) AS nTage',
+                ['from' => $this->cDatumVon_arr['cDatum'], 'to' => $this->cDatumBis_arr['cDatum']]
             );
             if ($dateDiff !== null) {
                 $this->nTage = (int)$dateDiff->nTage + 1;
@@ -358,19 +356,15 @@ class Statistik
             return [];
         }
         $stats = [];
+        $day   = (int)\date('d', $this->nStampVon);
+        $month = (int)\date('m', $this->nStampVon);
+        $year  = (int)\date('Y', $this->nStampVon);
 
         switch ($this->nAnzeigeIntervall) {
             case 1: // Stunden
                 for ($i = 0; $i <= 23; $i++) {
                     $oStat         = new stdClass();
-                    $oStat->dZeit  = \mktime(
-                        $i,
-                        0,
-                        0,
-                        (int)\date('m', $this->nStampVon),
-                        (int)\date('d', $this->nStampVon),
-                        (int)\date('Y', $this->nStampVon)
-                    );
+                    $oStat->dZeit  = \mktime($i, 0, 0, $month, $day, $year);
                     $oStat->nCount = 0;
                     $stats[]       = $oStat;
                 }
@@ -379,14 +373,7 @@ class Statistik
             case 2: // Tage
                 for ($i = 0; $i <= 30; $i++) {
                     $oStat         = new stdClass();
-                    $oStat->dZeit  = \mktime(
-                        0,
-                        0,
-                        0,
-                        (int)\date('m', $this->nStampVon),
-                        (int)\date('d', $this->nStampVon) + $i,
-                        (int)\date('Y', $this->nStampVon)
-                    );
+                    $oStat->dZeit  = \mktime(0, 0, 0, $month, $day + $i, $year);
                     $oStat->nCount = 0;
                     $stats[]       = $oStat;
                 }
@@ -395,13 +382,16 @@ class Statistik
             case 3: // Monate
                 for ($i = 0; $i <= 11; $i++) {
                     $oStat         = new stdClass();
+                    $nextYear      = $month + $i > 12;
+                    $monthTMP      = $nextYear ? $month + $i - 12 : $month + $i;
+                    $yearTMP       = $nextYear ? $year + 1 : $year;
                     $oStat->dZeit  = \mktime(
                         0,
                         0,
                         0,
-                        (int)\date('m', $this->nStampVon) + $i,
-                        (int)\date('d', $this->nStampVon),
-                        (int)\date('Y', $this->nStampVon)
+                        $monthTMP,
+                        \min($day, \cal_days_in_month(\CAL_GREGORIAN, $monthTMP, $yearTMP)),
+                        $yearTMP
                     );
                     $oStat->nCount = 0;
                     $stats[]       = $oStat;
@@ -437,55 +427,40 @@ class Statistik
      */
     private function mergeDaten($tmpData): array
     {
-        $stats = $this->vordefStats();
+        $stats     = $this->vordefStats();
+        $dayFrom   = (int)\date('d', $this->nStampVon);
+        $monthFrom = (int)\date('m', $this->nStampVon);
+        $yearFrom  = (int)\date('Y', $this->nStampVon);
+        $dayTo     = (int)\date('d', $this->nStampBis);
+        $monthTo   = (int)\date('m', $this->nStampBis);
+        $yearTo    = (int)\date('Y', $this->nStampBis);
         if ($this->nStampVon !== null) {
             switch ($this->nAnzeigeIntervall) {
                 case 1: // Stunden
-                    $start = \mktime(
-                        0,
-                        0,
-                        0,
-                        (int)\date('m', $this->nStampVon),
-                        (int)\date('d', $this->nStampVon),
-                        (int)\date('Y', $this->nStampVon)
-                    );
-                    $end   = \mktime(
-                        23,
-                        59,
-                        59,
-                        (int)\date('m', $this->nStampBis),
-                        (int)\date('d', $this->nStampBis),
-                        (int)\date('Y', $this->nStampBis)
-                    );
+                    $start = \mktime(0, 0, 0, $monthFrom, $dayFrom, $yearFrom);
+                    $end   = \mktime(23, 59, 59, $monthTo, $dayTo, $yearTo);
                     break;
 
                 case 2: // Tage
-                    $start = \mktime(
-                        0,
-                        0,
-                        0,
-                        (int)\date('m', $this->nStampVon),
-                        (int)\date('d', $this->nStampVon),
-                        (int)\date('Y', $this->nStampVon)
-                    );
+                    $start = \mktime(0, 0, 0, $monthFrom, $dayFrom, $yearFrom);
+                    $end   = \mktime(23, 59, 59, $monthTo, $dayTo, $yearTo);
+                    break;
+
+                case 3: // Monate
+                    $start = \mktime(0, 0, 0, $monthFrom, 1, $yearFrom);
                     $end   = \mktime(
                         23,
                         59,
                         59,
-                        (int)\date('m', $this->nStampBis),
-                        (int)\date('d', $this->nStampBis),
-                        (int)\date('Y', $this->nStampBis)
+                        $monthTo,
+                        \cal_days_in_month(\CAL_GREGORIAN, $monthTo, $yearTo),
+                        $yearTo
                     );
                     break;
 
-                case 3: // Monate
-                    $start = \mktime(0, 0, 0, (int)\date('m', $this->nStampVon), 1, (int)\date('Y', $this->nStampVon));
-                    $end   = \mktime(23, 59, 59, (int)\date('m', $this->nStampBis), 31, (int)\date('Y', $this->nStampBis));
-                    break;
-
                 case 4:    // Jahre
-                    $start = \mktime(0, 0, 0, 1, 1, (int)\date('Y', $this->nStampVon));
-                    $end   = \mktime(23, 59, 59, 12, 31, (int)\date('Y', $this->nStampBis));
+                    $start = \mktime(0, 0, 0, 1, 1, $yearFrom);
+                    $end   = \mktime(23, 59, 59, 12, 31, $yearTo);
                     break;
 
                 default:

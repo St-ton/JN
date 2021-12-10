@@ -35,6 +35,8 @@ class Customer
 
     public const ERROR_CAPTCHA = 4;
 
+    public const ERROR_NOT_ACTIVATED_YET = 5;
+
     public const ERROR_INVALID_DATA = 0;
 
     /**
@@ -287,7 +289,7 @@ class Customer
             );
 
             if ($data !== null && isset($data->kKunde) && $data->kKunde > 0) {
-                return new self($data->kKunde);
+                return new self((int)$data->kKunde);
             }
         }
 
@@ -381,7 +383,7 @@ class Customer
             return self::ERROR_LOCKED;
         }
         if ($user->cAktiv === 'N') {
-            return self::ERROR_INACTIVE;
+            return $user->cAbgeholt === 'Y' ? self::ERROR_INACTIVE : self::ERROR_NOT_ACTIVATED_YET;
         }
 
         return self::OK;
@@ -599,7 +601,7 @@ class Customer
         $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
         if ($this->dErstellt !== null) {
-            if (\mb_convert_case($this->dErstellt, MB_CASE_LOWER) === 'now()') {
+            if (\mb_convert_case($this->dErstellt, \MB_CASE_LOWER) === 'now()') {
                 $this->dErstellt = \date_format(\date_create(), 'Y-m-d');
             }
             $this->dErstellt_DE = \date_format(\date_create($this->dErstellt), 'd.m.Y');
@@ -655,19 +657,6 @@ class Customer
                 : null;
 
         return $return;
-    }
-
-    /**
-     * get customer attributes
-     *
-     * @return $this
-     * @deprecated since 5.0.0 - use getCustomerAttributes instead
-     */
-    public function holeKundenattribute(): self
-    {
-        \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return $this;
     }
 
     /**
@@ -790,28 +779,6 @@ class Customer
     }
 
     /**
-     * @param int $length
-     * @return bool|string
-     * @deprecated since 5.0.0
-     * @throws Exception
-     */
-    public function generatePassword(int $length = 12)
-    {
-        return Shop::Container()->getPasswordService()->generate($length);
-    }
-
-    /**
-     * @param string $password
-     * @return false|string
-     * @deprecated since 5.0.0
-     * @throws Exception
-     */
-    public function generatePasswordHash($password)
-    {
-        return Shop::Container()->getPasswordService()->hash($password);
-    }
-
-    /**
      * creates a random string for password reset validation
      *
      * @return bool - true if valid account
@@ -918,14 +885,13 @@ class Customer
             if ($languageID > 0) { // Kundensprache, falls gesetzt und gültig
                 try {
                     $lang     = Shop::Lang()->getLanguageByID($languageID);
-                    $langCode = $lang->cISO;
-                } catch (\Exception $e) {
+                    $langCode = $lang->getCode();
+                } catch (Exception $e) {
                     $lang = null;
                 }
             }
             if ($lang === null) { // Ansonsten Standardsprache
-                $lang     = Shop::Lang()->getDefaultLanguage();
-                $langCode = $lang->cISO ?? '';
+                $langCode = Shop::Lang()->getDefaultLanguage()->getCode();
             }
             $value = Shop::Container()->getDB()->getSingleObject(
                 'SELECT tsprachwerte.cWert

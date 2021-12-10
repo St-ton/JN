@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -63,14 +63,14 @@ class URL
     /**
      * @var array
      */
-    private $defaultPorts = ['http' => 80, 'https' => 443];
+    private $defaultPorts = ['http' => '80', 'https' => '443'];
 
     /**
      * @param string|null $url
      */
-    public function __construct($url = null)
+    public function __construct(?string $url = null)
     {
-        if ($url) {
+        if ($url !== null) {
             $this->setUrl($url);
         }
     }
@@ -89,18 +89,17 @@ class URL
      */
     public function setUrl(string $url): bool
     {
-        $this->url = $url;
-        // parse URL into respective parts
-        $url_components = \parse_url($this->url);
-
-        if (!$url_components) {
+        $this->url  = $url;
+        $components = \parse_url($this->url);
+        if (!$components) {
             return false;
         }
-        foreach ($url_components as $key => $value) {
+        foreach ($components as $key => $value) {
             if (\property_exists($this, $key)) {
                 $this->$key = $value;
             }
         }
+        $this->port = (string)$this->port;
 
         return true;
     }
@@ -111,6 +110,118 @@ class URL
     public function getScheme(): string
     {
         return $this->scheme;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHost(): string
+    {
+        return $this->host;
+    }
+
+    /**
+     * @param string $host
+     */
+    public function setHost(string $host): void
+    {
+        $this->host = $host;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPort(): string
+    {
+        return $this->port;
+    }
+
+    /**
+     * @param string $port
+     */
+    public function setPort(string $port): void
+    {
+        $this->port = $port;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUser(): string
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param string $user
+     */
+    public function setUser(string $user): void
+    {
+        $this->user = $user;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPass(): string
+    {
+        return $this->pass;
+    }
+
+    /**
+     * @param string $pass
+     */
+    public function setPass(string $pass): void
+    {
+        $this->pass = $pass;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    /**
+     * @param string $path
+     */
+    public function setPath(string $path): void
+    {
+        $this->path = $path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getQuery(): string
+    {
+        return $this->query;
+    }
+
+    /**
+     * @param string $query
+     */
+    public function setQuery(string $query): void
+    {
+        $this->query = $query;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFragment(): string
+    {
+        return $this->fragment;
+    }
+
+    /**
+     * @param string $fragment
+     */
+    public function setFragment(string $fragment): void
+    {
+        $this->fragment = $fragment;
     }
 
     /**
@@ -172,7 +283,7 @@ class URL
     /**
      * Decode unreserved characters
      *
-     * @see http://www.apps.ietf.org/rfc/rfc3986.html#sec-2.3
+     * @see https://datatracker.ietf.org/doc/html/rfc3986#section-2.3
      * @param string $string
      * @return mixed
      */
@@ -200,18 +311,20 @@ class URL
             },
             $unreserved
         ), static function ($matches) {
-            return \chr(\hexdec($matches[0]));
+            $match = \mb_strpos($matches[0], '%') === 0 ? \mb_substr($matches[0], 1) : $matches[0];
+            // php7.4+ expects strings like "7E" instead of "%7E"
+            return \chr(\hexdec($match));
         }, $string);
     }
 
     /**
      * Path segment normalization
      *
-     * @see http://www.apps.ietf.org/rfc/rfc3986.html#sec-5.2.4
+     * @see https://datatracker.ietf.org/doc/html/rfc3986#section-5.2.4
      * @param string $path
      * @return string
      */
-    public function removeDotSegments($path): string
+    public function removeDotSegments(string $path): string
     {
         $new_path = '';
         while (!empty($path)) {
@@ -251,7 +364,7 @@ class URL
      */
     private function schemeBasedNormalization(): self
     {
-        if (isset($this->defaultPorts[$this->scheme]) && $this->defaultPorts[$this->scheme] == $this->port) {
+        if (isset($this->defaultPorts[$this->scheme]) && $this->defaultPorts[$this->scheme] === $this->port) {
             $this->port = '';
         }
 
@@ -259,9 +372,26 @@ class URL
     }
 
     /**
-     * @param object $obj
-     * @param int    $type
-     * @param bool   $full
+     * Build an URL string from a given associative array of parts according to PHP's \parse_url()
+     *
+     * @param array $parts
+     * @return string - the resulting URL
+     */
+    public static function unparseURL(array $parts): string
+    {
+        return (isset($parts['scheme']) ? $parts['scheme'] . '://' : '') .
+            (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '') . '@' : '') .
+            ($parts['host'] ?? '') .
+            (isset($parts['port']) ? ':' . $parts['port'] : '') .
+            ($parts['path'] ?? '') .
+            (isset($parts['query']) ? '?' . $parts['query'] : '') .
+            (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
+    }
+
+    /**
+     * @param mixed $obj
+     * @param int   $type
+     * @param bool  $full
      * @return string
      * @former baueURL()
      * @since 5.0.0
@@ -275,98 +405,96 @@ class URL
             ? ('&lang=' . Shop::getLanguageCode())
             : '';
         $prefix = $full === false ? '' : Shop::getURL() . '/';
+        \executeHook(\HOOK_TOOLSGLOBAL_INC_SWITCH_BAUEURL, ['obj' => &$obj, 'art' => &$type]);
+        switch ($type) {
+            case \URLART_ARTIKEL:
+                return !empty($obj->cSeo)
+                    ? $prefix . $obj->cSeo
+                    : $prefix . '?a=' . $obj->kArtikel . $lang;
 
-        if ($type && $obj) {
-            \executeHook(\HOOK_TOOLSGLOBAL_INC_SWITCH_BAUEURL, ['obj' => &$obj, 'art' => &$type]);
-            switch ($type) {
-                case \URLART_ARTIKEL:
-                    return !empty($obj->cSeo)
-                        ? $prefix . $obj->cSeo
-                        : $prefix . '?a=' . $obj->kArtikel . $lang;
+            case \URLART_KATEGORIE:
+                if ($obj instanceof MenuItem) {
+                    return !empty($obj->getURL())
+                        ? $prefix . $obj->getURL()
+                        : $prefix . '?k=' . $obj->getID() . $lang;
+                }
+                return !empty($obj->cSeo)
+                    ? $prefix . $obj->cSeo
+                    : $prefix . '?k=' . $obj->kKategorie . $lang;
+            case \URLART_SEITE:
+                if (isset($_SESSION['cISOSprache'], $obj->cLocalizedSeo[$_SESSION['cISOSprache']])
+                    && \mb_strlen($obj->cLocalizedSeo[$_SESSION['cISOSprache']])
+                ) {
+                    return $prefix . $obj->cLocalizedSeo[$_SESSION['cISOSprache']];
+                }
+                // Hole aktuelle Spezialseite und gib den URL Dateinamen zurück
+                $oSpezialseite = Shop::Container()->getDB()->select(
+                    'tspezialseite',
+                    'nLinkart',
+                    (int)$obj->nLinkart
+                );
 
-                case \URLART_KATEGORIE:
-                    if ($obj instanceof MenuItem) {
-                        return !empty($obj->getURL())
-                            ? $prefix . $obj->getURL()
-                            : $prefix . '?k=' . $obj->getID() . $lang;
-                    }
-                    return !empty($obj->cSeo)
-                        ? $prefix . $obj->cSeo
-                        : $prefix . '?k=' . $obj->kKategorie . $lang;
-                case \URLART_SEITE:
-                    if (isset($_SESSION['cISOSprache'], $obj->cLocalizedSeo[$_SESSION['cISOSprache']])
-                        && \mb_strlen($obj->cLocalizedSeo[$_SESSION['cISOSprache']])
-                    ) {
-                        return $prefix . $obj->cLocalizedSeo[$_SESSION['cISOSprache']];
-                    }
-                    // Hole aktuelle Spezialseite und gib den URL Dateinamen zurück
-                    $oSpezialseite = Shop::Container()->getDB()->select(
-                        'tspezialseite',
-                        'nLinkart',
-                        (int)$obj->nLinkart
-                    );
+                return !empty($oSpezialseite->cDateiname)
+                    ? $prefix . $oSpezialseite->cDateiname
+                    : $prefix . '?s=' . $obj->kLink . $lang;
 
-                    return !empty($oSpezialseite->cDateiname)
-                        ? $prefix . $oSpezialseite->cDateiname
-                        : $prefix . '?s=' . $obj->kLink . $lang;
+            case \URLART_HERSTELLER:
+                return !empty($obj->cSeo)
+                    ? $prefix . $obj->cSeo
+                    : $prefix . '?h=' . $obj->kHersteller . $lang;
 
-                case \URLART_HERSTELLER:
-                    return !empty($obj->cSeo)
-                        ? $prefix . $obj->cSeo
-                        : $prefix . '?h=' . $obj->kHersteller . $lang;
+            case \URLART_LIVESUCHE:
+                return !empty($obj->cSeo)
+                    ? $prefix . $obj->cSeo
+                    : $prefix . '?l=' . $obj->kSuchanfrage . $lang;
 
-                case \URLART_LIVESUCHE:
-                    return !empty($obj->cSeo)
-                        ? $prefix . $obj->cSeo
-                        : $prefix . '?l=' . $obj->kSuchanfrage . $lang;
+            case \URLART_MERKMAL:
+                return !empty($obj->cSeo)
+                    ? $prefix . $obj->cSeo
+                    : $prefix . '?m=' . $obj->kMerkmalWert . $lang;
 
-                case \URLART_MERKMAL:
-                    return !empty($obj->cSeo)
-                        ? $prefix . $obj->cSeo
-                        : $prefix . '?m=' . $obj->kMerkmalWert . $lang;
+            case \URLART_NEWS:
+                if ($obj instanceof Item) {
+                    /** @var Item $obj */
+                    return !empty($obj->getSEO())
+                        ? $obj->getURL()
+                        : $prefix . '?n=' . $obj->getID() . $lang;
+                }
 
-                case \URLART_NEWS:
-                    if ($obj instanceof Item) {
-                        /** @var Item $obj */
-                        return !empty($obj->getSEO())
-                            ? $obj->getURL()
-                            : $prefix . '?n=' . $obj->getID() . $lang;
-                    }
+                return !empty($obj->cSeo)
+                    ? $prefix . $obj->cSeo
+                    : $prefix . '?n=' . $obj->kNews . $lang;
 
-                    return !empty($obj->cSeo)
-                        ? $prefix . $obj->cSeo
-                        : $prefix . '?n=' . $obj->kNews . $lang;
+            case \URLART_NEWSMONAT:
+                return !empty($obj->cSeo)
+                    ? $prefix . $obj->cSeo
+                    : $prefix . '?nm=' . $obj->kNewsMonatsUebersicht . $lang;
 
-                case \URLART_NEWSMONAT:
-                    return !empty($obj->cSeo)
-                        ? $prefix . $obj->cSeo
-                        : $prefix . '?nm=' . $obj->kNewsMonatsUebersicht . $lang;
+            case \URLART_NEWSKATEGORIE:
+                return !empty($obj->cSeo)
+                    ? $prefix . $obj->cSeo
+                    : $prefix . '?nk=' . $obj->kNewsKategorie . $lang;
 
-                case \URLART_NEWSKATEGORIE:
-                    return !empty($obj->cSeo)
-                        ? $prefix . $obj->cSeo
-                        : $prefix . '?nk=' . $obj->kNewsKategorie . $lang;
+            case \URLART_SEARCHSPECIALS:
+                return !empty($obj->cSeo)
+                    ? $prefix . $obj->cSeo
+                    : $prefix . '?q=' . $obj->kSuchspecial . $lang;
 
-                case \URLART_SEARCHSPECIALS:
-                    return !empty($obj->cSeo)
-                        ? $prefix . $obj->cSeo
-                        : $prefix . '?q=' . $obj->kSuchspecial . $lang;
+            case \URLART_NEWSLETTER:
+                try {
+                    $prefix = $full === false
+                        ? ''
+                        : Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_NEWSLETTER)->getURL();
+                } catch (SpecialPageNotFoundException $e) {
+                    $prefix = '';
+                    Shop::Container()->getLogService()->error($e->getMessage());
+                }
+                return !empty($obj->cSeo)
+                    ? $prefix . $obj->cSeo
+                    : $prefix . '?show=' . $obj->kNewsletterHistory;
 
-                case \URLART_NEWSLETTER:
-                    try {
-                        $prefix = $full === false
-                            ? ''
-                            : Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_NEWSLETTER)->getURL();
-                    } catch (SpecialPageNotFoundException $e) {
-                        $prefix = '';
-                        Shop::Container()->getLogService()->error($e->getMessage());
-                    }
-                    return !empty($obj->cSeo)
-                        ? $prefix . $obj->cSeo
-                        : $prefix . '?show=' . $obj->kNewsletterHistory;
-            }
+            default:
+                return '';
         }
-
-        return '';
     }
 }

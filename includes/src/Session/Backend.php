@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Session;
 
@@ -52,7 +52,7 @@ class Backend extends AbstractSession
         if (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === stdClass::class) {
             $_SESSION['Waehrung'] = new Currency($_SESSION['Waehrung']->kWaehrung);
         }
-        if (empty($_SESSION['Sprachen']) || \get_class($_SESSION['Sprachen'][0]) === stdClass::class) {
+        if (empty($_SESSION['Sprachen']) || \get_class(\array_values($_SESSION['Sprachen'])[0]) === stdClass::class) {
             $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
         }
         $this->initLanguageURLs();
@@ -70,7 +70,12 @@ class Backend extends AbstractSession
                     }
                 );
                 if ($lang === null) {
-                    die('No language installed...');
+                    $lang = first(
+                        LanguageHelper::getAllLanguages(),
+                        static function (LanguageModel $e) {
+                            return $e->getIso() === 'ger';
+                        }
+                    );
                 }
                 $_SESSION['kSprache']    = $lang->getId();
                 $_SESSION['cISOSprache'] = $lang->getCode();
@@ -98,15 +103,15 @@ class Backend extends AbstractSession
         if ($lang === null) {
             return false;
         }
-        $default = Text::convertISO6392ISO($this->getBrowserLanguage($allowed, $lang->cISO));
+        $default = Text::convertISO6392ISO($this->getBrowserLanguage($allowed, $lang->getCode()));
         foreach ($languages as $language) {
-            if ($language->cISO !== $default) {
+            if ($language->getCode() !== $default) {
                 continue;
             }
             foreach (Shop::Container()->getGetText()->getAdminLanguages() as $tag => $adminLocale) {
                 if ($adminLocale === $language->getNameDE() || $adminLocale === $language->getNameEN()) {
-                    $_SESSION['kSprache']    = (int)$language->kSprache;
-                    $_SESSION['cISOSprache'] = $language->cISO;
+                    $_SESSION['kSprache']    = $language->getId();
+                    $_SESSION['cISOSprache'] = $language->getCode();
                     Shop::Container()->getGetText()->setLanguage($tag);
                     return true;
                 }
@@ -132,8 +137,8 @@ class Backend extends AbstractSession
             }
             foreach ($languages as $language) {
                 if ($adminLocale === $language->getNameDE() || $adminLocale === $language->getNameEN()) {
-                    $_SESSION['kSprache']    = (int)$language->kSprache;
-                    $_SESSION['cISOSprache'] = $language->cISO;
+                    $_SESSION['kSprache']    = $language->getId();
+                    $_SESSION['cISOSprache'] = $language->getCode();
                     Shop::Container()->getGetText()->setLanguage($tag);
 
                     return true;

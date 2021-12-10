@@ -1003,12 +1003,12 @@ class Artikel
     /**
      * @var array
      */
-    private $conf;
+    protected $conf;
 
     /**
      * @var stdClass
      */
-    private $options;
+    protected $options;
 
     /**
      *
@@ -1572,29 +1572,30 @@ class Artikel
      */
     public function holeStueckliste(int $customerGroupID = 0, bool $getInvisibleParts = false): self
     {
-        if ($this->kArtikel > 0 && $this->kStueckliste > 0) {
-            $query = 'SELECT tartikel.kArtikel, tstueckliste.fAnzahl
-                          FROM tartikel
-                          JOIN tstueckliste 
-                              ON tstueckliste.kArtikel = tartikel.kArtikel 
-                              AND tstueckliste.kStueckliste = ' . (int)$this->kStueckliste . '
-                          LEFT JOIN tartikelsichtbarkeit 
-                              ON tstueckliste.kArtikel = tartikelsichtbarkeit.kArtikel 
-                              AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID;
-            if (!$getInvisibleParts) {
-                $query .= ' WHERE tartikelsichtbarkeit.kArtikel IS NULL';
-            }
-            $parts = Shop::Container()->getDB()->getObjects($query);
+        if ($this->kArtikel <= 0 || $this->kStueckliste <= 0) {
+            return $this;
+        }
+        $cond  = $getInvisibleParts ? '' : ' WHERE tartikelsichtbarkeit.kArtikel IS NULL';
+        $parts = Shop::Container()->getDB()->getObjects(
+            'SELECT tartikel.kArtikel, tstueckliste.fAnzahl
+                  FROM tartikel
+                  JOIN tstueckliste 
+                      ON tstueckliste.kArtikel = tartikel.kArtikel 
+                      AND tstueckliste.kStueckliste = :plid
+                  LEFT JOIN tartikelsichtbarkeit 
+                      ON tstueckliste.kArtikel = tartikelsichtbarkeit.kArtikel 
+                      AND tartikelsichtbarkeit.kKundengruppe = :cgid' . $cond,
+            ['plid' => $this->kStueckliste, 'cgid' => $customerGroupID]
+        );
 
-            $options                             = self::getDefaultOptions();
-            $options->nKeineSichtbarkeitBeachten = $getInvisibleParts ? 1 : 0;
-            foreach ($parts as $i => $partList) {
-                $product = new self();
-                $product->fuelleArtikel((int)$partList->kArtikel, $options);
-                $product->holeBewertungDurchschnitt();
-                $this->oStueckliste_arr[$i]                      = $product;
-                $this->oStueckliste_arr[$i]->fAnzahl_stueckliste = $partList->fAnzahl;
-            }
+        $options                             = self::getDefaultOptions();
+        $options->nKeineSichtbarkeitBeachten = $getInvisibleParts ? 1 : 0;
+        foreach ($parts as $i => $partList) {
+            $product = new self();
+            $product->fuelleArtikel((int)$partList->kArtikel, $options);
+            $product->holeBewertungDurchschnitt();
+            $this->oStueckliste_arr[$i]                      = $product;
+            $this->oStueckliste_arr[$i]->fAnzahl_stueckliste = $partList->fAnzahl;
         }
 
         return $this;
@@ -1717,14 +1718,15 @@ class Artikel
                                         ON deflang.kMedienDatei = lang.kMedienDatei 
                                         AND lang.kSprache = ' . $this->kSprache;
         }
-        $sql = 'SELECT tmediendatei.kMedienDatei, tmediendatei.cPfad, tmediendatei.cURL, tmediendatei.cTyp, 
-                        tmediendatei.nSort, ' . $conditionalFields . '
-                    FROM tmediendatei
-                    ' . $conditionalLeftJoin . '
-                    WHERE tmediendatei.kArtikel = ' . (int)$this->kArtikel . '
-                    ORDER BY tmediendatei.nSort ASC';
-
-        $this->oMedienDatei_arr = $db->getObjects($sql);
+        $this->oMedienDatei_arr = $db->getObjects(
+            'SELECT tmediendatei.kMedienDatei, tmediendatei.cPfad, tmediendatei.cURL, tmediendatei.cTyp, 
+            tmediendatei.nSort, ' . $conditionalFields . '
+                FROM tmediendatei
+                ' . $conditionalLeftJoin . '
+                WHERE tmediendatei.kArtikel = :pid
+                ORDER BY tmediendatei.nSort ASC',
+            ['pid' => $this->kArtikel]
+        );
         foreach ($this->oMedienDatei_arr as $mediaFile) {
             $mediaFile->kMedienDatei             = (int)$mediaFile->kMedienDatei;
             $mediaFile->kSprache                 = (int)$mediaFile->kSprache;
@@ -1797,16 +1799,6 @@ class Artikel
     {
         $this->cMedienTyp_arr = $mediaTypes;
 
-        return $this;
-    }
-
-    /**
-     * @param object $mediaFile
-     * @return $this
-     * @deprecated since 5.0.0
-     */
-    public function buildYoutubeEmbed($mediaFile): self
-    {
         return $this;
     }
 
@@ -2156,8 +2148,9 @@ class Artikel
                 'SELECT teigenschaftkombiwert.*
                     FROM teigenschaftkombiwert
                     JOIN tartikel 
-                      ON tartikel.kArtikel = ' . (int)$this->kArtikel . '
-                      AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi'
+                      ON tartikel.kArtikel = :pid
+                      AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi',
+                ['pid' => $this->kArtikel]
             );
             $this->holeVariationDetailPreisKind(); // Baut die Variationspreise für ein Variationskombkind
             // String für javascript Funktion vorbereiten um Variationen auszufüllen
@@ -2176,10 +2169,9 @@ class Artikel
         } else {
             $variations = Shop::Container()->getDB()->getObjects(
                 'SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
-                    teigenschaft.cTyp, teigenschaft.nSort, ' .
-                $propertySQL->cSELECT . '
+                    teigenschaft.cTyp, teigenschaft.nSort, ' . $propertySQL->cSELECT . '
                     teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName AS cName_teigenschaftwert, ' .
-                $propValueSQL->cSELECT . '
+                    $propValueSQL->cSELECT . '
                     teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff, teigenschaftwert.cArtNr, 
                     teigenschaftwert.nSort AS teigenschaftwert_nSort, teigenschaftwert.fLagerbestand, 
                     teigenschaftwert.fPackeinheit, teigenschaftwertpict.kEigenschaftWertPict, 
@@ -2192,20 +2184,21 @@ class Artikel
                     ' . $propValueSQL->cJOIN . '
                     LEFT JOIN teigenschaftsichtbarkeit 
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                        AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
                     LEFT JOIN teigenschaftwertsichtbarkeit 
                         ON teigenschaftwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
-                        AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgid
                     LEFT JOIN teigenschaftwertpict 
                         ON teigenschaftwertpict.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                     LEFT JOIN teigenschaftwertaufpreis 
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                        AND teigenschaftwertaufpreis.kKundengruppe = ' . $customerGroupID . '
-                    WHERE teigenschaft.kArtikel = ' . (int)$this->kArtikel . '
+                        AND teigenschaftwertaufpreis.kKundengruppe = :cgid
+                    WHERE teigenschaft.kArtikel = :pid
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     ORDER BY teigenschaft.nSort ASC, teigenschaft.cName, 
-                    teigenschaftwert.nSort ASC, teigenschaftwert.cName'
+                    teigenschaftwert.nSort ASC, teigenschaftwert.cName',
+                ['pid' => $this->kArtikel, 'cgid' => $customerGroupID]
             );
         }
 
@@ -2247,6 +2240,8 @@ class Artikel
             : 2;
         $per         = ' ' . Shop::Lang()->get('vpePer') . ' ' . $this->cVPEEinheit;
         $taxRate     = $_SESSION['Steuersatz'][$this->kSteuerklasse];
+        $matrixConf  = $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y';
+        $prodFilter  = (int)$this->conf['global']['artikel_artikelanzeigefilter'];
 
         $cntVariationen = $exportWorkaround
             ? 0
@@ -2337,23 +2332,19 @@ class Artikel
                         }
                         // Lagerbestand beachten?
                         if ($oVariationsWert->oVariationsKombi->cLagerBeachten === 'Y'
-                            && $oVariationsWert->oVariationsKombi->cLagerKleinerNull === 'N'
-                            && ($oVariationsWert->oVariationsKombi->tartikel_fLagerbestand <= 0
-                                || (int)$this->conf['global']['artikel_artikelanzeigefilter'] ===
-                                \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
-                            )
-                            && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y'
+                            && ($oVariationsWert->oVariationsKombi->cLagerKleinerNull === 'N'
+                                || $prodFilter === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER)
+                            && $oVariationsWert->oVariationsKombi->tartikel_fLagerbestand <= 0
+                            && $matrixConf === true
                         ) {
                             $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
                         }
                     } elseif ($this->cLagerVariation === 'Y'
                         && $this->cLagerBeachten === 'Y'
-                        && $this->cLagerKleinerNull === 'N'
-                        && ($oVariationsWert->fLagerbestand <= 0
-                            || (int)$this->conf['global']['artikel_artikelanzeigefilter'] ===
-                            \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
-                        )
-                        && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y'
+                        && ($this->cLagerKleinerNull === 'N'
+                            || $prodFilter === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER)
+                        && $oVariationsWert->fLagerbestand <= 0
+                        && $matrixConf === true
                     ) {
                         $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
                     }
@@ -2972,12 +2963,14 @@ class Artikel
             ['kArtikel' => $this->kArtikel]
         );
         foreach (Frontend::getLanguages() as $language) {
-            $this->cSprachURL_arr[$language->cISO] = '?a=' . $this->kArtikel . '&amp;lang=' . $language->cISO;
+            $code = $language->getCode();
+
+            $this->cSprachURL_arr[$code] = '?a=' . $this->kArtikel . '&amp;lang=' . $code;
             foreach ($seoData as $item) {
                 $item->kSprache = (int)$item->kSprache;
-                if ($language->kSprache === $item->kSprache) {
+                if ($language->getId() === $item->kSprache) {
                     if ($item->cSeo !== '') {
-                        $this->cSprachURL_arr[$language->cISO] = $item->cSeo;
+                        $this->cSprachURL_arr[$code] = $item->cSeo;
                     }
                     break;
                 }
@@ -3163,7 +3156,7 @@ class Artikel
         if ($test !== false) {
             return $test;
         }
-        if ($tmpProduct === null) {
+        if ($tmpProduct === null || $tmpProduct->kArtikel === $tmpProduct->kVaterArtikel) {
             $cacheTags = [\CACHING_GROUP_ARTICLE . '_' . $productID, \CACHING_GROUP_ARTICLE];
             \executeHook(\HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [
                 'oArtikel'  => &$this,
@@ -3172,6 +3165,11 @@ class Artikel
             ]);
             if ($noCache === false) {
                 Shop::Container()->getCache()->set($this->cacheID, null, $cacheTags);
+            }
+            if ($tmpProduct !== null && $tmpProduct->kArtikel === $tmpProduct->kVaterArtikel) {
+                Shop::Container()->getLogService()->warning(
+                    'Product ' . (int)$tmpProduct->kArtikel . ' has invalid parent.'
+                );
             }
 
             return null;
@@ -3191,7 +3189,7 @@ class Artikel
             return $this;
         }
         $this->sanitizeProductData($tmpProduct);
-        $this->addManufacturerData($tmpProduct);
+        $this->addManufacturerData();
         if ((int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
             && $this->getOption('bSimilar', false) === true
         ) {
@@ -3406,7 +3404,7 @@ class Artikel
             $return    = ($startDate > $today || $endDate < $today);
         }
         if ($return !== true) {
-            return null;
+            return false;
         }
         $this->cacheHit = true;
         $this->addVariationChildren($customerGroupID);
@@ -3522,11 +3520,6 @@ class Artikel
                 gpmes.cName AS cGrundpreisEinheitName,
                 ' . $seoSQL->cSELECT . '
                 ' . $localizationSQL->cSELECT . '
-                thersteller.cName AS cName_thersteller, thersteller.cHomepage,
-                thersteller.nSortNr AS nSortNr_thersteller, thersteller.cBildpfad AS manufImg,
-                therstellersprache.cMetaTitle AS cMetaTitle_spr, therstellersprache.cMetaKeywords AS cMetaKeywords_spr,
-                therstellersprache.cMetaDescription AS cMetaDescription_spr,
-                therstellersprache.cBeschreibung AS cBeschreibung_hst_spr,
                 tsonderpreise.fNettoPreis, tartikelext.fDurchschnittsBewertung,
                  tlieferstatus.cName AS cName_tlieferstatus, teinheit.cName AS teinheitcName,
                 tartikelsonderpreis.cAktiv AS cAktivSonderpreis, tartikelsonderpreis.dStart AS dStart_en,
@@ -3550,11 +3543,6 @@ class Artikel
                 ' . $localizationSQL->cJOIN . '
                 LEFT JOIN tbestseller
                 ON tbestseller.kArtikel = tartikel.kArtikel
-                LEFT JOIN thersteller
-                    ON thersteller.kHersteller = tartikel.kHersteller
-                LEFT JOIN therstellersprache
-                    ON therstellersprache.kHersteller = tartikel.kHersteller
-                    AND therstellersprache.kSprache = ' . $langID . '
                 LEFT JOIN tartikelext
                     ON tartikelext.kArtikel = tartikel.kArtikel
                 LEFT JOIN tlieferstatus
@@ -3583,10 +3571,10 @@ class Artikel
     }
 
     /**
-     * @param object $data
-     * @return object
+     * @param stdClass $data
+     * @return stdClass
      */
-    private function localizeData($data)
+    private function localizeData(stdClass $data): stdClass
     {
         if (!isset($data->cName_spr)) {
             return $data;
@@ -3605,9 +3593,9 @@ class Artikel
     }
 
     /**
-     * @param object $data
+     * @param stdClass $data
      */
-    private function sanitizeProductData($data): void
+    private function sanitizeProductData(stdClass $data): void
     {
         $this->originalName                      = $data->cName;
         $this->originalSeo                       = $data->originalSeo;
@@ -3774,36 +3762,30 @@ class Artikel
     }
 
     /**
-     * @param stdClass $data
      * @return Artikel
      */
-    private function addManufacturerData(stdClass $data): self
+    private function addManufacturerData(): self
     {
-        if ($this->kHersteller > 0) {
-            $manufacturer = new Hersteller($this->kHersteller, $this->kSprache);
+        if ($this->kHersteller <= 0) {
+            return $this;
+        }
+        $manufacturer = new Hersteller($this->kHersteller, $this->kSprache);
 
-            $this->cHersteller         = $data->cName_thersteller;
-            $this->cHerstellerSeo      = $manufacturer->cSeo;
-            $this->cHerstellerURL      = URL::buildURL($manufacturer, \URLART_HERSTELLER);
-            $this->cHerstellerHomepage = $data->cHomepage;
-            if (\filter_var($this->cHerstellerHomepage, \FILTER_VALIDATE_URL) === false) {
-                $this->cHerstellerHomepage = 'http://' . $data->cHomepage;
-                if (\filter_var($this->cHerstellerHomepage, \FILTER_VALIDATE_URL) === false) {
-                    $this->cHerstellerHomepage = $data->cHomepage;
-                }
-            }
-            $this->cHerstellerMetaTitle       = $data->cMetaTitle_spr;
-            $this->cHerstellerMetaKeywords    = $data->cMetaKeywords_spr;
-            $this->cHerstellerMetaDescription = $data->cMetaDescription_spr;
-            $this->cHerstellerBeschreibung    = $data->cBeschreibung_hst_spr;
-            $this->cHerstellerSortNr          = $data->nSortNr_thersteller;
-            if ($data->manufImg !== null && \mb_strlen($data->manufImg) > 0) {
-                $this->cBildpfad_thersteller    = $manufacturer->getImage(Image::SIZE_XS);
-                $this->cHerstellerBildKlein     = \PFAD_HERSTELLERBILDER_KLEIN . $data->manufImg;
-                $this->cHerstellerBildNormal    = \PFAD_HERSTELLERBILDER_NORMAL . $data->manufImg;
-                $this->cHerstellerBildURLKlein  = $manufacturer->getImage(Image::SIZE_XS);
-                $this->cHerstellerBildURLNormal = $manufacturer->getImage(Image::SIZE_MD);
-            }
+        $this->cHersteller                = $manufacturer->cName;
+        $this->cHerstellerSeo             = $manufacturer->cSeo;
+        $this->cHerstellerURL             = URL::buildURL($manufacturer, \URLART_HERSTELLER);
+        $this->cHerstellerHomepage        = $manufacturer->cHomepage;
+        $this->cHerstellerMetaTitle       = $manufacturer->cMetaTitle;
+        $this->cHerstellerMetaKeywords    = $manufacturer->cMetaKeywords;
+        $this->cHerstellerMetaDescription = $manufacturer->cMetaDescription;
+        $this->cHerstellerBeschreibung    = $manufacturer->cBeschreibung;
+        $this->cHerstellerSortNr          = $manufacturer->nSortNr;
+        if ($manufacturer->cBildpfad !== null && \mb_strlen($manufacturer->cBildpfad) > 0) {
+            $this->cHerstellerBildKlein     = \PFAD_HERSTELLERBILDER_KLEIN . $manufacturer->cBildpfad;
+            $this->cHerstellerBildNormal    = \PFAD_HERSTELLERBILDER_NORMAL . $manufacturer->cBildpfad;
+            $this->cBildpfad_thersteller    = $manufacturer->getImage(Image::SIZE_XS);
+            $this->cHerstellerBildURLKlein  = $this->cBildpfad_thersteller;
+            $this->cHerstellerBildURLNormal = $manufacturer->getImage(Image::SIZE_MD);
         }
 
         return $this;
@@ -3955,7 +3937,8 @@ class Artikel
             // Normal Lagerbestand 0
             $specials[\SEARCHSPECIALS_OUTOFSTOCK] = ($this->fLagerbestand <= 0
                 && $this->cLagerBeachten === 'Y'
-                && $this->cLagerKleinerNull !== 'Y');
+                && $this->cLagerKleinerNull !== 'Y')
+                || ($this->inWarenkorbLegbar !== null && $this->inWarenkorbLegbar <= 0);
         }
         // Auf Lager
         $specials[\SEARCHSPECIALS_ONSTOCK] = ($this->fLagerbestand > 0 && $this->cLagerBeachten === 'Y');
@@ -4035,8 +4018,9 @@ class Artikel
         if (!$hasSupplyDate) {
             $this->dZulaufDatum_de = null;
         }
-        $this->cAktivSonderpreis = ($specialPriceStartDate <= $now
-            && ($this->dSonderpreisEnde_en === null || $specialPriceEndDate >= $now)) ? 'Y' : 'N';
+        $this->cAktivSonderpreis = $this->dSonderpreisStart_en !== null
+            && $specialPriceStartDate <= $now
+            && ($this->dSonderpreisEnde_en === null || $specialPriceEndDate >= $now) ? 'Y' : 'N';
 
         return $this->getSearchSpecialOverlay();
     }
@@ -4502,20 +4486,19 @@ class Artikel
     }
 
     /**
-     * @param object|null $product
-     * @return object
+     * @param Artikel|stdClass|null $product
+     * @return stdClass
      * @since 4.06.7
      */
-    public function getStockInfo($product = null)
+    public function getStockInfo($product = null): stdClass
     {
-        $conf    = Shop::getSettings([\CONF_GLOBAL]);
         $product = $product ?? $this;
         $result  = (object)[
             'inStock'   => false,
             'notExists' => false,
         ];
 
-        switch ((int)$conf['global']['artikel_artikelanzeigefilter']) {
+        switch ((int)$this->conf['global']['artikel_artikelanzeigefilter']) {
             case \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER:
                 if ((isset($product->cLagerVariation) && $product->cLagerVariation === 'Y')
                     || $product->fLagerbestand > 0
@@ -4580,41 +4563,6 @@ class Artikel
     }
 
     /**
-     * @param object $obj
-     * @return $this
-     * @deprecated since 5.0.0
-     */
-    public function mapData($obj): self
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        foreach (\array_keys(\get_object_vars($obj)) as $member) {
-            $this->$member = $obj->$member;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function insertInDB(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * @return $this
-     * @deprecated since 5.0.0
-     */
-    public function updateInDB(): self
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return $this;
-    }
-
-    /**
      * @param int $show
      * @return $this
      */
@@ -4659,16 +4607,6 @@ class Artikel
     }
 
     /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function setzePostDaten(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return false;
-    }
-
-    /**
      * @param string|null $countryCode ISO Alpha-2 Country-Code e.g. DE
      * @param int|null    $shippingID special shippingID, if null will select cheapest
      * @return Versandart|object|null - cheapest shipping except shippings that offer cash payment or that are excluded
@@ -4697,6 +4635,9 @@ class Artikel
         if ($this->fGewicht === null) {
             $this->fGewicht = 0;
         }
+        $hasProductShippingCost = $this->isUsedForShippingCostCalculation($countryCode) ? 'N' : 'Y';
+        $dep                    = " AND va.cNurAbhaengigeVersandart = '" . $hasProductShippingCost . "' ";
+
         // cheapest shipping except shippings that offer cash payment
         $shipping = Shop::Container()->getDB()->getSingleObject(
             'SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
@@ -4719,7 +4660,7 @@ class Artikel
                     OR ( va.kVersandberechnung = 3
                         AND vas.fBis = (SELECT MIN(fBis) FROM tversandartstaffel WHERE fBis > :net)
                         )
-                    )
+                    ) ' . $dep . '
                 ORDER BY minPrice, nSort ASC LIMIT 1',
             [
                 'ccode'  => '%' . $countryCode . '%',
@@ -4756,7 +4697,7 @@ class Artikel
     ) {
         if (!isset($_SESSION['cISOSprache'])) {
             $defaultLanguage = LanguageHelper::getDefaultLanguage();
-            Shop::setLanguage($defaultLanguage->kSprache, $defaultLanguage->cISO);
+            Shop::setLanguage($defaultLanguage->getId(), $defaultLanguage->getCode());
         }
         if ($purchaseQuantity !== null) {
             $purchaseQuantity = (float)$purchaseQuantity;
@@ -5073,7 +5014,7 @@ class Artikel
         $return    = ['kArtikelXSellerKey_arr', 'oArtikelArr'];
         $limitSQL  = ' LIMIT 3';
         // Gibt es X-Seller? Aus der Artikelmenge der änhlichen Artikel, dann alle X-Seller rausfiltern
-        $xSeller  = ProductHelper::getXSelling($productID, $this->nIstVater > 0);
+        $xSeller  = ProductHelper::getXSelling($productID, $this->nIstVater > 0, $this->conf['artikeldetails']);
         $xSellIDs = [];
         if ($xSeller !== null) {
             foreach ($xSeller->Standard->XSellGruppen as $group) {
@@ -5350,6 +5291,8 @@ class Artikel
         }
         if ($this->conf['global']['global_ust_auszeichnung'] === 'auto') {
             $ust = $inklexkl . ' ' . $mwst . '% ' . Shop::Lang()->get('vat', 'productDetails');
+        } elseif ($this->conf['global']['global_ust_auszeichnung'] === 'autoNoVat') {
+            $ust = $inklexkl . ' ' . Shop::Lang()->get('vat', 'productDetails');
         } elseif ($this->conf['global']['global_ust_auszeichnung'] === 'endpreis') {
             $ust = Shop::Lang()->get('finalprice', 'productDetails');
         }
@@ -5625,19 +5568,6 @@ class Artikel
         }
 
         return Metadata::truncateMetaDescription($description);
-    }
-
-    /**
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function getTags(): array
-    {
-        \trigger_error(
-            __FUNCTION__ . ' is deprecated. Functionality of product tags was removed in 5.0.0',
-            \E_USER_DEPRECATED
-        );
-        return [];
     }
 
     /**

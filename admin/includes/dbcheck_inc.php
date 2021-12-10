@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Backend\DirManager;
 use JTL\Exceptions\CircularReferenceException;
@@ -77,13 +77,13 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                     t.`DATA_LENGTH` + t.`INDEX_LENGTH` AS DATA_SIZE,
                     COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS,
                     COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS,
-                    COUNT(IF(c.COLLATION_NAME = 'utf8_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
+                    COUNT(IF(c.COLLATION_NAME RLIKE 'utf8(mb3)?_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
                 FROM information_schema.TABLES t
                 LEFT JOIN information_schema.COLUMNS c ON c.TABLE_NAME = t.TABLE_NAME
                     AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
                     AND (c.DATA_TYPE = 'text'
                         OR (c.DATA_TYPE = 'tinyint' AND SUBSTRING(c.COLUMN_NAME, 1, 1) = 'k')
-                        OR c.COLLATION_NAME != 'utf8_unicode_ci')
+                        OR c.COLLATION_NAME NOT RLIKE 'utf8(mb3)?_unicode_ci')
                 WHERE t.`TABLE_SCHEMA` = :schema
                     AND t.`TABLE_NAME` NOT LIKE 'xplugin_%'
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
@@ -119,13 +119,11 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                     'table'  => $table
                 ]
             );
-            if ($columns !== false) {
-                foreach ($columns as $column) {
-                    if ($extended) {
-                        $dbStructure[$table]->Columns[$column->COLUMN_NAME] = $column;
-                    } else {
-                        $dbStructure[$table][] = $column->COLUMN_NAME;
-                    }
+            foreach ($columns as $column) {
+                if ($extended) {
+                    $dbStructure[$table]->Columns[$column->COLUMN_NAME] = $column;
+                } else {
+                    $dbStructure[$table][] = $column->COLUMN_NAME;
                 }
             }
             if ($extended) {
@@ -151,9 +149,9 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
 }
 
 /**
- * @return array|mixed
+ * @return array
  */
-function getDBFileStruct()
+function getDBFileStruct(): array
 {
     $version    = Parser::parse(APPLICATION_VERSION);
     $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
@@ -169,9 +167,9 @@ function getDBFileStruct()
     if (!file_exists($fileList)) {
         return [];
     }
-    $struct = json_decode(file_get_contents($fileList), false);
+    $struct = json_decode(file_get_contents($fileList));
 
-    return is_object($struct) ? get_object_vars($struct) : $struct;
+    return is_object($struct) ? get_object_vars($struct) : [];
 }
 
 /**
@@ -201,38 +199,41 @@ function compareDBStruct(array $dbFileStruct, array $dbStruct): array
             continue;
         }
         if (($dbStruct[$table]->Migration & DBMigrationHelper::MIGRATE_INNODB) === DBMigrationHelper::MIGRATE_INNODB) {
-            $errors[$table] = createDBStructError($table . __('errorNoInnoTable'), true);
+            $errors[$table] = createDBStructError(sprintf(__('errorNoInnoTable'), $table), true);
             continue;
         }
         if (($dbStruct[$table]->Migration & DBMigrationHelper::MIGRATE_UTF8) === DBMigrationHelper::MIGRATE_UTF8) {
-            $errors[$table] = createDBStructError($table . __('errorWrongCollation'), true);
+            $errors[$table] = createDBStructError(sprintf(__('errorWrongCollation'), $table), true);
             continue;
         }
 
-        foreach ($columns as $cColumn) {
-            if (!in_array($cColumn, isset($dbStruct[$table]->Columns)
+        foreach ($columns as $column) {
+            if (!in_array($column, isset($dbStruct[$table]->Columns)
                 ? array_keys($dbStruct[$table]->Columns)
                 : $dbStruct[$table], true)
             ) {
-                $errors[$table] = createDBStructError(sprintf(__('errorRowMissing'), $cColumn, $table));
+                $errors[$table] = createDBStructError(sprintf(__('errorRowMissing'), $column, $table));
                 break;
             }
 
-            if (isset($dbStruct[$table]->Columns[$cColumn])) {
-                if (!empty($dbStruct[$table]->Columns[$cColumn]->COLLATION_NAME)
-                    && $dbStruct[$table]->Columns[$cColumn]->COLLATION_NAME !== 'utf8_unicode_ci'
+            if (isset($dbStruct[$table]->Columns[$column])) {
+                if (!empty($dbStruct[$table]->Columns[$column]->COLLATION_NAME)
+                    && !in_array(
+                        $dbStruct[$table]->Columns[$column]->COLLATION_NAME,
+                        ['utf8_unicode_ci', 'utf8mb3_unicode_ci']
+                    )
                 ) {
-                    $errors[$table] = createDBStructError(sprintf(__('errorWrongCollationRow'), $cColumn));
+                    $errors[$table] = createDBStructError(sprintf(__('errorWrongCollationRow'), $column));
                     break;
                 }
-                if ($dbStruct[$table]->Columns[$cColumn]->DATA_TYPE === 'text') {
-                    $errors[$table] = createDBStructError(sprintf(__('errorDataTypeTextInRow'), $cColumn), true);
+                if ($dbStruct[$table]->Columns[$column]->DATA_TYPE === 'text') {
+                    $errors[$table] = createDBStructError(sprintf(__('errorDataTypeTextInRow'), $column), true);
                     break;
                 }
-                if ($dbStruct[$table]->Columns[$cColumn]->DATA_TYPE === 'tinyint'
-                    && strpos($dbStruct[$table]->Columns[$cColumn]->COLUMN_NAME, 'k') === 0
+                if ($dbStruct[$table]->Columns[$column]->DATA_TYPE === 'tinyint'
+                    && strpos($dbStruct[$table]->Columns[$column]->COLUMN_NAME, 'k') === 0
                 ) {
-                    $errors[$table] = createDBStructError(sprintf(__('errorDataTypeTinyInRow'), $cColumn), true);
+                    $errors[$table] = createDBStructError(sprintf(__('errorDataTypeTinyInRow'), $column), true);
                     break;
                 }
             }
@@ -275,19 +276,17 @@ function doDBMaintenance(string $action, array $tables)
  * @param array $dbStruct
  * @return stdClass
  */
-function determineEngineUpdate(array $dbStruct)
+function determineEngineUpdate(array $dbStruct): stdClass
 {
     $result             = new stdClass();
     $result->tableCount = 0;
     $result->dataSize   = 0;
     $result->estimated  = [];
 
-    foreach ($dbStruct as $table => $meta) {
-        if (isset($dbStruct[$table]->Migration)
-            && $dbStruct[$table]->Migration !== DBMigrationHelper::MIGRATE_NONE
-        ) {
+    foreach ($dbStruct as $meta) {
+        if (isset($meta->Migration) && $meta->Migration !== DBMigrationHelper::MIGRATE_NONE) {
             $result->tableCount++;
-            $result->dataSize += $dbStruct[$table]->DATA_SIZE;
+            $result->dataSize += $meta->DATA_SIZE;
         }
     }
 
@@ -441,7 +440,7 @@ function doMigrateToInnoDB_utf8(
         case 'start':
             $shopTables = array_keys(getDBFileStruct());
             $table      = DBMigrationHelper::getNextTableNeedMigration($db, $exclude);
-            if ($table !== null && is_object($table)) {
+            if ($table !== null) {
                 if (!in_array($table->TABLE_NAME, $shopTables, true)) {
                     $exclude[] = $table->TABLE_NAME;
                     $result    = doMigrateToInnoDB_utf8('start', '', 1, $exclude);
@@ -551,9 +550,7 @@ function doMigrateToInnoDB_utf8(
                     $cache->flushAll();
                 }
             } catch (Exception $e) {
-                Shop::Container()->getLogService()->error(
-                    sprintf(__('errorEmptyCache'), $e->getMessage())
-                );
+                Shop::Container()->getLogService()->error(sprintf(__('errorEmptyCache'), $e->getMessage()));
             }
             $callback    = static function (array $pParameters) {
                 if (!$pParameters['isdir']) {

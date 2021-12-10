@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Media\Image;
+use JTL\Media\IMedia;
 use JTL\Media\Media;
 use JTL\Shop;
 
@@ -14,8 +15,8 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_BRANDING_VIEW', true, true);
 $step        = 'branding_uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
-if (isset($_POST['action']) && $_POST['action'] === 'delete' && Form::validateToken()) {
-    $id = (int)$_POST['id'];
+if (Request::verifyGPDataString('action') === 'delete' && Form::validateToken()) {
+    $id = Request::postInt('id');
     loescheBrandingBild($id);
     $response         = new stdClass();
     $response->id     = $id;
@@ -77,7 +78,8 @@ function gibBranding(int $brandingID): ?stdClass
  */
 function speicherEinstellung(int $brandingID, array $post, array $files): bool
 {
-    if (!Image::isImageUpload($files['cBrandingBild'])) {
+    $hasNewImage = mb_strlen($files['cBrandingBild']['name'] ?? '') > 0;
+    if ($hasNewImage && !Image::isImageUpload($files['cBrandingBild'])) {
         return false;
     }
     $db                 = Shop::Container()->getDB();
@@ -89,7 +91,7 @@ function speicherEinstellung(int $brandingID, array $post, array $files): bool
     $conf->dTransparenz = $post['dTransparenz'];
     $conf->dGroesse     = $post['dGroesse'];
 
-    if (mb_strlen($files['cBrandingBild']['name']) > 0) {
+    if ($hasNewImage) {
         $conf->cBrandingBild = 'kBranding_' . $brandingID . mappeFileTyp($files['cBrandingBild']['type']);
     } else {
         $tmpConf             = $db->select(
@@ -105,13 +107,14 @@ function speicherEinstellung(int $brandingID, array $post, array $files): bool
     if ($conf->kBranding > 0 && mb_strlen($conf->cPosition) > 0 && mb_strlen($conf->cBrandingBild) > 0) {
         // Alte Einstellung loeschen
         $db->delete('tbrandingeinstellung', 'kBranding', $brandingID);
-        if (mb_strlen($files['cBrandingBild']['name']) > 0) {
+        if ($hasNewImage) {
             loescheBrandingBild($conf->kBranding);
             speicherBrandingBild($files, $conf->kBranding);
         }
         $db->insert('tbrandingeinstellung', $conf);
         $data = $db->select('tbranding', 'kBranding', $conf->kBranding);
         $type = Media::getClass($data->cBildKategorie ?? '');
+        /** @var IMedia $type */
         $type::clearCache();
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 

@@ -391,27 +391,6 @@ class PriceRange
     }
 
     /**
-     * get localized min - max strings
-     *
-     * @param int|null $netto
-     * @return string|string[]
-     * @deprecated since 5.0.0
-     */
-    public function getLocalized(int $netto = null)
-    {
-        $rangePrices = $this->getLocalizedArray($netto);
-
-        if ($netto !== null) {
-            return $rangePrices[0] . ' - '. $rangePrices[1];
-        }
-
-        return [
-            $rangePrices[0][0] . ' - '. $rangePrices[0][1],
-            $rangePrices[1][0] . ' - '. $rangePrices[1][1],
-        ];
-    }
-
-    /**
      * get localized min - max prices as array
      *
      * @param int|null $netto
@@ -473,5 +452,15 @@ class PriceRange
             Preise::getLocalizedPriceString($this->maxBruttoPrice, $currency),
             Preise::getLocalizedPriceString($this->maxNettoPrice, $currency),
         ];
+    }
+
+    /**
+     * get product data
+     *
+     * @return mixed|stdClass
+     */
+    public function getProductData()
+    {
+        return $this->productData;
     }
 }

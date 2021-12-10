@@ -1,6 +1,6 @@
 <script type="text/javascript">
     {assign var=addOne value=1}
-    var i = {if isset($VersandartStaffeln) && $VersandartStaffeln|@count > 0}Number({$VersandartStaffeln|@count}) + 1{else}2{/if};
+    var i = {if isset($VersandartStaffeln) && $VersandartStaffeln|count > 0}Number({$VersandartStaffeln|count}) + 1{else}2{/if};
     function addInputRow() {ldelim}
         $('#price_range tbody').append('<tr><td><div class="input-group"><span class="input-group-addon"><label>{__('upTo')}</label></span><input type="text" name="bis[]"  id="bis' + i + '" class="form-control kilogram"><span class="input-group-addon"><label>{if isset($einheit)}{$einheit}{/if}</label></span></div></td><td class="text-center"><div class="input-group"><span class="input-group-addon"><label>{__('amount')}</label></span><input type="text" name="preis[]"  id="preis' + i + '" class="form-control price_large"></div></td></tr>');
         i += 1;
@@ -231,7 +231,7 @@
                                         data-selected-text-format="count > 2"
                                         data-size="7"
                                         data-actions-box="true">
-                                    <option value="-1" {if isset($gesetzteKundengruppen.alle) && $gesetzteKundengruppen.alle}selected{/if}>{__('all')}</option>
+                                    <option value="-1" {if empty($gesetzteKundengruppen) || isset($gesetzteKundengruppen.alle) && $gesetzteKundengruppen.alle}selected{/if}>{__('all')}</option>
                                     <option data-divider="true"></option>
                                     {foreach $customerGroups as $customerGroup}
                                         {assign var=classID value=$customerGroup->getID()}
@@ -255,7 +255,7 @@
                                 <table id="price_range" class="table">
                                     <thead></thead>
                                     <tbody>
-                                    {if isset($VersandartStaffeln) && $VersandartStaffeln|@count > 0}
+                                    {if isset($VersandartStaffeln) && $VersandartStaffeln|count > 0}
                                         {foreach $VersandartStaffeln as $oPreisstaffel}
                                             {if $oPreisstaffel->fBis != 999999999}
                                                 <tr>
@@ -559,9 +559,9 @@
                                                    type="checkbox" name="land[]"
                                                    data-id="country_{$country->getISO()}"
                                                    value="{$country->getISO()}"
-                                                   id="country_{$country->getISO()}"
+                                                   id="country_{$country->getISO()}_{$continentKey}"
                                                     {if isset($gewaehlteLaender) && is_array($gewaehlteLaender) && in_array($country->getISO(),$gewaehlteLaender)} checked="checked"{/if} />
-                                            <label class="custom-control-label" for="country_{$country->getISO()}">{$country->getName()}</label>
+                                            <label class="custom-control-label" for="country_{$country->getISO()}_{$continentKey}">{$country->getName()}</label>
                                         </div>
                                     </div>
                                     {/foreach}

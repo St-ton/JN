@@ -40,25 +40,29 @@
                                     {block name='account-order-details-payment'}
                                         {lang key='paymentOptions' section='global'}:
                                         <span class="order-details-data-item">
-                                            <ul class="list-unstyled">
-                                                <li>{$Bestellung->cZahlungsartName}</li>
-                                                <li>
-                                                    {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO && $Bestellung->dBezahldatum_de !== '00.00.0000' && !empty($Bestellung->dBezahldatum_de)}
-                                                        {lang key='payedOn' section='login'} {$Bestellung->dBezahldatum_de}
-                                                    {else}
+                                            <dl class="list-unstyled">
+                                                {if $Bestellung->dBezahldatum_de === '00.00.0000' || empty($Bestellung->dBezahldatum_de)}
+                                                    <dt>{$Bestellung->cZahlungsartName}</dt>
+                                                    <dd>
                                                         {if ($Bestellung->cStatus == BESTELLUNG_STATUS_OFFEN || $Bestellung->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG)
-                                                        && (($Bestellung->Zahlungsart->cModulId !== 'za_ueberweisung_jtl'
-                                                        && $Bestellung->Zahlungsart->cModulId !== 'za_nachnahme_jtl'
-                                                        && $Bestellung->Zahlungsart->cModulId !== 'za_rechnung_jtl'
-                                                        && $Bestellung->Zahlungsart->cModulId !== 'za_barzahlung_jtl')
-                                                        && (isset($Bestellung->Zahlungsart->bPayAgain) && $Bestellung->Zahlungsart->bPayAgain))}
-                                                            {link href="{get_static_route id='bestellab_again.php'}?kBestellung={$Bestellung->kBestellung}"}{lang key='payNow' section='global'}{/link}
+                                                            && (($Bestellung->Zahlungsart->cModulId !== 'za_ueberweisung_jtl'
+                                                            && $Bestellung->Zahlungsart->cModulId !== 'za_nachnahme_jtl'
+                                                            && $Bestellung->Zahlungsart->cModulId !== 'za_rechnung_jtl'
+                                                            && $Bestellung->Zahlungsart->cModulId !== 'za_barzahlung_jtl')
+                                                            && (isset($Bestellung->Zahlungsart->bPayAgain) && $Bestellung->Zahlungsart->bPayAgain))}
+                                                                {link href="{get_static_route id='bestellab_again.php'}?kBestellung={$Bestellung->kBestellung}"}{lang key='payNow' section='global'}{/link}
                                                         {else}
                                                             {lang key='notPayedYet' section='login'}
                                                         {/if}
-                                                    {/if}
-                                                </li>
-                                            </ul>
+                                                    </dd>
+                                                {/if}
+                                                {foreach $incommingPayments as $paymentProvider => $incommingPayment}
+                                                    <dt>{$paymentProvider|htmlentities}</dt>
+                                                    {foreach $incommingPayment as $payment}
+                                                        <dd>{$payment->paymentLocalization}</dd>
+                                                    {/foreach}
+                                                {/foreach}
+                                            </dl>
                                         </span>
                                     {/block}
                                 </li>

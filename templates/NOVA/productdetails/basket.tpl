@@ -21,7 +21,7 @@
                 {if !$showMatrix}
                     {block name='productdetails-basket-form-inline'}
                         {row class="basket-form-inline"}
-                            {if $Artikel->Preise->fVKNetto == 0 && $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX]}
+                            {if $Artikel->Preise->fVKNetto == 0 && isset($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX])}
                                 {block name='productdetails-basket-voucher-flex'}
                                     {col cols=12 sm=6}
                                         {inputgroup class="form-counter"}
@@ -62,7 +62,10 @@
                                             id="quantity" class="quantity" name="anzahl"
                                             aria=["label"=>"{lang key='quantity'}"]
                                             value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
-                                            data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
+                                            data=[
+                                                "decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall},
+                                                "product-id"=>"{if isset($Artikel->kVariKindArtikel)}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}"
+                                            ]
                                         }
                                         {inputgroupappend}
                                             {if $Artikel->cEinheit}

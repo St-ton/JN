@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Customer\Customer;
 use JTL\Helpers\Seo;

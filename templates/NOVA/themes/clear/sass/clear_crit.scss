@@ -216,6 +216,7 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
     padding-bottom: $navbar-padding-y;
     img {
       height: $navbar-image-height;
+      width: auto;
     }
   }
 
@@ -471,10 +472,12 @@ hr {
 
 .lazyloading {
   color: transparent;
-  opacity: 1;
-  transition: opacity 300ms;
   width: auto;
   height: auto;
   max-width: 40px;
   max-height: 40px;
+}
+
+.lazyload {
+  opacity: 0 !important;
 }

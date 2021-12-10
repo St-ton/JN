@@ -150,10 +150,13 @@ msgid "redirect_save_404_value(N)"
 msgstr "No"
 
 msgid "global_ust_auszeichnung_value(auto)"
-msgstr "insert \"incl./excl. VAT\" automatically"
+msgstr "Insert \"incl./excl. VAT\" with respective VAT rate automatically"
 
 msgid "global_ust_auszeichnung_value(endpreis)"
 msgstr "Insert \"final price*\""
+
+msgid "global_ust_auszeichnung_value(autoNoVat)"
+msgstr "Insert \"incl./excl. VAT\" without VAT rate automatically"
 
 msgid "global_steuerpos_anzeigen_value(Y)"
 msgstr "Yes"
@@ -2338,9 +2341,6 @@ msgstr "Memcached"
 
 msgid "caching_method_value(memcache)"
 msgstr "Memcache"
-
-msgid "caching_method_value(xcache)"
-msgstr "XCache"
 
 msgid "caching_method_value(file)"
 msgstr "Files"

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
@@ -294,7 +294,7 @@ class AdminAccount
             }
         } elseif (\mb_strlen($admin->cPass) === 40) {
             // default login until Shop4
-            $crypted = \cryptPasswort($cPass, $admin->cPass);
+            $crypted = Shop::Container()->getPasswordService()->cryptOldPasswort($cPass, $admin->cPass);
         } else {
             // new default login from 4.0 on
             $verified = \password_verify($cPass, $admin->cPass);
@@ -331,14 +331,15 @@ class AdminAccount
 
     /**
      * @param int $userID
-     * @return mixed
+     * @return array|null
      */
-    private function getAttributes(int $userID)
+    private function getAttributes(int $userID): ?array
     {
         // try, because of SHOP-4319
         try {
             $attributes = reindex($this->db->getObjects(
-                'SELECT cName, cAttribText, cAttribValue FROM tadminloginattribut
+                'SELECT cName, cAttribText, cAttribValue
+                    FROM tadminloginattribut
                     WHERE kAdminlogin = :userID',
                 ['userID' => $userID]
             ), static function ($e) {
@@ -442,7 +443,7 @@ class AdminAccount
      * @param bool   $showNoAccessPage
      * @return bool
      */
-    public function permission($permission, bool $redirectToLogin = false, bool $showNoAccessPage = false): bool
+    public function permission(string $permission, bool $redirectToLogin = false, bool $showNoAccessPage = false): bool
     {
         if ($redirectToLogin) {
             $this->redirectOnFailure();
@@ -468,7 +469,7 @@ class AdminAccount
      */
     public function redirectOnUrl(): void
     {
-        $url    = Shop::getURL() . '/' . \PFAD_ADMIN . 'index.php';
+        $url    = Shop::getAdminURL() . '/index.php';
         $parsed = \parse_url($url);
         $host   = $parsed['host'];
         if (!empty($parsed['port']) && (int)$parsed['port'] > 0) {
@@ -537,7 +538,7 @@ class AdminAccount
      * @param stdClass $admin
      * @return $this
      */
-    private function toSession($admin): self
+    private function toSession(stdClass $admin): self
     {
         $group = $this->getPermissionsByGroup($admin->kAdminlogingruppe);
         if (\is_object($group) || (int)$admin->kAdminlogingruppe === \ADMINGROUP) {
@@ -566,28 +567,28 @@ class AdminAccount
     }
 
     /**
-     * @param string $cLogin
+     * @param string $login
      * @return $this
      */
-    private function setLastLogin($cLogin): self
+    private function setLastLogin(string $login): self
     {
-        $this->db->update('tadminlogin', 'cLogin', $cLogin, (object)['dLetzterLogin' => 'NOW()']);
+        $this->db->update('tadminlogin', 'cLogin', $login, (object)['dLetzterLogin' => 'NOW()']);
 
         return $this;
     }
 
     /**
-     * @param string $cLogin
-     * @param bool   $bReset
+     * @param string $login
+     * @param bool   $reset
      * @return $this
      */
-    private function setRetryCount(string $cLogin, bool $bReset = false): self
+    private function setRetryCount(string $login, bool $reset = false): self
     {
-        if ($bReset) {
+        if ($reset) {
             $this->db->update(
                 'tadminlogin',
                 'cLogin',
-                $cLogin,
+                $login,
                 (object)['nLoginVersuch' => 0, 'locked_at' => '_DBNULL_']
             );
 
@@ -597,12 +598,12 @@ class AdminAccount
             'UPDATE tadminlogin
                 SET nLoginVersuch = nLoginVersuch+1
                 WHERE cLogin = :login',
-            ['login' => $cLogin]
+            ['login' => $login]
         );
-        $data   = $this->db->select('tadminlogin', 'cLogin', $cLogin);
+        $data   = $this->db->select('tadminlogin', 'cLogin', $login);
         $locked = (int)$data->nLoginVersuch >= \MAX_LOGIN_ATTEMPTS;
         if ($locked === true && \array_key_exists('locked_at', (array)$data)) {
-            $this->db->update('tadminlogin', 'cLogin', $cLogin, (object)['locked_at' => 'NOW()']);
+            $this->db->update('tadminlogin', 'cLogin', $login, (object)['locked_at' => 'NOW()']);
         }
 
         return $this;
@@ -636,17 +637,6 @@ class AdminAccount
         }
 
         return false;
-    }
-
-    /**
-     * @param string $password
-     * @return string
-     * @deprecated since 5.0
-     * @throws Exception
-     */
-    public static function generatePasswordHash(string $password): string
-    {
-        return Shop::Container()->getPasswordService()->hash($password);
     }
 
     /**

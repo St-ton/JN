@@ -694,7 +694,9 @@ class Kupon
                 WHERE cCode = :code
                 LIMIT 1',
             ['code' => $code]
-        )->pluck('id')->transform('\intval')->mapInto(self::class)->first() ?? false;
+        )->map(static function ($e) {
+            return new self((int)$e->id);
+        })->first() ?? false;
     }
 
     /**
@@ -705,19 +707,19 @@ class Kupon
     {
         $translationList = [];
         $db              = Shop::Container()->getDB();
-        foreach ($_SESSION['Sprachen'] ?? [] as $language) {
-            $localized                        = $db->select(
+        foreach (Frontend::getLanguages() ?? [] as $language) {
+            $localized                             = $db->select(
                 'tkuponsprache',
                 'kKupon',
                 $id,
                 'cISOSprache',
-                $language->cISO,
+                $language->getCode(),
                 null,
                 null,
                 false,
                 'cName'
             );
-            $translationList[$language->cISO] = $localized->cName ?? '';
+            $translationList[$language->getCode()] = $localized->cName ?? '';
         }
 
         return $translationList;
@@ -818,17 +820,21 @@ class Kupon
         if (isset($_SESSION['NeukundenKuponAngenommen']) && $_SESSION['NeukundenKuponAngenommen']) {
             return 0;
         }
-        $db = Shop::Container()->getDB();
+        $db   = Shop::Container()->getDB();
+        $prep = [
+            'tya'  => self::TYPE_SHIPPING,
+            'tyb'  => self::TYPE_STANDARD,
+            'sum'  => $cart->gibGesamtsummeWaren(true, false),
+            'cgid' => Frontend::getCustomerGroup()->getID()
+        ];
         foreach ($cart->PositionenArr as $item) {
             if (isset($item->Artikel->cArtNr) && \mb_strlen($item->Artikel->cArtNr) > 0) {
-                $productQry .= " OR FIND_IN_SET('" .
-                    \str_replace('%', '\%', $db->escape($item->Artikel->cArtNr))
-                    . "', REPLACE(cArtikel, ';', ',')) > 0";
+                $prep['cArtNr'] = \str_replace('%', '\%', $item->Artikel->cArtNr);
+                $productQry    .= " OR FIND_IN_SET(:cArtNr, REPLACE(cArtikel, ';', ',')) > 0";
             }
             if (isset($item->Artikel->cHersteller) && \mb_strlen($item->Artikel->cHersteller) > 0) {
-                $manufQry .= " OR FIND_IN_SET('" .
-                    \str_replace('%', '\%', (string)$item->Artikel->kHersteller)
-                    . "', REPLACE(cHersteller, ';', ',')) > 0";
+                $prep['mnf'] = $item->Artikel->kHersteller;
+                $manufQry   .= " OR FIND_IN_SET(:mnf, REPLACE(cHersteller, ';', ',')) > 0";
             }
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
                 && isset($item->Artikel->kArtikel)
@@ -856,9 +862,9 @@ class Kupon
         foreach ($categories as $category) {
             $catQry .= " OR FIND_IN_SET('{$category}', REPLACE(cKategorien, ';', ',')) > 0";
         }
-
-        if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-            $customerQry = " OR FIND_IN_SET('" . $_SESSION['Kunde']->kKunde . "', REPLACE(cKunden, ';', ',')) > 0";
+        if (Frontend::getCustomer()->getID() > 0) {
+            $prep['cid'] = Frontend::getCustomer()->getID();
+            $customerQry = " OR FIND_IN_SET(:cid, REPLACE(cKunden, ';', ',')) > 0";
         }
         $ok = $db->getAffectedRows(
             "SELECT * FROM tkupon
@@ -866,12 +872,11 @@ class Kupon
                     AND dGueltigAb <= NOW()
                     AND (dGueltigBis > NOW()
                         OR dGueltigBis IS NULL)
-                    AND fMindestbestellwert <= " . $cart->gibGesamtsummeWaren(true, false) . "
-                    AND (cKuponTyp = '" . self::TYPE_SHIPPING . "'
-                        OR cKuponTyp = '" . self::TYPE_STANDARD . "')
+                    AND fMindestbestellwert <= :sum
+                    AND (cKuponTyp = :tya OR cKuponTyp = :tyb)
                     AND (kKundengruppe = -1
                         OR kKundengruppe = 0
-                        OR kKundengruppe = " . Frontend::getCustomerGroup()->getID() . ")
+                        OR kKundengruppe = :cgid)
                     AND (nVerwendungen = 0
                         OR nVerwendungen > nVerwendungenBisher)
                     AND (cArtikel = '' " . $productQry . ")
@@ -879,7 +884,8 @@ class Kupon
                     AND (cKategorien = ''
                         OR cKategorien = '-1' " . $catQry . ")
                     AND (cKunden = ''
-                        OR cKunden = '-1' " . $customerQry . ')'
+                        OR cKunden = '-1' " . $customerQry . ')',
+            $prep
         );
 
         return $ok > 0 ? 1 : 0;
@@ -908,7 +914,7 @@ class Kupon
             true
         )
             || ($coupon->cWertTyp === 'festpreis'
-                && $coupon->nGanzenWKRabattieren === '0'
+                && (int)$coupon->nGanzenWKRabattieren === 0
                 && $coupon->fMindestbestellwert > \gibGesamtsummeKuponartikelImWarenkorb(
                     $coupon,
                     Frontend::getCart()->PositionenArr
@@ -1049,16 +1055,17 @@ class Kupon
         $special->cName = $coupon->translationList;
         $languageHelper = LanguageHelper::getInstance();
         $oldLangISO     = $languageHelper->getIso();
-        foreach ($_SESSION['Sprachen'] as $language) {
+        foreach (Frontend::getLanguages() as $language) {
+            $code = $language->getCode();
             if ($coupon->cWertTyp === 'prozent'
                 && $coupon->nGanzenWKRabattieren === 0
                 && $coupon->cKuponTyp !== self::TYPE_NEWCUSTOMER
             ) {
-                $languageHelper->setzeSprache($language->cISO);
-                $special->cName[$language->cISO]             .= ' ' . $coupon->fWert . '% ';
-                $special->discountForArticle[$language->cISO] = $languageHelper->get('discountForArticle', 'checkout');
+                $languageHelper->setzeSprache($code);
+                $special->cName[$code]             .= ' ' . $coupon->fWert . '% ';
+                $special->discountForArticle[$code] = $languageHelper->get('discountForArticle', 'checkout');
             } elseif ($coupon->cWertTyp === 'prozent') {
-                $special->cName[$language->cISO] .= ' ' . $coupon->fWert . '%';
+                $special->cName[$code] .= ' ' . $coupon->fWert . '%';
             }
         }
         $languageHelper->setzeSprache($oldLangISO);

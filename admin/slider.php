@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Boxes\Admin\BoxAdmin;
@@ -141,7 +141,7 @@ switch ($action) {
         $slider = new Slider($db);
         $slider->load($kSlider, false);
         $smarty->assign('customerGroups', CustomerGroup::getGroups())
-               ->assign('oExtension', holeExtension($kSlider));
+            ->assign('oExtension', holeExtension($kSlider));
 
         if ($slider->getEffects() !== 'random') {
             $effects = explode(';', $slider->getEffects());
@@ -152,7 +152,7 @@ switch ($action) {
             $smarty->assign('cEffects', $options);
         } else {
             $smarty->assign('checked', 'checked="checked"')
-                   ->assign('disabled', 'disabled="true"');
+                ->assign('disabled', 'disabled="true"');
         }
         $smarty->assign('oSlider', $slider);
 
@@ -165,8 +165,8 @@ switch ($action) {
 
     case 'new':
         $smarty->assign('checked', 'checked="checked"')
-               ->assign('customerGroups', CustomerGroup::getGroups())
-               ->assign('oSlider', new Slider($db));
+            ->assign('customerGroups', CustomerGroup::getGroups())
+            ->assign('oSlider', new Slider($db));
         break;
 
     case 'delete':
@@ -191,8 +191,8 @@ $pagination = (new Pagination('sliders'))
     ->assemble();
 
 $smarty->assign('action', $action)
-       ->assign('kSlider', $kSlider)
-       ->assign('validPageTypes', (new BoxAdmin($db))->getMappedValidPageTypes())
-       ->assign('pagination', $pagination)
-       ->assign('oSlider_arr', $pagination->getPageItems())
-       ->display('slider.tpl');
+    ->assign('kSlider', $kSlider)
+    ->assign('validPageTypes', (new BoxAdmin($db))->getMappedValidPageTypes())
+    ->assign('pagination', $pagination)
+    ->assign('oSlider_arr', $pagination->getPageItems())
+    ->display('slider.tpl');

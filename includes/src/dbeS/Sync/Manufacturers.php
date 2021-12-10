@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -22,7 +22,7 @@ final class Manufacturers extends AbstractSync
     public function handle(Starter $starter)
     {
         $cacheTags = [];
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             if (\strpos($file, 'del_hersteller.xml') !== false) {
                 $cacheTags[] = $this->handleDeletes($xml);
@@ -85,7 +85,9 @@ final class Manufacturers extends AbstractSync
             $id               = (int)$manufacturers[$i]->kHersteller;
             $affectedProducts = $this->db->selectAll('tartikel', 'kHersteller', $id, 'kArtikel');
             if (!\trim($manufacturers[$i]->cSeo)) {
-                $manufacturers[$i]->cSeo = Seo::getFlatSeoPath($manufacturers[$i]->cName);
+                $manufacturers[$i]->cSeo = Seo::getSeo(Seo::getFlatSeoPath($manufacturers[$i]->cName));
+            } else {
+                $manufacturers[$i]->cSeo = Seo::getSeo($manufacturers[$i]->cSeo, true);
             }
             // alten Bildpfad merken
             $manufacturerImage            = $this->db->getSingleObject(
@@ -95,7 +97,6 @@ final class Manufacturers extends AbstractSync
                 ['mid' => $id]
             );
             $manufacturers[$i]->cBildPfad = $manufacturerImage->cBildPfad ?? '';
-            $manufacturers[$i]->cSeo      = Seo::getSeo($manufacturers[$i]->cSeo);
             $this->upsert('thersteller', [$manufacturers[$i]], 'kHersteller');
 
             $xmlLanguage = [];
@@ -137,7 +138,7 @@ final class Manufacturers extends AbstractSync
      * @param string          $slug
      * @return string
      */
-    private function updateSeo(int $id, array $languages, array $xmlLanguage, $slug): string
+    private function updateSeo(int $id, array $languages, array $xmlLanguage, string $slug): string
     {
         $this->db->delete('tseo', ['kKey', 'cKey'], [$id, 'kHersteller']);
         $mfSeo  = $this->mapper->mapArray($xmlLanguage, 'therstellersprache', 'mHerstellerSpracheSeo');
@@ -146,7 +147,7 @@ final class Manufacturers extends AbstractSync
             $baseSeo = $slug;
             foreach ($mfSeo as $mf) {
                 if (isset($mf->kSprache) && !empty($mf->cSeo) && (int)$mf->kSprache === $language->getId()) {
-                    $baseSeo = Seo::getSeo($mf->cSeo);
+                    $baseSeo = Seo::getSeo($mf->cSeo, true);
                     break;
                 }
             }

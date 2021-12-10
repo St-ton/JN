@@ -17,7 +17,7 @@ final class ExportSmarty extends JTLSmarty
     public function __construct(DbInterface $db)
     {
         parent::__construct(true, ContextType::EXPORT);
-        $this->setCaching(0)
+        $this->setCaching(JTLSmarty::CACHING_OFF)
              ->setTemplateDir(\PFAD_TEMPLATES)
              ->setCompileDir(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR)
              ->registerResource('db', new SmartyResourceNiceDB($db, ContextType::EXPORT));

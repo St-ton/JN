@@ -144,7 +144,7 @@ class Plugins
      * @param Smarty_Internal_Template $smarty
      * @return string
      */
-    public function SmartyConvertDate(array $params, $smarty)
+    public function SmartyConvertDate(array $params, $smarty): string
     {
         if (isset($params['date']) && \mb_strlen($params['date']) > 0) {
             $dateTime = new DateTime($params['date']);

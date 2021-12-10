@@ -5,6 +5,8 @@ use JTL\Filesystem\Filesystem;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\License\Manager;
+use JTL\License\Mapper;
 use JTL\Mapper\PluginState as StateMapper;
 use JTL\Mapper\PluginValidation as ValidationMapper;
 use JTL\Minify\MinifyService;
@@ -38,7 +40,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 
 Shop::Container()->getGetText()->loadAdminLocale('pages/plugin');
@@ -57,13 +58,15 @@ $parser          = new XMLParser();
 $uninstaller     = new Uninstaller($db, $cache);
 $legacyValidator = new LegacyPluginValidator($db, $parser);
 $pluginValidator = new PluginValidator($db, $parser);
-$listing         = new Listing($db, $cache, $legacyValidator, $pluginValidator);
-$installer       = new Installer($db, $uninstaller, $legacyValidator, $pluginValidator);
+$installer       = new Installer($db, $uninstaller, $legacyValidator, $pluginValidator, $cache);
 $updater         = new Updater($db, $installer);
 $extractor       = new Extractor($parser);
 $stateChanger    = new StateChanger($db, $cache, $legacyValidator, $pluginValidator);
 $minify          = new MinifyService();
+$manager         = new Manager($db, $cache);
+$mapper          = new Mapper($manager);
 $response        = null;
+$licenses        = $mapper->getCollection();
 if (isset($_SESSION['plugin_msg'])) {
     $notice = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);
@@ -74,12 +77,47 @@ if (!empty($_FILES['plugin-install-upload']) && Form::validateToken()) {
     $response       = $extractor->extractPlugin($_FILES['plugin-install-upload']['tmp_name']);
     $pluginUploaded = true;
 }
+$listing            = new Listing($db, $cache, $legacyValidator, $pluginValidator);
 $pluginsAll         = $listing->getAll();
 $pluginsInstalled   = $listing->getInstalled();
-$pluginsDisabled    = $listing->getDisabled();
+$pluginsDisabled    = $listing->getDisabled()->each(function (ListingItem $item) use ($licenses, $stateChanger) {
+    $exsID = $item->getExsID();
+    if ($exsID === null) {
+        return;
+    }
+    $license = $licenses->getForExsID($exsID);
+    if ($license === null || $license->getLicense()->isExpired()) {
+        $stateChanger->deactivate($item->getID(), State::EXS_LICENSE_EXPIRED);
+        $item->setAvailable(false);
+        $item->setState(State::EXS_LICENSE_EXPIRED);
+    } elseif ($license->getLicense()->getSubscription()->isExpired()) {
+        $stateChanger->deactivate($item->getID(), State::EXS_SUBSCRIPTION_EXPIRED);
+        $item->setAvailable(false);
+        $item->setState(State::EXS_LICENSE_EXPIRED);
+    }
+})->filter(static function (ListingItem $e) {
+    return $e->getState() === State::DISABLED;
+});
 $pluginsProblematic = $listing->getProblematic();
 $pluginsInstalled   = $listing->getEnabled();
-$pluginsAvailable   = $listing->getAvailable();
+$pluginsAvailable   = $listing->getAvailable()->each(function (ListingItem $item) use ($licenses) {
+    $exsID = $item->getExsID();
+    if ($exsID === null) {
+        return;
+    }
+    $license = $licenses->getForExsID($exsID);
+    if ($license === null || $license->getLicense()->isExpired()) {
+        $item->setHasError(true);
+        $item->setErrorMessage(__('Lizenz abgelaufen'));
+        $item->setAvailable(false);
+    } elseif ($license->getLicense()->getSubscription()->isExpired()) {
+        $item->setHasError(true);
+        $item->setErrorMessage(__('Subscription abgelaufen'));
+        $item->setAvailable(false);
+    }
+})->filter(static function (ListingItem $item) {
+    return $item->isAvailable() === true && $item->isInstalled() === false;
+});
 $pluginsErroneous   = $listing->getErroneous();
 if ($pluginUploaded === true) {
     $smarty->assign('pluginsDisabled', $pluginsDisabled)
@@ -400,7 +438,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
 if ($step === 'pluginverwaltung_uebersicht') {
     foreach ($pluginsAvailable as $available) {
         /** @var ListingItem $available */
-        $baseDir = $available->getPath() . '/';
+        $baseDir = $available->getPath();
         $files   = [
             'license.md',
             'License.md',

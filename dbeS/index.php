@@ -12,10 +12,8 @@ define('FREIDEFINIERBARER_FEHLER', 8);
 
 require_once DEFINES_PFAD . 'config.JTL-Shop.ini.php';
 require_once DEFINES_PFAD . 'defines.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 
 /**
@@ -68,8 +66,8 @@ function handleError($output)
  * 8: HTTP_CUSTOMERR
  * 9: HTTP_EBAYERROR
  *
- * @param string $msg Exception Message
- * @param int    $wawiExceptionCode int code (0-9)
+ * @param string   $msg - Exception Message
+ * @param int|null $wawiExceptionCode - code (0-9)
  */
 function syncException(string $msg, int $wawiExceptionCode = null)
 {
@@ -86,7 +84,6 @@ $shop = Shop::getInstance();
 error_reporting(SYNC_LOG_LEVEL);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
 if (!function_exists('Shop')) {
     /**

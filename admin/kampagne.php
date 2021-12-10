@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Campaign;
@@ -129,7 +129,7 @@ if ($step === 'kampagne_uebersicht') {
     $campaigns   = holeAlleKampagnen(true, false);
     $definitions = holeAlleKampagnenDefinitionen();
     $maxKey      = 0;
-    if (is_array($campaigns) && count($campaigns) > 0) {
+    if (count($campaigns) > 0) {
         $members = array_keys($campaigns);
         $maxKey  = $members[count($members) - 1];
     }

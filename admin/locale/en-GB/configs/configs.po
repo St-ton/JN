@@ -165,10 +165,10 @@ msgid "redirect_save_404_desc"
 msgstr "Specify whether bad URLs are to be recorded automatically on the Forwarding page. You can then set up a forwarding for these pages."
 
 msgid "global_ust_auszeichnung_name"
-msgstr "Position of VAT for item"
+msgstr "Display of VAT for items"
 
 msgid "global_ust_auszeichnung_desc"
-msgstr "Define how the value-added tax for the item is displayed."
+msgstr "Depending on the customer group, \"Insert 'incl./excl. VAT' automatically\" displays whether the indicated price includes or excludes VAT. You can decide whether the respective tax rate should also be displayed or not. If you select \"Insert 'final price*'\", the text \"final price*\" is displayed with the item. The related note must be entered into \"Notes in footer\"."
 
 msgid "global_fusszeilehinweis_name"
 msgstr "Notes in footer"
@@ -1134,7 +1134,7 @@ msgid "kundenregistrierung_nur_lieferlaender_name"
 msgstr "Offer only countries with shipping method for selection"
 
 msgid "kundenregistrierung_nur_lieferlaender_desc"
-msgstr "Specify whether only countries for which there is at least one shipping method can be selected for the invoice and shipping address. We recommend settings this option to \"Yes\"."
+msgstr "(This setting currently has no use and will be removed in the next vesion) Specify whether only countries for which there is at least one shipping method can be selected for the invoice and shipping address. We recommend settings this option to \"Yes\"."
 
 msgid "kundenregistrierung_abgleichen_plz_name"
 msgstr "Check postal codes"

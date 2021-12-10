@@ -119,9 +119,9 @@ if ($conf['artikeldetails']['benachrichtigung_nutzen'] !== 'N') {
     $smarty->assign('Benachrichtigung', Product::getAvailabilityFormDefaults());
 }
 if ($valid && Request::postInt('fragezumprodukt') === 1) {
-    $productNotices = Product::checkProductQuestion($productNotices, $conf);
+    $productNotices = Product::checkProductQuestion($productNotices, $conf['artikeldetails'], $AktuellerArtikel);
 } elseif ($valid && Request::postInt('benachrichtigung_verfuegbarkeit') === 1) {
-    $productNotices = Product::checkAvailabilityMessage($productNotices);
+    $productNotices = Product::checkAvailabilityMessage($productNotices, $conf['artikeldetails']);
 }
 foreach ($productNotices as $productNoticeKey => $productNotice) {
     $alertHelper->addAlert(Alert::TYPE_DANGER, $productNotice, 'productNotice' . $productNoticeKey);
@@ -134,6 +134,7 @@ $ratingStars  = Request::verifyGPCDataInt('btgsterne');
 $sorting      = Request::verifyGPCDataInt('sortierreihenfolge');
 $showRatings  = Request::verifyGPCDataInt('bewertung_anzeigen');
 $allLanguages = Request::verifyGPCDataInt('moreRating');
+$ratings      = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 if ($ratingPage === 0) {
     $ratingPage = 1;
 }
@@ -148,10 +149,7 @@ if ($AktuellerArtikel->Bewertungen === null || $ratingStars > 0) {
     );
     $AktuellerArtikel->holehilfreichsteBewertung();
 }
-
-if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich)
-    && (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
-) {
+if ((int)($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich ?? 0) > 0) {
     $ratings = array_filter(
         $AktuellerArtikel->Bewertungen->oBewertung_arr,
         static function ($oBewertung) use (&$AktuellerArtikel) {
@@ -159,17 +157,12 @@ if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreic
                 !== (int)$oBewertung->kBewertung;
         }
     );
-} else {
-    $ratings = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 }
 if (Frontend::getCustomer()->getID() > 0) {
-    $rated = Product::getRatedByCurrentCustomer(
-        (int)$AktuellerArtikel->kArtikel,
-        (int)$AktuellerArtikel->kVaterArtikel
-    );
+    $rated = Product::getRatedByCurrentCustomer($AktuellerArtikel->kArtikel, $AktuellerArtikel->kVaterArtikel);
 }
 
-$pagination = (new Pagination('ratings'))
+$pagination                                = (new Pagination('ratings'))
     ->setItemArray($ratings)
     ->setItemsPerPageOptions([(int)$conf['bewertung']['bewertung_anzahlseite']])
     ->setDefaultItemsPerPage($conf['bewertung']['bewertung_anzahlseite'])
@@ -180,7 +173,6 @@ $pagination = (new Pagination('ratings'))
     ])
     ->setDefaultSortByDir((int)$conf['bewertung']['bewertung_sortierung'])
     ->assemble();
-
 $AktuellerArtikel->Bewertungen->Sortierung = $sorting;
 
 $ratingsCount = $ratingStars === 0
@@ -217,49 +209,49 @@ $nav = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
 if (($AktuellerArtikel->kVariKindArtikel ?? 0) === 0 && $AktuellerArtikel->nIstVater === 0 && Upload::checkLicense()) {
     $maxSize = Upload::uploadMax();
     $smarty->assign('nMaxUploadSize', $maxSize)
-           ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
-           ->assign('oUploadSchema_arr', Upload::gibArtikelUploads(!empty($AktuellerArtikel->kVariKindArtikel)
-               ? $AktuellerArtikel->kVariKindArtikel
-               : $AktuellerArtikel->kArtikel));
+        ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
+        ->assign('oUploadSchema_arr', Upload::gibArtikelUploads(!empty($AktuellerArtikel->kVariKindArtikel)
+            ? $AktuellerArtikel->kVariKindArtikel
+            : $AktuellerArtikel->kArtikel));
 }
 $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
-       ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
-       ->assign('oAehnlicheArtikel_arr', $similarProducts)
-       ->assign('UVPlocalized', $AktuellerArtikel->cUVPLocalized)
-       ->assign('UVPBruttolocalized', Preise::getLocalizedPriceString($AktuellerArtikel->fUVPBrutto))
-       ->assign('Artikel', $AktuellerArtikel)
-       ->assign('Xselling', !empty($AktuellerArtikel->kVariKindArtikel)
-           ? Product::getXSelling($AktuellerArtikel->kVariKindArtikel)
-           : Product::getXSelling($AktuellerArtikel->kArtikel, $AktuellerArtikel->nIstVater > 0))
-       ->assign('Artikelhinweise', $productNotices)
-       ->assign(
-           'verfuegbarkeitsBenachrichtigung',
-           Product::showAvailabilityForm(
-               $AktuellerArtikel,
-               $conf['artikeldetails']['benachrichtigung_nutzen']
-           )
-       )
-       ->assign('BlaetterNavi', $ratingNav)
-       ->assign('BewertungsTabAnzeigen', (int)($ratingPage > 0 || $ratingStars > 0 || $showRatings > 0 || $allLanguages > 0))
-       ->assign('alertNote', $alertHelper->alertTypeExists(Alert::TYPE_NOTE))
-       ->assign('PFAD_MEDIAFILES', $shopURL . PFAD_MEDIAFILES)
-       ->assign('PFAD_BILDER', PFAD_BILDER)
-       ->assign('FKT_ATTRIBUT_ATTRIBUTEANHAENGEN', FKT_ATTRIBUT_ATTRIBUTEANHAENGEN)
-       ->assign('FKT_ATTRIBUT_WARENKORBMATRIX', FKT_ATTRIBUT_WARENKORBMATRIX)
-       ->assign('FKT_ATTRIBUT_INHALT', FKT_ATTRIBUT_INHALT)
-       ->assign('FKT_ATTRIBUT_MAXBESTELLMENGE', FKT_ATTRIBUT_MAXBESTELLMENGE)
-       ->assign('KONFIG_ITEM_TYP_ARTIKEL', KONFIG_ITEM_TYP_ARTIKEL)
-       ->assign('KONFIG_ITEM_TYP_SPEZIAL', KONFIG_ITEM_TYP_SPEZIAL)
-       ->assign('KONFIG_ANZEIGE_TYP_CHECKBOX', KONFIG_ANZEIGE_TYP_CHECKBOX)
-       ->assign('KONFIG_ANZEIGE_TYP_RADIO', KONFIG_ANZEIGE_TYP_RADIO)
-       ->assign('KONFIG_ANZEIGE_TYP_DROPDOWN', KONFIG_ANZEIGE_TYP_DROPDOWN)
-       ->assign('KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI', KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI)
-       ->assign('ratingPagination', $pagination)
-       ->assign('bewertungSterneSelected', $ratingStars)
-       ->assign('bPreisverlauf', is_array($oPreisverlauf) && count($oPreisverlauf) > 1)
-       ->assign('preisverlaufData', $oPreisverlauf)
-       ->assign('NavigationBlaettern', $nav)
-       ->assign('bereitsBewertet', $rated);
+    ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
+    ->assign('oAehnlicheArtikel_arr', $similarProducts)
+    ->assign('UVPlocalized', $AktuellerArtikel->cUVPLocalized)
+    ->assign('UVPBruttolocalized', Preise::getLocalizedPriceString($AktuellerArtikel->fUVPBrutto))
+    ->assign('Artikel', $AktuellerArtikel)
+    ->assign('Xselling', !empty($AktuellerArtikel->kVariKindArtikel)
+        ? Product::getXSelling($AktuellerArtikel->kVariKindArtikel, null, $conf['artikeldetails'])
+        : Product::getXSelling($AktuellerArtikel->kArtikel, $AktuellerArtikel->nIstVater > 0, $conf['artikeldetails']))
+    ->assign('Artikelhinweise', $productNotices)
+    ->assign(
+        'verfuegbarkeitsBenachrichtigung',
+        Product::showAvailabilityForm(
+            $AktuellerArtikel,
+            $conf['artikeldetails']['benachrichtigung_nutzen']
+        )
+    )
+    ->assign('BlaetterNavi', $ratingNav)
+    ->assign('BewertungsTabAnzeigen', (int)($ratingPage > 0 || $ratingStars > 0 || $showRatings > 0 || $allLanguages > 0))
+    ->assign('alertNote', $alertHelper->alertTypeExists(Alert::TYPE_NOTE))
+    ->assign('PFAD_MEDIAFILES', $shopURL . PFAD_MEDIAFILES)
+    ->assign('PFAD_BILDER', PFAD_BILDER)
+    ->assign('FKT_ATTRIBUT_ATTRIBUTEANHAENGEN', FKT_ATTRIBUT_ATTRIBUTEANHAENGEN)
+    ->assign('FKT_ATTRIBUT_WARENKORBMATRIX', FKT_ATTRIBUT_WARENKORBMATRIX)
+    ->assign('FKT_ATTRIBUT_INHALT', FKT_ATTRIBUT_INHALT)
+    ->assign('FKT_ATTRIBUT_MAXBESTELLMENGE', FKT_ATTRIBUT_MAXBESTELLMENGE)
+    ->assign('KONFIG_ITEM_TYP_ARTIKEL', KONFIG_ITEM_TYP_ARTIKEL)
+    ->assign('KONFIG_ITEM_TYP_SPEZIAL', KONFIG_ITEM_TYP_SPEZIAL)
+    ->assign('KONFIG_ANZEIGE_TYP_CHECKBOX', KONFIG_ANZEIGE_TYP_CHECKBOX)
+    ->assign('KONFIG_ANZEIGE_TYP_RADIO', KONFIG_ANZEIGE_TYP_RADIO)
+    ->assign('KONFIG_ANZEIGE_TYP_DROPDOWN', KONFIG_ANZEIGE_TYP_DROPDOWN)
+    ->assign('KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI', KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI)
+    ->assign('ratingPagination', $pagination)
+    ->assign('bewertungSterneSelected', $ratingStars)
+    ->assign('bPreisverlauf', is_array($oPreisverlauf) && count($oPreisverlauf) > 1)
+    ->assign('preisverlaufData', $oPreisverlauf)
+    ->assign('NavigationBlaettern', $nav)
+    ->assign('bereitsBewertet', $rated);
 
 $cMetaTitle       = $AktuellerArtikel->getMetaTitle();
 $cMetaDescription = $AktuellerArtikel->getMetaDescription($expandedCategories);

@@ -150,10 +150,13 @@ msgid "redirect_save_404_value(N)"
 msgstr "Nein"
 
 msgid "global_ust_auszeichnung_value(auto)"
-msgstr "automatisch „inkl. / exkl. USt“ einfügen"
+msgstr "Automatisch „inkl./exkl. USt“ und konkreten Steuersatz einfügen"
 
 msgid "global_ust_auszeichnung_value(endpreis)"
 msgstr "„Endpreis*“ einfügen"
+
+msgid "global_ust_auszeichnung_value(autoNoVat)"
+msgstr "Automatisch „inkl./exkl. USt“ ohne konkreten Steuersatz einfügen"
 
 msgid "global_steuerpos_anzeigen_value(Y)"
 msgstr "Ja"
@@ -2332,9 +2335,6 @@ msgstr "Memcached"
 
 msgid "caching_method_value(memcache)"
 msgstr "Memcache"
-
-msgid "caching_method_value(xcache)"
-msgstr "XCache"
 
 msgid "caching_method_value(file)"
 msgstr "Dateien"

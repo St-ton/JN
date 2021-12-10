@@ -261,9 +261,9 @@ class AdminAccountManager
         $handledKeys = [];
         foreach ($extAttribs as $key => $value) {
             $longText = null;
-            if (\is_array($value) && count($value) > 0) {
+            if (\is_array($value) && \count($value) > 0) {
                 $shortText = Text::filterXSS($value[0]);
-                if (count($value) > 1) {
+                if (\count($value) > 1) {
                     $longText = $value[1];
                 }
             } else {
@@ -336,7 +336,7 @@ class AdminAccountManager
         }
 
         foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
-            $useVita_ISO = 'useVita_' . $language->cISO;
+            $useVita_ISO = 'useVita_' . $language->getCode();
             if (!empty($attribs[$useVita_ISO])) {
                 $shortText = Text::filterXSS($attribs[$useVita_ISO]);
                 $longtText = $attribs[$useVita_ISO];
@@ -888,7 +888,7 @@ class AdminAccountManager
     /**
      * @param string $tab
      */
-    public function benutzerverwaltungRedirect($tab = ''): void
+    public function benutzerverwaltungRedirect(string $tab = ''): void
     {
         if ($this->getNotice() !== '') {
             $_SESSION['benutzerverwaltung.notice'] = $this->getNotice();

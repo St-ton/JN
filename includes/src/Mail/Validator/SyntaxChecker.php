@@ -4,7 +4,6 @@ namespace JTL\Mail\Validator;
 
 use Exception;
 use JTL\Backend\AdminIO;
-use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use JTL\Mail\Hydrator\HydratorInterface;
@@ -26,11 +25,6 @@ use stdClass;
 final class SyntaxChecker
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * @var RendererInterface
      */
     private $renderer;
@@ -46,24 +40,16 @@ final class SyntaxChecker
     private $factory;
 
     /**
-     * @var Model
-     */
-    private static $model;
-
-    /**
      * SyntaxChecker constructor.
-     * @param DbInterface       $db
      * @param TemplateFactory   $factory
      * @param RendererInterface $renderer
      * @param HydratorInterface $hydrator
      */
     public function __construct(
-        DbInterface $db,
         TemplateFactory $factory,
         RendererInterface $renderer,
         HydratorInterface $hydrator
     ) {
-        $this->db       = $db;
         $this->factory  = $factory;
         $this->hydrator = $hydrator;
         $this->renderer = $renderer;
@@ -207,7 +193,7 @@ final class SyntaxChecker
         try {
             $renderer = new SmartyRenderer(new MailSmarty($db));
             $hydrator = new TestHydrator($renderer->getSmarty(), $db, Shopsetting::getInstance());
-            $sc       = new self($db, new TemplateFactory($db), $renderer, $hydrator);
+            $sc       = new self(new TemplateFactory($db), $renderer, $hydrator);
             $template = $sc->factory->getTemplateByID($templateID);
 
             if ($template === null) {

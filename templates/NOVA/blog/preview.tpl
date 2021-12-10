@@ -1,7 +1,7 @@
 {block name='blog-preview'}
     {$title = $newsItem->getTitle()|escape:'quotes'}
     <div itemprop="blogPost" itemscope=true itemtype="https://schema.org/BlogPosting" class="newsbox blog-preview">
-        <meta itemprop="mainEntityOfPage" content="{$ShopURL}/{$newsItem->getURL()}">
+        <meta itemprop="mainEntityOfPage" content="{$newsItem->getURL()}">
         {block name='blog-preview-news-header'}
             <div class="newsbox-header">
                 {if !empty($newsItem->getPreviewImage())}
@@ -32,7 +32,7 @@
                                     {/block}
                                 </div>
                             {else}
-                                <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="d-none">
+                                <div itemprop="author publisher" itemscope itemtype="https://schema.org/Organization" class="d-none">
                                     <span itemprop="name">{$meta_publisher}</span>
                                     <meta itemprop="url" content="{$ShopURL}">
                                     <meta itemprop="logo" content="{$ShopLogoURL}">

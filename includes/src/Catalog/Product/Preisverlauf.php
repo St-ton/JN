@@ -25,6 +25,11 @@ class Preisverlauf
     public $kArtikel;
 
     /**
+     * @var int
+     */
+    public $kKundengruppe;
+
+    /**
      * @var float
      */
     public $fPreisPrivat;
@@ -55,21 +60,22 @@ class Preisverlauf
      * @param int $productID
      * @param int $customerGroupID
      * @param int $month
-     * @return mixed
+     * @return array
      */
-    public function gibPreisverlauf(int $productID, int $customerGroupID, int $month)
+    public function gibPreisverlauf(int $productID, int $customerGroupID, int $month): array
     {
         $cacheID = 'gpv_' . $productID . '_' . $customerGroupID . '_' . $month;
         if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
             $data     = Shop::Container()->getDB()->getObjects(
                 'SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
                     FROM tpreisverlauf 
-                    LEFT JOIN tartikel
+                    JOIN tartikel
                         ON tartikel.kArtikel = tpreisverlauf.kArtikel
-                    WHERE tpreisverlauf.kArtikel = ' . $productID . '
-                        AND tpreisverlauf.kKundengruppe = ' . $customerGroupID . '
-                        AND DATE_SUB(NOW(), INTERVAL ' . $month . ' MONTH) < tpreisverlauf.dDate
-                    ORDER BY tpreisverlauf.dDate DESC'
+                    WHERE tpreisverlauf.kArtikel = :pid
+                        AND tpreisverlauf.kKundengruppe = :cgid
+                        AND DATE_SUB(NOW(), INTERVAL :mnth MONTH) < tpreisverlauf.dDate
+                    ORDER BY tpreisverlauf.dDate DESC',
+                ['pid' => $productID, 'cgid' => $customerGroupID, 'mnth' => $month]
             );
             $currency = Frontend::getCurrency();
             $dt       = new DateTime();
@@ -104,6 +110,9 @@ class Preisverlauf
             foreach (\array_keys(\get_object_vars($item)) as $member) {
                 $this->$member = $item->$member;
             }
+            $this->kPreisverlauf = (int)$this->kPreisverlauf;
+            $this->kArtikel      = (int)$this->kArtikel;
+            $this->kKundengruppe = (int)$this->kKundengruppe;
         }
 
         return $this;
@@ -129,14 +138,5 @@ class Preisverlauf
         $upd = GeneralObject::copyMembers($this);
 
         return Shop::Container()->getDB()->update('tpreisverlauf', 'kPreisverlauf', $upd->kPreisverlauf, $upd);
-    }
-
-    /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function setzePostDaten(): bool
-    {
-        return false;
     }
 }

@@ -5,7 +5,7 @@
                 <tbody class="summary"></tbody>
                 <tfoot>
                 <tr>
-                    <td colspan="3" class="text-right-util word-break">
+                    <td colspan="3" class="cfg-price">
                         <strong class="price"></strong>
                         <p class="vat_info">
                             {block name='productdetails-config-sidebar-include-shipping-tax-info'}

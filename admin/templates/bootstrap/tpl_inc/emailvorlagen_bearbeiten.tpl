@@ -71,6 +71,7 @@
                                     <option value="1"{if $mailTemplate->getShowAKZ() === true} selected{/if}>{__('yes')}</option>
                                 </select>
                             </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('emailAddAKZDesc')}</div>
                         </div>
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="nAFK">{__('emailAddAGB')}:</label>
@@ -80,6 +81,7 @@
                                     <option value="1"{if $mailTemplate->getShowAGB() === true} selected{/if}>{__('yes')}</option>
                                 </select>
                             </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('emailAddAGBDesc')}</div>
                         </div>
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="nWRB">{__('emailAddWRB')}:</label>
@@ -89,6 +91,7 @@
                                     <option value="1"{if $mailTemplate->getShowWRB() === true} selected{/if}>{__('yes')}</option>
                                 </select>
                             </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('emailAddWRBDesc')}</div>
                         </div>
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="nWRBForm">{__('emailAddWRBForm')}:</label>
@@ -98,6 +101,7 @@
                                     <option value="1"{if $mailTemplate->getShowWRBForm() === true} selected{/if}>{__('yes')}</option>
                                 </select>
                             </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('emailAddWRBFormDesc')}</div>
                         </div>
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="nDSE">{__('emailAddDSE')}:</label>
@@ -107,6 +111,7 @@
                                     <option value="1"{if $mailTemplate->getShowDSE() === true} selected{/if}>{__('yes')}</option>
                                 </select>
                             </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('emailAddDSEDesc')}</div>
                         </div>
                     </div>
                 </div>
@@ -171,7 +176,7 @@
                             <textarea class="codemirror smarty" id="cContentText_{$kSprache}" name="cContentText_{$kSprache}"
                                       rows="20">{$mailTemplate->getText($kSprache)}</textarea>
                         </div>
-                        {if $mailTemplate->getAttachments($kSprache)|@count > 0}
+                        {if $mailTemplate->getAttachments($kSprache)|count > 0}
                             <div class="row mt-4">
                                 <div class="col-sm-auto col-form-label">{__('currentFiles')}:</div>
                                 <div class="col-sm-auto">

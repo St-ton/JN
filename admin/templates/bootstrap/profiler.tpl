@@ -35,16 +35,15 @@ var pies = [];
         </nav>
         <div class="tab-content">
             <div id="plugins" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active show{/if}">
-                {if $pluginProfilerData|@count > 0}
-                    <div class="card-group" id="accordion" role="tablist" aria-multiselectable="true">
+                {if $pluginProfilerData|count > 0}
+                    <div class="accordion" id="accordion" role="tablist" aria-multiselectable="true">
                         {foreach $pluginProfilerData as $profile}
                         <div class="card">
                             <div class="card-header" role="tab" data-idx="{$profile@index}" id="heading-profile-{$profile@index}">
                                 <div class="subheading1">
                                     <a data-toggle="collapse" data-parent="#accordion" href="#profile-{$profile@index}" aria-expanded="true" aria-controls="profile-{$profile@index}">
-                                        <span class="badge left">{$profile->runID}</span> {$profile->url} - {$profile->timestamp} - {$profile->total_time}s
+                                        <span class="badge badge-primary">{$profile->runID}</span> {$profile->url} - {$profile->timestamp} - {$profile->total_time}s
                                     </a>
-                                    <hr class="mb-n3">
                                 </div>
                             </div>
                             <div id="profile-{$profile@index}" class="collapse collapse" role="tabpanel" aria-labelledby="heading-profile-{$profile@index}">
@@ -83,16 +82,15 @@ var pies = [];
                 {/if}
             </div>
             <div id="sqlprofiler" class="tab-pane fade{if isset($tab) && $tab === 'sqlprofiler'} active show{/if}">
-                {if $sqlProfilerData !== null && $sqlProfilerData|@count > 0}
-                    <div class="card-group" id="accordion2" role="tablist" aria-multiselectable="true">
+                {if $sqlProfilerData !== null && $sqlProfilerData|count > 0}
+                    <div class="accordion" id="accordion2" role="tablist" aria-multiselectable="true">
                         {foreach $sqlProfilerData as $run}
                             <div class="card">
                                 <div class="card-header" role="tab" data-idx="{$run@index}" id="heading-sql-profile-{$run@index}">
                                     <div class="subheading1">
                                         <a data-toggle="collapse" data-parent="#accordion2" href="#sql-profile-{$run@index}" aria-expanded="true" aria-controls="profile-{$run@index}">
-                                            <span class="badge left">{$run->runID}</span> {$run->url} - {$run->timestamp} - {$run->total_time}s
+                                            <span class="badge badge-primary">{$run->runID}</span> {$run->url} - {$run->timestamp} - {$run->total_time}s
                                         </a>
-                                        <hr class="mb-n3">
                                     </div>
                                 </div>
                                 <div id="sql-profile-{$run@index}" class="collapse collapse" role="tabpanel" aria-labelledby="heading-sql-profile-{$run@index}">
@@ -108,7 +106,7 @@ var pies = [];
                                                         <strong>{__('statement')}:</strong> <code class="sql">{$query->statement}</code><br />
                                                     {/if}
                                                     {if $query->data !== null}
-                                                        {assign var=data value=$query->data|@unserialize}
+                                                        {assign var=data value=$query->data|unserialize}
                                                         <strong>{__('backtrace')}:</strong>
                                                         <ol class="backtrace">
                                                             {foreach $data.backtrace as $backtrace}

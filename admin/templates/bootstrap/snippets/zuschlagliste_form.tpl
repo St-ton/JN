@@ -9,7 +9,7 @@
     <div class="form-group form-row align-items-center">
         <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('isleList')}:</label>
         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-            <input class="form-control" type="text" id="cName" name="cName" value="{if isset($surchargeNew)}{$surchargeNew->getTitle()}{/if}" tabindex="1" required/>
+            <input class="form-control" type="text" id="cName" name="cName" value="{if isset($surchargeNew)}{$surchargeNew->getTitle()}{/if}" required/>
         </div>
     </div>
     {foreach $availableLanguages as $language}

@@ -7,13 +7,13 @@ use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
 @ini_set('max_execution_time', '0');
 
 if (Request::getInt('e') < 1 || !Form::validateToken()) {
     die('0');
 }
+Shop::Container()->getGetText()->loadAdminLocale('pages/exportformate');
 $db    = Shop::Container()->getDB();
 $queue = $db->select('texportqueue', 'kExportqueue', Request::getInt('e'));
 if (!isset($queue->kExportformat) || !$queue->kExportformat || !$queue->nLimit_m) {

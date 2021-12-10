@@ -26,6 +26,11 @@ class Log
     /**
      * @var string
      */
+    private $changerIp;
+
+    /**
+     * @var string
+     */
     private $settingName;
 
     /**
@@ -63,7 +68,8 @@ class Log
     {
         $this->setId((int)$data->kEinstellungenLog);
         $this->setAdminId((int)$data->kAdminlogin);
-        $this->setAdminName($data->adminName);
+        $this->setAdminName($data->adminName ?? \__('unknown') . '(' . $data->kAdminlogin . ')');
+        $this->setChangerIp($data->cIP ?? '');
         $this->setSettingType($data->settingType);
         $this->setSettingName($data->cEinstellungenName);
         $this->setValueNew($data->cEinstellungenWertNeu);
@@ -183,6 +189,22 @@ class Log
     public function setAdminName(string $adminName): void
     {
         $this->adminName = $adminName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getChangerIp(): string
+    {
+        return $this->changerIp;
+    }
+
+    /**
+     * @param string $ip
+     */
+    public function setChangerIp($ip): void
+    {
+        $this->changerIp = $ip;
     }
 
     /**

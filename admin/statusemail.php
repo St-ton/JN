@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
@@ -11,7 +11,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('EMAIL_REPORTS_VIEW', true, true);
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statusemail_inc.php';
 
 $alertHelper = Shop::Container()->getAlertService();
 $step        = 'statusemail_uebersicht';
@@ -26,12 +25,9 @@ if (Form::validateToken()) {
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorConfigSave'), 'errorConfigSave');
         }
-        $step = 'statusemail_uebersicht';
     }
-}
-if ($step === 'statusemail_uebersicht') {
-    $smarty->assign('oStatusemailEinstellungen', $statusMail->loadConfig());
 }
 
 $smarty->assign('step', $step)
-       ->display('statusemail.tpl');
+    ->assign('oStatusemailEinstellungen', $statusMail->loadConfig())
+    ->display('statusemail.tpl');

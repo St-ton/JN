@@ -26,4 +26,5 @@
         {__('Safe mode enabled.')} - {__('My purchases')}
     </div>
 {/if}
+{include file='tpl_inc/exstore_banner.tpl'}
 {include file='tpl_inc/footer.tpl'}

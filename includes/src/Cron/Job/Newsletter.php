@@ -139,10 +139,15 @@ final class Newsletter extends Job
                     ON tsprache.kSprache = tnewsletterempfaenger.kSprache
                 LEFT JOIN tkunde
                     ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-                WHERE tnewsletterempfaenger.kSprache = ' . (int)$jobData->kSprache . '
+                WHERE tnewsletterempfaenger.kSprache = :lid
                     AND tnewsletterempfaenger.nAktiv = 1 ' . $cgSQL . '
                 ORDER BY tnewsletterempfaenger.kKunde
-                LIMIT ' . $queueEntry->tasksExecuted . ', ' . $queueEntry->taskLimit
+                LIMIT :lmts, :lmte',
+            [
+                'lid'  => $jobData->kSprache,
+                'lmts' => $queueEntry->tasksExecuted,
+                'lmte' => $queueEntry->taskLimit
+            ]
         );
     }
 }

@@ -22,7 +22,8 @@ final class Data extends AbstractPush
             "SELECT *
                 FROM tverfuegbarkeitsbenachrichtigung
                 WHERE cAbgeholt = 'N'
-                LIMIT " . self::LIMIT_AVAILABILITY_MSGS
+                LIMIT :lmt",
+            ['lmt' => self::LIMIT_AVAILABILITY_MSGS]
         );
         $count   = \count($current);
         if ($count > 0) {
@@ -41,7 +42,8 @@ final class Data extends AbstractPush
         $queueData = $this->db->getArrays(
             'SELECT *
                 FROM tuploadqueue
-                LIMIT ' . self::LIMIT_UPLOADQUEUE
+                LIMIT :lmt',
+            ['lmt' => self::LIMIT_UPLOADQUEUE]
         );
         $count     = \count($queueData);
         if ($count > 0) {

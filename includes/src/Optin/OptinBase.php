@@ -138,6 +138,9 @@ abstract class OptinBase extends OptinFactory
         $this->dbHandler->insert('toptin', $newRow);
     }
 
+    /**
+     * set optin as active, with activation date and time
+     */
     public function activateOptin(): void
     {
         $rowData = new stdClass();

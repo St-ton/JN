@@ -1684,6 +1684,7 @@ class ProductFilter
 
             $this->searchResults->setPages($pages)
                                 ->setFilterOptions($this, $category)
+                                ->setSearchTerm($this->search->getName())
                                 ->setSearchTermWrite($this->metaData->getHeader());
         } else {
             $productList = $this->searchResults->getProducts();

@@ -8,7 +8,6 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use stdClass;
 
 /**
  * Class Product

@@ -1147,6 +1147,7 @@ class Artikel
         }
         $this->Preise->localizePreise();
         $this->getVariationDetailPrice($customerGroupID, $customerID);
+        $this->staffelPreis_arr = $this->getTierPrices();
 
         return $this;
     }

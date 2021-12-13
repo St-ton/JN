@@ -462,67 +462,67 @@ msgid "suche_sortierprio_name_name"
 msgstr "Priorität der Sortiermöglichkeiten: Name von A bis Z"
 
 msgid "suche_sortierprio_name_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_name_ab_name"
 msgstr "Priorität der Sortiermöglichkeiten: Name von Z bis A"
 
 msgid "suche_sortierprio_name_ab_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_preis_name"
 msgstr "Priorität der Sortiermöglichkeiten: Preis aufsteigend"
 
 msgid "suche_sortierprio_preis_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_preis_ab_name"
 msgstr "Priorität der Sortiermöglichkeiten: Preis absteigend"
 
 msgid "suche_sortierprio_preis_ab_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_ean_name"
 msgstr "Priorität der Sortiermöglichkeiten: GTIN"
 
 msgid "suche_sortierprio_ean_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_erstelldatum_name"
 msgstr "Priorität der Sortiermöglichkeiten: Neueste Artikel"
 
 msgid "suche_sortierprio_erstelldatum_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen. Mit dieser Option werden die zuletzt hinzugefügten Artikel zuerst angezeigt."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen. Mit dieser Option werden die zuletzt hinzugefügten Artikel zuerst angezeigt."
 
 msgid "suche_sortierprio_artikelnummer_name"
 msgstr "Priorität der Sortiermöglichkeiten: Artikelnummer"
 
 msgid "suche_sortierprio_artikelnummer_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_gewicht_name"
 msgstr "Priorität der Sortiermöglichkeiten: Gewicht"
 
 msgid "suche_sortierprio_gewicht_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_erscheinungsdatum_name"
 msgstr "Priorität der Sortiermöglichkeiten: Erscheinungsdatum"
 
 msgid "suche_sortierprio_erscheinungsdatum_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_bestseller_name"
 msgstr "Priorität der Sortiermöglichkeiten: Bestseller"
 
 msgid "suche_sortierprio_bestseller_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_sortierprio_bewertung_name"
 msgstr "Priorität der Sortiermöglichkeiten: Bewertungen"
 
 msgid "suche_sortierprio_bewertung_desc"
-msgstr "Je kleiner die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
+msgstr "Je größer die eingegebene Zahl, desto weiter oben wird diese Sortiermöglichkeit angezeigt. Geben Sie 0 ein, um diese Möglichkeit gar nicht anzuzeigen."
 
 msgid "suche_max_treffer_name"
 msgstr "Maximale Treffer pro Suche"

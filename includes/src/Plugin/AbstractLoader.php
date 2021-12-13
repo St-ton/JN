@@ -81,7 +81,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadLinks(int $id): Links
     {
-        $data  = $this->db->getObjects(
+        $data = $this->db->getObjects(
             'SELECT tlink.kLink
                 FROM tlink
                 JOIN tlinksprache
@@ -103,7 +103,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadLocalization(int $id, string $currentLanguageCode): Localization
     {
-        $data         = $this->db->getObjects(
+        $data = $this->db->getObjects(
             'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung, o.cISO,
                 COALESCE(c.cName, o.cName) AS customValue, l.type
             FROM tpluginsprachvariable AS l
@@ -136,7 +136,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadConfig(string $path, int $id): Config
     {
-        $data   = $this->db->getObjects(
+        $data = $this->db->getObjects(
             'SELECT c.kPluginEinstellungenConf AS id, c.cName AS name,
             c.cBeschreibung AS description, c.kPluginAdminMenu AS menuID, c.cConf AS confType,
             c.nSort, c.cInputTyp AS inputType, c.cSourceFile AS sourceFile,

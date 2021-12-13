@@ -346,9 +346,29 @@ class Preise
 
     /**
      * @param int $customerID
+     * @param int $productID
      * @return bool
      */
-    protected function hasCustomPrice(int $customerID): bool
+    public function customerHasCustomPriceForProduct(int $customerID, int $productID): bool
+    {
+        if (!$this->hasCustomPrice($customerID)) {
+            return false;
+        }
+
+        return Shop::Container()->getDB()->getSingleObject(
+            'SELECT COUNT(kPreis) AS cnt 
+                FROM tpreis
+                WHERE kKunde = :cid 
+                  AND (kArtikel = :pid OR kArtikel IN (SELECT kArtikel FROM tartikel WHERE kVaterArtikel = :pid))',
+            ['cid' => $customerID, 'pid' => $productID]
+        )->cnt > 0;
+    }
+
+    /**
+     * @param int $customerID
+     * @return bool
+     */
+    public function hasCustomPrice(int $customerID): bool
     {
         if ($customerID <= 0) {
             return false;

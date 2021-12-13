@@ -121,9 +121,7 @@ class SearchSpecial
      */
     public static function buildURL(int $key)
     {
-        $self = new self(Shop::Container()->getDB(), Shop::Container()->getCache());
-
-        return $self->getURL($key);
+        return (new self(Shop::Container()->getDB(), Shop::Container()->getCache()))->getURL($key);
     }
 
     /**

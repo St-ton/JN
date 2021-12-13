@@ -7,7 +7,6 @@ use JTL\Cart\CartHelper;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Nice;
-use JTL\Session\Frontend;
 use JTL\Shop;
 use function Functional\some;
 
@@ -53,7 +52,7 @@ class Configurator
             'kKonfigGruppe',
             'nSort ASC'
         );
-        if (!\is_array($data) || \count($data) === 0 || !self::checkLicense()) {
+        if (\count($data) === 0 || !self::checkLicense()) {
             return [];
         }
         $languageID = $languageID ?: Shop::getLanguageID();

@@ -11,7 +11,6 @@ use JTL\Checkout\Versand;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Date;
 use JTL\Helpers\ShippingMethod;
-use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use JTL\Shop;
 use stdClass;

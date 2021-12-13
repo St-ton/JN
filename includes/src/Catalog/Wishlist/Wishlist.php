@@ -336,8 +336,9 @@ class Wishlist
      */
     public static function pruefeArtikelnachBestellungLoeschen(int $wishlistID, array $items)
     {
-        $conf = Shop::getSettings([\CONF_GLOBAL]);
-        if ($wishlistID < 1 || $conf['global']['global_wunschliste_artikel_loeschen_nach_kauf'] !== 'Y') {
+        if ($wishlistID < 1
+            || Shop::getConfigValue(\CONF_GLOBAL, 'global_wunschliste_artikel_loeschen_nach_kauf') !== 'Y'
+        ) {
             return false;
         }
         $count    = 0;
@@ -1100,6 +1101,9 @@ class Wishlist
         }
         foreach ($wishList->getItems() as $item) {
             $product = $item->getProduct();
+            if ($product === null) {
+                continue;
+            }
             if (Frontend::getCustomerGroup()->isMerchant()) {
                 $price = isset($product->Preise->fVKNetto)
                     ? (int)$item->getQty() * $product->Preise->fVKNetto

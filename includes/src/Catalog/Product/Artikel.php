@@ -1203,6 +1203,7 @@ class Artikel
         }
         $this->Preise->localizePreise();
         $this->getVariationDetailPrice($customerGroupID, $customerID);
+        $this->staffelPreis_arr = $this->getTierPrices();
 
         return $this;
     }
@@ -4798,8 +4799,8 @@ class Artikel
             return '';
         }
         // set default values
-        $minDeliveryDays = \mb_strlen(\trim($favShipping->nMinLiefertage)) > 0 ? (int)$favShipping->nMinLiefertage : 2;
-        $maxDeliveryDays = \mb_strlen(\trim($favShipping->nMaxLiefertage)) > 0 ? (int)$favShipping->nMaxLiefertage : 3;
+        $minDeliveryDays = $favShipping->nMinLiefertage ?? 2;
+        $maxDeliveryDays = $favShipping->nMaxLiefertage ?? 3;
         // get all pieces (even invisible) to calc delivery
         $nAllPieces = $this->getDB()->getAffectedRows(
             'SELECT tartikel.kArtikel, tstueckliste.fAnzahl

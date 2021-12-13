@@ -668,8 +668,7 @@ abstract class AbstractSync
         if ($oldSeo === $newSeo || $oldSeo === '' || $newSeo === '') {
             return false;
         }
-        $redirect = new Redirect();
 
-        return $redirect->saveExt('/' . $oldSeo, $newSeo, true);
+        return (new Redirect())->saveExt('/' . $oldSeo, $newSeo, true);
     }
 }

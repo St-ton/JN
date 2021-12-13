@@ -1071,7 +1071,7 @@ class Cart
         $classID = 0;
         if ($this->config['kaufabwicklung']['bestellvorgang_versand_steuersatz'] === 'US') {
             $taxRates = [];
-            foreach ($this->PositionenArr as $i => $item) {
+            foreach ($this->PositionenArr as $item) {
                 if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && $item->kSteuerklasse > 0) {
                     if (empty($taxRates[$item->kSteuerklasse])) {
                         $taxRates[$item->kSteuerklasse] = $item->fPreisEinzelNetto * $item->nAnzahl;
@@ -1089,7 +1089,7 @@ class Cart
             }
         } else {
             $rate = -1;
-            foreach ($this->PositionenArr as $i => $item) {
+            foreach ($this->PositionenArr as $item) {
                 if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
                     && $item->kSteuerklasse > 0
                     && Tax::getSalesTax($item->kSteuerklasse) > $rate
@@ -1338,7 +1338,7 @@ class Cart
      */
     public function setzeVersandfreiKupon(): self
     {
-        foreach ($this->PositionenArr as $i => $item) {
+        foreach ($this->PositionenArr as $item) {
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_VERSANDPOS) {
                 $item->fPreisEinzelNetto = 0.0;
                 $item->fPreis            = 0.0;

@@ -153,11 +153,11 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
     private function cleanupDeliveryAddresses(): void
     {
         $this->db->queryPrepared(
-            'DELETE k
+            "DELETE k
             FROM tlieferadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE
-                b.cAbgeholt = "Y"
+                b.cAbgeholt = 'Y'
                 AND b.cStatus IN (:stateShipped, :stateCanceled)
                 AND NOT EXISTS (
                     SELECT kKunde
@@ -167,7 +167,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                         AND tkunde.cVorname != :anonString
                         AND tkunde.cNachname != :anonString
                         AND tkunde.cKundenNr != :anonString
-                )',
+                )",
             [
                 'stateShipped'  => \BESTELLUNG_STATUS_VERSANDT,
                 'stateCanceled' => \BESTELLUNG_STATUS_STORNO,
@@ -184,11 +184,11 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
     private function cleanupBillingAddresses(): void
     {
         $this->db->queryPrepared(
-            'DELETE k
+            "DELETE k
             FROM trechnungsadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE
-                b.cAbgeholt = "Y"
+                b.cAbgeholt = 'Y'
                 AND b.cStatus IN (:stateShipped, :stateCanceled)
                 AND NOT EXISTS (
                     SELECT kKunde
@@ -198,7 +198,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                         AND tkunde.cVorname != :anonString
                         AND tkunde.cNachname != :anonString
                         AND tkunde.cKundenNr != :anonString
-                )',
+                )",
             [
                 'stateShipped'  => \BESTELLUNG_STATUS_VERSANDT,
                 'stateCanceled' => \BESTELLUNG_STATUS_STORNO,

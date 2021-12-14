@@ -1010,6 +1010,12 @@ msgstr "Show dimensions"
 msgid "artikeldetails_abmessungen_anzeigen_desc"
 msgstr "Specify whether to display the dimensions (length x width x height) defined in JTL-Wawi on the item detail page."
 
+msgid "artikeldetails_inhalt_anzeigen_name"
+msgstr "Show content"
+
+msgid "artikeldetails_inhalt_anzeigen_desc"
+msgstr "Specify whether to display the content defined in JTL-Wawi on the item detail page."
+
 msgid "artikeldetails_attribute_anhaengen_name"
 msgstr "Add item attributes to description"
 

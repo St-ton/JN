@@ -150,66 +150,14 @@ class Download
             if (!$languageID) {
                 $languageID = Shop::getLanguageID();
             }
-<<<<<<< HEAD
-            $this->oDownloadSprache     = new Localization($item->kDownload, $languageID);
-            $this->oDownloadHistory_arr = History::getHistory($item->kDownload);
+            $this->oDownloadSprache = new Localization($item->kDownload, $languageID);
         }
         if ($orderID > 0) {
             $this->kBestellung = $orderID;
-            $order             = Shop::Container()->getDB()->select(
-                'tbestellung',
-                'kBestellung',
-                $orderID,
-                null,
-                null,
-                null,
-                null,
-                false,
-                'kBestellung, dBezahltDatum'
-=======
-            $this->kDownload = (int)$this->kDownload;
-            $this->nAnzahl   = (int)$this->nAnzahl;
-            $this->nTage     = (int)$this->nTage;
-            $this->nSort     = (int)$this->nSort;
-            if ($info) {
-                if (!$languageID) {
-                    $languageID = Shop::getLanguageID();
-                }
-                $this->oDownloadSprache = new Localization($item->kDownload, $languageID);
-            }
-            if ($orderID > 0) {
-                $this->kBestellung = $orderID;
-                $order             = Shop::Container()->getDB()->select(
-                    'tbestellung',
-                    'kBestellung',
-                    $orderID,
-                    null,
-                    null,
-                    null,
-                    null,
-                    false,
-                    'kBestellung, dBezahltDatum'
-                );
-                if ($order !== null
-                    && $order->kBestellung > 0
-                    && $order->dBezahltDatum !== null
-                    && $this->getTage() > 0
-                ) {
-                    $paymentDate = new DateTime($order->dBezahltDatum);
-                    $modifyBy    = $this->getTage() + 1;
-                    $paymentDate->modify('+' . $modifyBy . ' day');
-                    $this->dGueltigBis = $paymentDate->format('d.m.Y');
-                }
-            }
-            $this->oArtikelDownload_arr = Shop::Container()->getDB()->getObjects(
-                'SELECT tartikeldownload.*
-                    FROM tartikeldownload
-                    JOIN tdownload 
-                        ON tdownload.kDownload = tartikeldownload.kDownload
-                    WHERE tartikeldownload.kDownload = :dlid
-                    ORDER BY tdownload.nSort',
-                ['dlid' => $this->kDownload]
->>>>>>> master
+            $order             = Shop::Container()->getDB()->getSingleObject(
+                'SELECT * FROM tbestellung
+                    WHERE kBestellung = :oid',
+                ['oid' => $orderID]
             );
             if ($order !== null
                 && $order->kBestellung > 0
@@ -236,6 +184,7 @@ class Download
             $dla->kDownload = (int)$dla->kDownload;
         }
     }
+
 
     /**
      * @param array $keys

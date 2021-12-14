@@ -174,7 +174,7 @@ class Method implements MethodInterface
     {
         if ($orderID > 0) {
             $upd            = new stdClass();
-            $upd->cNotifyID = Shop::Container()->getDB()->escape($cNotifyID);
+            $upd->cNotifyID = $cNotifyID;
             $upd->dNotify   = 'NOW()';
             Shop::Container()->getDB()->update('tzahlungsession', 'kBestellung', $orderID, $upd);
         }

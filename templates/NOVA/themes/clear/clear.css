@@ -23307,7 +23307,7 @@ ul.partlist-items {
 }
 
 .img-xs {
-  width: 24px;
+  width: auto;
   height: 24px;
   object-fit: contain;
 }

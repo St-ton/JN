@@ -116,6 +116,11 @@ class MenuItem
     private $rght = 0;
 
     /**
+     * @var int
+     */
+    private $lvl = 0;
+
+    /**
      * @return int
      */
     public function getID(): int
@@ -401,13 +406,30 @@ class MenuItem
     }
 
     /**
-     * MenuItem constructor.
-     * @param stdClass $data
+     * @return int
      */
-    public function __construct(stdClass $data)
+    public function getLevel(): int
+    {
+        return $this->lvl;
+    }
+
+    /**
+     * @param int $lvl
+     */
+    public function setLevel(int $lvl): void
+    {
+        $this->lvl = $lvl;
+    }
+
+    /**
+     * MenuItem constructor.
+     * @param stdClass|Kategorie $data
+     */
+    public function __construct($data)
     {
         $this->setLeft((int)$data->lft);
         $this->setRight((int)$data->rght);
+        $this->setLevel((int)$data->nLevel);
         $this->setImageType(Image::TYPE_CATEGORY);
         $this->setID((int)$data->kKategorie);
         $this->setParentID((int)$data->kOberKategorie);

@@ -6,8 +6,15 @@ use Illuminate\Support\Collection;
 use JTL\Catalog\Product\Artikel;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
-use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Items\Category;
+use JTL\Filter\Items\Characteristic;
+use JTL\Filter\Items\Manufacturer;
+use JTL\Filter\Items\PriceRange;
+use JTL\Filter\Items\Rating;
+use JTL\Filter\Items\Search;
+use JTL\Filter\Items\SearchSpecial;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Type;
 use JTL\Helpers\Product;
@@ -79,21 +86,23 @@ class ProductStream extends Portlet
      */
     public function getFilteredProductIds(PortletInstance $instance): Collection
     {
+        $params         = ['MerkmalFilter_arr' => [], 'SuchFilter_arr' => [], 'SuchFilter' => []];
         $enabledFilters = $instance->getProperty('filters');
-        $productFilter  = new ProductFilter(
+        $pf             = new ProductFilter(
             Config::getDefault(),
             Shop::Container()->getDB(),
             Shop::Container()->getCache()
         );
-
+        $service        = Shop::Container()->getOPC();
         foreach ($enabledFilters as $enabledFilter) {
-            /** @var AbstractFilter $newFilter * */
-            $newFilter = new $enabledFilter['class']($productFilter);
-            $newFilter->setType(Type::AND);
-            $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
+            $service->getFilterClassParamMapping($enabledFilter['class'], $params, $enabledFilter['value'], $pf);
+        }
+        $pf->initStates($params);
+        foreach ($pf->getActiveFilters() as $filter) {
+            $filter->setType(Type::AND);
         }
 
-        return $productFilter->getProductKeys()->slice(0, $instance->getProperty('maxProducts'));
+        return $pf->getProductKeys()->slice(0, $instance->getProperty('maxProducts'));
     }
 
     /**

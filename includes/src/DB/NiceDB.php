@@ -804,6 +804,16 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
+    public function getSingleInt(string $stmt, string $rowName, array $params = []): ?int
+    {
+        $res = $this->getSingleObject($stmt, $params);
+
+        return $res === null ? null : ((int)$res->$rowName);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getSingleArray(string $stmt, array $params = []): ?array
     {
         return $this->_execute(1, $stmt, $params, ReturnType::SINGLE_ASSOC_ARRAY);

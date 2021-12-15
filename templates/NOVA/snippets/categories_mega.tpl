@@ -172,8 +172,8 @@
         {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
             {navitem href="{get_static_route id='wunschliste.php'}" class="wl-nav-scrollbar-item nav-scrollbar-item"}
                 {badge id="badge-wl-count" variant="primary" class="product-count"}
-                    {if $smarty.session.Wunschliste->getID() > 0}
-                        {$smarty.session.Wunschliste->getItems()|count}
+                    {if \JTL\Session\Frontend::getWishlist()->getID() > 0}
+                        {\JTL\Session\Frontend::getWishlist()->getItems()|count}
                     {else}
                         0
                     {/if}

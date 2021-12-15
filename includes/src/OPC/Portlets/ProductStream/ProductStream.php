@@ -7,14 +7,6 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Filter\Config;
-use JTL\Filter\FilterInterface;
-use JTL\Filter\Items\Category;
-use JTL\Filter\Items\Characteristic;
-use JTL\Filter\Items\Manufacturer;
-use JTL\Filter\Items\PriceRange;
-use JTL\Filter\Items\Rating;
-use JTL\Filter\Items\Search;
-use JTL\Filter\Items\SearchSpecial;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Type;
 use JTL\Helpers\Product;
@@ -97,6 +89,7 @@ class ProductStream extends Portlet
         foreach ($enabledFilters as $enabledFilter) {
             $service->getFilterClassParamMapping($enabledFilter['class'], $params, $enabledFilter['value'], $pf);
         }
+        $service->overrideConfig($pf);
         $pf->initStates($params);
         foreach ($pf->getActiveFilters() as $filter) {
             $filter->setType(Type::AND);

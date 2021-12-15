@@ -413,6 +413,24 @@ class Service
     }
 
     /**
+     * @param ProductFilter $pf
+     */
+    public function overrideConfig(ProductFilter $pf): void
+    {
+        $config = $pf->getFilterConfig()->getConfig();
+        if (isset($config['navigationsfilter'])) {
+            $config['navigationsfilter']['allgemein_kategoriefilter_benutzen']    = 'Y';
+            $config['navigationsfilter']['allgemein_availabilityfilter_benutzen'] = 'Y';
+            $config['navigationsfilter']['allgemein_herstellerfilter_benutzen']   = 'Y';
+            $config['navigationsfilter']['bewertungsfilter_benutzen']             = 'Y';
+            $config['navigationsfilter']['preisspannenfilter_benutzen']           = 'Y';
+            $config['navigationsfilter']['merkmalfilter_verwenden']               = 'Y';
+            $config['navigationsfilter']['kategoriefilter_anzeigen_als']          = 'KA';
+            $pf->getFilterConfig()->setConfig($config);
+        }
+    }
+
+    /**
      * @param array $enabledFilters
      * @return array
      */
@@ -431,6 +449,7 @@ class Service
             $this->getFilterClassParamMapping($enabledFilter['class'], $params, $enabledFilter['value'], $pf);
             $enabledMap[$enabledFilter['class'] . ':' . $enabledFilter['value']] = true;
         }
+        $this->overrideConfig($pf);
         $pf->initStates($params);
         foreach ($pf->getAvailableFilters() as $availableFilter) {
             $availableFilter->setType(Type::AND);

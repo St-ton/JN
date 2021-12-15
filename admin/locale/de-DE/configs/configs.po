@@ -1010,6 +1010,12 @@ msgstr "Abmessungen anzeigen"
 msgid "artikeldetails_abmessungen_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die in JTL-Wawi hinterlegten Maße (Länge x Breite x Höhe) auf der Artikeldetailseite angezeigt werden."
 
+msgid "artikeldetails_inhalt_anzeigen_name"
+msgstr "Inhalt anzeigen"
+
+msgid "artikeldetails_inhalt_anzeigen_desc"
+msgstr "Hier legen Sie fest, ob der in JTL-Wawi hinterlegten Inhalt/Menge auf der Artikeldetailseite angezeigt werden."
+
 msgid "artikeldetails_attribute_anhaengen_name"
 msgstr "Artikelattribute an Beschreibung anhängen"
 

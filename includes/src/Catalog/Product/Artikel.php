@@ -538,7 +538,7 @@ class Artikel
     /**
      * @var int
      */
-    public $nVariationOhneFreifeldAnzahl;
+    public $nVariationOhneFreifeldAnzahl = 0;
 
     /**
      * @var Bewertung|null

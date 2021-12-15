@@ -29,17 +29,18 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
      */
     private function cleanupCustomers(): void
     {
-        $guestAccounts = $this->db->getObjects(
+        $guestAccounts = $this->db->getInts(
             "SELECT kKunde
                 FROM tkunde
                 WHERE nRegistriert = 0
                   AND cAbgeholt ='Y'
                 LIMIT :pLimit",
+            'kKunde',
             ['pLimit' => $this->workLimit]
         );
 
-        foreach ($guestAccounts as $guestAccount) {
-            (new Customer((int)$guestAccount->kKunde))->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0);
+        foreach ($guestAccounts as $accountID) {
+            (new Customer($accountID))->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0);
         }
     }
 }

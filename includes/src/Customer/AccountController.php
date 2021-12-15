@@ -612,14 +612,15 @@ class AccountController
             if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || !empty($item->cUnique)) {
                 continue;
             }
-            $visibility = $this->db->getSingleObject(
+            $visibility = $this->db->getSingleInt(
                 'SELECT kArtikel
                     FROM tartikelsichtbarkeit
                     WHERE kArtikel = :pid
                         AND kKundengruppe = :cgid',
+                'kArtikel',
                 ['pid' => (int)$item->kArtikel, 'cgid' => $customerGroupID]
             );
-            if ($visibility !== null && $visibility->kArtikel > 0 && (int)$item->kKonfigitem === 0) {
+            if ($visibility !== null && $visibility > 0 && (int)$item->kKonfigitem === 0) {
                 unset($cart->PositionenArr[$i]);
             }
             $price = $this->db->getSingleObject(

@@ -1171,7 +1171,7 @@ final class Products extends AbstractSync
                 FROM tartikeldownload
                 WHERE kArtikel = :pid',
             'kDownload',
-            ['pid' =>  $productID]
+            ['pid' => $productID]
         );
     }
 
@@ -1260,13 +1260,13 @@ final class Products extends AbstractSync
      */
     private function addCategoryDiscounts(int $productID): array
     {
-        $customerGroups     = $this->db->getObjects('SELECT kKundengruppe FROM tkundengruppe');
+        $customerGroups     = $this->db->getInts('SELECT kKundengruppe FROM tkundengruppe', 'kKundengruppe');
         $affectedProductIDs = [];
         $this->db->delete('tartikelkategorierabatt', 'kArtikel', $productID);
         if (\count($customerGroups) === 0) {
             return $affectedProductIDs;
         }
-        foreach ($customerGroups as $item) {
+        foreach ($customerGroups as $customerGroupID) {
             $maxDiscount = $this->db->getSingleObject(
                 'SELECT tkategoriekundengruppe.fRabatt, tkategoriekundengruppe.kKategorie
                 FROM tkategoriekundengruppe
@@ -1282,7 +1282,7 @@ final class Products extends AbstractSync
                 LIMIT 1',
                 [
                     'kArtikel'      => $productID,
-                    'kKundengruppe' => (int)$item->kKundengruppe,
+                    'kKundengruppe' => $customerGroupID,
                 ]
             );
 
@@ -1294,7 +1294,7 @@ final class Products extends AbstractSync
                             fRabatt    = IF(fRabatt < :discount, :discount, fRabatt)',
                     [
                         'productID'     => $productID,
-                        'customerGroup' => (int)$item->kKundengruppe,
+                        'customerGroup' => $customerGroupID,
                         'categoryID'    => $maxDiscount->kKategorie,
                         'discount'      => $maxDiscount->fRabatt,
                     ]

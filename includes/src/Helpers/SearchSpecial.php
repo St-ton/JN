@@ -55,12 +55,13 @@ class SearchSpecial
         }
         if (($overlays = Shop::Container()->getCache()->get($cacheID)) === false) {
             $overlays = [];
-            $types    = Shop::Container()->getDB()->getObjects(
+            $types    = Shop::Container()->getDB()->getInts(
                 'SELECT kSuchspecialOverlay
-                    FROM tsuchspecialoverlay'
+                    FROM tsuchspecialoverlay',
+                'kSuchspecialOverlay'
             );
             foreach ($types as $type) {
-                $overlay = Overlay::getInstance((int)$type->kSuchspecialOverlay, $langID);
+                $overlay = Overlay::getInstance($type, $langID);
                 if ($overlay->getActive() === 1) {
                     $overlays[] = $overlay;
                 }

@@ -830,6 +830,12 @@ msgstr "Nein"
 msgid "artikeldetails_abmessungen_anzeigen_value(Y)"
 msgstr "Ja"
 
+msgid "artikeldetails_inhalt_anzeigen_value(N)"
+msgstr "Nein"
+
+msgid "artikeldetails_inhalt_anzeigen_value(Y)"
+msgstr "Ja"
+
 msgid "artikeldetails_attribute_anhaengen_value(Y)"
 msgstr "Ja"
 

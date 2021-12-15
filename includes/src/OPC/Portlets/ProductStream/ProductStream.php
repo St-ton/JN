@@ -89,6 +89,7 @@ class ProductStream extends Portlet
         foreach ($enabledFilters as $enabledFilter) {
             $service->getFilterClassParamMapping($enabledFilter['class'], $params, $enabledFilter['value'], $pf);
         }
+        $service->overrideConfig($pf);
         $pf->initStates($params);
         foreach ($pf->getActiveFilters() as $filter) {
             $filter->setType(Type::AND);

@@ -587,7 +587,12 @@ class Preise
         if ($currency === null || \is_numeric($currency) || \is_bool($currency)) {
             $currency = Frontend::getCurrency();
         } elseif (\is_object($currency) && ($currency instanceof stdClass)) {
-            $currency = new Currency((int)$currency->kWaehrung);
+            $currentCurrency = Frontend::getCurrency();
+            if ($currentCurrency->getID() === (int)$currency->kWaehrung) {
+                $currency = $currentCurrency;
+            } else {
+                $currency = new Currency((int)$currency->kWaehrung);
+            }
         } elseif (\is_string($currency)) {
             $currency = Currency::fromISO($currency);
         }

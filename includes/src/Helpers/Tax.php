@@ -12,7 +12,6 @@ use JTL\Link\Link;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
-use function Functional\map;
 
 /**
  * Class Tax

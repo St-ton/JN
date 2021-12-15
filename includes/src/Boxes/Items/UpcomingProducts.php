@@ -6,7 +6,6 @@ use JTL\Catalog\Product\ArtikelListe;
 use JTL\Helpers\SearchSpecial;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use function Functional\map;
 
 /**
  * Class UpcomingProducts

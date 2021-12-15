@@ -5,7 +5,6 @@ namespace JTL\Boxes\Items;
 use JTL\Catalog\Product\Artikel;
 use JTL\Helpers\SearchSpecial;
 use JTL\Shop;
-use function Functional\map;
 
 /**
  * Class TopRatedProducts

@@ -15,7 +15,7 @@
                     item=$mainCategory
                     square=false
                     srcSize='sm'
-                    alt="{if empty($imgAlt->cWert)}{$mainCategory->getName()|@seofy}{else}{$imgAlt->cWert}{/if}"}
+                    alt="{if empty($imgAlt->cWert)}{$mainCategory->getName()|seofy}{else}{$imgAlt->cWert}{/if}"}
             {/if}
             <span class="text-truncate d-block">
                 {$mainCategory->getShortName()}{if $mainCategory->hasChildren() && $subCategory >= $max_subsub_items}<span class="more-subcategories">&nbsp;({$mainCategory->getChildren()|count})</span>{/if}

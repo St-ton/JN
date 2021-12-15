@@ -116,7 +116,7 @@
                         {if !empty($separatedTabs)}
                             {block name='productdetails-tabs-tab-separated-tabs'}
                                 {foreach $separatedTabs as $separatedTab}
-                                    {tab title=$separatedTab.name active=$setActiveClass.separatedTabs && $separatedTab@first id="{$separatedTab.name|@seofy}"}
+                                    {tab title=$separatedTab.name active=$setActiveClass.separatedTabs && $separatedTab@first id="{$separatedTab.name|seofy}"}
                                         {opcMountPoint id='opc_before_separated_'|cat:$separatedTab.id}
                                         {$separatedTab.content}
                                         {opcMountPoint id='opc_after_separated_'|cat:$separatedTab.id}
@@ -168,7 +168,7 @@
                         {if $useMediaGroup}
                             {block name='productdetails-tabs-tab-mediagroup'}
                                 {foreach $Artikel->getMediaTypes() as $mediaType}
-                                    {$cMedienTypId = $mediaType->name|@seofy}
+                                    {$cMedienTypId = $mediaType->name|seofy}
                                     {tab title="{$mediaType->name} ({$mediaType->count})" active=$setActiveClass.mediaGroup && $mediaType@first id="{$cMedienTypId}"}
                                         {include file='productdetails/mediafile.tpl'}
                                     {/tab}
@@ -267,7 +267,7 @@
                             {if !empty($separatedTabs)}
                                 {block name='productdetails-tabs-separated-tabs'}
                                     {foreach $separatedTabs as $separatedTab}
-                                        {$separatedTabId = $separatedTab.name|@seofy}
+                                        {$separatedTabId = $separatedTab.name|seofy}
                                         {card no-body=true}
                                             {cardheader id="tab-{$separatedTabId}-head"
                                                 data=["toggle" => "collapse",
@@ -413,7 +413,7 @@
                             {if $useMediaGroup}
                                 {block name='productdetails-tabs-media-gorup'}
                                     {foreach $Artikel->getMediaTypes() as $mediaType}
-                                        {$cMedienTypId = $mediaType->name|@seofy}
+                                        {$cMedienTypId = $mediaType->name|seofy}
                                         {card no-body=true}
                                             {cardheader id="tab-{$cMedienTypId}-head"
                                                 data=["toggle" => "collapse",

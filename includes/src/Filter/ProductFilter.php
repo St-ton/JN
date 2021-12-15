@@ -1553,10 +1553,10 @@ class ProductFilter
         $sql->setOrderBy($sorting->getOrderBy());
         $sql->setLimit('');
         $sql->setGroupBy(['tartikel.kArtikel']);
-        $productKeys       = $this->db->getCollection($this->getFilterSQL()->getBaseQuery($sql, 'listing'))
-            ->map(static function ($e) {
-                return (int)$e->kArtikel;
-            });
+        $productKeys       = $this->db->getInts(
+            $this->getFilterSQL()->getBaseQuery($sql, 'listing'),
+            'kArtikel'
+        );
         $orderData         = new stdClass();
         $orderData->cJoin  = $sorting->getJoin()->getSQL();
         $orderData->cOrder = $sorting->getOrderBy();

@@ -13,19 +13,20 @@ function holeAktiveGeschenke(string $sql): array
     if (mb_strlen($sql) < 1) {
         return $res;
     }
-    $data = Shop::Container()->getDB()->getObjects(
+    $data = Shop::Container()->getDB()->getInts(
         'SELECT kArtikel
             FROM tartikelattribut
             WHERE cName = :atr
             ORDER BY CAST(cWert AS SIGNED) DESC ' . $sql,
+        'kArtikel',
         ['atr' => ART_ATTRIBUT_GRATISGESCHENKAB]
     );
 
     $options                            = Artikel::getDefaultOptions();
     $options->nKeinLagerbestandBeachten = 1;
-    foreach ($data as $item) {
+    foreach ($data as $productID) {
         $product = new Artikel();
-        $product->fuelleArtikel((int)$item->kArtikel, $options, 0, 0, true);
+        $product->fuelleArtikel($productID, $options, 0, 0, true);
         if ($product->kArtikel > 0) {
             $res[] = $product;
         }

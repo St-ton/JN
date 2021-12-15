@@ -94,9 +94,9 @@
         {/if}
             {block name='snippets-image-main-image'}
                 {if $imageType === \JTL\Media\Image::TYPE_PRODUCT || $imageType === \JTL\Media\Image::TYPE_VARIATION}
-                    {$alt=$alt|strip_tags|escape:'quotes'|escape:'html'}
-                {else}
                     {$alt=$alt|strip_tags|escape:'quotes'}
+                {else}
+                    {$alt=$alt|strip_tags|escape:'quotes'|escape:'html'}
                 {/if}
                 {if $item->getImage($srcSize)|strpos:'keinBild.gif' !== false}
                     {image fluid=$fluid lazy=$lazy webp=$webp center=$center

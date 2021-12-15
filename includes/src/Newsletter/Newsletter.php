@@ -358,15 +358,13 @@ class Newsletter
                 return "'" . $e . "'";
             }, $res);
             if (\count($res) > 0) {
-                $artNoData = $this->db->getObjects(
+                $res = $this->db->getInts(
                     'SELECT kArtikel
                         FROM tartikel
                         WHERE cArtNr IN (' . \implode(',', $res) . ')
-                            AND kEigenschaftKombi = 0'
+                            AND kEigenschaftKombi = 0',
+                    'kArtikel'
                 );
-                $res       = \array_map(static function ($e) {
-                    return $e->kArtikel;
-                }, $artNoData);
             }
         } else {
             $res = \array_map('\intval', $res);

@@ -282,6 +282,15 @@ interface DbInterface extends \Serializable
 
     /**
      * @param string $stmt
+     * @param string $rowName
+     * @param array  $params
+     * @return int[]
+     * @since 5.2.0
+     */
+    public function getInts(string $stmt, string $rowName, array $params = []): array;
+
+    /**
+     * @param string $stmt
      * @param array  $params
      * @return stdClass[]
      * @since 5.1.0

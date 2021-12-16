@@ -652,7 +652,6 @@ class CartItem
      */
     public static function getTaxRate(object $item): float
     {
-        $taxRate = Tax::getSalesTax(0);
         if (($item->kSteuerklasse ?? 0) === 0) {
             if (isset($item->fMwSt)) {
                 $taxRate = $item->fMwSt;
@@ -660,6 +659,8 @@ class CartItem
                 $taxRate = ($item->Artikel->kSteuerklasse ?? 0) > 0
                     ? Tax::getSalesTax($item->Artikel->kSteuerklasse)
                     : $item->Artikel->fMwSt;
+            } else {
+                $taxRate = Tax::getSalesTax(0);
             }
         } else {
             $taxRate = Tax::getSalesTax($item->kSteuerklasse);

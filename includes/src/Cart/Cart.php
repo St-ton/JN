@@ -1172,9 +1172,6 @@ class Cart
         bool $excludeShippingCostAttributes = false,
         string $iso = ''
     ) {
-        if (!\is_array($types)) {
-            return 0;
-        }
         $total = 0;
         foreach ($this->PositionenArr as $item) {
             if (\in_array($item->nPosTyp, $types, true)

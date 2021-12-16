@@ -23,6 +23,7 @@ use JTL\Extensions\Upload\File;
 use JTL\GeneralDataProtection\Journal;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
+use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
@@ -405,8 +406,8 @@ class AccountController
             if ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y') {
                 $this->setzeWarenkorbPersInWarenkorb($customer->getID());
             } elseif ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P') {
-                $persCart = new PersistentCart($customer->getID());
-                if (\count($persCart->oWarenkorbPersPos_arr) > 0) {
+                $persCart = new PersistentCart($customer->getID(), false, $this->db);
+                if (\count($persCart->getItems()) > 0) {
                     $this->smarty->assign('nWarenkorb2PersMerge', 1);
                 } else {
                     $this->setzeWarenkorbPersInWarenkorb($customer->getID());
@@ -526,14 +527,14 @@ class AccountController
         if (\count($cart->PositionenArr) > 0) {
             return false;
         }
-        $persCart = new PersistentCart($customer->getID());
+        $persCart = new PersistentCart($customer->getID(), false, $this->db);
         $persCart->ueberpruefePositionen(true);
-        if (\count($persCart->oWarenkorbPersPos_arr) === 0) {
+        if (\count($persCart->getItems()) === 0) {
             return false;
         }
         $languageID      = Shop::getLanguageID();
         $customerGroupID = $customer->getGroupID();
-        foreach ($persCart->oWarenkorbPersPos_arr as $item) {
+        foreach ($persCart->getItems() as $item) {
             if (!empty($item->Artikel->bHasKonfig)) {
                 continue;
             }
@@ -615,14 +616,8 @@ class AccountController
             if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || !empty($item->cUnique)) {
                 continue;
             }
-            $visibility = $this->db->getSingleObject(
-                'SELECT kArtikel
-                    FROM tartikelsichtbarkeit
-                    WHERE kArtikel = :pid
-                        AND kKundengruppe = :cgid',
-                ['pid' => (int)$item->kArtikel, 'cgid' => $customerGroupID]
-            );
-            if ($visibility !== null && $visibility->kArtikel > 0 && (int)$item->kKonfigitem === 0) {
+            $visibility = Product::checkProductVisibility($item->kArtikel, $customerGroupID, $this->db);
+            if ($visibility === false && (int)$item->kKonfigitem === 0) {
                 unset($cart->PositionenArr[$i]);
             }
             $price = $this->db->getSingleObject(
@@ -633,7 +628,7 @@ class AccountController
                         AND tpreisdetail.nAnzahlAb = 0
                     WHERE tpreis.kArtikel = :productID
                         AND tpreis.kKundengruppe = :customerGroup',
-                ['productID' => (int)$item->kArtikel, 'customerGroup' => $customerGroupID]
+                ['productID' => $item->kArtikel, 'customerGroup' => $customerGroupID]
             );
             if (!isset($price->fVKNetto)) {
                 unset($cart->PositionenArr[$i]);
@@ -651,6 +646,7 @@ class AccountController
             return false;
         }
         $cart = Frontend::getCart();
+        $pers = PersistentCart::getInstance($customerID, false, $this->db);
         foreach ($cart->PositionenArr as $item) {
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $productID = (int)$item->kArtikel;
@@ -670,10 +666,10 @@ class AccountController
                     ]
                 );
                 if ($present !== null && $present->kArtikel > 0) {
-                    PersistentCart::addToCheck($productID, 1, [], false, 0, \C_WARENKORBPOS_TYP_GRATISGESCHENK);
+                    $pers->check($productID, 1, [], false, 0, \C_WARENKORBPOS_TYP_GRATISGESCHENK);
                 }
             } else {
-                PersistentCart::addToCheck(
+                $pers->check(
                     $item->kArtikel,
                     $item->nAnzahl,
                     $item->WarenkorbPosEigenschaftArr,
@@ -686,9 +682,7 @@ class AccountController
         }
         $cart->PositionenArr = [];
 
-        $persCart = new PersistentCart($customerID);
-        /** @var PersistentCartItem $item */
-        foreach ($persCart->oWarenkorbPersPos_arr as $item) {
+        foreach (PersistentCart::getInstance($customerID, false, $this->db)->getItems() as $item) {
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $productID = (int)$item->kArtikel;
                 $present   = $this->db->getSingleObject(

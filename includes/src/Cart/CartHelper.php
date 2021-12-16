@@ -127,14 +127,14 @@ class CartHelper
      */
     protected function calculateTotal(stdClass $cartInfo): void
     {
-        $cartInfo->total[self::NET]   = $cartInfo->article[self::NET] +
-            $cartInfo->shipping[self::NET] -
-            $cartInfo->discount[self::NET] +
-            $cartInfo->surcharge[self::NET];
-        $cartInfo->total[self::GROSS] = $cartInfo->article[self::GROSS] +
-            $cartInfo->shipping[self::GROSS] -
-            $cartInfo->discount[self::GROSS] +
-            $cartInfo->surcharge[self::GROSS];
+        $cartInfo->total[self::NET]   = $cartInfo->article[self::NET]
+            + $cartInfo->shipping[self::NET]
+            - $cartInfo->discount[self::NET]
+            + $cartInfo->surcharge[self::NET];
+        $cartInfo->total[self::GROSS] = $cartInfo->article[self::GROSS]
+            + $cartInfo->shipping[self::GROSS]
+            - $cartInfo->discount[self::GROSS]
+            + $cartInfo->surcharge[self::GROSS];
     }
 
     /**
@@ -366,7 +366,11 @@ class CartHelper
             'cURLNormal'   => $variation->getImage(Image::SIZE_MD),
             'cURLGross'    => $variation->getImage(Image::SIZE_LG),
             'nNr'          => \count($item->variationPicturesArr) + 1,
-            'cAltAttribut' => \str_replace(['"', "'"], '', $item->Artikel->cName . ' - ' . $variation->cName),
+            'cAltAttribut' => \strip_tags(\str_replace(
+                ['"', "'"],
+                '',
+                $item->Artikel->cName . ' - ' . $variation->cName
+            )),
         ];
         $image->galleryJSON = $item->Artikel->getArtikelImageJSON($image);
 
@@ -478,8 +482,6 @@ class CartHelper
             if (Configurator::validateKonfig($productID)) {
                 $groups          = Configurator::getKonfig($productID);
                 $isConfigProduct = GeneralObject::hasCount($groups);
-            } else {
-                $isConfigProduct = false;
             }
         }
 
@@ -578,6 +580,7 @@ class CartHelper
             $cUnique = \uniqid('', true);
             // Hauptartikel in den WK legen
             self::addProductIDToCart($productID, $count, $attributes, 0, $cUnique);
+            $persCart = PersistentCart::getInstance(Frontend::getCustomer()->getID());
             // Konfigartikel in den WK legen
             foreach ($configItems as $configItem) {
                 $configItem->isKonfigItem = true;
@@ -610,7 +613,7 @@ class CartHelper
                         break;
                 }
 
-                PersistentCart::addToCheck(
+                $persCart->check(
                     $configItem->getArtikelKey(),
                     $configItem->fAnzahlWK,
                     $configItem->oEigenschaftwerte_arr ?? [],
@@ -677,18 +680,7 @@ class CartHelper
         if ($productExists === null) {
             return true;
         }
-        $vis = Shop::Container()->getDB()->select(
-            'tartikelsichtbarkeit',
-            'kArtikel',
-            $productID,
-            'kKundengruppe',
-            Frontend::getCustomerGroup()->getID(),
-            null,
-            null,
-            false,
-            'kArtikel'
-        );
-        if ($vis === null || !isset($vis->kArtikel) || !$vis->kArtikel) {
+        if (Product::checkProductVisibility($productID, Frontend::getCustomerGroup()->getID()) === true) {
             // Prüfe auf Vater Artikel
             $variations = [];
             if (Product::isParent($productID)) {
@@ -750,71 +742,61 @@ class CartHelper
             false,
             'kArtikel, cName'
         );
-        if ($productExists !== null && $productExists->kArtikel > 0) {
-            $vis = Shop::Container()->getDB()->select(
-                'tartikelsichtbarkeit',
-                'kArtikel',
-                $productID,
-                'kKundengruppe',
-                Frontend::getCustomerGroup()->getID(),
-                null,
-                null,
-                false,
-                'kArtikel'
-            );
-            if ($vis === null || !$vis->kArtikel) {
-                if (Product::isParent($productID)) {
-                    // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
-                    // muss zum Artikel weitergeleitet werden um Variationen zu wählen
-                    if (Request::verifyGPCDataInt('overview') === 1) {
-                        \header('Location: ' . Shop::getURL() . '/?a=' . $productID .
-                            '&n=' . $qty .
-                            '&r=' . \R_VARWAEHLEN, true, 303);
-                        exit;
-                    }
-
-                    $productID  = Product::getArticleForParent($productID);
-                    $attributes = $productID > 0
-                        ? Product::getSelectedPropertiesForVarCombiArticle($productID)
-                        : [];
-                } else {
-                    $attributes = Product::getSelectedPropertiesForArticle($productID);
-                }
-                if ($productID <= 0) {
-                    return true;
-                }
-                $wishlist = Frontend::getWishList();
-                if ($wishlist->getID() === 0) {
-                    $wishlist = new Wishlist();
-                    $wishlist->schreibeDB();
-                    $_SESSION['Wunschliste'] = $wishlist;
-                }
-                $itemID = $wishlist->fuegeEin(
-                    $productID,
-                    $productExists->cName,
-                    $attributes,
-                    $qty
-                );
-                if (isset($_SESSION['Kampagnenbesucher'])) {
-                    Campaign::setCampaignAction(\KAMPAGNE_DEF_WUNSCHLISTE, $itemID, $qty);
-                }
-
-                $obj = (object)['kArtikel' => $productID];
-                \executeHook(\HOOK_TOOLS_GLOBAL_CHECKEWARENKORBEINGANG_WUNSCHLISTE, [
-                    'kArtikel'         => &$productID,
-                    'fAnzahl'          => &$qty,
-                    'AktuellerArtikel' => &$obj
-                ]);
-
-                Shop::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_NOTE,
-                    Shop::Lang()->get('wishlistProductadded', 'messages'),
-                    'wishlistProductadded'
-                );
-                if ($redirect === true && !Request::isAjaxRequest()) {
-                    \header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php'), true, 302);
+        if ($productExists !== null
+            && $productExists->kArtikel > 0
+            && Product::checkProductVisibility($productID, Frontend::getCustomerGroup()->getID()) === true
+        ) {
+            if (Product::isParent($productID)) {
+                // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
+                // muss zum Artikel weitergeleitet werden um Variationen zu wählen
+                if (Request::verifyGPCDataInt('overview') === 1) {
+                    \header('Location: ' . Shop::getURL() . '/?a=' . $productID .
+                        '&n=' . $qty .
+                        '&r=' . \R_VARWAEHLEN, true, 303);
                     exit;
                 }
+
+                $productID  = Product::getArticleForParent($productID);
+                $attributes = $productID > 0
+                    ? Product::getSelectedPropertiesForVarCombiArticle($productID)
+                    : [];
+            } else {
+                $attributes = Product::getSelectedPropertiesForArticle($productID);
+            }
+            if ($productID <= 0) {
+                return true;
+            }
+            $wishlist = Frontend::getWishList();
+            if ($wishlist->getID() === 0) {
+                $wishlist = new Wishlist();
+                $wishlist->schreibeDB();
+                $_SESSION['Wunschliste'] = $wishlist;
+            }
+            $itemID = $wishlist->fuegeEin(
+                $productID,
+                $productExists->cName,
+                $attributes,
+                $qty
+            );
+            if (isset($_SESSION['Kampagnenbesucher'])) {
+                Campaign::setCampaignAction(\KAMPAGNE_DEF_WUNSCHLISTE, $itemID, $qty);
+            }
+
+            $obj = (object)['kArtikel' => $productID];
+            \executeHook(\HOOK_TOOLS_GLOBAL_CHECKEWARENKORBEINGANG_WUNSCHLISTE, [
+                'kArtikel'         => &$productID,
+                'fAnzahl'          => &$qty,
+                'AktuellerArtikel' => &$obj
+            ]);
+
+            Shop::Container()->getAlertService()->addAlert(
+                Alert::TYPE_NOTE,
+                Shop::Lang()->get('wishlistProductadded', 'messages'),
+                'wishlistProductadded'
+            );
+            if ($redirect === true && !Request::isAjaxRequest()) {
+                \header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php'), true, 302);
+                exit;
             }
         }
 
@@ -1505,8 +1487,7 @@ class CartHelper
                 $con = (\mb_strpos($product->cURLFull, '?') === false) ? '?' : '&';
                 if ($product->kEigenschaftKombi > 0) {
                     $url = empty($product->cURLFull)
-                        ? (Shop::getURL() . '/?a=' . $product->kVaterArtikel .
-                            '&a2=' . $product->kArtikel . '&')
+                        ? (Shop::getURL() . '/?a=' . $product->kVaterArtikel . '&a2=' . $product->kArtikel . '&')
                         : ($product->cURLFull . $con);
                     \header('Location: ' . $url . 'n=' . $qty . '&r=' . \implode(',', $redirectParam), true, 302);
                 } else {
@@ -1552,7 +1533,8 @@ class CartHelper
         // Wenn Kupon vorhanden und der cWertTyp prozentual ist, dann verwerfen und neu anlegen
         Kupon::reCheck();
         if (!isset($_POST['login']) && !isset($_REQUEST['basket2Pers'])) {
-            PersistentCart::addToCheck($productID, $qty, $attrValues, $unique, $configItemID);
+            $persCart = PersistentCart::getInstance(Frontend::getCustomer()->getID());
+            $persCart->check($productID, $qty, $attrValues, $unique, $configItemID);
         }
         Shop::Smarty()
             ->assign('cartNote', Shop::Lang()->get('basketAdded', 'messages'))
@@ -1593,7 +1575,6 @@ class CartHelper
                 'nPos'     => $item,
                 'position' => &$cart->PositionenArr[$item]
             ]);
-
             Upload::deleteArtikelUploads($cart->PositionenArr[$item]->kArtikel);
 
             $uniques[] = $unique;
@@ -1623,7 +1604,7 @@ class CartHelper
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
         \freeGiftStillValid($cart);
         if (Frontend::getCustomer()->getID() > 0) {
-            (new PersistentCart(Frontend::getCustomer()->getID()))->entferneAlles()->bauePersVonSession();
+            PersistentCart::getInstance(Frontend::getCustomer()->getID())->entferneAlles()->bauePersVonSession();
         }
     }
 
@@ -1870,9 +1851,8 @@ class CartHelper
             }
         }
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-            $persCart = new PersistentCart($_SESSION['Kunde']->kKunde);
-            $persCart->entferneAlles()
-                           ->bauePersVonSession();
+            $persCart = PersistentCart::getInstance($_SESSION['Kunde']->kKunde);
+            $persCart->entferneAlles()->bauePersVonSession();
         }
     }
 

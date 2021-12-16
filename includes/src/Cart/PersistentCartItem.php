@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Cart;
 
@@ -55,7 +55,7 @@ class PersistentCartItem
     /**
      * @var string
      */
-    public $cResponsibility;
+    public $cResponsibility = 'core';
 
     /**
      * @var int
@@ -68,7 +68,7 @@ class PersistentCartItem
     public $nPosTyp;
 
     /**
-     * @var array
+     * @var PersistentCartItemProperty[]
      */
     public $oWarenkorbPersPosEigenschaft_arr = [];
 

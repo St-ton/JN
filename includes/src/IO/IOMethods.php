@@ -235,7 +235,7 @@ class IOMethods
         Kupon::reCheck();
         // Persistenter Warenkorb
         if (!isset($_POST['login'])) {
-            PersistentCart::addToCheck($productID, $amount, $properties);
+            PersistentCart::getInstance(Frontend::getCustomer()->getID())->check($productID, $amount, $properties);
         }
         $pageType    = Shop::getPageType();
         $boxes       = Shop::Container()->getBoxService();

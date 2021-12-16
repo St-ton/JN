@@ -13,7 +13,7 @@
                                         {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
                                             {image webp=true fluid=true lazy=true
                                                 src=$oPosition->Artikel->cVorschaubild
-                                                alt=$oPosition->cName|trans
+                                                alt=$oPosition->cName|trans|escape:'html'
                                             }
                                         {/link}
                                     {/block}

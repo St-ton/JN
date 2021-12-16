@@ -37,7 +37,7 @@
                                 {strip}
                                     <div class="square square-image js-gallery-images {if !$image@first}d-none{/if}">
                                         <div class="inner">
-                                            {image alt=$image->cAltAttribut|escape:'html'
+                                            {image alt=$image->cAltAttribut
                                                 class="product-image"
                                                 fluid=true
                                                 lazy=true
@@ -88,7 +88,7 @@
                                     {elseif $image@index >= $imageCountDefault} d-none{/if}
                                     {if $image@last && $imageCount <= $imageCountDefault} last-mr{/if}">
                                     <div class="inner">
-                                        {image alt=$image->cAltAttribut|escape:'html'
+                                        {image alt=$image->cAltAttribut
                                             class="product-image"
                                             fluid=true
                                             lazy=true

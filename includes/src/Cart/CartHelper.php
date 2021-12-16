@@ -366,7 +366,11 @@ class CartHelper
             'cURLNormal'   => $variation->getImage(Image::SIZE_MD),
             'cURLGross'    => $variation->getImage(Image::SIZE_LG),
             'nNr'          => \count($item->variationPicturesArr) + 1,
-            'cAltAttribut' => \str_replace(['"', "'"], '', $item->Artikel->cName . ' - ' . $variation->cName),
+            'cAltAttribut' => \strip_tags(\str_replace(
+                ['"', "'"],
+                '',
+                $item->Artikel->cName . ' - ' . $variation->cName
+            )),
         ];
         $image->galleryJSON = $item->Artikel->getArtikelImageJSON($image);
 

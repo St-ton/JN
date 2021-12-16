@@ -35,13 +35,13 @@
                                     {col cols=12 md=4 lg=3}
                                         <ul class="list-unstyled">
                                             <li>
-                                                {link href=$oKategorie->getURL() title=$oKategorie->getName() class="nice-deco"}
+                                                {link href=$oKategorie->getURL() title=$oKategorie->getName()|escape:'html' class="nice-deco"}
                                                     <strong>{$oKategorie->getShortName()}</strong>
                                                 {/link}
                                             </li>
                                             {foreach $oKategorie->getChildren() as $oSubKategorie}
                                                 <li>
-                                                    {link href=$oSubKategorie->getURL() title=$oKategorie->getName() class="nice-deco"}
+                                                    {link href=$oSubKategorie->getURL() title=$oKategorie->getName()|escape:'html' class="nice-deco"}
                                                         {$oSubKategorie->getShortName()}
                                                     {/link}
                                                 </li>
@@ -51,7 +51,7 @@
                                                             {foreach $oSubKategorie->getChildren() as $oSubSubKategorie}
                                                                 <li>
                                                                     {link href=$oSubSubKategorie->getURL()
-                                                                       title=$oKategorie->getName() class="nice-deco"}
+                                                                       title=$oKategorie->getName()|escape:'html' class="nice-deco"}
                                                                         {$oSubSubKategorie->getShortName()}
                                                                     {/link}
                                                                 </li>
@@ -70,7 +70,7 @@
                                     {foreach $oKategorieliste->elemente as $oKategorie}
                                         {if $oKategorie->getChildren()|@count == 0}
                                             <li>
-                                                &nbsp;&nbsp;{link href=$oKategorie->getURL() title=$oKategorie->getName() class="nice-deco"}
+                                                &nbsp;&nbsp;{link href=$oKategorie->getURL() title=$oKategorie->getName()|escape:'html' class="nice-deco"}
                                                     {$oKategorie->getShortName()}
                                                 {/link}
                                             </li>

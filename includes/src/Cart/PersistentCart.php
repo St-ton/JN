@@ -111,13 +111,12 @@ class PersistentCart
         $idx    = 0;
         foreach ($this->oWarenkorbPersPos_arr as $i => $item) {
             /** @var PersistentCartItem $item */
-            $item->kArtikel = (int)$item->kArtikel;
             if ($exists) {
                 break;
             }
             if ($item->kArtikel === $productID
                 && $item->cUnique === $unique
-                && (int)$item->kKonfigitem === $configItemID
+                && $item->kKonfigitem === $configItemID
                 && \count($item->oWarenkorbPersPosEigenschaft_arr) > 0
             ) {
                 $idx    = $i;
@@ -136,7 +135,7 @@ class PersistentCart
             } elseif ($item->kArtikel === $productID
                 && $unique !== ''
                 && $item->cUnique === $unique
-                && (int)$item->kKonfigitem === $configItemID
+                && $item->kKonfigitem === $configItemID
             ) {
                 $idx    = $i;
                 $exists = true;
@@ -174,12 +173,12 @@ class PersistentCart
             $this->db->delete(
                 'twarenkorbpersposeigenschaft',
                 'kWarenkorbPersPos',
-                (int)$item->kWarenkorbPersPos
+                $item->kWarenkorbPersPos
             );
             $this->db->delete(
                 'twarenkorbperspos',
                 'kWarenkorbPers',
-                (int)$item->kWarenkorbPers
+                $item->kWarenkorbPers
             );
         }
 
@@ -197,7 +196,7 @@ class PersistentCart
             return false;
         }
         $this->entferneAlles();
-        $this->db->delete('twarenkorbpers', 'kWarenkorbPers', (int)$this->kWarenkorbPers);
+        $this->db->delete('twarenkorbpers', 'kWarenkorbPers', $this->kWarenkorbPers);
 
         return true;
     }
@@ -228,7 +227,7 @@ class PersistentCart
         $source = $_SESSION['WarenkorbPers'] ?? [];
         if (GeneralObject::hasCount('oWarenkorbPersPos_arr', $source)) {
             foreach ($source->oWarenkorbPersPos_arr as $i => $item) {
-                if ((int)$item->kWarenkorbPersPos === $id) {
+                if ($item->kWarenkorbPersPos === $id) {
                     unset($source->oWarenkorbPersPos_arr[$i]);
                 }
             }
@@ -247,7 +246,7 @@ class PersistentCart
     public function loescheGratisGeschenkAusWarenkorbPers(): self
     {
         foreach ($this->oWarenkorbPersPos_arr as $item) {
-            if ((int)$item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $this->entfernePos($item->kWarenkorbPersPos);
             }
         }
@@ -276,7 +275,7 @@ class PersistentCart
     public function ladeWarenkorbPers(bool $addProducts): self
     {
         // Prüfe ob die WarenkorbPers dem eingeloggten Kunden gehört
-        $persCart = $this->db->select('twarenkorbpers', 'kKunde', (int)$this->kKunde);
+        $persCart = $this->db->select('twarenkorbpers', 'kKunde', $this->kKunde);
         if (!isset($persCart->kWarenkorbPers) || $persCart->kWarenkorbPers < 1) {
             $this->dErstellt = 'NOW()';
             $this->schreibeDB();
@@ -296,7 +295,7 @@ class PersistentCart
         $cartItems = $this->db->selectAll(
             'twarenkorbperspos',
             'kWarenkorbPers',
-            (int)$this->kWarenkorbPers,
+            $this->kWarenkorbPers,
             '*, date_format(dHinzugefuegt, \'%d.%m.%Y %H:%i\') AS dHinzugefuegt_de',
             'kWarenkorbPersPos'
         );
@@ -335,7 +334,7 @@ class PersistentCart
             $attributes = $this->db->selectAll(
                 'twarenkorbpersposeigenschaft',
                 'kWarenkorbPersPos',
-                (int)$item->kWarenkorbPersPos
+                $item->kWarenkorbPersPos
             );
             foreach ($attributes as $attribute) {
                 $persItem->oWarenkorbPersPosEigenschaft_arr[] = new PersistentCartItemProperty(
@@ -403,7 +402,7 @@ class PersistentCart
                             $exists = $this->db->select(
                                 'teigenschaftwert',
                                 'kEigenschaftWert',
-                                (int)$oWarenkorbPersPosEigenschaft->kEigenschaftWert,
+                                $oWarenkorbPersPosEigenschaft->kEigenschaftWert,
                                 'kEigenschaft',
                                 (int)$attribute->kEigenschaft
                             );
@@ -509,18 +508,13 @@ class PersistentCart
         if (Shop::getSettingValue(\CONF_KAUFABWICKLUNG, 'warenkorbpers_nutzen') !== 'Y') {
             return;
         }
-        $existing = $this->db->select(
-            'tartikel',
-            'kArtikel',
-            $productID,
-            null,
-            null,
-            null,
-            null,
-            false,
-            'kArtikel, cName'
+        $product = $this->db->getSingleObject(
+            'SELECT cName 
+                FROM tartikel
+                WHERE kArtikel = :pid',
+            ['pid' => $productID]
         );
-        if ($productID > 0 && $existing !== null) {
+        if ($productID > 0 && $product !== null) {
             $visibility = (!empty($unique) && $configItemID > 0)
                 || Product::checkProductVisibility($productID, Frontend::getCustomerGroup()->getID(), $this->db);
             if ($visibility === true) {
@@ -529,7 +523,7 @@ class PersistentCart
                 }
                 $this->fuegeEin(
                     $productID,
-                    $existing->cName,
+                    $product->cName,
                     $attributeValues,
                     $amount,
                     $unique,
@@ -597,7 +591,7 @@ class PersistentCart
                 \array_filter($this->oWarenkorbPersPos_arr, static function ($persItem) use ($item) {
                     return $persItem->kWarenkorbPers === $item->kWarenkorbPers
                         && $persItem->cUnique === $item->cUnique
-                        && (int)$persItem->kKonfigitem === 0;
+                        && $persItem->kKonfigitem === 0;
                 })
             );
             // if main product not found, remove the child id
@@ -625,7 +619,7 @@ class PersistentCart
             if (\count($parents) === 0) {
                 $ids = \array_values(
                     \array_filter($ids, static function ($id) use ($item, $mainProduct) {
-                        return (int)$id !== (int)$item->kWarenkorbPersPos
+                        return (int)$id !== $item->kWarenkorbPersPos
                             && (int)$id !== $mainProduct[0]->kWarenkorbPersPos;
                     })
                 );

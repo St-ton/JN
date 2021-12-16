@@ -106,6 +106,9 @@ class Factory
             $mapping = $this->mapping[$type] ?? null;
         }
         if ($mapping === null) {
+            if ($type !== \SEARCH_SORT_STANDARD) {
+                return $this->getSortingOption(\SEARCH_SORT_STANDARD);
+            }
             throw new InvalidArgumentException('Cannot map type ' . $type);
         }
 

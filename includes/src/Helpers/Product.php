@@ -11,6 +11,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\Catalog\UnitsOfMeasure;
 use JTL\CheckBox;
 use JTL\Customer\CustomerGroup;
+use JTL\DB\DbInterface;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Group;
 use JTL\Extensions\Config\Item;
@@ -2109,5 +2110,40 @@ class Product
         }
 
         return \array_merge($available, $outOfStock);
+    }
+
+    /**
+     * @param int              $productID
+     * @param int              $customerGroupID
+     * @param DbInterface|null $db
+     * @return bool
+     */
+    public static function checkProductVisibility(int $productID, int $customerGroupID, ?DbInterface $db = null): bool
+    {
+        $cacheID = 'visibilityMustBeChecked' . $customerGroupID;
+        if (!Shop::has($cacheID)) {
+            $db = $db ?? Shop::Container()->getDB();
+            Shop::set(
+                $cacheID,
+                $db->getSingleObject(
+                    'SELECT COUNT(*) AS cnt 
+                        FROM tartikelsichtbarkeit
+                        WHERE kKundengruppe = :cgid',
+                    ['cgid' => $customerGroupID]
+                )->cnt > 0
+            );
+        }
+        if (Shop::get($cacheID) === false) {
+            return true;
+        }
+        $db = $db ?? Shop::Container()->getDB();
+
+        return $db->getSingleObject(
+            'SELECT kArtikel
+                FROM tartikelsichtbarkeit
+                WHERE kArtikel = :pid
+                    AND kKundengruppe = :cgid',
+            ['pid' => $productID, 'cgid' => $customerGroupID]
+        ) === null;
     }
 }

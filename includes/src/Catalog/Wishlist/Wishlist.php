@@ -547,23 +547,23 @@ class Wishlist
      */
     public function ueberpruefePositionen(): string
     {
-        $names  = [];
-        $notice = '';
-        $db     = Shop::Container()->getDB();
+        $names    = [];
+        $notice   = '';
+        $db       = Shop::Container()->getDB();
+        $cgroupID = Frontend::getCustomerGroup()->getID();
         foreach ($this->CWunschlistePos_arr as $wlPosition) {
             if ($wlPosition->getProductID() <= 0) {
                 continue;
             }
-            $exists = $db->select('tartikel', 'kArtikel', $wlPosition->getProductID());
-            if (isset($exists->kArtikel) && (int)$exists->kArtikel > 0) {
-                $visibility = $db->select(
-                    'tartikelsichtbarkeit',
-                    'kArtikel',
-                    $wlPosition->getProductID(),
-                    'kKundengruppe',
-                    Frontend::getCustomerGroup()->getID()
-                );
-                if ($visibility === null || empty($visibility->kArtikel)) {
+            $exists = $db->getSingleObject(
+                'SELECT kArtikel, kEigenschaftKombi
+                    FROM tartikel
+                    WHERE kArtikel = :pid',
+                ['pid' => $wlPosition->getProductID()]
+            );
+            if ($exists !== null && (int)$exists->kArtikel > 0) {
+                $visibility = Product::checkProductVisibility($wlPosition->getProductID(), $cgroupID);
+                if ($visibility === true) {
                     if (\count($wlPosition->getProperties()) > 0) {
                         if (Product::isVariChild($wlPosition->getProductID())) {
                             foreach ($wlPosition->getProperties() as $wlAttribute) {

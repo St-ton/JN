@@ -456,13 +456,13 @@ class Cart
                         $attr  = new Eigenschaft($value->kEigenschaft);
                         // Varkombi Kind?
                         if ($cartItem->Artikel->kVaterArtikel > 0) {
-                            if ($attr->kArtikel == $cartItem->Artikel->kVaterArtikel) {
+                            if ($attr->kArtikel === $cartItem->Artikel->kVaterArtikel) {
                                 $cartItem->setzeVariationsWert(
                                     $value->kEigenschaft,
                                     $value->kEigenschaftWert
                                 );
                             }
-                        } elseif ($attr->kArtikel == $cartItem->kArtikel) {
+                        } elseif ($attr->kArtikel === $cartItem->kArtikel) {
                             // Variationswert hat eigene Artikelnummer
                             // und der Artikel hat nur eine Dimension als Variation?
                             if (isset($value->cArtNr)
@@ -1043,7 +1043,7 @@ class Cart
         foreach ($this->PositionenArr as $i => $item) {
             if ($item->kArtikel === $productID && $excludeItem !== $i && \is_array($item->WarenkorbPosEigenschaftArr)) {
                 foreach ($item->WarenkorbPosEigenschaftArr as $attr) {
-                    if ($attr->kEigenschaftWert == $propertyValueID) {
+                    if ($attr->kEigenschaftWert === $propertyValueID) {
                         $qty += $item->nAnzahl;
                     }
                 }
@@ -1198,13 +1198,13 @@ class Cart
         $currency = $this->Waehrung ?? Frontend::getCurrency();
         $factor   = $currency->getConversionFactor();
         foreach ($this->PositionenArr as $item) {
-            if (!\in_array($item->nPosTyp, $types)) {
-                if ($gross) {
-                    $total += $item->fPreis * $factor * $item->nAnzahl *
-                        ((100 + CartItem::getTaxRate($item)) / 100);
-                } else {
-                    $total += $item->fPreis * $factor * $item->nAnzahl;
-                }
+            if (\in_array($item->nPosTyp, $types)) {
+                continue;
+            }
+            if ($gross) {
+                $total += $item->fPreis * $factor * $item->nAnzahl * ((100 + CartItem::getTaxRate($item)) / 100);
+            } else {
+                $total += $item->fPreis * $factor * $item->nAnzahl;
             }
         }
         if ($gross) {
@@ -1532,7 +1532,7 @@ class Cart
     /**
      * @return Artikel|null
      */
-    public function gibLetztenWKArtikel()
+    public function gibLetztenWKArtikel(): ?Artikel
     {
         if (!\is_array($this->PositionenArr)) {
             return null;

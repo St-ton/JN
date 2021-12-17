@@ -1232,6 +1232,12 @@ class LanguageHelper
      */
     public function getLanguageByID(int $langID): LanguageModel
     {
+        foreach (Frontend::getLanguages() as $language) {
+            if ($language->getId() === $langID) {
+                return $language;
+            }
+        }
+
         return LanguageModel::loadByAttributes(['id' => $langID], $this->db);
     }
 }

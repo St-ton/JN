@@ -259,7 +259,7 @@ class CartItem
         $surcharge                         = $db->select(
             'teigenschaftwertaufpreis',
             'kEigenschaftWert',
-            (int)$newAttributes->kEigenschaftWert,
+            $newAttributes->kEigenschaftWert,
             'kKundengruppe',
             Frontend::getCustomerGroup()->getID()
         );
@@ -286,7 +286,7 @@ class CartItem
                 $localized = $db->select(
                     'teigenschaftsprache',
                     'kEigenschaft',
-                    (int)$newAttributes->kEigenschaft,
+                    $newAttributes->kEigenschaft,
                     'kSprache',
                     $language->getId()
                 );
@@ -296,7 +296,7 @@ class CartItem
                 $eigenschaftwert_spr = $db->select(
                     'teigenschaftwertsprache',
                     'kEigenschaftWert',
-                    (int)$newAttributes->kEigenschaftWert,
+                    $newAttributes->kEigenschaftWert,
                     'kSprache',
                     $language->getId()
                 );
@@ -323,9 +323,8 @@ class CartItem
     public function gibGesetztenEigenschaftsWert(int $propertyID): int
     {
         foreach ($this->WarenkorbPosEigenschaftArr as $WKPosEigenschaft) {
-            $WKPosEigenschaft->kEigenschaft = (int)$WKPosEigenschaft->kEigenschaft;
             if ($WKPosEigenschaft->kEigenschaft === $propertyID) {
-                return (int)$WKPosEigenschaft->kEigenschaftWert;
+                return $WKPosEigenschaft->kEigenschaftWert;
             }
         }
 

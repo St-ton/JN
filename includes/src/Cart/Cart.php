@@ -811,13 +811,10 @@ class Cart
      */
     public function gibAnzahlArtikelExt(array $itemTypes, bool $excludeShippingCostAttributes = false, string $iso = '')
     {
-        if (!\is_array($itemTypes)) {
-            return 0;
-        }
         $count = 0;
         foreach ($this->PositionenArr as $item) {
             if (\in_array($item->nPosTyp, $itemTypes)
-                && (empty($item->cUnique) || (\mb_strlen($item->cUnique) > 0 && $item->kKonfigitem == 0))
+                && (empty($item->cUnique) || (\mb_strlen($item->cUnique) > 0 && $item->kKonfigitem === 0))
                 && $item->isUsedForShippingCostCalculation($iso, $excludeShippingCostAttributes)
             ) {
                 $count += $item->nAnzahl;
@@ -830,14 +827,11 @@ class Cart
     /**
      * gibt Anzahl der Positionen des Warenkorbs zurueck
      *
-     * @param int[]|mixed $itemTypes
+     * @param int[] $itemTypes
      * @return int
      */
-    public function gibAnzahlPositionenExt($itemTypes): int
+    public function gibAnzahlPositionenExt(array $itemTypes): int
     {
-        if (!\is_array($itemTypes)) {
-            return 0;
-        }
         $count = 0;
         foreach ($this->PositionenArr as $item) {
             if (\in_array($item->nPosTyp, $itemTypes, true)
@@ -1047,7 +1041,7 @@ class Cart
         }
         $qty = 0;
         foreach ($this->PositionenArr as $i => $item) {
-            if ($item->kArtikel == $productID && $excludeItem != $i && \is_array($item->WarenkorbPosEigenschaftArr)) {
+            if ($item->kArtikel === $productID && $excludeItem !== $i && \is_array($item->WarenkorbPosEigenschaftArr)) {
                 foreach ($item->WarenkorbPosEigenschaftArr as $attr) {
                     if ($attr->kEigenschaftWert == $propertyValueID) {
                         $qty += $item->nAnzahl;
@@ -1172,9 +1166,6 @@ class Cart
         bool $excludeShippingCostAttributes = false,
         string $iso = ''
     ) {
-        if (!\is_array($types)) {
-            return 0;
-        }
         $total = 0;
         foreach ($this->PositionenArr as $item) {
             if (\in_array($item->nPosTyp, $types, true)
@@ -1203,9 +1194,6 @@ class Cart
      */
     public function gibGesamtsummeWarenOhne(array $types, bool $gross = false)
     {
-        if (!\is_array($types)) {
-            return 0;
-        }
         $total    = 0;
         $currency = $this->Waehrung ?? Frontend::getCurrency();
         $factor   = $currency->getConversionFactor();
@@ -1763,7 +1751,7 @@ class Cart
      * @param Cart $cart
      * @return string
      */
-    public static function getChecksum($cart): string
+    public static function getChecksum(Cart $cart): string
     {
         $longestMinMaxDelivery = $cart->getLongestMinMaxDelivery();
         $checks                = [

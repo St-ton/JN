@@ -27,6 +27,9 @@ class Tax
      */
     public static function getSalesTax(int $taxID)
     {
+        if (isset($_SESSION['Steuersatz'][$taxID])) {
+            return $_SESSION['Steuersatz'][$taxID];
+        }
         if (!GeneralObject::hasCount('Steuersatz', $_SESSION)) {
             self::setTaxRates();
         }

@@ -1235,12 +1235,12 @@ class Wishlist
                     $wlPositionAttribute->cWert = $wlPositionAttribute->cFreifeldWert;
                 }
                 $prop = new WishlistItemProperty(
-                    $wlPositionAttribute->kEigenschaft,
-                    $wlPositionAttribute->kEigenschaftWert,
+                    (int)$wlPositionAttribute->kEigenschaft,
+                    (int)$wlPositionAttribute->kEigenschaftWert,
                     $wlPositionAttribute->cFreifeldWert,
                     $wlPositionAttribute->cName,
                     $wlPositionAttribute->cWert,
-                    $wlPositionAttribute->kWunschlistePos
+                    (int)$wlPositionAttribute->kWunschlistePos
                 );
 
                 $prop->setID((int)$wlPositionAttribute->kWunschlistePosEigenschaft);

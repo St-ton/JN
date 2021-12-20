@@ -612,9 +612,7 @@ class Wishlist
                                         );
                                     }
                                 }
-                                if (empty($attrValExists->kEigenschaftWert)
-                                    && empty($attrValExists->cFreifeldWert)
-                                ) {
+                                if ($attrValExists === null) {
                                     $names[] = $wlPosition->getProductName();
                                     $notice .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
 
@@ -623,7 +621,42 @@ class Wishlist
                                 }
                             }
                         } else {
-                            $this->delWunschlistePosSess($wlPosition->getProductID());
+                            $attributes = $db->selectAll(
+                                'teigenschaft',
+                                'kArtikel',
+                                $wlPosition->getProductID(),
+                                'kEigenschaft, cName, cTyp'
+                            );
+                            if (\count($attributes) > 0) {
+                                foreach ($wlPosition->getProperties() as $wlAttribute) {
+                                    $attrValExists = null;
+                                    if (!empty($wlAttribute->getPropertyID())) {
+                                        $attrValExists = $db->select(
+                                            'teigenschaftwert',
+                                            'kEigenschaftWert',
+                                            $wlAttribute->getPropertyValueID(),
+                                            'kEigenschaft',
+                                            $wlAttribute->getPropertyID()
+                                        );
+                                        if (empty($attrValExists)) {
+                                            $attrValExists = $db->select(
+                                                'twunschlisteposeigenschaft',
+                                                'kEigenschaft',
+                                                $wlAttribute->getPropertyID()
+                                            );
+                                        }
+                                    }
+                                    if ($attrValExists === null) {
+                                        $names[] = $wlPosition->cArtikelName;
+                                        $notice .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+
+                                        $this->delWunschlistePosSess($wlPosition->getProductID());
+                                        break;
+                                    }
+                                }
+                            } else {
+                                $this->delWunschlistePosSess($wlPosition->getProductID());
+                            }
                         }
                     }
                 }

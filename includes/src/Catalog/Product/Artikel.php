@@ -938,7 +938,7 @@ class Artikel
     /**
      * @var bool
      */
-    public $isSimpleVariation;
+    public $isSimpleVariation = false;
 
     /**
      * @var string

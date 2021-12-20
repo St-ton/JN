@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace JTL\Template;
 
 use JTL\DB\DbInterface;

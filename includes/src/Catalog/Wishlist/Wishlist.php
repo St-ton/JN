@@ -610,10 +610,8 @@ class Wishlist
                                             );
                                         }
                                     }
-                                    if (empty($attrValExists->kEigenschaftWert)
-                                        && empty($attrValExists->cFreifeldWert)
-                                    ) {
-                                        $names[] = $wlPosition->getProductName();
+                                    if ($attrValExists === null) {
+                                        $names[] = $wlPosition->cArtikelName;
                                         $notice .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
 
                                         $this->delWunschlistePosSess($wlPosition->getProductID());

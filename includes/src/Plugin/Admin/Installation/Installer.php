@@ -226,7 +226,7 @@ final class Installer
             $plugin->kPlugin = 0;
             $loader          = new PluginLoader($this->db, $this->cache);
             if (($languageID = Shop::getLanguageID()) === 0) {
-                $languageID = Shop::Lang()->getDefaultLanguage()->kSprache;
+                $languageID = Shop::Lang()->getDefaultLanguage()->getId();
             }
             $languageCode = Shop::Lang()->getIsoFromLangID($languageID)->cISO;
             $instance     = $loader->loadFromObject($plugin, $languageCode);
@@ -908,14 +908,14 @@ final class Installer
                 );
                 $upd = (object)[
                     'cBild'               => $method->cBild,
-                    'nSort'               => $method->nSort,
-                    'nMailSenden'         => $method->nMailSenden,
-                    'nWaehrendBestellung' => $method->nWaehrendBestellung,
+                    'nSort'               => (int)$method->nSort,
+                    'nMailSenden'         => (int)$method->nMailSenden,
+                    'nWaehrendBestellung' => (int)$method->nWaehrendBestellung,
                 ];
                 $this->db->update('tzahlungsart', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
-                $upd = (object)['kZahlungsart' => $method->kZahlungsart];
+                $upd = (object)['kZahlungsart' => (int)$method->kZahlungsart];
                 $this->db->update('tzahlungsartsprache', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
-                $setSQL = ' , kZahlungsart = ' . $method->kZahlungsart;
+                $setSQL = ' , kZahlungsart = ' . (int)$method->kZahlungsart;
             }
             $this->db->queryPrepared(
                 'UPDATE tzahlungsart

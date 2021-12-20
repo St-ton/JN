@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Backend\Settings\Manager;
@@ -65,6 +65,8 @@ if (Request::postVar('resetSetting') !== null) {
                 break;
             case 'text':
                 $currentValue->cWert = mb_substr($currentValue->cWert, 0, 255);
+                break;
+            default:
                 break;
         }
         $db->delete(
@@ -146,11 +148,11 @@ $topComparisons = $db->getObjects(
         FROM tvergleichsliste
         JOIN tvergleichslistepos 
             ON tvergleichsliste.kVergleichsliste = tvergleichslistepos.kVergleichsliste
-        WHERE DATE_SUB(NOW(), INTERVAL ' . (int)$_SESSION['Vergleichsliste']->nZeitFilter . ' DAY) 
-            < tvergleichsliste.dDate
+        WHERE DATE_SUB(NOW(), INTERVAL :ds DAY)  < tvergleichsliste.dDate
         GROUP BY tvergleichslistepos.kArtikel
         ORDER BY nAnzahl DESC
-        LIMIT ' . (int)$_SESSION['Vergleichsliste']->nAnzahl
+        LIMIT :lmt',
+    ['ds' => (int)$_SESSION['Vergleichsliste']->nZeitFilter, 'lmt' => (int)$_SESSION['Vergleichsliste']->nAnzahl]
 );
 if (is_array($topComparisons) && count($topComparisons) > 0) {
     erstelleDiagrammTopVergleiche($topComparisons);

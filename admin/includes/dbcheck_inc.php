@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Backend\DirManager;
 use JTL\Exceptions\CircularReferenceException;

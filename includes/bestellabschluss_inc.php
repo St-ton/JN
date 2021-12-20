@@ -242,9 +242,9 @@ function bestellungInDB($cleared = 0, $orderNo = '')
         }
         // Falls die Einstellung global_wunschliste_artikel_loeschen_nach_kauf auf Y (Ja) steht und
         // Artikel vom aktuellen Wunschzettel gekauft wurden, sollen diese vom Wunschzettel geloescht werden
-        if (isset($_SESSION['Wunschliste']->kWunschliste) && $_SESSION['Wunschliste']->kWunschliste > 0) {
+        if (Frontend::getWishList()->getID() > 0) {
             Wishlist::pruefeArtikelnachBestellungLoeschen(
-                $_SESSION['Wunschliste']->kWunschliste,
+                Frontend::getWishList()->getID(),
                 $cartItems
             );
         }
@@ -787,62 +787,6 @@ function aktualisiereKomponenteLagerbestand(int $productID, float $stockLevel, b
                 'kArtikel',
                 (int)$bom->kArtikel,
                 (object)['fLagerbestand' => $max]
-            );
-        }
-    }
-}
-
-/**
- * @param int       $productID
- * @param int|float $amount
- * @param null|int  $bomID
- * @deprecated since 4.06 - use aktualisiereStuecklistenLagerbestand instead
- */
-function AktualisiereAndereStuecklisten(int $productID, $amount, $bomID = null): void
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    if ($productID > 0) {
-        $prod = new Artikel();
-        $prod->fuelleArtikel($productID, Artikel::getDefaultOptions());
-        aktualisiereKomponenteLagerbestand($productID, $prod->fLagerbestand, $prod->cLagerKleinerNull === 'Y');
-    }
-}
-
-/**
- * @param int       $bomID
- * @param float     $fPackeinheitSt
- * @param float     $stockLevel
- * @param int|float $amount
- * @deprecated since 4.06 - dont use anymore
- */
-function AktualisiereStueckliste(int $bomID, $fPackeinheitSt, float $stockLevel, $amount): void
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    Shop::Container()->getDB()->update(
-        'tartikel',
-        'kStueckliste',
-        $bomID,
-        (object)['fLagerbestand' => $stockLevel]
-    );
-}
-
-/**
- * @param Artikel        $product
- * @param null|int|float $amount
- * @param bool           $isBom
- * @deprecated since 4.06 - use aktualisiereStuecklistenLagerbestand instead
- */
-function AktualisiereLagerStuecklisten($product, $amount = null, $isBom = false): void
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    if (isset($product->kArtikel) && $product->kArtikel > 0) {
-        if ($isBom) {
-            aktualisiereStuecklistenLagerbestand($product, $amount);
-        } else {
-            aktualisiereKomponenteLagerbestand(
-                $product->kArtikel,
-                $product->fLagerbestand,
-                $product->cLagerKleinerNull === 'Y'
             );
         }
     }

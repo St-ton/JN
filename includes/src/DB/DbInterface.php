@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\DB;
 
@@ -67,7 +67,7 @@ interface DbInterface extends \Serializable
      * @param bool   $echo - true -> print statement
      * @return int - 0 if fails, PrimaryKeyValue if successful
      */
-    public function insertRow(string $tableName, $object, bool $echo = false): int;
+    public function insertRow(string $tableName, object $object, bool $echo = false): int;
 
     /**
      * @param string $tableName
@@ -75,7 +75,7 @@ interface DbInterface extends \Serializable
      * @param bool   $echo
      * @return int
      */
-    public function insert(string $tableName, $object, bool $echo = false): int;
+    public function insert(string $tableName, object $object, bool $echo = false): int;
 
     /**
      * update table row
@@ -87,7 +87,7 @@ interface DbInterface extends \Serializable
      * @param bool             $echo - true -> print statement
      * @return int - -1 if fails, number of affected rows if successful
      */
-    public function updateRow(string $tableName, $keyname, $keyvalue, $object, bool $echo = false): int;
+    public function updateRow(string $tableName, $keyname, $keyvalue, object $object, bool $echo = false): int;
 
     /**
      * @param string           $tableName
@@ -97,7 +97,7 @@ interface DbInterface extends \Serializable
      * @param bool             $echo
      * @return int
      */
-    public function update(string $tableName, $keyname, $keyvalue, $object, bool $echo = false): int;
+    public function update(string $tableName, $keyname, $keyvalue, object $object, bool $echo = false): int;
 
     /**
      * @param string $tableName
@@ -106,7 +106,7 @@ interface DbInterface extends \Serializable
      * @param bool   $echo
      * @return int - -1 if fails, 0 if update, PrimaryKeyValue if successful inserted
      */
-    public function upsert(string $tableName, $object, array $excludeUpdate = [], bool $echo = false): int;
+    public function upsert(string $tableName, object $object, array $excludeUpdate = [], bool $echo = false): int;
 
     /**
      * selects all (*) values in a single row from a table - gives just one row back!
@@ -132,7 +132,7 @@ interface DbInterface extends \Serializable
         $keyvalue2 = null,
         bool $echo = false,
         string $select = '*'
-    );
+    ): ?stdClass;
 
     /**
      * @param string            $tableName
@@ -175,7 +175,7 @@ interface DbInterface extends \Serializable
         string $select = '*',
         string $orderBy = '',
         $limit = ''
-    );
+    ): array;
 
     /**
      * @param string           $tableName
@@ -193,7 +193,7 @@ interface DbInterface extends \Serializable
         string $select = '*',
         string $orderBy = '',
         $limit = ''
-    );
+    ): array;
 
     /**
      * executes query and returns misc data
@@ -213,7 +213,12 @@ interface DbInterface extends \Serializable
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws \InvalidArgumentException
      */
-    public function executeQuery(string $stmt, int $return = ReturnType::DEFAULT, bool $echo = false, $fnInfo = null);
+    public function executeQuery(
+        string $stmt,
+        int $return = ReturnType::DEFAULT,
+        bool $echo = false,
+        ?callable $fnInfo = null
+    );
 
     /**
      * @param string   $stmt
@@ -248,23 +253,23 @@ interface DbInterface extends \Serializable
         array $params,
         int $return = ReturnType::DEFAULT,
         bool $echo = false,
-        $fnInfo = null
+        ?callable $fnInfo = null
     );
 
     /**
-     * @param string $stmt
-     * @param array  $params
-     * @param int    $return
-     * @param bool   $echo
-     * @param mixed  $fnInfo
-     * @return int|object|array
+     * @param string        $stmt
+     * @param array         $params
+     * @param int           $return
+     * @param bool          $echo
+     * @param callable|null $fnInfo
+     * @return bool|int|object|array|Collection
      */
     public function queryPrepared(
         string $stmt,
         array $params,
         int $return = ReturnType::DEFAULT,
         bool $echo = false,
-        $fnInfo = null
+        ?callable $fnInfo = null
     );
 
     /**
@@ -402,5 +407,5 @@ interface DbInterface extends \Serializable
      * @param array  $params
      * @return string
      */
-    public function readableQuery($query, $params);
+    public function readableQuery(string $query, array $params): string;
 }

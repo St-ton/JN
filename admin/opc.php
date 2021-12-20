@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -12,7 +12,7 @@ use JTL\Shop;
  */
 
 require_once __DIR__ . '/includes/admininclude.php';
-$oAccount->permission('CONTENT_PAGE_VIEW', true, true);
+$oAccount->permission('OPC_VIEW', true, true);
 $pageKey      = Request::verifyGPCDataInt('pageKey');
 $pageId       = Request::verifyGPDataString('pageId');
 $pageUrl      = Request::verifyGPDataString('pageUrl');

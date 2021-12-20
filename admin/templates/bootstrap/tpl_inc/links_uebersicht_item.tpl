@@ -122,16 +122,6 @@
                         {if $deleteCount > 1} ({$deleteCount}){/if}
                     </button>
                     {if $id > 0}
-                        <button name="action"
-                                value="remove-linklfrom-linkgroup"
-                                class="btn btn-link px-2"
-                                title="{__('linkGroupRemove')}"
-                                data-toggle="tooltip">
-                            <span class="icon-hover">
-                                <span class="fal fa-unlink"></span>
-                                <span class="fas fa-unlink"></span>
-                            </span>
-                        </button>
                         <button name="action" value="edit-link" class="btn btn-link px-2" title="{__('modify')}"
                                 data-toggle="tooltip">
                             <span class="icon-hover">

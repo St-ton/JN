@@ -78,7 +78,7 @@
             </div>
         </div>
     </form>
-    {if $blocked|@count > 0}
+    {if $blocked|count > 0}
         <div class="card">
             <div class="card-header">
                 <div class="subheading1">{__('emailblacklistBlockedEmails')}</div>

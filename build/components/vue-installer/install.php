@@ -37,7 +37,6 @@ define('SHOP_LOG_LEVEL', E_ALL);
 define('SMARTY_LOG_LEVEL', E_ALL);
 define('ES_DB_LOGGING', false);
 
-require_once __DIR__ . '/vendor/autoload.php';
 require_once PFAD_ROOT . 'includes/defines.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 

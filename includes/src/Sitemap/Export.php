@@ -183,9 +183,9 @@ final class Export
     private function setSessionData(array $customerGroupIDs): void
     {
         $defaultLang             = LanguageHelper::getDefaultLanguage();
-        $defaultLangID           = (int)$defaultLang->kSprache;
+        $defaultLangID           = $defaultLang->getId();
         $_SESSION['kSprache']    = $defaultLangID;
-        $_SESSION['cISOSprache'] = $defaultLang->cISO;
+        $_SESSION['cISOSprache'] = $defaultLang->getCode();
         Tax::setTaxRates();
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = new CustomerGroup();

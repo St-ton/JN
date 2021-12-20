@@ -231,9 +231,33 @@ class Reset
         $this->db->query('TRUNCATE tkundenherkunft');
         $this->db->query('TRUNCATE tkundenkontodaten');
         $this->db->query('TRUNCATE tlieferadresse');
+        $this->db->query('TRUNCATE trechnungsadresse');
         $this->db->query('TRUNCATE twarenkorbpers');
         $this->db->query('TRUNCATE twarenkorbperspos');
         $this->db->query('TRUNCATE twarenkorbpersposeigenschaft');
+        $this->db->query('TRUNCATE tpasswordreset');
+        $this->db->query('DELETE FROM tbesucher WHERE kKunde > 0');
+        $this->db->query('DELETE FROM tbesucherarchiv WHERE kKunde > 0');
+        $this->db->query(
+            'DELETE tbewertung, tbewertunghilfreich, tbewertungguthabenbonus
+                FROM tbewertung
+                LEFT JOIN tbewertunghilfreich
+                    ON tbewertunghilfreich.kBewertung = tbewertung.kBewertung
+                LEFT JOIN tbewertungguthabenbonus
+                    ON tbewertungguthabenbonus.kBewertung = tbewertung.kBewertung
+                WHERE tbewertung.kKunde > 0'
+        );
+        $this->db->query('DELETE FROM tgutschein WHERE kKunde > 0');
+        $this->db->query('DELETE FROM tnewskommentar WHERE kKunde > 0');
+        $this->db->query('DELETE FROM tnewsletterempfaenger WHERE kKunde > 0');
+        $this->db->query('DELETE FROM tnewsletterempfaengerhistory WHERE kKunde > 0');
+        $this->db->query(
+            'DELETE tpreis, tpreisdetail
+                FROM tpreis
+                LEFT JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                WHERE kKunde > 0'
+        );
+
         $this->resetWishList();
         $this->resetOrders();
     }
@@ -254,6 +278,20 @@ class Reset
         $this->db->query('TRUNCATE twarenkorbposeigenschaft');
         $this->db->query('TRUNCATE tuploaddatei');
         $this->db->query('TRUNCATE tuploadqueue');
+        $this->db->query('TRUNCATE tzahlungsinfo');
+        $this->db->query('TRUNCATE trma');
+        $this->db->query('TRUNCATE trmaartikel');
+        $this->db->query('TRUNCATE tkuponbestellung');
+        $this->db->query('TRUNCATE tdownloadhistory');
+        $this->db->query('TRUNCATE tbestellattribut');
+        $this->db->query('TRUNCATE tzahlungseingang');
+        $this->db->query('TRUNCATE tzahlungsession');
+        $this->db->query('TRUNCATE tzahlungsid');
+        $this->db->query('TRUNCATE tzahlungslog');
+        $this->db->query('DELETE FROM tbesucher WHERE kBestellung > 0');
+        $this->db->query('DELETE FROM tbesucherarchiv WHERE kBestellung > 0');
+        $this->db->query('DELETE FROM tcheckboxlogging WHERE kBestellung > 0');
+
 
         $this->resetUploadFiles();
     }

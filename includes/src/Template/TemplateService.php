@@ -7,6 +7,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\License\Manager;
 use JTL\License\Struct\ExpiredExsLicense;
+use JTL\Shop;
 use SimpleXMLElement;
 
 /**
@@ -128,8 +129,7 @@ class TemplateService implements TemplateServiceInterface
     public function getActiveTemplate(bool $withLicense = true): Model
     {
         if ($this->activeTemplate === null) {
-            $cacheID = 'active_tpl';
-            if (($this->activeTemplate = $this->cache->get($cacheID)) === false) {
+            if (($this->activeTemplate = $this->cache->get($this->cacheID)) === false) {
                 $this->activeTemplate = $this->loadFull(['type' => 'standard'], $withLicense);
             } else {
                 $this->loaded = true;
@@ -161,11 +161,7 @@ class TemplateService implements TemplateServiceInterface
 
             return $model;
         }
-        $template = $this->mergeWithXML(
-            $dir,
-            $tplXML,
-            $parentXML
-        );
+        $template = $this->mergeWithXML($dir, $tplXML, $template, $parentXML);
         if ($withLicense === true) {
             $manager    = new Manager($this->db, $this->cache);
             $exsLicense = $manager->getLicenseByItemID($template->getTemplate());
@@ -175,6 +171,14 @@ class TemplateService implements TemplateServiceInterface
             }
             $template->setExsLicense($exsLicense);
         }
+        $config = $template->getConfig();
+        $paths  = new Paths(
+            $dir,
+            Shop::getURL(),
+            $template->getParent(),
+            $config->loadConfigFromDB()['theme']['theme_default']
+        );
+        $template->setPaths($paths);
         $template->setBoxLayout($this->getBoxLayout($tplXML, $parentXML));
         $template->setResources(new Resources($this->db, $tplXML, $parentXML));
 
@@ -184,13 +188,18 @@ class TemplateService implements TemplateServiceInterface
     /**
      * @param string                $dir
      * @param SimpleXMLElement      $xml
+     * @param Model|null            $template
      * @param SimpleXMLElement|null $parentXML
      * @return Model
      * @throws Exception
      */
-    private function mergeWithXML(string $dir, SimpleXMLElement $xml, ?SimpleXMLElement $parentXML = null): Model
-    {
-        $template = Model::loadByAttributes(['cTemplate' => $dir], $this->db, Model::ON_NOTEXISTS_NEW);
+    private function mergeWithXML(
+        string $dir,
+        SimpleXMLElement $xml,
+        ?Model $template = null,
+        ?SimpleXMLElement $parentXML = null
+    ): Model {
+        $template = $template ?? Model::loadByAttributes(['cTemplate' => $dir], $this->db, Model::ON_NOTEXISTS_NEW);
         $template->setName(\trim((string)$xml->Name));
         $template->setDir($dir);
         $template->setAuthor(\trim((string)$xml->Author));

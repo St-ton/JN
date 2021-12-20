@@ -206,7 +206,7 @@ class Location
     public function updateLocation(array $params, int $groupID): bool
     {
         $rows = 0;
-        if ($groupID > 0 && \is_array($params) && \count($params) > 0) {
+        if ($groupID > 0 && \count($params) > 0) {
             $rows = $this->db->delete(
                 'tauswahlassistentort',
                 'kAuswahlAssistentGruppe',

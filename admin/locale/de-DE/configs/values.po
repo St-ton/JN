@@ -830,6 +830,12 @@ msgstr "Nein"
 msgid "artikeldetails_abmessungen_anzeigen_value(Y)"
 msgstr "Ja"
 
+msgid "artikeldetails_inhalt_anzeigen_value(N)"
+msgstr "Nein"
+
+msgid "artikeldetails_inhalt_anzeigen_value(Y)"
+msgstr "Ja"
+
 msgid "artikeldetails_attribute_anhaengen_value(Y)"
 msgstr "Ja"
 
@@ -2335,9 +2341,6 @@ msgstr "Memcached"
 
 msgid "caching_method_value(memcache)"
 msgstr "Memcache"
-
-msgid "caching_method_value(xcache)"
-msgstr "XCache"
 
 msgid "caching_method_value(file)"
 msgstr "Dateien"

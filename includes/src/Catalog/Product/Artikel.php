@@ -1107,20 +1107,47 @@ class Artikel
     /**
      * @param int            $customerGroupID
      * @param Artikel|object $tmpProduct
+     * @param int            $customerID - always keep at 0 when saving the result to cache
      * @return $this
      */
-    public function holPreise(int $customerGroupID, $tmpProduct): self
+    public function holPreise(int $customerGroupID, $tmpProduct, int $customerID = 0): self
     {
         $this->Preise = new Preise(
             $customerGroupID,
             (int)$tmpProduct->kArtikel,
-            Frontend::getCustomer()->getID(),
+            $customerID,
             (int)$tmpProduct->kSteuerklasse
         );
         if ($this->getOption('nHidePrices', 0) === 1 || !Frontend::getCustomerGroup()->mayViewPrices()) {
             $this->Preise->setPricesToZero();
         }
         $this->Preise->localizePreise();
+
+        return $this;
+    }
+
+    /**
+     * @param int $customerGroupID
+     * @param int $customerID
+     * @return $this
+     */
+    protected function getCustomerPrice(int $customerGroupID, int $customerID): self
+    {
+        if (!$this->Preise->customerHasCustomPriceForProduct($customerID, $this->kArtikel)) {
+            return $this;
+        }
+        $this->Preise = new Preise(
+            $customerGroupID,
+            $this->kArtikel,
+            $customerID,
+            $this->kSteuerklasse
+        );
+        if ($this->getOption('nHidePrices', 0) === 1 || !Frontend::getCustomerGroup()->mayViewPrices()) {
+            $this->Preise->setPricesToZero();
+        }
+        $this->Preise->localizePreise();
+        $this->getVariationDetailPrice($customerGroupID, $customerID);
+        $this->staffelPreis_arr = $this->getTierPrices();
 
         return $this;
     }
@@ -1147,10 +1174,10 @@ class Artikel
      */
     public function gibKundenRabatt($maxDiscount)
     {
-        return (isset($_SESSION['Kunde']->kKunde, $_SESSION['Kunde']->fRabatt)
-            && (int)$_SESSION['Kunde']->kKunde > 0
-            && (double)$_SESSION['Kunde']->fRabatt > $maxDiscount)
-            ? (double)$_SESSION['Kunde']->fRabatt
+        $customer = Frontend::getCustomer();
+
+        return ($customer->getID() > 0 && (double)$customer->fRabatt > $maxDiscount)
+            ? (double)$customer->fRabatt
             : $maxDiscount;
     }
 
@@ -1308,7 +1335,7 @@ class Artikel
             $image->cURLNormal   = $baseURL . \BILD_KEIN_ARTIKELBILD_VORHANDEN;
             $image->cURLGross    = $baseURL . \BILD_KEIN_ARTIKELBILD_VORHANDEN;
             $image->nNr          = 1;
-            $image->cAltAttribut = \str_replace(['"', "'"], '', $this->cName);
+            $image->cAltAttribut = \strip_tags(\str_replace(['"', "'"], '', $this->cName));
             $image->galleryJSON  = $this->prepareImageDetails($image);
 
             $this->Bilder[0] = $image;
@@ -1335,9 +1362,14 @@ class Artikel
             }
             // Lookup image alt attribute
             $idx                 = 'img_alt_' . $imgNo;
-            $image->cAltAttribut = isset($this->AttributeAssoc[$idx])
-                ? \strip_tags($this->AttributeAssoc['img_alt_' . $imgNo])
-                : \str_replace(['"', "'"], '', $this->cName);
+            $image->cAltAttribut = \strip_tags(\str_replace(
+                ['"', "'"],
+                '',
+                $this->AttributeAssoc[$idx] ?? $this->cName
+            ));
+            if (isset($this->AttributeAssoc[$idx])) {
+                $image->cAltAttribut = Text::htmlentitiesOnce($image->cAltAttribut, \ENT_COMPAT | \ENT_HTML401);
+            }
 
             $image->galleryJSON = $this->prepareImageDetails($image);
             $this->Bilder[]     = $image;
@@ -1427,11 +1459,7 @@ class Artikel
                 'height' => $height
             ],
             'type' => $type,
-            'alt'  => \htmlspecialchars(
-                \str_replace('"', '', $image->cAltAttribut),
-                \ENT_COMPAT | \ENT_HTML401,
-                \JTL_CHARSET
-            )
+            'alt'  => \str_replace('"', '', $image->cAltAttribut)
         ];
     }
 
@@ -1572,29 +1600,30 @@ class Artikel
      */
     public function holeStueckliste(int $customerGroupID = 0, bool $getInvisibleParts = false): self
     {
-        if ($this->kArtikel > 0 && $this->kStueckliste > 0) {
-            $query = 'SELECT tartikel.kArtikel, tstueckliste.fAnzahl
-                          FROM tartikel
-                          JOIN tstueckliste 
-                              ON tstueckliste.kArtikel = tartikel.kArtikel 
-                              AND tstueckliste.kStueckliste = ' . (int)$this->kStueckliste . '
-                          LEFT JOIN tartikelsichtbarkeit 
-                              ON tstueckliste.kArtikel = tartikelsichtbarkeit.kArtikel 
-                              AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID;
-            if (!$getInvisibleParts) {
-                $query .= ' WHERE tartikelsichtbarkeit.kArtikel IS NULL';
-            }
-            $parts = Shop::Container()->getDB()->getObjects($query);
+        if ($this->kArtikel <= 0 || $this->kStueckliste <= 0) {
+            return $this;
+        }
+        $cond  = $getInvisibleParts ? '' : ' WHERE tartikelsichtbarkeit.kArtikel IS NULL';
+        $parts = Shop::Container()->getDB()->getObjects(
+            'SELECT tartikel.kArtikel, tstueckliste.fAnzahl
+                  FROM tartikel
+                  JOIN tstueckliste 
+                      ON tstueckliste.kArtikel = tartikel.kArtikel 
+                      AND tstueckliste.kStueckliste = :plid
+                  LEFT JOIN tartikelsichtbarkeit 
+                      ON tstueckliste.kArtikel = tartikelsichtbarkeit.kArtikel 
+                      AND tartikelsichtbarkeit.kKundengruppe = :cgid' . $cond,
+            ['plid' => $this->kStueckliste, 'cgid' => $customerGroupID]
+        );
 
-            $options                             = self::getDefaultOptions();
-            $options->nKeineSichtbarkeitBeachten = $getInvisibleParts ? 1 : 0;
-            foreach ($parts as $i => $partList) {
-                $product = new self();
-                $product->fuelleArtikel((int)$partList->kArtikel, $options);
-                $product->holeBewertungDurchschnitt();
-                $this->oStueckliste_arr[$i]                      = $product;
-                $this->oStueckliste_arr[$i]->fAnzahl_stueckliste = $partList->fAnzahl;
-            }
+        $options                             = self::getDefaultOptions();
+        $options->nKeineSichtbarkeitBeachten = $getInvisibleParts ? 1 : 0;
+        foreach ($parts as $i => $partList) {
+            $product = new self();
+            $product->fuelleArtikel((int)$partList->kArtikel, $options);
+            $product->holeBewertungDurchschnitt();
+            $this->oStueckliste_arr[$i]                      = $product;
+            $this->oStueckliste_arr[$i]->fAnzahl_stueckliste = $partList->fAnzahl;
         }
 
         return $this;
@@ -1717,14 +1746,15 @@ class Artikel
                                         ON deflang.kMedienDatei = lang.kMedienDatei 
                                         AND lang.kSprache = ' . $this->kSprache;
         }
-        $sql = 'SELECT tmediendatei.kMedienDatei, tmediendatei.cPfad, tmediendatei.cURL, tmediendatei.cTyp, 
-                        tmediendatei.nSort, ' . $conditionalFields . '
-                    FROM tmediendatei
-                    ' . $conditionalLeftJoin . '
-                    WHERE tmediendatei.kArtikel = ' . (int)$this->kArtikel . '
-                    ORDER BY tmediendatei.nSort ASC';
-
-        $this->oMedienDatei_arr = $db->getObjects($sql);
+        $this->oMedienDatei_arr = $db->getObjects(
+            'SELECT tmediendatei.kMedienDatei, tmediendatei.cPfad, tmediendatei.cURL, tmediendatei.cTyp, 
+            tmediendatei.nSort, ' . $conditionalFields . '
+                FROM tmediendatei
+                ' . $conditionalLeftJoin . '
+                WHERE tmediendatei.kArtikel = :pid
+                ORDER BY tmediendatei.nSort ASC',
+            ['pid' => $this->kArtikel]
+        );
         foreach ($this->oMedienDatei_arr as $mediaFile) {
             $mediaFile->kMedienDatei             = (int)$mediaFile->kMedienDatei;
             $mediaFile->kSprache                 = (int)$mediaFile->kSprache;
@@ -1797,16 +1827,6 @@ class Artikel
     {
         $this->cMedienTyp_arr = $mediaTypes;
 
-        return $this;
-    }
-
-    /**
-     * @param object $mediaFile
-     * @return $this
-     * @deprecated since 5.0.0
-     */
-    public function buildYoutubeEmbed($mediaFile): self
-    {
         return $this;
     }
 
@@ -2156,8 +2176,9 @@ class Artikel
                 'SELECT teigenschaftkombiwert.*
                     FROM teigenschaftkombiwert
                     JOIN tartikel 
-                      ON tartikel.kArtikel = ' . (int)$this->kArtikel . '
-                      AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi'
+                      ON tartikel.kArtikel = :pid
+                      AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi',
+                ['pid' => $this->kArtikel]
             );
             $this->holeVariationDetailPreisKind(); // Baut die Variationspreise für ein Variationskombkind
             // String für javascript Funktion vorbereiten um Variationen auszufüllen
@@ -2176,10 +2197,9 @@ class Artikel
         } else {
             $variations = Shop::Container()->getDB()->getObjects(
                 'SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
-                    teigenschaft.cTyp, teigenschaft.nSort, ' .
-                $propertySQL->cSELECT . '
+                    teigenschaft.cTyp, teigenschaft.nSort, ' . $propertySQL->cSELECT . '
                     teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName AS cName_teigenschaftwert, ' .
-                $propValueSQL->cSELECT . '
+                    $propValueSQL->cSELECT . '
                     teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff, teigenschaftwert.cArtNr, 
                     teigenschaftwert.nSort AS teigenschaftwert_nSort, teigenschaftwert.fLagerbestand, 
                     teigenschaftwert.fPackeinheit, teigenschaftwertpict.kEigenschaftWertPict, 
@@ -2192,20 +2212,21 @@ class Artikel
                     ' . $propValueSQL->cJOIN . '
                     LEFT JOIN teigenschaftsichtbarkeit 
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
-                        AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
                     LEFT JOIN teigenschaftwertsichtbarkeit 
                         ON teigenschaftwert.kEigenschaftWert = teigenschaftwertsichtbarkeit.kEigenschaftWert
-                        AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgid
                     LEFT JOIN teigenschaftwertpict 
                         ON teigenschaftwertpict.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                     LEFT JOIN teigenschaftwertaufpreis 
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                        AND teigenschaftwertaufpreis.kKundengruppe = ' . $customerGroupID . '
-                    WHERE teigenschaft.kArtikel = ' . (int)$this->kArtikel . '
+                        AND teigenschaftwertaufpreis.kKundengruppe = :cgid
+                    WHERE teigenschaft.kArtikel = :pid
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     ORDER BY teigenschaft.nSort ASC, teigenschaft.cName, 
-                    teigenschaftwert.nSort ASC, teigenschaftwert.cName'
+                    teigenschaftwert.nSort ASC, teigenschaftwert.cName',
+                ['pid' => $this->kArtikel, 'cgid' => $customerGroupID]
             );
         }
 
@@ -2247,6 +2268,8 @@ class Artikel
             : 2;
         $per         = ' ' . Shop::Lang()->get('vpePer') . ' ' . $this->cVPEEinheit;
         $taxRate     = $_SESSION['Steuersatz'][$this->kSteuerklasse];
+        $matrixConf  = $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y';
+        $prodFilter  = (int)$this->conf['global']['artikel_artikelanzeigefilter'];
 
         $cntVariationen = $exportWorkaround
             ? 0
@@ -2337,23 +2360,19 @@ class Artikel
                         }
                         // Lagerbestand beachten?
                         if ($oVariationsWert->oVariationsKombi->cLagerBeachten === 'Y'
-                            && $oVariationsWert->oVariationsKombi->cLagerKleinerNull === 'N'
-                            && ($oVariationsWert->oVariationsKombi->tartikel_fLagerbestand <= 0
-                                || (int)$this->conf['global']['artikel_artikelanzeigefilter'] ===
-                                \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
-                            )
-                            && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y'
+                            && ($oVariationsWert->oVariationsKombi->cLagerKleinerNull === 'N'
+                                || $prodFilter === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER)
+                            && $oVariationsWert->oVariationsKombi->tartikel_fLagerbestand <= 0
+                            && $matrixConf === true
                         ) {
                             $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
                         }
                     } elseif ($this->cLagerVariation === 'Y'
                         && $this->cLagerBeachten === 'Y'
-                        && $this->cLagerKleinerNull === 'N'
-                        && ($oVariationsWert->fLagerbestand <= 0
-                            || (int)$this->conf['global']['artikel_artikelanzeigefilter'] ===
-                            \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
-                        )
-                        && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y'
+                        && ($this->cLagerKleinerNull === 'N'
+                            || $prodFilter === \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER)
+                        && $oVariationsWert->fLagerbestand <= 0
+                        && $matrixConf === true
                     ) {
                         $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
                     }
@@ -2833,9 +2852,10 @@ class Artikel
      * Wichtig fuer die Anzeige von Aufpreisen
      *
      * @param int $customerGroupID
+     * @param int $customerID - always keep at 0 when saving the result to cache
      * @return $this
      */
-    private function getVariationDetailPrice(int $customerGroupID): self
+    private function getVariationDetailPrice(int $customerGroupID, int $customerID = 0): self
     {
         $this->oVariationDetailPreis_arr = [];
         if ($this->nVariationOhneFreifeldAnzahl !== 1) {
@@ -2878,7 +2898,7 @@ class Artikel
             if ($varDetailPrice->kArtikel !== $lastProduct) {
                 $lastProduct = $varDetailPrice->kArtikel;
                 $tmpProduct  = new self();
-                $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID);
+                $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID, $customerID);
             }
             if (!isset($this->oVariationDetailPreis_arr[$idx])) {
                 $this->oVariationDetailPreis_arr[$idx] = new stdClass();
@@ -2972,12 +2992,14 @@ class Artikel
             ['kArtikel' => $this->kArtikel]
         );
         foreach (Frontend::getLanguages() as $language) {
-            $this->cSprachURL_arr[$language->cISO] = '?a=' . $this->kArtikel . '&amp;lang=' . $language->cISO;
+            $code = $language->getCode();
+
+            $this->cSprachURL_arr[$code] = '?a=' . $this->kArtikel . '&amp;lang=' . $code;
             foreach ($seoData as $item) {
                 $item->kSprache = (int)$item->kSprache;
-                if ($language->kSprache === $item->kSprache) {
+                if ($language->getId() === $item->kSprache) {
                     if ($item->cSeo !== '') {
-                        $this->cSprachURL_arr[$language->cISO] = $item->cSeo;
+                        $this->cSprachURL_arr[$code] = $item->cSeo;
                     }
                     break;
                 }
@@ -3330,6 +3352,7 @@ class Artikel
             $toSave->Preise                         = $basePrice;
             Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
         }
+        $this->getCustomerPrice($customerGroupID, Frontend::getCustomer()->getID());
 
         return $this;
     }
@@ -3376,8 +3399,8 @@ class Artikel
         $options       = $this->options;
         $baseID        = Shop::Container()->getCache()->getBaseID(false, false, $customerGroupID, $langID);
         $taxClass      = isset($_SESSION['Steuersatz']) ? \implode('_', $_SESSION['Steuersatz']) : '';
-        $customerID    = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
-        $productHash   = \md5($baseID . $this->getOptionsHash($options) . $taxClass . $customerID);
+        $customerID    = Frontend::getCustomer()->getID();
+        $productHash   = \md5($baseID . $this->getOptionsHash($options) . $taxClass);
         $this->cacheID = 'fa_' . $productID . '_' . $productHash;
         $product       = Shop::Container()->getCache()->get($this->cacheID);
         if ($product === false) {
@@ -3393,6 +3416,7 @@ class Artikel
         if ($this->Preise === null || !\method_exists($this->Preise, 'rabbatierePreise')) {
             $this->holPreise($customerGroupID, $this);
         }
+        $this->getCustomerPrice($customerGroupID, $customerID);
         if ($maxDiscount > 0) {
             $this->rabattierePreise($customerGroupID);
         }
@@ -3734,9 +3758,10 @@ class Artikel
     /**
      * @param int $productID
      * @param int $customerGroupID
+     * @param int $customerID
      * @return $this
      */
-    private function getPriceData(int $productID, int $customerGroupID): self
+    private function getPriceData(int $productID, int $customerGroupID, int $customerID = 0): self
     {
         $tmp = Shop::Container()->getDB()->getSingleObject(
             'SELECT tartikel.kArtikel, tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kSteuerklasse,
@@ -3754,7 +3779,7 @@ class Artikel
             foreach (\get_object_vars($tmp) as $k => $v) {
                 $this->$k = $v;
             }
-            $this->holPreise($customerGroupID, $this);
+            $this->holPreise($customerGroupID, $this, $customerID);
         }
 
         return $this;
@@ -4493,20 +4518,19 @@ class Artikel
     }
 
     /**
-     * @param object|null $product
-     * @return object
+     * @param Artikel|stdClass|null $product
+     * @return stdClass
      * @since 4.06.7
      */
-    public function getStockInfo($product = null)
+    public function getStockInfo($product = null): stdClass
     {
-        $conf    = Shop::getSettings([\CONF_GLOBAL]);
         $product = $product ?? $this;
         $result  = (object)[
             'inStock'   => false,
             'notExists' => false,
         ];
 
-        switch ((int)$conf['global']['artikel_artikelanzeigefilter']) {
+        switch ((int)$this->conf['global']['artikel_artikelanzeigefilter']) {
             case \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER:
                 if ((isset($product->cLagerVariation) && $product->cLagerVariation === 'Y')
                     || $product->fLagerbestand > 0
@@ -4571,41 +4595,6 @@ class Artikel
     }
 
     /**
-     * @param object $obj
-     * @return $this
-     * @deprecated since 5.0.0
-     */
-    public function mapData($obj): self
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        foreach (\array_keys(\get_object_vars($obj)) as $member) {
-            $this->$member = $obj->$member;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function insertInDB(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * @return $this
-     * @deprecated since 5.0.0
-     */
-    public function updateInDB(): self
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return $this;
-    }
-
-    /**
      * @param int $show
      * @return $this
      */
@@ -4647,16 +4636,6 @@ class Artikel
         }
 
         return $this;
-    }
-
-    /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function setzePostDaten(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return false;
     }
 
     /**
@@ -4750,7 +4729,7 @@ class Artikel
     ) {
         if (!isset($_SESSION['cISOSprache'])) {
             $defaultLanguage = LanguageHelper::getDefaultLanguage();
-            Shop::setLanguage($defaultLanguage->kSprache, $defaultLanguage->cISO);
+            Shop::setLanguage($defaultLanguage->getId(), $defaultLanguage->getCode());
         }
         if ($purchaseQuantity !== null) {
             $purchaseQuantity = (float)$purchaseQuantity;
@@ -5067,7 +5046,7 @@ class Artikel
         $return    = ['kArtikelXSellerKey_arr', 'oArtikelArr'];
         $limitSQL  = ' LIMIT 3';
         // Gibt es X-Seller? Aus der Artikelmenge der änhlichen Artikel, dann alle X-Seller rausfiltern
-        $xSeller  = ProductHelper::getXSelling($productID, $this->nIstVater > 0);
+        $xSeller  = ProductHelper::getXSelling($productID, $this->nIstVater > 0, $this->conf['artikeldetails']);
         $xSellIDs = [];
         if ($xSeller !== null) {
             foreach ($xSeller->Standard->XSellGruppen as $group) {
@@ -5239,12 +5218,9 @@ class Artikel
             $discounts[] = $customerGroup->getDiscount();
         }
         // Existiert für diesen Kunden ein Rabatt?
-        if (\array_key_exists('Kunde', $_SESSION)
-            && isset($_SESSION['Kunde']->kKunde)
-            && $_SESSION['Kunde']->kKunde > 0
-            && $_SESSION['Kunde']->fRabatt != 0
-        ) {
-            $discounts[] = $_SESSION['Kunde']->fRabatt;
+        $customer = Frontend::getCustomer();
+        if ($customer->getID() > 0 && $customer->fRabatt != 0) {
+            $discounts[] = $customer->fRabatt;
         }
         // Maximalen Rabatt setzen
         if (\count($discounts) > 0) {
@@ -5510,9 +5486,8 @@ class Artikel
         }
         $idx = Frontend::getCustomerGroup()->getIsMerchant();
         if (isset(
-            $_SESSION['Kundengruppe']->nNettoPreise,
             $this->Preise->fVK[$idx],
-            $this->Preise->cVKLocalized[Frontend::getCustomerGroup()->isMerchant()]
+            $this->Preise->cVKLocalized[$idx]
         )
             && $this->Preise->fVK[$idx] > 0
             && $this->conf['metaangaben']['global_meta_title_preis'] === 'Y'
@@ -5621,19 +5596,6 @@ class Artikel
         }
 
         return Metadata::truncateMetaDescription($description);
-    }
-
-    /**
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function getTags(): array
-    {
-        \trigger_error(
-            __FUNCTION__ . ' is deprecated. Functionality of product tags was removed in 5.0.0',
-            \E_USER_DEPRECATED
-        );
-        return [];
     }
 
     /**

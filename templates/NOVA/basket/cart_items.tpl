@@ -40,16 +40,17 @@
         {block name='basket-cart-items-order-items-main'}
         {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
             {if !$oPosition->istKonfigKind()}
+                {$posName=$oPosition->cName|trans|escape:'html'}
                 {row class="cart-items-body type-{$oPosition->nPosTyp}"}
                     {block name='basket-cart-items-image'}
                         {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                             {col cols=3 xl=2 class="cart-items-image"}
                                 {if !empty($oPosition->Artikel->cVorschaubild)}
-                                    {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
+                                    {link href=$oPosition->Artikel->cURLFull title=$posName}
                                         {image lazy=true
                                             webp=true
                                             src=$oPosition->Artikel->cVorschaubild
-                                            alt=$oPosition->cName|trans
+                                            alt=$posName
                                             fluid-grow=true
                                         }
                                     {/link}
@@ -61,7 +62,7 @@
                         {col cols=$cols xl=$itemInfoCols class="ml-auto-util"}
                         {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK}
                             {block name='basket-cart-items-product-link'}
-                                {link class="cart-items-name" href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}
+                                {link class="cart-items-name" href=$oPosition->Artikel->cURLFull title=$posName}{$oPosition->cName|trans}{/link}
                             {/block}
                             {block name='basket-cart-items-product-data'}
                                 <ul class="list-unstyled">
@@ -273,7 +274,10 @@
                                                 id="quantity[{$oPosition@index}]" class="quantity" name="anzahl[{$oPosition@index}]"
                                                 aria=["label"=>"{lang key='quantity'}"]
                                                 value=$oPosition->nAnzahl
-                                                data=["decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall}]
+                                                data=[
+                                                    "decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall},
+                                                    "product-id"=>"{if isset($oPosition->Artikel->kVariKindArtikel)}{$oPosition->Artikel->kVariKindArtikel}{else}{$oPosition->Artikel->kArtikel}{/if}"
+                                                ]
                                             }
                                             {inputgroupappend}
                                                 {button variant="" class="btn-increment"

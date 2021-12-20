@@ -316,7 +316,7 @@ class Image
         $replace  = ['-', '-', '-', 'ae', 'oe', 'ue', 'ss'];
         $filename = \str_replace($source, $replace, \mb_convert_case($filename, \MB_CASE_LOWER));
 
-        return \preg_replace('/[^' . AbstractImage::REGEX_ALLOWED_CHARS . ']/', '', $filename);
+        return \preg_replace('/[^' . AbstractImage::REGEX_ALLOWED_CHARS . ']/u', '', $filename);
     }
 
     /**

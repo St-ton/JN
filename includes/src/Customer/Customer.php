@@ -35,7 +35,11 @@ class Customer
 
     public const ERROR_CAPTCHA = 4;
 
+    public const ERROR_NOT_ACTIVATED_YET = 5;
+
     public const ERROR_INVALID_DATA = 0;
+
+    public const CUSTOMER_ANONYM = 'Anonym';
 
     /**
      * @var int
@@ -287,7 +291,7 @@ class Customer
             );
 
             if ($data !== null && isset($data->kKunde) && $data->kKunde > 0) {
-                return new self($data->kKunde);
+                return new self((int)$data->kKunde);
             }
         }
 
@@ -381,7 +385,7 @@ class Customer
             return self::ERROR_LOCKED;
         }
         if ($user->cAktiv === 'N') {
-            return self::ERROR_INACTIVE;
+            return $user->cAbgeholt === 'Y' ? self::ERROR_INACTIVE : self::ERROR_NOT_ACTIVATED_YET;
         }
 
         return self::OK;
@@ -658,19 +662,6 @@ class Customer
     }
 
     /**
-     * get customer attributes
-     *
-     * @return $this
-     * @deprecated since 5.0.0 - use getCustomerAttributes instead
-     */
-    public function holeKundenattribute(): self
-    {
-        \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return $this;
-    }
-
-    /**
      * check country ISO code
      *
      * @param string $iso
@@ -790,28 +781,6 @@ class Customer
     }
 
     /**
-     * @param int $length
-     * @return bool|string
-     * @deprecated since 5.0.0
-     * @throws Exception
-     */
-    public function generatePassword(int $length = 12)
-    {
-        return Shop::Container()->getPasswordService()->generate($length);
-    }
-
-    /**
-     * @param string $password
-     * @return false|string
-     * @deprecated since 5.0.0
-     * @throws Exception
-     */
-    public function generatePasswordHash($password)
-    {
-        return Shop::Container()->getPasswordService()->hash($password);
-    }
-
-    /**
      * creates a random string for password reset validation
      *
      * @return bool - true if valid account
@@ -918,14 +887,13 @@ class Customer
             if ($languageID > 0) { // Kundensprache, falls gesetzt und gültig
                 try {
                     $lang     = Shop::Lang()->getLanguageByID($languageID);
-                    $langCode = $lang->cISO;
-                } catch (\Exception $e) {
+                    $langCode = $lang->getCode();
+                } catch (Exception $e) {
                     $lang = null;
                 }
             }
             if ($lang === null) { // Ansonsten Standardsprache
-                $lang     = Shop::Lang()->getDefaultLanguage();
-                $langCode = $lang->cISO ?? '';
+                $langCode = Shop::Lang()->getDefaultLanguage()->getCode();
             }
             $value = Shop::Container()->getDB()->getSingleObject(
                 'SELECT tsprachwerte.cWert
@@ -1076,18 +1044,17 @@ class Customer
         if (empty($customerID)) {
             return;
         }
-        $anonymous = 'Anonym';
 
         $db->delete('tlieferadresse', 'kKunde', $customerID);
         $db->delete('trechnungsadresse', 'kKunde', $customerID);
         $db->delete('tkundenattribut', 'kKunde', $customerID);
         $db->update('tkunde', 'kKunde', $customerID, (object)[
-             'cKundenNr'     => $anonymous,
+             'cKundenNr'     => self::CUSTOMER_ANONYM,
              'cPasswort'     => '',
              'cAnrede'       => '',
              'cTitel'        => '',
-             'cVorname'      => $anonymous,
-             'cNachname'     => $anonymous,
+             'cVorname'      => self::CUSTOMER_ANONYM,
+             'cNachname'     => self::CUSTOMER_ANONYM,
              'cFirma'        => '',
              'cZusatz'       => '',
              'cStrasse'      => '',
@@ -1100,7 +1067,7 @@ class Customer
              'cTel'          => '',
              'cMobil'        => '',
              'cFax'          => '',
-             'cMail'         => $anonymous,
+             'cMail'         => self::CUSTOMER_ANONYM,
              'cUSTID'        => '',
              'cWWW'          => '',
              'cSperre'       => 'Y',
@@ -1120,10 +1087,10 @@ class Customer
         $db->delete('tproduktanfragehistory', 'cMail', $this->cMail);
         $db->delete('tverfuegbarkeitsbenachrichtigung', 'cMail', $this->cMail);
 
-        $db->update('tbewertung', 'kKunde', $customerID, (object)['cName' => $anonymous]);
+        $db->update('tbewertung', 'kKunde', $customerID, (object)['cName' => self::CUSTOMER_ANONYM]);
         $db->update('tnewskommentar', 'kKunde', $customerID, (object)[
-            'cName'  => $anonymous,
-            'cEmail' => $anonymous
+            'cName'  => self::CUSTOMER_ANONYM,
+            'cEmail' => self::CUSTOMER_ANONYM
         ]);
         $db->queryPrepared(
             'DELETE FROM tnewsletterempfaenger
@@ -1133,20 +1100,20 @@ class Customer
         );
 
         $obj            = new stdClass();
-        $obj->cAnrede   = $anonymous;
-        $obj->cVorname  = $anonymous;
-        $obj->cNachname = $anonymous;
-        $obj->cEmail    = $anonymous;
+        $obj->cAnrede   = self::CUSTOMER_ANONYM;
+        $obj->cVorname  = self::CUSTOMER_ANONYM;
+        $obj->cNachname = self::CUSTOMER_ANONYM;
+        $obj->cEmail    = self::CUSTOMER_ANONYM;
         $db->update('tnewsletterempfaengerhistory', 'kKunde', $customerID, $obj);
         $db->update('tnewsletterempfaengerhistory', 'cEmail', $this->cMail, $obj);
 
         $db->insert('tnewsletterempfaengerhistory', (object)[
             'kSprache'     => $this->kSprache,
             'kKunde'       => $customerID,
-            'cAnrede'      => $anonymous,
-            'cVorname'     => $anonymous,
-            'cNachname'    => $anonymous,
-            'cEmail'       => $anonymous,
+            'cAnrede'      => self::CUSTOMER_ANONYM,
+            'cVorname'     => self::CUSTOMER_ANONYM,
+            'cNachname'    => self::CUSTOMER_ANONYM,
+            'cEmail'       => self::CUSTOMER_ANONYM,
             'cOptCode'     => '',
             'cLoeschCode'  => '',
             'cAktion'      => 'Geloescht',

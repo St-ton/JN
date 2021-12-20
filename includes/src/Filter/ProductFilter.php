@@ -335,31 +335,6 @@ class ProductFilter
     }
 
     /**
-     * for compatibility reasons only - called when oSprache_arr is directly read from ProductFilter instance
-     *
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function getLanguages(): array
-    {
-        return $this->filterConfig->getLanguages();
-    }
-
-    /**
-     * for compatibility reasons only - called when oSprache_arr is directly set on ProductFilter instance
-     *
-     * @param array $languages
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function setLanguages(array $languages): array
-    {
-        $this->filterConfig->setLanguages($languages);
-
-        return $languages;
-    }
-
-    /**
      * @return ProductFilterSQLInterface
      */
     public function getFilterSQL(): ProductFilterSQLInterface
@@ -1684,6 +1659,7 @@ class ProductFilter
 
             $this->searchResults->setPages($pages)
                                 ->setFilterOptions($this, $category)
+                                ->setSearchTerm($this->search->getName())
                                 ->setSearchTermWrite($this->metaData->getHeader());
         } else {
             $productList = $this->searchResults->getProducts();

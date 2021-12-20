@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Session;
 
@@ -19,6 +19,8 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use JTL\Link\LinkGroupCollection;
+use JTL\Plugin\Helper;
+use JTL\Plugin\PluginLoader;
 use JTL\Shop;
 use stdClass;
 use function Functional\first;
@@ -43,8 +45,11 @@ class Frontend extends AbstractSession
      * @return Frontend
      * @throws \Exception
      */
-    public static function getInstance(bool $start = true, $force = false, $sessionName = self::DEFAULT_SESSION): self
-    {
+    public static function getInstance(
+        bool $start = true,
+        bool $force = false,
+        string $sessionName = self::DEFAULT_SESSION
+    ): self {
         return ($force === true || self::$instance === null || self::$sessionName !== $sessionName)
             ? new self($start, $sessionName)
             : self::$instance;
@@ -213,9 +218,9 @@ class Frontend extends AbstractSession
         if (!isset($_SESSION['kSprache'])) {
             $default = Text::convertISO6392ISO($defaultLang);
             foreach ($_SESSION['Sprachen'] as $lang) {
-                if ($lang->cISO === $default || (empty($default) && $lang->cShopStandard === 'Y')) {
-                    $_SESSION['kSprache']    = $lang->kSprache;
-                    $_SESSION['cISOSprache'] = \trim($lang->cISO);
+                if ($lang->getCode() === $default || (empty($default) && $lang->isShopDefault())) {
+                    $_SESSION['kSprache']    = $lang->getId();
+                    $_SESSION['cISOSprache'] = \trim($lang->getCode());
                     Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
                     $_SESSION['currentLanguage'] = clone $lang;
                     break;
@@ -282,7 +287,7 @@ class Frontend extends AbstractSession
     {
         $index = Request::verifyGPCDataInt('wlplo');
         if ($index !== 0) {
-            $wl = new Wishlist();
+            $wl = self::getWishList();
             $wl->entfernePos($index);
         }
 
@@ -401,31 +406,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Customer
-     * @deprecated since 5.0.0
-     */
-    public static function customer(): Customer
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCustomer();
-    }
-
-    /**
      * @return CustomerGroup
      */
     public static function getCustomerGroup(): CustomerGroup
     {
         return $_SESSION['Kundengruppe'] ?? (new CustomerGroup())->loadDefaultGroup();
-    }
-
-    /**
-     * @return CustomerGroup
-     * @deprecated since 5.0.0
-     */
-    public static function customerGroup(): CustomerGroup
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCustomerGroup();
     }
 
     /**
@@ -443,31 +428,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return LanguageHelper
-     * @deprecated since 5.0.0
-     */
-    public function language(): LanguageHelper
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getLanguage();
-    }
-
-    /**
      * @return LanguageModel[]
      */
     public static function getLanguages(): array
     {
         return $_SESSION['Sprachen'] ?? [];
-    }
-
-    /**
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public static function languages(): array
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getLanguages();
     }
 
     /**
@@ -479,41 +444,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function payments(): array
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getPaymentMethods();
-    }
-
-    /**
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function deliveryCountries(): array
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return [];
-    }
-
-    /**
      * @return Currency
      */
     public static function getCurrency(): Currency
     {
         return $_SESSION['Waehrung'] ?? (new Currency())->getDefault();
-    }
-
-    /**
-     * @return Currency
-     * @deprecated since 5.0.0
-     */
-    public static function currency(): Currency
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCurrency();
     }
 
     /**
@@ -525,41 +460,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Cart
-     * @deprecated since 5.0.0
-     */
-    public static function cart(): Cart
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCart();
-    }
-
-    /**
      * @return Currency[]
      */
     public static function getCurrencies(): array
     {
         return $_SESSION['Waehrungen'] ?? [];
-    }
-
-    /**
-     * @return Currency[]
-     * @deprecated since 5.0.0
-     */
-    public static function currencies(): array
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCurrencies();
-    }
-
-    /**
-     * @return Cart
-     * @deprecated since 5.0.0
-     */
-    public function basket(): Cart
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return $_SESSION['Warenkorb'] ?? new Cart();
     }
 
     /**
@@ -571,16 +476,6 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Wishlist
-     * @deprecated since 5.0.0
-     */
-    public static function wishList(): Wishlist
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getWishList();
-    }
-
-    /**
      * @return ComparisonList
      */
     public static function getCompareList(): ComparisonList
@@ -589,36 +484,35 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return ComparisonList
-     * @deprecated since 5.0.0
-     */
-    public static function compareList(): ComparisonList
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCompareList();
-    }
-
-    /**
      * @param string $langISO
      * @former checkeSpracheWaehrung()
      * @since 5.0.0
      */
-    public static function checkReset($langISO = ''): void
+    public static function checkReset(string $langISO = ''): void
     {
         if ($langISO !== '') {
             if ($langISO !== Shop::getLanguageCode()) {
                 $_SESSION['oKategorie_arr']     = [];
                 $_SESSION['oKategorie_arr_new'] = [];
             }
-            $lang = first(LanguageHelper::getAllLanguages(), static function ($l) use ($langISO) {
-                return $l->cISO === $langISO;
+            $lang = first(LanguageHelper::getAllLanguages(), static function (LanguageModel $l) use ($langISO) {
+                return $l->getCode() === $langISO;
             });
             if ($lang === null) {
                 self::urlFallback();
             }
-            $_SESSION['cISOSprache'] = $lang->cISO;
-            $_SESSION['kSprache']    = (int)$lang->kSprache;
-            Shop::setLanguage($lang->kSprache, $lang->cISO);
+            $langCode                = $lang->getIso();
+            $langID                  = $lang->getId();
+            $_SESSION['cISOSprache'] = $langCode;
+            $_SESSION['kSprache']    = $langID;
+            $oldCode                 = Shop::getLanguageCode();
+            Shop::setLanguage($langID, $langCode);
+            if ($oldCode !== null && $oldCode !== $langCode) {
+                $loader = new PluginLoader(Shop::Container()->getDB(), Shop::Container()->getCache());
+                foreach (Helper::getBootstrappedPlugins() as $bsp) {
+                    Helper::updatePluginInstance($loader->init($bsp->getPlugin()->getID(), false, $langID));
+                }
+            }
             unset($_SESSION['Suche']);
             self::setSpecialLinks();
             if (isset($_SESSION['Wunschliste'])) {
@@ -633,7 +527,6 @@ class Frontend extends AbstractSession
 
         $currencyCode = Request::verifyGPDataString('curr');
         if ($currencyCode) {
-            $cart     = self::getCart();
             $currency = first(self::getCurrencies(), static function (Currency $c) use ($currencyCode) {
                 return $c->getCode() === $currencyCode;
             });
@@ -646,7 +539,8 @@ class Frontend extends AbstractSession
                 if (isset($_SESSION['Vergleichsliste'])) {
                     self::getCompareList()->umgebungsWechsel();
                 }
-                if ($cart !== null && \count($cart->PositionenArr) > 0) {
+                $cart = self::getCart();
+                if (\count($cart->PositionenArr) > 0) {
                     $cart->setzePositionsPreise();
                 }
             }
@@ -654,6 +548,9 @@ class Frontend extends AbstractSession
         LanguageHelper::getInstance()->autoload();
     }
 
+    /**
+     * @since 5.0.0
+     */
     private static function urlFallback(): void
     {
         $productID             = Request::verifyGPCDataInt('a');

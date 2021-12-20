@@ -31,7 +31,7 @@ class MailSmarty extends JTLSmarty
              ->setCompileDir(\PFAD_ROOT . \PFAD_COMPILEDIR)
              ->setTemplateDir(\PFAD_ROOT . \PFAD_EMAILTEMPLATES)
              ->setDebugging(false)
-             ->setCaching(false);
+             ->setCaching(JTLSmarty::CACHING_OFF);
         if ($context === ContextType::MAIL && \MAILTEMPLATE_USE_SECURITY) {
             $this->activateBackendSecurityMode();
         } elseif ($context === ContextType::NEWSLETTER && \NEWSLETTER_USE_SECURITY) {
@@ -60,8 +60,9 @@ class MailSmarty extends JTLSmarty
             $res  = $this->db->getSingleObject(
                 'SELECT ' . $row . ' AS content
                     FROM temailvorlagesprache
-                    WHERE kSprache = ' . (int)$lang->kSprache .
-                ' AND kEmailvorlage = ' . (int)$tpl->kEmailvorlage
+                    WHERE kSprache = :lid
+                 AND kEmailvorlage = :tid',
+                ['lid' => $lang->kSprache, 'tid' => $tpl->kEmailvorlage]
             );
             if (isset($res->content)) {
                 return $smarty->fetch('db:' . $params['type'] . '_' . $tpl->kEmailvorlage . '_' . $lang->kSprache);

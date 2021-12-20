@@ -26,8 +26,8 @@ class {$commandName} extends Command
     * @param InputInterface $input
     * @param OutputInterface $output
     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        return 0;
+        return Command::SUCCESS;
     }
 }

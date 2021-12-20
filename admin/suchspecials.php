@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
@@ -21,7 +21,7 @@ $postData   = Text::filterXSS($_POST);
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,
-        saveAdminSectionSettings(CONF_SUCHSPECIAL, $postData),
+        saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST),
         'saveSettings'
     );
 } elseif (Request::postInt('suchspecials') === 1 && Form::validateToken()) {

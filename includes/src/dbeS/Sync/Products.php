@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -230,8 +230,8 @@ final class Products extends AbstractSync
     }
 
     /**
-     * @param array $products
-     * @return array
+     * @param stdClass[] $products
+     * @return stdClass[]
      */
     private function addProduct(array $products): array
     {
@@ -858,7 +858,7 @@ final class Products extends AbstractSync
      * @param array $xml
      * @return int[] - list of product IDs to flush
      */
-    private function handleInserts($xml): array
+    private function handleInserts(array $xml): array
     {
         $res       = [];
         $productID = 0;
@@ -883,7 +883,7 @@ final class Products extends AbstractSync
         )->cSeo ?? null;
         $this->checkCategoryCache($xml, $productID);
         $downloadKeys = $this->getDownloadIDs($productID);
-        $this->deleteProduct($productID, true);
+        $this->deleteProduct($productID);
         $products = $this->addProduct($products);
         $this->addSeo($oldSeo, $products[0]->cSeo, $productID);
         $this->addProductLocalizations($xml, $products, $productID);
@@ -918,7 +918,7 @@ final class Products extends AbstractSync
      * @param array $xml
      * @return int[] - list of product IDs
      */
-    private function handleDeletes($xml): array
+    private function handleDeletes(array $xml): array
     {
         $res = [];
         if (!\is_array($xml['del_artikel'])) {
@@ -952,8 +952,7 @@ final class Products extends AbstractSync
                 ['pid' => $productID]
             );
             $this->removeProductIdfromCoupons($productID);
-            $res[] = $this->deleteProduct($productID);
-            $this->db->delete('tartikelkategorierabatt', 'kArtikel', $productID);
+            $res[] = $this->deleteProduct($productID, true);
             if ($parent > 0) {
                 Artikel::beachteVarikombiMerkmalLagerbestand($parent);
                 $res[] = $parent;
@@ -971,6 +970,9 @@ final class Products extends AbstractSync
      */
     private function deleteProduct(int $id, bool $force = false): int
     {
+        if ($id <= 0) {
+            return 0;
+        }
         // get list of all categories the product was associated with
         $categories = $this->db->selectAll(
             'tkategorieartikel',
@@ -978,7 +980,7 @@ final class Products extends AbstractSync
             $id,
             'kKategorie'
         );
-        if ($force === false && $this->categoryVisibilityFilter === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE) {
+        if ($force === true && $this->categoryVisibilityFilter === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE) {
             $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             foreach ($categories as $category) {
                 // check if the product was the only one in at least one of these categories
@@ -997,9 +999,6 @@ final class Products extends AbstractSync
                 }
             }
         }
-        if ($id <= 0) {
-            return 0;
-        }
         $this->db->delete('tseo', ['cKey', 'kKey'], ['kArtikel', $id]);
         $this->db->delete('tartikel', 'kArtikel', $id);
         $this->db->delete('tkategorieartikel', 'kArtikel', $id);
@@ -1007,11 +1006,6 @@ final class Products extends AbstractSync
         $this->db->delete('tartikelattribut', 'kArtikel', $id);
         $this->db->delete('tartikelwarenlager', 'kArtikel', $id);
         $this->db->delete('tartikelabnahme', 'kArtikel', $id);
-        $this->db->delete('tartikelpicthistory', 'kArtikel', $id);
-        $this->db->delete('tsuchcachetreffer', 'kArtikel', $id);
-        $this->db->delete('timagemaparea', 'kArtikel', $id);
-        $this->db->delete('tvergleichslistepos', 'kArtikel', $id);
-        $this->db->delete('twunschlistepos', 'kArtikel', $id);
         $this->deleteProductAttributes($id);
         $this->deleteProductAttributeValues($id);
         $this->deleteProperties($id);
@@ -1022,11 +1016,17 @@ final class Products extends AbstractSync
         $this->db->delete('tartikelsichtbarkeit', 'kArtikel', $id);
         $this->deleteProductMediaFiles($id);
         if ($force === true) {
-            $this->deleteDownload($id);
-        } else {
             $this->deleteProductDownloads($id);
+            $this->deleteProductUploads($id);
+            $this->db->delete('tartikelkategorierabatt', 'kArtikel', $id);
+            $this->db->delete('tartikelpicthistory', 'kArtikel', $id);
+            $this->db->delete('tsuchcachetreffer', 'kArtikel', $id);
+            $this->db->delete('timagemaparea', 'kArtikel', $id);
+            $this->db->delete('tvergleichslistepos', 'kArtikel', $id);
+            $this->db->delete('twunschlistepos', 'kArtikel', $id);
+        } else {
+            $this->deleteDownload($id);
         }
-        $this->deleteProductUploads($id);
         $this->deleteConfigGroup($id);
 
         return $id;
@@ -1241,8 +1241,11 @@ final class Products extends AbstractSync
         if ($data !== null && !empty($data->cArtNr)) {
             $artNo = $data->cArtNr;
             $this->db->queryPrepared(
-                "UPDATE tkupon SET cArtikel = REPLACE(cArtikel, ';" . $artNo . ";', ';') WHERE cArtikel LIKE :artno",
-                ['artno' => '%;' . $artNo . ';%']
+                "UPDATE tkupon SET cArtikel = REPLACE(cArtikel, :rep, ';') WHERE cArtikel LIKE :artno",
+                [
+                    'rep'   => ';' . $artNo . ';',
+                    'artno' => '%;' . $artNo . ';%'
+                ]
             );
             $this->db->query("UPDATE tkupon SET cArtikel = '' WHERE cArtikel = ';'");
         }

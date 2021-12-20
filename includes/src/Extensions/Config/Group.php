@@ -48,7 +48,7 @@ class Group implements JsonSerializable
     public $cKommentar;
 
     /**
-     * @var object
+     * @var GroupLocalization|null
      */
     public $oSprache;
 
@@ -122,53 +122,26 @@ class Group implements JsonSerializable
     private function loadFromDB(int $id = 0, int $languageID = 0): self
     {
         $data = Shop::Container()->getDB()->select('tkonfiggruppe', 'kKonfiggruppe', $id);
-        if (isset($data->kKonfiggruppe) && $data->kKonfiggruppe > 0) {
-            foreach (\array_keys(\get_object_vars($data)) as $member) {
-                $this->$member = $data->$member;
-            }
-            if (!$languageID) {
-                $languageID = Shop::getLanguageID();
-            }
-            $this->kKonfiggruppe = (int)$this->kKonfiggruppe;
-            $this->nMin          = (int)$this->nMin;
-            $this->nMax          = (int)$this->nMax;
-            $this->nTyp          = (int)$this->nTyp;
-            $this->oSprache      = new GroupLocalization($this->kKonfiggruppe, $languageID);
-            $this->oItem_arr     = Item::fetchAll($this->kKonfiggruppe, $languageID);
+        if (!isset($data->kKonfiggruppe) || $data->kKonfiggruppe <= 0) {
+            Shop::Container()->getLogService()->error('Cannot load config group with id ' . $id);
+
+            return $this;
         }
+        foreach (\array_keys(\get_object_vars($data)) as $member) {
+            $this->$member = $data->$member;
+        }
+        if (!$languageID) {
+            $languageID = Shop::getLanguageID();
+        }
+        $this->kKonfiggruppe = (int)$this->kKonfiggruppe;
+        $this->nMin          = (int)$this->nMin;
+        $this->nMax          = (int)$this->nMax;
+        $this->nTyp          = (int)$this->nTyp;
+        $this->oSprache      = new GroupLocalization($this->kKonfiggruppe, $languageID);
+        $this->oItem_arr     = Item::fetchAll($this->kKonfiggruppe, $languageID);
         $this->generateAllImageSizes(true, 1, $this->cBildPfad);
 
         return $this;
-    }
-
-    /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function save(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return false;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function update(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function delete(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
     }
 
     /**
@@ -271,9 +244,9 @@ class Group implements JsonSerializable
     }
 
     /**
-     * @return object|null
+     * @return GroupLocalization|null
      */
-    public function getSprache()
+    public function getSprache(): ?GroupLocalization
     {
         return $this->oSprache;
     }

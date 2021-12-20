@@ -16,8 +16,8 @@ class Migration_20211217122300 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->setLocalization('ger', 'basket', 'itemOverflowNotice', 'Und %d weitere Artikel im <a href="%s">Warenkorb</a>.');
-        $this->setLocalization('eng', 'basket', 'itemOverflowNotice', 'And %d more items in the <a href="%s">basket</a>.');
+        $this->setLocalization('ger', 'basket', 'itemOverflowNotice', 'Es befinden sich %d weitere Artikel im <a href="%s">Warenkorb</a>.');
+        $this->setLocalization('eng', 'basket', 'itemOverflowNotice', 'There are %d more items in your <a href="%s">basket</a>.');
     }
 
     /**

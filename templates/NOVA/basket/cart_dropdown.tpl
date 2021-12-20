@@ -1,7 +1,9 @@
 {block name='basket-cart-dropdown'}
     <div class="cart-dropdown dropdown-menu dropdown-menu-right lg-min-w-lg">
         {$cartPositions = $smarty.session.Warenkorb->PositionenArr}
-        {$maxCartPositions = 15}
+        {block name='basket-cart-dropdown-max-cart-positions'}
+            {$maxCartPositions = 15}
+        {/block}
         {if $cartPositions|count > 0}
             {block name='basket-cart-dropdown-cart-items-content'}
                 {block name='basket-cart-dropdown-cart-items'}

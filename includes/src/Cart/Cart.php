@@ -454,13 +454,13 @@ class Cart
                         $attr  = new Eigenschaft($value->kEigenschaft);
                         // Varkombi Kind?
                         if ($cartItem->Artikel->kVaterArtikel > 0) {
-                            if ($attr->kArtikel == $cartItem->Artikel->kVaterArtikel) {
+                            if ($attr->kArtikel === $cartItem->Artikel->kVaterArtikel) {
                                 $cartItem->setzeVariationsWert(
                                     $value->kEigenschaft,
                                     $value->kEigenschaftWert
                                 );
                             }
-                        } elseif ($attr->kArtikel == $cartItem->kArtikel) {
+                        } elseif ($attr->kArtikel === $cartItem->kArtikel) {
                             // Variationswert hat eigene Artikelnummer
                             // und der Artikel hat nur eine Dimension als Variation?
                             if (isset($value->cArtNr)
@@ -809,13 +809,10 @@ class Cart
      */
     public function gibAnzahlArtikelExt(array $itemTypes, bool $excludeShippingCostAttributes = false, string $iso = '')
     {
-        if (!\is_array($itemTypes)) {
-            return 0;
-        }
         $count = 0;
         foreach ($this->PositionenArr as $item) {
             if (\in_array($item->nPosTyp, $itemTypes)
-                && (empty($item->cUnique) || (\mb_strlen($item->cUnique) > 0 && $item->kKonfigitem == 0))
+                && (empty($item->cUnique) || (\mb_strlen($item->cUnique) > 0 && $item->kKonfigitem === 0))
                 && $item->isUsedForShippingCostCalculation($iso, $excludeShippingCostAttributes)
             ) {
                 $count += $item->nAnzahl;
@@ -828,14 +825,11 @@ class Cart
     /**
      * gibt Anzahl der Positionen des Warenkorbs zurueck
      *
-     * @param int[]|mixed $itemTypes
+     * @param int[] $itemTypes
      * @return int
      */
-    public function gibAnzahlPositionenExt($itemTypes): int
+    public function gibAnzahlPositionenExt(array $itemTypes): int
     {
-        if (!\is_array($itemTypes)) {
-            return 0;
-        }
         $count = 0;
         foreach ($this->PositionenArr as $item) {
             if (\in_array($item->nPosTyp, $itemTypes, true)
@@ -1046,9 +1040,9 @@ class Cart
         }
         $qty = 0;
         foreach ($this->PositionenArr as $i => $item) {
-            if ($item->kArtikel == $productID && $excludeItem != $i && \is_array($item->WarenkorbPosEigenschaftArr)) {
+            if ($item->kArtikel === $productID && $excludeItem !== $i && \is_array($item->WarenkorbPosEigenschaftArr)) {
                 foreach ($item->WarenkorbPosEigenschaftArr as $attr) {
-                    if ($attr->kEigenschaftWert == $propertyValueID) {
+                    if ($attr->kEigenschaftWert === $propertyValueID) {
                         $qty += $item->nAnzahl;
                     }
                 }
@@ -1171,9 +1165,6 @@ class Cart
         bool $excludeShippingCostAttributes = false,
         string $iso = ''
     ) {
-        if (!\is_array($types)) {
-            return 0;
-        }
         $total = 0;
         foreach ($this->PositionenArr as $item) {
             if (\in_array($item->nPosTyp, $types, true)
@@ -1202,20 +1193,17 @@ class Cart
      */
     public function gibGesamtsummeWarenOhne(array $types, bool $gross = false)
     {
-        if (!\is_array($types)) {
-            return 0;
-        }
         $total    = 0;
         $currency = $this->Waehrung ?? Frontend::getCurrency();
         $factor   = $currency->getConversionFactor();
         foreach ($this->PositionenArr as $item) {
-            if (!\in_array($item->nPosTyp, $types)) {
-                if ($gross) {
-                    $total += $item->fPreis * $factor * $item->nAnzahl *
-                        ((100 + CartItem::getTaxRate($item)) / 100);
-                } else {
-                    $total += $item->fPreis * $factor * $item->nAnzahl;
-                }
+            if (\in_array($item->nPosTyp, $types)) {
+                continue;
+            }
+            if ($gross) {
+                $total += $item->fPreis * $factor * $item->nAnzahl * ((100 + CartItem::getTaxRate($item)) / 100);
+            } else {
+                $total += $item->fPreis * $factor * $item->nAnzahl;
             }
         }
         if ($gross) {
@@ -1550,7 +1538,7 @@ class Cart
     /**
      * @return Artikel|null
      */
-    public function gibLetztenWKArtikel()
+    public function gibLetztenWKArtikel(): ?Artikel
     {
         if (!\is_array($this->PositionenArr)) {
             return null;
@@ -1769,7 +1757,7 @@ class Cart
      * @param Cart $cart
      * @return string
      */
-    public static function getChecksum($cart): string
+    public static function getChecksum(Cart $cart): string
     {
         $longestMinMaxDelivery = $cart->getLongestMinMaxDelivery();
         $checks                = [

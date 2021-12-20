@@ -121,7 +121,7 @@ class CartItem
     public $Artikel;
 
     /**
-     * @var array
+     * @var CartItemProperty[]
      */
     public $WarenkorbPosEigenschaftArr = [];
 
@@ -259,7 +259,7 @@ class CartItem
         $surcharge                         = $db->select(
             'teigenschaftwertaufpreis',
             'kEigenschaftWert',
-            (int)$newAttributes->kEigenschaftWert,
+            $newAttributes->kEigenschaftWert,
             'kKundengruppe',
             Frontend::getCustomerGroup()->getID()
         );
@@ -286,7 +286,7 @@ class CartItem
                 $localized = $db->select(
                     'teigenschaftsprache',
                     'kEigenschaft',
-                    (int)$newAttributes->kEigenschaft,
+                    $newAttributes->kEigenschaft,
                     'kSprache',
                     $language->getId()
                 );
@@ -296,7 +296,7 @@ class CartItem
                 $eigenschaftwert_spr = $db->select(
                     'teigenschaftwertsprache',
                     'kEigenschaftWert',
-                    (int)$newAttributes->kEigenschaftWert,
+                    $newAttributes->kEigenschaftWert,
                     'kSprache',
                     $language->getId()
                 );
@@ -323,9 +323,8 @@ class CartItem
     public function gibGesetztenEigenschaftsWert(int $propertyID): int
     {
         foreach ($this->WarenkorbPosEigenschaftArr as $WKPosEigenschaft) {
-            $WKPosEigenschaft->kEigenschaft = (int)$WKPosEigenschaft->kEigenschaft;
             if ($WKPosEigenschaft->kEigenschaft === $propertyID) {
-                return (int)$WKPosEigenschaft->kEigenschaftWert;
+                return $WKPosEigenschaft->kEigenschaftWert;
             }
         }
 
@@ -652,7 +651,6 @@ class CartItem
      */
     public static function getTaxRate(object $item): float
     {
-        $taxRate = Tax::getSalesTax(0);
         if (($item->kSteuerklasse ?? 0) === 0) {
             if (isset($item->fMwSt)) {
                 $taxRate = $item->fMwSt;
@@ -660,6 +658,8 @@ class CartItem
                 $taxRate = ($item->Artikel->kSteuerklasse ?? 0) > 0
                     ? Tax::getSalesTax($item->Artikel->kSteuerklasse)
                     : $item->Artikel->fMwSt;
+            } else {
+                $taxRate = Tax::getSalesTax(0);
             }
         } else {
             $taxRate = Tax::getSalesTax($item->kSteuerklasse);

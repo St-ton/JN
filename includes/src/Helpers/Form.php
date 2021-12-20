@@ -6,6 +6,7 @@ use Exception;
 use JTL\Customer\CustomerGroup;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\RateLimit\Upload;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
@@ -296,22 +297,16 @@ class Form
         if ($max <= 0) {
             return false;
         }
-        Shop::Container()->getDB()->query(
-            "DELETE
-                FROM tfloodprotect
-                WHERE dErstellt < DATE_SUB(NOW(), INTERVAL 1 HOUR)
-                    AND cTyp = 'upload'"
-        );
+        $limiter = new Upload(Shop::Container()->getDB());
+        $limiter->setLimit($max);
+        $limiter->init(Request::getRealIP());
+        $limiter->cleanup();
+        $ok = $limiter->check();
+        if ($ok === true) {
+            $limiter->persist();
+        }
 
-        $result = Shop::Container()->getDB()->getSingleObject(
-            "SELECT COUNT(kFloodProtect) AS cnt
-                FROM tfloodprotect
-                WHERE cTyp = 'upload'
-                    AND cIP = :ip",
-            ['ip' => Request::getRealIP()]
-        );
-
-        return ($result->cnt ?? 0) >= $max;
+        return !$ok;
     }
 
     /**

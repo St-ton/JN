@@ -3,6 +3,7 @@
 namespace JTL\Reset;
 
 use JTL\DB\DbInterface;
+use JTL\News\Admin\Controller;
 
 /**
  * Class Reset
@@ -171,7 +172,7 @@ class Reset
     private function resetNews(): void
     {
         foreach ($this->db->getObjects('SELECT kNews FROM tnews') as $i) {
-            \loescheNewsBilderDir($i->kNews, \PFAD_ROOT . \PFAD_NEWSBILDER);
+            Controller::deleteImageDir((int)$i->kNews);
         }
         $this->db->query('TRUNCATE tnews');
         $this->db->delete('trevisions', 'type', 'news');

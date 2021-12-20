@@ -31,6 +31,6 @@ class ForgotPassword extends AbstractRateLimiter
             ]
         );
 
-        return ($items->cnt ?? 0) <= self::LIMIT;
+        return ($items->cnt ?? 0) <= $this->getLimit();
     }
 }

@@ -7,7 +7,6 @@ use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Cart\PersistentCart;
-use JTL\Cart\PersistentCartItem;
 use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;

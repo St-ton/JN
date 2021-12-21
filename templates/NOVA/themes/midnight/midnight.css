@@ -26594,6 +26594,13 @@ header #burger-menu {
   margin-bottom: 1rem;
 }
 
+.item-overflow-notice {
+  padding: 0 0.75rem;
+}
+.item-overflow-notice a {
+  text-decoration: underline;
+}
+
 /* contact */
 .contact-form legend {
   border: 0;

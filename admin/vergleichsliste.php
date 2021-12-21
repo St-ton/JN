@@ -130,7 +130,7 @@ $last20     = $db->getObjects(
         LIMIT " . $pagination->getLimitSQL()
 );
 
-if (is_array($last20) && count($last20) > 0) {
+if (count($last20) > 0) {
     $positions = [];
     foreach ($last20 as $list) {
         $positions                              = $db->selectAll(
@@ -154,7 +154,7 @@ $topComparisons = $db->getObjects(
         LIMIT :lmt',
     ['ds' => (int)$_SESSION['Vergleichsliste']->nZeitFilter, 'lmt' => (int)$_SESSION['Vergleichsliste']->nAnzahl]
 );
-if (is_array($topComparisons) && count($topComparisons) > 0) {
+if (count($topComparisons) > 0) {
     erstelleDiagrammTopVergleiche($topComparisons);
 }
 

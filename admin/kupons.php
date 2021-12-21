@@ -66,7 +66,7 @@ $res         = handleCsvImportAction('kupon', static function ($obj, &$importDel
         $importDeleteDone = true;
     }
 
-    if (isset($obj->cCode) && $db->select('tkupon', 'cCode', $obj->cCode) !== null) {
+    if ($db->select('tkupon', 'cCode', $obj->cCode) !== null) {
         return false;
     }
 

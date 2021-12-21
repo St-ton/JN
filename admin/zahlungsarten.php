@@ -81,7 +81,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
     $nMailSendenStorno = Request::postInt('nMailSendenStorno');
     $nMailBits         = 0;
     if (is_array($filteredPost['kKundengruppe'])) {
-        $filteredPost['kKundengruppe'] = \array_map('\intval', $filteredPost['kKundengruppe']);
+        $filteredPost['kKundengruppe'] = array_map('\intval', $filteredPost['kKundengruppe']);
         $cKundengruppen                = Text::createSSK($filteredPost['kKundengruppe']);
         if (in_array(0, $filteredPost['kKundengruppe'], true)) {
             unset($cKundengruppen);

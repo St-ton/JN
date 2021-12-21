@@ -151,3 +151,9 @@
   }
 }
 
+.item-overflow-notice {
+  padding: 0 $table-cell-padding;
+  a {
+    text-decoration: underline;
+  }
+}

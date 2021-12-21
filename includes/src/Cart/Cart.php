@@ -354,7 +354,7 @@ class Cart
                 }
             }
         }
-
+        $db                    = Shop::Container()->getDB();
         $options               = Artikel::getDefaultOptions();
         $options->nStueckliste = 1;
         $options->nVariationen = 1;
@@ -362,7 +362,7 @@ class Cart
             $options->nKeineSichtbarkeitBeachten = 1;
         }
         $cartItem          = new CartItem();
-        $cartItem->Artikel = new Artikel();
+        $cartItem->Artikel = new Artikel($db);
         $cartItem->Artikel->fuelleArtikel($productID, $options, 0, $currentLangID);
         $cartItem->nAnzahl           = $qty;
         $cartItem->kArtikel          = $cartItem->Artikel->kArtikel;
@@ -380,8 +380,6 @@ class Cart
         $cartItem->cName         = [];
         $cartItem->cLieferstatus = [];
         $cartItem->fVK           = $cartItem->Artikel->Preise->fVK;
-
-        $db = Shop::Container()->getDB();
         foreach (Frontend::getLanguages() as $lang) {
             $code                           = $lang->getCode();
             $cartItem->cName[$code]         = $cartItem->Artikel->cName;
@@ -898,13 +896,14 @@ class Cart
         $bulk            = $this->config['kaufabwicklung']['general_child_item_bulk_pricing'] === 'Y';
         $customerGroupID = Frontend::getCustomerGroup()->getID();
         $langID          = Shop::getLanguageID();
+        $db              = Shop::Container()->getDB();
         foreach ($this->PositionenArr as $item) {
             if ($item->kArtikel <= 0 || $item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL) {
                 $this->setzeKonfig($item, true, false);
                 continue;
             }
             $oldItem                             = clone $item;
-            $product                             = new Artikel();
+            $product                             = new Artikel($db);
             $options->nKeineSichtbarkeitBeachten = 1;
             if ($item->kKonfigitem === 0) {
                 $options->nKeineSichtbarkeitBeachten = 0;
@@ -1280,6 +1279,7 @@ class Cart
     {
         $taxRates = [];
         $taxItems = [];
+        $currency = Frontend::getCurrency();
         foreach ($this->PositionenArr as $item) {
             if ($item->kSteuerklasse > 0) {
                 $ust = Tax::getSalesTax($item->kSteuerklasse);
@@ -1304,10 +1304,16 @@ class Cart
                     );
                     $taxItems[$idx]->fUst            = $ust;
                     $taxItems[$idx]->fBetrag         = ($item->fPreis * $item->nAnzahl * $ust) / 100.0;
-                    $taxItems[$idx]->cPreisLocalized = Preise::getLocalizedPriceString($taxItems[$idx]->fBetrag);
+                    $taxItems[$idx]->cPreisLocalized = Preise::getLocalizedPriceString(
+                        $taxItems[$idx]->fBetrag,
+                        $currency
+                    );
                 } else {
                     $taxItems[$idx]->fBetrag        += ($item->fPreis * $item->nAnzahl * $ust) / 100.0;
-                    $taxItems[$idx]->cPreisLocalized = Preise::getLocalizedPriceString($taxItems[$idx]->fBetrag);
+                    $taxItems[$idx]->cPreisLocalized = Preise::getLocalizedPriceString(
+                        $taxItems[$idx]->fBetrag,
+                        $currency
+                    );
                 }
             }
         }

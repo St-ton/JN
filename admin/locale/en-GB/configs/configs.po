@@ -3040,3 +3040,9 @@ msgstr "Show cookie banner"
 
 msgid "consent_manager_show_banner_desc"
 msgstr "Specify when visitors of your online shop will see the banner for giving or denying global consent."
+
+msgid "forgot_password_captcha_name"
+msgstr "Enable spam protection"
+
+msgid "forgot_password_captcha_desc"
+msgstr "Specify whether to enable the spam protection for the fogot password form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."

@@ -171,7 +171,7 @@ if ($action === 'bearbeiten') {
         }
     );
     if ($coupon->kKupon > 0) {
-        $names = getCouponNames((int)$coupon->kKupon);
+        $names = $coupon->translationList;
     } else {
         $names = [];
         foreach ($languages as $language) {
@@ -181,7 +181,6 @@ if ($action === 'bearbeiten') {
                 : $coupon->cName;
         }
     }
-
     $smarty->assign('taxClasses', $taxClasses)
         ->assign('customerGroups', CustomerGroup::getGroups())
         ->assign('manufacturers', $manufacturers)

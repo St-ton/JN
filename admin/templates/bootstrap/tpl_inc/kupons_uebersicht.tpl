@@ -52,7 +52,7 @@
                                                 {if $oKupon->cWertTyp === 'festpreis'}
                                                     <span data-toggle="tooltip" data-placement="right" data-html="true"
                                                           title='{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fWert}'>
-                                                        {$oKupon->cLocalizedValue}
+                                                        {$oKupon->cLocalizedWert}
                                                     </span>
                                                 {else}
                                                     {$oKupon->fWert} %
@@ -63,7 +63,7 @@
                                         <td class="text-center">
                                             <span data-toggle="tooltip" data-placement="right" data-html="true"
                                                   title='{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fMindestbestellwert}'>
-                                                {$oKupon->cLocalizedMbw}
+                                                {$oKupon->cLocalizedMBW}
                                             </span>
                                         </td>
                                         <td class="text-center">

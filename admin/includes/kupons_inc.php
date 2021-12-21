@@ -6,7 +6,6 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Kupon;
 use JTL\Customer\Customer;
-use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageModel;
@@ -15,7 +14,7 @@ use JTL\Mail\Mailer;
 use JTL\Shop;
 
 /**
- * @param array $ids
+ * @param int[] $ids
  * @return bool
  */
 function loescheKupons(array $ids): bool
@@ -23,8 +22,8 @@ function loescheKupons(array $ids): bool
     if (count($ids) === 0) {
         return false;
     }
-    $ids       = array_map('\intval', $ids);
-    $affedcted = Shop::Container()->getDB()->getAffectedRows(
+    $ids      = array_map('\intval', $ids);
+    $affected = Shop::Container()->getDB()->getAffectedRows(
         'DELETE tkupon, tkuponsprache, tkuponkunde, tkuponbestellung
             FROM tkupon
             LEFT JOIN tkuponsprache
@@ -36,7 +35,7 @@ function loescheKupons(array $ids): bool
             WHERE tkupon.kKupon IN(' . implode(',', $ids) . ')'
     );
 
-    return $affedcted >= count($ids);
+    return $affected >= count($ids);
 }
 
 /**
@@ -57,10 +56,10 @@ function getCouponNames(int $id): array
 }
 
 /**
- * @param string $selectedManufacturers
+ * @param string|null $selectedManufacturers
  * @return stdClass[]
  */
-function getManufacturers($selectedManufacturers = ''): array
+function getManufacturers(?string $selectedManufacturers = ''): array
 {
     $selected = Text::parseSSKint($selectedManufacturers);
     $items    = Shop::Container()->getDB()->getObjects('SELECT kHersteller, cName FROM thersteller');
@@ -77,12 +76,12 @@ function getManufacturers($selectedManufacturers = ''): array
 }
 
 /**
- * @param string $selectedCategories
- * @param int    $categoryID
- * @param int    $depth
- * @return array
+ * @param string|null $selectedCategories
+ * @param int         $categoryID
+ * @param int         $depth
+ * @return stdClass[]
  */
-function getCategories($selectedCategories = '', int $categoryID = 0, int $depth = 0): array
+function getCategories(?string $selectedCategories = '', int $categoryID = 0, int $depth = 0): array
 {
     $selected = Text::parseSSKint($selectedCategories);
     $arr      = [];
@@ -111,7 +110,7 @@ function getCategories($selectedCategories = '', int $categoryID = 0, int $depth
  * @param string|null $string
  * @return string|null
  */
-function normalizeDate($string): ?string
+function normalizeDate(?string $string): ?string
 {
     if ($string === null || $string === '') {
         return null;
@@ -126,22 +125,22 @@ function normalizeDate($string): ?string
 
 /**
  * @param string $type
- * @param string $whereSQL
- * @param string $orderSQL
- * @param string $limitSQL
+ * @param string $where
+ * @param string $order
+ * @param string $limit
  * @return array|int|object
  */
-function getRawCoupons($type = Kupon::TYPE_STANDARD, $whereSQL = '', $orderSQL = '', $limitSQL = '')
+function getRawCoupons(string $type = Kupon::TYPE_STANDARD, string $where = '', string $order = '', string $limit = '')
 {
     return Shop::Container()->getDB()->getObjects(
         'SELECT k.*, MAX(kk.dErstellt) AS dLastUse
             FROM tkupon AS k
             LEFT JOIN tkuponkunde AS kk ON kk.kKupon = k.kKupon
             WHERE cKuponTyp = :type ' .
-            ($whereSQL !== '' ? ' AND ' . $whereSQL : '') .
+            ($where !== '' ? ' AND ' . $where : '') .
             'GROUP BY k.kKupon' .
-            ($orderSQL !== '' ? ' ORDER BY ' . $orderSQL : '') .
-            ($limitSQL !== '' ? ' LIMIT ' . $limitSQL : ''),
+            ($order !== '' ? ' ORDER BY ' . $order : '') .
+            ($limit !== '' ? ' LIMIT ' . $limit : ''),
         ['type' => $type]
     );
 }
@@ -206,22 +205,22 @@ function getCoupon(int $id): Kupon
  *
  * @param Kupon $coupon
  */
-function augmentCoupon($coupon): void
+function augmentCoupon(Kupon $coupon): void
 {
-    $coupon->cLocalizedValue = $coupon->cWertTyp === 'festpreis'
+    $coupon->cLocalizedWert = $coupon->cWertTyp === 'festpreis'
         ? Preise::getLocalizedPriceString($coupon->fWert)
         : '';
-    $coupon->cLocalizedMbw   = isset($coupon->fMindestbestellwert)
+    $coupon->cLocalizedMBW  = isset($coupon->fMindestbestellwert)
         ? Preise::getLocalizedPriceString($coupon->fMindestbestellwert)
         : '';
-    $coupon->bOpenEnd        = $coupon->dGueltigBis === null;
+    $coupon->bOpenEnd       = $coupon->dGueltigBis === null;
 
-    if (date_create($coupon->dGueltigAb) === false) {
-        $coupon->cGueltigAbShort = 'ungültig';
-        $coupon->cGueltigAbLong  = 'ungültig';
-    } else {
+    if (date_create($coupon->dGueltigAb) !== false) {
         $coupon->cGueltigAbShort = date_create($coupon->dGueltigAb)->format('d.m.Y');
         $coupon->cGueltigAbLong  = date_create($coupon->dGueltigAb)->format('d.m.Y H:i');
+    } else {
+        $coupon->cGueltigAbShort = 'ungültig';
+        $coupon->cGueltigAbLong  = 'ungültig';
     }
 
     if ($coupon->bOpenEnd) {
@@ -237,10 +236,8 @@ function augmentCoupon($coupon): void
         $coupon->cGueltigBisShort = date_create($coupon->dGueltigBis)->format('d.m.Y');
         $coupon->cGueltigBisLong  = date_create($coupon->dGueltigBis)->format('d.m.Y H:i');
     }
-
-    if ((int)$coupon->kKundengruppe === -1) {
-        $coupon->cKundengruppe = '';
-    } else {
+    $coupon->cKundengruppe = '';
+    if ((int)$coupon->kKundengruppe !== -1) {
         $customerGroup         = Shop::Container()->getDB()->getSingleObject(
             'SELECT cName 
                 FROM tkundengruppe 
@@ -362,13 +359,15 @@ function createCouponFromInput(): Kupon
         $setDays                 = new DateInterval('P' . $input['dDauerTage'] . 'D');
         $coupon->dGueltigBis     = date_add($actualTimestampEndofDay, $setDays)->format('Y-m-d H:i:s');
     }
-    if (GeneralObject::hasCount('kHersteller', $input) && !in_array('-1', $input['kHersteller'])) {
+    $manufacturers = array_map('\intval', ($input['kHersteller'] ?? []));
+    $categories    = array_map('\intval', ($input['kKategorien'] ?? []));
+    if (!in_array(-1, $manufacturers, true)) {
         $coupon->cHersteller = Text::createSSK($input['kHersteller']);
     }
-    if (GeneralObject::hasCount('kKategorien', $input) && !in_array('-1', $input['kKategorien'])) {
+    if (!in_array(-1, $categories, true)) {
         $coupon->cKategorien = Text::createSSK($input['kKategorien']);
     }
-    if (!empty($input['cKunden']) && $input['cKunden'] != '-1') {
+    if (!empty($input['cKunden']) && $input['cKunden'] !== '-1') {
         $coupon->cKunden = trim($input['cKunden'], ";\t\n\r") . ';';
     }
     if (isset($input['couponCreation'])) {
@@ -419,7 +418,7 @@ function getCouponCount(string $type = Kupon::TYPE_STANDARD, string $whereSQL = 
  * @param Kupon $coupon
  * @return array - list of error messages
  */
-function validateCoupon($coupon): array
+function validateCoupon(Kupon $coupon): array
 {
     $errors = [];
     if ($coupon->cName === '') {
@@ -517,7 +516,7 @@ function validateCoupon($coupon): array
  * @param LanguageModel[] $languages
  * @return int - 0 on failure ; kKupon on success
  */
-function saveCoupon($coupon, $languages)
+function saveCoupon(Kupon $coupon, array $languages)
 {
     if ((int)$coupon->kKupon > 0) {
         // vorhandener Kupon
@@ -600,7 +599,7 @@ function saveCoupon($coupon, $languages)
  *
  * @param Kupon $coupon
  */
-function informCouponCustomers($coupon)
+function informCouponCustomers(Kupon $coupon)
 {
     augmentCoupon($coupon);
     $db              = Shop::Container()->getDB();

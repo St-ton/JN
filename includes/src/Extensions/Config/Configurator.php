@@ -7,6 +7,7 @@ use JTL\Cart\CartHelper;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Nice;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use function Functional\some;
 

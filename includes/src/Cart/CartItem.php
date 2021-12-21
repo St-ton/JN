@@ -121,7 +121,7 @@ class CartItem
     public $Artikel;
 
     /**
-     * @var array
+     * @var CartItemProperty[]
      */
     public $WarenkorbPosEigenschaftArr = [];
 

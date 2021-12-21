@@ -213,7 +213,7 @@ class Form
         $from     = new stdClass();
         $senders  = Shop::Container()->getDB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
         $mailData = new stdClass();
-        if (\is_array($senders) && \count($senders)) {
+        if (\count($senders)) {
             foreach ($senders as $f) {
                 $from->{$f->cKey} = $f->cValue;
             }
@@ -235,9 +235,7 @@ class Form
         }
         $data->mail = $mailData;
         if (isset($_SESSION['kSprache']) && !isset($data->tkunde)) {
-            if (!isset($data->tkunde)) {
-                $data->tkunde = new stdClass();
-            }
+            $data->tkunde           = new stdClass();
             $data->tkunde->kSprache = $_SESSION['kSprache'];
         }
         $mailer = Shop::Container()->get(Mailer::class);
@@ -300,8 +298,8 @@ class Form
         $limiter = new Upload(Shop::Container()->getDB());
         $limiter->setLimit($max);
         $limiter->init(Request::getRealIP());
-        $limiter->cleanup();
         $ok = $limiter->check();
+        $limiter->cleanup();
         if ($ok === true) {
             $limiter->persist();
         }
@@ -334,17 +332,14 @@ class Form
             'cTel'      => 'tel',
             'cMobil'    => 'mobil'
         ];
-
         foreach ($inputs as $key => $input) {
             $msg->$key = isset($_POST[$input]) ? Text::filterXSS($_POST[$input]) : ($_SESSION['Kunde']->$key ?? null);
         }
-
         if ($msg->cAnrede === 'm') {
             $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
         } elseif ($msg->cAnrede === 'w') {
             $msg->cAnredeLocalized = Shop::Lang()->get('salutationW');
         }
-
 
         return $msg;
     }

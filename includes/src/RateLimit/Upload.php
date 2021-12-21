@@ -13,12 +13,14 @@ class Upload extends AbstractRateLimiter
      */
     protected $type = 'upload';
 
-    protected const MINUTES = 60;
+    protected const FLOOD_MINUTES = 60;
+
+    protected const CLEANUP_MINUTES = 60;
 
     /**
      * @var int
      */
-    private $limit = 2;
+    private $limit = 10;
 
     /**
      * @inheritdoc
@@ -34,7 +36,7 @@ class Upload extends AbstractRateLimiter
             [
                 'ip'  => $this->ip,
                 'tpe' => $this->type,
-                'td'  => self::MINUTES
+                'td'  => $this->getFloodMinutes()
             ]
         );
 

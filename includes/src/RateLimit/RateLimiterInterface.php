@@ -51,6 +51,26 @@ interface RateLimiterInterface
     public function setLimit(int $limit): void;
 
     /**
+     * @return int - min age of items to clean up in minutes
+     */
+    public function getCleanupMinutes(): int;
+
+    /**
+     * @param int $minutes
+     */
+    public function setCleanupMinutes(int $minutes): void;
+
+    /**
+     * @return int - minutes to block further requests
+     */
+    public function getFloodMinutes(): int;
+
+    /**
+     * @param int $minutes
+     */
+    public function setFloodMinutes(int $minutes): void;
+
+    /**
      * @return DbInterface
      */
     public function getDB(): DbInterface;

@@ -27,7 +27,7 @@ class ForgotPassword extends AbstractRateLimiter
             [
                 'ip'  => $this->ip,
                 'tpe' => $this->type,
-                'td'  => self::MINUTES
+                'td'  => $this->getFloodMinutes()
             ]
         );
 

@@ -33,7 +33,9 @@ class AbstractRateLimiter implements RateLimiterInterface
 
     protected const LIMIT = 0;
 
-    protected const MINUTES = 5;
+    protected const CLEANUP_MINUTES = 60;
+
+    protected const FLOOD_MINUTES = 5;
 
     /**
      * @param DbInterface $db
@@ -99,7 +101,7 @@ class AbstractRateLimiter implements RateLimiterInterface
                 'ip'  => $this->ip,
                 'rid' => $this->key,
                 'tpe' => $this->type,
-                'td'  => self::MINUTES
+                'td'  => $this->getFloodMinutes()
             ]
         );
 
@@ -113,7 +115,7 @@ class AbstractRateLimiter implements RateLimiterInterface
                 FROM tfloodprotect
                 WHERE dErstellt < DATE_SUB(NOW(), INTERVAL :min MINUTE)
                     AND cTyp = :tpe',
-            ['min' => self::MINUTES, 'tpe' => $this->type]
+            ['min' => $this->getCleanupMinutes(), 'tpe' => $this->type]
         );
     }
 
@@ -129,6 +131,36 @@ class AbstractRateLimiter implements RateLimiterInterface
      * @inheritDoc
      */
     public function setLimit(int $limit): void
+    {
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCleanupMinutes(): int
+    {
+        return self::CLEANUP_MINUTES;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setCleanupMinutes(int $minutes): void
+    {
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getFloodMinutes(): int
+    {
+        return self::FLOOD_MINUTES;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setFloodMinutes(int $minutes): void
     {
     }
 

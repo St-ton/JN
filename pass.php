@@ -31,6 +31,7 @@ if ($valid && isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POS
     $limiter->init(Request::getRealIP(), (int)($kunde->kKunde ?? 0));
     if ($limiter->check() === true) {
         $limiter->persist();
+        $limiter->cleanup();
         $validRecaptcha = true;
         if (Shop::getSettingValue(CONF_KUNDEN, 'forgot_password_captcha') === 'Y' && !Form::validateCaptcha($_POST)) {
             $validRecaptcha     = false;

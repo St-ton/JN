@@ -105,11 +105,12 @@
                                 {block name='productlist-header-subcategories-image'}
                                     {link href=$subCategory->getURL()}
                                         {$imgAlt = $subCategory->getAttribute('img_alt')}
+                                        {$imgSrc = $subCategory->getImage(\JTL\Media\Image::SIZE_SM)}
                                         <div class="subcategories-image d-none d-md-flex">
-                                            {image fluid=true lazy=true webp=true class='img-aspect-ratio'
-                                                width='150px'
-                                                height='150px'
-                                                src=$subCategory->getImage(\JTL\Media\Image::SIZE_SM)
+                                            {image fluid=true lazy=true webp=true class="img-aspect-ratio"
+                                                src=$imgSrc
+                                                width="{if $imgSrc|strpos:'keinBild.gif' !== false}130{else}auto{/if}"
+                                                height="{if $imgSrc|strpos:'keinBild.gif' !== false}130{else}auto{/if}"
                                                 alt="{if empty($imgAlt->cWert)}{$subCategory->getName()}{else}{$imgAlt->cWert}{/if}"}
                                         </div>
                                     {/link}

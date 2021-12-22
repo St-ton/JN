@@ -216,6 +216,11 @@ html {
   }
 }
 
+.img-aspect-ratio {
+  width: 100%;
+  height: auto;
+}
+
 header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94); position: relative; z-index: $zindex-sticky;
 
   .form-control, .form-control:focus  {

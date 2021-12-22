@@ -20424,6 +20424,11 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 .breadcrumb-arrow {
   display: flex;
 }
+@media (min-width: 768px) {
+  .breadcrumb-arrow {
+    display: none;
+  }
+}
 .breadcrumb-arrow::before {
   content: '\f104' !important;
   font-family: "Font Awesome 5 Free" !important;

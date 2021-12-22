@@ -67,3 +67,9 @@ msgstr "A country with ISO code \"%s\" can not be found."
 
 msgid "warningCreateCountryInWawi"
 msgstr "You also need to create the same country in JTL-Wawi and set the corresponding tax zone: <a href=\"https://guide.jtl-software.de/jtl-wawi/global/laender-verwalten/\" target=\"_blank\">Manage countries</a>"
+
+msgid "infoRegistrationCountriesActivated"
+msgstr "Die Länder mit den ISO-Codes %s, wurden den auswählbaren Rechnungsländern hinzugefügt. Siehe <a href=\"countrymanager.php\" target=\"_blank\">Länderverwaltung</a>."
+
+msgid "warningRegistrationCountriesDeactivated"
+msgstr "Die Länder mit den ISO-Codes %s, wurden als auswählbare Rechnungsländern deaktiviert. Siehe <a href=\"countrymanager.php\" target=\"_blank\">Länderverwaltung</a>."

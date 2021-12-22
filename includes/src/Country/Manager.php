@@ -5,6 +5,7 @@ namespace JTL\Country;
 use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\L10n\GetText;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -45,25 +46,35 @@ class Manager
     protected $alertService;
 
     /**
+     * @var GetText
+     */
+    protected $getText;
+
+    /**
      * Manager constructor.
      * @param DbInterface $db
      * @param JTLSmarty $smarty
      * @param CountryServiceInterface $countryService
      * @param JTLCacheInterface $cache
      * @param AlertServiceInterface $alertService
+     * @param GetText $getText
      */
     public function __construct(
         DbInterface $db,
         JTLSmarty $smarty,
         CountryServiceInterface $countryService,
         JTLCacheInterface $cache,
-        AlertServiceInterface $alertService
+        AlertServiceInterface $alertService,
+        GetText $getText
     ) {
         $this->db             = $db;
         $this->smarty         = $smarty;
         $this->countryService = $countryService;
         $this->cache          = $cache;
         $this->alertService   = $alertService;
+        $this->getText        = $getText;
+
+        $getText->loadAdminLocale('pages/countrymanager');
     }
 
     /**
@@ -247,5 +258,60 @@ class Manager
     {
         \header('Refresh:0');
         exit;
+    }
+
+
+    /**
+     * @param array $inactiveCountries
+     * @param bool $showAlerts
+     */
+    public function updateRegistrationCountries(array $inactiveCountries = [], bool $showAlerts = true): void
+    {
+        $deactivated      = [];
+        $currentCountries = $this->db->getCollection('SELECT cISO FROM tland WHERE bPermitRegistration=1')
+            ->pluck('cISO')->toArray();
+        $this->db->query(
+            "UPDATE tland
+                INNER JOIN tversandart
+                  ON tversandart.cLaender RLIKE CONCAT(tland.cISO, ' ')
+                SET tland.bPermitRegistration = 1
+                WHERE tland.bPermitRegistration = 0"
+        );
+        $newCountries = $this->db->getCollection('SELECT cISO FROM tland WHERE bPermitRegistration=1')
+            ->pluck('cISO')->toArray();
+        $activated    = \array_diff($newCountries, $currentCountries);
+
+        if (\count($inactiveCountries) > 0) {
+            $possibleShippingCountries = $this->db->getCollection(
+                "SELECT DISTINCT(tland.cISO)
+                  FROM tland
+                  INNER JOIN tversandart
+                    ON tversandart.cLaender RLIKE CONCAT(tland.cISO, ' ')"
+            )->pluck('cISO')->toArray();
+            $deactivated               = \array_diff($inactiveCountries, $possibleShippingCountries);
+            $this->db->query(
+                "UPDATE tland
+                    SET bPermitRegistration = 0
+                    WHERE cISO IN ('" . \implode("', '", Text::filterXSS($deactivated)) . "')"
+            );
+        }
+
+
+        if ($showAlerts) {
+            if (\count($activated) > 0) {
+                $this->alertService->addAlert(
+                    Alert::TYPE_INFO,
+                    \sprintf(\__('infoRegistrationCountriesActivated'), \implode(', ', $activated)),
+                    'infoRegistrationCountriesActivated'
+                );
+            }
+            if (\count($deactivated) > 0) {
+                $this->alertService->addAlert(
+                    Alert::TYPE_WARNING,
+                    \sprintf(\__('warningRegistrationCountriesDeactivated'), \implode(', ', $deactivated)),
+                    'warningRegistrationCountriesDeactivated'
+                );
+            }
+        }
     }
 }

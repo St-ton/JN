@@ -38,6 +38,9 @@ msgstr "Automatically set true when a country is selectable in at least one ship
 msgid "isPermitRegistration"
 msgstr "Selectable as billing country"
 
+msgid "isPermitRegistrationDesc"
+msgstr "Automatically set to \"Yes\" when a country is selectable in at least one shipping method. Is also automatically set to \"No\" when a country is not in at least one shipping method."
+
 msgid "isRequireStateDefinition"
 msgstr "Federal state is mandatory"
 
@@ -73,3 +76,6 @@ msgstr "Die Länder mit den ISO-Codes %s, wurden den auswählbaren Rechnungslän
 
 msgid "warningRegistrationCountriesDeactivated"
 msgstr "Die Länder mit den ISO-Codes %s, wurden als auswählbare Rechnungsländern deaktiviert. Siehe <a href=\"countrymanager.php\" target=\"_blank\">Länderverwaltung</a>."
+
+msgid "warningShippingAvailable"
+msgstr "Das Land ist in mindestens einer Versandart als Lieferland aktiviert. Es ist daher empfohlen, das Land auch als auswählbares Rechnungsland anzubieten."

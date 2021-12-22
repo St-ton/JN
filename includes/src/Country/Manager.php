@@ -88,9 +88,17 @@ class Manager
                 $this->smarty->assign('countryPost', Text::filterXSS($_POST));
                 break;
             case 'update':
+                $country = $this->countryService->getCountry(Request::verifyGPDataString('cISO'));
+                if ($country->isShippingAvailable()) {
+                    $this->alertService->addAlert(
+                        Alert::TYPE_WARNING,
+                        \__('warningShippingAvailable'),
+                        'warningShippingAvailable'
+                    );
+                }
                 $this->smarty
                     ->assign('countryPost', Text::filterXSS($_POST))
-                    ->assign('country', $this->countryService->getCountry(Request::verifyGPDataString('cISO')));
+                    ->assign('country', $country);
                 break;
             default:
                 break;
@@ -299,16 +307,26 @@ class Manager
 
         if ($showAlerts) {
             if (\count($activated) > 0) {
+                $activatedCountries = $this->countryService->getFilteredCountryList($activated)->map(
+                    static function (Country $country) {
+                        return $country->getName();
+                    }
+                )->toArray();
                 $this->alertService->addAlert(
                     Alert::TYPE_INFO,
-                    \sprintf(\__('infoRegistrationCountriesActivated'), \implode(', ', $activated)),
+                    \sprintf(\__('infoRegistrationCountriesActivated'), \implode(', ', $activatedCountries)),
                     'infoRegistrationCountriesActivated'
                 );
             }
             if (\count($deactivated) > 0) {
+                $deactivatedCountries = $this->countryService->getFilteredCountryList($deactivated)->map(
+                    static function (Country $country) {
+                        return $country->getName();
+                    }
+                )->toArray();
                 $this->alertService->addAlert(
                     Alert::TYPE_WARNING,
-                    \sprintf(\__('warningRegistrationCountriesDeactivated'), \implode(', ', $deactivated)),
+                    \sprintf(\__('warningRegistrationCountriesDeactivated'), \implode(', ', $deactivatedCountries)),
                     'warningRegistrationCountriesDeactivated'
                 );
             }

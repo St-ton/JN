@@ -202,6 +202,8 @@ ifndef('FORCE_IMAGEDRIVER_GD', false);
 //with more then n categories, some db fields will only be selected if the corresponding options are active
 ifndef('CATEGORY_FULL_LOAD_LIMIT', 10000);
 ifndef('CATEGORY_FULL_LOAD_MAX_LEVEL', 3);
+//maximum number of categories to use for generating bestseller and top products in a category view
+ifndef('PRODUCT_LIST_CATEGORY_LIMIT', 500);
 //maximum number of entries in category filter, -1 for no limit
 ifndef('CATEGORY_FILTER_ITEM_LIMIT', -1);
 ifndef('PRODUCT_LIST_SHOW_RATINGS', false);
@@ -247,6 +249,8 @@ ifndef('SECURE_PHP_FUNCTIONS', '
     strcspn, strip_tags, stripslashes, stristr, strlen, strnatcasecmp, strnatcmp, strncasecmp, strncmp, strpbrk, strpos,
     strrchr, strrev, strripos, strrpos, strspn, strstr, strtok, strtolower, strtoupper, strtr, substr_compare,
     substr_count, substr_replace, substr, trim, ucfirst, ucwords, vsprintf, var_dump, print_r, printf, wordwrap,
+    intval, floatval, strval, doubleval,
+    is_array, is_numeric, is_bool, is_float, is_null, is_int, is_string, is_object,
     
     checkdate, date_add, date_create_from_format, date_create_immutable_from_format, date_create_immutable, date_create,
     date_date_set, date_diff, date_format, date_get_last_errors, date_interval_create_from_date_string,

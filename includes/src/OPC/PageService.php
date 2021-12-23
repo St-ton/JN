@@ -92,7 +92,7 @@ class PageService
 
         foreach ($this->getPageIOFunctionNames() as $functionName) {
             $publicFunctionName = 'opc' . \ucfirst($functionName);
-            $io->register($publicFunctionName, [$this, $functionName], null, 'CONTENT_PAGE_VIEW');
+            $io->register($publicFunctionName, [$this, $functionName], null, 'OPC_VIEW');
         }
     }
 

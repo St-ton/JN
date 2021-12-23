@@ -106,6 +106,21 @@ class MenuItem
     public $orphaned = false;
 
     /**
+     * @var int
+     */
+    private $lft = 0;
+
+    /**
+     * @var int
+     */
+    private $rght = 0;
+
+    /**
+     * @var int
+     */
+    private $lvl = 0;
+
+    /**
      * @return int
      */
     public function getID(): int
@@ -359,11 +374,62 @@ class MenuItem
     }
 
     /**
-     * MenuItem constructor.
-     * @param stdClass $data
+     * @return int
      */
-    public function __construct(stdClass $data)
+    public function getLeft(): int
     {
+        return $this->lft;
+    }
+
+    /**
+     * @param int $lft
+     */
+    public function setLeft(int $lft): void
+    {
+        $this->lft = $lft;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRight(): int
+    {
+        return $this->rght;
+    }
+
+    /**
+     * @param int $rght
+     */
+    public function setRight(int $rght): void
+    {
+        $this->rght = $rght;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLevel(): int
+    {
+        return $this->lvl;
+    }
+
+    /**
+     * @param int $lvl
+     */
+    public function setLevel(int $lvl): void
+    {
+        $this->lvl = $lvl;
+    }
+
+    /**
+     * MenuItem constructor.
+     * @param stdClass|Kategorie $data
+     */
+    public function __construct($data)
+    {
+        $this->setLeft((int)$data->lft);
+        $this->setRight((int)$data->rght);
+        $this->setLevel((int)$data->nLevel);
         $this->setImageType(Image::TYPE_CATEGORY);
         $this->setID((int)$data->kKategorie);
         $this->setParentID((int)$data->kOberKategorie);
@@ -383,7 +449,7 @@ class MenuItem
         $this->setURL($data->cSeo ?? '');
         $this->setImageURL($data->cPfad ?? '');
         $this->generateAllImageSizes(true, 1, $data->cPfad ?? null);
-        $this->setProductCount((int)$data->cnt);
+        $this->setProductCount((int)($data->cnt ?? 0));
         $this->setFunctionalAttributes($data->functionAttributes[$this->getID()] ?? []);
         $this->setAttributes($data->localizedAttributes[$this->getID()] ?? []);
         $this->setShortName($this->getAttribute(\ART_ATTRIBUT_SHORTNAME)->cWert ?? $this->getName());

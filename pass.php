@@ -23,32 +23,38 @@ $startKat->kKategorie = 0;
 $step                 = 'formular';
 $hinweis              = '';
 $cFehler              = '';
+$fehlendeAngaben      = [];
+
 //loginbenutzer?
 if (isset($_POST['passwort_vergessen'], $_POST['email'])
     && (int)$_POST['passwort_vergessen'] === 1
     && validateToken()
 ) {
-    $kunde = Shop::DB()->select(
-        'tkunde',
-        'cMail',
-        $_POST['email'],
-        'nRegistriert',
-        1,
-        null,
-        null,
-        false,
-        'kKunde, cSperre'
-    );
-    if (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre !== 'Y') {
-        $step   = 'passwort versenden';
-        $oKunde = new Kunde($kunde->kKunde);
-        $oKunde->prepareResetPassword();
-
-        $smarty->assign('Kunde', $oKunde);
-    } elseif (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre === 'Y') {
-        $hinweis = Shop::Lang()->get('accountLocked');
+    if (!validateCaptcha($_POST)) {
+        $fehlendeAngaben['captcha'] = 2;
     } else {
-        $hinweis = Shop::Lang()->get('incorrectEmail');
+        $kunde = Shop::DB()->select(
+            'tkunde',
+            'cMail',
+            $_POST['email'],
+            'nRegistriert',
+            1,
+            null,
+            null,
+            false,
+            'kKunde, cSperre'
+        );
+        if (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre !== 'Y') {
+            $step = 'passwort versenden';
+            $oKunde = new Kunde($kunde->kKunde);
+            $oKunde->prepareResetPassword();
+
+            $smarty->assign('Kunde', $oKunde);
+        } elseif (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre === 'Y') {
+            $hinweis = Shop::Lang()->get('accountLocked');
+        } else {
+            $hinweis = Shop::Lang()->get('incorrectEmail');
+        }
     }
 } elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpwh']) && validateToken()) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
@@ -101,6 +107,8 @@ $smarty->assign('step', $step)
        ->assign('cFehler', $cFehler)
        ->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('requestURL', isset($requestURL) ? $requestURL : null)
+       ->assign('code_pass', generiereCaptchaCode('Y'))
+       ->assign('fehlendeAngaben', $fehlendeAngaben)
        ->assign('Einstellungen', $GLOBALS['GlobaleEinstellungen']);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

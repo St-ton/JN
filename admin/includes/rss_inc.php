@@ -71,7 +71,7 @@ function generiereRSSXML()
             ['lid' => (int)$_SESSION['kSprache'], 'cgid' => $stdKundengruppe->kKundengruppe, 'ds' => $days]
         );
         foreach ($products as $product) {
-            $url  = URL::buildURL($product, URLART_ARTIKEL, true);
+            $url  = URL::buildURL($product, URLART_ARTIKEL, true, $shopURL . '/');
             $xml .= '
         <item>
             <title>' . wandelXMLEntitiesUm($product->cName) . '</title>
@@ -96,7 +96,7 @@ function generiereRSSXML()
             ['ds' => $days]
         );
         foreach ($news as $item) {
-            $url  = URL::buildURL($item, URLART_NEWS);
+            $url  = URL::buildURL($item, URLART_NEWS, true, $shopURL . '/');
             $xml .= '
         <item>p
             <title>' . wandelXMLEntitiesUm($item->title) . '</title>
@@ -117,7 +117,7 @@ function generiereRSSXML()
             ['ds' => $days]
         );
         foreach ($reviews as $review) {
-            $url  = URL::buildURL($review, URLART_ARTIKEL, true);
+            $url  = URL::buildURL($review, URLART_ARTIKEL, true, $shopURL . '/');
             $xml .= '
         <item>
             <title>Bewertung ' . wandelXMLEntitiesUm($review->cTitel) . ' von ' .

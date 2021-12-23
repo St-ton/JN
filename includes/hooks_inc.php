@@ -1889,9 +1889,28 @@ define('HOOK_SITEMAP_EXPORT_INIT', 286);
  * @since 5.0.0
  * @file includes/src/Mail/Mailer.php
  * @param \JTL\Mail\Mailer mailer
- * @param \JTL\Mail\Mail mail
+ * @param \JTL\Mail\Mail\MailInterface mail
  */
 define('HOOK_MAIL_PRERENDER', 290);
+
+/**
+ * @since 5.1.2
+ * @file includes/src/Mail/Mailer.php
+ * @param \JTL\Mail\Mailer mailer
+ * @param \JTL\Mail\Mail\MailInterface mail
+ * @param \PHPMailer\PHPMailer\PHPMailer phpmailer
+ */
+define('HOOK_MAILER_PRE_SEND', 291);
+
+/**
+ * @since 5.1.2
+ * @file includes/src/Mail/Mailer.php
+ * @param \JTL\Mail\Mailer mailer
+ * @param \JTL\Mail\Mail\MailInterface mail
+ * @param \PHPMailer\PHPMailer\PHPMailer phpmailer
+ * @param bool status
+ */
+define('HOOK_MAILER_POST_SEND', 292);
 
 /**
  * @since 5.0.0

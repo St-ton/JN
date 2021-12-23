@@ -92,6 +92,7 @@ class Sitemap
         }
         $cacheID = 'news_category_' . $this->langID . '_' . $this->customerGroupID;
         if (($newsCategories = $this->cache->get($cacheID)) === false) {
+            $prefix         = Shop::getURL() . '/';
             $newsCategories = $this->db->getObjects(
                 "SELECT tnewskategorie.kNewsKategorie, t.languageID AS kSprache, t.name AS cName,
                 t.description AS cBeschreibung, t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription,
@@ -124,7 +125,7 @@ class Sitemap
             );
             foreach ($newsCategories as $newsCategory) {
                 $newsCategory->cURL     = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE);
-                $newsCategory->cURLFull = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true);
+                $newsCategory->cURLFull = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true, $prefix);
 
                 $entries = $this->db->getObjects(
                     "SELECT tnews.kNews, t.languageID AS kSprache, tnews.cKundengruppe, t.title AS cBetreff, 
@@ -157,7 +158,7 @@ class Sitemap
                 );
                 foreach ($entries as $entry) {
                     $entry->cURL     = URL::buildURL($entry, \URLART_NEWS);
-                    $entry->cURLFull = URL::buildURL($entry, \URLART_NEWS, true);
+                    $entry->cURLFull = URL::buildURL($entry, \URLART_NEWS, true, $prefix);
                 }
                 $newsCategory->oNews_arr = $entries;
             }
@@ -177,6 +178,7 @@ class Sitemap
         }
         $cacheID = 'sitemap_news_' . $this->langID;
         if (($overview = $this->cache->get($cacheID)) === false) {
+            $prefix   = Shop::getURL() . '/';
             $overview = $this->db->getObjects(
                 "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, 
                 MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr, COUNT(*) AS nAnzahl
@@ -234,11 +236,11 @@ class Sitemap
                 );
                 foreach ($entries as $oNews) {
                     $oNews->cURL     = URL::buildURL($oNews, \URLART_NEWS);
-                    $oNews->cURLFull = URL::buildURL($oNews, \URLART_NEWS, true);
+                    $oNews->cURLFull = URL::buildURL($oNews, \URLART_NEWS, true, $prefix);
                 }
                 $news->oNews_arr = $entries;
                 $news->cURL      = URL::buildURL($news, \URLART_NEWSMONAT);
-                $news->cURLFull  = URL::buildURL($news, \URLART_NEWSMONAT, true);
+                $news->cURLFull  = URL::buildURL($news, \URLART_NEWSMONAT, true, $prefix);
             }
             $this->cache->set($cacheID, $overview, [\CACHING_GROUP_NEWS]);
         }

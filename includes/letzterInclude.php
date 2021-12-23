@@ -112,7 +112,11 @@ $cartValue       = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], t
 $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('NaviFilter', $NaviFilter)
     ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
-    ->assign('oUnterKategorien_arr', Category::getSubcategoryList($AktuelleKategorie->kKategorie ?? -1))
+    ->assign('oUnterKategorien_arr', Category::getSubcategoryList(
+        $AktuelleKategorie->kKategorie ?? -1,
+        $AktuelleKategorie->lft ?? -1,
+        $AktuelleKategorie->rght ?? -1,
+    ))
     ->assign('nTemplateVersion', $template->getVersion())
     ->assign('currentTemplateDir', $tplDir)
     ->assign('currentTemplateDirFull', $shopURL . '/' . $tplDir)

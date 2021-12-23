@@ -1335,7 +1335,7 @@ class Artikel
             $image->cURLNormal   = $baseURL . \BILD_KEIN_ARTIKELBILD_VORHANDEN;
             $image->cURLGross    = $baseURL . \BILD_KEIN_ARTIKELBILD_VORHANDEN;
             $image->nNr          = 1;
-            $image->cAltAttribut = \str_replace(['"', "'"], '', $this->cName);
+            $image->cAltAttribut = \strip_tags(\str_replace(['"', "'"], '', $this->cName));
             $image->galleryJSON  = $this->prepareImageDetails($image);
 
             $this->Bilder[0] = $image;
@@ -1362,9 +1362,14 @@ class Artikel
             }
             // Lookup image alt attribute
             $idx                 = 'img_alt_' . $imgNo;
-            $image->cAltAttribut = isset($this->AttributeAssoc[$idx])
-                ? \strip_tags($this->AttributeAssoc['img_alt_' . $imgNo])
-                : \str_replace(['"', "'"], '', $this->cName);
+            $image->cAltAttribut = \strip_tags(\str_replace(
+                ['"', "'"],
+                '',
+                $this->AttributeAssoc[$idx] ?? $this->cName
+            ));
+            if (isset($this->AttributeAssoc[$idx])) {
+                $image->cAltAttribut = Text::htmlentitiesOnce($image->cAltAttribut, \ENT_COMPAT | \ENT_HTML401);
+            }
 
             $image->galleryJSON = $this->prepareImageDetails($image);
             $this->Bilder[]     = $image;
@@ -1454,11 +1459,7 @@ class Artikel
                 'height' => $height
             ],
             'type' => $type,
-            'alt'  => \htmlspecialchars(
-                \str_replace('"', '', $image->cAltAttribut),
-                \ENT_COMPAT | \ENT_HTML401,
-                \JTL_CHARSET
-            )
+            'alt'  => \str_replace('"', '', $image->cAltAttribut)
         ];
     }
 

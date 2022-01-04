@@ -1186,10 +1186,16 @@ class Artikel
      * @param array     $attributes
      * @param int       $customerGroupID
      * @param string    $unique
+     * @param bool      $assign
      * @return float|null
      */
-    public function gibPreis($amount, array $attributes, int $customerGroupID = 0, string $unique = '')
-    {
+    public function gibPreis(
+        $amount,
+        array $attributes,
+        int $customerGroupID = 0,
+        string $unique = '',
+        bool $assign = true
+    ) {
         if (!Frontend::getCustomerGroup()->mayViewPrices()) {
             return null;
         }
@@ -1199,14 +1205,17 @@ class Artikel
         if (!$customerGroupID) {
             $customerGroupID = Frontend::getCustomerGroup()->getID();
         }
-        $customerID   = Frontend::getCustomer()->getID();
-        $this->Preise = new Preise($customerGroupID, $this->kArtikel, $customerID, (int)$this->kSteuerklasse);
+        $customerID = Frontend::getCustomer()->getID();
         // Varkombi Kind?
         $productID = ($this->kEigenschaftKombi > 0 && $this->kVaterArtikel > 0)
             ? $this->kVaterArtikel
             : $this->kArtikel;
-        $this->Preise->rabbatierePreise($this->getDiscount($customerGroupID, $productID));
-        $price = $this->Preise->fVKNetto;
+        $prices    = new Preise($customerGroupID, $this->kArtikel, $customerID, (int)$this->kSteuerklasse);
+        $prices->rabbatierePreise($this->getDiscount($customerGroupID, $productID));
+        if ($assign) {
+            $this->Preise = $prices;
+        }
+        $price = $prices->fVKNetto;
         if (isset($this->FunktionsAttribute[\FKT_ATTRIBUT_VOUCHER_FLEX])) {
             $customCalculated = (float)Frontend::get(
                 'customCalculated_' . $unique,
@@ -1217,8 +1226,8 @@ class Artikel
                 Frontend::set('customCalculated_' . $unique, $customCalculated);
             }
         }
-        foreach ($this->Preise->fPreis_arr as $i => $fPreis) {
-            if ($this->Preise->nAnzahl_arr[$i] <= $amount) {
+        foreach ($prices->fPreis_arr as $i => $fPreis) {
+            if ($prices->nAnzahl_arr[$i] <= $amount) {
                 $price = $fPreis;
             }
         }
@@ -1256,7 +1265,7 @@ class Artikel
                 'kKundengruppe',
                 $customerGroupID
             );
-            if (!\is_object($propExtraCharge) && $this->Preise->isDiscountable()) {
+            if (!\is_object($propExtraCharge) && $prices->isDiscountable()) {
                 $propExtraCharge = $db->select(
                     'teigenschaftwert',
                     'kEigenschaftWert',
@@ -2892,9 +2901,9 @@ class Artikel
         $per         = ' ' . Shop::Lang()->get('vpePer') . ' ';
         $taxRate     = $_SESSION['Steuersatz'][$this->kSteuerklasse];
         $precision   = isset($this->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
-        && (int)$this->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
-            ? (int)$this->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
-            : 2;
+            && (int)$this->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
+                ? (int)$this->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
+                : 2;
         foreach ($varDetailPrices as $varDetailPrice) {
             $varDetailPrice->kArtikel         = (int)$varDetailPrice->kArtikel;
             $varDetailPrice->kEigenschaft     = (int)$varDetailPrice->kEigenschaft;
@@ -2910,59 +2919,57 @@ class Artikel
                 $tmpProduct  = new self();
                 $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID, $customerID);
             }
-            if (!isset($this->oVariationDetailPreis_arr[$idx])) {
-                $this->oVariationDetailPreis_arr[$idx] = new stdClass();
-            }
-            $this->oVariationDetailPreis_arr[$idx]->Preise = $tmpProduct->Preise;
+
+            $prodVkNetto            = $this->gibPreis(1, [], $customerGroupID, '', false);
+            $varVKNetto             = $tmpProduct->gibPreis(1, [], $customerGroupID, '', false);
+            $variationPrice         = $this->oVariationDetailPreis_arr[$idx] ?? new stdClass();
+            $variationPrice->Preise = clone $tmpProduct->Preise;
+
             // Variationsaufpreise - wird benötigt wenn Einstellung 119 auf (Aufpreise / Rabatt anzeigen) steht
             $prefix = '';
-            if ($tmpProduct->Preise->fVK[0] > $this->Preise->fVK[0]) {
+            if ($varVKNetto > $prodVkNetto) {
                 $prefix = '+ ';
-            } elseif ($tmpProduct->Preise->fVK[0] < $this->Preise->fVK[0]) {
+            } elseif ($varVKNetto < $prodVkNetto) {
                 $prefix = '- ';
             }
 
-            if (!$customerGroupID) {
-                $customerGroupID = Frontend::getCustomerGroup()->getID();
-            }
             $discount = $this->Preise->isDiscountable() ? $this->getDiscount($customerGroupID, $this->kArtikel) : 0;
+            $variationPrice->Preise->rabbatierePreise($discount)->localizePreise();
 
-            if ($tmpProduct->Preise->fVK[0] > $this->Preise->fVK[0]
-                || $tmpProduct->Preise->fVK[0] < $this->Preise->fVK[0]
-            ) {
-                $this->oVariationDetailPreis_arr[$idx]->Preise->cAufpreisLocalized[0] =
+            if ($varVKNetto !== $prodVkNetto) {
+                $variationPrice->Preise->cAufpreisLocalized[0] =
                     $prefix .
                     Preise::getLocalizedPriceString(
-                        \abs($tmpProduct->Preise->fVK[0] - $this->Preise->fVK[0]) * ((100 - $discount) / 100),
+                        \abs(Tax::getGross($varVKNetto, $taxRate) - Tax::getGross($prodVkNetto, $taxRate)),
                         $currency
                     );
-                $this->oVariationDetailPreis_arr[$idx]->Preise->cAufpreisLocalized[1] =
+                $variationPrice->Preise->cAufpreisLocalized[1] =
                     $prefix .
                     Preise::getLocalizedPriceString(
-                        \abs($tmpProduct->Preise->fVK[1] - $this->Preise->fVK[1]) * ((100 - $discount) / 100),
+                        \abs($varVKNetto - $prodVkNetto),
                         $currency
                     );
             }
+
             // Grundpreis?
             if (!empty($tmpProduct->cVPE) && $tmpProduct->cVPE === 'Y' && $tmpProduct->fVPEWert > 0) {
-                $this->oVariationDetailPreis_arr[$idx]->Preise->PreisecPreisVPEWertInklAufpreis[0] =
+                $variationPrice->Preise->PreisecPreisVPEWertInklAufpreis[0] =
                     Preise::getLocalizedPriceString(
-                        Tax::getGross(
-                            $tmpProduct->Preise->fVKNetto / $tmpProduct->fVPEWert,
-                            $taxRate
-                        ),
+                        Tax::getGross($varVKNetto / $tmpProduct->fVPEWert, $taxRate),
                         $currency,
                         true,
                         $precision
                     ) . $per . $tmpProduct->cVPEEinheit;
-                $this->oVariationDetailPreis_arr[$idx]->Preise->PreisecPreisVPEWertInklAufpreis[1] =
+                $variationPrice->Preise->PreisecPreisVPEWertInklAufpreis[1] =
                     Preise::getLocalizedPriceString(
-                        $tmpProduct->Preise->fVKNetto / $tmpProduct->fVPEWert,
+                        $varVKNetto / $tmpProduct->fVPEWert,
                         $currency,
                         true,
                         $precision
                     ) . $per . $tmpProduct->cVPEEinheit;
             }
+
+            $this->oVariationDetailPreis_arr[$idx] = $variationPrice;
         }
 
         return $this;

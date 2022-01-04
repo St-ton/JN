@@ -1107,20 +1107,47 @@ class Artikel
     /**
      * @param int            $customerGroupID
      * @param Artikel|object $tmpProduct
+     * @param int            $customerID - always keep at 0 when saving the result to cache
      * @return $this
      */
-    public function holPreise(int $customerGroupID, $tmpProduct): self
+    public function holPreise(int $customerGroupID, $tmpProduct, int $customerID = 0): self
     {
         $this->Preise = new Preise(
             $customerGroupID,
             (int)$tmpProduct->kArtikel,
-            Frontend::getCustomer()->getID(),
+            $customerID,
             (int)$tmpProduct->kSteuerklasse
         );
         if ($this->getOption('nHidePrices', 0) === 1 || !Frontend::getCustomerGroup()->mayViewPrices()) {
             $this->Preise->setPricesToZero();
         }
         $this->Preise->localizePreise();
+
+        return $this;
+    }
+
+    /**
+     * @param int $customerGroupID
+     * @param int $customerID
+     * @return $this
+     */
+    protected function getCustomerPrice(int $customerGroupID, int $customerID): self
+    {
+        if (!$this->Preise->customerHasCustomPriceForProduct($customerID, $this->kArtikel)) {
+            return $this;
+        }
+        $this->Preise = new Preise(
+            $customerGroupID,
+            $this->kArtikel,
+            $customerID,
+            $this->kSteuerklasse
+        );
+        if ($this->getOption('nHidePrices', 0) === 1 || !Frontend::getCustomerGroup()->mayViewPrices()) {
+            $this->Preise->setPricesToZero();
+        }
+        $this->Preise->localizePreise();
+        $this->getVariationDetailPrice($customerGroupID, $customerID);
+        $this->staffelPreis_arr = $this->getTierPrices();
 
         return $this;
     }
@@ -1147,10 +1174,10 @@ class Artikel
      */
     public function gibKundenRabatt($maxDiscount)
     {
-        return (isset($_SESSION['Kunde']->kKunde, $_SESSION['Kunde']->fRabatt)
-            && (int)$_SESSION['Kunde']->kKunde > 0
-            && (double)$_SESSION['Kunde']->fRabatt > $maxDiscount)
-            ? (double)$_SESSION['Kunde']->fRabatt
+        $customer = Frontend::getCustomer();
+
+        return ($customer->getID() > 0 && (double)$customer->fRabatt > $maxDiscount)
+            ? (double)$customer->fRabatt
             : $maxDiscount;
     }
 
@@ -1317,7 +1344,7 @@ class Artikel
             $image->cURLNormal   = $baseURL . \BILD_KEIN_ARTIKELBILD_VORHANDEN;
             $image->cURLGross    = $baseURL . \BILD_KEIN_ARTIKELBILD_VORHANDEN;
             $image->nNr          = 1;
-            $image->cAltAttribut = \str_replace(['"', "'"], '', $this->cName);
+            $image->cAltAttribut = \strip_tags(\str_replace(['"', "'"], '', $this->cName));
             $image->galleryJSON  = $this->prepareImageDetails($image);
 
             $this->Bilder[0] = $image;
@@ -1344,9 +1371,14 @@ class Artikel
             }
             // Lookup image alt attribute
             $idx                 = 'img_alt_' . $imgNo;
-            $image->cAltAttribut = isset($this->AttributeAssoc[$idx])
-                ? \strip_tags($this->AttributeAssoc['img_alt_' . $imgNo])
-                : \str_replace(['"', "'"], '', $this->cName);
+            $image->cAltAttribut = \strip_tags(\str_replace(
+                ['"', "'"],
+                '',
+                $this->AttributeAssoc[$idx] ?? $this->cName
+            ));
+            if (isset($this->AttributeAssoc[$idx])) {
+                $image->cAltAttribut = Text::htmlentitiesOnce($image->cAltAttribut, \ENT_COMPAT | \ENT_HTML401);
+            }
 
             $image->galleryJSON = $this->prepareImageDetails($image);
             $this->Bilder[]     = $image;
@@ -1436,11 +1468,7 @@ class Artikel
                 'height' => $height
             ],
             'type' => $type,
-            'alt'  => \htmlspecialchars(
-                \str_replace('"', '', $image->cAltAttribut),
-                \ENT_COMPAT | \ENT_HTML401,
-                \JTL_CHARSET
-            )
+            'alt'  => \str_replace('"', '', $image->cAltAttribut)
         ];
     }
 
@@ -2843,9 +2871,10 @@ class Artikel
      * Wichtig fuer die Anzeige von Aufpreisen
      *
      * @param int $customerGroupID
+     * @param int $customerID - always keep at 0 when saving the result to cache
      * @return $this
      */
-    private function getVariationDetailPrice(int $customerGroupID): self
+    private function getVariationDetailPrice(int $customerGroupID, int $customerID = 0): self
     {
         $this->oVariationDetailPreis_arr = [];
         if ($this->nVariationOhneFreifeldAnzahl !== 1) {
@@ -2888,7 +2917,7 @@ class Artikel
             if ($varDetailPrice->kArtikel !== $lastProduct) {
                 $lastProduct = $varDetailPrice->kArtikel;
                 $tmpProduct  = new self();
-                $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID);
+                $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID, $customerID);
             }
 
             $prodVkNetto            = $this->gibPreis(1, [], $customerGroupID, '', false);
@@ -3338,6 +3367,7 @@ class Artikel
             $toSave->Preise                         = $basePrice;
             Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
         }
+        $this->getCustomerPrice($customerGroupID, Frontend::getCustomer()->getID());
 
         return $this;
     }
@@ -3384,8 +3414,8 @@ class Artikel
         $options       = $this->options;
         $baseID        = Shop::Container()->getCache()->getBaseID(false, false, $customerGroupID, $langID);
         $taxClass      = isset($_SESSION['Steuersatz']) ? \implode('_', $_SESSION['Steuersatz']) : '';
-        $customerID    = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
-        $productHash   = \md5($baseID . $this->getOptionsHash($options) . $taxClass . $customerID);
+        $customerID    = Frontend::getCustomer()->getID();
+        $productHash   = \md5($baseID . $this->getOptionsHash($options) . $taxClass);
         $this->cacheID = 'fa_' . $productID . '_' . $productHash;
         $product       = Shop::Container()->getCache()->get($this->cacheID);
         if ($product === false) {
@@ -3401,6 +3431,7 @@ class Artikel
         if ($this->Preise === null || !\method_exists($this->Preise, 'rabbatierePreise')) {
             $this->holPreise($customerGroupID, $this);
         }
+        $this->getCustomerPrice($customerGroupID, $customerID);
         if ($maxDiscount > 0) {
             $this->rabattierePreise($customerGroupID);
         }
@@ -3742,9 +3773,10 @@ class Artikel
     /**
      * @param int $productID
      * @param int $customerGroupID
+     * @param int $customerID
      * @return $this
      */
-    private function getPriceData(int $productID, int $customerGroupID): self
+    private function getPriceData(int $productID, int $customerGroupID, int $customerID = 0): self
     {
         $tmp = Shop::Container()->getDB()->getSingleObject(
             'SELECT tartikel.kArtikel, tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kSteuerklasse,
@@ -3762,7 +3794,7 @@ class Artikel
             foreach (\get_object_vars($tmp) as $k => $v) {
                 $this->$k = $v;
             }
-            $this->holPreise($customerGroupID, $this);
+            $this->holPreise($customerGroupID, $this, $customerID);
         }
 
         return $this;
@@ -5247,12 +5279,9 @@ class Artikel
             $discounts[] = $customerGroup->getDiscount();
         }
         // Existiert für diesen Kunden ein Rabatt?
-        if (\array_key_exists('Kunde', $_SESSION)
-            && isset($_SESSION['Kunde']->kKunde)
-            && $_SESSION['Kunde']->kKunde > 0
-            && $_SESSION['Kunde']->fRabatt != 0
-        ) {
-            $discounts[] = $_SESSION['Kunde']->fRabatt;
+        $customer = Frontend::getCustomer();
+        if ($customer->getID() > 0 && $customer->fRabatt != 0) {
+            $discounts[] = $customer->fRabatt;
         }
         // Maximalen Rabatt setzen
         if (\count($discounts) > 0) {
@@ -5518,9 +5547,8 @@ class Artikel
         }
         $idx = Frontend::getCustomerGroup()->getIsMerchant();
         if (isset(
-            $_SESSION['Kundengruppe']->nNettoPreise,
             $this->Preise->fVK[$idx],
-            $this->Preise->cVKLocalized[Frontend::getCustomerGroup()->isMerchant()]
+            $this->Preise->cVKLocalized[$idx]
         )
             && $this->Preise->fVK[$idx] > 0
             && $this->conf['metaangaben']['global_meta_title_preis'] === 'Y'

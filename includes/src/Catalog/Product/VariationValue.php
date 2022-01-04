@@ -360,7 +360,7 @@ class VariationValue
             ];
 
             $this->cPreisVPEWertAufpreis[0] = Preise::getLocalizedPriceString(
-                Tax::getGross($base[0], $taxRate),
+                $base[0],
                 $currency,
                 true,
                 $precision

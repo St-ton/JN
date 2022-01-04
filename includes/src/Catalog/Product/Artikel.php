@@ -2940,13 +2940,13 @@ class Artikel
                 $variationPrice->Preise->cAufpreisLocalized[0] =
                     $prefix .
                     Preise::getLocalizedPriceString(
-                        \abs($varVKNetto - $prodVkNetto),
+                        \abs(Tax::getGross($varVKNetto, $taxRate) - Tax::getGross($prodVkNetto, $taxRate)),
                         $currency
                     );
                 $variationPrice->Preise->cAufpreisLocalized[1] =
                     $prefix .
                     Preise::getLocalizedPriceString(
-                        \abs(Tax::getGross($varVKNetto, $taxRate) - Tax::getGross($prodVkNetto, $taxRate)),
+                        \abs($varVKNetto - $prodVkNetto),
                         $currency
                     );
             }

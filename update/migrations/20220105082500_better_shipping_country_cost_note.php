@@ -17,7 +17,7 @@ class Migration_20220105082500 extends Migration implements IMigration
     public function up()
     {
         $this->setLocalization('ger', 'productDetails', 'shippingInfoIcon', '(%s - Ausland abweichend)');
-        $this->setLocalization('eng', 'productDetails', 'shippingInfoIcon', '(%s - Other countries may differ)');
+        $this->setLocalization('eng', 'productDetails', 'shippingInfoIcon', '(%s - int. shipments may differ)');
     }
 
     /**

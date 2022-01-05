@@ -23086,7 +23086,7 @@ ul.partlist-items {
 }
 
 .img-xs {
-  width: 24px;
+  width: auto;
   height: 24px;
   object-fit: contain;
 }
@@ -26367,6 +26367,13 @@ header #burger-menu {
 .cart-items-body .cart-items-name {
   display: block;
   margin-bottom: 1rem;
+}
+
+.item-overflow-notice {
+  padding: 0 0.75rem;
+}
+.item-overflow-notice a {
+  text-decoration: underline;
 }
 
 /* contact */

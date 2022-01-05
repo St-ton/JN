@@ -5,15 +5,19 @@ namespace JTL\Extensions\Download;
 use DateTime;
 use JTL\Cart\Cart;
 use JTL\Checkout\Bestellung;
+use JTL\MagicCompatibilityTrait;
 use JTL\Nice;
 use JTL\Shop;
 
 /**
  * Class Download
  * @package JTL\Extensions\Download
+ * @property array oDownloadHistory_arr
  */
 class Download
 {
+    use MagicCompatibilityTrait;
+
     public const ERROR_NONE = 1;
 
     public const ERROR_ORDER_NOT_FOUND = 2;
@@ -74,11 +78,6 @@ class Download
     public $oDownloadSprache;
 
     /**
-     * @var array
-     */
-    public $oDownloadHistory_arr;
-
-    /**
      * @var int
      */
     public $kBestellung;
@@ -96,7 +95,14 @@ class Download
     /**
      * @var string
      */
-    private $cLimit;
+    public $cLimit;
+
+    /**
+     * @var array
+     */
+    public static $mapping = [
+        'oDownloadHistory_arr' => 'DownloadHistory'
+    ];
 
     /**
      * Download constructor.
@@ -125,6 +131,7 @@ class Download
      * @param int  $languageID
      * @param bool $info
      * @param int  $orderID
+     * @throws \Exception
      */
     private function loadFromDB(int $id, int $languageID, bool $info, int $orderID): void
     {
@@ -143,21 +150,14 @@ class Download
             if (!$languageID) {
                 $languageID = Shop::getLanguageID();
             }
-            $this->oDownloadSprache     = new Localization($item->kDownload, $languageID);
-            $this->oDownloadHistory_arr = History::getHistory($item->kDownload);
+            $this->oDownloadSprache = new Localization($item->kDownload, $languageID);
         }
         if ($orderID > 0) {
             $this->kBestellung = $orderID;
-            $order             = Shop::Container()->getDB()->select(
-                'tbestellung',
-                'kBestellung',
-                $orderID,
-                null,
-                null,
-                null,
-                null,
-                false,
-                'kBestellung, dBezahltDatum'
+            $order             = Shop::Container()->getDB()->getSingleObject(
+                'SELECT * FROM tbestellung
+                    WHERE kBestellung = :oid',
+                ['oid' => $orderID]
             );
             if ($order !== null
                 && $order->kBestellung > 0
@@ -184,6 +184,7 @@ class Download
             $dla->kDownload = (int)$dla->kDownload;
         }
     }
+
 
     /**
      * @param array $keys
@@ -213,7 +214,7 @@ class Download
                     'cid' => $customerID,
                     'pos' => \C_WARENKORBPOS_TYP_ARTIKEL
                 ];
-                $select = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, 
+                $select = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde,
                     tartikeldownload.kDownload';
                 $where  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
                 $join   = 'JOIN tbestellung ON tbestellung.kKunde = :cid
@@ -326,6 +327,7 @@ class Download
      * @param int $customerID
      * @param int $orderID
      * @return int
+     * @throws \Exception
      */
     public static function checkFile(int $downloadID, int $customerID, int $orderID): int
     {
@@ -423,6 +425,15 @@ class Download
         $this->kDownload = $kDownload;
 
         return $this;
+    }
+
+    /**
+     * @param int|null $kDownload
+     * @return array
+     */
+    public function getDownloadHistory(?int $kDownload = null): array
+    {
+        return History::getHistory($kDownload ?? $this->kDownload);
     }
 
     /**

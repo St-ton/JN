@@ -32,7 +32,8 @@ $smarty     = Shop::Smarty();
 $db         = Shop::Container()->getDB();
 $tplService = Shop::Container()->getTemplateService();
 $template   = $tplService->getActiveTemplate();
-$tplDir     = PFAD_TEMPLATES . $template->getDir() . '/';
+$paths      = $template->getPaths();
+$tplDir     = $paths->getBaseRelDir();
 $shopURL    = Shop::getURL();
 $cart       = $_SESSION['Warenkorb'] ?? new Cart();
 $conf       = Shopsetting::getInstance()->getAll();
@@ -111,17 +112,20 @@ $service->buildURIs($smarty, $template, $themeDir);
 
 $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($customerGroupID, $origin);
 $cartValue       = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
-
 $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('NaviFilter', $NaviFilter)
     ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
-    ->assign('oUnterKategorien_arr', Category::getSubcategoryList($AktuelleKategorie->kKategorie ?? -1))
+    ->assign('oUnterKategorien_arr', Category::getSubcategoryList(
+        $AktuelleKategorie->kKategorie ?? -1,
+        $AktuelleKategorie->lft ?? -1,
+        $AktuelleKategorie->rght ?? -1,
+    ))
     ->assign('nTemplateVersion', $template->getVersion())
     ->assign('currentTemplateDir', $tplDir)
-    ->assign('currentTemplateDirFull', $shopURL . '/' . $tplDir)
-    ->assign('currentTemplateDirFullPath', PFAD_ROOT . $tplDir)
-    ->assign('currentThemeDir', $tplDir . 'themes/' . $themeDir . '/')
-    ->assign('currentThemeDirFull', $shopURL . '/' . $tplDir . 'themes/' . $themeDir . '/')
+    ->assign('currentTemplateDirFull', $paths->getBaseURL())
+    ->assign('currentTemplateDirFullPath', $paths->getBaseDir())
+    ->assign('currentThemeDir', $paths->getRealRelThemeDir())
+    ->assign('currentThemeDirFull', $paths->getRealThemeURL())
     ->assign('opcDir', PFAD_ROOT . PFAD_ADMIN . 'opc/')
     ->assign('session_name', session_name())
     ->assign('session_id', session_id())

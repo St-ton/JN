@@ -34,7 +34,7 @@
                         {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                             {col cols=3 lg=2 class="checkout-items-item-image-wrapper"}
                                 {if !empty($oPosition->Artikel->cVorschaubild)}
-                                    {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
+                                    {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
                                         {include file='snippets/image.tpl' item=$oPosition->Artikel square=false srcSize='sm'}
                                     {/link}
                                 {/if}
@@ -45,7 +45,7 @@
                         {col cols=$cols lg=$itemInfoCols class="checkout-items-item-main"}
                             {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK}
                                 {block name='checkout-inc-order-items-product-data-link'}
-                                    <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}</p>
+                                    <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}{$oPosition->cName|trans}{/link}</p>
                                 {/block}
                                 {block name='checkout-inc-order-items-product-data'}
                                     <ul class="list-unstyled text-muted-util small">

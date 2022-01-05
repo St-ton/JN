@@ -15,7 +15,7 @@
                         {block name='productdetails-product-images-modal-image'}
                             <div class="square square-image">
                                 <div class="inner">
-                                    {image alt=$image->cAltAttribut|escape:'html'
+                                    {image alt=$image->cAltAttribut
                                         class="product-image"
                                         fluid=true
                                         lazy=true

@@ -54,7 +54,7 @@
                             {if !isset($shippingTime)}{lang key='shippingTime'}:{/if}
                             <span class="a{$Artikel->Lageranzeige->nStatus}">
                                 {$Artikel->cEstimatedDelivery}
-                                <span class="estimated-delivery-info">({lang key='shippingInfoIcon' section='productDetails'})</span>
+                                <span class="estimated-delivery-info">{lang key='shippingInfoIcon' section='productDetails' printf=$Firma->country->getISO()}</span>
                             </span>
                         </div>
                     </li>

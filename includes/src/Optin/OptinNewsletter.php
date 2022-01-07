@@ -63,12 +63,14 @@ class OptinNewsletter extends OptinBase implements OptinInterface
     /**
      * former "newsletterAnmeldungPlausi()"
      *
+     * @param int $location
      * @return array
      */
-    protected function checkCaptcha(): array
+    protected function checkCaptcha(int $location = \CHECKBOX_ORT_NEWSLETTERANMELDUNG): array
     {
         $res = [];
-        if (Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N'
+        if ($location === \CHECKBOX_ORT_NEWSLETTERANMELDUNG
+            && Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N'
             && !Form::validateCaptcha($_POST)) {
             $res['captcha'] = 2;
         }
@@ -78,11 +80,14 @@ class OptinNewsletter extends OptinBase implements OptinInterface
 
     /**
      * @param OptinRefData $refData
+     * @param int $location
      * @return OptinInterface
      * @throws InvalidInputException
      */
-    public function createOptin(OptinRefData $refData): OptinInterface
-    {
+    public function createOptin(
+        OptinRefData $refData,
+        int $location = \CHECKBOX_ORT_NEWSLETTERANMELDUNG
+    ): OptinInterface {
         $this->refData = $refData;
         $this->optCode = $this->generateUniqOptinCode();
 
@@ -92,12 +97,12 @@ class OptinNewsletter extends OptinBase implements OptinInterface
             $checks->nPlausi_arr = [];
             $nlCustomer          = null;
             if (Text::filterEmailAddress($this->refData->getEmail()) !== false) {
-                $checks->nPlausi_arr            = $this->checkCaptcha();
+                $checks->nPlausi_arr            = $this->checkCaptcha($location);
                 $kKundengruppe                  = Frontend::getCustomerGroup()->getID();
                 $checkBox                       = new CheckBox();
                 $checks->nPlausi_arr            = \array_merge(
                     $checks->nPlausi_arr,
-                    $checkBox->validateCheckBox(\CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true)
+                    $checkBox->validateCheckBox($location, $kKundengruppe, $_POST, true)
                 );
                 $checks->cPost_arr['cAnrede']   = Text::filterXSS($this->refData->getSalutation());
                 $checks->cPost_arr['cVorname']  = Text::filterXSS($this->refData->getFirstName());
@@ -470,5 +475,17 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                 $upd
             );
         }
+    }
+
+    /**
+     * only for FILE IMPORTS of newsletter receivers without sending optin-mails!
+     *
+     * @return OptinInterface
+     */
+    public function bypassSendingPermission(): OptinInterface
+    {
+        $this->hasSendingPermission = true;
+
+        return $this;
     }
 }

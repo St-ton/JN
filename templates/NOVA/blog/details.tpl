@@ -32,7 +32,7 @@
                             {/block}
                         {else}
                             {block name='blog-details-noauthor'}
-                                <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="d-none">
+                                <div itemprop="author publisher" itemscope itemtype="https://schema.org/Organization" class="d-none">
                                     <span itemprop="name">{$meta_publisher}</span>
                                     <meta itemprop="logo" content="{$ShopLogoURL}" />
                                 </div>
@@ -182,7 +182,7 @@
                                         {/col}
                                         {col cols="12" md=6 class="ml-auto-util"}
                                             {block name='blog-details-include-pagination'}
-                                                {include file='snippets/pagination.tpl' oPagination=$oPagiComments cThisUrl=$articleURL cParam_arr=$cParam_arr}
+                                                {include file='snippets/pagination.tpl' oPagination=$oPagiComments cThisUrl=$articleURL cParam_arr=$cParam_arr noWrapper=true}
                                             {/block}
                                         {/col}
                                     {/row}
@@ -221,7 +221,7 @@
                 <div class="h2">{lang key='news' section='news'}</div>
                 <div itemprop="about"
                     itemscope=true
-                    itemtype="http://schema.org/Blog"
+                    itemtype="https://schema.org/Blog"
                     class="carousel carousel-arrows-inside mx-0 slick-lazy slick-type-three {if $oNews_arr|count < 3}slider-no-preview{/if}"
                     data-slick-type="slider-three">
                     {include file='snippets/slider_items.tpl' items=$oNews_arr type='news'}

@@ -492,8 +492,8 @@ class CustomerGroup
                 FROM tkundengruppe
                 WHERE kKundengruppe > 0'
         )->map(static function ($e) {
-            return (int)$e->id;
-        })->mapInto(self::class)->toArray();
+            return new self((int)$e->id);
+        })->toArray();
     }
 
     /**

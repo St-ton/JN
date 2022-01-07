@@ -3,6 +3,7 @@
 namespace JTL;
 
 use JTL\Helpers\Text;
+use stdClass;
 
 /**
  * Class Jtllog
@@ -198,13 +199,20 @@ class Jtllog
      */
     public static function getLogWhere(string $whereSQL = '', $limitSQL = ''): array
     {
-        return Shop::Container()->getDB()->getObjects(
+        return Shop::Container()->getDB()->getCollection(
             'SELECT *
                 FROM tjtllog' .
             ($whereSQL !== '' ? ' WHERE ' . $whereSQL : '') .
             ' ORDER BY dErstellt DESC, kLog DESC ' .
             ($limitSQL !== '' ? ' LIMIT ' . $limitSQL : '')
-        );
+        )->map(static function (stdClass $log) {
+            $log->kLog   = (int)$log->kLog;
+            $log->nLevel = (int)$log->nLevel;
+            $log->kKey   = (int)$log->kKey;
+            $log->cLog   = Text::filterXSS($log->cLog);
+
+            return $log;
+        })->all();
     }
 
     /**
@@ -214,21 +222,22 @@ class Jtllog
      */
     public static function getLogCount(string $filter = '', int $level = 0): int
     {
-        $where = $level > 0
-            ? ' WHERE nLevel = ' . $level
-            : '';
-        if (\mb_strlen($filter) > 0) {
-            if (\mb_strlen($where) === 0) {
-                $where .= " WHERE cLog LIKE '%" . $filter . "%'";
-            } else {
-                $where .= " AND cLog LIKE '%" . $filter . "%'";
-            }
+        $conditions = [];
+        $prep       = [];
+        if ($level > 0) {
+            $prep['lvl']  = $level;
+            $conditions[] = 'nLevel = :lvl';
         }
+        if (\mb_strlen($filter) > 0) {
+            $prep['fltr'] = '%' . $filter . '%';
+            $conditions[] = 'cLog LIKE :fltr';
+        }
+        $where = \count($conditions) > 0 ? ' WHERE ' . \implode(' AND ', $conditions) : '';
 
         return (int)Shop::Container()->getDB()->getSingleObject(
             'SELECT COUNT(*) AS cnt 
-                FROM tjtllog' .
-            $where
+                FROM tjtllog' . $where,
+            $prep
         )->cnt;
     }
 

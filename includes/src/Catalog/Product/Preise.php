@@ -184,13 +184,13 @@ class Preise
     public function __construct(int $customerGroupID, int $productID, int $customerID = 0, int $taxClassID = 0)
     {
         $db             = Shop::Container()->getDB();
-        $customerFilter = 'AND p.kKundengruppe = ' . $customerGroupID;
+        $customerFilter = ' AND p.kKundengruppe = :cgid';
         if ($customerID > 0 && $this->hasCustomPrice($customerID)) {
-            $customerFilter = 'AND (p.kKundengruppe, COALESCE(p.kKunde, 0)) = (
-                            SELECT min(IFNULL(p1.kKundengruppe, ' . $customerGroupID . ')), max(IFNULL(p1.kKunde, 0))
+            $customerFilter = ' AND (p.kKundengruppe, COALESCE(p.kKunde, 0)) = (
+                            SELECT min(IFNULL(p1.kKundengruppe, :cgid)), max(IFNULL(p1.kKunde, 0))
                             FROM tpreis AS p1
-                            WHERE p1.kArtikel = ' . $productID . '
-                                AND (p1.kKundengruppe = 0 OR p1.kKundengruppe = ' . $customerGroupID . ')
+                            WHERE p1.kArtikel = :pid
+                                AND (p1.kKundengruppe = 0 OR p1.kKundengruppe = :cgid)
                                 AND (p1.kKunde = 0 OR p1.kKunde = ' . $customerID . '))';
         }
         $this->kArtikel      = $productID;
@@ -201,8 +201,9 @@ class Preise
             'SELECT *
                 FROM tpreis AS p
                 JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
-                WHERE p.kArtikel = ' . $productID . ' ' . $customerFilter . '
-                ORDER BY d.nAnzahlAb'
+                WHERE p.kArtikel = :pid' . $customerFilter . '
+                ORDER BY d.nAnzahlAb',
+            ['pid' => $productID, 'cgid' => $customerGroupID]
         );
         if (\count($prices) > 0) {
             if ($taxClassID === 0) {
@@ -333,14 +334,41 @@ class Preise
             $newNetPrice = \round($netPrice * ($defaultTax + 100) / 100, 2) / ($conversionTax + 100) * 100;
         }
 
+        \executeHook(\HOOK_RECALCULATED_NET_PRICE, [
+            'netPrice'      => $netPrice,
+            'defaultTax'    => $defaultTax,
+            'conversionTax' => $conversionTax,
+            'newNetPrice'   => &$newNetPrice
+        ]);
+
         return (double)$newNetPrice;
+    }
+
+    /**
+     * @param int $customerID
+     * @param int $productID
+     * @return bool
+     */
+    public function customerHasCustomPriceForProduct(int $customerID, int $productID): bool
+    {
+        if (!$this->hasCustomPrice($customerID)) {
+            return false;
+        }
+
+        return Shop::Container()->getDB()->getSingleObject(
+            'SELECT COUNT(kPreis) AS cnt 
+                FROM tpreis
+                WHERE kKunde = :cid 
+                  AND (kArtikel = :pid OR kArtikel IN (SELECT kArtikel FROM tartikel WHERE kVaterArtikel = :pid))',
+            ['cid' => $customerID, 'pid' => $productID]
+        )->cnt > 0;
     }
 
     /**
      * @param int $customerID
      * @return bool
      */
-    protected function hasCustomPrice(int $customerID): bool
+    public function hasCustomPrice(int $customerID): bool
     {
         if ($customerID <= 0) {
             return false;
@@ -462,7 +490,9 @@ class Preise
             ];
         }
         if (!empty($this->alterVKNetto)) {
-            $this->discountPercentage = (int)((($this->alterVKNetto - $this->fVKNetto) * 100) / $this->alterVKNetto);
+            $this->discountPercentage = (int)\round(
+                (($this->alterVKNetto - $this->fVKNetto) * 100) / $this->alterVKNetto
+            );
         }
 
         return $this;
@@ -499,9 +529,9 @@ class Preise
      */
     public static function getPriceJoinSql(
         int $customerGroupID,
-        $priceAlias = 'tpreis',
-        $detailAlias = 'tpreisdetail',
-        $productAlias = 'tartikel'
+        string $priceAlias = 'tpreis',
+        string $detailAlias = 'tpreisdetail',
+        string $productAlias = 'tartikel'
     ): string {
         return 'JOIN tpreis AS ' . $priceAlias . ' ON ' . $priceAlias . '.kArtikel = ' . $productAlias . '.kArtikel
                     AND ' . $priceAlias . '.kKundengruppe = ' . $customerGroupID . '
@@ -538,19 +568,19 @@ class Preise
     }
 
     /**
-     * @param float         $preis
-     * @param Currency|null $waehrung
-     * @param bool          $html
+     * @param float|string           $price
+     * @param Currency|stdClass|null $currency
+     * @param bool                   $html
      * @return string
      * @former gibPreisLocalizedOhneFaktor()
      */
-    public static function getLocalizedPriceWithoutFactor($preis, $waehrung = null, bool $html = true): string
+    public static function getLocalizedPriceWithoutFactor($price, $currency = null, bool $html = true): string
     {
-        $currency = !$waehrung ? Frontend::getCurrency() : $waehrung;
+        $currency = $currency ?? Frontend::getCurrency();
         if ($currency !== null && \get_class($currency) === 'stdClass') {
             $currency = new Currency($currency->kWaehrung);
         }
-        $localized = \number_format($preis, 2, $currency->getDecimalSeparator(), $currency->getThousandsSeparator());
+        $localized = \number_format($price, 2, $currency->getDecimalSeparator(), $currency->getThousandsSeparator());
         $name      = $html ? $currency->getHtmlEntity() : $currency->getName();
 
         return $currency->getForcePlacementBeforeNumber()

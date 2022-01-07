@@ -37,7 +37,7 @@
                             {if ($Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0) || isset($Artikel->cArtNr)}
                                 {if ($Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0)}
                                     {block name='productdetails-details-info-rating-wrapper'}
-                                        <div class="rating-wrapper" itemprop="aggregateRating" itemscope="true" itemtype="http://schema.org/AggregateRating">
+                                        <div class="rating-wrapper" itemprop="aggregateRating" itemscope="true" itemtype="https://schema.org/AggregateRating">
                                             <meta itemprop="ratingValue" content="{$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}"/>
                                             <meta itemprop="bestRating" content="5"/>
                                             <meta itemprop="worstRating" content="1"/>
@@ -110,7 +110,7 @@
                                         {block name='productdetails-details-info-manufacturer-wrapper'}
                                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'N' && isset($Artikel->cHersteller)}
                                                 {block name='productdetails-details-product-info-manufacturer'}
-                                                    <li  class="product-manufacturer" itemprop="brand" itemscope="true" itemtype="http://schema.org/Organization">
+                                                    <li  class="product-manufacturer" itemprop="brand" itemscope="true" itemtype="https://schema.org/Organization">
                                                         <strong>{lang key='manufacturers'}:</strong>
                                                         {if $Einstellungen.artikeldetails.artikel_weitere_artikel_hersteller_anzeigen === 'Y'}
                                                             <a href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
@@ -127,7 +127,7 @@
                                                                 {image lazy=true
                                                                     webp=true
                                                                     src=$Artikel->cHerstellerBildURLKlein
-                                                                    alt=$Artikel->cHersteller
+                                                                    alt=$Artikel->cHersteller|escape:'html'
                                                                 }
                                                                 <meta itemprop="image" content="{$Artikel->cHerstellerBildURLKlein}">
                                                             {/if}
@@ -175,7 +175,7 @@
                             {opcMountPoint id='opc_after_short_desc'}
                             {/block}
 
-                            <div class="product-offer"{if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')} itemprop="offers" itemscope itemtype="http://schema.org/Offer"{/if}>
+                            <div class="product-offer"{if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')} itemprop="offers" itemscope itemtype="https://schema.org/Offer"{/if}>
                                 {block name='productdetails-details-info-hidden'}
                                     {if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')}
                                         <meta itemprop="url" content="{$Artikel->cURLFull}">

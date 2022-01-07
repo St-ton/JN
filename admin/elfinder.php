@@ -32,16 +32,37 @@ if (Form::validateToken()) {
         $connector = new elFinderConnector(new elFinder([
             'bind'  => [
                 'rm rename'      => static function ($cmd, &$result, $args, $elfinder, $volume) {
-                    $sizes = ['xs', 'sm', 'md', 'lg', 'xl'];
+                    $sizes     = ['xs', 'sm', 'md', 'lg', 'xl'];
+                    $fileTypes = ['jpeg', 'jpg', 'webp', 'png'];
+
                     foreach ($result['added'] as &$item) {
                         $item['name'] = mb_strtolower($item['name']);
                     }
                     unset($item);
                     foreach ($result['removed'] as $filename) {
                         foreach ($sizes as $size) {
-                            $scaledFile = PFAD_ROOT . PFAD_MEDIA_IMAGE . 'opc/' . $size . '/' . $filename['name'];
-                            if (file_exists($scaledFile)) {
-                                @unlink($scaledFile);
+                            $filePath   = str_replace(
+                                PFAD_ROOT . PFAD_MEDIA_IMAGE . 'storage/opc/',
+                                '',
+                                $filename['realpath']
+                            );
+                            $scaledFile = PFAD_ROOT . PFAD_MEDIA_IMAGE . 'opc/' . $size . '/' . $filePath;
+                            if (is_dir($scaledFile)) {
+                                @rmdir($scaledFile);
+                                continue;
+                            }
+                            $fileExtension = pathinfo($scaledFile, PATHINFO_EXTENSION);
+                            $fileBaseName  = basename($scaledFile, '.' . $fileExtension);
+
+                            foreach ($fileTypes as $fileType) {
+                                $fileTemp = str_replace(
+                                    $fileBaseName . '.' . $fileExtension,
+                                    $fileBaseName . '.' . $fileType,
+                                    $scaledFile
+                                );
+                                if (file_exists($fileTemp)) {
+                                    @unlink($fileTemp);
+                                }
                             }
                         }
                     }

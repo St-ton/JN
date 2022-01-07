@@ -5,7 +5,7 @@
             {block name='productdetails-product-images-modal-header'}
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
+                        <span aria-hidden="true" class="fas fa-times"></span>
                     </button>
                 </div>
             {/block}
@@ -15,7 +15,7 @@
                         {block name='productdetails-product-images-modal-image'}
                             <div class="square square-image">
                                 <div class="inner">
-                                    {image alt=$image->cAltAttribut|escape:'html'
+                                    {image alt=$image->cAltAttribut
                                         class="product-image"
                                         fluid=true
                                         lazy=true

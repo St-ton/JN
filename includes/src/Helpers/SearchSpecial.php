@@ -232,10 +232,7 @@ class SearchSpecial
         if (!$customerGroupID) {
             $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
-        $config      = Shop::getSettings([\CONF_GLOBAL]);
-        $minAmount   = isset($config['global']['global_bestseller_minanzahl'])
-            ? (float)$config['global']['global_bestseller_minanzahl']
-            : 10;
+        $minAmount   = (float)(Shop::getSettingValue(\CONF_GLOBAL, 'global_bestseller_minanzahl') ?? 10);
         $cacheID     = 'ssp_bestsellers_' . $customerGroupID . '_' . $minAmount;
         $bestsellers = $this->cache->get($cacheID);
         if ($bestsellers === false || !\is_countable($bestsellers)) {
@@ -244,13 +241,14 @@ class SearchSpecial
                     FROM tbestseller, tartikel
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tbestseller.kArtikel = tartikel.kArtikel
-                        AND ROUND(tbestseller.fAnzahl) >= ' . $minAmount . '
+                        AND ROUND(tbestseller.fAnzahl) >= :mnt
                         ' . self::getParentSQL() . '
                         ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
-                    ORDER BY fAnzahl DESC'
+                    ORDER BY fAnzahl DESC',
+                ['cgid' => $customerGroupID, 'mnt' => $minAmount]
             ), static function ($e) {
                 return (int)$e->kArtikel;
             });
@@ -276,7 +274,7 @@ class SearchSpecial
         $specialOffers = $this->cache->get($cacheID);
         if ($specialOffers === false || !\is_countable($specialOffers)) {
             $specialOffers = map($this->db->getObjects(
-                'SELECT tartikel.kArtikel, tsonderpreise.fNettoPreis
+                "SELECT tartikel.kArtikel, tsonderpreise.fNettoPreis
                     FROM tartikel
                     JOIN tartikelsonderpreis 
                         ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
@@ -284,16 +282,17 @@ class SearchSpecial
                         ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikelsonderpreis.kArtikel = tartikel.kArtikel
-                        AND tsonderpreise.kKundengruppe = ' . $customerGroupID . "
+                        AND tsonderpreise.kKundengruppe = :cgid
                         AND tartikelsonderpreis.cAktiv = 'Y'
                         AND tartikelsonderpreis.dStart <= NOW()
                         AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
                         AND (tartikelsonderpreis.nAnzahl < tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
                         " . self::getParentSQL() . '
-                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL()
+                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
+                ['cgid' => $customerGroupID]
             ), static function ($e) {
                 return (int)$e->kArtikel;
             });
@@ -315,24 +314,22 @@ class SearchSpecial
         if (!$customerGroupID) {
             $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
-        $config  = Shop::getSettings([\CONF_BOXEN]);
-        $days    = ($config['boxen']['box_neuimsortiment_alter_tage'] > 0)
-            ? (int)$config['boxen']['box_neuimsortiment_alter_tage']
-            : 30;
+        $config  = Shop::getSettingValue(\CONF_BOXEN, 'box_neuimsortiment_alter_tage');
+        $days    = $config > 0 ? (int)$config : 30;
         $cacheID = 'ssp_new_' . $customerGroupID . '_days';
         $new     = $this->cache->get($cacheID);
         if ($new === false || !\is_countable($new)) {
             $new = map($this->db->getObjects(
-                'SELECT tartikel.kArtikel
+                "SELECT tartikel.kArtikel
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . "
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.cNeu = 'Y'
-                        AND DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < tartikel.dErstellt
-                        ' . self::getParentSQL() . '
-                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL()
+                        AND DATE_SUB(NOW(), INTERVAL :dys DAY) < tartikel.dErstellt
+                        " . self::getParentSQL() . ' ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL(),
+                ['cgid' => $customerGroupID, 'dys' => $days]
             ), static function ($e) {
                 return (int)$e->kArtikel;
             });

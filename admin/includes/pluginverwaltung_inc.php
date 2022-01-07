@@ -58,7 +58,8 @@ function updatePlugin(int $pluginID)
         $db,
         new Uninstaller($db, $cache),
         new LegacyPluginValidator($db, $parser),
-        new PluginValidator($db, $parser)
+        new PluginValidator($db, $parser),
+        $cache
     );
     $updater   = new Updater($db, $installer);
 
@@ -83,7 +84,8 @@ function installierePluginVorbereitung($dir, $oldPlugin = 0)
         $db,
         new Uninstaller($db, $cache),
         new LegacyPluginValidator($db, $parser),
-        new PluginValidator($db, $parser)
+        new PluginValidator($db, $parser),
+        $cache
     );
     $installer->setDir($dir);
     if ($oldPlugin !== 0) {

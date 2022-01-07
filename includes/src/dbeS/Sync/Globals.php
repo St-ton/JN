@@ -50,7 +50,7 @@ final class Globals extends AbstractSync
     private function handleInserts(array $xml): void
     {
         $source = $xml['globals'] ?? null;
-        if ($source !== null) {
+        if (\is_array($source)) {
             $this->updateCompany($source);
             $this->updateLanguages($source);
             $this->xml2db($source, 'tlieferstatus', 'mLieferstatus');
@@ -64,6 +64,8 @@ final class Globals extends AbstractSync
             $this->updateCustomerGroups($source);
             $this->updateWarehouses($source);
             $this->updateUnits($source);
+        } elseif ($source !== null) {
+            $this->logger->error(__METHOD__ . ': XML for globals is not correctly formatted.');
         }
         if (isset($xml['globals_wg']['tWarengruppe']) && \is_array($xml['globals_wg']['tWarengruppe'])) {
             $groups = $this->mapper->mapArray($xml['globals_wg'], 'tWarengruppe', 'mWarengruppe');
@@ -222,7 +224,15 @@ final class Globals extends AbstractSync
             return;
         }
         if ($del) {
-            $this->db->query('DELETE FROM ' . $tablename);
+            if ($tablename === 'tsprache') {
+                $this->db->query("DELETE FROM tsprache WHERE cISO != 'ger' AND cISO != 'eng'");
+                $this->db->query("UPDATE tsprache SET active = 0, cShopStandard = 'N', cStandard = 'N'");
+                foreach ($objects as $lang) {
+                    $lang->active = 1;
+                }
+            } else {
+                $this->db->query('DELETE FROM ' . $tablename);
+            }
         }
         foreach ($objects as $object) {
             //hack? unset arrays/objects that would result in nicedb exceptions
@@ -231,8 +241,12 @@ final class Globals extends AbstractSync
                     unset($object->$key);
                 }
             }
-            $key = $this->db->insert($tablename, $object);
-            if (!$key) {
+            if ($tablename === 'tsprache') {
+                $key = $this->db->upsert($tablename, $object);
+            } else {
+                $key = $this->db->insert($tablename, $object);
+            }
+            if ($key < 0 || ($tablename !== 'tsprache' && $key === 0)) {
                 $this->logger->error(__METHOD__ . ' failed: ' . $tablename . ', data: ' . \print_r($object, true));
             }
         }

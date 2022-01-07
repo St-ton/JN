@@ -29,7 +29,7 @@
                                 <span class="float-right">
                                     {link class="btn btn-sm btn-outline-primary"
                                         title="{lang key='edit' section='product rating'}"
-                                        href="{get_static_route id='bewertung.php'}?a={$Bewertung->kArtikel}&bfa=1"}
+                                        href="{get_static_route id='bewertung.php'}?a={$Bewertung->kArtikel}&bfa=1&token={$smarty.session.jtl_token}"}
                                         <span class="fa fa-pencil-alt"></span>
                                     {/link}
                                 </span>

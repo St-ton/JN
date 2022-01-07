@@ -486,7 +486,7 @@ class Updater
                 && (int)$value > 300
                 && (int)$value < 500
                 && !\in_array($value, ['.', '..'], true)
-                && \is_dir($dir . \DIRECTORY_SEPARATOR . $value)
+                && \is_dir($dir . '/' . $value)
             ) {
                 $directories[] = $value;
             }

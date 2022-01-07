@@ -850,7 +850,6 @@ function holeGoogleImage($productData)
     if (isset($product->FunktionsAttribute[ART_ATTRIBUT_BILDLINK])
         && mb_strlen($product->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]) > 0
     ) {
-        $artNo = Text::filterXSS($product->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]);
         $image = Shop::Container()->getDB()->getSingleObject(
             'SELECT tartikelpict.cPfad
                 FROM tartikelpict
@@ -860,7 +859,7 @@ function holeGoogleImage($productData)
                 GROUP BY tartikelpict.cPfad
                 ORDER BY tartikelpict.nNr
                 LIMIT 1',
-            ['artNr' => $artNo]
+            ['artNr' => $product->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]]
         );
     }
 

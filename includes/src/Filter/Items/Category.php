@@ -29,11 +29,12 @@ class Category extends BaseCategory
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('kf')
-             ->setUrlParamSEO(\SEP_KAT)
-             ->setVisibility($this->getConfig('navigationsfilter')['allgemein_kategoriefilter_benutzen'])
-             ->setFrontendName(Shop::isAdmin() ? \__('filterCategory') : Shop::Lang()->get('allCategories'))
-             ->setType($this->getConfig('navigationsfilter')['category_filter_type'] === 'O'
+            ->setUrlParam('kf')
+            ->setUrlParamSEO(\SEP_KAT)
+            ->setVisibility($this->getConfig('navigationsfilter')['allgemein_kategoriefilter_benutzen'])
+            ->setFrontendName(Shop::isAdmin() ? \__('filterCategory') : Shop::Lang()->get('allCategories'))
+            ->setFilterName($this->getFrontendName())
+            ->setType($this->getConfig('navigationsfilter')['category_filter_type'] === 'O'
                 ? Type::OR
                 : Type::AND);
     }
@@ -102,7 +103,7 @@ class Category extends BaseCategory
             ->setComment('join from ' . __METHOD__)
             ->setType('JOIN');
         if ($this->getConfig('navigationsfilter')['kategoriefilter_anzeigen_als'] === 'HF') {
-            $join->setTable('(
+            return $join->setTable('(
                 SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
                     FROM tkategorieartikel
                         INNER JOIN tkategorie 
@@ -137,6 +138,7 @@ class Category extends BaseCategory
                 ? $this->getClassName()
                 : null
         );
+        $customerGroupID    = $this->getCustomerGroupID();
         $options            = [];
         $sql                = (new StateSQL())->from($state);
         // Kategoriefilter anzeige
@@ -186,9 +188,7 @@ class Category extends BaseCategory
         if (!Shop::has('checkCategoryVisibility')) {
             Shop::set(
                 'checkCategoryVisibility',
-                $this->productFilter->getDB()->getAffectedRows(
-                    'SELECT kKategorie FROM tkategoriesichtbarkeit'
-                ) > 0
+                $this->productFilter->getDB()->getAffectedRows('SELECT kKategorie FROM tkategoriesichtbarkeit') > 0
             );
         }
         if (Shop::get('checkCategoryVisibility')) {
@@ -196,7 +196,8 @@ class Category extends BaseCategory
                 ->setComment('join5 from ' . __METHOD__)
                 ->setType('LEFT JOIN')
                 ->setTable('tkategoriesichtbarkeit')
-                ->setOn('tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie')
+                ->setOn('tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie
+                    AND tkategoriesichtbarkeit.kKundengruppe = ' . $customerGroupID)
                 ->setOrigin(__CLASS__));
 
             $sql->addCondition('tkategoriesichtbarkeit.kKategorie IS NULL');
@@ -238,7 +239,6 @@ class Category extends BaseCategory
             ['lid' => $this->getLanguageID()]
         );
         $langID             = $this->getLanguageID();
-        $customerGroupID    = $this->getCustomerGroupID();
         $additionalFilter   = new self($this->productFilter);
         $helper             = CategoryHelper::getInstance($langID, $customerGroupID);
         $filterURLGenerator = $this->productFilter->getFilterURL();

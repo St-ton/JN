@@ -8,14 +8,14 @@
             maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist
             assign='hasOnlyListableVariations'}
     {/if}
-    <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true"
+    <div id="{$idPrefix|default:''}result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true"
          class="productbox productbox-column {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($class)} {$class}{/if}">
         <div class="productbox-inner">
             {row}
                 {col cols=12}
                     <div class="productbox-image">
                         {if isset($Artikel->Bilder[0]->cAltAttribut)}
-                            {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}
+                            {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut}
                         {else}
                             {assign var=alt value=$Artikel->cName}
                         {/if}
@@ -33,7 +33,7 @@
                                             {$image = $Artikel->Bilder[0]}
                                             <div class="productbox-image square square-image first-wrapper">
                                                 <div class="inner">
-                                            {image alt=$alt fluid=true webp=true lazy=true
+                                            {image alt=$alt|truncate:60 fluid=true webp=true lazy=true
                                                 src="{$image->cURLKlein}"
                                                 srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                                          {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
@@ -48,7 +48,12 @@
                                                 <div class="productbox-image square square-image second-wrapper">
                                                     <div class="inner">
                                                     {$image = $Artikel->Bilder[1]}
-                                                    {image alt=$alt fluid=true webp=true lazy=true
+                                                    {if isset($image->cAltAttribut)}
+                                                        {$alt=$image->cAltAttribut}
+                                                    {else}
+                                                        {$alt=$Artikel->cName}
+                                                    {/if}
+                                                    {image alt=$alt|truncate:60 fluid=true webp=true lazy=true
                                                         src="{$image->cURLKlein}"
                                                         srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                                                  {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
@@ -68,20 +73,6 @@
                                 {/if}
                             </div>
                         {/block}
-
-                        {if $smarty.session.Kundengruppe->mayViewPrices()
-                            && isset($Artikel->SieSparenX)
-                            && $Artikel->SieSparenX->anzeigen == 1
-                            && $Artikel->SieSparenX->nProzent > 0
-                            && !$NettoPreise
-                            && $Artikel->taxData['tax'] > 0
-                        }
-                            {block name='productlist-item-badge-yousave'}
-                                <div class="productbox-sale-percentage">
-                                    <div class="ribbon ribbon-7 productbox-ribbon">{$Artikel->SieSparenX->nProzent}%</div>
-                                </div>
-                            {/block}
-                        {/if}
 
                         {block name='productlist-item-box-include-productlist-actions'}
                             <div class="productbox-quick-actions productbox-onhover d-none d-md-flex">
@@ -108,11 +99,11 @@
                         {block name='productlist-index-include-rating'}
                             {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
                                 {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung
-                                    link=$Artikel->cURLFull}<br>
+                                    link=$Artikel->cURLFull}
                             {/if}
                         {/block}
                         {block name='productlist-index-include-price'}
-                            <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                            <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">
                                 <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
                                 {include file='productdetails/price.tpl' Artikel=$Artikel tplscope=$tplscope}
                             </div>

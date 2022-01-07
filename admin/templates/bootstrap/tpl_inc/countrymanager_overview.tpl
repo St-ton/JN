@@ -1,7 +1,7 @@
 <div id="content">
     <div class="card">
-        <div class="card-body">
-            <table class="table table-responsive table-align-top">
+        <div class="card-body table-responsive ">
+            <table class="table table-align-top table-sticky-head">
                 <thead>
                     <tr>
                         <th>{__('ISO')}</th>
@@ -11,7 +11,7 @@
                         <th>{__('isEU')}</th>
                         <th>{__('Continent')}</th>
                         <th class="text-center">{__('isShippingAvailable')}{getHelpDesc cDesc=__('isShippingAvailableDesc')}</th>
-                        <th class="text-center">{__('isPermitRegistration')}</th>
+                        <th class="text-center">{__('isPermitRegistration')}{getHelpDesc cDesc=__('isPermitRegistrationDesc')}</th>
                         <th class="text-center">{__('isRequireStateDefinition')}</th>
                         <th></th>
                     </tr>

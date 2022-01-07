@@ -9,6 +9,7 @@ use JTL\DB\DbInterface;
 use JTL\Installation\Faker\de_DE\Commerce;
 use JTL\Installation\Faker\ImageProvider;
 use JTL\xtea\XTEA;
+use OverflowException;
 use stdClass;
 
 /**
@@ -55,7 +56,7 @@ class DemoDataInstaller
     /**
      * @var DbInterface
      */
-    private $pdo;
+    private $db;
 
     /**
      * @var array
@@ -74,7 +75,7 @@ class DemoDataInstaller
      */
     public function __construct(DbInterface $db, array $config = [])
     {
-        $this->pdo    = $db;
+        $this->db     = $db;
         $this->config = \array_merge(static::$defaultConfig, $config);
         $this->faker  = Fake::create('de_DE');
         $this->faker->addProvider(new Commerce($this->faker));
@@ -86,20 +87,6 @@ class DemoDataInstaller
         ]);
     }
 
-    protected function execute(): void
-    {
-        $config = [
-            'manufacturers' => \max(0, (int)$this->config['manufacturers']),
-            'categories'    => \max(0, (int)$this->config['categories']),
-            'articles'      => \max(0, (int)$this->config['articles']),
-            'customers'     => \max(0, (int)$this->config['customers']),
-        ];
-        $steps  = count(\array_filter($config));
-        $step   = 1;
-
-        $this->updateRatingsAvg()->updateGlobals();
-    }
-
     /**
      * @param null $callback
      * @return $this
@@ -107,13 +94,13 @@ class DemoDataInstaller
     public function run($callback = null): self
     {
         $this->cleanup()
-             ->addCompanyData()
-             ->createManufacturers($callback)
-             ->createCategories($callback)
-             ->createProducts($callback)
-             ->updateRatingsAvg()
-             ->setConfig()
-             ->updateGlobals();
+            ->addCompanyData()
+            ->createManufacturers($callback)
+            ->createCategories($callback)
+            ->createProducts($callback)
+            ->updateRatingsAvg()
+            ->setConfig()
+            ->updateGlobals();
 
         return $this;
     }
@@ -123,198 +110,198 @@ class DemoDataInstaller
      */
     public function setConfig(): self
     {
-        $this->pdo->query(
+        $this->db->query(
             "UPDATE `teinstellungen`
                 SET `cWert`='Y'
                 WHERE `kEinstellungenSektion`='107'
                 AND cName = 'bewertung_anzeigen';"
         );
-        $this->pdo->query(
+        $this->db->query(
             "UPDATE `teinstellungen`
                 SET `cWert`='10'
                 WHERE `kEinstellungenSektion`='2'
                 AND cName = 'startseite_bestseller_anzahl';"
         );
-        $this->pdo->query(
+        $this->db->query(
             "UPDATE `teinstellungen`
                 SET `cWert`='10'
                 WHERE `kEinstellungenSektion`='2'
                 AND cName = 'startseite_neuimsortiment_anzahl';"
         );
-        $this->pdo->query(
+        $this->db->query(
             "UPDATE `teinstellungen`
                 SET `cWert`='10'
                 WHERE `kEinstellungenSektion`='2'
                 AND cName = 'startseite_sonderangebote_anzahl';"
         );
-        $this->pdo->query(
+        $this->db->query(
             "UPDATE `teinstellungen`
                 SET `cWert`='10'
                 WHERE `kEinstellungenSektion`='2'
                 AND cName = 'startseite_topangebote_anzahl';"
         );
-        $this->pdo->query(
+        $this->db->query(
             "UPDATE `ttemplateeinstellungen`
                 SET `cWert`='Y'
                 WHERE `cTemplate`='NOVA'
                 AND `cSektion`='megamenu'
                 AND `cName`='show_pages';"
         );
-        $this->pdo->query(
+        $this->db->query(
             "UPDATE `ttemplateeinstellungen`
                 SET `cWert`='Y'
                 WHERE `cTemplate`='NOVA'
                 AND `cSektion`='megamenu'
                 AND `cName`='show_manufacturers';"
         );
-        $this->pdo->query(
+        $this->db->query(
             "UPDATE `ttemplateeinstellungen`
                 SET `cWert`='Y'
                 WHERE `cTemplate`='NOVA'
                 AND `cSektion`='footer'
                 AND `cName`='newsletter_footer';"
         );
-        $this->pdo->query(
+        $this->db->query(
             "UPDATE `ttemplateeinstellungen`
                 SET `cWert`='Y'
                 WHERE `cTemplate`='NOVA'
                 AND `cSektion`='footer'
                 AND `cName`='socialmedia_footer';"
         );
-        $this->pdo->query(
+        $this->db->query(
             "UPDATE `ttemplateeinstellungen`
                 SET `cWert`='https://www.facebook.com/JTLSoftware/'
                 WHERE `cTemplate`='NOVA'
                 AND `cSektion`='footer'
                 AND `cName`='facebook';"
         );
-        $this->pdo->query(
+        $this->db->query(
             "UPDATE `ttemplateeinstellungen`
                 SET `cWert`='https://twitter.com/JTLSoftware'
                 WHERE `cTemplate`='NOVA'
                 AND `cSektion`='footer'
                 AND `cName`='twitter';"
         );
-        $this->pdo->query(
+        $this->db->query(
             "UPDATE `ttemplateeinstellungen`
                 SET `cWert`='https://www.youtube.com/user/JTLSoftwareGmbH'
                 WHERE `cTemplate`='NOVA'
                 AND `cSektion`='footer'
                 AND `cName`='youtube';"
         );
-        $this->pdo->query(
+        $this->db->query(
             "UPDATE `ttemplateeinstellungen`
                 SET `cWert`='https://www.xing.com/companies/jtl-softwaregmbh'
                 WHERE `cTemplate`='NOVA'
                 AND `cSektion`='footer'
                 AND `cName`='xing';"
         );
-        $this->pdo->query(
+        $this->db->query(
             "UPDATE `tlinksprache`
                 SET `cTitle`='Startseite!', `cContent`='" . $this->faker->text(500) . "'
                 WHERE `kLink`='3'
                 AND `cISOSprache`='ger';"
         );
-        $this->pdo->query(
+        $this->db->query(
             "UPDATE `tlinksprache`
                 SET `cTitle`='Home!', `cContent`='" . $this->faker->text(500) . "'
                 WHERE `kLink`=3
                 AND `cISOSprache`='eng';"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `teinheit` (`kEinheit`, `kSprache`, `cName`)
                 VALUES (1,1,'kg'),(1,2,'kg'),(2,1,'ml'),(2,2,'ml'),(3,1,'Stk'),(3,2,'Piece');"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,`cKundengruppen`,
             `cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`)
                 VALUES (100,0,0,'NurEndkunden',1,'N','1;','N','N',0,0,0,'');"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
           `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`)
                 VALUES (101,0,0,'NurHaendler',1,'N','2;','N','N',0,0,0,'');"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
             `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`)
-                VALUES (102,0,9,0,'Beispiel',1,'N',NULL,'N','N',0,0,0,'');"
+                VALUES (102,0,0,'Beispiel',1,'N',NULL,'N','N',0,0,0,'');"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
             `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`)
                 VALUES (103,102,0,'Kindseite1',1,'N',NULL,'N','N',0,0,0,'');"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
             `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`)
                 VALUES (104,102,0,'Kindseite2',1,'N',NULL,'N','N',0,0,0,'');"
         );
-        $this->pdo->query(
+        $this->db->query(
             'INSERT INTO `tlinkgroupassociations` (`linkID`,`linkGroupID`)
                 VALUES (100, 9), (101, 9), (102, 9), (103, 9), (104, 9);'
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
             `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`)
                 VALUES (100,'customers-only','eng','Customers only','Customers only','" .
             $this->faker->text(500) . "','','','');"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
             `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`)
                 VALUES (100,'nur-kunden','ger','Nur Endkunden','Nur Endkunden','" .
             $this->faker->text(500) . "','','','');"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
                 `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`)
                 VALUES (101,'retailers-only','eng','Retailers only','Retailers only','" .
             $this->faker->text(500) . "','','','');"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
             `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`)
                 VALUES (101,'nur-haendler','ger','Nur Haendler','Nur Haendler','" .
             $this->faker->text(500) . "','','','');"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
             `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`)
                 VALUES (102,'beispiel-seite','ger','Beispielseite','Beispielseite','" .
             $this->faker->text(500) . "','','','');"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
             `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`)
                 VALUES (103,'kindseite-eins','ger','Kindseite1','Kindseite1','" .
             $this->faker->text(500) . "','','','');"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
             `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`)
                 VALUES (104,'kindseite-zwei','ger','Kindseite2','Kindseite2','" .
             $this->faker->text(500) . "','','','');"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tseo` (`cSeo`,`cKey`,`kKey`,`kSprache`) VALUES ('nur-endkunden', 'kLink', 100, 3);"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tseo` (`cSeo`,`cKey`,`kKey`,`kSprache`) VALUES ('customers-only', 'kLink', 100, 2);"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tseo` (`cSeo`,`cKey`,`kKey`,`kSprache`) VALUES ('nur-haendler', 'kLink', 101, 3);"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tseo` (`cSeo`,`cKey`,`kKey`,`kSprache`) VALUES ('retailers-only', 'kLink', 101, 2);"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tseo` (`cSeo`,`cKey`,`kKey`,`kSprache`) VALUES ('beispiel-seite', 'kLink', 102, 3);"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tseo` (`cSeo`,`cKey`,`kKey`,`kSprache`) VALUES ('kindseite-eins', 'kLink', 103, 3);"
         );
-        $this->pdo->query(
+        $this->db->query(
             "INSERT INTO `tseo` (`cSeo`,`cKey`,`kKey`,`kSprache`) VALUES ('kindseite-zwei', 'kLink', 104, 3);"
         );
 
@@ -326,17 +313,20 @@ class DemoDataInstaller
      */
     public function cleanup(): self
     {
-        $this->pdo->query(
+        $this->db->query(
             'TRUNCATE TABLE tkategorie; TRUNCATE TABLE tartikel; TRUNCATE TABLE tartikelpict; ' .
             'TRUNCATE TABLE tkategorieartikel; TRUNCATE TABLE tbewertung; TRUNCATE TABLE tartikelext; ' .
             'TRUNCATE TABLE tkategoriepict; TRUNCATE TABLE thersteller; ' .
             'TRUNCATE TABLE tpreis; TRUNCATE TABLE tpreisdetail; TRUNCATE TABLE teinheit; TRUNCATE TABLE tkunde;'
         );
-        $this->pdo->query('DELETE FROM tlink WHERE kLink > 99;');
-        $this->pdo->query('DELETE FROM tlinksprache WHERE kLink > 99;');
-        $this->pdo->query("DELETE FROM tseo WHERE cKey = 'kLink' AND kKey > 99;");
-        $this->pdo->query(
-            "DELETE FROM tseo WHERE cKey = 'kArtikel' OR cKey = 'kKategorie' OR cKey = 'kHersteller'"
+        $this->db->query('DELETE FROM tlink WHERE kLink > 99;');
+        $this->db->query('DELETE FROM tlinksprache WHERE kLink > 99;');
+        $this->db->query("DELETE FROM tseo WHERE cKey = 'kLink' AND kKey > 99;");
+        $this->db->query(
+            "DELETE FROM tseo 
+                WHERE cKey = 'kArtikel' 
+                    OR cKey = 'kKategorie' 
+                    OR cKey = 'kHersteller'"
         );
 
         return $this;
@@ -365,7 +355,7 @@ class DemoDataInstaller
         $ins->cBank         = 'Sparkasse Entenhausen';
         $ins->cIBAN         = 'DE257864472';
         $ins->cBIC          = 'FOOOBAR';
-        $this->pdo->insert('tfirma', $ins);
+        $this->db->insert('tfirma', $ins);
 
         return $this;
     }
@@ -375,7 +365,7 @@ class DemoDataInstaller
      */
     public function updateGlobals(): int
     {
-        return $this->pdo->getAffectedRows('UPDATE tglobals SET dLetzteAenderung = now()');
+        return $this->db->getAffectedRows('UPDATE tglobals SET dLetzteAenderung = NOW()');
     }
 
     /**
@@ -383,10 +373,11 @@ class DemoDataInstaller
      */
     public function updateRatingsAvg(): self
     {
-        $this->pdo->query('TRUNCATE TABLE tartikelext');
-        $this->pdo->query(
+        $this->db->query('TRUNCATE TABLE tartikelext');
+        $this->db->query(
             'INSERT INTO tartikelext(kArtikel, fDurchschnittsBewertung)
-                SELECT kArtikel, AVG(nSterne) FROM tbewertung GROUP BY kArtikel'
+                SELECT kArtikel, AVG(nSterne) 
+                FROM tbewertung GROUP BY kArtikel'
         );
 
         return $this;
@@ -398,52 +389,47 @@ class DemoDataInstaller
      */
     public function createManufacturers($callback = null): self
     {
-        $maxPk      = (int)$this->pdo->getSingleObject('SELECT max(kHersteller) AS maxPk FROM thersteller')->maxPk;
-        $limit      = $this->config['manufacturers'];
-        $name_index = 0;
-
+        $maxPk = (int)$this->db->getSingleObject('SELECT MAX(kHersteller) AS maxPk FROM thersteller')->maxPk;
+        $limit = $this->config['manufacturers'];
+        $index = 0;
         for ($i = 1; $i <= $limit; ++$i) {
             try {
-                $_name = $this->faker->unique()->company;
-                $res   = $this->pdo->getObjects('SELECT kHersteller FROM thersteller WHERE cName = "' . $_name . '"');
-                if (\is_array($res) && count($res) > 0) {
-                    throw new \OverflowException();
+                $name = $this->faker->unique()->company;
+                $res  = $this->db->getObjects(
+                    'SELECT kHersteller 
+                        FROM thersteller 
+                        WHERE cName = :nm',
+                    ['nm' => $name]
+                );
+                if (\count($res) > 0) {
+                    throw new OverflowException();
                 }
-            } catch (\OverflowException $e) {
-                $_name = $this->faker->unique(true)->company . '_' . ++$name_index;
+            } catch (OverflowException $e) {
+                $name = $this->faker->unique(true)->company . '_' . ++$index;
             }
 
-            $_manufacturer              = new stdClass();
-            $_manufacturer->kHersteller = $maxPk + $i;
-            $_manufacturer->cName       = $_name;
-            $_manufacturer->cSeo        = $this->slug($_name);
-            $_manufacturer->cHomepage   = $this->faker->unique()->url;
-            $_manufacturer->nSortNr     = 0;
-            $_manufacturer->cBildpfad   = $this->createManufacturerImage($_manufacturer->kHersteller, $_name);
-            $res                        = $this->pdo->insert('thersteller', $_manufacturer);
+            $manufacturer              = new stdClass();
+            $manufacturer->kHersteller = $maxPk + $i;
+            $manufacturer->cName       = $name;
+            $manufacturer->cSeo        = $this->slug($name);
+            $manufacturer->cHomepage   = $this->faker->unique()->url;
+            $manufacturer->nSortNr     = 0;
+            $manufacturer->cBildpfad   = $this->createManufacturerImage($manufacturer->kHersteller, $name);
+            $res                       = $this->db->insert('thersteller', $manufacturer);
             if ($res > 0) {
-                $seoItem       = new stdClass();
-                $seoItem->cKey = 'kHersteller';
-                $seoItem->cSeo = $_manufacturer->cSeo;
-
-                $seo_index = 0;
-                while (($data = $this->pdo->select('tseo', 'cKey', $seoItem->cKey, 'cSeo', $seoItem->cSeo)) !== false
-                    && \is_array($data)
-                    && count($data) > 0
-                ) {
-                    $seoItem->cSeo = $_manufacturer->cSeo . '_' . ++$seo_index;
-                }
-
-                $seoItem->kKey     = $_manufacturer->kHersteller;
+                $seoItem           = new stdClass();
+                $seoItem->cKey     = 'kHersteller';
+                $seoItem->cSeo     = $this->getUniqueSlug($manufacturer->cSeo);
+                $seoItem->kKey     = $manufacturer->kHersteller;
                 $seoItem->kSprache = 1;
-                $this->pdo->insert('tseo', $seoItem);
+                $this->db->insert('tseo', $seoItem);
 
                 $seoItem->cSeo    .= '-en';
                 $seoItem->kSprache = 2;
-                $this->pdo->insert('tseo', $seoItem);
+                $this->db->insert('tseo', $seoItem);
             }
 
-            $this->callback($callback, $i, $limit, $res > 0, $_name);
+            $this->callback($callback, $i, $limit, $res > 0, $name);
         }
 
         return $this;
@@ -455,17 +441,22 @@ class DemoDataInstaller
      */
     public function createCategories($callback = null): self
     {
-        $maxPk   = (int)$this->pdo->getSingleObject('SELECT max(kKategorie) AS maxPk FROM tkategorie')->maxPk;
+        $maxPk   = (int)$this->db->getSingleObject('SELECT MAX(kKategorie) AS maxPk FROM tkategorie')->maxPk;
         $limit   = $this->config['categories'];
         $nameIDX = 0;
         for ($i = 1; $i <= $limit; ++$i) {
             try {
                 $name = $this->faker->unique()->department;
-                $res  = $this->pdo->getObjects('SELECT kKategorie FROM tkategorie WHERE cName = "' . $name . '"');
-                if (\is_array($res) && count($res) > 0) {
-                    throw new \OverflowException();
+                $res  = $this->db->getObjects(
+                    'SELECT kKategorie 
+                        FROM tkategorie 
+                        WHERE cName = :nm',
+                    ['nm' => $name]
+                );
+                if (\count($res) > 0) {
+                    throw new OverflowException();
                 }
-            } catch (\OverflowException $e) {
+            } catch (OverflowException $e) {
                 $name = $this->faker->unique(true)->department . '_' . ++$nameIDX;
             }
             $category                        = new stdClass();
@@ -473,31 +464,23 @@ class DemoDataInstaller
             $category->cName                 = $name;
             $category->cSeo                  = $this->slug($name);
             $category->cBeschreibung         = $this->faker->text(200);
-            $category->kOberKategorie        = \rand(0, $category->kKategorie - 1);
+            $category->kOberKategorie        = \random_int(0, $category->kKategorie - 1);
             $category->nSort                 = 0;
             $category->dLetzteAktualisierung = 'now()';
             $category->lft                   = 0;
             $category->rght                  = 0;
-            $res                             = $this->pdo->insert('tkategorie', $category);
+            $res                             = $this->db->insert('tkategorie', $category);
             if ($res > 0) {
-                $seo       = new stdClass();
-                $seo->cKey = 'kKategorie';
-                $seo->cSeo = $category->cSeo;
-                $seo_index = 0;
-                while (($data = $this->pdo->select('tseo', 'cKey', $seo->cKey, 'cSeo', $seo->cSeo)) !== false
-                    && \is_array($data)
-                    && count($data) > 0
-                ) {
-                    $seo->cSeo = $category->cSeo . '_' . ++$seo_index;
-                }
-
+                $seo           = new stdClass();
+                $seo->cKey     = 'kKategorie';
+                $seo->cSeo     = $this->getUniqueSlug($category->cSeo);
                 $seo->kKey     = $category->kKategorie;
                 $seo->kSprache = 1;
-                $this->pdo->insert('tseo', $seo);
+                $this->db->insert('tseo', $seo);
 
                 $seo->cSeo    .= '-en';
                 $seo->kSprache = 2;
-                $this->pdo->insert('tseo', $seo);
+                $this->db->insert('tseo', $seo);
 
                 $this->createCategoryImage($category->kKategorie, $name);
             }
@@ -515,44 +498,50 @@ class DemoDataInstaller
      */
     public function createProducts($callback = null): self
     {
-        $maxPk         = (int)$this->pdo->getSingleObject('SELECT max(kArtikel) AS cnt FROM tartikel')->cnt;
-        $manufacturers = (int)$this->pdo->getSingleObject('SELECT count(kHersteller) AS cnt FROM thersteller')->cnt;
-        $categories    = (int)$this->pdo->getSingleObject('SELECT count(kKategorie) AS cnt FROM tkategorie')->cnt;
+        $maxPk         = (int)$this->db->getSingleObject('SELECT MAX(kArtikel) AS cnt FROM tartikel')->cnt;
+        $manufacturers = (int)$this->db->getSingleObject('SELECT COUNT(kHersteller) AS cnt FROM thersteller')->cnt;
+        $categories    = (int)$this->db->getSingleObject('SELECT COUNT(kKategorie) AS cnt FROM tkategorie')->cnt;
         if ($categories === 0) {
             return $this;
         }
 
-        $unitCount = (int)$this->pdo->getSingleObject(
-            'SELECT max(groupCount) AS unitCount
+        $unitCount = (int)$this->db->getSingleObject(
+            'SELECT MAX(groupCount) AS unitCount
                 FROM (
-                    SELECT count(*) AS groupCount
+                    SELECT COUNT(*) AS groupCount
                     FROM teinheit
                     GROUP BY kSprache
                 ) x'
         )->unitCount;
 
-        $limit      = $this->config['articles'];
-        $name_index = 0;
-        $_taxRate   = 19.00;
+        $limit   = $this->config['articles'];
+        $index   = 0;
+        $taxRate = 19.00;
 
         for ($i = 1; $i <= $limit; ++$i) {
             try {
-                $_name = $this->faker->unique()->productName;
-                $res   = $this->pdo->getObjects('SELECT kArtikel FROM tartikel WHERE cName = "' . $_name . '"');
-                if (\is_array($res) && count($res) > 0) {
-                    throw new \OverflowException();
+                $name = $this->faker->unique()->productName;
+                $res  = $this->db->getObjects(
+                    'SELECT kArtikel 
+                        FROM tartikel WHERE cName = :nm',
+                    ['nm' => $name]
+                );
+                if (\count($res) > 0) {
+                    throw new OverflowException();
                 }
-            } catch (\OverflowException $e) {
-                $_name = $this->faker->unique(true)->productName . '_' . ++$name_index;
+            } catch (OverflowException $e) {
+                $name = $this->faker->unique(true)->productName . '_' . ++$index;
             }
 
-            $price                             = \rand(1, 2999);
+            $price                             = \random_int(1, 2999);
             $product                           = new stdClass();
             $product->kArtikel                 = $maxPk + $i;
-            $product->kHersteller              = \rand(0, $manufacturers);
+            $product->kHersteller              = \random_int(0, $manufacturers);
             $product->kLieferstatus            = 0;
             $product->kSteuerklasse            = 1;
-            $product->kEinheit                 = (\rand(0, 10) === 10) && $unitCount > 0 ? \rand(1, $unitCount) : 0;
+            $product->kEinheit                 = (\random_int(0, 10) === 10) && $unitCount > 0
+                ? \random_int(1, $unitCount)
+                : 0;
             $product->kVersandklasse           = 1;
             $product->kEigenschaftKombi        = 0;
             $product->kVaterArtikel            = 0;
@@ -561,34 +550,34 @@ class DemoDataInstaller
             $product->kVPEEinheit              = 0;
             $product->kMassEinheit             = 0;
             $product->kGrundpreisEinheit       = 0;
-            $product->cName                    = $_name;
-            $product->cSeo                     = $this->slug($_name);
+            $product->cName                    = $name;
+            $product->cSeo                     = $this->slug($name);
             $product->cArtNr                   = $this->faker->ean8();
             $product->cBeschreibung            = $this->faker->text(300);
             $product->cAnmerkung               = '';
-            $product->fLagerbestand            = (float)\rand(0, 1000);
+            $product->fLagerbestand            = (float)\random_int(0, 1000);
             $product->fStandardpreisNetto      = $price / 19.00;
-            $product->fMwSt                    = $_taxRate;
-            $product->fMindestbestellmenge     = (5 < \rand(0, 10)) ? \rand(0, 5) : 0;
+            $product->fMwSt                    = $taxRate;
+            $product->fMindestbestellmenge     = (5 < \random_int(0, 10)) ? \random_int(0, 5) : 0;
             $product->fLieferantenlagerbestand = 0;
             $product->fLieferzeit              = 0;
             $product->cBarcode                 = $this->faker->ean13;
-            $product->cTopArtikel              = (\rand(0, 10) === 10) ? 'Y' : 'N';
-            $product->fGewicht                 = (float)\rand(0, 10);
+            $product->cTopArtikel              = (\random_int(0, 10) === 10) ? 'Y' : 'N';
+            $product->fGewicht                 = (float)\random_int(0, 10);
             $product->fArtikelgewicht          = $product->fGewicht;
             $product->fMassMenge               = 0; //@todo?
             $product->fGrundpreisMenge         = 0;
             $product->fBreite                  = 0;
             $product->fHoehe                   = 0;
             $product->fLaenge                  = 0;
-            $product->cNeu                     = (\rand(0, 10) === 10) ? 'Y' : 'N';
+            $product->cNeu                     = (\random_int(0, 10) === 10) ? 'Y' : 'N';
             $product->cKurzBeschreibung        = $this->faker->text(50);
-            $product->fUVP                     = (\rand(0, 10) === 10) ? ($price / 2) : 0;
-            $product->cLagerBeachten           = (\rand(0, 10) === 10) ? 'Y' : 'N';
+            $product->fUVP                     = (\random_int(0, 10) === 10) ? ($price / 2) : 0;
+            $product->cLagerBeachten           = (\random_int(0, 10) === 10) ? 'Y' : 'N';
             $product->cLagerKleinerNull        = $product->cLagerBeachten;
             $product->cLagerVariation          = 'N';
             $product->cTeilbar                 = 'N';
-            $product->fPackeinheit             = (\rand(0, 10) === 10) ? \rand(1, 12) : 1;
+            $product->fPackeinheit             = (\random_int(0, 10) === 10) ? \random_int(1, 12) : 1;
             $product->fAbnahmeintervall        = 0;
             $product->fZulauf                  = 0;
             $product->cVPE                     = 'N';
@@ -597,73 +586,62 @@ class DemoDataInstaller
             $product->dErscheinungsdatum       = 'now()';
             $product->dErstellt                = 'now()';
             $product->dLetzteAktualisierung    = 'now()';
-            $productID                         = $this->pdo->insert('tartikel', $product); //@todo!
+            $productID                         = $this->db->insert('tartikel', $product);
             if ($productID > 0) {
-                $_maxImages = $this->faker->numberBetween(1, 3);
-                for ($k = 0; $k < $_maxImages; ++$k) {
-                    $this->createProductImage($product->kArtikel, $_name, $k + 1);
+                $maxImages = $this->faker->numberBetween(1, 3);
+                for ($k = 0; $k < $maxImages; ++$k) {
+                    $this->createProductImage($product->kArtikel, $name, $k + 1);
                 }
-                $_numRatings = $this->faker->numberBetween(0, 6);
-                for ($j = 0; $j < $_numRatings; ++$j) {
+                $numRatings = $this->faker->numberBetween(0, 6);
+                for ($j = 0; $j < $numRatings; ++$j) {
                     $this->createRating($product->kArtikel);
                 }
+                $maxCategoryProduct = (int)$this->db->getSingleObject(
+                    'SELECT MAX(kKategorieArtikel) AS cnt 
+                        FROM tkategorieartikel'
+                )->cnt;
 
                 $productCategory                    = new stdClass();
-                $productCategory->kKategorieArtikel = $product->kArtikel;
+                $productCategory->kKategorieArtikel = $maxCategoryProduct + 1;
                 $productCategory->kArtikel          = $product->kArtikel;
-                $productCategory->kKategorie        = \rand(1, $categories);
-                $this->pdo->insert('tkategorieartikel', $productCategory);
+                $productCategory->kKategorie        = \random_int(1, $categories);
+                $this->db->insert('tkategorieartikel', $productCategory);
 
-                $seoItem       = new stdClass();
-                $seoItem->cKey = 'kArtikel';
-                $seoItem->cSeo = $product->cSeo;
-
-                $seo_index = 0;
-                while (($data = $this->pdo->select(
-                    'tseo',
-                    'cKey',
-                    $seoItem->cKey,
-                    'cSeo',
-                    $seoItem->cSeo
-                )) !== false
-                    && \is_array($data)
-                    && count($data) > 0
-                ) {
-                    $seoItem->cSeo = $product->cSeo . '_' . ++$seo_index;
-                }
-
+                $seoItem           = new stdClass();
+                $seoItem->cKey     = 'kArtikel';
+                $seoItem->cSeo     = $this->getUniqueSlug($product->cSeo);
                 $seoItem->kKey     = $product->kArtikel;
                 $seoItem->kSprache = 1;
-                $this->pdo->insert('tseo', $seoItem);
+                $this->db->insert('tseo', $seoItem);
 
                 $seoItem->cSeo    .= '-en';
                 $seoItem->kSprache = 2;
-                $this->pdo->insert('tseo', $seoItem);
+                $this->db->insert('tseo', $seoItem);
 
-                $_price2                = new stdClass();
-                $_price2->kArtikel      = $product->kArtikel;
-                $_price2->kKundengruppe = 1;
-                $idxKg1                 = $this->pdo->insert('tpreis', $_price2);
+                $price2                = new stdClass();
+                $price2->kArtikel      = $product->kArtikel;
+                $price2->kKundengruppe = 1;
+                $idxKg1                = $this->db->insert('tpreis', $price2);
                 if ($idxKg1 > 0) {
-                    $_price3            = new stdClass();
-                    $_price3->kPreis    = $idxKg1;
-                    $_price3->nAnzahlAb = 0;
-                    $_price3->fVKNetto  = $price / 19.00;
-                    $this->pdo->insert('tpreisdetail', $_price3);
+                    $price3            = new stdClass();
+                    $price3->kPreis    = $idxKg1;
+                    $price3->nAnzahlAb = 0;
+                    $price3->fVKNetto  = $price / 19.00;
+                    $this->db->insert('tpreisdetail', $price3);
                 }
 
-                $_price2->kKundengruppe = 2;
-                $idxKg2                 = $this->pdo->insert('tpreis', $_price2);
+                $price2->kKundengruppe = 2;
+                $idxKg2                = $this->db->insert('tpreis', $price2);
                 if ($idxKg2 > 0) {
-                    $_price3            = new stdClass();
-                    $_price3->kPreis    = $idxKg2;
-                    $_price3->nAnzahlAb = 0;
-                    $_price3->fVKNetto  = $price / 19.00;
-                    $this->pdo->insert('tpreisdetail', $_price3);
+                    $price3            = new stdClass();
+                    $price3->kPreis    = $idxKg2;
+                    $price3->nAnzahlAb = 0;
+                    $price3->fVKNetto  = $price / 19.00;
+                    $this->db->insert('tpreisdetail', $price3);
                 }
             }
 
-            $this->callback($callback, $i, $limit, $productID > 0, $_name);
+            $this->callback($callback, $i, $limit, $productID > 0, $name);
         }
 
         return $this;
@@ -677,10 +655,10 @@ class DemoDataInstaller
     {
         $limit = $this->config['customers'];
         $fake  = $this->faker;
-        $pdo   = $this->pdo;
+        $pdo   = $this->db;
         $xtea  = new XTEA(\BLOWFISH_KEY);
         for ($i = 1; $i <= $limit; ++$i) {
-            if (\rand(0, 1) === 0) {
+            if (\random_int(0, 1) === 0) {
                 $firstName = $fake->firstNameMale;
                 $gender    = 'm';
             } else {
@@ -689,7 +667,7 @@ class DemoDataInstaller
             }
             $lastName      = $fake->lastName;
             $streetName    = $fake->streetName;
-            $houseNr       = \rand(1, 200);
+            $houseNr       = \random_int(1, 200);
             $cityName      = $fake->city;
             $postcode      = $fake->postcode;
             $email         = $fake->email;
@@ -699,45 +677,44 @@ class DemoDataInstaller
             $lastNameEnc   = $xtea->encrypt($lastName);
             $lastName      = $fake->lastName;
 
-            $insertObj = (object)[
-                'kKundengruppe'      => 1,
-                'kSprache'           => 1,
-                'cKundenNr'          => '',
-                'cPasswort'          => $password,
-                'cAnrede'            => $gender,
-                'cTitel'             => '',
-                'cVorname'           => $firstName,
-                'cNachname'          => $lastNameEnc,
-                'cFirma'             => '',
-                'cZusatz'            => '',
-                'cStrasse'           => $streetNameEnc,
-                'cHausnummer'        => $houseNr,
-                'cAdressZusatz'      => '',
-                'cPLZ'               => $postcode,
-                'cOrt'               => $cityName,
-                'cBundesland'        => '',
-                'cLand'              => 'DE',
-                'cTel'               => '',
-                'cMobil'             => '',
-                'cFax'               => '',
-                'cMail'              => $email,
-                'cUSTID'             => '',
-                'cWWW'               => '',
-                'cSperre'            => 'N',
-                'fGuthaben'          => 0.0,
-                'cNewsletter'        => '',
-                'dGeburtstag'        => $dateofbirth,
-                'fRabatt'            => 0.0,
-                'dErstellt'          => 'now()',
-                'dVeraendert'        => 'now()',
-                'cAktiv'             => 'Y',
-                'cAbgeholt'          => 'N',
-                'nRegistriert'       => 1,
-                'nLoginversuche'     => 0,
-                'cResetPasswordHash' => '',
+            $customer = (object)[
+                'kKundengruppe'  => 1,
+                'kSprache'       => 1,
+                'cKundenNr'      => '',
+                'cPasswort'      => $password,
+                'cAnrede'        => $gender,
+                'cTitel'         => '',
+                'cVorname'       => $firstName,
+                'cNachname'      => $lastNameEnc,
+                'cFirma'         => '',
+                'cZusatz'        => '',
+                'cStrasse'       => $streetNameEnc,
+                'cHausnummer'    => $houseNr,
+                'cAdressZusatz'  => '',
+                'cPLZ'           => $postcode,
+                'cOrt'           => $cityName,
+                'cBundesland'    => '',
+                'cLand'          => 'DE',
+                'cTel'           => '',
+                'cMobil'         => '',
+                'cFax'           => '',
+                'cMail'          => $email,
+                'cUSTID'         => '',
+                'cWWW'           => '',
+                'cSperre'        => 'N',
+                'fGuthaben'      => 0.0,
+                'cNewsletter'    => '',
+                'dGeburtstag'    => $dateofbirth,
+                'fRabatt'        => 0.0,
+                'dErstellt'      => 'now()',
+                'dVeraendert'    => 'now()',
+                'cAktiv'         => 'Y',
+                'cAbgeholt'      => 'N',
+                'nRegistriert'   => 1,
+                'nLoginversuche' => 0,
             ];
 
-            $res = $pdo->insert('tkunde', $insertObj);
+            $res = $pdo->insert('tkunde', $customer);
             $this->callback($callback, $i, $limit, $res > 0, $firstName . ' ' . $lastName);
         }
 
@@ -753,10 +730,9 @@ class DemoDataInstaller
      */
     private function createImage(string $path, string $text = null, int $width = 500, int $height = 500): bool
     {
-        $font     = $this->getFontFile();
-        $filepath = $this->faker->imageFile(null, $width, $height, 'jpg', true, $text, null, null, $font);
+        $file = $this->faker->imageFile(null, $width, $height, 'jpg', true, $text, null, null, $this->getFontFile());
 
-        return $filepath !== null && \rename($filepath, $path);
+        return $file !== null && \rename($file, $path);
     }
 
     /**
@@ -766,20 +742,12 @@ class DemoDataInstaller
      */
     private function createManufacturerImage(int $manufacturerID, string $text): string
     {
-        if ($manufacturerID > 0) {
-            $file        = $this->slug($text) . '.jpg';
-            $pathNormal  = \PFAD_ROOT . 'bilder/hersteller/normal/' . $file;
-            $pathSmall   = \PFAD_ROOT . 'bilder/hersteller/klein/' . $file;
-            $pathStorage = \PFAD_ROOT . 'media/image/storage/manufacturers/' . $file;
-
-            return ($this->createImage($pathNormal, $text) === true
-                && $this->createImage($pathSmall, $text, 100, 100) === true
-                && $this->createImage($pathStorage, $text, 800, 800) === true)
-                ? $file
-                : '';
+        if ($manufacturerID <= 0) {
+            return '';
         }
+        $file = $this->slug($text) . '.jpg';
 
-        return '';
+        return $this->createImage(\PFAD_ROOT . \STORAGE_MANUFACTURERS . $file, $text, 800, 800) === true ? $file : '';
     }
 
     /**
@@ -789,21 +757,20 @@ class DemoDataInstaller
      */
     private function createProductImage(int $productID, string $text, int $imageNumber): void
     {
-        $maxPk = (int)$this->pdo->getSingleObject('SELECT max(kArtikelPict) AS maxPk FROM tartikelpict')->maxPk;
-        if ($productID > 0) {
-            $file = '1024_1024_' . \md5($text . $productID . $imageNumber) . '.jpg';
-            $path = \PFAD_ROOT . 'media/image/storage/' . $file;
-
-            if ($this->createImage($path, $text, 1024, 1024) === true) {
-                $_image                   = new stdClass();
-                $_image->cPfad            = $file;
-                $_image->kBild            = $this->pdo->insert('tbild', $_image);
-                $_image->kArtikelPict     = $maxPk + 1;
-                $_image->kMainArtikelBild = 0;
-                $_image->kArtikel         = $productID;
-                $_image->nNr              = $imageNumber;
-                $this->pdo->insert('tartikelpict', $_image);
-            }
+        $maxPk = (int)$this->db->getSingleObject('SELECT MAX(kArtikelPict) AS maxPk FROM tartikelpict')->maxPk;
+        if ($productID <= 0) {
+            return;
+        }
+        $file = '1024_1024_' . \md5($text . $productID . $imageNumber) . '.jpg';
+        if ($this->createImage(\PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $file, $text, 1024, 1024) === true) {
+            $image                   = new stdClass();
+            $image->cPfad            = $file;
+            $image->kBild            = $this->db->insert('tbild', $image);
+            $image->kArtikelPict     = $maxPk + 1;
+            $image->kMainArtikelBild = 0;
+            $image->kArtikel         = $productID;
+            $image->nNr              = $imageNumber;
+            $this->db->insert('tartikelpict', $image);
         }
     }
 
@@ -813,17 +780,12 @@ class DemoDataInstaller
      */
     private function createCategoryImage(int $categoryID, string $text): void
     {
-        if ($categoryID > 0) {
-            $file = $this->slug($text) . '.jpg';
-            $path = \PFAD_ROOT . 'bilder/kategorien/' . $file;
-            if ($this->createImage($path, $text, 200, 200) === true) {
-                $pathStorage = \PFAD_ROOT . 'media/image/storage/categories/' . $file;
-                $this->createImage($pathStorage, $text, 800, 800);
-                $image             = new stdClass();
-                $image->kKategorie = $categoryID;
-                $image->cPfad      = $file;
-                $this->pdo->insert('tkategoriepict', $image);
-            }
+        if ($categoryID <= 0) {
+            return;
+        }
+        $file = $this->slug($text) . '.jpg';
+        if ($this->createImage(\PFAD_ROOT . \STORAGE_CATEGORIES . $file, $text, 200, 200) === true) {
+            $this->db->insert('tkategoriepict', (object)['kKategorie' => $categoryID, 'cPfad' => $file]);
         }
     }
 
@@ -833,49 +795,53 @@ class DemoDataInstaller
      */
     private function createRating(int $productID): bool
     {
-        if ($productID > 0) {
-            $rating                  = new stdClass();
-            $rating->kArtikel        = $productID;
-            $rating->kKunde          = 0;
-            $rating->kSprache        = 1; //@todo: rand(0, 1)?
-            $rating->cName           = $this->faker->name;
-            $rating->cTitel          = \addcslashes($this->faker->realText(75), '\'"');
-            $rating->cText           = $this->faker->text(100);
-            $rating->nHilfreich      = \rand(0, 10);
-            $rating->nNichtHilfreich = \rand(0, 10);
-            $rating->nSterne         = \rand(1, 5);
-            $rating->nAktiv          = 1;
-            $rating->dDatum          = 'now()';
-
-            return $this->pdo->insert('tbewertung', $rating) > 0;
+        if ($productID <= 0) {
+            return false;
         }
+        $rating                  = new stdClass();
+        $rating->kArtikel        = $productID;
+        $rating->kKunde          = 0;
+        $rating->kSprache        = 1;
+        $rating->cName           = $this->faker->name;
+        $rating->cTitel          = \addcslashes($this->faker->realText(75), '\'"');
+        $rating->cText           = $this->faker->text(100);
+        $rating->nHilfreich      = \random_int(0, 10);
+        $rating->nNichtHilfreich = \random_int(0, 10);
+        $rating->nSterne         = \random_int(1, 5);
+        $rating->nAktiv          = 1;
+        $rating->dDatum          = 'now()';
 
-        return false;
+        return $this->db->insert('tbewertung', $rating) > 0;
     }
 
     /**
      * update lft/rght values for categories in the nested set model.
      *
-     * @param int $parentId
+     * @param int $parentID
      * @param int $left
      * @param int $level
      * @return int
      */
-    private function rebuildCategoryTree(int $parentId, int $left, int $level = 0): int
+    private function rebuildCategoryTree(int $parentID, int $left, int $level = 0): int
     {
         // the right value of this node is the left value + 1
         $right = $left + 1;
         // get all children of this node
-        $result = $this->pdo->getObjects(
-            'SELECT kKategorie FROM tkategorie WHERE kOberKategorie = ' . $parentId . ' ORDER BY nSort, cName'
+        $result = $this->db->getObjects(
+            'SELECT kKategorie 
+                FROM tkategorie 
+                WHERE kOberKategorie = :pid
+                ORDER BY nSort, cName',
+            ['pid' => $parentID]
         );
-        foreach ($result as $_res) {
-            $right = $this->rebuildCategoryTree((int)$_res->kKategorie, $right, $level + 1);
+        foreach ($result as $item) {
+            $right = $this->rebuildCategoryTree((int)$item->kKategorie, $right, $level + 1);
         }
         // we've got the left value, and now that we've processed the children of this node we also know the right value
-        $this->pdo->query(
-            'UPDATE tkategorie SET lft = ' . $left . ', rght = ' . $right . ', nLevel = ' . $level . '
-                WHERE kKategorie = ' . $parentId
+        $this->db->queryPrepared(
+            'UPDATE tkategorie SET lft = :lft, rght = :rght, nLevel = :lvl
+                WHERE kKategorie = :pid',
+            ['lft' => $left, 'rght' => $right, 'lvl' => $level, 'pid' => $parentID]
         );
 
         // return the right value of this node + 1
@@ -883,10 +849,25 @@ class DemoDataInstaller
     }
 
     /**
+     * @param string $seo
+     * @return string
+     */
+    private function getUniqueSlug(string $seo): string
+    {
+        $seoIndex = 0;
+        $original = $seo;
+        while ($this->db->getSingleObject('SELECT cSeo FROM tseo WHERE cSeo = :seo', ['seo' => $seo]) !== null) {
+            $seo = $original . '_' . ++$seoIndex;
+        }
+
+        return $seo;
+    }
+
+    /**
      * @param string $text
      * @return string
      */
-    private function slug($text): string
+    private function slug(string $text): string
     {
         return $this->slugify->slugify($text);
     }

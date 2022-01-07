@@ -125,13 +125,14 @@ class AccountController
             );
         }
         if (isset($_POST['email'], $_POST['passwort']) && Request::postInt('login') === 1) {
-            $customerID = $this->login($_POST['email'], $_POST['passwort'])->getID();
+            $customer   = $this->login($_POST['email'], $_POST['passwort']);
+            $customerID = $customer->getID();
         }
         if (isset($_GET['loggedout'])) {
             $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('loggedOut'), 'loggedOut');
         }
         if ($customerID > 0) {
-            $step = $this->handleCustomerRequest($customerID);
+            $step = $this->handleCustomerRequest($customer);
         }
         $alertNote = $this->alertService->alertTypeExists(Alert::TYPE_NOTE);
         if (!$alertNote && $step === 'mein Konto' && $customerID > 0) {
@@ -149,20 +150,22 @@ class AccountController
             $link = null;
         }
         $this->smarty->assign('alertNote', $alertNote)
-                     ->assign('step', $step)
-                     ->assign('Link', $link);
+            ->assign('step', $step)
+            ->assign('Link', $link);
     }
 
     /**
-     * @param int $customerID
+     * @param Customer $customer
      * @return string
+     * @throws Exception
      */
-    private function handleCustomerRequest(int $customerID): string
+    private function handleCustomerRequest(Customer $customer): string
     {
         Shop::setPageType(\PAGE_MEINKONTO);
-        $ratings = [];
-        $step    = 'mein Konto';
-        $valid   = Form::validateToken();
+        $customerID = $customer->getID();
+        $ratings    = [];
+        $step       = 'mein Konto';
+        $valid      = Form::validateToken();
         if (Request::verifyGPCDataInt('logout') === 1) {
             $this->logout();
         }
@@ -283,7 +286,7 @@ class AccountController
             $this->getCustomerFields();
         }
         if ($step === 'bewertungen') {
-            $ratings = $this->db->getObjects(
+            $ratings = $this->db->getCollection(
                 'SELECT tbewertung.kBewertung, fGuthabenBonus, nAktiv, kArtikel, cTitel, cText, 
                   tbewertung.dDatum, nSterne, cAntwort, dAntwortDatum
                   FROM tbewertung 
@@ -291,11 +294,13 @@ class AccountController
                       ON tbewertung.kBewertung = tbewertungguthabenbonus.kBewertung
                   WHERE tbewertung.kKunde = :customer',
                 ['customer' => $customerID]
-            );
+            )->each(static function ($item) {
+                $item->fGuthabenBonusLocalized = Preise::getLocalizedPriceString($item->fGuthabenBonus);
+            });
         }
-        $_SESSION['Kunde']->cGuthabenLocalized = Preise::getLocalizedPriceString($_SESSION['Kunde']->fGuthaben);
-        $this->smarty->assign('Kunde', $_SESSION['Kunde'])
-            ->assign('customerAttributes', $_SESSION['Kunde']->getCustomerAttributes())
+        $customer->cGuthabenLocalized = Preise::getLocalizedPriceString($customer->fGuthaben);
+        $this->smarty->assign('Kunde', $customer)
+            ->assign('customerAttributes', $customer->getCustomerAttributes())
             ->assign('bewertungen', $ratings)
             ->assign('BESTELLUNG_STATUS_BEZAHLT', \BESTELLUNG_STATUS_BEZAHLT)
             ->assign('BESTELLUNG_STATUS_VERSANDT', \BESTELLUNG_STATUS_VERSANDT)
@@ -331,12 +336,14 @@ class AccountController
             $returnCode = Customer::ERROR_CAPTCHA;
             $tries      = $captchaState;
         }
-        if ($customer->getID() > 0) {
+        if ($returnCode === Customer::OK && $customer->getID() > 0) {
             $this->initCustomer($customer);
         } elseif ($returnCode === Customer::ERROR_LOCKED) {
             $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountLocked'), 'accountLocked');
         } elseif ($returnCode === Customer::ERROR_INACTIVE) {
             $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountInactive'), 'accountInactive');
+        } elseif ($returnCode === Customer::ERROR_NOT_ACTIVATED_YET) {
+            $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('loginNotActivated'), 'loginNotActivated');
         } else {
             $this->checkLoginCaptcha($tries);
             $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('incorrectLogin'), 'incorrectLogin');
@@ -375,6 +382,7 @@ class AccountController
             );
         }
         if ($customer->cAktiv !== 'Y') {
+            $customer->kKunde = 0;
             $this->alertService->addAlert(
                 Alert::TYPE_NOTE,
                 Shop::Lang()->get('loginNotActivated'),
@@ -958,7 +966,8 @@ class AccountController
         $_SESSION['Kunde']->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($_SESSION['Kunde']->cLand);
         $this->smarty->assign('Bestellung', $order)
             ->assign('billingAddress', $order->oRechnungsadresse)
-            ->assign('Lieferadresse', $order->Lieferadresse ?? null);
+            ->assign('Lieferadresse', $order->Lieferadresse ?? null)
+            ->assign('incommingPayments', $order->getIncommingPayments());
         if (isset($order->oEstimatedDelivery->longestMin, $order->oEstimatedDelivery->longestMax)) {
             $this->smarty->assign(
                 'cEstimatedDeliveryEx',

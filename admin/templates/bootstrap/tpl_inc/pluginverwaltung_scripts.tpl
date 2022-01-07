@@ -8,26 +8,26 @@
             pluginName = oTemp.val();
             var licensePath = vLicenses[pluginName];
             if (this.checked && typeof licensePath === 'string') { // it's checked yet, right after the click was fired
+                var modal = $('#licenseModal');
                 $('input[id="plugin-check-' + pluginName + '"]').attr('disabled', 'disabled'); // block the checkbox!
-                $('div[id="licenseModal"]').modal({ backdrop : 'static' }).on('hide.bs.modal', function (e) {
+                modal.modal({ backdrop : 'static' }).one('hide.bs.modal', function (e) {
                     $('input[id=plugin-check-' + pluginName + ']').removeAttr('disabled');
-                    // check, which element is 'active' before/during the modal goes hiding (to determine, which button closes it)
-                    // (it is faster than check a var or bind an event to an element)
-                    if ('ok' === document.activeElement.name) {
-                        $('input[id=plugin-check-' + pluginName + ']').prop('checked', true);
-                    } else {
-                        $('input[id=plugin-check-' + pluginName + ']').prop('checked', false);
-                    }
+                });
+                $('#licenseModal button[name=cancel], #licenseModal .close').one('click', function(event) {
+                    $('input[id=plugin-check-' + pluginName + ']').prop('checked', false);
+                });
+                $('#licenseModal button[name=ok]').one('click', function(event) {
+                    $('input[id=plugin-check-' + pluginName + ']').prop('checked', true);
                 });
                 startSpinner();
-                $('div[id="licenseModal"]').find('.modal-body').load(
+                modal.find('.modal-body').load(
                     'getMarkdownAsHTML.php',
                     { 'jtl_token' : '{$smarty.Session.jtl_token}', 'path': vLicenses[pluginName] },
                     function () {
                         stopSpinner();
                     }
                 );
-                $('div[id="licenseModal"]').modal('show');
+                modal.modal('show');
             }
         });
     });

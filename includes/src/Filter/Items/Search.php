@@ -63,9 +63,10 @@ class Search extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setVisibility($this->getConfig('navigationsfilter')['suchtrefferfilter_nutzen'])
-             ->setFrontendName(Shop::isAdmin() ? \__('filterSearch') : Shop::Lang()->get('searchFilter'))
-             ->setUrlParam('sf');
+            ->setVisibility($this->getConfig('navigationsfilter')['suchtrefferfilter_nutzen'])
+            ->setFrontendName(Shop::isAdmin() ? \__('filterSearch') : Shop::Lang()->get('searchFilter'))
+            ->setFilterName($this->getFrontendName())
+            ->setUrlParam('sf');
     }
 
     /**
@@ -352,6 +353,10 @@ class Search extends AbstractFilter
             $count         = 1;
         } elseif (($value = $searchFilter->getValue()) > 0) {
             $searchCache = [$value];
+            $count       = 1;
+        }
+        if (\count($searchCache) === 0 && $this->getValue() !== null) {
+            $searchCache = [$this->getValue()];
             $count       = 1;
         }
 

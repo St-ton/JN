@@ -28,7 +28,7 @@ class TestHydrator extends DefaultsHydrator
     {
         parent::hydrate($data, $language);
         $lang = Shop::Lang();
-        $all  = LanguageHelper::getAllLanguages(1);
+        $all  = LanguageHelper::getAllLanguages(1, true, true);
         $lang->setzeSprache($all[$language->kSprache]->cISO);
 
         $langID        = (int)$language->kSprache;
@@ -58,6 +58,8 @@ class TestHydrator extends DefaultsHydrator
             ->assign('Neues_Passwort', 'geheim007')
             ->assign('passwordResetLink', Shop::getURL() . '/pass.php?fpwh=ca68b243f0c1e7e57162055f248218fd')
             ->assign('Gutschein', $this->getGift())
+            ->assign('interval', 720)
+            ->assign('intervalLoc', 'Monatliche Status-Email')
             ->assign('AGB', $oAGBWRB)
             ->assign('WRB', $oAGBWRB)
             ->assign('DSE', $oAGBWRB)

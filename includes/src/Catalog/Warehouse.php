@@ -505,26 +505,22 @@ class Warehouse extends MainModel
      */
     public function update(): int
     {
-        $db      = Shop::Container()->getDB();
-        $sql     = 'UPDATE twarenlager SET ';
-        $set     = [];
         $members = \array_keys(\get_object_vars($this));
         if (\is_array($members) && \count($members) > 0) {
-            foreach ($members as $cMember) {
-                $cMethod = 'get' . \mb_substr($cMember, 1);
-                if (\method_exists($this, $cMethod)) {
-                    $val    = $this->$cMethod();
-                    $mValue = $val === null
-                        ? 'NULL'
-                        : ("'" . $db->escape($val) . "'");
-                    $set[]  = "{$cMember} = {$mValue}";
+            $upd = new stdClass();
+            foreach ($members as $member) {
+                $method = 'get' . \mb_substr($member, 1);
+                if (\method_exists($this, $method)) {
+                    $upd->$member = $this->$method();
                 }
             }
 
-            $sql .= \implode(', ', $set);
-            $sql .= ' WHERE kWarenlager = ' . $this->kWarenlager;
-
-            return $db->getAffectedRows($sql);
+            return Shop::Container()->getDB()->updateRow(
+                'twarenlager',
+                'kWarenlager',
+                $this->kWarenlager,
+                $upd
+            );
         }
         throw new Exception('ERROR: Object has no members!');
     }

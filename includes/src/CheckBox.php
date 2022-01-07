@@ -181,7 +181,10 @@ class CheckBox
                 (int)$this->kCheckBoxFunktion
             );
             if (isset($func->kCheckBoxFunktion) && $func->kCheckBoxFunktion > 0) {
-                $func->cName             = \__($func->cName);
+                if (Shop::isAdmin()) {
+                    Shop::Container()->getGetText()->loadAdminLocale('pages/checkbox');
+                    $func->cName = \__($func->cName);
+                }
                 $this->oCheckBoxFunktion = $func;
             } else {
                 $this->kCheckBoxFunktion = 0;
@@ -258,11 +261,9 @@ class CheckBox
                     " . $sql . '
                 ORDER BY nSort'
         )
-            ->pluck('id')
             ->map(static function ($e) {
-                return (int)$e;
+                return new self((int)$e->id);
             })
-            ->mapInto(self::class)
             ->all();
         \executeHook(\HOOK_CHECKBOX_CLASS_GETCHECKBOXFRONTEND, [
             'oCheckBox_arr' => &$checkboxes,
@@ -325,7 +326,7 @@ class CheckBox
                 switch ($checkbox->oCheckBoxFunktion->cID) {
                     case 'jtl_newsletter': // Newsletteranmeldung
                         $params['oKunde'] = GeneralObject::copyMembers($params['oKunde']);
-                        $this->sfCheckBoxNewsletter($params['oKunde']);
+                        $this->sfCheckBoxNewsletter($params['oKunde'], $location);
                         break;
 
                     case 'jtl_adminmail': // CheckBoxMail
@@ -411,11 +412,9 @@ class CheckBox
                 FROM tcheckbox' . ($active ? ' WHERE nAktiv = 1' : '') . '
                 ORDER BY nSort ' . $limitSQL
         )
-            ->pluck('id')
             ->map(static function ($e) {
-                return (int)$e;
-            })
-            ->mapInto(self::class)->all();
+                return new self((int)$e->id);
+            })->all();
     }
 
     /**
@@ -614,12 +613,13 @@ class CheckBox
     }
 
     /**
-     * @param Customer|object $customer
+     * @param $customer
+     * @param int $location
      * @return bool
      * @throws Exceptions\CircularReferenceException
      * @throws Exceptions\ServiceNotFoundException
      */
-    private function sfCheckBoxNewsletter($customer): bool
+    private function sfCheckBoxNewsletter($customer, int $location): bool
     {
         if (!\is_object($customer)) {
             return false;
@@ -634,7 +634,7 @@ class CheckBox
         try {
             (new Optin(OptinNewsletter::class))
                 ->getOptinInstance()
-                ->createOptin($refData)
+                ->createOptin($refData, $location)
                 ->sendActivationMail();
         } catch (\Exception $e) {
             Shop::Container()->getLogService()->error($e->getMessage());

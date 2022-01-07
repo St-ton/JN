@@ -8,7 +8,7 @@ use JTL\Smarty\JTLSmarty;
  * Class ProductAvailable
  * @package JTL\Mail\Template
  */
-class ProductAvailable extends AbstractTemplate
+class ProductAvailable extends ProductTemplate
 {
     protected $id = \MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR;
 
@@ -21,6 +21,7 @@ class ProductAvailable extends AbstractTemplate
         if ($data === null) {
             return;
         }
+        $data = $this->useOriginalName($data);
         $smarty->assign('Benachrichtigung', $data->tverfuegbarkeitsbenachrichtigung)
                ->assign('Artikel', $data->tartikel);
     }

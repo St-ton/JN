@@ -179,11 +179,11 @@ final class Model extends DataModel
      */
     public function getSanitizedFilepath(): string
     {
-        $base = \PFAD_ROOT . \PFAD_EXPORT;
+        $base = \realpath(\PFAD_ROOT . \PFAD_EXPORT) . '/';
         $abs  = $base . $this->getFilename();
         $real = \realpath(\pathinfo($abs, \PATHINFO_DIRNAME)) . '/';
         if (\strpos($real, $base) !== 0) {
-            throw new Exception('Directory traversal detected for export ' . $this->getId());
+            throw new Exception(\sprintf(\__('Directory traversal detected for export %d.'), $this->getId()));
         }
 
         return $abs;

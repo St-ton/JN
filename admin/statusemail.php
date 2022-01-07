@@ -11,7 +11,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('EMAIL_REPORTS_VIEW', true, true);
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statusemail_inc.php';
 
 $alertHelper = Shop::Container()->getAlertService();
 $step        = 'statusemail_uebersicht';

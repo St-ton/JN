@@ -120,15 +120,19 @@ class PriceRange
         $priceRange = Shop::Container()->getDB()->getSingleObject(
             "SELECT baseprice.kArtikel,
                     MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL,
-                        COALESCE(baseprice.specialPrice, 999999999),
-                        baseprice.specialPrice + varaufpreis.fMinAufpreisNetto)) specialPriceMin,
+                        ROUND(COALESCE(baseprice.specialPrice, 999999999), 4),
+                        ROUND(baseprice.specialPrice, 4) + ROUND(varaufpreis.fMinAufpreisNetto, 4))) specialPriceMin,
                     MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL,
-                        COALESCE(baseprice.specialPrice, 0),
-                        baseprice.specialPrice + varaufpreis.fMaxAufpreisNetto)) specialPriceMax,
-                   MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL,
-                      baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMinAufpreisNetto)) fVKNettoMin,
-                   MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL,
-                      baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMaxAufpreisNetto)) fVKNettoMax
+                        ROUND(COALESCE(baseprice.specialPrice, 0), 4),
+                        ROUND(baseprice.specialPrice, 4) + ROUND(varaufpreis.fMaxAufpreisNetto, 4))) specialPriceMax,
+                    MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL,
+                        ROUND(baseprice.fVKNetto, 4),
+                        ROUND(baseprice.fVKNetto, 4) + ROUND(varaufpreis.fMinAufpreisNetto, 4))
+                    ) fVKNettoMin,
+                    MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL,
+                        ROUND(baseprice.fVKNetto, 4),
+                        ROUND(baseprice.fVKNetto, 4) + ROUND(varaufpreis.fMaxAufpreisNetto, 4))
+                    ) fVKNettoMax
             FROM (
                 SELECT IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) kArtikel,
                        tartikel.kArtikel kKindArtikel,
@@ -200,7 +204,7 @@ class PriceRange
             $this->minNettoPrice     = (float)$priceRange->fVKNettoMin;
             $this->maxNettoPrice     = (float)$priceRange->fVKNettoMax;
             $this->isMinSpecialPrice = (\round($priceRange->specialPriceMin, 2) === \round($this->minNettoPrice, 2));
-            $this->isMaxSpecialPrice = (\round($priceRange->specialPriceMax, 2) === \round($this->maxNettoPrice));
+            $this->isMaxSpecialPrice = (\round($priceRange->specialPriceMax, 2) === \round($this->maxNettoPrice, 2));
         } else {
             $this->minNettoPrice     = $this->productData->fNettoPreis;
             $this->maxNettoPrice     = $this->productData->fNettoPreis;
@@ -214,8 +218,8 @@ class PriceRange
 
         $ust = Tax::getSalesTax($this->productData->kSteuerklasse);
 
-        $this->minBruttoPrice = Tax::getGross($this->minNettoPrice, $ust);
-        $this->maxBruttoPrice = Tax::getGross($this->maxNettoPrice, $ust);
+        $this->minBruttoPrice = Tax::getGross($this->minNettoPrice, $ust, 4);
+        $this->maxBruttoPrice = Tax::getGross($this->maxNettoPrice, $ust, 4);
     }
 
     public function loadConfiguratorRange(): void
@@ -223,13 +227,13 @@ class PriceRange
         $configItems = Shop::Container()->getDB()->getObjects(
             'SELECT tartikel.kArtikel,
                     tkonfiggruppe.kKonfiggruppe,
-                    MIN(tkonfiggruppe.nMin) nMin,
-                    MAX(tkonfiggruppe.nMax) nMax,
+                    MIN(tkonfiggruppe.nMin) AS nMin,
+                    MAX(tkonfiggruppe.nMax) AS nMax,
                     tkonfigitem.kArtikel kKindArtikel,
                     tkonfigitem.bPreis,
-                    MIN(tkonfigitem.fMin) fMin,
-                    MAX(tkonfigitem.fMax) fMax,
-                    IF(tkonfigitem.bPreis = 0, tkonfigitempreis.kSteuerklasse, tartikel.kSteuerklasse) kSteuerklasse,
+                    MIN(tkonfigitem.fMin) AS fMin,
+                    MAX(tkonfigitem.fMax) AS fMax,
+                    IF(tkonfigitem.bPreis = 0, tkonfigitempreis.kSteuerklasse, tartikel.kSteuerklasse) AS kSteuerklasse,
                     MIN(tkonfigitempreis.fPreis) fMinPreis,
                     Max(tkonfigitempreis.fPreis) fMaxPreis
                 FROM tartikel
@@ -361,8 +365,8 @@ class PriceRange
             if (!$this->isMaxSpecialPrice) {
                 $this->maxNettoPrice *= (1 - $this->discount);
             }
-            $this->minBruttoPrice = Tax::getGross($this->minNettoPrice, $ust);
-            $this->maxBruttoPrice = Tax::getGross($this->maxNettoPrice, $ust);
+            $this->minBruttoPrice = Tax::getGross($this->minNettoPrice, $ust, 4);
+            $this->maxBruttoPrice = Tax::getGross($this->maxNettoPrice, $ust, 4);
         }
     }
 
@@ -473,5 +477,15 @@ class PriceRange
             Preise::getLocalizedPriceString($this->maxBruttoPrice, $currency),
             Preise::getLocalizedPriceString($this->maxNettoPrice, $currency),
         ];
+    }
+
+    /**
+     * get product data
+     *
+     * @return mixed|stdClass
+     */
+    public function getProductData()
+    {
+        return $this->productData;
     }
 }

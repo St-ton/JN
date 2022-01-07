@@ -379,7 +379,7 @@ class Metadata implements MetadataInterface
             } elseif ($category->bUnterKategorien) {
                 // Hat die aktuelle Kategorie Unterkategorien?
                 $helper = Category::getInstance();
-                $sub    = $helper->getCategoryById($category->kKategorie);
+                $sub    = $helper->getCategoryById($category->kKategorie, $category->lft, $category->rght);
                 if ($sub !== null && $sub->hasChildren()) {
                     $catNames       = map($sub->getChildren(), static function (MenuItem $e) {
                         return \strip_tags($e->getName());
@@ -413,7 +413,6 @@ class Metadata implements MetadataInterface
         // Keine eingestellten Metas vorhanden => generiere Standard Metas
         $metaDescription = '';
         if (\is_array($products) && \count($products) > 0) {
-            \shuffle($products);
             $maxIdx      = \min(12, \count($products));
             $productName = '';
             for ($i = 0; $i < $maxIdx; ++$i) {

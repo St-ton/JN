@@ -31,23 +31,23 @@ class Tax
             self::setTaxRates();
         }
         if (GeneralObject::isCountable('Steuersatz', $_SESSION) && !isset($_SESSION['Steuersatz'][$taxID])) {
-            $taxID = \array_keys($_SESSION['Steuersatz'])[0];
+            $taxID = (int)(\array_keys($_SESSION['Steuersatz'])[0] ?? 0);
         }
 
-        return $_SESSION['Steuersatz'][$taxID];
+        return $_SESSION['Steuersatz'][$taxID] ?? 0;
     }
 
     /**
      * @param string|null $countryCode
-     * @since since 5.0.0
+     * @param bool $skipUpdateCart
+     * @since 5.0.0
      */
-    public static function setTaxRates($countryCode = null): void
+    public static function setTaxRates($countryCode = null, bool $skipUpdateCart = false): void
     {
         $_SESSION['Steuersatz'] = [];
         $billingCountryCode     = null;
         $merchantCountryCode    = 'DE';
         $db                     = Shop::Container()->getDB();
-        $conf                   = Shop::getSettings([\CONF_KUNDEN])['kunden'];
         $company                = $db->getSingleObject('SELECT cLand FROM tfirma');
         if ($company !== null && !empty($company->cLand)) {
             $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($company->cLand);
@@ -55,19 +55,19 @@ class Tax
         if (\defined('STEUERSATZ_STANDARD_LAND')) {
             $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
         }
-        if ($conf['kundenregistrierung_standardland'] !== '') {
-            $merchantCountryCode = $conf['kundenregistrierung_standardland'];
-        }
         $deliveryCountryCode = $merchantCountryCode;
-        if ($countryCode) {
-            $deliveryCountryCode = $countryCode;
-        }
         if (!empty(Frontend::getCustomer()->cLand)) {
             $deliveryCountryCode = Frontend::getCustomer()->cLand;
             $billingCountryCode  = Frontend::getCustomer()->cLand;
         }
         if (!empty($_SESSION['Lieferadresse']->cLand)) {
             $deliveryCountryCode = $_SESSION['Lieferadresse']->cLand;
+        }
+        if (!empty($_SESSION['preferredDeliveryCountryCode'])) {
+            $deliveryCountryCode = $_SESSION['preferredDeliveryCountryCode'];
+        }
+        if ($countryCode) {
+            $deliveryCountryCode = $countryCode;
         }
         if ($billingCountryCode === null) {
             $billingCountryCode = $deliveryCountryCode;
@@ -107,11 +107,13 @@ class Tax
         );
         if (\count($taxZones) === 0) {
             // Keine Steuerzone für $deliveryCountryCode hinterlegt - das ist fatal!
-            $redirURL  = Frontend::getCustomer()->isLoggedIn()
-                ? Shop::Container()->getLinkService()->getStaticRoute('jtl.php') . '?editRechnungsadresse=1'
-                : Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1';
-            $urlHelper = new URL(Shop::getURL() . $_SERVER['REQUEST_URI']);
-            $country   = LanguageHelper::getCountryCodeByCountryName($deliveryCountryCode);
+            $linkService = Shop::Container()->getLinkService();
+            $logoutURL   = $linkService->getStaticRoute('jtl.php') . '?logout=1';
+            $redirURL    = Frontend::getCustomer()->isLoggedIn()
+                ? $linkService->getStaticRoute('jtl.php') . '?editRechnungsadresse=1'
+                : $linkService->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1';
+            $currentURL  = (new URL(Shop::getURL() . $_SERVER['REQUEST_URI']))->normalize();
+            $country     = LanguageHelper::getCountryCodeByCountryName($deliveryCountryCode);
 
             Shop::Container()->getLogService()->error('Keine Steuerzone für "' . $country . '" hinterlegt!');
 
@@ -131,7 +133,7 @@ class Tax
                 exit;
             }
 
-            if ($redirURL === $urlHelper->normalize()) {
+            if (\in_array($currentURL, [$redirURL, $logoutURL])) {
                 Shop::Container()->getAlertService()->addAlert(
                     Alert::TYPE_ERROR,
                     Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages') . '<br/>'
@@ -155,11 +157,13 @@ class Tax
         if ($qry !== '') {
             $taxClasses = $db->getObjects('SELECT * FROM tsteuerklasse');
             foreach ($taxClasses as $taxClass) {
+                $taxClass->kSteuerklasse                          = (int)$taxClass->kSteuerklasse;
                 $rate                                             = $db->getSingleObject(
                     'SELECT fSteuersatz
                         FROM tsteuersatz
-                        WHERE kSteuerklasse = ' . (int)$taxClass->kSteuerklasse . '
-                        AND (' . $qry . ') ORDER BY nPrio DESC'
+                        WHERE kSteuerklasse = :tcid
+                        AND (' . $qry . ') ORDER BY nPrio DESC',
+                    ['tcid' => $taxClass->kSteuerklasse]
                 );
                 $_SESSION['Steuersatz'][$taxClass->kSteuerklasse] = $rate->fSteuersatz ?? 0;
                 if ($UstBefreiungIGL) {
@@ -167,7 +171,7 @@ class Tax
                 }
             }
         }
-        if (isset($_SESSION['Warenkorb']) && $_SESSION['Warenkorb'] instanceof Cart) {
+        if ($skipUpdateCart === false && isset($_SESSION['Warenkorb']) && $_SESSION['Warenkorb'] instanceof Cart) {
             Frontend::getCart()->setzePositionsPreise();
         }
     }
@@ -188,8 +192,7 @@ class Tax
         }
         $taxRates = [];
         $taxPos   = [];
-        $conf     = Shop::getSettings([\CONF_GLOBAL]);
-        if ($conf['global']['global_steuerpos_anzeigen'] === 'N') {
+        if (Shop::getSettingValue(\CONF_GLOBAL, 'global_steuerpos_anzeigen') === 'N') {
             return $taxPos;
         }
         foreach ($items as $item) {

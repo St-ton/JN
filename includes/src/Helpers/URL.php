@@ -68,7 +68,7 @@ class URL
     /**
      * @param string|null $url
      */
-    public function __construct($url = null)
+    public function __construct(?string $url = null)
     {
         if ($url) {
             $this->setUrl($url);
@@ -89,14 +89,12 @@ class URL
      */
     public function setUrl(string $url): bool
     {
-        $this->url = $url;
-        // parse URL into respective parts
-        $url_components = \parse_url($this->url);
-
-        if (!$url_components) {
+        $this->url  = $url;
+        $components = \parse_url($this->url);
+        if (!$components) {
             return false;
         }
-        foreach ($url_components as $key => $value) {
+        foreach ($components as $key => $value) {
             if (\property_exists($this, $key)) {
                 $this->$key = $value;
             }
@@ -259,22 +257,30 @@ class URL
     }
 
     /**
-     * @param object $obj
-     * @param int    $type
-     * @param bool   $full
+     * @return string
+     */
+    private static function getLocalizedFallback(): string
+    {
+        return !LanguageHelper::isDefaultLanguageActive(true)
+            ? ('&lang=' . Shop::getLanguageCode())
+            : '';
+    }
+
+    /**
+     * @param object      $obj
+     * @param int         $type
+     * @param bool        $full
+     * @param string|null $prefix
      * @return string
      * @former baueURL()
      * @since 5.0.0
      */
-    public static function buildURL($obj, int $type, bool $full = false): string
+    public static function buildURL($obj, int $type, bool $full = false, ?string $prefix = null): string
     {
         if ($obj instanceof LinkInterface) {
             return $obj->getURL();
         }
-        $lang   = !LanguageHelper::isDefaultLanguageActive(true)
-            ? ('&lang=' . Shop::getLanguageCode())
-            : '';
-        $prefix = $full === false ? '' : Shop::getURL() . '/';
+        $prefix = $prefix ?? ($full === false ? '' : (Shop::getURL() . '/'));
 
         if ($type && $obj) {
             \executeHook(\HOOK_TOOLSGLOBAL_INC_SWITCH_BAUEURL, ['obj' => &$obj, 'art' => &$type]);
@@ -282,17 +288,17 @@ class URL
                 case \URLART_ARTIKEL:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
-                        : $prefix . '?a=' . $obj->kArtikel . $lang;
+                        : $prefix . '?a=' . $obj->kArtikel . self::getLocalizedFallback();
 
                 case \URLART_KATEGORIE:
                     if ($obj instanceof MenuItem) {
                         return !empty($obj->getURL())
                             ? $prefix . $obj->getURL()
-                            : $prefix . '?k=' . $obj->getID() . $lang;
+                            : $prefix . '?k=' . $obj->getID() . self::getLocalizedFallback();
                     }
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
-                        : $prefix . '?k=' . $obj->kKategorie . $lang;
+                        : $prefix . '?k=' . $obj->kKategorie . self::getLocalizedFallback();
                 case \URLART_SEITE:
                     if (isset($_SESSION['cISOSprache'], $obj->cLocalizedSeo[$_SESSION['cISOSprache']])
                         && \mb_strlen($obj->cLocalizedSeo[$_SESSION['cISOSprache']])
@@ -308,49 +314,49 @@ class URL
 
                     return !empty($oSpezialseite->cDateiname)
                         ? $prefix . $oSpezialseite->cDateiname
-                        : $prefix . '?s=' . $obj->kLink . $lang;
+                        : $prefix . '?s=' . $obj->kLink . self::getLocalizedFallback();
 
                 case \URLART_HERSTELLER:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
-                        : $prefix . '?h=' . $obj->kHersteller . $lang;
+                        : $prefix . '?h=' . $obj->kHersteller . self::getLocalizedFallback();
 
                 case \URLART_LIVESUCHE:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
-                        : $prefix . '?l=' . $obj->kSuchanfrage . $lang;
+                        : $prefix . '?l=' . $obj->kSuchanfrage . self::getLocalizedFallback();
 
                 case \URLART_MERKMAL:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
-                        : $prefix . '?m=' . $obj->kMerkmalWert . $lang;
+                        : $prefix . '?m=' . $obj->kMerkmalWert . self::getLocalizedFallback();
 
                 case \URLART_NEWS:
                     if ($obj instanceof Item) {
                         /** @var Item $obj */
                         return !empty($obj->getSEO())
                             ? $obj->getURL()
-                            : $prefix . '?n=' . $obj->getID() . $lang;
+                            : $prefix . '?n=' . $obj->getID() . self::getLocalizedFallback();
                     }
 
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
-                        : $prefix . '?n=' . $obj->kNews . $lang;
+                        : $prefix . '?n=' . $obj->kNews . self::getLocalizedFallback();
 
                 case \URLART_NEWSMONAT:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
-                        : $prefix . '?nm=' . $obj->kNewsMonatsUebersicht . $lang;
+                        : $prefix . '?nm=' . $obj->kNewsMonatsUebersicht . self::getLocalizedFallback();
 
                 case \URLART_NEWSKATEGORIE:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
-                        : $prefix . '?nk=' . $obj->kNewsKategorie . $lang;
+                        : $prefix . '?nk=' . $obj->kNewsKategorie . self::getLocalizedFallback();
 
                 case \URLART_SEARCHSPECIALS:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
-                        : $prefix . '?q=' . $obj->kSuchspecial . $lang;
+                        : $prefix . '?q=' . $obj->kSuchspecial . self::getLocalizedFallback();
 
                 case \URLART_NEWSLETTER:
                     try {

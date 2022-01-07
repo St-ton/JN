@@ -18,6 +18,11 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     private $enabled;
 
     /**
+     * @var bool
+     */
+    private $validated;
+
+    /**
      * SimpleCaptchaService constructor.
      * @param bool $enabled
      */
@@ -84,6 +89,9 @@ class SimpleCaptchaService implements CaptchaServiceInterface
      */
     public function validate(array $requestData): bool
     {
+        if ($this->validated !== null) {
+            return $this->validated;
+        }
         if (!$this->isEnabled()) {
             return true;
         }
@@ -100,9 +108,11 @@ class SimpleCaptchaService implements CaptchaServiceInterface
         $time = \mb_substr($code, \mb_strpos($code, ':') + 1);
 
         // if form is filled out during lower than 5 seconds it must be a bot...
-        return \time() > (int)$time + 5
+        $this->validated = \time() > (int)$time + 5
             && isset($requestData[$token])
             && ($requestData[$token] === \sha1($code));
+
+        return $this->validated;
     }
 
     /**

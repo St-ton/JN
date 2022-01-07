@@ -293,6 +293,9 @@ msgstr "Please check your inputs."
 msgid "lockForMinutes"
 msgstr "Blocked for %s minutes"
 
+msgid "errorLoginDataExpired"
+msgstr "Login data expired."
+
 msgid "errorWrongPasswordUser"
 msgstr "Invalid user name or password"
 
@@ -1290,7 +1293,7 @@ msgid "pages"
 msgstr "Pages"
 
 msgid "manufacturers"
-msgstr "Manufacturer"
+msgstr "Manufacturers"
 
 msgid "transparency"
 msgstr "Transparency"
@@ -2108,6 +2111,9 @@ msgstr "No changes logged yet."
 msgid "settingChangedBy"
 msgstr "Changed by"
 
+msgid "settingChangerIp"
+msgstr "IP address"
+
 msgid "settingValueNew"
 msgstr "Value new"
 
@@ -2121,10 +2127,10 @@ msgid "settingLogTitle"
 msgstr "Show Changelog"
 
 msgid "settingReset"
-msgstr "Reset setting."
+msgstr "Reset setting. (Default: %s)"
 
 msgid "confirmResetLog"
-msgstr "Reset setting - %s?"
+msgstr "Reset setting - %s? (Default: %s)"
 
 msgid "confirmResetLogTitle"
 msgstr "Confirm reset"
@@ -2134,3 +2140,21 @@ msgstr "Einstellung konnte nicht zurückgesetzt werden, da kein passender Eintra
 
 msgid "defaultDeleteConfirmTitle"
 msgstr "Confirm delete"
+
+msgid "pluginInstallXmlDoesNotExist"
+msgstr "info.xml does not exist: %s"
+
+msgid "pluginInstallDefinitionNotFound"
+msgstr "Cannot find plugin definition in %s"
+
+msgid "pluginInstallCannotMoveTo"
+msgstr "Cannot move to %s"
+
+msgid "pluginInstallTemplateDoesNotExist"
+msgstr "%s does not exist: %s"
+
+msgid "pluginInstallCannotOpenArchive"
+msgstr "Cannot open archive"
+
+msgid "pluginInstallInvalidArchive"
+msgstr "Invalid archive"

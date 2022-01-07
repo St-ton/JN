@@ -564,9 +564,7 @@ class Wishlist
                                             );
                                         }
                                     }
-                                    if (empty($attrValExists->kEigenschaftWert)
-                                        && empty($attrValExists->cFreifeldWert)
-                                    ) {
+                                    if ($attrValExists === null) {
                                         $names[] = $wlPosition->cArtikelName;
                                         $notice .= '<br />' .
                                             Shop::Lang()->get('noProductWishlist', 'messages');
@@ -1119,6 +1117,14 @@ class Wishlist
             $item->kWunschliste    = (int)$item->kWunschliste;
             $item->kArtikel        = (int)$item->kArtikel;
 
+            try {
+                $product = (new Artikel())->fuelleArtikel($item->kArtikel, $defaultOptions);
+            } catch (Exception $e) {
+                continue;
+            }
+            if ($product === null || $product->aufLagerSichtbarkeit() === false) {
+                continue;
+            }
             $wlItem = new WishlistItem(
                 $item->kArtikel,
                 $item->cArtikelName,
@@ -1186,12 +1192,7 @@ class Wishlist
                 $prop->kWunschlistePosEigenschaft         = (int)$wlPositionAttribute->kWunschlistePosEigenschaft;
                 $wlItem->CWunschlistePosEigenschaft_arr[] = $prop;
             }
-            $wlItem->Artikel = new Artikel();
-            try {
-                $wlItem->Artikel->fuelleArtikel($wlItem->kArtikel, $defaultOptions);
-            } catch (Exception $e) {
-                continue;
-            }
+            $wlItem->Artikel             = $product;
             $wlItem->cArtikelName        = $wlItem->Artikel->cName === ''
                 ? $wlItem->cArtikelName
                 : $wlItem->Artikel->cName;
@@ -1281,6 +1282,23 @@ class Wishlist
             }
             if ($variCountTMP === $variationCount) {
                 return $item->kWunschlistePos;
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * @param array $wishlists
+     * @param Wishlist $currentWishlist
+     * @param $wishlistId
+     * @return int
+     */
+    public static function getInvisibleItemCount(array $wishlists, Wishlist $currentWishlist, int $wishlistId): int
+    {
+        foreach ($wishlists as $wishlist) {
+            if ($wishlist->kWunschliste === $wishlistId) {
+                return $wishlist->productCount - \count($currentWishlist->CWunschlistePos_arr);
             }
         }
 

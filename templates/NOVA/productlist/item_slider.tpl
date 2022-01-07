@@ -4,7 +4,7 @@
             <div class="item-slider productbox-image square square-image">
                 <div class="inner">
                     {if isset($Artikel->Bilder[0]->cAltAttribut)}
-                        {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}
+                        {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut|truncate:60}
                     {else}
                         {assign var=alt value=$Artikel->cName}
                     {/if}
@@ -40,7 +40,7 @@
             {/if}
         {/if}
         {block name='productlist-item-slider-include-price'}
-            <div class="item-slider-price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+            <div class="item-slider-price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
                 {include file='productdetails/price.tpl' Artikel=$Artikel tplscope=$tplscope}
             </div>
         {/block}

@@ -173,6 +173,9 @@ switch ($action) {
                 $value->cName                 = $settings[$i]->cWertName;
                 $value->kEinstellungenSektion = CONF_CACHING;
                 switch ($settings[$i]->cInputTyp) {
+                    case 'pass':
+                        $value->cWert = $_POST[$settings[$i]->cWertName];
+                        break;
                     case 'kommazahl':
                         $value->cWert = (float)$value->cWert;
                         break;
@@ -185,6 +188,8 @@ switch ($action) {
                         break;
                     case 'listbox':
                         bearbeiteListBox($value->cWert, $settings[$i]->cWertName, CONF_CACHING);
+                        break;
+                    default:
                         break;
                 }
                 if ($value->cName === 'caching_method' && $value->cWert === 'auto') {

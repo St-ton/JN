@@ -125,24 +125,29 @@ class Migration_20180522105000 extends Migration implements IMigration
         $duplicates = $this->getDB()->getObjects(
             'SELECT *
                 FROM tlink
-                GROUP BY klink
-                HAVING COUNT(*) > 1'
+                WHERE kLink IN (
+                    SELECT kLink FROM tlink
+                    GROUP BY klink
+                    HAVING COUNT(*) > 1)
+                ORDER BY kLink, kVaterLink, kLinkgruppe, nSort;'
         );
         $oldIDs     = [];
+        $linkID     = 0;
         foreach ($duplicates as $duplicate) {
-            $oldParent = (int)$duplicate->kLink;
-            $this->getDB()->delete('tlink', 'kLink', $duplicate->kLink);
-            unset($duplicate->kLink);
-            $newID              = $this->getDB()->insert('tlink', $duplicate);
-            $oldIDs[$oldParent] = $newID;
-            $this->getDB()->queryPrepared(
-                'UPDATE tlink SET kVaterLink = :parent WHERE kVaterLink = :oldParent',
-                ['parent' => $newID, 'oldParent' => $oldParent]
-            );
-            $this->getDB()->queryPrepared(
-                'UPDATE tlinksprache SET kLink = :newID WHERE kLink = :oldID',
-                ['newID' => $newID, 'oldID' => $oldParent]
-            );
+            if ($linkID !== (int)$duplicate->kLink) {
+                $linkID = (int)$duplicate->kLink;
+            } else {
+                $this->getDB()->delete(
+                    'tlink',
+                    ['kLink', 'kVaterLink', 'kLinkgruppe'],
+                    [$duplicate->kLink, $duplicate->kVaterLink, $duplicate->kLinkgruppe]
+                );
+                unset($duplicate->kLink);
+                $duplicate->cName    = 'Referenz ' . $linkID;
+                $duplicate->nLinkart = LINKTYP_REFERENZ;
+                $newID               = $this->getDB()->insert('tlink', $duplicate);
+                $oldIDs[$linkID]     = $newID;
+            }
         }
         foreach ($oldIDs as $oldID => $newID) {
             $this->getDB()->queryPrepared(

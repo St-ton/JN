@@ -190,23 +190,25 @@ final class ReviewAdminController extends BaseController
         };
         $inactiveReviews    = $this->db->getCollection(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
-            FROM tbewertung
-            LEFT JOIN tartikel 
-                ON tbewertung.kArtikel = tartikel.kArtikel
-            WHERE tbewertung.kSprache = " . $this->languageID . '
-                AND tbewertung.nAktiv = 0
-            ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC
-            LIMIT ' . $inactivePagination->getLimitSQL()
+                FROM tbewertung
+                LEFT JOIN tartikel 
+                    ON tbewertung.kArtikel = tartikel.kArtikel
+                WHERE tbewertung.kSprache = :lid
+                    AND tbewertung.nAktiv = 0
+                ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC
+                LIMIT " . $inactivePagination->getLimitSQL(),
+            ['lid' => $this->languageID]
         )->each($sanitize)->toArray();
         $activeReviews      = $this->db->getCollection(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
-            FROM tbewertung
-            LEFT JOIN tartikel 
-                ON tbewertung.kArtikel = tartikel.kArtikel
-            WHERE tbewertung.kSprache = " . $this->languageID . '
-                AND tbewertung.nAktiv = 1
-            ORDER BY tbewertung.dDatum DESC
-            LIMIT ' . $activePagination->getLimitSQL()
+                FROM tbewertung
+                LEFT JOIN tartikel 
+                    ON tbewertung.kArtikel = tartikel.kArtikel
+                WHERE tbewertung.kSprache = :lid
+                    AND tbewertung.nAktiv = 1
+                ORDER BY tbewertung.dDatum DESC
+                LIMIT " . $activePagination->getLimitSQL(),
+            ['lid' => $this->languageID]
         )->each($sanitize)->toArray();
 
         $this->smarty->assign('oPagiInaktiv', $inactivePagination)

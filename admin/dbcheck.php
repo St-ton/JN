@@ -43,11 +43,7 @@ if (Request::postVar('update') === 'script' && $valid) {
 }
 
 $dbStruct = getDBStruct(true, true);
-$conf     = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_ARTIKELUEBERSICHT
-]);
-
+$conf     = Shop::getSettings([CONF_GLOBAL, CONF_ARTIKELUEBERSICHT]);
 if (empty($dbFileStruct)) {
     $errorMsg = __('errorReadStructureFile');
 } elseif ($valid && !empty($_POST['action']) && !empty($_POST['check'])) {

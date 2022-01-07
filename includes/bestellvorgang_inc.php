@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Cart\CartItem;
 use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
 use JTL\Checkout\Kupon;
@@ -15,6 +16,7 @@ use JTL\Customer\CustomerFields;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Order;
 use JTL\Helpers\PaymentMethod as Helper;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -85,17 +87,11 @@ function pruefeUnregistriertBestellen($post): int
     $cart = Frontend::getCart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
-    $missingInput       = checkKundenFormular(0);
     $Kunde              = getKundendaten($post, 0);
     $customerAttributes = getKundenattribute($post);
     $customerGroupID    = Frontend::getCustomerGroup()->getID();
     $checkBox           = new CheckBox();
-    $missingInput       = array_merge($missingInput, $checkBox->validateCheckBox(
-        CHECKBOX_ORT_REGISTRIERUNG,
-        $customerGroupID,
-        $post,
-        true
-    ));
+    $missingInput       = getMissingInput($post, $customerGroupID, $checkBox);
 
     $Kunde->getCustomerAttributes()->assign($customerAttributes);
     Frontend::set('customerAttributes', $customerAttributes);
@@ -104,10 +100,14 @@ function pruefeUnregistriertBestellen($post): int
             $post['kLieferadresse'] = 0;
             $post['lieferdaten']    = 1;
             pruefeLieferdaten($post);
+            $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand ?? $post['land'];
+            Tax::setTaxRates();
         } elseif (isset($post['kLieferadresse']) && (int)$post['kLieferadresse'] > 0) {
             pruefeLieferdaten($post);
+            $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand;
+            Tax::setTaxRates();
         } elseif (isset($post['register']['shipping_address'])) {
-            pruefeLieferdaten($post['register']['shipping_address'], $missingInput);
+            checkNewShippingAddress($post, $missingInput);
         }
     } elseif (isset($post['lieferdaten']) && (int)$post['lieferdaten'] === 1) {
         // compatibility with older template
@@ -164,6 +164,41 @@ function pruefeUnregistriertBestellen($post): int
 }
 
 /**
+ * Gibt mögliche fehlende Felder aus Formulareingaben zurück.
+ *
+ * @param array              $post
+ * @param int|null           $customerGroupId
+ * @param \JTL\CheckBox|null $checkBox
+ *
+ * @return array
+ */
+function getMissingInput(array $post, ?int $customerGroupId = null, ?CheckBox $checkBox = null): array
+{
+    $missingInput    = checkKundenFormular(0);
+    $customerGroupId = $customerGroupId ?? Frontend::getCustomerGroup()->getID();
+    $checkBox        = $checkBox ?? new CheckBox();
+
+    return array_merge($missingInput, $checkBox->validateCheckBox(
+        CHECKBOX_ORT_REGISTRIERUNG,
+        $customerGroupId,
+        $post,
+        true
+    ));
+}
+
+/**
+ * Prüft, ob eine neue Lieferadresse gültig ist.
+ *
+ * @param array      $post
+ * @param array|null $missingInput
+ */
+function checkNewShippingAddress(array $post, ?array $missingInput = null): void
+{
+    $missingInput = $missingInput ?? getMissingInput($post);
+    pruefeLieferdaten($post['register']['shipping_address'], $missingInput);
+}
+
+/**
  * @param array $post
  * @param array|null $missingData
  */
@@ -185,6 +220,9 @@ function pruefeLieferdaten($post, &$missingData = null): void
         $Lieferadresse             = getLieferdaten($post);
         $ok                        = angabenKorrekt($missingData);
         $_SESSION['Lieferadresse'] = $Lieferadresse;
+
+        $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand;
+        Tax::setTaxRates();
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_NEUELIEFERADRESSE_PLAUSI, [
             'nReturnValue'    => &$ok,
             'fehlendeAngaben' => &$missingData
@@ -262,10 +300,8 @@ function plausiGuthaben($post): void
             $_SESSION['Bestellung'] = new stdClass();
         }
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
-        $_SESSION['Bestellung']->fGuthabenGenutzt = min(
-            Frontend::getCustomer()->fGuthaben,
-            Frontend::getCart()->gibGesamtsummeWaren(true, false)
-        );
+        $_SESSION['Bestellung']->fGuthabenGenutzt = Order::getOrderCredit($_SESSION['Bestellung']);
+
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABENVERRECHNEN);
     }
 }
@@ -401,7 +437,10 @@ function pruefeLieferadresseStep($get): void
     //sondersteps Lieferadresse ändern
     if (!empty($_SESSION['Lieferadresse'])) {
         $Lieferadresse = $_SESSION['Lieferadresse'];
-        if (isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1) {
+        if (isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1
+            || isset($_SESSION['preferredDeliveryCountryCode'])
+            && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand
+        ) {
             Kupon::resetNewCustomerCoupon();
             unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
             $step = 'Lieferadresse';
@@ -542,13 +581,7 @@ function pruefeZahlungsartwahlStep($post)
 function pruefeGuthabenNutzen(): void
 {
     if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen) {
-        $_SESSION['Bestellung']->fGuthabenGenutzt   = min(
-            Frontend::getCustomer()->fGuthaben,
-            Frontend::getCart()->gibGesamtsummeWaren(true, false)
-        );
-        $_SESSION['Bestellung']->GutscheinLocalized = Preise::getLocalizedPriceString(
-            $_SESSION['Bestellung']->fGuthabenGenutzt
-        );
+        $_SESSION['Bestellung']->fGuthabenGenutzt = Order::getOrderCredit($_SESSION['Bestellung']);
     }
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABEN_PLAUSI);
@@ -1523,7 +1556,7 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
                 FROM tversandartzahlungsart, tzahlungsart
                 WHERE tversandartzahlungsart.kVersandart = :sid
                     AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
-                    AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen=''
+                    AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen = ''
                     OR FIND_IN_SET(:cgid, REPLACE(tzahlungsart.cKundengruppen, ';', ',')) > 0)
                     AND tzahlungsart.nActive = 1
                     AND tzahlungsart.nNutzbar = 1
@@ -1648,7 +1681,7 @@ function gibAktiveZahlungsart($shippingMethods)
         $_SESSION['AktiveZahlungsart'] = $shippingMethods[0]->kZahlungsart;
     }
 
-    return $_SESSION['AktiveZahlungsart'];
+    return (int)$_SESSION['AktiveZahlungsart'];
 }
 
 /**
@@ -2334,7 +2367,7 @@ function gibGesamtsummeKuponartikelImWarenkorb($coupon, array $cartItems)
         ) {
             $total += $item->fPreis
                 * $item->nAnzahl
-                * ((100 + Tax::getSalesTax($item->kSteuerklasse)) / 100);
+                * ((100 + CartItem::getTaxRate($item)) / 100);
         }
     }
 
@@ -2454,7 +2487,7 @@ function getKundendaten(array $post, $customerAccount, $htmlentities = 1)
     $customer   = new Customer($customerID);
     foreach ($mapping as $external => $internal) {
         if (isset($post[$external])) {
-            $val = Text::filterXSS($post[$external]);
+            $val = $external === 'pass' ? $post[$external] : Text::filterXSS($post[$external]);
             if ($htmlentities) {
                 $val = Text::htmlentities($val);
             }

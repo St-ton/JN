@@ -66,12 +66,12 @@ function generiereRSSXML()
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.cNeu = 'Y' " .  $lagerfilter . "
                     AND cNeu = 'Y' 
-                    AND DATE_SUB(now(), INTERVAL " . $days . ' DAY) < dErstellt
-                ORDER BY dLetzteAktualisierung DESC',
-            ['lid' => (int)$_SESSION['kSprache'], 'cgid' => $stdKundengruppe->kKundengruppe]
+                    AND DATE_SUB(now(), INTERVAL :ds DAY) < dErstellt
+                ORDER BY dLetzteAktualisierung DESC",
+            ['lid' => (int)$_SESSION['kSprache'], 'cgid' => $stdKundengruppe->kKundengruppe, 'ds' => $days]
         );
         foreach ($products as $product) {
-            $url  = URL::buildURL($product, URLART_ARTIKEL, true);
+            $url  = URL::buildURL($product, URLART_ARTIKEL, true, $shopURL . '/');
             $xml .= '
         <item>
             <title>' . wandelXMLEntitiesUm($product->cName) . '</title>
@@ -89,13 +89,14 @@ function generiereRSSXML()
                 FROM tnews
                 JOIN tnewssprache t 
                     ON tnews.kNews = t.kNews
-                WHERE DATE_SUB(now(), INTERVAL " . $days . ' DAY) < dGueltigVon
+                WHERE DATE_SUB(now(), INTERVAL :ds DAY) < dGueltigVon
                     AND nAktiv = 1
                     AND dGueltigVon <= now()
-                ORDER BY dGueltigVon DESC'
+                ORDER BY dGueltigVon DESC",
+            ['ds' => $days]
         );
         foreach ($news as $item) {
-            $url  = URL::buildURL($item, URLART_NEWS);
+            $url  = URL::buildURL($item, URLART_NEWS, true, $shopURL . '/');
             $xml .= '
         <item>p
             <title>' . wandelXMLEntitiesUm($item->title) . '</title>
@@ -111,11 +112,12 @@ function generiereRSSXML()
         $reviews = $db->getObjects(
             "SELECT *, dDatum, DATE_FORMAT(dDatum, '%a, %d %b %y %h:%i:%s +0100') AS dErstellt_RSS
                 FROM tbewertung
-                WHERE DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < dDatum
-                    AND nAktiv = 1'
+                WHERE DATE_SUB(NOW(), INTERVAL :ds DAY) < dDatum
+                    AND nAktiv = 1",
+            ['ds' => $days]
         );
         foreach ($reviews as $review) {
-            $url  = URL::buildURL($review, URLART_ARTIKEL, true);
+            $url  = URL::buildURL($review, URLART_ARTIKEL, true, $shopURL . '/');
             $xml .= '
         <item>
             <title>Bewertung ' . wandelXMLEntitiesUm($review->cTitel) . ' von ' .

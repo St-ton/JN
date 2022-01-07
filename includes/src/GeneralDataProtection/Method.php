@@ -16,7 +16,7 @@ use Psr\Log\LoggerInterface;
 class Method
 {
     /**
-     * object wide date at the point of instanciating
+     * object wide date at the point of instantiating
      *
      * @var DateTime
      */
@@ -30,17 +30,17 @@ class Method
     protected $interval = 0;
 
     /**
-     * select the maximum of 10,000 rows for one step!
+     * select the maximum of 1,000 rows for one step!
      * (if the scripts are running each day, we need some days
-     * to anonymize more than 10,000 data sets)
+     * to anonymize more than 1,000 data sets)
      *
      * @var int
      */
-    protected $workLimit = 10000;
+    protected $workLimit = 1000;
 
     /**
      * the last date we keep
-     * (depending from interval)
+     * (depends on interval)
      *
      * @var string
      */
@@ -59,7 +59,6 @@ class Method
     protected $db;
 
     /**
-     * Method constructor.
      * @param DateTime    $now
      * @param int         $interval
      * @param DbInterface $db

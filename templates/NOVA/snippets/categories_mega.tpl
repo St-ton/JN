@@ -40,7 +40,7 @@
                             || ((isset($activeParent)
                                 && isset($activeParent->kKategorie))
                                 && $activeParent->kKategorie == $category->getID())} active{/if}">
-                                {link href=$category->getURL() title=$category->getName()|@seofy class="nav-link dropdown-toggle" target="_self"}
+                                {link href=$category->getURL() title=$category->getName()|escape:'html' class="nav-link dropdown-toggle" target="_self"}
                                     <span class="nav-mobile-heading">{$category->getShortName()}</span>
                                 {/link}
                                 <div class="dropdown-menu">
@@ -76,7 +76,7 @@
                         {/block}
                     {else}
                         {block name='snippets-categories-mega-category-no-child'}
-                            {navitem href=$category->getURL() title=$category->getName()|@seofy
+                            {navitem href=$category->getURL() title=$category->getName()|escape:'html'
                                 class="nav-scrollbar-item {if $Einstellungen.template.megamenu.show_categories === 'mobile'} d-lg-none
                                     {elseif $Einstellungen.template.megamenu.show_categories === 'desktop'} d-none d-lg-inline-block {/if}
                                     {if $category->getID() === $activeId}active{/if}"}
@@ -105,7 +105,7 @@
             {block name='snippets-categories-mega-manufacturers-inner'}
                 <li class="nav-item nav-scrollbar-item dropdown dropdown-full {if $nSeitenTyp === $smarty.const.PAGE_HERSTELLER}active{/if}">
                     {link href="{if $manufacturerOverview !== null}{$manufacturerOverview->getURL()}{else}#{/if}" title={lang key='manufacturers'} class="nav-link dropdown-toggle" target="_self"}
-                        <span class="text-truncate">
+                        <span class="text-truncate nav-mobile-heading">
                             {if $manufacturerOverview !== null && !empty($manufacturerOverview->getName())}
                                 {$manufacturerOverview->getName()}
                             {else}

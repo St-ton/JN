@@ -1967,6 +1967,8 @@ pre#debug b {
   opacity: 1;
 }
 .content-header .description a {
+  color: #5cbcf6;
+  font-weight: bold;
   text-decoration: underline;
 }
 .dropdown.avatar > a {
@@ -2643,5 +2645,16 @@ input[type=number] {
   right: 42px;
   top: 12px;
   display: none;
+}
+.exstore-banner {
+  width: 100%;
+  margin: 2rem auto;
+  display: block;
+  max-width: 2000px;
+}
+@media (max-width: 768px) {
+  .exstore-banner {
+    max-width: 412px;
+  }
 }
 /*# sourceMappingURL=custom.css.map */

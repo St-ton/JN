@@ -1346,6 +1346,12 @@ msgstr "Show item attributes"
 msgid "bestellvorgang_artikelattribute_desc"
 msgstr ""
 
+msgid "bestellvorgang_partlist_name"
+msgstr "Show line items"
+
+msgid "bestellvorgang_partlist_desc"
+msgstr "Show line items in cart and chekout?"
+
 msgid "bestellvorgang_artikelkurzbeschreibung_name"
 msgstr "Show unique brief item description"
 

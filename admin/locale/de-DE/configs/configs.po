@@ -1346,6 +1346,12 @@ msgstr "Artikelattribute anzeigen"
 msgid "bestellvorgang_artikelattribute_desc"
 msgstr ""
 
+msgid "bestellvorgang_partlist_name"
+msgstr "Stücklistenkomponenten anzeigen"
+
+msgid "bestellvorgang_partlist_desc"
+msgstr "Sollen die Stücklistenkomponenten in Warenkorb und Checkout angezeigt werden?"
+
 msgid "bestellvorgang_artikelkurzbeschreibung_name"
 msgstr "Eindeutige Artikelkurzbeschreibung anzeigen"
 

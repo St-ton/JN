@@ -1346,6 +1346,12 @@ msgstr "Artikelattribute anzeigen"
 msgid "bestellvorgang_artikelattribute_desc"
 msgstr ""
 
+msgid "bestellvorgang_partlist_name"
+msgstr "Stücklistenkomponenten anzeigen"
+
+msgid "bestellvorgang_partlist_desc"
+msgstr "Sollen die Stücklistenkomponenten in Warenkorb und Checkout angezeigt werden?"
+
 msgid "bestellvorgang_artikelkurzbeschreibung_name"
 msgstr "Eindeutige Artikelkurzbeschreibung anzeigen"
 
@@ -3040,3 +3046,9 @@ msgstr "Cookie-Banner anzeigen"
 
 msgid "consent_manager_show_banner_desc"
 msgstr "Legen Sie fest, wann das Banner zum Erteilen oder Ablehnen einer globalen Einwilligung dem Besucher im Onlineshop angezeigt werden soll."
+
+msgid "forgot_password_captcha_name"
+msgstr "Spamschutz aktivieren"
+
+msgid "forgot_password_captcha_desc"
+msgstr "Hier legen Sie fest, ob für das Passwort-Vergessen-Formular der Spamschutz aktiviert werden soll. Dazu müssen Sie ggf. zuerst den Spamschutz von JTL-Shop in den globalen Einstellungen konfigurieren."

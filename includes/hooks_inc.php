@@ -1747,10 +1747,29 @@ const HOOK_SITEMAP_EXPORT_INIT = 286;
 /**
  * @since 5.0.0
  * @file includes/src/Mail/Mailer.php
- * @param \JTL\Mail\Mailer             mailer
+ * @param \JTL\Mail\Mailer mailer
  * @param \JTL\Mail\Mail\MailInterface mail
  */
 const HOOK_MAIL_PRERENDER = 290;
+
+/**
+ * @param \JTL\Mail\Mailer mailer
+ * @param \JTL\Mail\Mail\MailInterface mail
+ * @param \PHPMailer\PHPMailer\PHPMailer phpmailer
+ * @since 5.1.2
+ * @file includes/src/Mail/Mailer.php
+ */
+const HOOK_MAILER_PRE_SEND = 291;
+
+/**
+ * @param \JTL\Mail\Mailer mailer
+ * @param \JTL\Mail\Mail\MailInterface mail
+ * @param \PHPMailer\PHPMailer\PHPMailer phpmailer
+ * @param bool status
+ * @since 5.1.2
+ * @file includes/src/Mail/Mailer.php
+ */
+const HOOK_MAILER_POST_SEND = 292;
 
 /**
  * @since 5.0.0

@@ -962,12 +962,13 @@ class Cart
                     $qty = $this->gibAnzahlEinesArtikels($product->kArtikel);
                 }
                 $item->Artikel           = $product;
-                $item->fPreisEinzelNetto = $product->gibPreis($qty, [], 0, $item->cUnique);
+                $item->fPreisEinzelNetto = $product->gibPreis($qty, [], 0, $item->cUnique, false);
                 $item->fPreis            = $product->gibPreis(
                     $qty,
                     $item->WarenkorbPosEigenschaftArr,
                     0,
-                    $item->cUnique
+                    $item->cUnique,
+                    false
                 );
                 $item->fGesamtgewicht    = $item->gibGesamtgewicht();
                 \executeHook(\HOOK_SETZTE_POSITIONSPREISE, [

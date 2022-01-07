@@ -933,12 +933,13 @@ class Cart
                 $qty = $this->gibAnzahlEinesArtikels($product->kArtikel);
             }
             $item->Artikel           = $product;
-            $item->fPreisEinzelNetto = $product->gibPreis($qty, [], $customerGroupID, $item->cUnique);
+            $item->fPreisEinzelNetto = $product->gibPreis($qty, [], $customerGroupID, $item->cUnique, false);
             $item->fPreis            = $product->gibPreis(
                 $qty,
                 $item->WarenkorbPosEigenschaftArr,
                 $customerGroupID,
-                $item->cUnique
+                $item->cUnique,
+                false
             );
             $item->fGesamtgewicht    = $item->gibGesamtgewicht();
             $item->fVK               = $product->Preise->fVK;

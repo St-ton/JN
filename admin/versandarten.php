@@ -4,6 +4,7 @@ use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
 use JTL\Checkout\Versandart;
 use JTL\Country\Country;
+use JTL\Country\Manager;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -36,6 +37,7 @@ $getText         = Shop::Container()->getGetText();
 $cache           = Shop::Container()->getCache();
 $postData        = Text::filterXSS($_POST);
 $postCountries   = $postData['land'] ?? [];
+$manager         = new Manager($db, $smarty, $countryHelper, $cache, $alertHelper, $getText);
 
 $missingShippingClassCombis = getMissingShippingClassCombi();
 $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis);
@@ -233,7 +235,8 @@ if (Form::validateToken()) {
                 );
             } else {
                 //updaten
-                $methodID = Request::postInt('kVersandart');
+                $methodID          = Request::postInt('kVersandart');
+                $oldShippingMethod = $db->select('tversandart', 'kVersandart', $methodID);
                 $db->update('tversandart', 'kVersandart', $methodID, $shippingMethod);
                 $db->delete('tversandartzahlungsart', 'kVersandart', $methodID);
                 $db->delete('tversandartstaffel', 'kVersandart', $methodID);
@@ -243,6 +246,14 @@ if (Form::validateToken()) {
                     'successShippingMethodChange'
                 );
             }
+            $manager->updateRegistrationCountries(
+                array_diff(
+                    isset($oldShippingMethod->cLaender)
+                        ? explode(' ', trim($oldShippingMethod->cLaender))
+                        : [],
+                    $postCountries
+                )
+            );
             if ($methodID > 0) {
                 foreach ($VersandartZahlungsarten as $versandartzahlungsart) {
                     $versandartzahlungsart->kVersandart = $methodID;

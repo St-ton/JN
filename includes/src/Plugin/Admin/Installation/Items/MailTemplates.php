@@ -60,6 +60,18 @@ class MailTemplates extends AbstractItem
             $availableLocalizations = [];
             $addedLanguages         = [];
             $first                  = true;
+            $prevTemplateID         = 0;
+            if ($this->oldPlugin !== null) {
+                $prevTemplateID = (int)($this->db->getSingleObject(
+                    'SELECT kEmailvorlage
+                        FROM temailvorlage
+                        WHERE kPlugin = :pid AND cModulId = :mid',
+                    [
+                        'pid' => $this->oldPlugin->getID(),
+                        'mid' => $mailTpl->cModulId
+                    ],
+                )->kEmailvorlage ?? 0);
+            }
             foreach ($template['TemplateLanguage'] as $l => $localized) {
                 $l = (string)$l;
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
@@ -86,14 +98,14 @@ class MailTemplates extends AbstractItem
                     continue;
                 }
                 $addedLanguages[] = $localizedTpl->kSprache;
-                if ($this->oldPlugin === null) { // @todo: this check does not seem to be sufficient
+                if ($this->oldPlugin === null || $prevTemplateID === 0) {
                     $this->db->insert('temailvorlagesprache', $localizedTpl);
                 }
                 $this->db->insert('temailvorlagespracheoriginal', $localizedTpl);
             }
             // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
             foreach ($allLanguages as $language) {
-                if (\in_array($language->kSprache, $addedLanguages, true)) {
+                if (\in_array($language->getId(), $addedLanguages, true)) {
                     continue;
                 }
                 if ($first === true) {
@@ -105,7 +117,7 @@ class MailTemplates extends AbstractItem
                     );
                     $first = false;
                 }
-                $fallbackLocalization->kSprache = $language->kSprache;
+                $fallbackLocalization->kSprache = $language->getId();
                 if (!isset($this->oldPlugin->kPlugin) || !$this->oldPlugin->kPlugin) {
                     $this->db->insert('temailvorlagesprache', $fallbackLocalization);
                 }

@@ -4,7 +4,7 @@
             <div class="item-slider productbox-image square square-image">
                 <div class="inner">
                     {if isset($Artikel->Bilder[0]->cAltAttribut)}
-                        {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}
+                        {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut|truncate:60}
                     {else}
                         {assign var=alt value=$Artikel->cName}
                     {/if}

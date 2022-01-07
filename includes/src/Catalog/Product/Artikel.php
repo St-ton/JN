@@ -1107,20 +1107,47 @@ class Artikel
     /**
      * @param int            $customerGroupID
      * @param Artikel|object $tmpProduct
+     * @param int            $customerID - always keep at 0 when saving the result to cache
      * @return $this
      */
-    public function holPreise(int $customerGroupID, $tmpProduct): self
+    public function holPreise(int $customerGroupID, $tmpProduct, int $customerID = 0): self
     {
         $this->Preise = new Preise(
             $customerGroupID,
             (int)$tmpProduct->kArtikel,
-            Frontend::getCustomer()->getID(),
+            $customerID,
             (int)$tmpProduct->kSteuerklasse
         );
         if ($this->getOption('nHidePrices', 0) === 1 || !Frontend::getCustomerGroup()->mayViewPrices()) {
             $this->Preise->setPricesToZero();
         }
         $this->Preise->localizePreise();
+
+        return $this;
+    }
+
+    /**
+     * @param int $customerGroupID
+     * @param int $customerID
+     * @return $this
+     */
+    protected function getCustomerPrice(int $customerGroupID, int $customerID): self
+    {
+        if (!$this->Preise->customerHasCustomPriceForProduct($customerID, $this->kArtikel)) {
+            return $this;
+        }
+        $this->Preise = new Preise(
+            $customerGroupID,
+            $this->kArtikel,
+            $customerID,
+            $this->kSteuerklasse
+        );
+        if ($this->getOption('nHidePrices', 0) === 1 || !Frontend::getCustomerGroup()->mayViewPrices()) {
+            $this->Preise->setPricesToZero();
+        }
+        $this->Preise->localizePreise();
+        $this->getVariationDetailPrice($customerGroupID, $customerID);
+        $this->staffelPreis_arr = $this->getTierPrices();
 
         return $this;
     }
@@ -1147,10 +1174,10 @@ class Artikel
      */
     public function gibKundenRabatt($maxDiscount)
     {
-        return (isset($_SESSION['Kunde']->kKunde, $_SESSION['Kunde']->fRabatt)
-            && (int)$_SESSION['Kunde']->kKunde > 0
-            && (double)$_SESSION['Kunde']->fRabatt > $maxDiscount)
-            ? (double)$_SESSION['Kunde']->fRabatt
+        $customer = Frontend::getCustomer();
+
+        return ($customer->getID() > 0 && (double)$customer->fRabatt > $maxDiscount)
+            ? (double)$customer->fRabatt
             : $maxDiscount;
     }
 
@@ -1159,10 +1186,16 @@ class Artikel
      * @param array     $attributes
      * @param int       $customerGroupID
      * @param string    $unique
+     * @param bool      $assign
      * @return float|null
      */
-    public function gibPreis($amount, array $attributes, int $customerGroupID = 0, string $unique = '')
-    {
+    public function gibPreis(
+        $amount,
+        array $attributes,
+        int $customerGroupID = 0,
+        string $unique = '',
+        bool $assign = true
+    ) {
         if (!Frontend::getCustomerGroup()->mayViewPrices()) {
             return null;
         }
@@ -1172,14 +1205,17 @@ class Artikel
         if (!$customerGroupID) {
             $customerGroupID = Frontend::getCustomerGroup()->getID();
         }
-        $customerID   = Frontend::getCustomer()->getID();
-        $this->Preise = new Preise($customerGroupID, $this->kArtikel, $customerID, (int)$this->kSteuerklasse);
+        $customerID = Frontend::getCustomer()->getID();
         // Varkombi Kind?
         $productID = ($this->kEigenschaftKombi > 0 && $this->kVaterArtikel > 0)
             ? $this->kVaterArtikel
             : $this->kArtikel;
-        $this->Preise->rabbatierePreise($this->getDiscount($customerGroupID, $productID));
-        $price = $this->Preise->fVKNetto;
+        $prices    = new Preise($customerGroupID, $this->kArtikel, $customerID, (int)$this->kSteuerklasse);
+        $prices->rabbatierePreise($this->getDiscount($customerGroupID, $productID));
+        if ($assign) {
+            $this->Preise = $prices;
+        }
+        $price = $prices->fVKNetto;
         if (isset($this->FunktionsAttribute[\FKT_ATTRIBUT_VOUCHER_FLEX])) {
             $customCalculated = (float)Frontend::get(
                 'customCalculated_' . $unique,
@@ -1190,8 +1226,8 @@ class Artikel
                 Frontend::set('customCalculated_' . $unique, $customCalculated);
             }
         }
-        foreach ($this->Preise->fPreis_arr as $i => $fPreis) {
-            if ($this->Preise->nAnzahl_arr[$i] <= $amount) {
+        foreach ($prices->fPreis_arr as $i => $fPreis) {
+            if ($prices->nAnzahl_arr[$i] <= $amount) {
                 $price = $fPreis;
             }
         }
@@ -1229,7 +1265,7 @@ class Artikel
                 'kKundengruppe',
                 $customerGroupID
             );
-            if (!\is_object($propExtraCharge) && $this->Preise->isDiscountable()) {
+            if (!\is_object($propExtraCharge) && $prices->isDiscountable()) {
                 $propExtraCharge = $db->select(
                     'teigenschaftwert',
                     'kEigenschaftWert',
@@ -1308,7 +1344,7 @@ class Artikel
             $image->cURLNormal   = $baseURL . \BILD_KEIN_ARTIKELBILD_VORHANDEN;
             $image->cURLGross    = $baseURL . \BILD_KEIN_ARTIKELBILD_VORHANDEN;
             $image->nNr          = 1;
-            $image->cAltAttribut = \str_replace(['"', "'"], '', $this->cName);
+            $image->cAltAttribut = \strip_tags(\str_replace(['"', "'"], '', $this->cName));
             $image->galleryJSON  = $this->prepareImageDetails($image);
 
             $this->Bilder[0] = $image;
@@ -1335,9 +1371,14 @@ class Artikel
             }
             // Lookup image alt attribute
             $idx                 = 'img_alt_' . $imgNo;
-            $image->cAltAttribut = isset($this->AttributeAssoc[$idx])
-                ? \strip_tags($this->AttributeAssoc['img_alt_' . $imgNo])
-                : \str_replace(['"', "'"], '', $this->cName);
+            $image->cAltAttribut = \strip_tags(\str_replace(
+                ['"', "'"],
+                '',
+                $this->AttributeAssoc[$idx] ?? $this->cName
+            ));
+            if (isset($this->AttributeAssoc[$idx])) {
+                $image->cAltAttribut = Text::htmlentitiesOnce($image->cAltAttribut, \ENT_COMPAT | \ENT_HTML401);
+            }
 
             $image->galleryJSON = $this->prepareImageDetails($image);
             $this->Bilder[]     = $image;
@@ -1427,11 +1468,7 @@ class Artikel
                 'height' => $height
             ],
             'type' => $type,
-            'alt'  => \htmlspecialchars(
-                \str_replace('"', '', $image->cAltAttribut),
-                \ENT_COMPAT | \ENT_HTML401,
-                \JTL_CHARSET
-            )
+            'alt'  => \str_replace('"', '', $image->cAltAttribut)
         ];
     }
 
@@ -2824,9 +2861,10 @@ class Artikel
      * Wichtig fuer die Anzeige von Aufpreisen
      *
      * @param int $customerGroupID
+     * @param int $customerID - always keep at 0 when saving the result to cache
      * @return $this
      */
-    private function getVariationDetailPrice(int $customerGroupID): self
+    private function getVariationDetailPrice(int $customerGroupID, int $customerID = 0): self
     {
         $this->oVariationDetailPreis_arr = [];
         if ($this->nVariationOhneFreifeldAnzahl !== 1) {
@@ -2853,9 +2891,9 @@ class Artikel
         $per         = ' ' . Shop::Lang()->get('vpePer') . ' ';
         $taxRate     = $_SESSION['Steuersatz'][$this->kSteuerklasse];
         $precision   = isset($this->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
-        && (int)$this->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
-            ? (int)$this->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
-            : 2;
+            && (int)$this->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
+                ? (int)$this->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
+                : 2;
         foreach ($varDetailPrices as $varDetailPrice) {
             $varDetailPrice->kArtikel         = (int)$varDetailPrice->kArtikel;
             $varDetailPrice->kEigenschaft     = (int)$varDetailPrice->kEigenschaft;
@@ -2869,61 +2907,59 @@ class Artikel
             if ($varDetailPrice->kArtikel !== $lastProduct) {
                 $lastProduct = $varDetailPrice->kArtikel;
                 $tmpProduct  = new self();
-                $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID);
+                $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID, $customerID);
             }
-            if (!isset($this->oVariationDetailPreis_arr[$idx])) {
-                $this->oVariationDetailPreis_arr[$idx] = new stdClass();
-            }
-            $this->oVariationDetailPreis_arr[$idx]->Preise = $tmpProduct->Preise;
+
+            $prodVkNetto            = $this->gibPreis(1, [], $customerGroupID, '', false);
+            $varVKNetto             = $tmpProduct->gibPreis(1, [], $customerGroupID, '', false);
+            $variationPrice         = $this->oVariationDetailPreis_arr[$idx] ?? new stdClass();
+            $variationPrice->Preise = clone $tmpProduct->Preise;
+
             // Variationsaufpreise - wird benötigt wenn Einstellung 119 auf (Aufpreise / Rabatt anzeigen) steht
             $prefix = '';
-            if ($tmpProduct->Preise->fVK[0] > $this->Preise->fVK[0]) {
+            if ($varVKNetto > $prodVkNetto) {
                 $prefix = '+ ';
-            } elseif ($tmpProduct->Preise->fVK[0] < $this->Preise->fVK[0]) {
+            } elseif ($varVKNetto < $prodVkNetto) {
                 $prefix = '- ';
             }
 
-            if (!$customerGroupID) {
-                $customerGroupID = Frontend::getCustomerGroup()->getID();
-            }
             $discount = $this->Preise->isDiscountable() ? $this->getDiscount($customerGroupID, $this->kArtikel) : 0;
+            $variationPrice->Preise->rabbatierePreise($discount)->localizePreise();
 
-            if ($tmpProduct->Preise->fVK[0] > $this->Preise->fVK[0]
-                || $tmpProduct->Preise->fVK[0] < $this->Preise->fVK[0]
-            ) {
-                $this->oVariationDetailPreis_arr[$idx]->Preise->cAufpreisLocalized[0] =
+            if ($varVKNetto !== $prodVkNetto) {
+                $variationPrice->Preise->cAufpreisLocalized[0] =
                     $prefix .
                     Preise::getLocalizedPriceString(
-                        \abs($tmpProduct->Preise->fVK[0] - $this->Preise->fVK[0]) * ((100 - $discount) / 100),
+                        \abs(Tax::getGross($varVKNetto, $taxRate) - Tax::getGross($prodVkNetto, $taxRate)),
                         $currency
                     );
-                $this->oVariationDetailPreis_arr[$idx]->Preise->cAufpreisLocalized[1] =
+                $variationPrice->Preise->cAufpreisLocalized[1] =
                     $prefix .
                     Preise::getLocalizedPriceString(
-                        \abs($tmpProduct->Preise->fVK[1] - $this->Preise->fVK[1]) * ((100 - $discount) / 100),
+                        \abs($varVKNetto - $prodVkNetto),
                         $currency
                     );
             }
+
             // Grundpreis?
             if (!empty($tmpProduct->cVPE) && $tmpProduct->cVPE === 'Y' && $tmpProduct->fVPEWert > 0) {
-                $this->oVariationDetailPreis_arr[$idx]->Preise->PreisecPreisVPEWertInklAufpreis[0] =
+                $variationPrice->Preise->PreisecPreisVPEWertInklAufpreis[0] =
                     Preise::getLocalizedPriceString(
-                        Tax::getGross(
-                            $tmpProduct->Preise->fVKNetto / $tmpProduct->fVPEWert,
-                            $taxRate
-                        ),
+                        Tax::getGross($varVKNetto / $tmpProduct->fVPEWert, $taxRate),
                         $currency,
                         true,
                         $precision
                     ) . $per . $tmpProduct->cVPEEinheit;
-                $this->oVariationDetailPreis_arr[$idx]->Preise->PreisecPreisVPEWertInklAufpreis[1] =
+                $variationPrice->Preise->PreisecPreisVPEWertInklAufpreis[1] =
                     Preise::getLocalizedPriceString(
-                        $tmpProduct->Preise->fVKNetto / $tmpProduct->fVPEWert,
+                        $varVKNetto / $tmpProduct->fVPEWert,
                         $currency,
                         true,
                         $precision
                     ) . $per . $tmpProduct->cVPEEinheit;
             }
+
+            $this->oVariationDetailPreis_arr[$idx] = $variationPrice;
         }
 
         return $this;
@@ -3323,6 +3359,7 @@ class Artikel
             $toSave->Preise                         = $basePrice;
             Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
         }
+        $this->getCustomerPrice($customerGroupID, Frontend::getCustomer()->getID());
 
         return $this;
     }
@@ -3369,8 +3406,8 @@ class Artikel
         $options       = $this->options;
         $baseID        = Shop::Container()->getCache()->getBaseID(false, false, $customerGroupID, $langID);
         $taxClass      = isset($_SESSION['Steuersatz']) ? \implode('_', $_SESSION['Steuersatz']) : '';
-        $customerID    = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
-        $productHash   = \md5($baseID . $this->getOptionsHash($options) . $taxClass . $customerID);
+        $customerID    = Frontend::getCustomer()->getID();
+        $productHash   = \md5($baseID . $this->getOptionsHash($options) . $taxClass);
         $this->cacheID = 'fa_' . $productID . '_' . $productHash;
         $product       = Shop::Container()->getCache()->get($this->cacheID);
         if ($product === false) {
@@ -3386,6 +3423,7 @@ class Artikel
         if ($this->Preise === null || !\method_exists($this->Preise, 'rabbatierePreise')) {
             $this->holPreise($customerGroupID, $this);
         }
+        $this->getCustomerPrice($customerGroupID, $customerID);
         if ($maxDiscount > 0) {
             $this->rabattierePreise($customerGroupID);
         }
@@ -3727,9 +3765,10 @@ class Artikel
     /**
      * @param int $productID
      * @param int $customerGroupID
+     * @param int $customerID
      * @return $this
      */
-    private function getPriceData(int $productID, int $customerGroupID): self
+    private function getPriceData(int $productID, int $customerGroupID, int $customerID = 0): self
     {
         $tmp = Shop::Container()->getDB()->getSingleObject(
             'SELECT tartikel.kArtikel, tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kSteuerklasse,
@@ -3747,7 +3786,7 @@ class Artikel
             foreach (\get_object_vars($tmp) as $k => $v) {
                 $this->$k = $v;
             }
-            $this->holPreise($customerGroupID, $this);
+            $this->holPreise($customerGroupID, $this, $customerID);
         }
 
         return $this;
@@ -5186,12 +5225,9 @@ class Artikel
             $discounts[] = $customerGroup->getDiscount();
         }
         // Existiert für diesen Kunden ein Rabatt?
-        if (\array_key_exists('Kunde', $_SESSION)
-            && isset($_SESSION['Kunde']->kKunde)
-            && $_SESSION['Kunde']->kKunde > 0
-            && $_SESSION['Kunde']->fRabatt != 0
-        ) {
-            $discounts[] = $_SESSION['Kunde']->fRabatt;
+        $customer = Frontend::getCustomer();
+        if ($customer->getID() > 0 && $customer->fRabatt != 0) {
+            $discounts[] = $customer->fRabatt;
         }
         // Maximalen Rabatt setzen
         if (\count($discounts) > 0) {
@@ -5457,9 +5493,8 @@ class Artikel
         }
         $idx = Frontend::getCustomerGroup()->getIsMerchant();
         if (isset(
-            $_SESSION['Kundengruppe']->nNettoPreise,
             $this->Preise->fVK[$idx],
-            $this->Preise->cVKLocalized[Frontend::getCustomerGroup()->isMerchant()]
+            $this->Preise->cVKLocalized[$idx]
         )
             && $this->Preise->fVK[$idx] > 0
             && $this->conf['metaangaben']['global_meta_title_preis'] === 'Y'

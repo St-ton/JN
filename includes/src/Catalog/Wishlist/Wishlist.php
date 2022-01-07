@@ -610,10 +610,8 @@ class Wishlist
                                             );
                                         }
                                     }
-                                    if (empty($attrValExists->kEigenschaftWert)
-                                        && empty($attrValExists->cFreifeldWert)
-                                    ) {
-                                        $names[] = $wlPosition->getProductName();
+                                    if ($attrValExists === null) {
+                                        $names[] = $wlPosition->cArtikelName;
                                         $notice .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
 
                                         $this->delWunschlistePosSess($wlPosition->getProductID());
@@ -1235,12 +1233,12 @@ class Wishlist
                     $wlPositionAttribute->cWert = $wlPositionAttribute->cFreifeldWert;
                 }
                 $prop = new WishlistItemProperty(
-                    $wlPositionAttribute->kEigenschaft,
-                    $wlPositionAttribute->kEigenschaftWert,
+                    (int)$wlPositionAttribute->kEigenschaft,
+                    (int)$wlPositionAttribute->kEigenschaftWert,
                     $wlPositionAttribute->cFreifeldWert,
                     $wlPositionAttribute->cName,
                     $wlPositionAttribute->cWert,
-                    $wlPositionAttribute->kWunschlistePos
+                    (int)$wlPositionAttribute->kWunschlistePos
                 );
 
                 $prop->setID((int)$wlPositionAttribute->kWunschlistePosEigenschaft);

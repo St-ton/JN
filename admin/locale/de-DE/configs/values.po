@@ -1208,6 +1208,12 @@ msgstr "Ja"
 msgid "bestellvorgang_artikelattribute_value(N)"
 msgstr "Nein"
 
+msgid "bestellvorgang_partlist_value(Y)"
+msgstr "Ja"
+
+msgid "bestellvorgang_partlist_value(N)"
+msgstr "Nein"
+
 msgid "bestellvorgang_artikelkurzbeschreibung_value(Y)"
 msgstr "Ja"
 

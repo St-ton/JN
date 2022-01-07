@@ -219,7 +219,7 @@
                             {/block}
                         {/if}
 
-                        {if !empty($oPosition->Artikel->kStueckliste) && !empty($oPosition->Artikel->oStueckliste_arr)}
+                        {if $Einstellungen.kaufabwicklung.bestellvorgang_partlist === 'Y' && !empty($oPosition->Artikel->kStueckliste) && !empty($oPosition->Artikel->oStueckliste_arr)}
                             {block name='basket-cart-items-product-partlist-items'}
                                 <ul class="partlist-items text-muted-util small">
                                     {foreach $oPosition->Artikel->oStueckliste_arr as $partListItem}

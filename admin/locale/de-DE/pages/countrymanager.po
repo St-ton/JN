@@ -38,6 +38,9 @@ msgstr "Wird automatisch gesetzt sobald ein Land in mindestens einer Versandart 
 msgid "isPermitRegistration"
 msgstr "Als Rechnungsland wählbar"
 
+msgid "isPermitRegistrationDesc"
+msgstr "Wird automatisch auf „Ja“ gesetzt, sobald ein Land in mindestens einer Versandart vorhanden ist. Wird außerdem automatisch auf „Nein“ gesetzt, sobald ein Land in keiner Versandart mehr vorhanden ist."
+
 msgid "isRequireStateDefinition"
 msgstr "Bundesland als Pflichtfeld"
 
@@ -67,3 +70,12 @@ msgstr "Ein Land mit ISO-Code „%s“ kann nicht gefunden werden."
 
 msgid "warningCreateCountryInWawi"
 msgstr "Legen Sie unbedingt zusätzlich auch das gleiche Land in JTL-Wawi an und setzen Sie die entsprechende Steuerzone: <a href=\"https://guide.jtl-software.de/jtl-wawi/global/laender-verwalten/\" target=\"_blank\">Länder verwalten</a>"
+
+msgid "infoRegistrationCountriesActivated"
+msgstr "Die Länder <strong>%s</strong> wurden zu den auswählbaren Rechnungsländern hinzugefügt. Siehe <a href=\"countrymanager.php\" target=\"_blank\">Länderverwaltung</a>."
+
+msgid "warningRegistrationCountriesDeactivated"
+msgstr "Die Länder <strong>%s</strong> wurden aus den auswählbaren Rechnungsländern entfernt. Siehe <a href=\"countrymanager.php\" target=\"_blank\">Länderverwaltung</a>"
+
+msgid "warningShippingAvailable"
+msgstr "Das Land ist in mindestens einer Versandart als Lieferland aktiviert. Wir empfehlen daher, das Land auch als auswählbares Rechnungsland anzubieten."

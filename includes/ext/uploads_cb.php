@@ -80,7 +80,7 @@ if (!empty($_FILES)) {
     $targetFile = PFAD_UPLOADS . $unique;
     $tempFile   = $fileData['tmp_name'];
     $targetInfo = pathinfo($targetFile);
-    $realPath   = str_replace('\\', '/', realpath($targetInfo['dirname']) . DIRECTORY_SEPARATOR);
+    $realPath   = realpath($targetInfo['dirname']) . '/';
 
     // legitimate uploads do not have an extension for the destination file name - but for the originally uploaded file
     if (!isset($pathInfo['extension']) || isset($targetInfo['extension'])) {

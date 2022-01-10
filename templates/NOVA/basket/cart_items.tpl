@@ -326,6 +326,7 @@
                             {/col}
                         {/if}
                     {/block}
+                    {include file='snippets/uploads.tpl' tplscope='basket'}
                     {block name='basket-cart-items-items-bottom-hr'}
                         {col cols=12}
                             <hr>

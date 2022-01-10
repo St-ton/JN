@@ -30,7 +30,7 @@
                                                 {/block}
                                             </div>
                                             {block name='basket-index-include-uploads'}
-                                                {include file='snippets/uploads.tpl' tplscope='basket'}
+                                               {* {include file='snippets/uploads.tpl' tplscope='basket'}*}
                                             {/block}
                                         {/form}
                                     {/block}

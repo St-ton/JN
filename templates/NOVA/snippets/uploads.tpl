@@ -155,17 +155,20 @@
                 {/foreach}
             {/block}
         {elseif $tplscope === 'basket'}
-            {block name='snippets-uploads-subheading'}
+{*            {$oUploadSchema_arr|var_dump}*}
+{*            {$oPosition|var_dump}*}
+           {* {block name='snippets-uploads-subheading'}
                 <div class="h3 section-heading">{lang key='uploadHeadline'}</div>
                 <hr class="upload-scheme-cart-hr-before">
-            {/block}
+            {/block}*}
             {block name='snippets-uploads-schemes'}
                 {foreach $oUploadSchema_arr as $oUploadSchema}
+                    {if $oUploadSchema->prodID === $oPosition->kArtikel}
                     <div class="upload-scheme-cart">
                         {block name='snippets-uploads-scheme-name'}
                             <p>
                                 <span class="upload-scheme-cart-name">
-                                    {$oUploadSchema->cName}
+{*                                    {$oUploadSchema->cName}*}
                                     {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)}
                                         <small>
                                             {foreach name=variationen from=$oUploadSchema->WarenkorbPosEigenschaftArr item=Variation}
@@ -198,6 +201,7 @@
                                                         <span class="current-upload small text-success">
                                                             {if $oUpload->bVorhanden}
                                                                 <i class="fa fa-check" aria-hidden="true"></i>
+                                                                {$oUpload|var_dump}
                                                                 {$oUpload->cDateiname} ({$oUpload->cDateigroesse})
                                                             {/if}
                                                         </span>
@@ -212,21 +216,26 @@
                                                 </div>
                                             {/block}
                                             {block name='snippets-uploads-scheme-script'}
-                                                {inline_script}<script>
+                                                <script>
                                                     var clientUploadErrorIsActive = false;
                                                     $(function () {
                                                         var $el = $('#fileinput{$oUploadSchema@index}{$oUpload@index}');
                                                         $el.fileinput({
                                                             uploadUrl:             '{$ShopURL}/{$smarty.const.PFAD_UPLOAD_CALLBACK}',
                                                             uploadAsync:           false,
-                                                            showPreview:           false,
+                                                            showPreview:           true,
                                                             showUpload:            false,
                                                             showRemove:            false,
                                                             required:              true,
+                                                            initialPreview: [
+                                                                "<img style=\"width:auto;height:100px;\" class=\"file-preview-image\" src=\"{$ShopURL}/uploads/'{$oUpload->cUnique}'\"/>"
+                                                            ],
+                                                            initialPreviewAsData: false,
                                                             browseClass:           'btn btn-light',
                                                             fileActionSettings:    {
                                                                 showZoom:   false,
-                                                                showRemove: false
+                                                                showRemove: false,
+                                                                showDrag: false
                                                             },
                                                             allowedFileExtensions: [{$oUpload->cDateiListe|replace:'*.':'\''|replace:';':'\','|cat:'\''}],
                                                             language:              '{$uploaderLang}',
@@ -311,7 +320,7 @@
                                                             $('#upload-{$oUploadSchema@index}{$oUpload@index} .fileinput-upload').removeClass('disabled');
                                                         });
                                                     });
-                                                </script>{/inline_script}
+                                                </script>
                                             {/block}
                                         {/col}
                                     {/block}
@@ -319,6 +328,7 @@
                             {/foreach}
                         {/block}
                     </div>
+                    {/if}
                 {/foreach}
                 {block name='snippets-uploads-schemes-hr'}
                     <hr class="upload-scheme-cart-hr-after">

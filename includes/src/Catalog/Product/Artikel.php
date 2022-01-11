@@ -1241,7 +1241,7 @@ class Artikel
         $productID = ($this->kEigenschaftKombi > 0 && $this->kVaterArtikel > 0)
             ? $this->kVaterArtikel
             : $this->kArtikel;
-        $prices    = new Preise($customerGroupID, $this->kArtikel, $customerID, (int)$this->kSteuerklasse);
+        $prices    = new Preise($customerGroupID, $this->kArtikel, $customerID, $this->kSteuerklasse);
         $prices->rabbatierePreise($this->getDiscount($customerGroupID, $productID));
         if ($assign) {
             $this->Preise = $prices;
@@ -5211,17 +5211,20 @@ class Artikel
         }
         $discounts   = [];
         $maxDiscount = 0;
-        if (!Shop::has('checkCategoryDiscount')) {
+        $cacheID     = 'checkCategoryDiscount' . $customerGroupID;
+        if (!Shop::has($cacheID)) {
             Shop::set(
-                'checkCategoryDiscount',
+                $cacheID,
                 Shop::Container()->getDB()->getSingleObject(
                     'SELECT COUNT(kArtikel) AS cnt
-                        FROM tartikelkategorierabatt'
+                        FROM tartikelkategorierabatt
+                        WHERE kKundengruppe = :cgid',
+                    ['cgid' => $customerGroupID]
                 )->cnt > 0
             );
         }
         // Existiert für diese Kundengruppe ein Kategorierabatt?
-        if (Shop::get('checkCategoryDiscount')) {
+        if (Shop::get($cacheID)) {
             if ($this->kEigenschaftKombi > 0) {
                 $categoryDiscount = Shop::Container()->getDB()->select(
                     'tartikelkategorierabatt',

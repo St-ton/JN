@@ -1231,12 +1231,12 @@ class Artikel
             $customerGroupID = $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
         }
         $customerID = Frontend::getCustomer()->getID();
-        if ($this->Preise === null
-            || $this->Preise->kKundengruppe !== $customerGroupID
-            || ($this->Preise->kKunde !== $customerID && $this->Preise->hasCustomPrice($customerID))
-        ) {
-            $this->Preise = new Preise($customerGroupID, $this->kArtikel, $customerID, $this->kSteuerklasse);
-        }
+//        if ($this->Preise === null
+//            || $this->Preise->kKundengruppe !== $customerGroupID
+//            || ($this->Preise->kKunde !== $customerID && $this->Preise->hasCustomPrice($customerID))
+//        ) {
+//            $this->Preise = new Preise($customerGroupID, $this->kArtikel, $customerID, $this->kSteuerklasse);
+//        }
         // Varkombi Kind?
         $productID = ($this->kEigenschaftKombi > 0 && $this->kVaterArtikel > 0)
             ? $this->kVaterArtikel
@@ -3235,7 +3235,6 @@ class Artikel
                     'Product ' . (int)$tmpProduct->kArtikel . ' has invalid parent.'
                 );
             }
-
             return null;
         }
         // EXPERIMENTAL_MULTILANG_SHOP

@@ -1751,10 +1751,9 @@ class CartHelper
 
                     if ($valid) {
                         $item->nAnzahl = $quantity;
-                        $item->fPreis  = $product->gibPreis(
+                        $item->fPreis  = $product->recalculatePrices(
                             $item->nAnzahl,
                             $item->WarenkorbPosEigenschaftArr,
-                            0,
                             $item->cUnique
                         );
                         $item->setzeGesamtpreisLocalized();

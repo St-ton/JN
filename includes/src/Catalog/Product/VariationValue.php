@@ -3,6 +3,7 @@
 namespace JTL\Catalog\Product;
 
 use JTL\Catalog\Currency;
+use JTL\Helpers\Product;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Media\Image;
@@ -314,9 +315,7 @@ class VariationValue
         if (!isset($this->fAufpreisNetto) || $this->fAufpreisNetto === 0.0) {
             return;
         }
-
         $surcharge                   = $this->fAufpreisNetto;
-        $customerGroupID             = Frontend::getCustomerGroup()->getID();
         $this->cAufpreisLocalized[0] = Preise::getLocalizedPriceString(
             Tax::getGross($surcharge, $taxRate, 4),
             $currency
@@ -324,11 +323,11 @@ class VariationValue
         $this->cAufpreisLocalized[1] = Preise::getLocalizedPriceString($surcharge, $currency);
         // Wenn der Artikel ein VarkombiKind ist
         if ($product->kVaterArtikel > 0) {
-            $vkNetto = $product->gibPreis(1, [], $customerGroupID, '', false);
+            $vkNetto = Product::calculatePrice($product->Preise, $product);
         } else {
-            $vkNetto = $product->gibPreis(1, [
+            $vkNetto = Product::calculatePrice($product->Preise, $product, 1, [
                 $this->kEigenschaft => $this->kEigenschaftWert
-            ], $customerGroupID, '', false);
+            ]);
         }
         $this->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
             Tax::getGross($vkNetto, $taxRate),

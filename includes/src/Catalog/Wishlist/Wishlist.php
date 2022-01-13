@@ -472,7 +472,7 @@ class Wishlist
                 $price = (int)$item->getQty() * $product->Preise->fVKNetto;
             } else {
                 $price = (int)$item->getQty()
-                    * ($product->Preise->fVKNetto * (100 + $_SESSION['Steuersatz'][$product->kSteuerklasse]) / 100);
+                    * ($product->Preise->fVKNetto * (100 + $_SESSION['Steuersatz'][$product->getTaxClassID()]) / 100);
             }
 
             $item->setPrice(Preise::getLocalizedPriceString($price, Frontend::getCurrency()));
@@ -1132,13 +1132,11 @@ class Wishlist
                 continue;
             }
             if (Frontend::getCustomerGroup()->isMerchant()) {
-                $price = isset($product->Preise->fVKNetto)
-                    ? (int)$item->getQty() * $product->Preise->fVKNetto
-                    : 0;
+                $price = (int)($item->getQty() * ($product->Preise->fVKNetto) ?? 0);
             } else {
                 $price = isset($product->Preise->fVKNetto)
                     ? (int)$item->getQty()
-                    * ($product->Preise->fVKNetto * (100 + $_SESSION['Steuersatz'][$product->kSteuerklasse]) / 100)
+                    * ($product->Preise->fVKNetto * (100 + $_SESSION['Steuersatz'][$product->getTaxClassID()]) / 100)
                     : 0;
             }
             $item->setPrice(Preise::getLocalizedPriceString($price, Frontend::getCurrency()));

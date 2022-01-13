@@ -47,7 +47,10 @@ final class Wishlist extends AbstractBox
             }
             $additionalParams = Text::filterXSS($additionalParams);
             foreach ($wishlistItems as $wishlistItem) {
-                $product                   = $wishlistItem->getProduct();
+                $product = $wishlistItem->getProduct();
+                if ($product === null) {
+                    continue;
+                }
                 $additionalParams['wlplo'] = $wishlistItem->getID();
                 $wishlistItem->setURL($shopURL . \http_build_query($additionalParams));
                 if (Frontend::getCustomerGroup()->isMerchant()) {
@@ -57,7 +60,7 @@ final class Wishlist extends AbstractBox
                 } else {
                     $price = isset($product->Preise->fVKNetto)
                         ? (int)$wishlistItem->getQty() * ($product->Preise->fVKNetto
-                            * (100 + $_SESSION['Steuersatz'][$product->kSteuerklasse]) / 100)
+                            * (100 + $_SESSION['Steuersatz'][$product->getTaxClassID()]) / 100)
                         : 0;
                 }
                 $wishlistItem->setPrice(Preise::getLocalizedPriceString($price, Frontend::getCurrency()));

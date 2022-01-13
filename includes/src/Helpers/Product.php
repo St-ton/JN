@@ -7,6 +7,7 @@ use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\UnitsOfMeasure;
 use JTL\CheckBox;
@@ -1896,7 +1897,7 @@ class Product
 
     /**
      * @param int       $productID
-     * @param float|int $amount
+     * @param float|int $qty
      * @param array     $variations
      * @param array     $configGroups
      * @param array     $configGroupAmounts
@@ -1907,7 +1908,7 @@ class Product
      */
     public static function buildConfig(
         int $productID,
-        $amount,
+        $qty,
         array $variations,
         array $configGroups,
         array $configGroupAmounts,
@@ -1915,7 +1916,7 @@ class Product
         bool $singleProductOutput = false
     ): ?stdClass {
         $config                  = new stdClass();
-        $config->fAnzahl         = $amount;
+        $config->fAnzahl         = $qty;
         $config->fGesamtpreis    = [0.0, 0.0];
         $config->cPreisLocalized = [];
         $config->cPreisString    = Shop::Lang()->get('priceAsConfigured', 'productDetails');
@@ -1941,18 +1942,18 @@ class Product
         $config->Lageranzeige          = new stdClass();
         $config->Lageranzeige->nStatus = $product->Lageranzeige->nStatus;
 
-        $amount = \max($amount, 1);
-        if ($product->cTeilbar !== 'Y' && (int)$amount != $amount) {
-            $amount = (int)$amount;
+        $qty = \max($qty, 1);
+        if ($product->cTeilbar !== 'Y' && (int)$qty != $qty) {
+            $qty = (int)$qty;
         }
-
-        $_amount              = $singleProductOutput ? 1 : $amount;
+        // @todo: qty/_qty chaos.
+        $_qty                 = $singleProductOutput ? 1 : $qty;
         $config->fGesamtpreis = [
             Tax::getGross(
-                $product->gibPreis($amount, $selectedProperties),
-                Tax::getSalesTax($product->kSteuerklasse)
-            ) * $_amount,
-            $product->gibPreis($amount, $selectedProperties) * $_amount
+                self::calculatePrice($product->Preise, $product, $qty, $selectedProperties),
+                Tax::getSalesTax($product->getTaxClassID())
+            ) * $_qty,
+            self::calculatePrice($product->Preise, $product, $qty, $selectedProperties) * $_qty
         ];
 
         $config->oKonfig_arr = $product->oKonfig_arr;
@@ -1981,7 +1982,7 @@ class Product
                 }
                 $configItem->fAnzahlWK = $configItem->fAnzahl;
                 if (!$configItem->ignoreMultiplier() && !$singleProductOutput) {
-                    $configItem->fAnzahlWK *= $amount;
+                    $configItem->fAnzahlWK *= $qty;
                 }
                 $configItem->bAktiv = \in_array($configItemID, $configItems);
 
@@ -2145,5 +2146,113 @@ class Product
                     AND kKundengruppe = :cgid',
             ['pid' => $productID, 'cgid' => $customerGroupID]
         ) === null;
+    }
+
+    /**
+     * @param Preise    $prices
+     * @param Artikel   $product
+     * @param int|float $qty
+     * @param array     $attributes
+     * @param string    $unique
+     * @return float|int
+     */
+    public static function calculatePrice(
+        Preise $prices,
+        Artikel $product,
+        $qty = 1,
+        array $attributes = [],
+        string $unique = ''
+    ) {
+        $taxClassID = $product->getTaxClassID();
+        $price      = $prices->fVKNetto;
+        if (isset($product->FunktionsAttribute[\FKT_ATTRIBUT_VOUCHER_FLEX])) {
+            $customCalculated = (float)Frontend::get(
+                'customCalculated_' . $unique,
+                Request::postVar(\FKT_ATTRIBUT_VOUCHER_FLEX . 'Value')
+            );
+            if ($customCalculated > 0) {
+                $price = Tax::getNet($customCalculated, Tax::getSalesTax($taxClassID), 4);
+                Frontend::set('customCalculated_' . $unique, $customCalculated);
+            }
+        }
+        foreach ($prices->fPreis_arr as $i => $fPreis) {
+            if ($prices->nAnzahl_arr[$i] <= $qty) {
+                $price = $fPreis;
+            }
+        }
+        $net = Frontend::getCustomerGroup()->isMerchant();
+        // Ticket #1247
+        $price = $net
+            ? \round($price, 4)
+            : Tax::getGross(
+                $price,
+                Tax::getSalesTax($product->kSteuerklasse),
+                4
+            ) / ((100 + Tax::getSalesTax($taxClassID)) / 100);
+        // Falls es sich um eine Variationskombination handelt, spielen Variationsaufpreise keine Rolle,
+        // da Vakombis ihre Aufpreise direkt im Artikelpreis definieren.
+        if ($product->nIstVater === 1 || $product->kVaterArtikel > 0) {
+            return $price;
+        }
+
+        return self::getVariationPrice($product, $attributes, $prices, $price);
+    }
+
+    /**
+     * @param Artikel $product
+     * @param array   $attributes
+     * @param Preise  $prices
+     * @param float   $price
+     * @return float|int
+     */
+    public static function getVariationPrice(Artikel $product, array $attributes, Preise $prices, float $price)
+    {
+        $customerGroupID = $product->getCustomerGroupID();
+        $taxClassID      = $product->getTaxClassID();
+        $net             = Frontend::getCustomerGroup()->isMerchant();
+        $db              = Shop::Container()->getDB();
+        foreach ($attributes as $item) {
+            if (isset($item->cTyp) && ($item->cTyp === 'FREIFELD' || $item->cTyp === 'PFLICHT-FREIFELD')) {
+                continue;
+            }
+            $propValueID = 0;
+            if (isset($item->kEigenschaftWert) && $item->kEigenschaftWert > 0) {
+                $propValueID = (int)$item->kEigenschaftWert;
+            } elseif ($item > 0) {
+                $propValueID = (int)$item;
+            }
+            $propValue       = new EigenschaftWert($propValueID);
+            $extraCharge     = $propValue->fAufpreisNetto;
+            $propExtraCharge = $db->select(
+                'teigenschaftwertaufpreis',
+                'kEigenschaftWert',
+                $propValueID,
+                'kKundengruppe',
+                $customerGroupID
+            );
+            if (!\is_object($propExtraCharge) && $prices->isDiscountable()) {
+                $propExtraCharge = $db->select(
+                    'teigenschaftwert',
+                    'kEigenschaftWert',
+                    $propValueID
+                );
+            }
+            if ($propExtraCharge !== null) {
+                $fMaxRabatt  = $product->getDiscount($customerGroupID, $product->kArtikel);
+                $extraCharge = $propExtraCharge->fAufpreisNetto * ((100 - $fMaxRabatt) / 100);
+            }
+            // Ticket #1247
+            $extraCharge = $net
+                ? \round($extraCharge, 4)
+                : Tax::getGross(
+                    $extraCharge,
+                    Tax::getSalesTax($taxClassID),
+                    4
+                ) / ((100 + Tax::getSalesTax($taxClassID)) / 100);
+
+            $price += $extraCharge;
+        }
+
+        return $price;
     }
 }

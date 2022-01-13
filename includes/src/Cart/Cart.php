@@ -367,8 +367,8 @@ class Cart
         $cartItem->nAnzahl           = $qty;
         $cartItem->kArtikel          = $cartItem->Artikel->kArtikel;
         $cartItem->kVersandklasse    = $cartItem->Artikel->kVersandklasse;
-        $cartItem->kSteuerklasse     = $cartItem->Artikel->kSteuerklasse;
-        $cartItem->fPreisEinzelNetto = $cartItem->Artikel->gibPreis($cartItem->nAnzahl, [], 0, $unique);
+        $cartItem->kSteuerklasse     = $cartItem->Artikel->getTaxClassID();
+        $cartItem->fPreisEinzelNetto = $cartItem->Artikel->recalculatePrices($cartItem->nAnzahl, [], $unique);
         $cartItem->fPreis            = $cartItem->fPreisEinzelNetto;
         $cartItem->cArtNr            = $cartItem->Artikel->cArtNr;
         $cartItem->nPosTyp           = $type;
@@ -934,13 +934,8 @@ class Cart
                 $qty = $this->gibAnzahlEinesArtikels($product->kArtikel);
             }
             $item->Artikel           = $product;
-            $item->fPreisEinzelNetto = $product->gibPreis($qty, [], $customerGroupID, $item->cUnique);
-            $item->fPreis            = $product->gibPreis(
-                $qty,
-                $item->WarenkorbPosEigenschaftArr,
-                $customerGroupID,
-                $item->cUnique
-            );
+            $item->fPreisEinzelNetto = Product::calculatePrice($product->Preise, $product, $qty, [], $item->cUnique);
+            $item->fPreis            = Product::calculatePrice($product->Preise, $product, $qty, $item->WarenkorbPosEigenschaftArr, $item->cUnique);
             $item->fGesamtgewicht    = $item->gibGesamtgewicht();
             $item->fVK               = $product->Preise->fVK;
             \executeHook(\HOOK_SETZTE_POSITIONSPREISE, [
@@ -1059,7 +1054,7 @@ class Cart
      *
      * @param string $countryCode
      * @return int
-     *@todo: param?
+     * @todo: param?
      */
     public function gibVersandkostenSteuerklasse($countryCode = ''): int
     {

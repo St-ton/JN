@@ -670,9 +670,9 @@ class IOMethods
         $options               = Artikel::getDefaultOptions();
         $options->nVariationen = 1;
         $product->fuelleArtikel($productID, $options);
-        $fVKNetto                      = $product->gibPreis($amount, [], Frontend::getCustomerGroup()->getID());
+        $fVKNetto                      = Product::calculatePrice($product->Preise, $product, $amount);
         $fVK                           = [
-            Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$product->kSteuerklasse]),
+            Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$product->getTaxClassID()]),
             $fVKNetto
         ];
         $product->Preise->cVKLocalized = [
@@ -901,9 +901,9 @@ class IOMethods
         $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');
 
         $isNet        = Frontend::getCustomerGroup()->getIsMerchant();
-        $fVKNetto     = $product->gibPreis($amount, $valueIDs, Frontend::getCustomerGroup()->getID());
+        $fVKNetto     = Product::calculatePrice($product->Preise, $product, $amount, $valueIDs);
         $fVK          = [
-            Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$product->kSteuerklasse]),
+            Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$product->getTaxClassID()]),
             $fVKNetto
         ];
         $cVKLocalized = [
@@ -938,19 +938,15 @@ class IOMethods
             $fStaffelVK = [0 => [], 1 => []];
             $cStaffelVK = [0 => [], 1 => []];
             foreach ($product->staffelPreis_arr as $staffelPreis) {
-                $nAnzahl                 = &$staffelPreis['nAnzahl'];
-                $fStaffelVKNetto         = $product->gibPreis(
-                    $nAnzahl,
-                    $valueIDs,
-                    Frontend::getCustomerGroup()->getID()
-                );
-                $fStaffelVK[0][$nAnzahl] = Tax::getGross(
+                $qty                 = &$staffelPreis['nAnzahl'];
+                $fStaffelVKNetto     = Product::calculatePrice($product->Preise, $product, $qty, $valueIDs);
+                $fStaffelVK[0][$qty] = Tax::getGross(
                     $fStaffelVKNetto,
                     $_SESSION['Steuersatz'][$product->kSteuerklasse]
                 );
-                $fStaffelVK[1][$nAnzahl] = $fStaffelVKNetto;
-                $cStaffelVK[0][$nAnzahl] = Preise::getLocalizedPriceString($fStaffelVK[0][$nAnzahl]);
-                $cStaffelVK[1][$nAnzahl] = Preise::getLocalizedPriceString($fStaffelVK[1][$nAnzahl]);
+                $fStaffelVK[1][$qty] = $fStaffelVKNetto;
+                $cStaffelVK[0][$qty] = Preise::getLocalizedPriceString($fStaffelVK[0][$qty]);
+                $cStaffelVK[1][$qty] = Preise::getLocalizedPriceString($fStaffelVK[1][$qty]);
             }
 
             $ioResponse->callEvoProductFunction(
@@ -970,11 +966,11 @@ class IOMethods
             $fStaffelVPE = [0 => [], 1 => []];
             $cStaffelVPE = [0 => [], 1 => []];
             foreach ($product->staffelPreis_arr as $key => $staffelPreis) {
-                $nAnzahl                  = &$staffelPreis['nAnzahl'];
-                $fStaffelVPE[0][$nAnzahl] = $product->fStaffelpreisVPE_arr[$key][0];
-                $fStaffelVPE[1][$nAnzahl] = $product->fStaffelpreisVPE_arr[$key][1];
-                $cStaffelVPE[0][$nAnzahl] = $staffelPreis['cBasePriceLocalized'][0];
-                $cStaffelVPE[1][$nAnzahl] = $staffelPreis['cBasePriceLocalized'][1];
+                $qty                  = &$staffelPreis['nAnzahl'];
+                $fStaffelVPE[0][$qty] = $product->fStaffelpreisVPE_arr[$key][0];
+                $fStaffelVPE[1][$qty] = $product->fStaffelpreisVPE_arr[$key][1];
+                $cStaffelVPE[0][$qty] = $staffelPreis['cBasePriceLocalized'][0];
+                $cStaffelVPE[1][$qty] = $staffelPreis['cBasePriceLocalized'][1];
             }
 
             $ioResponse->callEvoProductFunction(

@@ -63,7 +63,7 @@ class Artikel
     /**
      * @var int
      */
-    public $kSteuerklasse = 0;
+    public $kSteuerklasse;
 
     /**
      * @var int
@@ -6040,6 +6040,6 @@ class Artikel
      */
     public function getTaxClassID(): int
     {
-        return $this->kSteuerklasse;
+        return $this->kSteuerklasse ?? 0;
     }
 }

@@ -2923,8 +2923,8 @@ class Artikel
 
             $idx = $varDetailPrice->kEigenschaftWert;
             if ($varDetailPrice->kArtikel !== $lastProduct) {
-                $lastProduct = $varDetailPrice->kArtikel;
-                $tmpProduct  = new self();
+                $lastProduct               = $varDetailPrice->kArtikel;
+                $tmpProduct                = new self();
                 $tmpProduct->kKundengruppe = $this->kKundengruppe;
                 $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerID);
             }
@@ -3413,15 +3413,15 @@ class Artikel
      */
     private function loadFromCache(int $productID)
     {
-        $langID        = $this->kSprache;
+        $langID          = $this->kSprache;
         $customerGroupID = $this->kKundengruppe;
-        $options       = $this->options;
-        $baseID        = Shop::Container()->getCache()->getBaseID(false, false, $customerGroupID, $langID);
-        $taxClass      = isset($_SESSION['Steuersatz']) ? \implode('_', $_SESSION['Steuersatz']) : '';
-        $customerID    = Frontend::getCustomer()->getID();
-        $productHash   = \md5($baseID . $this->getOptionsHash($options) . $taxClass);
-        $this->cacheID = 'fa_' . $productID . '_' . $productHash;
-        $product       = Shop::Container()->getCache()->get($this->cacheID);
+        $options         = $this->options;
+        $baseID          = Shop::Container()->getCache()->getBaseID(false, false, $customerGroupID, $langID);
+        $taxClass        = isset($_SESSION['Steuersatz']) ? \implode('_', $_SESSION['Steuersatz']) : '';
+        $customerID      = Frontend::getCustomer()->getID();
+        $productHash     = \md5($baseID . $this->getOptionsHash($options) . $taxClass);
+        $this->cacheID   = 'fa_' . $productID . '_' . $productHash;
+        $product         = Shop::Container()->getCache()->get($this->cacheID);
         if ($product === false) {
             return false;
         }

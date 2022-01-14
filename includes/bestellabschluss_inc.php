@@ -696,8 +696,9 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
     if ($amount <= 0) {
         return $newStockLevel;
     }
+    $db = Shop::Container()->getDB();
     // Gibt es lagerrelevante Komponenten in der Stückliste?
-    $components = Shop::Container()->getDB()->getObjects(
+    $components = $db->getObjects(
         "SELECT tstueckliste.kArtikel, tstueckliste.fAnzahl
             FROM tstueckliste
             JOIN tartikel
@@ -712,7 +713,7 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
         foreach ($components as $component) {
-            $tmpArtikel = new Artikel();
+            $tmpArtikel = new Artikel($db);
             $tmpArtikel->fuelleArtikel($component->kArtikel, $options);
             $compStockLevel = floor(
                 aktualisiereLagerbestand(

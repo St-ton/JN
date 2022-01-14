@@ -1284,7 +1284,7 @@ class Exportformat
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
         foreach ($this->db->getObjects($this->getExportSQL()) as $productData) {
-            $product = new Artikel();
+            $product = new Artikel($this->db);
             $product->fuelleArtikel(
                 (int)$productData->kArtikel,
                 $options,
@@ -1617,7 +1617,7 @@ class Exportformat
                 AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1"
         );
         if ($productData !== null && $productData->kArtikel > 0) {
-            $product = new Artikel();
+            $product = new Artikel($this->db);
             $product->fuelleArtikel($productData->kArtikel, Artikel::getExportOptions());
             $product->cDeeplink             = '';
             $product->Artikelbild           = '';

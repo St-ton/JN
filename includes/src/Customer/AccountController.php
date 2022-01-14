@@ -7,7 +7,6 @@ use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Cart\PersistentCart;
-use JTL\Cart\PersistentCartItem;
 use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
@@ -712,7 +711,7 @@ class AccountController
                         ->fuegeEin($productID, 1, [], \C_WARENKORBPOS_TYP_GRATISGESCHENK);
                 }
             } else {
-                $tmpProduct = new Artikel();
+                $tmpProduct = new Artikel($this->db);
                 $tmpProduct->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
                     ? Artikel::getDefaultOptions()
                     : Artikel::getDefaultConfigOptions());

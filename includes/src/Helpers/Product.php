@@ -883,9 +883,10 @@ class Product
         $xSelling->Standard->XSellGruppen = [];
         $xSelling->Kauf->Artikel          = [];
         $conf                             = $conf ?? Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
+        $db                               = Shop::Container()->getDB();
         if ($conf['artikeldetails_xselling_standard_anzeigen'] === 'Y') {
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $xsell          = Shop::Container()->getDB()->getObjects(
+            $xsell          = $db->getObjects(
                 'SELECT txsell.*, txsellgruppe.cName, txsellgruppe.cBeschreibung
                     FROM txsell
                     JOIN tartikel
@@ -908,13 +909,13 @@ class Product
                     foreach ($products as $xs) {
                         $group->Name         = $xs->cName;
                         $group->Beschreibung = $xs->cBeschreibung;
-                        $product             = (new Artikel())->fuelleArtikel(
+                        $product             = (new Artikel($db))->fuelleArtikel(
                             (int)$xs->kXSellArtikel,
                             $defaultOptions,
                             0,
                             $languageID
                         );
-                        if ($product !== null && (int)$product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
+                        if ($product !== null && $product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                             $group->Artikel[] = $product;
                         }
                     }
@@ -936,7 +937,7 @@ class Product
                     $selectSQL = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
                     $filterSQL = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
                 }
-                $xsell = Shop::Container()->getDB()->getObjects(
+                $xsell = $db->getObjects(
                     'SELECT ' . $productID . ' AS kArtikel, ' . $selectSQL . ' AS kXSellArtikel,
                         SUM(txsellkauf.nAnzahl) nAnzahl
                         FROM txsellkauf
@@ -953,7 +954,7 @@ class Product
                     ['pid' => $productID, 'lmt' => $limit]
                 );
             } elseif ($conf['artikeldetails_xselling_kauf_parent'] === 'Y') {
-                $xsell = Shop::Container()->getDB()->getObjects(
+                $xsell = $db->getObjects(
                     'SELECT txsellkauf.kArtikel,
                     IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
                     SUM(txsellkauf.nAnzahl) nAnzahl
@@ -972,7 +973,7 @@ class Product
                     ['pid' => $productID, 'lmt' => $limit]
                 );
             } else {
-                $xsell = Shop::Container()->getDB()->selectAll(
+                $xsell = $db->selectAll(
                     'txsellkauf',
                     'kArtikel',
                     $productID,
@@ -1373,6 +1374,7 @@ class Product
     {
         $nav             = new stdClass();
         $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $db              = Shop::Container()->getDB();
         // Wurde der Artikel von der Artikelübersicht aus angeklickt?
         if ($productID > 0
             && isset($_SESSION['oArtikelUebersichtKey_arr'])
@@ -1397,13 +1399,13 @@ class Product
                 $prevID = $collection[$index - 1];
             }
             if ($nextID > 0) {
-                $nav->naechsterArtikel = (new Artikel())->fuelleArtikel($nextID, Artikel::getDefaultOptions());
+                $nav->naechsterArtikel = (new Artikel($db))->fuelleArtikel($nextID, Artikel::getDefaultOptions());
                 if ($nav->naechsterArtikel === null) {
                     unset($nav->naechsterArtikel);
                 }
             }
             if ($prevID > 0) {
-                $nav->vorherigerArtikel = (new Artikel())->fuelleArtikel($prevID, Artikel::getDefaultOptions());
+                $nav->vorherigerArtikel = (new Artikel($db))->fuelleArtikel($prevID, Artikel::getDefaultOptions());
                 if ($nav->vorherigerArtikel === null) {
                     unset($nav->vorherigerArtikel);
                 }
@@ -1412,7 +1414,7 @@ class Product
         // Ist der Besucher nicht von der Artikelübersicht gekommen?
         if ($categoryID > 0 && (!isset($nav->vorherigerArtikel) && !isset($nav->naechsterArtikel))) {
             $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $prev        = Shop::Container()->getDB()->getSingleObject(
+            $prev        = $db->getSingleObject(
                 'SELECT tartikel.kArtikel
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
@@ -1427,7 +1429,7 @@ class Product
                     LIMIT 1',
                 ['cgid' => $customerGroupID, 'pid' => $productID, 'cid' => $categoryID]
             );
-            $next        = Shop::Container()->getDB()->getSingleObject(
+            $next        = $db->getSingleObject(
                 'SELECT tartikel.kArtikel
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
@@ -1444,11 +1446,11 @@ class Product
             );
 
             if ($prev !== null && !empty($prev->kArtikel)) {
-                $nav->vorherigerArtikel = (new Artikel())
+                $nav->vorherigerArtikel = (new Artikel($db))
                     ->fuelleArtikel((int)$prev->kArtikel, Artikel::getDefaultOptions());
             }
             if ($next !== null && !empty($next->kArtikel)) {
-                $nav->naechsterArtikel = (new Artikel())
+                $nav->naechsterArtikel = (new Artikel($db))
                     ->fuelleArtikel((int)$next->kArtikel, Artikel::getDefaultOptions());
             }
         }
@@ -1796,9 +1798,10 @@ class Product
             if ((int)$conf['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
                 $limit = ' LIMIT ' . (int)$conf['artikeldetails_aehnlicheartikel_anzahl'];
             }
+            $db                = Shop::Container()->getDB();
             $stockFilterSQL    = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $customerGroupID   = Frontend::getCustomerGroup()->getID();
-            $productAttributes = Shop::Container()->getDB()->getObjects(
+            $productAttributes = $db->getObjects(
                 'SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
                     FROM tartikelmerkmal
                         JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
@@ -1822,7 +1825,7 @@ class Product
             if (\count($productAttributes) > 0) {
                 $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($productAttributes as $productAttribute) {
-                    $product = new Artikel();
+                    $product = new Artikel($db);
                     $id      = $productAttribute->kVaterArtikel > 0
                         ? $productAttribute->kVaterArtikel
                         : $productAttribute->kArtikel;
@@ -1832,7 +1835,7 @@ class Product
                     }
                 }
             } else { // Falls es keine Merkmale gibt, in tsuchcachetreffer suchen
-                $searchCacheHits = Shop::Container()->getDB()->getObjects(
+                $searchCacheHits = $db->getObjects(
                     'SELECT tsuchcachetreffer.kArtikel, tartikel.kVaterArtikel
                         FROM
                         (
@@ -1858,7 +1861,7 @@ class Product
                 if (\count($searchCacheHits) > 0) {
                     $defaultOptions = Artikel::getDefaultOptions();
                     foreach ($searchCacheHits as $hit) {
-                        $product = new Artikel();
+                        $product = new Artikel($db);
                         $id      = ($hit->kVaterArtikel > 0)
                             ? $hit->kVaterArtikel
                             : $hit->kArtikel;

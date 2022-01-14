@@ -1442,7 +1442,8 @@ class IOMethods
         $ioResponse       = new IOResponse();
         $response         = new stdClass();
         $response->review = flatten(filter(
-            (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions())->Bewertungen->oBewertung_arr,
+            (new Artikel($this->db))
+                ->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions())->Bewertungen->oBewertung_arr,
             static function ($e) use ($formData) {
                 return (int)$e->kBewertung === (int)$formData['reviewID'];
             }

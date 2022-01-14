@@ -7,7 +7,6 @@ use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Cart\PersistentCart;
-use JTL\Cart\PersistentCartItem;
 use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
@@ -286,9 +285,9 @@ class AccountController
         if ($step === 'rechnungsdaten') {
             $this->getCustomerFields();
         }
+        $currency = Frontend::getCurrency();
         if ($step === 'bewertungen') {
-            $currency = Frontend::getCurrency();
-            $ratings  = $this->db->getCollection(
+            $ratings = $this->db->getCollection(
                 'SELECT tbewertung.kBewertung, fGuthabenBonus, nAktiv, kArtikel, cTitel, cText, 
                   tbewertung.dDatum, nSterne, cAntwort, dAntwortDatum
                   FROM tbewertung 

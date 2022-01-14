@@ -15,8 +15,6 @@ class Upload extends AbstractRateLimiter
 
     protected const FLOOD_MINUTES = 60;
 
-    protected const CLEANUP_MINUTES = 60;
-
     /**
      * @var int
      */

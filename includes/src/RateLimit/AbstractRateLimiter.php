@@ -31,7 +31,7 @@ class AbstractRateLimiter implements RateLimiterInterface
      */
     protected $type = 'generic';
 
-    protected const LIMIT = 0;
+    protected const LIMIT = 3;
 
     protected const CLEANUP_MINUTES = 60;
 
@@ -105,7 +105,7 @@ class AbstractRateLimiter implements RateLimiterInterface
             ]
         );
 
-        return ($items->cnt ?? 0) <= $this->getLimit();
+        return ($items->cnt ?? 0) < $this->getLimit();
     }
 
     public function cleanup(): void

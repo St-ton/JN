@@ -336,8 +336,9 @@ class Wishlist
      */
     public static function pruefeArtikelnachBestellungLoeschen(int $wishlistID, array $items)
     {
-        $conf = Shop::getSettings([\CONF_GLOBAL]);
-        if ($wishlistID < 1 || $conf['global']['global_wunschliste_artikel_loeschen_nach_kauf'] !== 'Y') {
+        if ($wishlistID < 1
+            || Shop::getConfigValue(\CONF_GLOBAL, 'global_wunschliste_artikel_loeschen_nach_kauf') !== 'Y'
+        ) {
             return false;
         }
         $count    = 0;
@@ -546,40 +547,75 @@ class Wishlist
      */
     public function ueberpruefePositionen(): string
     {
-        $names  = [];
-        $notice = '';
-        $db     = Shop::Container()->getDB();
+        $names    = [];
+        $notice   = '';
+        $db       = Shop::Container()->getDB();
+        $cgroupID = Frontend::getCustomerGroup()->getID();
         foreach ($this->CWunschlistePos_arr as $wlPosition) {
             if ($wlPosition->getProductID() <= 0) {
                 continue;
             }
-            $exists = $db->select('tartikel', 'kArtikel', $wlPosition->getProductID());
-            if (isset($exists->kArtikel) && (int)$exists->kArtikel > 0) {
-                $visibility = $db->select(
-                    'tartikelsichtbarkeit',
-                    'kArtikel',
-                    $wlPosition->getProductID(),
-                    'kKundengruppe',
-                    Frontend::getCustomerGroup()->getID()
-                );
-                if ($visibility === null || empty($visibility->kArtikel)) {
-                    if (\count($wlPosition->getProperties()) > 0) {
-                        if (Product::isVariChild($wlPosition->getProductID())) {
+            $exists = $db->getSingleObject(
+                'SELECT kArtikel, kEigenschaftKombi
+                    FROM tartikel
+                    WHERE kArtikel = :pid',
+                ['pid' => $wlPosition->getProductID()]
+            );
+            if ($exists !== null
+                && (int)$exists->kArtikel > 0
+                && Product::checkProductVisibility($wlPosition->getProductID(), $cgroupID) === true
+            ) {
+                if (\count($wlPosition->getProperties()) > 0) {
+                    if (Product::isVariChild($wlPosition->getProductID())) {
+                        foreach ($wlPosition->getProperties() as $wlAttribute) {
+                            $attrValExists = $db->select(
+                                'teigenschaftkombiwert',
+                                'kEigenschaftKombi',
+                                (int)$exists->kEigenschaftKombi,
+                                'kEigenschaftWert',
+                                $wlAttribute->getPropertyValueID(),
+                                'kEigenschaft',
+                                $wlAttribute->getPropertyID(),
+                                false,
+                                'kEigenschaftKombi'
+                            );
+                            if (empty($attrValExists->kEigenschaftKombi)) {
+                                $names[] = $wlPosition->getProductName();
+                                $notice .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                                $this->delWunschlistePosSess($wlPosition->getProductID());
+                                break;
+                            }
+                        }
+                    } else {
+                        $attributes = $db->selectAll(
+                            'teigenschaft',
+                            'kArtikel',
+                            $wlPosition->getProductID(),
+                            'kEigenschaft, cName, cTyp'
+                        );
+                        if (\count($attributes) > 0) {
                             foreach ($wlPosition->getProperties() as $wlAttribute) {
-                                $attrValExists = $db->select(
-                                    'teigenschaftkombiwert',
-                                    'kEigenschaftKombi',
-                                    (int)$exists->kEigenschaftKombi,
-                                    'kEigenschaftWert',
-                                    $wlAttribute->getPropertyValueID(),
-                                    'kEigenschaft',
-                                    $wlAttribute->getPropertyID(),
-                                    false,
-                                    'kEigenschaftKombi'
-                                );
-                                if (empty($attrValExists->kEigenschaftKombi)) {
+                                $attrValExists = null;
+                                if (!empty($wlAttribute->getPropertyID())) {
+                                    $attrValExists = $db->select(
+                                        'teigenschaftwert',
+                                        'kEigenschaftWert',
+                                        $wlAttribute->getPropertyValueID(),
+                                        'kEigenschaft',
+                                        $wlAttribute->getPropertyID()
+                                    );
+                                    if (empty($attrValExists)) {
+                                        $attrValExists = $db->select(
+                                            'twunschlisteposeigenschaft',
+                                            'kEigenschaft',
+                                            $wlAttribute->getPropertyID()
+                                        );
+                                    }
+                                }
+                                if ($attrValExists === null) {
                                     $names[] = $wlPosition->getProductName();
                                     $notice .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+
                                     $this->delWunschlistePosSess($wlPosition->getProductID());
                                     break;
                                 }
@@ -623,10 +659,6 @@ class Wishlist
                             }
                         }
                     }
-                } else {
-                    $names[] = $wlPosition->getProductName();
-                    $notice .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
-                    $this->delWunschlistePosSess($wlPosition->getProductID());
                 }
             } else {
                 $names[] = $wlPosition->getProductName();
@@ -1096,6 +1128,9 @@ class Wishlist
         }
         foreach ($wishList->getItems() as $item) {
             $product = $item->getProduct();
+            if ($product === null) {
+                continue;
+            }
             if (Frontend::getCustomerGroup()->isMerchant()) {
                 $price = isset($product->Preise->fVKNetto)
                     ? (int)$item->getQty() * $product->Preise->fVKNetto
@@ -1377,9 +1412,9 @@ class Wishlist
     }
 
     /**
-     * @param self[]|Collection    $wishlists
-     * @param Wishlist $currentWishlist
-     * @param int      $wishlistID
+     * @param self[]|Collection $wishlists
+     * @param Wishlist          $currentWishlist
+     * @param int               $wishlistID
      * @return int
      */
     public static function getInvisibleItemCount(iterable $wishlists, Wishlist $currentWishlist, int $wishlistID): int

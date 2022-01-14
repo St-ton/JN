@@ -11,6 +11,7 @@ use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Lieferadresse;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
+use JTL\Firma;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
@@ -37,6 +38,11 @@ class Frontend extends AbstractSession
      * @var Frontend
      */
     protected static $instance;
+
+    /**
+     * @var bool
+     */
+    private $mustUpdate = false;
 
     /**
      * @param bool   $start       - call session_start()?
@@ -69,6 +75,20 @@ class Frontend extends AbstractSession
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
 
         \executeHook(\HOOK_CORE_SESSION_CONSTRUCTOR);
+    }
+
+    /**
+     * this method is split from updateGlobals() to allow a later execution after the plugin bootstrapper
+     * was initialized. otherwise the hooks executed by these method calls could not be handled with the
+     * event dispatcher
+     */
+    public function deferredUpdate(): void
+    {
+        if ($this->mustUpdate !== true) {
+            return;
+        }
+        self::getCart()->loescheDeaktiviertePositionen();
+        Tax::setTaxRates();
     }
 
     /**
@@ -199,6 +219,7 @@ class Frontend extends AbstractSession
      */
     private function updateGlobals(): void
     {
+
         unset($_SESSION['oKategorie_arr_new']);
         $_SESSION['ks']       = [];
         $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
@@ -274,9 +295,18 @@ class Frontend extends AbstractSession
             $_SESSION['Linkgruppen'] = Shop::Container()->getLinkService()->getLinkGroups();
             $_SESSION['Hersteller']  = Manufacturer::getInstance()->getManufacturers();
         }
+        if (\defined('STEUERSATZ_STANDARD_LAND')) {
+            $merchantCountryCode = \STEUERSATZ_STANDARD_LAND;
+        } else {
+            $company = new Firma(true, Shop::Container()->getDB());
+            if (!empty($company->cLand)) {
+                $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($company->cLand);
+            }
+        }
+        $_SESSION['Steuerland']     = $merchantCountryCode ?? 'DE';
+        $_SESSION['cLieferlandISO'] = $_SESSION['Steuerland'];
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
-        self::getCart()->loescheDeaktiviertePositionen();
-        Tax::setTaxRates();
+        $this->mustUpdate = true;
         Shop::Lang()->reset();
     }
 

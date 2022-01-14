@@ -450,7 +450,7 @@ class Newsletter
             }
             $manufacturer = new Hersteller($id, $langID);
             if (\mb_strpos($manufacturer->cURL, $shopURL) === false) {
-                $manufacturer->cURL = $manufacturer->cURL = $shopURL . $manufacturer->cURL;
+                $manufacturer->cURL = $shopURL . $manufacturer->cURL;
             }
             if (isset($campaign->cParameter) && \mb_strlen($campaign->cParameter) > 0) {
                 $sep                 = \mb_strpos($manufacturer->cURL, '.php') !== false ? '&' : '?';

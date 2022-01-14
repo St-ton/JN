@@ -23,7 +23,6 @@ use JTL\News\CommentList;
 use JTL\News\Controller as FrontendController;
 use JTL\News\Item;
 use JTL\News\ItemList;
-use JTL\OPC\PageDB;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
@@ -1131,7 +1130,7 @@ final class Controller
     public function hasOPCContent(array $languages, int $newsId): bool
     {
         $pageService = Shop::Container()->getOPCPageService();
-        
+
         foreach ($languages as $language) {
             $pageID = $pageService->createGenericPageId('news', $newsId, $language->getId());
             if ($pageService->getDraftCount($pageID) > 0) {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Cart;
 
@@ -48,19 +48,19 @@ class PersistentCartItemProperty
 
     /**
      * PersistentCartItemProperty constructor.
-     * @param int    $propertyID
-     * @param int    $propertyValueID
-     * @param string $freeText
-     * @param string $propertyName
-     * @param string $propertyValueName
-     * @param int    $kWarenkorbPersPos
+     * @param int         $propertyID
+     * @param int         $propertyValueID
+     * @param string|null $freeText
+     * @param string|null $propertyName
+     * @param string|null $propertyValueName
+     * @param int         $kWarenkorbPersPos
      */
     public function __construct(
         int $propertyID,
         int $propertyValueID,
-        $freeText,
-        $propertyName,
-        $propertyValueName,
+        ?string $freeText,
+        ?string $propertyName,
+        ?string $propertyValueName,
         int $kWarenkorbPersPos
     ) {
         $this->kWarenkorbPersPos    = $kWarenkorbPersPos;

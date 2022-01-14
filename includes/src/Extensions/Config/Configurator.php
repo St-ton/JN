@@ -2,6 +2,7 @@
 
 namespace JTL\Extensions\Config;
 
+use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
@@ -51,7 +52,7 @@ class Configurator
             'kKonfigGruppe',
             'nSort ASC'
         );
-        if (!\is_array($data) || \count($data) === 0 || !self::checkLicense()) {
+        if (\count($data) === 0 || !self::checkLicense()) {
             return [];
         }
         $languageID = $languageID ?: Shop::getLanguageID();
@@ -101,9 +102,9 @@ class Configurator
     }
 
     /**
-     * @param object $cart
+     * @param Cart $cart
      */
-    public static function postcheckCart($cart): void
+    public static function postcheckCart(Cart $cart): void
     {
         if (!\is_array($cart->PositionenArr) || \count($cart->PositionenArr) === 0 || !self::checkLicense()) {
             return;
@@ -114,7 +115,7 @@ class Configurator
                 continue;
             }
             $deleted = false;
-            if ($item->cUnique && (int)$item->kKonfigitem === 0) {
+            if ($item->cUnique && $item->kKonfigitem === 0) {
                 $configItems = [];
                 foreach ($cart->PositionenArr as $child) {
                     if ($child->cUnique && $child->cUnique === $item->cUnique && $child->kKonfigitem > 0) {
@@ -128,7 +129,7 @@ class Configurator
                 }
             } elseif (!$item->cUnique) {
                 // Konfiguration vorhanden -> löschen
-                if (self::hasKonfig($item->kArtikel)) {
+                if ($item->kKonfigitem > 0 && self::hasKonfig($item->kArtikel)) {
                     $deleted        = true;
                     $deletedItems[] = $index;
                 }
@@ -140,7 +141,9 @@ class Configurator
                 );
             }
         }
-        CartHelper::deleteCartItems($deletedItems, false);
+        if (\count($deletedItems) > 0) {
+            CartHelper::deleteCartItems($deletedItems, false);
+        }
     }
 
     /**

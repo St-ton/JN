@@ -1694,7 +1694,7 @@ class ProductFilter
                 $productsPerPage = null;
             }
             foreach ($productKeys->forPage($this->nSeite, $productsPerPage) as $id) {
-                $productList->push((new Artikel())->fuelleArtikel($id, $opt));
+                $productList->push((new Artikel($this->db))->fuelleArtikel($id, $opt));
             }
             $productList = $productList->filter();
             $this->searchResults->setVisibleProductCount($productList->count());

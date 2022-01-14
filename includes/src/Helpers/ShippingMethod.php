@@ -187,8 +187,12 @@ class ShippingMethod
      * @param int    $cgroupID
      * @return array
      */
-    public static function getPossibleShippingMethods(string $countryCode, string $zip, string $shippingClasses, int $cgroupID): array
-    {
+    public static function getPossibleShippingMethods(
+        string $countryCode,
+        string $zip,
+        string $shippingClasses,
+        int $cgroupID
+    ): array {
         $db                       = Shop::Container()->getDB();
         $cart                     = Frontend::getCart();
         $taxClassID               = $cart->gibVersandkostenSteuerklasse();
@@ -219,7 +223,6 @@ class ShippingMethod
         }
         $netPricesActive = Frontend::getCustomerGroup()->isMerchant();
         $currency        = Frontend::getCurrency();
-
         foreach ($methods as $i => $shippingMethod) {
             $gross = $shippingMethod->eSteuer !== 'netto';
 
@@ -382,7 +385,7 @@ class ShippingMethod
         if (!isset($_SESSION['shipping_count'])) {
             $_SESSION['shipping_count'] = 0;
         }
-        if (!\is_array($products) || \count($products) === 0) {
+        if (\count($products) === 0) {
             return '';
         }
         $iso      = $_SESSION['cLieferlandISO'] ?? 'DE';
@@ -902,7 +905,9 @@ class ShippingMethod
                         Tax::getNet(
                             (float)$item->fKosten,
                             $taxRate
-                        ), $currency)
+                        ),
+                        $currency
+                    )
                         . ' ' . Shop::Lang()->get('plus', 'productDetails')
                         . ' ' . Shop::Lang()->get('vat', 'productDetails');
                 } else {

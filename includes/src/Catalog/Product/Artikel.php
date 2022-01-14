@@ -1061,7 +1061,7 @@ class Artikel
     public function __sleep()
     {
         return select(\array_keys(\get_object_vars($this)), static function ($e) {
-            return $e !== 'conf';
+            return $e !== 'conf' && $e !== 'db';
         });
     }
 
@@ -1100,7 +1100,7 @@ class Artikel
     /**
      * @return array
      */
-    private function getConfig(): array
+    protected function getConfig(): array
     {
         return Shop::getSettings([
             \CONF_GLOBAL,
@@ -1689,7 +1689,7 @@ class Artikel
         $options->nKeineSichtbarkeitBeachten = $getInvisibleParts ? 1 : 0;
         foreach ($parts as $i => $partList) {
             $product = new self($this->getDB());
-            $product->fuelleArtikel((int)$partList->kArtikel, $options, 0, $this->kSprache);
+            $product->fuelleArtikel((int)$partList->kArtikel, $options, $customerGroupID, $this->kSprache);
             $product->holeBewertungDurchschnitt();
             $this->oStueckliste_arr[$i]                      = $product;
             $this->oStueckliste_arr[$i]->fAnzahl_stueckliste = $partList->fAnzahl;
@@ -1705,7 +1705,7 @@ class Artikel
      */
     private function getProductBundle(): self
     {
-        $this->oProduktBundleMain              = new self();
+        $this->oProduktBundleMain              = new self($this->getDB());
         $this->oProduktBundlePrice             = new stdClass();
         $this->oProduktBundlePrice->fVKNetto   = 0.0;
         $this->oProduktBundlePrice->fPriceDiff = 0.0;
@@ -1724,23 +1724,22 @@ class Artikel
             ['kArtikel' => $this->kArtikel]
         );
         if ($main !== null && $main->kArtikel > 0 && $main->kStueckliste > 0) {
-            $options                             = self::getDefaultOptions();
-            $options->nKeineSichtbarkeitBeachten = 1;
-            $options->nStueckliste               = 1;
-            $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $options, 0, $this->kSprache);
+            $opt                             = self::getDefaultOptions();
+            $opt->nKeineSichtbarkeitBeachten = 1;
+            $opt->nStueckliste               = 1;
+            $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $opt, $this->kKundengruppe, $this->kSprache);
 
-            $currency                            = Frontend::getCurrency();
-            $bundles                             = $this->getDB()->selectAll(
+            $currency                        = Frontend::getCurrency();
+            $bundles                         = $this->getDB()->selectAll(
                 'tstueckliste',
                 'kStueckliste',
                 $main->kStueckliste,
                 'kArtikel, fAnzahl'
             );
-            $options->nKeineSichtbarkeitBeachten = 0;
+            $opt->nKeineSichtbarkeitBeachten = 0;
             foreach ($bundles as $bundle) {
-                $product = new self();
-                $product->fuelleArtikel((int)$bundle->kArtikel, $options, 0, $this->kSprache);
-
+                $product = new self($this->getDB());
+                $product->fuelleArtikel((int)$bundle->kArtikel, $opt, $this->kKundengruppe, $this->kSprache);
                 if ($product->kArtikel > 0) {
                     $this->oProduktBundle_arr[]           = $product;
                     $this->oProduktBundlePrice->fVKNetto += $product->Preise->fVKNetto * $bundle->fAnzahl;
@@ -2787,9 +2786,8 @@ class Artikel
                 if (isset($tmp[$productID])) {
                     $varCombChildren[$i] = $tmp[$productID];
                 } else {
-                    $product = new self();
-                    $product->fuelleArtikel($productID, $options, 0, $this->kSprache);
-
+                    $product = new self($this->getDB());
+                    $product->fuelleArtikel($productID, $options, $customerGroupID, $this->kSprache);
                     $tmp[$productID]     = $product;
                     $varCombChildren[$i] = $product;
                 }
@@ -2966,7 +2964,7 @@ class Artikel
             $tmpOptions->nKeinLagerbestandBeachten = 1;
             if ($varDetailPrice->kArtikel !== $lastProduct) {
                 $lastProduct = $varDetailPrice->kArtikel;
-                $tmpProduct  = new self();
+                $tmpProduct  = new self($this->getDB());
                 $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID, $customerID);
             }
 
@@ -4238,8 +4236,13 @@ class Artikel
     private function setToParentStockText(string $stockTextConstant, string $stockTextLangVar): void
     {
         if ($this->kVaterArtikel > 0 && empty($this->AttributeAssoc[$stockTextConstant])) {
-            $parentProduct = new self();
-            $parentProduct->fuelleArtikel($this->kVaterArtikel, self::getDefaultOptions(), 0, $this->kSprache);
+            $parentProduct = new self($this->getDB());
+            $parentProduct->fuelleArtikel(
+                $this->kVaterArtikel,
+                self::getDefaultOptions(),
+                $this->kKundengruppe,
+                $this->kSprache
+            );
             $this->Lageranzeige->AmpelText = (!empty($parentProduct->AttributeAssoc[$stockTextConstant]))
                 ? $parentProduct->AttributeAssoc[$stockTextConstant]
                 : Shop::Lang()->get($stockTextLangVar, 'global');
@@ -5062,17 +5065,22 @@ class Artikel
      */
     private function buildProductsFromSimilarProducts(): array
     {
-        $data     = $this->similarProducts; //this was created at fuelleArtikel() before and therefore cached
+        $data     = $this->similarProducts; // this was created at fuelleArtikel() before and therefore cached
         $products = $data['oArtikelArr'];
         $keys     = $data['kArtikelXSellerKey_arr'];
         $similar  = [];
         if (\is_array($products) && \count($products) > 0) {
             $defaultOptions = self::getDefaultOptions();
             foreach ($products as $productData) {
-                $product = new self();
-                $product->fuelleArtikel(($productData->kVaterArtikel > 0)
-                    ? (int)$productData->kVaterArtikel
-                    : (int)$productData->kArtikel, $defaultOptions);
+                $product = new self($this->getDB());
+                $product->fuelleArtikel(
+                    ($productData->kVaterArtikel > 0)
+                        ? (int)$productData->kVaterArtikel
+                        : (int)$productData->kArtikel,
+                    $defaultOptions,
+                    $this->kKundengruppe,
+                    $this->kSprache
+                );
                 if ($product->kArtikel > 0) {
                     $similar[] = $product;
                 }

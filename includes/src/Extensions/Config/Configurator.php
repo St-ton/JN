@@ -7,6 +7,7 @@ use JTL\Cart\CartHelper;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Nice;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use function Functional\some;
 
@@ -109,7 +110,9 @@ class Configurator
         if (!\is_array($cart->PositionenArr) || \count($cart->PositionenArr) === 0 || !self::checkLicense()) {
             return;
         }
-        $deletedItems = [];
+        $deletedItems    = [];
+        $languageID      = Shop::getLanguageID();
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
         foreach ($cart->PositionenArr as $index => $item) {
             if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL) {
                 continue;
@@ -119,7 +122,7 @@ class Configurator
                 $configItems = [];
                 foreach ($cart->PositionenArr as $child) {
                     if ($child->cUnique && $child->cUnique === $item->cUnique && $child->kKonfigitem > 0) {
-                        $configItems[] = new Item($child->kKonfigitem);
+                        $configItems[] = new Item($child->kKonfigitem, $languageID, $customerGroupID);
                     }
                 }
                 // Konfiguration validieren

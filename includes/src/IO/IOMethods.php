@@ -665,12 +665,16 @@ class IOMethods
             $itemQuantities,
             true
         );
-        $net                = Frontend::getCustomerGroup()->getIsMerchant();
-
+        if ($config === null) {
+            return $response;
+        }
+        $net                   = Frontend::getCustomerGroup()->getIsMerchant();
         $options               = Artikel::getDefaultOptions();
         $options->nVariationen = 1;
-        $product->fuelleArtikel($productID, $options);
-        $fVKNetto                      = $product->gibPreis($amount, [], Frontend::getCustomerGroup()->getID());
+        $languageID            = Shop::getLanguageID();
+        $customerGroupID       = Frontend::getCustomerGroup()->getID();
+        $product->fuelleArtikel($productID, $options, $customerGroupID, $languageID);
+        $fVKNetto                      = $product->gibPreis($amount, [], $customerGroupID);
         $fVK                           = [
             Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$product->kSteuerklasse]),
             $fVKNetto
@@ -690,7 +694,7 @@ class IOMethods
                 if ($configItemID <= 0) {
                     continue;
                 }
-                $configItem          = new Item($configItemID);
+                $configItem          = new Item($configItemID, $languageID, $customerGroupID);
                 $configItem->fAnzahl = (float)($configItemCounts[$configItemID]
                     ?? $configGroupCounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial());
                 if ($configItemCounts && isset($configItemCounts[$configItem->getKonfigitem()])) {

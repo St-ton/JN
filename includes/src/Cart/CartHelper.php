@@ -468,11 +468,9 @@ class CartHelper
             $attributes = Product::getSelectedPropertiesForArticle($productID);
         }
         $isConfigProduct = false;
-        if (Configurator::checkLicense()) {
-            if (Configurator::validateKonfig($productID)) {
-                $groups          = Configurator::getKonfig($productID);
-                $isConfigProduct = GeneralObject::hasCount($groups);
-            }
+        if (Configurator::checkLicense() && Configurator::validateKonfig($productID)) {
+            $groups          = Configurator::getKonfig($productID);
+            $isConfigProduct = GeneralObject::hasCount($groups);
         }
 
         // Beim Bearbeiten die alten Positionen löschen
@@ -496,7 +494,8 @@ class CartHelper
             ? $_POST['item_quantity']
             : false;
         $ignoreLimits      = isset($_POST['konfig_ignore_limits']);
-
+        $languageID        = Shop::getLanguageID();
+        $customerGroupID   = Frontend::getCustomerGroup()->getID();
         foreach ($configGroups as $itemList) {
             foreach ($itemList as $configItemID) {
                 $configItemID = (int)$configItemID;
@@ -504,7 +503,7 @@ class CartHelper
                 if ($configItemID <= 0) {
                     continue;
                 }
-                $configItem          = new Item($configItemID);
+                $configItem          = new Item($configItemID, $languageID, $customerGroupID);
                 $configItem->fAnzahl = (float)($configItemCounts[$configItemID]
                     ?? $configGroupCounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial());
                 if ($configItemCounts && isset($configItemCounts[$configItem->getKonfigitem()])) {

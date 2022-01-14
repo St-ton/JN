@@ -630,7 +630,7 @@ class Preise
         } elseif (\is_string($currency)) {
             $currency = Currency::fromISO($currency);
         } else {
-            $currency =  new Currency();
+            $currency = new Currency();
         }
 
         return $currency;

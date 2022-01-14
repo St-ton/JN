@@ -313,12 +313,12 @@ class CMS
             ['cgid' => Frontend::getCustomerGroup()->getID(), 'an' => \FKT_ATTRIBUT_GRATISGESCHENK]
         );
 
+        $currency       = Frontend::getCurrency();
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($tmpGifts as $item) {
             $product = new Artikel();
             $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
-            $product->cBestellwert = Preise::getLocalizedPriceString((float)$item->cWert);
-
+            $product->cBestellwert = Preise::getLocalizedPriceString((float)$item->cWert, $currency);
             if ($product->kEigenschaftKombi > 0 || \count($product->Variationen) === 0) {
                 $gifts[] = $product;
             }

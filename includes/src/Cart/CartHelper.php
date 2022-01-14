@@ -1990,43 +1990,44 @@ class CartHelper
     public static function getFreeGifts(array $conf): array
     {
         $gifts = [];
-        if ($conf['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
-            $sqlSort = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
-            if ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'N') {
-                $sqlSort = ' ORDER BY tartikel.cName';
-            } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
-                $sqlSort = ' ORDER BY tartikel.fLagerbestand DESC';
-            }
-            $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0
-                ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
-                : '';
-            $giftsTmp = Shop::Container()->getDB()->getObjects(
-                "SELECT tartikel.kArtikel, tartikelattribut.cWert
-                    FROM tartikel
-                    JOIN tartikelattribut
-                        ON tartikelattribut.kArtikel = tartikel.kArtikel
-                    WHERE (tartikel.fLagerbestand > 0 ||
-                          (tartikel.fLagerbestand <= 0 &&
-                          (tartikel.cLagerBeachten = 'N' || tartikel.cLagerKleinerNull = 'Y')))
-                        AND tartikelattribut.cName = :atr
-                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= :csum " . $sqlSort . $limit,
-                [
-                    'atr'  => \FKT_ATTRIBUT_GRATISGESCHENK,
-                    'csum' => Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
-                ]
-            );
-
-            foreach ($giftsTmp as $gift) {
-                $product = (new Artikel())->fuelleArtikel((int)$gift->kArtikel, Artikel::getDefaultOptions());
-                if ($product !== null
-                    && (int)$product->kArtikel > 0
-                    && ($product->kEigenschaftKombi > 0
-                        || !\is_array($product->Variationen)
-                        || \count($product->Variationen) === 0)
-                ) {
-                    $product->cBestellwert = Preise::getLocalizedPriceString((float)$gift->cWert);
-                    $gifts[]               = $product;
-                }
+        if ($conf['sonstiges']['sonstiges_gratisgeschenk_nutzen'] !== 'Y') {
+            return $gifts;
+        }
+        $sqlSort = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
+        if ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'N') {
+            $sqlSort = ' ORDER BY tartikel.cName';
+        } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
+            $sqlSort = ' ORDER BY tartikel.fLagerbestand DESC';
+        }
+        $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0
+            ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
+            : '';
+        $giftsTmp = Shop::Container()->getDB()->getObjects(
+            "SELECT tartikel.kArtikel, tartikelattribut.cWert
+                FROM tartikel
+                JOIN tartikelattribut
+                    ON tartikelattribut.kArtikel = tartikel.kArtikel
+                WHERE (tartikel.fLagerbestand > 0 ||
+                      (tartikel.fLagerbestand <= 0 &&
+                      (tartikel.cLagerBeachten = 'N' || tartikel.cLagerKleinerNull = 'Y')))
+                    AND tartikelattribut.cName = :atr
+                    AND CAST(tartikelattribut.cWert AS DECIMAL) <= :csum " . $sqlSort . $limit,
+            [
+                'atr'  => \FKT_ATTRIBUT_GRATISGESCHENK,
+                'csum' => Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
+            ]
+        );
+        $currency = Frontend::getCurrency();
+        foreach ($giftsTmp as $gift) {
+            $product = (new Artikel())->fuelleArtikel((int)$gift->kArtikel, Artikel::getDefaultOptions());
+            if ($product !== null
+                && (int)$product->kArtikel > 0
+                && ($product->kEigenschaftKombi > 0
+                    || !\is_array($product->Variationen)
+                    || \count($product->Variationen) === 0)
+            ) {
+                $product->cBestellwert = Preise::getLocalizedPriceString((float)$gift->cWert, $currency);
+                $gifts[]               = $product;
             }
         }
 

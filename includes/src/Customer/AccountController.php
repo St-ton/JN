@@ -680,7 +680,8 @@ class AccountController
             }
         }
         $cart->PositionenArr = [];
-
+        $customerGroupID     = Frontend::getCustomer()->getGroupID();
+        $languageID          = Shop::getLanguageID();
         foreach (PersistentCart::getInstance($customerID, false, $this->db)->getItems() as $item) {
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $productID = (int)$item->kArtikel;
@@ -712,9 +713,14 @@ class AccountController
                 }
             } else {
                 $tmpProduct = new Artikel($this->db);
-                $tmpProduct->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
-                    ? Artikel::getDefaultOptions()
-                    : Artikel::getDefaultConfigOptions());
+                $tmpProduct->fuelleArtikel(
+                    $item->kArtikel,
+                    (int)$item->kKonfigitem === 0
+                        ? Artikel::getDefaultOptions()
+                        : Artikel::getDefaultConfigOptions(),
+                    $customerGroupID,
+                    $languageID
+                );
                 if ((int)$tmpProduct->kArtikel > 0 && \count(CartHelper::addToCartCheck(
                     $tmpProduct,
                     $item->fAnzahl,

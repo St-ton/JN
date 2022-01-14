@@ -229,17 +229,18 @@ class Wishlist
             if ($exists) {
                 break;
             }
-
-            if ($item->getProductID() === $productID) {
-                $index  = $i;
-                $exists = true;
-                if (\count($item->getProperties()) > 0) {
-                    foreach ($attributes as $attr) {
-                        if (!$item->istEigenschaftEnthalten($attr->kEigenschaft, $attr->kEigenschaftWert)) {
-                            $exists = false;
-                            break;
-                        }
-                    }
+            if ($item->getProductID() !== $productID) {
+                continue;
+            }
+            $index  = $i;
+            $exists = true;
+            if (\count($item->getProperties()) === 0) {
+                continue;
+            }
+            foreach ($attributes as $attr) {
+                if (!$item->istEigenschaftEnthalten($attr->kEigenschaft, $attr->kEigenschaftWert)) {
+                    $exists = false;
+                    break;
                 }
             }
         }

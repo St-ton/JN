@@ -1399,13 +1399,15 @@ class Product
                 $prevID = $collection[$index - 1];
             }
             if ($nextID > 0) {
-                $nav->naechsterArtikel = (new Artikel($db))->fuelleArtikel($nextID, Artikel::getDefaultOptions());
+                $nav->naechsterArtikel = (new Artikel($db))
+                    ->fuelleArtikel($nextID, Artikel::getDefaultOptions(), $customerGroupID);
                 if ($nav->naechsterArtikel === null) {
                     unset($nav->naechsterArtikel);
                 }
             }
             if ($prevID > 0) {
-                $nav->vorherigerArtikel = (new Artikel($db))->fuelleArtikel($prevID, Artikel::getDefaultOptions());
+                $nav->vorherigerArtikel = (new Artikel($db))
+                    ->fuelleArtikel($prevID, Artikel::getDefaultOptions(), $customerGroupID);
                 if ($nav->vorherigerArtikel === null) {
                     unset($nav->vorherigerArtikel);
                 }
@@ -1447,11 +1449,11 @@ class Product
 
             if ($prev !== null && !empty($prev->kArtikel)) {
                 $nav->vorherigerArtikel = (new Artikel($db))
-                    ->fuelleArtikel((int)$prev->kArtikel, Artikel::getDefaultOptions());
+                    ->fuelleArtikel((int)$prev->kArtikel, Artikel::getDefaultOptions(), $customerGroupID);
             }
             if ($next !== null && !empty($next->kArtikel)) {
                 $nav->naechsterArtikel = (new Artikel($db))
-                    ->fuelleArtikel((int)$next->kArtikel, Artikel::getDefaultOptions());
+                    ->fuelleArtikel((int)$next->kArtikel, Artikel::getDefaultOptions(), $customerGroupID);
             }
         }
 

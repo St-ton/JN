@@ -40,6 +40,9 @@ class Product
      */
     public static function isVariChild(int $productID): bool
     {
+        if ($productID <= 0) {
+            return false;
+        }
         $product = Shop::Container()->getDB()->select(
             'tartikel',
             'kArtikel',
@@ -61,6 +64,9 @@ class Product
      */
     public static function getParent(int $productID): int
     {
+        if ($productID <= 0) {
+            return false;
+        }
         $product = Shop::Container()->getDB()->select(
             'tartikel',
             'kArtikel',

@@ -1262,17 +1262,17 @@ class Artikel
             $customerGroupID = $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
         }
         $customerID = Frontend::getCustomer()->getID();
-        if ($this->Preise === null
-            || $this->Preise->kKundengruppe !== $customerGroupID
-            || ($this->Preise->kKunde !== $customerID && $this->Preise->hasCustomPrice($customerID))
-        ) {
-            $this->Preise = new Preise($customerGroupID, $this->kArtikel, $customerID, $this->kSteuerklasse);
-        }
+//        if ($this->Preise === null
+//            || $this->Preise->kKundengruppe !== $customerGroupID
+//            || ($this->Preise->kKunde !== $customerID && $this->Preise->hasCustomPrice($customerID))
+//        ) {
+//            $this->Preise = new Preise($customerGroupID, $this->kArtikel, $customerID, $this->kSteuerklasse);
+//        }
         // Varkombi Kind?
         $productID = ($this->kEigenschaftKombi > 0 && $this->kVaterArtikel > 0)
             ? $this->kVaterArtikel
             : $this->kArtikel;
-        $prices    = new Preise($customerGroupID, $this->kArtikel, $customerID, (int)$this->kSteuerklasse);
+        $prices    = new Preise($customerGroupID, $this->kArtikel, $customerID, $this->kSteuerklasse);
         $prices->rabbatierePreise($this->getDiscount($customerGroupID, $productID));
         if ($assign) {
             $this->Preise = $prices;
@@ -3262,7 +3262,6 @@ class Artikel
                     'Product ' . (int)$tmpProduct->kArtikel . ' has invalid parent.'
                 );
             }
-
             return null;
         }
         // EXPERIMENTAL_MULTILANG_SHOP
@@ -5237,17 +5236,20 @@ class Artikel
         }
         $discounts   = [];
         $maxDiscount = 0;
-        if (!Shop::has('checkCategoryDiscount')) {
+        $cacheID     = 'checkCategoryDiscount' . $customerGroupID;
+        if (!Shop::has($cacheID)) {
             Shop::set(
-                'checkCategoryDiscount',
-                $this->getDB()->getSingleObject(
+                $cacheID,
+                Shop::Container()->getDB()->getSingleObject(
                     'SELECT COUNT(kArtikel) AS cnt
-                        FROM tartikelkategorierabatt'
+                        FROM tartikelkategorierabatt
+                        WHERE kKundengruppe = :cgid',
+                    ['cgid' => $customerGroupID]
                 )->cnt > 0
             );
         }
         // Existiert für diese Kundengruppe ein Kategorierabatt?
-        if (Shop::get('checkCategoryDiscount')) {
+        if (Shop::get($cacheID)) {
             if ($this->kEigenschaftKombi > 0) {
                 $categoryDiscount = $this->getDB()->select(
                     'tartikelkategorierabatt',

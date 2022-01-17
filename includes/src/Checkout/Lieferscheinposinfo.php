@@ -38,7 +38,6 @@ class Lieferscheinposinfo
 
     /**
      * Lieferscheinposinfo constructor.
-     *
      * @param int $id
      */
     public function __construct(int $id = 0)

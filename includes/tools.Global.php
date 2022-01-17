@@ -3051,7 +3051,7 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
         $query,
         [
             'iso'  => '%' . $cISO . '%',
-            'scls' => '^([0-9 -]* )?' . $Artikel->kVersandklasse,
+            'scls' => '^([0-9 -]* )?' . $Artikel->kVersandklasse . ' ',
             'cgid' => $kKundengruppe
         ],
         2

@@ -5396,7 +5396,7 @@ class Artikel
             [
                 'ccode'  => '%' . $countryCode . '%',
                 'cgid'   => $_SESSION['Kundengruppe']->kKundengruppe,
-                'sclass' => '^([0-9 -]* )?' . $this->kVersandklasse,
+                'sclass' => '^([0-9 -]* )?' . $this->kVersandklasse . ' ',
                 'wght'   => $this->fGewicht,
                 'net'    => $this->Preise->fVKNetto
             ],

@@ -120,10 +120,9 @@ class TwoFA
         // codes with a length over 6 chars are emergency-codes
         if (6 < \mb_strlen($code)) {
             // try to find this code in the emergency-code-pool
-            $twoFAEmergency = new TwoFAEmergency($this->db);
-
-            return $twoFAEmergency->isValidEmergencyCode($this->userTuple->kAdminlogin, $code);
+            return (new TwoFAEmergency($this->db))->isValidEmergencyCode($this->userTuple->kAdminlogin, $code);
         }
+
         return $this->authenticator->verifyCode($this->userTuple->c2FAauthSecret, $code);
     }
 

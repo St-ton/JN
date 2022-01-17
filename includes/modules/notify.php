@@ -79,6 +79,7 @@ if (strlen($cSh) > 0) {
     } else {
         $session = Frontend::getInstance(false, false);
     }
+    $session->deferredUpdate();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 
     $logger->debug('Session Hash ' . $cSh . ' ergab cModulId aus Session: ' . $_SESSION['Zahlungsart']->cModulId

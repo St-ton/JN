@@ -28,6 +28,9 @@ class Tax
      */
     public static function getSalesTax(int $taxID)
     {
+        if (isset($_SESSION['Steuersatz'][$taxID])) {
+            return $_SESSION['Steuersatz'][$taxID];
+        }
         if (!GeneralObject::hasCount('Steuersatz', $_SESSION)) {
             self::setTaxRates();
         }
@@ -54,7 +57,7 @@ class Tax
             $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($company->cLand);
         }
         if (\defined('STEUERSATZ_STANDARD_LAND')) {
-            $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
+            $merchantCountryCode = \STEUERSATZ_STANDARD_LAND;
         }
         $deliveryCountryCode = $merchantCountryCode;
         if (!empty(Frontend::getCustomer()->cLand)) {

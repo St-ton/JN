@@ -31,7 +31,6 @@ use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\ProductFilter;
 use JTL\Helpers\Form;
-use JTL\Helpers\PHPSettings;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;

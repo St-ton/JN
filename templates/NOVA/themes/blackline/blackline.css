@@ -27722,6 +27722,9 @@ header .nav-right .dropdown-menu {
     margin-right: 1rem;
   }
 }
+header .subcategory-wrapper .lg-row-lg {
+  width: inherit;
+}
 @media (max-width: 991.98px) {
   header .dropup, header .dropright, header .dropdown, header .dropleft, header .col, header [class*=col-] {
     position: static;

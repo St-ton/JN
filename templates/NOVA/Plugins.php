@@ -792,6 +792,6 @@ class Plugins
      */
     public function sanitizeTitle($params): string
     {
-        return \htmlspecialchars($params['title'], ENT_COMPAT, JTL_CHARSET, false);
+        return \htmlspecialchars($params['title'], \ENT_COMPAT, \JTL_CHARSET, false);
     }
 }

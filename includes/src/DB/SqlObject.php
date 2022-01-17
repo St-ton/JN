@@ -39,6 +39,11 @@ class SqlObject
     private $order = '';
 
     /**
+     * @var string
+     */
+    private $groupBy = '';
+
+    /**
      * @return string
      */
     public function getStatement(): string
@@ -144,5 +149,21 @@ class SqlObject
     public function setOrder(string $order): void
     {
         $this->order = $order;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGroupBy(): string
+    {
+        return $this->groupBy;
+    }
+
+    /**
+     * @param string $groupBy
+     */
+    public function setGroupBy(string $groupBy): void
+    {
+        $this->groupBy = $groupBy;
     }
 }

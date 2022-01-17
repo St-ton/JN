@@ -338,6 +338,7 @@ class CartHelper
     /**
      * @param CartItem       $item
      * @param VariationValue $variation
+     * @deprecated since 5.2.0
      */
     public static function setVariationPicture(CartItem $item, VariationValue $variation): void
     {

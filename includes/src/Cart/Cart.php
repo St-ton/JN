@@ -494,10 +494,6 @@ class Cart
                                     }
                                 )
                             );
-
-                            if ($oVariationWert !== false) {
-                                CartHelper::setVariationPicture($cartItem, $oVariationWert);
-                            }
                         }
                     }
                 }

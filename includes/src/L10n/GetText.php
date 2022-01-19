@@ -7,6 +7,7 @@ use Gettext\Loader\MoLoader;
 use Gettext\Translations;
 use Gettext\Translator;
 use Gettext\TranslatorFunctions;
+use JTL\Backend\Settings\Item;
 use JTL\Plugin\Admin\ListingItem as PluginListingItem;
 use JTL\Plugin\PluginInterface;
 use JTL\Template\Admin\ListingItem as TemplateListingItem;
@@ -293,9 +294,9 @@ class GetText
     }
 
     /**
-     * @param stdClass $config
+     * @param stdClass|Item $config
      */
-    public function localizeConfig(stdClass $config): void
+    public function localizeConfig($config): void
     {
         if ($config->cConf === 'Y') {
             $config->cName         = \__($config->cWertName . '_name');
@@ -310,7 +311,7 @@ class GetText
     }
 
     /**
-     * @param stdClass[] $configs
+     * @param stdClass[]|Item[] $configs
      */
     public function localizeConfigs(array $configs): void
     {
@@ -320,7 +321,7 @@ class GetText
     }
 
     /**
-     * @param stdClass $config
+     * @param stdClass|Item $config
      * @param stdClass $value
      */
     public function localizeConfigValue(stdClass $config, stdClass $value): void
@@ -329,10 +330,10 @@ class GetText
     }
 
     /**
-     * @param stdClass   $config
+     * @param stdClass|Item   $config
      * @param stdClass[] $values
      */
-    public function localizeConfigValues(stdClass $config, array $values): void
+    public function localizeConfigValues($config, array $values): void
     {
         foreach ($values as $value) {
             $this->localizeConfigValue($config, $value);

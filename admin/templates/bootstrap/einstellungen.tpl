@@ -1,4 +1,5 @@
 {include file='tpl_inc/header.tpl'}
+STEP: {$step}
 {if $step === 'uebersicht'}
     {include file='tpl_inc/einstellungen_uebersicht.tpl'}
 {elseif $step === 'einstellungen bearbeiten'}

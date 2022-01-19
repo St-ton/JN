@@ -107,10 +107,11 @@
                                     </span>
                                 {/if}
                             </span>
-                            {if isset($oSections[$cnf->kEinstellungenSektion])
-                                && $oSections[$cnf->kEinstellungenSektion]->hasSectionMarkup}
-                                    {$oSections[$cnf->kEinstellungenSektion]->getSectionMarkup()}
-                            {/if}
+{*                            @TODO!*}
+{*                            {if isset($oSections[$cnf->kEinstellungenSektion])*}
+{*                                && $oSections[$cnf->kEinstellungenSektion]->hasSectionMarkup}*}
+{*                                    {$oSections[$cnf->kEinstellungenSektion]->getSectionMarkup()}*}
+{*                            {/if}*}
                             <hr class="mb-n3">
                         </div>
                         <div class="card-body">
@@ -121,7 +122,7 @@
             <div class="save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        {if $Sektion->kEinstellungenSektion === $smarty.const.CONF_EMAILS}
+                        {if $Sektion->getID() === $smarty.const.CONF_EMAILS}
                             <script>
                             $(function() {
                                 if ($('#email_methode').val() !== 'smtp') {

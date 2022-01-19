@@ -105,7 +105,7 @@ class Manager
                 $section->cName
             );
             if (\class_exists($className)) {
-                $this->instances[$sectionID] = new $className($this->db, $this->smarty);
+                $this->instances[$sectionID] = new $className($this, $sectionID);
 
                 return $this->instances[$sectionID];
             }
@@ -324,5 +324,100 @@ class Manager
                 FROM teinstellungenlog' .
                 ($where !== '' ? ' WHERE ' . $where : '')
         )->cnt;
+    }
+
+    /**
+     * @return DbInterface
+     */
+    public function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @return JTLSmarty
+     */
+    public function getSmarty(): JTLSmarty
+    {
+        return $this->smarty;
+    }
+
+    /**
+     * @param JTLSmarty $smarty
+     */
+    public function setSmarty(JTLSmarty $smarty): void
+    {
+        $this->smarty = $smarty;
+    }
+
+    /**
+     * @return AdminAccount
+     */
+    public function getAdminAccount(): AdminAccount
+    {
+        return $this->adminAccount;
+    }
+
+    /**
+     * @param AdminAccount $adminAccount
+     */
+    public function setAdminAccount(AdminAccount $adminAccount): void
+    {
+        $this->adminAccount = $adminAccount;
+    }
+
+    /**
+     * @return GetText
+     */
+    public function getGetText(): GetText
+    {
+        return $this->getText;
+    }
+
+    /**
+     * @param GetText $getText
+     */
+    public function setGetText(GetText $getText): void
+    {
+        $this->getText = $getText;
+    }
+
+    /**
+     * @return AlertServiceInterface
+     */
+    public function getAlertService(): AlertServiceInterface
+    {
+        return $this->alertService;
+    }
+
+    /**
+     * @param AlertServiceInterface $alertService
+     */
+    public function setAlertService(AlertServiceInterface $alertService): void
+    {
+        $this->alertService = $alertService;
+    }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        $res                 = \get_object_vars($this);
+        $res['db']           = '*truncated*';
+        $res['smarty']       = '*truncated*';
+        $res['getText']      = '*truncated*';
+        $res['alertService'] = '*truncated*';
+        $res['adminAccount'] = '*truncated*';
+
+        return $res;
     }
 }

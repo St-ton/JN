@@ -2,8 +2,7 @@
 
 namespace JTL\Backend\Settings\Sections;
 
-use JTL\DB\DbInterface;
-use JTL\Smarty\JTLSmarty;
+use JTL\Backend\Settings\Manager;
 
 /**
  * Interface Section
@@ -12,11 +11,10 @@ use JTL\Smarty\JTLSmarty;
 interface Section
 {
     /**
-     * Section constructor.
-     * @param DbInterface $db
-     * @param JTLSmarty   $smarty
+     * @param Manager $manager
+     * @param int     $sectionID
      */
-    public function __construct(DbInterface $db, JTLSmarty $smarty);
+    public function __construct(Manager $manager, int $sectionID);
 
     /**
      * @param object $conf
@@ -41,4 +39,20 @@ interface Section
      * @return string
      */
     public function getValueMarkup($conf): string;
+
+    /**
+     * @param array $data
+     * @return bool
+     */
+    public function update(array $data): bool;
+
+    /**
+     * @return array
+     */
+    public function getConfigData(): array;
+
+    /**
+     * @param array $data
+     */
+    public function setConfigData(array $data): void;
 }

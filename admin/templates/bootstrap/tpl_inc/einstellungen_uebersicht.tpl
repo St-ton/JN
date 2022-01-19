@@ -17,7 +17,7 @@
                     <td>{$Sektion->cName}</td>
                     <td>{$Sektion->anz} {__('settings')}</td>
                     <td>
-                        <a href="einstellungen.php?kSektion={$Sektion->kEinstellungenSektion}" class="btn btn-primary">{__('configure')}</a>
+                        <a href="einstellungen.php?kSektion={$Sektion->getID()}" class="btn btn-primary">{__('configure')}</a>
                     </td>
                 </tr>
             {/foreach}

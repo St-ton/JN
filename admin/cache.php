@@ -258,28 +258,25 @@ switch ($action) {
         $tab = 'settings';
         break;
     case 'benchmark':
-        //do benchmarks
+        // do benchmarks
         $tab      = 'benchmark';
-        $testData = 'simple short string';
         $methods  = 'all';
         $repeat   = Request::postInt('repeat', 1);
         $runCount = Request::postInt($postData['runcount'], 1000);
-        if (isset($postData['testdata'])) {
-            switch ($postData['testdata']) {
-                case 'array':
-                    $testData = ['test1' => 'string number one', 'test2' => 'string number two', 'test3' => 333];
-                    break;
-                case 'object':
-                    $testData        = new stdClass();
-                    $testData->test1 = 'string number one';
-                    $testData->test2 = 'string number two';
-                    $testData->test3 = 333;
-                    break;
-                case 'string':
-                default:
-                    $testData = 'simple short string';
-                    break;
-            }
+        switch ($postData['testdata'] ?? 'string') {
+            case 'array':
+                $testData = ['test1' => 'string number one', 'test2' => 'string number two', 'test3' => 333];
+                break;
+            case 'object':
+                $testData        = new stdClass();
+                $testData->test1 = 'string number one';
+                $testData->test2 = 'string number two';
+                $testData->test3 = 333;
+                break;
+            case 'string':
+            default:
+                $testData = 'simple short string';
+                break;
         }
         if (is_array(Request::postVar('methods'))) {
             $methods = $postData['methods'];
@@ -347,7 +344,7 @@ $settings = $db->getObjects(
     'SELECT te.*, ted.cWert AS defaultValue
         FROM teinstellungenconf AS te
         LEFT JOIN teinstellungen_default AS ted
-          ON ted.cName= te.cWertName
+          ON ted.cName = te.cWertName
         WHERE te.nStandardAnzeigen = 1
             AND te.kEinstellungenSektion = :sid
         ORDER BY te.nSort',

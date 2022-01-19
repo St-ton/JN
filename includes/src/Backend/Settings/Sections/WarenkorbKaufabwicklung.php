@@ -2,8 +2,7 @@
 
 namespace JTL\Backend\Settings\Sections;
 
-use JTL\DB\DbInterface;
-use JTL\Smarty\JTLSmarty;
+use JTL\Backend\Settings\Manager;
 
 /**
  * Class Kaufabwicklung
@@ -14,9 +13,9 @@ class WarenkorbKaufabwicklung extends Base
     /**
      * @inheritdoc
      */
-    public function __construct(DbInterface $db, JTLSmarty $smarty)
+    public function __construct(Manager $manager, int $sectionID)
     {
-        parent::__construct($db, $smarty);
+        parent::__construct($manager, $sectionID);
         $this->hasSectionMarkup = true;
     }
 

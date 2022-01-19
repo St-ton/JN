@@ -96,4 +96,22 @@ final class ConsentLocalizationModel extends DataModel
 
         return $attributes;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMapping($attribName): string
+    {
+        static $nameMapping = [];
+        if (!isset($nameMapping[$attribName])) {
+            foreach ($this->getAttributes() as $name => $attribute) {
+                if ($attribute->name === $attribName) {
+                    $nameMapping[$attribName] = $name;
+                    break;
+                }
+            }
+        }
+
+        return $nameMapping[$attribName] ?? $attribName;
+    }
 }

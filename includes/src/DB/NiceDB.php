@@ -161,6 +161,8 @@ class NiceDB implements DbInterface
                     ? " COLLATE '" . \DB_COLLATE . "'"
                     : '');
         }
+        // this was added for compatibility with 5.1.2 and php8.1
+        $options[PDO::ATTR_STRINGIFY_FETCHES] = true;
 
         return $options;
     }

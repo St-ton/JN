@@ -170,7 +170,7 @@ class Notification implements IteratorAggregate, Countable
             $this->add(
                 NotificationEntry::TYPE_WARNING,
                 \__('mysqlTimeErrorTitle'),
-                \sprintf(\__('mysqlTimeErrorMessage', $times['db'], $times['php']))
+                \sprintf(\__('mysqlTimeErrorMessage'), $times['db'], $times['php'])
             );
         }
 

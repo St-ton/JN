@@ -244,10 +244,15 @@ class SearchSpecial
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tbestseller.kArtikel = tartikel.kArtikel
                         AND ROUND(tbestseller.fAnzahl) >= :mnt
+                        AND tartikel.fStandardpreisNetto >= :minPrice
                         ' . self::getParentSQL() . '
                         ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
                     ORDER BY fAnzahl DESC',
-                ['cgid' => $customerGroupID, 'mnt' => $minAmount]
+                [
+                    'cgid' => $customerGroupID,
+                    'mnt' => $minAmount,
+                    'minPrice' => Shop::getSettingValue(\CONF_STARTSEITE, 'startseite_bestseller_minprice')
+                ]
             ), static function ($e) {
                 return (int)$e->kArtikel;
             });

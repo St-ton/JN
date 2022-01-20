@@ -159,11 +159,16 @@ class Bestseller
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND ROUND(tbestseller.fAnzahl) >= :ms ' . $storagesql .  $productsql . '
+                    AND ROUND(tbestseller.fAnzahl) >= :ms 
+                    AND tartikel.fStandardpreisNetto >= :minPrice' . $storagesql .  $productsql . '
                 GROUP BY tartikel.kArtikel
                 ORDER BY tbestseller.fAnzahl DESC
                 LIMIT :lmt',
-            ['cgid' => $this->customergrp, 'ms' => $this->minsales, 'lmt' => $this->limit]
+            [
+                'cgid'     => $this->customergrp,
+                'ms'       => $this->minsales,
+                'minPrice' => Shop::getSettingValue(\CONF_STARTSEITE, 'startseite_bestseller_minprice'),
+                'lmt'      => $this->limit]
         );
         foreach ($data as $item) {
             $products[] = (int)$item->kArtikel;

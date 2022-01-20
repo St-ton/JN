@@ -326,6 +326,12 @@ msgstr "Bestseller: Anzahl Artikel"
 msgid "startseite_bestseller_anzahl_desc"
 msgstr ""
 
+msgid "startseite_bestseller_minprice_name"
+msgstr "Bestseller: Minimaler Nettopreis"
+
+msgid "startseite_bestseller_minprice_desc"
+msgstr "Mindest Nettopreis damit Artikel als Bestseller angezeigt werden. Bezieht sich auf den Netto-Vk aus JTL-Wawi (in Datenbank: tartikel.fStandardpreisNetto). Dieser Preis wird für Bestseller an allen Stellen im Shop genutzt."
+
 msgid "startseite_bestseller_sortnr_name"
 msgstr "Bestseller: Sortiernummer"
 

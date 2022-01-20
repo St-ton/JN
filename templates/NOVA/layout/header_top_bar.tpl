@@ -1,7 +1,6 @@
 {block name='layout-header-top-bar'}
     {strip}
         {nav tag='ul' class='topbar-main nav-dividers'}
-        {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1 || isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
             {block name='layout-header-top-bar-user-settings'}
                 {block name='layout-header-top-bar-user-settings-currency'}
                     {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
@@ -22,7 +21,6 @@
                     {include file='snippets/language_dropdown.tpl'}
                 {/block}
             {/block}
-        {/if}
         {if $linkgroups->getLinkGroupByTemplate('Kopf') !== null && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}
             {block name='layout-header-top-bar-cms-pages'}
                 {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}

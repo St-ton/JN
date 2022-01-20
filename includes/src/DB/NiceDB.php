@@ -162,7 +162,9 @@ class NiceDB implements DbInterface
                     : '');
         }
         // this was added for compatibility with 5.1.2 and php8.1
-        $options[PDO::ATTR_STRINGIFY_FETCHES] = true;
+        if (\PHP_VERSION_ID >= 80100) {
+            $options[PDO::ATTR_STRINGIFY_FETCHES] = true;
+        }
 
         return $options;
     }

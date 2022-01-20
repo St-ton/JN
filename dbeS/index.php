@@ -7,7 +7,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Plugin\Helper;
 use JTL\Shop;
 
-const DEFINES_PFAD = __DIR__ . '/../includes/';
+const DEFINES_PFAD             = __DIR__ . '/../includes/';
 const FREIDEFINIERBARER_FEHLER = 8;
 
 require_once DEFINES_PFAD . 'config.JTL-Shop.ini.php';

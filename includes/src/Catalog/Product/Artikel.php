@@ -4755,7 +4755,7 @@ class Artikel
             [
                 'ccode'  => '%' . $countryCode . '%',
                 'cgid'   => $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID(),
-                'sclass' => '^([0-9 -]* )?' . $this->kVersandklasse,
+                'sclass' => '^([0-9 -]* )?' . $this->kVersandklasse . ' ',
                 'wght'   => $this->fGewicht,
                 'net'    => $this->Preise->fVKNetto
             ]

@@ -5,6 +5,7 @@ namespace JTL\Catalog\Product;
 use Countable;
 use Illuminate\Support\Collection;
 use JTL\Shop;
+use function Functional\map;
 
 /**
  * Class Bestseller
@@ -137,20 +138,25 @@ class Bestseller
     }
 
     /**
+     * @param string $additionalSQL
+     * @param bool $useProductSQL
      * @return int[]
      */
-    public function fetch(): array
+    public function fetch(string $additionalSQL = ' ', bool $useProductSQL = true): array
     {
-        $products = [];
+        $products   = [];
+        $productsql = ' ';
         if ($this->customergrp === null) {
             return $products;
         }
-        $productsql = $this->getProducts()->isNotEmpty()
-            ? ' AND tartikel.kArtikel IN (' .
-                \implode(',', $this->getProducts()->toArray()) . ') '
-            : '';
+        if ($useProductSQL) {
+            $productsql = $this->getProducts()->isNotEmpty()
+                ? ' AND tartikel.kArtikel IN (' . \implode(',', $this->getProducts()->toArray()) . ') '
+                : '';
+        }
         $storagesql = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-        $data       = Shop::Container()->getDB()->getObjects(
+
+        return map(Shop::Container()->getDB()->getObjects(
             'SELECT tartikel.kArtikel
                 FROM tartikel
                 JOIN tbestseller
@@ -160,7 +166,7 @@ class Bestseller
                     AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND ROUND(tbestseller.fAnzahl) >= :ms 
-                    AND tartikel.fStandardpreisNetto >= :minPrice' . $storagesql .  $productsql . '
+                    AND tartikel.fStandardpreisNetto >= :minPrice' . $additionalSQL . $storagesql .  $productsql . '
                 GROUP BY tartikel.kArtikel
                 ORDER BY tbestseller.fAnzahl DESC
                 LIMIT :lmt',
@@ -168,13 +174,11 @@ class Bestseller
                 'cgid'     => $this->customergrp,
                 'ms'       => $this->minsales,
                 'minPrice' => Shop::getSettingValue(\CONF_STARTSEITE, 'startseite_bestseller_minprice'),
-                'lmt'      => $this->limit]
-        );
-        foreach ($data as $item) {
-            $products[] = (int)$item->kArtikel;
-        }
-
-        return $products;
+                'lmt'      => $this->limit
+            ]
+        ), static function ($e) {
+            return (int)$e->kArtikel;
+        });
     }
 
     /**

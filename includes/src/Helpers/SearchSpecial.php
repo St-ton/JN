@@ -3,6 +3,7 @@
 namespace JTL\Helpers;
 
 use JTL\Cache\JTLCacheInterface;
+use JTL\Catalog\Product\Bestseller;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\Media\Image\Overlay;
@@ -235,27 +236,12 @@ class SearchSpecial
         $cacheID     = 'ssp_bestsellers_' . $customerGroupID . '_' . $minAmount;
         $bestsellers = $this->cache->get($cacheID);
         if ($bestsellers === false || !\is_countable($bestsellers)) {
-            $bestsellers = map($this->db->getObjects(
-                'SELECT tartikel.kArtikel, tbestseller.fAnzahl
-                    FROM tbestseller, tartikel
-                    LEFT JOIN tartikelsichtbarkeit 
-                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = :cgid
-                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        AND tbestseller.kArtikel = tartikel.kArtikel
-                        AND ROUND(tbestseller.fAnzahl) >= :mnt
-                        AND tartikel.fStandardpreisNetto >= :minPrice
-                        ' . self::getParentSQL() . '
-                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
-                    ORDER BY fAnzahl DESC',
-                [
-                    'cgid' => $customerGroupID,
-                    'mnt' => $minAmount,
-                    'minPrice' => Shop::getSettingValue(\CONF_STARTSEITE, 'startseite_bestseller_minprice')
-                ]
-            ), static function ($e) {
-                return (int)$e->kArtikel;
-            });
+            $bestsellers = (new Bestseller([
+                'Customergroup' => $customerGroupID,
+                'Limit'         => $limit,
+                'MinSales'      => $minAmount
+            ]))->fetch(self::getParentSQL(), false);
+
             $this->cache->set($cacheID, $bestsellers, $this->getCacheTags($bestsellers));
         }
 

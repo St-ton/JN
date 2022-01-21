@@ -489,10 +489,6 @@ class Cart
                                     }
                                 )
                             );
-
-                            if ($oVariationWert !== false) {
-                                CartHelper::setVariationPicture($cartItem, $oVariationWert);
-                            }
                         }
                     }
                 }
@@ -1892,7 +1888,7 @@ class Cart
                 'itemCount'   => $itemCount,
                 'totalWeight' => $totalWeight,
                 'maxPrices'   => $maxPrices,
-                'scl'         => '^([0-9 -]* )?' . $shippingClasses
+                'scl'         => '^([0-9 -]* )?' . $shippingClasses . ' '
             ]
         );
         if ($shipping !== null && $shipping->kVersandart > 0) {

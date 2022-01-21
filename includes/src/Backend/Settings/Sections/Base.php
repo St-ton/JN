@@ -11,7 +11,6 @@ use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
-use StringHandler;
 use function Functional\filter;
 use function Functional\flatten;
 
@@ -64,6 +63,11 @@ class Base implements Section
     protected $sortID = 0;
 
     /**
+     * @var int
+     */
+    protected $configCount = 0;
+
+    /**
      * @var string
      */
     protected $permission;
@@ -90,6 +94,7 @@ class Base implements Section
         'cName'                 => 'Name',
         'kEinstellungenSektion' => 'SectionID',
         'nSort'                 => 'Sort',
+        'anz'                   => 'ConfigCount',
         'kAdminmenueGruppe'     => 'MenuID'
     ];
 
@@ -109,10 +114,19 @@ class Base implements Section
     {
         $data = $this->db->select('teinstellungensektion', 'kEinstellungenSektion', $this->id);
         if ($data !== null) {
-            $this->name       = \__('configsection_' . $this->id);
-            $this->menuID     = (int)$data->kAdminmenueGruppe;
-            $this->sortID     = (int)$data->nSort;
-            $this->permission = $data->cRecht;
+            $this->configCount = (int)$this->db->getSingleObject(
+                "SELECT COUNT(*) AS cnt
+                FROM teinstellungenconf
+                WHERE kEinstellungenSektion = :sid
+                    AND cConf = 'Y'
+                    AND nStandardAnzeigen = 1
+                    AND nModul = 0",
+                ['sid' => $this->id]
+            )->cnt;
+            $this->name        = \__('configsection_' . $this->id);
+            $this->menuID      = (int)$data->kAdminmenueGruppe;
+            $this->sortID      = (int)$data->nSort;
+            $this->permission  = $data->cRecht;
         }
     }
 
@@ -147,6 +161,9 @@ class Base implements Section
         return '';
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getConfigData(): array
     {
         return $this->configData ?? $this->generateConfigData();
@@ -158,21 +175,32 @@ class Base implements Section
      */
     public function generateConfigData(SqlObject $sql = null): array
     {
-        $sql = $sql ?? new SqlObject();
+        if ($sql === null) {
+            $sql = new SqlObject();
+            $sql->setWhere('ec.kEinstellungenSektion = :sid
+                    AND ec.nModul = 0
+                    AND ec.nStandardanzeigen = 1');
+            $sql->addParam('sid', $this->id);
+            $sql->setOrder('ec.nSort');
+        }
 
-        $this->configData = $this->db->getObjects(
-            "SELECT ec.*, e.cWert AS currentValue, ted.cWert AS defaultValue
+        $data             = $this->db->getObjects(
+            'SELECT ec.*, e.cWert AS currentValue, ted.cWert AS defaultValue
                 FROM teinstellungenconf AS ec
                 LEFT JOIN teinstellungen AS e
                     ON e.cName = ec.cWertName
                 LEFT JOIN teinstellungen_default AS ted
                     ON ted.cName = ec.cWertName
-                WHERE ec.kEinstellungenSektion = :sid
-                    AND ec.nModul = 0
-                    AND ec.nStandardanzeigen = 1 " . $sql->getWhere() . '
-                ORDER BY ec.nSort',
-            \array_merge(['sid' => $this->id], $sql->getParams())
+                WHERE ' . $sql->getWhere() . '
+                ORDER BY ' . $sql->getOrder(),
+            $sql->getParams()
         );
+        $this->configData = [];
+        foreach ($data as $item) {
+            $config = new Item();
+            $config->parseFromDB($item);
+            $this->configData[] = $config;
+        }
 
         return $this->configData;
     }
@@ -182,19 +210,28 @@ class Base implements Section
         $this->configData = $data;
     }
 
-    public function update(array $data): bool
+    /**
+     * @param array $data
+     * @return array
+     * @todo check params for callers
+     */
+    public function update(array $data, bool $filter = true): array
     {
-        $filtered = StringHandler::filterXSS($data);
-        $value    = new stdClass();
-        $confData = $this->getConfigData();
-        foreach ($confData as $sectionData) {
-            if (!isset($filtered[$sectionData->cWertName])) {
+        $unfiltered = $data;
+        if ($filter === true) {
+            $data = Text::filterXSS($data);
+        }
+        $value   = new stdClass();
+        $updated = [];
+        foreach ($this->getConfigData() as $sectionData) {
+            $id = $sectionData->getValueName();
+            if (!isset($data[$id])) {
                 continue;
             }
-            $value->cWert                 = $filtered[$sectionData->cWertName];
-            $value->cName                 = $sectionData->cWertName;
-            $value->kEinstellungenSektion = $sectionData->kEinstellungenSektion;
-            switch ($sectionData->cInputTyp) {
+            $value->cWert                 = $data[$id];
+            $value->cName                 = $id;
+            $value->kEinstellungenSektion = $sectionData->getConfigSectionID();
+            switch ($sectionData->getInputType()) {
                 case 'kommazahl':
                     $value->cWert = (float)\str_replace(',', '.', $value->cWert);
                     break;
@@ -206,93 +243,88 @@ class Base implements Section
                     $value->cWert = \mb_substr($value->cWert, 0, 255);
                     break;
                 case 'pass':
-                    $value->cWert = $data[$sectionData->cWertName];
+                    $value->cWert = $unfiltered[$id];
                     break;
                 default:
                     break;
             }
-            if (!$this->validate($sectionData, $filtered[$sectionData->cWertName])) {
+            if (!$this->validate($sectionData, $data[$id])) {
                 continue;
             }
-            if (\is_array($filtered[$sectionData->cWertName])) {
-                $this->manager->addLogListbox($sectionData->cWertName, $filtered[$sectionData->cWertName]);
+            if (\is_array($data[$id])) {
+                $this->manager->addLogListbox($id, $data[$id]);
             }
             $this->db->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
-                [$sectionData->kEinstellungenSektion, $sectionData->cWertName]
+                [$sectionData->getConfigSectionID(), $id]
             );
-            if (\is_array($filtered[$sectionData->cWertName])) {
-                foreach ($filtered[$sectionData->cWertName] as $cWert) {
+            if (\is_array($data[$id])) {
+                foreach ($data[$id] as $cWert) {
                     $value->cWert = $cWert;
                     $this->db->insert('teinstellungen', $value);
                 }
             } else {
                 $this->db->insert('teinstellungen', $value);
                 $this->manager->addLog(
-                    $sectionData->cWertName,
-                    $sectionData->currentValue,
-                    $filtered[$sectionData->cWertName]
+                    $id,
+                    $sectionData->getCurrentValue(),
+                    $data[$id]
                 );
             }
+            $updated[] = ['id' => $id, 'value' => $data[$id]];
         }
 
-        return true;
+        return $updated;
     }
 
+    /**
+     * @todo: should be renamed.
+     * @todo: add to interface
+     * @inheritdoc
+     */
     public function loadCurrentData(): array
     {
-        $getText   = Shop::Container()->getGetText();
-        foreach ($this->getConfigData() as $config2) {
-            $config = new Item();
-            $config->cConf = $config2->cConf;
-            $config->kEinstellungenConf    = (int)$config2->kEinstellungenConf;
-            $config->kEinstellungenSektion = (int)$config2->kEinstellungenSektion;
-            $config->nStandardAnzeigen     = (int)$config2->nStandardAnzeigen;
-            $config->nSort                 = (int)$config2->nSort;
-            $config->nModul                = (int)$config2->nModul;
-            $config->cInputTyp                = $config2->cInputTyp;
-            $config->cWertName                = $config2->cWertName;
-            $config->defaultValue = $config2->defaultValue;
-            $config->currentValue = $config2->currentValue;
+        $getText = Shop::Container()->getGetText();
+        foreach ($this->getConfigData() as $config) {
             $getText->localizeConfig($config);
             //@ToDo: Setting 492 is the only one listbox at the moment.
             //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
-            if ($config->cInputTyp === 'listbox' && $config->kEinstellungenConf === 492) {
-                $config->ConfWerte = $this->db->getObjects(
+            if ($config->getInputType() === 'listbox' && $config->getID() === 492) {
+                $config->setValues($this->db->getObjects(
                     'SELECT kKundengruppe AS cWert, cName
                     FROM tkundengruppe
                     ORDER BY cStandard DESC'
-                );
-            } elseif (\in_array($config->cInputTyp, ['selectbox', 'listbox'], true)) {
-                $config->ConfWerte = $this->db->selectAll(
+                ));
+            } elseif (\in_array($config->getInputType(), ['selectbox', 'listbox'], true)) {
+                $setValues = $this->db->selectAll(
                     'teinstellungenconfwerte',
                     'kEinstellungenConf',
-                    $config->kEinstellungenConf,
+                    $config->getID(),
                     '*',
                     'nSort'
                 );
-
-                $getText->localizeConfigValues($config, $config->ConfWerte);
+                $getText->localizeConfigValues($config, $setValues);
+                $config->setValues($setValues);
             }
-            if ($config->cInputTyp === 'listbox') {
-                $setValue              = $this->db->selectAll(
+            if ($config->getInputType() === 'listbox') {
+                $setValue = $this->db->selectAll(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
-                    [(int)$config->kEinstellungenSektion, $config->cWertName]
+                    [$config->getConfigSectionID(), $config->getValueName()]
                 );
-                $config->gesetzterWert = $setValue;
+                $config->setSetValue($setValue);
             } else {
-                $setValue              = $this->db->select(
+                $setValue = $this->db->select(
                     'teinstellungen',
                     'kEinstellungenSektion',
-                    (int)$config->kEinstellungenSektion,
+                    $config->getConfigSectionID(),
                     'cName',
-                    $config->cWertName
+                    $config->getValueName()
                 );
-                $config->gesetzterWert = isset($setValue->cWert)
+                $config->setSetValue(isset($setValue->cWert)
                     ? Text::htmlentities($setValue->cWert)
-                    : null;
+                    : null);
             }
             $this->setValue($config, $setValue);
             $this->items[] = $config;
@@ -301,12 +333,10 @@ class Base implements Section
         return $this->items;
     }
 
-
-
     /**
      * settings page is separated but has same config group as parent config page, filter these settings
      *
-     * @param array $confData
+     * @param array  $confData
      * @param string $filter
      * @return array
      */
@@ -348,14 +378,14 @@ class Base implements Section
         if ($filter !== '' && isset($keys[$filter])) {
             $keysToFilter = $keys[$filter];
 
-            return filter($confData, static function ($e) use ($keysToFilter) {
-                return \in_array($e->cWertName, $keysToFilter, true);
+            return filter($confData, static function (Item $e) use ($keysToFilter) {
+                return \in_array($e->getValueName(), $keysToFilter, true);
             });
         }
         $keysToFilter = flatten($keys);
 
-        return filter($confData, static function ($e) use ($keysToFilter) {
-            return !\in_array($e->cWertName, $keysToFilter, true);
+        return filter($confData, static function (Item $e) use ($keysToFilter) {
+            return !\in_array($e->getValueName(), $keysToFilter, true);
         });
     }
 
@@ -453,6 +483,22 @@ class Base implements Section
     public function setItems(array $items): void
     {
         $this->items = $items;
+    }
+
+    /**
+     * @return int
+     */
+    public function getConfigCount(): int
+    {
+        return $this->configCount;
+    }
+
+    /**
+     * @param int $configCount
+     */
+    public function setConfigCount(int $configCount): void
+    {
+        $this->configCount = $configCount;
     }
 
     /**

@@ -168,18 +168,18 @@
             </div>
             <div class="card-body">
                 {foreach $Conf as $cnf}
-                    {if $cnf->cConf === 'Y'}
+                    {if $cnf->isConfigurable()}
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->cWertName}">{$cnf->cName}:</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->getValueName()}">{$cnf->getName()}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                {if $cnf->cInputTyp === 'selectbox'}
-                                    <select class="custom-select" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
-                                        {foreach $cnf->ConfWerte as $wert}
-                                            <option value="{$wert->cWert}" {if isset($cnf->gesetzterWert) && $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
+                                {if $cnf->getInputType() === 'selectbox'}
+                                    <select class="custom-select" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}">
+                                        {foreach $cnf->getValues() as $wert}
+                                            <option value="{$wert->cWert}" {if $cnf->getSetValue() !== null && $cnf->getSetValue() == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                         {/foreach}
                                     </select>
                                 {else}
-                                    <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" tabindex="3" />
+                                    <input class="form-control" type="text" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}" tabindex="3" />
                                 {/if}
                             </div>
                             {if $cnf->cBeschreibung}

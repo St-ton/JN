@@ -3,6 +3,8 @@
 use JTL\Alert\Alert;
 use JTL\Backend\Notification;
 use JTL\Backend\NotificationEntry;
+use JTL\Backend\Settings\Manager;
+use JTL\Backend\Settings\SectionFactory;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -23,9 +25,13 @@ $mysqlVersion     = $db->getSingleObject("SHOW VARIABLES LIKE 'innodb_version'")
 $step             = 'einstellungen bearbeiten';
 $Conf             = [];
 $createIndex      = false;
-$alertHelper      = Shop::Container()->getAlertService();
+$getText          = Shop::Container()->getGetText();
+$alertService     = Shop::Container()->getAlertService();
+$adminAccount     = Shop::Container()->getAdminAccount();
+$sectionFactory   = new SectionFactory();
+$settingManager   = new Manager($db, $smarty, $adminAccount, $getText, $alertService);
 
-Shop::Container()->getGetText()->loadAdminLocale('pages/einstellungen');
+$getText->loadAdminLocale('pages/einstellungen');
 
 if (Request::getVar('action') === 'createIndex') {
     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
@@ -89,7 +95,7 @@ if (Request::getVar('action') === 'createIndex') {
         }
 
         if ($res === 0) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorIndexNotCreatable'), 'errorIndexNotCreatable');
+            $alertService->addAlert(Alert::TYPE_ERROR, __('errorIndexNotCreatable'), 'errorIndexNotCreatable');
             $shopSettings = Shopsetting::getInstance();
             $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 
@@ -106,7 +112,7 @@ if (Request::getVar('action') === 'createIndex') {
                 $shopSettings->reset();
             }
         } else {
-            $alertHelper->addAlert(
+            $alertService->addAlert(
                 Alert::TYPE_SUCCESS,
                 __('successIndexCreate'),
                 'successIndexCreate',
@@ -114,7 +120,7 @@ if (Request::getVar('action') === 'createIndex') {
             );
         }
     } else {
-        $alertHelper->addAlert(
+        $alertService->addAlert(
             Alert::TYPE_SUCCESS,
             __('successIndexDelete'),
             'successIndexDelete',
@@ -132,7 +138,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken())
         if (version_compare($mysqlVersion, '5.6', '<')) {
             //Volltextindizes werden von MySQL mit InnoDB erst ab Version 5.6 unterstützt
             $_POST['suche_fulltext'] = 'N';
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFulltextSearchMYSQL'), 'errorFulltextSearchMYSQL');
+            $alertService->addAlert(Alert::TYPE_ERROR, __('errorFulltextSearchMYSQL'), 'errorFulltextSearchMYSQL');
         } else {
             // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
             $currentVal                 = $db->getSingleObject('SELECT @@ft_min_word_len AS ft_min_word_len');
@@ -141,7 +147,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken())
     }
 
     $shopSettings = Shopsetting::getInstance();
-    $alertHelper->addAlert(
+    $alertService->addAlert(
         Alert::TYPE_SUCCESS,
         saveAdminSectionSettings($sectionID, $_POST),
         'saveSettings'
@@ -175,19 +181,19 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken())
     }
 
     if ($sucheFulltext && $fulltextChanged) {
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchActivate'), 'successSearchActivate');
+        $alertService->addAlert(Alert::TYPE_SUCCESS, __('successSearchActivate'), 'successSearchActivate');
     } elseif ($fulltextChanged) {
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchDeactivate'), 'successSearchDeactivate');
+        $alertService->addAlert(Alert::TYPE_SUCCESS, __('successSearchDeactivate'), 'successSearchDeactivate');
     }
 
     $conf = Shop::getSettings([$sectionID]);
 }
 
-$section = $db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
+$section = $sectionFactory->getSection($sectionID, $settingManager);
 if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
     && (!$db->getSingleObject("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'")
     || !$db->getSingleObject("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'"))) {
-    $alertHelper->addAlert(
+    $alertService->addAlert(
         Alert::TYPE_ERROR,
         __('errorCreateTime') .
         '<a href="sucheinstellungen.php" title="Aktualisieren"><i class="alert-danger fa fa-refresh"></i></a>',
@@ -202,7 +208,7 @@ if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
 
 $smarty->assign('action', 'sucheinstellungen.php')
        ->assign('kEinstellungenSektion', $sectionID)
-       ->assign('Sektion', $section)
+       ->assign('section', $section)
        ->assign('Conf', getAdminSectionSettings(CONF_ARTIKELUEBERSICHT))
        ->assign('cPrefDesc', filteredConfDescription($sectionID))
        ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $sectionID))

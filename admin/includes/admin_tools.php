@@ -3,6 +3,7 @@
 use JTL\Alert\Alert;
 use JTL\Backend\AdminFavorite;
 use JTL\Backend\Notification;
+use JTL\Backend\Settings\Item;
 use JTL\Backend\Settings\Manager;
 use JTL\Campaign;
 use JTL\Catalog\Currency;
@@ -51,67 +52,65 @@ function getAdminSectionSettings($configSectionID, bool $byName = false): array
             ['configSection' => $configSectionID]
         );
     }
-    foreach ($confData as $conf) {
-        $conf->kEinstellungenSektion = (int)$conf->kEinstellungenSektion;
-        $conf->kEinstellungenConf    = (int)$conf->kEinstellungenConf;
-        $conf->nSort                 = (int)$conf->nSort;
-        $conf->nStandardAnzeigen     = (int)$conf->nStandardAnzeigen;
-        $conf->nModul                = (int)$conf->nModul;
-
+    $items = [];
+    foreach ($confData as $confItem) {
+        $conf = new Item();
+        $conf->parseFromDB($confItem);
         $gettext->localizeConfig($conf);
 
-        if ($conf->cInputTyp === 'listbox') {
-            $conf->ConfWerte = $db->selectAll(
+        if ($conf->getInputType() === 'listbox') {
+            $conf->setValues($db->selectAll(
                 'tkundengruppe',
                 [],
                 [],
                 'kKundengruppe, cName',
                 'cStandard DESC'
-            );
-        } elseif ($conf->cInputTyp === 'selectkdngrp') {
-            $conf->ConfWerte = $db->getObjects(
+            ));
+        } elseif ($conf->getInputType() === 'selectkdngrp') {
+            $conf->setValues($db->getObjects(
                 'SELECT kKundengruppe, cName
                     FROM tkundengruppe
                     ORDER BY cStandard DESC'
-            );
+            ));
         } else {
-            $conf->ConfWerte = $db->selectAll(
+            $conf->setValues($db->selectAll(
                 'teinstellungenconfwerte',
                 'kEinstellungenConf',
-                $conf->kEinstellungenConf,
+                $conf->getID(),
                 '*',
                 'nSort'
-            );
-            $gettext->localizeConfigValues($conf, $conf->ConfWerte);
+            ));
+            $gettext->localizeConfigValues($conf, $conf->getValues());
         }
 
-        if ($conf->cInputTyp === 'listbox') {
+        if ($conf->getInputType() === 'listbox') {
             $setValue = $db->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
-                [$conf->kEinstellungenSektion, $conf->cWertName],
+                [$conf->getConfigSectionID(), $conf->getValueName()],
                 'cWert'
             );
 
-            $conf->gesetzterWert = $setValue;
-        } elseif ($conf->cInputTyp === 'selectkdngrp') {
-            $setValue            = $db->selectAll(
+            $conf->setSetValue($setValue);
+        } elseif ($conf->getInputType() === 'selectkdngrp') {
+            $setValue = $db->selectAll(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
-                [$conf->kEinstellungenSektion, $conf->cWertName]
+                [$conf->getConfigSectionID(), $conf->getValueName()]
             );
-            $conf->gesetzterWert = $setValue;
+            $conf->setSetValue($setValue);
         } else {
-            $setValue            = $db->select(
+            $setValue = $db->select(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
-                [$conf->kEinstellungenSektion, $conf->cWertName]
+                [$conf->getConfigSectionID(), $conf->getValueName()]
             );
-            $conf->gesetzterWert = $setValue->cWert ?? null;
+            $conf->setSetValue($setValue->cWert ?? null);
         }
+        $items[] = $conf;
     }
 
-    return $confData;
+    return $items;
 }
 
 /**

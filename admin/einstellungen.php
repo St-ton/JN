@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
-use JTL\DB\SqlObject;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -16,7 +15,7 @@ use function Functional\pluck;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
-/** @global \JTL\Smarty\JTLSmarty     $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 /** @global \JTL\Backend\AdminAccount $oAccount */
 $sectionID      = (int)($_REQUEST['kSektion'] ?? 0);
 $isSearch       = (int)($_REQUEST['einstellungen_suchen'] ?? 0) === 1;
@@ -84,8 +83,7 @@ if ($isSearch) {
 }
 if (Request::postVar('resetSetting') !== null) {
     $settingManager->resetSetting(Request::postVar('resetSetting'));
-}
-elseif (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form::validateToken()) {
+} elseif (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form::validateToken()) {
     // Einstellungssuche
     $sql = new stdClass();
     if ($isSearch) {
@@ -103,6 +101,7 @@ elseif (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && 
 //            // @todo:!
 //            $sqlObj = new SqlObject();
 //            $sqlObj->setWhere($sql->cWHERE);
+            Shop::dbg($sql, true, 'sql1');
             $sectionInstance = $sectionFactory->getSection($id, $settingManager);
             $sectionInstance->setConfigData($confData);
             $sectionInstance->update($_POST);
@@ -133,27 +132,8 @@ elseif (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && 
 }
 
 if ($step === 'uebersicht') {
-    die('ueber!');
-    $sections     = $db->getObjects(
-        'SELECT *
-            FROM teinstellungensektion
-            ORDER BY kEinstellungenSektion'
-    );
-    foreach ($sections as $_sec) {
-        $confCount = $db->getSingleObject(
-            "SELECT COUNT(*) AS anz
-                FROM teinstellungenconf
-                WHERE kEinstellungenSektion = :sid
-                    AND cConf = 'Y'
-                    AND nStandardAnzeigen = 1
-                    AND nModul = 0",
-            ['sid' => (int)$_sec->kEinstellungenSektion]
-        );
-
-        $_sec->anz = (int)$confCount->anz;
-        $getText->localizeConfigSection($_sec);
-    }
-    $smarty->assign('Sektionen', $sections);
+    $sections = $settingManager->getAllSections();
+    $smarty->assign('sections', $sections);
 }
 if ($step === 'einstellungen bearbeiten') {
     $confData = [];
@@ -164,15 +144,16 @@ if ($step === 'einstellungen bearbeiten') {
     if (!isset($sql->cWHERE)) {
         $sql->cWHERE = '';
     }
-        $oSections = [];
+    $oSections = [];
     if (mb_strlen($sql->cWHERE) > 0) {
         $confData = $sql->oEinstellung_arr;
         $smarty->assign('cSearch', $sql->cSearch)
-               ->assign('cSuche', $sql->cSuche);
+            ->assign('cSuche', $sql->cSuche);
         foreach (\array_unique(pluck($confData, 'kEinstellungenSektion')) as $id) {
 //            // @todo:!
 //            $sqlObj = new SqlObject();
 //            $sqlObj->setWhere($sql->cWHERE);
+            Shop::dbg($sql, true);
             $sectionInstance = $sectionFactory->getSection($id, $settingManager);
             $sectionInstance->setConfigData($confData);
             $oSections[] = $sectionInstance->loadCurrentData();
@@ -180,13 +161,11 @@ if ($step === 'einstellungen bearbeiten') {
         flatten($oSections);
     } else {
         $sectionInstance = $sectionFactory->getSection($sectionID, $settingManager);
-        $confData = $sectionInstance->loadCurrentData();
-        $oSections[] = $sectionInstance;
+        $confData        = $sectionInstance->getFilteredConfData($sectionInstance->loadCurrentData(), Request::verifyGPDataString('group'));
+        $oSections[]     = $sectionInstance;
     }
-    $smarty->assign('Sektion', $section)
-        ->assign('Conf', mb_strlen($search) > 0
-            ? $confData
-            : $sectionInstance->getFilteredConfData($confData, Request::verifyGPDataString('group')))
+    $smarty->assign('section', $section)
+        ->assign('Conf', $confData)
         ->assign(
             'title',
             __('settings') . ': ' . (Request::verifyGPDataString('group') !== ''

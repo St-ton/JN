@@ -294,24 +294,24 @@ class GetText
     }
 
     /**
-     * @param stdClass|Item $config
+     * @param Item $config
      */
-    public function localizeConfig($config): void
+    public function localizeConfig(Item $config): void
     {
-        if ($config->cConf === 'Y') {
-            $config->cName         = \__($config->cWertName . '_name');
-            $config->cBeschreibung = \__($config->cWertName . '_desc');
+        if ($config->isConfigurable()) {
+            $config->setName(\__($config->getValueName() . '_name'));
+            $config->setDescription(\__($config->getValueName() . '_desc'));
 
-            if ($config->cBeschreibung === $config->cWertName . '_desc') {
-                $config->cBeschreibung = '';
+            if ($config->getDescription() === $config->getValueName() . '_desc') {
+                $config->setDescription('');
             }
-        } elseif ($config->cConf === 'N') {
-            $config->cName = \__($config->cWertName);
+        } else {
+            $config->setName(\__($config->getValueName()));
         }
     }
 
     /**
-     * @param stdClass[]|Item[] $configs
+     * @param Item[] $configs
      */
     public function localizeConfigs(array $configs): void
     {
@@ -321,19 +321,19 @@ class GetText
     }
 
     /**
-     * @param stdClass|Item $config
+     * @param Item $config
      * @param stdClass $value
      */
-    public function localizeConfigValue(stdClass $config, stdClass $value): void
+    public function localizeConfigValue(Item $config, stdClass $value): void
     {
-        $value->cName = \__($config->cWertName . '_value(' . $value->cWert . ')');
+        $value->cName = \__($config->getValueName() . '_value(' . $value->cWert . ')');
     }
 
     /**
-     * @param stdClass|Item   $config
+     * @param Item   $config
      * @param stdClass[] $values
      */
-    public function localizeConfigValues($config, array $values): void
+    public function localizeConfigValues(Item $config, array $values): void
     {
         foreach ($values as $value) {
             $this->localizeConfigValue($config, $value);

@@ -123,33 +123,33 @@
         <div id="settings">
             {assign var=open value=false}
             {foreach $oConfig_arr as $oConfig}
-                {if $oConfig->cConf === 'Y'}
+                {if $oConfig->isConfigurable()}
                     <div class="item form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $oConfig->cInputTyp === 'number'}config-type-number{/if}">
-                        {if $oConfig->cInputTyp === 'selectbox'}
-                            <select id="{$oConfig->cWertName}" name="{$oConfig->cWertName}"
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->getValueName()}">{$oConfig->cName}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $oConfig->getInputType() === 'number'}config-type-number{/if}">
+                        {if $oConfig->getInputType() === 'selectbox'}
+                            <select id="{$oConfig->getValueName()}" name="{$oConfig->getValueName()}"
                                     class="custom-select combo"
-                                    {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
+                                    {if $oConfig->getValueName() === 'preisspannenfilter_anzeige_berechnung'}
                                         onChange="selectCheck(this);"
                                     {/if}>
-                                {foreach $oConfig->ConfWerte as $wert}
+                                {foreach $oConfig->getValues() as $wert}
                                     <option value="{$wert->cWert}"
-                                            {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>
+                                            {if $oConfig->getSetValue() == $wert->cWert}selected{/if}>
                                         {$wert->cName}
                                     </option>
                                 {/foreach}
                             </select>
-                        {elseif $oConfig->cInputTyp === 'number'}
+                        {elseif $oConfig->getInputType() === 'number'}
                             <div class="input-group form-counter">
                                 <div class="input-group-prepend">
                                     <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
                                         <span class="fas fa-minus"></span>
                                     </button>
                                 </div>
-                                <input class="form-control" type="number" name="{$oConfig->cWertName}"
-                               id="{$oConfig->cWertName}"
-                               value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}"
+                                <input class="form-control" type="number" name="{$oConfig->getValueName()}"
+                               id="{$oConfig->getValueName()}"
+                               value="{if $oConfig->getSetValue() !== null}{$oConfig->getSetValue()}{/if}"
                                tabindex="1">
                                 <div class="input-group-append">
                                     <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
@@ -158,16 +158,16 @@
                                 </div>
                             </div>
                         {else}
-                            <input class="form-control" type="text" name="{$oConfig->cWertName}"
-                                   id="{$oConfig->cWertName}"
-                                   value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}"
+                            <input class="form-control" type="text" name="{$oConfig->getValueName()}"
+                                   id="{$oConfig->getValueName()}"
+                                   value="{if $oConfig->getSetValue() !== null}{$oConfig->getSetValue()}{/if}"
                                    tabindex="1">
                         {/if}
                         </div>
                         {include file='snippets/einstellungen_icons.tpl' cnf=$oConfig}
-                        {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
+                        {if $oConfig->getValueName() === 'preisspannenfilter_anzeige_berechnung'}
                     </div>
-                    <div id="Werte" style="display: {if $oConfig->gesetzterWert === 'M'}block{else}none{/if};">
+                    <div id="Werte" style="display: {if $oConfig->getSetValue() === 'M'}block{else}none{/if};">
                         <div id="ranges-error-alert" class="alert alert-danger" style="display: none;"></div>
                         <div id="price-rows" class="w-100"></div>
                         <div class="row">

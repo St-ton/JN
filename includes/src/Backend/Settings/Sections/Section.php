@@ -2,6 +2,7 @@
 
 namespace JTL\Backend\Settings\Sections;
 
+use JTL\Backend\Settings\Item;
 use JTL\Backend\Settings\Manager;
 
 /**
@@ -42,12 +43,13 @@ interface Section
 
     /**
      * @param array $data
-     * @return bool
+     * @param bool  $filter
+     * @return array
      */
-    public function update(array $data): bool;
+    public function update(array $data, bool $filter = true): array;
 
     /**
-     * @return array
+     * @return Item[]
      */
     public function getConfigData(): array;
 

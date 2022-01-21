@@ -39,24 +39,24 @@
 
             {assign var=open value=false}
             {foreach $oConfig_arr as $oConfig}
-                {if $oConfig->cConf === 'Y'}
+                {if $oConfig->isConfigurable()}
                     <div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $oConfig->cInputTyp === 'number'}config-type-number{/if}">
-                            {if $oConfig->cInputTyp === 'selectbox'}
-                                <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="custom-select combo">
-                                    {foreach $oConfig->ConfWerte as $wert}
-                                        <option value="{$wert->cWert}" {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
+                        <label class="col col-sm-4 text-sm-right" for="{$oConfig->getValueName()}">{$oConfig->cName}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $oConfig->getInputType() === 'number'}config-type-number{/if}">
+                            {if $oConfig->getInputType() === 'selectbox'}
+                                <select name="{$oConfig->getValueName()}" id="{$oConfig->getValueName()}" class="custom-select combo">
+                                    {foreach $oConfig->getValues() as $wert}
+                                        <option value="{$wert->cWert}" {if $oConfig->getSetValue() == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                     {/foreach}
                                 </select>
-                            {elseif $oConfig->cInputTyp === 'number'}
+                            {elseif $oConfig->getInputType() === 'number'}
                                 <div class="input-group form-counter">
                                     <div class="input-group-prepend">
                                         <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
                                             <span class="fas fa-minus"></span>
                                         </button>
                                     </div>
-                                    <input class="form-control" type="number" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
+                                    <input class="form-control" type="number" name="{$oConfig->getValueName()}" id="{$oConfig->getValueName()}" value="{if $oConfig->getSetValue() !== null}{$oConfig->getSetValue()}{/if}" tabindex="1" />
                                     <div class="input-group-append">
                                         <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
                                             <span class="fas fa-plus"></span>
@@ -64,7 +64,7 @@
                                     </div>
                                 </div>
                             {else}
-                                <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
+                                <input class="form-control" type="text" name="{$oConfig->getValueName()}" id="{$oConfig->getValueName()}" value="{if $oConfig->getSetValue() !== null}{$oConfig->getSetValue()}{/if}" tabindex="1" />
                             {/if}
                         </div>
                         {include file='snippets/einstellungen_icons.tpl' cnf=$oConfig}

@@ -12,20 +12,20 @@
                 </div>
                 <div class="card-body">
                     {foreach $oConfig_arr as $cnf}
-                        {if $cnf->cConf === 'Y'}
-                            <div class="form-group form-row align-items-center item{if isset($cnf->kEinstellungenConf) && isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->cWertName}">{$cnf->cName}:</label>
+                        {if $cnf->isConfigurable()}
+                            <div class="form-group form-row align-items-center item{if isset($cnf->getID()) && isset($cSuche) && $cnf->getID() == $cSuche} highlight{/if}">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->getValueName()}">{$cnf->getName()}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                {if $cnf->cInputTyp === 'selectbox'}
-                                        <select class="custom-select" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
-                                            {foreach $cnf->ConfWerte as $wert}
-                                                <option value="{$wert->cWert}" {if $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
+                                {if $cnf->getInputType() === 'selectbox'}
+                                        <select class="custom-select" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}">
+                                            {foreach $cnf->getValues() as $wert}
+                                                <option value="{$wert->cWert}" {if $cnf->getSetValue() == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                             {/foreach}
                                         </select>
-                                {elseif $cnf->cInputTyp === 'pass'}
-                                    <input class="form-control" type="password" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
+                                {elseif $cnf->getInputType() === 'pass'}
+                                    <input class="form-control" type="password" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{$cnf->getSetValue()}" tabindex="1" />
                                 {else}
-                                    <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
+                                    <input class="form-control" type="text" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{$cnf->getSetValue()}" tabindex="1" />
                                 {/if}
                                 </div>
                                 {include file='snippets/einstellungen_icons.tpl' cnf=$cnf}

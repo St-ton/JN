@@ -1,4 +1,4 @@
-{if isset($Sektion) && $Sektion}
+{if isset($section)}
     {if isset($cSearch) && $cSearch|strlen  > 0}
         {assign var=title value=$cSearch}
     {/if}
@@ -41,45 +41,45 @@
             {/if}
             <input type="hidden" name="kSektion" value="{$kEinstellungenSektion}" />
             {foreach $Conf as $cnf}
-                {if $cnf->cConf === 'Y'}
-                    <div class="form-group form-row align-items-center {if isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
-                        <label class="col col-sm-4 col-form-label text-sm-right order-1" for="{$cnf->cWertName}">{$cnf->cName}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $cnf->cInputTyp === 'number'}config-type-number{/if}">
-                            {if $cnf->cInputTyp === 'selectbox'}
-                                {if $cnf->cWertName === 'kundenregistrierung_standardland' || $cnf->cWertName === 'lieferadresse_abfragen_standardland' }
-                                    <select class="custom-select" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
+                {if $cnf->isConfigurable()}
+                    <div class="form-group form-row align-items-center {if isset($cSuche) && $cnf->getID() == $cSuche} highlight{/if}">
+                        <label class="col col-sm-4 col-form-label text-sm-right order-1" for="{$cnf->getValueName()}">{$cnf->getName()}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $cnf->getInputType() === 'number'}config-type-number{/if}">
+                            {if $cnf->getInputType() === 'selectbox'}
+                                {if $cnf->getValueName() === 'kundenregistrierung_standardland' || $cnf->getValueName() === 'lieferadresse_abfragen_standardland' }
+                                    <select class="custom-select" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}">
                                         {foreach $countries as $country}
-                                            <option value="{$country->getISO()}" {if $cnf->gesetzterWert == $country->getISO()}selected{/if}>{$country->getName()}</option>
+                                            <option value="{$country->getISO()}" {if $cnf->getSetValue() == $country->getISO()}selected{/if}>{$country->getName()}</option>
                                         {/foreach}
                                     </select>
                                 {else}
-                                    <select class="custom-select" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
-                                        {foreach $cnf->ConfWerte as $wert}
-                                            <option value="{$wert->cWert}" {if $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
+                                    <select class="custom-select" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}">
+                                        {foreach $cnf->getValues() as $value}
+                                            <option value="{$value->cWert}" {if $cnf->getSetValue() == $value->cWert}selected{/if}>{$value->cName}</option>
                                         {/foreach}
                                     </select>
                                 {/if}
-                            {elseif $cnf->cInputTyp === 'listbox'}
-                                <select name="{$cnf->cWertName}[]"
-                                id="{$cnf->cWertName}"
+                            {elseif $cnf->getInputType() === 'listbox'}
+                                <select name="{$cnf->getValueName()}[]"
+                                id="{$cnf->getValueName()}"
                                 multiple="multiple"
                                 class="selectpicker custom-select combo"
                                 data-selected-text-format="count > 2"
                                 data-size="7">
-                                    {foreach $cnf->ConfWerte as $wert}
-                                        <option value="{$wert->cWert}" {foreach $cnf->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->cWert}selected{/if}{/foreach}>{$wert->cName}</option>
+                                    {foreach $cnf->getValues() as $value}
+                                        <option value="{$value->cWert}" {foreach $cnf->getSetValue() as $setValue}{if $setValue->cWert == $value->cWert}selected{/if}{/foreach}>{$value->cName}</option>
                                     {/foreach}
                                 </select>
-                            {elseif $cnf->cInputTyp === 'pass'}
-                                <input class="form-control" autocomplete="off" type="password" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
-                            {elseif $cnf->cInputTyp === 'number'}
+                            {elseif $cnf->getInputType() === 'pass'}
+                                <input class="form-control" autocomplete="off" type="password" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{$cnf->getSetValue()}" tabindex="1" />
+                            {elseif $cnf->getInputType() === 'number'}
                                 <div class="input-group form-counter">
                                     <div class="input-group-prepend">
                                         <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
                                             <span class="fas fa-minus"></span>
                                         </button>
                                     </div>
-                                    <input class="form-control" type="number" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" tabindex="1" />
+                                    <input class="form-control" type="number" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}" tabindex="1" />
                                     <div class="input-group-append">
                                         <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
                                             <span class="fas fa-plus"></span>
@@ -87,7 +87,7 @@
                                     </div>
                                 </div>
                             {else}
-                                <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" tabindex="1" />
+                                <input class="form-control" type="text" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}" tabindex="1" />
                             {/if}
                         </div>
                         {include file='snippets/einstellungen_icons.tpl' cnf=$cnf}
@@ -99,8 +99,8 @@
                     {/if}
                     <div class="card">
                         <div class="card-header">
-                            <span class="subheading1" id="{$cnf->cWertName}">
-                                {$cnf->cName}
+                            <span class="subheading1" id="{$cnf->getValueName()}">
+                                {$cnf->getName()}
                                 {if !empty($cnf->cSektionsPfad)}
                                     <span class="path float-right">
                                         <strong>{__('settingspath')}:</strong> {$cnf->cSektionsPfad}
@@ -122,7 +122,7 @@
             <div class="save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        {if $Sektion->getID() === $smarty.const.CONF_EMAILS}
+                        {if $section->getID() === $smarty.const.CONF_EMAILS}
                             <script>
                             $(function() {
                                 if ($('#email_methode').val() !== 'smtp') {

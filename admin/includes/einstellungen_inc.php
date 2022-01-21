@@ -1,5 +1,8 @@
 <?php declare(strict_types=1);
 
+use JTL\Backend\Settings\Manager as SettingsManager;
+use JTL\Backend\Settings\Sections\Search;
+use JTL\DB\SqlObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
@@ -15,9 +18,12 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_menu.php';
  */
 function bearbeiteEinstellungsSuche(string $query, bool $save = false): stdClass
 {
+//    \trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
+    $sql    = new SqlObject();
     $result = (object)[
         'cSearch'          => '',
         'cWHERE'           => '',
+        'sql' => $sql,
         'nSuchModus'       => 0,
         'cSuche'           => $query,
         'oEinstellung_arr' => [],
@@ -25,9 +31,9 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false): stdClass
     if (mb_strlen($query) === 0) {
         return $result;
     }
-    $result->cWHERE = "(ec.cModulId IS NULL OR ec.cModulId = '') AND ec.kEinstellungenSektion != 101 ";
-    $idList         = explode(',', $query);
-    $isIdList       = count($idList) > 1;
+    $where    = "(ec.cModulId IS NULL OR ec.cModulId = '') AND ec.kEinstellungenSektion != 101 ";
+    $idList   = explode(',', $query);
+    $isIdList = count($idList) > 1;
     if ($isIdList) {
         foreach ($idList as $i => $item) {
             $idList[$i] = (int)$item;
@@ -40,9 +46,9 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false): stdClass
     }
 
     if ($isIdList) {
+        $where             .= ' AND kEinstellungenConf IN (' . implode(', ', $idList) . ')';
         $result->nSuchModus = 1;
         $result->cSearch    = sprintf(__('searchForID'), implode(', ', $idList));
-        $result->cWHERE    .= ' AND kEinstellungenConf IN (' . implode(', ', $idList) . ')';
         $result->confIds    = $idList;
     } else {
         $rangeList = explode('-', $query);
@@ -55,16 +61,16 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false): stdClass
             }
         }
         if ($isIdRange) {
+            $where             .= ' AND kEinstellungenConf BETWEEN ' . $rangeList[0] . ' AND ' . $rangeList[1];
+            $where             .= " AND cConf = 'Y'";
             $result->nSuchModus = 2;
             $result->cSearch    = sprintf(__('searchForIDRange'), $rangeList[0] . ' - ' . $rangeList[1]);
-            $result->cWHERE    .= ' AND kEinstellungenConf BETWEEN ' . $rangeList[0] . ' AND ' . $rangeList[1];
-            $result->cWHERE    .= " AND cConf = 'Y'";
             $result->confIdFrom = $rangeList[0];
             $result->confIdTo   = $rangeList[1];
         } elseif ((int)$query > 0) {
             $result->nSuchModus = 3;
             $result->cSearch    = sprintf(__('searchForID'), $query);
-            $result->cWHERE    .= ' AND kEinstellungenConf = ' . (int)$query;
+            $where             .= ' AND kEinstellungenConf = ' . (int)$query;
         } else {
             $query              = mb_convert_case($query, MB_CASE_LOWER);
             $queryEnt           = Text::htmlentities($query);
@@ -83,10 +89,12 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false): stdClass
                     $valueNames[] = "'" . $valueName . "'";
                 }
             }
-            $result->cWHERE .= ' AND cWertName IN (' . (implode(', ', $valueNames) ?: "''") . ')';
-            $result->cWHERE .= " AND cConf = 'Y'";
+            $where .= ' AND cWertName IN (' . (implode(', ', $valueNames) ?: "''") . ')';
+            $where .= " AND cConf = 'Y'";
         }
     }
+    $result->cWHERE = $where;
+    $sql->setWhere($where);
 
     return holeEinstellungen($result, $save);
 }
@@ -95,12 +103,22 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false): stdClass
  * @param stdClass $sql
  * @param bool   $save
  * @return stdClass
+ * @deprecated since 5.2.0
  */
 function holeEinstellungen(stdClass $sql, bool $save): stdClass
 {
+//    \trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
     if (mb_strlen($sql->cWHERE) <= 0) {
         return $sql;
     }
+    $manager               = new SettingsManager(
+        Shop::Container()->getDB(),
+        Shop::Smarty(),
+        Shop::Container()->getAdminAccount(),
+        Shop::Container()->getGetText(),
+        Shop::Container()->getAlertService()
+    );
+    $section               = new Search($manager, 0);
     $sql->oEinstellung_arr = Shop::Container()->getDB()->getObjects(
         'SELECT ec.*, e.cWert AS currentValue, ed.cWert AS defaultValue
             FROM teinstellungenconf AS ec
@@ -111,29 +129,13 @@ function holeEinstellungen(stdClass $sql, bool $save): stdClass
             WHERE ' . $sql->cWHERE . '
             ORDER BY ec.kEinstellungenSektion, nSort'
     );
+    $configData            = $section->generateConfigData($sql->sql);
+    $sql->configData       = $configData;
+//    Shop::dbg($configData, false, '$configData:');
+//    Shop::dbg($sql->oEinstellung_arr, false, '$sql->oEinstellung_arr');
     Shop::Container()->getGetText()->loadConfigLocales();
-    foreach ($sql->oEinstellung_arr as $config) {
-        $config->kEinstellungenConf    = (int)$config->kEinstellungenConf;
-        $config->kEinstellungenSektion = (int)$config->kEinstellungenSektion;
-        $config->nSort                 = (int)$config->nSort;
-        $config->nStandardAnzeigen     = (int)$config->nStandardAnzeigen;
-        $config->nModul                = (int)$config->nModul;
-        Shop::Container()->getGetText()->localizeConfig($config);
-        if ((int)$sql->nSuchModus === 3 && $config->cConf === 'Y') {
-            $sql->oEinstellung_arr = [];
-            $configHead            = holeEinstellungHeadline($config->nSort, $config->kEinstellungenSektion);
-            if ($configHead !== null && $configHead->kEinstellungenConf > 0) {
-                $sql->oEinstellung_arr[] = $configHead;
-                $sql                     = holeEinstellungAbteil(
-                    $sql,
-                    $configHead->nSort,
-                    $configHead->kEinstellungenSektion
-                );
-            }
-        } elseif ($config->cConf === 'N') {
-            $sql = holeEinstellungAbteil($sql, (int)$config->nSort, (int)$config->kEinstellungenSektio);
-        }
-    }
+    $section->enhanceSearchResults($sql);
+//    Shop::dbg($sql->configData, false, 'xxx1');
     // Aufräumen
     if (count($sql->oEinstellung_arr) > 0) {
         $configIDs = [];
@@ -148,7 +150,11 @@ function holeEinstellungen(stdClass $sql, bool $save): stdClass
             }
         }
         $sql->oEinstellung_arr = sortiereEinstellungen($sql->oEinstellung_arr);
+        $sql->configData       = $section->sortiereEinstellungen($sql->configData);
+        $sql->configData       = $section->groupByHeadline($sql->configData);
     }
+//    Shop::dbg($sql->configData, false, '$sql->configDataAfter');
+//    Shop::dbg($sql->oEinstellung_arr, true, '$sql->oEinstellung_arrAfter');
 
     return $sql;
 }

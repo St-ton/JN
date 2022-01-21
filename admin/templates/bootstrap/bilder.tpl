@@ -54,40 +54,40 @@
             </div>
             {assign var=open value=false}
             {foreach $oConfig_arr as $cnf}
-            {if strpos($cnf->cWertName, 'hoehe') === false && strpos($cnf->cWertName, 'breite') === false}
-                {if $cnf->cConf === 'Y'}
-                    <div class="form-group form-row align-items-center{if isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
-                        <label class="col col-sm-4 col-form-label text-sm-right order-1" for="{$cnf->cWertName}">{$cnf->cName}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $cnf->cInputTyp === 'number'}config-type-number{/if}">
-                        {if $cnf->cInputTyp === 'selectbox'}
-                            <select class="custom-select" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
-                                {foreach $cnf->ConfWerte as $wert}
-                                    <option value="{$wert->cWert}" {if $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
+            {if strpos($cnf->getValueName(), 'hoehe') === false && strpos($cnf->getValueName(), 'breite') === false}
+                {if $cnf->isConfigurable()}
+                    <div class="form-group form-row align-items-center{if isset($cSuche) && $cnf->getID() == $cSuche} highlight{/if}">
+                        <label class="col col-sm-4 col-form-label text-sm-right order-1" for="{$cnf->getValueName()}">{$cnf->getName()}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $cnf->getInputType() === 'number'}config-type-number{/if}">
+                        {if $cnf->getInputType() === 'selectbox'}
+                            <select class="custom-select" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}">
+                                {foreach $cnf->getValues() as $wert}
+                                    <option value="{$wert->cWert}" {if $cnf->getSetValue() == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                 {/foreach}
                             </select>
-                        {elseif $cnf->cInputTyp === 'pass'}
-                            <input class="form-control" type="password" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
-                        {elseif $cnf->cInputTyp === 'number'}
+                        {elseif $cnf->getInputType() === 'pass'}
+                            <input class="form-control" type="password" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{$cnf->getSetValue()}" tabindex="1" />
+                        {elseif $cnf->getInputType() === 'number'}
                             <div class="input-group form-counter">
                                 <div class="input-group-prepend">
                                     <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
                                         <span class="fas fa-minus"></span>
                                     </button>
                                 </div>
-                                <input class="form-control" type="number" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
+                                <input class="form-control" type="number" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{$cnf->getSetValue()}" tabindex="1" />
                                 <div class="input-group-append">
                                     <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
                                         <span class="fas fa-plus"></span>
                                     </button>
                                 </div>
                             </div>
-                        {elseif $cnf->cInputTyp === 'color'}
+                        {elseif $cnf->getInputType() === 'color'}
                             {include file='snippets/colorpicker.tpl'
-                                cpID="config-{$cnf->cWertName}"
-                                cpName=$cnf->cWertName
-                                cpValue=$cnf->gesetzterWert}
+                                cpID="config-{$cnf->getValueName()}"
+                                cpName=$cnf->getValueName()
+                                cpValue=$cnf->getSetValue()}
                         {else}
-                            <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
+                            <input class="form-control" type="text" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{$cnf->getSetValue()}" tabindex="1" />
                         {/if}
                         </div>
                         {include file='snippets/einstellungen_icons.tpl' cnf=$cnf}
@@ -96,7 +96,7 @@
                     {if $open}</div></div>{/if}
                     <div class="card">
                         <div class="card-header">
-                            <div class="subheading1">{$cnf->cName}
+                            <div class="subheading1">{$cnf->getName()}
                             {if isset($cnf->cSektionsPfad) && $cnf->cSektionsPfad|strlen > 0}
                                 <span class="path"><strong>{__('settingspath')}:</strong> {$cnf->cSektionsPfad}</span>
                             {/if}

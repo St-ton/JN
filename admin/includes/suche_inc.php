@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use Illuminate\Support\Collection;
+use JTL\Backend\Settings\Item;
 use JTL\Helpers\Text;
 use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
@@ -22,12 +23,15 @@ function adminSearch(string $query, bool $standalonePage = false): ?string
     require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
     require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'zahlungsarten_inc.php';
 
-    $adminMenuItems  = adminMenuSearch($query);
-    $settings        = bearbeiteEinstellungsSuche($query);
+    $adminMenuItems = adminMenuSearch($query);
+    $settings       = bearbeiteEinstellungsSuche($query);
+//    Shop::dbg($settings, true);
     $shippings       = getShippingByName($query);
     $paymentMethods  = getPaymentMethodsByName($query);
     $groupedSettings = [];
     $currentGroup    = null;
+//    Shop::dbg($settings->oEinstellung_arr, false, '$settings->oEinstellung_arr:');
+//    Shop::dbg($settings, true, '$settings');
     foreach ($settings->oEinstellung_arr as $setting) {
         if ($setting->cConf === 'N') {
             $currentGroup                   = $setting;
@@ -38,6 +42,20 @@ function adminSearch(string $query, bool $standalonePage = false): ?string
             $currentGroup->oEinstellung_arr[] = $setting;
         }
     }
+//    $groupedSettings = $settings->configData;
+//    Shop::dbg($settings, true, 'grouped:');
+//    $currentGroup    = null;
+//    /** @var Item $setting */
+//    foreach ($settings->configData as $setting) {
+//        if (!$setting->isConfigurable()) {
+//            $currentGroup                   = $setting;
+//            $currentGroup->oEinstellung_arr = [];
+//            $groupedSettings[]              = $currentGroup;
+//        } elseif ($currentGroup !== null) {
+//            $setting->setName(highlightSearchTerm($setting->getName(), $query));
+//            $currentGroup->oEinstellung_arr[] = $setting;
+//        }
+//    }
     foreach ($shippings as $shipping) {
         $shipping->cName = highlightSearchTerm($shipping->cName, $query);
     }
@@ -49,7 +67,7 @@ function adminSearch(string $query, bool $standalonePage = false): ?string
     $smarty->assign('standalonePage', $standalonePage)
         ->assign('query', Text::filterXSS($query))
         ->assign('adminMenuItems', $adminMenuItems)
-        ->assign('settings', !empty($settings->oEinstellung_arr) ? $groupedSettings : null)
+        ->assign('settings', $groupedSettings)
         ->assign('shippings', count($shippings) > 0 ? $shippings : null)
         ->assign('paymentMethods', count($paymentMethods) > 0 ? $paymentMethods : null)
         ->assign('plugins', getPlugins($query));

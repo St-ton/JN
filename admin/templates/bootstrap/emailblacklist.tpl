@@ -8,24 +8,24 @@
         <div id="settings">
             {assign var=open value=false}
             {foreach $config as $configItem}
-                {if $configItem->cConf === 'Y'}
+                {if $configItem->isConfigurable()}
                     <div class="item form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$configItem->cWertName}">{$configItem->cName}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $configItem->cInputTyp === 'number'}config-type-number{/if}">
-                            {if $configItem->cInputTyp === 'selectbox'}
-                                <select name="{$configItem->cWertName}" id="{$configItem->cWertName}" class="custom-select combo">
-                                    {foreach $configItem->ConfWerte as $wert}
-                                        <option value="{$wert->cWert}" {if $configItem->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$configItem->getValueName()}">{$configItem->cName}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $configItem->getInputType() === 'number'}config-type-number{/if}">
+                            {if $configItem->getInputType() === 'selectbox'}
+                                <select name="{$configItem->getValueName()}" id="{$configItem->getValueName()}" class="custom-select combo">
+                                    {foreach $configItem->getValues() as $wert}
+                                        <option value="{$wert->cWert}" {if $configItem->getSetValue() == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                     {/foreach}
                                 </select>
-                            {elseif $configItem->cInputTyp === 'number'}
+                            {elseif $configItem->getInputType() === 'number'}
                                 <div class="input-group form-counter">
                                     <div class="input-group-prepend">
                                         <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
                                             <span class="fas fa-minus"></span>
                                         </button>
                                     </div>
-                                    <input class="form-control" type="number" name="{$configItem->cWertName}" id="{$configItem->cWertName}" value="{if isset($configItem->gesetzterWert)}{$configItem->gesetzterWert}{/if}" tabindex="1" />
+                                    <input class="form-control" type="number" name="{$configItem->getValueName()}" id="{$configItem->getValueName()}" value="{if $configItem->getSetValue() !== null}{$configItem->getSetValue()}{/if}" tabindex="1" />
                                     <div class="input-group-append">
                                         <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
                                             <span class="fas fa-plus"></span>
@@ -33,7 +33,7 @@
                                     </div>
                                 </div>
                             {else}
-                                <input type="text" name="{$configItem->cWertName}" id="{$configItem->cWertName}" value="{$configItem->gesetzterWert}" tabindex="1" />
+                                <input type="text" name="{$configItem->getValueName()}" id="{$configItem->getValueName()}" value="{$configItem->getSetValue()}" tabindex="1" />
                             {/if}
                         </div>
                         {if $configItem->cBeschreibung}

@@ -326,6 +326,22 @@ class Manager
         )->cnt;
     }
 
+    public function getAllSections(): array
+    {
+        $sections   = [];
+        $factory    = new SectionFactory();
+        $sectionIDs = $this->db->getObjects(
+            'SELECT kEinstellungenSektion AS id
+                FROM teinstellungensektion
+                ORDER BY kEinstellungenSektion'
+        );
+        foreach ($sectionIDs as $item) {
+            $sections[] = $factory->getSection((int)$item->id, $this);
+        }
+
+        return $sections;
+    }
+
     /**
      * @return DbInterface
      */

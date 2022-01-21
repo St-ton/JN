@@ -145,49 +145,49 @@
         <div class="card">
             {assign var=hasBody value=false}
             {foreach $Conf as $cnf}
-            {if $cnf->cConf === 'Y'}
+            {if $cnf->isConfigurable()}
             {if $hasBody === false}<div class="card-body">{assign var=hasBody value=true}{/if}
                 <div class="form-group form-row align-items-center">
-                    <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->cWertName}">{$cnf->cName}:</label>
-                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $cnf->cInputTyp === 'number'}config-type-number{/if}">
-                    {if $cnf->cInputTyp === 'selectbox'}
-                        <select name="{$cnf->cWertName}" id="{$cnf->cWertName}" class="custom-select combo">
-                            {foreach $cnf->ConfWerte as $wert}
-                                <option value="{$wert->cWert}" {if isset($cnf->gesetzterWert) && $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->getValueName()}">{$cnf->getName()}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $cnf->getInputType() === 'number'}config-type-number{/if}">
+                    {if $cnf->getInputType() === 'selectbox'}
+                        <select name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" class="custom-select combo">
+                            {foreach $cnf->getValues() as $wert}
+                                <option value="{$wert->cWert}" {if $cnf->getSetValue() !== null && $cnf->getSetValue() == $wert->cWert}selected{/if}>{$wert->cName}</option>
                             {/foreach}
                         </select>
-                    {elseif $cnf->cInputTyp === 'password'}
-                        <input class="form-control" autocomplete="off" type="password" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" />
-                    {elseif $cnf->cInputTyp === 'number'}
+                    {elseif $cnf->getInputType() === 'password'}
+                        <input class="form-control" autocomplete="off" type="password" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}" />
+                    {elseif $cnf->getInputType() === 'number'}
                         <div class="input-group form-counter">
                             <div class="input-group-prepend">
                                 <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
                                     <span class="fas fa-minus"></span>
                                 </button>
                             </div>
-                            <input class="form-control" type="number" name="{$cnf->cWertName}"
-                                   id="{$cnf->cWertName}"
-                                   value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}"/>
+                            <input class="form-control" type="number" name="{$cnf->getValueName()}"
+                                   id="{$cnf->getValueName()}"
+                                   value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}"/>
                             <div class="input-group-append">
                                 <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
                                     <span class="fas fa-plus"></span>
                                 </button>
                             </div>
                         </div>
-                    {elseif $cnf->cInputTyp === 'textarea'}
-                        <textarea class="form-control" name="{$cnf->cWertName}" id="{$cnf->cWertName}">{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}</textarea>
+                    {elseif $cnf->getInputType() === 'textarea'}
+                        <textarea class="form-control" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}">{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}</textarea>
                     {else}
-                        <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" />
-                        {if isset($cnf->kEinstellungenConf)}
-                            <span id="EinstellungAjax_{$cnf->kEinstellungenConf}"></span>
+                        <input class="form-control" type="text" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}" />
+                        {if isset($cnf->getID())}
+                            <span id="EinstellungAjax_{$cnf->getID()}"></span>
                         {/if}
                     {/if}
                     </div>
-                    <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$cnf->cBeschreibung}</div>
+                    <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$cnf->getDescription()}</div>
                 </div>
                 {else}
                     <div class="card-header">
-                        <div class="subheading1">{__('settings')}: {$cnf->cName}</div>
+                        <div class="subheading1">{__('settings')}: {$cnf->getName()}</div>
                         <hr class="mb-n3">
                     </div>
                     <div class="card-body">

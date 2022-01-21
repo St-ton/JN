@@ -36,13 +36,9 @@
                     {foreach $setting->oEinstellung_arr as $s}
                         <li tabindex="-1">
                             <a class="dropdown-item value"
-                               href="
-                               {if $setting->specialSetting === false}einstellungen.php?cSuche={$s->getID()}&einstellungen_suchen=1
-                               {else}
-                               {$setting->cURL}{$setting->settingsAnchor}
-                               {/if}">
+                               href="{if $setting->specialSetting === false}einstellungen.php?cSuche={$s->getID()}&einstellungen_suchen=1{else}{$setting->cURL}{$setting->settingsAnchor}{/if}">
                                 <span class="title">{$s->getName()}
-                                    <small>{$s->getDescription()}</small>
+{*                                    <small>{$s->getDescription()}</small>*}
                                 </span>
                                 <span class="path">{__('settingNumberShort')}: {$s->getID()}</span>
                             </a>

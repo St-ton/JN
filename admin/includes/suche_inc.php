@@ -28,41 +28,13 @@ function adminSearch(string $query, bool $standalonePage = false): ?string
 //    Shop::dbg($settings, true);
     $shippings       = getShippingByName($query);
     $paymentMethods  = getPaymentMethodsByName($query);
-    $groupedSettings = [];
-    $currentGroup    = null;
-//    Shop::dbg($settings->oEinstellung_arr, false, '$settings->oEinstellung_arr:');
-//    Shop::dbg($settings, true, '$settings');
-    foreach ($settings->oEinstellung_arr as $setting) {
-        if ($setting->cConf === 'N') {
-            $currentGroup                   = $setting;
-            $currentGroup->oEinstellung_arr = [];
-            $groupedSettings[]              = $currentGroup;
-        } elseif ($currentGroup !== null) {
-            $setting->cName                   = highlightSearchTerm($setting->cName, $query);
-            $currentGroup->oEinstellung_arr[] = $setting;
-        }
-    }
-//    $groupedSettings = $settings->configData;
-//    Shop::dbg($settings, true, 'grouped:');
-//    $currentGroup    = null;
-//    /** @var Item $setting */
-//    foreach ($settings->configData as $setting) {
-//        if (!$setting->isConfigurable()) {
-//            $currentGroup                   = $setting;
-//            $currentGroup->oEinstellung_arr = [];
-//            $groupedSettings[]              = $currentGroup;
-//        } elseif ($currentGroup !== null) {
-//            $setting->setName(highlightSearchTerm($setting->getName(), $query));
-//            $currentGroup->oEinstellung_arr[] = $setting;
-//        }
-//    }
+    $groupedSettings = $settings->groupedConfigData;
     foreach ($shippings as $shipping) {
         $shipping->cName = highlightSearchTerm($shipping->cName, $query);
     }
     foreach ($paymentMethods as $paymentMethod) {
         $paymentMethod->cName = highlightSearchTerm($paymentMethod->cName, $query);
     }
-
     $smarty = Shop::Smarty();
     $smarty->assign('standalonePage', $standalonePage)
         ->assign('query', Text::filterXSS($query))

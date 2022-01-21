@@ -3,6 +3,7 @@
 use JTL\Alert\Alert;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
+use JTL\DB\SqlObject;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -138,6 +139,7 @@ if ($step === 'uebersicht') {
 if ($step === 'einstellungen bearbeiten') {
     $confData = [];
     $sql      = new stdClass();
+    Shop::dbg($isSearch, false, '$isSearch?');
     if ($isSearch) {
         $sql = bearbeiteEinstellungsSuche($search);
     }
@@ -147,18 +149,23 @@ if ($step === 'einstellungen bearbeiten') {
     $oSections = [];
     if (mb_strlen($sql->cWHERE) > 0) {
         $confData = $sql->oEinstellung_arr;
+        Shop::dbg($confData, true,'oEinstellungen_ar');
         $smarty->assign('cSearch', $sql->cSearch)
             ->assign('cSuche', $sql->cSuche);
         foreach (\array_unique(pluck($confData, 'kEinstellungenSektion')) as $id) {
 //            // @todo:!
-//            $sqlObj = new SqlObject();
-//            $sqlObj->setWhere($sql->cWHERE);
-            Shop::dbg($sql, true);
+            $sqlObj = new SqlObject();
+            $sqlObj->setWhere($sql->cWHERE);
+//            Shop::dbg($sql, true);
             $sectionInstance = $sectionFactory->getSection($id, $settingManager);
-            $sectionInstance->setConfigData($confData);
-            $oSections[] = $sectionInstance->loadCurrentData();
+            $sectionInstance->generateConfigData($sqlObj);
+            $current = $sectionInstance->loadCurrentData();
+            $oSections[] = $current;
         }
         flatten($oSections);
+//        Shop::dbg($confData, false,'old');
+        $confData = $sql->configData;
+//        Shop::dbg($confData, true,'newwww');
     } else {
         $sectionInstance = $sectionFactory->getSection($sectionID, $settingManager);
         $confData        = $sectionInstance->getFilteredConfData($sectionInstance->loadCurrentData(), Request::verifyGPDataString('group'));

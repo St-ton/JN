@@ -398,7 +398,7 @@ class Item
         $this->pluginID = $pluginID;
     }
 
-    public function __debugInfo(): ?array
+    public function x__debugInfo(): ?array
     {
         return [
             'id'        => $this->getID(),

@@ -175,10 +175,10 @@ class Search extends Base
     public function groupByHeadline(array $configData): array
     {
         $headlines = filter($configData, static function ($item) {
-            return $item instanceof Headline;
+            return \get_class($item) === Headline::class;
         });
         $items     = filter($configData, static function ($item) {
-            return $item instanceof Item;
+            return \get_class($item) === Item::class;
         });
         /** @var Headline $headline */
         foreach ($headlines as $headline) {

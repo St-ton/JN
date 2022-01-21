@@ -151,10 +151,11 @@ function holeEinstellungen(stdClass $sql, bool $save): stdClass
         }
         $sql->oEinstellung_arr = sortiereEinstellungen($sql->oEinstellung_arr);
         $sql->configData       = $section->sortiereEinstellungen($sql->configData);
-        $sql->configData       = $section->groupByHeadline($sql->configData);
+        $sql->groupedConfigData       = $section->groupByHeadline($sql->configData);
     }
 //    Shop::dbg($sql->configData, false, '$sql->configDataAfter');
 //    Shop::dbg($sql->oEinstellung_arr, true, '$sql->oEinstellung_arrAfter');
+//    Shop::dbg($sql,true);
 
     return $sql;
 }
@@ -349,7 +350,7 @@ function sortiereEinstellungen(array $config): array
     $sections   = [];
     foreach ($config as $conf) {
         if (isset($conf->kEinstellungenSektion) && $conf->cConf !== 'N') {
-            $headline = holeEinstellungHeadline($conf->nSort, $conf->kEinstellungenSektion);
+            $headline = holeEinstellungHeadline((int)$conf->nSort, (int)$conf->kEinstellungenSektion);
             if ($headline !== null && !isset($sections[$headline->cWertName])) {
                 $sections[$headline->cWertName] = true;
                 $tmpConf[]                      = $headline;

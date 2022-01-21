@@ -181,6 +181,8 @@ class Base implements Section
                     AND ec.nModul = 0
                     AND ec.nStandardanzeigen = 1');
             $sql->addParam('sid', $this->id);
+        }
+        if ($sql->getOrder() === '') {
             $sql->setOrder('ec.nSort');
         }
 

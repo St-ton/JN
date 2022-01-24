@@ -1,6 +1,9 @@
 <?php declare(strict_types=1);
 
 use Illuminate\Support\Collection;
+use JTL\Backend\Settings\Manager as SettingsManager;
+use JTL\Backend\Settings\Search;
+use JTL\Backend\Settings\Sections\Section;
 use JTL\Helpers\Text;
 use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
@@ -26,8 +29,6 @@ function adminSearch(string $query, bool $standalonePage = false): ?string
     $settings       = configSearch($query);
     $shippings      = getShippingByName($query);
     $paymentMethods = getPaymentMethodsByName($query);
-//    $groupedSettings = $settings->groupedConfigData;
-//    Shop::dbg($settings, true, '$settings:');
     foreach ($shippings as $shipping) {
         $shipping->cName = highlightSearchTerm($shipping->cName, $query);
     }
@@ -49,6 +50,25 @@ function adminSearch(string $query, bool $standalonePage = false): ?string
     }
 
     return $smarty->fetch('suche.tpl');
+}
+
+/**
+ * @param string $query
+ * @return Section[]
+ */
+function configSearch(string $query): array
+{
+    $db      = Shop::Container()->getDB();
+    $gettext = Shop::Container()->getGetText();
+    $manager = new SettingsManager(
+        $db,
+        Shop::Smarty(),
+        Shop::Container()->getAdminAccount(),
+        $gettext,
+        Shop::Container()->getAlertService()
+    );
+
+    return (new Search($db, $gettext, $manager))->getResultSections($query);
 }
 
 /**

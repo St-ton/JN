@@ -191,7 +191,6 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken())
 
 $section = $sectionFactory->getSection($sectionID, $settingManager);
 $section->load();
-//dd($section);
 if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
     && (!$db->getSingleObject("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'")
         || !$db->getSingleObject("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'"))) {
@@ -211,7 +210,6 @@ getAdminSectionSettings(CONF_ARTIKELUEBERSICHT);
 $smarty->assign('action', 'sucheinstellungen.php')
     ->assign('kEinstellungenSektion', $sectionID)
     ->assign('sections', [$section])
-    ->assign('cPrefDesc', filteredConfDescription($sectionID))
     ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $sectionID))
     ->assign('step', $step)
     ->assign('supportFulltext', version_compare($mysqlVersion, '5.6', '>='))

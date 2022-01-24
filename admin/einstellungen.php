@@ -142,9 +142,7 @@ if ($step === 'einstellungen bearbeiten') {
         ->assign('sections', $sections);
 }
 
-$smarty->assign('cPrefDesc', filteredConfDescription($sectionID))
-    ->assign('cPrefURL', __('prefURL' . $sectionID))
-    ->assign('step', $step)
+$smarty->assign('step', $step)
     ->assign('countries', ShippingMethod::getPossibleShippingCountries())
     ->assign('waehrung', $defaultCurrency->cName)
     ->display('einstellungen.tpl');

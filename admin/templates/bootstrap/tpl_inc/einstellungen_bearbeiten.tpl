@@ -2,7 +2,7 @@
     {if isset($cSearch) && $cSearch|strlen  > 0}
         {assign var=title value=$cSearch}
     {/if}
-    {include file='tpl_inc/seite_header.tpl' cTitel=$title cBeschreibung=$cPrefDesc cDokuURL=$cPrefURL}
+    {include file='tpl_inc/seite_header.tpl' cTitel=$title cBeschreibung='' cDokuURL=$cPrefURL}
 {/if}
 {$search = isset($cSuche) && !empty($cSuche)}
 {if $search}

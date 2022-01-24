@@ -7,6 +7,7 @@ use JTL\Cart\CartHelper;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Nice;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use function Functional\some;
 
@@ -109,7 +110,9 @@ class Configurator
         if (!\is_array($cart->PositionenArr) || \count($cart->PositionenArr) === 0 || !self::checkLicense()) {
             return;
         }
-        $deletedItems = [];
+        $deletedItems    = [];
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $languageID      = Shop::getLanguageID();
         foreach ($cart->PositionenArr as $index => $item) {
             if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL) {
                 continue;
@@ -119,7 +122,7 @@ class Configurator
                 $configItems = [];
                 foreach ($cart->PositionenArr as $child) {
                     if ($child->cUnique && $child->cUnique === $item->cUnique && $child->kKonfigitem > 0) {
-                        $configItems[] = new Item($child->kKonfigitem);
+                        $configItems[] = new Item($child->kKonfigitem, $languageID, $customerGroupID);
                     }
                 }
                 // Konfiguration validieren
@@ -136,8 +139,8 @@ class Configurator
             }
             if ($deleted) {
                 Shop::Container()->getLogService()->error(
-                    'Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: ' .
-                    $item->cName[$_SESSION['cISOSprache']] . '(' . $item->kArtikel . ')'
+                    'Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: '
+                    . $item->cName[$_SESSION['cISOSprache']] . '(' . $item->kArtikel . ')'
                 );
             }
         }
@@ -229,11 +232,11 @@ class Configurator
                 $errors[$groupID] .= self::langComponent($min > 1);
             } elseif ($itemCount > $max && $max > 0) {
                 if ($min === $max) {
-                    $errors[$groupID] = Shop::Lang()->get('configChooseNComponents', 'productDetails', $min) .
-                        self::langComponent($min > 1);
+                    $errors[$groupID] = Shop::Lang()->get('configChooseNComponents', 'productDetails', $min)
+                        . self::langComponent($min > 1);
                 } else {
-                    $errors[$groupID] = Shop::Lang()->get('configChooseMaxComponents', 'productDetails', $max) .
-                        self::langComponent($max > 1);
+                    $errors[$groupID] = Shop::Lang()->get('configChooseMaxComponents', 'productDetails', $max)
+                        . self::langComponent($max > 1);
                 }
             }
         }

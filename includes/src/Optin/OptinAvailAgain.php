@@ -50,7 +50,8 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
         $this->refData                       = $refData;
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
-        $this->product                       = (new Artikel())->fuelleArtikel($this->refData->getProductId(), $options);
+        $this->product                       = new Artikel($this->dbHandler);
+        $this->product->fuelleArtikel($this->refData->getProductId(), $options);
         $this->saveOptin($this->generateUniqOptinCode());
 
         return $this;

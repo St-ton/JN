@@ -64,9 +64,10 @@ function getManufacturers($selectedManufacturers = ''): array
 {
     $selected = Text::parseSSKint($selectedManufacturers);
     $items    = Shop::Container()->getDB()->getObjects('SELECT kHersteller, cName FROM thersteller');
+    $langID   = Shop::getLanguageID();
     foreach ($items as $item) {
         $item->kHersteller = (int)$item->kHersteller;
-        $manufacturer      = new Hersteller($item->kHersteller);
+        $manufacturer      = new Hersteller($item->kHersteller, $langID);
         $item->cName       = $manufacturer->cName;
         $item->selected    = in_array($item->kHersteller, $selected, true);
         unset($manufacturer);
@@ -613,7 +614,7 @@ function informCouponCustomers($coupon)
     $coupon->cLocalizedMBW  = Preise::getLocalizedPriceString($coupon->fMindestbestellwert, $defaultCurrency, false);
     // kKunde-Array aller auserwaehlten Kunden
     $customerIDs     = Text::parseSSKint($coupon->cKunden);
-    $customerData    = $db->getObjects(
+    $customerData    = $db->getInts(
         'SELECT kKunde
             FROM tkunde
             WHERE TRUE
@@ -622,7 +623,8 @@ function informCouponCustomers($coupon)
             : 'AND kKundengruppe = ' . (int)$coupon->kKundengruppe) . '
                 ' . ($coupon->cKunden === '-1'
             ? 'AND TRUE'
-            : 'AND kKunde IN (' . implode(',', $customerIDs) . ')')
+            : 'AND kKunde IN (' . implode(',', $customerIDs) . ')'),
+        'kKunde'
     );
     $productIDs      = [];
     $manufacturerIDs = Text::parseSSK($coupon->cHersteller);
@@ -631,17 +633,15 @@ function informCouponCustomers($coupon)
         $itemNumbers = array_map(static function ($e) {
             return '"' . $e . '"';
         }, $itemNumbers);
-        $productData = $db->getObjects(
+        $productIDs  = $db->getInts(
             'SELECT kArtikel
                 FROM tartikel
-                WHERE cArtNr IN (' . implode(',', $itemNumbers) . ')'
+                WHERE cArtNr IN (' . implode(',', $itemNumbers) . ')',
+            'kArtikel'
         );
-        $productIDs  = array_map(static function ($e) {
-            return (int)$e->kArtikel;
-        }, $productData);
     }
-    foreach ($customerData as $item) {
-        $customer = new Customer((int)$item->kKunde);
+    foreach ($customerData as $customerID) {
+        $customer = new Customer($customerID);
         $language = Shop::Lang()->getIsoFromLangID($customer->kSprache);
         if (!$language) {
             $language = $defaultLang;
@@ -664,7 +664,7 @@ function informCouponCustomers($coupon)
         }
         $products = [];
         foreach ($productIDs as $productID) {
-            $product = new Artikel();
+            $product = new Artikel($db);
             $product->fuelleArtikel(
                 $productID,
                 $defaultOptions,

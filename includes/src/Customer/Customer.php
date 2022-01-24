@@ -872,14 +872,15 @@ class Customer
     {
         if (($languageID > 0 || $customerID > 0) && $salutation !== '') {
             if ($languageID === 0 && $customerID > 0) {
-                $customer = Shop::Container()->getDB()->getSingleObject(
+                $customerLangID = Shop::Container()->getDB()->getSingleInt(
                     'SELECT kSprache
                         FROM tkunde
                         WHERE kKunde = :cid',
+                    'kSprache',
                     ['cid' => $customerID]
                 );
-                if ($customer !== null && $customer->kSprache > 0) {
-                    $languageID = (int)$customer->kSprache;
+                if ($customerLangID !== null && $customerLangID > 0) {
+                    $languageID = $customerLangID;
                 }
             }
             $lang     = null;

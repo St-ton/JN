@@ -142,12 +142,13 @@ class Location
      */
     private function getLanguage(int $groupID): int
     {
-        return (int)($this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT kSprache
                 FROM tauswahlassistentgruppe
                 WHERE kAuswahlAssistentGruppe = :groupID',
+            'kSprache',
             ['groupID' => $groupID]
-        )->kSprache ?? 0);
+        ) ?? 0;
     }
 
     /**
@@ -157,7 +158,7 @@ class Location
      */
     public function saveLocation(array $params, int $groupID): bool
     {
-        if ($groupID <= 0 || !\is_array($params) || \count($params) === 0) {
+        if ($groupID <= 0 || \count($params) === 0) {
             return false;
         }
         if (isset($params['cKategorie']) && \mb_strlen($params['cKategorie']) > 0) {
@@ -388,7 +389,7 @@ class Location
      */
     public function getLocation(string $keyName, int $id, int $languageID, bool $backend = false): ?self
     {
-        $item = $this->db->getSingleObject(
+        $item = $this->db->getSingleInt(
             'SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort AS o
                 JOIN tauswahlassistentgruppe AS g
@@ -396,6 +397,7 @@ class Location
                     AND g.kSprache = :langID
                 WHERE o.cKey = :keyID
                     AND o.kKey = :kkey',
+            'kAuswahlAssistentOrt',
             [
                 'langID' => $languageID,
                 'keyID'  => $keyName,
@@ -403,8 +405,8 @@ class Location
             ]
         );
 
-        return $item !== null && $item->kAuswahlAssistentOrt > 0
-            ? new self((int)$item->kAuswahlAssistentOrt, 0, $backend)
+        return $item !== null && $item > 0
+            ? new self($item, 0, $backend)
             : null;
     }
 }

@@ -57,7 +57,5 @@ if (!empty($_POST) && Form::validateToken()) {
         }
     }
 }
-$config = getAdminSectionSettings(CONF_FS);
-Shop::Container()->getGetText()->localizeConfigs($config);
-$smarty->assign('oConfig_arr', $config)
-    ->display('filesystem.tpl');
+getAdminSectionSettings(CONF_FS);
+$smarty->display('filesystem.tpl');

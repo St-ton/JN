@@ -5,8 +5,11 @@ use JTL\Backend\AdminFavorite;
 use JTL\Backend\Notification;
 use JTL\Backend\Settings\Item;
 use JTL\Backend\Settings\Manager;
+use JTL\Backend\Settings\SectionFactory;
+use JTL\Backend\Settings\Sections\Subsection;
 use JTL\Campaign;
 use JTL\Catalog\Currency;
+use JTL\DB\SqlObject;
 use JTL\Filter\SearchResults;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -18,6 +21,7 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
+use function Functional\pluck;
 
 /**
  * @param int|array $configSectionID
@@ -26,6 +30,58 @@ use JTL\Smarty\JTLSmarty;
  */
 function getAdminSectionSettings($configSectionID, bool $byName = false): array
 {
+    $sections       = [];
+    $filterNames    = [];
+    $smarty         = Shop::Smarty();
+    $db             = Shop::Container()->getDB();
+    $getText        = Shop::Container()->getGetText();
+    $adminAccount   = Shop::Container()->getAdminAccount();
+    $alertService   = Shop::Container()->getAlertService();
+    $sectionFactory = new SectionFactory();
+    $settingManager = new Manager($db, $smarty, $adminAccount, $getText, $alertService);
+    if ($byName) {
+        $sql = new SqlObject();
+        $in  = [];
+        foreach ($configSectionID as $i => $item) {
+            $sql->addParam(':itm' . $i, $item);
+            $in[] = ':itm' . $i;
+        }
+        $sectionIDs      = $db->getObjects(
+            'SELECT UNIQUE ec.kEinstellungenSektion AS id
+                FROM teinstellungenconf AS ec
+                LEFT JOIN teinstellungen_default AS e
+                    ON e.cName = ec.cWertName 
+                    WHERE ec.cWertName IN (' . implode(',', $in) . ')
+                    ORDER BY ec.nSort',
+            $sql->getParams()
+        );
+        $filterNames     = $configSectionID;
+        $configSectionID = array_map('\intval', pluck($sectionIDs, 'id'));
+    }
+    foreach ((array)$configSectionID as $id) {
+        $section = $sectionFactory->getSection($id, $settingManager);
+        $section->load();
+        $sections[] = $section;
+    }
+    if (count($filterNames) > 0) {
+        $section    = $sectionFactory->getSection(1, $settingManager);
+        $subsection = new Subsection();
+        foreach ($sections as $_section) {
+            foreach ($_section->getSubsections() as $_subsection) {
+                foreach ($_subsection->getItems() as $item) {
+                    if (in_array($item->getValueName(), $filterNames, true)) {
+                        $subsection->addItem($item);
+                    }
+                }
+            }
+        }
+        $section->setSubsections([$subsection]);
+        $sections = [$section];
+    }
+    $smarty->assign('sections', $sections);
+
+    return $sections;
+
     $gettext = Shop::Container()->getGetText();
     $gettext->loadConfigLocales();
     $db = Shop::Container()->getDB();

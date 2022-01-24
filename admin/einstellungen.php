@@ -4,7 +4,6 @@ use JTL\Alert\Alert;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\Search;
 use JTL\Backend\Settings\SectionFactory;
-use JTL\DB\SqlObject;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -12,8 +11,6 @@ use JTL\Helpers\Text;
 use JTL\Mail\SmtpTest;
 use JTL\Shop;
 use JTL\Shopsetting;
-use function Functional\flatten;
-use function Functional\pluck;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
@@ -27,9 +24,9 @@ $adminAccount   = Shop::Container()->getAdminAccount();
 $alertService   = Shop::Container()->getAlertService();
 $sectionFactory = new SectionFactory();
 $search         = Request::verifyGPDataString('cSuche');
+$searchQuery    = $search;
 $settingManager = new Manager($db, $smarty, $adminAccount, $getText, $alertService);
 $getText->loadConfigLocales(true, true);
-
 if ($isSearch) {
     $oAccount->permission('SETTINGS_SEARCH_VIEW', true, true);
 }
@@ -78,7 +75,6 @@ if ($sectionID > 0) {
     $smarty->assign('kEinstellungenSektion', CONF_GLOBAL);
 }
 $smarty->assign('testResult', null);
-//$getText->localizeConfigSection($section);
 
 if ($isSearch) {
     $step = 'einstellungen bearbeiten';
@@ -91,17 +87,10 @@ if (Request::postVar('resetSetting') !== null) {
     $confData = [];
     if ($isSearch) {
         $searchInstance = new Search($db, $getText, $settingManager);
-        $sql = $searchInstance->getResultSections($search);
-        Shop::dbg($sql, true);
+        $sections       = $searchInstance->getResultSections($search);
         $smarty->assign('cSearch', $searchInstance->getTitle());
-        foreach (\array_unique(pluck($confData, 'kEinstellungenSektion')) as $id) {
-//            // @todo:!
-//            $sqlObj = new SqlObject();
-//            $sqlObj->setWhere($sql->cWHERE);
-            Shop::dbg($sql, true, 'sql1');
-            $sectionInstance = $sectionFactory->getSection($id, $settingManager);
-            $sectionInstance->setConfigData($confData);
-            $sectionInstance->update($_POST);
+        foreach ($sections as $section) {
+            $section->update($_POST);
         }
     } else {
         $sectionInstance = $sectionFactory->getSection($sectionID, $settingManager);
@@ -127,48 +116,22 @@ if (Request::postVar('resetSetting') !== null) {
         $smarty->assign('testResult', $result);
     }
 }
-
 if ($step === 'uebersicht') {
     $overview = $settingManager->getAllSections();
     $smarty->assign('sectionOverview', $overview);
 }
 if ($step === 'einstellungen bearbeiten') {
-    $sections       = [];
-    $confData       = [];
-    $sql      = new stdClass();
     if ($isSearch) {
         $searchInstance = new Search($db, $getText, $settingManager);
-        $searchInstance->getResultSections($search);
-
-        $test = getSearchTest($search);
-        $sql = bearbeiteEinstellungsSuche($search);
-        $confData = $sql->oEinstellung_arr;
+        $sections       = $searchInstance->getResultSections($search);
         $smarty->assign('cSearch', $searchInstance->getTitle())
-            ->assign('cSuche', $searchInstance->getTitle());
-        foreach (\array_unique(pluck($confData, 'kEinstellungenSektion')) as $id) {
-//            // @todo:!
-            $sqlObj = new SqlObject();
-            $sqlObj->setWhere($sql->cWHERE);
-            $sectionInstance = $sectionFactory->getSection($id, $settingManager);
-            $cfd = $sectionInstance->generateConfigData($sqlObj);
-//            Shop::dbg($cfd, false, 'generateConfigData:');
-            $crnt = $sectionInstance->loadCurrentData();
-//            Shop::dbg($crnt, false, 'crnt:');
-            $sections[] = $sectionInstance;
-        }
-        flatten($sections);
-//        Shop::dbg($confData, false,'old');
-        $confData = $sql->configData;
-//        Shop::dbg($confData, false, 'confData:');
-//        Shop::dbg($sections, true,'sections:');
+            ->assign('cSuche', $search);
     } else {
         $sectionInstance = $sectionFactory->getSection($sectionID, $settingManager);
         $sectionInstance->load();
-        $sections[] = $sectionInstance;
+        $sections = [$sectionInstance];
     }
-//    Shop::dbg($sections, true);
     $smarty->assign('section', $section)
-//        ->assign('Conf', $confData)
         ->assign(
             'title',
             __('settings') . ': ' . (Request::verifyGPDataString('group') !== ''

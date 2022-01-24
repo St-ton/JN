@@ -306,7 +306,6 @@
             </div>
             <div id="config" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl'
-                    config=$oConfig_arr
                     name='einstellen'
                     a='saveSettings'
                     action='boxen.php'

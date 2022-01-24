@@ -3,12 +3,11 @@
 
 namespace JTL\Backend\Settings;
 
-
+use JTL\Backend\Settings\Sections\Section;
 use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
 use JTL\L10n\GetText;
-use JTL\Shop;
 use stdClass;
 
 class Search
@@ -47,7 +46,7 @@ class Search
 
     private function getSqlObject(string $query): SqlObject
     {
-        $sql    = new SqlObject();
+        $sql      = new SqlObject();
         $where    = "(ec.cModulId IS NULL OR ec.cModulId = '') AND ec.kEinstellungenSektion != " . \CONF_EXPORTFORMATE . ' ';
         $idList   = \explode(',', $query);
         $isIdList = count($idList) > 1;
@@ -63,9 +62,9 @@ class Search
         }
 
         if ($isIdList) {
-            $where             .= ' AND kEinstellungenConf IN (' . \implode(', ', $idList) . ')';
-            $this->mode = 1;
-            $this->title    = \sprintf(\__('searchForID'), \implode(', ', $idList));
+            $where      .= ' AND kEinstellungenConf IN (' . \implode(', ', $idList) . ')';
+            $this->mode  = 1;
+            $this->title = \sprintf(\__('searchForID'), \implode(', ', $idList));
         } else {
             $rangeList = \explode('-', $query);
             $isIdRange = count($rangeList) === 2;
@@ -77,19 +76,19 @@ class Search
                 }
             }
             if ($isIdRange) {
-                $where             .= ' AND kEinstellungenConf BETWEEN ' . $rangeList[0] . ' AND ' . $rangeList[1];
-                $where             .= " AND cConf = 'Y'";
-                $this->mode = 2;
-                $this->title    = \sprintf(\__('searchForIDRange'), $rangeList[0] . ' - ' . $rangeList[1]);
+                $where      .= ' AND kEinstellungenConf BETWEEN ' . $rangeList[0] . ' AND ' . $rangeList[1];
+                $where      .= " AND cConf = 'Y'";
+                $this->mode  = 2;
+                $this->title = \sprintf(\__('searchForIDRange'), $rangeList[0] . ' - ' . $rangeList[1]);
             } elseif ((int)$query > 0) {
-                $this->mode = 3;
-                $this->title    = \sprintf(\__('searchForID'), $query);
-                $where             .= ' AND kEinstellungenConf = ' . (int)$query;
+                $this->mode  = 3;
+                $this->title = \sprintf(\__('searchForID'), $query);
+                $where      .= ' AND kEinstellungenConf = ' . (int)$query;
             } else {
                 $query              = \mb_convert_case($query, \MB_CASE_LOWER);
                 $queryEnt           = Text::htmlentities($query);
-                $this->mode = 4;
-                $this->title    = \sprintf(\__('searchForName'), $query);
+                $this->mode         = 4;
+                $this->title        = \sprintf(\__('searchForName'), $query);
                 $configTranslations = $this->getText->getAdminTranslations('configs/configs');
                 $valueNames         = [];
                 foreach ($configTranslations->getIterator() as $translation) {
@@ -111,10 +110,14 @@ class Search
         return $sql;
     }
 
+    /**
+     * @param string $query
+     * @return Section[]
+     */
     public function getResultSections(string $query): array
     {
-        $sqlObject = $this->getSqlObject($query);
-        $sql = 'SELECT ec.*, e.cWert AS currentValue, ed.cWert AS defaultValue
+        $sqlObject  = $this->getSqlObject($query);
+        $sql        = 'SELECT ec.*, e.cWert AS currentValue, ed.cWert AS defaultValue
             FROM teinstellungenconf AS ec
             LEFT JOIN teinstellungen AS e
               ON e.cName = ec.cWertName
@@ -122,28 +125,57 @@ class Search
               ON ed.cName = ec.cWertName
             WHERE ' . $sqlObject->getWhere() . '
             ORDER BY ec.kEinstellungenSektion, nSort';
-//        $sql = 'SELECT ec.*, e.cWert AS currentValue, ed.cWert AS defaultValue
-//            FROM teinstellungenconf AS ec
-//            LEFT JOIN teinstellungen AS e
-//              ON e.cName = ec.cWertName
-//            LEFT JOIN teinstellungen_default AS ed
-//              ON ed.cName = ec.cWertName
-//            WHERE (ec.cModulId IS NULL OR ec.cModulId = \'\') AND ec.kEinstellungenSektion != 101  AND (kEinstellungenConf = 109 or kEinstellungenConf = 100)
-//            ORDER BY ec.kEinstellungenSektion, nSort';
-        $data = $this->db->getCollection($sql);
+        $data       = $this->db->getCollection($sql);
         $sectionIDs = $data->pluck('kEinstellungenSektion')->unique()->map('\intval');
-        $factory = new SectionFactory();
-        $sections = [];
+        $configIDs  = $data->pluck('kEinstellungenConf')->unique()->map('\intval')->toArray();
+        $factory    = new SectionFactory();
+        $sections   = [];
         foreach ($sectionIDs as $sectionID) {
             $section = $factory->getSection($sectionID, $this->manager);
             $section->load();
+            foreach ($section->getSubsections() as $subsection) {
+                $subsection->setShow(false);
+                foreach ($subsection->getItems() as $item) {
+                    $menuEntry = $this->mapConfigSectionToMenuEntry($sectionID, $item->getValueName());
+                    $isSpecial = $menuEntry->specialSetting ?? false;
+                    if ($isSpecial !== false) {
+                        $url = ($menuEntry->url ?? '') . ($menuEntry->settingsAnchor ?? '');
+                    } else {
+                        $url = 'einstellungen.php?cSuche=' . $item->getID() . '&einstellungen_suchen=1';
+                    }
+                    $item->setURL($url);
+                    if (\in_array($item->getID(), $configIDs, true)) {
+                        $subsection->setShow(true);
+                        $subsection->setPath($menuEntry->path ?? '');
+                        $subsection->setURL($menuEntry->url ?? '');
+                        $item->setHighlight(true);
+                    }
+                }
+            }
             $sections[] = $section;
         }
-//        Shop::dbg($sql);
-//        Shop::dbg($sectionIDs, true);
-//        Shop::dbg($data, true, 'DATA@'.__CLASS__);
 
         return $sections;
+    }
+
+    /**
+     * @param int    $sectionID
+     * @param string $groupName
+     * @return stdClass
+     */
+    private function mapConfigSectionToMenuEntry(int $sectionID, string $groupName = 'all')
+    {
+        global $sectionMenuMapping;
+
+        if (isset($sectionMenuMapping[$sectionID])) {
+            if (!isset($sectionMenuMapping[$sectionID][$groupName])) {
+                $groupName = 'all';
+            }
+
+            return $sectionMenuMapping[$sectionID][$groupName];
+        }
+
+        return (object)[];
     }
 
     /**

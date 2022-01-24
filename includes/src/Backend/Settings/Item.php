@@ -83,8 +83,30 @@ class Item
      */
     private $values;
 
-    public $defaultValue;
-    public $currentValue;
+    /**
+     * @var bool
+     */
+    private $highlight = false;
+
+    /**
+     * @var mixed
+     */
+    private $defaultValue;
+
+    /**
+     * @var mixed
+     */
+    private $currentValue;
+
+    /**
+     * @var string|null
+     */
+    protected $url;
+
+    /**
+     * @var string|null
+     */
+    protected $path;
 
     /**
      * @var string[]
@@ -398,7 +420,58 @@ class Item
         $this->pluginID = $pluginID;
     }
 
-    public function x__debugInfo(): ?array
+    /**
+     * @return bool
+     */
+    public function isHighlight(): bool
+    {
+        return $this->highlight;
+    }
+
+    /**
+     * @param bool $highlight
+     */
+    public function setHighlight(bool $highlight): void
+    {
+        $this->highlight = $highlight;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getURL(): ?string
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string|null $url
+     */
+    public function setURL(?string $url): void
+    {
+        $this->url = $url;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    /**
+     * @param string|null $path
+     */
+    public function setPath(?string $path): void
+    {
+        $this->path = $path;
+    }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo(): ?array
     {
         return [
             'id'        => $this->getID(),

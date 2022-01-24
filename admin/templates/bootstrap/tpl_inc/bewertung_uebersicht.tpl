@@ -317,92 +317,33 @@
                 </form>
             </div>
             <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
-                <form name="einstellen" method="post" action="bewertung.php">
-                    {$jtl_token}
-                    <input type="hidden" name="einstellungen" value="1" />
-                    <input type="hidden" name="tab" value="einstellungen" />
-                    <div class="settings">
-                        <span class="subheading1">{__('settings')}</span>
-                        <hr class="mb-3">
-                        <div>
-                            {foreach $oConfig_arr as $oConfig}
-                                {if $oConfig->isConfigurable()}
-                                    <div class="form-group form-row align-items-center">
-                                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->getValueName()}">
-                                            {$oConfig->cName}{if $oConfig->getValueName()|strpos:'_guthaben'} <span id="EinstellungAjax_{$oConfig->getValueName()}"></span>:{else}:{/if}
-                                        </label>
-                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $oConfig->getInputType() === 'number'}config-type-number{/if}">
-                                            {if $oConfig->getInputType() === 'selectbox'}
-                                                <select name="{$oConfig->getValueName()}" id="{$oConfig->getValueName()}" class="custom-select combo">
-                                                    {foreach $oConfig->getValues() as $wert}
-                                                        <option value="{$wert->cWert}" {if $oConfig->getSetValue() == $wert->cWert}selected{/if}>{$wert->cName}</option>
-                                                    {/foreach}
-                                                </select>
-                                            {elseif $oConfig->getInputType() === 'listbox'}
-                                                <select name="{$oConfig->getValueName()}[]"
-                                                        id="{$oConfig->getValueName()}"
-                                                        multiple="multiple"
-                                                        class="selectpicker custom-select combo"
-                                                        data-selected-text-format="count > 2"
-                                                        data-size="5">
-                                                    {foreach $oConfig->getValues() as $wert}
-                                                        <option value="{$wert->kKundengruppe}" {foreach $oConfig->getSetValue() as $setValue}{if $setValue->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
-                                                    {/foreach}
-                                                </select>
-                                            {elseif $oConfig->getInputType() === 'number'}
-                                                <div class="input-group form-counter">
-                                                    <div class="input-group-prepend">
-                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                                            <span class="fas fa-minus"></span>
-                                                        </button>
-                                                    </div>
-                                                    <input class="form-control" type="number" name="{$oConfig->getValueName()}" id="{$oConfig->getValueName()}"  value="{if $oConfig->getSetValue() !== null}{$oConfig->getSetValue()}{/if}" tabindex="1"{if $oConfig->getValueName()|strpos:"_guthaben"} onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$oConfig->getValueName()}', this);"{/if} />
-                                                    <div class="input-group-append">
-                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                                            <span class="fas fa-plus"></span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            {else}
-                                                <input class="form-control" type="text" name="{$oConfig->getValueName()}" id="{$oConfig->getValueName()}"  value="{if $oConfig->getSetValue() !== null}{$oConfig->getSetValue()}{/if}" tabindex="1"{if $oConfig->getValueName()|strpos:"_guthaben"} onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$oConfig->getValueName()}', this);"{/if} />
-                                            {/if}
-                                        </div>
-                                        {include file='snippets/einstellungen_icons.tpl' cnf=$oConfig}
-                                    </div>
-                                {else}
-                                    {if $oConfig->cBeschreibung}
-                                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                                            {getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->getID()}
-                                        </div>
-                                    {/if}
-                                {/if}
-                            {/foreach}
-                        </div>
-                        <div class="card-footer save-wrapper">
-                            <div class="row">
-                                <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">{__('saveWithIcon')}</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                {include file='tpl_inc/config_section.tpl'
+                    name='einstellen'
+                    action='bewertung.php'
+                    buttonCaption=__('saveWithIcon')
+                    title=__('settings')
+                    tab='einstellungen'
+                }
             </div>
         </div>
     </div>
 </div>
 
 <script type="text/javascript">
-    {foreach $oConfig_arr as $oConfig}
-        {if $oConfig->getValueName()|strpos:'_guthaben'}
-            ioCall(
-                'getCurrencyConversion',
-                [0, $('#{$oConfig->getValueName()}').val(), 'EinstellungAjax_{$oConfig->getValueName()}'],
-                undefined,
-                undefined,
-                undefined,
-                true
-            );
-        {/if}
+    {foreach $sections as $section}
+        {foreach $section->getSubsections() as $subsection}
+            {foreach $subsection->getItems() as $config}
+                {if $config->getValueName()|strpos:'_guthaben'}
+                    ioCall(
+                        'getCurrencyConversion',
+                        [0, $('#{$config->getValueName()}').val(), 'EinstellungAjax_{$config->getValueName()}'],
+                        undefined,
+                        undefined,
+                        undefined,
+                        true
+                    );
+                {/if}
+            {/foreach}
+        {/foreach}
     {/foreach}
 </script>

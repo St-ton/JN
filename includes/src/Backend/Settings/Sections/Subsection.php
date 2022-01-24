@@ -16,6 +16,11 @@ class Subsection extends Item
     private $items = [];
 
     /**
+     * @var bool
+     */
+    public $show = true;
+
+    /**
      * @return Item[]
      */
     public function getItems(): array
@@ -39,4 +44,34 @@ class Subsection extends Item
         $this->items = $items;
     }
 
+    public function removeItemAtIndex(int $idx): void
+    {
+        unset($this->items[$idx]);
+    }
+
+    /**
+     * @return int
+     */
+    public function getShownItemsCount(): int
+    {
+        return \count(\array_filter($this->items, static function (Item $item) {
+            return $item->getShowDefault() > 0;
+        }));
+    }
+
+    /**
+     * @return bool
+     */
+    public function show(): bool
+    {
+        return $this->show;
+    }
+
+    /**
+     * @param bool $show
+     */
+    public function setShow(bool $show): void
+    {
+        $this->show = $show;
+    }
 }

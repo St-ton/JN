@@ -7,8 +7,8 @@ use JTL\Backend\Settings\Manager;
 use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
+use JTL\L10n\GetText;
 use JTL\MagicCompatibilityTrait;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
 use function Functional\filter;
@@ -25,12 +25,7 @@ class Base implements Section
     /**
      * @var bool
      */
-    public $hasSectionMarkup = false;
-
-    /**
-     * @var bool
-     */
-    public $hasValueMarkup = false;
+    protected $hasSectionMarkup = false;
 
     /**
      * @var DbInterface
@@ -51,6 +46,11 @@ class Base implements Section
      * @var string
      */
     protected $name = '';
+
+    /**
+     * @var string
+     */
+    protected $sectionMarkup = '';
 
     /**
      * @var int
@@ -83,6 +83,11 @@ class Base implements Section
     protected $manager;
 
     /**
+     * @var GetText
+     */
+    protected $getText;
+
+    /**
      * @var Item[]
      */
     protected $items = [];
@@ -91,6 +96,11 @@ class Base implements Section
      * @var Subsection[]
      */
     protected $subsections = [];
+
+    /**
+     * @var string|null
+     */
+    protected $url;
 
     /**
      * @var string[]
@@ -111,13 +121,14 @@ class Base implements Section
         $this->manager = $manager;
         $this->db      = $manager->getDB();
         $this->smarty  = $manager->getSmarty();
+        $this->getText = $manager->getGetText();
         $this->id      = $sectionID;
         $this->initBaseData();
     }
 
     public function load(): void
     {
-        $data             = $this->db->getObjects(
+        $data        = $this->db->getObjects(
             'SELECT ec.*, e.cWert AS currentValue, ted.cWert AS defaultValue
                 FROM teinstellungenconf AS ec
                 LEFT JOIN teinstellungen AS e
@@ -125,20 +136,19 @@ class Base implements Section
                 LEFT JOIN teinstellungen_default AS ted
                     ON ted.cName = ec.cWertName
                 WHERE ec.kEinstellungenSektion = :sid
-                    AND ec.nModul = 0 AND ec.nStandardAnzeigen != 0
+                    #AND ec.nModul = 0 AND ec.nStandardAnzeigen != 0
                 ORDER BY ec.nSort',
             ['sid' => $this->id]
         );
         $configItems = [];
-        $getText = Shop::Container()->getGetText();
         foreach ($data as $item) {
-            if ($item->cConf === 'N' && $item->cInputTyp === null) {
+            if ($item->cConf === 'N' && ($item->cInputTyp === '' || $item->cInputTyp === null)) {
                 $config = new Subsection();
             } else {
                 $config = new Item();
             }
             $config->parseFromDB($item);
-            $getText->localizeConfig($config);
+            $this->getText->localizeConfig($config);
             //@ToDo: Setting 492 is the only one listbox at the moment.
             //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
             if ($config->getInputType() === 'listbox' && $config->getID() === 492) {
@@ -155,10 +165,23 @@ class Base implements Section
                     '*',
                     'nSort'
                 );
-                $getText->localizeConfigValues($config, $setValues);
+                $this->getText->localizeConfigValues($config, $setValues);
                 $config->setValues($setValues);
+            } elseif ($config->getInputType() === 'selectkdngrp') {
+                $config->setValues($this->db->getObjects(
+                    'SELECT kKundengruppe, cName
+                        FROM tkundengruppe
+                        ORDER BY cStandard DESC'
+                ));
             }
             if ($config->getInputType() === 'listbox') {
+                $setValue = $this->db->selectAll(
+                    'teinstellungen',
+                    ['kEinstellungenSektion', 'cName'],
+                    [$config->getConfigSectionID(), $config->getValueName()]
+                );
+                $config->setSetValue($setValue);
+            } elseif ($config->getInputType() === 'selectkdngrp') {
                 $setValue = $this->db->selectAll(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
@@ -181,7 +204,6 @@ class Base implements Section
         }
         $this->subsections = [];
         $currentSubsection = null;
-        dd($configItems);
         foreach ($configItems as $item) {
             if (\get_class($item) === Subsection::class) {
                 if ($currentSubsection !== null) {
@@ -189,32 +211,15 @@ class Base implements Section
                 }
                 $currentSubsection = $item;
             } else {
+                if ($currentSubsection === null) {
+                    $currentSubsection = new Subsection();
+                }
                 $currentSubsection->addItem($item);
             }
         }
         $this->subsections[] = $currentSubsection;
-        $this->subsections = \array_filter($this->subsections);
+        $this->subsections   = \array_filter($this->subsections);
     }
-
-    /**
-     * @todo: should be renamed.
-     * @todo: add to interface
-     * @inheritdoc
-     */
-    public function loadPossibleValues(): array
-    {
-        $getText = Shop::Container()->getGetText();
-        $this->items = [];
-        foreach ($this->getConfigData() as $config) {
-
-            $this->setValue($config, $setValue);
-            $this->items[] = $config;
-        }
-//        Shop::dbg(count($this->items), false, 'count:');
-
-        return $this->items;
-    }
-
 
     protected function initBaseData(): void
     {
@@ -222,11 +227,11 @@ class Base implements Section
         if ($data !== null) {
             $this->configCount = (int)$this->db->getSingleObject(
                 "SELECT COUNT(*) AS cnt
-                FROM teinstellungenconf
-                WHERE kEinstellungenSektion = :sid
-                    AND cConf = 'Y'
-                    AND nStandardAnzeigen = 1
-                    AND nModul = 0",
+                    FROM teinstellungenconf
+                    WHERE kEinstellungenSektion = :sid
+                        AND cConf = 'Y'
+                        AND nStandardAnzeigen = 1
+                        AND nModul = 0",
                 ['sid' => $this->id]
             )->cnt;
             $this->name        = \__('configsection_' . $this->id);
@@ -256,15 +261,15 @@ class Base implements Section
      */
     public function getSectionMarkup(): string
     {
-        return '';
+        return $this->sectionMarkup;
     }
 
     /**
      * @inheritdoc
      */
-    public function getValueMarkup($conf): string
+    public function setSectionMarkup(string $markup): void
     {
-        return '';
+        $this->sectionMarkup = $markup;
     }
 
     /**
@@ -277,7 +282,7 @@ class Base implements Section
 
     /**
      * @param SqlObject|null $sql
-     * @return array
+     * @return Item[]
      */
     public function generateConfigData(SqlObject $sql = null): array
     {
@@ -303,10 +308,9 @@ class Base implements Section
                 ORDER BY ' . $sql->getOrder(),
             $sql->getParams()
         );
-        $this->items = [];
+        $this->items      = [];
         $this->configData = [];
 
-        $getText = Shop::Container()->getGetText();
         foreach ($data as $item) {
             $config = new Item();
             $config->parseFromDB($item);
@@ -325,7 +329,6 @@ class Base implements Section
     /**
      * @param array $data
      * @return array
-     * @todo check params for callers
      */
     public function update(array $data, bool $filter = true): array
     {
@@ -405,10 +408,9 @@ class Base implements Section
      */
     public function loadCurrentData(): array
     {
-        $getText = Shop::Container()->getGetText();
         $this->items = [];
         foreach ($this->getConfigData() as $config) {
-            $getText->localizeConfig($config);
+            $this->getText->localizeConfig($config);
             //@ToDo: Setting 492 is the only one listbox at the moment.
             //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
             if ($config->getInputType() === 'listbox' && $config->getID() === 492) {
@@ -425,7 +427,7 @@ class Base implements Section
                     '*',
                     'nSort'
                 );
-                $getText->localizeConfigValues($config, $setValues);
+                $this->getText->localizeConfigValues($config, $setValues);
                 $config->setValues($setValues);
             }
             if ($config->getInputType() === 'listbox') {
@@ -637,6 +639,38 @@ class Base implements Section
     public function setSubsections(array $subsections): void
     {
         $this->subsections = $subsections;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSectionMarkup(): bool
+    {
+        return $this->hasSectionMarkup;
+    }
+
+    /**
+     * @param bool $hasSectionMarkup
+     */
+    public function setHasSectionMarkup(bool $hasSectionMarkup): void
+    {
+        $this->hasSectionMarkup = $hasSectionMarkup;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getURL(): ?string
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string|null $url
+     */
+    public function setURL(?string $url): void
+    {
+        $this->url = $url;
     }
 
     /**

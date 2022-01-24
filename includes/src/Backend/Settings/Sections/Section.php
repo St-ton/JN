@@ -38,10 +38,9 @@ interface Section
     public function getSectionMarkup(): string;
 
     /**
-     * @param object $conf
-     * @return string
+     * @param string $markup
      */
-    public function getValueMarkup($conf): string;
+    public function setSectionMarkup(string $markup): void;
 
     /**
      * @param array $data

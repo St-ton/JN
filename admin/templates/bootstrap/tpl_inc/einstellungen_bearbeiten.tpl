@@ -31,60 +31,50 @@
                 </div>
             </div>
         {/if}
-        bearbeiten.tpl!
         {if isset($sections) && $sections|count > 0}
-        <form name="einstellen" method="post" action="{$action|default:''}" class="settings navbar-form">
-            {$jtl_token}
-            <input type="hidden" name="einstellungen_bearbeiten" value="1" />
-            {if $search}
-                <input type="hidden" name="cSuche" value="{$cSuche}" />
-                <input type="hidden" name="einstellungen_suchen" value="1" />
-            {/if}
-            <input type="hidden" name="kSektion" value="{$kEinstellungenSektion}" />
-            {foreach $sections as $section}
-                {foreach $section->getSubsections() as $subsection}
-                    {include file='tpl_inc/config_heading.tpl' subsection=$subsection idx=$subsection@index}
-                    {foreach $subsection->getItems() as $cnf}
-                        {if $cnf->isConfigurable()}
-                            {include file='tpl_inc/config_item.tpl' cnf=$cnf}
-                        {/if}
-                    {/foreach}
-                {/foreach}
-            {/foreach}
-                </div>
-            </div>
-            <div class="save-wrapper">
-                <div class="row">
-                    <div class="ml-auto col-sm-6 col-xl-auto">
-                        {if $section->getID() === $smarty.const.CONF_EMAILS}
-                            <script>
-                            $(function() {
-                                if ($('#email_methode').val() !== 'smtp') {
-                                    $('#configTest').hide();
-                                }
-                                $('#email_methode').on('change', function () {
-                                    var currentVal = $(this).val();
-                                    if (currentVal === 'smtp') {
-                                        $('#configTest').show();
-                                    } else {
-                                        $('#configTest').hide();
-                                    }
-                                });
-                            });
-                            </script>
-                            <button type="submit" name="test_emails" value="1" class="btn btn-secondary btn-block" id="configTest">
-                                {__('saveWithconfigTest')}
+            <form name="einstellen" method="post" action="{$action|default:''}" class="settings navbar-form">
+                {$jtl_token}
+                <input type="hidden" name="einstellungen_bearbeiten" value="1" />
+                {if $search}
+                    <input type="hidden" name="cSuche" value="{$cSuche}" />
+                    <input type="hidden" name="einstellungen_suchen" value="1" />
+                {/if}
+                <input type="hidden" name="kSektion" value="{$kEinstellungenSektion}" />
+                {include file='tpl_inc/config_sections.tpl'}
+                <div class="save-wrapper">
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            {foreach $sections as $section}
+                                {if $section->getID() === $smarty.const.CONF_EMAILS}
+                                    <script>
+                                    $(function() {
+                                        if ($('#email_methode').val() !== 'smtp') {
+                                            $('#configTest').hide();
+                                        }
+                                        $('#email_methode').on('change', function () {
+                                            var currentVal = $(this).val();
+                                            if (currentVal === 'smtp') {
+                                                $('#configTest').show();
+                                            } else {
+                                                $('#configTest').hide();
+                                            }
+                                        });
+                                    });
+                                    </script>
+                                    <button type="submit" name="test_emails" value="1" class="btn btn-secondary btn-block" id="configTest">
+                                        {__('saveWithconfigTest')}
+                                    </button>
+                                {/if}
+                            {/foreach}
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button type="submit" value="{__('savePreferences')}" class="btn btn-primary btn-block">
+                                {__('saveWithIcon')}
                             </button>
-                        {/if}
-                    </div>
-                    <div class="col-sm-6 col-xl-auto">
-                        <button type="submit" value="{__('savePreferences')}" class="btn btn-primary btn-block">
-                            {__('saveWithIcon')}
-                        </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
         {else}
             <div class="alert alert-info">{__('noSearchResult')}</div>
         {/if}

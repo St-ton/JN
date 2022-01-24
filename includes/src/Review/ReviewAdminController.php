@@ -210,12 +210,11 @@ final class ReviewAdminController extends BaseController
                 LIMIT " . $activePagination->getLimitSQL(),
             ['lid' => $this->languageID]
         )->each($sanitize)->toArray();
-
+        \getAdminSectionSettings(\CONF_BEWERTUNG);
         $this->smarty->assign('oPagiInaktiv', $inactivePagination)
             ->assign('oPagiAktiv', $activePagination)
             ->assign('inactiveReviews', $inactiveReviews)
-            ->assign('activeReviews', $activeReviews)
-            ->assign('oConfig_arr', \getAdminSectionSettings(\CONF_BEWERTUNG));
+            ->assign('activeReviews', $activeReviews);
     }
 
     /**

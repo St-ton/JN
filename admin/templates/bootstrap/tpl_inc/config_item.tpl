@@ -1,4 +1,4 @@
-<div class="form-group form-row align-items-center {if isset($cSuche) && $cnf->getID() == $cSuche} highlight{/if}">
+<div class="form-group form-row align-items-center {if $cnf->isHighlight() || (isset($cSuche) && $cnf->getID() == $cSuche)} highlight{/if}">
     <label class="col col-sm-4 col-form-label text-sm-right order-1" for="{$cnf->getValueName()}">{$cnf->getName()}:</label>
     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $cnf->getInputType() === 'number'}config-type-number{/if}">
         {if $cnf->getInputType() === 'selectbox'}
@@ -11,7 +11,9 @@
             {else}
                 <select class="custom-select" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}">
                     {foreach $cnf->getValues() as $value}
-                        <option value="{$value->cWert}" {if $cnf->getSetValue() == $value->cWert}selected{/if}>{$value->cName}</option>
+                        <option value="{$value->cWert}" {if $cnf->getSetValue() == $value->cWert}selected{/if}>
+                            {$value->cName}
+                        </option>
                     {/foreach}
                 </select>
             {/if}
@@ -26,8 +28,22 @@
                     <option value="{$value->cWert}" {foreach $cnf->getSetValue() as $setValue}{if $setValue->cWert == $value->cWert}selected{/if}{/foreach}>{$value->cName}</option>
                 {/foreach}
             </select>
+        {elseif $cnf->getInputType() === 'selectkdngrp'}
+            <select name="{$cnf->getValueName()}[]" id="{$cnf->getValueName()}" class="custom-select combo">
+                {foreach $cnf->getValues() as $value}
+                    <option value="{$value->kKundengruppe}" {foreach $cnf->getSetValue() as $setValue}{if $setValue->cWert == $value->kKundengruppe}selected{/if}{/foreach}>
+                        {$value->cName}
+                    </option>
+                {/foreach}
+            </select>
+        {elseif $cnf->getInputType() === 'color'}
+            {include file='snippets/colorpicker.tpl'
+            cpID="config-{$cnf->getValueName()}"
+            cpName=$cnf->getValueName()
+            cpValue=$cnf->getSetValue()}
         {elseif $cnf->getInputType() === 'pass'}
-            <input class="form-control" autocomplete="off" type="password" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{$cnf->getSetValue()}" tabindex="1" />
+            <input class="form-control" autocomplete="off" type="password" name="{$cnf->getValueName()}"
+                   id="{$cnf->getValueName()}" value="{$cnf->getSetValue()}" tabindex="1" />
         {elseif $cnf->getInputType() === 'number'}
             <div class="input-group form-counter">
                 <div class="input-group-prepend">
@@ -35,7 +51,15 @@
                         <span class="fas fa-minus"></span>
                     </button>
                 </div>
-                <input class="form-control" type="number" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}" tabindex="1" />
+                <input class="form-control" type="number"
+                       name="{$cnf->getValueName()}"
+                       id="{$cnf->getValueName()}"
+                       value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}"
+                       tabindex="1"
+                        {if $cnf->getValueName()|strpos:'_bestandskundenguthaben' || $cnf->getValueName()|strpos:'_neukundenguthaben'}
+                            onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$cnf->getValueName()}', this);"
+                        {/if}
+                />
                 <div class="input-group-append">
                     <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
                         <span class="fas fa-plus"></span>

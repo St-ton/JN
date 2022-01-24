@@ -207,11 +207,10 @@ if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
         'sucheinstellungen.php'
     );
 }
-
+getAdminSectionSettings(CONF_ARTIKELUEBERSICHT);
 $smarty->assign('action', 'sucheinstellungen.php')
     ->assign('kEinstellungenSektion', $sectionID)
     ->assign('sections', [$section])
-    ->assign('Conf', getAdminSectionSettings(CONF_ARTIKELUEBERSICHT))
     ->assign('cPrefDesc', filteredConfDescription($sectionID))
     ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $sectionID))
     ->assign('step', $step)

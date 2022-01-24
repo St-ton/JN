@@ -24,7 +24,6 @@ $settingManager = new Manager(
     Shop::Container()->getGetText(),
     $alertService
 );
-$section        = (new SectionFactory())->getSection(CONF_VERGLEICHSLISTE, $settingManager);
 if (!isset($_SESSION['Vergleichsliste'])) {
     $_SESSION['Vergleichsliste'] = new stdClass();
 }
@@ -35,16 +34,13 @@ if (Request::postInt('zeitfilter') === 1) {
     $_SESSION['Vergleichsliste']->nAnzahl     = Request::postInt('nAnzahl');
 }
 
-if (Request::postVar('resetSetting') !== null) {
-    $settingManager->resetSetting(Request::postVar('resetSetting'));
-} elseif (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
-    $section->update($_POST);
-    $alertService->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
-    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
+if ((Request::postInt('einstellungen') === 1 || Request::postVar('resetSetting') !== null) && Form::validateToken()) {
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSectionSettings(CONF_VERGLEICHSLISTE, $_POST),
+        'saveSettings'
+    );
 }
-
-$section->generateConfigData();
-$configData = $section->loadCurrentData();
 
 $listCount  = (int)$db->getSingleObject(
     'SELECT COUNT(*) AS cnt
@@ -87,11 +83,10 @@ $topComparisons = $db->getObjects(
 if (count($topComparisons) > 0) {
     erstelleDiagrammTopVergleiche($topComparisons);
 }
-
+getAdminSectionSettings(CONF_VERGLEICHSLISTE);
 $smarty->assign('Letzten20Vergleiche', $last20)
     ->assign('TopVergleiche', $topComparisons)
     ->assign('pagination', $pagination)
-    ->assign('oConfig_arr', $configData)
     ->display('vergleichsliste.tpl');
 
 /**

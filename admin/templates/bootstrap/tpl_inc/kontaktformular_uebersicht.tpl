@@ -22,44 +22,13 @@
         </nav>
         <div class="tab-content">
             <div id="config" class="tab-pane fade {if $cTab === '' || $cTab === 'config'} active show{/if}">
-                <form name="einstellen" method="post" action="kontaktformular.php">
-                    {$jtl_token}
-                    <input type="hidden" name="einstellungen" value="1" />
-                    <div class="settings">
-                        <div class="subheading1">{__('settings')}</div>
-                        <hr class="mb-3">
-                        <div>
-                            {foreach $Conf as $cnf}
-                                {if $cnf->isConfigurable()}
-                                    <div class="form-group form-row align-items-center">
-                                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->getValueName()}">{$cnf->getName()}:</label>
-                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                            {if $cnf->getInputType() === 'selectbox'}
-                                                <select name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" class="custom-select combo">
-                                                    {foreach $cnf->getValues() as $wert}
-                                                        <option value="{$wert->cWert}" {if $cnf->getSetValue() == $wert->cWert}selected{/if}>{$wert->cName}</option>
-                                                    {/foreach}
-                                                </select>
-                                            {else}
-                                                <input class="form-control" type="text" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{$cnf->getSetValue()}" tabindex="1" />
-                                            {/if}
-                                        </div>
-                                        {include file='snippets/einstellungen_icons.tpl' cnf=$cnf}
-                                    </div>
-                                {/if}
-                            {/foreach}
-                        </div>
-                        <div class="card-footer save-wrapper">
-                            <div class="row">
-                                <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
-                                        {__('saveWithIcon')}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                {include file='tpl_inc/config_section.tpl'
+                name='einstellen'
+                a='saveSettings'
+                action='kontaktformular.php'
+                buttonCaption=__('save')
+                tab='einstellungen'
+                showNonConf=true}
             </div>
             <div id="subjects" class="tab-pane fade {if $cTab === 'subjects'} active show{/if}">
                 <div class="alert alert-info">{__('contanctformSubjectDesc')}</div>

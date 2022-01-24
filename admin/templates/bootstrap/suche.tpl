@@ -25,27 +25,30 @@
 {if isset($settings)}
     <div class="dropdown-header">{__('content')}</div>
     <ul>
-
-        {foreach $settings as $setting}
-            <li>
-                <a class="dropdown-item" href="{$setting->cURL}">
-                    <span class="title">{__($setting->getValueName())}</span>
-                    <span class="path">{$setting->cSektionsPfad}</span>
-                </a>
-                <ul>
-                    {foreach $setting->oEinstellung_arr as $s}
-                        <li tabindex="-1">
-                            <a class="dropdown-item value"
-                               href="{if $setting->specialSetting === false}einstellungen.php?cSuche={$s->getID()}&einstellungen_suchen=1{else}{$setting->cURL}{$setting->settingsAnchor}{/if}">
-                                <span class="title">{$s->getName()}
-{*                                    <small>{$s->getDescription()}</small>*}
-                                </span>
-                                <span class="path">{__('settingNumberShort')}: {$s->getID()}</span>
-                            </a>
-                        </li>
-                    {/foreach}
-                </ul>
-            </li>
+        {foreach $settings as $section}
+            {foreach $section->getSubsections() as $sub}
+                {if $sub->show() === true}
+                    <li>
+                        <a class="dropdown-item" href="{$sub->getURL()}">
+                            <span class="title">{__($sub->getName())}</span>
+                            <span class="path">{$sub->getPath()}</span>
+                        </a>
+                        <ul>
+                        {foreach $sub->getItems() as $setting}
+                                <li tabindex="-1">
+                                    <a class="dropdown-item value"
+                                       href="{$setting->getURL()}">
+                                        <span class="title">{$setting->getName()}
+{*                                            <small>{$setting->getDescription()}</small>*}
+                                        </span>
+                                        <span class="path">{__('settingNumberShort')}: {$setting->getID()}</span>
+                                    </a>
+                                </li>
+                        {/foreach}
+                        </ul>
+                    </li>
+                {/if}
+            {/foreach}
         {/foreach}
     </ul>
 {/if}

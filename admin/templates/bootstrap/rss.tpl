@@ -10,7 +10,14 @@
     {/if}
     <div class="card">
         <div class="card-body">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='rss.php' buttonCaption=__('saveWithIcon') title=__('settings') tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl'
+                name='einstellen'
+                action='rss.php'
+                buttonCaption=__('saveWithIcon')
+                title=__('settings')
+                tab='einstellungen'
+                skipHeading=true
+            }
         </div>
     </div>
 </div>

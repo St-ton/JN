@@ -1,94 +1,32 @@
 <?php declare(strict_types=1);
 
 use JTL\Backend\Settings\Manager as SettingsManager;
-use JTL\Backend\Settings\Sections\Search;
+use JTL\Backend\Settings\Search;
+use JTL\Backend\Settings\Sections\Section;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
-use function Functional\filter;
-use function Functional\flatten;
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_menu.php';
 
-function getSearchTest(string $query, bool $save = false): stdClass
+/**
+ * @param string $query
+ * @return Section[]
+ */
+function configSearch(string $query): array
 {
-    $sql    = new SqlObject();
-    $result = (object)[
-        'cSearch'          => '',
-        'cWHERE'           => '',
-        'sql' => $sql,
-        'nSuchModus'       => 0,
-        'cSuche'           => $query,
-        'oEinstellung_arr' => [],
-    ];
-    if (mb_strlen($query) === 0) {
-        return $result;
-    }
-    $where    = "(ec.cModulId IS NULL OR ec.cModulId = '') AND ec.kEinstellungenSektion != " . CONF_EXPORTFORMATE . ' ';
-    $idList   = explode(',', $query);
-    $isIdList = count($idList) > 1;
-    if ($isIdList) {
-        foreach ($idList as $i => $item) {
-            $idList[$i] = (int)$item;
-
-            if ($idList[$i] === 0) {
-                $isIdList = false;
-                break;
-            }
-        }
-    }
-
-    if ($isIdList) {
-        $where             .= ' AND kEinstellungenConf IN (' . implode(', ', $idList) . ')';
-        $result->nSuchModus = 1;
-        $result->cSearch    = sprintf(__('searchForID'), implode(', ', $idList));
-        $result->confIds    = $idList;
-    } else {
-        $rangeList = explode('-', $query);
-        $isIdRange = count($rangeList) === 2;
-        if ($isIdRange) {
-            $rangeList[0] = (int)$rangeList[0];
-            $rangeList[1] = (int)$rangeList[1];
-            if ($rangeList[0] === 0 || $rangeList[1] === 0) {
-                $isIdRange = false;
-            }
-        }
-        if ($isIdRange) {
-            $where             .= ' AND kEinstellungenConf BETWEEN ' . $rangeList[0] . ' AND ' . $rangeList[1];
-            $where             .= " AND cConf = 'Y'";
-            $result->nSuchModus = 2;
-            $result->cSearch    = sprintf(__('searchForIDRange'), $rangeList[0] . ' - ' . $rangeList[1]);
-        } elseif ((int)$query > 0) {
-            $result->nSuchModus = 3;
-            $result->cSearch    = sprintf(__('searchForID'), $query);
-            $where             .= ' AND kEinstellungenConf = ' . (int)$query;
-        } else {
-            $query              = mb_convert_case($query, MB_CASE_LOWER);
-            $queryEnt           = Text::htmlentities($query);
-            $result->nSuchModus = 4;
-            $result->cSearch    = sprintf(__('searchForName'), $query);
-            $getText            = Shop::Container()->getGetText();
-            $configTranslations = $getText->getAdminTranslations('configs/configs');
-            $valueNames         = [];
-            foreach ($configTranslations->getIterator() as $translation) {
-                $orig  = $translation->getOriginal();
-                $trans = $translation->getTranslation();
-                if ((mb_stripos($trans, $query) !== false || mb_stripos($trans, $queryEnt) !== false)
-                    && mb_substr($orig, -5) === '_name'
-                ) {
-                    $valueName    = preg_replace('/(_name|_desc)$/', '', $orig);
-                    $valueNames[] = "'" . $valueName . "'";
-                }
-            }
-            $where .= ' AND cWertName IN (' . (implode(', ', $valueNames) ?: "''") . ')';
-            $where .= " AND cConf = 'Y'";
-        }
-    }
-    $result->cWHERE = $where;
-    $sql->setWhere($where);
-
-    return $result;
+    $db             = Shop::Container()->getDB();
+    $gettext        = Shop::Container()->getGetText();
+    $manager        = new SettingsManager(
+        $db,
+        Shop::Smarty(),
+        Shop::Container()->getAdminAccount(),
+        $gettext,
+        Shop::Container()->getAlertService()
+    );
+    $searchInstance = new Search($db, $gettext, $manager);
+    return $searchInstance->getResultSections($query);
 }
 
 /**
@@ -98,8 +36,6 @@ function getSearchTest(string $query, bool $save = false): stdClass
  */
 function bearbeiteEinstellungsSuche(string $query, bool $save = false): stdClass
 {
-    $result = getSearchTest($query, $save);
-
     return holeEinstellungen($result, $save);
 }
 
@@ -115,39 +51,18 @@ function holeEinstellungen(stdClass $sql, bool $save): stdClass
     if (mb_strlen($sql->cWHERE) <= 0) {
         return $sql;
     }
-    $manager               = new SettingsManager(
+    $manager         = new SettingsManager(
         Shop::Container()->getDB(),
         Shop::Smarty(),
         Shop::Container()->getAdminAccount(),
         Shop::Container()->getGetText(),
         Shop::Container()->getAlertService()
     );
-    $section               = new Search($manager, 0);
-    $sql->oEinstellung_arr = Shop::Container()->getDB()->getObjects(
-        'SELECT ec.*, e.cWert AS currentValue, ed.cWert AS defaultValue
-            FROM teinstellungenconf AS ec
-            LEFT JOIN teinstellungen AS e
-              ON e.cName = ec.cWertName
-            LEFT JOIN teinstellungen_default AS ed
-              ON ed.cName = ec.cWertName
-            WHERE ' . $sql->cWHERE . '
-            ORDER BY ec.kEinstellungenSektion, nSort'
-    );
-    Shop::dbg('SELECT ec.*, e.cWert AS currentValue, ed.cWert AS defaultValue
-            FROM teinstellungenconf AS ec
-            LEFT JOIN teinstellungen AS e
-              ON e.cName = ec.cWertName
-            LEFT JOIN teinstellungen_default AS ed
-              ON ed.cName = ec.cWertName
-            WHERE ' . $sql->cWHERE . '
-            ORDER BY ec.kEinstellungenSektion, nSort', false, 'Searching with SQL:');
-    $configData            = $section->generateConfigData($sql->sql);
-    $sql->configData       = $configData;
-//    Shop::dbg($configData, false, '$configData:');
-//    Shop::dbg($sql->oEinstellung_arr, false, '$sql->oEinstellung_arr');
+    $section         = new Search($manager, 0);
+    $configData      = $section->generateConfigData($sql->sql);
+    $sql->configData = $configData;
     Shop::Container()->getGetText()->loadConfigLocales();
     $section->enhanceSearchResults($sql);
-//    Shop::dbg($sql->configData, false, 'xxx1');
     // Aufräumen
     if (count($sql->oEinstellung_arr) > 0) {
         $configIDs = [];
@@ -161,13 +76,10 @@ function holeEinstellungen(stdClass $sql, bool $save): stdClass
                 unset($sql->oEinstellung_arr[$i]);
             }
         }
-        $sql->oEinstellung_arr = sortiereEinstellungen($sql->oEinstellung_arr);
-        $sql->configData       = $section->sortiereEinstellungen($sql->configData);
-        $sql->groupedConfigData       = $section->groupByHeadline($sql->configData);
+        $sql->oEinstellung_arr  = sortiereEinstellungen($sql->oEinstellung_arr);
+        $sql->configData        = $section->sortiereEinstellungen($sql->configData);
+        $sql->groupedConfigData = $section->groupByHeadline($sql->configData);
     }
-//    Shop::dbg($sql->configData, false, '$sql->configDataAfter');
-//    Shop::dbg($sql->oEinstellung_arr, true, '$sql->oEinstellung_arrAfter');
-//    Shop::dbg($sql,true);
 
     return $sql;
 }

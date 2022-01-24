@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
 use Illuminate\Support\Collection;
-use JTL\Backend\Settings\Item;
 use JTL\Helpers\Text;
 use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
@@ -24,11 +23,11 @@ function adminSearch(string $query, bool $standalonePage = false): ?string
     require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'zahlungsarten_inc.php';
 
     $adminMenuItems = adminMenuSearch($query);
-    $settings       = bearbeiteEinstellungsSuche($query);
-//    Shop::dbg($settings, true);
-    $shippings       = getShippingByName($query);
-    $paymentMethods  = getPaymentMethodsByName($query);
-    $groupedSettings = $settings->groupedConfigData;
+    $settings       = configSearch($query);
+    $shippings      = getShippingByName($query);
+    $paymentMethods = getPaymentMethodsByName($query);
+//    $groupedSettings = $settings->groupedConfigData;
+//    Shop::dbg($settings, true, '$settings:');
     foreach ($shippings as $shipping) {
         $shipping->cName = highlightSearchTerm($shipping->cName, $query);
     }
@@ -39,7 +38,7 @@ function adminSearch(string $query, bool $standalonePage = false): ?string
     $smarty->assign('standalonePage', $standalonePage)
         ->assign('query', Text::filterXSS($query))
         ->assign('adminMenuItems', $adminMenuItems)
-        ->assign('settings', $groupedSettings)
+        ->assign('settings', $settings)
         ->assign('shippings', count($shippings) > 0 ? $shippings : null)
         ->assign('paymentMethods', count($paymentMethods) > 0 ? $paymentMethods : null)
         ->assign('plugins', getPlugins($query));
@@ -109,7 +108,7 @@ function adminMenuSearch(string $query): array
 function highlightSearchTerm(string $haystack, string $needle): string
 {
     return preg_replace(
-        '/\p{L}*?' . preg_quote($needle, '/'). '\p{L}*/ui',
+        '/\p{L}*?' . preg_quote($needle, '/') . '\p{L}*/ui',
         '<mark>$0</mark>',
         $haystack
     );

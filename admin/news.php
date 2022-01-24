@@ -294,14 +294,14 @@ if ($controller->getStep() === 'news_uebersicht') {
     $categoryPagination = (new Pagination('kats'))
         ->setItemArray($newsCategories)
         ->assemble();
-    $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_NEWS))
-           ->assign('comments', $commentPagination->getPageItems())
-           ->assign('oNews_arr', $itemPagination->getPageItems())
-           ->assign('oNewsKategorie_arr', $categoryPagination->getPageItems())
-           ->assign('oNewsMonatsPraefix_arr', $prefixes)
-           ->assign('oPagiKommentar', $commentPagination)
-           ->assign('oPagiNews', $itemPagination)
-           ->assign('oPagiKats', $categoryPagination);
+    getAdminSectionSettings(CONF_NEWS);
+    $smarty->assign('comments', $commentPagination->getPageItems())
+        ->assign('oNews_arr', $itemPagination->getPageItems())
+        ->assign('oNewsKategorie_arr', $categoryPagination->getPageItems())
+        ->assign('oNewsMonatsPraefix_arr', $prefixes)
+        ->assign('oPagiKommentar', $commentPagination)
+        ->assign('oPagiNews', $itemPagination)
+        ->assign('oPagiKats', $categoryPagination);
 } elseif ($controller->getStep() === 'news_kategorie_erstellen') {
     $smarty->assign('oNewsKategorie_arr', $controller->getAllNewsCategories())
            ->assign('oNewsKategorie', $newsCategory);

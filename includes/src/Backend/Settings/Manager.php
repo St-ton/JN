@@ -24,11 +24,6 @@ class Manager
     public $hasSectionMarkup = false;
 
     /**
-     * @var bool
-     */
-    public $hasValueMarkup = false;
-
-    /**
      * @var Manager[]
      */
     private $instances = [];
@@ -139,23 +134,6 @@ class Manager
     public function setValue(&$conf, $value): self
     {
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSectionMarkup(): string
-    {
-        return '';
-    }
-
-    /**
-     * @param object $conf
-     * @return string
-     */
-    public function getValueMarkup($conf): string
-    {
-        return '';
     }
 
     /**

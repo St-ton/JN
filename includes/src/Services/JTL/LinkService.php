@@ -577,7 +577,7 @@ final class LinkService implements LinkServiceInterface
         $data->kLinkWRB     = $linkWRB !== null ? $linkWRB->getID() : 0;
         $data->kLinkWRBForm = $linkWRBForm !== null ? $linkWRBForm->getID() : 0;
 
-        $data->agbWrbNotice = $conf['bestellvorgang_wrb_anzeigen'] === '1'
+        $data->agbWrbNotice = (int)$conf['bestellvorgang_wrb_anzeigen'] === 1
         ? \sprintf(
             Shop::Lang()->get('termsCancelationNotice', 'checkout'),
             $data->cURLAGB,

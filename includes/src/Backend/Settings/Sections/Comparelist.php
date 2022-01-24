@@ -13,7 +13,7 @@ class Comparelist extends Base
     /**
      * @inheritdoc
      */
-    public function generateConfigData(SqlObject $sql = null): array
+    public function load(?SqlObject $sql = null): void
     {
         if ($sql === null) {
             $sql = new SqlObject();
@@ -21,22 +21,6 @@ class Comparelist extends Base
                 OR ec.kEinstellungenConf IN (469, 470)');
             $sql->addParam('sid', $this->id);
         }
-        return parent::generateConfigData($sql);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getConfigData(): array
-    {
-        $data = $this->generateConfigData();
-        foreach ($data as $i => $item) {
-            if ($item->getValueName() === 'caching_types_disabled') {
-                unset($data[$i]);
-                break;
-            }
-        }
-
-        return $data;
+        parent::load($sql);
     }
 }

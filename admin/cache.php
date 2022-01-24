@@ -2,7 +2,6 @@
 
 use JTL\Alert\Alert;
 use JTL\Backend\DirManager;
-use JTL\Backend\Settings\Item;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
 use JTL\Helpers\Form;
@@ -11,7 +10,6 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Minify\MinifyService;
 use JTL\Shop;
-use function Functional\filter;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
@@ -305,15 +303,18 @@ if ($cache !== null) {
 }
 
 $cacheSection = $sectionFactory->getSection(CONF_CACHING, $settingManager);
-$confData     = $cacheSection->getConfigData();
-$cacheSection->generateConfigData();
-$allSettings      = $cacheSection->loadCurrentData();
-$advancedSettings = filter($allSettings, static function (Item $item) {
-    return $item->getShowDefault() === 0 || $item->getShowDefault() === 2;
-});
-$settings         = filter($allSettings, static function (Item $item) {
-    return $item->getShowDefault() === 1;
-});
+$cacheSection->load();
+$advancedSettings = [];
+$settings         = [];
+foreach ($cacheSection->getSubsections() as $subsection) {
+    foreach ($subsection->getItems() as $item) {
+        if ($item->getShowDefault() === 0 || $item->getShowDefault() === 2) {
+            $advancedSettings[] = $item;
+        } elseif ($item->getShowDefault() === 1) {
+            $settings[] = $item;
+        }
+    }
+}
 if (function_exists('opcache_get_status')) {
     $data                       = opcache_get_status();
     $opcacheStats               = new stdClass();

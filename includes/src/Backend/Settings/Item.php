@@ -146,6 +146,9 @@ class Item
         $this->setCurrentValue($dbItem->currentValue ?? null);
         $this->setDefaultValue($dbItem->defaultValue ?? null);
         $this->setPluginID((int)($dbItem->kPlugin ?? 0));
+        if ($this->getValueName() === 'caching_types_disabled') {
+            $this->setConfigurable(false);
+        }
     }
 
     /**
@@ -466,19 +469,5 @@ class Item
     public function setPath(?string $path): void
     {
         $this->path = $path;
-    }
-
-    /**
-     * @return array
-     */
-    public function __debugInfo(): ?array
-    {
-        return [
-            'id'        => $this->getID(),
-            'name'      => $this->getName(),
-            'sort'      => $this->getSort(),
-            'sectionID' => $this->getConfigSectionID(),
-            'valueName' => $this->getValueName()
-        ];
     }
 }

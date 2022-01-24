@@ -19,11 +19,6 @@ use JTL\Smarty\JTLSmarty;
 class Manager
 {
     /**
-     * @var bool
-     */
-    public $hasSectionMarkup = false;
-
-    /**
      * @var Manager[]
      */
     private $instances = [];
@@ -398,20 +393,5 @@ class Manager
     public function setAlertService(AlertServiceInterface $alertService): void
     {
         $this->alertService = $alertService;
-    }
-
-    /**
-     * @return array
-     */
-    public function __debugInfo()
-    {
-        $res                 = \get_object_vars($this);
-        $res['db']           = '*truncated*';
-        $res['smarty']       = '*truncated*';
-        $res['getText']      = '*truncated*';
-        $res['alertService'] = '*truncated*';
-        $res['adminAccount'] = '*truncated*';
-
-        return $res;
     }
 }

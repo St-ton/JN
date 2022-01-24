@@ -18,7 +18,7 @@ use function Functional\flatten;
  * Class Base
  * @package Backend\Settings
  */
-class Base implements Section
+class Base implements SectionInterface
 {
     use MagicCompatibilityTrait;
 
@@ -103,6 +103,16 @@ class Base implements Section
     protected $url;
 
     /**
+     * @var int
+     */
+    protected $updateErrors = 0;
+
+    /**
+     * @var bool
+     */
+    protected $loaded = false;
+
+    /**
      * @var string[]
      */
     protected $mapping = [
@@ -126,8 +136,19 @@ class Base implements Section
         $this->initBaseData();
     }
 
-    public function load(): void
+    /**
+     * @inheritdoc
+     */
+    public function load(?SqlObject $sql = null): void
     {
+        if ($sql === null) {
+            $sql = new SqlObject();
+            $sql->setWhere('ec.kEinstellungenSektion = :sid');
+            $sql->addParam('sid', $this->id);
+        }
+        if ($sql->getOrder() === '') {
+            $sql->setOrder('ec.nSort');
+        }
         $data        = $this->db->getObjects(
             'SELECT ec.*, e.cWert AS currentValue, ted.cWert AS defaultValue
                 FROM teinstellungenconf AS ec
@@ -135,10 +156,9 @@ class Base implements Section
                     ON e.cName = ec.cWertName
                 LEFT JOIN teinstellungen_default AS ted
                     ON ted.cName = ec.cWertName
-                WHERE ec.kEinstellungenSektion = :sid
-                    #AND ec.nModul = 0 AND ec.nStandardAnzeigen != 0
-                ORDER BY ec.nSort',
-            ['sid' => $this->id]
+                WHERE ' . $sql->getWhere() . '
+                ORDER BY ' . $sql->getOrder(),
+            $sql->getParams()
         );
         $configItems = [];
         foreach ($data as $item) {
@@ -149,8 +169,6 @@ class Base implements Section
             }
             $config->parseFromDB($item);
             $this->getText->localizeConfig($config);
-            //@ToDo: Setting 492 is the only one listbox at the moment.
-            //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
             if ($config->getInputType() === 'listbox' && $config->getID() === 492) {
                 $config->setValues($this->db->getObjects(
                     'SELECT kKundengruppe AS cWert, cName
@@ -201,6 +219,7 @@ class Base implements Section
                     : null);
             }
             $configItems[] = $config;
+            $this->items[] = $config;
         }
         $this->subsections = [];
         $currentSubsection = null;
@@ -219,6 +238,7 @@ class Base implements Section
         }
         $this->subsections[] = $currentSubsection;
         $this->subsections   = \array_filter($this->subsections);
+        $this->loaded        = true;
     }
 
     protected function initBaseData(): void
@@ -252,8 +272,71 @@ class Base implements Section
     /**
      * @inheritdoc
      */
-    public function setValue(&$conf, $value): void
+    public function update(array $data, bool $filter = true, array $tags = [\CACHING_GROUP_OPTION]): array
     {
+        $unfiltered = $data;
+        if ($filter === true) {
+            $data = Text::filterXSS($data);
+        }
+        $value   = new stdClass();
+        $updated = [];
+        if ($this->loaded === false) {
+            $this->load();
+        }
+        foreach ($this->getItems() as $item) {
+            $id = $item->getValueName();
+            if (!isset($data[$id])) {
+                continue;
+            }
+            $value->cWert                 = $data[$id];
+            $value->cName                 = $id;
+            $value->kEinstellungenSektion = $item->getConfigSectionID();
+            switch ($item->getInputType()) {
+                case 'kommazahl':
+                    $value->cWert = (float)\str_replace(',', '.', $value->cWert);
+                    break;
+                case 'zahl':
+                case 'number':
+                    $value->cWert = (int)$value->cWert;
+                    break;
+                case 'text':
+                    $value->cWert = \mb_substr($value->cWert, 0, 255);
+                    break;
+                case 'pass':
+                    $value->cWert = $unfiltered[$id];
+                    break;
+                default:
+                    break;
+            }
+            if (!$this->validate($item, $data[$id])) {
+                $this->updateErrors++;
+                continue;
+            }
+            if (\is_array($data[$id])) {
+                $this->manager->addLogListbox($id, $data[$id]);
+            }
+            $this->db->delete(
+                'teinstellungen',
+                ['kEinstellungenSektion', 'cName'],
+                [$item->getConfigSectionID(), $id]
+            );
+            if (\is_array($data[$id])) {
+                foreach ($data[$id] as $cWert) {
+                    $value->cWert = $cWert;
+                    $this->db->insert('teinstellungen', $value);
+                }
+            } else {
+                $this->db->insert('teinstellungen', $value);
+                $this->manager->addLog(
+                    $id,
+                    $item->getCurrentValue(),
+                    $data[$id]
+                );
+            }
+            $updated[] = ['id' => $id, 'value' => $data[$id]];
+        }
+
+        return $updated;
     }
 
     /**
@@ -275,196 +358,7 @@ class Base implements Section
     /**
      * @inheritdoc
      */
-    public function getConfigData(): array
-    {
-        return $this->configData ?? $this->generateConfigData();
-    }
-
-    /**
-     * @param SqlObject|null $sql
-     * @return Item[]
-     */
-    public function generateConfigData(SqlObject $sql = null): array
-    {
-        if ($sql === null) {
-            $sql = new SqlObject();
-            $sql->setWhere('ec.kEinstellungenSektion = :sid
-                    AND ec.nModul = 0
-                    AND ec.nStandardanzeigen = 1');
-            $sql->addParam('sid', $this->id);
-        }
-        if ($sql->getOrder() === '') {
-            $sql->setOrder('ec.nSort');
-        }
-
-        $data             = $this->db->getObjects(
-            'SELECT ec.*, e.cWert AS currentValue, ted.cWert AS defaultValue
-                FROM teinstellungenconf AS ec
-                LEFT JOIN teinstellungen AS e
-                    ON e.cName = ec.cWertName
-                LEFT JOIN teinstellungen_default AS ted
-                    ON ted.cName = ec.cWertName
-                WHERE ' . $sql->getWhere() . '
-                ORDER BY ' . $sql->getOrder(),
-            $sql->getParams()
-        );
-        $this->items      = [];
-        $this->configData = [];
-
-        foreach ($data as $item) {
-            $config = new Item();
-            $config->parseFromDB($item);
-            $this->configData[] = $config;
-//            $this->items[] = $config;
-        }
-
-        return $this->configData;
-    }
-
-    public function setConfigData(array $data): void
-    {
-        $this->configData = $data;
-    }
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    public function update(array $data, bool $filter = true): array
-    {
-        $unfiltered = $data;
-        if ($filter === true) {
-            $data = Text::filterXSS($data);
-        }
-        $value   = new stdClass();
-        $updated = [];
-        foreach ($this->getConfigData() as $sectionData) {
-            $id = $sectionData->getValueName();
-            if (!isset($data[$id])) {
-                continue;
-            }
-            $value->cWert                 = $data[$id];
-            $value->cName                 = $id;
-            $value->kEinstellungenSektion = $sectionData->getConfigSectionID();
-            switch ($sectionData->getInputType()) {
-                case 'kommazahl':
-                    $value->cWert = (float)\str_replace(',', '.', $value->cWert);
-                    break;
-                case 'zahl':
-                case 'number':
-                    $value->cWert = (int)$value->cWert;
-                    break;
-                case 'text':
-                    $value->cWert = \mb_substr($value->cWert, 0, 255);
-                    break;
-                case 'pass':
-                    $value->cWert = $unfiltered[$id];
-                    break;
-                default:
-                    break;
-            }
-            if (!$this->validate($sectionData, $data[$id])) {
-                continue;
-            }
-            if (\is_array($data[$id])) {
-                $this->manager->addLogListbox($id, $data[$id]);
-            }
-            $this->db->delete(
-                'teinstellungen',
-                ['kEinstellungenSektion', 'cName'],
-                [$sectionData->getConfigSectionID(), $id]
-            );
-            if (\is_array($data[$id])) {
-                foreach ($data[$id] as $cWert) {
-                    $value->cWert = $cWert;
-                    $this->db->insert('teinstellungen', $value);
-                }
-            } else {
-                $this->db->insert('teinstellungen', $value);
-                $this->manager->addLog(
-                    $id,
-                    $sectionData->getCurrentValue(),
-                    $data[$id]
-                );
-            }
-            $updated[] = ['id' => $id, 'value' => $data[$id]];
-        }
-
-        return $updated;
-    }
-
-    /**
-     * @return Item[]
-     */
-    public function getItem(): array
-    {
-        return $this->items;
-    }
-
-    /**
-     * @todo: should be renamed.
-     * @todo: add to interface
-     * @inheritdoc
-     */
-    public function loadCurrentData(): array
-    {
-        $this->items = [];
-        foreach ($this->getConfigData() as $config) {
-            $this->getText->localizeConfig($config);
-            //@ToDo: Setting 492 is the only one listbox at the moment.
-            //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
-            if ($config->getInputType() === 'listbox' && $config->getID() === 492) {
-                $config->setValues($this->db->getObjects(
-                    'SELECT kKundengruppe AS cWert, cName
-                    FROM tkundengruppe
-                    ORDER BY cStandard DESC'
-                ));
-            } elseif (\in_array($config->getInputType(), ['selectbox', 'listbox'], true)) {
-                $setValues = $this->db->selectAll(
-                    'teinstellungenconfwerte',
-                    'kEinstellungenConf',
-                    $config->getID(),
-                    '*',
-                    'nSort'
-                );
-                $this->getText->localizeConfigValues($config, $setValues);
-                $config->setValues($setValues);
-            }
-            if ($config->getInputType() === 'listbox') {
-                $setValue = $this->db->selectAll(
-                    'teinstellungen',
-                    ['kEinstellungenSektion', 'cName'],
-                    [$config->getConfigSectionID(), $config->getValueName()]
-                );
-                $config->setSetValue($setValue);
-            } else {
-                $setValue = $this->db->select(
-                    'teinstellungen',
-                    'kEinstellungenSektion',
-                    $config->getConfigSectionID(),
-                    'cName',
-                    $config->getValueName()
-                );
-                $config->setSetValue(isset($setValue->cWert)
-                    ? Text::htmlentities($setValue->cWert)
-                    : null);
-            }
-            $this->setValue($config, $setValue);
-            $this->items[] = $config;
-        }
-//        Shop::dbg(count($this->items), false, 'count:');
-
-        return $this->items;
-    }
-
-    /**
-     * settings page is separated but has same config group as parent config page, filter these settings
-     *
-     * @param array  $confData
-     * @param string $filter
-     * @return array
-     */
-    public function getFilteredConfData(array $confData, string $filter): array
+    public function filter(string $filter): void
     {
         $keys = [
             'configgroup_5_product_question'  => [
@@ -501,20 +395,24 @@ class Base implements Section
 
         if ($filter !== '' && isset($keys[$filter])) {
             $keysToFilter = $keys[$filter];
-
-            return filter($confData, static function (Item $e) use ($keysToFilter) {
-                return \in_array($e->getValueName(), $keysToFilter, true);
-            });
+        } else {
+            $keysToFilter = flatten($keys);
         }
-        $keysToFilter = flatten($keys);
 
-        return filter($confData, static function (Item $e) use ($keysToFilter) {
+        $this->items = filter($this->getItems(), static function (Item $e) use ($keysToFilter) {
             return !\in_array($e->getValueName(), $keysToFilter, true);
         });
+        foreach ($this->getSubsections() as $subsection) {
+            foreach ($subsection->getItems() as $i => $item) {
+                if (\in_array($item->getValueName(), $keysToFilter, true)) {
+                    $subsection->removeItemAtIndex($i);
+                }
+            }
+        }
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getID(): int
     {
@@ -522,7 +420,7 @@ class Base implements Section
     }
 
     /**
-     * @param int $id
+     * @inheritdoc
      */
     public function setID(int $id): void
     {
@@ -554,7 +452,7 @@ class Base implements Section
     }
 
     /**
-     * @param int $menuID
+     * @inheritdoc
      */
     public function setMenuID(int $menuID): void
     {
@@ -562,7 +460,7 @@ class Base implements Section
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getSortID(): int
     {
@@ -570,7 +468,7 @@ class Base implements Section
     }
 
     /**
-     * @param int $sortID
+     * @inheritdoc
      */
     public function setSortID(int $sortID): void
     {
@@ -578,7 +476,7 @@ class Base implements Section
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getPermission(): string
     {
@@ -586,7 +484,7 @@ class Base implements Section
     }
 
     /**
-     * @param string $permission
+     * @inheritdoc
      */
     public function setPermission(string $permission): void
     {
@@ -602,7 +500,7 @@ class Base implements Section
     }
 
     /**
-     * @param Item[] $items
+     * @inheritdoc
      */
     public function setItems(array $items): void
     {
@@ -610,7 +508,7 @@ class Base implements Section
     }
 
     /**
-     * @return int
+     * @inheritdoc
      */
     public function getConfigCount(): int
     {
@@ -618,7 +516,7 @@ class Base implements Section
     }
 
     /**
-     * @param int $configCount
+     * @inheritdoc
      */
     public function setConfigCount(int $configCount): void
     {
@@ -626,7 +524,7 @@ class Base implements Section
     }
 
     /**
-     * @return Subsection[]
+     * @inheritdoc
      */
     public function getSubsections(): array
     {
@@ -642,7 +540,7 @@ class Base implements Section
     }
 
     /**
-     * @return bool
+     * @inheritdoc
      */
     public function hasSectionMarkup(): bool
     {
@@ -650,7 +548,7 @@ class Base implements Section
     }
 
     /**
-     * @param bool $hasSectionMarkup
+     * @inheritdoc
      */
     public function setHasSectionMarkup(bool $hasSectionMarkup): void
     {
@@ -658,7 +556,7 @@ class Base implements Section
     }
 
     /**
-     * @return string|null
+     * @inheritdoc
      */
     public function getURL(): ?string
     {
@@ -666,7 +564,7 @@ class Base implements Section
     }
 
     /**
-     * @param string|null $url
+     * @inheritdoc
      */
     public function setURL(?string $url): void
     {
@@ -674,18 +572,18 @@ class Base implements Section
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function __debugInfo()
+    public function getUpdateErrors(): int
     {
-        $res                 = \get_object_vars($this);
-        $res['db']           = '*truncated*';
-        $res['smarty']       = '*truncated*';
-        $res['getText']      = '*truncated*';
-        $res['alertService'] = '*truncated*';
-        $res['manager']      = '*truncated*';
-        $res['adminAccount'] = '*truncated*';
+        return $this->updateErrors;
+    }
 
-        return $res;
+    /**
+     * @inheritdoc
+     */
+    public function setUpdateErrors(int $updateErrors): void
+    {
+        $this->updateErrors = $updateErrors;
     }
 }

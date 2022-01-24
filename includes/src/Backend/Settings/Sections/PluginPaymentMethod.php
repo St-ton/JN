@@ -5,7 +5,6 @@ namespace JTL\Backend\Settings\Sections;
 use JTL\Backend\Settings\Item;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
-use JTL\Shop;
 use stdClass;
 
 /**
@@ -17,14 +16,14 @@ class PluginPaymentMethod extends Base
     /**
      * @inheritdoc
      */
-    public function generateConfigData(SqlObject $sql = null): array
+    public function load(?SqlObject $sql = null): void
     {
         if ($sql === null) {
             $sql = new SqlObject();
             $sql->setWhere(' 1 = 1');
         }
 
-        $data             = $this->db->getObjects(
+        $data = $this->db->getObjects(
             'SELECT *, kPluginEinstellungenConf AS kEinstellungenConf,
                 kPluginEinstellungenConf AS kEinstellungenSektion
                 FROM tplugineinstellungenconf
@@ -32,25 +31,15 @@ class PluginPaymentMethod extends Base
                  ORDER BY nSort',
             $sql->getParams()
         );
-        $this->configData = [];
+
+        $configItems = [];
         foreach ($data as $item) {
-            $config = new Item();
+            if ($item->cConf === 'N' && ($item->cInputTyp === '' || $item->cInputTyp === null)) {
+                $config = new Subsection();
+            } else {
+                $config = new Item();
+            }
             $config->parseFromDB($item);
-            $this->configData[] = $config;
-        }
-
-        return $this->configData;
-    }
-
-    /**
-     * @todo: should be renamed.
-     * @todo: add to interface
-     * @inheritdoc
-     */
-    public function loadCurrentData(): array
-    {
-        $getText = Shop::Container()->getGetText();
-        foreach ($this->getConfigData() as $config) {
             if (\in_array($config->getInputType(), ['selectbox', 'listbox'], true)) {
                 $setValues = $this->db->selectAll(
                     'tplugineinstellungenconfwerte',
@@ -75,16 +64,33 @@ class PluginPaymentMethod extends Base
             $config->setSetValue(isset($setValue->cWert)
                 ? Text::htmlentities($setValue->cWert)
                 : null);
+
+            $configItems[] = $config;
             $this->items[] = $config;
         }
-
-        return $this->items;
+        $this->subsections = [];
+        $currentSubsection = null;
+        foreach ($configItems as $item) {
+            if (\get_class($item) === Subsection::class) {
+                if ($currentSubsection !== null) {
+                    $this->subsections[] = $currentSubsection;
+                }
+                $currentSubsection = $item;
+            } else {
+                if ($currentSubsection === null) {
+                    $currentSubsection = new Subsection();
+                }
+                $currentSubsection->addItem($item);
+            }
+        }
+        $this->subsections[] = $currentSubsection;
+        $this->subsections   = \array_filter($this->subsections);
     }
 
     /**
      * @inheritdoc
      */
-    public function update(array $data, bool $filter = true): array
+    public function update(array $data, bool $filter = true, array $tags = [\CACHING_GROUP_OPTION]): array
     {
         $unfiltered = $data;
         if ($filter === true) {
@@ -92,7 +98,10 @@ class PluginPaymentMethod extends Base
         }
         $kPlugin = $data['kPlugin'];
         $updated = [];
-        foreach ($this->getConfigData() as $sectionData) {
+        if ($this->loaded === false) {
+            $this->load();
+        }
+        foreach ($this->getItems() as $sectionData) {
             $id = $sectionData->getValueName();
             if (!isset($data[$id])) {
                 continue;

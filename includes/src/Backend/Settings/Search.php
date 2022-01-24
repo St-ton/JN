@@ -3,7 +3,7 @@
 
 namespace JTL\Backend\Settings;
 
-use JTL\Backend\Settings\Sections\Section;
+use JTL\Backend\Settings\Sections\SectionInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
@@ -112,7 +112,7 @@ class Search
 
     /**
      * @param string $query
-     * @return Section[]
+     * @return SectionInterface[]
      */
     public function getResultSections(string $query): array
     {

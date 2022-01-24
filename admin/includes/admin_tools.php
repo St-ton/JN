@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Backend\AdminFavorite;
 use JTL\Backend\Notification;
-use JTL\Backend\Settings\Item;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
 use JTL\Backend\Settings\Sections\Subsection;
@@ -222,8 +221,8 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
     if (!Form::validateToken()) {
         return __('errorCSRF');
     }
-    $db             = Shop::Container()->getDB();
-    $settingManager = new Manager(
+    $db      = Shop::Container()->getDB();
+    $manager = new Manager(
         $db,
         Shop::Smarty(),
         Shop::Container()->getAdminAccount(),
@@ -231,62 +230,14 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
         Shop::Container()->getAlertService()
     );
     if (Request::postVar('resetSetting') !== null) {
-        $settingManager->resetSetting(Request::postVar('resetSetting'));
+        $manager->resetSetting(Request::postVar('resetSetting'));
         return __('successConfigReset');
     }
-    $invalid  = 0;
-    $confData = $db->getObjects(
-        "SELECT ec.*, e.cWert AS currentValue
-            FROM teinstellungenconf AS ec
-            LEFT JOIN teinstellungen AS e
-                ON e.cName = ec.cWertName
-            WHERE ec.kEinstellungenSektion = :configSectionID
-              AND ec.cConf = 'Y'
-            ORDER BY ec.nSort",
-        ['configSectionID' => $configSectionID]
-    );
-    foreach ($confData as $config) {
-        $val                        = new stdClass();
-        $val->cWert                 = $post[$config->cWertName] ?? null;
-        $val->cName                 = $config->cWertName;
-        $val->kEinstellungenSektion = $configSectionID;
-        $valid                      = true;
-        switch ($config->cInputTyp) {
-            case 'kommazahl':
-                $val->cWert = (float)str_replace(',', '.', $val->cWert);
-                break;
-            case 'zahl':
-            case 'number':
-                $val->cWert = (int)$val->cWert;
-                $valid      = validateSetting($val);
-                break;
-            case 'text':
-                $val->cWert = Text::filterXSS(mb_substr($val->cWert, 0, 255));
-                break;
-            case 'listbox':
-            case 'selectkdngrp':
-                bearbeiteListBox($val->cWert, $config->cWertName, $configSectionID);
-                break;
-            default:
-                break;
-        }
-        if ($valid && $config->cInputTyp !== 'listbox' && $config->cInputTyp !== 'selectkdngrp') {
-            $db->delete(
-                'teinstellungen',
-                ['kEinstellungenSektion', 'cName'],
-                [$configSectionID, $config->cWertName]
-            );
-            $db->insert('teinstellungen', $val);
+    $section = (new SectionFactory())->getSection($configSectionID, $manager);
+    $section->update($post, true, $tags);
+    $invalid = $section->getUpdateErrors();
 
-            $settingManager->addLog($config->cWertName, $config->currentValue, $post[$config->cWertName]);
-        }
-        if (!$valid) {
-            $invalid++;
-        }
-    }
-    Shop::Container()->getCache()->flushTags($tags);
-
-    if ($invalid > 0 || count($confData) === 0) {
+    if ($invalid > 0) {
         return __('errorConfigSave');
     }
 
@@ -296,19 +247,12 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
 /**
  * @param stdClass $setting
  * @return bool
+ * @deprecated since 5.2.0
  */
 function validateSetting(stdClass $setting): bool
 {
-    $valid = true;
-    switch ($setting->cName) {
-        case 'bilder_jpg_quali':
-            $valid = validateNumberRange(0, 100, $setting);
-            break;
-        default:
-            break;
-    }
-
-    return $valid;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return false;
 }
 
 /**
@@ -316,20 +260,12 @@ function validateSetting(stdClass $setting): bool
  * @param int      $max
  * @param stdClass $setting
  * @return bool
+ * @deprecated since 5.2.0
  */
 function validateNumberRange(int $min, int $max, stdClass $setting): bool
 {
-    $valid = $min <= $setting->cWert && $setting->cWert <= $max;
-
-    if (!$valid) {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_DANGER,
-            sprintf(__('errrorNumberRange'), __($setting->cName . '_name'), $min, $max),
-            'errrorNumberRange'
-        );
-    }
-
-    return $valid;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return false;
 }
 
 /**

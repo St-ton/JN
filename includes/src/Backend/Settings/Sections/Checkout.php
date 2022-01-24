@@ -21,7 +21,6 @@ class Checkout extends Base
 
     /**
      * @return string
-     * @throws \SmartyException
      */
     public function getSectionMarkup(): string
     {

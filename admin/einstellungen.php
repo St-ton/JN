@@ -129,6 +129,7 @@ if ($step === 'einstellungen bearbeiten') {
     } else {
         $sectionInstance = $sectionFactory->getSection($sectionID, $settingManager);
         $sectionInstance->load();
+        $sectionInstance->filter(Request::verifyGPDataString('group'));
         $sections = [$sectionInstance];
     }
     $smarty->assign('section', $section)
@@ -142,7 +143,8 @@ if ($step === 'einstellungen bearbeiten') {
         ->assign('sections', $sections);
 }
 
-$smarty->assign('step', $step)
+$smarty->assign('cPrefURL', __('prefURL' . $sectionID))
+    ->assign('step', $step)
     ->assign('countries', ShippingMethod::getPossibleShippingCountries())
     ->assign('waehrung', $defaultCurrency->cName)
     ->display('einstellungen.tpl');

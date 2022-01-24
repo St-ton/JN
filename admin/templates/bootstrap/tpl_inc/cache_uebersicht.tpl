@@ -452,7 +452,6 @@
                     {$jtl_token}
                     <input type="hidden" name="a" value="settings" />
                     <input name="tab" type="hidden" value="settings" />
-
                     <div>
                         <div class="subheading1">{__('general')}</div>
                         <hr class="mb-3">

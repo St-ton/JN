@@ -3,7 +3,7 @@
 use Illuminate\Support\Collection;
 use JTL\Backend\Settings\Manager as SettingsManager;
 use JTL\Backend\Settings\Search;
-use JTL\Backend\Settings\Sections\Section;
+use JTL\Backend\Settings\Sections\SectionInterface;
 use JTL\Helpers\Text;
 use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
@@ -54,7 +54,7 @@ function adminSearch(string $query, bool $standalonePage = false): ?string
 
 /**
  * @param string $query
- * @return Section[]
+ * @return SectionInterface[]
  */
 function configSearch(string $query): array
 {

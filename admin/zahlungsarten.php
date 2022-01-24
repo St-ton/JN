@@ -127,9 +127,9 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
     } else {
         $section = $sectionFactory->getSection(CONF_ZAHLUNGSARTEN, $settingManager);
         $sql     = new SqlObject();
-        $sql->setWhere(' cModulId = :mid');
+        $sql->setWhere(' ec.cModulId = :mid');
         $sql->addParam('mid', $paymentMethod->cModulId);
-        $section->generateConfigData($sql);
+        $section->load($sql);
         $post             = $_POST;
         $post['cModulId'] = $paymentMethod->cModulId;
         $section->update($post);
@@ -175,15 +175,15 @@ if ($step === 'einstellen') {
                 AND cConf = 'Y'");
             $sql->addParam('mid', $paymentMethod->cModulId . '\_%');
             $section = new PluginPaymentMethod($settingManager, CONF_ZAHLUNGSARTEN);
-            $section->generateConfigData($sql);
-            $conf = $section->loadCurrentData();
+            $section->load($sql);
+            $conf = $section->getItems();
         } else {
             $section = $sectionFactory->getSection(CONF_ZAHLUNGSARTEN, $settingManager);
             $sql     = new SqlObject();
-            $sql->setWhere(' cModulId = :mid');
+            $sql->setWhere(' ec.cModulId = :mid');
             $sql->addParam('mid', $paymentMethod->cModulId);
-            $section->generateConfigData($sql);
-            $conf = $section->loadCurrentData();
+            $section->load($sql);
+            $conf = $section->getItems();
         }
 
         $customerGroups = $db->getObjects(
@@ -191,7 +191,7 @@ if ($step === 'einstellen') {
                 FROM tkundengruppe
                 ORDER BY cName'
         );
-        $smarty->assign('Conf', $conf)
+        $smarty->assign('configItems', $conf)
             ->assign('zahlungsart', $paymentMethod)
             ->assign('kundengruppen', $customerGroups)
             ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($paymentMethod))

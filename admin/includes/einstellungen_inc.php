@@ -11,14 +11,8 @@ use function Functional\flatten;
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_menu.php';
 
-/**
- * @param string $query
- * @param bool   $save
- * @return stdClass
- */
-function bearbeiteEinstellungsSuche(string $query, bool $save = false): stdClass
+function getSearchTest(string $query, bool $save = false): stdClass
 {
-//    \trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
     $sql    = new SqlObject();
     $result = (object)[
         'cSearch'          => '',
@@ -31,7 +25,7 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false): stdClass
     if (mb_strlen($query) === 0) {
         return $result;
     }
-    $where    = "(ec.cModulId IS NULL OR ec.cModulId = '') AND ec.kEinstellungenSektion != 101 ";
+    $where    = "(ec.cModulId IS NULL OR ec.cModulId = '') AND ec.kEinstellungenSektion != " . CONF_EXPORTFORMATE . ' ';
     $idList   = explode(',', $query);
     $isIdList = count($idList) > 1;
     if ($isIdList) {
@@ -65,8 +59,6 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false): stdClass
             $where             .= " AND cConf = 'Y'";
             $result->nSuchModus = 2;
             $result->cSearch    = sprintf(__('searchForIDRange'), $rangeList[0] . ' - ' . $rangeList[1]);
-            $result->confIdFrom = $rangeList[0];
-            $result->confIdTo   = $rangeList[1];
         } elseif ((int)$query > 0) {
             $result->nSuchModus = 3;
             $result->cSearch    = sprintf(__('searchForID'), $query);
@@ -95,6 +87,18 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false): stdClass
     }
     $result->cWHERE = $where;
     $sql->setWhere($where);
+
+    return $result;
+}
+
+/**
+ * @param string $query
+ * @param bool   $save
+ * @return stdClass
+ */
+function bearbeiteEinstellungsSuche(string $query, bool $save = false): stdClass
+{
+    $result = getSearchTest($query, $save);
 
     return holeEinstellungen($result, $save);
 }
@@ -129,6 +133,14 @@ function holeEinstellungen(stdClass $sql, bool $save): stdClass
             WHERE ' . $sql->cWHERE . '
             ORDER BY ec.kEinstellungenSektion, nSort'
     );
+    Shop::dbg('SELECT ec.*, e.cWert AS currentValue, ed.cWert AS defaultValue
+            FROM teinstellungenconf AS ec
+            LEFT JOIN teinstellungen AS e
+              ON e.cName = ec.cWertName
+            LEFT JOIN teinstellungen_default AS ed
+              ON ed.cName = ec.cWertName
+            WHERE ' . $sql->cWHERE . '
+            ORDER BY ec.kEinstellungenSektion, nSort', false, 'Searching with SQL:');
     $configData            = $section->generateConfigData($sql->sql);
     $sql->configData       = $configData;
 //    Shop::dbg($configData, false, '$configData:');

@@ -11,7 +11,7 @@
     <div class="table-responsive">
         <table class="list table">
             <tbody>
-            {foreach $sections as $section}
+            {foreach $sectionOverview as $section}
                 <tr>
                     <td>{$section->getName()}</td>
                     <td>{$section->getConfigCount()} {__('settings')}</td>

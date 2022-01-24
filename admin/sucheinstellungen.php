@@ -66,9 +66,9 @@ if (Request::getVar('action') === 'createIndex') {
                 $rows = array_intersect(
                     $searchCols,
                     ['cName', 'cSeo', 'cSuchbegriffe',
-                     'cArtNr', 'cKurzBeschreibung',
-                     'cBeschreibung', 'cBarcode',
-                     'cISBN', 'cHAN', 'cAnmerkung'
+                        'cArtNr', 'cKurzBeschreibung',
+                        'cBeschreibung', 'cBarcode',
+                        'cISBN', 'cHAN', 'cAnmerkung'
                     ]
                 );
                 break;
@@ -160,17 +160,17 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken())
 
     $fulltextChanged = false;
     foreach ([
-            'suche_fulltext',
-            'suche_prio_name',
-            'suche_prio_suchbegriffe',
-            'suche_prio_artikelnummer',
-            'suche_prio_kurzbeschreibung',
-            'suche_prio_beschreibung',
-            'suche_prio_ean',
-            'suche_prio_isbn',
-            'suche_prio_han',
-            'suche_prio_anmerkung'
-        ] as $sucheParam) {
+                 'suche_fulltext',
+                 'suche_prio_name',
+                 'suche_prio_suchbegriffe',
+                 'suche_prio_artikelnummer',
+                 'suche_prio_kurzbeschreibung',
+                 'suche_prio_beschreibung',
+                 'suche_prio_ean',
+                 'suche_prio_isbn',
+                 'suche_prio_han',
+                 'suche_prio_anmerkung'
+             ] as $sucheParam) {
         if (isset($_POST[$sucheParam]) && ($_POST[$sucheParam] != $conf['artikeluebersicht'][$sucheParam])) {
             $fulltextChanged = true;
             break;
@@ -190,9 +190,11 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken())
 }
 
 $section = $sectionFactory->getSection($sectionID, $settingManager);
+$section->load();
+//dd($section);
 if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
     && (!$db->getSingleObject("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'")
-    || !$db->getSingleObject("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'"))) {
+        || !$db->getSingleObject("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'"))) {
     $alertService->addAlert(
         Alert::TYPE_ERROR,
         __('errorCreateTime') .
@@ -207,13 +209,13 @@ if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
 }
 
 $smarty->assign('action', 'sucheinstellungen.php')
-       ->assign('kEinstellungenSektion', $sectionID)
-       ->assign('section', $section)
-       ->assign('Conf', getAdminSectionSettings(CONF_ARTIKELUEBERSICHT))
-       ->assign('cPrefDesc', filteredConfDescription($sectionID))
-       ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $sectionID))
-       ->assign('step', $step)
-       ->assign('supportFulltext', version_compare($mysqlVersion, '5.6', '>='))
-       ->assign('createIndex', $createIndex)
-       ->assign('waehrung', $standardwaehrung->cName)
-       ->display('sucheinstellungen.tpl');
+    ->assign('kEinstellungenSektion', $sectionID)
+    ->assign('sections', [$section])
+    ->assign('Conf', getAdminSectionSettings(CONF_ARTIKELUEBERSICHT))
+    ->assign('cPrefDesc', filteredConfDescription($sectionID))
+    ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $sectionID))
+    ->assign('step', $step)
+    ->assign('supportFulltext', version_compare($mysqlVersion, '5.6', '>='))
+    ->assign('createIndex', $createIndex)
+    ->assign('waehrung', $standardwaehrung->cName)
+    ->display('sucheinstellungen.tpl');

@@ -17,6 +17,8 @@ interface Section
      */
     public function __construct(Manager $manager, int $sectionID);
 
+    public function load(): void;
+
     /**
      * @param object $conf
      * @param object $confValue

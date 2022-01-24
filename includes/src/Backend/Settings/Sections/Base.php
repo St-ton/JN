@@ -88,6 +88,11 @@ class Base implements Section
     protected $items = [];
 
     /**
+     * @var Subsection[]
+     */
+    protected $subsections = [];
+
+    /**
      * @var string[]
      */
     protected $mapping = [
@@ -109,6 +114,107 @@ class Base implements Section
         $this->id      = $sectionID;
         $this->initBaseData();
     }
+
+    public function load(): void
+    {
+        $data             = $this->db->getObjects(
+            'SELECT ec.*, e.cWert AS currentValue, ted.cWert AS defaultValue
+                FROM teinstellungenconf AS ec
+                LEFT JOIN teinstellungen AS e
+                    ON e.cName = ec.cWertName
+                LEFT JOIN teinstellungen_default AS ted
+                    ON ted.cName = ec.cWertName
+                WHERE ec.kEinstellungenSektion = :sid
+                    AND ec.nModul = 0 AND ec.nStandardAnzeigen != 0
+                ORDER BY ec.nSort',
+            ['sid' => $this->id]
+        );
+        $configItems = [];
+        $getText = Shop::Container()->getGetText();
+        foreach ($data as $item) {
+            if ($item->cConf === 'N' && $item->cInputTyp === null) {
+                $config = new Subsection();
+            } else {
+                $config = new Item();
+            }
+            $config->parseFromDB($item);
+            $getText->localizeConfig($config);
+            //@ToDo: Setting 492 is the only one listbox at the moment.
+            //But In special case of setting 492 values come from kKundengruppe instead of teinstellungenconfwerte
+            if ($config->getInputType() === 'listbox' && $config->getID() === 492) {
+                $config->setValues($this->db->getObjects(
+                    'SELECT kKundengruppe AS cWert, cName
+                    FROM tkundengruppe
+                    ORDER BY cStandard DESC'
+                ));
+            } elseif (\in_array($config->getInputType(), ['selectbox', 'listbox'], true)) {
+                $setValues = $this->db->selectAll(
+                    'teinstellungenconfwerte',
+                    'kEinstellungenConf',
+                    $config->getID(),
+                    '*',
+                    'nSort'
+                );
+                $getText->localizeConfigValues($config, $setValues);
+                $config->setValues($setValues);
+            }
+            if ($config->getInputType() === 'listbox') {
+                $setValue = $this->db->selectAll(
+                    'teinstellungen',
+                    ['kEinstellungenSektion', 'cName'],
+                    [$config->getConfigSectionID(), $config->getValueName()]
+                );
+                $config->setSetValue($setValue);
+            } else {
+                $setValue = $this->db->select(
+                    'teinstellungen',
+                    'kEinstellungenSektion',
+                    $config->getConfigSectionID(),
+                    'cName',
+                    $config->getValueName()
+                );
+                $config->setSetValue(isset($setValue->cWert)
+                    ? Text::htmlentities($setValue->cWert)
+                    : null);
+            }
+            $configItems[] = $config;
+        }
+        $this->subsections = [];
+        $currentSubsection = null;
+        dd($configItems);
+        foreach ($configItems as $item) {
+            if (\get_class($item) === Subsection::class) {
+                if ($currentSubsection !== null) {
+                    $this->subsections[] = $currentSubsection;
+                }
+                $currentSubsection = $item;
+            } else {
+                $currentSubsection->addItem($item);
+            }
+        }
+        $this->subsections[] = $currentSubsection;
+        $this->subsections = \array_filter($this->subsections);
+    }
+
+    /**
+     * @todo: should be renamed.
+     * @todo: add to interface
+     * @inheritdoc
+     */
+    public function loadPossibleValues(): array
+    {
+        $getText = Shop::Container()->getGetText();
+        $this->items = [];
+        foreach ($this->getConfigData() as $config) {
+
+            $this->setValue($config, $setValue);
+            $this->items[] = $config;
+        }
+//        Shop::dbg(count($this->items), false, 'count:');
+
+        return $this->items;
+    }
+
 
     protected function initBaseData(): void
     {
@@ -197,11 +303,15 @@ class Base implements Section
                 ORDER BY ' . $sql->getOrder(),
             $sql->getParams()
         );
+        $this->items = [];
         $this->configData = [];
+
+        $getText = Shop::Container()->getGetText();
         foreach ($data as $item) {
             $config = new Item();
             $config->parseFromDB($item);
             $this->configData[] = $config;
+//            $this->items[] = $config;
         }
 
         return $this->configData;
@@ -281,6 +391,14 @@ class Base implements Section
     }
 
     /**
+     * @return Item[]
+     */
+    public function getItem(): array
+    {
+        return $this->items;
+    }
+
+    /**
      * @todo: should be renamed.
      * @todo: add to interface
      * @inheritdoc
@@ -288,6 +406,7 @@ class Base implements Section
     public function loadCurrentData(): array
     {
         $getText = Shop::Container()->getGetText();
+        $this->items = [];
         foreach ($this->getConfigData() as $config) {
             $getText->localizeConfig($config);
             //@ToDo: Setting 492 is the only one listbox at the moment.
@@ -331,6 +450,7 @@ class Base implements Section
             $this->setValue($config, $setValue);
             $this->items[] = $config;
         }
+//        Shop::dbg(count($this->items), false, 'count:');
 
         return $this->items;
     }
@@ -501,6 +621,22 @@ class Base implements Section
     public function setConfigCount(int $configCount): void
     {
         $this->configCount = $configCount;
+    }
+
+    /**
+     * @return Subsection[]
+     */
+    public function getSubsections(): array
+    {
+        return $this->subsections;
+    }
+
+    /**
+     * @param Subsection[] $subsections
+     */
+    public function setSubsections(array $subsections): void
+    {
+        $this->subsections = $subsections;
     }
 
     /**

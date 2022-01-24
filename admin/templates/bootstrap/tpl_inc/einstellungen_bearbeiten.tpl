@@ -1,9 +1,7 @@
-{if isset($section)}
-    {if isset($cSearch) && $cSearch|strlen  > 0}
-        {assign var=title value=$cSearch}
-    {/if}
-    {include file='tpl_inc/seite_header.tpl' cTitel=$title cBeschreibung='' cDokuURL=$cPrefURL}
+{if isset($cSearch) && $cSearch|strlen  > 0}
+    {assign var=title value=$cSearch}
 {/if}
+{include file='tpl_inc/seite_header.tpl' cTitel=$title cBeschreibung='' cDokuURL=$cPrefURL}
 {$search = isset($cSuche) && !empty($cSuche)}
 {if $search}
     <script>

@@ -1190,7 +1190,7 @@ class ShippingMethod
                         OR FIND_IN_SET(:cgid, REPLACE(cKundengruppen, ';', ',')) > 0)" . $dep,
             [
                 'iso'  => '%' . $iso . '%',
-                'scls' => '^([0-9 -]* )?' . $product->kVersandklasse,
+                'scls' => '^([0-9 -]* )?' . $product->kVersandklasse . ' ',
                 'cgid' => $customerGroupID
             ]
         );

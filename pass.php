@@ -5,6 +5,7 @@ use JTL\Customer\Customer;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\RateLimit\ForgotPassword;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
@@ -13,48 +14,54 @@ Shop::setPageType(PAGE_PASSWORTVERGESSEN);
 $linkHelper  = Shop::Container()->getLinkService();
 $kLink       = $linkHelper->getSpecialPageID(LINKTYP_PASSWORD_VERGESSEN);
 $step        = 'formular';
+$db          = Shop::Container()->getDB();
 $alertHelper = Shop::Container()->getAlertService();
 $smarty      = Shop::Smarty();
 $valid       = Form::validateToken();
 $missing     = ['captcha' => false];
 if ($valid && isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
-    $validRecaptcha = true;
-    if (Shop::getSettingValue(CONF_KUNDEN, 'forgot_password_captcha') === 'Y' && !Form::validateCaptcha($_POST)) {
-        $validRecaptcha     = false;
-        $missing['captcha'] = true;
-    }
-    $kunde = Shop::Container()->getDB()->select(
-        'tkunde',
-        'cMail',
-        $_POST['email'],
-        'nRegistriert',
-        1,
-        null,
-        null,
-        false,
-        'kKunde, cSperre'
+    $kunde   = $db->getSingleObject(
+        'SELECT kKunde, cSperre
+        FROM tkunde
+            WHERE cMail = :mail
+            AND nRegistriert = 1',
+        ['mail' => $_POST['email']]
     );
-    if ($validRecaptcha === false) {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('fillOut'), 'accountLocked');
-    } elseif (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre !== 'Y') {
-        $step     = 'passwort versenden';
-        $customer = new Customer((int)$kunde->kKunde);
-        $customer->prepareResetPassword();
+    $limiter = new ForgotPassword($db);
+    $limiter->init(Request::getRealIP(), (int)($kunde->kKunde ?? 0));
+    if ($limiter->check() === true) {
+        $limiter->persist();
+        $limiter->cleanup();
+        $validRecaptcha = true;
+        if (Shop::getSettingValue(CONF_KUNDEN, 'forgot_password_captcha') === 'Y' && !Form::validateCaptcha($_POST)) {
+            $validRecaptcha     = false;
+            $missing['captcha'] = true;
+        }
+        if ($validRecaptcha === false) {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('fillOut'), 'accountLocked');
+        } elseif (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre !== 'Y') {
+            $step     = 'passwort versenden';
+            $customer = new Customer((int)$kunde->kKunde);
+            $customer->prepareResetPassword();
 
-        $smarty->assign('Kunde', $customer);
-    } elseif (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre === 'Y') {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('accountLocked'), 'accountLocked');
+            $smarty->assign('Kunde', $customer);
+        } elseif (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre === 'Y') {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('accountLocked'), 'accountLocked');
+        } else {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('incorrectEmail'), 'incorrectEmail');
+        }
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('incorrectEmail'), 'incorrectEmail');
+        $missing['limit'] = true;
+        $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('formToFast', 'account data'), 'accountLocked');
     }
 } elseif ($valid && isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpwh'])) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
-        $resetItem = Shop::Container()->getDB()->select('tpasswordreset', 'cKey', $_POST['fpwh']);
+        $resetItem = $db->select('tpasswordreset', 'cKey', $_POST['fpwh']);
         if ($resetItem !== null && ($dateExpires = new DateTime($resetItem->dExpires)) >= new DateTime()) {
             $customer = new Customer((int)$resetItem->kKunde);
             if ($customer->kKunde > 0 && $customer->cSperre !== 'Y') {
                 $customer->updatePassword($_POST['pw_new']);
-                Shop::Container()->getDB()->delete('tpasswordreset', 'kKunde', $customer->kKunde);
+                $db->delete('tpasswordreset', 'kKunde', $customer->kKunde);
                 header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?updated_pw=true');
                 exit();
             }
@@ -80,7 +87,7 @@ if ($valid && isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POS
     $step = 'confirm';
     $smarty->assign('fpwh', Text::filterXSS($_POST['fpwh']));
 } elseif (isset($_GET['fpwh'])) {
-    $resetItem = Shop::Container()->getDB()->select('tpasswordreset', 'cKey', $_GET['fpwh']);
+    $resetItem = $db->select('tpasswordreset', 'cKey', $_GET['fpwh']);
     if ($resetItem) {
         $dateExpires = new DateTime($resetItem->dExpires);
         if ($dateExpires >= new DateTime()) {

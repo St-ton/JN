@@ -134,13 +134,12 @@ $ratingStars  = Request::verifyGPCDataInt('btgsterne');
 $sorting      = Request::verifyGPCDataInt('sortierreihenfolge');
 $showRatings  = Request::verifyGPCDataInt('bewertung_anzeigen');
 $allLanguages = Request::verifyGPCDataInt('moreRating');
-$ratings      = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 if ($ratingPage === 0) {
     $ratingPage = 1;
 }
 if ($AktuellerArtikel->Bewertungen === null || $ratingStars > 0) {
     $AktuellerArtikel->holeBewertung(
-        $conf['bewertung']['bewertung_anzahlseite'],
+        -1,
         $ratingPage,
         $ratingStars,
         $conf['bewertung']['bewertung_freischalten'],
@@ -149,6 +148,7 @@ if ($AktuellerArtikel->Bewertungen === null || $ratingStars > 0) {
     );
     $AktuellerArtikel->holehilfreichsteBewertung();
 }
+$ratings = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 if ((int)($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich ?? 0) > 0) {
     $ratings = array_filter(
         $AktuellerArtikel->Bewertungen->oBewertung_arr,

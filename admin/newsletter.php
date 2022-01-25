@@ -3,6 +3,7 @@
 use JTL\Alert\Alert;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
+use JTL\DB\SqlObject;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -26,14 +27,10 @@ $step          = 'uebersicht';
 $option        = '';
 $admin         = new Admin($db, $alertHelper);
 
-$inactiveSearchSQL         = new stdClass();
-$inactiveSearchSQL->cJOIN  = '';
-$inactiveSearchSQL->cWHERE = '';
-$activeSearchSQL           = new stdClass();
-$activeSearchSQL->cJOIN    = '';
-$activeSearchSQL->cWHERE   = '';
-$customerGroup             = $db->select('tkundengruppe', 'cStandard', 'Y');
-$_SESSION['Kundengruppe']  = new CustomerGroup((int)$customerGroup->kKundengruppe);
+$inactiveSearchSQL        = new SqlObject();
+$activeSearchSQL          = new SqlObject();
+$customerGroup            = $db->select('tkundengruppe', 'cStandard', 'Y');
+$_SESSION['Kundengruppe'] = new CustomerGroup((int)$customerGroup->kKundengruppe);
 setzeSprache();
 $languageID = (int)$_SESSION['editLanguageID'];
 $instance   = new Newsletter($db, $conf);
@@ -107,18 +104,20 @@ if (Form::validateToken()) {
     } elseif (mb_strlen(Request::verifyGPDataString('cSucheInaktiv')) > 0) { // Inaktive Abonnentensuche
         $query = $db->escape(Text::filterXSS(Request::verifyGPDataString('cSucheInaktiv')));
         if (mb_strlen($query) > 0) {
-            $inactiveSearchSQL->cWHERE = " AND (tnewsletterempfaenger.cVorname LIKE '%" . $query .
-                "%' OR tnewsletterempfaenger.cNachname LIKE '%" . $query .
-                "%' OR tnewsletterempfaenger.cEmail LIKE '%" . $query . "%')";
+            $inactiveSearchSQL->setWhere(' AND (tnewsletterempfaenger.cVorname LIKE :qry
+                OR tnewsletterempfaenger.cNachname LIKE :qry
+                OR tnewsletterempfaenger.cEmail LIKE :qry)');
+            $inactiveSearchSQL->addParam('qry', '%' . $query . '%');
         }
 
         $smarty->assign('cSucheInaktiv', $query);
     } elseif (mb_strlen(Request::verifyGPDataString('cSucheAktiv')) > 0) { // Aktive Abonnentensuche
         $query = $db->escape(Text::filterXSS(Request::verifyGPDataString('cSucheAktiv')));
         if (mb_strlen($query) > 0) {
-            $activeSearchSQL->cWHERE = " AND (tnewsletterempfaenger.cVorname LIKE '%" . $query .
-                "%' OR tnewsletterempfaenger.cNachname LIKE '%" . $query .
-                "%' OR tnewsletterempfaenger.cEmail LIKE '%" . $query . "%')";
+            $activeSearchSQL->setWhere(' AND (tnewsletterempfaenger.cVorname LIKE :qry
+                OR tnewsletterempfaenger.cNachname LIKE :qry
+                OR tnewsletterempfaenger.cEmail LIKE :qry)');
+            $activeSearchSQL->addParam('qry', '%' . $query . '%');
         }
 
         $smarty->assign('cSucheAktiv', $query);
@@ -264,7 +263,8 @@ if ($step === 'uebersicht') {
     $recipientsCount   = (int)$db->getSingleObject(
         'SELECT COUNT(*) AS cnt
             FROM tnewsletterempfaenger
-            WHERE tnewsletterempfaenger.nAktiv = 0' . $inactiveSearchSQL->cWHERE
+            WHERE tnewsletterempfaenger.nAktiv = 0' . $inactiveSearchSQL->getWhere(),
+        $inactiveSearchSQL->getParams()
     )->cnt;
     $queueCount        = (int)$db->getSingleObject(
         "SELECT COUNT(*) AS cnt
@@ -357,9 +357,10 @@ if ($step === 'uebersicht') {
             LEFT JOIN tkundengruppe
                 ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
             WHERE tnewsletterempfaenger.nAktiv = 0
-            " . $inactiveSearchSQL->cWHERE . '
+            " . $inactiveSearchSQL->getWhere() . '
             ORDER BY tnewsletterempfaenger.dEingetragen DESC
-            LIMIT ' . $pagiInactive->getLimitSQL()
+            LIMIT ' . $pagiInactive->getLimitSQL(),
+        $inactiveSearchSQL->getParams()
     );
     foreach ($inactiveRecipients as $recipient) {
         $customer                = new Customer(isset($recipient->kKunde) ? (int)$recipient->kKunde : null);

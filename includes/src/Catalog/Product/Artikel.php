@@ -3551,7 +3551,7 @@ class Artikel
      */
     private function getBomSQL(int $productID): SqlObject
     {
-        $bom    = $this->getDB()->getSingleObject(
+        $bom = $this->getDB()->getSingleObject(
             'SELECT kStueckliste AS id, fLagerbestand AS stock
                 FROM tartikel
                 WHERE kArtikel = :pid',

@@ -50,7 +50,10 @@ if (Form::validateToken()) {
         $shippingType = getShippingTypes(Request::verifyGPCDataInt('kVersandberechnung'));
     }
 
-    if (Request::postInt('del') > 0 && Versandart::deleteInDB((int)$postData['del'])) {
+    if (Request::postInt('del') > 0) {
+        $oldShippingMethod = $db->select('tversandart', 'kVersandart', (int)$postData['del']);
+        Versandart::deleteInDB((int)$postData['del']);
+        $manager->updateRegistrationCountries(explode(' ', trim($oldShippingMethod->cLaender ?? '')));
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successShippingMethodDelete'), 'successShippingMethodDelete');
         $cache->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
     }

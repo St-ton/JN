@@ -37,6 +37,11 @@ abstract class DataModel implements DataModelInterface, Iterator
     protected $getters = [];
 
     /**
+     * @var array
+     */
+    protected static $nameMapping = [];
+
+    /**
      * true when loaded from database
      * @var bool
      */
@@ -93,6 +98,7 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     public function __construct(DbInterface $db = null)
     {
+        self::$nameMapping = [];
         $this->prepare($db);
         $this->fabricate();
     }
@@ -683,17 +689,16 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     public function getMapping($attribName): string
     {
-        static $nameMapping = [];
-        if (!isset($nameMapping[$attribName])) {
+        if (!isset(self::$nameMapping[$attribName])) {
             foreach ($this->getAttributes() as $name => $attribute) {
                 if ($attribute->name === $attribName) {
-                    $nameMapping[$attribName] = $name;
+                    self::$nameMapping[$attribName] = $name;
                     break;
                 }
             }
         }
 
-        return $nameMapping[$attribName] ?? $attribName;
+        return self::$nameMapping[$attribName] ?? $attribName;
     }
 
     /**
@@ -702,17 +707,16 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     private function hasMapping(string $attribName): bool
     {
-        static $mapping = [];
-        if (!isset($mapping[$attribName])) {
+        if (!isset(self::$nameMapping[$attribName])) {
             foreach ($this->getAttributes() as $name => $attribute) {
                 if ($attribute->name === $attribName) {
-                    $mapping[$attribName] = $name;
+                    self::$nameMapping[$attribName] = $name;
                     break;
                 }
             }
         }
 
-        return isset($mapping[$attribName]);
+        return isset(self::$nameMapping[$attribName]);
     }
 
     /**

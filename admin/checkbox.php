@@ -18,8 +18,9 @@ $oAccount->permission('CHECKBOXES_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'checkbox_inc.php';
 $alertHelper = Shop::Container()->getAlertService();
+$db          = Shop::Container()->getDB();
 $step        = 'uebersicht';
-$checkbox    = new CheckBox();
+$checkbox    = new CheckBox(0, $db);
 $tab         = $step;
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $tab = Request::verifyGPDataString('tab');
@@ -42,7 +43,7 @@ if (isset($_POST['erstellenShowButton'])) {
     $checkboxID = Request::verifyGPCDataInt('edit');
     $step       = 'erstellen';
     $tab        = $step;
-    $smarty->assign('oCheckBox', new CheckBox($checkboxID));
+    $smarty->assign('oCheckBox', new CheckBox($checkboxID, $db));
 } elseif (Request::verifyGPCDataInt('erstellen') === 1 && Form::validateToken()) {
     $post       = Text::filterXSS($_POST);
     $step       = 'erstellen';
@@ -71,7 +72,7 @@ $smarty->assign('oCheckBox_arr', $checkbox->getAll('LIMIT ' . $pagination->getLi
     ->assign('pagination', $pagination)
     ->assign('cAnzeigeOrt_arr', CheckBox::gibCheckBoxAnzeigeOrte())
     ->assign('customerGroups', CustomerGroup::getGroups())
-    ->assign('oLink_arr', Shop::Container()->getDB()->getObjects(
+    ->assign('oLink_arr', $db->getObjects(
         'SELECT * 
               FROM tlink 
               ORDER BY cName'

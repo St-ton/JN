@@ -15,7 +15,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('ORDER_CUSTOMERFIELDS_VIEW', true, true);
 setzeSprache();
 $languageID  = (int)$_SESSION['editLanguageID'];
-$cf          = CustomerFields::getInstance($languageID);
+$cf          = CustomerFields::getInstance($languageID, Shop::Container()->getDB());
 $step        = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
 $smarty->assign('cTab', $step);

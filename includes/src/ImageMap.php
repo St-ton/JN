@@ -146,7 +146,7 @@ class ImageMap implements IExtensionPoint
             return;
         }
         $defaultOptions = Artikel::getDefaultOptions();
-        $area->oArtikel = new Artikel();
+        $area->oArtikel = new Artikel($this->db);
         if ($fill === true) {
             $area->oArtikel->fuelleArtikel(
                 $area->kArtikel,

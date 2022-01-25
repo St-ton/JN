@@ -347,7 +347,7 @@ class PersistentCart
                 );
             }
             if ($addProducts) {
-                $persItem->Artikel = new Artikel();
+                $persItem->Artikel = new Artikel($this->db);
                 $persItem->Artikel->fuelleArtikel($persItem->kArtikel, $defaultOptions);
                 $persItem->cArtikelName = $persItem->Artikel->cName;
 

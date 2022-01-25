@@ -97,7 +97,7 @@ class Plugins
                 $params['kArtikel'] = [$params['kArtikel']];
             }
             foreach ($params['kArtikel'] as $productID) {
-                $product    = new Artikel();
+                $product    = new Artikel($this->db);
                 $products[] = $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
             }
         } else {

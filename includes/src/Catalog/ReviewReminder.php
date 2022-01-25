@@ -110,7 +110,7 @@ class ReviewReminder
                 if ($item->kArtikel <= 0) {
                     continue;
                 }
-                $productVisible = (new Artikel())->fuelleArtikel(
+                $productVisible = (new Artikel($db))->fuelleArtikel(
                     (int)$item->kArtikel,
                     $defaultOptions,
                     (int)$customer->kKundengruppe

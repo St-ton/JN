@@ -108,8 +108,8 @@ class Country
              ->setEU($countryData->nEU)
              ->setNameDE($countryData->cDeutsch)
              ->setNameEN($countryData->cEnglisch)
-             ->setPermitRegistration($countryData->bPermitRegistration === '1')
-             ->setRequireStateDefinition($countryData->bRequireStateDefinition === '1')
+             ->setPermitRegistration((int)$countryData->bPermitRegistration === 1)
+             ->setRequireStateDefinition((int)$countryData->bRequireStateDefinition === 1)
              ->setShippingAvailable($db->getSingleObject(
                  'SELECT COUNT(*) AS cnt 
                     FROM tversandart

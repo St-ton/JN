@@ -27,9 +27,10 @@ final class TopRatedProducts extends AbstractBox
         $cacheID   = 'bx_tprtd_' . $config['boxen']['boxen_topbewertet_minsterne'] . '_' .
             $limit . \md5($parentSQL);
         $cached    = true;
+        $db        = Shop::Container()->getDB();
         if (($topRated = Shop::Container()->getCache()->get($cacheID)) === false) {
             $cached   = false;
-            $topRated = Shop::Container()->getDB()->getObjects(
+            $topRated = $db->getObjects(
                 'SELECT tartikel.kArtikel, tartikelext.fDurchschnittsBewertung
                     FROM tartikel
                     JOIN tartikelext 
@@ -51,7 +52,7 @@ final class TopRatedProducts extends AbstractBox
             );
             $defaultOptions = Artikel::getDefaultOptions();
             foreach ($res as $id) {
-                $item = (new Artikel())->fuelleArtikel($id, $defaultOptions);
+                $item = (new Artikel($db))->fuelleArtikel($id, $defaultOptions);
                 if ($item !== null) {
                     $item->fDurchschnittsBewertung = \round($item->fDurchschnittsBewertung * 2) / 2;
                     $products[]                    = $item;

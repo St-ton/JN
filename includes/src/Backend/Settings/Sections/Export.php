@@ -4,7 +4,6 @@ namespace JTL\Backend\Settings\Sections;
 
 use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
-use JTL\Shop;
 use stdClass;
 
 /**
@@ -18,7 +17,7 @@ class Export extends Base
      */
     public function load(?SqlObject $sql = null): void
     {
-        parent::load(null);
+        parent::load();
         if ($sql === null) {
             $sql = new SqlObject();
             $sql->setWhere(' 1 = 1');

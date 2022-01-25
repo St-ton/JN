@@ -686,7 +686,7 @@ function updateStock(int $productID, $amount, $packeinheit)
  * @param int|float $amount
  * @return int|float - neuer Lagerbestand
  */
-function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
+function aktualisiereStuecklistenLagerbestand(Artikel $bomProduct, $amount)
 {
     $amount        = (float)$amount;
     $bomID         = (int)$bomProduct->kStueckliste;
@@ -696,8 +696,9 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
     if ($amount <= 0) {
         return $newStockLevel;
     }
+    $db = Shop::Container()->getDB();
     // Gibt es lagerrelevante Komponenten in der Stückliste?
-    $components = Shop::Container()->getDB()->getObjects(
+    $components = $db->getObjects(
         "SELECT tstueckliste.kArtikel, tstueckliste.fAnzahl
             FROM tstueckliste
             JOIN tartikel
@@ -707,12 +708,12 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
         ['slid' => $bomID]
     );
 
-    if (is_array($components) && count($components) > 0) {
+    if (count($components) > 0) {
         // wenn ja, dann wird für diese auch der Bestand aktualisiert
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
         foreach ($components as $component) {
-            $tmpArtikel = new Artikel();
+            $tmpArtikel = new Artikel($db);
             $tmpArtikel->fuelleArtikel($component->kArtikel, $options);
             $compStockLevel = floor(
                 aktualisiereLagerbestand(
@@ -745,7 +746,7 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
             $newStockLevel = $negStockLevel;
         }
 
-        Shop::Container()->getDB()->update(
+        $db->update(
             'tartikel',
             'kArtikel',
             (int)$bomProduct->kArtikel,

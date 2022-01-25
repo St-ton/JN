@@ -21,12 +21,13 @@ $specialContent = new stdClass();
 $alertHelper    = Shop::Container()->getAlertService();
 $lang           = Shop::getLanguageCode();
 if (Form::checkSubject()) {
+    $db          = Shop::Container()->getDB();
     $step        = 'formular';
     $missingData = [];
     if (Request::postInt('kontakt') === 1 && Form::validateToken()) {
         $missingData     = Form::getMissingContactFormData();
         $customerGroupID = Frontend::getCustomerGroup()->getID();
-        $checkBox        = new CheckBox();
+        $checkBox        = new CheckBox(0, $db);
         $missingData     = array_merge(
             $missingData,
             $checkBox->validateCheckBox(CHECKBOX_ORT_KONTAKT, $customerGroupID, $_POST, true)
@@ -52,7 +53,7 @@ if (Form::checkSubject()) {
         }
     }
 
-    $contents = Shop::Container()->getDB()->selectAll(
+    $contents = $db->selectAll(
         'tspezialcontentsprache',
         ['nSpezialContent', 'cISOSprache'],
         [(int)SC_KONTAKTFORMULAR, $lang]
@@ -60,7 +61,7 @@ if (Form::checkSubject()) {
     foreach ($contents as $content) {
         $specialContent->{$content->cTyp} = $content->cContent;
     }
-    $subjects = Shop::Container()->getDB()->getObjects(
+    $subjects = $db->getObjects(
         "SELECT *
             FROM tkontaktbetreff
             WHERE (cKundengruppen = 0
@@ -69,7 +70,7 @@ if (Form::checkSubject()) {
         ['customerGroupID' => Frontend::getCustomerGroup()->getID()]
     );
     foreach ($subjects as $subject) {
-        $localization             = Shop::Container()->getDB()->select(
+        $localization             = $db->select(
             'tkontaktbetreffsprache',
             'kKontaktBetreff',
             (int)$subject->kKontaktBetreff,

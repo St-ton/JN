@@ -161,7 +161,7 @@ class Group implements JsonSerializable
      */
     public function setBildPfad($cBildPfad): self
     {
-        $this->cBildPfad = Shop::Container()->getDB()->escape($cBildPfad);
+        $this->cBildPfad = $cBildPfad;
 
         return $this;
     }

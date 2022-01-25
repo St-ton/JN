@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6ce17904932a643caf89bf09b6d8c6a0",
+    "content-hash": "d01830617a238fb13b21711a80f49ef8",
     "packages": [
         {
             "name": "chamilo/pclzip",
@@ -1277,7 +1277,7 @@
         },
         {
             "name": "jtlshop/phpquery",
-            "version": "1.0.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jtl-software/jtl-shop/tools/phpquery.git",
@@ -1292,6 +1292,7 @@
             "require": {
                 "php": ">=7.2"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "files": [
@@ -7906,6 +7907,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "jtlshop/shop5-systemcheck": 20,
+        "jtlshop/phpquery": 20,
         "phpgangsta/googleauthenticator": 20,
         "jtlshop/qrcodegenerator": 20,
         "erusev/parsedown": 10,

@@ -675,7 +675,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerializeShort()
+    public function jsonSerializeShort(): array
     {
         return [
             'id'              => $this->portlet->getId(),
@@ -689,7 +689,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $result             = $this->jsonSerializeShort();
         $result['subareas'] = $this->subareaList->jsonSerialize();

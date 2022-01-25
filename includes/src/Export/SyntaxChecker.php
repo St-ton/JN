@@ -3,8 +3,10 @@
 namespace JTL\Export;
 
 use Exception;
+use InvalidArgumentException;
 use JTL\Backend\AdminIO;
 use JTL\Catalog\Category\Kategorie;
+use JTL\Cron\QueueEntry;
 use JTL\DB\DbInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -278,6 +280,71 @@ class SyntaxChecker
             ];
         }
         $res->state = self::getHTMLState($ef->errorCode);
+
+        return $res;
+    }
+
+    /**
+     * @param int $exportID
+     * @return stdClass
+     * @throws InvalidArgumentException
+     */
+    public static function testExport(int $exportID): stdClass
+    {
+        $db = Shop::Container()->getDB();
+        try {
+            $model = Model::load(['id' => $exportID], $db, Model::ON_NOTEXISTS_FAIL);
+        } catch (Exception $e) {
+            throw new InvalidArgumentException('Cannot find export with id ' . $exportID);
+        }
+        $smarty  = new ExportSmarty($db);
+        $factory = new ExporterFactory($db, Shop::Container()->getLogService(), Shop::Container()->getCache());
+        $ef      = $factory->getExporter($exportID);
+        $writer  = new TestWriter($model, $ef->getConfig(), $smarty);
+        $test    = (object)[
+            'jobQueueID'    => 0,
+            'cronID'        => 0,
+            'foreignKeyID'  => 0,
+            'taskLimit'     => 10,
+            'tasksExecuted' => 0,
+            'lastProductID' => 0,
+            'jobType'       => 'test',
+            'foreignKey'    => 'test',
+            'tableName'     => 'test',
+        ];
+        $ef->setWriter($writer);
+        $ef->startExport(
+            $exportID,
+            new QueueEntry($test),
+            false,
+            false,
+            true,
+            10
+        );
+        $nl      = $writer->getNewLine();
+        $header  = \array_filter(\mb_split($nl, $writer->getHeader()));
+        $content = \array_filter(\mb_split($nl, $writer->getContent()));
+        $footer  = \array_filter(\mb_split($nl, $writer->getFooter()));
+
+        $res          = new stdClass();
+        $res->header  = [];
+        $res->content = [];
+        $res->footer  = [];
+
+        foreach ($header as $item) {
+            $res->header[] = \str_getcsv($item);
+        }
+        foreach ($content as $item) {
+            $res->content[] = \str_getcsv($item);
+        }
+        foreach ($footer as $item) {
+            $res->footer[] = \str_getcsv($item);
+        }
+        $res->html = Shop::Smarty()
+            ->assign('header', $res->header)
+            ->assign('content', $res->content)
+            ->assign('footer', $res->footer)
+            ->fetch('tpl_inc/exportformate_testresult.tpl');
 
         return $res;
     }

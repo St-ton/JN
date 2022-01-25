@@ -2972,8 +2972,8 @@ class Artikel
 
             $idx = $varDetailPrice->kEigenschaftWert;
             if ($varDetailPrice->kArtikel !== $lastProduct) {
-                $lastProduct = $varDetailPrice->kArtikel;
-                $tmpProduct  = new self($this->getDB());
+                $lastProduct               = $varDetailPrice->kArtikel;
+                $tmpProduct                = new self($this->getDB());
                 $tmpProduct->kKundengruppe = $this->kKundengruppe;
                 $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerID);
             }

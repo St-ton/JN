@@ -586,4 +586,15 @@ class Base implements SectionInterface
     {
         $this->updateErrors = $updateErrors;
     }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo(): array
+    {
+        $data = \get_object_vars($this);
+        unset($data['smarty'], $data['db'], $data['getText'], $data['manager']);
+
+        return $data;
+    }
 }

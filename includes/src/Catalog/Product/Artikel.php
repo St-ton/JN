@@ -1687,7 +1687,7 @@ class Artikel
         $options->nKeineSichtbarkeitBeachten = $getInvisibleParts ? 1 : 0;
         foreach ($parts as $i => $partList) {
             $product = new self($this->getDB());
-            $product->fuelleArtikel((int)$partList->kArtikel, $options, $customerGroupID, $this->kSprache);
+            $product->fuelleArtikel((int)$partList->kArtikel, $options, $this->kKundengruppe, $this->kSprache);
             $product->holeBewertungDurchschnitt();
             $this->oStueckliste_arr[$i]                      = $product;
             $this->oStueckliste_arr[$i]->fAnzahl_stueckliste = $partList->fAnzahl;
@@ -2074,7 +2074,7 @@ class Artikel
                     GROUP BY teigenschaftkombiwert.kEigenschaftWert
                     ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName',
                 \array_merge(
-                    ['cgid' => $customerGroupID, 'pid' => $this->kArtikel],
+                    ['cgid' => $this->kKundengruppe, 'pid' => $this->kArtikel],
                     $propertySQL->getParams(),
                     $propValueSQL->getParams()
                 )
@@ -2100,7 +2100,7 @@ class Artikel
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                         AND teigenschaft.cTyp IN (\'FREIFELD\', \'PFLICHT-FREIFELD\')
                         ORDER BY teigenschaft.nSort, teigenschaft.cName',
-                \array_merge(['pid' => $this->kArtikel, 'cgid' => $customerGroupID], $propertySQL->getParams())
+                \array_merge(['pid' => $this->kArtikel, 'cgid' => $this->kKundengruppe], $propertySQL->getParams())
             );
 
             $variations = \array_merge($variations, $tmpVariationsParent);
@@ -2122,7 +2122,7 @@ class Artikel
                     ) AND tartikelsichtbarkeit.kArtikel IS NULL
                     GROUP BY teigenschaftkombiwert.kEigenschaftKombi
                 ) ek ON ek.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi');
-                $score->addParam(':cgid', $customerGroupID);
+                $score->addParam(':cgid', $this->kKundengruppe);
                 $score->addParam(':kek', $this->kEigenschaftKombi);
             }
             $baseQuery = new SqlObject();
@@ -2166,7 +2166,7 @@ class Artikel
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL');
             $baseQuery->setParams(
                 \array_merge(
-                    [':cgid' => $customerGroupID, ':ppid' => (int)$this->kVaterArtikel],
+                    [':cgid' => $this->kKundengruppe, ':ppid' => (int)$this->kVaterArtikel],
                     $propertySQL->getParams(),
                     $propValueSQL->getParams(),
                     $score->getParams()
@@ -2251,7 +2251,7 @@ class Artikel
                         AND teigenschaft.cTyp IN (\'FREIFELD\', \'PFLICHT-FREIFELD\')
                         ORDER BY teigenschaft.nSort, teigenschaft.cName',
                 \array_merge(
-                    ['pid' => $this->kArtikel, 'ppid' => $this->kVaterArtikel, 'cgid' => $customerGroupID],
+                    ['pid' => $this->kArtikel, 'ppid' => $this->kVaterArtikel, 'cgid' => $this->kKundengruppe],
                     $propertySQL->getParams()
                 )
             );
@@ -2313,7 +2313,7 @@ class Artikel
                     ORDER BY teigenschaft.nSort ASC, teigenschaft.cName, 
                     teigenschaftwert.nSort ASC, teigenschaftwert.cName',
                 \array_merge(
-                    ['pid' => $this->kArtikel, 'cgid' => $customerGroupID],
+                    ['pid' => $this->kArtikel, 'cgid' => $this->kKundengruppe],
                     $propertySQL->getParams(),
                     $propValueSQL->getParams()
                 )
@@ -2800,7 +2800,7 @@ class Artikel
                     $varCombChildren[$i] = $tmp[$productID];
                 } else {
                     $product = new self($this->getDB());
-                    $product->fuelleArtikel($productID, $options, $customerGroupID, $this->kSprache);
+                    $product->fuelleArtikel($productID, $options, $this->kKundengruppe, $this->kSprache);
                     $tmp[$productID]     = $product;
                     $varCombChildren[$i] = $product;
                 }
@@ -2975,7 +2975,7 @@ class Artikel
                 $lastProduct = $varDetailPrice->kArtikel;
                 $tmpProduct  = new self($this->getDB());
                 $tmpProduct->kKundengruppe = $this->kKundengruppe;
-                $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID, $customerID);
+                $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerID);
             }
 
             $prodVkNetto            = ProductHelper::calculatePrice($this->Preise, $this);
@@ -3342,7 +3342,7 @@ class Artikel
         if ($this->getOption('nVariationen', 0) === 1) {
             $this->holVariationen($workaround);
         }
-        $this->checkVariationExtraCharge($customerGroupID);
+        $this->checkVariationExtraCharge();
         if ($this->nIstVater === 1 && $this->getOption('nVariationDetailPreis', 0) === 1) {
             $this->getVariationDetailPrice();
         }
@@ -4079,9 +4079,8 @@ class Artikel
      * Sobald ein KindArtikel teurer ist als der Vaterartikel, muss nVariationsAufpreisVorhanden auf 1
      * gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
      * aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist
-     * @param int $customerGroupID
      */
-    private function checkVariationExtraCharge(int $customerGroupID): void
+    private function checkVariationExtraCharge(): void
     {
         if ($this->kVaterArtikel === 0 && $this->nIstVater === 1 && \is_object($this->Preise)) {
             $net          = $this->Preise->fVKNetto ?? 0.0;
@@ -4100,7 +4099,7 @@ class Artikel
                         AND sp.kKundengruppe = :cgid
                     WHERE a.kVaterArtikel = :pid
                         AND COALESCE(sp.fNettoPreis, d.fVKNetto) - ' . $net . ' > 0.0001',
-                ['cgid' => $customerGroupID, 'pid' => $this->kArtikel]
+                ['cgid' => $this->kKundengruppe, 'pid' => $this->kArtikel]
             );
 
             $this->nVariationsAufpreisVorhanden = (int)($specialPrice->specialPrices ?? 0) > 0 ? 1 : 0;

@@ -51,7 +51,7 @@ switch ($action) {
         break;
     default:
         $smarty->assign('disabled', '');
-        if (!empty($_POST) && Form::validateToken()) {
+        if ($action !== 'view' && !empty($_POST) && Form::validateToken()) {
             $slider   = new Slider($db);
             $_kSlider = (int)$_POST['kSlider'];
             $slider->load($kSlider, false);

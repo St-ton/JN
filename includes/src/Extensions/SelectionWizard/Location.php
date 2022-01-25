@@ -148,7 +148,7 @@ class Location
                 WHERE kAuswahlAssistentGruppe = :groupID',
             'kSprache',
             ['groupID' => $groupID]
-        ) ?? 0;
+        );
     }
 
     /**
@@ -405,7 +405,7 @@ class Location
             ]
         );
 
-        return $item !== null && $item > 0
+        return $item > 0
             ? new self($item, 0, $backend)
             : null;
     }

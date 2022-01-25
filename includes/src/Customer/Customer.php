@@ -879,7 +879,7 @@ class Customer
                     'kSprache',
                     ['cid' => $customerID]
                 );
-                if ($customerLangID !== null && $customerLangID > 0) {
+                if ($customerLangID > 0) {
                     $languageID = $customerLangID;
                 }
             }

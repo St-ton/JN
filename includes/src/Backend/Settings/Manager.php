@@ -5,6 +5,7 @@ namespace JTL\Backend\Settings;
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
 use JTL\Backend\AdminAccount;
+use JTL\Backend\Settings\Sections\SectionInterface;
 use JTL\DB\DbInterface;
 use JTL\GeneralDataProtection\IpAnonymizer;
 use JTL\Helpers\Request;
@@ -18,11 +19,6 @@ use JTL\Smarty\JTLSmarty;
  */
 class Manager
 {
-    /**
-     * @var Manager[]
-     */
-    private $instances = [];
-
     /**
      * @var DbInterface
      */
@@ -49,7 +45,7 @@ class Manager
     protected $alertService;
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $listboxLogged = [];
 
@@ -75,60 +71,6 @@ class Manager
         $this->adminAccount = $adminAccount;
         $this->getText      = $getText;
         $this->alertService = $alertService;
-    }
-
-    /**
-     * get instance of Manager or Sections\..
-     * @param int $sectionID
-     * @return static
-     */
-    public function getInstance(int $sectionID)
-    {
-        if (isset($this->instances[$sectionID])) {
-            return $this->instances[$sectionID];
-        }
-        $section = $this->db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
-        if (isset($section->kEinstellungenSektion)) {
-            $className = 'JTL\Backend\Settings\Sections\\' . \preg_replace(
-                ['([üäöÜÄÖ])', '/[^a-zA-Z_]/'],
-                ['$1e', ''],
-                $section->cName
-            );
-            if (\class_exists($className)) {
-                $this->instances[$sectionID] = new $className($this, $sectionID);
-
-                return $this->instances[$sectionID];
-            }
-        }
-        $this->instances[$sectionID] = new self(
-            $this->db,
-            $this->smarty,
-            $this->adminAccount,
-            $this->getText,
-            $this->alertService
-        );
-
-        return $this->instances[$sectionID];
-    }
-
-    /**
-     * @param object $conf
-     * @param object $confValue
-     * @return bool
-     */
-    public function validate($conf, &$confValue): bool
-    {
-        return true;
-    }
-
-    /**
-     * @param object $conf
-     * @param mixed  $value
-     * @return static
-     */
-    public function setValue(&$conf, $value): self
-    {
-        return $this;
     }
 
     /**
@@ -299,6 +241,9 @@ class Manager
         )->cnt;
     }
 
+    /**
+     * @return SectionInterface[]
+     */
     public function getAllSections(): array
     {
         $sections   = [];

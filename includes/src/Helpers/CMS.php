@@ -299,7 +299,8 @@ class CMS
         $limit    = ((int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
             ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
             : '';
-        $tmpGifts = Shop::Container()->getDB()->getObjects(
+        $db       = Shop::Container()->getDB();
+        $tmpGifts = $db->getObjects(
             'SELECT tartikel.kArtikel, tartikelattribut.cWert
                 FROM tartikel
                 JOIN tartikelattribut 
@@ -316,7 +317,7 @@ class CMS
         $currency       = Frontend::getCurrency();
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($tmpGifts as $item) {
-            $product = new Artikel();
+            $product = new Artikel($db);
             $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
             $product->cBestellwert = Preise::getLocalizedPriceString((float)$item->cWert, $currency);
             if ($product->kEigenschaftKombi > 0 || \count($product->Variationen) === 0) {

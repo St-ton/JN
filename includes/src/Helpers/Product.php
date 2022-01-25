@@ -881,6 +881,7 @@ class Product
         if ($productID <= 0) {
             return null;
         }
+        $languageID                       = Shop::getLanguageID();
         $defaultOptions                   = Artikel::getDefaultOptions();
         $xSelling                         = new stdClass();
         $xSelling->Standard               = new stdClass();
@@ -888,9 +889,10 @@ class Product
         $xSelling->Standard->XSellGruppen = [];
         $xSelling->Kauf->Artikel          = [];
         $conf                             = $conf ?? Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
+        $db                               = Shop::Container()->getDB();
         if ($conf['artikeldetails_xselling_standard_anzeigen'] === 'Y') {
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $xsell          = Shop::Container()->getDB()->getObjects(
+            $xsell          = $db->getObjects(
                 'SELECT txsell.*, txsellgruppe.cName, txsellgruppe.cBeschreibung
                     FROM txsell
                     JOIN tartikel
@@ -900,7 +902,7 @@ class Product
                         AND txsellgruppe.kSprache = :lid
                     WHERE txsell.kArtikel = :aid' . $stockFilterSQL . '
                     ORDER BY tartikel.cName',
-                ['lid' => Shop::getLanguageID(), 'aid' => $productID]
+                ['lid' => $languageID, 'aid' => $productID]
             );
             if (\count($xsell) > 0) {
                 $xsellgruppen   = group($xsell, static function ($e) {
@@ -913,8 +915,13 @@ class Product
                     foreach ($products as $xs) {
                         $group->Name         = $xs->cName;
                         $group->Beschreibung = $xs->cBeschreibung;
-                        $product             = (new Artikel())->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
-                        if ($product !== null && (int)$product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
+                        $product             = (new Artikel($db))->fuelleArtikel(
+                            (int)$xs->kXSellArtikel,
+                            $defaultOptions,
+                            0,
+                            $languageID
+                        );
+                        if ($product !== null && $product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                             $group->Artikel[] = $product;
                         }
                     }
@@ -936,7 +943,7 @@ class Product
                     $selectSQL = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
                     $filterSQL = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
                 }
-                $xsell = Shop::Container()->getDB()->getObjects(
+                $xsell = $db->getObjects(
                     'SELECT ' . $productID . ' AS kArtikel, ' . $selectSQL . ' AS kXSellArtikel,
                         SUM(txsellkauf.nAnzahl) nAnzahl
                         FROM txsellkauf
@@ -953,7 +960,7 @@ class Product
                     ['pid' => $productID, 'lmt' => $limit]
                 );
             } elseif ($conf['artikeldetails_xselling_kauf_parent'] === 'Y') {
-                $xsell = Shop::Container()->getDB()->getObjects(
+                $xsell = $db->getObjects(
                     'SELECT txsellkauf.kArtikel,
                     IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
                     SUM(txsellkauf.nAnzahl) nAnzahl
@@ -972,7 +979,7 @@ class Product
                     ['pid' => $productID, 'lmt' => $limit]
                 );
             } else {
-                $xsell = Shop::Container()->getDB()->selectAll(
+                $xsell = $db->selectAll(
                     'txsellkauf',
                     'kArtikel',
                     $productID,
@@ -984,7 +991,7 @@ class Product
             if (\count($xsell) > 0) {
                 foreach ($xsell as $xs) {
                     $product = new Artikel();
-                    $product->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
+                    $product->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions, 0, $languageID);
                     if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                         $xSelling->Kauf->Artikel[] = $product;
                     }
@@ -1264,7 +1271,7 @@ class Product
                 $inquiry->nStatus   = 0;
                 $inquiry->cNachname = $inquiry->cNachname ?? '';
                 $inquiry->cVorname  = $inquiry->cVorname ?? '';
-                $checkBox           = new CheckBox();
+                $checkBox           = new CheckBox(0, $dbHandler);
                 $customerGroupID    = Frontend::getCustomerGroup()->getID();
                 $checkBox->triggerSpecialFunction(
                     \CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT,
@@ -1373,6 +1380,7 @@ class Product
     {
         $nav             = new stdClass();
         $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $db              = Shop::Container()->getDB();
         // Wurde der Artikel von der Artikelübersicht aus angeklickt?
         if ($productID > 0
             && isset($_SESSION['oArtikelUebersichtKey_arr'])
@@ -1397,13 +1405,15 @@ class Product
                 $prevID = $collection[$index - 1];
             }
             if ($nextID > 0) {
-                $nav->naechsterArtikel = (new Artikel())->fuelleArtikel($nextID, Artikel::getDefaultOptions());
+                $nav->naechsterArtikel = (new Artikel($db))
+                    ->fuelleArtikel($nextID, Artikel::getDefaultOptions(), $customerGroupID);
                 if ($nav->naechsterArtikel === null) {
                     unset($nav->naechsterArtikel);
                 }
             }
             if ($prevID > 0) {
-                $nav->vorherigerArtikel = (new Artikel())->fuelleArtikel($prevID, Artikel::getDefaultOptions());
+                $nav->vorherigerArtikel = (new Artikel($db))
+                    ->fuelleArtikel($prevID, Artikel::getDefaultOptions(), $customerGroupID);
                 if ($nav->vorherigerArtikel === null) {
                     unset($nav->vorherigerArtikel);
                 }
@@ -1412,7 +1422,7 @@ class Product
         // Ist der Besucher nicht von der Artikelübersicht gekommen?
         if ($categoryID > 0 && (!isset($nav->vorherigerArtikel) && !isset($nav->naechsterArtikel))) {
             $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $prev        = Shop::Container()->getDB()->getSingleObject(
+            $prev        = $db->getSingleObject(
                 'SELECT tartikel.kArtikel
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
@@ -1427,7 +1437,7 @@ class Product
                     LIMIT 1',
                 ['cgid' => $customerGroupID, 'pid' => $productID, 'cid' => $categoryID]
             );
-            $next        = Shop::Container()->getDB()->getSingleObject(
+            $next        = $db->getSingleObject(
                 'SELECT tartikel.kArtikel
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
@@ -1444,12 +1454,12 @@ class Product
             );
 
             if ($prev !== null && !empty($prev->kArtikel)) {
-                $nav->vorherigerArtikel = (new Artikel())
-                    ->fuelleArtikel((int)$prev->kArtikel, Artikel::getDefaultOptions());
+                $nav->vorherigerArtikel = (new Artikel($db))
+                    ->fuelleArtikel((int)$prev->kArtikel, Artikel::getDefaultOptions(), $customerGroupID);
             }
             if ($next !== null && !empty($next->kArtikel)) {
-                $nav->naechsterArtikel = (new Artikel())
-                    ->fuelleArtikel((int)$next->kArtikel, Artikel::getDefaultOptions());
+                $nav->naechsterArtikel = (new Artikel($db))
+                    ->fuelleArtikel((int)$next->kArtikel, Artikel::getDefaultOptions(), $customerGroupID);
             }
         }
 
@@ -1796,9 +1806,10 @@ class Product
             if ((int)$conf['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
                 $limit = ' LIMIT ' . (int)$conf['artikeldetails_aehnlicheartikel_anzahl'];
             }
+            $db                = Shop::Container()->getDB();
             $stockFilterSQL    = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $customerGroupID   = Frontend::getCustomerGroup()->getID();
-            $productAttributes = Shop::Container()->getDB()->getObjects(
+            $productAttributes = $db->getObjects(
                 'SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
                     FROM tartikelmerkmal
                         JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
@@ -1822,17 +1833,17 @@ class Product
             if (\count($productAttributes) > 0) {
                 $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($productAttributes as $productAttribute) {
-                    $product = new Artikel();
+                    $product = new Artikel($db);
                     $id      = $productAttribute->kVaterArtikel > 0
                         ? $productAttribute->kVaterArtikel
                         : $productAttribute->kArtikel;
-                    $product->fuelleArtikel($id, $defaultOptions);
+                    $product->fuelleArtikel($id, $defaultOptions, $customerGroupID);
                     if ($product->kArtikel > 0) {
                         $products[] = $product;
                     }
                 }
             } else { // Falls es keine Merkmale gibt, in tsuchcachetreffer suchen
-                $searchCacheHits = Shop::Container()->getDB()->getObjects(
+                $searchCacheHits = $db->getObjects(
                     'SELECT tsuchcachetreffer.kArtikel, tartikel.kVaterArtikel
                         FROM
                         (
@@ -1858,11 +1869,11 @@ class Product
                 if (\count($searchCacheHits) > 0) {
                     $defaultOptions = Artikel::getDefaultOptions();
                     foreach ($searchCacheHits as $hit) {
-                        $product = new Artikel();
+                        $product = new Artikel($db);
                         $id      = ($hit->kVaterArtikel > 0)
                             ? $hit->kVaterArtikel
                             : $hit->kArtikel;
-                        $product->fuelleArtikel($id, $defaultOptions);
+                        $product->fuelleArtikel($id, $defaultOptions, $customerGroupID);
                         if ($product->kArtikel > 0) {
                             $products[] = $product;
                         }
@@ -2035,6 +2046,8 @@ class Product
         }
         $baseItem = $cart->PositionenArr[$configID];
         if ($baseItem->istKonfigVater()) {
+            $customerGroupID    = Frontend::getCustomerGroup()->getID();
+            $languageID         = Shop::getLanguageID();
             $configItems        = [];
             $configItemAmounts  = [];
             $configGroupAmounts = [];
@@ -2042,7 +2055,8 @@ class Product
                 if ($item->cUnique !== $baseItem->cUnique || !$item->istKonfigKind()) {
                     continue;
                 }
-                $configItem                                      = new Item($item->kKonfigitem);
+                $configItem = new Item($item->kKonfigitem, $languageID, $customerGroupID);
+
                 $configItems[]                                   = $configItem->getKonfigitem();
                 $configItemAmounts[$configItem->getKonfigitem()] = $item->nAnzahl / $baseItem->nAnzahl;
                 if ($configItem->ignoreMultiplier()) {

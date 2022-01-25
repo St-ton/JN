@@ -656,6 +656,8 @@ class IOMethods
         $amount             = $aValues['anzahl'] ?? 1;
         $invalidGroups      = [];
         $configItems        = [];
+        $customerGroupID    = Frontend::getCustomerGroup()->getID();
+        $languageID         = Shop::getLanguageID();
         $config             = Product::buildConfig(
             $productID,
             $amount,
@@ -671,8 +673,6 @@ class IOMethods
         $net                   = Frontend::getCustomerGroup()->getIsMerchant();
         $options               = Artikel::getDefaultOptions();
         $options->nVariationen = 1;
-        $languageID            = Shop::getLanguageID();
-        $customerGroupID       = Frontend::getCustomerGroup()->getID();
         $product->fuelleArtikel($productID, $options, $customerGroupID, $languageID);
         $fVKNetto                      = $product->gibPreis($amount, [], $customerGroupID);
         $fVK                           = [
@@ -1445,7 +1445,8 @@ class IOMethods
         $ioResponse       = new IOResponse();
         $response         = new stdClass();
         $response->review = flatten(filter(
-            (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions())->Bewertungen->oBewertung_arr,
+            (new Artikel($this->db))
+                ->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions())->Bewertungen->oBewertung_arr,
             static function ($e) use ($formData) {
                 return (int)$e->kBewertung === (int)$formData['reviewID'];
             }

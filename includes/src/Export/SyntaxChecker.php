@@ -211,7 +211,7 @@ class SyntaxChecker
                 AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1"
         );
         if ($productData !== null) {
-            $product = new Product();
+            $product = new Product($this->db);
             $product->fuelleArtikel((int)$productData->kArtikel, Product::getExportOptions());
             $product->cDeeplink             = '';
             $product->Artikelbild           = '';

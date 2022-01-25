@@ -287,7 +287,8 @@ class AccountController
         }
         $currency = Frontend::getCurrency();
         if ($step === 'bewertungen') {
-            $ratings = $this->db->getCollection(
+            $currency = Frontend::getCurrency();
+            $ratings  = $this->db->getCollection(
                 'SELECT tbewertung.kBewertung, fGuthabenBonus, nAktiv, kArtikel, cTitel, cText, 
                   tbewertung.dDatum, nSterne, cAntwort, dAntwortDatum
                   FROM tbewertung 
@@ -531,6 +532,8 @@ class AccountController
         if (\count($persCart->getItems()) === 0) {
             return false;
         }
+        $languageID      = Shop::getLanguageID();
+        $customerGroupID = $customer->getGroupID();
         foreach ($persCart->getItems() as $item) {
             if (!empty($item->Artikel->bHasKonfig)) {
                 continue;
@@ -564,7 +567,7 @@ class AccountController
                 }
                 // Konfigitems ohne Artikelbezug
             } elseif ($item->kArtikel === 0 && !empty($item->kKonfigitem)) {
-                $configItem = new Item($item->kKonfigitem);
+                $configItem = new Item($item->kKonfigitem, $languageID, $customerGroupID);
                 $cart->erstelleSpezialPos(
                     $configItem->getName(),
                     $item->fAnzahl,
@@ -678,7 +681,8 @@ class AccountController
             }
         }
         $cart->PositionenArr = [];
-
+        $customerGroupID     = Frontend::getCustomer()->getGroupID();
+        $languageID          = Shop::getLanguageID();
         foreach (PersistentCart::getInstance($customerID, false, $this->db)->getItems() as $item) {
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $productID = (int)$item->kArtikel;
@@ -709,10 +713,15 @@ class AccountController
                         ->fuegeEin($productID, 1, [], \C_WARENKORBPOS_TYP_GRATISGESCHENK);
                 }
             } else {
-                $tmpProduct = new Artikel();
-                $tmpProduct->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
-                    ? Artikel::getDefaultOptions()
-                    : Artikel::getDefaultConfigOptions());
+                $tmpProduct = new Artikel($this->db);
+                $tmpProduct->fuelleArtikel(
+                    $item->kArtikel,
+                    (int)$item->kKonfigitem === 0
+                        ? Artikel::getDefaultOptions()
+                        : Artikel::getDefaultConfigOptions(),
+                    $customerGroupID,
+                    $languageID
+                );
                 if ((int)$tmpProduct->kArtikel > 0 && \count(CartHelper::addToCartCheck(
                     $tmpProduct,
                     $item->fAnzahl,

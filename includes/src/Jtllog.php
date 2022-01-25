@@ -205,7 +205,7 @@ class Jtllog
      */
     public function setcKey($cKey): self
     {
-        $this->cKey = Shop::Container()->getDB()->escape($cKey);
+        $this->cKey = $cKey;
 
         return $this;
     }
@@ -227,7 +227,7 @@ class Jtllog
      */
     public function setErstellt($dErstellt): self
     {
-        $this->dErstellt = Shop::Container()->getDB()->escape($dErstellt);
+        $this->dErstellt = $dErstellt;
 
         return $this;
     }

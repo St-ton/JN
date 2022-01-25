@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d01830617a238fb13b21711a80f49ef8",
+    "content-hash": "1f1ae42b2494f60195413ac6d8c9937a",
     "packages": [
         {
             "name": "chamilo/pclzip",
@@ -1281,16 +1281,16 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jtl-software/jtl-shop/tools/phpquery.git",
-                "reference": "5e0e984063fcb438c61e52971db0f70874237ef8"
+                "reference": "f240990dbcc61b53f9aa7fc45ef88aeb41ed991e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fphpquery/repository/archive.zip?sha=5e0e984063fcb438c61e52971db0f70874237ef8",
-                "reference": "5e0e984063fcb438c61e52971db0f70874237ef8",
+                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fphpquery/repository/archive.zip?sha=f240990dbcc61b53f9aa7fc45ef88aeb41ed991e",
+                "reference": "f240990dbcc61b53f9aa7fc45ef88aeb41ed991e",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2"
+                "php": ">=8.0"
             },
             "default-branch": true,
             "type": "library",
@@ -1318,9 +1318,9 @@
                 "jtl-shop"
             ],
             "support": {
-                "source": "https://gitlab.com/jtl-software/jtl-shop/tools/phpquery/-/tree/1.0.1"
+                "source": "https://gitlab.com/jtl-software/jtl-shop/tools/phpquery/-/tree/master"
             },
-            "time": "2021-06-15T12:32:11+02:00"
+            "time": "2022-01-25T09:37:49+00:00"
         },
         {
             "name": "jtlshop/qrcodegenerator",
@@ -1517,12 +1517,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jtl-software/jtl-shop/tools/shop5-systemcheck.git",
-                "reference": "ffce4b98ffaf35b0e0bfcce91591e96cf451fc4d"
+                "reference": "9c75d2c02c66d51b9895fd40afc99a37e5348ff8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fshop5-systemcheck/repository/archive.zip?sha=ffce4b98ffaf35b0e0bfcce91591e96cf451fc4d",
-                "reference": "ffce4b98ffaf35b0e0bfcce91591e96cf451fc4d",
+                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fshop5-systemcheck/repository/archive.zip?sha=9c75d2c02c66d51b9895fd40afc99a37e5348ff8",
+                "reference": "9c75d2c02c66d51b9895fd40afc99a37e5348ff8",
                 "shasum": ""
             },
             "require": {
@@ -1554,7 +1554,7 @@
             "support": {
                 "source": "https://gitlab.com/jtl-software/jtl-shop/tools/shop5-systemcheck/-/tree/smarty4"
             },
-            "time": "2022-01-17T12:32:14+01:00"
+            "time": "2022-01-25T09:37:00+00:00"
         },
         {
             "name": "jtlshop/xtea",
@@ -7917,7 +7917,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php-64bit": ">=7.4",
+        "php-64bit": ">=8.0.2",
         "ext-bcmath": "*",
         "ext-curl": "*",
         "ext-dom": "*",

@@ -366,7 +366,8 @@ class Product
                         break;
                     }
                 } elseif (!isset($_SESSION['variBoxAnzahl_arr'])) {
-                    \header('Location: ' . Shop::getURL()
+                    \header(
+                        'Location: ' . Shop::getURL()
                         . '/?a=' . $productID
                         . '&n=' . Request::postInt('anzahl')
                         . '&r=' . \R_VARWAEHLEN,
@@ -381,7 +382,8 @@ class Product
                     && self::hasSelectedVariationValue($attr2->kEigenschaft)
                     && \mb_strlen(self::getSelectedVariationValue($attr2->kEigenschaft)) === 0
                 ) {
-                    \header('Location: ' . Shop::getURL()
+                    \header(
+                        'Location: ' . Shop::getURL()
                         . '/?a=' . $productID
                         . '&n=' . Request::postInt('anzahl')
                         . '&r=' . \R_VARWAEHLEN,
@@ -399,7 +401,8 @@ class Product
         }
 
         if (!$exists && !isset($_SESSION['variBoxAnzahl_arr'])) {
-            \header('Location: ' . Shop::getURL()
+            \header(
+                'Location: ' . Shop::getURL()
                 . '/?a=' . $productID
                 . '&n=' . Request::postInt('anzahl')
                 . '&r=' . \R_VARWAEHLEN,
@@ -495,7 +498,8 @@ class Product
                         break;
                     }
                 } elseif (!isset($_SESSION['variBoxAnzahl_arr']) && $redirect) {
-                    \header('Location: ' . Shop::getURL()
+                    \header(
+                        'Location: ' . Shop::getURL()
                         . '/?a=' . $productID
                         . '&n=' . Request::postInt('anzahl')
                         . '&r=' . \R_VARWAEHLEN,
@@ -528,7 +532,8 @@ class Product
         }
 
         if (!$exists && $redirect && !isset($_SESSION['variBoxAnzahl_arr'])) {
-            \header('Location: ' . Shop::getURL()
+            \header(
+                'Location: ' . Shop::getURL()
                 . '/?a=' . $productID
                 . '&n=' . Request::postInt('anzahl')
                 . '&r=' . \R_VARWAEHLEN,
@@ -919,7 +924,7 @@ class Product
                     ORDER BY tartikel.cName',
                 ['lid' => Shop::getLanguageID(), 'aid' => $productID]
             );
-            $xsellgruppen = group($xsell, static function ($e) {
+            $xsellgruppen   = group($xsell, static function ($e) {
                 return $e->kXSellGruppe;
             });
             foreach ($xsellgruppen as $products) {

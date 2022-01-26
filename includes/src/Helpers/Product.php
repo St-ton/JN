@@ -919,20 +919,18 @@ class Product
                     ORDER BY tartikel.cName',
                 ['lid' => Shop::getLanguageID(), 'aid' => $productID]
             );
-            if (\count($xsell) > 0) {
-                $xsellgruppen = group($xsell, static function ($e) {
-                    return $e->kXSellGruppe;
-                });
-                foreach ($xsellgruppen as $products) {
-                    $group             = new stdClass();
-                    $group->productIDs = [];
-                    foreach ($products as $xs) {
-                        $group->Name         = $xs->cName;
-                        $group->Beschreibung = $xs->cBeschreibung;
-                        $group->productIDs[] = (int)$xs->kXSellArtikel;
-                    }
-                    $xSelling->Standard->XSellGruppen[] = $group;
+            $xsellgruppen = group($xsell, static function ($e) {
+                return $e->kXSellGruppe;
+            });
+            foreach ($xsellgruppen as $products) {
+                $group             = new stdClass();
+                $group->productIDs = [];
+                foreach ($products as $xs) {
+                    $group->Name         = $xs->cName;
+                    $group->Beschreibung = $xs->cBeschreibung;
+                    $group->productIDs[] = (int)$xs->kXSellArtikel;
                 }
+                $xSelling->Standard->XSellGruppen[] = $group;
             }
         }
 
@@ -2182,12 +2180,13 @@ class Product
             $db = $db ?? Shop::Container()->getDB();
             Shop::set(
                 $cacheID,
-                $db->getSingleObject(
+                $db->getSingleInt(
                     'SELECT COUNT(*) AS cnt 
                         FROM tartikelsichtbarkeit
                         WHERE kKundengruppe = :cgid',
+                    'cnt',
                     ['cgid' => $customerGroupID]
-                )->cnt > 0
+                ) > 0
             );
         }
         if (Shop::get($cacheID) === false) {
@@ -2195,12 +2194,13 @@ class Product
         }
         $db = $db ?? Shop::Container()->getDB();
 
-        return $db->getSingleObject(
+        return $db->getSingleInt(
             'SELECT kArtikel
                 FROM tartikelsichtbarkeit
                 WHERE kArtikel = :pid
                     AND kKundengruppe = :cgid',
+            'kArtikel',
             ['pid' => $productID, 'cgid' => $customerGroupID]
-        ) === null;
+        ) > 0;
     }
 }

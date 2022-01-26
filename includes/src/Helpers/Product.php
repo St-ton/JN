@@ -41,6 +41,9 @@ class Product
      */
     public static function isVariChild(int $productID): bool
     {
+        if ($productID <= 0) {
+            return false;
+        }
         $product = Shop::Container()->getDB()->select(
             'tartikel',
             'kArtikel',
@@ -62,6 +65,9 @@ class Product
      */
     public static function getParent(int $productID): int
     {
+        if ($productID <= 0) {
+            return 0;
+        }
         $product = Shop::Container()->getDB()->select(
             'tartikel',
             'kArtikel',
@@ -760,7 +766,7 @@ class Product
                 'kArtikel',
                 ['pid' => $productID]
             );
-            if ($product !== null && $product > 0) {
+            if ($product > 0) {
                 return $product;
             }
         }
@@ -1213,16 +1219,15 @@ class Product
         if ($min <= 0) {
             return false;
         }
-        $history = Shop::Container()->getDB()->getSingleInt(
+
+        return Shop::Container()->getDB()->getSingleInt(
             'SELECT kProduktanfrageHistory
                 FROM tproduktanfragehistory
                 WHERE cIP = :ip
                     AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
             'kProduktanfrageHistory',
             ['ip' => Request::getRealIP(), 'min' => $min]
-        );
-
-        return $history !== null && $history > 0;
+        ) > 0;
     }
 
     /**
@@ -1353,16 +1358,15 @@ class Product
         if (!$min) {
             return false;
         }
-        $history = Shop::Container()->getDB()->getSingleInt(
+
+        return Shop::Container()->getDB()->getSingleInt(
             'SELECT kVerfuegbarkeitsbenachrichtigung
                 FROM tverfuegbarkeitsbenachrichtigung
                 WHERE cIP = :ip
                 AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
             'kVerfuegbarkeitsbenachrichtigung',
             ['ip' => Request::getRealIP(), 'min' => $min]
-        );
-
-        return $history !== null && $history > 0;
+        ) > 0;
     }
 
     /**

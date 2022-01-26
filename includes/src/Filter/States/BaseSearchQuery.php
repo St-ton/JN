@@ -449,7 +449,7 @@ class BaseSearchQuery extends AbstractFilter
                 'search' => $query
             ]
         );
-        if ($searchCache !== null && $searchCache > 0) {
+        if ($searchCache > 0) {
             return $searchCache;
         }
         // wenn kein Suchcache vorhanden

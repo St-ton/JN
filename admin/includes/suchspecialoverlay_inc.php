@@ -11,11 +11,11 @@ use JTL\Shop;
 function gibAlleSuchspecialOverlays(): array
 {
     $overlays = [];
-    foreach (Shop::Container()->getDB()->getObjects('SELECT kSuchspecialOverlay FROM tsuchspecialoverlay') as $type) {
-        $overlays[] = Overlay::getInstance(
-            (int)$type->kSuchspecialOverlay,
-            (int)$_SESSION['editLanguageID']
-        );
+    foreach (Shop::Container()->getDB()->getInts(
+        'SELECT kSuchspecialOverlay FROM tsuchspecialoverlay',
+        'kSuchspecialOverlay'
+    ) as $type) {
+        $overlays[] = Overlay::getInstance($type, (int)$_SESSION['editLanguageID']);
     }
 
     return $overlays;

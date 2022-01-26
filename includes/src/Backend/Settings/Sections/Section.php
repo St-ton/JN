@@ -12,7 +12,7 @@ use JTL\Smarty\JTLSmarty;
 interface Section
 {
     /**
-     * SettingSection constructor.
+     * Section constructor.
      * @param DbInterface $db
      * @param JTLSmarty   $smarty
      */

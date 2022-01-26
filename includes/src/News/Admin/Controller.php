@@ -26,7 +26,6 @@ use JTL\News\ItemList;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
-use function Functional\map;
 
 /**
  * Class Controller
@@ -402,15 +401,14 @@ final class Controller
      */
     private function getCategoryAndChildrenByID(int $categoryID): array
     {
-        return map($this->db->getObjects(
+        return $this->db->getInts(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node, tnewskategorie AS parent
                 WHERE node.lft BETWEEN parent.lft AND parent.rght
                     AND parent.kNewsKategorie = :cid',
+            'id',
             ['cid' => $categoryID]
-        ), static function ($e) {
-            return (int)$e->id;
-        });
+        );
     }
 
     /**
@@ -675,12 +673,10 @@ final class Controller
     public function getAllNews(): Collection
     {
         $itemList = new ItemList($this->db);
-        $ids      = map($this->db->getObjects(
-            'SELECT kNews FROM tnews'
-        ), static function ($e) {
-            return (int)$e->kNews;
-        });
-        $itemList->createItems($ids);
+        $itemList->createItems($this->db->getInts(
+            'SELECT kNews FROM tnews',
+            'kNews'
+        ));
 
         return $itemList->getItems()->sortByDesc(static function (Item $e) {
             return $e->getDateCreated();
@@ -693,17 +689,16 @@ final class Controller
     public function getNonActivatedComments(): Collection
     {
         $itemList = new CommentList($this->db);
-        $ids      = map($this->db->getObjects(
+        $ids      = $this->db->getInts(
             'SELECT tnewskommentar.kNewsKommentar AS id
                 FROM tnewskommentar
                 JOIN tnews 
                     ON tnews.kNews = tnewskommentar.kNews
                 JOIN tnewssprache t 
                     ON tnews.kNews = t.kNews
-                WHERE tnewskommentar.nAktiv = 0'
-        ), static function ($e) {
-            return (int)$e->id;
-        });
+                WHERE tnewskommentar.nAktiv = 0',
+            'id'
+        );
         $itemList->createItems($ids, false);
 
         return $itemList->getItems();
@@ -716,17 +711,16 @@ final class Controller
     public function getAllNewsCategories(bool $showOnlyActive = false): Collection
     {
         $itemList = new CategoryList($this->db);
-        $ids      = map($this->db->getObjects(
+        $ids      = $this->db->getInts(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node 
                 INNER JOIN tnewskategorie AS parent
                 WHERE node.lvl > 0 
                     AND parent.lvl > 0 ' . ($showOnlyActive ? ' AND node.nAktiv = 1 ' : '') .
             ' GROUP BY node.kNewsKategorie
-                ORDER BY node.lft, node.nSort ASC'
-        ), static function ($e) {
-            return (int)$e->id;
-        });
+                ORDER BY node.lft, node.nSort ASC',
+            'id'
+        );
         $itemList->createItems($ids);
 
         return $itemList->generateTree();

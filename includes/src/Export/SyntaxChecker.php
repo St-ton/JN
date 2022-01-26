@@ -203,16 +203,17 @@ class SyntaxChecker
         $model   = Model::load(['id' => $this->id], $this->db);
         $session->initSession($model, $this->db);
         $this->initSmarty();
-        $product     = null;
-        $productData = $this->db->getSingleObject(
+        $product   = null;
+        $productID = $this->db->getSingleInt(
             "SELECT kArtikel 
                 FROM tartikel 
                 WHERE kVaterArtikel = 0 
-                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1"
+                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
+            'kArtikel'
         );
-        if ($productData !== null) {
+        if ($productID > 0) {
             $product = new Product($this->db);
-            $product->fuelleArtikel((int)$productData->kArtikel, Product::getExportOptions());
+            $product->fuelleArtikel($productID, Product::getExportOptions());
             $product->cDeeplink             = '';
             $product->Artikelbild           = '';
             $product->Lieferbar             = 'N';

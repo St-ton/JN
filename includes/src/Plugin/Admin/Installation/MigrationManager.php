@@ -314,15 +314,14 @@ final class MigrationManager
      */
     public function getCurrentId(): int
     {
-        $version = $this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT kMigration 
                 FROM tpluginmigration 
                 WHERE pluginID = :pid
                 ORDER BY kMigration DESC',
+            'kMigration',
             ['pid' => $this->pluginID]
         );
-
-        return (int)($version->kMigration ?? 0);
     }
 
     /**

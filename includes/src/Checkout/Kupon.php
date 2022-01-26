@@ -8,9 +8,11 @@ use JTL\Cart\CartHelper;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Preise;
 use JTL\DB\DbInterface;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
+use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -389,6 +391,79 @@ class Kupon
     public function delete(): int
     {
         return $this->db->delete('tkupon', 'kKupon', (int)$this->kKupon);
+    }
+
+    public function augment(): void
+    {
+        $this->cLocalizedWert = $this->cWertTyp === 'festpreis'
+            ? Preise::getLocalizedPriceString($this->fWert)
+            : '';
+        $this->cLocalizedMBW  = $this->fMindestbestellwert !== null
+            ? Preise::getLocalizedPriceString($this->fMindestbestellwert)
+            : '';
+        $this->bOpenEnd       = $this->dGueltigBis === null;
+
+        if (\date_create($this->dGueltigAb) !== false) {
+            $this->cGueltigAbShort = \date_create($this->dGueltigAb)->format('d.m.Y');
+            $this->cGueltigAbLong  = \date_create($this->dGueltigAb)->format('d.m.Y H:i');
+        } else {
+            $this->cGueltigAbShort = 'ungültig';
+            $this->cGueltigAbLong  = 'ungültig';
+        }
+
+        if ($this->bOpenEnd) {
+            $this->cGueltigBisShort = 'open-end';
+            $this->cGueltigBisLong  = 'open-end';
+        } elseif (\date_create($this->dGueltigBis) === false) {
+            $this->cGueltigBisShort = 'ungültig';
+            $this->cGueltigBisLong  = 'ungültig';
+        } elseif ($this->dGueltigBis === '') {
+            $this->cGueltigBisShort = '';
+            $this->cGueltigBisLong  = '';
+        } else {
+            $this->cGueltigBisShort = \date_create($this->dGueltigBis)->format('d.m.Y');
+            $this->cGueltigBisLong  = \date_create($this->dGueltigBis)->format('d.m.Y H:i');
+        }
+        $this->cKundengruppe = '';
+        if ((int)$this->kKundengruppe !== -1) {
+            $customerGroup       = $this->db->getSingleObject(
+                'SELECT cName 
+                    FROM tkundengruppe 
+                    WHERE kKundengruppe = :cgid',
+                ['cgid' => $this->kKundengruppe]
+            );
+            $this->cKundengruppe = $customerGroup->cName ?? '';
+        }
+
+        $artNos       = Text::parseSSKint($this->cArtikel);
+        $manufactuers = Text::parseSSKint($this->cHersteller);
+        $categories   = Text::parseSSKint($this->cKategorien);
+        $customers    = Text::parseSSKint($this->cKunden);
+
+        $this->cArtikelInfo    = ($this->cArtikel === '')
+            ? ''
+            : (string)\count($artNos);
+        $this->cHerstellerInfo = (empty($this->cHersteller) || $this->cHersteller === '-1')
+            ? ''
+            : (string)\count($manufactuers);
+        $this->cKategorieInfo  = (empty($this->cKategorien) || $this->cKategorien === '-1')
+            ? ''
+            : (string)\count($categories);
+        $this->cKundenInfo     = (empty($this->cKunden) || $this->cKunden === '-1')
+            ? ''
+            : (string)\count($customers);
+
+        $maxCreated     = $this->db->getSingleObject(
+            'SELECT MAX(dErstellt) AS dLastUse
+                FROM tkuponkunde
+                WHERE kKupon = :cid',
+            ['cid' => (int)$this->kKupon]
+        );
+        $this->dLastUse = \date_create(
+            $maxCreated !== null && \is_string($maxCreated->dLastUse)
+                ? $maxCreated->dLastUse
+                : ''
+        );
     }
 
     /**

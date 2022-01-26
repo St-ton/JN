@@ -128,10 +128,14 @@ function normalizeDate(?string $string): ?string
  * @param string $where
  * @param string $order
  * @param string $limit
- * @return array|int|object
+ * @return stdClass[]
  */
-function getRawCoupons(string $type = Kupon::TYPE_STANDARD, string $where = '', string $order = '', string $limit = '')
-{
+function getRawCoupons(
+    string $type = Kupon::TYPE_STANDARD,
+    string $where = '',
+    string $order = '',
+    string $limit = ''
+): array {
     return Shop::Container()->getDB()->getObjects(
         'SELECT k.*, MAX(kk.dErstellt) AS dLastUse
             FROM tkupon AS k
@@ -152,7 +156,7 @@ function getRawCoupons(string $type = Kupon::TYPE_STANDARD, string $where = '', 
  * @param string $whereSQL - an SQL WHERE clause (col1 = val1 AND vol2 LIKE ...)
  * @param string $orderSQL - an SQL ORDER BY clause (cName DESC)
  * @param string $limitSQL - an SQL LIMIT clause  (10,20)
- * @return array
+ * @return Kupon[]
  */
 function getCoupons(
     string $type = Kupon::TYPE_STANDARD,
@@ -172,9 +176,9 @@ function getCoupons(
 /**
  * @param string $type
  * @param string $whereSQL
- * @return array
+ * @return stdClass[]
  */
-function getExportableCoupons(string $type = Kupon::TYPE_STANDARD, string $whereSQL = '')
+function getExportableCoupons(string $type = Kupon::TYPE_STANDARD, string $whereSQL = ''): array
 {
     $coupons = getRawCoupons($type, $whereSQL);
     foreach ($coupons as $rawCoupon) {
@@ -195,7 +199,7 @@ function getExportableCoupons(string $type = Kupon::TYPE_STANDARD, string $where
 function getCoupon(int $id): Kupon
 {
     $coupon = new Kupon($id);
-    augmentCoupon($coupon);
+    $coupon->augment();
 
     return $coupon;
 }
@@ -204,78 +208,12 @@ function getCoupon(int $id): Kupon
  * Enhance an existing Kupon instance with some extra information that can be displayed
  *
  * @param Kupon $coupon
+ * @deprecated since 5.2.0
  */
 function augmentCoupon(Kupon $coupon): void
 {
-    $coupon->cLocalizedWert = $coupon->cWertTyp === 'festpreis'
-        ? Preise::getLocalizedPriceString($coupon->fWert)
-        : '';
-    $coupon->cLocalizedMBW  = isset($coupon->fMindestbestellwert)
-        ? Preise::getLocalizedPriceString($coupon->fMindestbestellwert)
-        : '';
-    $coupon->bOpenEnd       = $coupon->dGueltigBis === null;
-
-    if (date_create($coupon->dGueltigAb) !== false) {
-        $coupon->cGueltigAbShort = date_create($coupon->dGueltigAb)->format('d.m.Y');
-        $coupon->cGueltigAbLong  = date_create($coupon->dGueltigAb)->format('d.m.Y H:i');
-    } else {
-        $coupon->cGueltigAbShort = 'ungültig';
-        $coupon->cGueltigAbLong  = 'ungültig';
-    }
-
-    if ($coupon->bOpenEnd) {
-        $coupon->cGueltigBisShort = 'open-end';
-        $coupon->cGueltigBisLong  = 'open-end';
-    } elseif (date_create($coupon->dGueltigBis) === false) {
-        $coupon->cGueltigBisShort = 'ungültig';
-        $coupon->cGueltigBisLong  = 'ungültig';
-    } elseif ($coupon->dGueltigBis === '') {
-        $coupon->cGueltigBisShort = '';
-        $coupon->cGueltigBisLong  = '';
-    } else {
-        $coupon->cGueltigBisShort = date_create($coupon->dGueltigBis)->format('d.m.Y');
-        $coupon->cGueltigBisLong  = date_create($coupon->dGueltigBis)->format('d.m.Y H:i');
-    }
-    $coupon->cKundengruppe = '';
-    if ((int)$coupon->kKundengruppe !== -1) {
-        $customerGroup         = Shop::Container()->getDB()->getSingleObject(
-            'SELECT cName 
-                FROM tkundengruppe 
-                WHERE kKundengruppe = :cgid',
-            ['cgid' => $coupon->kKundengruppe]
-        );
-        $coupon->cKundengruppe = $customerGroup->cName ?? '';
-    }
-
-    $artNos       = Text::parseSSKint($coupon->cArtikel);
-    $manufactuers = Text::parseSSKint($coupon->cHersteller);
-    $categories   = Text::parseSSKint($coupon->cKategorien);
-    $customers    = Text::parseSSKint($coupon->cKunden);
-
-    $coupon->cArtikelInfo    = ($coupon->cArtikel === '')
-        ? ''
-        : (string)count($artNos);
-    $coupon->cHerstellerInfo = (empty($coupon->cHersteller) || $coupon->cHersteller === '-1')
-        ? ''
-        : (string)count($manufactuers);
-    $coupon->cKategorieInfo  = (empty($coupon->cKategorien) || $coupon->cKategorien === '-1')
-        ? ''
-        : (string)count($categories);
-    $coupon->cKundenInfo     = (empty($coupon->cKunden) || $coupon->cKunden === '-1')
-        ? ''
-        : (string)count($customers);
-
-    $maxCreated       = Shop::Container()->getDB()->getSingleObject(
-        'SELECT MAX(dErstellt) AS dLastUse
-            FROM tkuponkunde
-            WHERE kKupon = :cid',
-        ['cid' => (int)$coupon->kKupon]
-    );
-    $coupon->dLastUse = date_create(
-        $maxCreated !== null && is_string($maxCreated->dLastUse)
-        ? $maxCreated->dLastUse
-        : ''
-    );
+    trigger_error(__FUNCTION__ . ' is deprecated - use Kupon::augment() instead', E_USER_DEPRECATED);
+    $coupon->augment();
 }
 
 /**
@@ -309,7 +247,7 @@ function createNewCoupon(string $type): Kupon
     $coupon->cKunden               = '-1';
     $coupon->kKupon                = 0;
 
-    augmentCoupon($coupon);
+    $coupon->augment();
 
     return $coupon;
 }
@@ -601,7 +539,7 @@ function saveCoupon(Kupon $coupon, array $languages)
  */
 function informCouponCustomers(Kupon $coupon)
 {
-    augmentCoupon($coupon);
+    $coupon->augment();
     $db              = Shop::Container()->getDB();
     $defaultLang     = $db->select('tsprache', 'cShopStandard', 'Y');
     $defaultCurrency = $db->select('twaehrung', 'cStandard', 'Y');

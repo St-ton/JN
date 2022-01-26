@@ -133,7 +133,7 @@ if ($action === 'bearbeiten') {
         $errorMessage .= '</ul>';
         $action        = 'bearbeiten';
         $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMessage, 'errorCheckInput');
-        augmentCoupon($coupon);
+        $coupon->augment();
     } elseif (saveCoupon($coupon, $languages) > 0) {// Validierung erfolgreich => Kupon speichern
         // erfolgreich gespeichert => evtl. Emails versenden
         if (isset($_POST['informieren'])

@@ -12,6 +12,7 @@
         {$squareClass = $squareClass|default:''}
         {$srcSize     = $srcSize|default:'md'}
         {$center      = $center|default:false}
+        {$data        = $data|default:[]}
 
         {if $srcSize === 'xs'}
             {$srcSize = \JTL\Media\Image::SIZE_XS}
@@ -118,6 +119,7 @@
                         width=$width
                         height=$height
                         class=$class
+                        data=$data
                     }
                 {/if}
             {/block}

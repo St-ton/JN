@@ -1,5 +1,8 @@
 {block name='productdetails-config-options'}
     <div id="cfg-accordion" class="accordion">
+        <div class="zoom-container">
+            <img class="imagezoom" src="">
+        </div>
         {foreach $Artikel->oKonfig_arr as $configGroup}
             {if $configGroup->getItemCount() > 0}
                 {$configLocalization = $configGroup->getSprache()}
@@ -63,13 +66,16 @@
                                 {/col}
                             {/if}
                             {if $configLocalization->hatBeschreibung()}
-                                {col cols=12 lg="{if $configGroupHasImage}9{else}12{/if}" order=1 order-lg=0}
+                                {col cols=12 lg="{if $configGroupHasImage}8{else}12{/if}" order=1 order-lg=0}
                                     {$configLocalization->getBeschreibung()}
                                 {/col}
                             {/if}
                             {if $configGroupHasImage}
-                                {col cols=12 lg=3 offset-lg="{if $configLocalization->hatBeschreibung()}0{else}5{/if}" order=0 order-lg=1}
-                                    {include file='snippets/image.tpl' item=$configGroup square=false}
+                                {col cols=12 lg=4 offset-lg="{if $configLocalization->hatBeschreibung()}0{else}5{/if}" order=0 order-lg=1}
+                                    <div class="cfg-group-image">
+                                        <input type="checkbox" class="maximize">
+                                        {include file='snippets/image.tpl' item=$configGroup square=false class="w-100" data=['lg-img-src'=>"{$configGroup->getImage(\JTL\Media\Image::SIZE_LG)}"]}
+                                    </div>
                                 {/col}
                             {/if}
                         {/row}
@@ -120,7 +126,10 @@
                                                         <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                     {/if}
                                                     {badge class="badge-circle circle-small"}<i class="fas fa-check"></i>{/badge}
-                                                    {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
+                                                    <div class="cfg-group-image">
+                                                        <input type="checkbox" class="maximize">
+                                                        {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName() data=['lg-img-src'=>"{$oItem->getArtikel()->getImage(\JTL\Media\Image::SIZE_LG)}"]}
+                                                    </div>
                                                     <p class="cfg-item-description">
                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                         {if $smarty.session.Kundengruppe->mayViewPrices()}
@@ -190,7 +199,10 @@
                                                         <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                     {/if}
                                                     {badge class="badge-circle circle-small"}<i class="fas fa-check"></i>{/badge}
-                                                    {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
+                                                    <div class="cfg-group-image">
+                                                        <input type="checkbox" class="maximize">
+                                                        {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName() data=['lg-img-src'=>"{$oItem->getArtikel()->getImage(\JTL\Media\Image::SIZE_LG)}"]}
+                                                    </div>
                                                     <p class="cfg-item-description">
                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                         {if $smarty.session.Kundengruppe->mayViewPrices()}
@@ -299,7 +311,10 @@
                                     {collapse visible=isset($nKonfigitem_arr) && in_array($oItem->getKonfigitem(), $nKonfigitem_arr) id="drpdwn_qnt_{$oItem->getKonfigitem()}" class="cfg-drpdwn-item"}
                                         {row}
                                             {col md=4 cols="{if empty($cBeschreibung)}12{else}4{/if}"}
-                                                {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
+                                                <div class="cfg-group-image">
+                                                    <input type="checkbox" class="maximize">
+                                                    {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName() data=['lg-img-src'=>"{$oItem->getArtikel()->getImage(\JTL\Media\Image::SIZE_LG)}"]}
+                                                </div>
                                                 <p class="cfg-item-description">
                                                     {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                     {if $smarty.session.Kundengruppe->mayViewPrices()}

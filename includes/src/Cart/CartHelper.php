@@ -1955,28 +1955,29 @@ class CartHelper
                 return (int)$p->Artikel->kArtikel;
             }
         );
-        if (\count($productIDs) > 0) {
-            $db         = Shop::Container()->getDB();
-            $productIDs = \implode(', ', $productIDs);
-            $xsellData  = $db->getObjects(
-                'SELECT DISTINCT kXSellArtikel
-                    FROM txsellkauf
-                    WHERE kArtikel IN (' . $productIDs . ')
-                        AND kXSellArtikel NOT IN (' . $productIDs .')
-                    ORDER BY nAnzahl DESC
-                    LIMIT ' . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl']
-            );
-            if (\count($xsellData) > 0) {
-                $xSelling->Kauf          = new stdClass();
-                $xSelling->Kauf->Artikel = [];
-                $defaultOptions          = Artikel::getDefaultOptions();
-                foreach ($xsellData as $item) {
-                    $product = (new Artikel($db))->fuelleArtikel((int)$item->kXSellArtikel, $defaultOptions);
-                    if ($product !== null
-                        && (int)$product->kArtikel > 0
-                        && $product->aufLagerSichtbarkeit()) {
-                        $xSelling->Kauf->Artikel[] = $product;
-                    }
+        if (\count($productIDs) === 0) {
+            return $xSelling;
+        }
+        $db         = Shop::Container()->getDB();
+        $productIDs = \implode(', ', $productIDs);
+        $xsellData  = $db->getInts(
+            'SELECT DISTINCT kXSellArtikel
+                FROM txsellkauf
+                WHERE kArtikel IN (' . $productIDs . ')
+                    AND kXSellArtikel NOT IN (' . $productIDs .')
+                ORDER BY nAnzahl DESC
+                LIMIT ' . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'],
+            'kXSellArtikel'
+        );
+        if (\count($xsellData) > 0) {
+            $xSelling->Kauf          = new stdClass();
+            $xSelling->Kauf->Artikel = [];
+            $defaultOptions          = Artikel::getDefaultOptions();
+            foreach ($xsellData as $productID) {
+                $product = new Artikel($db);
+                $product->fuelleArtikel($productID, $defaultOptions);
+                if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
+                    $xSelling->Kauf->Artikel[] = $product;
                 }
             }
         }
@@ -2025,9 +2026,9 @@ class CartHelper
         );
 
         foreach ($giftsTmp as $gift) {
-            $product = (new Artikel($db))->fuelleArtikel((int)$gift->kArtikel, Artikel::getDefaultOptions());
-            if ($product !== null
-                && (int)$product->kArtikel > 0
+            $product = new Artikel($db);
+            $product->fuelleArtikel((int)$gift->kArtikel, Artikel::getDefaultOptions());
+            if ($product->kArtikel > 0
                 && ($product->kEigenschaftKombi > 0
                     || !\is_array($product->Variationen)
                     || \count($product->Variationen) === 0)

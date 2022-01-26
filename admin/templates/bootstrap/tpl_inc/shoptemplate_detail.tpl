@@ -121,6 +121,7 @@
                     {if isset($smarty.get.activate)}
                         <input type="hidden" name="activate" value="1" />
                         {*TEST Commit*}
+                        {*TEST Commit2*}
                     {/if}
                     <input type="hidden" name="type" value="settings" />
                     <input type="hidden" name="dir" value="{$template->getDir()}" />

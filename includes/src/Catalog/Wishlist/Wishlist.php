@@ -401,6 +401,7 @@ class Wishlist
             return [];
         }
         $db            = Shop::Container()->getDB();
+        $currency      = Frontend::getCurrency();
         $searchResults = [];
         $data          = $db->getObjects(
             "SELECT twunschlistepos.*, date_format(twunschlistepos.dHinzugefuegt, '%d.%m.%Y %H:%i') AS dHinzugefuegt_de
@@ -476,7 +477,7 @@ class Wishlist
                     * ($product->Preise->fVKNetto * (100 + $_SESSION['Steuersatz'][$product->kSteuerklasse]) / 100);
             }
 
-            $item->setPrice(Preise::getLocalizedPriceString($price, Frontend::getCurrency()));
+            $item->setPrice(Preise::getLocalizedPriceString($price, $currency));
             $searchResults[$i] = $item;
         }
 
@@ -1129,6 +1130,7 @@ class Wishlist
         if (!\is_array($wishList->CWunschlistePos_arr)) {
             return $wishList;
         }
+        $currency = Frontend::getCurrency();
         foreach ($wishList->getItems() as $item) {
             $product = $item->getProduct();
             if ($product === null) {
@@ -1144,7 +1146,7 @@ class Wishlist
                     * ($product->Preise->fVKNetto * (100 + $_SESSION['Steuersatz'][$product->kSteuerklasse]) / 100)
                     : 0;
             }
-            $item->setPrice(Preise::getLocalizedPriceString($price, Frontend::getCurrency()));
+            $item->setPrice(Preise::getLocalizedPriceString($price, $currency));
         }
 
         return $wishList;

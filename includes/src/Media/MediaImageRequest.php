@@ -205,7 +205,7 @@ class MediaImageRequest
      */
     public function getPath(): ?string
     {
-        if (empty($this->path)) {
+        if ($this->path === null) {
             $this->path = $this->getPathByID();
         }
 
@@ -225,7 +225,7 @@ class MediaImageRequest
      */
     public function getSourcePath(): ?string
     {
-        if (empty($this->sourcePath)) {
+        if ($this->sourcePath === null) {
             $this->sourcePath = $this->getPathByID();
         }
 

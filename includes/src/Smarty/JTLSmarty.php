@@ -90,25 +90,27 @@ class JTLSmarty extends BC
             if ($model->getTemplate() === null) {
                 throw new RuntimeException('Cannot load template ' . ($model->getName() ?? ''));
             }
+            $paths      = $model->getPaths();
             $tplDir     = $model->getDir();
             $parent     = $model->getParent();
-            $compileDir = \PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/';
+            $compileDir = $paths->getCompileDir();
             if (!\is_dir($compileDir) && !\mkdir($compileDir) && !\is_dir($compileDir)) {
                 throw new RuntimeException(\sprintf('Directory "%s" could not be created', $compileDir));
             }
             $this->template_dir = [];
             $this->setCompileDir($compileDir)
-                ->setCacheDir(\PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/' . 'page_cache/')
+                ->setCacheDir($paths->getCacheDir())
                 ->setPluginsDir(\SMARTY_PLUGINS_DIR)
-                ->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/');
+                ->assign('tplDir', $paths->getBaseDir())
+                ->assign('parentTemplateDir', null);
             if ($parent !== null) {
                 self::$isChildTemplate = true;
-                $this->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
-                    ->assign('parent_template_path', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
-                    ->assign('parentTemplateDir', \PFAD_TEMPLATES . $parent . '/')
-                    ->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $parent, $parent);
+                $this->assign('tplDir', $paths->getParentDir())
+                    ->assign('parent_template_path', $paths->getParentDir())
+                    ->assign('parentTemplateDir', $paths->getParentRelDir())
+                    ->addTemplateDir($paths->getParentRelDir(), $parent);
             }
-            $this->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/', $this->context);
+            $this->addTemplateDir($paths->getBaseDir(), $this->context);
             foreach (Helper::getTemplatePaths() as $moduleId => $path) {
                 $templateKey = 'plugin_' . $moduleId;
                 $this->addTemplateDir($path, $templateKey);

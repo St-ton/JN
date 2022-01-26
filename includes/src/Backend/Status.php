@@ -2,6 +2,7 @@
 
 namespace JTL\Backend;
 
+use DateTime;
 use Exception;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Checkout\ZahlungsLog;
@@ -286,6 +287,26 @@ class Status
     public function hasInstallDir(): bool
     {
         return \is_dir(\PFAD_ROOT . \PFAD_INSTALL);
+    }
+
+    /**
+     * @return array
+     */
+    public function hasMysqlPhpTimeMismatch(): array
+    {
+        try {
+            $dbTimeString = $this->db->getSingleObject('SELECT NOW() AS time')->time;
+            $dbTime       = new DateTime($dbTimeString);
+            $phpTime      = new DateTime();
+
+            return [
+                'db'   => $dbTime->format('Y-m-d H:i:s'),
+                'php'  => $phpTime->format('Y-m-d H:i:s'),
+                'diff' => \abs($dbTime->getTimestamp() - $phpTime->getTimestamp())
+            ];
+        } catch (Exception $e) {
+            return ['diff' => 0];
+        }
     }
 
     /**

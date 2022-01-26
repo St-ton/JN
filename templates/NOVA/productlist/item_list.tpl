@@ -20,7 +20,7 @@
                     {block name='productlist-item-list-image'}
                         <div class="productbox-image">
                             {if isset($Artikel->Bilder[0]->cAltAttribut)}
-                                {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}
+                                {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut}
                             {else}
                                 {assign var=alt value=$Artikel->cName}
                             {/if}
@@ -43,7 +43,7 @@
                                                     {$image = $Artikel->Bilder[0]}
                                                     <div class="productbox-image square square-image first-wrapper">
                                                         <div class="inner">
-                                                            {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
+                                                            {image alt=$alt|truncate:60 fluid=true webp=true lazy=true
                                                                 src="{$image->cURLKlein}"
                                                                 srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                                                     {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
@@ -55,9 +55,14 @@
                                                     </div>
                                                     {if !$isMobile && !empty($Artikel->Bilder[1])}
                                                         {$image = $Artikel->Bilder[1]}
+                                                        {if isset($image->cAltAttribut)}
+                                                            {assign var=alt value=$image->cAltAttribut}
+                                                        {else}
+                                                            {assign var=alt value=$Artikel->cName}
+                                                        {/if}
                                                         <div class="productbox-image square square-image second-wrapper">
                                                             <div class="inner">
-                                                                {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
+                                                                {image alt=$alt|truncate:60 fluid=true webp=true lazy=true
                                                                     src="{$image->cURLKlein}"
                                                                     srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                                                         {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,

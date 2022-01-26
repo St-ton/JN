@@ -221,7 +221,7 @@ abstract class AbstractSync
 
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
-        $product                             = (new Artikel())->fuelleArtikel($data->kArtikel, $options);
+        $product                             = (new Artikel($this->db))->fuelleArtikel($data->kArtikel, $options);
         if ($product === null) {
             return;
         }
@@ -251,7 +251,7 @@ abstract class AbstractSync
 
             $mailer = Shop::Container()->get(Mailer::class);
             $mail   = new Mail();
-            
+
             // if original language was deleted between ActivationOptIn and now, try to send it in english,
             // if there is no english, use the shop-default.
             $mail->setLanguage(
@@ -259,7 +259,7 @@ abstract class AbstractSync
                 LanguageHelper::getAllLanguages(2)['eng'] ??
                 LanguageHelper::getDefaultLanguage()
             );
-            
+
             $mail->setToMail($tplMail->toEmail);
             $mail->setToName($tplMail->toName);
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $tplData));
@@ -668,8 +668,7 @@ abstract class AbstractSync
         if ($oldSeo === $newSeo || $oldSeo === '' || $newSeo === '') {
             return false;
         }
-        $redirect = new Redirect();
 
-        return $redirect->saveExt('/' . $oldSeo, $newSeo, true);
+        return (new Redirect())->saveExt('/' . $oldSeo, $newSeo, true);
     }
 }

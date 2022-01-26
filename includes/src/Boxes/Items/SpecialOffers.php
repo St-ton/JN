@@ -28,7 +28,7 @@ final class SpecialOffers extends AbstractBox
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
             $limit          = $config['boxen']['box_sonderangebote_anzahl_basis'];
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
-            $cacheID        = 'box_spclff_' . $customerGroupID
+            $cacheID        = 'box_spclffr_' . $customerGroupID
                 . '_' . $limit . \md5($stockFilterSQL . $parentSQL);
             if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached     = false;

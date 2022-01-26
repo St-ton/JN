@@ -2214,8 +2214,8 @@ class Artikel
                     return (empty($cArry) ? '' : $cArry . ', ') . $item->combine;
                 }, '');
                 $variations      = empty($combinations) ? [] : $this->getDB()->getObjects(
-                    $baseQuery->getStatement() .
-                    ' AND (teigenschaftkombiwert.kEigenschaftWert, COALESCE(ek.score, 0)) IN (' .
+                    $baseQuery->getStatement()
+                    . ' AND (teigenschaftkombiwert.kEigenschaftWert, COALESCE(ek.score, 0)) IN (' .
                     $combinations . '
                         )
                         GROUP BY teigenschaftkombiwert.kEigenschaftWert
@@ -3547,7 +3547,7 @@ class Artikel
 
     /**
      * @param int $productID
-     * @return string
+     * @return SqlObject
      */
     private function getBomSQL(int $productID): SqlObject
     {
@@ -3581,9 +3581,9 @@ class Artikel
     }
 
     /**
-     * @param int         $productID
-     * @param int         $customerGroupID
-     * @return SqlObject
+     * @param int $productID
+     * @param int $customerGroupID
+     * @return string
      */
     private function getProductSQL(int $productID, int $customerGroupID): SqlObject
     {

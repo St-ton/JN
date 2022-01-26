@@ -1285,7 +1285,6 @@ class Cart
             }
         }
         \sort($taxRates);
-        $currency = Frontend::getCurrency();
         foreach ($this->PositionenArr as $item) {
             if ($item->kSteuerklasse <= 0) {
                 continue;

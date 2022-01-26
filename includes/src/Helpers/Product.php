@@ -66,7 +66,7 @@ class Product
     public static function getParent(int $productID): int
     {
         if ($productID <= 0) {
-            return false;
+            return 0;
         }
         $product = Shop::Container()->getDB()->select(
             'tartikel',

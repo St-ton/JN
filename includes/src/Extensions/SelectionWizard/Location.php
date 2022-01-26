@@ -142,13 +142,13 @@ class Location
      */
     private function getLanguage(int $groupID): int
     {
-        return $this->db->getSingleInt(
+        return \max(0, $this->db->getSingleInt(
             'SELECT kSprache
                 FROM tauswahlassistentgruppe
                 WHERE kAuswahlAssistentGruppe = :groupID',
             'kSprache',
             ['groupID' => $groupID]
-        );
+        ));
     }
 
     /**

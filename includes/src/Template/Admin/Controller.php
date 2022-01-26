@@ -113,6 +113,10 @@ class Controller
                 $this->saveConfig();
                 $this->displayOverview();
                 break;
+            case 'save-config-continue':
+                $this->saveConfig();
+                $this->displayTemplateSettings();
+                break;
             case 'upload':
                 $this->upload($_FILES['template-install-upload']);
                 break;

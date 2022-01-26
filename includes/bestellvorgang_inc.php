@@ -238,17 +238,17 @@ function pruefeLieferdaten($post, &$missingData = null): void
         }
     } elseif ((int)$post['kLieferadresse'] > 0) {
         // vorhandene lieferadresse
-        $addressData = Shop::Container()->getDB()->getSingleObject(
+        $addressID = Shop::Container()->getDB()->getSingleInt(
             'SELECT kLieferadresse
                 FROM tlieferadresse
                 WHERE kKunde = :cid
                     AND kLieferadresse = :daid',
+            'kLieferadresse',
             ['cid' => Frontend::getCustomer()->getID(), 'daid' => (int)$post['kLieferadresse']]
         );
-        if ($addressData !== null && $addressData->kLieferadresse > 0) {
-            $deliveryAddress           = new Lieferadresse((int)$addressData->kLieferadresse);
+        if ($addressID > 0) {
+            $deliveryAddress           = new Lieferadresse($addressID);
             $_SESSION['Lieferadresse'] = $deliveryAddress;
-
             executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_VORHANDENELIEFERADRESSE);
         }
     } elseif ((int)$post['kLieferadresse'] === 0 && isset($_SESSION['Kunde'])) {
@@ -2775,15 +2775,16 @@ function pruefeAjaxEinKlick(): int
     }
     // Hat der Kunde eine Lieferadresse angegeben?
     if ($lastOrder->kLieferadresse > 0) {
-        $addressData = Shop::Container()->getDB()->getSingleObject(
+        $addressID = Shop::Container()->getDB()->getSingleInt(
             'SELECT kLieferadresse
                 FROM tlieferadresse
                 WHERE kKunde = :cid
                     AND kLieferadresse = :daid',
+            'kLieferadresse',
             ['cid' => $customerID, 'daid' => (int)$lastOrder->kLieferadresse]
         );
-        if ($addressData !== null && $addressData->kLieferadresse > 0) {
-            $addressData               = new Lieferadresse((int)$addressData->kLieferadresse);
+        if ($addressID > 0) {
+            $addressData               = new Lieferadresse($addressID);
             $_SESSION['Lieferadresse'] = $addressData;
             if (!isset($_SESSION['Bestellung'])) {
                 $_SESSION['Bestellung'] = new stdClass();

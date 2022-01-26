@@ -1453,7 +1453,7 @@ final class Shop
             }
             if ($requestFile === '/') {
                 // special case: home page is accessible without seo url
-                $link = null;
+                $link = 0;
                 self::setPageType(\PAGE_STARTSEITE);
                 self::$fileName = 'seite.php';
                 if (Frontend::getCustomerGroup()->getID() > 0) {
@@ -1462,14 +1462,16 @@ final class Shop
                         OR cKundengruppen IS NULL
                         OR cKundengruppen = 'NULL'
                         OR tlink.cKundengruppen = '')";
-                    $link             = self::Container()->getDB()->getSingleObject(
+                    $link             = self::Container()->getDB()->getSingleInt(
                         'SELECT kLink
                             FROM tlink
-                            WHERE nLinkart = ' . \LINKTYP_STARTSEITE . $customerGroupSQL
+                            WHERE nLinkart = :lt' . $customerGroupSQL,
+                        'kLink',
+                        ['lt' => \LINKTYP_STARTSEITE]
                     );
                 }
-                self::$kLink = isset($link->kLink)
-                    ? (int)$link->kLink
+                self::$kLink = $link > 0
+                    ? $link
                     : self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_STARTSEITE);
             } elseif (Media::getInstance()->isValidRequest($path)) {
                 Media::getInstance()->handleRequest($path);

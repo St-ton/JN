@@ -752,15 +752,16 @@ class Product
 
                 $having = ' HAVING COUNT(*) = 2';
             }
-            $product = Shop::Container()->getDB()->getSingleObject(
+            $product = Shop::Container()->getDB()->getSingleInt(
                 'SELECT kArtikel
                     FROM tartikel' . $join . '
                     WHERE tartikel.kVaterArtikel = :pid
                     GROUP BY teigenschaftkombiwert.kEigenschaftKombi' . $having,
+                'kArtikel',
                 ['pid' => $productID]
             );
-            if ($product !== null && \count($product->kArtikel) > 0) {
-                return (int)$product->kArtikel;
+            if ($product > 0) {
+                return $product;
             }
         }
 
@@ -1212,15 +1213,15 @@ class Product
         if ($min <= 0) {
             return false;
         }
-        $history = Shop::Container()->getDB()->getSingleObject(
+
+        return Shop::Container()->getDB()->getSingleInt(
             'SELECT kProduktanfrageHistory
                 FROM tproduktanfragehistory
                 WHERE cIP = :ip
                     AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
+            'kProduktanfrageHistory',
             ['ip' => Request::getRealIP(), 'min' => $min]
-        );
-
-        return $history !== null && $history->kProduktanfrageHistory > 0;
+        ) > 0;
     }
 
     /**
@@ -1351,15 +1352,15 @@ class Product
         if (!$min) {
             return false;
         }
-        $history = Shop::Container()->getDB()->getSingleObject(
+
+        return Shop::Container()->getDB()->getSingleInt(
             'SELECT kVerfuegbarkeitsbenachrichtigung
                 FROM tverfuegbarkeitsbenachrichtigung
                 WHERE cIP = :ip
                 AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
+            'kVerfuegbarkeitsbenachrichtigung',
             ['ip' => Request::getRealIP(), 'min' => $min]
-        );
-
-        return $history !== null && $history->kVerfuegbarkeitsbenachrichtigung > 0;
+        ) > 0;
     }
 
     /**

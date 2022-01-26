@@ -382,15 +382,16 @@ function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true):
         $interalSQL = ' WHERE kKampagne >= 1000';
     }
     $campaigns = [];
-    $items     = Shop::Container()->getDB()->getObjects(
+    $items     = Shop::Container()->getDB()->getInts(
         'SELECT kKampagne
             FROM tkampagne
             ' . $activeSQL . '
             ' . $interalSQL . '
-            ORDER BY kKampagne'
+            ORDER BY kKampagne',
+        'kKampagne'
     );
-    foreach ($items as $item) {
-        $campaign = new Campaign((int)$item->kKampagne);
+    foreach ($items as $campaignID) {
+        $campaign = new Campaign($campaignID);
         if ($campaign->kKampagne > 0) {
             $campaigns[$campaign->kKampagne] = $campaign;
         }

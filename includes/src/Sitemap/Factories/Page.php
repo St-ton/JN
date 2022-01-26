@@ -26,7 +26,7 @@ final class Page extends AbstractFactory
         $languageCodes = map($languages, static function (LanguageModel $e) {
             return "'" . $e->getCode() . "'";
         });
-        $linkIDs       = $this->db->getCollection(
+        $linkIDs       = $this->db->getInts(
             "SELECT DISTINCT tlink.kLink AS id
                 FROM tlink
                 JOIN tlinkgroupassociations
@@ -49,10 +49,9 @@ final class Page extends AbstractFactory
                         OR tlink.cKundengruppen = 'NULL'
                         OR FIND_IN_SET(:cGrpID, REPLACE(tlink.cKundengruppen, ';', ',')) > 0)
                 ORDER BY tlinksprache.kLink",
+            'id',
             ['cGrpID' => $customerGroup]
-        )->map(static function ($e) {
-            return (int)$e->id;
-        })->toArray();
+        );
         $linkList      = new LinkList($this->db);
         $linkList->createLinks($linkIDs);
         foreach ($linkList->getLinks()->all() as $link) {

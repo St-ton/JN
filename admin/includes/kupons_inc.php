@@ -341,13 +341,14 @@ function createCouponFromInput(): Kupon
  */
 function getCouponCount(string $type = Kupon::TYPE_STANDARD, string $whereSQL = ''): int
 {
-    return (int)Shop::Container()->getDB()->getSingleObject(
+    return Shop::Container()->getDB()->getSingleInt(
         'SELECT COUNT(kKupon) AS cnt
             FROM tkupon
             WHERE cKuponTyp = :tp' .
             ($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
+        'cnt',
         ['tp' => $type]
-    )->cnt;
+    );
 }
 
 /**
@@ -355,96 +356,12 @@ function getCouponCount(string $type = Kupon::TYPE_STANDARD, string $whereSQL = 
  *
  * @param Kupon $coupon
  * @return array - list of error messages
+ * @deprecated since 5.2.0
  */
 function validateCoupon(Kupon $coupon): array
 {
-    $errors = [];
-    if ($coupon->cName === '') {
-        $errors[] = __('errorCouponNameMissing');
-    }
-    if (($coupon->cKuponTyp === Kupon::TYPE_STANDARD || $coupon->cKuponTyp === Kupon::TYPE_NEWCUSTOMER)
-        && $coupon->fWert < 0
-    ) {
-        $errors[] = __('errorCouponValueNegative');
-    }
-    if ($coupon->fMindestbestellwert < 0) {
-        $errors[] = __('errorCouponMinOrderValueNegative');
-    }
-    if ($coupon->cKuponTyp === Kupon::TYPE_SHIPPING && $coupon->cLieferlaender === '') {
-        $errors[] = __('errorCouponISOMissing');
-    }
-    if (isset($coupon->massCreationCoupon)) {
-        $codeLen = (int)$coupon->massCreationCoupon->hashLength
-            + (int)mb_strlen($coupon->massCreationCoupon->prefixHash)
-            + (int)mb_strlen($coupon->massCreationCoupon->suffixHash);
-        if ($codeLen > 32) {
-            $errors[] = __('errorCouponCodeLong');
-        }
-        if ($codeLen < 2) {
-            $errors[] = __('errorCouponCodeShort');
-        }
-        if (!$coupon->massCreationCoupon->lowerCase
-            && !$coupon->massCreationCoupon->upperCase
-            && !$coupon->massCreationCoupon->numbersHash
-        ) {
-            $errors[] = __('errorCouponCodeOptionSelect');
-        }
-    } elseif (mb_strlen($coupon->cCode) > 32) {
-        $errors[] = __('errorCouponCodeLong');
-    }
-    if ($coupon->cCode !== ''
-        && !isset($coupon->massCreationCoupon)
-        && ($coupon->cKuponTyp === Kupon::TYPE_STANDARD || $coupon->cKuponTyp === Kupon::TYPE_SHIPPING)
-    ) {
-        $queryRes = Shop::Container()->getDB()->getSingleObject(
-            'SELECT kKupon
-                FROM tkupon
-                WHERE cCode = :cCode
-                    AND kKupon != :kKupon',
-            ['cCode' => $coupon->cCode, 'kKupon' => (int)$coupon->kKupon]
-        );
-        if ($queryRes !== null) {
-            $errors[] = __('errorCouponCodeDuplicate');
-        }
-    }
-
-    $productNos = [];
-    foreach (Text::parseSSK($coupon->cArtikel) as $productNo) {
-        $res = Shop::Container()->getDB()->select('tartikel', 'cArtNr', $productNo);
-        if ($res === null) {
-            $errors[] = sprintf(__('errorProductNumberNotFound'), $productNo);
-        } else {
-            $productNos[] = $productNo;
-        }
-    }
-
-    $coupon->cArtikel = Text::createSSK($productNos);
-
-    if ($coupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
-        $countryHelper = Shop::Container()->getCountryService();
-        foreach (Text::parseSSK($coupon->cLieferlaender) as $isoCode) {
-            if ($countryHelper->getCountry($isoCode) === null) {
-                $errors[] = sprintf(__('errorISOInvalid'), $isoCode);
-            }
-        }
-    }
-
-    $validFrom  = date_create($coupon->dGueltigAb ?? '');
-    $validUntil = date_create($coupon->dGueltigBis ?? '');
-    if ($validFrom === false) {
-        $errors[] = __('errorPeriodBeginFormat');
-    }
-    if ($validUntil === false) {
-        $errors[] = __('errorPeriodEndFormat');
-    }
-
-    $openEnd = $coupon->dGueltigBis === null;
-
-    if ($validFrom !== false && $validUntil !== false && $validFrom > $validUntil && $openEnd === false) {
-        $errors[] = __('errorPeriodEndAfterBegin');
-    }
-
-    return $errors;
+    trigger_error(__FUNCTION__ . ' is deprecated - use Kupon::validate() instead', E_USER_DEPRECATED);
+    return $coupon->validate();
 }
 
 /**

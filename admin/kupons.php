@@ -121,7 +121,7 @@ if ($action === 'bearbeiten') {
     }
 } elseif ($action === 'speichern') {
     $coupon       = createCouponFromInput();
-    $couponErrors = validateCoupon($coupon);
+    $couponErrors = $coupon->validate();
     if (count($couponErrors) > 0) {
         // Es gab Fehler bei der Validierung => weiter bearbeiten
         $errorMessage = __('errorCheckInput') . ':<ul>';
@@ -161,10 +161,8 @@ if ($action === 'bearbeiten') {
     }
 }
 if ($action === 'bearbeiten') {
-    $taxClasses    = Shop::Container()->getDB()->getObjects('SELECT kSteuerklasse, cName FROM tsteuerklasse');
-    $manufacturers = getManufacturers($coupon->cHersteller);
-    $categories    = getCategories($coupon->cKategorien);
-    $customerIDs   = array_filter(
+    $taxClasses  = Shop::Container()->getDB()->getObjects('SELECT kSteuerklasse, cName FROM tsteuerklasse');
+    $customerIDs = array_filter(
         Text::parseSSKint($coupon->cKunden),
         static function ($customerID) {
             return (int)$customerID > 0;
@@ -183,8 +181,8 @@ if ($action === 'bearbeiten') {
     }
     $smarty->assign('taxClasses', $taxClasses)
         ->assign('customerGroups', CustomerGroup::getGroups())
-        ->assign('manufacturers', $manufacturers)
-        ->assign('categories', $categories)
+        ->assign('manufacturers', getManufacturers($coupon->cHersteller))
+        ->assign('categories', getCategories($coupon->cKategorien))
         ->assign('customerIDs', $customerIDs)
         ->assign('couponNames', $names)
         ->assign('oKupon', $coupon);

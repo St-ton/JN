@@ -1182,8 +1182,9 @@ class Kupon
                 }
             }
         }
-        foreach ($categories as $category) {
-            $catQry .= " OR FIND_IN_SET('{$category}', REPLACE(cKategorien, ';', ',')) > 0";
+        foreach ($categories as $i => $category) {
+            $prep['cqid' . $i] = $category;
+            $catQry           .= ' OR FIND_IN_SET(:cqid' . $i . ", REPLACE(cKategorien, ';', ',')) > 0";
         }
         if (Frontend::getCustomer()->getID() > 0) {
             $prep['cid'] = Frontend::getCustomer()->getID();
@@ -1321,6 +1322,97 @@ class Kupon
         }
 
         return $ret;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function validate(): array
+    {
+        $errors = [];
+        if ($this->cName === '') {
+            $errors[] = \__('errorCouponNameMissing');
+        }
+        if (($this->cKuponTyp === self::TYPE_STANDARD || $this->cKuponTyp === self::TYPE_NEWCUSTOMER)
+            && $this->fWert < 0
+        ) {
+            $errors[] = \__('errorCouponValueNegative');
+        }
+        if ($this->fMindestbestellwert < 0) {
+            $errors[] = \__('errorCouponMinOrderValueNegative');
+        }
+        if ($this->cKuponTyp === self::TYPE_SHIPPING && $this->cLieferlaender === '') {
+            $errors[] = \__('errorCouponISOMissing');
+        }
+        if (isset($this->massCreationCoupon)) {
+            $codeLen = (int)$this->massCreationCoupon->hashLength
+                + (int)\mb_strlen($this->massCreationCoupon->prefixHash)
+                + (int)\mb_strlen($this->massCreationCoupon->suffixHash);
+            if ($codeLen > 32) {
+                $errors[] = \__('errorCouponCodeLong');
+            }
+            if ($codeLen < 2) {
+                $errors[] = \__('errorCouponCodeShort');
+            }
+            if (!$this->massCreationCoupon->lowerCase
+                && !$this->massCreationCoupon->upperCase
+                && !$this->massCreationCoupon->numbersHash
+            ) {
+                $errors[] = \__('errorCouponCodeOptionSelect');
+            }
+        } elseif (\mb_strlen($this->cCode) > 32) {
+            $errors[] = \__('errorCouponCodeLong');
+        }
+        if ($this->cCode !== ''
+            && !isset($this->massCreationCoupon)
+            && ($this->cKuponTyp === self::TYPE_STANDARD || $this->cKuponTyp === self::TYPE_SHIPPING)
+        ) {
+            $queryRes = $this->db->getSingleObject(
+                'SELECT kKupon
+                    FROM tkupon
+                    WHERE cCode = :cCode
+                        AND kKupon != :kKupon',
+                ['cCode' => $this->cCode, 'kKupon' => $this->kKupon]
+            );
+            if ($queryRes !== null) {
+                $errors[] = \__('errorCouponCodeDuplicate');
+            }
+        }
+
+        $productNos = [];
+        foreach (Text::parseSSK($this->cArtikel) as $productNo) {
+            $res = $this->db->select('tartikel', 'cArtNr', $productNo);
+            if ($res === null) {
+                $errors[] = \sprintf(\__('errorProductNumberNotFound'), $productNo);
+            } else {
+                $productNos[] = $productNo;
+            }
+        }
+
+        $this->cArtikel = Text::createSSK($productNos);
+        if ($this->cKuponTyp === self::TYPE_SHIPPING) {
+            $countryHelper = Shop::Container()->getCountryService();
+            foreach (Text::parseSSK($this->cLieferlaender) as $isoCode) {
+                if ($countryHelper->getCountry($isoCode) === null) {
+                    $errors[] = \sprintf(\__('errorISOInvalid'), $isoCode);
+                }
+            }
+        }
+
+        $validFrom  = \date_create($this->dGueltigAb ?? '');
+        $validUntil = \date_create($this->dGueltigBis ?? '');
+        if ($validFrom === false) {
+            $errors[] = \__('errorPeriodBeginFormat');
+        }
+        if ($validUntil === false) {
+            $errors[] = \__('errorPeriodEndFormat');
+        }
+        $openEnd = $this->dGueltigBis === null;
+        if ($validFrom !== false && $validUntil !== false && $validFrom > $validUntil && $openEnd === false) {
+            $errors[] = \__('errorPeriodEndAfterBegin');
+        }
+
+        return $errors;
     }
 
     /**

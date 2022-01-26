@@ -12,6 +12,7 @@ use JTL\Catalog\UnitsOfMeasure;
 use JTL\CheckBox;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
+use JTL\DB\SqlObject;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Group;
 use JTL\Extensions\Config\Item;
@@ -270,35 +271,33 @@ class Product
             return [];
         }
 
-        $attributes       = [];
-        $attributeValues  = [];
-        $langID           = Shop::getLanguageID();
-        $attr             = new stdClass();
-        $attr->cSELECT    = '';
-        $attr->cJOIN      = '';
-        $attrVal          = new stdClass();
-        $attrVal->cSELECT = '';
-        $attrVal->cJOIN   = '';
+        $attributes      = [];
+        $attributeValues = [];
+        $langID          = Shop::getLanguageID();
+        $attr            = new SqlObject();
+        $attrVal         = new SqlObject();
         foreach ($propertyValues as $i => $_u) {
             $attributes[]      = $i;
             $attributeValues[] = $propertyValues[$i];
         }
         if ($langID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
-            $attr->cSELECT = 'teigenschaftsprache.cName AS cName_teigenschaftsprache, ';
-            $attr->cJOIN   = 'LEFT JOIN teigenschaftsprache
+            $attr->setSelect('teigenschaftsprache.cName AS cName_teigenschaftsprache, ');
+            $attr->setJoin('LEFT JOIN teigenschaftsprache
                                         ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
-                                        AND teigenschaftsprache.kSprache = ' . $langID;
+                                        AND teigenschaftsprache.kSprache = :lid');
+            $attr->addParam(':lid', $langID);
 
-            $attrVal->cSELECT = 'teigenschaftwertsprache.cName AS cName_teigenschaftwertsprache, ';
-            $attrVal->cJOIN   = 'LEFT JOIN teigenschaftwertsprache
+            $attrVal->setSelect('teigenschaftwertsprache.cName AS cName_teigenschaftwertsprache, ');
+            $attrVal->setJoin('LEFT JOIN teigenschaftwertsprache
                                     ON teigenschaftwertsprache.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                                    AND teigenschaftwertsprache.kSprache = ' . $langID;
+                                    AND teigenschaftwertsprache.kSprache = :lid');
+            $attrVal->addParam('lid', $langID);
         }
 
         $attrs = $db->getObjects(
-            'SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, ' . $attrVal->cSELECT . '
-                teigenschaftwertsichtbarkeit.kKundengruppe, teigenschaftwert.kEigenschaft, teigenschaft.cTyp, ' .
-            $attr->cSELECT . ' teigenschaft.cName AS cNameEigenschaft, teigenschaft.kArtikel
+            'SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, ' . $attrVal->getSelect() . '
+                teigenschaftwertsichtbarkeit.kKundengruppe, teigenschaftwert.kEigenschaft, teigenschaft.cTyp, '
+                . $attr->getSelect() . ' teigenschaft.cName AS cNameEigenschaft, teigenschaft.kArtikel
                 FROM teigenschaftwert
                 LEFT JOIN teigenschaftwertsichtbarkeit
                     ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
@@ -306,13 +305,13 @@ class Product
                 JOIN teigenschaft ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
                 LEFT JOIN teigenschaftsichtbarkeit ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                     AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
-                ' . $attr->cJOIN . '
-                ' . $attrVal->cJOIN . '
+                ' . $attr->getJoin() . '
+                ' . $attrVal->getJoin() . '
                 WHERE teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                     AND teigenschaftwert.kEigenschaft IN (' . \implode(',', $attributes) . ')
                     AND teigenschaftwert.kEigenschaftWert IN (' . \implode(',', $attributeValues) . ')',
-            ['cgid' => $customerGroup]
+            \array_merge(['cgid' => $customerGroup], $attr->getParams(), $attrVal->getParams())
         );
 
 
@@ -761,7 +760,7 @@ class Product
                 'kArtikel',
                 ['pid' => $productID]
             );
-            if ($product !== null && $product > 0) {
+            if ($product > 0) {
                 return $product;
             }
         }
@@ -1214,16 +1213,15 @@ class Product
         if ($min <= 0) {
             return false;
         }
-        $history = Shop::Container()->getDB()->getSingleInt(
+
+        return Shop::Container()->getDB()->getSingleInt(
             'SELECT kProduktanfrageHistory
                 FROM tproduktanfragehistory
                 WHERE cIP = :ip
                     AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
             'kProduktanfrageHistory',
             ['ip' => Request::getRealIP(), 'min' => $min]
-        );
-
-        return $history !== null && $history > 0;
+        ) > 0;
     }
 
     /**
@@ -1354,16 +1352,15 @@ class Product
         if (!$min) {
             return false;
         }
-        $history = Shop::Container()->getDB()->getSingleInt(
+
+        return Shop::Container()->getDB()->getSingleInt(
             'SELECT kVerfuegbarkeitsbenachrichtigung
                 FROM tverfuegbarkeitsbenachrichtigung
                 WHERE cIP = :ip
                 AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
             'kVerfuegbarkeitsbenachrichtigung',
             ['ip' => Request::getRealIP(), 'min' => $min]
-        );
-
-        return $history !== null && $history > 0;
+        ) > 0;
     }
 
     /**

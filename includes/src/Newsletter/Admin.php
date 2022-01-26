@@ -7,6 +7,7 @@ use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\Campaign;
 use JTL\DB\DbInterface;
+use JTL\DB\SqlObject;
 use JTL\Exceptions\EmptyResultSetException;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -775,25 +776,28 @@ final class Admin
     }
 
     /**
-     * @param stdClass $searchSQL
+     * @param SqlObject $searchSQL
      * @return int
      */
-    public function getSubscriberCount(stdClass $searchSQL): int
+    public function getSubscriberCount(SqlObject $searchSQL): int
     {
         return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tnewsletterempfaenger
-                WHERE kSprache = :lid' . $searchSQL->cWHERE,
-            ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])]
+                WHERE kSprache = :lid' . $searchSQL->getWhere(),
+            \array_merge(
+                ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])],
+                $searchSQL->getParams()
+            )
         )->cnt;
     }
 
     /**
-     * @param string   $limitSQL
-     * @param stdClass $searchSQL
+     * @param string    $limitSQL
+     * @param SqlObject $searchSQL
      * @return array
      */
-    public function getSubscribers(string $limitSQL, stdClass $searchSQL): array
+    public function getSubscribers(string $limitSQL, SqlObject $searchSQL): array
     {
         return $this->db->getCollection(
             "SELECT tnewsletterempfaenger.*,
@@ -814,9 +818,12 @@ final class Admin
                       AND tnewsletterempfaengerhistory.cAktion = 'Eingetragen'
                 LEFT JOIN toptin
                     ON toptin.cMail = tnewsletterempfaenger.cEmail
-                WHERE tnewsletterempfaenger.kSprache =:lid " . $searchSQL->cWHERE . '
+                WHERE tnewsletterempfaenger.kSprache = :lid " . $searchSQL->getWhere() . '
                 ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL,
-            ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])]
+            \array_merge(
+                ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])],
+                $searchSQL->getParams()
+            )
         )->map(static function (stdClass $item) {
             $item->cVorname  = Text::filterXSS($item->cVorname);
             $item->cNachname = Text::filterXSS($item->cNachname);

@@ -321,7 +321,7 @@ final class MigrationManager
                 ORDER BY kMigration DESC',
             'kMigration',
             ['pid' => $this->pluginID]
-        ) ?? 0;
+        );
     }
 
     /**

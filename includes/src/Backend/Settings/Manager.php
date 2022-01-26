@@ -158,7 +158,6 @@ class Manager
         return '';
     }
 
-
     /**
      * @param string $setting
      * @param null|string $oldValue

@@ -246,7 +246,7 @@ function pruefeLieferdaten($post, &$missingData = null): void
             'kLieferadresse',
             ['cid' => Frontend::getCustomer()->getID(), 'daid' => (int)$post['kLieferadresse']]
         );
-        if ($addressID !== null && $addressID > 0) {
+        if ($addressID > 0) {
             $deliveryAddress           = new Lieferadresse($addressID);
             $_SESSION['Lieferadresse'] = $deliveryAddress;
             executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_VORHANDENELIEFERADRESSE);
@@ -1933,7 +1933,7 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
         [
             'iso' => '%' . $countryCode . '%',
             'dep' => $depending,
-            'scl' => '^([0-9 -]* )?' . $shippingClasses,
+            'scl' => '^([0-9 -]* )?' . $shippingClasses . ' ',
             'sid' => $shippingMethodID
         ]
     );
@@ -2783,7 +2783,7 @@ function pruefeAjaxEinKlick(): int
             'kLieferadresse',
             ['cid' => $customerID, 'daid' => (int)$lastOrder->kLieferadresse]
         );
-        if ($addressID !== null && $addressID > 0) {
+        if ($addressID > 0) {
             $addressData               = new Lieferadresse($addressID);
             $_SESSION['Lieferadresse'] = $addressData;
             if (!isset($_SESSION['Bestellung'])) {

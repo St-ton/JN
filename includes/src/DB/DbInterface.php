@@ -317,10 +317,10 @@ interface DbInterface extends \Serializable
      * @param string $stmt
      * @param string $rowName
      * @param array  $params
-     * @return int|null
+     * @return int
      * @since 5.2.0
      */
-    public function getSingleInt(string $stmt, string $rowName, array $params = []): ?int;
+    public function getSingleInt(string $stmt, string $rowName, array $params = []): int;
 
     /**
      * @param string $stmt

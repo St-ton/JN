@@ -101,14 +101,18 @@ class Emailhistory
      */
     public function save(bool $primary = true)
     {
-        $ins = new stdClass();
-        foreach (\array_keys(\get_object_vars($this)) as $member) {
-            $ins->$member = $this->$member;
-        }
-        if (isset($ins->kEmailhistory) && (int)$ins->kEmailhistory > 0) {
+        if ($this->kEmailhistory > 0) {
             return $this->update();
         }
-        unset($ins->kEmailhistory);
+        $ins                = new stdClass();
+        $ins->kEmailvorlage = $this->kEmailvorlage;
+        $ins->cSubject      = $this->cSubject;
+        $ins->cFromName     = $this->cFromName;
+        $ins->cFromEmail    = $this->cFromEmail;
+        $ins->cToName       = $this->cToName;
+        $ins->cToEmail      = $this->cToEmail;
+        $ins->dSent         = $this->dSent;
+
         $kPrim = $this->db->insert('temailhistory', $ins);
         if ($kPrim > 0) {
             return $primary ? $kPrim : true;
@@ -123,17 +127,15 @@ class Emailhistory
      */
     public function update(): int
     {
-        $members = \array_keys(\get_object_vars($this));
-        if (\count($members) === 0) {
-            throw new Exception('ERROR: Object has no members!');
-        }
-        $upd = new stdClass();
-        foreach ($members as $member) {
-            $methodName = 'get' . \mb_substr($member, 1);
-            if (\method_exists($this, $methodName)) {
-                $upd->$member = $this->$methodName();
-            }
-        }
+        $upd                = new stdClass();
+        $upd->kEmailhistory = $this->kEmailhistory;
+        $upd->kEmailvorlage = $this->kEmailvorlage;
+        $upd->cSubject      = $this->cSubject;
+        $upd->cFromName     = $this->cFromName;
+        $upd->cFromEmail    = $this->cFromEmail;
+        $upd->cToName       = $this->cToName;
+        $upd->cToEmail      = $this->cToEmail;
+        $upd->dSent         = $this->dSent;
 
         return $this->db->updateRow('temailhistory', 'kEmailhistory', $this->getEmailhistory(), $upd);
     }

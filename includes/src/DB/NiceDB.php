@@ -128,6 +128,10 @@ class NiceDB implements DbInterface
                     ? " COLLATE '" . \DB_COLLATE . "'"
                     : '');
         }
+        // this was added for compatibility with 5.1.2 and php8.1
+        if (\PHP_VERSION_ID >= 80100) {
+            $options[PDO::ATTR_STRINGIFY_FETCHES] = true;
+        }
 
         return $options;
     }
@@ -804,11 +808,11 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function getSingleInt(string $stmt, string $rowName, array $params = []): ?int
+    public function getSingleInt(string $stmt, string $rowName, array $params = []): int
     {
         $res = $this->getSingleObject($stmt, $params);
 
-        return $res === null ? null : ((int)$res->$rowName);
+        return $res === null ? -1 : ((int)$res->$rowName);
     }
 
     /**

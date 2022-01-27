@@ -1084,7 +1084,7 @@ function gibLieferadresseAusSession()
  */
 function pruefeVerfuegbarkeit(): array
 {
-    $res  = ['cArtikelName_arr' => []];
+    $res = ['cArtikelName_arr' => []];
     foreach (Frontend::getCart()->PositionenArr as $item) {
         if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
             && isset($item->Artikel->cLagerBeachten)

@@ -910,98 +910,124 @@ class Product
         $xSelling->Kauf->productIDs       = [];
         $conf                             = $conf ?? Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
         $db                               = Shop::Container()->getDB();
-        if ($conf['artikeldetails_xselling_standard_anzeigen'] === 'Y') {
-            $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $xsell          = $db->getObjects(
-                'SELECT txsell.*, txsellgruppe.cName, txsellgruppe.cBeschreibung
-                    FROM txsell
-                    JOIN tartikel
-                        ON txsell.kXSellArtikel = tartikel.kArtikel
-                    LEFT JOIN txsellgruppe
-                        ON txsellgruppe.kXSellGruppe = txsell.kXSellGruppe
-                        AND txsellgruppe.kSprache = :lid
-                    WHERE txsell.kArtikel = :aid' . $stockFilterSQL . '
-                    ORDER BY tartikel.cName',
-                ['lid' => Shop::getLanguageID(), 'aid' => $productID]
-            );
-            $xsellgruppen   = group($xsell, static function ($e) {
-                return $e->kXSellGruppe;
-            });
-            foreach ($xsellgruppen as $products) {
-                $group             = new stdClass();
-                $group->productIDs = [];
-                foreach ($products as $xs) {
-                    $group->Name         = $xs->cName;
-                    $group->Beschreibung = $xs->cBeschreibung;
-                    $group->productIDs[] = (int)$xs->kXSellArtikel;
-                }
-                $xSelling->Standard->XSellGruppen[] = $group;
-            }
-        }
-
-        if ($conf['artikeldetails_xselling_kauf_anzeigen'] === 'Y') {
-            $limit = (int)$conf['artikeldetails_xselling_kauf_anzahl'];
-            if ($isParent === null) {
-                $isParent = self::isParent($productID);
-            }
-            if ($isParent === true) {
-                $selectSQL = 'txsellkauf.kXSellArtikel';
-                $filterSQL = 'tartikel.kVaterArtikel';
-                if ($conf['artikeldetails_xselling_kauf_parent'] === 'Y') {
-                    $selectSQL = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
-                    $filterSQL = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
-                }
-                $xsell = $db->getObjects(
-                    'SELECT ' . $productID . ' AS kArtikel, ' . $selectSQL . ' AS kXSellArtikel,
-                        SUM(txsellkauf.nAnzahl) nAnzahl
-                        FROM txsellkauf
-                        JOIN tartikel ON tartikel.kArtikel = txsellkauf.kXSellArtikel
-                        WHERE (txsellkauf.kArtikel IN (
-                                SELECT tartikel.kArtikel
-                                FROM tartikel
-                                WHERE tartikel.kVaterArtikel = :pid
-                            ) OR txsellkauf.kArtikel = :pid)
-                            AND ' . $filterSQL . ' != :pid
-                        GROUP BY 1, 2
-                        ORDER BY SUM(txsellkauf.nAnzahl) DESC
-                        LIMIT :lmt',
-                    ['pid' => $productID, 'lmt' => $limit]
-                );
-            } elseif ($conf['artikeldetails_xselling_kauf_parent'] === 'Y') {
-                $xsell = $db->getObjects(
-                    'SELECT txsellkauf.kArtikel,
-                    IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
-                    SUM(txsellkauf.nAnzahl) nAnzahl
-                        FROM txsellkauf
-                        JOIN tartikel
-                            ON tartikel.kArtikel = txsellkauf.kXSellArtikel
-                        WHERE txsellkauf.kArtikel = :pid
-                            AND (tartikel.kVaterArtikel != (
-                                SELECT tartikel.kVaterArtikel
-                                FROM tartikel
-                                WHERE tartikel.kArtikel = :pid
-                            ) OR tartikel.kVaterArtikel = 0)
-                        GROUP BY 1, 2
-                        ORDER BY SUM(txsellkauf.nAnzahl) DESC
-                        LIMIT :lmt',
-                    ['pid' => $productID, 'lmt' => $limit]
-                );
-            } else {
-                $xsell = $db->selectAll(
-                    'txsellkauf',
-                    'kArtikel',
-                    $productID,
-                    'kXSellArtikel',
-                    'nAnzahl DESC',
-                    $limit
-                );
-            }
-            foreach ($xsell as $xs) {
-                $xSelling->Kauf->productIDs[] = (int)$xs->kXSellArtikel;
-            }
-        }
+        self::getXSellingDefault($xSelling, $db, $productID, $conf);
+        self::getXSellingPurchases($xSelling, $db, $productID, $isParent ?? self::isParent($productID), $conf);
 
         return $xSelling;
+    }
+
+    /**
+     * @param stdClass    $xSelling
+     * @param DbInterface $db
+     * @param int         $productID
+     * @param array       $conf
+     */
+    private static function getXSellingDefault(stdClass $xSelling, DbInterface $db, int $productID, array $conf): void
+    {
+        if ($conf['artikeldetails_xselling_standard_anzeigen'] !== 'Y') {
+            return;
+        }
+        $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
+        $data        = $db->getObjects(
+            'SELECT txsell.*, txsellgruppe.cName, txsellgruppe.cBeschreibung
+                FROM txsell
+                JOIN tartikel
+                    ON txsell.kXSellArtikel = tartikel.kArtikel
+                LEFT JOIN txsellgruppe
+                    ON txsellgruppe.kXSellGruppe = txsell.kXSellGruppe
+                    AND txsellgruppe.kSprache = :lid
+                WHERE txsell.kArtikel = :aid' . $stockFilter . '
+                ORDER BY tartikel.cName',
+            ['lid' => Shop::getLanguageID(), 'aid' => $productID]
+        );
+        $groups      = group($data, static function ($e) {
+            return $e->kXSellGruppe;
+        });
+        foreach ($groups as $products) {
+            $group             = new stdClass();
+            $group->productIDs = [];
+            foreach ($products as $xs) {
+                $group->Name         = $xs->cName;
+                $group->Beschreibung = $xs->cBeschreibung;
+                $group->productIDs[] = (int)$xs->kXSellArtikel;
+            }
+            $xSelling->Standard->XSellGruppen[] = $group;
+        }
+    }
+
+    /**
+     * @param stdClass    $xSelling
+     * @param DbInterface $db
+     * @param int         $productID
+     * @param bool        $isParent
+     * @param array       $conf
+     */
+    private static function getXSellingPurchases(
+        stdClass $xSelling,
+        DbInterface $db,
+        int $productID,
+        bool $isParent,
+        array $conf
+    ): void {
+        if ($conf['artikeldetails_xselling_kauf_anzeigen'] !== 'Y') {
+            return;
+        }
+        $limit = (int)$conf['artikeldetails_xselling_kauf_anzahl'];
+        if ($isParent === true) {
+            $selectSQL = 'txsellkauf.kXSellArtikel';
+            $filterSQL = 'tartikel.kVaterArtikel';
+            if ($conf['artikeldetails_xselling_kauf_parent'] === 'Y') {
+                $selectSQL = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
+                $filterSQL = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
+            }
+            $xsell = $db->getObjects(
+                'SELECT ' . $productID . ' AS kArtikel, ' . $selectSQL . ' AS kXSellArtikel,
+                    SUM(txsellkauf.nAnzahl) nAnzahl
+                    FROM txsellkauf
+                    JOIN tartikel ON tartikel.kArtikel = txsellkauf.kXSellArtikel
+                    WHERE (txsellkauf.kArtikel IN (
+                            SELECT tartikel.kArtikel
+                            FROM tartikel
+                            WHERE tartikel.kVaterArtikel = :pid
+                        ) OR txsellkauf.kArtikel = :pid)
+                        AND ' . $filterSQL . ' != :pid
+                    GROUP BY 1, 2
+                    ORDER BY SUM(txsellkauf.nAnzahl) DESC
+                    LIMIT :lmt',
+                ['pid' => $productID, 'lmt' => $limit]
+            );
+        } elseif ($conf['artikeldetails_xselling_kauf_parent'] === 'Y') {
+            $xsell = $db->getObjects(
+                'SELECT txsellkauf.kArtikel,
+                IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
+                SUM(txsellkauf.nAnzahl) nAnzahl
+                    FROM txsellkauf
+                    JOIN tartikel
+                        ON tartikel.kArtikel = txsellkauf.kXSellArtikel
+                    WHERE txsellkauf.kArtikel = :pid
+                        AND (tartikel.kVaterArtikel != (
+                            SELECT tartikel.kVaterArtikel
+                            FROM tartikel
+                            WHERE tartikel.kArtikel = :pid
+                        ) OR tartikel.kVaterArtikel = 0)
+                    GROUP BY 1, 2
+                    ORDER BY SUM(txsellkauf.nAnzahl) DESC
+                    LIMIT :lmt',
+                ['pid' => $productID, 'lmt' => $limit]
+            );
+        } else {
+            $xsell = $db->selectAll(
+                'txsellkauf',
+                'kArtikel',
+                $productID,
+                'kXSellArtikel',
+                'nAnzahl DESC',
+                $limit
+            );
+        }
+        foreach ($xsell as $xs) {
+            $xSelling->Kauf->productIDs[] = (int)$xs->kXSellArtikel;
+        }
     }
 
     /**
@@ -1012,16 +1038,16 @@ class Product
      */
     public static function buildXSellersFromIDs($xSelling, int $productID): stdClass
     {
-        $xSelling       = (object)$xSelling;
-        $defaultOptions = Artikel::getDefaultOptions();
-        $db             = Shop::Container()->getDB();
-        $languageID     = Shop::getLanguageID();
-        $cgroupID       = Frontend::getCustomerGroup()->getID();
+        $xSelling   = (object)$xSelling;
+        $options    = Artikel::getDefaultOptions();
+        $db         = Shop::Container()->getDB();
+        $languageID = Shop::getLanguageID();
+        $cgroupID   = Frontend::getCustomerGroup()->getID();
         foreach ($xSelling->Standard->XSellGruppen as $group) {
             $group->Artikel = [];
             foreach ($group->productIDs as $id) {
                 $product = new Artikel($db);
-                $product->fuelleArtikel($id, $defaultOptions, $cgroupID, $languageID);
+                $product->fuelleArtikel($id, $options, $cgroupID, $languageID);
                 if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                     $group->Artikel[] = $product;
                 }
@@ -1031,7 +1057,7 @@ class Product
         }
         foreach ($xSelling->Kauf->productIDs as $id) {
             $product = new Artikel($db);
-            $product->fuelleArtikel($id, $defaultOptions, $cgroupID, $languageID);
+            $product->fuelleArtikel($id, $options, $cgroupID, $languageID);
             if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
                 $xSelling->Kauf->Artikel[] = $product;
             }

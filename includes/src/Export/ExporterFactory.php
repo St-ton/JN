@@ -17,22 +17,22 @@ class ExporterFactory
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var ExportWriterInterface|null
      */
-    private $writer;
+    private ?ExportWriterInterface $writer;
 
     /**
      * @param DbInterface                $db

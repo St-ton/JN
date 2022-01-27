@@ -7,14 +7,27 @@ use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
 use JTL\L10n\GetText;
+use JTL\Shop;
 use stdClass;
 
+/**
+ * Class Search
+ * @package JTL\Backend\Settings
+ */
 class Search
 {
+    public const SEARCH_MODE_LIST = 1;
+
+    public const SEARCH_MODE_RANGE = 2;
+
+    public const SEARCH_MODE_ID = 3;
+
+    public const SEARCH_MODE_TEXT = 4;
+
     /**
      * @var int
      */
-    public int $mode = 0;
+    private int $mode = 0;
 
     /**
      * @var string
@@ -71,7 +84,7 @@ class Search
 
         if ($isIdList) {
             $where      .= ' AND kEinstellungenConf IN (' . \implode(', ', $idList) . ')';
-            $this->mode  = 1;
+            $this->mode  = self::SEARCH_MODE_LIST;
             $this->title = \sprintf(\__('searchForID'), \implode(', ', $idList));
         } else {
             $rangeList = \explode('-', $query);
@@ -86,16 +99,16 @@ class Search
             if ($isIdRange) {
                 $where      .= ' AND kEinstellungenConf BETWEEN ' . $rangeList[0] . ' AND ' . $rangeList[1];
                 $where      .= " AND cConf = 'Y'";
-                $this->mode  = 2;
+                $this->mode  = self::SEARCH_MODE_RANGE;
                 $this->title = \sprintf(\__('searchForIDRange'), $rangeList[0] . ' - ' . $rangeList[1]);
             } elseif ((int)$query > 0) {
-                $this->mode  = 3;
+                $this->mode  = self::SEARCH_MODE_ID;
                 $this->title = \sprintf(\__('searchForID'), $query);
                 $where      .= ' AND kEinstellungenConf = ' . (int)$query;
             } else {
                 $query              = \mb_convert_case($query, \MB_CASE_LOWER);
                 $queryEnt           = Text::htmlentities($query);
-                $this->mode         = 4;
+                $this->mode         = self::SEARCH_MODE_TEXT;
                 $this->title        = \sprintf(\__('searchForName'), $query);
                 $configTranslations = $this->getText->getAdminTranslations('configs/configs');
                 $valueNames         = [];
@@ -134,22 +147,24 @@ class Search
             WHERE ' . $sqlObject->getWhere() . '
             ORDER BY ec.kEinstellungenSektion, nSort';
         $data       = $this->db->getCollection($sql);
-        $sectionIDs = $data->pluck('kEinstellungenSektion')->unique()->map('\intval');
-        $configIDs  = $data->pluck('kEinstellungenConf')->unique()->map('\intval')->toArray();
+        $sectionIDs = \array_unique(\array_map('\intval', $data->pluck('kEinstellungenSektion')->toArray()));
+        $configIDs  = \array_unique(\array_map('\intval', $data->pluck('kEinstellungenConf')->toArray()));
         $factory    = new SectionFactory();
         $sections   = [];
+        $urlPrefix  = Shop::getAdminURL() . '/';
         foreach ($sectionIDs as $sectionID) {
             $section = $factory->getSection($sectionID, $this->manager);
             $section->load();
             foreach ($section->getSubsections() as $subsection) {
                 $subsection->setShow(false);
-                foreach ($subsection->getItems() as $item) {
+                foreach ($subsection->getItems() as $idx => $item) {
+                    $item->setShowDefault(0);
                     $menuEntry = $this->mapConfigSectionToMenuEntry($sectionID, $item->getValueName());
                     $isSpecial = $menuEntry->specialSetting ?? false;
                     if ($isSpecial !== false) {
                         $url = ($menuEntry->url ?? '') . ($menuEntry->settingsAnchor ?? '');
                     } else {
-                        $url = 'einstellungen.php?cSuche=' . $item->getID() . '&einstellungen_suchen=1';
+                        $url = $urlPrefix . 'einstellungen.php?cSuche=' . $item->getID() . '&einstellungen_suchen=1';
                     }
                     $item->setURL($url);
                     if (\in_array($item->getID(), $configIDs, true)) {
@@ -157,6 +172,8 @@ class Search
                         $subsection->setPath($menuEntry->path ?? '');
                         $subsection->setURL($menuEntry->url ?? '');
                         $item->setHighlight(true);
+                    } elseif ($this->mode !== self::SEARCH_MODE_ID) {
+                        $subsection->removeItemAtIndex($idx);
                     }
                 }
             }

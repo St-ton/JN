@@ -160,13 +160,12 @@ function bestellungInDB($cleared = 0, $orderNo = '')
         );
         $cart->kLieferadresse = $_SESSION['Bestellung']->kLieferadresse;
     }
-    $conf = Shop::getSettings([CONF_GLOBAL]);
-    //füge Warenkorb ein
+    // füge Warenkorb ein
     executeHook(HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB, ['oWarenkorb' => &$cart, 'oBestellung' => &$order]);
     $cart->kWarenkorb = $cart->insertInDB();
-    //füge alle Warenkorbpositionen ein
+    // füge alle Warenkorbpositionen ein
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
-        $productFilter = (int)$conf['global']['artikel_artikelanzeigefilter'];
+        $productFilter = (int)Shop::getSettingValue(CONF_GLOBAL, 'artikel_artikelanzeigefilter');
         /** @var CartItem $item */
         foreach ($cart->PositionenArr as $item) {
             if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
@@ -873,12 +872,10 @@ function KuponVerwendungen($order): void
  */
 function baueBestellnummer(): string
 {
-    $conf      = Shop::getSettings([CONF_KAUFABWICKLUNG]);
+    $conf      = Shop::getSettingSection(CONF_KAUFABWICKLUNG);
     $number    = new Nummern(JTL_GENNUMBER_ORDERNUMBER);
     $orderNo   = 1;
-    $increment = isset($conf['kaufabwicklung']['bestellabschluss_bestellnummer_anfangsnummer'])
-        ? (int)$conf['kaufabwicklung']['bestellabschluss_bestellnummer_anfangsnummer']
-        : 1;
+    $increment = (int)($conf['bestellabschluss_bestellnummer_anfangsnummer'] ?? 1);
     if ($number) {
         $orderNo = $number->getNummer() + $increment;
         $number->setNummer($number->getNummer() + 1);
@@ -894,12 +891,12 @@ function baueBestellnummer(): string
     $prefix = str_replace(
         ['%Y', '%m', '%d', '%W'],
         [date('Y'), date('m'), date('d'), date('W')],
-        $conf['kaufabwicklung']['bestellabschluss_bestellnummer_praefix']
+        $conf['bestellabschluss_bestellnummer_praefix']
     );
     $suffix = str_replace(
         ['%Y', '%m', '%d', '%W'],
         [date('Y'), date('m'), date('d'), date('W')],
-        $conf['kaufabwicklung']['bestellabschluss_bestellnummer_suffix']
+        $conf['bestellabschluss_bestellnummer_suffix']
     );
     executeHook(HOOK_BESTELLABSCHLUSS_INC_BAUEBESTELLNUMMER, [
         'orderNo' => &$orderNo,
@@ -1088,13 +1085,12 @@ function gibLieferadresseAusSession()
 function pruefeVerfuegbarkeit(): array
 {
     $res  = ['cArtikelName_arr' => []];
-    $conf = Shop::getSettings([CONF_GLOBAL]);
     foreach (Frontend::getCart()->PositionenArr as $item) {
         if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
             && isset($item->Artikel->cLagerBeachten)
             && $item->Artikel->cLagerBeachten === 'Y'
             && $item->Artikel->cLagerKleinerNull === 'Y'
-            && $conf['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
+            && Shop::getSettingValue(CONF_GLOBAL, 'global_lieferverzoegerung_anzeigen') === 'Y'
             && $item->nAnzahl > $item->Artikel->fLagerbestand
         ) {
             $res['cArtikelName_arr'][] = $item->Artikel->cName;

@@ -111,7 +111,7 @@ if (Request::postVar('resetSetting') !== null) {
     if (isset($postData['test_emails']) && (int)$postData['test_emails'] === 1) {
         ob_start();
         $test = new SmtpTest();
-        $test->run(Shop::getSettings([CONF_EMAILS])['emails']);
+        $test->run(Shop::getSettingSection(CONF_EMAILS));
         $result = ob_get_clean();
         $smarty->assign('testResult', $result);
     }

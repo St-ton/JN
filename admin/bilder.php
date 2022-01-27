@@ -96,7 +96,7 @@ $indices = [
 ];
 getAdminSectionSettings(CONF_BILDER);
 $smarty->assign('indices', $indices)
-    ->assign('imgConf', Shop::getSettings([CONF_BILDER])['bilder'])
+    ->assign('imgConf', Shop::getSettingSection(CONF_BILDER))
     ->assign('sizes', ['mini', 'klein', 'normal', 'gross'])
     ->assign('dims', ['breite', 'hoehe'])
     ->display('bilder.tpl');

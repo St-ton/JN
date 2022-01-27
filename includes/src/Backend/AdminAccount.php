@@ -300,10 +300,9 @@ class AdminAccount
             $verified = \password_verify($cPass, $admin->cPass);
         }
         if ($verified === true || ($crypted !== null && $admin->cPass === $crypted)) {
-            $settings = Shop::getSettings(\CONF_GLOBAL);
             if (\is_array($_SESSION)
-                && $settings['global']['wartungsmodus_aktiviert'] === 'N'
                 && \count($_SESSION) > 0
+                && Shop::getSettingValue(\CONF_GLOBAL, 'wartungsmodus_aktiviert') === 'N'
             ) {
                 foreach (\array_keys($_SESSION) as $i) {
                     unset($_SESSION[$i]);

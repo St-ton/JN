@@ -464,10 +464,10 @@ class Status
      */
     public function hasFullTextIndexError(): bool
     {
-        $conf = Shop::getSettings([\CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
+        $conf = Shop::getSettingValue(\CONF_ARTIKELUEBERSICHT, 'suche_fulltext');
 
-        return isset($conf['suche_fulltext'])
-            && $conf['suche_fulltext'] !== 'N'
+        return $conf !== null
+            && $conf !== 'N'
             && (!$this->db->query(
                 "SHOW INDEX
                     FROM tartikel

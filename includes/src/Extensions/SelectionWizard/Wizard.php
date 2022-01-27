@@ -99,7 +99,7 @@ class Wizard
      */
     public function __construct(string $keyName, int $id, int $languageID = 0, bool $activeOnly = true)
     {
-        $this->config = Shop::getSettings(\CONF_AUSWAHLASSISTENT)['auswahlassistent'];
+        $this->config = Shop::getSettingSection(\CONF_AUSWAHLASSISTENT);
         $languageID   = $languageID ?: Shop::getLanguageID();
 
         if ($id > 0
@@ -400,7 +400,7 @@ class Wizard
      */
     public static function isRequired(): bool
     {
-        return Shop::getSettings([\CONF_AUSWAHLASSISTENT])['auswahlassistent']['auswahlassistent_nutzen'] === 'Y';
+        return Shop::getSettingValue(\CONF_AUSWAHLASSISTENT, 'auswahlassistent_nutzen') === 'Y';
     }
 
     /**

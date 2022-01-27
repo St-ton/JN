@@ -8,7 +8,7 @@ use JTL\DB\SqlObject;
 
 /**
  * Interface SectionInterface
- * @package Backend\Settings\Sections
+ * @package JTL\Backend\Settings\Sections
  */
 interface SectionInterface
 {

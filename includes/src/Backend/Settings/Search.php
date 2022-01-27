@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace JTL\Backend\Settings;
 
 use JTL\Backend\Settings\Sections\SectionInterface;
@@ -15,28 +14,33 @@ class Search
     /**
      * @var int
      */
-    public $mode = 0;
+    public int $mode = 0;
 
     /**
      * @var string
      */
-    public $title = '';
+    public string $title = '';
 
     /**
      * @var GetText
      */
-    protected $getText;
+    protected GetText $getText;
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var Manager
      */
-    protected $manager;
+    protected Manager $manager;
 
+    /**
+     * @param DbInterface $db
+     * @param GetText     $gettext
+     * @param Manager     $manager
+     */
     public function __construct(DbInterface $db, GetText $gettext, Manager $manager)
     {
         $this->db      = $db;
@@ -44,6 +48,10 @@ class Search
         $this->manager = $manager;
     }
 
+    /**
+     * @param string $query
+     * @return SqlObject
+     */
     private function getSqlObject(string $query): SqlObject
     {
         $sql      = new SqlObject();

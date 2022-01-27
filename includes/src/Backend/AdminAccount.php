@@ -29,47 +29,47 @@ class AdminAccount
     /**
      * @var bool
      */
-    private $loggedIn = false;
+    private bool $loggedIn = false;
 
     /**
      * @var bool
      */
-    private $twoFaAuthenticated = false;
+    private bool $twoFaAuthenticated = false;
 
     /**
      * @var Loggerinterface
      */
-    private $authLogger;
+    private LoggerInterface $authLogger;
 
     /**
      * @var AdminLoginStatusToLogLevel
      */
-    private $levelMapper;
+    private AdminLoginStatusToLogLevel $levelMapper;
 
     /**
      * @var AdminLoginStatusMessageMapper
      */
-    private $messageMapper;
+    private AdminLoginStatusMessageMapper $messageMapper;
 
     /**
      * @var int
      */
-    private $lockedMinutes = 0;
+    private int $lockedMinutes = 0;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var GetText
      */
-    private $getText;
+    private GetText $getText;
 
     /**
      * @var AlertServiceInterface
      */
-    private $alertService;
+    private AlertServiceInterface $alertService;
 
     /**
      * AdminAccount constructor.

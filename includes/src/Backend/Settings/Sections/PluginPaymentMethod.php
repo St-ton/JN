@@ -9,7 +9,7 @@ use stdClass;
 
 /**
  * Class PluginPaymentMethod
- * @package Backend\Settings
+ * @package JTL\Backend\Settings
  */
 class PluginPaymentMethod extends Base
 {

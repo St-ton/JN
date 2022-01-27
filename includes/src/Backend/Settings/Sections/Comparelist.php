@@ -6,7 +6,7 @@ use JTL\DB\SqlObject;
 
 /**
  * Class Comparelist
- * @package Backend\Settings
+ * @package JTL\Backend\Settings
  */
 class Comparelist extends Base
 {

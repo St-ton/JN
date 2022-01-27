@@ -27,22 +27,22 @@ class AdminAccountManager
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLSmarty
      */
-    private $smarty;
+    private JTLSmarty $smarty;
 
     /**
      * @var AlertServiceInterface
      */
-    private $alertService;
+    private AlertServiceInterface $alertService;
 
     /**
      * @var array
      */
-    private $messages = [
+    private array $messages = [
         'notice' => '',
         'error'  => ''
     ];
@@ -238,9 +238,6 @@ class AdminAccountManager
      */
     public function saveAttributes(stdClass $account, array $extAttribs, array &$errorMap): bool
     {
-        if (!\is_array($extAttribs)) {
-            return true;
-        }
         $result = true;
         $this->validateAccount($extAttribs);
 

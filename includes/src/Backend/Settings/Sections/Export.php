@@ -8,7 +8,7 @@ use stdClass;
 
 /**
  * Class Export
- * @package Backend\Settings
+ * @package JTL\Backend\Settings
  */
 class Export extends Base
 {

@@ -16,22 +16,22 @@ class CustomerFields
     /**
      * @var static[]
      */
-    private static $instances;
+    private static array $instances = [];
 
     /**
      * @var stdClass[]
      */
-    protected $customerFields = [];
+    protected array $customerFields = [];
 
     /**
      * @var int
      */
-    protected $langID;
+    protected int $langID;
 
     /**
-     * @var DbInterface|null
+     * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * CustomerFields constructor.

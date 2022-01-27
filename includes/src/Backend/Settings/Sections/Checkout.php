@@ -6,7 +6,7 @@ use JTL\Backend\Settings\Manager;
 
 /**
  * Class Checkout
- * @package Backend\Settings
+ * @package JTL\Backend\Settings
  */
 class Checkout extends Base
 {

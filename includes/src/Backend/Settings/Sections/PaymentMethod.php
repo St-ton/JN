@@ -7,7 +7,7 @@ use stdClass;
 
 /**
  * Class PaymentMethod
- * @package Backend\Settings
+ * @package JTL\Backend\Settings
  */
 class PaymentMethod extends Base
 {

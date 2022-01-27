@@ -15,39 +15,39 @@ use JTL\Smarty\JTLSmarty;
 
 /**
  * Class SettingSection
- * @package Backend\Settings
+ * @package JTL\Backend\Settings
  */
 class Manager
 {
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var JTLSmarty
      */
-    protected $smarty;
+    protected JTLSmarty $smarty;
 
     /**
      * @var AdminAccount
      */
-    protected $adminAccount;
+    protected AdminAccount $adminAccount;
 
     /**
      * @var GetText
      */
-    protected $getText;
+    protected GetText $getText;
 
     /**
      * @var AlertServiceInterface
      */
-    protected $alertService;
+    protected AlertServiceInterface $alertService;
 
     /**
      * @var string[]
      */
-    protected $listboxLogged = [];
+    protected array $listboxLogged = [];
 
     /**
      * Manager constructor.

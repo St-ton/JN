@@ -1453,24 +1453,9 @@ final class Shop
             }
             if ($requestFile === '/') {
                 // special case: home page is accessible without seo url
-                $link = null;
                 self::setPageType(\PAGE_STARTSEITE);
                 self::$fileName = 'seite.php';
-                if (Frontend::getCustomerGroup()->getID() > 0) {
-                    $customerGroupSQL = " AND (FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
-                        . "', REPLACE(cKundengruppen, ';', ',')) > 0
-                        OR cKundengruppen IS NULL
-                        OR cKundengruppen = 'NULL'
-                        OR tlink.cKundengruppen = '')";
-                    $link             = self::Container()->getDB()->getSingleObject(
-                        'SELECT kLink
-                            FROM tlink
-                            WHERE nLinkart = ' . \LINKTYP_STARTSEITE . $customerGroupSQL
-                    );
-                }
-                self::$kLink = isset($link->kLink)
-                    ? (int)$link->kLink
-                    : self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_STARTSEITE);
+                self::$kLink    = self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_STARTSEITE);
             } elseif (Media::getInstance()->isValidRequest($path)) {
                 Media::getInstance()->handleRequest($path);
             } else {
@@ -1482,15 +1467,12 @@ final class Shop
             $link = self::Container()->getLinkService()->getLinkByID(self::$kLink);
             if ($link !== null && ($linkType = $link->getLinkType()) > 0) {
                 self::$nLinkart = $linkType;
-
                 if ($linkType === \LINKTYP_EXTERNE_URL) {
                     \header('Location: ' . $link->getURL(), true, 303);
                     exit;
                 }
-
                 self::$fileName = 'seite.php';
                 self::setPageType(\PAGE_EIGENE);
-
                 if ($linkType === \LINKTYP_STARTSEITE) {
                     self::setPageType(\PAGE_STARTSEITE);
                 } elseif ($linkType === \LINKTYP_DATENSCHUTZ) {

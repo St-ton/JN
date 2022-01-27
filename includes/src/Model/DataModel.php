@@ -821,13 +821,13 @@ abstract class DataModel implements DataModelInterface, Iterator
             throw new Exception(__METHOD__ . ': invalid attribute(' . $attribName . ')', self::ERR_INVALID_PARAM);
         }
         if (isset($this->setters[$attribName])) {
-            $this->members[$attribName] = static::cast(
+            $this->members[$attribName] = self::cast(
                 \call_user_func($this->setters[$attribName], $value, $this),
                 $attributes[$attribName]->dataType,
                 $attributes[$attribName]->nullable
             );
         } else {
-            $this->members[$attribName] = static::cast(
+            $this->members[$attribName] = self::cast(
                 $value,
                 $attributes[$attribName]->dataType,
                 $attributes[$attribName]->nullable

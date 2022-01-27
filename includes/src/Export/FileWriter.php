@@ -13,24 +13,24 @@ use JTL\Smarty\ExportSmarty;
 class FileWriter implements ExportWriterInterface
 {
     /**
-     * @var ExportSmarty
+     * @var ExportSmarty|null
      */
-    private $smarty;
+    private ?ExportSmarty $smarty;
 
     /**
      * @var Model
      */
-    private $model;
+    private Model $model;
 
     /**
      * @var array
      */
-    private $config;
+    private array $config;
 
     /**
      * @var string
      */
-    private $tmpFileName;
+    private string $tmpFileName;
 
     /**
      * @var resource

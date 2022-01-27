@@ -6,10 +6,10 @@
 {/if}
 <div id="content">
     <div id="testResultsModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
+        <div class="modal-dialog" style="max-width: 90%">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 class="modal-title">{__('danger')}!</h2>
+                    <h2 class="modal-title">{__('Preview')}</h2>
                     <button type="button" class="close" data-dismiss="modal">
                         <i class="fal fa-times"></i>
                     </button>
@@ -218,19 +218,24 @@
         </div>
         <div class="save-wrapper">
             <div class="row">
-                <div class="ml-auto col-sm-4 col-xl-auto">
+                <div class="ml-auto col-sm-3 col-xl-auto">
                     <a class="btn btn-outline-primary btn-block" href="exportformate.php">
                         {__('cancelWithIcon')}
                     </a>
                 </div>
                 {if $exportID > 0}
-                    <div class="col-sm-4 col-xl-auto">
-                        <button class="btn btn-secondary" id="testExport" data-exportid="{$exportID}">Test export</button>
+                    <div class="col-sm-3 col-xl-auto">
+                        <button class="btn btn-success" id="testExport" data-exportid="{$exportID}">{__('Preview')}</button>
                     </div>
                 {/if}
-                <div class="col-sm-4 col-xl-auto">
-                    <button type="submit" class="btn btn-primary btn-block" value="{if $exportID < 1}{__('newExportformatSave')}{else}{__('modifyExportformatSave')}{/if}">
+                <div class="col-sm-3 col-xl-auto">
+                    <button type="submit" class="btn btn-secondary btn-block" value="{if $exportID < 1}{__('newExportformatSave')}{else}{__('modifyExportformatSave')}{/if}">
                         <i class="fa fa-save"></i> {if $exportID < 1}{__('newExportformatSave')}{else}{__('modifyExportformatSave')}{/if}
+                    </button>
+                </div>
+                <div class="col-sm-3 col-xl-auto">
+                    <button type="submit" class="btn btn-primary btn-block" name="saveAndContinue" value="1">
+                        <i class="fa fa-save"></i> {__('saveAndContinue')}
                     </button>
                 </div>
             </div>

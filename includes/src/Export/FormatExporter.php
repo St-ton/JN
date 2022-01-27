@@ -122,7 +122,7 @@ class FormatExporter extends AbstractExporter
             $this->quit();
             $this->logger->notice('Finished export');
 
-            return !$started;
+            return true;
         }
         $cacheHits    = 0;
         $cacheMisses  = 0;

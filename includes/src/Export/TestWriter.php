@@ -1,43 +1,45 @@
 <?php declare(strict_types=1);
 
-
 namespace JTL\Export;
 
 use JTL\Helpers\Text;
-use JTL\Shop;
 use JTL\Smarty\ExportSmarty;
 
+/**
+ * Class TestWriter
+ * @package JTL\Export
+ */
 class TestWriter implements ExportWriterInterface
 {
     /**
      * @var Model
      */
-    private $model;
+    private Model $model;
 
     /**
      * @var array
      */
-    private $config;
+    private array $config;
 
     /**
      * @var ExportSmarty|null
      */
-    private $smarty;
+    private ?ExportSmarty $smarty;
 
     /**
      * @var string
      */
-    private $header = '';
+    private string $header = '';
 
     /**
      * @var string
      */
-    private $footer = '';
+    private string $footer = '';
 
     /**
      * @var string
      */
-    private $content = '';
+    private string $content = '';
 
     /**
      * @inheritdoc

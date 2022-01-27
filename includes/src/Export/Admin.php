@@ -25,22 +25,22 @@ class Admin
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var AlertServiceInterface
      */
-    private $alertService;
+    private AlertServiceInterface $alertService;
 
     /**
      * @var JTLSmarty
      */
-    private $smarty;
+    private JTLSmarty $smarty;
 
     /**
      * @var string
      */
-    private $step = 'overview';
+    private string $step = 'overview';
 
     /**
      * Admin constructor.
@@ -180,6 +180,10 @@ class Admin
                 $this->db->insert('texportformateinstellungen', $ins);
             }
             $this->step = 'overview';
+            if (Request::postInt('saveAndContinue') === 1) {
+                $this->step = 'edit';
+                $this->view();
+            }
         } else {
             $_POST['cContent']   = \str_replace('<tab>', "\t", $_POST['cContent']);
             $_POST['cKopfzeile'] = \str_replace('<tab>', "\t", Request::postVar('cKopfzeile', ''));
@@ -212,28 +216,28 @@ class Admin
 
         if (Request::postInt('kExportformat') > 0) {
             try {
-                $exportformat = Model::load(
+                $model = Model::load(
                     ['id' => Request::postInt('kExportformat')],
                     $this->db,
                     Model::ON_NOTEXISTS_FAIL
                 );
-                /** @var Model $exportformat */
-                $exportformat->setHeader(\str_replace("\t", '<tab>', $exportformat->getHeader()));
-                $exportformat->setContent(Text::htmlentities(\str_replace("\t", '<tab>', $exportformat->getContent())));
-                $exportformat->setFooter(\str_replace("\t", '<tab>', $exportformat->getFooter()));
+                /** @var Model $model */
+                $model->setHeader(\str_replace("\t", '<tab>', $model->getHeader()));
+                $model->setContent(Text::htmlentities(\str_replace("\t", '<tab>', $model->getContent())));
+                $model->setFooter(\str_replace("\t", '<tab>', $model->getFooter()));
             } catch (Exception $e) {
-                $exportformat = null;
+                $model = null;
             }
         } else {
-            $exportformat = Model::newInstance($this->db);
-            $exportformat->setUseCache(1);
+            $model = Model::newInstance($this->db);
+            $model->setUseCache(1);
         }
         $gettext    = Shop::Container()->getGetText();
         $configs    = \getAdminSectionSettings(\CONF_EXPORTFORMATE);
         $efSettings = Shop::Container()->getDB()->selectAll(
             'texportformateinstellungen',
             'kExportformat',
-            (int)($exportformat->kExportformat ?? 0)
+            $model->getId()
         );
         $gettext->localizeConfigs($configs);
 
@@ -251,7 +255,7 @@ class Admin
             }
             $gettext->localizeConfigValues($config, $config->ConfWerte);
         }
-        $this->smarty->assign('Exportformat', $exportformat)
+        $this->smarty->assign('Exportformat', $model)
             ->assign('Conf', $configs);
     }
 

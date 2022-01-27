@@ -18,47 +18,47 @@ abstract class AbstractExporter implements ExporterInterface
     /**
      * @var array
      */
-    protected $config = [];
+    protected array $config = [];
 
     /**
      * @var ExportSmarty
      */
-    protected $smarty;
+    protected ExportSmarty $smarty;
 
     /**
-     * @var QueueEntry
+     * @var QueueEntry|null
      */
-    protected $queue;
+    protected ?QueueEntry $queue;
 
     /**
-     * @var Model
+     * @var Model|null
      */
-    protected $model;
+    protected ?Model $model;
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
      * @var JTLCacheInterface
      */
-    protected $cache;
+    protected JTLCacheInterface $cache;
 
     /**
-     * @var ExportWriterInterface
+     * @var ExportWriterInterface|null
      */
-    protected $writer;
+    protected ?ExportWriterInterface $writer;
 
     /**
      * @var float
      */
-    protected $startedAt;
+    protected float $startedAt;
 
     /**
      * FormatExporter constructor.

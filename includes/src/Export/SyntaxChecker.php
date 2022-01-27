@@ -11,7 +11,6 @@ use JTL\DB\DbInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\ExportSmarty;
-use SmartyException;
 use stdClass;
 
 /**
@@ -27,22 +26,22 @@ class SyntaxChecker
     /**
      * @var ExportSmarty
      */
-    private $smarty;
+    private ExportSmarty $smarty;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @var int
      */
-    public $errorCode = self::SYNTAX_NOT_CHECKED;
+    public int $errorCode = self::SYNTAX_NOT_CHECKED;
 
     /**
      * SyntaxChecker constructor.
@@ -145,7 +144,7 @@ class SyntaxChecker
         try {
             return Shop::Smarty()->assign('exportformat', (object)['nFehlerhaft' => $error])
                 ->fetch('snippets/exportformat_state.tpl');
-        } catch (SmartyException | Exception $e) {
+        } catch (Exception $e) {
             return '';
         }
     }
@@ -292,6 +291,7 @@ class SyntaxChecker
      */
     public static function testExport(int $exportID): stdClass
     {
+        Shop::Container()->getGetText()->loadAdminLocale('pages/exportformate');
         $db = Shop::Container()->getDB();
         try {
             $model = Model::load(['id' => $exportID], $db, Model::ON_NOTEXISTS_FAIL);
@@ -322,7 +322,13 @@ class SyntaxChecker
             true,
             10
         );
-        $nl      = $writer->getNewLine();
+        $nl        = $writer->getNewLine();
+        $separator = ',';
+        if (\mb_strpos($writer->getHeader(), "\t") !== false) {
+            $separator = "\t";
+        } elseif (\mb_strpos($writer->getHeader(), ';') !== false) {
+            $separator = ';';
+        }
         $header  = \array_filter(\mb_split($nl, $writer->getHeader()));
         $content = \array_filter(\mb_split($nl, $writer->getContent()));
         $footer  = \array_filter(\mb_split($nl, $writer->getFooter()));
@@ -333,13 +339,13 @@ class SyntaxChecker
         $res->footer  = [];
 
         foreach ($header as $item) {
-            $res->header[] = \str_getcsv($item);
+            $res->header[] = \str_getcsv($item, $separator);
         }
         foreach ($content as $item) {
-            $res->content[] = \str_getcsv($item);
+            $res->content[] = \str_getcsv($item, $separator);
         }
         foreach ($footer as $item) {
-            $res->footer[] = \str_getcsv($item);
+            $res->footer[] = \str_getcsv($item, $separator);
         }
         $res->html = Shop::Smarty()
             ->assign('header', $res->header)

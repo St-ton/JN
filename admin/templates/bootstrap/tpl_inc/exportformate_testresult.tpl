@@ -16,11 +16,11 @@
                     <tr>
                         {$last = 0}
                         {foreach $item as $i => $ele}
-                            <td>{$ele}{if $i >= $targetLength}<strong>No matching headline!{/if}</td>
+                            <td>{$ele}{if $i >= $targetLength} <strong>{__('Missing headline row')}{/if}</td>
                             {$last = $last+1}
                         {/foreach}
                         {while $last < $targetLength}
-                            <td>Missing ele!</td>
+                            <td><strong>{__('Missing element')}</strong></td>
                             {$last = $last+1}
                         {/while}
                     </tr>
@@ -29,5 +29,5 @@
         </table>
     </div>
 {else}
-    <div class="alert alert-danger">No valid header found</div>
+    <div class="alert alert-danger">{__('No valid header found')}</div>
 {/if}

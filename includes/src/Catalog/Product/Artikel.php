@@ -12,6 +12,7 @@ use JTL\Checkout\Versandart;
 use JTL\Country\Country;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
+use JTL\DB\SqlObject;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Extensions\Config\Configurator;
@@ -2015,22 +2016,20 @@ class Artikel
     {
         $isDefaultLang = LanguageHelper::isDefaultLanguageActive(false, $this->kSprache);
         // Nicht Standardsprache?
-        $propertySQL           = new stdClass();
-        $propValueSQL          = new stdClass();
-        $propertySQL->cSELECT  = '';
-        $propertySQL->cJOIN    = '';
-        $propValueSQL->cSELECT = '';
-        $propValueSQL->cJOIN   = '';
+        $propertySQL  = new SqlObject();
+        $propValueSQL = new SqlObject();
         if ($this->kSprache > 0 && !$isDefaultLang) {
-            $propertySQL->cSELECT = 'teigenschaftsprache.cName AS cName_teigenschaftsprache, ';
-            $propertySQL->cJOIN   = ' LEFT JOIN teigenschaftsprache 
+            $propertySQL->setSelect('teigenschaftsprache.cName AS cName_teigenschaftsprache, ');
+            $propertySQL->setJoin(' LEFT JOIN teigenschaftsprache 
                                             ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
-                                            AND teigenschaftsprache.kSprache = ' . $this->kSprache;
+                                            AND teigenschaftsprache.kSprache = :lid');
+            $propertySQL->addParam(':lid', $this->kSprache);
 
-            $propValueSQL->cSELECT = 'teigenschaftwertsprache.cName AS localizedName, ';
-            $propValueSQL->cJOIN   = ' LEFT JOIN teigenschaftwertsprache 
+            $propValueSQL->setSelect('teigenschaftwertsprache.cName AS localizedName, ');
+            $propValueSQL->setJoin(' LEFT JOIN teigenschaftwertsprache 
                                     ON teigenschaftwertsprache.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                                    AND teigenschaftwertsprache.kSprache = ' . $this->kSprache;
+                                    AND teigenschaftwertsprache.kSprache = :lid');
+            $propValueSQL->addParam(':lid', $this->kSprache);
         }
         // Vater?
         if ($this->nIstVater === 1) {
@@ -2039,9 +2038,9 @@ class Artikel
                     tartikel.cLagerBeachten, tartikel.cLagerKleinerNull, tartikel.cLagerVariation, 
                     teigenschaftkombiwert.kEigenschaft, tartikel.fVPEWert, teigenschaftkombiwert.kEigenschaftKombi, 
                     teigenschaft.kArtikel, teigenschaftkombiwert.kEigenschaftWert, teigenschaft.cName,
-                    teigenschaft.cWaehlbar, teigenschaft.cTyp, teigenschaft.nSort, ' .
-                $propertySQL->cSELECT . ' teigenschaftwert.cName AS cName_teigenschaftwert, ' .
-                $propValueSQL->cSELECT . ' teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff,
+                    teigenschaft.cWaehlbar, teigenschaft.cTyp, teigenschaft.nSort, '
+                    . $propertySQL->getSelect() . ' teigenschaftwert.cName AS cName_teigenschaftwert, '
+                    . $propValueSQL->getSelect() . ' teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff,
                     teigenschaftwert.cArtNr, teigenschaftwert.nSort AS teigenschaftwert_nSort, 
                     teigenschaftwert.fLagerbestand, teigenschaftwert.fPackeinheit,
                     teigenschaftwertpict.kEigenschaftWertPict, teigenschaftwertpict.cPfad, teigenschaftwertpict.cType,
@@ -2061,8 +2060,8 @@ class Artikel
                             ON teigenschaft.kEigenschaft = teigenschaftkombiwert.kEigenschaft
                     LEFT JOIN teigenschaftwert 
                             ON teigenschaftwert.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
-                    ' . $propertySQL->cJOIN . '
-                    ' . $propValueSQL->cJOIN . '
+                    ' . $propertySQL->getJoin() . '
+                    ' . $propValueSQL->getJoin() . '
                     LEFT JOIN teigenschaftsichtbarkeit 
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                         AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
@@ -2078,13 +2077,17 @@ class Artikel
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     GROUP BY teigenschaftkombiwert.kEigenschaftWert
                     ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort, teigenschaftwert.cName',
-                ['cgid' => $customerGroupID, 'pid' => $this->kArtikel]
+                \array_merge(
+                    ['cgid' => $customerGroupID, 'pid' => $this->kArtikel],
+                    $propertySQL->getParams(),
+                    $propValueSQL->getParams()
+                )
             );
 
             $tmpVariationsParent = $this->getDB()->getObjects(
                 'SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
-                    teigenschaft.cTyp, teigenschaft.nSort, ' .
-                $propertySQL->cSELECT . '
+                    teigenschaft.cTyp, teigenschaft.nSort, '
+                    . $propertySQL->getSelect() . '
                     NULL AS kEigenschaftWert, NULL AS cName_teigenschaftwert,
                     NULL AS localizedName, NULL AS fAufpreisNetto,
                     NULL AS fGewichtDiff, NULL AS cArtNr,
@@ -2093,7 +2096,7 @@ class Artikel
                     NULL AS cPfad, NULL AS cType,
                     NULL AS fAufpreisNetto_teigenschaftwertaufpreis
                     FROM teigenschaft
-                    ' . $propertySQL->cJOIN . '
+                    ' . $propertySQL->getJoin() . '
                     LEFT JOIN teigenschaftsichtbarkeit 
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                         AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
@@ -2101,44 +2104,46 @@ class Artikel
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                         AND teigenschaft.cTyp IN (\'FREIFELD\', \'PFLICHT-FREIFELD\')
                         ORDER BY teigenschaft.nSort, teigenschaft.cName',
-                ['pid' => $this->kArtikel, 'cgid' => $customerGroupID]
+                \array_merge(['pid' => $this->kArtikel, 'cgid' => $customerGroupID], $propertySQL->getParams())
             );
 
             $variations = \array_merge($variations, $tmpVariationsParent);
         } elseif ($this->kVaterArtikel > 0) { //child?
-            $scoreJoin   = '';
-            $scoreSelect = '';
+            $score = new SqlObject();
             if (!$exportWorkaround) {
-                $scoreSelect = ', COALESCE(ek.score, 0) nMatched';
-                $scoreJoin   = 'LEFT JOIN (
+                $score->setSelect(', COALESCE(ek.score, 0) nMatched');
+                $score->setJoin('LEFT JOIN (
                     SELECT teigenschaftkombiwert.kEigenschaftKombi,
                     COUNT(teigenschaftkombiwert.kEigenschaftWert) AS score
                     FROM teigenschaftkombiwert
                     INNER JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                     LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE (kEigenschaft, kEigenschaftWert) IN (
                         SELECT kEigenschaft, kEigenschaftWert
                             FROM teigenschaftkombiwert
-                            WHERE kEigenschaftKombi = ' . $this->kEigenschaftKombi . '
+                            WHERE kEigenschaftKombi = :kek
                     ) AND tartikelsichtbarkeit.kArtikel IS NULL
                     GROUP BY teigenschaftkombiwert.kEigenschaftKombi
-                ) ek ON ek.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi';
+                ) ek ON ek.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi');
+                $score->addParam(':cgid', $customerGroupID);
+                $score->addParam(':kek', $this->kEigenschaftKombi);
             }
-            $baseQuery = 'SELECT tartikel.kArtikel AS tartikel_kArtikel,
+            $baseQuery = new SqlObject();
+            $baseQuery->setStatement('SELECT tartikel.kArtikel AS tartikel_kArtikel,
                         tartikel.fLagerbestand AS tartikel_fLagerbestand, tartikel.cLagerBeachten, 
                         tartikel.cLagerKleinerNull, tartikel.cLagerVariation,
                         teigenschaftkombiwert.kEigenschaft, tartikel.fVPEWert, teigenschaftkombiwert.kEigenschaftKombi,
                         teigenschaft.kArtikel, teigenschaftkombiwert.kEigenschaftWert, teigenschaft.cName,
-                        teigenschaft.cWaehlbar, teigenschaft.cTyp, teigenschaft.nSort, ' .
-                $propertySQL->cSELECT . ' teigenschaftwert.cName AS cName_teigenschaftwert, ' .
-                $propValueSQL->cSELECT . ' teigenschaftwert.fAufpreisNetto,
+                        teigenschaft.cWaehlbar, teigenschaft.cTyp, teigenschaft.nSort, '
+                        . $propertySQL->getSelect() . ' teigenschaftwert.cName AS cName_teigenschaftwert, '
+                        . $propValueSQL->getSelect() . ' teigenschaftwert.fAufpreisNetto,
                         teigenschaftwert.fGewichtDiff, teigenschaftwert.cArtNr, 
                         teigenschaftwert.nSort AS teigenschaftwert_nSort, teigenschaftwert.fLagerbestand, 
                         teigenschaftwert.fPackeinheit, teigenschaftwertpict.cType,
                         teigenschaftwertpict.kEigenschaftWertPict, teigenschaftwertpict.cPfad,
-                        teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis' .
-                $scoreSelect . '
+                        teigenschaftwertaufpreis.fAufpreisNetto AS fAufpreisNetto_teigenschaftwertaufpreis'
+                        . $score->getSelect() . '
                     FROM tartikel
                     JOIN teigenschaftkombiwert
                         ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
@@ -2146,23 +2151,31 @@ class Artikel
                         ON teigenschaft.kEigenschaft = teigenschaftkombiwert.kEigenschaft
                     LEFT JOIN teigenschaftwert
                         ON teigenschaftwert.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
-                    ' . $propertySQL->cJOIN . '
-                    ' . $propValueSQL->cJOIN . '
-                    ' . $scoreJoin . '
+                    ' . $propertySQL->getJoin() . '
+                    ' . $propValueSQL->getJoin() . '
+                    ' . $score->getJoin() . '
                     LEFT JOIN teigenschaftsichtbarkeit
                         ON teigenschaftsichtbarkeit.kEigenschaft = teigenschaftkombiwert.kEigenschaft
-                        AND teigenschaftsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
                     LEFT JOIN teigenschaftwertsichtbarkeit
                         ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
-                        AND teigenschaftwertsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                        AND teigenschaftwertsichtbarkeit.kKundengruppe = :cgid
                     LEFT JOIN teigenschaftwertpict
                         ON teigenschaftwertpict.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
                     LEFT JOIN teigenschaftwertaufpreis
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert
-                        AND teigenschaftwertaufpreis.kKundengruppe = ' . $customerGroupID . '
-                    WHERE tartikel.kVaterArtikel = ' . (int)$this->kVaterArtikel . '
+                        AND teigenschaftwertaufpreis.kKundengruppe = :cgid
+                    WHERE tartikel.kVaterArtikel = :ppid
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
-                        AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL';
+                        AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL');
+            $baseQuery->setParams(
+                \array_merge(
+                    [':cgid' => $customerGroupID, ':ppid' => (int)$this->kVaterArtikel],
+                    $propertySQL->getParams(),
+                    $propValueSQL->getParams(),
+                    $score->getParams()
+                )
+            );
             if ($exportWorkaround === false) {
                 /* Workaround for performance-issue in MySQL 5.5 with large varcombis */
                 $allCombinations = $this->getDB()->getObjects(
@@ -2201,27 +2214,29 @@ class Artikel
                     return (empty($cArry) ? '' : $cArry . ', ') . $item->combine;
                 }, '');
                 $variations      = empty($combinations) ? [] : $this->getDB()->getObjects(
-                    $baseQuery .
-                    ' AND (teigenschaftkombiwert.kEigenschaftWert, COALESCE(ek.score, 0)) IN (' .
+                    $baseQuery->getStatement()
+                    . ' AND (teigenschaftkombiwert.kEigenschaftWert, COALESCE(ek.score, 0)) IN (' .
                     $combinations . '
                         )
                         GROUP BY teigenschaftkombiwert.kEigenschaftWert
-                        ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort'
+                        ORDER BY teigenschaft.nSort, teigenschaft.cName, teigenschaftwert.nSort',
+                    $baseQuery->getParams()
                 );
             } else {
                 $variations = $this->getDB()->getObjects(
-                    $baseQuery .
+                    $baseQuery->getStatement() .
                     ' AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                         GROUP BY teigenschaftkombiwert.kEigenschaftWert
                         ORDER BY teigenschaft.nSort, teigenschaft.cName, 
-                        teigenschaftwert.nSort, teigenschaftwert.cName'
+                        teigenschaftwert.nSort, teigenschaftwert.cName',
+                    $baseQuery->getParams()
                 );
             }
 
             $tmpVariationsParent = $this->getDB()->getObjects(
                 'SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
-                    teigenschaft.cTyp, teigenschaft.nSort, ' .
-                $propertySQL->cSELECT . '
+                    teigenschaft.cTyp, teigenschaft.nSort, '
+                    . $propertySQL->getSelect() . '
                     NULL AS kEigenschaftWert, NULL AS cName_teigenschaftwert,
                     NULL AS localizedName, NULL AS fAufpreisNetto, NULL AS fGewichtDiff,
                     NULL AS cArtNr, NULL AS teigenschaftwert_nSort,
@@ -2230,7 +2245,7 @@ class Artikel
                     NULL AS cType,
                     NULL AS fAufpreisNetto_teigenschaftwertaufpreis
                     FROM teigenschaft
-                    ' . $propertySQL->cJOIN . '
+                    ' . $propertySQL->getJoin() . '
                     LEFT JOIN teigenschaftsichtbarkeit 
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                         AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
@@ -2239,7 +2254,10 @@ class Artikel
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL
                         AND teigenschaft.cTyp IN (\'FREIFELD\', \'PFLICHT-FREIFELD\')
                         ORDER BY teigenschaft.nSort, teigenschaft.cName',
-                ['pid' => $this->kArtikel, 'ppid' => $this->kVaterArtikel, 'cgid' => $customerGroupID]
+                \array_merge(
+                    ['pid' => $this->kArtikel, 'ppid' => $this->kVaterArtikel, 'cgid' => $customerGroupID],
+                    $propertySQL->getParams()
+                )
             );
 
             $variations = \array_merge($variations, $tmpVariationsParent);
@@ -2269,9 +2287,9 @@ class Artikel
         } else {
             $variations = $this->getDB()->getObjects(
                 'SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
-                    teigenschaft.cTyp, teigenschaft.nSort, ' . $propertySQL->cSELECT . '
+                    teigenschaft.cTyp, teigenschaft.nSort, ' . $propertySQL->getSelect() . '
                     teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName AS cName_teigenschaftwert, ' .
-                    $propValueSQL->cSELECT . '
+                    $propValueSQL->getSelect() . '
                     teigenschaftwert.fAufpreisNetto, teigenschaftwert.fGewichtDiff, teigenschaftwert.cArtNr, 
                     teigenschaftwert.nSort AS teigenschaftwert_nSort, teigenschaftwert.fLagerbestand, 
                     teigenschaftwert.fPackeinheit, teigenschaftwertpict.kEigenschaftWertPict, 
@@ -2280,8 +2298,8 @@ class Artikel
                     FROM teigenschaft
                     LEFT JOIN teigenschaftwert 
                         ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
-                    ' . $propertySQL->cJOIN . '
-                    ' . $propValueSQL->cJOIN . '
+                    ' . $propertySQL->getJoin() . '
+                    ' . $propValueSQL->getJoin() . '
                     LEFT JOIN teigenschaftsichtbarkeit 
                         ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                         AND teigenschaftsichtbarkeit.kKundengruppe = :cgid
@@ -2298,7 +2316,11 @@ class Artikel
                         AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                     ORDER BY teigenschaft.nSort ASC, teigenschaft.cName, 
                     teigenschaftwert.nSort ASC, teigenschaftwert.cName',
-                ['pid' => $this->kArtikel, 'cgid' => $customerGroupID]
+                \array_merge(
+                    ['pid' => $this->kArtikel, 'cgid' => $customerGroupID],
+                    $propertySQL->getParams(),
+                    $propValueSQL->getParams()
+                )
             );
         }
 
@@ -3024,19 +3046,19 @@ class Artikel
 
     /**
      * @param int $productID
-     * @return stdClass
+     * @return SqlObject
      */
-    private function getLocalizationSQL(int $productID): stdClass
+    private function getLocalizationSQL(int $productID): SqlObject
     {
-        $lang          = new stdClass();
-        $lang->cSELECT = '';
-        $lang->cJOIN   = '';
+        $lang = new SqlObject();
         if ($this->kSprache > 0 && !LanguageHelper::isDefaultLanguageActive()) {
-            $lang->cSELECT = 'tartikelsprache.cName AS cName_spr, tartikelsprache.cBeschreibung AS cBeschreibung_spr,
-                              tartikelsprache.cKurzBeschreibung AS cKurzBeschreibung_spr, ';
-            $lang->cJOIN   = ' LEFT JOIN tartikelsprache
-                                   ON tartikelsprache.kArtikel = ' . $productID . ' 
-                                   AND tartikelsprache.kSprache = ' . $this->kSprache;
+            $lang->setSelect('tartikelsprache.cName AS cName_spr, tartikelsprache.cBeschreibung AS cBeschreibung_spr,
+                              tartikelsprache.cKurzBeschreibung AS cKurzBeschreibung_spr, ');
+            $lang->setJoin(' LEFT JOIN tartikelsprache
+                                   ON tartikelsprache.kArtikel = :pid 
+                                   AND tartikelsprache.kSprache = :lid');
+            $lang->addParam(':pid', $productID);
+            $lang->addParam(':lid', $this->kSprache);
         }
 
         return $lang;
@@ -3240,7 +3262,7 @@ class Artikel
         $this->cCachedCountryCode = $_SESSION['cLieferlandISO'] ?? null;
 
         $productSQL = $this->getProductSQL($productID, $customerGroupID);
-        $tmpProduct = $this->getDB()->getSingleObject($productSQL);
+        $tmpProduct = $this->getDB()->getSingleObject($productSQL->getStatement(), $productSQL->getParams());
         $test       = $this->retryWithoutStockFilter($tmpProduct, $productID, $customerGroupID, $noCache);
         if ($test !== false) {
             return $test;
@@ -3265,12 +3287,12 @@ class Artikel
         // EXPERIMENTAL_MULTILANG_SHOP
         if ($tmpProduct->cSeo === null && \EXPERIMENTAL_MULTILANG_SHOP === true) {
             // redo the query with modified seo join - without language ID
-            $productSQL = \str_replace(
-                $this->getSeoSQL()->cJOIN,
+            $statement  = \str_replace(
+                $this->getSeoSQL()->getJoin(),
                 'LEFT JOIN tseo ON tseo.cKey = \'kArtikel\' AND tseo.kKey = tartikel.kArtikel',
-                $productSQL
+                $productSQL->getStatement()
             );
-            $tmpProduct = $this->getDB()->getSingleObject($productSQL);
+            $tmpProduct = $this->getDB()->getSingleObject($statement, $productSQL->getParams());
         }
         // EXPERIMENTAL_MULTILANG_SHOP END
         if (!isset($tmpProduct->kArtikel)) {
@@ -3510,47 +3532,52 @@ class Artikel
     }
 
     /**
-     * @return stdClass
+     * @return SqlObject
      */
-    private function getSeoSQL(): stdClass
+    private function getSeoSQL(): SqlObject
     {
-        $seoSQL          = new stdClass();
-        $seoSQL->cSELECT = 'tseo.cSeo, ';
-        $seoSQL->cJOIN   = 'LEFT JOIN tseo ON tseo.cKey = \'kArtikel\' AND tseo.kKey = tartikel.kArtikel';
-        $seoSQL->cJOIN  .= ' AND tseo.kSprache = ' . $this->kSprache;
+        $obj = new SqlObject();
+        $obj->setSelect('tseo.cSeo, ');
+        $obj->setJoin('LEFT JOIN tseo ON tseo.cKey = \'kArtikel\' AND tseo.kKey = tartikel.kArtikel
+                            AND tseo.kSprache = :lid');
+        $obj->addParam(':lid', $this->kSprache);
 
-        return $seoSQL;
+        return $obj;
     }
 
     /**
      * @param int $productID
-     * @return string
+     * @return SqlObject
      */
-    private function getBomSQL(int $productID): string
+    private function getBomSQL(int $productID): SqlObject
     {
-        $bom    = $this->getDB()->getSingleObject(
+        $bom = $this->getDB()->getSingleObject(
             'SELECT kStueckliste AS id, fLagerbestand AS stock
                 FROM tartikel
                 WHERE kArtikel = :pid',
             ['pid' => $productID]
         );
-        $bomSQL = ' tartikel.fLagerbestand, ';
+        $obj = new SqlObject();
+        $obj->setStatement(' tartikel.fLagerbestand, ');
         if ($bom === null || empty($bom->id)) {
-            return $bomSQL;
+            return $obj;
         }
         if (!$bom->stock) {
             $bom->stock = 0;
         }
-
-        return 'IF(tartikel.kStueckliste > 0,
+        $obj->setStatement('IF(tartikel.kStueckliste > 0,
                         (SELECT LEAST(IFNULL(FLOOR(MIN(tartikel.fLagerbestand / tstueckliste.fAnzahl)),
-                        9999999), ' . $bom->stock . ') AS fMin
+                        9999999), :stk) AS fMin
                         FROM tartikel
                         JOIN tstueckliste ON tstueckliste.kArtikel = tartikel.kArtikel
-                            AND tstueckliste.kStueckliste = ' . (int)$bom->id . '
+                            AND tstueckliste.kStueckliste = :bid
                             AND tartikel.fLagerbestand > 0
                             AND tartikel.cLagerBeachten  = \'Y\'
-                        WHERE tartikel.cLagerKleinerNull = \'N\'), tartikel.fLagerbestand) AS fLagerbestand,';
+                        WHERE tartikel.cLagerKleinerNull = \'N\'), tartikel.fLagerbestand) AS fLagerbestand,');
+        $obj->addParam('stk', $bom->stock);
+        $obj->addParam('bid', (int)$bom->id);
+
+        return $obj;
     }
 
     /**
@@ -3558,16 +3585,11 @@ class Artikel
      * @param int $customerGroupID
      * @return string
      */
-    private function getProductSQL(int $productID, int $customerGroupID): string
+    private function getProductSQL(int $productID, int $customerGroupID): SqlObject
     {
-        $langID = $this->kSprache;
-
-        $bestsellerMinSales = isset($this->conf['global']['global_bestseller_minanzahl'])
-            ? (float)$this->conf['global']['global_bestseller_minanzahl']
-            : 10;
-        $topratedMinRatings = isset($this->conf['boxen']['boxen_topbewertet_minsterne'])
-            ? (int)$this->conf['boxen']['boxen_topbewertet_minsterne']
-            : 4;
+        $langID             = $this->kSprache;
+        $bestsellerMinSales = (float)($this->conf['global']['global_bestseller_minanzahl'] ?? 10);
+        $topratedMinRatings = (int)($this->conf['boxen']['boxen_topbewertet_minsterne'] ?? 4);
         $localizationSQL    = $this->getLocalizationSQL($productID);
         // Work Around Lagerbestand nicht beachten wenn es sich um ein VariKind handelt
         // Da das Kind geladen werden muss.
@@ -3583,11 +3605,11 @@ class Artikel
         $bomSQL = $this->getBomSQL($productID);
         $seoSQL = $this->getSeoSQL();
 
-        return 'SELECT tartikel.kArtikel, tartikel.kHersteller, tartikel.kLieferstatus, tartikel.kSteuerklasse,
+        $sql = 'SELECT tartikel.kArtikel, tartikel.kHersteller, tartikel.kLieferstatus, tartikel.kSteuerklasse,
                 tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kVersandklasse, tartikel.kEigenschaftKombi,
                 tartikel.kVaterArtikel, tartikel.kStueckliste, tartikel.kWarengruppe,
-                tartikel.cArtNr, tartikel.cName, tartikel.cBeschreibung, tartikel.cAnmerkung, ' . $bomSQL . '
-                tartikel.fMwSt, tartikel.cSeo AS originalSeo,
+                tartikel.cArtNr, tartikel.cName, tartikel.cBeschreibung, tartikel.cAnmerkung, '
+                . $bomSQL->getStatement() . ' tartikel.fMwSt, tartikel.cSeo AS originalSeo,
                 IF (tartikelabnahme.fMindestabnahme IS NOT NULL,
                     tartikelabnahme.fMindestabnahme, tartikel.fMindestbestellmenge) AS fMindestbestellmenge,
                 IF (tartikelabnahme.fIntervall IS NOT NULL,
@@ -3608,8 +3630,8 @@ class Artikel
                 tartikel.nAutomatischeLiefertageberechnung, tartikel.nBearbeitungszeit, me.cCode AS cMasseinheitCode,
                 mes.cName AS cMasseinheitName, gpme.cCode AS cGrundpreisEinheitCode,
                 gpmes.cName AS cGrundpreisEinheitName,
-                ' . $seoSQL->cSELECT . '
-                ' . $localizationSQL->cSELECT . '
+                ' . $seoSQL->getSelect() . '
+                ' . $localizationSQL->getSelect() . '
                 tsonderpreise.fNettoPreis, tartikelext.fDurchschnittsBewertung,
                  tlieferstatus.cName AS cName_tlieferstatus, teinheit.cName AS teinheitcName,
                 tartikelsonderpreis.cAktiv AS cAktivSonderpreis, tartikelsonderpreis.dStart AS dStart_en,
@@ -3617,47 +3639,64 @@ class Artikel
                 tartikelsonderpreis.dEnde AS dEnde_en,
                 DATE_FORMAT(tartikelsonderpreis.dEnde, \'%d.%m.%Y\') AS dEnde_de,
                 tversandklasse.cName AS cVersandklasse,
-                round(tbestseller.fAnzahl) >= ' . $bestsellerMinSales . ' AS bIsBestseller,
-                round(tartikelext.fDurchschnittsBewertung) >= ' . $topratedMinRatings . ' AS bIsTopBewertet
+                round(tbestseller.fAnzahl) >= :bsms AS bIsBestseller,
+                round(tartikelext.fDurchschnittsBewertung) >= :trmr AS bIsTopBewertet
                 FROM tartikel
                 LEFT JOIN tartikelabnahme
                     ON tartikel.kArtikel = tartikelabnahme.kArtikel
-                    AND tartikelabnahme.kKundengruppe = ' . $customerGroupID . '
+                    AND tartikelabnahme.kKundengruppe = :cgid
                 LEFT JOIN tartikelsonderpreis
                     ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
                     AND tartikelsonderpreis.cAktiv = \'Y\'
                     AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
                 LEFT JOIN tsonderpreise ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                    AND tsonderpreise.kKundengruppe = ' . $customerGroupID . '
-                ' . $seoSQL->cJOIN . '
-                ' . $localizationSQL->cJOIN . '
+                    AND tsonderpreise.kKundengruppe = :cgid
+                ' . $seoSQL->getJoin() . '
+                ' . $localizationSQL->getJoin() . '
                 LEFT JOIN tbestseller
                 ON tbestseller.kArtikel = tartikel.kArtikel
                 LEFT JOIN tartikelext
                     ON tartikelext.kArtikel = tartikel.kArtikel
                 LEFT JOIN tlieferstatus
                     ON tlieferstatus.kLieferstatus = tartikel.kLieferstatus
-                    AND tlieferstatus.kSprache = ' . $langID . '
+                    AND tlieferstatus.kSprache = :lid
                 LEFT JOIN teinheit
                     ON teinheit.kEinheit = tartikel.kEinheit
-                    AND teinheit.kSprache = ' . $langID . '
+                    AND teinheit.kSprache = :lid
                 LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                    AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 LEFT JOIN tversandklasse
                     ON tversandklasse.kVersandklasse = tartikel.kVersandklasse
                 LEFT JOIN tmasseinheit me ON me.kMassEinheit = tartikel.kMassEinheit
                 LEFT JOIN tmasseinheitsprache mes
                     ON mes.kMassEinheit = me.kMassEinheit
-                    AND mes.kSprache = ' . $langID . '
+                    AND mes.kSprache = :lid
                 LEFT JOIN tmasseinheit gpme
                     ON gpme.kMassEinheit = tartikel.kGrundpreisEinheit
                 LEFT JOIN tmasseinheitsprache gpmes
                     ON gpmes.kMassEinheit = gpme.kMassEinheit
-                    AND gpmes.kSprache = ' . $langID . '
-                WHERE tartikel.kArtikel = ' . $productID . '
-                    ' . $visibilitySQL . '
-                    ' . $stockLevelSQL;
+                    AND gpmes.kSprache = :lid
+                WHERE tartikel.kArtikel = :pid'
+                . $visibilitySQL . ' ' . $stockLevelSQL;
+
+        $obj = new SqlObject();
+        $obj->setStatement($sql);
+        $params = [
+            ':lid'  => $langID,
+            ':cgid' => $customerGroupID,
+            ':pid'  => $productID,
+            ':bsms' => $bestsellerMinSales,
+            ':trmr' => $topratedMinRatings
+        ];
+        $obj->setParams(\array_merge(
+            $params,
+            $bomSQL->getParams(),
+            $seoSQL->getParams(),
+            $localizationSQL->getParams()
+        ));
+
+        return $obj;
     }
 
     /**
@@ -3938,9 +3977,7 @@ class Artikel
      */
     private function getCategories(int $productID, int $customerGroupID): array
     {
-        return \array_map(static function ($e) {
-            return (int)$e->kKategorie;
-        }, $this->getDB()->getObjects(
+        return $this->getDB()->getInts(
             'SELECT tkategorieartikel.kKategorie
                 FROM tkategorieartikel
                 LEFT JOIN tkategoriesichtbarkeit
@@ -3951,8 +3988,9 @@ class Artikel
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                     AND tkategorieartikel.kKategorie > 0
                     AND tkategorieartikel.kArtikel = :pid',
+            'kKategorie',
             ['cgid' => $customerGroupID, 'pid' => $productID]
-        ));
+        );
     }
 
     /**

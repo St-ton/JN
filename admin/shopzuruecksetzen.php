@@ -106,8 +106,8 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
 
                 // Shopinhalte
                 case 'news':
-                    foreach ($db->getObjects('SELECT kNews FROM tnews') as $i) {
-                        NewsController::deleteImageDir($i->kNews);
+                    foreach ($db->getInts('SELECT kNews FROM tnews', 'kNews') as $newsID) {
+                        NewsController::deleteImageDir($newsID);
                     }
                     $db->query('TRUNCATE tnews');
                     $db->delete('trevisions', 'type', 'news');

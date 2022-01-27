@@ -68,13 +68,13 @@ class Search
     private function getSqlObject(string $query): SqlObject
     {
         $sql      = new SqlObject();
-        $where    = "(ec.cModulId IS NULL OR ec.cModulId = '') AND ec.kEinstellungenSektion != " . \CONF_EXPORTFORMATE . ' ';
+        $where    = "(ec.cModulId IS NULL OR ec.cModulId = '')
+            AND ec.kEinstellungenSektion != " . \CONF_EXPORTFORMATE . ' ';
         $idList   = \explode(',', $query);
         $isIdList = count($idList) > 1;
         if ($isIdList) {
             foreach ($idList as $i => $item) {
                 $idList[$i] = (int)$item;
-
                 if ($idList[$i] === 0) {
                     $isIdList = false;
                     break;
@@ -137,34 +137,31 @@ class Search
      */
     public function getResultSections(string $query): array
     {
-        $sqlObject  = $this->getSqlObject($query);
-        $sql        = 'SELECT ec.*, e.cWert AS currentValue, ed.cWert AS defaultValue
+        $data       = $this->db->getCollection('SELECT ec.*, e.cWert AS currentValue, ed.cWert AS defaultValue
             FROM teinstellungenconf AS ec
             LEFT JOIN teinstellungen AS e
               ON e.cName = ec.cWertName
             LEFT JOIN teinstellungen_default AS ed
               ON ed.cName = ec.cWertName
-            WHERE ' . $sqlObject->getWhere() . '
-            ORDER BY ec.kEinstellungenSektion, nSort';
-        $data       = $this->db->getCollection($sql);
+            WHERE ' . $this->getSqlObject($query)->getWhere() . '
+            ORDER BY ec.kEinstellungenSektion, nSort');
         $sectionIDs = \array_unique(\array_map('\intval', $data->pluck('kEinstellungenSektion')->toArray()));
         $configIDs  = \array_unique(\array_map('\intval', $data->pluck('kEinstellungenConf')->toArray()));
         $factory    = new SectionFactory();
         $sections   = [];
-        $urlPrefix  = Shop::getAdminURL() . '/';
+        $urlPrefix  = Shop::getAdminURL() . '/einstellungen.php?einstellungen_suchen=1&cSuche=';
         foreach ($sectionIDs as $sectionID) {
             $section = $factory->getSection($sectionID, $this->manager);
             $section->load();
             foreach ($section->getSubsections() as $subsection) {
                 $subsection->setShow(false);
                 foreach ($subsection->getItems() as $idx => $item) {
-                    $item->setShowDefault(0);
                     $menuEntry = $this->mapConfigSectionToMenuEntry($sectionID, $item->getValueName());
                     $isSpecial = $menuEntry->specialSetting ?? false;
                     if ($isSpecial !== false) {
                         $url = ($menuEntry->url ?? '') . ($menuEntry->settingsAnchor ?? '');
                     } else {
-                        $url = $urlPrefix . 'einstellungen.php?cSuche=' . $item->getID() . '&einstellungen_suchen=1';
+                        $url = $urlPrefix . $item->getID();
                     }
                     $item->setURL($url);
                     if (\in_array($item->getID(), $configIDs, true)) {

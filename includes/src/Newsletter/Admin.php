@@ -1247,8 +1247,8 @@ final class Admin
         foreach (\array_map('\intval', $templateIDs) as $tplID) {
             $tpl = $this->db->getSingleObject(
                 'SELECT kNewsletterVorlage, kNewslettervorlageStd
-                        FROM tnewslettervorlage
-                        WHERE kNewsletterVorlage = :tplID',
+                    FROM tnewslettervorlage
+                    WHERE kNewsletterVorlage = :tplID',
                 ['tplID' => $tplID]
             );
             if ($tpl === null || $tpl->kNewsletterVorlage <= 0) {
@@ -1257,11 +1257,11 @@ final class Admin
             if (($tpl->kNewslettervorlageStd ?? 0) > 0) {
                 $this->db->queryPrepared(
                     'DELETE tnewslettervorlage, tnewslettervorlagestdvarinhalt
-                            FROM tnewslettervorlage
-                            LEFT JOIN tnewslettervorlagestdvarinhalt
-                                ON tnewslettervorlagestdvarinhalt.kNewslettervorlage =
-                                   tnewslettervorlage.kNewsletterVorlage
-                            WHERE tnewslettervorlage.kNewsletterVorlage = :tplID',
+                        FROM tnewslettervorlage
+                        LEFT JOIN tnewslettervorlagestdvarinhalt
+                            ON tnewslettervorlagestdvarinhalt.kNewslettervorlage =
+                               tnewslettervorlage.kNewsletterVorlage
+                        WHERE tnewslettervorlage.kNewsletterVorlage = :tplID',
                     ['tplID' => $tplID]
                 );
             } else {

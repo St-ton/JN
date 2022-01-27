@@ -11,7 +11,6 @@ use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
 use JTL\Shop;
 use stdClass;
-use function Functional\map;
 
 /**
  * Class Item
@@ -278,16 +277,15 @@ class Item extends AbstractItem
      */
     public function getCategoryIDs(): array
     {
-        return map($this->db->getObjects(
+        return $this->db->getInts(
             'SELECT DISTINCT(tnewskategorie.kNewsKategorie)
                 FROM tnewskategorie 
                 JOIN tnewskategorienews
                     ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
                 WHERE tnewskategorienews.kNews = :nid',
+            'kNewsKategorie',
             ['nid' => $this->id]
-        ), static function ($e) {
-            return (int)$e->kNewsKategorie;
-        });
+        );
     }
 
     /**

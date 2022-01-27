@@ -252,11 +252,12 @@ class MigrationManager
      */
     public function getCurrentId(): int
     {
-        return (int)($this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT kMigration 
                 FROM tmigration 
-                ORDER BY kMigration DESC'
-        )->kMigration ?? 0);
+                ORDER BY kMigration DESC',
+            'kMigration'
+        ) ?? 0;
     }
 
     /**

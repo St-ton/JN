@@ -667,12 +667,14 @@ class IOMethods
             $itemQuantities,
             true
         );
-        $net                = Frontend::getCustomerGroup()->getIsMerchant();
-
+        if ($config === null) {
+            return $response;
+        }
+        $net                   = Frontend::getCustomerGroup()->getIsMerchant();
         $options               = Artikel::getDefaultOptions();
         $options->nVariationen = 1;
         $product->fuelleArtikel($productID, $options, $customerGroupID, $languageID);
-        $fVKNetto                      = $product->gibPreis($amount, [], Frontend::getCustomerGroup()->getID());
+        $fVKNetto                      = $product->gibPreis($amount, [], $customerGroupID);
         $fVK                           = [
             Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$product->kSteuerklasse]),
             $fVKNetto
@@ -902,6 +904,7 @@ class IOMethods
         );
         $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');
 
+        $currency     = Frontend::getCurrency();
         $isNet        = Frontend::getCustomerGroup()->getIsMerchant();
         $fVKNetto     = $product->gibPreis($amount, $valueIDs, Frontend::getCustomerGroup()->getID());
         $fVK          = [
@@ -909,8 +912,8 @@ class IOMethods
             $fVKNetto
         ];
         $cVKLocalized = [
-            0 => Preise::getLocalizedPriceString($fVK[0]),
-            1 => Preise::getLocalizedPriceString($fVK[1])
+            0 => Preise::getLocalizedPriceString($fVK[0], $currency),
+            1 => Preise::getLocalizedPriceString($fVK[1], $currency)
         ];
         $cPriceLabel  = '';
         if (isset($product->nVariationAnzahl) && $product->nVariationAnzahl > 0) {
@@ -951,8 +954,8 @@ class IOMethods
                     $_SESSION['Steuersatz'][$product->kSteuerklasse]
                 );
                 $fStaffelVK[1][$nAnzahl] = $fStaffelVKNetto;
-                $cStaffelVK[0][$nAnzahl] = Preise::getLocalizedPriceString($fStaffelVK[0][$nAnzahl]);
-                $cStaffelVK[1][$nAnzahl] = Preise::getLocalizedPriceString($fStaffelVK[1][$nAnzahl]);
+                $cStaffelVK[0][$nAnzahl] = Preise::getLocalizedPriceString($fStaffelVK[0][$nAnzahl], $currency);
+                $cStaffelVK[1][$nAnzahl] = Preise::getLocalizedPriceString($fStaffelVK[1][$nAnzahl], $currency);
             }
 
             $ioResponse->callEvoProductFunction(

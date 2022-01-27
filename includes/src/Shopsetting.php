@@ -251,10 +251,7 @@ final class Shopsetting implements ArrayAccess
     public function getSettings($sections): array
     {
         $ret = [];
-        if (!\is_array($sections)) {
-            $sections = (array)$sections;
-        }
-        foreach ($sections as $section) {
+        foreach ((array)$sections as $section) {
             $mapping = self::mapSettingName($section);
             if ($mapping !== null) {
                 $ret[$mapping] = $this[$mapping];

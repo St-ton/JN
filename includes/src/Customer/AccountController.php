@@ -285,6 +285,7 @@ class AccountController
         if ($step === 'rechnungsdaten') {
             $this->getCustomerFields();
         }
+        $currency = Frontend::getCurrency();
         if ($step === 'bewertungen') {
             $currency = Frontend::getCurrency();
             $ratings  = $this->db->getCollection(
@@ -299,7 +300,7 @@ class AccountController
                 $item->fGuthabenBonusLocalized = Preise::getLocalizedPriceString($item->fGuthabenBonus, $currency);
             });
         }
-        $customer->cGuthabenLocalized = Preise::getLocalizedPriceString($customer->fGuthaben);
+        $customer->cGuthabenLocalized = Preise::getLocalizedPriceString($customer->fGuthaben, $currency);
         $this->smarty->assign('Kunde', $customer)
             ->assign('customerAttributes', $customer->getCustomerAttributes())
             ->assign('bewertungen', $ratings)

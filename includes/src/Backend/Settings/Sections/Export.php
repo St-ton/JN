@@ -8,7 +8,7 @@ use stdClass;
 
 /**
  * Class Export
- * @package JTL\Backend\Settings
+ * @package JTL\Backend\Settings\Sections
  */
 class Export extends Base
 {
@@ -43,6 +43,7 @@ class Export extends Base
      */
     public function update(array $data, bool $filter = true, array $tags = [\CACHING_GROUP_OPTION]): array
     {
+        $unfiltered = $data;
         if ($filter === true) {
             $data = Text::filterXSS($data);
         }
@@ -64,17 +65,9 @@ class Export extends Base
             $ins->cWert         = $data[$id];
             $ins->cName         = $id;
             $ins->kExportformat = $exportID;
-            switch ($item->getInputType()) {
-                case 'kommazahl':
-                    $ins->cWert = (float)$ins->cWert;
-                    break;
-                case 'zahl':
-                case 'number':
-                    $ins->cWert = (int)$ins->cWert;
-                    break;
-                case 'text':
-                    $ins->cWert = \mb_substr($ins->cWert, 0, 255);
-                    break;
+            $this->setConfigValue($ins, $item->getInputType(), $data, $unfiltered);
+            if (\is_string($ins->cWert)) {
+                $ins->cWert = \mb_substr($ins->cWert, 0, 255);
             }
             if (!$this->validate($item, $data[$id])) {
                 $this->updateErrors++;

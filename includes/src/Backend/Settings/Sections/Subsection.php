@@ -6,7 +6,7 @@ use JTL\Backend\Settings\Item;
 
 /**
  * Class Subsection
- * @package JTL\Backend\Settings
+ * @package JTL\Backend\Settings\Sections
  */
 class Subsection extends Item
 {

@@ -5,6 +5,7 @@ namespace JTL\Backend\Settings\Sections;
 use JTL\Backend\Settings\Item;
 use JTL\Backend\Settings\Manager;
 use JTL\DB\SqlObject;
+use stdClass;
 
 /**
  * Interface SectionInterface
@@ -46,6 +47,14 @@ interface SectionInterface
      * @return array
      */
     public function update(array $data, bool $filter = true, array $tags = [\CACHING_GROUP_OPTION]): array;
+
+    /**
+     * @param stdClass $object
+     * @param string   $type
+     * @param array    $data
+     * @param array    $unfiltered
+     */
+    public function setConfigValue(stdClass $object, string $type, array $data, array $unfiltered): void;
 
     /**
      * @param string $filter

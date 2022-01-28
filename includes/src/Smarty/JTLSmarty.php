@@ -420,7 +420,7 @@ class JTLSmarty extends BC
                 }
             }
         }
-        $res = $transform ? ('file:' . $resource_cfb_name) : $resource_cfb_name;
+        $res                          = $transform ? ('file:' . $resource_cfb_name) : $resource_cfb_name;
         $this->mapping[$resourceName] = $res;
 
         return $res;

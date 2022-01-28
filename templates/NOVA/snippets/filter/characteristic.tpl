@@ -12,6 +12,7 @@
         <ul class="nav nav-filter-has-image">
     {/if}
     {foreach $Merkmal->getOptions() as $attributeValue}
+        {if $Merkmal->getData('cTyp') === 'BILD'}<li>{/if}
         {$attributeImageURL = null}
         {if ($Merkmal->getData('cTyp') === 'BILD' || $Merkmal->getData('cTyp') === 'BILD-TEXT')}
             {$attributeImageURL = $attributeValue->getImage(\JTL\Media\Image::SIZE_XS)}
@@ -122,6 +123,7 @@
                 {/if}
             {/block}
         {/if}
+    {if $Merkmal->getData('cTyp') === 'BILD'}</li>{/if}
     {/foreach}
     {if !$is_dropdown && $limit != -1 && $Merkmal->getOptions()|count > $limit}
         {block name='snippets-filter-characteristics-more-bottom'}

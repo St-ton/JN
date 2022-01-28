@@ -23,6 +23,7 @@
             {else}
                 {$tooltip = []}
             {/if}
+            {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'B'}<li>{/if}
             {link href="{if !empty($filterOption->getURL())}{$filterOption->getURL()}{else}#{/if}"
                 title="{$filterOption->getName()|escape:'html'}: {$filterOption->getCount()}"
                 data=$tooltip
@@ -56,6 +57,7 @@
                     {/if}
                 </div>
             {/link}
+            {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'B'}</li>{/if}
         {/block}
     {/foreach}
     {if $limit != -1 && $filter->getOptions()|count > $limit}

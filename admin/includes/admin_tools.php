@@ -105,6 +105,7 @@ function saveAdminSettings(
     );
     if (Request::postVar('resetSetting') !== null) {
         $settingManager->resetSetting(Request::postVar('resetSetting'));
+
         return __('successConfigReset');
     }
     $where    = $byName

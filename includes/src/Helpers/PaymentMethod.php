@@ -23,7 +23,7 @@ class PaymentMethod
             return false;
         }
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
-        $conf                         = Shop::getSettings([\CONF_ZAHLUNGSARTEN])['zahlungsarten'];
+        $conf                         = Shop::getSettingSection(\CONF_ZAHLUNGSARTEN);
         $paymentMethod->einstellungen = $conf;
         switch ($paymentMethod->cModulId) {
             case 'za_ueberweisung_jtl':

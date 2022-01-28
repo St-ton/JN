@@ -7,7 +7,7 @@ use stdClass;
 
 /**
  * Class PaymentMethod
- * @package Backend\Settings
+ * @package JTL\Backend\Settings\Sections
  */
 class PaymentMethod extends Base
 {
@@ -24,40 +24,26 @@ class PaymentMethod extends Base
         if ($this->loaded === false) {
             $this->load();
         }
-        foreach ($this->getItems() as $sectionData) {
-            $id = $sectionData->getValueName();
+        foreach ($this->getItems() as $item) {
+            $id = $item->getValueName();
             if (!isset($data[$id])) {
                 continue;
             }
-            $update                        = new stdClass();
-            $update->cWert                 = $data[$id];
-            $update->cName                 = $id;
-            $update->kEinstellungenSektion = \CONF_ZAHLUNGSARTEN;
-            $update->cModulId              = $data['cModulId'];
-
-            switch ($sectionData->getInputType()) {
-                case 'kommazahl':
-                    $update->cWert = (float)\str_replace(',', '.', $update->cWert);
-                    break;
-                case 'zahl':
-                case 'number':
-                    $update->cWert = (int)$update->cWert;
-                    break;
-                case 'text':
-                    $update->cWert = \mb_substr($update->cWert, 0, 255);
-                    break;
-                case 'pass':
-                    $update->cWert = $unfiltered[$id];
-                    break;
-                default:
-                    break;
+            $ins                        = new stdClass();
+            $ins->cWert                 = $data[$id];
+            $ins->cName                 = $id;
+            $ins->kEinstellungenSektion = \CONF_ZAHLUNGSARTEN;
+            $ins->cModulId              = $data['cModulId'];
+            $this->setConfigValue($ins, $item->getInputType(), $data, $unfiltered);
+            if (\is_string($ins->cWert)) {
+                $ins->cWert = \mb_substr($ins->cWert, 0, 255);
             }
             $this->db->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [\CONF_ZAHLUNGSARTEN, $id]
             );
-            $this->db->insert('teinstellungen', $update);
+            $this->db->insert('teinstellungen', $ins);
             $updated[] = ['id' => $id, 'value' => $data[$id]];
         }
 

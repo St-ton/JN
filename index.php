@@ -2,7 +2,6 @@
 
 use JTL\Cart\CartHelper;
 use JTL\Shop;
-use function Functional\flatten;
 
 require __DIR__ . '/includes/globalinclude.php';
 

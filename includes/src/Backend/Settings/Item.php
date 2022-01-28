@@ -7,7 +7,7 @@ use stdClass;
 
 /**
  * Class Item
- * @package Backend\Settings
+ * @package JTL\Backend\Settings
  */
 class Item
 {
@@ -16,17 +16,17 @@ class Item
     /**
      * @var int
      */
-    private $id = 0;
+    private int $id = 0;
 
     /**
      * @var bool
      */
-    private $configurable = false;
+    private bool $configurable = false;
 
     /**
      * @var string|null
      */
-    private $inputType;
+    private ?string $inputType;
 
     /**
      * @var mixed
@@ -36,57 +36,57 @@ class Item
     /**
      * @var string
      */
-    private $name = '';
+    private string $name = '';
 
     /**
      * @var string
      */
-    private $valueName = '';
+    private string $valueName = '';
 
     /**
      * @var string
      */
-    private $description = '';
+    private string $description = '';
 
     /**
      * @var int
      */
-    private $configSectionID = 0;
+    private int $configSectionID = 0;
 
     /**
      * @var int
      */
-    private $showDefault = 0;
+    private int $showDefault = 0;
 
     /**
      * @var int
      */
-    private $sort = 0;
+    private int $sort = 0;
 
     /**
      * @var string|null
      */
-    private $moduleID;
+    private ?string $moduleID;
 
     /**
      * @var int
      */
-    private $moduleNumber = 0;
+    private int $moduleNumber = 0;
 
     /**
      * @var int
      */
-    private $pluginID = 0;
+    private int $pluginID = 0;
 
     /**
      * @var array|null
      */
-    private $values;
+    private ?array $values;
 
     /**
      * @var bool
      */
-    private $highlight = false;
+    private bool $highlight = false;
 
     /**
      * @var mixed
@@ -101,17 +101,17 @@ class Item
     /**
      * @var string|null
      */
-    protected $url;
+    protected ?string $url;
 
     /**
      * @var string|null
      */
-    protected $path;
+    protected ?string $path;
 
     /**
      * @var string[]
      */
-    protected $mapping = [
+    protected array $mapping = [
         'cConf'                 => 'ConfigurableCompat',
         'cInputTyp'             => 'InputType',
         'gesetzterWert'         => 'SetValue',

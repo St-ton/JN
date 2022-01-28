@@ -10,7 +10,7 @@ use JTL\Backend\Settings\Sections\SectionInterface;
 
 /**
  * Class SectionFactory
- * @package Backend\Settings
+ * @package JTL\Backend\Settings
  */
 class SectionFactory
 {

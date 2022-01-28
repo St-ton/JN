@@ -6,19 +6,19 @@ use JTL\Backend\Settings\Item;
 
 /**
  * Class Subsection
- * @package Backend\Settings
+ * @package JTL\Backend\Settings\Sections
  */
 class Subsection extends Item
 {
     /**
      * @var Item[]
      */
-    private $items = [];
+    private array $items = [];
 
     /**
      * @var bool
      */
-    public $show = true;
+    public bool $show = true;
 
     /**
      * @return Item[]

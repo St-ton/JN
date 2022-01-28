@@ -256,7 +256,7 @@ class ComparisonList
      */
     public function getPrioRows(bool $keysOnly = false, bool $newStandard = true): array
     {
-        $conf = Shop::getSettings([\CONF_VERGLEICHSLISTE])['vergleichsliste'];
+        $conf = Shop::getSettingSection(\CONF_VERGLEICHSLISTE);
         $rows = [
             'vergleichsliste_artikelnummer',
             'vergleichsliste_hersteller',

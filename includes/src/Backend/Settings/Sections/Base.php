@@ -16,7 +16,7 @@ use function Functional\flatten;
 
 /**
  * Class Base
- * @package Backend\Settings
+ * @package JTL\Backend\Settings\Sections
  */
 class Base implements SectionInterface
 {
@@ -25,97 +25,97 @@ class Base implements SectionInterface
     /**
      * @var bool
      */
-    protected $hasSectionMarkup = false;
+    protected bool $hasSectionMarkup = false;
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var JTLSmarty
      */
-    protected $smarty;
+    protected JTLSmarty $smarty;
 
     /**
      * @var int
      */
-    protected $id;
+    protected int $id;
 
     /**
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * @var string
      */
-    protected $sectionMarkup = '';
+    protected string $sectionMarkup = '';
 
     /**
      * @var int
      */
-    protected $menuID = 0;
+    protected int $menuID = 0;
 
     /**
      * @var int
      */
-    protected $sortID = 0;
+    protected int $sortID = 0;
 
     /**
      * @var int
      */
-    protected $configCount = 0;
+    protected int $configCount = 0;
 
     /**
      * @var string
      */
-    protected $permission;
+    protected string $permission;
 
     /**
      * @var array
      */
-    protected $configData;
+    protected array $configData;
 
     /**
      * @var Manager
      */
-    protected $manager;
+    protected Manager $manager;
 
     /**
      * @var GetText
      */
-    protected $getText;
+    protected GetText $getText;
 
     /**
      * @var Item[]
      */
-    protected $items = [];
+    protected array $items = [];
 
     /**
      * @var Subsection[]
      */
-    protected $subsections = [];
+    protected array $subsections = [];
 
     /**
      * @var string|null
      */
-    protected $url;
+    protected ?string $url;
 
     /**
      * @var int
      */
-    protected $updateErrors = 0;
+    protected int $updateErrors = 0;
 
     /**
      * @var bool
      */
-    protected $loaded = false;
+    protected bool $loaded = false;
 
     /**
      * @var string[]
      */
-    protected $mapping = [
+    protected array $mapping = [
         'cName'                 => 'Name',
         'kEinstellungenSektion' => 'SectionID',
         'nSort'                 => 'Sort',
@@ -291,23 +291,7 @@ class Base implements SectionInterface
             $value->cWert                 = $data[$id];
             $value->cName                 = $id;
             $value->kEinstellungenSektion = $item->getConfigSectionID();
-            switch ($item->getInputType()) {
-                case 'kommazahl':
-                    $value->cWert = (float)\str_replace(',', '.', $value->cWert);
-                    break;
-                case 'zahl':
-                case 'number':
-                    $value->cWert = (int)$value->cWert;
-                    break;
-                case 'text':
-                    $value->cWert = \mb_substr($value->cWert, 0, 255);
-                    break;
-                case 'pass':
-                    $value->cWert = $unfiltered[$id];
-                    break;
-                default:
-                    break;
-            }
+            $this->setConfigValue($value, $item->getInputType(), $data, $unfiltered);
             if (!$this->validate($item, $data[$id])) {
                 $this->updateErrors++;
                 continue;
@@ -337,6 +321,30 @@ class Base implements SectionInterface
         }
 
         return $updated;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setConfigValue(stdClass $object, string $type, array $data, array $unfiltered): void
+    {
+        switch ($type) {
+            case 'kommazahl':
+                $object->cWert = (float)\str_replace(',', '.', $object->cWert);
+                break;
+            case 'zahl':
+            case 'number':
+                $object->cWert = (int)$object->cWert;
+                break;
+            case 'text':
+                $object->cWert = \mb_substr($object->cWert, 0, 255);
+                break;
+            case 'pass':
+                $object->cWert = $unfiltered[$object->cName];
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -585,5 +593,16 @@ class Base implements SectionInterface
     public function setUpdateErrors(int $updateErrors): void
     {
         $this->updateErrors = $updateErrors;
+    }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo(): array
+    {
+        $data = \get_object_vars($this);
+        unset($data['smarty'], $data['db'], $data['getText'], $data['manager']);
+
+        return $data;
     }
 }

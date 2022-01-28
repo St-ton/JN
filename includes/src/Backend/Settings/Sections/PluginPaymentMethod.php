@@ -9,7 +9,7 @@ use stdClass;
 
 /**
  * Class PluginPaymentMethod
- * @package Backend\Settings
+ * @package JTL\Backend\Settings\Sections
  */
 class PluginPaymentMethod extends Base
 {
@@ -101,39 +101,25 @@ class PluginPaymentMethod extends Base
         if ($this->loaded === false) {
             $this->load();
         }
-        foreach ($this->getItems() as $sectionData) {
-            $id = $sectionData->getValueName();
+        foreach ($this->getItems() as $item) {
+            $id = $item->getValueName();
             if (!isset($data[$id])) {
                 continue;
             }
-            $aktWert          = new stdClass();
-            $aktWert->kPlugin = $kPlugin;
-            $aktWert->cName   = $id;
-            $aktWert->cWert   = $data[$id];
-
-            switch ($sectionData->getInputType()) {
-                case 'kommazahl':
-                    $aktWert->cWert = (float)\str_replace(',', '.', $aktWert->cWert);
-                    break;
-                case 'zahl':
-                case 'number':
-                    $aktWert->cWert = (int)$aktWert->cWert;
-                    break;
-                case 'text':
-                    $aktWert->cWert = \mb_substr($aktWert->cWert, 0, 255);
-                    break;
-                case 'pass':
-                    $aktWert->cWert = $unfiltered[$id];
-                    break;
-                default:
-                    break;
+            $ins          = new stdClass();
+            $ins->kPlugin = $kPlugin;
+            $ins->cName   = $id;
+            $ins->cWert   = $data[$id];
+            $this->setConfigValue($ins, $item->getInputType(), $data, $unfiltered);
+            if (\is_string($ins->cWert)) {
+                $ins->cWert = \mb_substr($ins->cWert, 0, 255);
             }
             $this->db->delete(
                 'tplugineinstellungen',
                 ['kPlugin', 'cName'],
                 [$kPlugin, $id]
             );
-            $this->db->insert('tplugineinstellungen', $aktWert);
+            $this->db->insert('tplugineinstellungen', $ins);
             $updated[] = ['id' => $id, 'value' => $data[$id]];
         }
 

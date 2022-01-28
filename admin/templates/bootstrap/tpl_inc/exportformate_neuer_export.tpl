@@ -167,7 +167,7 @@
                 <hr class="mb-n3">
             </div>
             <div class="card-body">
-                {foreach $Conf as $cnf}
+                {foreach $settings as $cnf}
                     {if $cnf->isConfigurable()}
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->getValueName()}">{$cnf->getName()}:</label>
@@ -182,14 +182,14 @@
                                     <input class="form-control" type="text" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}" tabindex="3" />
                                 {/if}
                             </div>
-                            {if $cnf->cBeschreibung}
+                            {if $cnf->getDescription()}
                                 <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                                    {getHelpDesc cDesc=$cnf->cBeschreibung}
+                                    {getHelpDesc cDesc=$cnf->getDescription()}
                                 </div>
                             {/if}
                         </div>
                     {else}
-                        <h3 style="text-align:center;">{$cnf->cName}</h3>
+                        <h3 style="text-align:center;">{$cnf->getName()}</h3>
                     {/if}
                 {/foreach}
             </div>

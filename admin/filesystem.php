@@ -26,8 +26,7 @@ if (!empty($_POST) && Form::validateToken()) {
 
     if (isset($postData['test'])) {
         try {
-            $config  = Shop::getSettings([CONF_FS])['fs'];
-            $factory = new AdapterFactory($config);
+            $factory = new AdapterFactory(Shop::getSettingSection(CONF_FS));
             $factory->setFtpConfig([
                 'ftp_host'     => $postData['ftp_hostname'],
                 'ftp_port'     => (int)($postData['ftp_port'] ?? 21),

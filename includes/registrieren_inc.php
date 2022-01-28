@@ -27,7 +27,7 @@ function kundeSpeichern(array $post)
            $knd;
 
     unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
-    $conf = Shop::getSettings([CONF_GLOBAL]);
+    $conf = Shop::getSettingValue(CONF_GLOBAL, 'global_kundenkonto_aktiv');
     $cart = Frontend::getCart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
@@ -98,9 +98,7 @@ function kundeSpeichern(array $post)
             $knd->kSprache          = Shop::getLanguageID();
             $knd->cAbgeholt         = 'N';
             $knd->cSperre           = 'N';
-            $knd->cAktiv            = $conf['global']['global_kundenkonto_aktiv'] === 'A'
-                ? 'N'
-                : 'Y';
+            $knd->cAktiv            = $conf === 'A' ? 'N' : 'Y';
             $cPasswortKlartext      = $knd->cPasswort;
             $knd->cPasswort         = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
             $knd->dErstellt         = 'NOW()';
@@ -126,7 +124,7 @@ function kundeSpeichern(array $post)
             // Insert Kundenattribute
             $customerAttributes->setCustomerID((int)$knd->kKunde);
             $customerAttributes->save();
-            if ($conf['global']['global_kundenkonto_aktiv'] !== 'A') {
+            if ($conf !== 'A') {
                 $_SESSION['Kunde'] = new Customer($knd->kKunde);
                 $_SESSION['Kunde']->getCustomerAttributes()->load($knd->kKunde);
             } else {
@@ -146,7 +144,7 @@ function kundeSpeichern(array $post)
         if (isset($post['ajaxcheckout_return']) && (int)$post['ajaxcheckout_return'] === 1) {
             return 1;
         }
-        if ($conf['global']['global_kundenkonto_aktiv'] !== 'A') {
+        if ($conf !== 'A') {
             //weiterleitung zu mein Konto
             header('Location: ' . Shop::Container()->getLinkService()
                                       ->getStaticRoute('jtl.php', true) . '?reg=1', true, 303);

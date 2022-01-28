@@ -30,18 +30,18 @@
                             <td class="text-center">
                                 <div class="input-group form-counter min-w-sm">
                                     {$optIdx = 'bilder_'|cat:$idx|cat:'_'|cat:$size|cat:'_breite'}
-                                    {if !isset($oConfig.$optIdx)}
+                                    {if !isset($imgConf.$optIdx)}
                                         {$optIdx = 'bilder_'|cat:$idx|cat:'_breite'}
                                     {/if}
-                                    <input size="4" class="form-control" type="number" name="{$optIdx}" value="{$oConfig.$optIdx}" />
+                                    <input size="4" class="form-control" type="number" name="{$optIdx}" value="{$imgConf.$optIdx}" />
                                 </div>
                                 <span class="cross-sign text-center">x</span>
                                 <div class="input-group form-counter min-w-sm">
                                     {$optIdx = 'bilder_'|cat:$idx|cat:'_'|cat:$size|cat:'_hoehe'}
-                                    {if !isset($oConfig.$optIdx)}
+                                    {if !isset($imgConf.$optIdx)}
                                         {$optIdx = 'bilder_'|cat:$idx|cat:'_hoehe'}
                                     {/if}
-                                    <input size="4" class="form-control" type="number" name="{$optIdx}" value="{$oConfig.$optIdx}" />
+                                    <input size="4" class="form-control" type="number" name="{$optIdx}" value="{$imgConf.$optIdx}" />
                                 </div>
                             </td>
                             {/foreach}

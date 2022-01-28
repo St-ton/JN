@@ -36,7 +36,6 @@
                     </div>
                     <div class="snippets-filter-show-all">
                         {button variant="link"
-                            role="button"
                             data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]}
                             {lang key='showAll'}
                         {/button}

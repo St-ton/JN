@@ -8,7 +8,6 @@
                     variant="link"
                     class="btn-filter-box dropdown-toggle"
                     block=true
-                    role="button"
                     data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}"]
                 }
                     <span class="text-truncate">

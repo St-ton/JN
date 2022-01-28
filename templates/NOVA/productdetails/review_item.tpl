@@ -77,7 +77,7 @@
                                 <span class="subheadline">{$oBewertung->cTitel}</span>
                                 <p itemprop="reviewBody">{$oBewertung->cText|nl2br}</p>
                                 <div class="blockquote-footer">
-                                    <span itemprop="author" itemscope=true itemtype="https://schema.org/Person">
+                                    <span itemprop="author" itemscope itemtype="https://schema.org/Person">
                                         <span itemprop="name">{$oBewertung->cName}</span>
                                     </span>,
                                     <meta itemprop="datePublished" content="{$oBewertung->dDatum}" />{$oBewertung->Datum}

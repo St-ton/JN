@@ -6,7 +6,7 @@
     {$label         = $options[4]}
     {$invalidReason = $options[6]|default:''}
     {$autocomplete  = $options[7]|default:''}
-    {$size          = $options[8]|default:''}
+    {$size          = $options[8]|default:'20'}
     {$isRequired    = !empty($options[5]) && ($options[5] === 'Y' || $options[5] === true)}
     {$inputNameTmp  = $inputName|replace:"register[shipping_address][":""|replace:"]":""}
 

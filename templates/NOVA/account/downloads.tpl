@@ -9,7 +9,6 @@
                     {cardheader id="download-{$oDownload@iteration}"}
                         {button
                             variant="link"
-                            role="button"
                             block=true
                             aria=["expanded"=>"false","controls"=>"collapse-download-{$oDownload@iteration}"]
                             data=["toggle"=> "collapse", "target"=>"#collapse-download-{$oDownload@iteration}"]
@@ -81,7 +80,6 @@
                                             {cardheader id="download-{$oDownload@iteration}"}
                                                 {button
                                                     variant="link"
-                                                    role="button"
                                                     block=true
                                                     aria=["expanded"=>"false","controls"=>"collapse-download-{$oDownload@iteration}"]
                                                     data=["toggle"=> "collapse", "target"=>"#collapse-download-{$oDownload@iteration}"]

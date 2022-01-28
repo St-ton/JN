@@ -14,7 +14,7 @@ class Reset
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * Reset constructor.
@@ -171,8 +171,8 @@ class Reset
 
     private function resetNews(): void
     {
-        foreach ($this->db->getObjects('SELECT kNews FROM tnews') as $i) {
-            Controller::deleteImageDir((int)$i->kNews);
+        foreach ($this->db->getInts('SELECT kNews FROM tnews', 'kNews') as $id) {
+            Controller::deleteImageDir($id);
         }
         $this->db->query('TRUNCATE tnews');
         $this->db->delete('trevisions', 'type', 'news');

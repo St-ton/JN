@@ -3965,9 +3965,7 @@ class Artikel
      */
     private function getCategories(int $productID): array
     {
-        return \array_map(static function ($e) {
-            return (int)$e->kKategorie;
-        }, $this->getDB()->getObjects(
+        return $this->getDB()->getInts(
             'SELECT tkategorieartikel.kKategorie
                 FROM tkategorieartikel
                 LEFT JOIN tkategoriesichtbarkeit
@@ -3978,8 +3976,9 @@ class Artikel
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                     AND tkategorieartikel.kKategorie > 0
                     AND tkategorieartikel.kArtikel = :pid',
+            'kKategorie',
             ['cgid' => $this->kKundengruppe, 'pid' => $productID]
-        ));
+        );
     }
 
     /**

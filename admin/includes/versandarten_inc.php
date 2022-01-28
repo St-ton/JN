@@ -170,13 +170,13 @@ function gibGesetzteKundengruppen(string $customerGroupsString): array
 {
     $activeGroups = [];
     $groups       = Text::parseSSKint($customerGroupsString);
-    $groupData    = Shop::Container()->getDB()->getObjects(
+    $groupData    = Shop::Container()->getDB()->getInts(
         'SELECT kKundengruppe
             FROM tkundengruppe
-            ORDER BY kKundengruppe'
+            ORDER BY kKundengruppe',
+        'kKundengruppe'
     );
-    foreach ($groupData as $group) {
-        $id                = (int)$group->kKundengruppe;
+    foreach ($groupData as $id) {
         $activeGroups[$id] = in_array($id, $groups, true);
     }
     $activeGroups['alle'] = $customerGroupsString === '-1';

@@ -613,9 +613,12 @@ class Preise
      */
     private static function getCurrency($currency): Currency
     {
+        if ($currency instanceof Currency) {
+            return $currency;
+        }
         if ($currency === null || \is_numeric($currency) || \is_bool($currency)) {
             $currency = Frontend::getCurrency();
-        } elseif (\is_object($currency) && ($currency instanceof stdClass)) {
+        } elseif ($currency instanceof stdClass) {
             $loaded = null;
             foreach (Frontend::getCurrencies() as $cur) {
                 if ($cur->getID() === (int)$currency->kWaehrung) {
@@ -626,6 +629,8 @@ class Preise
             $currency = $loaded ?? new Currency((int)$currency->kWaehrung);
         } elseif (\is_string($currency)) {
             $currency = Currency::fromISO($currency);
+        } else {
+            $currency = new Currency();
         }
 
         return $currency;

@@ -667,8 +667,10 @@ class IOMethods
             $itemQuantities,
             true
         );
-        $net                = Frontend::getCustomerGroup()->getIsMerchant();
-
+        if ($config === null) {
+            return $response;
+        }
+        $net                   = Frontend::getCustomerGroup()->getIsMerchant();
         $options               = Artikel::getDefaultOptions();
         $options->nVariationen = 1;
         $product->fuelleArtikel($productID, $options, $customerGroupID, $languageID);
@@ -902,6 +904,7 @@ class IOMethods
         );
         $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');
 
+        $currency     = Frontend::getCurrency();
         $isNet        = Frontend::getCustomerGroup()->getIsMerchant();
         $fVKNetto     = Product::calculatePrice($product->Preise, $product, $amount, $valueIDs);
         $fVK          = [
@@ -909,8 +912,8 @@ class IOMethods
             $fVKNetto
         ];
         $cVKLocalized = [
-            0 => Preise::getLocalizedPriceString($fVK[0]),
-            1 => Preise::getLocalizedPriceString($fVK[1])
+            0 => Preise::getLocalizedPriceString($fVK[0], $currency),
+            1 => Preise::getLocalizedPriceString($fVK[1], $currency)
         ];
         $cPriceLabel  = '';
         if (isset($product->nVariationAnzahl) && $product->nVariationAnzahl > 0) {
@@ -947,8 +950,8 @@ class IOMethods
                     $_SESSION['Steuersatz'][$product->kSteuerklasse]
                 );
                 $fStaffelVK[1][$qty] = $fStaffelVKNetto;
-                $cStaffelVK[0][$qty] = Preise::getLocalizedPriceString($fStaffelVK[0][$qty]);
-                $cStaffelVK[1][$qty] = Preise::getLocalizedPriceString($fStaffelVK[1][$qty]);
+                $cStaffelVK[0][$qty] = Preise::getLocalizedPriceString($fStaffelVK[0][$qty], $currency);
+                $cStaffelVK[1][$qty] = Preise::getLocalizedPriceString($fStaffelVK[1][$qty], $currency);
             }
 
             $ioResponse->callEvoProductFunction(

@@ -12,7 +12,6 @@ use JTL\Link\Link;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
-use function Functional\map;
 
 /**
  * Class Tax
@@ -102,14 +101,15 @@ class Tax
                 $UstBefreiungIGL = true;
             }
         }
-        $taxZones = $db->getObjects(
+        $zones = $db->getInts(
             'SELECT tsteuerzone.kSteuerzone
                 FROM tsteuerzone, tsteuerzoneland
                 WHERE tsteuerzoneland.cISO = :ciso
                     AND tsteuerzoneland.kSteuerzone = tsteuerzone.kSteuerzone',
+            'kSteuerzone',
             ['ciso' => $deliveryCountryCode]
         );
-        if (\count($taxZones) === 0) {
+        if (\count($zones) === 0) {
             // Keine Steuerzone für $deliveryCountryCode hinterlegt - das ist fatal!
             $linkService = Shop::Container()->getLinkService();
             $logoutURL   = $linkService->getStaticRoute('jtl.php') . '?logout=1';
@@ -151,10 +151,7 @@ class Tax
             \header('Location: ' . $redirURL);
             exit;
         }
-        $zones = map($taxZones, static function ($e) {
-            return (int)$e->kSteuerzone;
-        });
-        $qry   = \count($zones) > 0
+        $qry = \count($zones) > 0
             ? 'kSteuerzone IN (' . \implode(',', $zones) . ')'
             : '';
 

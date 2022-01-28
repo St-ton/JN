@@ -10,7 +10,6 @@ use JTL\News\ItemList;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
-use function Functional\map;
 
 /**
  * Class CMS
@@ -86,7 +85,7 @@ class CMS
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
                 $limit = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
             }
-            $newsIDs = Shop::Container()->getDB()->getObjects(
+            $newsIDs = Shop::Container()->getDB()->getInts(
                 "SELECT tnews.kNews
                     FROM tnews
                     JOIN tnewskategorienews 
@@ -107,12 +106,11 @@ class CMS
                             OR FIND_IN_SET(:cgid, REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     GROUP BY tnews.kNews
                     ORDER BY tnews.dGueltigVon DESC" . $limit,
+                'kNews',
                 ['lid' => $langID, 'cgid' => $cgID]
             );
             $items   = new ItemList(Shop::Container()->getDB());
-            $items->createItems(map($newsIDs, static function ($e) {
-                return (int)$e->kNews;
-            }));
+            $items->createItems($newsIDs);
             $items     = $items->getItems();
             $cacheTags = [\CACHING_GROUP_NEWS];
             \executeHook(\HOOK_GET_NEWS, [
@@ -314,12 +312,12 @@ class CMS
             ['cgid' => Frontend::getCustomerGroup()->getID(), 'an' => \FKT_ATTRIBUT_GRATISGESCHENK]
         );
 
+        $currency       = Frontend::getCurrency();
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($tmpGifts as $item) {
             $product = new Artikel($db);
             $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
-            $product->cBestellwert = Preise::getLocalizedPriceString((float)$item->cWert);
-
+            $product->cBestellwert = Preise::getLocalizedPriceString((float)$item->cWert, $currency);
             if ($product->kEigenschaftKombi > 0 || \count($product->Variationen) === 0) {
                 $gifts[] = $product;
             }

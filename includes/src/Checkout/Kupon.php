@@ -234,6 +234,9 @@ class Kupon
      */
     public $Hersteller = [];
 
+    /**
+     * @var DbInterface
+     */
     private $db;
 
     public const TYPE_STANDARD    = 'standard';
@@ -1088,8 +1091,8 @@ class Kupon
         bool $lower = true,
         bool $upper = true,
         bool $numbers = true,
-        $prefix = '',
-        $suffix = ''
+        string $prefix = '',
+        string $suffix = ''
     ): string {
         $lowerString   = $lower ? 'abcdefghijklmnopqrstuvwxyz' : null;
         $upperString   = $upper ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : null;

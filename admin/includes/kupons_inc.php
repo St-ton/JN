@@ -318,7 +318,7 @@ function createCouponFromInput(): Kupon
         $massCreationCoupon->upperCase       = ($massCreationCoupon->cActiv === 1 && !empty($input['upperCase']));
         $massCreationCoupon->numbersHash     = ($massCreationCoupon->cActiv === 1 && !empty($input['numbersHash']));
         $massCreationCoupon->hashLength      = ($massCreationCoupon->cActiv === 1 && !empty($input['hashLength']))
-            ? $input['hashLength']
+            ? (int)$input['hashLength']
             : 4;
         $massCreationCoupon->prefixHash      = ($massCreationCoupon->cActiv === 1 && !empty($input['prefixHash']))
             ? $input['prefixHash']

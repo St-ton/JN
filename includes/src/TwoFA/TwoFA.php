@@ -98,9 +98,7 @@ class TwoFA
         // codes with a length over 6 chars are emergency-codes
         if (\mb_strlen($code) > 6) {
             // try to find this code in the emergency-code-pool
-            $twoFAEmergency = new TwoFAEmergency($this->db);
-
-            return $twoFAEmergency->isValidEmergencyCode($this->userTuple->getID(), $code);
+            return (new TwoFAEmergency($this->db))->isValidEmergencyCode($this->userTuple->getID(), $code);
         }
         return $this->authenticator->verifyCode($this->userTuple->getSecret(), $code);
     }

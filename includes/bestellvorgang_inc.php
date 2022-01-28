@@ -1563,7 +1563,8 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
             ['sid' => $shippingMethodID, 'cgid' => $customerGroupID]
         );
     }
-    $valid = [];
+    $valid    = [];
+    $currency = Frontend::getCurrency();
     foreach ($methods as $method) {
         if (!$method->kZahlungsart) {
             continue;
@@ -1617,7 +1618,7 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
         if ($method->cAufpreisTyp === 'festpreis') {
             $method->fAufpreis *= ((100 + $taxRate) / 100);
         }
-        $method->cPreisLocalized = Preise::getLocalizedPriceString($method->fAufpreis);
+        $method->cPreisLocalized = Preise::getLocalizedPriceString($method->fAufpreis, $currency);
         if ($method->cAufpreisTyp === 'prozent') {
             $method->cPreisLocalized  = ($method->fAufpreis < 0) ? ' ' : '+ ';
             $method->cPreisLocalized .= $method->fAufpreis . '%';

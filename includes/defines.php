@@ -195,6 +195,8 @@ ifndef('FORCE_IMAGEDRIVER_GD', false);
 //with more then n categories, some db fields will only be selected if the corresponding options are active
 ifndef('CATEGORY_FULL_LOAD_LIMIT', 10000);
 ifndef('CATEGORY_FULL_LOAD_MAX_LEVEL', 3);
+//maximum number of categories to use for generating bestseller and top products in a category view
+ifndef('PRODUCT_LIST_CATEGORY_LIMIT', 500);
 //maximum number of entries in category filter, -1 for no limit
 ifndef('CATEGORY_FILTER_ITEM_LIMIT', -1);
 ifndef('PRODUCT_LIST_SHOW_RATINGS', false);

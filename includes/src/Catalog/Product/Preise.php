@@ -175,6 +175,21 @@ class Preise
     public $discountPercentage = 0;
 
     /**
+     * @var array
+     */
+    public $cAufpreisLocalized = [];
+
+    /**
+     * @var array
+     */
+    public $cPreisVPEWertInklAufpreis = [];
+
+    /**
+     * @var array - probably a typo? but it is used in templates..
+     */
+    public $PreisecPreisVPEWertInklAufpreis = [];
+
+    /**
      * Preise constructor.
      * @param int $customerGroupID
      * @param int $productID
@@ -569,13 +584,7 @@ class Preise
         bool $html = true,
         int $decimals = 2
     ): string {
-        if ($currency === null || \is_numeric($currency) || \is_bool($currency)) {
-            $currency = Frontend::getCurrency();
-        } elseif (\is_object($currency) && ($currency instanceof stdClass)) {
-            $currency = new Currency((int)$currency->kWaehrung);
-        } elseif (\is_string($currency)) {
-            $currency = Currency::fromISO($currency);
-        }
+        $currency     = self::getCurrency($currency);
         $localized    = \number_format(
             $price * $currency->getConversionFactor(),
             $decimals,
@@ -596,5 +605,34 @@ class Preise
         return $currency->getForcePlacementBeforeNumber()
             ? ($currencyName . ' ' . $localized)
             : ($localized . ' ' . $currencyName);
+    }
+
+    /**
+     * @param mixed $currency
+     * @return Currency
+     */
+    private static function getCurrency($currency): Currency
+    {
+        if ($currency instanceof Currency) {
+            return $currency;
+        }
+        if ($currency === null || \is_numeric($currency) || \is_bool($currency)) {
+            $currency = Frontend::getCurrency();
+        } elseif ($currency instanceof stdClass) {
+            $loaded = null;
+            foreach (Frontend::getCurrencies() as $cur) {
+                if ($cur->getID() === (int)$currency->kWaehrung) {
+                    $loaded = $cur;
+                    break;
+                }
+            }
+            $currency = $loaded ?? new Currency((int)$currency->kWaehrung);
+        } elseif (\is_string($currency)) {
+            $currency = Currency::fromISO($currency);
+        } else {
+            $currency = new Currency();
+        }
+
+        return $currency;
     }
 }

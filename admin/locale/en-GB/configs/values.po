@@ -1208,6 +1208,12 @@ msgstr "Yes"
 msgid "bestellvorgang_artikelattribute_value(N)"
 msgstr "No"
 
+msgid "bestellvorgang_partlist_value(Y)"
+msgstr "Yes"
+
+msgid "bestellvorgang_partlist_value(N)"
+msgstr "No"
+
 msgid "bestellvorgang_artikelkurzbeschreibung_value(Y)"
 msgstr "Yes"
 
@@ -2473,3 +2479,9 @@ msgstr "Show at second page view (2)"
 
 msgid "consent_manager_show_banner_value(3)"
 msgstr "Show at third page view (3)"
+
+msgid "forgot_password_captcha_value(N)"
+msgstr "No"
+
+msgid "forgot_password_captcha_value(Y)"
+msgstr "Yes"

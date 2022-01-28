@@ -187,9 +187,8 @@ class LegacyPlugin extends PluginBC
     public function mapPluginStatus(int $state): string
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        $mapper = new PluginState();
 
-        return $mapper->map($state);
+        return (new PluginState())->map($state);
     }
 
     /**

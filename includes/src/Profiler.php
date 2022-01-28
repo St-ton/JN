@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
@@ -10,11 +10,6 @@ use stdClass;
  */
 class Profiler
 {
-    /**
-     * @var Profiler
-     */
-    private static $instance;
-
     /**
      * @var bool
      */
@@ -94,14 +89,6 @@ class Profiler
     public static $method;
 
     /**
-     * @return Profiler
-     */
-    public static function getInstance(): self
-    {
-        return self::$instance ?? new self();
-    }
-
-    /**
      * check if one of the profilers is active
      *
      * @return int
@@ -144,9 +131,9 @@ class Profiler
     /**
      * @param string $action
      * @param string $status
-     * @param string $key
+     * @param mixed  $key
      */
-    public static function setCacheProfile($action, $status, $key): void
+    public static function setCacheProfile(string $action, string $status, $key): void
     {
         self::$cacheProfile[$action][$status][] = $key;
     }
@@ -371,7 +358,7 @@ class Profiler
      * @param bool $combined
      * @return array
      */
-    public static function getPluginProfiles($combined = false): array
+    public static function getPluginProfiles(bool $combined = false): array
     {
         return self::getProfile('plugin', $combined);
     }
@@ -380,7 +367,7 @@ class Profiler
      * @param bool $combined
      * @return array
      */
-    public static function getSQLProfiles($combined = false): array
+    public static function getSQLProfiles(bool $combined = false): array
     {
         return self::getProfile('sql', $combined);
     }
@@ -394,8 +381,9 @@ class Profiler
      */
     private static function getProfile(string $type = 'plugin', bool $combined = false): array
     {
+        $db = Shop::Container()->getDB();
         if ($combined === true) {
-            return Shop::Container()->getDB()->getObjects(
+            return $db->getObjects(
                 'SELECT *
                     FROM tprofiler
                     JOIN tprofiler_runs 
@@ -405,7 +393,6 @@ class Profiler
                 ['type' => $type]
             );
         }
-        $db       = Shop::Container()->getDB();
         $profiles = $db->selectAll('tprofiler', 'ptype', $type, '*', 'runID DESC');
         $data     = [];
         foreach ($profiles as $profile) {
@@ -428,7 +415,7 @@ class Profiler
      * @param string $dir
      * @return bool
      */
-    public static function start($flags = -1, $options = [], $dir = '/tmp'): bool
+    public static function start(int $flags = -1, array $options = [], string $dir = '/tmp'): bool
     {
         if (\defined('PROFILE_SHOP') && PROFILE_SHOP === true) {
             self::$flags   = $flags;

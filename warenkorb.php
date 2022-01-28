@@ -13,7 +13,6 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 
 $warning = '';
@@ -112,8 +111,9 @@ if ($valid && isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int
         } else {
             executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
             $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
-                 ->fuegeEin($giftID, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
-            PersistentCart::addToCheck($giftID, 1, [], '', 0, C_WARENKORBPOS_TYP_GRATISGESCHENK);
+                ->fuegeEin($giftID, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
+            PersistentCart::getInstance(Frontend::getCustomer()->getID())
+                ->check($giftID, 1, [], '', 0, C_WARENKORBPOS_TYP_GRATISGESCHENK);
         }
     }
 }

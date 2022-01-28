@@ -226,7 +226,7 @@ final class Installer
             $plugin->kPlugin = 0;
             $loader          = new PluginLoader($this->db, $this->cache);
             if (($languageID = Shop::getLanguageID()) === 0) {
-                $languageID = Shop::Lang()->getDefaultLanguage()->kSprache;
+                $languageID = Shop::Lang()->getDefaultLanguage()->getId();
             }
             $languageCode = Shop::Lang()->getIsoFromLangID($languageID)->cISO;
             $instance     = $loader->loadFromObject($plugin, $languageCode);

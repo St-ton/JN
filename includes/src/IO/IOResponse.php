@@ -4,7 +4,6 @@ namespace JTL\IO;
 
 use Exception;
 use JsonSerializable;
-use JTL\Helpers\Text;
 
 /**
  * Class IOResponse
@@ -42,18 +41,6 @@ class IOResponse implements JsonSerializable
      * @var array
      */
     private $evoProductFunctionCalls = [];
-
-    /**
-     * @param string $target
-     * @param string $attr
-     * @param mixed  $data
-     * @return $this
-     * @deprecated since 5.0.0
-     */
-    public function assign($target, $attr, $data): self
-    {
-        return $this->assignDom($target, $attr, $data);
-    }
 
     /**
      * @param string $target
@@ -104,7 +91,7 @@ class IOResponse implements JsonSerializable
      * @param bool       $groupEnd
      * @return $this
      */
-    public function debugLog($msg, bool $groupHead = false, $groupEnd = false): self
+    public function debugLog($msg, bool $groupHead = false, bool $groupEnd = false): self
     {
         $this->debugLogLines[] = [$msg, $groupHead, $groupEnd];
 
@@ -137,79 +124,12 @@ class IOResponse implements JsonSerializable
             $orange = 'background: #e86c00; color: #fff;';
             $grey   = 'background: #e8e8e8; color: #333;';
 
-            $this->debugLog(['%c CALL %c ' . $name, $orange, $reset], false, false);
-            $this->debugLog(['%c PARAMS %c', $grey, $reset, $args], false, false);
-            $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset], true, false);
+            $this->debugLog(['%c CALL %c ' . $name, $orange, $reset]);
+            $this->debugLog(['%c PARAMS %c', $grey, $reset, $args]);
+            $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset], true);
 
             foreach ($this->generateCallTrace() as $trace) {
-                $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset, $trace], false, false);
-            }
-
-            $this->debugLog(null, false, true);
-            $this->debugLog(null, false, true);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param string $function
-     * @return $this
-     * @deprecated since 5.0.0
-     */
-    public function jsfunc($function): self
-    {
-        $arguments = \func_get_args();
-        \array_shift($arguments);
-
-        $filtered = $arguments;
-
-        \array_walk($filtered, static function (&$value, $key) {
-            switch (\gettype($value)) {
-                case 'array':
-                case 'object':
-                case 'string':
-                    $value = Text::utf8_convert_recursive($value);
-                    $value = \json_encode($value);
-                    break;
-
-                case 'boolean':
-                    $value = $value ? 'true' : 'false';
-                    break;
-
-                case 'integer':
-                case 'double':
-                    // nothing todo
-                    break;
-
-                case 'resource':
-                case 'NULL':
-                case 'unknown type':
-                default:
-                    $value = 'null';
-                    break;
-            }
-        });
-
-        $argumentlist = \implode(', ', $filtered);
-        $syntax       = \sprintf('%s(%s);', $function, $argumentlist);
-
-        $this->script($syntax);
-
-        if (\defined('IO_LOG_CONSOLE') && \IO_LOG_CONSOLE === true) {
-            $reset  = 'background: transparent; color: #000;';
-            $orange = 'background: #e86c00; color: #fff;';
-            $grey   = 'background: #e8e8e8; color: #333;';
-
-            $args = Text::utf8_convert_recursive($arguments);
-
-            $this->debugLog(['%c CALL %c {$function}()', $orange, $reset], false, false);
-            $this->debugLog(['%c METHOD %c {$function}()', $grey, $reset], false, false);
-            $this->debugLog(['%c PARAMS %c', $grey, $reset, $args], false, false);
-            $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset], true, false);
-
-            foreach ($this->generateCallTrace() as $trace) {
-                $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset, $trace], false, false);
+                $this->debugLog(['%c TOGGLE DEBUG TRACE %c', $grey, $reset, $trace]);
             }
 
             $this->debugLog(null, false, true);

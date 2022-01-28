@@ -707,19 +707,19 @@ class Kupon
     {
         $translationList = [];
         $db              = Shop::Container()->getDB();
-        foreach ($_SESSION['Sprachen'] ?? [] as $language) {
-            $localized                        = $db->select(
+        foreach (Frontend::getLanguages() ?? [] as $language) {
+            $localized                             = $db->select(
                 'tkuponsprache',
                 'kKupon',
                 $id,
                 'cISOSprache',
-                $language->cISO,
+                $language->getCode(),
                 null,
                 null,
                 false,
                 'cName'
             );
-            $translationList[$language->cISO] = $localized->cName ?? '';
+            $translationList[$language->getCode()] = $localized->cName ?? '';
         }
 
         return $translationList;
@@ -1055,16 +1055,17 @@ class Kupon
         $special->cName = $coupon->translationList;
         $languageHelper = LanguageHelper::getInstance();
         $oldLangISO     = $languageHelper->getIso();
-        foreach ($_SESSION['Sprachen'] as $language) {
+        foreach (Frontend::getLanguages() as $language) {
+            $code = $language->getCode();
             if ($coupon->cWertTyp === 'prozent'
                 && $coupon->nGanzenWKRabattieren === 0
                 && $coupon->cKuponTyp !== self::TYPE_NEWCUSTOMER
             ) {
-                $languageHelper->setzeSprache($language->cISO);
-                $special->cName[$language->cISO]             .= ' ' . $coupon->fWert . '% ';
-                $special->discountForArticle[$language->cISO] = $languageHelper->get('discountForArticle', 'checkout');
+                $languageHelper->setzeSprache($code);
+                $special->cName[$code]             .= ' ' . $coupon->fWert . '% ';
+                $special->discountForArticle[$code] = $languageHelper->get('discountForArticle', 'checkout');
             } elseif ($coupon->cWertTyp === 'prozent') {
-                $special->cName[$language->cISO] .= ' ' . $coupon->fWert . '%';
+                $special->cName[$code] .= ' ' . $coupon->fWert . '%';
             }
         }
         $languageHelper->setzeSprache($oldLangISO);
@@ -1121,9 +1122,11 @@ class Kupon
     {
         unset($_SESSION['NeukundenKupon'], $_SESSION['NeukundenKuponAngenommen']);
         $cart = Frontend::getCart();
-        $cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_NEUKUNDENKUPON);
-        if ($priceRecalculation) {
-            $cart->setzePositionsPreise();
+        if ($cart->posTypEnthalten(\C_WARENKORBPOS_TYP_NEUKUNDENKUPON)) {
+            $cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_NEUKUNDENKUPON);
+            if ($priceRecalculation) {
+                $cart->setzePositionsPreise();
+            }
         }
     }
 

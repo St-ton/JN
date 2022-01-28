@@ -14,6 +14,7 @@ use JTL\Media\Image;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use JTL\TwoFA\TwoFA;
 use JTL\TwoFA\UserData;
 use stdClass;
 use function Functional\pluck;
@@ -337,7 +338,7 @@ class AdminAccountManager
         }
 
         foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
-            $useVita_ISO = 'useVita_' . $language->cISO;
+            $useVita_ISO = 'useVita_' . $language->getCode();
             if (!empty($attribs[$useVita_ISO])) {
                 $shortText = Text::filterXSS($attribs[$useVita_ISO]);
                 $longtText = $attribs[$useVita_ISO];
@@ -492,20 +493,21 @@ class AdminAccountManager
         }
         if (isset($_POST['save'])) {
             $errors              = [];
+            $language            = Text::filterXSS($_POST['language']);
             $tmpAcc              = new stdClass();
             $tmpAcc->kAdminlogin = Request::postInt('kAdminlogin');
             $tmpAcc->cName       = \htmlspecialchars(\trim($_POST['cName']), \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
             $tmpAcc->cMail       = \htmlspecialchars(\trim($_POST['cMail']), \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
-            $tmpAcc->language    = $_POST['language'];
+            $tmpAcc->language    = \array_key_exists($language, Shop::Container()->getGetText()->getAdminLanguages())
+                ? $language
+                : 'de-DE';
             $tmpAcc->cLogin      = \trim($_POST['cLogin']);
             $tmpAcc->cPass       = \trim($_POST['cPass']);
             $tmpAcc->b2FAauth    = Request::postInt('b2FAauth');
             $tmpAttribs          = $_POST['extAttribs'] ?? [];
-
             if (0 < \mb_strlen($_POST['c2FAsecret'])) {
                 $tmpAcc->c2FAauthSecret = \trim($_POST['c2FAsecret']);
             }
-
             $validUntil = Request::postInt('dGueltigBisAktiv') === 1;
             if ($validUntil) {
                 try {

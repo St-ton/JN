@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Backend\DirManager;
@@ -33,6 +33,7 @@ $getText->loadConfigLocales();
 if (0 < mb_strlen(Request::verifyGPDataString('tab'))) {
     $smarty->assign('tab', Request::verifyGPDataString('tab'));
 }
+
 try {
     $cache = Shop::Container()->getCache();
     $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
@@ -213,8 +214,6 @@ switch ($action) {
                             $value->cWert = 'memcached';
                         } elseif (in_array('apc', $availableMethods, true)) {
                             $value->cWert = 'apc';
-                        } elseif (in_array('xcache', $availableMethods, true)) {
-                            $value->cWert = 'xcache';
                         } elseif (in_array('advancedfile', $availableMethods, true)) {
                             $value->cWert = 'advancedfile';
                         } elseif (in_array('file', $availableMethods, true)) {
@@ -466,14 +465,11 @@ foreach ($allMethods as $name => $state) {
         $nonAvailableMethods[] = $name;
     }
 }
-$cachingGroups = [];
-if ($cache !== null) {
-    $cachingGroups = $cache->getCachingGroups();
-    foreach ($cachingGroups as &$cachingGroup) {
-        $cachingGroup['key_count'] = count($cache->getKeysByTag([constant($cachingGroup['name'])]));
-    }
-    unset($cachingGroup);
+$cachingGroups = $cache->getCachingGroups();
+foreach ($cachingGroups as &$cachingGroup) {
+    $cachingGroup['key_count'] = count($cache->getKeysByTag([constant($cachingGroup['name'])]));
 }
+unset($cachingGroup);
 if (!empty($cache->getError())) {
     $alertHelper->addAlert(Alert::TYPE_ERROR, $cache->getError(), 'errorCache');
 }

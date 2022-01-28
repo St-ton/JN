@@ -5,6 +5,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Linechart;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -28,26 +29,10 @@ function holeAlleKampagnenDefinitionen(): array
 }
 
 /**
- * @param int $id
- * @return stdClass|null
- * @deprecated since 5.1.0
- */
-function holeKampagne(int $id): ?stdClass
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::Container()->getDB()->getSingleObject(
-        "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
-            FROM tkampagne
-            WHERE kKampagne = :cid",
-        ['cid' => $id]
-    );
-}
-
-/**
  * @param int $definitionID
- * @return mixed
+ * @return stdClass|null
  */
-function holeKampagneDef(int $definitionID)
+function holeKampagneDef(int $definitionID): ?stdClass
 {
     return Shop::Container()->getDB()->select('tkampagnedef', 'kKampagneDef', $definitionID);
 }
@@ -57,7 +42,7 @@ function holeKampagneDef(int $definitionID)
  * @param array $definitions
  * @return array
  */
-function holeKampagneGesamtStats($campaigns, $definitions)
+function holeKampagneGesamtStats(array $campaigns, array $definitions): array
 {
     $stats = [];
     $sql   = '';
@@ -124,7 +109,7 @@ function holeKampagneGesamtStats($campaigns, $definitions)
  * @param int $b
  * @return int
  */
-function kampagneSortDESC($a, $b)
+function kampagneSortDESC($a, $b): int
 {
     if ($a == $b) {
         return 0;
@@ -138,7 +123,7 @@ function kampagneSortDESC($a, $b)
  * @param int $b
  * @return int
  */
-function kampagneSortASC($a, $b)
+function kampagneSortASC($a, $b): int
 {
     if ($a == $b) {
         return 0;
@@ -152,7 +137,7 @@ function kampagneSortASC($a, $b)
  * @param array $definitions
  * @return array
  */
-function holeKampagneDetailStats($campaignID, $definitions)
+function holeKampagneDetailStats(int $campaignID, array $definitions): array
 {
     // Zeitraum
     $whereSQL     = '';
@@ -248,11 +233,7 @@ function holeKampagneDetailStats($campaignID, $definitions)
     );
     // Vorbelegen
     $statsAssoc = [];
-    if (is_array($definitions)
-        && is_array($timeSpans['cDatum'])
-        && count($definitions) > 0
-        && count($timeSpans['cDatum']) > 0
-    ) {
+    if (is_array($timeSpans['cDatum']) && count($definitions) > 0 && count($timeSpans['cDatum']) > 0) {
         foreach ($timeSpans['cDatum'] as $i => $timeSpan) {
             if (!isset($statsAssoc[$timeSpan]['cDatum'])) {
                 $statsAssoc[$timeSpan]['cDatum'] = $timeSpans['cDatumFull'][$i];
@@ -299,16 +280,15 @@ function holeKampagneDetailStats($campaignID, $definitions)
         $_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr = $tmpData;
     }
     // Gesamtstats
-    if (is_array($statsAssoc) && count($statsAssoc) > 0) {
-        foreach ($statsAssoc as $statDefinitionsAssoc) {
-            foreach ($statDefinitionsAssoc as $definitionID => $item) {
-                if ($definitionID !== 'cDatum') {
-                    if (!isset($statsAssoc['Gesamt'][$definitionID])) {
-                        $statsAssoc['Gesamt'][$definitionID] = $item;
-                    } else {
-                        $statsAssoc['Gesamt'][$definitionID] += $item;
-                    }
-                }
+    foreach ($statsAssoc as $statDefinitionsAssoc) {
+        foreach ($statDefinitionsAssoc as $definitionID => $item) {
+            if ($definitionID === 'cDatum') {
+                continue;
+            }
+            if (!isset($statsAssoc['Gesamt'][$definitionID])) {
+                $statsAssoc['Gesamt'][$definitionID] = $item;
+            } else {
+                $statsAssoc['Gesamt'][$definitionID] += $item;
             }
         }
     }
@@ -325,11 +305,12 @@ function holeKampagneDetailStats($campaignID, $definitions)
  * @param string $sql
  * @return array
  */
-function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &$members, $sql)
+function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$text, &$members, $sql): array
 {
     $cryptoService = Shop::Container()->getCryptoService();
     $data          = [];
-    if ((int)$campaignID <= 0 || (int)$definition->kKampagneDef <= 0 || mb_strlen($cStamp) === 0) {
+    $defID         = (int)$definition->kKampagneDef;
+    if ($campaignID <= 0 || $defID <= 0 || mb_strlen($cStamp) === 0) {
         return $data;
     }
     $select = '';
@@ -342,7 +323,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
             ' . $where . '
                 AND kKampagne = :cid
                 AND kKampagneDef = :cdid' . $sql,
-        ['cid' => (int)$campaignID, 'cdid' => (int)$definition->kKampagneDef]
+        ['cid' => $campaignID, 'cdid' => $defID]
     );
     if (count($stats) > 0) {
         switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
@@ -365,7 +346,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
         }
     }
     // Kampagnendefinitionen
-    switch ((int)$definition->kKampagneDef) {
+    switch ($defID) {
         case KAMPAGNE_DEF_HIT:    // HIT
             $data = Shop::Container()->getDB()->getObjects(
                 'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
@@ -391,17 +372,13 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                         AND kKampagne = :cid
                         AND kKampagneDef = :cdid
                     ORDER BY tkampagnevorgang.dErstellt DESC' . $sql,
-                ['cid' => (int)$campaignID, 'cdid' => (int)$definition->kKampagneDef]
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
-
-            if (is_array($data) && count($data) > 0) {
+            if (count($data) > 0) {
                 foreach ($data as $i => $oDaten) {
-                    $customDataParts = explode(';', $oDaten->cCustomData);
-                    $cEinstiegsseite = $customDataParts [0] ?? '';
-                    $referer         = $customDataParts [1] ?? '';
-
-                    $data[$i]->cEinstiegsseite = $cEinstiegsseite;
-                    $data[$i]->cReferer        = $referer;
+                    $customDataParts           = explode(';', $oDaten->cCustomData);
+                    $data[$i]->cEinstiegsseite = Text::filterXSS($customDataParts [0] ?? '');
+                    $data[$i]->cReferer        = Text::filterXSS($customDataParts [1] ?? '');
                 }
 
                 $members = [
@@ -444,7 +421,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                         AND kKampagne = :cid
                         AND kKampagneDef = :cdid
                     ORDER BY tkampagnevorgang.dErstellt DESC',
-                ['cid' => (int)$campaignID, 'cdid' => (int)$definition->kKampagneDef]
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
 
             if (is_array($data) && count($data) > 0) {
@@ -500,7 +477,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                         AND kKampagne = :cid
                         AND kKampagneDef = :cdid
                     ORDER BY tkampagnevorgang.dErstellt DESC',
-                ['cid' => (int)$campaignID, 'cdid' => (int)$definition->kKampagneDef]
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
 
             if (is_array($data) && count($data) > 0) {
@@ -556,7 +533,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                         AND kKampagne = :cid
                         AND kKampagneDef = :cdid
                     ORDER BY tkampagnevorgang.dErstellt DESC',
-                ['cid' => (int)$campaignID, 'cdid' => (int)$definition->kKampagneDef]
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
             $dCount = count($data);
             if (is_array($data) && $dCount > 0) {
@@ -625,7 +602,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                         AND kKampagne = :cid
                         AND kKampagneDef = :cdid
                     ORDER BY tkampagnevorgang.dErstellt DESC',
-                ['cid' => (int)$campaignID, 'cdid' => (int)$definition->kKampagneDef]
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
 
             if (is_array($data) && count($data) > 0) {
@@ -678,7 +655,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                         AND kKampagne = :cid
                         AND kKampagneDef = :cdid
                     ORDER BY tkampagnevorgang.dErstellt DESC',
-                ['cid' => (int)$campaignID, 'cdid' => (int)$definition->kKampagneDef]
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
 
             if (is_array($data) && count($data) > 0) {
@@ -713,7 +690,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                         AND kKampagne = :cid
                         AND kKampagneDef = :cdid
                     ORDER BY tkampagnevorgang.dErstellt DESC',
-                ['cid' => (int)$campaignID, 'cdid' => (int)$definition->kKampagneDef]
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
             $dCount = count($data);
             if (is_array($data) && $dCount > 0) {
@@ -765,7 +742,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                         AND kKampagne = :cid
                         AND kKampagneDef = :cdid
                     ORDER BY tkampagnevorgang.dErstellt DESC',
-                ['cid' => (int)$campaignID, 'cdid' => (int)$definition->kKampagneDef]
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
             $dCount = count($data);
             if (is_array($data) && $dCount > 0) {
@@ -821,7 +798,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                         AND tkampagnevorgang.kKampagne = :cid
                         AND tkampagnevorgang.kKampagneDef = :cdid
                     ORDER BY tkampagnevorgang.dErstellt DESC',
-                ['cid' => (int)$campaignID, 'cdid' => (int)$definition->kKampagneDef, 'cgid' => $customerGroupID]
+                ['cid' => $campaignID, 'cdid' => $defID, 'cgid' => $customerGroupID]
             );
             if (is_array($data) && count($data) > 0) {
                 Frontend::getCustomerGroup()->setMayViewPrices(1);
@@ -869,7 +846,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                         AND tkampagnevorgang.kKampagne = :cid
                         AND tkampagnevorgang.kKampagneDef = :cdid
                     ORDER BY tkampagnevorgang.dErstellt DESC',
-                ['cid' => (int)$campaignID, 'cdid' => (int)$definition->kKampagneDef]
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
 
             if (is_array($data) && count($data) > 0) {
@@ -922,7 +899,7 @@ function baueDefDetailSELECTWHERE(&$select, &$where, $stamp)
 /**
  * @return array
  */
-function gibDetailDatumZeitraum()
+function gibDetailDatumZeitraum(): array
 {
     $timeSpan               = [];
     $timeSpan['cDatum']     = [];
@@ -1143,7 +1120,7 @@ function gibStamp($oldStamp, int $direction, int $view): string
  * 6 = Kampagnennamen schon vergeben
  * 7 = Kampagnenparameter schon vergeben
  */
-function speicherKampagne($campaign)
+function speicherKampagne($campaign): int
 {
     // Standardkampagnen (Interne) Werte herstellen
     if (isset($campaign->kKampagne) && ($campaign->kKampagne < 1000 && $campaign->kKampagne > 0)) {
@@ -1213,7 +1190,7 @@ function speicherKampagne($campaign)
  * @param int $code
  * @return string
  */
-function mappeFehlerCodeSpeichern(int $code)
+function mappeFehlerCodeSpeichern(int $code): string
 {
     $msg = '';
     switch ($code) {
@@ -1246,7 +1223,7 @@ function mappeFehlerCodeSpeichern(int $code)
  * @param array $campaignIDs
  * @return int
  */
-function loescheGewaehlteKampagnen(array $campaignIDs)
+function loescheGewaehlteKampagnen(array $campaignIDs): int
 {
     if (count($campaignIDs) === 0) {
         return 0;
@@ -1397,7 +1374,7 @@ function checkGesamtStatZeitParam()
  * @param string $month
  * @return string
  */
-function mappeENGMonat($month)
+function mappeENGMonat($month): string
 {
     $translation = '';
     if (mb_strlen($month) > 0) {
@@ -1447,7 +1424,7 @@ function mappeENGMonat($month)
 /**
  * @return array
  */
-function GetTypes()
+function GetTypes(): array
 {
     return [
         1  => __('Hit'),
@@ -1467,7 +1444,7 @@ function GetTypes()
  * @param int $type
  * @return string
  */
-function GetKampTypeName($type)
+function GetKampTypeName(int $type): string
 {
     $types = GetTypes();
 
@@ -1476,28 +1453,27 @@ function GetKampTypeName($type)
 
 /**
  * @param array $stats
- * @param mixed $type
+ * @param int   $type
  * @return Linechart
  */
-function PrepareLineChartKamp($stats, $type)
+function PrepareLineChartKamp(array $stats, int $type): Linechart
 {
     $chart = new Linechart(['active' => false]);
-    if (!is_array($stats) || count($stats) === 0) {
+    if (count($stats) === 0) {
         return $chart;
     }
     $chart->setActive(true);
     $data = [];
-    foreach ($stats as $Date => $Dates) {
-        if (mb_strpos($Date, 'Gesamt') === false) {
+    foreach ($stats as $date => $dates) {
+        if (mb_strpos($date, 'Gesamt') === false) {
             $x = '';
-            foreach ($Dates as $Key => $Stat) {
-                if (mb_strpos($Key, 'cDatum') !== false) {
-                    $x = $Dates[$Key];
+            foreach ($dates as $key => $stat) {
+                if (is_string($key) && mb_strpos($key, 'cDatum') !== false) {
+                    $x = $dates[$key];
                 }
-
-                if ($Key == $type) {
+                if ($key === $type) {
                     $obj    = new stdClass();
-                    $obj->y = (float)$Stat;
+                    $obj->y = (float)$stat;
 
                     $chart->addAxis((string)$x);
                     $data[] = $obj;

@@ -8,7 +8,6 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use stdClass;
 
 /**
  * Class Product
@@ -171,7 +170,7 @@ class Product extends Artikel
         $this->Versandkosten         = ShippingMethod::getLowestShippingFees(
             $config['exportformate_lieferland'] ?? '',
             $this,
-            0,
+            false,
             $this->kKundengruppe
         );
         if ($this->Versandkosten !== -1) {
@@ -196,7 +195,7 @@ class Product extends Artikel
      */
     public function addCategoryData(bool $fallback = false): void
     {
-        $productCategoryID = $this->gibKategorie();
+        $productCategoryID = $this->gibKategorie($this->kKundengruppe);
         if ($fallback === true) {
             // since 4.05 the product class only stores category IDs in Artikel::oKategorie_arr
             // but old google base exports rely on category attributes that wouldn't be available anymore

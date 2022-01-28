@@ -34,6 +34,11 @@ class Bewertung
     public $oBewertungGesamt;
 
     /**
+     * @var int
+     */
+    public $Sortierung = 0;
+
+    /**
      * @param int    $productID
      * @param int    $languageID
      * @param int    $pageOffset

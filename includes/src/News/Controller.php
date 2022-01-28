@@ -15,8 +15,6 @@ use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
 use function Functional\every;
-use function Functional\map;
-use function Functional\pluck;
 
 /**
  * Class Controller
@@ -249,16 +247,15 @@ class Controller
     public function getAllNewsCategories(bool $activeOnly = false): Collection
     {
         $itemList = new CategoryList($this->db);
-        $ids      = map($this->db->getObjects(
+        $ids      = $this->db->getInts(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node INNER JOIN tnewskategorie AS parent
                 WHERE node.lvl > 0 
                     AND parent.lvl > 0 ' . ($activeOnly ? ' AND node.nAktiv = 1 ' : '') .
             ' GROUP BY node.kNewsKategorie
-                ORDER BY node.lft, node.nSort ASC'
-        ), static function ($e) {
-            return (int)$e->id;
-        });
+                ORDER BY node.lft, node.nSort ASC',
+            'id'
+        );
         $itemList->createItems($ids);
 
         return $itemList->generateTree();
@@ -458,14 +455,14 @@ class Controller
     {
         $dateData = $this->db->getObjects(
             'SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
-                FROM tnews 
-                JOIN tnewskategorienews 
+                FROM tnews
+                JOIN tnewskategorienews
                     ON tnewskategorienews.kNews = tnews.kNews' . $sql->cNewsKatSQL . "
                 JOIN tnewssprache
                     ON tnewssprache.kNews = tnews.kNews
                 WHERE tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= NOW()
-                    AND (tnews.cKundengruppe LIKE '%;-1;%' 
+                    AND (tnews.cKundengruppe LIKE '%;-1;%'
                         OR FIND_IN_SET(:cgid, REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     AND tnewssprache.languageID = :lid
                 GROUP BY nJahr, nMonat
@@ -537,16 +534,12 @@ class Controller
     public function getNewsCategories(int $newsItemID): array
     {
         $langID         = Shop::getLanguageID();
-        $newsCategories = map(
-            pluck($this->db->selectAll(
-                'tnewskategorienews',
-                'kNews',
-                $newsItemID,
-                'kNewsKategorie'
-            ), 'kNewsKategorie'),
-            static function ($e) {
-                return (int)$e;
-            }
+        $newsCategories = $this->db->getInts(
+            'SELECT kNewsKategorie
+                FROM tnewskategorienews
+                WHERE kNews = :nid',
+            'kNewsKategorie',
+            ['nid' => $newsItemID]
         );
 
         return \count($newsCategories) > 0
@@ -557,11 +550,11 @@ class Controller
                 tnewskategorie.cPreviewImage, tseo.cSeo,
                 DATE_FORMAT(tnewskategorie.dLetzteAktualisierung, \'%d.%m.%Y %H:%i\') AS dLetzteAktualisierung_de
                     FROM tnewskategorie
-                    JOIN tnewskategoriesprache t 
+                    JOIN tnewskategoriesprache t
                         ON tnewskategorie.kNewsKategorie = t.kNewsKategorie
-                    LEFT JOIN tnewskategorienews 
+                    LEFT JOIN tnewskategorienews
                         ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
-                    LEFT JOIN tseo 
+                    LEFT JOIN tseo
                         ON tseo.cKey = \'kNewsKategorie\'
                         AND tseo.kKey = tnewskategorie.kNewsKategorie
                         AND tseo.kSprache = :lid

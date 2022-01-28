@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -11,8 +11,8 @@ use JTL\Shop;
 class Seo
 {
     /**
-     * @param string $url
-     * @param bool $keepUnderscore
+     * @param string|mixed $url
+     * @param bool         $keepUnderscore
      * @return string
      */
     public static function getSeo($url, bool $keepUnderscore = false): string
@@ -21,7 +21,7 @@ class Seo
     }
 
     /**
-     * @param string $url
+     * @param string|mixed $url
      * @return string
      */
     public static function checkSeo($url): string
@@ -34,7 +34,8 @@ class Seo
             return $url;
         }
         Shop::Container()->getDB()->query('SET @IKEY := 0');
-        $obj = Shop::Container()->getDB()->getSingleObject(
+
+        return Shop::Container()->getDB()->getSingleObject(
             "SELECT oseo.newSeo
                 FROM (
                     SELECT CONCAT('{$url}', '_', (CONVERT(@IKEY:=@IKEY+1 USING 'utf8') COLLATE utf8_unicode_ci)) newSeo,
@@ -51,9 +52,7 @@ class Seo
                 )
                 ORDER BY oseo.nOrder
                 LIMIT 1"
-        );
-
-        return $obj->newSeo ?? $url;
+        )->newSeo ?? $url;
     }
 
     /**
@@ -83,7 +82,7 @@ class Seo
      * @param string $path - the seo path e.g. "My/Product/Name"
      * @return string - flat SEO-URL Path e.g. "My-Product-Name"
      */
-    public static function getFlatSeoPath($path): string
+    public static function getFlatSeoPath(string $path): string
     {
         return \trim(\str_replace('/', '-', $path), ' -_');
     }

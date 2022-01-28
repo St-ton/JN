@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -112,7 +112,7 @@ class GeneralObject
     }
 
     /**
-     * @param object $object
+     * @param mixed $object
      * @return mixed
      * @since 5.0.0
      */

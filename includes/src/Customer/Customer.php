@@ -297,19 +297,15 @@ class Customer
      */
     public function holRegKundeViaEmail(string $mail): ?Customer
     {
-        $data = Shop::Container()->getDB()->select(
-            'tkunde',
-            'cMail',
-            $mail,
-            null,
-            null,
-            null,
-            null,
-            false,
-            'kKunde'
+        $id = Shop::Container()->getDB()->getSingleInt(
+            'SELECT kKunde 
+                FROM tkunde
+                WHERE cMail = :ml',
+            'kKunde',
+            ['ml' => $mail]
         );
 
-        return $data !== null && $data->kKunde > 0 ? new self($data->kKunde) : null;
+        return $id > 0 ? new self($id) : null;
     }
 
     /**
@@ -704,19 +700,6 @@ class Customer
     }
 
     /**
-     * get customer attributes
-     *
-     * @return $this
-     * @deprecated since 5.0.0 - use getCustomerAttributes instead
-     */
-    public function holeKundenattribute(): self
-    {
-        \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return $this;
-    }
-
-    /**
      * check country ISO code
      *
      * @param string $iso
@@ -836,28 +819,6 @@ class Customer
     }
 
     /**
-     * @param int $length
-     * @return bool|string
-     * @deprecated since 5.0.0
-     * @throws Exception
-     */
-    public function generatePassword(int $length = 12)
-    {
-        return Shop::Container()->getPasswordService()->generate($length);
-    }
-
-    /**
-     * @param string $password
-     * @return false|string
-     * @deprecated since 5.0.0
-     * @throws Exception
-     */
-    public function generatePasswordHash($password)
-    {
-        return Shop::Container()->getPasswordService()->hash($password);
-    }
-
-    /**
      * creates a random string for password reset validation
      *
      * @return bool - true if valid account
@@ -949,14 +910,15 @@ class Customer
     {
         if (($languageID > 0 || $customerID > 0) && $salutation !== '') {
             if ($languageID === 0 && $customerID > 0) {
-                $customer = Shop::Container()->getDB()->getSingleObject(
+                $customerLangID = Shop::Container()->getDB()->getSingleInt(
                     'SELECT kSprache
                         FROM tkunde
                         WHERE kKunde = :cid',
+                    'kSprache',
                     ['cid' => $customerID]
                 );
-                if ($customer !== null && $customer->kSprache > 0) {
-                    $languageID = (int)$customer->kSprache;
+                if ($customerLangID > 0) {
+                    $languageID = $customerLangID;
                 }
             }
             $lang     = null;
@@ -964,14 +926,13 @@ class Customer
             if ($languageID > 0) { // Kundensprache, falls gesetzt und gültig
                 try {
                     $lang     = Shop::Lang()->getLanguageByID($languageID);
-                    $langCode = $lang->cISO;
-                } catch (\Exception $e) {
+                    $langCode = $lang->getCode();
+                } catch (Exception $e) {
                     $lang = null;
                 }
             }
             if ($lang === null) { // Ansonsten Standardsprache
-                $lang     = Shop::Lang()->getDefaultLanguage();
-                $langCode = $lang->cISO ?? '';
+                $langCode = Shop::Lang()->getDefaultLanguage()->getCode();
             }
             $value = Shop::Container()->getDB()->getSingleObject(
                 'SELECT tsprachwerte.cWert

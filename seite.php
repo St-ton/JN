@@ -17,7 +17,6 @@ if (!defined('PFAD_ROOT')) {
     http_response_code(400);
     exit();
 }
-require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 $smarty      = Shop::Smarty();
 $conf        = Shopsetting::getInstance()->getAll();
 $linkHelper  = Shop::Container()->getLinkService();

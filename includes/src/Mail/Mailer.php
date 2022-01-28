@@ -132,7 +132,7 @@ class Mailer
         $method->sendmail_pfad = $this->config['emails']['email_sendmail_pfad'];
         $method->smtp_hostname = $this->config['emails']['email_smtp_hostname'];
         $method->smtp_port     = $this->config['emails']['email_smtp_port'];
-        $method->smtp_auth     = $this->config['emails']['email_smtp_auth'];
+        $method->smtp_auth     = (int)$this->config['emails']['email_smtp_auth'] === 1;
         $method->smtp_user     = $this->config['emails']['email_smtp_user'];
         $method->smtp_pass     = $this->config['emails']['email_smtp_pass'];
         $method->SMTPSecure    = $this->config['emails']['email_smtp_verschluesselung'];
@@ -286,12 +286,23 @@ class Mailer
             $phpmailer->isHTML(false);
             $phpmailer->Body = $mail->getBodyText();
         }
+        $this->addAttachments($phpmailer, $mail);
+        \executeHook(\HOOK_MAILER_PRE_SEND, [
+            'mailer'    => $this,
+            'mail'      => $mail,
+            'phpmailer' => $phpmailer
+        ]);
         if (\mb_strlen($phpmailer->Body) === 0) {
             Shop::Container()->getLogService()->warning('Empty body for mail ' . $phpmailer->Subject);
         }
-        $this->addAttachments($phpmailer, $mail);
         $sent = $phpmailer->send();
         $mail->setError($phpmailer->ErrorInfo);
+        \executeHook(\HOOK_MAILER_POST_SEND, [
+            'mailer'    => $this,
+            'mail'      => $mail,
+            'phpmailer' => $phpmailer,
+            'status'    => $sent
+        ]);
 
         return $sent;
     }
@@ -327,6 +338,8 @@ class Mailer
         $sent = $this->sendViaPHPMailer($mail);
         if ($sent) {
             $this->log($mail);
+        } else {
+            Shop::Container()->getLogService()->error('Error sending mail: ' . $mail->getError());
         }
         \executeHook(\HOOK_MAILTOOLS_VERSCHICKEMAIL_GESENDET);
 

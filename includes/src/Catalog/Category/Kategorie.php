@@ -4,6 +4,7 @@ namespace JTL\Catalog\Category;
 
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
+use JTL\DB\SqlObject;
 use JTL\Helpers\Category;
 use JTL\Helpers\Request;
 use JTL\Helpers\URL;
@@ -98,12 +99,6 @@ class Kategorie
     public $nBildVorhanden;
 
     /**
-     * @var array
-     * @deprecated since version 4.05 - use categoryFunctionAttributes instead
-     */
-    public $KategorieAttribute;
-
-    /**
      * @var array - value/key pair
      */
     public $categoryFunctionAttributes;
@@ -144,6 +139,26 @@ class Kategorie
     public $cKurzbezeichnung = '';
 
     /**
+     * @var int
+     */
+    public $lft = 0;
+
+    /**
+     * @var int
+     */
+    public $rght = 0;
+
+    /**
+     * @var array|null
+     */
+    public $Unterkategorien;
+
+    /**
+     * @var bool|null
+     */
+    public $bAktiv = true;
+
+    /**
      * @param int  $id
      * @param int  $languageID
      * @param int  $customerGroupID
@@ -182,7 +197,7 @@ class Kategorie
         }
         $languageID = $languageID ?: Shop::getLanguageID();
         if (!$languageID) {
-            $languageID = LanguageHelper::getDefaultLanguage()->kSprache;
+            $languageID = LanguageHelper::getDefaultLanguage()->getId();
         }
         $this->kSprache    = $languageID;
         $defaultLangActive = LanguageHelper::isDefaultLanguageActive(false, $languageID);
@@ -202,27 +217,25 @@ class Kategorie
 
             return $this;
         }
-        $db              = Shop::Container()->getDB();
-        $catSQL          = new stdClass();
-        $catSQL->cSELECT = '';
-        $catSQL->cJOIN   = '';
-        $catSQL->cWHERE  = '';
+        $db     = Shop::Container()->getDB();
+        $catSQL = new SqlObject();
         if (!$recall && $languageID > 0 && !$defaultLangActive) {
-            $catSQL->cSELECT = 'tkategoriesprache.cName AS cName_spr, 
+            $catSQL->setSelect('tkategoriesprache.cName AS cName_spr, 
                 tkategoriesprache.cBeschreibung AS cBeschreibung_spr, 
                 tkategoriesprache.cMetaDescription AS cMetaDescription_spr,
                 tkategoriesprache.cMetaKeywords AS cMetaKeywords_spr, 
-                tkategoriesprache.cTitleTag AS cTitleTag_spr, ';
-            $catSQL->cJOIN   = ' JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie';
-            $catSQL->cWHERE  = ' AND tkategoriesprache.kSprache = ' . $languageID;
+                tkategoriesprache.cTitleTag AS cTitleTag_spr, ');
+            $catSQL->setJoin(' JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie');
+            $catSQL->setWhere(' AND tkategoriesprache.kSprache = :lid');
+            $catSQL->addParam(':lid', $languageID);
         }
         $item = $db->getSingleObject(
-            'SELECT tkategorie.kKategorie, ' . $catSQL->cSELECT . ' tkategorie.kOberKategorie, 
+            'SELECT tkategorie.kKategorie, ' . $catSQL->getSelect() . ' tkategorie.kOberKategorie, 
                 tkategorie.nSort, tkategorie.dLetzteAktualisierung,
                 tkategorie.cName, tkategorie.cBeschreibung, tseo.cSeo, tkategoriepict.cPfad, tkategoriepict.cType,
-                atr.cWert AS customImgName
+                atr.cWert AS customImgName, tkategorie.lft, tkategorie.rght
                 FROM tkategorie
-                ' . $catSQL->cJOIN . '
+                ' . $catSQL->getJoin() . '
                 LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie
                     AND tkategoriesichtbarkeit.kKundengruppe = :cgid
                 LEFT JOIN tseo ON tseo.cKey = \'kKategorie\'
@@ -233,14 +246,14 @@ class Kategorie
                 LEFT JOIN tkategorieattribut atr
                     ON atr.kKategorie = tkategorie.kKategorie
                     AND atr.cName = \'bildname\' 
-                WHERE tkategorie.kKategorie = :kid ' . $catSQL->cWHERE . '
+                WHERE tkategorie.kKategorie = :kid ' . $catSQL->getWhere() . '
                     AND tkategoriesichtbarkeit.kKategorie IS NULL',
-            ['lid' => $languageID, 'kid' => $id, 'cgid' => $customerGroupID]
+            \array_merge(['lid' => $languageID, 'kid' => $id, 'cgid' => $customerGroupID], $catSQL->getParams())
         );
         if ($item === null) {
             if (!$recall && !$defaultLangActive) {
                 if (\EXPERIMENTAL_MULTILANG_SHOP === true) {
-                    $defaultLangID = LanguageHelper::getDefaultLanguage()->kSprache;
+                    $defaultLangID = LanguageHelper::getDefaultLanguage()->getId();
                     if ($defaultLangID !== $languageID) {
                         return $this->loadFromDB($id, $defaultLangID, $customerGroupID, true);
                     }
@@ -292,7 +305,7 @@ class Kategorie
         if (!empty($item->cSeo) || \EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return;
         }
-        $defaultLangID = LanguageHelper::getDefaultLanguage()->kSprache;
+        $defaultLangID = LanguageHelper::getDefaultLanguage()->getId();
         if ($languageID !== $defaultLangID) {
             $seo = $db->select(
                 'tseo',
@@ -324,6 +337,7 @@ class Kategorie
             $this->cBildpfad      = $item->cPfad;
             $this->cBildURL       = \PFAD_KATEGORIEBILDER . $item->cPfad;
             $this->cBild          = $imageBaseURL . \PFAD_KATEGORIEBILDER . $item->cPfad;
+            $this->imageURL       = $imageBaseURL . \PFAD_KATEGORIEBILDER . $item->cPfad;
             $this->nBildVorhanden = 1;
             $this->generateAllImageSizes(true, 1, $this->cBildpfad);
         }
@@ -393,30 +407,6 @@ class Kategorie
     }
 
     /**
-     * add category into db
-     *
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function insertInDB(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * update category in db
-     *
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function updateInDB(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
      * set data from given object to category
      *
      * @param object $obj
@@ -433,6 +423,8 @@ class Kategorie
             $this->kOberKategorie = (int)$this->kOberKategorie;
             $this->nSort          = (int)$this->nSort;
             $this->kSprache       = (int)$this->kSprache;
+            $this->lft            = (int)$this->lft;
+            $this->rght           = (int)$this->rght;
         }
 
         return $this;
@@ -503,18 +495,6 @@ class Kategorie
         );
 
         return $data !== null ? (int)$data->kOberKategorie : false;
-    }
-
-    /**
-     * set data from sync POST request
-     *
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function setzePostDaten(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return false;
     }
 
     /**

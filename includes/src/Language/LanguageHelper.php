@@ -333,7 +333,7 @@ class LanguageHelper
             return true;
         });
         /** @var Collection $data */
-        $this->availableLanguages = $data->map(static function ($e) {
+        $this->availableLanguages = $data->map(static function (stdClass $e) {
             return (object)['kSprache' => (int)$e->kSprache];
         })->toArray();
 
@@ -373,20 +373,6 @@ class LanguageHelper
     }
 
     /**
-     * @param int               $sectionID
-     * @param mixed|null|string $default
-     * @return string|null
-     * @deprecated since 5.0.0
-     */
-    public function getSectionName(int $sectionID, $default = null): ?string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        $section = $this->db->select('tsprachsektion', 'kSprachsektion', $sectionID);
-
-        return $section->cName ?? $default;
-    }
-
-    /**
      * @return $this
      */
     public function autoload(): self
@@ -399,8 +385,8 @@ class LanguageHelper
         } else {
             $language = $this->mappedGetDefaultLanguage();
             if (isset($language->cISO) && \mb_strlen($language->cISO) > 0) {
-                $this->currentISOCode = $language->cISO;
-                $this->kSprache       = $language->id;
+                $this->currentISOCode = $language->getCode();
+                $this->kSprache       = $language->getId();
             }
         }
         $this->currentLanguageID = $this->kSprache;
@@ -426,12 +412,12 @@ class LanguageHelper
 
     /**
      * @param string $isoCode
-     * @return int|bool
+     * @return int
      */
-    public function mappekISO(string $isoCode)
+    public function mappekISO(string $isoCode): int
     {
         if (\mb_strlen($isoCode) === 0) {
-            return false;
+            return 0;
         }
         if (isset($this->byISO[$isoCode]->kSprachISO)) {
             return (int)$this->byISO[$isoCode]->kSprachISO;
@@ -439,7 +425,7 @@ class LanguageHelper
         $langISO               = $this->mappedGetLangIDFromIso($isoCode);
         $this->byISO[$isoCode] = $langISO;
 
-        return isset($langISO->kSprachISO) ? (int)$langISO->kSprachISO : false;
+        return (int)($langISO->kSprachISO ?? 0);
     }
 
     /**
@@ -447,7 +433,7 @@ class LanguageHelper
      * @param string $sectionName
      * @return string
      */
-    public function getTranslation($name, $sectionName = 'global'): string
+    public function getTranslation(string $name, string $sectionName = 'global'): string
     {
         if ($this->currentLanguageID === 0) {
             return '';
@@ -520,7 +506,7 @@ class LanguageHelper
 
     /**
      * @param string $pluginID
-     * @return array
+     * @return stdClass[]
      */
     private function getPluginLocalizations(string $pluginID): array
     {
@@ -551,12 +537,12 @@ class LanguageHelper
      * @param string $varName
      * @return $this
      */
-    public function logWert($sectionName, $varName): self
+    public function logWert(string $sectionName, string $varName): self
     {
         $exists = $this->db->select(
             'tsprachlog',
             'kSprachISO',
-            (int)$this->currentLanguageID,
+            $this->currentLanguageID,
             'cSektion',
             $sectionName,
             'cName',
@@ -585,7 +571,7 @@ class LanguageHelper
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function gibLogWerte(): array
     {
@@ -599,7 +585,7 @@ class LanguageHelper
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function gibAlleWerte(): array
     {
@@ -687,7 +673,7 @@ class LanguageHelper
     public function setzeWert(int $sectionID, $name, $value): bool
     {
         $_keys       = ['kSprachISO', 'kSprachsektion', 'cName'];
-        $_values     = [(int)$this->currentLanguageID, $sectionID, $name];
+        $_values     = [$this->currentLanguageID, $sectionID, $name];
         $_upd        = new stdClass();
         $_upd->cWert = $value;
 
@@ -701,7 +687,7 @@ class LanguageHelper
      * @param string $value
      * @return bool
      */
-    public function fuegeEin($isoCode, int $sectionID, $name, $value): bool
+    public function fuegeEin(string $isoCode, int $sectionID, $name, $value): bool
     {
         $isoID = $this->mappekISO($isoCode);
         if ($isoID > 0) {
@@ -724,7 +710,7 @@ class LanguageHelper
      * @param string $name
      * @return int
      */
-    public function loesche(int $sectionID, $name): int
+    public function loesche(int $sectionID, string $name): int
     {
         return $this->db->delete(
             'tsprachwerte',
@@ -774,7 +760,7 @@ class LanguageHelper
                         LEFT JOIN tsprachsektion 
                             ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
                         WHERE kSprachISO = :iso',
-                    ['iso' => (int)$this->currentLanguageID]
+                    ['iso' => $this->currentLanguageID]
                 );
                 break;
 
@@ -787,7 +773,7 @@ class LanguageHelper
                             ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
                         WHERE kSprachISO = :iso
                             AND bSystem = 1',
-                    ['iso' => (int)$this->currentLanguageID]
+                    ['iso' => $this->currentLanguageID]
                 );
                 break;
 
@@ -800,7 +786,7 @@ class LanguageHelper
                           ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
                         WHERE kSprachISO = :iso 
                             AND bSystem = 0',
-                    ['iso' => (int)$this->currentLanguageID]
+                    ['iso' => $this->currentLanguageID]
                 );
                 break;
         }
@@ -842,7 +828,7 @@ class LanguageHelper
         $deleteFlag  = false;
         $updateCount = 0;
         $kSprachISO  = $this->mappekISO($iso);
-        if ($kSprachISO === 0 || $kSprachISO === false) {
+        if ($kSprachISO > 0) {
             // Sprache noch nicht installiert
             $langIso       = new stdClass();
             $langIso->cISO = $iso;
@@ -905,7 +891,7 @@ class LanguageHelper
                         break;
 
                     case 2: // Vorhandene Variablen beibehalten
-                        $oWert = $this->db->select(
+                        $dbval = $this->db->select(
                             'tsprachwerte',
                             'kSprachISO',
                             $kSprachISO,
@@ -914,7 +900,7 @@ class LanguageHelper
                             'cName',
                             $name
                         );
-                        if (!$oWert) {
+                        if (!$dbval) {
                             $this->db->queryPrepared(
                                 'REPLACE INTO tsprachwerte
                                     SET kSprachISO = :iso, 
@@ -956,15 +942,14 @@ class LanguageHelper
      */
     private function mappedIsShopLanguage(int $languageID, array $languages = []): bool
     {
-        if ($languageID > 0) {
-            if (!\is_array($languages) || \count($languages) === 0) {
-                $languages = $this->mappedGetAllLanguages(1);
-            }
-
-            return isset($languages[$languageID]);
+        if ($languageID <= 0) {
+            return false;
+        }
+        if (!\is_array($languages) || \count($languages) === 0) {
+            $languages = $this->mappedGetAllLanguages(1);
         }
 
-        return false;
+        return isset($languages[$languageID]);
     }
 
     /**
@@ -977,16 +962,12 @@ class LanguageHelper
         if (\mb_strlen($iso) > 0) {
             $data = $this->mappedGetLangIDFromIso($iso);
 
-            return $data === null
-                ? false
-                : $data->kSprachISO;
+            return $data->kSprachISO ?? false;
         }
         if ($languageID > 0) {
             $data = $this->mappedGetIsoFromLangID($languageID);
 
-            return $data === null
-                ? false
-                : $data->cISO;
+            return $data->cISO ?? false;
         }
 
         return false;
@@ -999,30 +980,30 @@ class LanguageHelper
      * 0 = Normales Array
      * 1 = Gib ein Assoc mit Key = kSprache
      * 2 = Gib ein Assoc mit Key = cISO
-     * @param bool $forceLoad
+     * @param bool $force
      * @param bool $onlyActive
      * @return LanguageModel[]
      * @throws \Exception
      * @former gibAlleSprachen()
      * @since  5.0.0
      */
-    private function mappedGetAllLanguages(int $returnType = 0, bool $forceLoad = false, bool $onlyActive = false)
+    private function mappedGetAllLanguages(int $returnType = 0, bool $force = false, bool $onlyActive = false): array
     {
         $languages = Frontend::getLanguages();
-        if ($forceLoad || \count($languages) === 0) {
+        if ($force || \count($languages) === 0) {
             $languages = $onlyActive === true
                 ? LanguageModel::loadAll($this->db, ['active'], [1])->toArray()
                 : LanguageModel::loadAll($this->db, [], [])->toArray();
         }
         switch ($returnType) {
             case 2:
-                return reindex($languages, static function ($e) {
-                    return $e->cISO;
+                return reindex($languages, static function (LanguageModel $e) {
+                    return $e->getCode();
                 });
 
             case 1:
-                return reindex($languages, static function ($e) {
-                    return $e->kSprache;
+                return reindex($languages, static function (LanguageModel $e) {
+                    return $e->getId();
                 });
 
             case 0:
@@ -1241,9 +1222,7 @@ class LanguageHelper
      */
     private function mappedGetIsoCodeByCountryName(string $country): string
     {
-        $iso = Shop::Container()->getCountryService()->getIsoByCountryName($country);
-
-        return $iso ?? 'noISO';
+        return Shop::Container()->getCountryService()->getIsoByCountryName($country) ?? 'noISO';
     }
 
     /**
@@ -1253,6 +1232,12 @@ class LanguageHelper
      */
     public function getLanguageByID(int $langID): LanguageModel
     {
+        foreach (Frontend::getLanguages() as $language) {
+            if ($language->getId() === $langID) {
+                return $language;
+            }
+        }
+
         return LanguageModel::loadByAttributes(['id' => $langID], $this->db);
     }
 }

@@ -40,7 +40,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 
 Shop::Container()->getGetText()->loadAdminLocale('pages/plugin');

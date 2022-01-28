@@ -128,7 +128,7 @@ class HookManager
             } elseif (\is_file($plugin->getPaths()->getFrontendPath() . $file)) {
                 $start = \microtime(true);
                 include $plugin->getPaths()->getFrontendPath() . $file;
-                if (PROFILE_PLUGINS === true) {
+                if (\PROFILE_PLUGINS === true) {
                     $now = \microtime(true);
                     Profiler::setPluginProfile([
                         'runtime'   => $now - $start,

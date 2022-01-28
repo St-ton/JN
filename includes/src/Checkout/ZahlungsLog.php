@@ -48,13 +48,21 @@ class ZahlungsLog
     public function holeLog(string $limit, int $level = -1, string $whereSQL = ''): array
     {
         $condition = $level >= 0 ? ('AND nLevel = ' . $level) : '';
+        $params    = ['mid' => $this->cModulId];
+        $limits    = \explode(',', $limit);
+        if (\count($limits) === 2) {
+            $params['lmt']  = (int)$limits[0];
+            $params['lmte'] = (int)$limits[1];
+        } else {
+            $params['lmt'] = (int)$limit;
+        }
 
         return Shop::Container()->getDB()->getObjects(
             'SELECT * FROM tzahlungslog
                 WHERE cModulId = :mid' . $condition . ($whereSQL !== '' ? ' AND ' . $whereSQL : '') . '
                 ORDER BY dDatum DESC, kZahlunglog DESC 
-                LIMIT :lmt',
-            ['mid' => $this->cModulId, 'lmt' => $limit]
+                ' . (\count($limits) === 2 ? 'LIMIT :lmt, :lmte' : 'LIMIT :lmt'),
+            $params
         );
     }
 

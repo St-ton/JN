@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Checkout\Zahlungsart;
@@ -66,18 +66,24 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
     && Request::postInt('kZahlungsart') > 0
     && Form::validateToken()
 ) {
-    $step              = 'uebersicht';
-    $paymentMethod     = $db->select(
+    $step          = 'uebersicht';
+    $paymentMethod = $db->select(
         'tzahlungsart',
         'kZahlungsart',
         Request::postInt('kZahlungsart')
     );
+    if ($paymentMethod !== null) {
+        $paymentMethod->kZahlungsart        = (int)$paymentMethod->kZahlungsart;
+        $paymentMethod->nSort               = (int)$paymentMethod->nSort;
+        $paymentMethod->nWaehrendBestellung = (int)$paymentMethod->nWaehrendBestellung;
+    }
     $nMailSenden       = Request::postInt('nMailSenden');
     $nMailSendenStorno = Request::postInt('nMailSendenStorno');
     $nMailBits         = 0;
     if (is_array($filteredPost['kKundengruppe'])) {
-        $cKundengruppen = Text::createSSK($filteredPost['kKundengruppe']);
-        if (in_array(0, $filteredPost['kKundengruppe'])) {
+        $filteredPost['kKundengruppe'] = \array_map('\intval', $filteredPost['kKundengruppe']);
+        $cKundengruppen                = Text::createSSK($filteredPost['kKundengruppe']);
+        if (in_array(0, $filteredPost['kKundengruppe'], true)) {
             unset($cKundengruppen);
         }
     }
@@ -99,7 +105,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
     $upd->nMailSenden         = $nMailBits;
     $upd->cBild               = $filteredPost['cBild'];
     $upd->nWaehrendBestellung = $duringCheckout;
-    $db->update('tzahlungsart', 'kZahlungsart', (int)$paymentMethod->kZahlungsart, $upd);
+    $db->update('tzahlungsart', 'kZahlungsart', $paymentMethod->kZahlungsart, $upd);
     // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
     if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
         $kPlugin     = PluginHelper::getIDByModuleID($paymentMethod->cModulId);

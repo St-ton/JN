@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * This file is only intended to deliver HTML,
  * read from a Markdown-file,

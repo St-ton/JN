@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
@@ -7,7 +7,7 @@ use JTL\Shop;
 /**
  * @return bool
  */
-function generiereRSSXML()
+function generiereRSSXML(): bool
 {
     Shop::Container()->getLogService()->debug('RSS wird erstellt');
     if (!is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
@@ -30,19 +30,19 @@ function generiereRSSXML()
     // ISO-8859-1
     $xml = '<?xml version="1.0" encoding="' . JTL_CHARSET . '"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-	<channel>
-		<title>' . $conf['rss']['rss_titel'] . '</title>
-		<link>' . $shopURL . '</link>
-		<description>' . $conf['rss']['rss_description'] . '</description>
-		<language>' . Text::convertISO2ISO639($language->cISO) . '</language>
-		<copyright>' . $conf['rss']['rss_copyright'] . '</copyright>
-		<pubDate>' . date('r') . '</pubDate>
-		<atom:link href="' . $shopURL . '/rss.xml" rel="self" type="application/rss+xml" />
-		<image>
-			<url>' . $conf['rss']['rss_logoURL'] . '</url>
-			<title>' . $conf['rss']['rss_titel'] . '</title>
-			<link>' . $shopURL . '</link>
-		</image>';
+    <channel>
+        <title>' . $conf['rss']['rss_titel'] . '</title>
+        <link>' . $shopURL . '</link>
+        <description>' . $conf['rss']['rss_description'] . '</description>
+        <language>' . Text::convertISO2ISO639($language->cISO) . '</language>
+        <copyright>' . $conf['rss']['rss_copyright'] . '</copyright>
+        <pubDate>' . date('r') . '</pubDate>
+        <atom:link href="' . $shopURL . '/rss.xml" rel="self" type="application/rss+xml" />
+        <image>
+            <url>' . $conf['rss']['rss_logoURL'] . '</url>
+            <title>' . $conf['rss']['rss_titel'] . '</title>
+            <link>' . $shopURL . '</link>
+        </image>';
     //Artikel STD Sprache
     $lagerfilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
     $days        = (int)$conf['rss']['rss_alterTage'];
@@ -71,7 +71,7 @@ function generiereRSSXML()
             ['lid' => (int)$_SESSION['kSprache'], 'cgid' => $stdKundengruppe->kKundengruppe, 'ds' => $days]
         );
         foreach ($products as $product) {
-            $url  = URL::buildURL($product, URLART_ARTIKEL, true);
+            $url  = URL::buildURL($product, URLART_ARTIKEL, true, $shopURL . '/');
             $xml .= '
         <item>
             <title>' . wandelXMLEntitiesUm($product->cName) . '</title>
@@ -96,7 +96,7 @@ function generiereRSSXML()
             ['ds' => $days]
         );
         foreach ($news as $item) {
-            $url  = URL::buildURL($item, URLART_NEWS);
+            $url  = URL::buildURL($item, URLART_NEWS, true, $shopURL . '/');
             $xml .= '
         <item>p
             <title>' . wandelXMLEntitiesUm($item->title) . '</title>
@@ -117,7 +117,7 @@ function generiereRSSXML()
             ['ds' => $days]
         );
         foreach ($reviews as $review) {
-            $url  = URL::buildURL($review, URLART_ARTIKEL, true);
+            $url  = URL::buildURL($review, URLART_ARTIKEL, true, $shopURL . '/');
             $xml .= '
         <item>
             <title>Bewertung ' . wandelXMLEntitiesUm($review->cTitel) . ' von ' .
@@ -131,9 +131,9 @@ function generiereRSSXML()
     }
 
     $xml .= '
-	</channel>
+    </channel>
 </rss>
-		';
+        ';
 
     $file = fopen(PFAD_ROOT . FILE_RSS_FEED, 'w+');
     fwrite($file, $xml);
@@ -157,7 +157,7 @@ function bauerfc2822datum($dateString)
  * @param string $text
  * @return string
  */
-function wandelXMLEntitiesUm($text)
+function wandelXMLEntitiesUm($text): string
 {
     return mb_strlen($text) > 0
         ? '<![CDATA[ ' . Text::htmlentitydecode($text) . ' ]]>'

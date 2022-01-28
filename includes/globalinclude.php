@@ -71,8 +71,6 @@ if (!PHPSettings::getInstance()->hasMinLimit(64 * 1024 * 1024)) {
     ini_set('memory_limit', '64M');
 }
 
-require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
-
 try {
     $db = Shop::Container()->getDB();
 } catch (Exception $exc) {
@@ -108,10 +106,7 @@ if (PHP_SAPI !== 'cli'
 }
 if (!JTL_INCLUDE_ONLY_DB && !defined('CLI_BATCHRUN')) {
     $debugbar = Shop::Container()->getDebugBar();
-
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
     $pluginHooks    = Helper::getHookList();
     $globalMetaData = Metadata::getGlobalMetaData();
     executeHook(HOOK_GLOBALINCLUDE_INC);
@@ -131,6 +126,7 @@ if (!JTL_INCLUDE_ONLY_DB && !defined('CLI_BATCHRUN')) {
         $bAdminWartungsmodus = true;
     }
     Shop::bootstrap();
+    $session->deferredUpdate();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
     $debugbar->addCollector(new Smarty(Shop::Smarty()));
 }

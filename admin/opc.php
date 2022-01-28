@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\SelectionWizard;
 
@@ -167,19 +167,20 @@ class Wizard
         $this->kSprache                = (int)$this->kSprache;
         $this->nAktiv                  = (int)$this->nAktiv;
 
-        $questionIDs = Shop::Container()->getDB()->getObjects(
+        $questionIDs = Shop::Container()->getDB()->getInts(
             'SELECT kAuswahlAssistentFrage AS id
                 FROM tauswahlassistentfrage
                 WHERE kAuswahlAssistentGruppe = :groupID' .
             ($activeOnly ? ' AND nAktiv = 1 ' : ' ') .
             'ORDER BY nSort',
+            'id',
             ['groupID' => $this->kAuswahlAssistentGruppe]
         );
 
         $this->questions = [];
 
         foreach ($questionIDs as $questionID) {
-            $question                                  = new Question((int)$questionID->id);
+            $question                                  = new Question($questionID);
             $this->questions[]                         = $question;
             $this->questionsAssoc[$question->kMerkmal] = $question;
         }

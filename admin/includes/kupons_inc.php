@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Hersteller;
@@ -18,9 +18,9 @@ use JTL\Shop;
  * @param array $ids
  * @return bool
  */
-function loescheKupons($ids)
+function loescheKupons(array $ids): bool
 {
-    if (!is_array($ids) || count($ids) === 0) {
+    if (count($ids) === 0) {
         return false;
     }
     $ids       = array_map('\intval', $ids);
@@ -43,7 +43,7 @@ function loescheKupons($ids)
  * @param int $id
  * @return array - key = lang-iso ; value = localized coupon name
  */
-function getCouponNames(int $id)
+function getCouponNames(int $id): array
 {
     $names = [];
     if (!$id) {
@@ -58,15 +58,16 @@ function getCouponNames(int $id)
 
 /**
  * @param string $selectedManufacturers
- * @return array
+ * @return stdClass[]
  */
-function getManufacturers($selectedManufacturers = '')
+function getManufacturers($selectedManufacturers = ''): array
 {
     $selected = Text::parseSSKint($selectedManufacturers);
     $items    = Shop::Container()->getDB()->getObjects('SELECT kHersteller, cName FROM thersteller');
+    $langID   = Shop::getLanguageID();
     foreach ($items as $item) {
         $item->kHersteller = (int)$item->kHersteller;
-        $manufacturer      = new Hersteller($item->kHersteller);
+        $manufacturer      = new Hersteller($item->kHersteller, $langID);
         $item->cName       = $manufacturer->cName;
         $item->selected    = in_array($item->kHersteller, $selected, true);
         unset($manufacturer);
@@ -81,7 +82,7 @@ function getManufacturers($selectedManufacturers = '')
  * @param int    $depth
  * @return array
  */
-function getCategories($selectedCategories = '', int $categoryID = 0, int $depth = 0)
+function getCategories($selectedCategories = '', int $categoryID = 0, int $depth = 0): array
 {
     $selected = Text::parseSSKint($selectedCategories);
     $arr      = [];
@@ -110,14 +111,12 @@ function getCategories($selectedCategories = '', int $categoryID = 0, int $depth
  * @param string|null $string
  * @return string|null
  */
-function normalizeDate($string)
+function normalizeDate($string): ?string
 {
     if ($string === null || $string === '') {
         return null;
     }
-
     $date = date_create($string);
-
     if ($date === false) {
         return $string;
     }
@@ -156,8 +155,12 @@ function getRawCoupons($type = Kupon::TYPE_STANDARD, $whereSQL = '', $orderSQL =
  * @param string $limitSQL - an SQL LIMIT clause  (10,20)
  * @return array
  */
-function getCoupons($type = Kupon::TYPE_STANDARD, $whereSQL = '', $orderSQL = '', $limitSQL = '')
-{
+function getCoupons(
+    string $type = Kupon::TYPE_STANDARD,
+    string $whereSQL = '',
+    string $orderSQL = '',
+    string $limitSQL = ''
+): array {
     $raw = getRawCoupons($type, $whereSQL, $orderSQL, $limitSQL);
     $res = [];
     foreach ($raw as $item) {
@@ -172,7 +175,7 @@ function getCoupons($type = Kupon::TYPE_STANDARD, $whereSQL = '', $orderSQL = ''
  * @param string $whereSQL
  * @return array
  */
-function getExportableCoupons($type = Kupon::TYPE_STANDARD, $whereSQL = '')
+function getExportableCoupons(string $type = Kupon::TYPE_STANDARD, string $whereSQL = '')
 {
     $coupons = getRawCoupons($type, $whereSQL);
     foreach ($coupons as $rawCoupon) {
@@ -190,7 +193,7 @@ function getExportableCoupons($type = Kupon::TYPE_STANDARD, $whereSQL = '')
  * @param int $id
  * @return Kupon $oKupon
  */
-function getCoupon(int $id)
+function getCoupon(int $id): Kupon
 {
     $coupon = new Kupon($id);
     augmentCoupon($coupon);
@@ -203,7 +206,7 @@ function getCoupon(int $id)
  *
  * @param Kupon $coupon
  */
-function augmentCoupon($coupon)
+function augmentCoupon($coupon): void
 {
     $coupon->cLocalizedValue = $coupon->cWertTyp === 'festpreis'
         ? Preise::getLocalizedPriceString($coupon->fWert)
@@ -281,13 +284,13 @@ function augmentCoupon($coupon)
 /**
  * Create a fresh Kupon instance with default values to be edited
  *
- * @param string $cKuponTyp - Kupon::TYPE_STANDRAD, Kupon::TYPE_SHIPPING, Kupon::TYPE_NEWCUSTOMER
+ * @param string $type - Kupon::TYPE_STANDRAD, Kupon::TYPE_SHIPPING, Kupon::TYPE_NEWCUSTOMER
  * @return Kupon
  */
-function createNewCoupon($cKuponTyp)
+function createNewCoupon(string $type): Kupon
 {
     $coupon                        = new Kupon();
-    $coupon->cKuponTyp             = $cKuponTyp;
+    $coupon->cKuponTyp             = $type;
     $coupon->cName                 = '';
     $coupon->fWert                 = 0.0;
     $coupon->cWertTyp              = 'festpreis';
@@ -320,7 +323,7 @@ function createNewCoupon($cKuponTyp)
  * @return Kupon
  * @throws Exception
  */
-function createCouponFromInput()
+function createCouponFromInput(): Kupon
 {
     $input                         = Text::filterXSS($_POST);
     $coupon                        = new Kupon(Request::postInt('kKuponBearbeiten'));
@@ -416,7 +419,7 @@ function getCouponCount(string $type = Kupon::TYPE_STANDARD, string $whereSQL = 
  * @param Kupon $coupon
  * @return array - list of error messages
  */
-function validateCoupon($coupon)
+function validateCoupon($coupon): array
 {
     $errors = [];
     if ($coupon->cName === '') {
@@ -611,7 +614,7 @@ function informCouponCustomers($coupon)
     $coupon->cLocalizedMBW  = Preise::getLocalizedPriceString($coupon->fMindestbestellwert, $defaultCurrency, false);
     // kKunde-Array aller auserwaehlten Kunden
     $customerIDs     = Text::parseSSKint($coupon->cKunden);
-    $customerData    = $db->getObjects(
+    $customerData    = $db->getInts(
         'SELECT kKunde
             FROM tkunde
             WHERE TRUE
@@ -620,7 +623,8 @@ function informCouponCustomers($coupon)
             : 'AND kKundengruppe = ' . (int)$coupon->kKundengruppe) . '
                 ' . ($coupon->cKunden === '-1'
             ? 'AND TRUE'
-            : 'AND kKunde IN (' . implode(',', $customerIDs) . ')')
+            : 'AND kKunde IN (' . implode(',', $customerIDs) . ')'),
+        'kKunde'
     );
     $productIDs      = [];
     $manufacturerIDs = Text::parseSSK($coupon->cHersteller);
@@ -629,17 +633,15 @@ function informCouponCustomers($coupon)
         $itemNumbers = array_map(static function ($e) {
             return '"' . $e . '"';
         }, $itemNumbers);
-        $productData = $db->getObjects(
+        $productIDs  = $db->getInts(
             'SELECT kArtikel
                 FROM tartikel
-                WHERE cArtNr IN (' . implode(',', $itemNumbers) . ')'
+                WHERE cArtNr IN (' . implode(',', $itemNumbers) . ')',
+            'kArtikel'
         );
-        $productIDs  = array_map(static function ($e) {
-            return (int)$e->kArtikel;
-        }, $productData);
     }
-    foreach ($customerData as $item) {
-        $customer = new Customer((int)$item->kKunde);
+    foreach ($customerData as $customerID) {
+        $customer = new Customer($customerID);
         $language = Shop::Lang()->getIsoFromLangID($customer->kSprache);
         if (!$language) {
             $language = $defaultLang;
@@ -662,7 +664,7 @@ function informCouponCustomers($coupon)
         }
         $products = [];
         foreach ($productIDs as $productID) {
-            $product = new Artikel();
+            $product = new Artikel($db);
             $product->fuelleArtikel(
                 $productID,
                 $defaultOptions,

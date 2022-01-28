@@ -104,7 +104,7 @@ class ReviewController extends BaseController
      */
     private function getProductURL(int $productID): string
     {
-        $product = new Artikel();
+        $product = new Artikel($this->db);
         $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
         if (!empty($product->cURLFull)) {
             return \mb_strpos($product->cURLFull, '?') === false
@@ -126,7 +126,7 @@ class ReviewController extends BaseController
      * @param int    $stars
      * @return string
      */
-    private function save(int $productID, int $customerID, int $langID, $title, $text, int $stars): string
+    private function save(int $productID, int $customerID, int $langID, string $title, string $text, int $stars): string
     {
         $url = $this->getProductURL($productID);
         if ($stars < 1 || $stars > 5) {
@@ -197,7 +197,7 @@ class ReviewController extends BaseController
             );
             exit();
         }
-        $product = new Artikel();
+        $product = new Artikel($this->db);
         $product->fuelleArtikel($params['kArtikel'], Artikel::getDefaultOptions());
         if (!$product->kArtikel) {
             \header('Location: ' . Shop::getURL() . '/', true, 303);

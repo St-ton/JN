@@ -80,7 +80,7 @@ abstract class AbstractExporter implements ExporterInterface
     }
 
     /**
-     * @inheritdoc
+     * @return string
      */
     public function getFileWriterClass(): string
     {

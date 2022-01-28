@@ -30,7 +30,6 @@ interface ExportWriterInterface
 
     /**
      * @return int
-     * @throws \SmartyException
      */
     public function writeFooter(): int;
 

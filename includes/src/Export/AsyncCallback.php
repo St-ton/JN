@@ -297,6 +297,7 @@ class AsyncCallback
     public function setError(?string $error): AsyncCallback
     {
         $this->error = $error;
+
         return $this;
     }
 }

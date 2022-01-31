@@ -12,7 +12,6 @@ require_once __DIR__ . '/includes/globalinclude.php';
 
 Shop::setPageType(PAGE_PASSWORTVERGESSEN);
 $linkHelper  = Shop::Container()->getLinkService();
-$kLink       = $linkHelper->getSpecialPageID(LINKTYP_PASSWORD_VERGESSEN);
 $step        = 'formular';
 $db          = Shop::Container()->getDB();
 $alertHelper = Shop::Container()->getAlertService();
@@ -109,7 +108,7 @@ if ($valid && isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POS
     $step = 'confirm';
 }
 $cCanonicalURL = $linkHelper->getStaticRoute('pass.php');
-$link          = $linkHelper->getPageLink($kLink);
+$link          = $linkHelper->getSpecialPage(LINKTYP_PASSWORD_VERGESSEN);
 if (!$alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
     $alertHelper->addAlert(
         Alert::TYPE_INFO,

@@ -220,8 +220,6 @@ if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
     Cart::refreshChecksum($cart);
     $_SESSION['AktiveZahlungsart'] = $savedPayment;
 }
-$kLink = $linkService->getSpecialPageID(LINKTYP_BESTELLVORGANG);
-$link  = $linkService->getPageLink($kLink);
 CartHelper::addVariationPictures($cart);
 Shop::Smarty()->assign(
     'AGB',
@@ -232,7 +230,7 @@ Shop::Smarty()->assign(
 )
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
     ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
-    ->assign('Link', $link)
+    ->assign('Link', $linkService->getSpecialPage(LINKTYP_BESTELLVORGANG))
     ->assign('alertNote', $alertService->alertTypeExists(Alert::TYPE_NOTE))
     ->assign('step', $step)
     ->assign(

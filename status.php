@@ -57,8 +57,8 @@ if (!empty($uid)) {
     }
 
     $smarty->assign('Bestellung', $order)
-           ->assign('uid', Text::filterXSS($uid))
-           ->assign('showLoginPanel', Frontend::getCustomer()->isLoggedIn());
+        ->assign('uid', Text::filterXSS($uid))
+        ->assign('showLoginPanel', Frontend::getCustomer()->isLoggedIn());
 
     if ($plzValid || Frontend::getCustomer()->isLoggedIn()) {
         $db->update('tbestellstatus', 'cUID', $uid, (object)[

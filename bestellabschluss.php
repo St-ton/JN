@@ -108,7 +108,7 @@ if ($kPlugin > 0) {
     try {
         $plugin = $loader->init($kPlugin);
         $smarty->assign('oPlugin', $plugin)
-               ->assign('plugin', $plugin);
+            ->assign('plugin', $plugin);
     } catch (InvalidArgumentException $e) {
         Shop::Container()->getLogService()->error(
             'Associated plugin for payment method ' . $bestellung->Zahlungsart->cModulId . ' not found'

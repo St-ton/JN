@@ -241,9 +241,9 @@ Shop::Smarty()->assign(
     ->assign('Warensumme', $cart->gibGesamtsummeWaren())
     ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
     ->assign('bestellschritt', gibBestellschritt($step))
-    ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
-    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
-    ->assign('unregForm', Request::verifyGPCDataInt('unreg_form'));
+    ->assign('unregForm', Request::verifyGPCDataInt('unreg_form'))
+    ->assignDeprecated('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL, '5.0.0')
+    ->assignDeprecated('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK, '5.0.0');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_BESTELLVORGANG_PAGE);

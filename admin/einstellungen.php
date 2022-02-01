@@ -132,14 +132,9 @@ if ($step === 'einstellungen bearbeiten') {
         $sectionInstance->filter(Request::verifyGPDataString('group'));
         $sections = [$sectionInstance];
     }
+    $group = Text::filterXSS(Request::verifyGPDataString('group'));
     $smarty->assign('section', $section)
-        ->assign(
-            'title',
-            __('settings') . ': ' . (Request::verifyGPDataString('group') !== ''
-                ? __(Request::verifyGPDataString('group'))
-                : __($section->getName())
-            )
-        )
+        ->assign('title', __('settings') . ': ' . ($group !== '' ? __($group) : __($section->getName())))
         ->assign('sections', $sections);
 }
 

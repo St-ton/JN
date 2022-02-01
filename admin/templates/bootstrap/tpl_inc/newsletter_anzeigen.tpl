@@ -1,6 +1,6 @@
 <div id="page">
     <div id="content">
-        <form method="post" action="newsletter.php">
+        <form method="post" action="{$adminURL}/newsletter.php">
             {$jtl_token}
             <div id="welcome" class="post">
                 <h2 class="title"><span>{__('newsletterhistory')}</span></h2>

@@ -5,7 +5,7 @@
     {include file='tpl_inc/seite_header.tpl' cTitel=__('modifyExportformat')}
 {/if}
 <div id="content">
-    <form name="wxportformat_erstellen" method="post" action="exportformate.php">
+    <form name="wxportformat_erstellen" method="post" action="{$adminURL}/exportformate.php">
         {$jtl_token}
         {if $exportID > 0}
             <input type="hidden" name="action" value="create" />
@@ -197,7 +197,7 @@
         <div class="save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <a class="btn btn-outline-primary btn-block" href="exportformate.php">
+                    <a class="btn btn-outline-primary btn-block" href="{$adminURL}/exportformate.php">
                         {__('cancelWithIcon')}
                     </a>
                 </div>

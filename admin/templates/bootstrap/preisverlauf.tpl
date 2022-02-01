@@ -9,7 +9,7 @@
             {include file='tpl_inc/config_section.tpl'
                     name='einstellen'
                     a='saveSettings'
-                    action='preisverlauf.php'
+                    action=$adminURL|cat:'/preisverlauf.php'
                     title=__('settings')
                     skipHeading=true
                     tab='einstellungen'}

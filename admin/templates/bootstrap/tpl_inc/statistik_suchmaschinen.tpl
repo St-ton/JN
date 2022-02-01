@@ -106,8 +106,8 @@
                         <thead>
                         <tr>
                             <th class="check">&nbsp;</th>
-                            <th class="text-center">{__('crawlerListUserAgent')}</th>
-                            <th class=" text-center">{__('crawlerListDescription')}</th>
+                            <th class="text-center">{JTL\Helpers\Text::filterXSS(__('crawlerListUserAgent'))}</th>
+                            <th class=" text-center">{JTL\Helpers\Text::filterXSS(__('crawlerListDescription'))}</th>
                             <th class="th-5 text-center">&nbsp;</th>
                         </tr>
                         </thead>

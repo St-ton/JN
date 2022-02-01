@@ -386,13 +386,13 @@ if ($step === 'uebersicht') {
             FROM tkundengruppe
             ORDER BY cName'
     );
+    getAdminSectionSettings(CONF_NEWSLETTER);
     $smarty->assign('kundengruppen', $customerGroupsByName)
         ->assign('oNewsletterQueue_arr', $queue)
         ->assign('oNewsletterVorlage_arr', $templates)
         ->assign('oNewslettervorlageStd_arr', $defaultData)
         ->assign('oNewsletterEmpfaenger_arr', $inactiveRecipients)
         ->assign('oNewsletterHistory_arr', $history)
-        ->assign('oConfig_arr', getAdminSectionSettings(CONF_NEWSLETTER))
         ->assign('oAbonnenten_arr', $admin->getSubscribers(
             ' LIMIT ' . $pagiSubscriptions->getLimitSQL(),
             $activeSearchSQL

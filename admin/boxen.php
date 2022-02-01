@@ -218,7 +218,7 @@ $alertHelper->addAlert(
     'warningNovaSidebar',
     ['dismissable' => false]
 );
-
+getAdminSectionSettings(CONF_BOXEN);
 $smarty->assign('filterMapping', $filterMapping)
     ->assign('validPageTypes', $boxAdmin->getMappedValidPageTypes())
     ->assign('bBoxenAnzeigen', $boxAdmin->getVisibility($pageID))
@@ -232,5 +232,4 @@ $smarty->assign('filterMapping', $filterMapping)
     ->assign('oBoxenContainer', $boxContainer)
     ->assign('nPage', $pageID)
     ->assign('invisibleBoxes', $boxAdmin->getInvisibleBoxes())
-    ->assign('oConfig_arr', getAdminSectionSettings(CONF_BOXEN))
     ->display('boxen.tpl');

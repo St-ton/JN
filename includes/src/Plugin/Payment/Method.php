@@ -148,7 +148,7 @@ class Method implements MethodInterface
         ) {
             return Shop::getURL() . '/bestellvorgang.php';
         }
-        if (Shop::getSettings([\CONF_KAUFABWICKLUNG])['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') {
+        if (Shop::getSettingValue(\CONF_KAUFABWICKLUNG, 'bestellabschluss_abschlussseite') === 'A') {
             // Abschlussseite
             $paymentID = $this->db->getSingleObject(
                 'SELECT cId
@@ -390,7 +390,7 @@ class Method implements MethodInterface
      */
     public function loadSettings()
     {
-        $this->paymentConfig = Shop::getSettings([\CONF_ZAHLUNGSARTEN])['zahlungsarten'];
+        $this->paymentConfig = Shop::getSettingSection(\CONF_ZAHLUNGSARTEN);
 
         return $this;
     }

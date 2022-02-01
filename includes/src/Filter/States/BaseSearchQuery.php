@@ -1121,7 +1121,7 @@ class BaseSearchQuery extends AbstractFilter
         $max     = 0;
         $current = '';
         $prefix  = 'tartikel.';
-        $conf    = $conf['artikeluebersicht'] ?? Shop::getSettings([\CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
+        $conf    = $conf['artikeluebersicht'] ?? Shop::getSettingSection(\CONF_ARTIKELUEBERSICHT);
         if (!LanguageHelper::isDefaultLanguageActive()) {
             $prefix = 'tartikelsprache.';
         }

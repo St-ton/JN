@@ -610,8 +610,8 @@ $queryMapping   = $db->getObjects(
         LIMIT ' . $paginationMapping->getLimitSQL(),
     ['lid' => $languageID]
 );
-$smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs, true))
-    ->assign('Suchanfragen', $searchQueries)
+getAdminSectionSettings($settingsIDs, true);
+$smarty->assign('Suchanfragen', $searchQueries)
     ->assign('Suchanfragenerfolglos', $failedQueries)
     ->assign('Suchanfragenblacklist', $queryBlacklist)
     ->assign('Suchanfragenmapping', $queryMapping)

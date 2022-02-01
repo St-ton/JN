@@ -15,6 +15,7 @@
         {/if}
         <div>
             {include file='tpl_inc/config_sections.tpl' sections=$sections|default:([$section])}
+            {$additional|default:''}
         </div>
         <div class="save-wrapper card-footer">
             <div class="row">

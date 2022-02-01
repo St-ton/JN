@@ -368,7 +368,16 @@
                 </form>
             </div>
             <div id="einstellungen" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
-                {include file='tpl_inc/config_section.tpl' name='einstellen' a='saveSettings' action=$adminURL|cat:'/news.php' buttonCaption=__('saveWithIcon') title=__('settings') skipHeading=true tab='einstellungen'}
+                {include file='tpl_inc/news_month_prefixes.tpl' assign='additional'}
+                {include file='tpl_inc/config_section.tpl'
+                    name='einstellen'
+                    a='saveSettings'
+                    action=$adminURL|cat:'/news.php'
+                    buttonCaption=__('saveWithIcon')
+                    title=__('settings')
+                    skipHeading=true
+                    additional=$additional
+                    tab='einstellungen'}
             </div>
         </div>
     </div>

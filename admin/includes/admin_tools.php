@@ -46,7 +46,7 @@ function getAdminSectionSettings($configSectionID, bool $byName = false): array
             $in[] = ':itm' . $i;
         }
         $sectionIDs      = $db->getObjects(
-            'SELECT UNIQUE ec.kEinstellungenSektion AS id
+            'SELECT DISTINCT ec.kEinstellungenSektion AS id
                 FROM teinstellungenconf AS ec
                 LEFT JOIN teinstellungen_default AS e
                     ON e.cName = ec.cWertName 

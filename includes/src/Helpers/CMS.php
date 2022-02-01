@@ -28,7 +28,7 @@ class CMS
         if (!$customerGroupID || !Frontend::getCustomerGroup()->mayViewCategories()) {
             return [];
         }
-        $boxes         = self::getHomeBoxList(Shop::getSettings([\CONF_STARTSEITE])['startseite']);
+        $boxes         = self::getHomeBoxList(Shop::getSettingSection(\CONF_STARTSEITE));
         $searchSpecial = new SearchSpecial(Shop::Container()->getDB(), Shop::Container()->getCache());
         foreach ($boxes as $box) {
             $type       = 0;

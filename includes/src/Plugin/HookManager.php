@@ -18,39 +18,39 @@ use JTL\Smarty\JTLSmarty;
 class HookManager
 {
     /**
-     * @var HookManager
+     * @var HookManager|null
      */
-    private static $instance;
+    private static ?HookManager $instance;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var TimeDataCollector
      */
-    private $timer;
+    private TimeDataCollector $timer;
 
     /**
      * @var array
      */
-    private $hookList;
+    private array $hookList;
 
     /**
      * @var Dispatcher
      */
-    private $dispatcher;
+    private Dispatcher $dispatcher;
 
     /**
      * @var int
      */
-    private $lockedForPluginID = 0;
+    private int $lockedForPluginID = 0;
 
     /**
      * HookManager constructor.

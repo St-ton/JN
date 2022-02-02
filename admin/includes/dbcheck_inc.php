@@ -553,6 +553,9 @@ function doMigrateToInnoDB_utf8(
                 Shop::Container()->getLogService()->error(sprintf(__('errorEmptyCache'), $e->getMessage()));
             }
             $callback    = static function (array $pParameters) {
+                if (strpos($pParameters['filename'], '.') === 0) {
+                    return;
+                }
                 if (!$pParameters['isdir']) {
                     @unlink($pParameters['path'] . $pParameters['filename']);
                 } else {

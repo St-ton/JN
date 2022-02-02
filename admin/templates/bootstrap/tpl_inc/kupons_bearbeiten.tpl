@@ -498,7 +498,7 @@
                                 $('#customerSelectionInfo').val(selectedCustomers.length + ' {__('customers')}');
                                 $('#cKunden').val(selectedCustomers.join(';'));
                             } else {
-                                $('#customerSelectionInfo').val('{__('all')}' + ' {__('customer')}');
+                                $('#customerSelectionInfo').val('{__('all')}' + ' {__('customers')}');
                                 $('#cKunden').val('-1');
                             }
                         }

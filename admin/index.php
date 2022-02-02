@@ -92,7 +92,6 @@ $profilerState = Profiler::getIsActive();
 switch ($profilerState) {
     case 0:
     default:
-        $type = '';
         break;
     case 1:
         $type = 'Datenbank';

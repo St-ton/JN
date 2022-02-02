@@ -963,7 +963,7 @@ function gibStepVersand(): void
  * @param array $post
  * @return array|int
  */
-function plausiKupon($post)
+function plausiKupon(array $post)
 {
     $errors = [];
     if (isset($post['Kuponcode'])
@@ -972,9 +972,9 @@ function plausiKupon($post)
         $coupon = new Kupon();
         $coupon = $coupon->getByCode($_POST['Kuponcode']);
         if ($coupon !== false && $coupon->kKupon > 0) {
-            $errors = Kupon::checkCoupon($coupon);
+            $errors = $coupon->check();
             if (angabenKorrekt($errors)) {
-                Kupon::acceptCoupon($coupon);
+                $coupon->accept();
                 if ($coupon->cKuponTyp === Kupon::TYPE_SHIPPING) { // Versandfrei Kupon
                     $_SESSION['oVersandfreiKupon'] = $coupon;
                 }
@@ -1026,8 +1026,8 @@ function plausiNeukundenKupon()
         $coupons = (new Kupon())->getNewCustomerCoupon();
         if (!empty($coupons) && !Kupon::newCustomerCouponUsed($customer->cMail)) {
             foreach ($coupons as $coupon) {
-                if (angabenKorrekt(Kupon::checkCoupon($coupon))) {
-                    Kupon::acceptCoupon($coupon);
+                if (angabenKorrekt($coupon->check())) {
+                    $coupon->accept();
                     break;
                 }
             }

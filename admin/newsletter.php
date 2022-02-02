@@ -102,7 +102,7 @@ if (Form::validateToken()) {
             }
         }
     } elseif (mb_strlen(Request::verifyGPDataString('cSucheInaktiv')) > 0) { // Inaktive Abonnentensuche
-        $query = $db->escape(Text::filterXSS(Request::verifyGPDataString('cSucheInaktiv')));
+        $query = Request::verifyGPDataString('cSucheInaktiv');
         if (mb_strlen($query) > 0) {
             $inactiveSearchSQL->setWhere(' AND (tnewsletterempfaenger.cVorname LIKE :qry
                 OR tnewsletterempfaenger.cNachname LIKE :qry
@@ -110,9 +110,9 @@ if (Form::validateToken()) {
             $inactiveSearchSQL->addParam('qry', '%' . $query . '%');
         }
 
-        $smarty->assign('cSucheInaktiv', $query);
+        $smarty->assign('cSucheInaktiv', Text::filterXSS($query));
     } elseif (mb_strlen(Request::verifyGPDataString('cSucheAktiv')) > 0) { // Aktive Abonnentensuche
-        $query = $db->escape(Text::filterXSS(Request::verifyGPDataString('cSucheAktiv')));
+        $query = Request::verifyGPDataString('cSucheAktiv');
         if (mb_strlen($query) > 0) {
             $activeSearchSQL->setWhere(' AND (tnewsletterempfaenger.cVorname LIKE :qry
                 OR tnewsletterempfaenger.cNachname LIKE :qry
@@ -120,7 +120,7 @@ if (Form::validateToken()) {
             $activeSearchSQL->addParam('qry', '%' . $query . '%');
         }
 
-        $smarty->assign('cSucheAktiv', $query);
+        $smarty->assign('cSucheAktiv', Text::filterXSS($query));
     } elseif (Request::verifyGPCDataInt('vorschau') > 0) { // Vorschau
         $nlTemplateID = Request::verifyGPCDataInt('vorschau');
         // Infos der Vorlage aus DB holen

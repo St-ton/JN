@@ -381,7 +381,7 @@ class JTLSmarty extends BC
         if ($mapped !== null) {
             return $mapped;
         }
-        if (\str_starts_with($resourceName, 'file:') === 0) {
+        if (\str_starts_with($resourceName, 'file:')) {
             $resourceName = \str_replace('file:', '', $resourceName);
             $transform    = true;
         }

@@ -86,14 +86,13 @@ final class Products extends AbstractSync
             return;
         }
         // get list of all categories the product is currently associated with
-        $currentCategoryIDs = map($this->db->selectAll(
-            'tkategorieartikel',
-            'kArtikel',
-            $productID,
-            'kKategorie'
-        ), static function ($e) {
-            return (int)$e->kKategorie;
-        });
+        $currentCategoryIDs = $this->db->getInts(
+            'SELECT kKategorie
+                FROM tkategorieartikel
+                WHERE kArtikel = :pid',
+            'kKategorie',
+            ['pid' => $productID]
+        );
         // get list of all categories the product will be associated with after this update
         $newCategoryIDs = map($this->mapper->mapArray(
             $xml['tartikel'],
@@ -1017,6 +1016,7 @@ final class Products extends AbstractSync
         $this->deleteProductMediaFiles($id);
         if ($force === true) {
             $this->deleteProductDownloads($id);
+            $this->deleteProductUploads($id);
             $this->db->delete('tartikelkategorierabatt', 'kArtikel', $id);
             $this->db->delete('tartikelpicthistory', 'kArtikel', $id);
             $this->db->delete('tsuchcachetreffer', 'kArtikel', $id);
@@ -1026,7 +1026,6 @@ final class Products extends AbstractSync
         } else {
             $this->deleteDownload($id);
         }
-        $this->deleteProductUploads($id);
         $this->deleteConfigGroup($id);
 
         return $id;
@@ -1167,9 +1166,13 @@ final class Products extends AbstractSync
      */
     private function getDownloadIDs(int $productID): array
     {
-        return map($this->db->selectAll('tartikeldownload', 'kArtikel', $productID), static function ($item) {
-            return (int)$item->kDownload;
-        });
+        return $this->db->getInts(
+            'SELECT kDownload
+                FROM tartikeldownload
+                WHERE kArtikel = :pid',
+            'kDownload',
+            ['pid' => $productID]
+        );
     }
 
     /**
@@ -1257,13 +1260,13 @@ final class Products extends AbstractSync
      */
     private function addCategoryDiscounts(int $productID): array
     {
-        $customerGroups     = $this->db->getObjects('SELECT kKundengruppe FROM tkundengruppe');
+        $customerGroups     = $this->db->getInts('SELECT kKundengruppe FROM tkundengruppe', 'kKundengruppe');
         $affectedProductIDs = [];
         $this->db->delete('tartikelkategorierabatt', 'kArtikel', $productID);
         if (\count($customerGroups) === 0) {
             return $affectedProductIDs;
         }
-        foreach ($customerGroups as $item) {
+        foreach ($customerGroups as $customerGroupID) {
             $maxDiscount = $this->db->getSingleObject(
                 'SELECT tkategoriekundengruppe.fRabatt, tkategoriekundengruppe.kKategorie
                 FROM tkategoriekundengruppe
@@ -1279,7 +1282,7 @@ final class Products extends AbstractSync
                 LIMIT 1',
                 [
                     'kArtikel'      => $productID,
-                    'kKundengruppe' => (int)$item->kKundengruppe,
+                    'kKundengruppe' => $customerGroupID,
                 ]
             );
 
@@ -1291,7 +1294,7 @@ final class Products extends AbstractSync
                             fRabatt    = IF(fRabatt < :discount, :discount, fRabatt)',
                     [
                         'productID'     => $productID,
-                        'customerGroup' => (int)$item->kKundengruppe,
+                        'customerGroup' => $customerGroupID,
                         'categoryID'    => $maxDiscount->kKategorie,
                         'discount'      => $maxDiscount->fRabatt,
                     ]
@@ -1312,25 +1315,22 @@ final class Products extends AbstractSync
      */
     private function getConfigParents(int $productID): array
     {
-        $configGroupIDs = map(
-            $this->db->selectAll('tkonfigitem', 'kArtikel', $productID, 'kKonfiggruppe'),
-            static function ($item) {
-                return (int)$item->kKonfiggruppe;
-            }
+        $configGroupIDs = $this->db->getInts(
+            'SELECT kKonfiggruppe
+                FROM tkonfigitem 
+                WHERE kArtikel = :pid',
+            'kKonfiggruppe',
+            ['pid' => $productID]
         );
         if (\count($configGroupIDs) === 0) {
             return [];
         }
 
-        return map(
-            $this->db->getObjects(
-                'SELECT kArtikel AS id
-                    FROM tartikelkonfiggruppe
-                    WHERE kKonfiggruppe IN (' . \implode(',', $configGroupIDs) . ')'
-            ),
-            static function ($item) {
-                return (int)$item->id;
-            }
+        return $this->db->getInts(
+            'SELECT kArtikel AS id
+                FROM tartikelkonfiggruppe
+                WHERE kKonfiggruppe IN (' . \implode(',', $configGroupIDs) . ')',
+            'id'
         );
     }
 

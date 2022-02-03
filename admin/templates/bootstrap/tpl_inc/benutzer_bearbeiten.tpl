@@ -117,7 +117,7 @@ $(document).ready(function() {
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('benutzerDesc')}
 <div id="content">
-    <form class="navbar-form" action="benutzerverwaltung.php" method="post" enctype="multipart/form-data">
+    <form class="navbar-form" action="{$adminURL}/benutzerverwaltung.php" method="post" enctype="multipart/form-data">
         {$jtl_token}
         <div id="settings" class="settings">
             <div class="card">
@@ -457,7 +457,7 @@ $(document).ready(function() {
         <div class="card-footer save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <a class="btn btn-outline-primary btn-block" href="benutzerverwaltung.php">
+                    <a class="btn btn-outline-primary btn-block" href="{$adminURL}/benutzerverwaltung.php">
                         {__('cancelWithIcon')}
                     </a>
                 </div>

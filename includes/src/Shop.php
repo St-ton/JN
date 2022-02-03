@@ -31,7 +31,6 @@ use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\ProductFilter;
 use JTL\Helpers\Form;
-use JTL\Helpers\PHPSettings;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
@@ -687,6 +686,15 @@ final class Shop
     public static function getConfig($config): array
     {
         return self::getSettings($config);
+    }
+
+    /**
+     * @param int $sectionID
+     * @return array|null
+     */
+    public static function getSettingSection(int $sectionID): ?array
+    {
+        return (self::$settings ?? Shopsetting::getInstance())->getSection($sectionID);
     }
 
     /**
@@ -1454,24 +1462,9 @@ final class Shop
             }
             if ($requestFile === '/') {
                 // special case: home page is accessible without seo url
-                $link = null;
                 self::setPageType(\PAGE_STARTSEITE);
                 self::$fileName = 'seite.php';
-                if (Frontend::getCustomerGroup()->getID() > 0) {
-                    $customerGroupSQL = " AND (FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
-                        . "', REPLACE(cKundengruppen, ';', ',')) > 0
-                        OR cKundengruppen IS NULL
-                        OR cKundengruppen = 'NULL'
-                        OR tlink.cKundengruppen = '')";
-                    $link             = self::Container()->getDB()->getSingleObject(
-                        'SELECT kLink
-                            FROM tlink
-                            WHERE nLinkart = ' . \LINKTYP_STARTSEITE . $customerGroupSQL
-                    );
-                }
-                self::$kLink = isset($link->kLink)
-                    ? (int)$link->kLink
-                    : self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_STARTSEITE);
+                self::$kLink    = self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_STARTSEITE);
             } elseif (Media::getInstance()->isValidRequest($path)) {
                 Media::getInstance()->handleRequest($path);
             } else {
@@ -1483,15 +1476,12 @@ final class Shop
             $link = self::Container()->getLinkService()->getLinkByID(self::$kLink);
             if ($link !== null && ($linkType = $link->getLinkType()) > 0) {
                 self::$nLinkart = $linkType;
-
                 if ($linkType === \LINKTYP_EXTERNE_URL) {
                     \header('Location: ' . $link->getURL(), true, 303);
                     exit;
                 }
-
                 self::$fileName = 'seite.php';
                 self::setPageType(\PAGE_EIGENE);
-
                 if ($linkType === \LINKTYP_STARTSEITE) {
                     self::setPageType(\PAGE_STARTSEITE);
                 } elseif ($linkType === \LINKTYP_DATENSCHUTZ) {
@@ -1688,8 +1678,7 @@ final class Shop
     public static function getLogo(bool $fullUrl = false): ?string
     {
         $ret  = null;
-        $conf = self::getSettings([\CONF_LOGO]);
-        $logo = $conf['logo']['shop_logo'] ?? null;
+        $logo = self::getSettingValue(\CONF_LOGO, 'shop_logo');
         if ($logo !== null && $logo !== '') {
             $ret = \PFAD_SHOPLOGO . $logo;
         } elseif (\is_dir(\PFAD_ROOT . \PFAD_SHOPLOGO)) {

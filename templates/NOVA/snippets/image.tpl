@@ -23,7 +23,6 @@
             {$srcSize = \JTL\Media\Image::SIZE_LG}
         {/if}
 
-
         {$imageType = $item->getImageType()}
 
         {if $imageType === \JTL\Media\Image::TYPE_CHARACTERISTIC_VALUE}
@@ -93,10 +92,15 @@
             <div class="inner">
         {/if}
             {block name='snippets-image-main-image'}
+                {if $imageType === \JTL\Media\Image::TYPE_PRODUCT || $imageType === \JTL\Media\Image::TYPE_VARIATION}
+                    {$alt=$alt|strip_tags|escape:'quotes'}
+                {else}
+                    {$alt=$alt|strip_tags|escape:'quotes'|escape:'html'}
+                {/if}
                 {if $item->getImage($srcSize)|strpos:'keinBild.gif' !== false}
                     {image fluid=$fluid lazy=$lazy webp=$webp center=$center
                         src=$item->getImage($srcSize)
-                        alt=$alt|strip_tags|escape:'quotes'|escape:'html'
+                        alt=$alt
                         width=130
                         height= 130
                         class=$class|cat:" img-aspect-ratio"
@@ -108,7 +112,7 @@
                                 {$item->getImage(\JTL\Media\Image::SIZE_SM)} {$klein}w,
                                 {$item->getImage(\JTL\Media\Image::SIZE_MD)} {$normal}w,
                                 {$item->getImage(\JTL\Media\Image::SIZE_LG)} {$gross}w"
-                        alt=$alt|strip_tags|escape:'quotes'|escape:'html'
+                        alt=$alt
                         sizes=$sizes
                         width=$width
                         height=$height

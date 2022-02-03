@@ -115,10 +115,10 @@
                 </span>
             {/if}
             {if !$listingItem->isActive()}
-                <a class="btn btn-primary" href="shoptemplate.php?action=switch&dir={$listingItem->getDir()}{if $listingItem->getOptionsCount() > 0}&config=1{/if}&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('activate')}</a>
+                <a class="btn btn-primary" href="{$adminURL}/shoptemplate.php?action=switch&dir={$listingItem->getDir()}{if $listingItem->getOptionsCount() > 0}&config=1{/if}&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('activate')}</a>
             {else}
                 {if $listingItem->getOptionsCount() > 0}
-                    <a class="btn btn-outline-primary" href="shoptemplate.php?action=config&dir={$listingItem->getDir()}&token={$smarty.session.jtl_token}"><i class="fal fa-edit"></i> {__('settings')}</a>
+                    <a class="btn btn-outline-primary" href="{$adminURL}/shoptemplate.php?action=config&dir={$listingItem->getDir()}&token={$smarty.session.jtl_token}"><i class="fal fa-edit"></i> {__('settings')}</a>
                 {/if}
             {/if}
         {/if}

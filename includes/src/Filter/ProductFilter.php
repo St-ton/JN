@@ -953,7 +953,7 @@ class ProductFilter
     /**
      * get filters that can be displayed at content level
      *
-     * @return array|FilterInterface[]
+     * @return FilterInterface[]
      */
     public function getAvailableContentFilters(): array
     {
@@ -964,8 +964,7 @@ class ProductFilter
 
         return \array_filter(
             $this->filters,
-            static function ($f) use ($templateSettings) {
-                /** @var FilterInterface $f */
+            static function (FilterInterface $f) use ($templateSettings) {
                 return $f->getVisibility() === Visibility::SHOW_ALWAYS
                     || $f->getVisibility() === Visibility::SHOW_CONTENT
                     || ($f->getClassName() === PriceRange::class
@@ -1659,6 +1658,7 @@ class ProductFilter
 
             $this->searchResults->setPages($pages)
                                 ->setFilterOptions($this, $category)
+                                ->setSearchTerm($this->search->getName())
                                 ->setSearchTermWrite($this->metaData->getHeader());
         } else {
             $productList = $this->searchResults->getProducts();
@@ -1694,7 +1694,7 @@ class ProductFilter
                 $productsPerPage = null;
             }
             foreach ($productKeys->forPage($this->nSeite, $productsPerPage) as $id) {
-                $productList->push((new Artikel())->fuelleArtikel($id, $opt));
+                $productList->push((new Artikel($this->db))->fuelleArtikel($id, $opt));
             }
             $productList = $productList->filter();
             $this->searchResults->setVisibleProductCount($productList->count());

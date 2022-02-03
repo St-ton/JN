@@ -127,7 +127,7 @@
                                                                 {image lazy=true
                                                                     webp=true
                                                                     src=$Artikel->cHerstellerBildURLKlein
-                                                                    alt=$Artikel->cHersteller
+                                                                    alt=$Artikel->cHersteller|escape:'html'
                                                                 }
                                                                 <meta itemprop="image" content="{$Artikel->cHerstellerBildURLKlein}">
                                                             {/if}

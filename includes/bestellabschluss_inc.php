@@ -160,13 +160,12 @@ function bestellungInDB($cleared = 0, $orderNo = '')
         );
         $cart->kLieferadresse = $_SESSION['Bestellung']->kLieferadresse;
     }
-    $conf = Shop::getSettings([CONF_GLOBAL]);
-    //füge Warenkorb ein
+    // füge Warenkorb ein
     executeHook(HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB, ['oWarenkorb' => &$cart, 'oBestellung' => &$order]);
     $cart->kWarenkorb = $cart->insertInDB();
-    //füge alle Warenkorbpositionen ein
+    // füge alle Warenkorbpositionen ein
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
-        $productFilter = (int)$conf['global']['artikel_artikelanzeigefilter'];
+        $productFilter = (int)Shop::getSettingValue(CONF_GLOBAL, 'artikel_artikelanzeigefilter');
         /** @var CartItem $item */
         foreach ($cart->PositionenArr as $item) {
             if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
@@ -686,7 +685,7 @@ function updateStock(int $productID, $amount, $packeinheit)
  * @param int|float $amount
  * @return int|float - neuer Lagerbestand
  */
-function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
+function aktualisiereStuecklistenLagerbestand(Artikel $bomProduct, $amount)
 {
     $amount        = (float)$amount;
     $bomID         = (int)$bomProduct->kStueckliste;
@@ -696,8 +695,9 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
     if ($amount <= 0) {
         return $newStockLevel;
     }
+    $db = Shop::Container()->getDB();
     // Gibt es lagerrelevante Komponenten in der Stückliste?
-    $components = Shop::Container()->getDB()->getObjects(
+    $components = $db->getObjects(
         "SELECT tstueckliste.kArtikel, tstueckliste.fAnzahl
             FROM tstueckliste
             JOIN tartikel
@@ -707,12 +707,12 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
         ['slid' => $bomID]
     );
 
-    if (is_array($components) && count($components) > 0) {
+    if (count($components) > 0) {
         // wenn ja, dann wird für diese auch der Bestand aktualisiert
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
         foreach ($components as $component) {
-            $tmpArtikel = new Artikel();
+            $tmpArtikel = new Artikel($db);
             $tmpArtikel->fuelleArtikel($component->kArtikel, $options);
             $compStockLevel = floor(
                 aktualisiereLagerbestand(
@@ -745,7 +745,7 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
             $newStockLevel = $negStockLevel;
         }
 
-        Shop::Container()->getDB()->update(
+        $db->update(
             'tartikel',
             'kArtikel',
             (int)$bomProduct->kArtikel,
@@ -872,12 +872,10 @@ function KuponVerwendungen($order): void
  */
 function baueBestellnummer(): string
 {
-    $conf      = Shop::getSettings([CONF_KAUFABWICKLUNG]);
+    $conf      = Shop::getSettingSection(CONF_KAUFABWICKLUNG);
     $number    = new Nummern(JTL_GENNUMBER_ORDERNUMBER);
     $orderNo   = 1;
-    $increment = isset($conf['kaufabwicklung']['bestellabschluss_bestellnummer_anfangsnummer'])
-        ? (int)$conf['kaufabwicklung']['bestellabschluss_bestellnummer_anfangsnummer']
-        : 1;
+    $increment = (int)($conf['bestellabschluss_bestellnummer_anfangsnummer'] ?? 1);
     if ($number) {
         $orderNo = $number->getNummer() + $increment;
         $number->setNummer($number->getNummer() + 1);
@@ -893,12 +891,12 @@ function baueBestellnummer(): string
     $prefix = str_replace(
         ['%Y', '%m', '%d', '%W'],
         [date('Y'), date('m'), date('d'), date('W')],
-        $conf['kaufabwicklung']['bestellabschluss_bestellnummer_praefix']
+        $conf['bestellabschluss_bestellnummer_praefix']
     );
     $suffix = str_replace(
         ['%Y', '%m', '%d', '%W'],
         [date('Y'), date('m'), date('d'), date('W')],
-        $conf['kaufabwicklung']['bestellabschluss_bestellnummer_suffix']
+        $conf['bestellabschluss_bestellnummer_suffix']
     );
     executeHook(HOOK_BESTELLABSCHLUSS_INC_BAUEBESTELLNUMMER, [
         'orderNo' => &$orderNo,
@@ -1086,14 +1084,13 @@ function gibLieferadresseAusSession()
  */
 function pruefeVerfuegbarkeit(): array
 {
-    $res  = ['cArtikelName_arr' => []];
-    $conf = Shop::getSettings([CONF_GLOBAL]);
+    $res = ['cArtikelName_arr' => []];
     foreach (Frontend::getCart()->PositionenArr as $item) {
         if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
             && isset($item->Artikel->cLagerBeachten)
             && $item->Artikel->cLagerBeachten === 'Y'
             && $item->Artikel->cLagerKleinerNull === 'Y'
-            && $conf['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
+            && Shop::getSettingValue(CONF_GLOBAL, 'global_lieferverzoegerung_anzeigen') === 'Y'
             && $item->nAnzahl > $item->Artikel->fLagerbestand
         ) {
             $res['cArtikelName_arr'][] = $item->Artikel->cName;

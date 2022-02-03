@@ -794,4 +794,17 @@ class Plugins
     {
         return \htmlspecialchars($params['title'], \ENT_COMPAT, \JTL_CHARSET, false);
     }
+
+    /**
+     * removes currency for given price string
+     * @param String $price
+     * @return String
+     */
+    public function removeCurrency($price = ''): string
+    {
+        $currSep=Frontend::getCurrency()->getDecimalSeparator();
+        $currTho=Frontend::getCurrency()->getThousandsSeparator();
+
+        return \str_replace('.',$currSep,\sprintf("%.2f",\str_replace($currSep,'.',\str_replace($currTho, '', ($price)))));
+    }
 }

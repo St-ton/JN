@@ -43,10 +43,15 @@
                 {block name='productdetails-price-snippets'}
                     {if $tplscope !== 'box'}
                         {if $Artikel->Preise->oPriceRange->isRange()}
-                            <meta itemprop="minPrice" content="{$Artikel->Preise->oPriceRange->minBruttoPrice}">
-                            <meta itemprop="maxPrice" content="{$Artikel->Preise->oPriceRange->maxBruttoPrice}">
+                            <meta itemprop="minPrice" content="{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|removeCurrency}">
+                            <meta itemprop="maxPrice" content="{$Artikel->Preise->oPriceRange->getMaxLocalized($NettoPreise)|removeCurrency}">
                         {/if}
-                        <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{$Artikel->Preise->oPriceRange->minBruttoPrice}{else}{$Artikel->Preise->fVKBrutto}{/if}">
+                        {if $Artikel->Preise->oPriceRange->isRange()}
+                            {$priceNoCurr = $Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)}
+                        {else}
+                            {$priceNoCurr = $Artikel->Preise->cVKLocalized[$NettoPreise]}
+                        {/if}
+                        <meta itemprop="price" content="{$priceNoCurr|removeCurrency}">
                         <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
                         {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== null && $Artikel->dSonderpreisEnde_en !== null}
                             <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">

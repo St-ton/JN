@@ -38,9 +38,9 @@
                         {foreach $oAdminList_arr as $oAdmin}
                             <tr>
                                 <td class="text-left">{$oAdmin->kAdminlogin}</td>
-                                <td class="text-center">{$oAdmin->cLogin}</td>
+                                <td class="text-center">{JTL\Helpers\Text::filterXSS($oAdmin->cLogin)}</td>
                                 <td class="text-center">{if $oAdmin->b2FAauth}{__('stateON')}{else}{__('stateOFF')}{/if}</td>
-                                <td class="text-center">{$oAdmin->cMail}</td>
+                                <td class="text-center">{JTL\Helpers\Text::filterXSS($oAdmin->cMail)}</td>
                                 <td class="text-center">
                                     {if $oAdmin->kAdminlogingruppe > 1}
                                         <form method="post" action="{$adminURL}/benutzerverwaltung.php">

@@ -92,8 +92,7 @@ class Helper
         if ($available === null) {
             throw new InvalidArgumentException('Could not find update for item with ID ' . $itemID);
         }
-        $downloader = new Downloader();
 
-        return $downloader->downloadRelease($available);
+        return (new Downloader())->downloadRelease($available);
     }
 }

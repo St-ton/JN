@@ -7,6 +7,7 @@ use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\Campaign;
 use JTL\DB\DbInterface;
+use JTL\DB\SqlObject;
 use JTL\Exceptions\EmptyResultSetException;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -27,12 +28,12 @@ final class Admin
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var AlertServiceInterface
      */
-    private $alertService;
+    private AlertServiceInterface $alertService;
 
     /**
      * Admin constructor.
@@ -78,7 +79,7 @@ final class Admin
         if (empty($name)) {
             $checks['cName'] = 1;
         }
-        if (!\is_array($customerGroups) || \count($customerGroups) === 0) {
+        if (\count($customerGroups) === 0) {
             $checks['kKundengruppe_arr'] = 1;
         }
         if (empty($subject)) {
@@ -110,12 +111,12 @@ final class Admin
     }
 
     /**
-     * @param string $text
-     * @param array  $stdVars
-     * @param bool   $noHTML
-     * @return mixed|string
+     * @param string      $text
+     * @param array|mixed $stdVars
+     * @param bool        $noHTML
+     * @return string
      */
-    public function mapDefaultTemplate($text, $stdVars, bool $noHTML = false)
+    public function mapDefaultTemplate(string $text, $stdVars, bool $noHTML = false): string
     {
         if (!\is_array($stdVars) || \count($stdVars) === 0) {
             return $text;
@@ -301,7 +302,7 @@ final class Admin
             $post['cArt'] ?? ''
         );
 
-        if (!\is_array($checks) || \count($checks) !== 0) {
+        if (\count($checks) !== 0) {
             return $checks;
         }
         $day         = $post['dTag'];
@@ -336,8 +337,8 @@ final class Admin
         $tpl->kNewslettervorlageStd = $defaultTplID;
         $tpl->kKampagne             = (int)$post['kKampagne'];
         $tpl->kSprache              = (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache']);
-        $tpl->cName                 = $post['cName'];
-        $tpl->cBetreff              = $post['cBetreff'];
+        $tpl->cName                 = Text::filterXSS($post['cName']);
+        $tpl->cBetreff              = Text::filterXSS($post['cBetreff']);
         $tpl->cArt                  = $post['cArt'];
         $tpl->cArtikel              = $productIDs;
         $tpl->cHersteller           = $manufacturerIDs;
@@ -497,15 +498,15 @@ final class Admin
 
         $alertHelper = Shop::Container()->getAlertService();
         $checks      = $this->checkTemplate(
-            $post['cName'],
-            $post['kKundengruppe'] ?? '',
-            $post['cBetreff'],
-            $post['cArt'],
-            $post['cHtml'],
-            $post['cText']
+            $post['cName'] ?? '',
+            $post['kKundengruppe'] ?? [],
+            $post['cBetreff'] ?? '',
+            $post['cArt'] ?? '',
+            $post['cHtml'] ?? '',
+            $post['cText' ?? '']
         );
 
-        if (\is_array($checks) && \count($checks) === 0) {
+        if (\count($checks) === 0) {
             $day         = $post['dTag'];
             $month       = $post['dMonat'];
             $year        = $post['dJahr'];
@@ -529,8 +530,8 @@ final class Admin
             }
             $tpl->kSprache      = (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache']);
             $tpl->kKampagne     = $campaignID;
-            $tpl->cName         = $post['cName'];
-            $tpl->cBetreff      = $post['cBetreff'];
+            $tpl->cName         = Text::filterXSS($post['cName']);
+            $tpl->cBetreff      = Text::filterXSS($post['cBetreff']);
             $tpl->cArt          = $post['cArt'];
             $tpl->cArtikel      = $productIDs;
             $tpl->cHersteller   = $manufacturerIDs;
@@ -590,13 +591,19 @@ final class Admin
      * @param string $text
      * @return array
      */
-    public function checkTemplate($name, $customerGroups, $subject, $type, $html, $text): array
-    {
+    public function checkTemplate(
+        string $name,
+        array $customerGroups,
+        string $subject,
+        string $type,
+        string $html,
+        string $text
+    ): array {
         $checks = [];
         if (empty($name)) {
             $checks['cName'] = 1;
         }
-        if (!\is_array($customerGroups) || \count($customerGroups) === 0) {
+        if (\count($customerGroups) === 0) {
             $checks['kKundengruppe_arr'] = 1;
         }
         if (empty($subject)) {
@@ -619,7 +626,7 @@ final class Admin
      * @param string $productString
      * @return stdClass
      */
-    public function getProductData($productString): stdClass
+    public function getProductData(string $productString): stdClass
     {
         $productIDs                = \explode(';', $productString);
         $productData               = new stdClass();
@@ -678,9 +685,9 @@ final class Admin
      * @param array $recipientIDs
      * @return bool
      */
-    public function activateSubscribers($recipientIDs): bool
+    public function activateSubscribers(array $recipientIDs): bool
     {
-        if (!\is_array($recipientIDs) || \count($recipientIDs) === 0) {
+        if (\count($recipientIDs) === 0) {
             return false;
         }
         $where      = ' IN (' . \implode(',', \array_map('\intval', $recipientIDs)) . ')';
@@ -775,25 +782,28 @@ final class Admin
     }
 
     /**
-     * @param stdClass $searchSQL
+     * @param SqlObject $searchSQL
      * @return int
      */
-    public function getSubscriberCount(stdClass $searchSQL): int
+    public function getSubscriberCount(SqlObject $searchSQL): int
     {
         return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tnewsletterempfaenger
-                WHERE kSprache = :lid' . $searchSQL->cWHERE,
-            ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])]
+                WHERE kSprache = :lid' . $searchSQL->getWhere(),
+            \array_merge(
+                ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])],
+                $searchSQL->getParams()
+            )
         )->cnt;
     }
 
     /**
-     * @param string   $limitSQL
-     * @param stdClass $searchSQL
+     * @param string    $limitSQL
+     * @param SqlObject $searchSQL
      * @return array
      */
-    public function getSubscribers(string $limitSQL, stdClass $searchSQL): array
+    public function getSubscribers(string $limitSQL, SqlObject $searchSQL): array
     {
         return $this->db->getCollection(
             "SELECT tnewsletterempfaenger.*,
@@ -814,9 +824,12 @@ final class Admin
                       AND tnewsletterempfaengerhistory.cAktion = 'Eingetragen'
                 LEFT JOIN toptin
                     ON toptin.cMail = tnewsletterempfaenger.cEmail
-                WHERE tnewsletterempfaenger.kSprache =:lid " . $searchSQL->cWHERE . '
+                WHERE tnewsletterempfaenger.kSprache = :lid " . $searchSQL->getWhere() . '
                 ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL,
-            ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])]
+            \array_merge(
+                ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])],
+                $searchSQL->getParams()
+            )
         )->map(static function (stdClass $item) {
             $item->cVorname  = Text::filterXSS($item->cVorname);
             $item->cNachname = Text::filterXSS($item->cNachname);
@@ -965,7 +978,7 @@ final class Admin
             $filteredPost,
             $templateID
         );
-        if (\is_array($checks) && \count($checks) > 0) {
+        if (\count($checks) > 0) {
             $smarty->assign('cPlausiValue_arr', $checks)
                 ->assign('cPostVar_arr', $filteredPost)
                 ->assign('oNewslettervorlageStd', $tpl);
@@ -1240,8 +1253,8 @@ final class Admin
         foreach (\array_map('\intval', $templateIDs) as $tplID) {
             $tpl = $this->db->getSingleObject(
                 'SELECT kNewsletterVorlage, kNewslettervorlageStd
-                        FROM tnewslettervorlage
-                        WHERE kNewsletterVorlage = :tplID',
+                    FROM tnewslettervorlage
+                    WHERE kNewsletterVorlage = :tplID',
                 ['tplID' => $tplID]
             );
             if ($tpl === null || $tpl->kNewsletterVorlage <= 0) {
@@ -1250,11 +1263,11 @@ final class Admin
             if (($tpl->kNewslettervorlageStd ?? 0) > 0) {
                 $this->db->queryPrepared(
                     'DELETE tnewslettervorlage, tnewslettervorlagestdvarinhalt
-                            FROM tnewslettervorlage
-                            LEFT JOIN tnewslettervorlagestdvarinhalt
-                                ON tnewslettervorlagestdvarinhalt.kNewslettervorlage =
-                                   tnewslettervorlage.kNewsletterVorlage
-                            WHERE tnewslettervorlage.kNewsletterVorlage = :tplID',
+                        FROM tnewslettervorlage
+                        LEFT JOIN tnewslettervorlagestdvarinhalt
+                            ON tnewslettervorlagestdvarinhalt.kNewslettervorlage =
+                               tnewslettervorlage.kNewsletterVorlage
+                        WHERE tnewslettervorlage.kNewsletterVorlage = :tplID',
                     ['tplID' => $tplID]
                 );
             } else {

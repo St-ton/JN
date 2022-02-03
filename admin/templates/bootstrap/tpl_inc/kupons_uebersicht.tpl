@@ -10,7 +10,7 @@
             {if $oKupon_arr|count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['tab'=>$cKuponTyp]}
             {/if}
-            <form method="post" action="kupons.php">
+            <form method="post" action="{$adminURL}/kupons.php">
                 {$jtl_token}
                 <input type="hidden" name="cKuponTyp" id="cKuponTyp_{$cKuponTyp}" value="{$cKuponTyp}">
                 {if $oKupon_arr|count > 0}
@@ -52,7 +52,7 @@
                                                 {if $oKupon->cWertTyp === 'festpreis'}
                                                     <span data-toggle="tooltip" data-placement="right" data-html="true"
                                                           title='{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fWert}'>
-                                                        {$oKupon->cLocalizedValue}
+                                                        {$oKupon->cLocalizedWert}
                                                     </span>
                                                 {else}
                                                     {$oKupon->fWert} %
@@ -63,7 +63,7 @@
                                         <td class="text-center">
                                             <span data-toggle="tooltip" data-placement="right" data-html="true"
                                                   title='{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fMindestbestellwert}'>
-                                                {$oKupon->cLocalizedMbw}
+                                                {$oKupon->cLocalizedMBW}
                                             </span>
                                         </td>
                                         <td class="text-center">
@@ -94,7 +94,7 @@
                                         </td>
                                         <td>
                                             <div class="btn-group">
-                                                <a href="kupons.php?kKupon={$oKupon->kKupon}&token={$smarty.session.jtl_token}"
+                                                <a href="{$adminURL}/kupons.php?kKupon={$oKupon->kKupon}&token={$smarty.session.jtl_token}"
                                                    class="btn btn-link px-2"
                                                    title="{__('modify')}"
                                                    data-toggle="tooltip">
@@ -139,7 +139,7 @@
                             {include file='tpl_inc/csv_import_btn.tpl' importerId="kupon_{$cKuponTyp}" importerType="kupon"}
                         </div>
                         <div class="col-sm-6 col-xl-auto">
-                            <a href="kupons.php?kKupon=0&cKuponTyp={$cKuponTyp}&token={$smarty.session.jtl_token}"
+                            <a href="{$adminURL}/kupons.php?kKupon=0&cKuponTyp={$cKuponTyp}&token={$smarty.session.jtl_token}"
                                class="btn btn-primary btn-block" title="{__('modify')}">
                                 <i class="fa fa-share"></i> {__($cKuponTypName|cat:'Create')}
                             </a>

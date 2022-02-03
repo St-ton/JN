@@ -48,7 +48,6 @@ const onInitOrResize = () => {
     updateVH()
 
     if(isMobile()) {
-        hideDropdown()
         $backdropDropdowns.removeClass('zindex-dropdown').detach()
 
         if(hasNavScrollbar())

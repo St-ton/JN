@@ -4,6 +4,7 @@ namespace JTL\Plugin\Payment;
 
 use JTL\Cart\Cart;
 use JTL\Checkout\Bestellung;
+use JTL\DB\DbInterface;
 
 /**
  * Interface MethodInterface - Represents a Method of Payment the customer can pay his order with.
@@ -238,4 +239,14 @@ interface MethodInterface
      * @return static
      */
     public function sendMail(int $orderID, string $type, $additional = null);
+
+    /**
+     * @return DbInterface
+     */
+    public function getDB(): DbInterface;
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void;
 }

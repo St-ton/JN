@@ -41,7 +41,7 @@
                                 && isset($activeParent->kKategorie))
                                 && $activeParent->kKategorie == $category->getID())} active{/if}">
                                 {link href=$category->getURL()
-                                    title=$category->getName()|@seofy
+                                    title=$category->getName()|escape:'html'
                                     class="nav-link dropdown-toggle"
                                     target="_self"
                                     data=["category-id"=>$category->getID()]}
@@ -80,7 +80,7 @@
                         {/block}
                     {else}
                         {block name='snippets-categories-mega-category-no-child'}
-                            {navitem href=$category->getURL() title=$category->getName()|@seofy
+                            {navitem href=$category->getURL() title=$category->getName()|escape:'html'
                                 class="nav-scrollbar-item {if $Einstellungen.template.megamenu.show_categories === 'mobile'} d-lg-none
                                     {elseif $Einstellungen.template.megamenu.show_categories === 'desktop'} d-none d-lg-inline-block {/if}
                                     {if $category->getID() === $activeId}active{/if}"
@@ -177,8 +177,8 @@
         {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
             {navitem href="{get_static_route id='wunschliste.php'}" class="wl-nav-scrollbar-item nav-scrollbar-item"}
                 {badge id="badge-wl-count" variant="primary" class="product-count"}
-                    {if isset($smarty.session.Wunschliste) && $smarty.session.Wunschliste->getID() > 0}
-                        {$smarty.session.Wunschliste->getItems()|count}
+                    {if \JTL\Session\Frontend::getWishlist()->getID() > 0}
+                        {\JTL\Session\Frontend::getWishlist()->getItems()|count}
                     {else}
                         0
                     {/if}

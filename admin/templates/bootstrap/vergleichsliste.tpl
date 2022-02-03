@@ -58,7 +58,7 @@
             </div>
             <div id="topartikel" class="tab-pane fade {if $cTab === 'topartikel'} active show{/if}">
                 <div>
-                    <form id="postzeitfilter" name="postzeitfilter" method="post" action="vergleichsliste.php">
+                    <form id="postzeitfilter" name="postzeitfilter" method="post" action="{$adminURL}/vergleichsliste.php">
                         {$jtl_token}
                         <input type="hidden" name="zeitfilter" value="1" />
                         <input type="hidden" name="tab" value="topartikel" />
@@ -132,7 +132,14 @@
                 </div>
             </div>
             <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
-                {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='vergleichsliste.php' buttonCaption=__('saveWithIcon') title=__('settings') tab='einstellungen'}
+                {include
+                    file='tpl_inc/config_section.tpl'
+                    name='einstellen'
+                    action=$adminURL|cat:'/vergleichsliste.php'
+                    buttonCaption=__('saveWithIcon')
+                    title=__('settings')
+                    tab='einstellungen'
+                }
             </div>
         </div>
     </div>

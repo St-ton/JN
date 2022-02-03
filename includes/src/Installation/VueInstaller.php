@@ -236,18 +236,15 @@ define('DB_USER','" . \addcslashes($credentials['user'], "'") . "');
 define('DB_PASS','" . \addcslashes($credentials['pass'], "'") . "');
 
 define('BLOWFISH_KEY', '" . $blowfishKey . "');
-
-define('EVO_COMPATIBILITY', false);
-
-//enables printing of warnings/infos/errors for the shop frontend
+// enables printing of warnings/infos/errors for the shop frontend
 define('SHOP_LOG_LEVEL', E_ALL);
-//enables printing of warnings/infos/errors for the dbeS sync
+// enables printing of warnings/infos/errors for the dbeS sync
 define('SYNC_LOG_LEVEL', E_ALL ^ E_NOTICE ^ E_DEPRECATED ^ E_WARNING);
-//enables printing of warnings/infos/errors for the admin backend
+// enables printing of warnings/infos/errors for the admin backend
 define('ADMIN_LOG_LEVEL', E_ALL);
-//enables printing of warnings/infos/errors for the smarty templates
+// enables printing of warnings/infos/errors for the smarty templates
 define('SMARTY_LOG_LEVEL', E_ALL);
-//excplicitly show/hide errors
+// excplicitly show/hide errors
 ini_set('display_errors', 0);" . "\n";
         $file   = \fopen(\PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');
         \fwrite($file, $config);

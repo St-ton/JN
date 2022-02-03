@@ -489,12 +489,12 @@ class AdminAccountManager
             $language            = Text::filterXSS($_POST['language']);
             $tmpAcc              = new stdClass();
             $tmpAcc->kAdminlogin = Request::postInt('kAdminlogin');
-            $tmpAcc->cName       = \htmlspecialchars(\trim($_POST['cName']), \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
-            $tmpAcc->cMail       = \htmlspecialchars(\trim($_POST['cMail']), \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
+            $tmpAcc->cName       = Text::filterXSS(\trim($_POST['cName']));
+            $tmpAcc->cMail       = Text::filterXSS(\trim($_POST['cMail']));
             $tmpAcc->language    = \array_key_exists($language, Shop::Container()->getGetText()->getAdminLanguages())
                 ? $language
                 : 'de-DE';
-            $tmpAcc->cLogin      = \trim($_POST['cLogin']);
+            $tmpAcc->cLogin      = Text::filterXSS(\trim($_POST['cLogin']));
             $tmpAcc->cPass       = \trim($_POST['cPass']);
             $tmpAcc->b2FAauth    = Request::postInt('b2FAauth');
             $tmpAttribs          = $_POST['extAttribs'] ?? [];
@@ -729,17 +729,9 @@ class AdminAccountManager
             $errors                        = [];
             $adminGroup                    = new stdClass();
             $adminGroup->kAdminlogingruppe = Request::postInt('kAdminlogingruppe');
-            $adminGroup->cGruppe           = \htmlspecialchars(
-                \trim($_POST['cGruppe']),
-                \ENT_COMPAT | \ENT_HTML401,
-                \JTL_CHARSET
-            );
-            $adminGroup->cBeschreibung     = \htmlspecialchars(
-                \trim($_POST['cBeschreibung']),
-                \ENT_COMPAT | \ENT_HTML401,
-                \JTL_CHARSET
-            );
-            $groupPermissions              = $_POST['perm'] ?? [];
+            $adminGroup->cGruppe           = Text::filterXSS(\trim($_POST['cGruppe']));
+            $adminGroup->cBeschreibung     = Text::filterXSS(\trim($_POST['cBeschreibung']));
+            $groupPermissions              = Text::filterXSS($_POST['perm'] ?? []);
 
             if (\mb_strlen($adminGroup->cGruppe) === 0) {
                 $errors['cGruppe'] = 1;

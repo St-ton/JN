@@ -16,7 +16,7 @@
 
 <div id="content">
     {if $warehouses|count > 0}
-        <form method="post" action="warenlager.php">
+        <form method="post" action="{$adminURL}/warenlager.php">
             {$jtl_token}
             <input name="a" type="hidden" value="update" />
             <div class="card">

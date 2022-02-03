@@ -69,7 +69,7 @@ switch (true) {
     case isset($_GET['select']) && $valid:
         $table = $_GET['select'];
 
-        if (!preg_match('/^\w+$/i', $table, $m) || !$valid) {
+        if (!preg_match('/^\w+$/i', $table, $m)) {
             die('Not allowed.');
         }
 

@@ -57,7 +57,7 @@
                                     <td class="text-center">{$CWunschliste->Datum}</td>
                                     <td class="text-center">
                                         <span {if $CWunschliste->isOnline}data-toggle="tooltip" title="{__('wishlistCustomerOnline')}{/if}">
-                                            <a href="wunschliste.php?delete={$CWunschliste->kWunschliste}&token={$smarty.session.jtl_token}"
+                                            <a href="{$adminURL}/wunschliste.php?delete={$CWunschliste->kWunschliste}&token={$smarty.session.jtl_token}"
                                                class="btn btn-link px-2 delete-confirm {if $CWunschliste->isOnline} disabled {/if}"
                                                data-modal-body="{__('wishlistDelete')|sprintf:$CWunschliste->cName:$name}"
                                                data-toggle="tooltip"
@@ -144,7 +144,15 @@
                 {/if}
             </div>
             <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
-                {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='wunschliste.php' buttonCaption=__('saveWithIcon') title=__('settings') tab='einstellungen'}
+                {include
+                    file='tpl_inc/config_section.tpl'
+                    name='einstellen'
+                    action='wunschliste.php'
+                    buttonCaption=__('saveWithIcon')
+                    title=__('settings')
+                    tab='einstellungen'
+                    skipHeading=true
+                }
             </div>
         </div>
     </div>

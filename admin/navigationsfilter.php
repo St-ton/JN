@@ -33,7 +33,6 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
 }
 
 $priceRangeFilters = $db->getObjects('SELECT * FROM tpreisspannenfilter');
-
-$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_NAVIGATIONSFILTER))
-       ->assign('oPreisspannenfilter_arr', $priceRangeFilters)
-       ->display('navigationsfilter.tpl');
+getAdminSectionSettings(CONF_NAVIGATIONSFILTER);
+$smarty->assign('oPreisspannenfilter_arr', $priceRangeFilters)
+    ->display('navigationsfilter.tpl');

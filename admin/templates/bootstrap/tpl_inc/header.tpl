@@ -131,7 +131,7 @@
                             <a class="dropdown-item link-shop" href="{$URL_SHOP}?fromAdmin=yes" title="{__('goShop')}" target="_blank">
                                 <i class="fa fa-shopping-cart"></i> {__('goShop')}
                             </a>
-                            <a class="dropdown-item link-logout" href="logout.php?token={$smarty.session.jtl_token}"
+                            <a class="dropdown-item link-logout" href="{$adminURL}/logout.php?token={$smarty.session.jtl_token}"
                                title="{__('logout')}">
                                 <i class="fa fa-sign-out"></i> {__('logout')}
                             </a>
@@ -214,7 +214,7 @@
                             return true;
                         });
                         $('#licenseGotoTemplates').on('click', function (e) {
-                            window.location.href = '{$shopURL}/{$smarty.const.PFAD_ADMIN}shoptemplate.php?licensenoticeaccepted=true';
+                            window.location.href = '{$adminURL}/shoptemplate.php?licensenoticeaccepted=true';
                             return true;
                         });
                     });

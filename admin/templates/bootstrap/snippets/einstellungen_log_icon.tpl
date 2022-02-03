@@ -3,9 +3,9 @@
         title="{__('settingLogTitle')}"
         data-toggle="tooltip"
         data-placement="top"
-        data-setting-name="{$cnf->cWertName}"
-        data-name="{$cnf->cName}"
-        data-id="{$cnf->kEinstellungenConf}"
+        data-setting-name="{$cnf->getValueName()}"
+        data-name="{$cnf->getName()}"
+        data-id="{$cnf->getID()}"
         type="button"
     >
         <span class="icon-hover">

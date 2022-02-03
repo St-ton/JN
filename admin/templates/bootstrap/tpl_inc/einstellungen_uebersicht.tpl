@@ -1,23 +1,22 @@
-{if isset($Sektion->cName)}
-    {assign var=cTitel value=__('settings')|cat:': '|cat:$Sektion->cName}
+{if isset($section) && $section->getName()}
+    {assign var=cTitel value=__('settings')|cat:': '|cat:$section->getName()}
 {else}
     {assign var=cTitel value=__('settings')}
 {/if}
 {if isset($cSearch) && $cSearch|strlen  > 0}
     {assign var=cTitel value=$cSearch}
 {/if}
-
 {include file='tpl_inc/seite_header.tpl' cTitel=__('settings') cBeschreibung=__('preferencesDesc') cDokuURL=__('preferencesURL')}
 <div id="content">
     <div class="table-responsive">
         <table class="list table">
             <tbody>
-            {foreach $Sektionen as $Sektion}
+            {foreach $sectionOverview as $section}
                 <tr>
-                    <td>{$Sektion->cName}</td>
-                    <td>{$Sektion->anz} {__('settings')}</td>
+                    <td>{$section->getName()}</td>
+                    <td>{$section->getConfigCount()} {__('settings')}</td>
                     <td>
-                        <a href="einstellungen.php?kSektion={$Sektion->kEinstellungenSektion}" class="btn btn-primary">{__('configure')}</a>
+                        <a href="{$adminURL}/einstellungen.php?kSektion={$section->getID()}" class="btn btn-primary">{__('configure')}</a>
                     </td>
                 </tr>
             {/foreach}

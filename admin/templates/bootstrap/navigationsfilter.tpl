@@ -120,7 +120,7 @@
     {include file='tpl_inc/config_section.tpl'
         name='einstellen'
         a='saveSettings'
-        action='navigationsfilter.php'
+        action=$adminURL|cat:'/navigationsfilter.php'
         buttonCaption=__('saveWithIcon')
         title=__('settings')
         tab='einstellungen'

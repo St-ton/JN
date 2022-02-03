@@ -3,7 +3,7 @@
 <div id="content">
     {include file='tpl_inc/config_section.tpl'
     name='einstellen'
-    action='shopsitemap.php'
+    action=$adminURL|cat:'/shopsitemap.php'
     buttonCaption=__('saveWithIcon')
     title=__('settings')
     tab='einstellungen'

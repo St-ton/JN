@@ -18,7 +18,7 @@ $oAccount->permission('OBJECTCACHE_VIEW', true, true);
 $notice         = '';
 $error          = '';
 $step           = 'uebersicht';
-$tab            = 'uebersicht';
+$tab            = Request::postVar('tab', 'uebersicht');
 $cache          = null;
 $opcacheStats   = null;
 $options        = null;

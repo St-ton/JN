@@ -157,6 +157,7 @@ class Base implements SectionInterface
                 LEFT JOIN teinstellungen_default AS ted
                     ON ted.cName = ec.cWertName
                 WHERE ' . $sql->getWhere() . '
+                GROUP BY ec.kEinstellungenConf
                 ORDER BY ' . $sql->getOrder(),
             $sql->getParams()
         );
@@ -172,8 +173,8 @@ class Base implements SectionInterface
             if ($config->getInputType() === 'listbox' && $config->getID() === 492) {
                 $config->setValues($this->db->getObjects(
                     'SELECT kKundengruppe AS cWert, cName
-                    FROM tkundengruppe
-                    ORDER BY cStandard DESC'
+                        FROM tkundengruppe
+                        ORDER BY cStandard DESC'
                 ));
             } elseif (\in_array($config->getInputType(), ['selectbox', 'listbox'], true)) {
                 $setValues = $this->db->selectAll(

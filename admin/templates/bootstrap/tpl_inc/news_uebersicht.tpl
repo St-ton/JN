@@ -73,7 +73,7 @@
             <div id="inaktiv" class="tab-pane fade{if $cTab === '' || $cTab === 'inaktiv'} active show{/if}">
                 {if $comments && $comments|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiKommentar cAnchor='inaktiv'}
-                    <form method="post" action="news.php">
+                    <form method="post" action="{$adminURL}/news.php">
                         {$jtl_token}
                         <input type="hidden" name="news" value="1" />
                         <input type="hidden" name="newskommentar_freischalten" value="1" />
@@ -117,7 +117,7 @@
                                             <td class="text-center">{$comment->getDateCreatedCompat()}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="news.php?news=1&kNews={$comment->getNewsID()}&kNewsKommentar={$comment->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}/news.php?news=1&kNews={$comment->getNewsID()}&kNewsKommentar={$comment->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('modify')}"
                                                        data-toggle="tooltip">
@@ -159,7 +159,7 @@
             </div>
             <div id="aktiv" class="tab-pane fade{if $cTab === 'aktiv'} active show{/if}">
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiNews cAnchor='aktiv'}
-                <form name="news" method="post" action="news.php">
+                <form name="news" method="post" action="{$adminURL}/news.php">
                     {$jtl_token}
                     <input type="hidden" name="news" value="1" />
                     <input type="hidden" name="news_loeschen" value="1" />
@@ -203,7 +203,7 @@
                                             </td>
                                             <td class="text-center">
                                                 {if $oNews->getCommentCount() > 0}
-                                                    <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->getCommentCount()}</a>
+                                                    <a href="{$adminURL}/news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->getCommentCount()}</a>
                                                 {else}
                                                     {$oNews->getCommentCount()}
                                                 {/if}
@@ -211,7 +211,7 @@
                                             <td class="text-center">{$oNews->getDateCompat()}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}/news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('preview')}"
                                                        data-toggle="tooltip">
@@ -220,7 +220,7 @@
                                                             <span class="fas fa-eye"></span>
                                                         </span>
                                                     </a>
-                                                    <a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}/news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('modify')}"
                                                        data-toggle="tooltip">
@@ -267,14 +267,14 @@
                     </div>
                 </form>
                 <div class="container2">
-                    <form name="erstellen" method="post" action="news.php">
+                    <form name="erstellen" method="post" action="{$adminURL}/news.php">
                         {$jtl_token}
                     </form>
                 </div>
             </div>
             <div id="kategorien" class="tab-pane fade{if $cTab === 'kategorien'} active show{/if}">
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiKats cAnchor='kategorien'}
-                <form name="news" method="post" action="news.php">
+                <form name="news" method="post" action="{$adminURL}/news.php">
                     {$jtl_token}
                     <input type="hidden" name="news" value="1" />
                     <input type="hidden" name="news_kategorie_loeschen" value="1" />
@@ -315,7 +315,7 @@
                                             <td class="text-center">{$oNewsKategorie->getDateLastModified()->format('d.m.Y H:i')}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}/news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('modify')}"
                                                        data-toggle="tooltip">
@@ -368,7 +368,16 @@
                 </form>
             </div>
             <div id="einstellungen" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
-                {include file='tpl_inc/config_section.tpl' name='einstellen' a='saveSettings' action='news.php' buttonCaption=__('saveWithIcon') title=__('settings') skipHeading=true tab='einstellungen'}
+                {include file='tpl_inc/news_month_prefixes.tpl' assign='additional'}
+                {include file='tpl_inc/config_section.tpl'
+                    name='einstellen'
+                    a='saveSettings'
+                    action=$adminURL|cat:'/news.php'
+                    buttonCaption=__('saveWithIcon')
+                    title=__('settings')
+                    skipHeading=true
+                    additional=$additional
+                    tab='einstellungen'}
             </div>
         </div>
     </div>

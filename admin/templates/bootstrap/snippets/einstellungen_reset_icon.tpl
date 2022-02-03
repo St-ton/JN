@@ -7,7 +7,7 @@
     <button type="button"
             name="resetSetting"
             value="{$cnf->getValueName()}"
-            class="btn btn-link p-0 {if $cnf->getSetValue() === $defaultValue}hidden{/if} delete-confirm btn-submit"
+            class="btn btn-link p-0 {if $cnf->getSetValue() === $cnf->getDefaultValue()}hidden{/if} delete-confirm btn-submit"
             title="{__('settingReset')|sprintf:$defaultValue}"
             data-toggle="tooltip"
             data-placement="top"

@@ -54,11 +54,11 @@
 {/if}
 {if isset($shippings)}
     <div class="dropdown-divider dropdown-divider-light"></div>
-    <div class="dropdown-header"><a href="versandarten.php" class="value">{__('shippingTypesOverview')}</a></div>
+    <div class="dropdown-header"><a href="{$adminURL}/versandarten.php" class="value">{__('shippingTypesOverview')}</a></div>
     <ul>
         {foreach $shippings as $shipping}
             <li class="dropdown-item is-form-submit" tabindex="-1">
-                <form method="post" action="versandarten.php">
+                <form method="post" action="{$adminURL}/versandarten.php">
                     {$jtl_token}
                     <input type="hidden" name="edit" value="{$shipping->kVersandart}">
                     <button type="submit" class="btn btn-link p-0">{$shipping->cName}</button>
@@ -69,11 +69,11 @@
 {/if}
 {if isset($paymentMethods)}
     <div class="dropdown-divider dropdown-divider-light"></div>
-    <div class="dropdown-header"><a href="zahlungsarten.php" class="value">{__('paymentTypesOverview')}</a></div>
+    <div class="dropdown-header"><a href="{$adminURL}/zahlungsarten.php" class="value">{__('paymentTypesOverview')}</a></div>
     <ul>
         {foreach $paymentMethods as $paymentMethod}
             <li>
-                <a href="zahlungsarten.php?kZahlungsart={$paymentMethod->kZahlungsart}&token={$smarty.session.jtl_token}" class="dropdown-item value">
+                <a href="{$adminURL}/zahlungsarten.php?kZahlungsart={$paymentMethod->kZahlungsart}&token={$smarty.session.jtl_token}" class="dropdown-item value">
                     {$paymentMethod->cName}
                 </a>
             </li>
@@ -82,11 +82,11 @@
 {/if}
 {if $plugins->isNotEmpty()}
     <div class="dropdown-divider dropdown-divider-light"></div>
-    <div class="dropdown-header"><a href="pluginverwaltung.php" class="value">{__('Plug-in manager')}</a></div>
+    <div class="dropdown-header"><a href="{$adminURL}/pluginverwaltung.php" class="value">{__('Plug-in manager')}</a></div>
     <ul>
         {foreach $plugins as $plugin}
             <li>
-                <a href="plugin.php?kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}" class="dropdown-item value">
+                <a href="{$adminURL}/plugin.php?kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}" class="dropdown-item value">
                     <span class="title">
                         {$plugin->getName()}
                     </span>

@@ -16,7 +16,6 @@ $smarty     = Shop::Smarty();
 $linkHelper = Shop::Container()->getLinkService();
 $uid        = Request::verifyGPDataString('uid');
 if (!empty($uid)) {
-    $conf   = Shop::getSettings([CONF_KUNDEN]);
     $db     = Shop::Container()->getDB();
     $status = $db->getSingleObject(
         'SELECT kBestellung, failedAttempts
@@ -26,7 +25,7 @@ if (!empty($uid)) {
                 AND (failedAttempts <= :maxAttempts OR 1 = :loggedIn)',
         [
             'uid'         => $uid,
-            'maxAttempts' => (int)$conf['kunden']['kundenlogin_max_loginversuche'],
+            'maxAttempts' => (int)Shop::getSettingValue(CONF_KUNDEN, 'kundenlogin_max_loginversuche'),
             'loggedIn'    => Frontend::getCustomer()->isLoggedIn() ? 1 : 0,
         ]
     );

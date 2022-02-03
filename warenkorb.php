@@ -52,7 +52,7 @@ if ($valid
     $coupon            = $coupon->getByCode($_POST['Kuponcode']);
     $invalidCouponCode = 11;
     if ($coupon !== false && $coupon->kKupon > 0) {
-        $couponError       = Kupon::checkCoupon($coupon);
+        $couponError       = $coupon->check();
         $check             = angabenKorrekt($couponError);
         $invalidCouponCode = 0;
         executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
@@ -61,15 +61,15 @@ if ($valid
         ]);
         if ($check) {
             if ($coupon->cKuponTyp === Kupon::TYPE_STANDARD) {
-                Kupon::acceptCoupon($coupon);
+                $coupon->accept();
                 executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
             } elseif (!empty($coupon->kKupon) && $coupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                 $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
                 $_SESSION['oVersandfreiKupon'] = $coupon;
                 $alertHelper->addAlert(
                     Alert::TYPE_SUCCESS,
-                    Shop::Lang()->get('couponSucc1') . ' ' .
-                        trim(str_replace(';', ', ', $coupon->cLieferlaender), ', '),
+                    Shop::Lang()->get('couponSucc1') . ' '
+                    . trim(str_replace(';', ', ', $coupon->cLieferlaender), ', '),
                     'shippingFreeSuccess'
                 );
             }

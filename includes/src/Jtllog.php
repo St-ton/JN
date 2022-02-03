@@ -287,9 +287,9 @@ class Jtllog
      */
     public static function getSytemlogFlag(bool $cache = true): int
     {
-        $conf = Shop::getSettings([\CONF_GLOBAL]);
-        if ($cache === true && isset($conf['global']['systemlog_flag'])) {
-            return (int)$conf['global']['systemlog_flag'];
+        $conf = Shop::getSettingValue(\CONF_GLOBAL, 'systemlog_flag');
+        if ($cache === true && $conf !== null) {
+            return (int)$conf;
         }
         $conf = Shop::Container()->getDB()->getSingleObject(
             "SELECT cWert 

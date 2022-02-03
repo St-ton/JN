@@ -33,9 +33,6 @@ class FileCheck
      */
     public function validateCsvFile(string $hashFile, array &$result, int &$errors, string $prefix = \PFAD_ROOT): int
     {
-        if (!\is_array($result)) {
-            return self::ERROR_RESULT_NO_ARRAY;
-        }
         if (!\file_exists($hashFile)) {
             return self::ERROR_INPUT_FILE_MISSING;
         }

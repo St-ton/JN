@@ -37,7 +37,7 @@
 </script>
 
 <div id="content">
-    <form method="post" action="kupons.php">
+    <form method="post" action="{$adminURL}/kupons.php">
         {$jtl_token}
         <input type="hidden" name="kKuponBearbeiten" value="{$oKupon->kKupon}">
         <input type="hidden" name="cKuponTyp" value="{$oKupon->cKuponTyp}">
@@ -498,7 +498,7 @@
                                 $('#customerSelectionInfo').val(selectedCustomers.length + ' {__('customers')}');
                                 $('#cKunden').val(selectedCustomers.join(';'));
                             } else {
-                                $('#customerSelectionInfo').val('{__('all')}' + ' {__('customer')}');
+                                $('#customerSelectionInfo').val('{__('all')}' + ' {__('customers')}');
                                 $('#cKunden').val('-1');
                             }
                         }
@@ -528,7 +528,7 @@
         <div class="card-footer save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <a class="btn btn-outline-primary btn-block" href="kupons.php?tab={$oKupon->cKuponTyp}">
+                    <a class="btn btn-outline-primary btn-block" href="{$adminURL}/kupons.php?tab={$oKupon->cKuponTyp}">
                         {__('cancelWithIcon')}
                     </a>
                 </div>

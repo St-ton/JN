@@ -14,13 +14,13 @@
                             {input type="hidden" name="login" value="1"}
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
-                                    'email', "email-box-login-{$oBox->getID()}", 'email', null,{lang key='emailadress'}, true, null, 'email'
+                                    'email', "email-box-login-{$oBox->getID()}", 'email', null,{lang key='emailadress'}, true, null, 'email', null, 'sm'
                                 ]
                             }
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
                                     'password', "password-box-login-{$oBox->getID()}", 'passwort', null,
-                                    {lang key='password' section='account data'}, true, null, 'current-password'
+                                    {lang key='password' section='account data'}, true, null, 'current-password', null, 'sm'
                                 ]
                             }
                         {/block}

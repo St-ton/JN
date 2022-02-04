@@ -50,7 +50,7 @@ class Frontend extends AbstractSession
      * @param bool   $force       - force new instance?
      * @param string $sessionName - if null, then default to current session name
      * @return Frontend
-     * @throws \Exception
+     * @throws Exception
      */
     public static function getInstance(
         bool $start = true,
@@ -66,7 +66,7 @@ class Frontend extends AbstractSession
      * Frontend constructor.
      * @param bool   $start
      * @param string $sessionName
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(bool $start = true, string $sessionName = self::DEFAULT_SESSION)
     {
@@ -96,7 +96,7 @@ class Frontend extends AbstractSession
      * setzt Sessionvariablen beim ersten Sessionaufbau oder wenn globale Daten aktualisiert werden müssen
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setStandardSessionVars(): self
     {
@@ -222,7 +222,7 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     private function updateGlobals(): void
     {
@@ -458,7 +458,7 @@ class Frontend extends AbstractSession
         $lang                    = LanguageHelper::getInstance();
         $lang->kSprache          = (int)$_SESSION['kSprache'];
         $lang->currentLanguageID = (int)$_SESSION['kSprache'];
-        $lang->kSprachISO        = (int)$lang->mappekISO($_SESSION['cISOSprache']);
+        $lang->kSprachISO        = $lang->mappekISO($_SESSION['cISOSprache']);
         $lang->cISOSprache       = $_SESSION['cISOSprache'];
 
         return $lang;
@@ -605,17 +605,15 @@ class Frontend extends AbstractSession
         $val                   = 0;
         \http_response_code(301);
         if ($productID > 0) {
-            $key = 'kArtikel';
             $val = $productID;
-        } elseif ($categoryID > 0) {
+        } elseif ($childProductID > 0) {
+            $val = $childProductID;
+        }  elseif ($categoryID > 0) {
             $key = 'kKategorie';
             $val = $categoryID;
         } elseif ($pageID > 0) {
             $key = 'kLink';
             $val = $pageID;
-        } elseif ($childProductID > 0) {
-            $key = 'kArtikel';
-            $val = $childProductID;
         } elseif ($manufacturerID > 0) {
             $key = 'kHersteller';
             $val = $manufacturerID;

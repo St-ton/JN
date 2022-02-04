@@ -20,6 +20,10 @@ class Migration_20210616151700 extends Migration implements IMigration
             'ALTER TABLE `tconsent` 
                 ADD COLUMN `templateID` VARCHAR(255) NULL DEFAULT NULL'
         );
+        $this->execute(
+            'ALTER TABLE `tglobals` 
+                ADD COLUMN `consentVersion` INT NOT NULL DEFAULT 1'
+        );
     }
 
     /**
@@ -29,6 +33,11 @@ class Migration_20210616151700 extends Migration implements IMigration
     {
         $this->execute(
             'ALTER TABLE `tconsent` 
-                DROP COLUMN `templateID`');
+                DROP COLUMN `templateID`'
+        );
+        $this->execute(
+            'ALTER TABLE `tglobals` 
+                DROP COLUMN `consentVersion`'
+        );
     }
 }

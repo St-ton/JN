@@ -15,22 +15,22 @@ abstract class AbstractItem implements ItemInterface
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var SimpleXMLElement
      */
-    protected $xml;
+    protected SimpleXMLElement $xml;
 
     /**
      * @var SimpleXMLElement|null
      */
-    protected $parentXml;
+    protected ?SimpleXMLElement $parentXml;
 
     /**
      * @var Model|null
      */
-    protected $model;
+    protected ?Model $model;
 
     /**
      * @inheritdoc

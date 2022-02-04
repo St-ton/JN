@@ -7,6 +7,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\License\Manager;
 use JTL\License\Struct\ExpiredExsLicense;
+use JTL\Model\DataModelInterface;
 use JTL\Plugin\InstallCode;
 use JTL\Shop;
 use JTL\Template\Admin\Installation\TemplateInstallerFactory;
@@ -21,27 +22,27 @@ class TemplateService implements TemplateServiceInterface
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var Model|null
      */
-    private $activeTemplate;
+    private ?Model $activeTemplate = null;
 
     /**
      * @var bool
      */
-    private $loaded = false;
+    private bool $loaded = false;
 
     /**
      * @var string
      */
-    private $cacheID = 'active_tpl';
+    private string $cacheID = 'active_tpl';
 
     /**
      * TemplateService constructor.
@@ -136,9 +137,13 @@ class TemplateService implements TemplateServiceInterface
     public function getActiveTemplate(bool $withLicense = true): Model
     {
         if ($this->activeTemplate === null) {
-            if (($this->activeTemplate = $this->cache->get($this->cacheID)) === false) {
+            if (($activeTemplate = $this->cache->get($this->cacheID)) === false) {
                 $this->activeTemplate = $this->loadFull(['type' => 'standard'], $withLicense);
             } else {
+                $this->activeTemplate = $activeTemplate;
+                // cached instance will not have the db instance available
+                $this->activeTemplate->setDB($this->db);
+                $this->activeTemplate->getConfig()->setDB($this->db);
                 $this->loaded = true;
             }
         }
@@ -202,7 +207,7 @@ class TemplateService implements TemplateServiceInterface
     private function mergeWithXML(
         string $dir,
         SimpleXMLElement $xml,
-        ?Model $template = null,
+        ?DataModelInterface $template = null,
         ?SimpleXMLElement $parentXML = null
     ): Model {
         $template = $template ?? Model::loadByAttributes(['cTemplate' => $dir], $this->db, Model::ON_NOTEXISTS_NEW);
@@ -222,14 +227,12 @@ class TemplateService implements TemplateServiceInterface
         $template->setDescription(!empty($xml->Description) ? \trim((string)$xml->Description) : '');
         if ($parentXML !== null && !empty($xml->Parent)) {
             $parentConfig = $this->mergeWithXML((string)$xml->Parent, $parentXML);
-            if ($parentConfig !== false) {
-                $version = !empty($template->getVersion()) ? $template->getVersion() : $parentConfig->getVersion();
-                $template->setVersion($version);
-                $shopVersion = !empty($template->getShopVersion())
-                    ? $template->getShopVersion()
-                    : $parentConfig->getShopVersion();
-                $template->setShopVersion($shopVersion);
-            }
+            $version      = !empty($template->getVersion()) ? $template->getVersion() : $parentConfig->getVersion();
+            $template->setVersion($version);
+            $shopVersion = !empty($template->getShopVersion())
+                ? $template->getShopVersion()
+                : $parentConfig->getShopVersion();
+            $template->setShopVersion($shopVersion);
         }
         $version = $template->getVersion();
         if (empty($version)) {
@@ -261,7 +264,10 @@ class TemplateService implements TemplateServiceInterface
             }
             foreach ($xml->Boxes[0] as $item) {
                 /** @var SimpleXMLElement $item */
-                $attr                           = $item->attributes();
+                $attr = $item->attributes();
+                if ($attr === null) {
+                    continue;
+                }
                 $items[(string)$attr->Position] = (bool)(int)$attr->Available;
             }
         }

@@ -4,6 +4,7 @@ namespace JTL\Template\Admin\Installation;
 
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
+use JTL\Model\DataModelInterface;
 use JTL\Plugin\InstallCode;
 use JTL\Template\Admin\Installation\Items\Consent;
 use JTL\Template\Admin\Installation\Items\ItemInterface;
@@ -19,22 +20,22 @@ class TemplateInstallerFactory
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var SimpleXMLElement
      */
-    protected $xml;
+    protected SimpleXMLElement $xml;
 
     /**
      * @var SimpleXMLElement|null
      */
-    protected $parentXml;
+    protected ?SimpleXMLElement $parentXml;
 
     /**
      * @var Model
      */
-    protected $model;
+    protected DataModelInterface $model;
 
     /**
      * @param DbInterface           $db
@@ -46,7 +47,7 @@ class TemplateInstallerFactory
         DbInterface $db,
         SimpleXMLElement $xml,
         ?SimpleXMLElement $parentXml,
-        Model $model
+        DataModelInterface $model
     ) {
         $this->db        = $db;
         $this->xml       = $xml;

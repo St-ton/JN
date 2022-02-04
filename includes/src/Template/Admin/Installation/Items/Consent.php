@@ -34,6 +34,7 @@ class Consent extends AbstractItem
         $addedItems          = [];
         $addedLanguages      = [];
         $defaultLocalization = null;
+        $added               = false;
         foreach ([$this->xml, $this->parentXml] as $xml) {
             foreach ($xml->ServicesRequiringConsent ?? [] as $node) {
                 foreach ($node as $vendor) {
@@ -46,6 +47,7 @@ class Consent extends AbstractItem
                     if ($consentID <= 0) {
                         return InstallCode::SQL_CANNOT_SAVE_VENDOR;
                     }
+                    $added                    = true;
                     $localization             = new stdClass();
                     $localization->consentID  = $consentID;
                     $localization->languageID = 0;
@@ -63,7 +65,19 @@ class Consent extends AbstractItem
                         $localization->privacyPolicy = $localized['PrivacyPolicy'];
                         $localization->languageID    = $mapped->kSprache;
                         $addedLanguages[]            = $localization->languageID;
-                        $this->db->insert('tconsentlocalization', $localization);
+                        $existingID                  = $this->db->getSingleInt(
+                            'SELECT id 
+                                FROM tconsentlocalization
+                                WHERE consentID = :cid
+                                    AND languageID = :lid',
+                            'id',
+                            ['cid' => $localization->consentID, 'lid' => $localization->languageID]
+                        );
+                        if ($existingID === -1) {
+                            $this->db->insert('tconsentlocalization', $localization);
+                        } else {
+                            $this->db->update('tconsentlocalization', 'id', $existingID, $localization);
+                        }
                         if ($defaultLocalization === null || $localization->languageID === $defaultLanguage->getId()) {
                             $defaultLocalization = clone $localization;
                         }
@@ -76,6 +90,9 @@ class Consent extends AbstractItem
             }
         }
         $this->cleanUpOldVendors($templateID, $addedItems);
+        if ($added === true) {
+            $this->db->query('UPDATE tglobals SET consentVersion = consentVersion + 1, dLetzteAenderung = NOW()');
+        }
 
         return InstallCode::OK;
     }

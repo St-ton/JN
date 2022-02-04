@@ -19,27 +19,27 @@ class Resources
     /**
      * @var array
      */
-    private $groups = [];
+    private array $groups = [];
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var bool
      */
-    private $initialized = false;
+    private bool $initialized = false;
 
     /**
      * @var SimpleXMLElement[]
      */
-    private $xmlList;
+    private array $xmlList;
 
     /**
      * @var array
      */
-    private $cacheTags = [];
+    private array $cacheTags = [];
 
     /**
      * Resources constructor.

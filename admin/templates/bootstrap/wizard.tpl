@@ -44,7 +44,7 @@
                             <span class="setup-subheadline">{__('welcome')}</span>
                             <p>{__('welcomeDesc')}</p>
                             {if !$hasAuth}
-                                <a href="wizard.php?action=auth&wizard-authenticated=1" class="btn btn-primary mt-5 mb-3 px-3 w-100">
+                                <a href="{$adminURL}/wizard.php?action=auth&wizard-authenticated=1" class="btn btn-primary mt-5 mb-3 px-3 w-100">
                                     {__('beginAuth')}
                                 </a>
                                 <button type="button" class="btn btn-outline-primary px-3 w-100" data-setup-next>
@@ -324,8 +324,8 @@
                         <div class="col text-right">
                             <button type="button" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-next>{__('next')}</button>
                             <button type="submit" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-submit>{__('confirm')}</button>
-                            <a href="index.php" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-close>{__('finalize')}</a>
-                            <a href="wizard.php?action=auth&wizard-authenticated={$steps|count + 1}" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto d-none" data-setup-auth>{__('authButton')}</a>
+                            <a href="{$adminURL}/index.php" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto" data-setup-close>{__('finalize')}</a>
+                            <a href="{$adminURL}/wizard.php?action=auth&wizard-authenticated={$steps|count + 1}" class="btn btn-primary min-w-sm ml-sm-3 my-2 my-sm-0 w-100 w-sm-auto d-none" data-setup-auth>{__('authButton')}</a>
                         </div>
                     </div>
                 </div>

@@ -39,9 +39,8 @@ $blocked   = $db->getObjects(
         ORDER BY dLetzterBlock DESC
         LIMIT 100"
 );
-
+getAdminSectionSettings(CONF_EMAILBLACKLIST);
 $smarty->assign('blacklist', $blacklist)
     ->assign('blocked', $blocked)
-    ->assign('config', getAdminSectionSettings(CONF_EMAILBLACKLIST))
     ->assign('step', $step)
     ->display('emailblacklist.tpl');

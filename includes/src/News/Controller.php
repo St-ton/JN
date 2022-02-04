@@ -15,8 +15,6 @@ use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
 use function Functional\every;
-use function Functional\map;
-use function Functional\pluck;
 
 /**
  * Class Controller
@@ -249,16 +247,15 @@ class Controller
     public function getAllNewsCategories(bool $activeOnly = false): Collection
     {
         $itemList = new CategoryList($this->db);
-        $ids      = map($this->db->getObjects(
+        $ids      = $this->db->getInts(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node INNER JOIN tnewskategorie AS parent
                 WHERE node.lvl > 0 
                     AND parent.lvl > 0 ' . ($activeOnly ? ' AND node.nAktiv = 1 ' : '') .
             ' GROUP BY node.kNewsKategorie
-                ORDER BY node.lft, node.nSort ASC'
-        ), static function ($e) {
-            return (int)$e->id;
-        });
+                ORDER BY node.lft, node.nSort ASC',
+            'id'
+        );
         $itemList->createItems($ids);
 
         return $itemList->generateTree();
@@ -537,16 +534,12 @@ class Controller
     public function getNewsCategories(int $newsItemID): array
     {
         $langID         = Shop::getLanguageID();
-        $newsCategories = map(
-            pluck($this->db->selectAll(
-                'tnewskategorienews',
-                'kNews',
-                $newsItemID,
-                'kNewsKategorie'
-            ), 'kNewsKategorie'),
-            static function ($e) {
-                return (int)$e;
-            }
+        $newsCategories = $this->db->getInts(
+            'SELECT kNewsKategorie
+                FROM tnewskategorienews
+                WHERE kNews = :nid',
+            'kNewsKategorie',
+            ['nid' => $newsItemID]
         );
 
         return \count($newsCategories) > 0

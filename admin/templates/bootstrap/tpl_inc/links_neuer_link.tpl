@@ -36,7 +36,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('newLinks') cBeschreibung=$description}
 <div id="content">
     <div id="settings">
-        <form id="create_link" name="link_erstellen" method="post" action="links.php" enctype="multipart/form-data">
+        <form id="create_link" name="link_erstellen" method="post" action="{$adminURL}/links.php" enctype="multipart/form-data">
             {$jtl_token}
             <input type="hidden" name="action" value="create-or-update-link" />
             <input type="hidden" name="kLinkgruppe" value="{$Link->getLinkGroupID()}" />
@@ -356,7 +356,7 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-outline-primary btn-block" href="links.php">
+                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}/links.php">
                             {__('cancelWithIcon')}
                         </a>
                     </div>

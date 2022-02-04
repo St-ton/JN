@@ -7,7 +7,6 @@ use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Cart\PersistentCart;
-use JTL\Cart\PersistentCartItem;
 use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
@@ -286,8 +285,10 @@ class AccountController
         if ($step === 'rechnungsdaten') {
             $this->getCustomerFields();
         }
+        $currency = Frontend::getCurrency();
         if ($step === 'bewertungen') {
-            $ratings = $this->db->getCollection(
+            $currency = Frontend::getCurrency();
+            $ratings  = $this->db->getCollection(
                 'SELECT tbewertung.kBewertung, fGuthabenBonus, nAktiv, kArtikel, cTitel, cText, 
                   tbewertung.dDatum, nSterne, cAntwort, dAntwortDatum
                   FROM tbewertung 
@@ -295,11 +296,11 @@ class AccountController
                       ON tbewertung.kBewertung = tbewertungguthabenbonus.kBewertung
                   WHERE tbewertung.kKunde = :customer',
                 ['customer' => $customerID]
-            )->each(static function ($item) {
-                $item->fGuthabenBonusLocalized = Preise::getLocalizedPriceString($item->fGuthabenBonus);
+            )->each(static function ($item) use ($currency) {
+                $item->fGuthabenBonusLocalized = Preise::getLocalizedPriceString($item->fGuthabenBonus, $currency);
             });
         }
-        $customer->cGuthabenLocalized = Preise::getLocalizedPriceString($customer->fGuthaben);
+        $customer->cGuthabenLocalized = Preise::getLocalizedPriceString($customer->fGuthaben, $currency);
         $this->smarty->assign('Kunde', $customer)
             ->assign('customerAttributes', $customer->getCustomerAttributes())
             ->assign('bewertungen', $ratings)
@@ -469,7 +470,7 @@ class AccountController
     }
 
     /**
-     * @return array
+     * @return Kupon[]
      */
     private function getCoupons(): array
     {
@@ -479,7 +480,7 @@ class AccountController
         $coupons[] = !empty($_SESSION['NeukundenKupon']) ? $_SESSION['NeukundenKupon'] : null;
         $coupons[] = !empty($_SESSION['Kupon']) ? $_SESSION['Kupon'] : null;
 
-        return $coupons;
+        return \array_filter($coupons);
     }
 
     /**
@@ -491,7 +492,7 @@ class AccountController
             if (empty($coupon)) {
                 continue;
             }
-            $error      = Kupon::checkCoupon($coupon);
+            $error      = $coupon->check();
             $returnCode = \angabenKorrekt($error);
             \executeHook(\HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
                 'error'        => &$error,
@@ -499,7 +500,7 @@ class AccountController
             ]);
             if ($returnCode) {
                 if (isset($coupon->kKupon) && $coupon->kKupon > 0 && $coupon->cKuponTyp === Kupon::TYPE_STANDARD) {
-                    Kupon::acceptCoupon($coupon);
+                    $coupon->accept();
                     \executeHook(\HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
                 } elseif (!empty($coupon->kKupon) && $coupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                     // Versandfrei Kupon
@@ -531,6 +532,8 @@ class AccountController
         if (\count($persCart->getItems()) === 0) {
             return false;
         }
+        $languageID      = Shop::getLanguageID();
+        $customerGroupID = $customer->getGroupID();
         foreach ($persCart->getItems() as $item) {
             if (!empty($item->Artikel->bHasKonfig)) {
                 continue;
@@ -564,7 +567,7 @@ class AccountController
                 }
                 // Konfigitems ohne Artikelbezug
             } elseif ($item->kArtikel === 0 && !empty($item->kKonfigitem)) {
-                $configItem = new Item($item->kKonfigitem);
+                $configItem = new Item($item->kKonfigitem, $languageID, $customerGroupID);
                 $cart->erstelleSpezialPos(
                     $configItem->getName(),
                     $item->fAnzahl,
@@ -678,7 +681,8 @@ class AccountController
             }
         }
         $cart->PositionenArr = [];
-
+        $customerGroupID     = Frontend::getCustomer()->getGroupID();
+        $languageID          = Shop::getLanguageID();
         foreach (PersistentCart::getInstance($customerID, false, $this->db)->getItems() as $item) {
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $productID = (int)$item->kArtikel;
@@ -709,10 +713,15 @@ class AccountController
                         ->fuegeEin($productID, 1, [], \C_WARENKORBPOS_TYP_GRATISGESCHENK);
                 }
             } else {
-                $tmpProduct = new Artikel();
-                $tmpProduct->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
-                    ? Artikel::getDefaultOptions()
-                    : Artikel::getDefaultConfigOptions());
+                $tmpProduct = new Artikel($this->db);
+                $tmpProduct->fuelleArtikel(
+                    $item->kArtikel,
+                    (int)$item->kKonfigitem === 0
+                        ? Artikel::getDefaultOptions()
+                        : Artikel::getDefaultConfigOptions(),
+                    $customerGroupID,
+                    $languageID
+                );
                 if ((int)$tmpProduct->kArtikel > 0 && \count(CartHelper::addToCartCheck(
                     $tmpProduct,
                     $item->fAnzahl,

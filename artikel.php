@@ -24,15 +24,17 @@ if (!defined('PFAD_ROOT')) {
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 Shop::setPageType(PAGE_ARTIKEL);
-$oPreisverlauf  = null;
-$bPreisverlauf  = false;
-$rated          = false;
-$productNotices = [];
-$nonAllowed     = [];
-$conf           = Shopsetting::getInstance()->getAll();
-$shopURL        = Shop::getURL() . '/';
-$alertHelper    = Shop::Container()->getAlertService();
-$valid          = Form::validateToken();
+$oPreisverlauf   = null;
+$bPreisverlauf   = false;
+$rated           = false;
+$productNotices  = [];
+$nonAllowed      = [];
+$conf            = Shopsetting::getInstance()->getAll();
+$shopURL         = Shop::getURL() . '/';
+$alertHelper     = Shop::Container()->getAlertService();
+$valid           = Form::validateToken();
+$languageID      = Shop::getLanguageID();
+$customerGroupID = Frontend::getCustomerGroup()->getID();
 if ($productNote = Product::mapErrorCode(
     Request::verifyGPDataString('cHinweis'),
     ((float)Request::getVar('fB', 0) > 0) ? (float)$_GET['fB'] : 0.0
@@ -49,7 +51,12 @@ if ($valid && isset($_POST['a'])
     $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('basketAllAdded', 'messages'), 'allAdded');
     Shop::$kArtikel = Request::postInt('aBundle');
 }
-$AktuellerArtikel = (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions());
+$AktuellerArtikel = (new Artikel())->fuelleArtikel(
+    Shop::$kArtikel,
+    Artikel::getDetailOptions(),
+    $customerGroupID,
+    $languageID
+);
 // Warenkorbmatrix Anzeigen auf Artikel Attribut pruefen und falls vorhanden setzen
 if (isset($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigen'])
     && mb_strlen($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigen']) > 0
@@ -76,7 +83,12 @@ $similarProducts = (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel
     ? $AktuellerArtikel->holeAehnlicheArtikel()
     : [];
 if (Shop::$kVariKindArtikel > 0) {
-    $oVariKindArtikel = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel, Artikel::getDetailOptions());
+    $oVariKindArtikel = (new Artikel())->fuelleArtikel(
+        Shop::$kVariKindArtikel,
+        Artikel::getDetailOptions(),
+        $customerGroupID,
+        $languageID
+    );
     if ($oVariKindArtikel !== null && $oVariKindArtikel->kArtikel > 0) {
         $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = Product::showAvailabilityForm(
             $oVariKindArtikel,
@@ -126,7 +138,7 @@ if ($valid && Request::postInt('fragezumprodukt') === 1) {
 foreach ($productNotices as $productNoticeKey => $productNotice) {
     $alertHelper->addAlert(Alert::TYPE_DANGER, $productNotice, 'productNotice' . $productNoticeKey);
 }
-$AktuelleKategorie  = new Kategorie($AktuellerArtikel->gibKategorie());
+$AktuelleKategorie  = new Kategorie($AktuellerArtikel->gibKategorie($customerGroupID), $languageID, $customerGroupID);
 $expandedCategories = new KategorieListe();
 $expandedCategories->getOpenCategories($AktuelleKategorie);
 $ratingPage   = Request::verifyGPCDataInt('btgseite');
@@ -134,13 +146,12 @@ $ratingStars  = Request::verifyGPCDataInt('btgsterne');
 $sorting      = Request::verifyGPCDataInt('sortierreihenfolge');
 $showRatings  = Request::verifyGPCDataInt('bewertung_anzeigen');
 $allLanguages = Request::verifyGPCDataInt('moreRating');
-$ratings      = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 if ($ratingPage === 0) {
     $ratingPage = 1;
 }
 if ($AktuellerArtikel->Bewertungen === null || $ratingStars > 0) {
     $AktuellerArtikel->holeBewertung(
-        $conf['bewertung']['bewertung_anzahlseite'],
+        -1,
         $ratingPage,
         $ratingStars,
         $conf['bewertung']['bewertung_freischalten'],
@@ -149,6 +160,7 @@ if ($AktuellerArtikel->Bewertungen === null || $ratingStars > 0) {
     );
     $AktuellerArtikel->holehilfreichsteBewertung();
 }
+$ratings = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 if ((int)($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich ?? 0) > 0) {
     $ratings = array_filter(
         $AktuellerArtikel->Bewertungen->oBewertung_arr,

@@ -54,7 +54,7 @@
         </nav>
         <div class="tab-content">
             <div id="massaction" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active show{/if}">
-                <form method="post" action="cache.php">
+                <form method="post" action="{$adminURL}/cache.php">
                     {$jtl_token}
                     <div>
                         <div class="subheading1">{__('management')}</div>
@@ -124,7 +124,7 @@
                                     </div>
                                     <input name="a" type="hidden" value="cacheMassAction" />
                                 </div>
-                                <form method="post" action="cache.php" class="submit-form">
+                                <form method="post" action="{$adminURL}/cache.php" class="submit-form">
                                     {$jtl_token}
                                     <div class="ml-auto col-sm-6 col-xl-auto">
                                         <button name="a" type="submit" value="flush_object_cache" class="btn btn-outline-primary btn-block delete"{if !$cache_enabled} disabled="disabled"{/if}>
@@ -331,7 +331,7 @@
                     <div class="settings">
                         <div class="subheading1">{__('settings')}</div>
                         <hr class="mb-3">
-                        <form method="post" action="cache.php">
+                        <form method="post" action="{$adminURL}/cache.php">
                             {$jtl_token}
                             <div>
                                 <div class="form-group form-row align-items-center">
@@ -452,30 +452,29 @@
                     {$jtl_token}
                     <input type="hidden" name="a" value="settings" />
                     <input name="tab" type="hidden" value="settings" />
-
                     <div>
                         <div class="subheading1">{__('general')}</div>
                         <hr class="mb-3">
                         <div>
                             {foreach $settings as $setting}
-                                {if $setting->cConf === 'Y'}
+                                {if $setting->isConfigurable()}
                                     <div class="form-group form-row align-items-center">
-                                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->cWertName}">{$setting->cName}:</label>
-                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $setting->cInputTyp === 'number'}config-type-number{/if}">
-                                            {if $setting->cInputTyp === 'selectbox'}
-                                                <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="custom-select">
-                                                    {foreach $setting->ConfWerte as $wert}
-                                                        <option value="{$wert->cWert}" {if isset($setting->gesetzterWert) && $setting->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
+                                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->getValueName()}">{$setting->getName()}:</label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $setting->getInputType() === 'number'}config-type-number{/if}">
+                                            {if $setting->getInputType() === 'selectbox'}
+                                                <select name="{$setting->getValueName()}" id="{$setting->getValueName()}" class="custom-select">
+                                                    {foreach $setting->getValues() as $value}
+                                                        <option value="{$value->cWert}" {if $setting->getSetValue() !== null && $setting->getSetValue() == $value->cWert}selected{/if}>{$value->cName}</option>
                                                     {/foreach}
                                                 </select>
-                                            {elseif $setting->cInputTyp === 'number'}
+                                            {elseif $setting->getInputType() === 'number'}
                                                 <div class="input-group form-counter">
                                                     <div class="input-group-prepend">
                                                         <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
                                                             <span class="fas fa-minus"></span>
                                                         </button>
                                                     </div>
-                                                    <input class="form-control" type="number" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                                    <input class="form-control" type="number" name="{$setting->getValueName()}" id="{$setting->getValueName()}" value="{if $setting->getSetValue() !== null}{$setting->getSetValue()}{/if}" tabindex="1" />
                                                     <div class="input-group-append">
                                                         <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
                                                             <span class="fas fa-plus"></span>
@@ -483,7 +482,7 @@
                                                     </div>
                                                 </div>
                                             {else}
-                                                <input class="form-control" type="text" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                                <input class="form-control" type="text" name="{$setting->getValueName()}" id="{$setting->getValueName()}" value="{if $setting->getSetValue() !== null}{$setting->getSetValue()}{/if}" tabindex="1" />
                                             {/if}
                                         </div>
                                         {include file='snippets/einstellungen_icons.tpl' cnf=$setting}
@@ -499,34 +498,34 @@
                             <hr class="mb-3">
                             <div>
                                 {foreach $advanced_settings as $setting}
-                                    {if $setting->cConf === 'Y'}
+                                    {if $setting->isConfigurable()}
                                         <div class="form-group form-row align-items-center">
-                                            <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->cWertName}">{$setting->cName}:</label>
+                                            <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->getValueName()}">{$setting->getName()}:</label>
                                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                                {if $setting->cInputTyp === 'selectbox'}
-                                                    <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="custom-select">
-                                                        {foreach $setting->ConfWerte as $wert}
-                                                            <option value="{$wert->cWert}" {if isset($setting->gesetzterWert) && $setting->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
+                                                {if $setting->getInputType() === 'selectbox'}
+                                                    <select name="{$setting->getValueName()}" id="{$setting->getValueName()}" class="custom-select">
+                                                        {foreach $setting->getValues() as $wert}
+                                                            <option value="{$wert->cWert}" {if $setting->getSetValue() !== null && $setting->getSetValue() == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                                         {/foreach}
                                                     </select>
-                                                {elseif $setting->cInputTyp === 'number'}
+                                                {elseif $setting->getInputType() === 'number'}
                                                     <div class="input-group form-counter">
                                                         <div class="input-group-prepend">
                                                             <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
                                                                 <span class="fas fa-minus"></span>
                                                             </button>
                                                         </div>
-                                                        <input class="form-control" type="number" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                                        <input class="form-control" type="number" name="{$setting->getValueName()}" id="{$setting->getValueName()}" value="{if $setting->getSetValue() !== null}{$setting->getSetValue()}{/if}" tabindex="1" />
                                                         <div class="input-group-append">
                                                             <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
                                                                 <span class="fas fa-plus"></span>
                                                             </button>
                                                         </div>
                                                     </div>
-                                                {elseif $setting->cInputTyp === 'pass'}
-                                                    <input class="form-control" type="password" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                                {elseif $setting->getInputType() === 'pass'}
+                                                    <input class="form-control" type="password" name="{$setting->getValueName()}" id="{$setting->getValueName()}" value="{if $setting->getSetValue() !== null}{$setting->getSetValue()}{/if}" tabindex="1" />
                                                 {else}
-                                                    <input class="form-control" type="text" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                                    <input class="form-control" type="text" name="{$setting->getValueName()}" id="{$setting->getValueName()}" value="{if $setting->getSetValue() !== null}{$setting->getSetValue()}{/if}" tabindex="1" />
                                                 {/if}
                                             </div>
                                             {include file='snippets/einstellungen_icons.tpl' cnf=$setting}

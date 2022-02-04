@@ -354,7 +354,7 @@ class Cart
                 }
             }
         }
-
+        $db                    = Shop::Container()->getDB();
         $options               = Artikel::getDefaultOptions();
         $options->nStueckliste = 1;
         $options->nVariationen = 1;
@@ -362,7 +362,7 @@ class Cart
             $options->nKeineSichtbarkeitBeachten = 1;
         }
         $cartItem          = new CartItem();
-        $cartItem->Artikel = new Artikel();
+        $cartItem->Artikel = new Artikel($db);
         $cartItem->Artikel->fuelleArtikel($productID, $options, 0, $currentLangID);
         $cartItem->nAnzahl           = $qty;
         $cartItem->kArtikel          = $cartItem->Artikel->kArtikel;
@@ -380,8 +380,6 @@ class Cart
         $cartItem->cName         = [];
         $cartItem->cLieferstatus = [];
         $cartItem->fVK           = $cartItem->Artikel->Preise->fVK;
-
-        $db = Shop::Container()->getDB();
         foreach (Frontend::getLanguages() as $lang) {
             $code                           = $lang->getCode();
             $cartItem->cName[$code]         = $cartItem->Artikel->cName;
@@ -489,10 +487,6 @@ class Cart
                                     }
                                 )
                             );
-
-                            if ($oVariationWert !== false) {
-                                CartHelper::setVariationPicture($cartItem, $oVariationWert);
-                            }
                         }
                     }
                 }
@@ -898,13 +892,14 @@ class Cart
         $bulk            = $this->config['kaufabwicklung']['general_child_item_bulk_pricing'] === 'Y';
         $customerGroupID = Frontend::getCustomerGroup()->getID();
         $langID          = Shop::getLanguageID();
+        $db              = Shop::Container()->getDB();
         foreach ($this->PositionenArr as $item) {
             if ($item->kArtikel <= 0 || $item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL) {
                 $this->setzeKonfig($item, true, false);
                 continue;
             }
             $oldItem                             = clone $item;
-            $product                             = new Artikel();
+            $product                             = new Artikel($db);
             $options->nKeineSichtbarkeitBeachten = 1;
             if ($item->kKonfigitem === 0) {
                 $options->nKeineSichtbarkeitBeachten = 0;
@@ -1280,6 +1275,7 @@ class Cart
     {
         $taxRates = [];
         $taxItems = [];
+        $currency = Frontend::getCurrency();
         foreach ($this->PositionenArr as $item) {
             if ($item->kSteuerklasse > 0) {
                 $ust = Tax::getSalesTax($item->kSteuerklasse);
@@ -1304,10 +1300,16 @@ class Cart
                     );
                     $taxItems[$idx]->fUst            = $ust;
                     $taxItems[$idx]->fBetrag         = ($item->fPreis * $item->nAnzahl * $ust) / 100.0;
-                    $taxItems[$idx]->cPreisLocalized = Preise::getLocalizedPriceString($taxItems[$idx]->fBetrag);
+                    $taxItems[$idx]->cPreisLocalized = Preise::getLocalizedPriceString(
+                        $taxItems[$idx]->fBetrag,
+                        $currency
+                    );
                 } else {
                     $taxItems[$idx]->fBetrag        += ($item->fPreis * $item->nAnzahl * $ust) / 100.0;
-                    $taxItems[$idx]->cPreisLocalized = Preise::getLocalizedPriceString($taxItems[$idx]->fBetrag);
+                    $taxItems[$idx]->cPreisLocalized = Preise::getLocalizedPriceString(
+                        $taxItems[$idx]->fBetrag,
+                        $currency
+                    );
                 }
             }
         }
@@ -1810,8 +1812,7 @@ class Cart
         ) {
             return null;
         }
-
-
+        $currency         = Frontend::getCurrency();
         $customerGroupID  = $_SESSION['Kunde']->kKundengruppe ?? 0;
         $customerGroupSQL = $customerGroupID > 0
             ? " OR FIND_IN_SET('" . $customerGroupID . "', REPLACE(va.cKundengruppen, ';', ',')) > 0"
@@ -1843,7 +1844,7 @@ class Cart
         }
         //use previously determined shippingfree shipping method
         if ($shippingFreeMinID !== null) {
-            $localizedZero              = Preise::getLocalizedPriceString(0);
+            $localizedZero              = Preise::getLocalizedPriceString(0, $currency);
             $method                     = new Versandart($shippingFreeMinID);
             $method->cPriceLocalized[0] = $localizedZero;
             $method->cPriceLocalized[1] = $localizedZero;
@@ -1892,29 +1893,30 @@ class Cart
                 'itemCount'   => $itemCount,
                 'totalWeight' => $totalWeight,
                 'maxPrices'   => $maxPrices,
-                'scl'         => '^([0-9 -]* )?' . $shippingClasses
+                'scl'         => '^([0-9 -]* )?' . $shippingClasses . ' '
             ]
         );
         if ($shipping !== null && $shipping->kVersandart > 0) {
             $method = new Versandart((int)$shipping->kVersandart);
             $method->setCountryCode($countryCode);
-
             if ($method->eSteuer === 'brutto') {
-                $method->cPriceLocalized[0] = Preise::getLocalizedPriceString($shipping->minPrice);
+                $method->cPriceLocalized[0] = Preise::getLocalizedPriceString($shipping->minPrice, $currency);
                 $method->cPriceLocalized[1] = Preise::getLocalizedPriceString(
                     Tax::getNet(
                         $shipping->minPrice,
                         $_SESSION['Steuersatz'][$this->gibVersandkostenSteuerklasse()]
-                    )
+                    ),
+                    $currency
                 );
             } else {
                 $method->cPriceLocalized[0] = Preise::getLocalizedPriceString(
                     Tax::getGross(
                         $shipping->minPrice,
                         $_SESSION['Steuersatz'][$this->gibVersandkostenSteuerklasse()]
-                    )
+                    ),
+                    $currency
                 );
-                $method->cPriceLocalized[1] = Preise::getLocalizedPriceString($shipping->minPrice);
+                $method->cPriceLocalized[1] = Preise::getLocalizedPriceString($shipping->minPrice, $currency);
             }
             $this->oFavourableShipping = $method;
         }

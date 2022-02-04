@@ -249,9 +249,8 @@ $searchSpecials = [];
 foreach ($ssSeoData as $searchSpecial) {
     $searchSpecials[$searchSpecial->kKey] = $searchSpecial->cSeo;
 }
-
-$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SUCHSPECIAL))
-    ->assign('oSuchSpecials_arr', $searchSpecials)
+getAdminSectionSettings(CONF_SUCHSPECIAL);
+$smarty->assign('oSuchSpecials_arr', $searchSpecials)
     ->assign('step', $step)
     ->display('suchspecials.tpl');
 

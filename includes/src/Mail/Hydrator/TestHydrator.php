@@ -116,9 +116,9 @@ class TestHydrator extends DefaultsHydrator
      */
     private function getCheckbox(): CheckBox
     {
-        $id = $this->db->getSingleObject('SELECT kCheckbox FROM tcheckbox LIMIT 1');
+        $id = $this->db->getSingleInt('SELECT kCheckbox FROM tcheckbox LIMIT 1', 'kCheckbox');
 
-        return new CheckBox((int)($id->kCheckbox ?? 0));
+        return new CheckBox($id, $this->db);
     }
 
     /**

@@ -161,15 +161,14 @@ foreach ($sitemapReports as $report) {
         );
     }
 }
-
-$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SITEMAP))
-       ->assign('nSitemapDownloadYear', $yearDownloads)
-       ->assign('oSitemapDownloadYears_arr', $sitemapDownloadsPerYear)
-       ->assign('oSitemapDownloadPagination', $downloadPagination)
-       ->assign('oSitemapDownload_arr', $sitemapDownloads)
-       ->assign('nSitemapReportYear', $yearReports)
-       ->assign('oSitemapReportYears_arr', $reportYears)
-       ->assign('oSitemapReportPagination', $pagination)
-       ->assign('oSitemapReport_arr', $sitemapReports)
-       ->assign('URL', Shop::getURL() . '/' . 'sitemap_index.xml')
-       ->display('sitemapexport.tpl');
+getAdminSectionSettings(CONF_SITEMAP);
+$smarty->assign('nSitemapDownloadYear', $yearDownloads)
+    ->assign('oSitemapDownloadYears_arr', $sitemapDownloadsPerYear)
+    ->assign('oSitemapDownloadPagination', $downloadPagination)
+    ->assign('oSitemapDownload_arr', $sitemapDownloads)
+    ->assign('nSitemapReportYear', $yearReports)
+    ->assign('oSitemapReportYears_arr', $reportYears)
+    ->assign('oSitemapReportPagination', $pagination)
+    ->assign('oSitemapReport_arr', $sitemapReports)
+    ->assign('URL', Shop::getURL() . '/' . 'sitemap_index.xml')
+    ->display('sitemapexport.tpl');

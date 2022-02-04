@@ -827,15 +827,16 @@ class DemoDataInstaller
         // the right value of this node is the left value + 1
         $right = $left + 1;
         // get all children of this node
-        $result = $this->db->getObjects(
+        $result = $this->db->getInts(
             'SELECT kKategorie 
                 FROM tkategorie 
                 WHERE kOberKategorie = :pid
                 ORDER BY nSort, cName',
+            'kKategorie',
             ['pid' => $parentID]
         );
-        foreach ($result as $item) {
-            $right = $this->rebuildCategoryTree((int)$item->kKategorie, $right, $level + 1);
+        foreach ($result as $categoryID) {
+            $right = $this->rebuildCategoryTree($categoryID, $right, $level + 1);
         }
         // we've got the left value, and now that we've processed the children of this node we also know the right value
         $this->db->queryPrepared(

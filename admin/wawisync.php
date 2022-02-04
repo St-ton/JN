@@ -38,6 +38,6 @@ if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && Form::validateToken()) {
 }
 
 $user = Shop::Container()->getDB()->select('tsynclogin', 'kSynclogin', 1);
-$smarty->assign('wawiuser', $user->cName)
-       ->assign('wawipass', $user->cPass)
-       ->display('wawisync.tpl');
+$smarty->assign('wawiuser', htmlentities($user->cName))
+    ->assign('wawipass', $user->cPass)
+    ->display('wawisync.tpl');

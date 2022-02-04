@@ -11,22 +11,22 @@ class CronjobHistory
     /**
      * @var string
      */
-    public $cExportformat;
+    public string $cExportformat;
 
     /**
      * @var string
      */
-    public $cDateiname;
+    public string $cDateiname;
 
     /**
      * @var int
      */
-    public $nDone;
+    public int $nDone;
 
     /**
      * @var string
      */
-    public $cLastStartDate;
+    public string $cLastStartDate;
 
     /**
      * @param string $name

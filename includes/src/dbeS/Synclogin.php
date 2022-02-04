@@ -13,19 +13,19 @@ use Psr\Log\LoggerInterface;
 class Synclogin
 {
     /**
-     * @var string
+     * @var string|null
      */
-    public $cMail;
+    public ?string $cMail = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cName;
+    public ?string $cName = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cPass;
+    public ?string $cPass = null;
 
     /**
      * Synclogin constructor.

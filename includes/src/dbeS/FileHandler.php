@@ -17,12 +17,12 @@ class FileHandler
     /**
      * @var string
      */
-    private $unzipPath = '';
+    private string $unzipPath = '';
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * FileHandler constructor.

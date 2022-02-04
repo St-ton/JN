@@ -11,42 +11,42 @@ class SystemFile
     /**
      * @var int
      */
-    public $kFileID;
+    public int $kFileID;
 
     /**
      * @var string
      */
-    public $cFilepath;
+    public string $cFilepath;
 
     /**
      * @var string
      */
-    public $cRelFilepath;
+    public string $cRelFilepath;
 
     /**
      * @var string
      */
-    public $cFilename;
+    public string $cFilename;
 
     /**
      * @var string
      */
-    public $cDirname;
+    public string $cDirname;
 
     /**
      * @var string
      */
-    public $cExtension;
+    public string $cExtension;
 
     /**
      * @var int
      */
-    public $nUploaded;
+    public int $nUploaded;
 
     /**
      * @var int
      */
-    public $nBytes;
+    public int $nBytes;
 
     /**
      * @param int    $fileID

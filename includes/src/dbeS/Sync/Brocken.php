@@ -31,7 +31,7 @@ final class Brocken extends AbstractSync
             $data->cBrocken  = $input;
             $data->dErstellt = 'NOW()';
             $this->db->insert('tbrocken', $data);
-        } elseif (isset($data->cBrocken) && $data->cBrocken !== $input && \strlen($data->cBrocken) > 0) {
+        } elseif ($data->cBrocken !== $input && \strlen($data->cBrocken) > 0) {
             $this->db->update(
                 'tbrocken',
                 'cBrocken',

@@ -15,7 +15,7 @@ class Test
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * Test constructor.

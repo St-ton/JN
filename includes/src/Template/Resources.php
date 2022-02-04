@@ -7,7 +7,6 @@ use JTL\Plugin\State;
 use JTL\Shop;
 use SimpleXMLElement;
 use stdClass;
-use function Functional\group;
 use function Functional\select;
 
 /**
@@ -164,13 +163,13 @@ class Resources
             $customFile = \str_replace('.css', '_custom.css', $_cssRes->abs);
             if (\file_exists($customFile)) {
                 $groups['plugin_css'][] = [
-                    'idx' => $_cssRes->cName,
+                    'idx' => $_cssRes->name,
                     'abs' => $customFile,
                     'rel' => \str_replace('.css', '_custom.css', $_cssRes->rel)
                 ];
             } else {
                 $groups['plugin_css'][] = [
-                    'idx' => $_cssRes->cName,
+                    'idx' => $_cssRes->name,
                     'abs' => $_cssRes->abs,
                     'rel' => $_cssRes->rel
                 ];
@@ -178,14 +177,14 @@ class Resources
         }
         foreach ($pluginRes['js_head'] as $_jshRes) {
             $groups['plugin_js_head'][] = [
-                'idx' => $_jshRes->cName,
+                'idx' => $_jshRes->name,
                 'abs' => $_jshRes->abs,
                 'rel' => $_jshRes->rel
             ];
         }
         foreach ($pluginRes['js_body'] as $_jsbRes) {
             $groups['plugin_js_body'][] = [
-                'idx' => $_jsbRes->cName,
+                'idx' => $_jsbRes->name,
                 'abs' => $_jsbRes->abs,
                 'rel' => $_jsbRes->rel
             ];
@@ -229,23 +228,19 @@ class Resources
      */
     public function getPluginResources(): array
     {
-        $resourcesc = $this->db->getObjects(
-            'SELECT * 
+        $grouped = $this->db->getCollection(
+            'SELECT type, bExtension, path, nVersion, cVerzeichnis, position, cName AS name
                 FROM tplugin_resources AS res
                 JOIN tplugin
                     ON tplugin.kPlugin = res.kPlugin
                 WHERE tplugin.nStatus = :state
                 ORDER BY res.priority DESC',
             ['state' => State::ACTIVATED]
-        );
-        $grouped    = group($resourcesc, static function ($e) {
-            return $e->type;
-        });
+        )->groupBy('type');
         if (isset($grouped['js'])) {
-            $grouped['js'] = group($grouped['js'], static function ($e) {
-                return $e->position;
-            });
+            $grouped['js'] = $grouped['js']->groupBy('position');
         }
+        $grouped = $grouped->toArray();
 
         return [
             'css'     => $this->getPluginResourcesPath($grouped['css'] ?? []),
@@ -268,15 +263,12 @@ class Resources
         }
         $settingsGroup = \constant((string)$attrs->DependsOnSettingGroup);
         $settingValue  = (string)$attrs->DependsOnSettingValue;
-        $comparator    = (string)$attrs->DependsOnSettingComparison;
+        $comparator    = (string)($attrs->DependsOnSettingComparison ?? '==');
         $setting       = (string)$attrs->DependsOnSetting;
         $conf          = Shop::getSettings([$settingsGroup]);
         $hierarchy     = \explode('.', $setting);
         $iterations    = \count($hierarchy);
         $i             = 0;
-        if (empty($comparator)) {
-            $comparator = '==';
-        }
         foreach ($hierarchy as $_h) {
             $conf = $conf[$_h] ?? null;
             if ($conf === null) {

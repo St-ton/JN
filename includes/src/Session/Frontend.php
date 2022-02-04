@@ -2,6 +2,7 @@
 
 namespace JTL\Session;
 
+use Exception;
 use JTL\Campaign;
 use JTL\Cart\Cart;
 use JTL\Cart\PersistentCart;
@@ -35,14 +36,14 @@ class Frontend extends AbstractSession
     private const DEFAULT_SESSION = 'JTLSHOP';
 
     /**
-     * @var Frontend
+     * @var Frontend|null
      */
-    protected static $instance;
+    protected static ?Frontend $instance = null;
 
     /**
      * @var bool
      */
-    private $mustUpdate = false;
+    private bool $mustUpdate = false;
 
     /**
      * @param bool   $start       - call session_start()?
@@ -102,6 +103,7 @@ class Frontend extends AbstractSession
         LanguageHelper::getInstance()->autoload();
         $_SESSION['FremdParameter'] = [];
         $_SESSION['Warenkorb']      = $_SESSION['Warenkorb'] ?? new Cart();
+        $_SESSION['consentVersion'] = (int)($_SESSION['consentVersion'] ?? 1);
 
         $updateGlobals  = $this->checkGlobals();
         $updateLanguage = $this->checkLanguageUpdate();
@@ -189,6 +191,7 @@ class Frontend extends AbstractSession
 
     /**
      * @return bool
+     * @throws Exception
      */
     private function checkGlobals(): bool
     {
@@ -196,19 +199,23 @@ class Frontend extends AbstractSession
         if (isset($_SESSION['Globals_TS'])) {
             $doUpdate = false;
             $last     = Shop::Container()->getDB()->getSingleObject(
-                'SELECT dLetzteAenderung 
+                'SELECT * 
                     FROM tglobals 
                     WHERE dLetzteAenderung > :ts',
                 ['ts' => $_SESSION['Globals_TS']]
             );
             if ($last !== null) {
-                $_SESSION['Globals_TS'] = $last->dLetzteAenderung;
-                $doUpdate               = true;
+                $_SESSION['Globals_TS']     = $last->dLetzteAenderung;
+                $_SESSION['consentVersion'] = (int)$last->consentVersion;
+                $doUpdate                   = true;
             }
         } else {
-            $_SESSION['Globals_TS'] = Shop::Container()->getDB()->getSingleObject(
-                'SELECT dLetzteAenderung FROM tglobals'
-            )->dLetzteAenderung;
+            $data = Shop::Container()->getDB()->getSingleObject('SELECT * FROM tglobals');
+            if ($data === null) {
+                throw new Exception('Fatal: could not load tglobals');
+            }
+            $_SESSION['Globals_TS']     = $data->dLetzteAenderung;
+            $_SESSION['consentVersion'] = (int)$data->consentVersion;
         }
 
         return $doUpdate || !isset($_SESSION['cISOSprache'], $_SESSION['kSprache'], $_SESSION['Kundengruppe']);

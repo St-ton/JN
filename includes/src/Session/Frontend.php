@@ -608,7 +608,7 @@ class Frontend extends AbstractSession
             $val = $productID;
         } elseif ($childProductID > 0) {
             $val = $childProductID;
-        }  elseif ($categoryID > 0) {
+        } elseif ($categoryID > 0) {
             $key = 'kKategorie';
             $val = $categoryID;
         } elseif ($pageID > 0) {

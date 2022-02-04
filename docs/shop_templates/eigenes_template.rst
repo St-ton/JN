@@ -117,7 +117,7 @@ Sie finden die Vorlage auf der
 Projektseite `novachild <https://gitlab.com/jtl-software/jtl-shop/child-templates/novachild>`_.
 
 Für ein neues Child-Template benennen Sie zunächst den Ordner ``novachild/`` in den gewünschten
-Template-Namen um, z. B. ``MeinShopTemplate/`` und laden Sie den Ordner in das Unterverzeichis ``templates/``
+Template-Namen um, z. B. ``MeinShopTemplate/``, und laden dann den Ordner in das Unterverzeichis ``templates/``
 Ihres Shops. |br|
 
 .. caution::
@@ -158,7 +158,7 @@ wird, welches angepasst werden soll.
     "*Standard-Template für mobile Endgeräte?*" nicht mehr ausgewählt werden kann und eine Warnung ausgegeben wird,
     falls dies (noch) so sein sollte.
 
-Ab JTL-Shop Version 5.0.0 ist es bei allen Templates Konvention, dass der in der template.xml definierte Namen auch
+Ab JTL-Shop Version 5.0.0 ist es bei allen Templates Konvention, dass der in der ``template.xml`` definierte Namen auch
 dem Ordnernamen entsprechen muss. |br|
 Darüberhinaus werden alle PHP-Dateien im Hauptverzeichnis des Templates über einen Autoloader geladen.
 Auch der  Namespace in allen dort genutzen PHP-Dateien muss dabei immer dem Schema ``Template\<template-name>``
@@ -167,9 +167,9 @@ entsprechen.
 Wenn Sie Ihr Childtemplate also wie oben in ``MeinShopTemplate`` umbenannt haben, müssen folgende Änderungen vorgenommen
 werden:
 
-* <Name>-Attribut in der template.xml: ``MeinShopTemplate``
-* Ordner des Templates: ``MeinShopTemplate``
-* namespace in der Datei Bootstrap.php: ``Template\MeinShopTemplate``
+* ``<Name>``-Attribut in der template.xml: ``MeinShopTemplate``
+* Ordner des Templates: ``<Shop-Root>/templates/MeinShopTemplate``
+* *namespace* in der Datei Bootstrap.php: ``Template\MeinShopTemplate``
 
 
 Ihr Template aktivieren

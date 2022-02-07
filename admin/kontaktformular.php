@@ -15,15 +15,15 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
-$step        = 'uebersicht';
-$alertHelper = Shop::Container()->getAlertService();
-$db          = Shop::Container()->getDB();
-$languages   = LanguageHelper::getAllLanguages(0, true);
+$step         = 'uebersicht';
+$alertService = Shop::Container()->getAlertService();
+$db           = Shop::Container()->getDB();
+$languages    = LanguageHelper::getAllLanguages(0, true);
 if (Request::getInt('del') > 0 && Form::validateToken()) {
     $db->delete('tkontaktbetreff', 'kKontaktBetreff', Request::getInt('del'));
     $db->delete('tkontaktbetreffsprache', 'kKontaktBetreff', Request::getInt('del'));
 
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSubjectDelete'), 'successSubjectDelete');
+    $alertService->addAlert(Alert::TYPE_SUCCESS, __('successSubjectDelete'), 'successSubjectDelete');
 }
 
 if (Request::postInt('content') === 1 && Form::validateToken()) {
@@ -55,7 +55,7 @@ if (Request::postInt('content') === 1 && Form::validateToken()) {
         $db->insert('tspezialcontentsprache', $spezialContent3);
         unset($spezialContent1, $spezialContent2, $spezialContent3);
     }
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successContentSave'), 'successContentSave');
+    $alertService->addAlert(Alert::TYPE_SUCCESS, __('successContentSave'), 'successContentSave');
     $tab = 'content';
 }
 
@@ -75,11 +75,11 @@ if (Request::postInt('betreff') === 1 && Form::validateToken()) {
         $subjectID         = 0;
         if (Request::postInt('kKontaktBetreff') === 0) {
             $subjectID = $db->insert('tkontaktbetreff', $newSubject);
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSubjectCreate'), 'successSubjectCreate');
+            $alertService->addAlert(Alert::TYPE_SUCCESS, __('successSubjectCreate'), 'successSubjectCreate');
         } else {
             $subjectID = Request::postInt('kKontaktBetreff');
             $db->update('tkontaktbetreff', 'kKontaktBetreff', $subjectID, $newSubject);
-            $alertHelper->addAlert(
+            $alertService->addAlert(
                 Alert::TYPE_SUCCESS,
                 sprintf(__('successSubjectSave'), $newSubject->cName),
                 'successSubjectSave'
@@ -106,18 +106,14 @@ if (Request::postInt('betreff') === 1 && Form::validateToken()) {
             $db->insert('tkontaktbetreffsprache', $localized);
         }
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSubjectSave'), 'errorSubjectSave');
+        $alertService->addAlert(Alert::TYPE_ERROR, __('errorSubjectSave'), 'errorSubjectSave');
         $step = 'betreff';
     }
     $tab = 'subjects';
 }
 
 if (Request::postInt('einstellungen') === 1) {
-    $alertHelper->addAlert(
-        Alert::TYPE_SUCCESS,
-        saveAdminSectionSettings(CONF_KONTAKTFORMULAR, $_POST),
-        'saveSettings'
-    );
+    saveAdminSectionSettings(CONF_KONTAKTFORMULAR, $_POST);
     $tab = 'config';
 }
 

@@ -64,6 +64,7 @@ class Manager
         GetText $getText,
         AlertServiceInterface $alertService
     ) {
+        $getText->loadAdminLocale('configs/configs');
         $getText->loadConfigLocales(true, true);
 
         $this->db           = $db;

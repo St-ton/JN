@@ -15,13 +15,13 @@ use JTL\Shop;
 use JTL\Shopsetting;
 
 $shopSettings = Shopsetting::getInstance();
-$alertHelper  = Shop::Container()->getAlertService();
+$alertService = Shop::Container()->getAlertService();
 
 Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 if (!empty($_POST) && Form::validateToken()) {
     $postData = Text::filterXSS($_POST);
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSectionSettings(CONF_FS, $_POST), 'saveSettings');
+    saveAdminSectionSettings(CONF_FS, $_POST);
     $shopSettings->reset();
 
     if (isset($postData['test'])) {
@@ -47,12 +47,12 @@ if (!empty($_POST) && Form::validateToken()) {
             $fs         = new Filesystem($factory->getAdapter());
             $isShopRoot = $fs->fileExists('includes/config.JTL-Shop.ini.php');
             if ($isShopRoot) {
-                $alertHelper->addAlert(Alert::TYPE_INFO, __('fsValidConnection'), 'fsValidConnection');
+                $alertService->addAlert(Alert::TYPE_INFO, __('fsValidConnection'), 'fsValidConnection');
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('fsInvalidShopRoot'), 'fsInvalidShopRoot');
+                $alertService->addAlert(Alert::TYPE_ERROR, __('fsInvalidShopRoot'), 'fsInvalidShopRoot');
             }
         } catch (Exception $e) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, $e->getMessage(), 'errorFS');
+            $alertService->addAlert(Alert::TYPE_ERROR, $e->getMessage(), 'errorFS');
         }
     }
 }

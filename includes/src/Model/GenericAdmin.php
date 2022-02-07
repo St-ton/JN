@@ -303,10 +303,6 @@ class GenericAdmin
     public function saveSettings(): void
     {
         $this->tab = 'settings';
-        $this->alertService->addAlert(
-            Alert::TYPE_SUCCESS,
-            \saveAdminSectionSettings(\CONF_CONSENTMANAGER, $_POST),
-            'saveSettings'
-        );
+        \saveAdminSectionSettings(\CONF_CONSENTMANAGER, $_POST);
     }
 }

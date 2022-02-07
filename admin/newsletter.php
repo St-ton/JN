@@ -21,11 +21,11 @@ $oAccount->permission('MODULE_NEWSLETTER_VIEW', true, true);
 
 $db            = Shop::Container()->getDB();
 $conf          = Shop::getSettings([CONF_NEWSLETTER]);
-$alertHelper   = Shop::Container()->getAlertService();
+$alertService  = Shop::Container()->getAlertService();
 $newsletterTPL = null;
 $step          = 'uebersicht';
 $option        = '';
-$admin         = new Admin($db, $alertHelper);
+$admin         = new Admin($db, $alertService);
 
 $inactiveSearchSQL        = new SqlObject();
 $activeSearchSQL          = new SqlObject();
@@ -39,20 +39,16 @@ if (Form::validateToken()) {
     if (Request::postInt('einstellungen') === 1) {
         if (isset($postData['speichern']) || Request::postVar('resetSetting') !== null) {
             $step = 'uebersicht';
-            $alertHelper->addAlert(
-                Alert::TYPE_SUCCESS,
-                saveAdminSectionSettings(CONF_NEWSLETTER, $_POST),
-                'saveSettings'
-            );
+            saveAdminSectionSettings(CONF_NEWSLETTER, $_POST);
             $admin->setNewsletterCheckboxStatus();
         }
     } elseif (Request::postInt('newsletterabonnent_loeschen') === 1
         || (Request::verifyGPCDataInt('inaktiveabonnenten') === 1 && isset($postData['abonnentloeschenSubmit']))
     ) {
         if ($admin->deleteSubscribers($postData['kNewsletterEmpfaenger'] ?? [])) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterAboDelete'), 'successNewsletterAboDelete');
+            $alertService->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterAboDelete'), 'successNewsletterAboDelete');
         } else {
-            $alertHelper->addAlert(
+            $alertService->addAlert(
                 Alert::TYPE_ERROR,
                 __('errorAtLeastOneNewsletterAbo'),
                 'errorAtLeastOneNewsletterAbo'
@@ -60,9 +56,9 @@ if (Form::validateToken()) {
         }
     } elseif (isset($postData['abonnentfreischaltenSubmit']) && Request::verifyGPCDataInt('inaktiveabonnenten') === 1) {
         if ($admin->activateSubscribers($postData['kNewsletterEmpfaenger'])) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterAbounlock'), 'successNewsletterAbounlock');
+            $alertService->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterAbounlock'), 'successNewsletterAbounlock');
         } else {
-            $alertHelper->addAlert(
+            $alertService->addAlert(
                 Alert::TYPE_ERROR,
                 __('errorAtLeastOneNewsletterAbo'),
                 'errorAtLeastOneNewsletterAbo'
@@ -76,7 +72,7 @@ if (Form::validateToken()) {
             if (!empty($postData['kNewsletterQueue']) && is_array($postData['kNewsletterQueue'])) {
                 $admin->deleteQueue($postData['kNewsletterQueue']);
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
+                $alertService->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
             }
         }
     } elseif (Request::postInt('newsletterhistory') === 1 || Request::getInt('newsletterhistory') === 1) {
@@ -84,7 +80,7 @@ if (Form::validateToken()) {
             if (is_array($postData['kNewsletterHistory'])) {
                 $admin->deleteHistory($postData['kNewsletterHistory']);
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneHistory'), 'errorAtLeastOneHistory');
+                $alertService->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneHistory'), 'errorAtLeastOneHistory');
             }
         } elseif (isset($_GET['anzeigen'])) {
             $step      = 'history_anzeigen';
@@ -144,7 +140,7 @@ if (Form::validateToken()) {
             $preview              = $instance->getPreview($newsletterTPL);
         }
         if (is_string($preview)) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, $preview, 'errorNewsletterPreview');
+            $alertService->addAlert(Alert::TYPE_ERROR, $preview, 'errorNewsletterPreview');
         }
         $smarty->assign('oNewsletterVorlage', $newsletterTPL)
             ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant());
@@ -405,7 +401,7 @@ if ($step === 'uebersicht') {
         ->assign('oPagiAlleAbos', $pagiSubscriptions);
 }
 if (isset($checks) && is_array($checks) && count($checks) > 0) {
-    $alertHelper->addAlert(
+    $alertService->addAlert(
         Alert::TYPE_ERROR,
         __('errorFillRequired'),
         'plausiErrorFillRequired'

@@ -14,18 +14,14 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_CUSTOMERFIELDS_VIEW', true, true);
 setzeSprache();
-$languageID  = (int)$_SESSION['editLanguageID'];
-$cf          = CustomerFields::getInstance($languageID, Shop::Container()->getDB());
-$step        = 'uebersicht';
-$alertHelper = Shop::Container()->getAlertService();
+$languageID   = (int)$_SESSION['editLanguageID'];
+$cf           = CustomerFields::getInstance($languageID, Shop::Container()->getDB());
+$step         = 'uebersicht';
+$alertService = Shop::Container()->getAlertService();
 $smarty->assign('cTab', $step);
 
 if (Request::postInt('einstellungen') > 0) {
-    $alertHelper->addAlert(
-        Alert::TYPE_SUCCESS,
-        saveAdminSectionSettings(CONF_KUNDENFELD, $_POST),
-        'saveSettings'
-    );
+    saveAdminSectionSettings(CONF_KUNDENFELD, $_POST);
 } elseif (Request::postInt('kundenfelder') === 1 && Form::validateToken()) {
     $success = true;
     if (isset($_POST['loeschen'])) {
@@ -35,16 +31,16 @@ if (Request::postInt('einstellungen') > 0) {
                 $success = $success && $cf->delete((int)$fieldID);
             }
             if ($success) {
-                $alertHelper->addAlert(
+                $alertService->addAlert(
                     Alert::TYPE_SUCCESS,
                     __('successCustomerFieldDelete'),
                     'successCustomerFieldDelete'
                 );
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCustomerFieldDelete'), 'errorCustomerFieldDelete');
+                $alertService->addAlert(Alert::TYPE_ERROR, __('errorCustomerFieldDelete'), 'errorCustomerFieldDelete');
             }
         } else {
-            $alertHelper->addAlert(
+            $alertService->addAlert(
                 Alert::TYPE_ERROR,
                 __('errorAtLeastOneCustomerField'),
                 'errorAtLeastOneCustomerField'
@@ -56,13 +52,13 @@ if (Request::postInt('einstellungen') > 0) {
             $success              = $success && $cf->save($customerField);
         }
         if ($success) {
-            $alertHelper->addAlert(
+            $alertService->addAlert(
                 Alert::TYPE_SUCCESS,
                 __('successCustomerFieldUpdate'),
                 'successCustomerFieldUpdate'
             );
         } else {
-            $alertHelper->addAlert(
+            $alertService->addAlert(
                 Alert::TYPE_ERROR,
                 __('errorCustomerFieldUpdate'),
                 'errorCustomerFieldUpdate'
@@ -90,20 +86,20 @@ if (Request::postInt('einstellungen') > 0) {
 
         if (count($check->getPlausiVar()) === 0) {
             if ($cf->save($customerField, $cfValues)) {
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCustomerFieldSave'), 'successCustomerFieldSave');
+                $alertService->addAlert(Alert::TYPE_SUCCESS, __('successCustomerFieldSave'), 'successCustomerFieldSave');
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCustomerFieldSave'), 'errorCustomerFieldSave');
+                $alertService->addAlert(Alert::TYPE_ERROR, __('errorCustomerFieldSave'), 'errorCustomerFieldSave');
             }
         } else {
             $erroneousFields = $check->getPlausiVar();
             if (isset($erroneousFields['cName']) && $erroneousFields['cName'] === 2) {
-                $alertHelper->addAlert(
+                $alertService->addAlert(
                     Alert::TYPE_ERROR,
                     __('errorCustomerFieldNameExists'),
                     'errorCustomerFieldNameExists'
                 );
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
+                $alertService->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
             }
             $smarty->assign('xPlausiVar_arr', $check->getPlausiVar())
                 ->assign('xPostVar_arr', $check->getPostVar())

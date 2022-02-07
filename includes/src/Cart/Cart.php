@@ -972,12 +972,13 @@ class Cart
                     $qty = $this->gibAnzahlEinesArtikels($product->kArtikel);
                 }
                 $item->Artikel           = $product;
-                $item->fPreisEinzelNetto = $product->gibPreis($qty, [], 0, $item->cUnique);
+                $item->fPreisEinzelNetto = $product->gibPreis($qty, [], 0, $item->cUnique, false);
                 $item->fPreis            = $product->gibPreis(
                     $qty,
                     $item->WarenkorbPosEigenschaftArr,
                     0,
-                    $item->cUnique
+                    $item->cUnique,
+                    false
                 );
                 $item->fGesamtgewicht    = $item->gibGesamtgewicht();
                 \executeHook(\HOOK_SETZTE_POSITIONSPREISE, [
@@ -1944,7 +1945,7 @@ class Cart
                 'itemCount'   => $itemCount,
                 'totalWeight' => $totalWeight,
                 'maxPrices'   => $maxPrices,
-                'scl'         => '^([0-9 -]* )?' . $shippingClasses
+                'scl'         => '^([0-9 -]* )?' . $shippingClasses . ' '
             ]
         );
         if ($shipping !== null && $shipping->kVersandart > 0) {

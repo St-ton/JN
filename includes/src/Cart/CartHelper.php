@@ -146,17 +146,7 @@ class CartHelper
         $info = $this->initCartInfo();
 
         foreach ($this->getPositions() as $item) {
-            $amountItem = $item->fPreisEinzelNetto;
-            if ((!isset($item->Artikel->kVaterArtikel) || (int)$item->Artikel->kVaterArtikel === 0)
-                && GeneralObject::isCountable('WarenkorbPosEigenschaftArr', $item)
-            ) {
-                foreach ($item->WarenkorbPosEigenschaftArr as $attr) {
-                    if ((float)$attr->fAufpreis !== 0.0) {
-                        $amountItem += $attr->fAufpreis;
-                    }
-                }
-            }
-            $amount      = $amountItem * $info->currency->getConversionFactor();
+            $amount      = $item->fPreis * $info->currency->getConversionFactor();
             $amountGross = Tax::getGross(
                 $amount,
                 CartItem::getTaxRate($item),

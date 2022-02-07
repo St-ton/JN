@@ -5,6 +5,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Linechart;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -393,15 +394,11 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                     ORDER BY tkampagnevorgang.dErstellt DESC' . $sql,
                 ['cid' => (int)$campaignID, 'cdid' => (int)$definition->kKampagneDef]
             );
-
-            if (is_array($data) && count($data) > 0) {
+            if (count($data) > 0) {
                 foreach ($data as $i => $oDaten) {
-                    $customDataParts = explode(';', $oDaten->cCustomData);
-                    $cEinstiegsseite = $customDataParts [0] ?? '';
-                    $referer         = $customDataParts [1] ?? '';
-
-                    $data[$i]->cEinstiegsseite = $cEinstiegsseite;
-                    $data[$i]->cReferer        = $referer;
+                    $customDataParts           = explode(';', $oDaten->cCustomData);
+                    $data[$i]->cEinstiegsseite = Text::filterXSS($customDataParts [0] ?? '');
+                    $data[$i]->cReferer        = Text::filterXSS($customDataParts [1] ?? '');
                 }
 
                 $members = [

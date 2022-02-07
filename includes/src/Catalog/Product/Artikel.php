@@ -4750,7 +4750,7 @@ class Artikel
             [
                 'ccode'  => '%' . $countryCode . '%',
                 'cgid'   => Frontend::getCustomerGroup()->getID(),
-                'sclass' => '^([0-9 -]* )?' . $this->kVersandklasse,
+                'sclass' => '^([0-9 -]* )?' . $this->kVersandklasse . ' ',
                 'wght'   => $this->fGewicht,
                 'net'    => $this->Preise->fVKNetto
             ]
@@ -5733,7 +5733,7 @@ class Artikel
             )
             && ($this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y'
                 || (!empty($this->FunktionsAttribute[\FKT_ATTRIBUT_WARENKORBMATRIX])
-                    && $this->FunktionsAttribute[\FKT_ATTRIBUT_WARENKORBMATRIX] === '1'))
+                    && (int)$this->FunktionsAttribute[\FKT_ATTRIBUT_WARENKORBMATRIX] === 1))
         ) {
             //the cart matrix cannot deal with those different kinds of variations..
             //so if we got "freifeldvariationen" in combination with normal ones, we have to disable the matrix

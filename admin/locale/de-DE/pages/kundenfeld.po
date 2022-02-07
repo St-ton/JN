@@ -71,9 +71,6 @@ msgstr "Formularfeld konnte nicht gespeichert werden."
 msgid "errorCustomerFieldNameExists"
 msgstr "Ein Feld mit diesem Namen existiert bereits."
 
-msgid "errorLoginTemporaryNotPossible"
-msgstr "Anmeldung zurzeit nicht möglich."
-
 msgid "errorFieldNeedsAtLeastOneValue"
 msgstr "Bitte geben Sie mindestens einen Wert für das Feld ein."
 

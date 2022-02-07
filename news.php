@@ -41,7 +41,7 @@ switch ($controller->getPageType($params)) {
         $newsItemID = $params['kNews'];
         $newsItem   = new Item($db);
         $newsItem->load($newsItemID);
-        $newsItem->checkVisibility(Frontend::getCustomer()->getGroupID());
+        $newsItem->checkVisibility($customerGroupID);
 
         $cMetaTitle       = $newsItem->getMetaTitle();
         $cMetaDescription = $newsItem->getMetaDescription();

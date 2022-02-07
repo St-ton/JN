@@ -71,6 +71,19 @@ class Manager
     }
 
     /**
+     * @return string[]
+     */
+    private function getHeaders(): array
+    {
+        return [
+            'Accept'        => 'application/json',
+            'Content-Type'  => 'application/json',
+            'User-Agent'    => 'JTL-Shop/' . Shop::getApplicationVersion() . '-' . $this->domain,
+            'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
+        ];
+    }
+
+    /**
      * @param string $url
      * @return string
      * @throws GuzzleException
@@ -82,11 +95,7 @@ class Manager
             'POST',
             $url,
             [
-                'headers' => [
-                    'Accept'        => 'application/json',
-                    'Content-Type'  => 'application/json',
-                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
-                ],
+                'headers' => $this->getHeaders(),
                 'verify'  => true,
                 'body'    => \json_encode((object)['domain' => $this->domain])
             ]
@@ -107,11 +116,7 @@ class Manager
             'POST',
             $url,
             [
-                'headers' => [
-                    'Accept'        => 'application/json',
-                    'Content-Type'  => 'application/json',
-                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
-                ],
+                'headers' => $this->getHeaders(),
                 'verify'  => true,
                 'body'    => \json_encode((object)['domain' => $this->domain])
             ]
@@ -132,11 +137,7 @@ class Manager
             'GET',
             $url,
             [
-                'headers' => [
-                    'Accept'        => 'application/json',
-                    'Content-Type'  => 'application/json',
-                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
-                ],
+                'headers' => $this->getHeaders(),
                 'verify'  => true,
                 'body'    => \json_encode((object)['domain' => $this->domain])
             ]
@@ -159,11 +160,7 @@ class Manager
             'POST',
             $url,
             [
-                'headers' => [
-                    'Accept'        => 'application/json',
-                    'Content-Type'  => 'application/json',
-                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
-                ],
+                'headers' => $this->getHeaders(),
                 'verify'  => true,
                 'body'    => \json_encode((object)[
                     'exsid'         => $exsID,
@@ -197,11 +194,7 @@ class Manager
             'POST',
             \EXS_LIVE === true ? self::API_LIVE_URL : self::API_DEV_URL,
             [
-                'headers' => [
-                    'Accept'        => 'application/json',
-                    'Content-Type'  => 'application/json',
-                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
-                ],
+                'headers' => $this->getHeaders(),
                 'verify'  => true,
                 'body'    => \json_encode((object)['shop' => [
                     'domain'    => $this->domain,
@@ -232,11 +225,7 @@ class Manager
             'GET',
             self::USER_API_URL,
             [
-                'headers' => [
-                    'Accept'        => 'application/json',
-                    'Content-Type'  => 'application/json',
-                    'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
-                ],
+                'headers' => $this->getHeaders(),
                 'verify'  => true
             ]
         );

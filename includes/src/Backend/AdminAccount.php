@@ -497,7 +497,7 @@ class AdminAccount
                 'cPass',
                 $_SESSION['AdminAccount']->cPass
             );
-            $this->twoFaAuthenticated = (isset($account->b2FAauth) && $account->b2FAauth === '1')
+            $this->twoFaAuthenticated = (isset($account->b2FAauth) && (int)$account->b2FAauth === 1)
                 ? (isset($_SESSION['AdminAccount']->TwoFA_valid) && $_SESSION['AdminAccount']->TwoFA_valid === true)
                 : true;
             $this->loggedIn           = isset($account->cLogin);

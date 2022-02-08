@@ -2,6 +2,7 @@
 
 namespace JTL\Catalog;
 
+use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
@@ -228,10 +229,12 @@ class Hersteller
      */
     public static function getAll(bool $productLookup = true): array
     {
-        $sqlWhere   = ' WHERE thersteller.nAktiv = 1';
         $languageID = Shop::getLanguageID();
+        $sql        = new SqlObject();
+        $sql->setWhere(' thersteller.nAktiv = 1');
+        $sql->addParam(':lid', $languageID);
         if ($productLookup) {
-            $sqlWhere = ' WHERE EXISTS (
+            $sql->setWhere(' EXISTS (
                             SELECT 1
                             FROM tartikel
                             WHERE tartikel.kHersteller = thersteller.kHersteller
@@ -239,10 +242,8 @@ class Hersteller
                                 AND NOT EXISTS (
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                                    AND tartikelsichtbarkeit.kKundengruppe = ' .
-                Frontend::getCustomerGroup()->getID() .
-                ')
-                        )';
+                                    AND tartikelsichtbarkeit.kKundengruppe = :cgid))');
+            $sql->addParam(':cgid', Frontend::getCustomerGroup()->getID());
         }
         $items   = Shop::Container()->getDB()->getObjects(
             "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
@@ -256,9 +257,10 @@ class Hersteller
                 LEFT JOIN tseo 
                     ON tseo.kKey = thersteller.kHersteller
                     AND tseo.cKey = 'kHersteller'
-                    AND tseo.kSprache = :lid " . $sqlWhere . '
+                    AND tseo.kSprache = :lid 
+                WHERE " . $sql->getWhere() . '
                 ORDER BY thersteller.nSortNr, thersteller.cName',
-            ['lid' => $languageID]
+            $sql->getParams()
         );
         $results = [];
         foreach ($items as $item) {

@@ -796,15 +796,15 @@ class Plugins
     }
 
     /**
-     * removes currency for given price string
+     * format price strings to have a '.' to indicate decimal separator. (https://schema.org/price)
      * @param String $price
      * @return String
      */
-    public function removeCurrency($price = ''): string
+    public function formatForMicrodata(string $price = ''): string
     {
-        $currSep=Frontend::getCurrency()->getDecimalSeparator();
-        $currTho=Frontend::getCurrency()->getThousandsSeparator();
+        $currSep = Frontend::getCurrency()->getDecimalSeparator();
+        $currTho = Frontend::getCurrency()->getThousandsSeparator();
 
-        return \str_replace('.',$currSep,\sprintf("%.2f",\str_replace($currSep,'.',\str_replace($currTho, '', ($price)))));
+        return \sprintf("%.2f", \str_replace($currSep, '.', \str_replace($currTho, '', ($price))));
     }
 }

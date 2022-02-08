@@ -53,7 +53,8 @@ class Helper
         $hook     = null;
         $hooks    = [];
         $hookData = Shop::Container()->getDB()->getObjects(
-            'SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.cVerzeichnis, tplugin.nVersion, tpluginhook.cDateiname
+            'SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.cVerzeichnis, tplugin.nVersion, 
+                tpluginhook.cDateiname, tpluginhook.nPriority
                 FROM tplugin
                 JOIN tpluginhook
                     ON tpluginhook.kPlugin = tplugin.kPlugin
@@ -65,6 +66,7 @@ class Helper
             $plugin             = new stdClass();
             $plugin->kPlugin    = (int)$hook->kPlugin;
             $plugin->nVersion   = (int)$hook->nVersion;
+            $plugin->nPriority  = (int)$hook->nPriority;
             $plugin->cDateiname = $hook->cDateiname;
 
             $hooks[$hook->nHook][$hook->kPlugin] = $plugin;
@@ -84,6 +86,7 @@ class Helper
                 $plugin                                = new stdClass();
                 $plugin->kPlugin                       = (int)$hook->kPlugin;
                 $plugin->nVersion                      = $hook->nVersion;
+                $plugin->nPriority                     = (int)$hook->nPriority;
                 $plugin->cDateiname                    = \PLUGIN_SEITENHANDLER;
                 $hooks[\HOOK_SEITE_PAGE_IF_LINKART][0] = $plugin;
             }

@@ -2,6 +2,7 @@
 
 namespace JTL\Events;
 
+use JTL\Shop;
 use JTL\SingletonTrait;
 use stdClass;
 use function Functional\pluck;
@@ -19,7 +20,7 @@ final class Dispatcher
      *
      * @var array
      */
-    private $listeners = [];
+    public $listeners = [];
 
     /**
      * The wildcard listeners.

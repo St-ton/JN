@@ -7,7 +7,6 @@ use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
-use JTL\Profiler;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 
@@ -73,6 +72,7 @@ class HookManager
         $this->dispatcher = $dispatcher;
         $this->hookList   = $hookList;
         self::$instance   = $this;
+        $this->createEvents();
     }
 
     /**
@@ -89,6 +89,41 @@ class HookManager
         );
     }
 
+    private function createEvents(): void
+    {
+        foreach ($this->hookList as $hookID => $listeners) {
+            foreach ($listeners as $pluginData) {
+                $this->dispatcher->listen(
+                    'shop.hook.' . $hookID,
+                    function (array $args) use ($pluginData, $hookID) {
+                        global $smarty, $args_arr, $oPlugin;
+                        $plugin = $this->getPluginInstance($pluginData->kPlugin);
+                        if ($plugin === null) {
+                            return;
+                        }
+                        $args_arr            = $args;
+                        $plugin->nCalledHook = $hookID;
+                        $oPlugin             = $plugin;
+                        $file                = $pluginData->cDateiname;
+                        if ($hookID === \HOOK_SEITE_PAGE_IF_LINKART && $file === \PLUGIN_SEITENHANDLER) {
+                            include \PFAD_ROOT . \PFAD_INCLUDES . \PLUGIN_SEITENHANDLER;
+                        } elseif ($hookID === \HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION) {
+                            if ($plugin->getID() === (int)$args['oCheckBox']->oCheckBoxFunktion->kPlugin) {
+                                include $plugin->getPaths()->getFrontendPath() . $file;
+                            }
+                        } elseif (\is_file($plugin->getPaths()->getFrontendPath() . $file)) {
+                            include $plugin->getPaths()->getFrontendPath() . $file;
+                        }
+                        if ($smarty !== null) {
+                            $smarty->clearAssign('oPlugin_' . $plugin->getPluginID());
+                        }
+                    },
+                    $pluginData->nPriority
+                );
+            }
+        }
+    }
+
     /**
      * @param int   $hookID
      * @param array $args
@@ -98,51 +133,11 @@ class HookManager
         if (\SAFE_MODE === true) {
             return;
         }
-        global $smarty, $args_arr, $oPlugin;
-
+        if ($this->lockedForPluginID > 0) {
+            Shop::dbg($this->lockedForPluginID, false, 'locked@hook ' . $hookID);
+        }
         $this->timer->startMeasure('shop.hook.' . $hookID);
         $this->dispatcher->fire('shop.hook.' . $hookID, \array_merge((array)$hookID, $args));
-        if (empty($this->hookList[$hookID])) {
-            $this->timer->stopMeasure('shop.hook.' . $hookID);
-
-            return;
-        }
-        foreach ($this->hookList[$hookID] as $item) {
-            if ($this->lockedForPluginID === $item->kPlugin) {
-                continue;
-            }
-            $plugin = $this->getPluginInstance($item->kPlugin);
-            if ($plugin === null) {
-                continue;
-            }
-            $args_arr            = $args;
-            $plugin->nCalledHook = $hookID;
-            $oPlugin             = $plugin;
-            $file                = $item->cDateiname;
-            if ($hookID === \HOOK_SEITE_PAGE_IF_LINKART && $file === \PLUGIN_SEITENHANDLER) {
-                include \PFAD_ROOT . \PFAD_INCLUDES . \PLUGIN_SEITENHANDLER;
-            } elseif ($hookID === \HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION) {
-                if ($plugin->getID() === (int)$args['oCheckBox']->oCheckBoxFunktion->kPlugin) {
-                    include $plugin->getPaths()->getFrontendPath() . $file;
-                }
-            } elseif (\is_file($plugin->getPaths()->getFrontendPath() . $file)) {
-                $start = \microtime(true);
-                include $plugin->getPaths()->getFrontendPath() . $file;
-                if (PROFILE_PLUGINS === true) {
-                    $now = \microtime(true);
-                    Profiler::setPluginProfile([
-                        'runtime'   => $now - $start,
-                        'timestamp' => $now,
-                        'hookID'    => $hookID,
-                        'runcount'  => 1,
-                        'file'      => $plugin->getPaths()->getFrontendPath() . $file
-                    ]);
-                }
-            }
-            if ($smarty !== null) {
-                $smarty->clearAssign('oPlugin_' . $plugin->getPluginID());
-            }
-        }
         $this->timer->stopMeasure('shop.hook.' . $hookID);
     }
 
@@ -153,6 +148,9 @@ class HookManager
      */
     private function getPluginInstance(int $id, JTLSmarty $smarty = null): ?PluginInterface
     {
+        if ($this->lockedForPluginID === $id) {
+            return null;
+        }
         $plugin = Shop::get('oplugin_' . $id);
         if ($plugin === null) {
             $loader = Helper::getLoaderByPluginID($id, $this->db, $this->cache);
@@ -184,5 +182,14 @@ class HookManager
     public function unlock(): void
     {
         $this->lockedForPluginID = 0;
+    }
+
+    /**
+     * @param int $pluginID
+     * @return bool
+     */
+    public function isLocked(int $pluginID): bool
+    {
+        return $this->lockedForPluginID === $pluginID;
     }
 }

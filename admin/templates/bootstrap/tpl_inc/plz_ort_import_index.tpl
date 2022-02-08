@@ -17,6 +17,9 @@
                             <i class="fa fa-download"></i> {__('plz_ort_import_new')}
                         </a>
                     </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        {include file='tpl_inc/csv_import_btn.tpl' importerId="plz"}
+                    </div>
                 </div>
             </div>
         </form>

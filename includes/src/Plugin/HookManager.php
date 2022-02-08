@@ -192,4 +192,84 @@ class HookManager
     {
         return $this->lockedForPluginID === $pluginID;
     }
+
+    /**
+     * @return DbInterface
+     */
+    public function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @return JTLCacheInterface
+     */
+    public function getCache(): JTLCacheInterface
+    {
+        return $this->cache;
+    }
+
+    /**
+     * @param JTLCacheInterface $cache
+     */
+    public function setCache(JTLCacheInterface $cache): void
+    {
+        $this->cache = $cache;
+    }
+
+    /**
+     * @return TimeDataCollector
+     */
+    public function getTimer(): TimeDataCollector
+    {
+        return $this->timer;
+    }
+
+    /**
+     * @param TimeDataCollector $timer
+     */
+    public function setTimer(TimeDataCollector $timer): void
+    {
+        $this->timer = $timer;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHookList(): array
+    {
+        return $this->hookList;
+    }
+
+    /**
+     * @param array $hookList
+     */
+    public function setHookList(array $hookList): void
+    {
+        $this->hookList = $hookList;
+    }
+
+    /**
+     * @return Dispatcher
+     */
+    public function getDispatcher(): Dispatcher
+    {
+        return $this->dispatcher;
+    }
+
+    /**
+     * @param Dispatcher $dispatcher
+     */
+    public function setDispatcher(Dispatcher $dispatcher): void
+    {
+        $this->dispatcher = $dispatcher;
+    }
 }

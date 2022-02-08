@@ -89,7 +89,7 @@ function regionsToState(){
 
         var result = {};
         var io = $.evo.io();
-        var country = $(this).find(':selected').val();
+        var country = $(this).find(':selected').val() ?? '';
         var connection_id = $(this).attr('id').toString().replace("-country","");
 
         io.call('getRegionsByCountry', [country], result, function (error, data) {
@@ -99,7 +99,8 @@ function regionsToState(){
                 var state_id = connection_id+'-state';
                 var state = $('#'+state_id);
                 var state_data = state.data();
-                if (state.length === 0) {
+
+                if (typeof(result.response)==='undefined' || state.length === 0) {
                     return;
                 }
                 var title = state_data.defaultoption;

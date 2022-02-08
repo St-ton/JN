@@ -231,10 +231,10 @@ class Hersteller
     {
         $languageID = Shop::getLanguageID();
         $sql        = new SqlObject();
-        $sql->setWhere(' thersteller.nAktiv = 1');
+        $sql->setWhere('thersteller.nAktiv = 1');
         $sql->addParam(':lid', $languageID);
         if ($productLookup) {
-            $sql->setWhere(' EXISTS (
+            $sql->setWhere('EXISTS (
                             SELECT 1
                             FROM tartikel
                             WHERE tartikel.kHersteller = thersteller.kHersteller
@@ -245,7 +245,8 @@ class Hersteller
                                     AND tartikelsichtbarkeit.kKundengruppe = :cgid))');
             $sql->addParam(':cgid', Frontend::getCustomerGroup()->getID());
         }
-        $items   = Shop::Container()->getDB()->getObjects(
+
+        return Shop::Container()->getDB()->getCollection(
             "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                 thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                 therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
@@ -261,15 +262,12 @@ class Hersteller
                 WHERE " . $sql->getWhere() . '
                 ORDER BY thersteller.nSortNr, thersteller.cName',
             $sql->getParams()
-        );
-        $results = [];
-        foreach ($items as $item) {
-            $manufacturer = new self(0, 0, true);
+        )->map(static function (stdClass $item) {
+            $manufacturer = new self();
             $manufacturer->loadFromObject($item);
-            $results[] = $manufacturer;
-        }
 
-        return $results;
+            return $manufacturer;
+        })->toArray();
     }
 
     /**

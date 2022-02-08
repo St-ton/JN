@@ -50,7 +50,7 @@ final class LastJob
         if (!\KEEP_SYNC_FILES) {
             FileSystem::delDirRecursively(\PFAD_ROOT . \PFAD_DBES_TMP);
         }
-        $this->cleanupUnusedManufacturers();
+        $this->disableUnsedManufacturers();
         $this->finishStdJobs();
         $GLOBALS['nIntervall'] = \defined('LASTJOBS_INTERVALL') ? \LASTJOBS_INTERVALL : 12;
         $jobs                  = $this->getRepeatedJobs($GLOBALS['nIntervall']);
@@ -109,18 +109,12 @@ final class LastJob
         }
     }
 
-    private function cleanupUnusedManufacturers(): void
+    private function disableUnsedManufacturers(): void
     {
         $this->db->query(
-            'DELETE
-                FROM thersteller
-                WHERE kHersteller NOT IN (SELECT kHersteller FROM tartikel)'
-        );
-        $this->db->query(
-            'DELETE
-                FROM tseo
-                WHERE cKey = \'kHersteller\' 
-                AND kKey NOT IN (SELECT kHersteller FROM thersteller)'
+            'UPDATE thersteller
+                SET nAktiv = IF(
+                    (SELECT COUNT(*) FROM tartikel WHERE kHersteller = thersteller.kHersteller) > 0, 1, 0)'
         );
     }
 

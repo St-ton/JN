@@ -120,7 +120,7 @@ class Hersteller
     public function loadFromObject(stdClass $obj): self
     {
         $members = \array_keys(\get_object_vars($obj));
-        if (\is_array($members) && \count($members) > 0) {
+        if (\count($members) > 0) {
             foreach ($members as $member) {
                 $this->{$member} = $obj->{$member};
             }
@@ -166,7 +166,8 @@ class Hersteller
                         ON tseo.kKey = thersteller.kHersteller
                         AND tseo.cKey = 'kHersteller'
                         AND tseo.kSprache = :langID
-                    WHERE thersteller.kHersteller = :manfID",
+                    WHERE thersteller.kHersteller = :manfID
+                        AND thersteller.nAktiv = 1",
                 [
                     'langID' => $languageID,
                     'manfID' => $id
@@ -227,7 +228,7 @@ class Hersteller
      */
     public static function getAll(bool $productLookup = true): array
     {
-        $sqlWhere   = '';
+        $sqlWhere   = ' WHERE thersteller.nAktiv = 1';
         $languageID = Shop::getLanguageID();
         if ($productLookup) {
             $sqlWhere = ' WHERE EXISTS (

@@ -68,6 +68,7 @@ class BaseManufacturer extends AbstractFilter
                     FROM tseo
                     JOIN thersteller
                         ON thersteller.kHersteller = tseo.kKey
+                        AND thersteller.nAktiv = 1
                     WHERE cKey = 'kHersteller' 
                         AND kKey IN (" . \implode(', ', \array_map('\intval', $val)) . ')'
             );

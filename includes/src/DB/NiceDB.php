@@ -483,7 +483,6 @@ class NiceDB implements DbInterface
      */
     public function insertBatch(string $tableName, array $objects): int
     {
-        $start = \microtime(true);
         $this->validateEntityName($tableName);
         $keys    = []; //column names
         $values  = []; //column values - either sql statement like "now()" or prepared like ":my-var-name"
@@ -493,8 +492,7 @@ class NiceDB implements DbInterface
         $v       = [];
         foreach ($objects as $object) {
             $this->validateDbObject($object);
-            $arr = \get_object_vars($object);
-            foreach ($arr as $col => $val) {
+            foreach (\get_object_vars($object) as $col => $val) {
                 if ($i === 0) {
                     $keys[] = '`' . $col . '`';
                 }
@@ -513,7 +511,7 @@ class NiceDB implements DbInterface
                 ++$j;
             }
             $v[] = '(' . \implode(', ', $values) . ')';
-            $i++;
+            ++$i;
             $values = [];
         }
 
@@ -531,12 +529,8 @@ class NiceDB implements DbInterface
 
             return 0;
         }
-        $id = $this->pdo->lastInsertId();
-        if (\mb_strpos($tableName, 'tprofiler') !== 0) {
-            $this->analyzeQuery($stmt, $assigns, null, \microtime(true) - $start);
-        }
 
-        return $id > 0 ? (int)$id : 1;
+        return $s->rowCount();
     }
 
     /**

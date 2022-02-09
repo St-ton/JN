@@ -89,7 +89,8 @@ function regionsToState(){
 
         var result = {};
         var io = $.evo.io();
-        var country = $(this).find(':selected').val() ?? '';
+        var country = $(this).find(':selected').val();
+        country = (country !== null && country !== undefined) ? country : '';
         var connection_id = $(this).attr('id').toString().replace("-country","");
 
         io.call('getRegionsByCountry', [country], result, function (error, data) {

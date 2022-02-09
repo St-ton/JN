@@ -124,3 +124,15 @@ msgstr "Konnte Export-Datei %s nicht erstellen. Fehlende Schreibrechte?"
 
 msgid "Directory traversal detected for export %d."
 msgstr "Directory traversal für Export %d entdeckt."
+
+msgid "Preview"
+msgstr "Vorschau"
+
+msgid "No valid header found"
+msgstr "Kein Header gefunden"
+
+msgid "Missing headline row"
+msgstr "Keine Spaltenüberschrift gefunden"
+
+msgid "Missing element"
+msgstr "Fehlendes Element"

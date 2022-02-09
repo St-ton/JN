@@ -224,15 +224,15 @@ class Hersteller
     }
 
     /**
-     * @param bool $productLookup
-     * @return array
+     * @param bool     $productLookup
+     * @param int|null $languageID
+     * @return self[]
      */
-    public static function getAll(bool $productLookup = true): array
+    public static function getAll(bool $productLookup = true, int $languageID = null): array
     {
-        $languageID = Shop::getLanguageID();
-        $sql        = new SqlObject();
+        $sql = new SqlObject();
         $sql->setWhere('thersteller.nAktiv = 1');
-        $sql->addParam(':lid', $languageID);
+        $sql->addParam(':lid', $languageID ?? Shop::getLanguageID());
         if ($productLookup) {
             $sql->setWhere('EXISTS (
                             SELECT 1

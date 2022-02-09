@@ -21,6 +21,7 @@ final class SearchCloud extends AbstractBox
         $this->addMapping('Suchbegriffe', 'Items');
         $this->addMapping('SuchbegriffeJSON', 'JSON');
         $this->setShow(false);
+        $prefix    = Shop::getURL() . '/';
         $langID    = Shop::getLanguageID();
         $limit     = (int)$config['boxen']['boxen_livesuche_count'];
         $cacheID   = 'bx_stgs_' . $langID . '_' . $limit;
@@ -54,7 +55,7 @@ final class SearchCloud extends AbstractBox
                     \random_int(1, 10) :
                     (\round(($cloudEntry->nAnzahlGesuche - $items[$count - 1]->nAnzahlGesuche) / $prio_step) + 1);
                 $cloudEntry->cURL     = URL::buildURL($cloudEntry, \URLART_LIVESUCHE);
-                $cloudEntry->cURLFull = URL::buildURL($cloudEntry, \URLART_LIVESUCHE, true);
+                $cloudEntry->cURLFull = URL::buildURL($cloudEntry, \URLART_LIVESUCHE, true, $prefix);
             }
             $this->setShow(true);
             \shuffle($items);

@@ -19,6 +19,7 @@ final class NewsCurrentMonth extends AbstractBox
     {
         parent::__construct($config);
         $this->addMapping('oNewsMonatsUebersicht_arr', 'Items');
+        $prefix       = Shop::getURL() . '/';
         $langID       = Shop::getLanguageID();
         $sql          = (int)$config['news']['news_anzahl_box'] > 0
             ? ' LIMIT ' . (int)$config['news']['news_anzahl_box']
@@ -46,7 +47,7 @@ final class NewsCurrentMonth extends AbstractBox
         );
         foreach ($newsOverview as $item) {
             $item->cURL     = URL::buildURL($item, \URLART_NEWSMONAT);
-            $item->cURLFull = URL::buildURL($item, \URLART_NEWSMONAT, true);
+            $item->cURLFull = URL::buildURL($item, \URLART_NEWSMONAT, true, $prefix);
         }
         $this->setShow(\count($newsOverview) > 0);
         $this->setItems($newsOverview);

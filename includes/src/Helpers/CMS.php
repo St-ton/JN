@@ -171,12 +171,13 @@ class CMS
     }
 
     /**
-     * @param array $conf
+     * @param array    $conf
+     * @param int|null $languageID
      * @return array
      * @since  5.0.0
      * @former gibLivesucheTop()
      */
-    public static function getLiveSearchTop(array $conf): array
+    public static function getLiveSearchTop(array $conf, int $languageID = null): array
     {
         $limit      = (int)$conf['sonstiges']['sonstiges_livesuche_all_top_count'] > 0
             ? (int)$conf['sonstiges']['sonstiges_livesuche_all_top_count']
@@ -194,19 +195,20 @@ class CMS
                     AND tsuchanfrage.nAktiv = 1
                 ORDER BY tsuchanfrage.nAnzahlGesuche DESC
                 LIMIT :lmt",
-            ['lid' => Shop::getLanguageID(), 'lmt' => $limit]
+            ['lid' => $languageID ?? Shop::getLanguageID(), 'lmt' => $limit]
         );
         $count      = \count($searchData);
         $search     = [];
         $priority   = $count > 0
             ? (($searchData[0]->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / 9)
             : 0;
+        $prefix     = Shop::getURL() . '/';
         foreach ($searchData as $item) {
             $item->Klasse   = $priority < 1
                 ? \random_int(1, 10)
                 : (\round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1);
             $item->cURL     = URL::buildURL($item, \URLART_LIVESUCHE);
-            $item->cURLFull = URL::buildURL($item, \URLART_LIVESUCHE, true);
+            $item->cURLFull = URL::buildURL($item, \URLART_LIVESUCHE, true, $prefix);
             $search[]       = $item;
         }
 
@@ -214,12 +216,13 @@ class CMS
     }
 
     /**
-     * @param array $conf
+     * @param array    $conf
+     * @param int|null $languageID
      * @return array
      * @since  5.0.0
      * @former gibLivesucheLast()
      */
-    public static function getLiveSearchLast(array $conf): array
+    public static function getLiveSearchLast(array $conf, int $languageID = null): array
     {
         $limit      = (int)$conf['sonstiges']['sonstiges_livesuche_all_last_count'] > 0
             ? (int)$conf['sonstiges']['sonstiges_livesuche_all_last_count']
@@ -238,19 +241,20 @@ class CMS
                     AND tsuchanfrage.kSuchanfrage > 0
                 ORDER BY tsuchanfrage.dZuletztGesucht DESC
                 LIMIT :lmt",
-            ['lid' => Shop::getLanguageID(), 'lmt' => $limit]
+            ['lid' => $languageID ?? Shop::getLanguageID(), 'lmt' => $limit]
         );
         $count      = \count($searchData);
         $search     = [];
         $priority   = $count > 0
             ? (($searchData[0]->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / 9)
             : 0;
+        $prefix     = Shop::getURL() . '/';
         foreach ($searchData as $item) {
             $item->Klasse   = $priority < 1
                 ? \random_int(1, 10)
                 : \round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1;
             $item->cURL     = URL::buildURL($item, \URLART_LIVESUCHE);
-            $item->cURLFull = URL::buildURL($item, \URLART_LIVESUCHE, true);
+            $item->cURLFull = URL::buildURL($item, \URLART_LIVESUCHE, true, $prefix);
             $search[]       = $item;
         }
 
@@ -258,37 +262,43 @@ class CMS
     }
 
     /**
+     * @param int|null $languageID
      * @return array
      * @since  5.0.0
      * @former gibNewsletterHistory()
      */
-    public static function getNewsletterHistory(): array
+    public static function getNewsletterHistory(int $languageID = null): array
     {
         $history = Shop::Container()->getDB()->selectAll(
             'tnewsletterhistory',
             'kSprache',
-            Shop::getLanguageID(),
+            $languageID ?? Shop::getLanguageID(),
             'kNewsletterHistory, cBetreff, DATE_FORMAT(dStart, \'%d.%m.%Y %H:%i\') AS Datum, cHTMLStatic',
             'dStart DESC'
         );
+        $prefix  = Shop::getURL() . '/';
         foreach ($history as $item) {
             $item->cURL     = URL::buildURL($item, \URLART_NEWSLETTER);
-            $item->cURLFull = URL::buildURL($item, \URLART_NEWSLETTER, true);
+            $item->cURLFull = URL::buildURL($item, \URLART_NEWSLETTER, true, $prefix);
         }
 
         return $history;
     }
 
     /**
-     * @param array $conf
+     * @param array    $conf
+     * @param int|null $languageID
+     * @param int|null $customerGroupID
      * @return array
      * @since  5.0.0
      * @former gibGratisGeschenkArtikel()
      */
-    public static function getFreeGifts(array $conf): array
+    public static function getFreeGifts(array $conf, int $languageID = null, int $customerGroupID = null): array
     {
-        $gifts = [];
-        $sort  = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
+        $customerGroupID = $customerGroupID ?? Frontend::getCustomerGroup()->getID();
+        $languageID      = $languageID ?? Shop::getLanguageID();
+        $gifts           = [];
+        $sort            = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
         if ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'N') {
             $sort = ' ORDER BY tartikel.cName';
         } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
@@ -309,14 +319,14 @@ class CMS
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikelattribut.cName = :an'
             . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . $sort . $limit,
-            ['cgid' => Frontend::getCustomerGroup()->getID(), 'an' => \FKT_ATTRIBUT_GRATISGESCHENK]
+            ['cgid' => $customerGroupID, 'an' => \FKT_ATTRIBUT_GRATISGESCHENK]
         );
 
         $currency       = Frontend::getCurrency();
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($tmpGifts as $item) {
             $product = new Artikel($db);
-            $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
+            $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
             $product->cBestellwert = Preise::getLocalizedPriceString((float)$item->cWert, $currency);
             if ($product->kEigenschaftKombi > 0 || \count($product->Variationen) === 0) {
                 $gifts[] = $product;

@@ -59,9 +59,10 @@ final class NewsCategories extends AbstractBox
             );
             Shop::Container()->getCache()->set($cacheID, $newsCategories, $cacheTags);
         }
+        $prefix = Shop::getURL() . '/';
         foreach ($newsCategories as $newsCategory) {
             $newsCategory->cURL     = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE);
-            $newsCategory->cURLFull = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true);
+            $newsCategory->cURLFull = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true, $prefix);
         }
         $this->setShow(\count($newsCategories) > 0);
         $this->setItems($newsCategories);

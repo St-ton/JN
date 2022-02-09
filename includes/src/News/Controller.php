@@ -145,9 +145,10 @@ class Controller
     public function displayItem(Item $newsItem, Pagination $pagination): void
     {
         $newsCategories = $this->getNewsCategories($newsItem->getID());
+        $prefix         = Shop::getURL() . '/';
         foreach ($newsCategories as $category) {
             $category->cURL     = URL::buildURL($category, \URLART_NEWSKATEGORIE);
-            $category->cURLFull = URL::buildURL($category, \URLART_NEWSKATEGORIE, true);
+            $category->cURLFull = URL::buildURL($category, \URLART_NEWSKATEGORIE, true, $prefix);
         }
         $comments            = $newsItem->getComments()->getThreadedItems()->filter(static function ($item) {
             return $item->isActive();

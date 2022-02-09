@@ -99,7 +99,7 @@ class Form
     public static function getMissingContactFormData(): array
     {
         $ret  = [];
-        $conf = Shop::getSettings([\CONF_KONTAKTFORMULAR, \CONF_GLOBAL])['kontakt'];
+        $conf = Shop::getSettingSection(\CONF_KONTAKTFORMULAR);
         if (empty($_POST['nachricht'])) {
             $ret['nachricht'] = 1;
         }

@@ -3150,7 +3150,7 @@ class Artikel
      */
     public static function getDetailOptions(): stdClass
     {
-        $conf                           = Shop::getSettings([\CONF_ARTIKELDETAILS])['artikeldetails'];
+        $conf                           = Shop::getSettingSection(\CONF_ARTIKELDETAILS);
         $options                        = new stdClass();
         $options->nMerkmale             = 1;
         $options->nKategorie            = 1;
@@ -4034,15 +4034,7 @@ class Artikel
         // Top bewertet
         // No need to check with custom function.. this value is set in fuelleArtikel()?
         $specials[\SEARCHSPECIALS_TOPREVIEWS] = (int)$this->bIsTopBewertet === 1;
-        // Variationen Lagerbestand 0
-        if ($this->cLagerBeachten === 'Y'
-            && $this->cLagerKleinerNull === 'N'
-            && $this->cLagerVariation === 'Y'
-            && \is_array($this->Variationen)
-            && \count($this->Variationen) > 0
-        ) {
-            $specials[\SEARCHSPECIALS_OUTOFSTOCK] = $this->nVariationenVerfuegbar === 0;
-        }
+
         // VariationskombiKinder Lagerbestand 0
         if ($this->kVaterArtikel > 0) {
             $variChildren = $this->getDB()->selectAll(

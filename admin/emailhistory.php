@@ -29,13 +29,10 @@ if ($action === 'delete') {
     }
 }
 
-if ($step === 'uebersicht') {
-    $pagination = (new Pagination('emailhist'))
-        ->setItemCount($history->getCount())
-        ->assemble();
-    $smarty->assign('pagination', $pagination)
-        ->assign('oEmailhistory_arr', $history->getAll(' LIMIT ' . $pagination->getLimitSQL()));
-}
-
-$smarty->assign('step', $step)
+$pagination = (new Pagination('emailhist'))
+    ->setItemCount($history->getCount())
+    ->assemble();
+$smarty->assign('pagination', $pagination)
+    ->assign('oEmailhistory_arr', $history->getAll(' LIMIT ' . $pagination->getLimitSQL()))
+    ->assign('step', $step)
     ->display('emailhistory.tpl');

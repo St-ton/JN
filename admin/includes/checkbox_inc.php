@@ -13,7 +13,7 @@ use JTL\Shop;
 function plausiCheckBox(array $post, array $languages): array
 {
     $checks = [];
-    if (!is_array($languages) || count($languages) === 0) {
+    if (count($languages) === 0) {
         $checks['oSprache_arr'] = 1;
 
         return $checks;

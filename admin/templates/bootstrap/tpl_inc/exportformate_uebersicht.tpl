@@ -128,7 +128,7 @@
                                 {include file='snippets/exportformat_state.tpl' exportformat=$exportformat}
                             </td>
                             <td class="text-center">
-                                <form method="post" action="exportformate.php">
+                                <form method="post" action="{$adminURL}/exportformate.php">
                                     {$jtl_token}
                                     <input type="hidden" name="kExportformat" value="{$exportformat->getId()}" />
                                     <div class="btn-group">

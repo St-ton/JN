@@ -39,7 +39,7 @@ final class Images extends AbstractSync
     public function handle(Starter $starter)
     {
         $this->brandingConfig = $this->initBrandingConfig();
-        $this->config         = Shop::getSettings([\CONF_BILDER])['bilder'];
+        $this->config         = Shop::getSettingSection(\CONF_BILDER);
         $this->db->query('START TRANSACTION');
         foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];

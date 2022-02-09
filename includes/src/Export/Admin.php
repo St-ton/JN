@@ -7,7 +7,10 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JTL\Alert\Alert;
 use JTL\Backend\Revision;
+use JTL\Backend\Settings\Manager;
+use JTL\Backend\Settings\Sections\Export;
 use JTL\DB\DbInterface;
+use JTL\DB\SqlObject;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -43,6 +46,11 @@ class Admin
     private string $step = 'overview';
 
     /**
+     * @var Export
+     */
+    private Export $config;
+
+    /**
      * Admin constructor.
      * @param DbInterface           $db
      * @param AlertServiceInterface $alertService
@@ -53,6 +61,14 @@ class Admin
         $this->db           = $db;
         $this->alertService = $alertService;
         $this->smarty       = $smarty;
+        $manager            = new Manager(
+            $db,
+            $smarty,
+            Shop::Container()->getAdminAccount(),
+            Shop::Container()->getGetText(),
+            $alertService
+        );
+        $this->config       = new Export($manager, \CONF_EXPORTFORMATE);
     }
 
     public function getAction(): void
@@ -149,36 +165,9 @@ class Admin
                     'successFormatCreate'
                 );
             }
-            $doCheck = $exportID;
-
-            $this->db->delete('texportformateinstellungen', 'kExportformat', $exportID);
-            $configs = $this->db->selectAll(
-                'teinstellungenconf',
-                'kEinstellungenSektion',
-                \CONF_EXPORTFORMATE,
-                '*',
-                'nSort'
-            );
-            Shop::Container()->getGetText()->localizeConfigs($configs);
-            foreach ($configs as $config) {
-                $ins                = new stdClass();
-                $ins->cWert         = $_POST[$config->cWertName];
-                $ins->cName         = $config->cWertName;
-                $ins->kExportformat = $exportID;
-                switch ($config->cInputTyp) {
-                    case 'kommazahl':
-                        $ins->cWert = (float)$ins->cWert;
-                        break;
-                    case 'zahl':
-                    case 'number':
-                        $ins->cWert = (int)$ins->cWert;
-                        break;
-                    case 'text':
-                        $ins->cWert = \mb_substr($ins->cWert, 0, 255);
-                        break;
-                }
-                $this->db->insert('texportformateinstellungen', $ins);
-            }
+            $doCheck           = $exportID;
+            $_POST['exportID'] = $exportID;
+            $this->config->update($_POST, true, []);
             $this->step = 'overview';
             if (Request::postInt('saveAndContinue') === 1) {
                 $this->step = 'edit';
@@ -232,31 +221,12 @@ class Admin
             $model = Model::newInstance($this->db);
             $model->setUseCache(1);
         }
-        $gettext    = Shop::Container()->getGetText();
-        $configs    = \getAdminSectionSettings(\CONF_EXPORTFORMATE);
-        $efSettings = Shop::Container()->getDB()->selectAll(
-            'texportformateinstellungen',
-            'kExportformat',
-            $model->getId()
-        );
-        $gettext->localizeConfigs($configs);
-
-        foreach ($configs as $config) {
-            $set = false;
-            foreach ($efSettings as $efSetting) {
-                if ($efSetting->cName === $config->cWertName) {
-                    $config->gesetzterWert = $efSetting->cWert;
-                    $set                   = true;
-                    break;
-                }
-            }
-            if ($set === false && Request::postVar($config->cWertName) !== null) {
-                $config->gesetzterWert = Request::postVar($config->cWertName);
-            }
-            $gettext->localizeConfigValues($config, $config->ConfWerte);
-        }
+        $sql = new SqlObject();
+        $sql->setWhere('kExportformat = :eid');
+        $sql->addParam(':eid', $model->getId());
+        $this->config->load($sql);
         $this->smarty->assign('Exportformat', $model)
-            ->assign('Conf', $configs);
+            ->assign('settings', $this->config->getItems());
     }
 
     /**
@@ -274,9 +244,9 @@ class Admin
         }
         $realBase   = \realpath(\PFAD_ROOT . \PFAD_EXPORT);
         $real       = \realpath(\PFAD_ROOT . \PFAD_EXPORT . $exportformat->cDateiname);
-        $ok1        = \is_string($real) && \strpos($real, $realBase) === 0;
+        $ok1        = \is_string($real) && \str_starts_with($real, $realBase);
         $realZipped = \realpath(\PFAD_ROOT . \PFAD_EXPORT . $exportformat->cDateiname . '.zip');
-        $ok2        = \is_string($realZipped) && \strpos($realZipped, $realBase) === 0;
+        $ok2        = \is_string($realZipped) && \str_starts_with($realZipped, $realBase);
         if ($ok1 === true || $ok2 === true || (int)($exportformat->nSplitgroesse ?? 0) > 0) {
             if (empty($_GET['hasError'])) {
                 $this->alertService->addAlert(
@@ -350,7 +320,7 @@ class Admin
             return;
         }
         $real = \realpath(\PFAD_ROOT . \PFAD_EXPORT . $file);
-        if ($real !== false && \strpos($real, \realpath(\PFAD_ROOT . \PFAD_EXPORT)) === 0) {
+        if ($real !== false && \str_starts_with($real, \realpath(\PFAD_ROOT . \PFAD_EXPORT))) {
             \header('Content-type: text/plain');
             \header('Content-Disposition: attachment; filename=' . $file);
             echo \file_get_contents($real);

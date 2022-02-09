@@ -44,8 +44,10 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         header('Location: ' . $cCanonicalURL, true, $link->getRedirectCode());
         exit();
     }
-    $smarty->assign('StartseiteBoxen', CMS::getHomeBoxes())
-        ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y' ? CMS::getHomeNews($conf) : []);
+    $smarty->assign('StartseiteBoxen', CMS::getHomeBoxes($cgroupID))
+        ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y'
+            ? CMS::getHomeNews($conf, $cgroupID, $languageID)
+            : []);
     Wizard::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, $languageID, $smarty);
 } elseif ($link->getLinkType() === LINKTYP_AGB) {
     $smarty->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB($languageID, $cgroupID));

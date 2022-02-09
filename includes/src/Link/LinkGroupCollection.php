@@ -3,6 +3,8 @@
 namespace JTL\Link;
 
 use Illuminate\Support\Collection;
+use JTL\Language\LanguageHelper;
+use JTL\Shop;
 
 /**
  * Class LinkGroupCollection
@@ -17,17 +19,32 @@ final class LinkGroupCollection extends Collection
     /**
      * @var array
      */
-    public $Link_Datenschutz;
+    public array $Link_Datenschutz = [];
 
     /**
      * @var array
      */
-    public $Link_Versandseite;
+    public array $Link_Versandseite = [];
 
     /**
      * @var array
      */
-    public $Link_AGB;
+    public array $Link_AGB = [];
+
+
+    public function __wakeup()
+    {
+        $languageID         = Shop::getLanguageID();
+        $fallbackLanguageID = LanguageHelper::getDefaultLanguage(true)->getId();
+        /** @var LinkGroupInterface $linkGroup */
+        foreach ($this->items as $linkGroup) {
+            /** @var LinkInterface $link */
+            foreach ($linkGroup->getLinks() as $link) {
+                $link->setCurrentLanguageID($languageID);
+                $link->setFallbackLanguageID($fallbackLanguageID);
+            }
+        }
+    }
 
     /**
      * @param string $name

@@ -172,7 +172,7 @@ class KategorieListe
         $db                                                            = Shop::Container()->getDB();
         $defaultLanguageActive                                         = LanguageHelper::isDefaultLanguageActive();
         $orderByName                                                   = $defaultLanguageActive ? '' : 'tkategoriesprache.cName, ';
-        $categories                                                    = $db->getObjects(
+        $categoryIDs                                                   = $db->getInts(
             'SELECT tkategorie.kKategorie
                 FROM tkategorie
                 LEFT JOIN tkategoriesprache 
@@ -184,23 +184,22 @@ class KategorieListe
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                     AND tkategorie.kOberKategorie = :cid
                 ORDER BY tkategorie.nSort, ' . $orderByName . 'tkategorie.cName',
+            'kKategorie',
             ['lid' => $languageID, 'cid' => $categoryID, 'cgid' => $customerGroupID]
         );
         $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID] = [];
-        foreach ($categories as $i => &$category) {
-            $category = new Kategorie((int)$category->kKategorie, $languageID, $customerGroupID);
+        foreach ($categoryIDs as $cid) {
+            $category = new Kategorie($cid, $languageID, $customerGroupID);
             if (!$this->nichtLeer($category->kKategorie, $customerGroupID)) {
                 $categoryList['ks'][$category->kKategorie] = 2;
-                unset($categories[$i]);
                 continue;
             }
+            $categories[] = $category;
             // ks = ist kategorie leer 1 = nein, 2 = ja
             $categoryList['ks'][$category->kKategorie]                       = 1;
             $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID][] = $category->kKategorie;
             $categoryList['oKategorie_arr'][$category->kKategorie]           = $category;
         }
-        unset($category);
-        $categories = \array_merge($categories);
         self::setCategoryList($categoryList, $customerGroupID, $languageID);
 
         return $categories;
@@ -239,7 +238,7 @@ class KategorieListe
 
                     return true;
                 }
-                $catData = $db->getObjects(
+                $catData = $db->getInts(
                     'SELECT tkategorie.kKategorie
                         FROM tkategorie
                         LEFT JOIN tkategoriesichtbarkeit 
@@ -248,10 +247,11 @@ class KategorieListe
                         WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                             AND tkategorie.kOberKategorie = :pcid
                             AND tkategorie.kKategorie != :cid',
+                    'kKategorie',
                     ['cid' => $categoryID, 'pcid' => $category, 'cgid' => $customerGroupID]
                 );
-                foreach ($catData as $obj) {
-                    $categoryIDs[] = (int)$obj->kKategorie;
+                foreach ($catData as $id) {
+                    $categoryIDs[] = $id;
                 }
             }
             $categoryList['ks'][$categoryID] = 2;

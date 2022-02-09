@@ -167,15 +167,16 @@ class Merkmal
                                         AND standardSprache.kSprache = :lid';
                 $orderSQL     = ' ORDER BY tmw.nSort, standardSprache.cWert';
             }
-            $tmpAttributes          = Shop::Container()->getDB()->getObjects(
+            $tmpAttributes          = Shop::Container()->getDB()->getInts(
                 'SELECT tmw.kMerkmalWert
                     FROM tmerkmalwert tmw ' .  $joinValueSQL . '
                     WHERE kMerkmal = :mid' . $orderSQL,
+                'kMerkmalWert',
                 ['mid' => $this->kMerkmal, 'lid' => $languageID]
             );
             $this->oMerkmalWert_arr = [];
-            foreach ($tmpAttributes as $oMerkmalWertTMP) {
-                $this->oMerkmalWert_arr[] = new MerkmalWert((int)$oMerkmalWertTMP->kMerkmalWert, $this->kSprache);
+            foreach ($tmpAttributes as $aid) {
+                $this->oMerkmalWert_arr[] = new MerkmalWert($aid, $this->kSprache);
             }
         }
         $imageBaseURL = Shop::getImageBaseURL();

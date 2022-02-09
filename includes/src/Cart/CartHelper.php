@@ -1954,20 +1954,21 @@ class CartHelper
         if (\count($productIDs) > 0) {
             $db         = Shop::Container()->getDB();
             $productIDs = \implode(', ', $productIDs);
-            $xsellData  = $db->getObjects(
+            $xsellData  = $db->getInts(
                 'SELECT DISTINCT kXSellArtikel
                     FROM txsellkauf
                     WHERE kArtikel IN (' . $productIDs . ')
                         AND kXSellArtikel NOT IN (' . $productIDs .')
                     ORDER BY nAnzahl DESC
-                    LIMIT ' . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl']
+                    LIMIT ' . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'],
+                'kXSellArtikel'
             );
             if (\count($xsellData) > 0) {
                 $xSelling->Kauf          = new stdClass();
                 $xSelling->Kauf->Artikel = [];
                 $defaultOptions          = Artikel::getDefaultOptions();
-                foreach ($xsellData as $item) {
-                    $product = (new Artikel($db))->fuelleArtikel((int)$item->kXSellArtikel, $defaultOptions);
+                foreach ($xsellData as $id) {
+                    $product = (new Artikel($db))->fuelleArtikel($id, $defaultOptions);
                     if ($product !== null
                         && (int)$product->kArtikel > 0
                         && $product->aufLagerSichtbarkeit()) {

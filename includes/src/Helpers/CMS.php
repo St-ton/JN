@@ -18,13 +18,14 @@ use stdClass;
 class CMS
 {
     /**
+     * @param int|null $customerGroupID
      * @return array
      * @since  5.0.0
      * @former gibStartBoxen()
      */
-    public static function getHomeBoxes(): array
+    public static function getHomeBoxes(int $customerGroupID = null): array
     {
-        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $customerGroupID = $customerGroupID ?? Frontend::getCustomerGroup()->getID();
         if (!$customerGroupID || !Frontend::getCustomerGroup()->mayViewCategories()) {
             return [];
         }
@@ -56,7 +57,7 @@ class CMS
             }
             if (\count($productIDs) > 0) {
                 $box->cURL    = $searchSpecial->getURL($type);
-                $box->Artikel = new ArtikelListe();
+                $box->Artikel = new ArtikelListe(Shop::getLanguageID(), $customerGroupID);
                 $box->Artikel->getArtikelByKeys($productIDs, 0, \count($productIDs));
             }
         }
@@ -66,20 +67,22 @@ class CMS
     }
 
     /**
-     * @param array $conf
+     * @param array    $conf
+     * @param int|null $customerGroupID
+     * @param int|null $languageID
      * @return Collection
      * @since  5.0.0
      * @former gibNews()
      */
-    public static function getHomeNews(array $conf): Collection
+    public static function getHomeNews(array $conf, int $customerGroupID = null, int $languageID = null): Collection
     {
         $items = new Collection();
         if (!isset($conf['news']['news_anzahl_content']) || (int)$conf['news']['news_anzahl_content'] === 0) {
             return $items;
         }
         $limit   = '';
-        $cgID    = Frontend::getCustomerGroup()->getID();
-        $langID  = Shop::getLanguageID();
+        $cgID    = $customerGroupID ?? Frontend::getCustomerGroup()->getID();
+        $langID  = $languageID ?? Shop::getLanguageID();
         $cacheID = 'news_' . \md5(\json_encode($conf['news']) . '_' . $langID . '_' . $cgID);
         if (($items = Shop::Container()->getCache()->get($cacheID)) === false) {
             if ((int)$conf['news']['news_anzahl_content'] > 0) {

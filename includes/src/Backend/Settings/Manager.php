@@ -248,13 +248,14 @@ class Manager
     {
         $sections   = [];
         $factory    = new SectionFactory();
-        $sectionIDs = $this->db->getObjects(
+        $sectionIDs = $this->db->getInts(
             'SELECT kEinstellungenSektion AS id
                 FROM teinstellungensektion
-                ORDER BY kEinstellungenSektion'
+                ORDER BY kEinstellungenSektion',
+            'id'
         );
-        foreach ($sectionIDs as $item) {
-            $sections[] = $factory->getSection((int)$item->id, $this);
+        foreach ($sectionIDs as $id) {
+            $sections[] = $factory->getSection($id, $this);
         }
 
         return $sections;

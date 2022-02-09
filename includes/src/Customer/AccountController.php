@@ -53,22 +53,22 @@ class AccountController
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var AlertServiceInterface
      */
-    private $alertService;
+    private AlertServiceInterface $alertService;
 
     /**
      * @var LinkServiceInterface
      */
-    private $linkService;
+    private LinkServiceInterface $linkService;
 
     /**
      * @var JTLSmarty
      */
-    private $smarty;
+    private JTLSmarty $smarty;
 
     /**
      * AccountController constructor.
@@ -532,7 +532,7 @@ class AccountController
         if (\count($persCart->getItems()) === 0) {
             return false;
         }
-        $languageID      = Shop::getLanguageID();
+        $languageID      = $customer->getLanguageID();
         $customerGroupID = $customer->getGroupID();
         foreach ($persCart->getItems() as $item) {
             if (!empty($item->Artikel->bHasKonfig)) {
@@ -1107,7 +1107,7 @@ class AccountController
                 false,
                 true
             ))
-            ->assign('oKundenfeld_arr', new CustomerFields(Shop::getLanguageID()));
+            ->assign('oKundenfeld_arr', new CustomerFields($customer->getLanguageID()));
     }
 
     /**

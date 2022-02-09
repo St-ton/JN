@@ -150,7 +150,8 @@ class Bestseller
                 \implode(',', $this->getProducts()->toArray()) . ') '
             : '';
         $storagesql = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-        $data       = Shop::Container()->getDB()->getObjects(
+
+        return Shop::Container()->getDB()->getInts(
             'SELECT tartikel.kArtikel
                 FROM tartikel
                 JOIN tbestseller
@@ -163,13 +164,9 @@ class Bestseller
                 GROUP BY tartikel.kArtikel
                 ORDER BY tbestseller.fAnzahl DESC
                 LIMIT :lmt',
+            'kArtikel',
             ['cgid' => $this->customergrp, 'ms' => $this->minsales, 'lmt' => $this->limit]
         );
-        foreach ($data as $item) {
-            $products[] = (int)$item->kArtikel;
-        }
-
-        return $products;
     }
 
     /**

@@ -128,8 +128,8 @@ final class Categories extends AbstractSync
         $this->setLanguages($xml, $category->kKategorie, $categories[0]);
         $this->setCustomerGroups($xml, $category->kKategorie);
         $this->setCategoryDiscount($category->kKategorie);
-        foreach ($this->getLinkedDiscountCategories($category->kKategorie) as $linkedCategory) {
-            $this->setCategoryDiscount((int)$linkedCategory->kKategorie);
+        foreach ($this->getLinkedDiscountCategories($category->kKategorie) as $linkedCategoryID) {
+            $this->setCategoryDiscount($linkedCategoryID);
         }
         $this->setVisibility($xml, $category->kKategorie);
         $this->setAttributes($xml, $category->kKategorie);
@@ -348,11 +348,11 @@ final class Categories extends AbstractSync
 
     /**
      * @param int $categoryID
-     * @return stdClass[]
+     * @return int[]
      */
     private function getLinkedDiscountCategories(int $categoryID): array
     {
-        return $this->db->getObjects(
+        return $this->db->getInts(
             'SELECT DISTINCT tkgrp_b.kKategorie
                 FROM tkategorieartikel tart_a
                 INNER JOIN tkategorieartikel tart_b ON tart_a.kArtikel = tart_b.kArtikel
@@ -364,6 +364,7 @@ final class Categories extends AbstractSync
                 WHERE tart_a.kKategorie = :categoryID
                     AND tkgrp_b.fRabatt > COALESCE(tkgrp_a.fRabatt, 0)
                     AND tsicht.kKategorie IS NULL',
+            'kKategorie',
             ['categoryID' => $categoryID]
         );
     }

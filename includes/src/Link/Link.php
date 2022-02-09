@@ -20,232 +20,227 @@ final class Link extends AbstractLink
     /**
      * @var int
      */
-    protected $id = 0;
+    protected int $id = 0;
 
     /**
      * @var int
      */
-    protected $level = 0;
+    protected int $level = 0;
 
     /**
      * @var int
      */
-    protected $parent = 0;
+    protected int $parent = 0;
 
     /**
      * @var int
      */
-    protected $linkGroupID = -1;
+    protected int $linkGroupID = -1;
 
     /**
      * @var int
      */
-    protected $pluginID = -1;
+    protected int $pluginID = -1;
 
     /**
      * @var int
      */
-    protected $linkType = -1;
+    protected int $linkType = -1;
 
     /**
      * @var int[]
      */
-    protected $linkGroups = [];
+    protected array $linkGroups = [];
 
     /**
      * @var string[]
      */
-    protected $names = [];
+    protected array $names = [];
 
     /**
      * @var string[]
      */
-    protected $urls = [];
+    protected array $urls = [];
 
     /**
      * @var string[]
      */
-    protected $seo = [];
+    protected array $seo = [];
 
     /**
      * @var string[]
      */
-    protected $titles = [];
+    protected array $titles = [];
 
     /**
      * @var string[]
      */
-    protected $contents = [];
+    protected array $contents = [];
 
     /**
      * @var string[]
      */
-    protected $metaTitles = [];
+    protected array $metaTitles = [];
 
     /**
      * @var string[]
      */
-    protected $metaKeywords = [];
+    protected array $metaKeywords = [];
 
     /**
      * @var string[]
      */
-    protected $metaDescriptions = [];
+    protected array $metaDescriptions = [];
 
     /**
      * @var int[]
      */
-    protected $customerGroups = [];
+    protected array $customerGroups = [];
 
     /**
      * @var int[]
      */
-    protected $languageIDs = [];
+    protected array $languageIDs = [];
 
     /**
      * @var int
      */
-    protected $reference = 0;
+    protected int $reference = 0;
 
     /**
      * @var int
      */
-    protected $sort = 0;
+    protected int $sort = 0;
 
     /**
      * @var bool
      */
-    protected $ssl = false;
+    protected bool $ssl = false;
 
     /**
      * @var bool
      */
-    protected $noFollow = false;
+    protected bool $noFollow = false;
 
     /**
      * @var bool
      */
-    protected $printButton = false;
+    protected bool $printButton = false;
 
     /**
      * @var bool
      */
-    protected $isActive = false;
+    protected bool $isActive = false;
 
     /**
      * @var bool
      */
-    protected $isEnabled = true;
+    protected bool $isEnabled = true;
 
     /**
      * @var bool
      */
-    protected $isFluid = false;
+    protected bool $isFluid = false;
 
     /**
      * @var bool
      */
-    protected $isVisible = true;
+    protected bool $isVisible = true;
 
     /**
      * @var bool
      */
-    protected $isSystem = false;
+    protected bool $isSystem = false;
 
     /**
      * @var bool
      */
-    protected $visibleLoggedInOnly = false;
+    protected bool $visibleLoggedInOnly = false;
 
     /**
      * @var array
      */
-    protected $languageCodes = [];
+    protected array $languageCodes = [];
 
     /**
      * @var int
      */
-    protected $redirectCode = 0;
+    protected int $redirectCode = 0;
 
     /**
      * @var string
      */
-    protected $identifier = '';
+    protected string $identifier = '';
 
     /**
      * @var bool
      */
-    protected $pluginEnabled = true;
+    protected bool $pluginEnabled = true;
 
     /**
      * @var string
      */
-    protected $fileName = '';
+    protected string $fileName = '';
 
     /**
      * @var string
      */
-    protected $handler = '';
+    protected string $handler = '';
 
     /**
      * @var string
      */
-    protected $template = '';
+    protected string $template = '';
 
     /**
      * @var string
      */
-    protected $displayName = '';
+    protected string $displayName = '';
 
     /**
      * @var Collection
      */
-    protected $childLinks;
+    protected Collection $childLinks;
 
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    protected $db;
-
-    /**
-     * @var int
-     */
-    private $currentLanguageID;
+    protected ?DbInterface $db = null;
 
     /**
      * @var int
      */
-    private $fallbackLanguageID;
+    private int $currentLanguageID;
+
+    /**
+     * @var int
+     */
+    private int $fallbackLanguageID;
 
     /**
      * Link constructor.
      * @param DbInterface $db
+     * @param int|null    $languageID
+     * @param int|null    $fallbackLanguageID
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, int $languageID = null, int $fallbackLanguageID = null)
     {
         $this->db         = $db;
         $this->childLinks = new Collection();
-        $this->initLanguageID();
+        $this->initLanguageID($languageID, $fallbackLanguageID);
     }
 
     /**
-     *
+     * @param int|null $languageID
+     * @param int|null $fallbackLanguageID
      */
-    public function __wakeup(): void
+    private function initLanguageID(int $languageID = null, int $fallbackLanguageID = null): void
     {
-        $this->initLanguageID();
-    }
-
-    /**
-     *
-     */
-    private function initLanguageID(): void
-    {
-        $this->currentLanguageID = Shop::getLanguageID();
+        $this->currentLanguageID = $languageID ?? Shop::getLanguageID();
         if ($this->currentLanguageID === 0) {
             $this->currentLanguageID = (int)($_SESSION['kSprache'] ?? 1);
         }
-        $this->fallbackLanguageID = LanguageHelper::getDefaultLanguage(true)->getId();
+        $this->fallbackLanguageID = $fallbackLanguageID ?? LanguageHelper::getDefaultLanguage(true)->getId();
     }
 
     /**
@@ -398,7 +393,7 @@ final class Link extends AbstractLink
             }
             $this->setHandler($link->handler ?? '');
             $this->setTemplate($link->template ?? $link->fullscreenTemplate ?? '');
-            if (($this->id === null || $this->id === 0) && isset($link->kLink)) {
+            if ($this->id === 0 && isset($link->kLink)) {
                 $this->setID((int)$link->kLink);
             }
         }
@@ -1232,11 +1227,43 @@ final class Link extends AbstractLink
     /**
      * @inheritdoc
      */
+    public function getCurrentLanguageID(): int
+    {
+        return $this->currentLanguageID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setCurrentLanguageID(int $currentLanguageID): void
+    {
+        $this->currentLanguageID = $currentLanguageID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFallbackLanguageID(): int
+    {
+        return $this->fallbackLanguageID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setFallbackLanguageID(int $fallbackLanguageID): void
+    {
+        $this->fallbackLanguageID = $fallbackLanguageID;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function buildChildLinks(): array
     {
         $links = [];
         foreach ($this->db->selectAll('tlink', 'kVaterLink', $this->getID(), 'kLink') as $id) {
-            $links[] = (new self($this->db))->load((int)$id->kLink);
+            $links[] = (new self($this->db, $this->currentLanguageID))->load((int)$id->kLink);
         }
 
         return $links;

@@ -1069,16 +1069,17 @@ final class Products extends AbstractSync
      */
     private function deleteProductAttributeValues(int $productID): void
     {
-        $propValues = $this->db->getObjects(
+        $propValues = $this->db->getInts(
             'SELECT teigenschaftwert.kEigenschaftWert AS id
                 FROM teigenschaftwert
                 JOIN teigenschaft
                     ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
                 WHERE teigenschaft.kArtikel = :pid',
+            'id',
             ['pid' => $productID]
         );
         foreach ($propValues as $propValue) {
-            $this->deletePropertyValue((int)$propValue->id);
+            $this->deletePropertyValue($propValue);
         }
     }
 
@@ -1377,33 +1378,37 @@ final class Products extends AbstractSync
         if ($deps->count() > 0) {
             $whereIn = $deps->implode(',');
             // flush cache tags associated with the product's manufacturer ID
-            $cacheTags = $cacheTags->concat(map($this->db->getObjects(
+            $cacheTags = $cacheTags->concat(map($this->db->getInts(
                 'SELECT DISTINCT kHersteller AS id
                     FROM tartikel
                     WHERE kArtikel IN (' . $whereIn . ')
-                        AND kHersteller > 0'
-            ), static function ($item) {
-                return \CACHING_GROUP_MANUFACTURER . '_' . (int)$item->id;
-            }))->concat(map($this->db->getObjects(
+                        AND kHersteller > 0',
+                'id'
+            ), static function (int $id) {
+                return \CACHING_GROUP_MANUFACTURER . '_' . $id;
+            }))->concat(map($this->db->getInts(
                 'SELECT DISTINCT kKategorie AS id
                     FROM tkategorieartikel
-                    WHERE kArtikel IN (' . $whereIn . ')'
-            ), static function ($item) {
-                return \CACHING_GROUP_CATEGORY . '_' . (int)$item->id;
-            }))->concat(map($this->db->getObjects(
+                    WHERE kArtikel IN (' . $whereIn . ')',
+                'id'
+            ), static function (int $id) {
+                return \CACHING_GROUP_CATEGORY . '_' . $id;
+            }))->concat(map($this->db->getInts(
                 'SELECT DISTINCT kVaterArtikel AS id
                     FROM tartikel
                     WHERE kArtikel IN (' . $whereIn . ')
-                        AND kVaterArtikel > 0'
-            ), static function ($item) {
-                return \CACHING_GROUP_ARTICLE . '_' . (int)$item->id;
-            }))->concat(map($this->db->getObjects(
+                        AND kVaterArtikel > 0',
+                'id'
+            ), static function (int $id) {
+                return \CACHING_GROUP_ARTICLE . '_' . $id;
+            }))->concat(map($this->db->getInts(
                 'SELECT DISTINCT kArtikel AS id
                     FROM tartikel
                     WHERE kVaterArtikel IN (' . $whereIn . ')
-                        AND kVaterArtikel > 0'
-            ), static function ($item) {
-                return \CACHING_GROUP_ARTICLE . '_' . (int)$item->id;
+                        AND kVaterArtikel > 0',
+                'id'
+            ), static function (int $id) {
+                return \CACHING_GROUP_ARTICLE . '_' . $id;
             }));
         }
 

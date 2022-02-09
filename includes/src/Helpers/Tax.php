@@ -156,8 +156,7 @@ class Tax
             : '';
 
         if ($qry !== '') {
-            foreach ($db->getObjects('SELECT * FROM tsteuerklasse') as $taxClass) {
-                $taxClassID                          = (int)$taxClass->kSteuerklasse;
+            foreach ($db->getInts('SELECT kSteuerklasse FROM tsteuerklasse', 'kSteuerklasse') as $taxClassID) {
                 $rate                                = $db->getSingleObject(
                     'SELECT fSteuersatz
                         FROM tsteuersatz

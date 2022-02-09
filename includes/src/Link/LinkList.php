@@ -16,12 +16,12 @@ final class LinkList implements LinkListInterface
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var Collection
      */
-    private $links;
+    private Collection $links;
 
     /**
      * LinkList constructor.

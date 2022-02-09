@@ -16,7 +16,7 @@ abstract class AbstractLink implements LinkInterface
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'cNoFollow'          => 'NoFollowCompat',
         'cURL'               => 'URL',
         'cURLFull'           => 'URL',
@@ -79,7 +79,7 @@ abstract class AbstractLink implements LinkInterface
     {
         $groups = $this->getCustomerGroups();
 
-        return \is_array($groups) && \count($groups) > 0
+        return \count($groups) > 0
             ? \implode(';', $groups) . ';'
             : null;
     }

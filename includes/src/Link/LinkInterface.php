@@ -501,6 +501,26 @@ interface LinkInterface
     public function setTemplate(string $template): void;
 
     /**
+     * @return int
+     */
+    public function getCurrentLanguageID(): int;
+
+    /**
+     * @param int $currentLanguageID
+     */
+    public function setCurrentLanguageID(int $currentLanguageID): void;
+
+    /**
+     * @return int
+     */
+    public function getFallbackLanguageID(): int;
+
+    /**
+     * @param int $fallbackLanguageID
+     */
+    public function setFallbackLanguageID(int $fallbackLanguageID): void;
+
+    /**
      * @return LinkInterface[]
      */
     public function buildChildLinks(): array;

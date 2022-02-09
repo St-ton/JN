@@ -11,27 +11,27 @@ use JTL\Shop;
 require_once __DIR__ . '/includes/globalinclude.php';
 
 Shop::setPageType(PAGE_KONTAKT);
-$smarty         = Shop::Smarty();
-$conf           = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
-$linkHelper     = Shop::Container()->getLinkService();
-$link           = $linkHelper->getSpecialPage(LINKTYP_KONTAKT);
-$cCanonicalURL  = '';
-$specialContent = new stdClass();
-$alertHelper    = Shop::Container()->getAlertService();
-$lang           = Shop::getLanguageCode();
-if (Form::checkSubject()) {
+$smarty          = Shop::Smarty();
+$conf            = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
+$linkHelper      = Shop::Container()->getLinkService();
+$link            = $linkHelper->getSpecialPage(LINKTYP_KONTAKT);
+$cCanonicalURL   = '';
+$specialContent  = new stdClass();
+$alertHelper     = Shop::Container()->getAlertService();
+$lang            = Shop::getLanguageCode();
+$customerGroupID = Frontend::getCustomerGroup()->getID();
+if (Form::checkSubject($customerGroupID)) {
     $db          = Shop::Container()->getDB();
     $step        = 'formular';
     $missingData = [];
     if (Request::postInt('kontakt') === 1 && Form::validateToken()) {
-        $missingData     = Form::getMissingContactFormData();
-        $customerGroupID = Frontend::getCustomerGroup()->getID();
-        $checkBox        = new CheckBox(0, $db);
-        $missingData     = array_merge(
+        $missingData = Form::getMissingContactFormData();
+        $checkBox    = new CheckBox(0, $db);
+        $missingData = array_merge(
             $missingData,
             $checkBox->validateCheckBox(CHECKBOX_ORT_KONTAKT, $customerGroupID, $_POST, true)
         );
-        $ok              = Form::eingabenKorrekt($missingData);
+        $ok          = Form::eingabenKorrekt($missingData);
         $smarty->assign('cPost_arr', Text::filterXSS($_POST));
         executeHook(HOOK_KONTAKT_PAGE_PLAUSI);
 

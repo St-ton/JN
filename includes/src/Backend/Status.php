@@ -237,14 +237,14 @@ class Status
     public function getPluginSharedHooks(): array
     {
         $sharedPlugins = [];
-        $sharedHookIds = $this->db->getObjects(
+        $sharedHookIds = $this->db->getInts(
             'SELECT nHook
                 FROM tpluginhook
                 GROUP BY nHook
-                HAVING COUNT(DISTINCT kPlugin) > 1'
+                HAVING COUNT(DISTINCT kPlugin) > 1',
+            'nHook'
         );
-        foreach ($sharedHookIds as $hookData) {
-            $hookID                 = (int)$hookData->nHook;
+        foreach ($sharedHookIds as $hookID) {
             $sharedPlugins[$hookID] = [];
             $plugins                = $this->db->getObjects(
                 'SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID

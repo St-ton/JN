@@ -18,7 +18,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'cLocalizedName' => 'Name',
         'Links'          => 'Links'
     ];
@@ -26,52 +26,52 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @var array
      */
-    private $names = [];
+    private array $names = [];
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $groupName;
+    private ?string $groupName = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    private $id;
+    private ?int $id = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $template;
-
-    /**
-     * @var bool
-     */
-    private $isSpecial = true;
+    private ?string $template = null;
 
     /**
      * @var bool
      */
-    private $isSystem = true;
+    private bool $isSpecial = true;
+
+    /**
+     * @var bool
+     */
+    private bool $isSystem = true;
 
     /**
      * @var array
      */
-    private $languageID = [];
+    private array $languageID = [];
 
     /**
      * @var array
      */
-    private $languageCode = [];
+    private array $languageCode = [];
 
     /**
      * @var Collection
      */
-    private $links;
+    private Collection $links;
 
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    private $db;
+    private ?DbInterface $db = null;
 
     /**
      * LinkGroup constructor.

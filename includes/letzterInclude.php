@@ -73,7 +73,7 @@ if (is_object($globalMetaData)) {
 if (!isset($AktuelleKategorie)) {
     $AktuelleKategorie = new Kategorie(Request::verifyGPCDataInt('kategorie'), $languageID, $customerGroupID);
 }
-$expandedCategories->getOpenCategories($AktuelleKategorie);
+$expandedCategories->getOpenCategories($AktuelleKategorie, $customerGroupID, $languageID);
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
@@ -182,7 +182,7 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('countries', Shop::Container()->getCountryService()->getCountrylist());
 
 if ($smarty->getTemplateVars('Link') === null) {
-    $smarty->assign('Link', $link ?? new Link($db));
+    $smarty->assign('Link', $link ?? new Link($db, $languageID));
 }
 
 $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());

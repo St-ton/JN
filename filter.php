@@ -33,6 +33,8 @@ $AktuelleKategorie  = new Kategorie();
 $expandedCategories = new KategorieListe();
 $hasError           = false;
 $params             = Shop::getParameters();
+$languageID         = Shop::getLanguageID();
+$customerGroupID    = Frontend::getCustomerGroup()->getID();
 if ($NaviFilter->hasCategory()) {
     $categoryID                  = $NaviFilter->getCategory()->getValue();
     $_SESSION['LetzteKategorie'] = $categoryID;
@@ -47,7 +49,7 @@ if ($NaviFilter->hasCategory()) {
             return;
         }
     }
-    $expandedCategories->getOpenCategories($AktuelleKategorie);
+    $expandedCategories->getOpenCategories($AktuelleKategorie, $customerGroupID, $languageID);
 }
 $NaviFilter->setUserSort($AktuelleKategorie);
 $oSuchergebnisse = $NaviFilter->generateSearchResults($AktuelleKategorie);
@@ -65,11 +67,7 @@ if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y'
     && !Request::isAjaxRequest()
 ) {
     $hasSubCategories = ($categoryID = $NaviFilter->getCategory()->getValue()) > 0
-        && (new Kategorie(
-            $categoryID,
-            $NaviFilter->getFilterConfig()->getLanguageID(),
-            $NaviFilter->getFilterConfig()->getCustomerGroupID()
-        ))->existierenUnterkategorien();
+        && (new Kategorie($categoryID, $languageID, $customerGroupID))->existierenUnterkategorien();
     if ($NaviFilter->getFilterCount() > 0
         || $NaviFilter->getRealSearch() !== null
         || ($NaviFilter->getCategory()->getValue() > 0 && !$hasSubCategories)
@@ -98,7 +96,7 @@ if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y'
     });
     $bestsellers = Bestseller::buildBestsellers(
         $productsIDs,
-        Frontend::getCustomerGroup()->getID(),
+        $customerGroupID,
         Frontend::getCustomerGroup()->mayViewCategories(),
         false,
         (int)$conf['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'],
@@ -135,11 +133,11 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
             $categoryContent->Unterkategorien->elemente = $children->getChildren();
         }
         if ($tb === 'Top' || $tb === 'TopBest') {
-            $categoryContent->TopArtikel = new ArtikelListe();
+            $categoryContent->TopArtikel = new ArtikelListe($languageID, $customerGroupID);
             $categoryContent->TopArtikel->holeTopArtikel($categoryContent->Unterkategorien);
         }
         if ($tb === 'Bestseller' || $tb === 'TopBest') {
-            $categoryContent->BestsellerArtikel = new ArtikelListe();
+            $categoryContent->BestsellerArtikel = new ArtikelListe($languageID, $customerGroupID);
             $categoryContent->BestsellerArtikel->holeBestsellerArtikel(
                 $categoryContent->Unterkategorien,
                 $categoryContent->TopArtikel ?? null
@@ -158,7 +156,7 @@ if (!str_contains(basename($NaviFilter->getFilterURL()->getURL()), '.php')) {
 Wizard::startIfRequired(
     AUSWAHLASSISTENT_ORT_KATEGORIE,
     $params['kKategorie'],
-    Shop::getLanguageID(),
+    $languageID,
     $smarty,
     [],
     $NaviFilter

@@ -113,7 +113,7 @@ if ($conf['preisverlauf']['preisverlauf_anzeigen'] === 'Y' && Frontend::getCusto
     $oPreisverlauf  = new Preisverlauf();
     $oPreisverlauf  = $oPreisverlauf->gibPreisverlauf(
         Shop::$kArtikel,
-        $AktuellerArtikel->Preise->kKundengruppe,
+        $customerGroupID,
         (int)$conf['preisverlauf']['preisverlauf_anzahl_monate']
     );
 }
@@ -140,7 +140,7 @@ foreach ($productNotices as $productNoticeKey => $productNotice) {
 }
 $AktuelleKategorie  = new Kategorie($AktuellerArtikel->gibKategorie($customerGroupID), $languageID, $customerGroupID);
 $expandedCategories = new KategorieListe();
-$expandedCategories->getOpenCategories($AktuelleKategorie);
+$expandedCategories->getOpenCategories($AktuelleKategorie, $customerGroupID, $languageID);
 $ratingPage   = Request::verifyGPCDataInt('btgseite');
 $ratingStars  = Request::verifyGPCDataInt('btgsterne');
 $sorting      = Request::verifyGPCDataInt('sortierreihenfolge');

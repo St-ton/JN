@@ -44,10 +44,10 @@ class ResetCommand extends Command
         $factory    = new TemplateFactory($db);
         $controller = new Controller($db, $mailer, $factory);
         $io         = $this->getIO();
-        $templates  = $db->getObjects('SELECT DISTINCT kEmailVorlage FROM temailvorlagesprache');
+        $templates  = $db->getInts('SELECT DISTINCT kEmailVorlage FROM temailvorlagesprache', 'kEmailVorlage');
         $count      = 0;
         foreach ($templates as $template) {
-            $controller->resetTemplate((int)$template->kEmailVorlage);
+            $controller->resetTemplate($template);
             $count++;
         }
         $io->writeln('<info>' . $count. ' templates has been reset.</info>');

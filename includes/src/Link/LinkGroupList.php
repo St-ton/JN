@@ -15,24 +15,24 @@ use function Functional\group;
 final class LinkGroupList implements LinkGroupListInterface
 {
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    private $db;
+    private ?DbInterface $db = null;
 
     /**
-     * @var JTLCacheInterface
+     * @var JTLCacheInterface|null
      */
-    private $cache;
-
-    /**
-     * @var LinkGroupCollection
-     */
-    private $linkGroups;
+    private ?JTLCacheInterface $cache = null;
 
     /**
      * @var LinkGroupCollection
      */
-    private $visibleLinkGroups;
+    private LinkGroupCollection $linkGroups;
+
+    /**
+     * @var LinkGroupCollection
+     */
+    private LinkGroupCollection $visibleLinkGroups;
 
     /**
      * LinkGroupList constructor.
@@ -84,8 +84,11 @@ final class LinkGroupList implements LinkGroupListInterface
         if ($this->linkGroups->count() > 0) {
             return $this;
         }
-        $cached = true;
-        if (($this->linkGroups = $this->cache->get('linkgroups')) === false) {
+        $linkGroups = $this->cache->get('linkgroups');
+        if ($linkGroups !== false) {
+            $cached           = true;
+            $this->linkGroups = $linkGroups;
+        } else {
             $cached           = false;
             $this->linkGroups = new LinkGroupCollection();
             foreach ($this->loadDefaultGroups() as $group) {
@@ -138,7 +141,7 @@ final class LinkGroupList implements LinkGroupListInterface
         $lg->setTemplate('unassigned');
         $lg->setGroupName('unassigned');
         $links = new Collection();
-        foreach ($grouped as $linkID => $linkData) {
+        foreach ($grouped as $linkData) {
             $link = new Link($this->db);
             $link->map($linkData);
             if ($link->getLinkType() === \LINKTYP_DATENSCHUTZ) {
@@ -232,7 +235,7 @@ final class LinkGroupList implements LinkGroupListInterface
         $lg->setTemplate('specialpages');
         $lg->setGroupName('specialpages');
         $links = new Collection();
-        foreach ($grouped as $linkID => $linkData) {
+        foreach ($grouped as $linkData) {
             $link = new Link($this->db);
             $link->map($linkData);
             if ($link->getLinkType() === \LINKTYP_DATENSCHUTZ) {
@@ -300,7 +303,7 @@ final class LinkGroupList implements LinkGroupListInterface
         $lg->setTemplate('staticroutes');
         $lg->setGroupName('staticroutes');
         $links = new Collection();
-        foreach ($grouped as $linkID => $linkData) {
+        foreach ($grouped as $linkData) {
             $link = new Link($this->db);
             $link->map($linkData);
             $links->push($link);

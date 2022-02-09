@@ -56,7 +56,7 @@ final class BestsellingProducts extends AbstractBox
             $res = \array_slice($productIDs, 0, $this->config['boxen']['box_bestseller_anzahl_anzeige']);
             if (\count($res) > 0) {
                 $this->setShow(true);
-                $products = new ArtikelListe();
+                $products = new ArtikelListe(null, $customerGroupID);
                 $products->getArtikelByKeys($res, 0, \count($res));
                 $this->setProducts($products);
                 $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_BESTSELLER));

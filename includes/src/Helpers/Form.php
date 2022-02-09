@@ -161,28 +161,21 @@ class Form
     }
 
     /**
+     * @param int|null $customerGroupID
      * @return bool
      * @former pruefeBetreffVorhanden()
      * @since 5.0.0
      */
-    public static function checkSubject(): bool
+    public static function checkSubject(int $customerGroupID = null): bool
     {
-        $customerGroupID = Frontend::getCustomerGroup()->getID();
-        if (!$customerGroupID) {
-            $customerGroupID = (int)$_SESSION['Kunde']->kKundengruppe;
-            if (!$customerGroupID) {
-                $customerGroupID = CustomerGroup::getDefaultGroupID();
-            }
-        }
-
-        $subjects = Shop::Container()->getDB()->getObjects(
-            "SELECT kKontaktBetreff
+        return Shop::Container()->getDB()->getSingleInt(
+            "SELECT COUNT(kKontaktBetreff) AS cnt
                 FROM tkontaktbetreff
-                WHERE FIND_IN_SET('" . $customerGroupID . "', REPLACE(cKundengruppen, ';', ',')) > 0
-                    OR cKundengruppen = '0'"
-        );
-
-        return \count($subjects) > 0;
+                WHERE FIND_IN_SET(:cgid, REPLACE(cKundengruppen, ';', ',')) > 0
+                    OR cKundengruppen = '0'",
+            'cnt',
+            ['cgid' => $customerGroupID ?? Frontend::getCustomerGroup()->getID()]
+        ) > 0;
     }
 
     /**

@@ -104,9 +104,9 @@ class Starter
     private Synclogin $auth;
 
     /**
-     * @var array|null
+     * @var mixed|null
      */
-    private ?array $data = null;
+    private $data;
 
     /**
      * @var array|null

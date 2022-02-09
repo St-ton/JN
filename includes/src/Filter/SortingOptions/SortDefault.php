@@ -29,6 +29,6 @@ class SortDefault extends AbstractSortingOption
         }
         $this->setName(Shop::Lang()->get('standard'));
         $this->setValue(\SEARCH_SORT_STANDARD);
-        $this->setPriority(1);
+        $this->setPriority(10);
     }
 }

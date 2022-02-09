@@ -7,6 +7,7 @@ use JTL\Cron\JobFactory;
 use JTL\Cron\LegacyCron;
 use JTL\Cron\Queue;
 use JTL\Customer\CustomerGroup;
+use JTL\Export\ExporterFactory;
 use JTL\Export\FormatExporter;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -33,7 +34,7 @@ function holeExportformatCron(): array
             ORDER BY tcron.startDate DESC"
     );
 
-    $exporter = new FormatExporter($db, Shop::Container()->getLogService());
+    $factory = new ExporterFactory($db, Shop::Container()->getLogService(), Shop::Container()->getCache());
     foreach ($exports as $export) {
         $export->kExportformat      = (int)$export->kExportformat;
         $export->kKundengruppe      = (int)$export->kKundengruppe;
@@ -51,6 +52,8 @@ function holeExportformatCron(): array
         $export->cAlleXStdToDays    = rechneUmAlleXStunden($export->frequency);
         $export->frequencyLocalized = $export->cAlleXStdToDays;
         $export->Sprache            = Shop::Lang()->getLanguageByID($export->kSprache);
+
+        $exporter = $factory->getExporter($export->kExportformat);
         $exporter->init($export->kExportformat);
         $export->Waehrung     = $db->select(
             'twaehrung',

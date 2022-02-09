@@ -10,17 +10,18 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
 $oAccount->permission('PLZ_ORT_IMPORT_VIEW', true, true);
 
-$action   = 'index';
-$messages = [
+$action     = 'index';
+$messages   = [
     'notice' => '',
     'error'  => '',
 ];
-
-$landIsoMap    = [];
-$entries       = [];
-$db            = Shop::Container()->getDB();
-
-handleCsvImportAction('plz', static function($entry) use ($db, &$landIsoMap, &$entries){
+$landIsoMap = [];
+$entries    = [];
+$db         = Shop::Container()->getDB();
+$cnt        = 0;
+$itemList   = [];
+$res        = handleCsvImportAction('plz', static function ($entry) use ($db, &$landIsoMap, &$entries, &$cnt, &$itemList) {
+    ++$cnt;
     $iso = null;
     if (\array_key_exists($entry->land, $landIsoMap)) {
         $iso = $landIsoMap[$entry->land];
@@ -37,22 +38,13 @@ handleCsvImportAction('plz', static function($entry) use ($db, &$landIsoMap, &$e
             'cOrt'     => $entry->ort,
             'cLandISO' => $iso,
         ];
-//        $entries[] = [
-//            $db->escape($entry->plz),
-//            $entry->ort,
-//            $iso,
-//        ];
-        $res = $db->insert('tplz', $importEntry);
+        $itemList[]  = $importEntry;
+    }
+    if ($cnt % 1000 === 0) {
+        $db->insertBatch('tplz', $itemList);
+        $itemList = [];
     }
 }, ['plz', 'ort', 'land']);
-
-//$query = "INSERT INTO tplz (cPLZ, cOrt, cLandISO) VALUES ";
-//
-//foreach ($entries as $i => $entry) {
-//    if ($i > 0) $query .= ', ';
-//    $query .= '("' . $entry->cPLZ . '", "' . $entry->cOrt . '", "' . $entry->cLandISO . '")';
-//}
-//$res = $db->query($query);
 
 plzimportActionIndex($smarty, $messages);
 plzimportFinalize($smarty, $messages);

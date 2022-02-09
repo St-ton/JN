@@ -11,6 +11,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\License\Exception\AuthException;
 use JTL\License\Installer\Helper;
 use JTL\License\Struct\ExsLicense;
 use JTL\Mapper\PluginValidation;
@@ -251,6 +252,8 @@ class Admin
                 }
             }
             $smarty->assign('bindErrorMessage', $response->error);
+        } catch (AuthException $e) {
+            $smarty->assign('bindErrorMessage', $e->getMessage());
         }
         $this->getLicenses(true);
         $this->getList($smarty);
@@ -278,7 +281,7 @@ class Admin
                 Request::postVar('key')
             );
             $responseData = \json_decode($apiResponse);
-        } catch (ClientException | GuzzleException $e) {
+        } catch (ClientException | GuzzleException | AuthException $e) {
             $response->error = $e->getMessage();
             $smarty->assign('extendErrorMessage', $e->getMessage());
         }
@@ -369,7 +372,7 @@ class Admin
         } catch (Exception $e) {
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_ERROR,
-                \__('errorFetchLicenseAPI') . '' . $e->getMessage(),
+                \__('errorFetchLicenseAPI') . ' ' . $e->getMessage(),
                 'errorFetchLicenseAPI'
             );
         }

@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\License\Exception\AuthException;
 use JTL\License\Struct\ExsLicense;
 use JTL\Shop;
 use stdClass;
@@ -49,6 +50,11 @@ class Manager
     private $client;
 
     /**
+     * @var string
+     */
+    private $token;
+
+    /**
      * Manager constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
@@ -59,6 +65,7 @@ class Manager
         $this->cache  = $cache;
         $this->client = new Client();
         $this->domain = \parse_url(\URL_SHOP)['host'];
+        $this->token  = AuthToken::getInstance($this->db)->get();
     }
 
     /**
@@ -79,7 +86,7 @@ class Manager
             'Accept'        => 'application/json',
             'Content-Type'  => 'application/json',
             'User-Agent'    => 'JTL-Shop/' . Shop::getApplicationVersion() . '-' . $this->domain,
-            'Authorization' => 'Bearer ' . AuthToken::getInstance($this->db)->get()
+            'Authorization' => 'Bearer ' . $this->token
         ];
     }
 
@@ -88,9 +95,13 @@ class Manager
      * @return string
      * @throws GuzzleException
      * @throws ClientException
+     * @throws AuthException
      */
     public function setBinding(string $url): string
     {
+        if ($this->token === '') {
+            throw new AuthException(\__('Invalid token.'));
+        }
         $res = $this->client->request(
             'POST',
             $url,
@@ -109,9 +120,13 @@ class Manager
      * @return string
      * @throws GuzzleException
      * @throws ClientException
+     * @throws AuthException
      */
     public function createLicense(string $url): string
     {
+        if ($this->token === '') {
+            throw new AuthException(\__('Invalid token.'));
+        }
         $res = $this->client->request(
             'POST',
             $url,
@@ -130,9 +145,13 @@ class Manager
      * @return string
      * @throws GuzzleException
      * @throws ClientException
+     * @throws AuthException
      */
     public function clearBinding(string $url): string
     {
+        if ($this->token === '') {
+            throw new AuthException(\__('Invalid token.'));
+        }
         $res = $this->client->request(
             'GET',
             $url,
@@ -153,9 +172,13 @@ class Manager
      * @return string
      * @throws GuzzleException
      * @throws ClientException
+     * @throws AuthException
      */
     public function extendUpgrade(string $url, string $exsID, string $key): string
     {
+        if ($this->token === '') {
+            throw new AuthException(\__('Invalid token.'));
+        }
         $res = $this->client->request(
             'POST',
             $url,
@@ -184,11 +207,15 @@ class Manager
      * @param array $installedExtensions
      * @return int
      * @throws GuzzleException
+     * @throws AuthException
      */
     public function update(bool $force = false, array $installedExtensions = []): int
     {
         if (!$force && !$this->checkUpdate()) {
             return 0;
+        }
+        if ($this->token === '') {
+            throw new AuthException(\__('Invalid token.'));
         }
         $res = $this->client->request(
             'POST',
@@ -221,6 +248,9 @@ class Manager
      */
     private function getTokenOwner(): stdClass
     {
+        if ($this->token === '') {
+            throw new AuthException(\__('Invalid token.'));
+        }
         $res = $this->client->request(
             'GET',
             self::USER_API_URL,

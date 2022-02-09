@@ -154,8 +154,8 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
 } else {
     $smarty->assign('noModule', true);
 }
+getAdminSectionSettings(CONF_AUSWAHLASSISTENT);
 $smarty->assign('step', $step)
     ->assign('cTab', $tab)
     ->assign('languageID', $languageID)
-    ->assign('oConfig_arr', getAdminSectionSettings(CONF_AUSWAHLASSISTENT))
     ->display('auswahlassistent.tpl');

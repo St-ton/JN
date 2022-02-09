@@ -5,7 +5,7 @@
     {include file='tpl_inc/seite_header.tpl' cTitel=__('modifyExportformat')}
 {/if}
 <div id="content">
-    <form name="wxportformat_erstellen" method="post" action="exportformate.php">
+    <form name="wxportformat_erstellen" method="post" action="{$adminURL}/exportformate.php">
         {$jtl_token}
         {if $exportID > 0}
             <input type="hidden" name="action" value="create" />
@@ -167,29 +167,29 @@
                 <hr class="mb-n3">
             </div>
             <div class="card-body">
-                {foreach $Conf as $cnf}
-                    {if $cnf->cConf === 'Y'}
+                {foreach $settings as $cnf}
+                    {if $cnf->isConfigurable()}
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->cWertName}">{$cnf->cName}:</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->getValueName()}">{$cnf->getName()}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                {if $cnf->cInputTyp === 'selectbox'}
-                                    <select class="custom-select" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
-                                        {foreach $cnf->ConfWerte as $wert}
-                                            <option value="{$wert->cWert}" {if isset($cnf->gesetzterWert) && $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
+                                {if $cnf->getInputType() === 'selectbox'}
+                                    <select class="custom-select" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}">
+                                        {foreach $cnf->getValues() as $wert}
+                                            <option value="{$wert->cWert}" {if $cnf->getSetValue() !== null && $cnf->getSetValue() == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                         {/foreach}
                                     </select>
                                 {else}
-                                    <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" tabindex="3" />
+                                    <input class="form-control" type="text" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}" tabindex="3" />
                                 {/if}
                             </div>
-                            {if $cnf->cBeschreibung}
+                            {if $cnf->getDescription()}
                                 <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                                    {getHelpDesc cDesc=$cnf->cBeschreibung}
+                                    {getHelpDesc cDesc=$cnf->getDescription()}
                                 </div>
                             {/if}
                         </div>
                     {else}
-                        <h3 style="text-align:center;">{$cnf->cName}</h3>
+                        <h3 style="text-align:center;">{$cnf->getName()}</h3>
                     {/if}
                 {/foreach}
             </div>
@@ -197,7 +197,7 @@
         <div class="save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <a class="btn btn-outline-primary btn-block" href="exportformate.php">
+                    <a class="btn btn-outline-primary btn-block" href="{$adminURL}/exportformate.php">
                         {__('cancelWithIcon')}
                     </a>
                 </div>

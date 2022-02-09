@@ -41,7 +41,7 @@
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1300px;
-  --font-family-sans-serif: "Raleway", sans-serif;
+  --font-family-sans-serif: 'Raleway', sans-serif;
   --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 *, *::before, *::after {
@@ -58,7 +58,7 @@ article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
 }
 body {
   margin: 0;
-  font-family: "Raleway", sans-serif;
+  font-family: 'Raleway', sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.5;
@@ -1578,7 +1578,7 @@ pre code {
 }
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .productlist-filter-headline, .h4, .h5, .h6 {
   margin-bottom: 1rem;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 400;
   line-height: 1.2;
   color: #212121;
@@ -1631,7 +1631,7 @@ html {
   display: none;
 }
 .dropdown-toggle::after {
-  content: "";
+  content: '';
   margin-left: 0.5rem;
   display: inline-block;
 }
@@ -1657,7 +1657,7 @@ html {
   position: relative;
 }
 .nav-dividers .nav-item:not(:last-child)::after {
-  content: "";
+  content: '';
   position: absolute;
   right: 0;
   top: 0.5rem;
@@ -1750,7 +1750,7 @@ html {
   flex-direction: row-reverse;
 }
 #header-top-bar, header {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   background-color: #212121;
   color: #ffffff;
 }
@@ -1844,7 +1844,7 @@ header .nav-right .dropdown-menu {
     padding: 1.5rem;
   }
   header .navbar-nav > .nav-item > .nav-link::before {
-    content: "";
+    content: '';
     position: absolute;
     bottom: 0;
     left: 50%;
@@ -1914,7 +1914,7 @@ header .nav-right .dropdown-menu {
   width: 100%;
   height: calc(1.5em + 1.25rem + 2px);
   padding: 0.625rem 0.9375rem;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 0.875rem;
   font-weight: 300;
   line-height: 1.5;
@@ -1936,7 +1936,7 @@ header .nav-right .dropdown-menu {
   position: relative;
 }
 .square::before {
-  content: "";
+  content: '';
   display: inline-block;
   padding-bottom: 100%;
 }
@@ -2082,6 +2082,6 @@ hr {
   opacity: 0 !important;
 }
 .text-accent, .price.h1, .product-title.h2 {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
 }

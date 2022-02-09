@@ -41,7 +41,7 @@
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1300px;
-  --font-family-sans-serif: "Open Sans", sans-serif;
+  --font-family-sans-serif: 'Open Sans', sans-serif;
   --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 *, *::before, *::after {
@@ -58,7 +58,7 @@ article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
 }
 body {
   margin: 0;
-  font-family: "Open Sans", sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.5;
@@ -1638,7 +1638,7 @@ html {
   display: none;
 }
 .dropdown-toggle::after {
-  content: "";
+  content: '';
   margin-left: 0.5rem;
   display: inline-block;
 }
@@ -1664,7 +1664,7 @@ html {
   position: relative;
 }
 .nav-dividers .nav-item:not(:last-child)::after {
-  content: "";
+  content: '';
   position: absolute;
   right: 0;
   top: 0.5rem;
@@ -1820,7 +1820,7 @@ header .nav-right .dropdown-menu {
     padding: 1.5rem;
   }
   header .navbar-nav > .nav-item > .nav-link::before {
-    content: "";
+    content: '';
     position: absolute;
     bottom: 0;
     left: 50%;
@@ -1906,7 +1906,7 @@ header .nav-right .dropdown-menu {
   position: relative;
 }
 .square::before {
-  content: "";
+  content: '';
   display: inline-block;
   padding-bottom: 100%;
 }

@@ -1,7 +1,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('plz_ort_import') cBeschreibung=__('plz_ort_importDesc')}
 <div id="content">
     <div class="card">
-        <form id="importForm" action="/plz_ort_import.php">
+        <form id="importForm" action="{$adminURL}/plz_ort_import.php">
             {$jtl_token}
             <div class="card-header">
                 <div class="subheading1">{__('plz_ort_available')}</div>

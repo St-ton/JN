@@ -153,8 +153,8 @@ if ($step === 'uebersicht') {
     foreach ($specialContent as $item) {
         $content[$item->cISOSprache . '_' . $item->cTyp] = $item->cContent;
     }
+    getAdminSectionSettings(CONF_KONTAKTFORMULAR);
     $smarty->assign('Betreffs', $subjects)
-        ->assign('Conf', getAdminSectionSettings(CONF_KONTAKTFORMULAR))
         ->assign('Content', $content);
 }
 

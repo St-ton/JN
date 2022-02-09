@@ -2,6 +2,7 @@
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
+use JTL\Helpers\Text;
 use JTL\Media\IMedia;
 use JTL\Media\Media;
 use JTL\Shop;
@@ -19,7 +20,7 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
         Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(
             CONF_BILDER,
-            $_POST,
+            Text::filterXSS($_POST),
             [CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]
         ),
         'saveSettings'
@@ -94,9 +95,9 @@ $indices = [
     'news'          => __('news'),
     'newskategorie' => __('newscategory')
 ];
-$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_BILDER))
-    ->assign('oConfig', Shop::getSettings([CONF_BILDER])['bilder'])
-    ->assign('indices', $indices)
+getAdminSectionSettings(CONF_BILDER);
+$smarty->assign('indices', $indices)
+    ->assign('imgConf', Shop::getSettingSection(CONF_BILDER))
     ->assign('sizes', ['mini', 'klein', 'normal', 'gross'])
     ->assign('dims', ['breite', 'hoehe'])
     ->display('bilder.tpl');

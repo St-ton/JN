@@ -10,7 +10,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
-if (isset($_POST['speichern']) && Form::validateToken()) {
+if (isset($_POST['einstellungen']) && Form::validateToken()) {
     Shop::Container()->getAlertService()->addAlert(
         Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_SITEMAP, $_POST),
@@ -30,6 +30,5 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
         }
     }
 }
-
-$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SITEMAP))
-    ->display('shopsitemap.tpl');
+getAdminSectionSettings(CONF_SITEMAP);
+$smarty->display('shopsitemap.tpl');

@@ -92,7 +92,6 @@ $profilerState = Profiler::getIsActive();
 switch ($profilerState) {
     case 0:
     default:
-        $type = '';
         break;
     case 1:
         $type = 'Datenbank';
@@ -164,23 +163,22 @@ function redirectToURI($uri)
 }
 
 /**
- * @param AdminAccount $oAccount
- * @param Updater      $oUpdater
+ * @param AdminAccount $account
+ * @param Updater      $updater
  * @return void
  * @throws Exception
  */
-function redirectLogin(AdminAccount $oAccount, Updater $oUpdater)
+function redirectLogin(AdminAccount $account, Updater $updater)
 {
     unset($_SESSION['frontendUpToDate']);
-    $conf     = Shop::getSettings([CONF_GLOBAL]);
     $safeMode = isset($GLOBALS['plgSafeMode'])
         ? '?safemode=' . ($GLOBALS['plgSafeMode'] ? 'on' : 'off')
         : '';
-    if (($conf['global']['global_wizard_done'] ?? 'Y') === 'N') {
+    if (Shop::getSettingValue(CONF_GLOBAL, 'global_wizard_done') === 'N') {
         header('Location: ' . Shop::getAdminURL(true) . '/wizard.php' . $safeMode);
         exit;
     }
-    if ($oAccount->permission('SHOP_UPDATE_VIEW') && $oUpdater->hasPendingUpdates()) {
+    if ($account->permission('SHOP_UPDATE_VIEW') && $updater->hasPendingUpdates()) {
         header('Location: ' . Shop::getAdminURL(true) . '/dbupdater.php' . $safeMode);
         exit;
     }

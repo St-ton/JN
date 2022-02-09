@@ -101,7 +101,7 @@ function regionsToState(){
                 var state = $('#'+state_id);
                 var state_data = state.data();
 
-                if (typeof(result.response)==='undefined' || state.length === 0) {
+                if (typeof(result.response) === 'undefined' || state.length === 0) {
                     return;
                 }
                 var title = state_data.defaultoption;

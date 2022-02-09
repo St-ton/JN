@@ -44,7 +44,7 @@
                                                 {if $Bestellung->dBezahldatum_de === '00.00.0000' || empty($Bestellung->dBezahldatum_de)}
                                                     <dt>{$Bestellung->cZahlungsartName}</dt>
                                                     <dd>
-                                                        {if ($Bestellung->cStatus == BESTELLUNG_STATUS_OFFEN || $Bestellung->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG)
+                                                        {if ($Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_OFFEN || $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_IN_BEARBEITUNG)
                                                             && (($Bestellung->Zahlungsart->cModulId !== 'za_ueberweisung_jtl'
                                                             && $Bestellung->Zahlungsart->cModulId !== 'za_nachnahme_jtl'
                                                             && $Bestellung->Zahlungsart->cModulId !== 'za_rechnung_jtl'
@@ -72,13 +72,13 @@
                                         <span class="order-details-data-item">
                                             <ul class="list-unstyled">
                                                 <li>{$Bestellung->cVersandartName}</li>
-                                                {if $Bestellung->cStatus == BESTELLUNG_STATUS_VERSANDT}
+                                                {if $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT}
                                                     <li>{lang key='shippedOn' section='login'} {$Bestellung->dVersanddatum_de}</li>
-                                                {elseif $Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT}
+                                                {elseif $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_TEILVERSANDT}
                                                     <li>{$Bestellung->Status}</li>
                                                 {else}
                                                     <li><span>{lang key='notShippedYet' section='login'}</span></li>
-                                                    {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO}
+                                                    {if $Bestellung->cStatus != $smarty.const.BESTELLUNG_STATUS_STORNO}
                                                         <li>
                                                             <span>{lang key='shippingTime' section='global'}: {if isset($cEstimatedDeliveryEx)}{$cEstimatedDeliveryEx}{else}{$Bestellung->cEstimatedDelivery}{/if}</span>
                                                         </li>
@@ -182,7 +182,7 @@
 
         {if $Bestellung->oLieferschein_arr|@count > 0}
             {block name='account-order-details-delivery-note-content'}
-                <div class="h2">{if $Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT}{lang key='partialShipped' section='order'}{else}{lang key='shipped' section='order'}{/if}</div>
+                <div class="h2">{if $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_TEILVERSANDT}{lang key='partialShipped' section='order'}{else}{lang key='shipped' section='order'}{/if}</div>
                 <div class="table-responsive mb-3">
                     <table class="table table-striped table-bordered">
                         <thead>
@@ -218,7 +218,7 @@
                 {foreach $Bestellung->oLieferschein_arr as $oLieferschein}
                     {block name='account-order-details-delivery-note-popup'}
                         {modal id="shipping-order-{$oLieferschein->getLieferschein()}"
-                            title=(($Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT) ? {lang key='partialShipped' section='order'} : {lang key='shipped' section='order'})
+                            title=(($Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_TEILVERSANDT) ? {lang key='partialShipped' section='order'} : {lang key='shipped' section='order'})
                             class="fade shipping-order-modal"
                             size="lg"}
                             {block name='account-order-details-delivery-note-popup-heading'}

@@ -5,6 +5,28 @@
     {include file='tpl_inc/seite_header.tpl' cTitel=__('modifyExportformat')}
 {/if}
 <div id="content">
+    <div id="testResultsModal" class="modal fade" role="dialog">
+        <div class="modal-dialog" style="max-width: 90%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">{__('Preview')}</h2>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <i class="fal fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="testResults"></div>
+                </div>
+                <div class="modal-footer">
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                            <button type="button" class="btn btn-outline-primary btn-block" name="cancel" data-dismiss="modal">{__('close')}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <form name="wxportformat_erstellen" method="post" action="{$adminURL}/exportformate.php">
         {$jtl_token}
         {if $exportID > 0}
@@ -196,14 +218,24 @@
         </div>
         <div class="save-wrapper">
             <div class="row">
-                <div class="ml-auto col-sm-6 col-xl-auto">
+                <div class="ml-auto col-sm-3 col-xl-auto">
                     <a class="btn btn-outline-primary btn-block" href="{$adminURL}/exportformate.php">
                         {__('cancelWithIcon')}
                     </a>
                 </div>
-                <div class="col-sm-6 col-xl-auto">
-                    <button type="submit" class="btn btn-primary btn-block" value="{if $exportID < 1}{__('newExportformatSave')}{else}{__('modifyExportformatSave')}{/if}">
+                {if $exportID > 0}
+                    <div class="col-sm-3 col-xl-auto">
+                        <button class="btn btn-success" id="testExport" data-exportid="{$exportID}">{__('Preview')}</button>
+                    </div>
+                {/if}
+                <div class="col-sm-3 col-xl-auto">
+                    <button type="submit" class="btn btn-secondary btn-block" value="{if $exportID < 1}{__('newExportformatSave')}{else}{__('modifyExportformatSave')}{/if}">
                         <i class="fa fa-save"></i> {if $exportID < 1}{__('newExportformatSave')}{else}{__('modifyExportformatSave')}{/if}
+                    </button>
+                </div>
+                <div class="col-sm-3 col-xl-auto">
+                    <button type="submit" class="btn btn-primary btn-block" name="saveAndContinue" value="1">
+                        <i class="fa fa-save"></i> {__('saveAndContinue')}
                     </button>
                 </div>
             </div>
@@ -213,9 +245,29 @@
     {if $exportID > 0}
         {getRevisions type='export' key=$exportID show=['cContent','cKopfzeile','cFusszeile'] data=$Exportformat}
     {/if}
+
 </div>
 <script>
     {literal}
+    $(window).on('load', function () {
+        $('#testExport').on('click', function (ele) {
+            var id = ele.currentTarget.getAttribute('data-exportid');
+            testrun(id);
+            return false;
+        });
+    });
+    function testrun(tplID) {
+        simpleAjaxCall('io.php', {
+            jtl_token: JTL_TOKEN,
+            io : JSON.stringify({
+                name: 'testExport',
+                params : [tplID]
+            })
+        }, function (result) {
+            $('#testResults').html(result.html);
+            $('#testResultsModal').modal('show');
+        });
+    }
     function validateTemplateSyntax(tplID) {
         simpleAjaxCall('io.php', {
             jtl_token: JTL_TOKEN,

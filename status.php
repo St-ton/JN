@@ -56,8 +56,8 @@ if (!empty($uid)) {
     }
 
     $smarty->assign('Bestellung', $order)
-           ->assign('uid', Text::filterXSS($uid))
-           ->assign('showLoginPanel', Frontend::getCustomer()->isLoggedIn());
+        ->assign('uid', Text::filterXSS($uid))
+        ->assign('showLoginPanel', Frontend::getCustomer()->isLoggedIn());
 
     if ($plzValid || Frontend::getCustomer()->isLoggedIn()) {
         $db->update('tbestellstatus', 'cUID', $uid, (object)[
@@ -81,10 +81,10 @@ if (!empty($uid)) {
 
 $step = 'bestellung';
 $smarty->assign('step', $step)
-    ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
-    ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
-    ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)
-    ->assign('Link', $linkHelper->getPageLink($linkHelper->getSpecialPageID(LINKTYP_LOGIN)));
+    ->assign('Link', $linkHelper->getPageLink($linkHelper->getSpecialPageID(LINKTYP_LOGIN)))
+    ->assignDeprecated('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT, '5.0.0')
+    ->assignDeprecated('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT, '5.0.0')
+    ->assignDeprecated('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN, '5.0.0');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

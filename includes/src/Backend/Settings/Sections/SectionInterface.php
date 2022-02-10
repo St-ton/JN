@@ -25,11 +25,11 @@ interface SectionInterface
     public function load(?SqlObject $sql = null): void;
 
     /**
-     * @param object $conf
-     * @param object $confValue
+     * @param Item  $conf
+     * @param mixed $confValue
      * @return bool
      */
-    public function validate($conf, &$confValue): bool;
+    public function validate(Item $conf, $confValue): bool;
 
     /**
      * @return string

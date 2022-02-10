@@ -481,7 +481,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function insertBatch(string $tableName, array $objects): int
+    public function insertBatch(string $tableName, array $objects, bool $upsert = false): int
     {
         $this->validateEntityName($tableName);
         $keys    = []; //column names
@@ -514,8 +514,12 @@ class NiceDB implements DbInterface
             ++$i;
             $values = [];
         }
-
-        $stmt = 'INSERT INTO ' . $tableName . ' (' . \implode(', ', $keys) . ') VALUES ' . \implode(',', $v);
+        if ($upsert) {
+            $stmt = 'REPLACE INTO ';
+        } else {
+            $stmt = 'INSERT IGNORE INTO ';
+        }
+        $stmt .= $tableName . ' (' . \implode(', ', $keys) . ') VALUES ' . \implode(',', $v);
         try {
             $s   = $this->pdo->prepare($stmt);
             $res = $s->execute($assigns);

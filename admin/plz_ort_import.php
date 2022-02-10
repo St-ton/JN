@@ -16,35 +16,40 @@ $messages   = [
     'error'  => '',
 ];
 $landIsoMap = [];
-$entries    = [];
 $db         = Shop::Container()->getDB();
-$cnt        = 0;
-$itemList   = [];
-$res        = handleCsvImportAction('plz', static function ($entry) use ($db, &$landIsoMap, &$entries, &$cnt, &$itemList) {
-    ++$cnt;
-    $iso = null;
-    if (\array_key_exists($entry->land, $landIsoMap)) {
-        $iso = $landIsoMap[$entry->land];
-    } else {
-        $land = $db->getSingleObject('SELECT cIso FROM tland WHERE cDeutsch = :land', ['land' => $entry->land]);
-        if ($land !== null) {
-            $iso                      = $land->cIso;
-            $landIsoMap[$entry->land] = $iso;
+$itemBatch  = [];
+$res        = handleCsvImportAction(
+    'plz',
+    static function ($entry, &$importDeleteDone, $importType) use ($db, &$landIsoMap, &$itemBatch) {
+        if ($importType === 0 && $importDeleteDone === false) {
+            $db->query('TRUNCATE TABLE tplz');
+            $importDeleteDone = true;
         }
-    }
-    if ($iso !== null) {
-        $importEntry = (object)[
-            'cPLZ'     => $entry->plz,
-            'cOrt'     => $entry->ort,
-            'cLandISO' => $iso,
-        ];
-        $itemList[]  = $importEntry;
-    }
-    if ($cnt % 1000 === 0) {
-        $db->insertBatch('tplz', $itemList);
-        $itemList = [];
-    }
-}, ['plz', 'ort', 'land']);
+        $iso = null;
+        if (\array_key_exists($entry->land, $landIsoMap)) {
+            $iso = $landIsoMap[$entry->land];
+        } else {
+            $land = $db->getSingleObject('SELECT cIso FROM tland WHERE cDeutsch = :land', ['land' => $entry->land]);
+            if ($land !== null) {
+                $iso                      = $land->cIso;
+                $landIsoMap[$entry->land] = $iso;
+            }
+        }
+        if ($iso !== null) {
+            $importEntry = (object)[
+                'cPLZ'     => $entry->plz,
+                'cOrt'     => $entry->ort,
+                'cLandISO' => $iso,
+            ];
+            $itemBatch[] = $importEntry;
+        }
+        if (\count($itemBatch) === 1024) {
+            $db->insertBatch('tplz', $itemBatch, $importType !== 2);
+            $itemBatch = [];
+        }
+    },
+    ['plz', 'ort', 'land']
+);
 
 plzimportActionIndex($smarty, $messages);
 plzimportFinalize($smarty, $messages);

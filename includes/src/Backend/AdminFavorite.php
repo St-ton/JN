@@ -16,27 +16,27 @@ class AdminFavorite
     /**
      * @var int
      */
-    public $kAdminfav;
+    public int $kAdminfav = 0;
 
     /**
      * @var int
      */
-    public $kAdminlogin;
+    public int $kAdminlogin = 0;
 
     /**
      * @var string
      */
-    public $cTitel;
+    public string $cTitel = '';
 
     /**
      * @var string
      */
-    public $cUrl;
+    public string $cUrl = '';
 
     /**
      * @var int
      */
-    public $nSort;
+    public int $nSort = 0;
 
     /**
      * AdminFavorite constructor.
@@ -56,8 +56,12 @@ class AdminFavorite
     public function loadFromDB(int $id): self
     {
         $obj = Shop::Container()->getDB()->select('tadminfavs', 'kAdminfav', $id);
-        foreach (\get_object_vars($obj) as $k => $v) {
-            $this->$k = $v;
+        if ($obj !== null) {
+            $this->kAdminfav   = (int)$obj->kAdminfav;
+            $this->kAdminlogin = (int)$obj->kAdminlogin;
+            $this->nSort       = (int)$obj->nSort;
+            $this->cTitel      = $obj->cTitel;
+            $this->cUrl        = $obj->cUrl;
         }
         \executeHook(\HOOK_ATTRIBUT_CLASS_LOADFROMDB);
 
@@ -102,9 +106,6 @@ class AdminFavorite
         } catch (Exception $e) {
             return [];
         }
-
-        $favs = \is_array($favs) ? $favs : [];
-
         foreach ($favs as $fav) {
             $fav->bExtern = true;
             $fav->cAbsUrl = $fav->cUrl;

@@ -13,19 +13,21 @@ function holeAktiveGeschenke(string $sql): array
     if (mb_strlen($sql) < 1) {
         return $res;
     }
-    $data = Shop::Container()->getDB()->getObjects(
+    $db   = Shop::Container()->getDB();
+    $data = $db->getInts(
         'SELECT kArtikel
             FROM tartikelattribut
             WHERE cName = :atr
             ORDER BY CAST(cWert AS SIGNED) DESC ' . $sql,
+        'kArtikel',
         ['atr' => ART_ATTRIBUT_GRATISGESCHENKAB]
     );
 
     $options                            = Artikel::getDefaultOptions();
     $options->nKeinLagerbestandBeachten = 1;
-    foreach ($data as $item) {
-        $product = new Artikel();
-        $product->fuelleArtikel((int)$item->kArtikel, $options, 0, 0, true);
+    foreach ($data as $productID) {
+        $product = new Artikel($db);
+        $product->fuelleArtikel($productID, $options, 0, 0, true);
         if ($product->kArtikel > 0) {
             $res[] = $product;
         }
@@ -44,7 +46,8 @@ function holeHaeufigeGeschenke(string $sql): array
     if (mb_strlen($sql) < 1) {
         return $res;
     }
-    $data = Shop::Container()->getDB()->getObjects(
+    $db   = Shop::Container()->getDB();
+    $data = $db->getObjects(
         'SELECT tgratisgeschenk.kArtikel, COUNT(*) AS nAnzahl, 
             MAX(tbestellung.dErstellt) AS lastOrdered, AVG(tbestellung.fGesamtsumme) AS avgOrderValue
             FROM tgratisgeschenk
@@ -57,7 +60,7 @@ function holeHaeufigeGeschenke(string $sql): array
     $options                            = Artikel::getDefaultOptions();
     $options->nKeinLagerbestandBeachten = 1;
     foreach ($data as $item) {
-        $product = new Artikel();
+        $product = new Artikel($db);
         $product->fuelleArtikel((int)$item->kArtikel, $options, 0, 0, true);
         if ($product->kArtikel > 0) {
             $product->nGGAnzahl = $item->nAnzahl;
@@ -82,7 +85,8 @@ function holeLetzten100Geschenke(string $sql): array
     if (mb_strlen($sql) < 1) {
         return $res;
     }
-    $data                               = Shop::Container()->getDB()->getObjects(
+    $db                                 = Shop::Container()->getDB();
+    $data                               = $db->getObjects(
         'SELECT tgratisgeschenk.*, tbestellung.dErstellt AS orderCreated, tbestellung.fGesamtsumme
             FROM tgratisgeschenk
               LEFT JOIN tbestellung 
@@ -92,7 +96,7 @@ function holeLetzten100Geschenke(string $sql): array
     $options                            = Artikel::getDefaultOptions();
     $options->nKeinLagerbestandBeachten = 1;
     foreach ($data as $item) {
-        $product = new Artikel();
+        $product = new Artikel($db);
         $product->fuelleArtikel((int)$item->kArtikel, $options, 0, 0, true);
         if ($product->kArtikel > 0) {
             $product->nGGAnzahl = $item->nAnzahl;

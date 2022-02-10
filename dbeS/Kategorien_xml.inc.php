@@ -41,6 +41,17 @@ function rebuildCategoryTree(int $parentID, int $left, int $level = 0): int
  */
 function Kategorien_xml_Finish(): void
 {
-    rebuildCategoryTree(0, 1);
+    $lft            = 1;
+    $nodeKategories = Shop::Container()->getDB()->getObjects(
+        'SELECT DISTINCT tkategorie.kOberKategorie
+            FROM tkategorie
+            LEFT JOIN tkategorie parent ON parent.kKategorie = tkategorie.kOberKategorie
+            WHERE parent.kKategorie IS NULL
+            ORDER BY tkategorie.kOberKategorie'
+    );
+    foreach ($nodeKategories as $node) {
+        $lft = rebuildCategoryTree($node->kOberKategorie, $lft);
+    }
+
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_CATEGORY]);
 }

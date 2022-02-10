@@ -2,10 +2,12 @@
 
 namespace JTL\Extensions\Config;
 
+use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Nice;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use function Functional\some;
 
@@ -51,7 +53,7 @@ class Configurator
             'kKonfigGruppe',
             'nSort ASC'
         );
-        if (!\is_array($data) || \count($data) === 0 || !self::checkLicense()) {
+        if (\count($data) === 0 || !self::checkLicense()) {
             return [];
         }
         $languageID = $languageID ?: Shop::getLanguageID();
@@ -101,24 +103,26 @@ class Configurator
     }
 
     /**
-     * @param object $cart
+     * @param Cart $cart
      */
-    public static function postcheckCart($cart): void
+    public static function postcheckCart(Cart $cart): void
     {
         if (!\is_array($cart->PositionenArr) || \count($cart->PositionenArr) === 0 || !self::checkLicense()) {
             return;
         }
-        $deletedItems = [];
+        $deletedItems    = [];
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $languageID      = Shop::getLanguageID();
         foreach ($cart->PositionenArr as $index => $item) {
             if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL) {
                 continue;
             }
             $deleted = false;
-            if ($item->cUnique && (int)$item->kKonfigitem === 0) {
+            if ($item->cUnique && $item->kKonfigitem === 0) {
                 $configItems = [];
                 foreach ($cart->PositionenArr as $child) {
                     if ($child->cUnique && $child->cUnique === $item->cUnique && $child->kKonfigitem > 0) {
-                        $configItems[] = new Item($child->kKonfigitem);
+                        $configItems[] = new Item($child->kKonfigitem, $languageID, $customerGroupID);
                     }
                 }
                 // Konfiguration validieren
@@ -128,19 +132,21 @@ class Configurator
                 }
             } elseif (!$item->cUnique) {
                 // Konfiguration vorhanden -> löschen
-                if (self::hasKonfig($item->kArtikel)) {
+                if ($item->kKonfigitem > 0 && self::hasKonfig($item->kArtikel)) {
                     $deleted        = true;
                     $deletedItems[] = $index;
                 }
             }
             if ($deleted) {
                 Shop::Container()->getLogService()->error(
-                    'Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: ' .
-                    $item->cName[$_SESSION['cISOSprache']] . '(' . $item->kArtikel . ')'
+                    'Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: '
+                    . $item->cName[$_SESSION['cISOSprache']] . '(' . $item->kArtikel . ')'
                 );
             }
         }
-        CartHelper::deleteCartItems($deletedItems, false);
+        if (\count($deletedItems) > 0) {
+            CartHelper::deleteCartItems($deletedItems, false);
+        }
     }
 
     /**
@@ -226,11 +232,11 @@ class Configurator
                 $errors[$groupID] .= self::langComponent($min > 1);
             } elseif ($itemCount > $max && $max > 0) {
                 if ($min === $max) {
-                    $errors[$groupID] = Shop::Lang()->get('configChooseNComponents', 'productDetails', $min) .
-                        self::langComponent($min > 1);
+                    $errors[$groupID] = Shop::Lang()->get('configChooseNComponents', 'productDetails', $min)
+                        . self::langComponent($min > 1);
                 } else {
-                    $errors[$groupID] = Shop::Lang()->get('configChooseMaxComponents', 'productDetails', $max) .
-                        self::langComponent($max > 1);
+                    $errors[$groupID] = Shop::Lang()->get('configChooseMaxComponents', 'productDetails', $max)
+                        . self::langComponent($max > 1);
                 }
             }
         }

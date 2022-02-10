@@ -76,7 +76,7 @@
     <div class="card-footer save-wrapper">
         <div class="row">
             <div class="ml-auto col-sm-6 col-lg-auto">
-                <a class="btn btn-outline-primary btn-block" href="versandarten.php">
+                <a class="btn btn-outline-primary btn-block" href="{$adminURL}/versandarten.php">
                     {__('goBack')}
                 </a>
             </div>

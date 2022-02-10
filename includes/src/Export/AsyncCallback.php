@@ -15,57 +15,57 @@ class AsyncCallback
     /**
      * @var int
      */
-    private $exportID = 0;
+    private int $exportID = 0;
 
     /**
      * @var int
      */
-    private $queueID = 0;
+    private int $queueID = 0;
 
     /**
      * @var int
      */
-    private $productCount = 0;
+    private int $productCount = 0;
 
     /**
      * @var int
      */
-    private $tasksExecuted = 0;
+    private int $tasksExecuted = 0;
 
     /**
      * @var int
      */
-    private $lastProductID = 0;
+    private int $lastProductID = 0;
 
     /**
      * @var bool
      */
-    private $isFinished = false;
+    private bool $isFinished = false;
 
     /**
      * @var bool
      */
-    private $isFirst = false;
+    private bool $isFirst = false;
 
     /**
      * @var int
      */
-    private $cacheHits = 0;
+    private int $cacheHits = 0;
 
     /**
      * @var int
      */
-    private $cacheMisses = 0;
+    private int $cacheMisses = 0;
 
     /**
      * @var string
      */
-    private $url;
+    private string $url;
 
     /**
      * @var string|null
      */
-    private $error;
+    private ?string $error = null;
 
     /**
      * AsyncCallback constructor.
@@ -297,6 +297,7 @@ class AsyncCallback
     public function setError(?string $error): AsyncCallback
     {
         $this->error = $error;
+
         return $this;
     }
 }

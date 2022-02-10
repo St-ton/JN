@@ -864,24 +864,16 @@ final class Orders extends AbstractSync
                 $this->db->update(
                     'tbestellattribut',
                     'kBestellattribut',
-                    $orderAttributeOld->kBestellattribut,
+                    (int)$orderAttributeOld->kBestellattribut,
                     (object)['cValue' => $orderAttribute->value]
                 );
-                if (isset($orderAttributeOld->kBestellattribut)) {
-                    $this->db->update(
-                        'tbestellattribut',
-                        'kBestellattribut',
-                        (int)$orderAttributeOld->kBestellattribut,
-                        (object)['cValue' => $orderAttribute->value]
-                    );
-                    $updated[] = (int)$orderAttributeOld->kBestellattribut;
-                } else {
-                    $updated[] = $this->db->insert('tbestellattribut', (object)[
-                        'kBestellung' => $orderID,
-                        'cName'       => $orderAttribute->key,
-                        'cValue'      => $orderAttribute->value,
-                    ]);
-                }
+                $updated[] = (int)$orderAttributeOld->kBestellattribut;
+            } else {
+                $updated[] = $this->db->insert('tbestellattribut', (object)[
+                    'kBestellung' => $orderID,
+                    'cName'       => $orderAttribute->key,
+                    'cValue'      => $orderAttribute->value,
+                ]);
             }
         }
 

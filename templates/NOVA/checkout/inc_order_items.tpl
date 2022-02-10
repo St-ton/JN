@@ -34,7 +34,7 @@
                         {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                             {col cols=3 lg=2 class="checkout-items-item-image-wrapper"}
                                 {if !empty($oPosition->Artikel->cVorschaubild)}
-                                    {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
+                                    {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
                                         {include file='snippets/image.tpl' item=$oPosition->Artikel square=false srcSize='sm'}
                                     {/link}
                                 {/if}
@@ -43,9 +43,10 @@
                     {/block}
                     {block name='checkout-inc-order-items-items-main-content'}
                         {col cols=$cols lg=$itemInfoCols class="checkout-items-item-main"}
-                            {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK}
+                            {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL
+                            || $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK}
                                 {block name='checkout-inc-order-items-product-data-link'}
-                                    <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}</p>
+                                    <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}{$oPosition->cName|trans}{/link}</p>
                                 {/block}
                                 {block name='checkout-inc-order-items-product-data'}
                                     <ul class="list-unstyled text-muted-util small">
@@ -61,7 +62,7 @@
                                         {/if}
                                         {if $oPosition->Artikel->cLocalizedVPE
                                             && $oPosition->Artikel->cVPE !== 'N'
-                                            && $oPosition->nPosTyp != $C_WARENKORBPOS_TYP_GRATISGESCHENK
+                                            && $oPosition->nPosTyp !== $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK
                                         }
                                             {block name='checkout-inc-order-items-product-data-base-price'}
                                                 <li class="baseprice"><strong>{lang key='basePrice'}:</strong> {$oPosition->Artikel->cLocalizedVPE[$NettoPreise]}</li>
@@ -202,7 +203,7 @@
                                     </ul>
                                 {/block}
                             {/if}
-                            {if !empty($oPosition->Artikel->kStueckliste) && !empty($oPosition->Artikel->oStueckliste_arr)}
+                            {if $Einstellungen.kaufabwicklung.bestellvorgang_partlist === 'Y' && !empty($oPosition->Artikel->kStueckliste) && !empty($oPosition->Artikel->oStueckliste_arr)}
                                 {block name='checkout-inc-order-items-product-partlist-items'}
                                     <ul class="partlist-items text-muted-util small">
                                         {foreach $oPosition->Artikel->oStueckliste_arr as $partListItem}
@@ -219,7 +220,7 @@
                         {block name='checkout-inc-order-items-price-single'}
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
                                 {col cols=$cols lg=2 class="checkout-items-item-price-single text-nowrap-util"}
-                                    {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
+                                    {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL}
                                         {if (!$oPosition->istKonfigVater() || !isset($oPosition->oKonfig_arr) || $oPosition->oKonfig_arr|count === 0)}
                                             <span class="checkout-items-item-title">{lang key="pricePerUnit" section="productDetails"}:</span>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
                                         {/if}

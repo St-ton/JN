@@ -52,7 +52,7 @@
                 {if isset($oCheckBox_arr) && $oCheckBox_arr|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='uebersicht'}
                     <div id="tabellenLivesuche">
-                        <form name="uebersichtForm" method="post" action="checkbox.php">
+                        <form name="uebersichtForm" method="post" action="{$adminURL}/checkbox.php">
                             {$jtl_token}
                             <input type="hidden" name="uebersicht" value="1" />
                             <input type="hidden" name="tab" value="uebersicht" />
@@ -107,7 +107,7 @@
                                                     <td>{$oCheckBoxUebersicht->dErstellt_DE}</td>
                                                     <td>
                                                         <div class="btn-group">
-                                                            <a href="checkbox.php?edit={$oCheckBoxUebersicht->kCheckBox}&token={$smarty.session.jtl_token}"
+                                                            <a href="{$adminURL}/checkbox.php?edit={$oCheckBoxUebersicht->kCheckBox}&token={$smarty.session.jtl_token}"
                                                                class="btn btn-link px-2" title="{__('modify')}" data-toggle="tooltip">
                                                                 <span class="icon-hover">
                                                                     <span class="fal fa-edit"></span>
@@ -158,7 +158,7 @@
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='uebersicht' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
-                    <form method="post" action="checkbox.php">
+                    <form method="post" action="{$adminURL}/checkbox.php">
                         {$jtl_token}
                         <input name="tab" type="hidden" value="erstellen" />
                         <button name="erstellenShowButton" type="submit" class="btn btn-primary" value="neue Checkbox erstellen"><i class="fa fa-share"></i> {__('checkboxCreate')}</button>
@@ -170,7 +170,7 @@
                     <div class="subheading1">{if isset($oCheckBox->kCheckBox) && $oCheckBox->kCheckBox > 0}{__('edit')}{else}{__('create')}{/if}</div>
                         <hr class="mb-3">
                     <div>
-                        <form method="post" action="checkbox.php" >
+                        <form method="post" action="{$adminURL}/checkbox.php" >
                             {$jtl_token}
                             <input name="erstellen" type="hidden" value="1" />
                             <input name="tab" type="hidden" value="erstellen" />
@@ -388,7 +388,7 @@
                         <div class="card-footer save-wrapper">
                             <div class="row">
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <a class="btn btn-outline-primary btn-block" href="checkbox.php">
+                                    <a class="btn btn-outline-primary btn-block" href="{$adminURL}/checkbox.php">
                                         {__('cancelWithIcon')}
                                     </a>
                                 </div>

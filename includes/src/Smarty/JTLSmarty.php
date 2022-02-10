@@ -22,7 +22,7 @@ class JTLSmarty extends BC
     /**
      * @var array
      */
-    public $config;
+    public array $config;
 
     /**
      * @var array
@@ -32,22 +32,27 @@ class JTLSmarty extends BC
     /**
      * @var JTLSmarty[]
      */
-    private static $instance = [];
+    private static array $instance = [];
 
     /**
      * @var string
      */
-    public $context;
+    public string $context;
 
     /**
      * @var bool
      */
-    public static $isChildTemplate = false;
+    public static bool $isChildTemplate = false;
 
     /**
      * @var string
      */
-    private $templateDir;
+    private string $templateDir;
+
+    /**
+     * @var array
+     */
+    private array $mapping = [];
 
     /**
      * modified constructor with custom initialisation
@@ -303,7 +308,7 @@ class JTLSmarty extends BC
         }
         $file   = \basename($filename, '.tpl');
         $dir    = \dirname($filename);
-        $custom = \mb_strpos($dir, \PFAD_ROOT) === false
+        $custom = !\str_contains($dir, \PFAD_ROOT)
             ? $this->getTemplateDir($this->context) . (($dir === '.')
                 ? ''
                 : ($dir . '/')) . $file . '_custom.tpl'
@@ -325,9 +330,7 @@ class JTLSmarty extends BC
      */
     public function fetch($template = null, $cacheID = null, $compileID = null, $parent = null): string
     {
-        $debug = !empty($this->_debug->template_data)
-            ? $this->_debug->template_data
-            : null;
+        $debug = $this->_debug->template_data ?? null;
         $res   = parent::fetch($this->getResourceName($template), $cacheID, $compileID, $parent);
         if ($debug !== null) {
             // fetch overwrites the old debug data so we have to merge it with our previously saved data
@@ -371,12 +374,16 @@ class JTLSmarty extends BC
     public function getResourceName(string $resourceName): string
     {
         $transform = false;
-        if (\mb_strpos($resourceName, 'string:') === 0 || \mb_strpos($resourceName, '[') !== false) {
+        if (\str_starts_with($resourceName, 'string:') || \str_contains($resourceName, '[')) {
             return $resourceName;
         }
-        if (\mb_strpos($resourceName, 'file:') === 0) {
+        if (\str_starts_with($resourceName, 'file:')) {
             $resourceName = \str_replace('file:', '', $resourceName);
             $transform    = true;
+        }
+        $mapped = $this->mapping[$resourceName] ?? null;
+        if ($mapped !== null) {
+            return $mapped;
         }
         $resource_custom_name = $this->getCustomFile($resourceName);
         $resource_cfb_name    = $resource_custom_name;
@@ -392,7 +399,7 @@ class JTLSmarty extends BC
             if ($resourceName === $resource_cfb_name) {
                 $extends = [];
                 foreach ($this->getTemplateDir() as $module => $templateDir) {
-                    if (\mb_strpos($module, 'plugin_') === 0) {
+                    if (\str_starts_with($module, 'plugin_')) {
                         $pluginID    = \mb_substr($module, 7);
                         $templateVar = 'oPlugin_' . $pluginID;
                         if ($this->getTemplateVars($templateVar) === null) {
@@ -413,8 +420,10 @@ class JTLSmarty extends BC
                 }
             }
         }
+        $res                          = $transform ? ('file:' . $resource_cfb_name) : $resource_cfb_name;
+        $this->mapping[$resourceName] = $res;
 
-        return $transform ? ('file:' . $resource_cfb_name) : $resource_cfb_name;
+        return $res;
     }
 
     /**

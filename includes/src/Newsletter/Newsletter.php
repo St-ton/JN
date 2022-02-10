@@ -358,15 +358,13 @@ class Newsletter
                 return "'" . $e . "'";
             }, $res);
             if (\count($res) > 0) {
-                $artNoData = $this->db->getObjects(
+                $res = $this->db->getInts(
                     'SELECT kArtikel
                         FROM tartikel
                         WHERE cArtNr IN (' . \implode(',', $res) . ')
-                            AND kEigenschaftKombi = 0'
+                            AND kEigenschaftKombi = 0',
+                    'kArtikel'
                 );
-                $res       = \array_map(static function ($e) {
-                    return $e->kArtikel;
-                }, $artNoData);
             }
         } else {
             $res = \array_map('\intval', $res);
@@ -392,6 +390,7 @@ class Newsletter
         $products       = [];
         $shopURL        = Shop::getURL() . '/';
         $imageBaseURL   = Shop::getImageBaseURL();
+        $db             = Shop::Container()->getDB();
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($productIDs as $id) {
             $id = (int)$id;
@@ -399,7 +398,7 @@ class Newsletter
                 continue;
             }
             Frontend::getCustomerGroup()->setMayViewPrices(1);
-            $product = new Artikel();
+            $product = new Artikel($db);
             $product->fuelleArtikel($id, $defaultOptions, $customerGroupID, $langID);
             if (!($product->kArtikel > 0)) {
                 Shop::Container()->getLogService()->notice(
@@ -450,7 +449,7 @@ class Newsletter
             }
             $manufacturer = new Hersteller($id, $langID);
             if (\mb_strpos($manufacturer->cURL, $shopURL) === false) {
-                $manufacturer->cURL = $manufacturer->cURL = $shopURL . $manufacturer->cURL;
+                $manufacturer->cURL = $shopURL . $manufacturer->cURL;
             }
             if (isset($campaign->cParameter) && \mb_strlen($campaign->cParameter) > 0) {
                 $sep                 = \mb_strpos($manufacturer->cURL, '.php') !== false ? '&' : '?';

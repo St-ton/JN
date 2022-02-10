@@ -1747,10 +1747,29 @@ const HOOK_SITEMAP_EXPORT_INIT = 286;
 /**
  * @since 5.0.0
  * @file includes/src/Mail/Mailer.php
- * @param \JTL\Mail\Mailer             mailer
+ * @param \JTL\Mail\Mailer mailer
  * @param \JTL\Mail\Mail\MailInterface mail
  */
 const HOOK_MAIL_PRERENDER = 290;
+
+/**
+ * @param \JTL\Mail\Mailer mailer
+ * @param \JTL\Mail\Mail\MailInterface mail
+ * @param \PHPMailer\PHPMailer\PHPMailer phpmailer
+ * @since 5.1.2
+ * @file includes/src/Mail/Mailer.php
+ */
+const HOOK_MAILER_PRE_SEND = 291;
+
+/**
+ * @param \JTL\Mail\Mailer mailer
+ * @param \JTL\Mail\Mail\MailInterface mail
+ * @param \PHPMailer\PHPMailer\PHPMailer phpmailer
+ * @param bool status
+ * @since 5.1.2
+ * @file includes/src/Mail/Mailer.php
+ */
+const HOOK_MAILER_POST_SEND = 292;
 
 /**
  * @since 5.0.0
@@ -1880,7 +1899,33 @@ const HOOK_BESTELLUNG_SETZEGUTHABEN = 335;
 
 /**
  * @since 5.2.0
- * @param JTL\Template\TemplateServiceInterface $service
- * @param array $arguments
+ * @param JTL\Export\Product        $product
+ * @param JTL\Export\FormatExporter $exporter
+ * @param int                       $exportID
+ */
+const HOOK_EXPORT_PRE_RENDER = 340;
+
+/**
+ * @since 5.2.0
+ * @param JTL\Export\FormatExporter $exporter
+ * @param int                       $exportID
+ * @param int                       $max
+ * @param bool                      $isAsync
+ * @param bool                      $isCron
+ */
+const HOOK_EXPORT_START = 341;
+
+/**
+ * @since 5.2.0
+ * @param JTL\Export\FormatExporter $exporter
+ * @param int                       $exportID
+ * @param JTL\Export\Model          $model
+ */
+const HOOK_EXPORT_FACTORY_GET_EXPORTER = 342;
+
+/**
+ * @since 5.2.0
+ * @param JTL\Template\TemplateServiceInterface service
+ * @param array arguments
  */
 const HOOK_TPL_LOAD_PRE = 350;

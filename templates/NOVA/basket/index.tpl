@@ -49,7 +49,7 @@
                                         {block name='basket-index-freegifts-content'}
                                             {$selectedFreegift=0}
                                             {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
-                                                {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK}
+                                                {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK}
                                                     {$selectedFreegift=$oPosition->Artikel->kArtikel}
                                                 {/if}
                                             {/foreach}

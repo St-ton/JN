@@ -1010,6 +1010,12 @@ msgstr "Show dimensions"
 msgid "artikeldetails_abmessungen_anzeigen_desc"
 msgstr "Specify whether to display the dimensions (length x width x height) defined in JTL-Wawi on the item detail page."
 
+msgid "artikeldetails_inhalt_anzeigen_name"
+msgstr "Show content"
+
+msgid "artikeldetails_inhalt_anzeigen_desc"
+msgstr "Specify whether to display the content defined in JTL-Wawi on the item detail page."
+
 msgid "artikeldetails_attribute_anhaengen_name"
 msgstr "Add item attributes to description"
 
@@ -1248,7 +1254,7 @@ msgid "warenkorb_versandermittlung_anzeigen_name"
 msgstr "Show shipping cost determination"
 
 msgid "warenkorb_versandermittlung_anzeigen_desc"
-msgstr "Specify whether to display the shipping cost determination on the special page \"Shipments\"."
+msgstr "Specify whether to display the shipping cost determination on the special page \"Basket\"."
 
 msgid "warenkorb_kupon_anzeigen_name"
 msgstr "Prompt coupons in basket"
@@ -1339,6 +1345,12 @@ msgstr "Show item attributes"
 
 msgid "bestellvorgang_artikelattribute_desc"
 msgstr ""
+
+msgid "bestellvorgang_partlist_name"
+msgstr "Show line items"
+
+msgid "bestellvorgang_partlist_desc"
+msgstr "Show line items in cart and chekout?"
 
 msgid "bestellvorgang_artikelkurzbeschreibung_name"
 msgstr "Show unique brief item description"
@@ -3034,3 +3046,9 @@ msgstr "Show cookie banner"
 
 msgid "consent_manager_show_banner_desc"
 msgstr "Specify when visitors of your online shop will see the banner for giving or denying global consent."
+
+msgid "forgot_password_captcha_name"
+msgstr "Enable spam protection"
+
+msgid "forgot_password_captcha_desc"
+msgstr "Specify whether to enable the spam protection for the fogot password form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."

@@ -62,15 +62,16 @@ class MailTemplates extends AbstractItem
             $first                  = true;
             $prevTemplateID         = 0;
             if ($this->oldPlugin !== null) {
-                $prevTemplateID = (int)($this->db->getSingleObject(
+                $prevTemplateID = $this->db->getSingleInt(
                     'SELECT kEmailvorlage
                         FROM temailvorlage
                         WHERE kPlugin = :pid AND cModulId = :mid',
+                    'kEmailvorlage',
                     [
                         'pid' => $this->oldPlugin->getID(),
                         'mid' => $mailTpl->cModulId
                     ],
-                )->kEmailvorlage ?? 0);
+                );
             }
             foreach ($template['TemplateLanguage'] as $l => $localized) {
                 $l = (string)$l;
@@ -98,7 +99,7 @@ class MailTemplates extends AbstractItem
                     continue;
                 }
                 $addedLanguages[] = $localizedTpl->kSprache;
-                if ($this->oldPlugin === null || $prevTemplateID === 0) {
+                if ($this->oldPlugin === null || $prevTemplateID < 1) {
                     $this->db->insert('temailvorlagesprache', $localizedTpl);
                 }
                 $this->db->insert('temailvorlagespracheoriginal', $localizedTpl);

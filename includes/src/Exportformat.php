@@ -1606,16 +1606,17 @@ class Exportformat
         ];
 
         $this->initSession()->initSmarty();
-        $product     = null;
-        $productData = $this->db->getSingleObject(
+        $product   = null;
+        $productID = $this->db->getSingleInt(
             "SELECT kArtikel 
                 FROM tartikel 
                 WHERE kVaterArtikel = 0 
-                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1"
+                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
+            'kArtikel'
         );
-        if ($productData !== null && $productData->kArtikel > 0) {
+        if ($productID > 0) {
             $product = new Artikel($this->db);
-            $product->fuelleArtikel($productData->kArtikel, Artikel::getExportOptions());
+            $product->fuelleArtikel($productID, Artikel::getExportOptions());
             $product->cDeeplink             = '';
             $product->Artikelbild           = '';
             $product->Lieferbar             = '';

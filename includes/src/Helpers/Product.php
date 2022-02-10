@@ -119,7 +119,7 @@ class Product
                     $attributes[]      = $i;
                     $attributeValues[] = (int)$kVariationKombi;
                 }
-                $product = Shop::Container()->getDB()->getSingleObject(
+                $product = Shop::Container()->getDB()->getSingleInt(
                     'SELECT tartikel.kArtikel
                         FROM teigenschaftkombiwert
                         JOIN tartikel
@@ -133,10 +133,11 @@ class Product
                             AND tartikel.kVaterArtikel = :pid
                         GROUP BY tartikel.kArtikel
                         HAVING COUNT(*) = ' . \count($combinations),
+                    'kArtikel',
                     ['cgid' => $customerGroupID, 'pid' => $productID]
                 );
-                if ($product !== null && $product->kArtikel > 0) {
-                    return (int)$product->kArtikel;
+                if ($product > 0) {
+                    return $product;
                 }
             }
             if (!isset($_SESSION['variBoxAnzahl_arr'])) {
@@ -1422,7 +1423,7 @@ class Product
         // Ist der Besucher nicht von der Artikelübersicht gekommen?
         if ($categoryID > 0 && (!isset($nav->vorherigerArtikel) && !isset($nav->naechsterArtikel))) {
             $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $prev        = $db->getSingleObject(
+            $prev        = $db->getSingleInt(
                 'SELECT tartikel.kArtikel
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
@@ -1435,9 +1436,10 @@ class Product
                         AND tartikel.kArtikel < :pid ' . $stockFilter . '
                     ORDER BY tartikel.kArtikel DESC
                     LIMIT 1',
+                'kArtikel',
                 ['cgid' => $customerGroupID, 'pid' => $productID, 'cid' => $categoryID]
             );
-            $next        = $db->getSingleObject(
+            $next        = $db->getSingleInt(
                 'SELECT tartikel.kArtikel
                     FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
@@ -1450,16 +1452,17 @@ class Product
                         AND tartikel.kArtikel > :pid ' . $stockFilter . '
                     ORDER BY tartikel.kArtikel
                     LIMIT 1',
+                'kArtikel',
                 ['cgid' => $customerGroupID, 'pid' => $productID, 'cid' => $categoryID]
             );
 
-            if ($prev !== null && !empty($prev->kArtikel)) {
+            if ($prev > 0) {
                 $nav->vorherigerArtikel = (new Artikel($db))
-                    ->fuelleArtikel((int)$prev->kArtikel, Artikel::getDefaultOptions(), $customerGroupID);
+                    ->fuelleArtikel($prev, Artikel::getDefaultOptions(), $customerGroupID);
             }
-            if ($next !== null && !empty($next->kArtikel)) {
+            if ($next > 0) {
                 $nav->naechsterArtikel = (new Artikel($db))
-                    ->fuelleArtikel((int)$next->kArtikel, Artikel::getDefaultOptions(), $customerGroupID);
+                    ->fuelleArtikel($next, Artikel::getDefaultOptions(), $customerGroupID);
             }
         }
 
@@ -2145,12 +2148,13 @@ class Product
             $db = $db ?? Shop::Container()->getDB();
             Shop::set(
                 $cacheID,
-                $db->getSingleObject(
+                $db->getSingleInt(
                     'SELECT COUNT(*) AS cnt 
                         FROM tartikelsichtbarkeit
                         WHERE kKundengruppe = :cgid',
+                    'cnt',
                     ['cgid' => $customerGroupID]
-                )->cnt > 0
+                ) > 0
             );
         }
         if (Shop::get($cacheID) === false) {

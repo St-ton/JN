@@ -51,12 +51,13 @@ abstract class BaseController
     public function updateAverage(int $productID, string $activate): bool
     {
         $sql = $activate === 'Y' ? ' AND nAktiv = 1' : '';
-        $cnt = (int)$this->db->getSingleObject(
-            'SELECT COUNT(*) AS nAnzahl
+        $cnt = $this->db->getSingleInt(
+            'SELECT COUNT(*) AS cnt
                 FROM tbewertung
                 WHERE kArtikel = :pid' . $sql,
+            'cnt',
             ['pid' => $productID]
-        )->nAnzahl;
+        );
         if ($cnt === 1) {
             $sql = '';
         } elseif ($cnt === 0) {

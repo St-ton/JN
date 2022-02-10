@@ -303,7 +303,8 @@ class Location
         $locationSQL = $groupID > 0
             ? ' AND o.kAuswahlAssistentGruppe != ' . $groupID
             : '';
-        $item        = $this->db->getSingleObject(
+
+        return $this->db->getSingleInt(
             'SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort AS o
                 JOIN tauswahlassistentgruppe AS g
@@ -311,14 +312,13 @@ class Location
                     AND g.kSprache = :langID
                 WHERE o.cKey = :keyID' . $locationSQL . '
                     AND o.kKey = :catID',
+            'kAuswahlAssistentOrt',
             [
                 'keyID'  => \AUSWAHLASSISTENT_ORT_KATEGORIE,
                 'catID'  => $categoryID,
                 'langID' => $languageID
             ]
-        );
-
-        return ($item->kAuswahlAssistentOrt ?? 0) > 0;
+        ) > 0;
     }
 
     /**
@@ -335,7 +335,8 @@ class Location
         $condSQL = $groupID > 0
             ? ' AND o.kAuswahlAssistentGruppe != ' . $groupID
             : '';
-        $data    = $this->db->getSingleObject(
+
+        return $this->db->getSingleInt(
             'SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort AS o
                 JOIN tauswahlassistentgruppe AS g
@@ -343,14 +344,13 @@ class Location
                     AND g.kSprache = :langID
                 WHERE o.cKey = :keyID' . $condSQL . '
                     AND o.kKey = :linkID',
+            'kAuswahlAssistentOrt',
             [
                 'langID' => $languageID,
                 'keyID'  => \AUSWAHLASSISTENT_ORT_LINK,
                 'linkID' => $linkID
             ]
-        );
-
-        return ($data->kAuswahlAssistentOrt ?? 0) > 0;
+        ) > 0;
     }
 
     /**
@@ -366,7 +366,8 @@ class Location
         $locationSQL = $groupID > 0
             ? ' AND o.kAuswahlAssistentGruppe != ' . $groupID
             : '';
-        $item        = $this->db->getSingleObject(
+
+        return $this->db->getSingleInt(
             'SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort AS o
                 JOIN tauswahlassistentgruppe AS g
@@ -374,10 +375,9 @@ class Location
                     AND g.kSprache = :langID
                 WHERE o.cKey = :keyID' . $locationSQL . '
                     AND o.kKey = 1',
+            'kAuswahlAssistentOrt',
             ['langID' => $languageID, 'keyID' => \AUSWAHLASSISTENT_ORT_STARTSEITE]
-        );
-
-        return ($item->kAuswahlAssistentOrt ?? 0) > 0;
+        ) > 0;
     }
 
     /**

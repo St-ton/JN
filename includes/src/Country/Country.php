@@ -110,12 +110,13 @@ class Country
              ->setNameEN($countryData->cEnglisch)
              ->setPermitRegistration((int)$countryData->bPermitRegistration === 1)
              ->setRequireStateDefinition((int)$countryData->bRequireStateDefinition === 1)
-             ->setShippingAvailable($db->getSingleObject(
+             ->setShippingAvailable($db->getSingleInt(
                  'SELECT COUNT(*) AS cnt 
                     FROM tversandart
                     WHERE cLaender LIKE :iso',
+                 'cnt',
                  ['iso' => '%' . $this->getISO() . '%']
-             )->cnt > 0);
+             ) > 0);
     }
 
     /**

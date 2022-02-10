@@ -256,12 +256,13 @@ class Group implements JsonSerializable
      */
     public function getItemCount(): int
     {
-        return (int)Shop::Container()->getDB()->getSingleObject(
+        return Shop::Container()->getDB()->getSingleInt(
             'SELECT COUNT(*) AS cnt 
                 FROM tkonfigitem 
                 WHERE kKonfiggruppe = :gid',
-            ['gid' => (int)$this->kKonfiggruppe]
-        )->cnt;
+            'cnt',
+            ['gid' => $this->kKonfiggruppe]
+        );
     }
 
     /**

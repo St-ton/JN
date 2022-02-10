@@ -226,13 +226,14 @@ class Search extends AbstractFilter
         }
         // Ist md5(IP) bereits X mal im Cache
         $maxHits       = (int)$this->getConfig('artikeluebersicht')['livesuche_max_ip_count'];
-        $userCacheHits = (int)$this->productFilter->getDB()->getSingleObject(
+        $userCacheHits = $this->productFilter->getDB()->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tsuchanfragencache
                 WHERE kSprache = :lang
                 AND cIP = :ip',
+            'cnt',
             ['lang' => $languageID, 'ip' => Request::getRealIP()]
-        )->cnt;
+        );
         $ipUsed        = $this->productFilter->getDB()->select(
             'tsuchanfragencache',
             'kSprache',

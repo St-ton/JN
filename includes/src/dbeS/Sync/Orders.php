@@ -772,12 +772,13 @@ final class Orders extends AbstractSync
             if ((!$shopOrder->dVersandDatum && $order->dVersandt)
                 || (!$shopOrder->dBezahltDatum && $order->dBezahltDatum)
             ) {
-                $tmp = $this->db->getSingleObject(
+                $tmp = $this->db->getSingleInt(
                     'SELECT kKunde FROM tbestellung WHERE kBestellung = :oid',
+                    'kKunde',
                     ['oid' => $order->kBestellung]
                 );
-                if ($tmp !== null) {
-                    $customer = new Customer((int)$tmp->kKunde);
+                if ($tmp > 0) {
+                    $customer = new Customer($tmp);
                 }
             }
             if ($customer === null) {
@@ -799,14 +800,16 @@ final class Orders extends AbstractSync
      */
     private function deleteOrder(int $orderID): void
     {
-        $customerID = (int)($this->db->getSingleObject(
+        $customerID = $this->db->getSingleInt(
             'SELECT tbestellung.kKunde
                 FROM tbestellung
-                INNER JOIN tkunde ON tbestellung.kKunde = tkunde.kKunde
+                INNER JOIN tkunde 
+                    ON tbestellung.kKunde = tkunde.kKunde
                 WHERE tbestellung.kBestellung = :oid
                     AND tkunde.nRegistriert = 0',
+            'kKunde',
             ['oid' => $orderID]
-        )->kKunde ?? 0);
+        );
         $cartID     = (int)($this->db->select(
             'tbestellung',
             'kBestellung',

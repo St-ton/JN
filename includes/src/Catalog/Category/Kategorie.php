@@ -486,25 +486,26 @@ class Kategorie
         if ($this->kOberKategorie !== null) {
             return $this->kOberKategorie > 0 ? (int)$this->kOberKategorie : false;
         }
-        $data = Shop::Container()->getDB()->getSingleObject(
+        $data = Shop::Container()->getDB()->getSingleInt(
             'SELECT kOberKategorie
                 FROM tkategorie
                 WHERE kOberKategorie > 0
                     AND kKategorie = :cid',
-            ['cid' => (int)$this->kKategorie]
+            'kOberKategorie',
+            ['cid' => $this->kKategorie]
         );
 
-        return $data !== null ? (int)$data->kOberKategorie : false;
+        return $data > 0 ? $data : false;
     }
 
     /**
      * check if category is visible
      *
-     * @param int $categoryId
-     * @param int $customerGroupId
+     * @param int $categoryID
+     * @param int $customerGroupID
      * @return bool
      */
-    public static function isVisible($categoryId, $customerGroupId): bool
+    public static function isVisible(int $categoryID, int $customerGroupID): bool
     {
         if (!Shop::has('checkCategoryVisibility')) {
             Shop::set(
@@ -518,9 +519,9 @@ class Kategorie
         $data = Shop::Container()->getDB()->select(
             'tkategoriesichtbarkeit',
             'kKategorie',
-            (int)$categoryId,
+            $categoryID,
             'kKundengruppe',
-            (int)$customerGroupId
+            $customerGroupID
         );
 
         return empty($data->kKategorie);

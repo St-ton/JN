@@ -1143,7 +1143,8 @@ class Artikel
             $categoryFilter = ' AND tkategorieartikel.kKategorie = :fcid';
             $params['fcid'] = $_SESSION['LetzteKategorie'];
         }
-        $category = $this->getDB()->getSingleObject(
+
+        return \max(0, $this->getDB()->getSingleInt(
             'SELECT tkategorieartikel.kKategorie
                 FROM tkategorieartikel
                 LEFT JOIN tkategoriesichtbarkeit 
@@ -1155,10 +1156,9 @@ class Artikel
                     AND kArtikel = :pid' . $categoryFilter . '
                 ORDER BY tkategorie.nSort
                 LIMIT 1',
+            'kKategorie',
             $params
-        );
-
-        return (int)($category->kKategorie ?? 0);
+        ));
     }
 
     /**
@@ -2367,7 +2367,7 @@ class Artikel
 
         $cntVariationen = $exportWorkaround
             ? 0
-            : (int)$this->getDB()->getSingleObject(
+            : $this->getDB()->getSingleInt(
                 'SELECT COUNT(teigenschaft.kEigenschaft) AS cnt
                     FROM teigenschaft
                     LEFT JOIN teigenschaftsichtbarkeit 
@@ -2376,8 +2376,9 @@ class Artikel
                     WHERE kArtikel = :pid
                         AND teigenschaft.cTyp NOT IN (\'FREIFELD\', \'PFLICHT-FREIFELD\')
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL',
-                ['cgid' => $customerGroupID, 'pid' => (int)$this->kVaterArtikel]
-            )->cnt;
+                'cnt',
+                ['cgid' => $customerGroupID, 'pid' => $this->kVaterArtikel]
+            );
         foreach ($variations as $i => $tmpVariation) {
             if ($lastID !== $tmpVariation->kEigenschaft) {
                 ++$counter;
@@ -4087,9 +4088,9 @@ class Artikel
     private function checkVariationExtraCharge(int $customerGroupID): void
     {
         if ($this->kVaterArtikel === 0 && $this->nIstVater === 1 && \is_object($this->Preise)) {
-            $net          = $this->Preise->fVKNetto ?? 0.0;
-            $specialPrice = $this->getDB()->getSingleObject(
-                'SELECT COUNT(a.kArtikel) AS specialPrices
+            $net   = $this->Preise->fVKNetto ?? 0.0;
+            $count = $this->getDB()->getSingleInt(
+                'SELECT COUNT(a.kArtikel) AS cnt
                     FROM tartikel AS a
                     JOIN tpreis AS p
                         ON p.kArtikel = a.kArtikel
@@ -4103,10 +4104,11 @@ class Artikel
                         AND sp.kKundengruppe = :cgid
                     WHERE a.kVaterArtikel = :pid
                         AND COALESCE(sp.fNettoPreis, d.fVKNetto) - ' . $net . ' > 0.0001',
+                'cnt',
                 ['cgid' => $customerGroupID, 'pid' => (int)$this->kArtikel]
             );
 
-            $this->nVariationsAufpreisVorhanden = (int)($specialPrice->specialPrices ?? 0) > 0 ? 1 : 0;
+            $this->nVariationsAufpreisVorhanden = $count > 0 ? 1 : 0;
         }
     }
 
@@ -4867,17 +4869,17 @@ class Artikel
         }
         $isPartsList = !empty($this->oStueckliste_arr) && !empty($this->kStueckliste);
         if ($isPartsList) {
-            $piecesNotInShop = $this->getDB()->getSingleObject(
-                'SELECT COUNT(tstueckliste.kArtikel) AS nAnzahl
+            $piecesNotInShop = $this->getDB()->getSingleInt(
+                'SELECT COUNT(tstueckliste.kArtikel) AS cnt
                     FROM tstueckliste
                     LEFT JOIN tartikel
                       ON tartikel.kArtikel = tstueckliste.kArtikel
                     WHERE tstueckliste.kStueckliste = :plid
                         AND tartikel.kArtikel IS NULL',
+                'cnt',
                 ['plid' => (int)$this->kStueckliste]
             );
-
-            if ($piecesNotInShop !== null && (int)$piecesNotInShop->nAnzahl > 0) {
+            if ($piecesNotInShop > 0) {
                 // this list has potentially invisible parts and can't calculated correctly
                 // handle this parts list as an normal product
                 $isPartsList = false;
@@ -5279,12 +5281,13 @@ class Artikel
         if (!Shop::has($cacheID)) {
             Shop::set(
                 $cacheID,
-                Shop::Container()->getDB()->getSingleObject(
+                Shop::Container()->getDB()->getSingleInt(
                     'SELECT COUNT(kArtikel) AS cnt
                         FROM tartikelkategorierabatt
                         WHERE kKundengruppe = :cgid',
+                    'cnt',
                     ['cgid' => $customerGroupID]
-                )->cnt > 0
+                ) > 0
             );
         }
         // Existiert für diese Kundengruppe ein Kategorierabatt?

@@ -374,14 +374,15 @@ class ComparisonList
             return;
         }
         $db   = Shop::Container()->getDB();
-        $data = $db->getSingleObject(
-            'SELECT COUNT(kVergleichsliste) AS nVergleiche
+        $data = $db->getSingleInt(
+            'SELECT COUNT(kVergleichsliste) AS cnt
                 FROM tvergleichsliste
                 WHERE cIP = :ip
                     AND dDate > DATE_SUB(NOW(),INTERVAL 1 DAY)',
+            'cnt',
             ['ip' => Request::getRealIP()]
         );
-        if ($data !== null && $data->nVergleiche < 3) {
+        if ($data < 3) {
             $ins        = new stdClass();
             $ins->cIP   = Request::getRealIP();
             $ins->dDate = \date('Y-m-d H:i:s');

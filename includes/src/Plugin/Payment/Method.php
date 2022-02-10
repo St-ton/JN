@@ -373,13 +373,14 @@ class Method implements MethodInterface
     public function getCustomerOrderCount(int $customerID): int
     {
         if ($customerID > 0) {
-            return (int)$this->db->getSingleObject(
+            return $this->db->getSingleInt(
                 "SELECT COUNT(*) AS cnt
                     FROM tbestellung
                     WHERE (cStatus = '2' || cStatus = '3' || cStatus = '4')
                         AND kKunde = :cid",
+                'cnt',
                 ['cid' => $customerID]
-            )->cnt;
+            );
         }
 
         return 0;
@@ -424,17 +425,18 @@ class Method implements MethodInterface
 
         if ($this->getSetting('min_bestellungen') > 0) {
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
-                $count = (int)$this->db->getSingleObject(
+                $count = $this->db->getSingleInt(
                     'SELECT COUNT(*) AS cnt
                         FROM tbestellung
                         WHERE kKunde = :cid
                         AND (cStatus = :stp OR cStatus = :sts)',
+                    'cnt',
                     [
                         'cid' => (int)$customer->kKunde,
                         'stp' => \BESTELLUNG_STATUS_BEZAHLT,
                         'sts' => \BESTELLUNG_STATUS_VERSANDT
                     ]
-                )->cnt;
+                );
                 if ($count < $this->getSetting('min_bestellungen')) {
                     ZahlungsLog::add(
                         $this->moduleID,

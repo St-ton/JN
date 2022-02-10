@@ -1822,19 +1822,20 @@ class CartHelper
         // Gesamtsumme Warenkorb < Gratisgeschenk && Gratisgeschenk in den Pos?
         if ($freeGiftID > 0) {
             // Prüfen, ob der Artikel wirklich ein Gratis Geschenk ist
-            $gift = Shop::Container()->getDB()->getSingleObject(
+            $gift = Shop::Container()->getDB()->getSingleInt(
                 'SELECT kArtikel
                     FROM tartikelattribut
                     WHERE kArtikel = :pid
                         AND cName = :atr
                         AND CAST(cWert AS DECIMAL) <= :sum',
+                'kArtikel',
                 [
                     'pid' => $freeGiftID,
                     'atr' => \FKT_ATTRIBUT_GRATISGESCHENK,
                     'sum' => $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
                 ]
             );
-            if ($gift === null || empty($gift->kArtikel)) {
+            if ($gift < 1) {
                 $cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_GRATISGESCHENK);
             }
         }

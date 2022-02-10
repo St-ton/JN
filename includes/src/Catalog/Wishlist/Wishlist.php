@@ -282,16 +282,17 @@ class Wishlist
     public function entfernePos(int $itemID): self
     {
         $db       = Shop::Container()->getDB();
-        $customer = $db->getSingleObject(
+        $customer = $db->getSingleInt(
             'SELECT twunschliste.kKunde
                 FROM twunschliste
                 JOIN twunschlistepos 
                     ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
                 WHERE twunschlistepos.kWunschlistePos = :wliid',
+            'kKunde',
             ['wliid' => $itemID]
         );
         // Prüfen ob der eingeloggte Kunde auch der Besitzer der zu löschenden WunschlistenPos ist
-        if ($customer !== null && (int)$customer->kKunde === Frontend::getCustomer()->getID()) {
+        if ($customer === Frontend::getCustomer()->getID()) {
             // Alle Eigenschaften löschen
             $db->delete('twunschlisteposeigenschaft', 'kWunschlistePos', $itemID);
             // Die Posiotion mit ID $kWunschlistePos löschen

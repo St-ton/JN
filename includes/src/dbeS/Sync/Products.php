@@ -983,14 +983,15 @@ final class Products extends AbstractSync
             $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             foreach ($categories as $category) {
                 // check if the product was the only one in at least one of these categories
-                $categoryCount = (int)$this->db->getSingleObject(
+                $categoryCount = $this->db->getSingleInt(
                     'SELECT COUNT(tkategorieartikel.kArtikel) AS cnt
                         FROM tkategorieartikel
                         LEFT JOIN tartikel
                             ON tartikel.kArtikel = tkategorieartikel.kArtikel
                         WHERE tkategorieartikel.kKategorie = :cid ' . $stockFilter,
+                    'cnt',
                     ['cid' => (int)$category->kKategorie]
-                )->cnt;
+                );
                 if ($categoryCount <= 1) {
                     // the category only had this product in it - flush cache
                     $this->flushCategoryTreeCache();

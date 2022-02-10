@@ -215,7 +215,7 @@ class Category
         $showCategoryImages = self::$config['template']['megamenu']['show_category_images'] ?? 'N';
         $extended           = !empty($stockFilter);
         $isDefaultLang      = LanguageHelper::isDefaultLanguageActive();
-        $categoryCount      = (int)self::$db->getSingleObject('SELECT COUNT(*) AS cnt FROM tkategorie')->cnt;
+        $categoryCount      = self::$db->getSingleInt('SELECT COUNT(*) AS cnt FROM tkategorie', 'cnt');
         self::$limitReached = $categoryCount >= \CATEGORY_FULL_LOAD_LIMIT;
         self::$depth        = self::$limitReached ? \CATEGORY_FULL_LOAD_MAX_LEVEL : -1;
         $descriptionSelect  = ", '' AS cBeschreibung";

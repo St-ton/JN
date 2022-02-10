@@ -43,7 +43,7 @@ class PageDB
      */
     public function getPageCount(): int
     {
-        return (int)$this->shopDB->getSingleObject('SELECT COUNT(DISTINCT cPageId) AS count FROM topcpage')->count;
+        return $this->shopDB->getSingleInt('SELECT COUNT(DISTINCT cPageId) AS cnt FROM topcpage', 'cnt');
     }
 
     /**
@@ -69,10 +69,11 @@ class PageDB
      */
     public function getDraftCount(string $id): int
     {
-        return (int)$this->shopDB->getSingleObject(
-            'SELECT COUNT(kPage) AS count FROM topcpage WHERE cPageId = :id',
+        return $this->shopDB->getSingleInt(
+            'SELECT COUNT(kPage) AS cnt FROM topcpage WHERE cPageId = :id',
+            'cnt',
             ['id' => $id]
-        )->count;
+        );
     }
 
     /**

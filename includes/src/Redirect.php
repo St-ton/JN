@@ -311,11 +311,12 @@ class Redirect
      */
     public static function getRedirectCount(string $whereSQL = ''): int
     {
-        return (int)Shop::Container()->getDB()->getSingleObject(
+        return Shop::Container()->getDB()->getSingleInt(
             'SELECT COUNT(kRedirect) AS cnt
                 FROM tredirect' .
-            ($whereSQL !== '' ? ' WHERE ' . $whereSQL : '')
-        )->cnt;
+            ($whereSQL !== '' ? ' WHERE ' . $whereSQL : ''),
+            'cnt'
+        );
     }
 
     /**
@@ -343,10 +344,11 @@ class Redirect
      */
     public static function getTotalRedirectCount(): int
     {
-        return (int)Shop::Container()->getDB()->getSingleObject(
+        return Shop::Container()->getDB()->getSingleInt(
             'SELECT COUNT(kRedirect) AS cnt
-                FROM tredirect'
-        )->cnt;
+                FROM tredirect',
+            'cnt'
+        );
     }
 
     /**
@@ -520,7 +522,7 @@ class Redirect
     public function getCount(int $redirectedURLs, ?string $query): int
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        $qry  = 'SELECT COUNT(*) AS nCount FROM tredirect ';
+        $qry  = 'SELECT COUNT(*) AS cnt FROM tredirect ';
         $prep = [];
         if ($redirectedURLs === 1 || !empty($query)) {
             $qry .= 'WHERE ';
@@ -536,6 +538,6 @@ class Redirect
             $prep = ['search' => '%' . $query . '%'];
         }
 
-        return (int)Shop::Container()->getDB()->getSingleObject($qry, $prep)->nCount;
+        return Shop::Container()->getDB()->getSingleInt($qry, 'cnt', $prep);
     }
 }

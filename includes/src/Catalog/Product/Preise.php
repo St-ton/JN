@@ -370,13 +370,14 @@ class Preise
             return false;
         }
 
-        return Shop::Container()->getDB()->getSingleObject(
+        return Shop::Container()->getDB()->getSingleInt(
             'SELECT COUNT(kPreis) AS cnt 
                 FROM tpreis
                 WHERE kKunde = :cid 
                   AND (kArtikel = :pid OR kArtikel IN (SELECT kArtikel FROM tartikel WHERE kVaterArtikel = :pid))',
+            'cnt',
             ['cid' => $customerID, 'pid' => $productID]
-        )->cnt > 0;
+        ) > 0;
     }
 
     /**
@@ -390,19 +391,17 @@ class Preise
         }
         $cacheID = 'custprice_' . $customerID;
         if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $data = Shop::Container()->getDB()->getSingleObject(
-                'SELECT COUNT(kPreis) AS nAnzahl 
+            $data = Shop::Container()->getDB()->getSingleInt(
+                'SELECT COUNT(kPreis) AS cnt 
                     FROM tpreis
                     WHERE kKunde = :cid',
+                'cnt',
                 ['cid' => $customerID]
             );
-            if (\is_object($data)) {
-                $cacheTags = [\CACHING_GROUP_ARTICLE];
-                Shop::Container()->getCache()->set($cacheID, $data, $cacheTags);
-            }
+            Shop::Container()->getCache()->set($cacheID, $data, [\CACHING_GROUP_ARTICLE]);
         }
 
-        return $data !== null && $data->nAnzahl > 0;
+        return $data > 0;
     }
 
     /**

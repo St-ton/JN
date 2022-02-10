@@ -497,7 +497,7 @@ class Bestellung
         // Hole Netto- oder Bruttoeinstellung der Kundengruppe
         $nNettoPreis = 0;
         if ($this->kBestellung > 0) {
-            $netOrderData = $db->getSingleObject(
+            $netOrderData = $db->getSingleInt(
                 'SELECT tkundengruppe.nNettoPreise
                     FROM tkundengruppe
                     JOIN tbestellung 
@@ -505,9 +505,10 @@ class Bestellung
                     JOIN tkunde 
                         ON tkunde.kKunde = tbestellung.kKunde
                     WHERE tkunde.kKundengruppe = tkundengruppe.kKundengruppe',
+                'nNettoPreise',
                 ['oid' => (int)$this->kBestellung]
             );
-            if ($netOrderData !== null && $netOrderData->nNettoPreise > 0) {
+            if ($netOrderData > 0) {
                 $nNettoPreis = 1;
             }
         }
@@ -1000,17 +1001,16 @@ class Bestellung
      */
     public static function getProductAmount(int $orderID, int $productID): int
     {
-        $data = Shop::Container()->getDB()->getSingleObject(
-            'SELECT twarenkorbpos.nAnzahl
+        return \max(0, Shop::Container()->getDB()->getSingleInt(
+            'SELECT twarenkorbpos.nAnzahl AS cnt
                 FROM tbestellung
                 JOIN twarenkorbpos
                     ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                 WHERE tbestellung.kBestellung = :oid
                     AND twarenkorbpos.kArtikel = :pid',
+            'cnt',
             ['oid' => $orderID, 'pid' => $productID]
-        );
-
-        return (int)($data->nAnzahl ?? 0);
+        ));
     }
 
     /**

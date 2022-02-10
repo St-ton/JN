@@ -1011,14 +1011,15 @@ function plausiNeukundenKupon()
         }
         // not for already registered customers with order(s)
         if ($customer->getID() > 0) {
-            $order = Shop::Container()->getDB()->getSingleObject(
+            $orderID = Shop::Container()->getDB()->getSingleInt(
                 'SELECT kBestellung
                     FROM tbestellung
                     WHERE kKunde = :customerID
                     LIMIT 1',
+                'kBestellung',
                 ['customerID' => $customer->getID()]
             );
-            if ($order !== null) {
+            if ($orderID > 0) {
                 return;
             }
         }
@@ -1767,21 +1768,22 @@ function pruefeZahlungsartMinBestellungen(int $minOrders): bool
 
         return false;
     }
-    $count = Shop::Container()->getDB()->getSingleObject(
-        'SELECT COUNT(*) AS anz
+    $count = Shop::Container()->getDB()->getSingleInt(
+        'SELECT COUNT(*) AS cnt
             FROM tbestellung
             WHERE kKunde = :cid
                 AND (cStatus = :s1 OR cStatus = :s2)',
+        'cnt',
         [
             'cid' => Frontend::getCustomer()->getID(),
             's1'  => BESTELLUNG_STATUS_BEZAHLT,
             's2'  => BESTELLUNG_STATUS_VERSANDT
         ]
     );
-    if ($count !== null && $count->anz < $minOrders) {
+    if ($count < $minOrders) {
         Shop::Container()->getLogService()->debug(
             'pruefeZahlungsartMinBestellungen Bestellanzahl zu niedrig: Anzahl '
-            . (int)$count->anz . ' < ' . $minOrders
+            . $count . ' < ' . $minOrders
         );
 
         return false;
@@ -2438,16 +2440,18 @@ function warenkorbKuponFaehigKategorien($coupon, array $items): bool
     if (count($products) === 0) {
         return false;
     }
+    $couponCatIDs = array_map('\intval', explode(';', trim($coupon->cKategorien, ';')));
     // check if at least one product is in at least one category valid for this coupon
-    $category = Shop::Container()->getDB()->getSingleObject(
+    $categoryID = Shop::Container()->getDB()->getSingleInt(
         'SELECT kKategorie
             FROM tkategorieartikel
               WHERE kArtikel IN (' . implode(',', $products) . ')
-                AND kKategorie IN (' . str_replace(';', ',', trim($coupon->cKategorien, ';')) . ')
-                LIMIT 1'
+                AND kKategorie IN (' . implode(',', $couponCatIDs) . ')
+                LIMIT 1',
+        'kKategorie'
     );
 
-    return $category !== null;
+    return $categoryID > 0;
 }
 
 /**
@@ -2591,12 +2595,13 @@ function freeGiftStillValid(Cart $cart = null): bool
             continue;
         }
         // Prüfen ob der Artikel wirklich ein Gratisgeschenk ist und ob die Mindestsumme erreicht wird
-        $gift = Shop::Container()->getDB()->getSingleObject(
+        $gift = Shop::Container()->getDB()->getSingleInt(
             'SELECT kArtikel
                 FROM tartikelattribut
                 WHERE kArtikel = :pid
                    AND cName = :attr
                    AND CAST(cWert AS DECIMAL) <= :sum',
+            'kArtikel',
             [
                 'pid'  => $item->kArtikel,
                 'attr' => FKT_ATTRIBUT_GRATISGESCHENK,
@@ -2604,7 +2609,7 @@ function freeGiftStillValid(Cart $cart = null): bool
             ]
         );
 
-        if ($gift === null || empty($gift->kArtikel)) {
+        if ($gift < 1) {
             $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK);
             $valid = false;
         }
@@ -2627,20 +2632,19 @@ function valid_plzort(string $poCode, string $city, string $country): bool
     if (!in_array(mb_convert_case($country, MB_CASE_UPPER), $supportedCountryCodes, true)) {
         return true;
     }
-    $obj = Shop::Container()->getDB()->getSingleObject(
+    return Shop::Container()->getDB()->getSingleInt(
         'SELECT kPLZ
             FROM tplz
             WHERE cPLZ = :plz
                 AND INSTR(cOrt COLLATE utf8_german2_ci, :ort)
                 AND cLandISO = :land',
+        'kPLZ',
         [
             'plz'  => $poCode,
             'ort'  => $city,
             'land' => $country
         ]
-    );
-
-    return $obj !== null && $obj->kPLZ > 0;
+    ) > 0;
 }
 
 /**

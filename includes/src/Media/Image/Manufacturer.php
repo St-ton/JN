@@ -131,11 +131,12 @@ class Manufacturer extends AbstractImage
      */
     public function getTotalImageCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(kHersteller) AS cnt
                 FROM thersteller
-                WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\''
-        )->cnt;
+                WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\'',
+            'cnt'
+        );
     }
 
     /**

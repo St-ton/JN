@@ -1098,10 +1098,7 @@ class Kupon
         $upperString   = $upper ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : null;
         $numbersString = $numbers ? '0123456789' : null;
         $code          = '';
-        $count         = (int)$this->db->getSingleObject(
-            'SELECT COUNT(*) AS cnt 
-                FROM tkupon'
-        )->cnt;
+        $count         = $this->db->getSingleInt('SELECT COUNT(*) AS cnt FROM tkupon', 'cnt');
         while (empty($code) || ($count === 0
                 ? empty($code)
                 : $this->db->select('tkupon', 'cCode', $code))) {
@@ -1308,17 +1305,18 @@ class Kupon
                 $ret['ungueltig'] = 11;
             } elseif (!empty($this->nVerwendungenProKunde) && $this->nVerwendungenProKunde > 0) {
                 //check if max usage of coupon is reached for cutomer
-                $countCouponUsed = $this->db->getSingleObject(
+                $countCouponUsed = $this->db->getSingleInt(
                     'SELECT nVerwendungen
                          FROM tkuponkunde
                          WHERE kKupon = :coupon
                             AND cMail = :email',
+                    'nVerwendungen',
                     [
                         'coupon' => (int)$this->kKupon,
                         'email'  => self::hash($_SESSION['Kunde']->cMail)
                     ]
                 );
-                if ($countCouponUsed !== null && $countCouponUsed->nVerwendungen >= $this->nVerwendungenProKunde) {
+                if ($countCouponUsed >= $this->nVerwendungenProKunde) {
                     $ret['ungueltig'] = 6;
                 }
             }

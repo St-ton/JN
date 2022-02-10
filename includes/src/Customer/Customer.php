@@ -974,23 +974,25 @@ class Customer
         $db               = Shop::Container()->getDB();
         $customerID       = $this->getID();
 
-        $openOrders               = $db->getSingleObject(
+        $openOrders               = $db->getSingleInt(
             'SELECT COUNT(kBestellung) AS orderCount
                 FROM tbestellung
                 WHERE cStatus NOT IN (:orderSent, :orderCanceled)
                     AND kKunde = :customerId',
+            'orderCount',
             [
                 'customerId'    => $customerID,
                 'orderSent'     => \BESTELLUNG_STATUS_VERSANDT,
                 'orderCanceled' => \BESTELLUNG_STATUS_STORNO,
             ]
         );
-        $ordersInCancellationTime = $db->getSingleObject(
+        $ordersInCancellationTime = $db->getSingleInt(
             'SELECT COUNT(kBestellung) AS orderCount
-                    FROM tbestellung
-                    WHERE kKunde = :customerId
-                        AND cStatus = :orderSent
-                        AND DATE(dVersandDatum) > DATE_SUB(NOW(), INTERVAL :cancellationTime DAY)',
+                FROM tbestellung
+                WHERE kKunde = :customerId
+                    AND cStatus = :orderSent
+                    AND DATE(dVersandDatum) > DATE_SUB(NOW(), INTERVAL :cancellationTime DAY)',
+            'orderCount',
             [
                 'customerId'       => $customerID,
                 'orderSent'        => \BESTELLUNG_STATUS_VERSANDT,
@@ -998,10 +1000,10 @@ class Customer
             ]
         );
 
-        if (!empty($openOrders->orderCount) || !empty($ordersInCancellationTime->orderCount)) {
+        if ($openOrders > 0 || $ordersInCancellationTime > 0) {
             return (object)[
-                'openOrders'               => (int)$openOrders->orderCount,
-                'ordersInCancellationTime' => (int)$ordersInCancellationTime->orderCount
+                'openOrders'               => $openOrders,
+                'ordersInCancellationTime' => $ordersInCancellationTime
             ];
         }
 

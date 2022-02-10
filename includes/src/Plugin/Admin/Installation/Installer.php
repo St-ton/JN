@@ -873,19 +873,20 @@ final class Installer
         );
         $updatedMethods    = [];
         foreach ($oldPaymentMethods as $method) {
-            $oldModuleID      = \str_replace(
+            $oldModuleID        = \str_replace(
                 'kPlugin_' . $oldPluginID . '_',
                 'kPlugin\_' . $pluginID . '\_',
                 $method->cModulId
             );
-            $newPaymentMethod = $this->db->getSingleObject(
+            $newPaymentMethodID = $this->db->getSingleInt(
                 'SELECT kZahlungsart
                     FROM tzahlungsart
                     WHERE cModulId LIKE :oldID',
+                'kZahlungsart',
                 ['oldID' => $oldModuleID]
             );
-            $setSQL           = '';
-            if ($newPaymentMethod !== null && isset($method->kZahlungsart, $newPaymentMethod->kZahlungsart)) {
+            $setSQL             = '';
+            if ($newPaymentMethodID > 0 && isset($method->kZahlungsart)) {
                 $this->db->queryPrepared(
                     'INSERT INTO tzahlungsartsprache
                         SELECT :newID, cISOSprache, cName, cGebuehrname, cHinweisText, cHinweisTextShop
@@ -896,7 +897,7 @@ final class Installer
                             cGebuehrname     = told.cGebuehrname,
                             cHinweisText     = told.cHinweisText,
                             cHinweisTextShop = told.cHinweisTextShop',
-                    ['newID' => $newPaymentMethod->kZahlungsart, 'oldID' => $method->kZahlungsart]
+                    ['newID' => $newPaymentMethodID, 'oldID' => $method->kZahlungsart]
                 );
                 $this->db->queryPrepared(
                     'DELETE tzahlungsart, tzahlungsartsprache
@@ -912,9 +913,9 @@ final class Installer
                     'nMailSenden'         => (int)$method->nMailSenden,
                     'nWaehrendBestellung' => (int)$method->nWaehrendBestellung,
                 ];
-                $this->db->update('tzahlungsart', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
+                $this->db->update('tzahlungsart', 'kZahlungsart', $newPaymentMethodID, $upd);
                 $upd = (object)['kZahlungsart' => (int)$method->kZahlungsart];
-                $this->db->update('tzahlungsartsprache', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
+                $this->db->update('tzahlungsartsprache', 'kZahlungsart', $newPaymentMethodID, $upd);
                 $setSQL = ' , kZahlungsart = ' . (int)$method->kZahlungsart;
             }
             $this->db->queryPrepared(

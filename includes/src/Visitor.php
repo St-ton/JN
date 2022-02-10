@@ -3,7 +3,7 @@
 namespace JTL;
 
 use DateTime;
-use JTL\Crawler;
+use JTL\Crawler\Controller;
 use JTL\GeneralDataProtection\IpAnonymizer;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -188,15 +188,16 @@ class Visitor
      */
     public static function refreshCustomerOrderId(int $customerID): int
     {
-        $data = Shop::Container()->getDB()->getSingleObject(
-            'SELECT `kBestellung`
-                FROM `tbestellung`
-                WHERE `kKunde` = :cid
-                ORDER BY `dErstellt` DESC LIMIT 1',
+        $id = Shop::Container()->getDB()->getSingleInt(
+            'SELECT kBestellung
+                FROM tbestellung
+                WHERE kKunde = :cid
+                ORDER BY dErstellt DESC LIMIT 1',
+            'kBestellung',
             ['cid' => $customerID]
         );
 
-        return (int)($data->kBestellung ?? 0);
+        return $id > 0 ? $id : 0;
     }
 
     /**
@@ -377,10 +378,9 @@ class Visitor
      */
     public static function isSpider(string $userAgent): int
     {
-        $controller = new Crawler\Controller(Shop::Container()->getDB(), Shop::Container()->getCache());
-        $bot        = $controller->getByUserAgent($userAgent);
+        $controller = new Controller(Shop::Container()->getDB(), Shop::Container()->getCache());
 
-        return (int)($bot->kBesucherBot ?? 0);
+        return (int)($controller->getByUserAgent($userAgent)->kBesucherBot ?? 0);
     }
 
     /**
@@ -388,7 +388,7 @@ class Visitor
      */
     public static function getSpiders(): array
     {
-        $controller = new Crawler\Controller(Shop::Container()->getDB(), Shop::Container()->getCache());
+        $controller = new Controller(Shop::Container()->getDB(), Shop::Container()->getCache());
 
         return $controller->getAllCrawlers();
     }

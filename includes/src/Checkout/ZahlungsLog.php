@@ -71,12 +71,13 @@ class ZahlungsLog
      */
     public function logCount(): int
     {
-        return (int)Shop::Container()->getDB()->getSingleObject(
+        return Shop::Container()->getDB()->getSingleInt(
             'SELECT COUNT(*) AS cnt 
                 FROM tzahlungslog 
                 WHERE cModulId = :module',
+            'cnt',
             ['module' => $this->cModulId]
-        )->cnt;
+        );
     }
 
     /**
@@ -162,20 +163,22 @@ class ZahlungsLog
     public static function count(string $moduleID, int $level = -1, string $whereSQL = ''): int
     {
         if ($level === -1) {
-            return (int)Shop::Container()->getDB()->getSingleObject(
-                'SELECT COUNT(*) AS count 
+            return Shop::Container()->getDB()->getSingleInt(
+                'SELECT COUNT(*) AS cnt 
                     FROM tzahlungslog 
                     WHERE cModulId = :cModulId ' . ($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
+                'cnt',
                 ['cModulId' => $moduleID]
-            )->count;
+            );
         }
 
-        return (int)Shop::Container()->getDB()->getSingleObject(
-            'SELECT COUNT(*) AS count 
+        return Shop::Container()->getDB()->getSingleInt(
+            'SELECT COUNT(*) AS cnt 
                 FROM tzahlungslog 
                 WHERE cModulId = :cModulId 
                     AND nLevel = :nLevel ' . ($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
+            'cnt',
             ['nLevel' => $level, 'cModulId' => $moduleID]
-        )->count;
+        );
     }
 }

@@ -434,10 +434,11 @@ class CheckBox
      */
     public function getTotalCount(bool $active = false): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
-                FROM tcheckbox' . ($active ? ' WHERE nAktiv = 1' : '')
-        )->cnt;
+                FROM tcheckbox' . ($active ? ' WHERE nAktiv = 1' : ''),
+            'cnt'
+        );
     }
 
     /**

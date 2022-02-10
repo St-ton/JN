@@ -267,15 +267,15 @@ class Form
         if (!$min) {
             return false;
         }
-        $history = Shop::Container()->getDB()->getSingleObject(
+
+        return Shop::Container()->getDB()->getSingleInt(
             'SELECT kKontaktHistory
                 FROM tkontakthistory
                 WHERE cIP = :ip
                     AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
+            'kKontaktHistory',
             ['ip' => Request::getRealIP(), 'min' => $min]
-        );
-
-        return $history !== null && $history->kKontaktHistory > 0;
+        ) > 0;
     }
 
     /**

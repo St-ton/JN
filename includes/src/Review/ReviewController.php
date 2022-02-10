@@ -247,7 +247,8 @@ class ReviewController extends BaseController
         if ($this->config['bewertung']['bewertung_artikel_gekauft'] !== 'Y') {
             return true;
         }
-        $order = $this->db->getSingleObject(
+
+        return $this->db->getSingleInt(
             'SELECT tbestellung.kBestellung
                 FROM tbestellung
                 LEFT JOIN tartikel 
@@ -259,10 +260,9 @@ class ReviewController extends BaseController
                 WHERE tbestellung.kKunde = :cid
                     AND (twarenkorbpos.kArtikel = :aid 
                     OR twarenkorbpos.kArtikel = tartikel.kArtikel)',
+            'kBestellung',
             ['aid' => $productID, 'cid' => $customer->getID()]
-        );
-
-        return $order !== null && $order->kBestellung > 0;
+        ) > 0;
     }
 
     /**

@@ -18,19 +18,18 @@ class ForgotPassword extends AbstractRateLimiter
      */
     public function check(?array $args = null): bool
     {
-        $items = $this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tfloodprotect
                 WHERE cIP = :ip
                     AND cTyp = :tpe
                     AND TIMESTAMPDIFF(MINUTE, dErstellt, NOW()) < :td',
+            'cnt',
             [
                 'ip'  => $this->ip,
                 'tpe' => $this->type,
                 'td'  => $this->getFloodMinutes()
             ]
-        );
-
-        return ($items->cnt ?? 0) <= $this->getLimit();
+        ) <= $this->getLimit();
     }
 }

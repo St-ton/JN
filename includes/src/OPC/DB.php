@@ -203,7 +203,7 @@ class DB
      */
     public function getPortletCount(): int
     {
-        return (int)$this->shopDB->getSingleObject('SELECT COUNT(kPortlet) AS count FROM topcportlet')->count;
+        return $this->shopDB->getSingleInt('SELECT COUNT(kPortlet) AS cnt FROM topcportlet', 'cnt');
     }
 
     /**

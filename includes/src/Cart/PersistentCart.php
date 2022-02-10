@@ -207,16 +207,17 @@ class PersistentCart
      */
     public function entfernePos(int $id): self
     {
-        $customer = $this->db->getSingleObject(
+        $customer = $this->db->getSingleInt(
             'SELECT twarenkorbpers.kKunde
                 FROM twarenkorbpers
                 JOIN twarenkorbperspos 
                     ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
                 WHERE twarenkorbperspos.kWarenkorbPersPos = :kwpp',
+            'kKunde',
             ['kwpp' => $id]
         );
         // Prüfen ob der eingeloggte Kunde auch der Besitzer der zu löschenden WarenkorbPersPos ist
-        if ($customer === null || (int)$customer->kKunde !== Frontend::getCustomer()->getID()) {
+        if ($customer < 0 || $customer !== Frontend::getCustomer()->getID()) {
             return $this;
         }
         // Alle Eigenschaften löschen

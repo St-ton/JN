@@ -224,13 +224,14 @@ final class ReviewAdminController extends BaseController
      */
     private function getInactivePagination(): Pagination
     {
-        $totalCount = (int)$this->db->getSingleObject(
-            'SELECT COUNT(*) AS nAnzahl
+        $totalCount = $this->db->getSingleInt(
+            'SELECT COUNT(*) AS cnt
                 FROM tbewertung
                 WHERE kSprache = :lid
                     AND nAktiv = 0',
+            'cnt',
             ['lid' => $this->languageID]
-        )->nAnzahl;
+        );
 
         return (new Pagination('inactive'))
             ->setItemCount($totalCount)
@@ -242,13 +243,14 @@ final class ReviewAdminController extends BaseController
      */
     private function getActivePagination(): Pagination
     {
-        $activeCount = (int)$this->db->getSingleObject(
-            'SELECT COUNT(*) AS nAnzahl
+        $activeCount = $this->db->getSingleInt(
+            'SELECT COUNT(*) AS cnt
                 FROM tbewertung
                 WHERE kSprache = :lid
                     AND nAktiv = 1',
+            'cnt',
             ['lid' => $this->languageID]
-        )->nAnzahl;
+        );
 
         return (new Pagination('active'))
             ->setItemCount($activeCount)

@@ -90,22 +90,21 @@ class AbstractRateLimiter implements RateLimiterInterface
      */
     public function check(?array $args = null): bool
     {
-        $items = $this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tfloodprotect
                 WHERE cIP = :ip
                     AND reference = :rid
                     AND cType = :tpe
                     AND TIMESTAMPDIFF(MINUTE, dErstellt, NOW()) < :td',
+            'cnt',
             [
                 'ip'  => $this->ip,
                 'rid' => $this->key,
                 'tpe' => $this->type,
                 'td'  => $this->getFloodMinutes()
             ]
-        );
-
-        return ($items->cnt ?? 0) < $this->getLimit();
+        ) < $this->getLimit();
     }
 
     public function cleanup(): void

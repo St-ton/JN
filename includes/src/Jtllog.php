@@ -111,11 +111,12 @@ class Jtllog
         }
         $where = \count($conditions) > 0 ? ' WHERE ' . \implode(' AND ', $conditions) : '';
 
-        return (int)Shop::Container()->getDB()->getSingleObject(
+        return Shop::Container()->getDB()->getSingleInt(
             'SELECT COUNT(*) AS cnt 
                 FROM tjtllog' . $where,
+            'cnt',
             $prep
-        )->cnt;
+        );
     }
 
     /**
@@ -128,11 +129,7 @@ class Jtllog
             'DELETE FROM tjtllog 
                 WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < NOW()'
         );
-        $count = (int)$db->getSingleObject(
-            'SELECT COUNT(*) AS cnt 
-                FROM tjtllog'
-        )->cnt;
-
+        $count = $db->getSingleInt('SELECT COUNT(*) AS cnt FROM tjtllog', 'cnt');
         if ($count > \JTLLOG_MAX_LOGSIZE) {
             $db->query('DELETE FROM tjtllog ORDER BY dErstellt LIMIT ' . ($count - \JTLLOG_MAX_LOGSIZE));
         }

@@ -329,15 +329,16 @@ class Controller
             $checks['cKommentar'] = 2;
         }
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && $newsID > 0) {
-            $commentCount = Shop::Container()->getDB()->getSingleObject(
-                'SELECT COUNT(*) AS nAnzahl
+            $commentCount = Shop::Container()->getDB()->getSingleInt(
+                'SELECT COUNT(*) AS cnt
                     FROM tnewskommentar
                     WHERE kNews = :nid
                         AND kKunde = :cid',
+                'cnt',
                 ['nid' => $newsID, 'cid' => Frontend::getCustomer()->getID()]
             );
 
-            if ((int)($commentCount->nAnzahl ?? 0) > (int)$config['news']['news_kommentare_anzahlprobesucher']
+            if ($commentCount > (int)$config['news']['news_kommentare_anzahlprobesucher']
                 && (int)$config['news']['news_kommentare_anzahlprobesucher'] !== 0
             ) {
                 $checks['nAnzahl'] = 1;

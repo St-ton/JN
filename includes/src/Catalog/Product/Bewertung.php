@@ -235,10 +235,11 @@ class Bewertung
             ['pid' => $productID]
         );
         // Anzahl Bewertungen für aktuelle Sprache
-        $totalLocalized = $db->getSingleObject(
-            'SELECT COUNT(*) AS nAnzahlSprache
+        $this->nAnzahlSprache = $db->getSingleInt(
+            'SELECT COUNT(*) AS cnt
                 FROM tbewertung
                 WHERE kArtikel = :pid' . $langSQL . $activateSQL,
+            'cnt',
             ['pid' => $productID]
         );
         if ($total !== null && (int)$total->fDurchschnitt > 0) {
@@ -251,7 +252,6 @@ class Bewertung
             $total->nAnzahl         = 0;
             $this->oBewertungGesamt = $total;
         }
-        $this->nAnzahlSprache = (int)($totalLocalized->nAnzahlSprache ?? 0);
         foreach ($this->oBewertung_arr as $i => $rating) {
             $this->oBewertung_arr[$i]->nAnzahlHilfreich = $rating->nHilfreich + $rating->nNichtHilfreich;
         }

@@ -153,12 +153,13 @@ class Category extends AbstractImage
      */
     public function getTotalImageCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(tkategoriepict.kKategorie) AS cnt
                 FROM tkategoriepict
                 INNER JOIN tkategorie
-                    ON tkategorie.kKategorie = tkategoriepict.kKategorie'
-        )->cnt;
+                    ON tkategorie.kKategorie = tkategoriepict.kKategorie',
+            'cnt'
+        );
     }
 
     /**

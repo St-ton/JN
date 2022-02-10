@@ -787,15 +787,16 @@ final class Admin
      */
     public function getSubscriberCount(SqlObject $searchSQL): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tnewsletterempfaenger
                 WHERE kSprache = :lid' . $searchSQL->getWhere(),
+            'cnt',
             \array_merge(
                 ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])],
                 $searchSQL->getParams()
             )
-        )->cnt;
+        );
     }
 
     /**

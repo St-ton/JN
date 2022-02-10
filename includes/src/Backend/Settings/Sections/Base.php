@@ -247,15 +247,16 @@ class Base implements SectionInterface
     {
         $data = $this->db->select('teinstellungensektion', 'kEinstellungenSektion', $this->id);
         if ($data !== null) {
-            $this->configCount = (int)$this->db->getSingleObject(
+            $this->configCount = $this->db->getSingleInt(
                 "SELECT COUNT(*) AS cnt
                     FROM teinstellungenconf
                     WHERE kEinstellungenSektion = :sid
                         AND cConf = 'Y'
                         AND nStandardAnzeigen = 1
                         AND nModul = 0",
+                'cnt',
                 ['sid' => $this->id]
-            )->cnt;
+            );
             $this->name        = \__('configsection_' . $this->id);
             $this->menuID      = (int)$data->kAdminmenueGruppe;
             $this->sortID      = (int)$data->nSort;

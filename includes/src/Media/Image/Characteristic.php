@@ -141,11 +141,12 @@ class Characteristic extends AbstractImage
      */
     public function getTotalImageCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(kMerkmal) AS cnt
                 FROM tmerkmal
                 WHERE cBildpfad IS NOT NULL
-                    AND cBildpfad != \'\''
-        )->cnt;
+                    AND cBildpfad != \'\'',
+            'cnt'
+        );
     }
 }

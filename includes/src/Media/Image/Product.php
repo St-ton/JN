@@ -52,12 +52,13 @@ class Product extends AbstractImage
      */
     public function getTotalImageCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(tartikelpict.kArtikel) AS cnt
                 FROM tartikelpict
                 INNER JOIN tartikel
-                    ON tartikelpict.kArtikel = tartikel.kArtikel'
-        )->cnt;
+                    ON tartikelpict.kArtikel = tartikel.kArtikel',
+            'cnt'
+        );
     }
 
     /**

@@ -85,11 +85,12 @@ final class ImageLink extends AbstractSync
             return;
         }
         // is last reference
-        $res = $this->db->getSingleObject(
+        $res = $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt FROM tartikelpict WHERE kBild = :iid',
+            'cnt',
             ['iid' => (int)$image->kBild]
         );
-        if ((int)($res->cnt ?? 0) === 1) {
+        if ($res === 1) {
             $this->db->delete('tbild', 'kBild', (int)$image->kBild);
             $storage = \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $image->cPfad;
             if (\file_exists($storage)) {

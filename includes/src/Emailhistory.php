@@ -174,7 +174,7 @@ class Emailhistory
      */
     public function getCount(): int
     {
-        return (int)$this->db->getSingleObject('SELECT COUNT(*) AS cnt FROM temailhistory')->cnt;
+        return $this->db->getSingleInt('SELECT COUNT(*) AS cnt FROM temailhistory', 'cnt');
     }
 
     /**

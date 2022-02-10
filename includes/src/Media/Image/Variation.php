@@ -126,11 +126,12 @@ class Variation extends AbstractImage
      */
     public function getTotalImageCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(kEigenschaftWertPict) AS cnt
                 FROM teigenschaftwertpict
                 WHERE cPfad IS NOT NULL
-                    AND cPfad != \'\''
-        )->cnt;
+                    AND cPfad != \'\'',
+            'cnt'
+        );
     }
 }

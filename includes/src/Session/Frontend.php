@@ -157,14 +157,15 @@ class Frontend extends AbstractSession
         if (empty($_SESSION['Kunde']->kKunde) || isset($_SESSION['kundendaten_aktualisiert'])) {
             return false;
         }
-        $data = Shop::Container()->getDB()->getSingleObject(
+        $data = Shop::Container()->getDB()->getSingleInt(
             'SELECT kKunde
                 FROM tkunde
                 WHERE kKunde = :cid
                     AND DATE_SUB(NOW(), INTERVAL 3 HOUR) < dVeraendert',
+            'kKunde',
             ['cid' => (int)$_SESSION['Kunde']->kKunde]
         );
-        if ($data !== null && $data->kKunde > 0) {
+        if ($data > 0) {
             Shop::setLanguage(
                 $_SESSION['kSprache'] ?? $_SESSION['Kunde']->kSprache ?? 0,
                 $_SESSION['cISOSprache'] ?? null

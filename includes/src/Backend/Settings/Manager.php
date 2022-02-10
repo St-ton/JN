@@ -234,11 +234,12 @@ class Manager
      */
     public function getAllSettingLogsCount(string $where = ''): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(kEinstellungenLog) AS cnt
                 FROM teinstellungenlog' .
-                ($where !== '' ? ' WHERE ' . $where : '')
-        )->cnt;
+                ($where !== '' ? ' WHERE ' . $where : ''),
+            'cnt'
+        );
     }
 
     /**

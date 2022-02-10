@@ -107,7 +107,7 @@ class WarmCacheCommand extends Command
         $where     = $this->childProducts ? '' : ' WHERE kVaterArtikel = 0';
         $listOpt   = Artikel::getDefaultOptions();
         $detailOpt = Artikel::getDetailOptions();
-        $total     = (int)$this->db->getSingleObject('SELECT COUNT(kArtikel) AS cnt FROM tartikel' . $where)->cnt;
+        $total     = $this->db->getSingleInt('SELECT COUNT(kArtikel) AS cnt FROM tartikel' . $where, 'cnt');
         $bar       = new ProgressBar($this->getIO(), $total);
         $bar->setFormat('cache');
         $bar->setMessage('Warming products');
@@ -175,7 +175,7 @@ class WarmCacheCommand extends Command
             return 0;
         }
         $generated = 0;
-        $total     = (int)$this->db->getSingleObject('SELECT COUNT(kKategorie) AS cnt FROM tkategorie')->cnt;
+        $total     = $this->db->getSingleInt('SELECT COUNT(kKategorie) AS cnt FROM tkategorie', 'cnt');
         $bar       = new ProgressBar($this->getIO(), $total);
         $bar->setFormat('cache');
         $bar->setMessage('Warming categories');
@@ -212,7 +212,7 @@ class WarmCacheCommand extends Command
             return 0;
         }
         $generated = 0;
-        $total     = (int)$this->db->getSingleObject('SELECT COUNT(kHersteller) AS cnt FROM thersteller')->cnt;
+        $total     = $this->db->getSingleInt('SELECT COUNT(kHersteller) AS cnt FROM thersteller', 'cnt');
         $bar       = new ProgressBar($this->getIO(), $total);
         $bar->setFormat('cache');
         $bar->setMessage('Warming manufacturers');
@@ -245,7 +245,7 @@ class WarmCacheCommand extends Command
         if ($this->links === false) {
             return 0;
         }
-        $total = (int)$this->db->getSingleObject('SELECT COUNT(*) AS cnt FROM tlinkgruppe')->cnt + 3;
+        $total = $this->db->getSingleInt('SELECT COUNT(*) AS cnt FROM tlinkgruppe', 'cnt') + 3;
         $bar   = new ProgressBar($this->getIO(), $total);
         $bar->setFormat('cache');
         $bar->setMessage('Warming link groups');

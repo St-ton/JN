@@ -257,16 +257,17 @@ class Newsletter
         $net      = 0;
         $bodyHtml = '';
         if (isset($customer->kKunde) && $customer->kKunde > 0) {
-            $customergGroup = $this->db->getSingleObject(
+            $customergGroup = $this->db->getSingleInt(
                 'SELECT tkundengruppe.nNettoPreise
                     FROM tkunde
                     JOIN tkundengruppe
                         ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
                     WHERE tkunde.kKunde = :cid',
+                'nNettoPreise',
                 ['cid' => (int)$customer->kKunde]
             );
-            if ($customergGroup !== null && isset($customergGroup->nNettoPreise)) {
-                $net = $customergGroup->nNettoPreise;
+            if ($customergGroup > -1) {
+                $net = $customergGroup;
             }
         }
 

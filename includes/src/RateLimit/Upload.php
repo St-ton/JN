@@ -25,12 +25,13 @@ class Upload extends AbstractRateLimiter
      */
     public function check(?array $args = null): bool
     {
-        $items = $this->db->getSingleObject(
+        $items = $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tfloodprotect
                 WHERE cIP = :ip
                     AND cTyp = :tpe
                     AND TIMESTAMPDIFF(MINUTE, dErstellt, NOW()) < :td',
+            'cnt',
             [
                 'ip'  => $this->ip,
                 'tpe' => $this->type,
@@ -38,7 +39,7 @@ class Upload extends AbstractRateLimiter
             ]
         );
 
-        return ($items->cnt ?? 0) <= $this->getLimit();
+        return $items <= $this->getLimit();
     }
 
     /**

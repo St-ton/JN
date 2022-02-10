@@ -768,13 +768,14 @@ class Cart
             && $this->config['kaufabwicklung']['bestellabschluss_spamschutz_nutzen'] === 'Y'
             && ($ip = Request::getRealIP())
         ) {
-            $cnt = (int)Shop::Container()->getDB()->getSingleObject(
+            $cnt = Shop::Container()->getDB()->getSingleInt(
                 'SELECT COUNT(*) AS cnt
                     FROM tbestellung
                     WHERE cIP = :ip
                         AND dErstellt > NOW() - INTERVAL 1 DAY',
+                'cnt',
                 ['ip' => $ip]
-            )->cnt;
+            );
             if ($cnt > 0) {
                 $min = 2 ** $cnt;
                 $min = \min([$min, 1440]);

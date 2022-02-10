@@ -200,15 +200,16 @@ class Statusmail
         $products       = [];
         $customerGroups = $this->db->getObjects('SELECT kKundengruppe, cName FROM tkundengruppe');
         foreach ($customerGroups as $customerGroup) {
-            $productCount           = (int)$this->db->getSingleObject(
+            $productCount           = $this->db->getSingleInt(
                 'SELECT COUNT(*) AS cnt
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL',
+                'cnt',
                 ['cgid' => (int)$customerGroup->kKundengruppe]
-            )->cnt;
+            );
             $product                = new stdClass();
             $product->nAnzahl       = $productCount;
             $product->kKundengruppe = (int)$customerGroup->kKundengruppe;
@@ -225,17 +226,18 @@ class Statusmail
      */
     private function getNewCustomersCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tkunde
                 WHERE dErstellt >= :from
                     AND dErstellt < :to
                     AND nRegistriert = 1',
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**
@@ -243,7 +245,7 @@ class Statusmail
      */
     private function getNewCustomerSalesCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(DISTINCT(tkunde.kKunde)) AS cnt
                 FROM tkunde
                 JOIN tbestellung
@@ -253,11 +255,12 @@ class Statusmail
                     AND tkunde.dErstellt >= :from
                     AND tkunde.dErstellt < :to
                     AND tkunde.nRegistriert = 1',
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**
@@ -265,16 +268,17 @@ class Statusmail
      */
     private function getOrderCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tbestellung
                 WHERE dErstellt >= :from
                     AND dErstellt < :to',
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**
@@ -282,7 +286,7 @@ class Statusmail
      */
     private function getOrderCountForNewCustomers(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tbestellung
                 JOIN tkunde
@@ -290,11 +294,12 @@ class Statusmail
                 WHERE tbestellung.dErstellt >= :from
                     AND tbestellung.dErstellt < :to
                     AND tkunde.nRegistriert = 1',
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**
@@ -302,17 +307,18 @@ class Statusmail
      */
     private function getIncomingPaymentsCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tbestellung
                 WHERE tbestellung.dErstellt >= :from
                     AND tbestellung.dErstellt < :to
                     AND tbestellung.dBezahltDatum IS NOT NULL',
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**
@@ -320,17 +326,18 @@ class Statusmail
      */
     private function getShippedOrdersCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tbestellung
                 WHERE tbestellung.dErstellt >= :from
                     AND tbestellung.dErstellt < :to
                     AND tbestellung.dVersandDatum IS NOT NULL',
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**
@@ -338,17 +345,18 @@ class Statusmail
      */
     private function getVisitorCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tbesucherarchiv
                 WHERE dZeit >= :from
                     AND dZeit < :to
                     AND kBesucherBot = 0',
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**
@@ -356,17 +364,18 @@ class Statusmail
      */
     private function getBotVisitCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             "SELECT COUNT(*) AS cnt
                 FROM tbesucherarchiv
                 WHERE dZeit >= :from
                     AND dZeit < :to
                     AND cReferer != ''",
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**
@@ -374,17 +383,18 @@ class Statusmail
      */
     private function getRatingsCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tbewertung
                 WHERE dDatum >= :from
                     AND dDatum < :to
                     AND nAktiv = 1',
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**
@@ -392,17 +402,18 @@ class Statusmail
      */
     private function getNonApprovedRatingsCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tbewertung
                 WHERE dDatum >= :from
                     AND dDatum < :to
                     AND nAktiv = 0',
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**
@@ -433,21 +444,19 @@ class Statusmail
      */
     private function getNewsletterOptOutCount():int
     {
-        $res = $this->db->getSingleObject(
-            'SELECT COUNT(*) AS total
+        return $this->db->getSingleInt(
+            'SELECT COUNT(*) AS cnt
                 FROM toptinhistory
                 WHERE dDeActivated >= :from
-                AND dDeActivated < :to
-                AND kOptinClass = :class
-                ',
+                    AND dDeActivated < :to
+                    AND kOptinClass = :class',
+            'cnt',
             [
                 'class' => 'JTL\\Optin\\OptinNewsletter',
                 'from'  => $this->dateStart,
                 'to'    => $this->dateEnd
             ]
         );
-
-        return (int)($res->total ?? 0);
     }
 
     /**
@@ -477,16 +486,17 @@ class Statusmail
      */
     private function getSentWishlistCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                     FROM twunschlisteversand
                     WHERE dZeit >= :from
                         AND dZeit < :to',
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**
@@ -494,17 +504,18 @@ class Statusmail
      */
     private function getNewsCommentsCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tnewskommentar
                 WHERE dErstellt >= :from
                     AND dErstellt < :to
                     AND nAktiv = 1',
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**
@@ -512,17 +523,18 @@ class Statusmail
      */
     private function getNonApprovedCommentsCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tnewskommentar
                 WHERE dErstellt >= :from
                     AND dErstellt < :to
                     AND nAktiv = 0',
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**
@@ -530,16 +542,17 @@ class Statusmail
      */
     private function getAvailabilityNotificationsCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tverfuegbarkeitsbenachrichtigung
                 WHERE dErstellt >= :from
                     AND dErstellt < :to',
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**
@@ -547,16 +560,17 @@ class Statusmail
      */
     private function getProductInquriesCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tproduktanfragehistory
                 WHERE dErstellt >= :from
                     AND dErstellt < :to',
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**
@@ -564,16 +578,17 @@ class Statusmail
      */
     private function getComparisonsCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tvergleichsliste
                 WHERE dDate >= :from
                     AND dDate < :to',
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**
@@ -581,16 +596,17 @@ class Statusmail
      */
     private function getCouponUsageCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tkuponkunde
                 WHERE dErstellt >= :from
                     AND dErstellt < :to',
+            'cnt',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ]
-        )->cnt;
+        );
     }
 
     /**

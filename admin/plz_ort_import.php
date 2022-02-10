@@ -6,7 +6,6 @@
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once __DIR__ . '/includes/plz_ort_import_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
 $oAccount->permission('PLZ_ORT_IMPORT_VIEW', true, true);
 
@@ -16,8 +15,8 @@ $messages   = [
     'error'  => '',
 ];
 $landIsoMap = [];
-$db         = Shop::Container()->getDB();
 $itemBatch  = [];
+$db         = Shop::Container()->getDB();
 $res        = handleCsvImportAction(
     'plz',
     static function ($entry, &$importDeleteDone, $importType) use ($db, &$landIsoMap, &$itemBatch) {
@@ -51,5 +50,27 @@ $res        = handleCsvImportAction(
     ['plz', 'ort', 'land']
 );
 
-plzimportActionIndex($smarty, $messages);
-plzimportFinalize($smarty, $messages);
+$oPlzOrt_arr = Shop::Container()->getDB()->getObjects(
+    'SELECT tplz.cLandISO, tland.cDeutsch, tland.cKontinent, COUNT(tplz.kPLZ) AS nPLZOrte, backup.nBackup
+            FROM tplz
+            INNER JOIN tland ON tland.cISO = tplz.cLandISO
+            LEFT JOIN (
+                SELECT tplz_backup.cLandISO, COUNT(tplz_backup.kPLZ) AS nBackup
+                FROM tplz_backup
+                GROUP BY tplz_backup.cLandISO
+            ) AS backup ON backup.cLandISO = tplz.cLandISO
+            GROUP BY tplz.cLandISO, tland.cDeutsch, tland.cKontinent
+            ORDER BY tplz.cLandISO'
+);
+
+foreach ($oPlzOrt_arr as $item) {
+    $country = Shop::Container()->getCountryService()->getCountry($item->cLandISO);
+    if ($country !== null) {
+        $item->cDeutsch   = $country->getName();
+        $item->cKontinent = $country->getContinent();
+    }
+}
+
+$smarty
+    ->assign('oPlzOrt_arr', $oPlzOrt_arr)
+    ->display('plz_ort_import.tpl');

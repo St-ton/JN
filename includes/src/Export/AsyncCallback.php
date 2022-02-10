@@ -65,7 +65,7 @@ class AsyncCallback
     /**
      * @var string|null
      */
-    private ?string $error;
+    private ?string $error = null;
 
     /**
      * AsyncCallback constructor.

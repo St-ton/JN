@@ -1460,6 +1460,10 @@ class CartHelper
         if ((int)$qty !== $qty && $product->cTeilbar !== 'Y') {
             $qty = \max((int)$qty, 1);
         }
+        \executeHook(\HOOK_CARTHELPER_ADD_PRODUCT_ID_TO_CART, [
+            'product' => $product,
+            'qty'     => &$qty
+        ]);
         $redirectParam = self::addToCartCheck($product, $qty, $attrValues);
         // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen
         // wenn 'Preis auf Anfrage' eingestellt ist

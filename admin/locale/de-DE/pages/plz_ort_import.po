@@ -6,7 +6,7 @@ msgid "plz_ort_import"
 msgstr "Postleitzahlen und Orte importieren"
 
 msgid "plz_ort_importDesc"
-msgstr "Auf dieser Seite können Sie aktuelle Daten zu Postleitzahlen und Orten aus OpenGeoDB importieren."
+msgstr "Auf dieser Seite können Sie aktuelle Daten zu Postleitzahlen und Orten aus einer CSV Datei importieren."
 
 msgid "plz_ort_available"
 msgstr "Vorhandene Postleitzahlen / Ortsdaten"

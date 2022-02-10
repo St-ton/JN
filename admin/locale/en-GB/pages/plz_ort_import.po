@@ -6,7 +6,7 @@ msgid "plz_ort_import"
 msgstr "Importing postal codes/locations"
 
 msgid "plz_ort_importDesc"
-msgstr "On this page you can import current data concerning postal codes and locations from OpenGeoDB."
+msgstr "On this page you can import current data concerning postal codes and locations from a CSV file."
 
 msgid "plz_ort_available"
 msgstr "Existing postal codes and location data"

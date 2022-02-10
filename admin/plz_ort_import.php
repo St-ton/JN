@@ -5,7 +5,7 @@
  */
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once __DIR__ . '/includes/plz_ort_import_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
 $oAccount->permission('PLZ_ORT_IMPORT_VIEW', true, true);
 

@@ -5,7 +5,6 @@ namespace JTL\Template\Admin\Installation\Items;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use JTL\Plugin\InstallCode;
-use JTL\Shop;
 use SimpleXMLElement;
 use stdClass;
 

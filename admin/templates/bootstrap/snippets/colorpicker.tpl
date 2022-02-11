@@ -9,9 +9,10 @@
     </span>
 </div>
 <script>
-    $('#{$cpID}-group').colorpicker({
-        format: 'hex',
+    cp = $('#{$cpID}-group').colorpicker({ldelim}
+        format: 'rgba',
         fallbackColor: '#FFF',
-        autoInputFallback: false
-    });
+        autoInputFallback: false,
+        useAlpha: {$useAlpha|default:false}
+    {rdelim});
 </script>

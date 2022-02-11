@@ -9,7 +9,7 @@
     </span>
 </div>
 <script>
-    cp = $('#{$cpID}-group').colorpicker({ldelim}
+    $('#{$cpID}-group').colorpicker({ldelim}
         format: 'rgba',
         fallbackColor: '#FFF',
         autoInputFallback: false,

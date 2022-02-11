@@ -20,58 +20,53 @@ use stdClass;
 class NiceDB implements DbInterface
 {
     /**
-     * @var pdo
+     * @var bool
      */
-    protected $db;
+    protected bool $isConnected = false;
 
     /**
      * @var bool
      */
-    protected $isConnected = false;
-
-    /**
-     * @var bool
-     */
-    public $logErrors = false;
+    public bool $logErrors = false;
 
     /**
      * debug mode
      *
      * @var bool
      */
-    private $debug = false;
+    private bool $debug = false;
 
     /**
      * debug level, 0 no debug, 1 normal, 2 verbose, 3 very verbose with backtrace
      *
      * @var int
      */
-    private $debugLevel = 0;
+    private int $debugLevel = 0;
 
     /**
-     * @var NiceDB
+     * @var NiceDB|null
      */
-    private static $instance;
+    private static ?self $instance = null;
 
     /**
      * @var PDO|null
      */
-    private $pdo;
+    private ?PDO $pdo;
 
     /**
      * @var string
      */
-    public $state = 'instanciated';
+    public string $state = 'instanciated';
 
     /**
      * @var array
      */
-    private $config;
+    private array $config;
 
     /**
      * @var int
      */
-    private $transactionCount = 0;
+    private int $transactionCount = 0;
 
     /**
      * create DB Connection with default parameters
@@ -504,7 +499,7 @@ class NiceDB implements DbInterface
         $arr     = \get_object_vars($object);
         $updates = []; // list of "<column name>=?" or "<column name>=now()" strings
         $assigns = []; // list of values to insert as param for ->prepare()
-        if (!\is_array($arr) || !$keyname || !$keyvalue) {
+        if (!$keyname || !$keyvalue) {
             return -1;
         }
         foreach ($arr as $_key => $_val) {
@@ -1312,7 +1307,7 @@ class NiceDB implements DbInterface
     public function getErrorMessage(): string
     {
         $error = $this->getError();
-        if (\is_array($error) && isset($error[2])) {
+        if (isset($error[2])) {
             return \is_string($error[2]) ? $error[2] : '';
         }
 
@@ -1419,7 +1414,7 @@ class NiceDB implements DbInterface
             $values[] = $value;
         }
 
-        return \preg_replace($keys, $values, $query, 1, $count);
+        return \preg_replace($keys, $values, $query, 1);
     }
 
     /**

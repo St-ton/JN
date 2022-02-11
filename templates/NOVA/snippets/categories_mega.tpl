@@ -172,6 +172,7 @@
         {block name='snippets-categories-mega-wishlist'}
         {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
             {navitem href="{get_static_route id='wunschliste.php'}" class="wl-nav-scrollbar-item nav-scrollbar-item"}
+                {lang key='wishlist'}
                 {badge id="badge-wl-count" variant="primary" class="product-count"}
                     {if \JTL\Session\Frontend::getWishlist()->getID() > 0}
                         {\JTL\Session\Frontend::getWishlist()->getItems()|count}

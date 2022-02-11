@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /* grid breakpoints */
 /* grid containers */
 /* links */
@@ -14,6 +13,7 @@
  * Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
+@charset "UTF-8";
 .fa, .fas, .far, .fal, .fad, .fab {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -4563,15 +4563,15 @@ readers do not read off random characters that represent icons */
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 @font-face {
-  font-family: "Font Awesome 5 Brands";
+  font-family: 'Font Awesome 5 Brands';
   font-style: normal;
   font-weight: 400;
   font-display: block;
   src: url("../base/fontawesome/webfonts/fa-brands-400.eot");
-  src: url("../base/fontawesome/webfonts/fa-brands-400.eot?#iefix") format("embedded-opentype"), url("../base/fontawesome/webfonts/fa-brands-400.woff2") format("woff2"), url("../base/fontawesome/webfonts/fa-brands-400.woff") format("woff"), url("../base/fontawesome/webfonts/fa-brands-400.ttf") format("truetype"), url("../base/fontawesome/webfonts/fa-brands-400.svg#fontawesome") format("svg");
+  src: url("../base/fontawesome/webfonts/fa-brands-400.eot?#iefix") format('embedded-opentype'), url("../base/fontawesome/webfonts/fa-brands-400.woff2") format('woff2'), url("../base/fontawesome/webfonts/fa-brands-400.woff") format('woff'), url("../base/fontawesome/webfonts/fa-brands-400.ttf") format('truetype'), url("../base/fontawesome/webfonts/fa-brands-400.svg#fontawesome") format('svg');
 }
 .fab {
-  font-family: "Font Awesome 5 Brands";
+  font-family: 'Font Awesome 5 Brands';
   font-weight: 400;
 }
 /*!
@@ -4579,15 +4579,15 @@ readers do not read off random characters that represent icons */
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 @font-face {
-  font-family: "Font Awesome 5 Free";
+  font-family: 'Font Awesome 5 Free';
   font-style: normal;
   font-weight: 400;
   font-display: block;
   src: url("../base/fontawesome/webfonts/fa-regular-400.eot");
-  src: url("../base/fontawesome/webfonts/fa-regular-400.eot?#iefix") format("embedded-opentype"), url("../base/fontawesome/webfonts/fa-regular-400.woff2") format("woff2"), url("../base/fontawesome/webfonts/fa-regular-400.woff") format("woff"), url("../base/fontawesome/webfonts/fa-regular-400.ttf") format("truetype"), url("../base/fontawesome/webfonts/fa-regular-400.svg#fontawesome") format("svg");
+  src: url("../base/fontawesome/webfonts/fa-regular-400.eot?#iefix") format('embedded-opentype'), url("../base/fontawesome/webfonts/fa-regular-400.woff2") format('woff2'), url("../base/fontawesome/webfonts/fa-regular-400.woff") format('woff'), url("../base/fontawesome/webfonts/fa-regular-400.ttf") format('truetype'), url("../base/fontawesome/webfonts/fa-regular-400.svg#fontawesome") format('svg');
 }
 .far {
-  font-family: "Font Awesome 5 Free";
+  font-family: 'Font Awesome 5 Free';
   font-weight: 400;
 }
 /*!
@@ -4595,15 +4595,15 @@ readers do not read off random characters that represent icons */
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 @font-face {
-  font-family: "Font Awesome 5 Free";
+  font-family: 'Font Awesome 5 Free';
   font-style: normal;
   font-weight: 900;
   font-display: block;
   src: url("../base/fontawesome/webfonts/fa-solid-900.eot");
-  src: url("../base/fontawesome/webfonts/fa-solid-900.eot?#iefix") format("embedded-opentype"), url("../base/fontawesome/webfonts/fa-solid-900.woff2") format("woff2"), url("../base/fontawesome/webfonts/fa-solid-900.woff") format("woff"), url("../base/fontawesome/webfonts/fa-solid-900.ttf") format("truetype"), url("../base/fontawesome/webfonts/fa-solid-900.svg#fontawesome") format("svg");
+  src: url("../base/fontawesome/webfonts/fa-solid-900.eot?#iefix") format('embedded-opentype'), url("../base/fontawesome/webfonts/fa-solid-900.woff2") format('woff2'), url("../base/fontawesome/webfonts/fa-solid-900.woff") format('woff'), url("../base/fontawesome/webfonts/fa-solid-900.ttf") format('truetype'), url("../base/fontawesome/webfonts/fa-solid-900.svg#fontawesome") format('svg');
 }
 .fa, .fas {
-  font-family: "Font Awesome 5 Free";
+  font-family: 'Font Awesome 5 Free';
   font-weight: 900;
 }
 /*! nouislider - 14.0.2 - 6/28/2019 */
@@ -4907,7 +4907,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   overflow: hidden;
 }
 .slick-lightbox-slick-item:before {
-  content: "";
+  content: '';
   display: inline-block;
   height: 100%;
   vertical-align: middle;
@@ -4967,7 +4967,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   opacity: 0.85;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  content: "×";
+  content: '×';
 }
 .pass-graybar {
   height: 3px;
@@ -4996,7 +4996,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
  */
 h1, h2, h3, h4, h5, h6, .h1, .h2, .product-matrix .product-matrix-title, .h3, .sidepanel-left .box-normal .box-normal-link, .h4, .h5, .h6 {
   margin-bottom: 1rem;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 400;
   line-height: 1.2;
   color: #212121;
@@ -8414,7 +8414,7 @@ a.close.disabled {
   z-index: 1070;
   display: block;
   margin: 0.5rem;
-  font-family: "Raleway", sans-serif;
+  font-family: 'Raleway', sans-serif;
   font-style: normal;
   font-weight: 400;
   line-height: 1.5;
@@ -8509,7 +8509,7 @@ a.close.disabled {
   z-index: 1060;
   display: block;
   max-width: 276px;
-  font-family: "Raleway", sans-serif;
+  font-family: 'Raleway', sans-serif;
   font-style: normal;
   font-weight: 400;
   line-height: 1.5;
@@ -12423,7 +12423,7 @@ select.bs-select-hidden, .bootstrap-select > select.bs-select-hidden, select.sel
   z-index: 1060;
 }
 .bootstrap-select .dropdown-toggle:before, .bootstrap-select :not(.navbar-toggler)[data-toggle="collapse"]:before {
-  content: "";
+  content: '';
   display: inline-block;
 }
 .bootstrap-select .dropdown-toggle .filter-option, .bootstrap-select [data-toggle="collapse"]:not(.navbar-toggler) .filter-option {
@@ -12546,7 +12546,7 @@ select.bs-select-hidden, .bootstrap-select > select.bs-select-hidden, select.sel
   margin-right: 34px;
 }
 .bootstrap-select .bs-ok-default:after {
-  content: "";
+  content: '';
   display: block;
   width: 0.5em;
   height: 1em;
@@ -12558,7 +12558,7 @@ select.bs-select-hidden, .bootstrap-select > select.bs-select-hidden, select.sel
   z-index: 1061;
 }
 .bootstrap-select.show-menu-arrow .dropdown-toggle .filter-option:before, .bootstrap-select.show-menu-arrow [data-toggle="collapse"]:not(.navbar-toggler) .filter-option:before {
-  content: "";
+  content: '';
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
   border-bottom: 7px solid rgba(204, 204, 204, 0.2);
@@ -12568,7 +12568,7 @@ select.bs-select-hidden, .bootstrap-select > select.bs-select-hidden, select.sel
   display: none;
 }
 .bootstrap-select.show-menu-arrow .dropdown-toggle .filter-option:after, .bootstrap-select.show-menu-arrow [data-toggle="collapse"]:not(.navbar-toggler) .filter-option:after {
-  content: "";
+  content: '';
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
   border-bottom: 6px solid white;
@@ -12841,7 +12841,7 @@ select.bs-select-hidden, .bootstrap-select > select.bs-select-hidden, select.sel
   margin-bottom: 0.25rem;
 }
 .consent-switch .consent-label::before, .consent-switch .consent-label::after {
-  content: "";
+  content: '';
   float: left;
   margin-top: 0.125rem;
   position: absolute;
@@ -12899,7 +12899,7 @@ select.bs-select-hidden, .bootstrap-select > select.bs-select-hidden, select.sel
   position: relative;
 }
 .consent-modal-content::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 0;
   left: 0;
@@ -12951,7 +12951,7 @@ select.bs-select-hidden, .bootstrap-select > select.bs-select-hidden, select.sel
   }
 }
 #consent-manager {
-  font-family: "Proxima Nova", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
   color: #525252;
   font-size: 0.875rem;
   line-height: 1.5;
@@ -13049,7 +13049,7 @@ select.bs-select-hidden, .bootstrap-select > select.bs-select-hidden, select.sel
   position: relative;
 }
 :not(.fading) > #consent-banner::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 0;
   left: 0;
@@ -13087,7 +13087,7 @@ select.bs-select-hidden, .bootstrap-select > select.bs-select-hidden, select.sel
   color: #435a6b;
 }
 .consent-banner-icon::before {
-  content: "";
+  content: '';
   background-color: inherit;
   width: calc(100% + 0.125rem);
   height: calc(50% + 0.125rem);
@@ -15430,7 +15430,7 @@ Supports Thumbs: false
   /* IE10+ */
   background: linear-gradient(to bottom, #565656 0%, #333333 100%);
   /* W3C */
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#565656", endColorstr="#333333",GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#565656', endColorstr='#333333',GradientType=0);
   /* IE6-9 */
   opacity: 0.5;
   -webkit-transition: all 200ms ease-in-out;
@@ -15526,42 +15526,42 @@ Supports Thumbs: false
   font-family: "Raleway";
   font-style: normal;
   font-weight: 400;
-  src: local("Raleway-Regular"), local("Raleway-Regular"), url("../base/fonts/raleway/Raleway-Regular.ttf") format("truetype");
+  src: local('Raleway-Regular'), local('Raleway-Regular'), url("../base/fonts/raleway/Raleway-Regular.ttf") format("truetype");
   font-display: swap;
 }
 @font-face {
   font-family: "Raleway";
   font-style: normal;
   font-weight: 500;
-  src: local("Raleway-Medium"), local("Raleway-Medium"), url("../base/fonts/raleway/Raleway-Medium.ttf") format("truetype");
+  src: local('Raleway-Medium'), local('Raleway-Medium'), url("../base/fonts/raleway/Raleway-Medium.ttf") format("truetype");
   font-display: swap;
 }
 @font-face {
   font-family: "Raleway";
   font-style: normal;
   font-weight: 700;
-  src: local("Raleway-Bold"), local("Raleway-Bold"), url("../base/fonts/raleway/Raleway-Bold.ttf") format("truetype");
+  src: local('Raleway-Bold'), local('Raleway-Bold'), url("../base/fonts/raleway/Raleway-Bold.ttf") format("truetype");
   font-display: swap;
 }
 @font-face {
   font-family: "Poppins";
   font-style: normal;
   font-weight: 300;
-  src: local("Poppins-Light"), local("Poppins-Light"), url("../base/fonts/poppins/Poppins-Light.ttf") format("truetype");
+  src: local('Poppins-Light'), local('Poppins-Light'), url("../base/fonts/poppins/Poppins-Light.ttf") format("truetype");
   font-display: swap;
 }
 @font-face {
   font-family: "Poppins";
   font-style: normal;
   font-weight: 400;
-  src: local("Poppins-Regular"), local("Poppins-Regular"), url("../base/fonts/poppins/Poppins-Regular.ttf") format("truetype");
+  src: local('Poppins-Regular'), local('Poppins-Regular'), url("../base/fonts/poppins/Poppins-Regular.ttf") format("truetype");
   font-display: swap;
 }
 @font-face {
   font-family: "Poppins";
   font-style: normal;
   font-weight: 600;
-  src: local("Poppins-SemiBold"), local("Poppins-SemiBold"), url("../base/fonts/poppins/Poppins-SemiBold.ttf") format("truetype");
+  src: local('Poppins-SemiBold'), local('Poppins-SemiBold'), url("../base/fonts/poppins/Poppins-SemiBold.ttf") format("truetype");
   font-display: swap;
 }
 .container-fluid-xl {
@@ -15571,7 +15571,7 @@ Supports Thumbs: false
   margin-left: -0.5rem;
   margin-right: -0.5rem;
 }
-.row-sm > .col, .row-sm > [class*="col-"] {
+.row-sm > .col, .row-sm > [class*='col-'] {
   padding-right: 0.5rem;
   padding-left: 0.5rem;
 }
@@ -15579,7 +15579,7 @@ Supports Thumbs: false
   margin-left: -2rem;
   margin-right: -2rem;
 }
-.row-lg > .col, .row-lg > [class*="col-"] {
+.row-lg > .col, .row-lg > [class*='col-'] {
   padding-right: 2rem;
   padding-left: 2rem;
 }
@@ -15588,7 +15588,7 @@ Supports Thumbs: false
     margin-left: -0.5rem;
     margin-right: -0.5rem;
   }
-  .sm-row-sm > .col, .sm-row-sm > [class*="col-"] {
+  .sm-row-sm > .col, .sm-row-sm > [class*='col-'] {
     padding-right: 0.5rem;
     padding-left: 0.5rem;
   }
@@ -15596,7 +15596,7 @@ Supports Thumbs: false
     margin-left: -2rem;
     margin-right: -2rem;
   }
-  .sm-row-lg > .col, .sm-row-lg > [class*="col-"] {
+  .sm-row-lg > .col, .sm-row-lg > [class*='col-'] {
     padding-right: 2rem;
     padding-left: 2rem;
   }
@@ -15606,7 +15606,7 @@ Supports Thumbs: false
     margin-left: -0.5rem;
     margin-right: -0.5rem;
   }
-  .md-row-sm > .col, .md-row-sm > [class*="col-"] {
+  .md-row-sm > .col, .md-row-sm > [class*='col-'] {
     padding-right: 0.5rem;
     padding-left: 0.5rem;
   }
@@ -15614,7 +15614,7 @@ Supports Thumbs: false
     margin-left: -2rem;
     margin-right: -2rem;
   }
-  .md-row-lg > .col, .md-row-lg > [class*="col-"] {
+  .md-row-lg > .col, .md-row-lg > [class*='col-'] {
     padding-right: 2rem;
     padding-left: 2rem;
   }
@@ -15624,7 +15624,7 @@ Supports Thumbs: false
     margin-left: -0.5rem;
     margin-right: -0.5rem;
   }
-  .lg-row-sm > .col, .lg-row-sm > [class*="col-"] {
+  .lg-row-sm > .col, .lg-row-sm > [class*='col-'] {
     padding-right: 0.5rem;
     padding-left: 0.5rem;
   }
@@ -15632,7 +15632,7 @@ Supports Thumbs: false
     margin-left: -2rem;
     margin-right: -2rem;
   }
-  .lg-row-lg > .col, .lg-row-lg > [class*="col-"] {
+  .lg-row-lg > .col, .lg-row-lg > [class*='col-'] {
     padding-right: 2rem;
     padding-left: 2rem;
   }
@@ -15642,7 +15642,7 @@ Supports Thumbs: false
     margin-left: -0.5rem;
     margin-right: -0.5rem;
   }
-  .xl-row-sm > .col, .xl-row-sm > [class*="col-"] {
+  .xl-row-sm > .col, .xl-row-sm > [class*='col-'] {
     padding-right: 0.5rem;
     padding-left: 0.5rem;
   }
@@ -15650,7 +15650,7 @@ Supports Thumbs: false
     margin-left: -2rem;
     margin-right: -2rem;
   }
-  .xl-row-lg > .col, .xl-row-lg > [class*="col-"] {
+  .xl-row-lg > .col, .xl-row-lg > [class*='col-'] {
     padding-right: 2rem;
     padding-left: 2rem;
   }
@@ -15939,7 +15939,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   position: relative;
 }
 .nav-dividers .nav-item:not(:last-child)::after {
-  content: "";
+  content: '';
   position: absolute;
   right: 0;
   top: 0.5rem;
@@ -15969,7 +15969,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   border-radius: 1rem;
 }
 .navbar-toggler .navbar-toggler-icon:before, .navbar-toggler .navbar-toggler-icon:after {
-  content: "";
+  content: '';
   height: inherit;
   width: inherit;
   transform-origin: center;
@@ -16125,7 +16125,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 }
 .breadcrumb-arrow::before {
   content: '\f104' !important;
-  font-family: "Font Awesome 5 Free" !important;
+  font-family: 'Font Awesome 5 Free' !important;
   font-weight: 900;
   margin-right: 6px;
 }
@@ -16226,7 +16226,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   border-radius: 0;
   border-width: 0.125rem;
 }
-.btn-icon > [class*="fa-"] {
+.btn-icon > [class*='fa-'] {
   width: 1.25em;
   height: 1.25em;
   line-height: 1.25em;
@@ -16288,7 +16288,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   position: relative;
 }
 .btn-animated .btn-primary::before {
-  content: "";
+  content: '';
   display: block;
   position: absolute;
   width: 2.5rem;
@@ -16313,7 +16313,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   z-index: 1;
 }
 .btn-animated .btn-outline-primary::after {
-  content: "";
+  content: '';
   position: absolute;
   z-index: -1;
   width: 0%;
@@ -16745,7 +16745,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 }
 .slick-prev::after {
   content: '\f053' !important;
-  font-family: "Font Awesome 5 Free" !important;
+  font-family: 'Font Awesome 5 Free' !important;
   font-weight: 900;
 }
 @media (max-width: 1299.98px) {
@@ -16759,7 +16759,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 }
 .slick-next::after {
   content: '\f054' !important;
-  font-family: "Font Awesome 5 Free" !important;
+  font-family: 'Font Awesome 5 Free' !important;
   font-weight: 900;
 }
 @media (max-width: 1299.98px) {
@@ -16983,7 +16983,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 }
 .dropdown-toggle::after, :not(.navbar-toggler)[data-toggle="collapse"]::after {
   content: '\f078' !important;
-  font-family: "Font Awesome 5 Free" !important;
+  font-family: 'Font Awesome 5 Free' !important;
   font-weight: 900;
   margin-left: 0.5rem;
   vertical-align: middle;
@@ -16994,7 +16994,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   border-top: 0;
   font-size: 0.75em;
 }
-.dropdown-toggle[aria-expanded="true"]::after, :not(.navbar-toggler)[data-toggle="collapse"][aria-expanded="true"]::after {
+.dropdown-toggle[aria-expanded='true']::after, :not(.navbar-toggler)[data-toggle="collapse"][aria-expanded='true']::after {
   transform: rotate(180deg);
 }
 .dropdown-toggle.no-caret, .no-caret:not(.navbar-toggler)[data-toggle="collapse"] {
@@ -17142,7 +17142,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 .form-counter .form-control {
   border: 0;
   text-align: center;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
   -moz-appearance: textfield;
 }
@@ -17154,7 +17154,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 .form-counter .input-group-text {
   border: 0;
   background: none;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
 }
 .form-counter .btn:hover {
@@ -17167,7 +17167,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 .custom-control-label-image::before, .custom-control-label-image::after {
   top: auto;
 }
-input[type="radio"]:checked + label, input[type="checkbox"]:checked + label {
+input[type='radio']:checked + label, input[type='checkbox']:checked + label {
   font-weight: 700;
 }
 [data-toggle-password] {
@@ -17288,7 +17288,7 @@ label {
   padding: 0.4em 0.6em;
   border-radius: 50rem;
   font-size: 0.7em;
-  font-family: "Raleway", sans-serif;
+  font-family: 'Raleway', sans-serif;
   color: #212121;
   max-width: 3em;
   text-overflow: ellipsis;
@@ -17515,7 +17515,7 @@ label {
   font-weight: 700;
 }
 .page-item.active .page-link::after, .page-item.active .page-text::after {
-  content: "";
+  content: '';
   position: absolute;
   left: 0.5625rem;
   bottom: 0;
@@ -17671,7 +17671,7 @@ label {
 }
 @media (min-width: 1300px) {
   .productbox.productbox-hover .productbox-inner::before {
-    content: "";
+    content: '';
     background-color: #ffffff;
     position: absolute;
     left: 0;
@@ -17824,7 +17824,7 @@ label {
   margin-bottom: 1px;
 }
 .bs-tooltip-top .arrow::before, .bs-tooltip-auto[x-placement^="top"] .arrow::before, .bs-tooltip-top .arrow::after, .bs-tooltip-auto[x-placement^="top"] .arrow::after, .bs-tooltip-auto[x-placement^=top] .arrow::before, .bs-tooltip-auto[x-placement^=top] .arrow::after {
-  content: "";
+  content: '';
   position: absolute;
   border: solid transparent;
   height: 0;
@@ -17850,7 +17850,7 @@ label {
   margin-top: 1px;
 }
 .bs-tooltip-bottom .arrow::before, .bs-tooltip-auto[x-placement^="bottom"] .arrow::before, .bs-tooltip-bottom .arrow::after, .bs-tooltip-auto[x-placement^="bottom"] .arrow::after, .bs-tooltip-auto[x-placement^=bottom] .arrow::before, .bs-tooltip-auto[x-placement^=bottom] .arrow::after {
-  content: "";
+  content: '';
   position: absolute;
   border: solid transparent;
   height: 0;
@@ -17876,7 +17876,7 @@ label {
   margin-left: 1px;
 }
 .bs-tooltip-right .arrow::before, .bs-tooltip-auto[x-placement^="right"] .arrow::before, .bs-tooltip-right .arrow::after, .bs-tooltip-auto[x-placement^="right"] .arrow::after, .bs-tooltip-auto[x-placement^=right] .arrow::before, .bs-tooltip-auto[x-placement^=right] .arrow::after {
-  content: "";
+  content: '';
   position: absolute;
   border: solid transparent;
   height: 0;
@@ -17905,7 +17905,7 @@ label {
   margin-right: 1px;
 }
 .bs-tooltip-left .arrow::before, .bs-tooltip-auto[x-placement^="left"] .arrow::before, .bs-tooltip-left .arrow::after, .bs-tooltip-auto[x-placement^="left"] .arrow::after, .bs-tooltip-auto[x-placement^=left] .arrow::before, .bs-tooltip-auto[x-placement^=left] .arrow::after {
-  content: "";
+  content: '';
   position: absolute;
   border: solid transparent;
   height: 0;
@@ -17996,7 +17996,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   border-right-style: solid;
   left: 0;
 }
-.ribbon > [class*="fa-"]:last-child {
+.ribbon > [class*='fa-']:last-child {
   position: absolute;
   right: 0;
   top: 50%;
@@ -18129,7 +18129,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   font-size: 0.9rem;
 }
 .stepper .step::after {
-  content: " ";
+  content: ' ';
   display: block;
   width: 0;
   height: 0;
@@ -18144,7 +18144,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   z-index: 2;
 }
 .stepper .step::before {
-  content: " ";
+  content: ' ';
   display: block;
   width: 0;
   height: 0;
@@ -18165,7 +18165,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   background: #ffffff;
 }
 .stepper .step-active .step-content::after {
-  content: "";
+  content: '';
   position: absolute;
   height: 0.125rem;
   bottom: 0;
@@ -18204,7 +18204,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
     display: none;
   }
   .stepper .step-current .step-content::after {
-    content: "";
+    content: '';
     display: block;
     position: absolute;
     height: 0.125rem;
@@ -18232,7 +18232,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   position: relative;
 }
 .tab-navigation .nav-link::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -18321,7 +18321,7 @@ table caption {
 .list-icons > li {
   padding-left: 2em;
 }
-.list-icons [class*="fa-"] {
+.list-icons [class*='fa-'] {
   text-align: center;
   width: 1.25em;
   margin-left: -2em;
@@ -18830,7 +18830,7 @@ ul.config-items, ul.partlist-items {
   color: #212121;
   margin: 8px 0;
   font-size: 1.875rem;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 .hr-sect::before {
   margin: 0 30px 0 0;
@@ -18937,7 +18937,7 @@ input.form-control[name="wishlist-url"] {
   cursor: pointer;
 }
 #login-dropdown a::before, #login-dropdown a::after, .attr-characteristica::before, .attr-characteristica::after, .content-wrapper a::before, .content-wrapper a::after, a.nice-deco::before, a.nice-deco::after {
-  content: "";
+  content: '';
   position: absolute;
   background-color: #525252;
   height: 5%;
@@ -19707,7 +19707,7 @@ input.typeahead:-ms-input-placeholder {
   font-size: 2.625rem;
 }
 .text-accent, .productbox-price, .tab-navigation .nav-link {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
 }
 .text-stroke {
@@ -19811,7 +19811,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   border-bottom: 0 solid #212121;
   font-size: 0.875rem;
   font-weight: 700;
-  font-family: "Raleway", sans-serif;
+  font-family: 'Raleway', sans-serif;
   padding-bottom: 0;
 }
 .modal .productlist-filter-wrapper {
@@ -19919,7 +19919,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   position: relative;
 }
 .productlist-filter-categories > .nav-item > .nav-link::before {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -21011,7 +21011,7 @@ header .nav-right .dropdown-menu {
   }
 }
 @media (max-width: 991.98px) {
-  header .dropup, header .dropright, header .dropdown, header .dropleft, header .col, header [class*="col-"] {
+  header .dropup, header .dropright, header .dropdown, header .dropleft, header .col, header [class*='col-'] {
     position: static;
   }
   header .navbar-collapse {
@@ -21052,7 +21052,7 @@ header .nav-right .dropdown-menu {
   }
   header .navbar-nav .nav-link::after {
     content: '\f054' !important;
-    font-family: "Font Awesome 5 Free" !important;
+    font-family: 'Font Awesome 5 Free' !important;
     font-weight: 900;
     margin-left: 0.5rem;
     margin-top: 0;
@@ -21118,7 +21118,7 @@ header .nav-right .dropdown-menu {
     padding: 1.5rem;
   }
   header .navbar-nav > .nav-item > .nav-link::before {
-    content: "";
+    content: '';
     position: absolute;
     bottom: 0;
     left: 50%;
@@ -21174,7 +21174,7 @@ header .nav-right .dropdown-menu {
     display: none;
   }
   header .submenu-headline-toplevel {
-    font-family: "Poppins", sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 1rem;
     border-bottom: 1px solid #212121;
     margin-bottom: 1rem;
@@ -21597,7 +21597,7 @@ header #burger-menu {
 .cart-items-body .cart-items-price {
   margin-left: auto;
   white-space: nowrap;
-  color: "Poppins", sans-serif;
+  color: 'Poppins', sans-serif;
 }
 @media (min-width: 1300px) {
   .cart-items-body .cart-items-price {
@@ -22408,7 +22408,7 @@ header .dropdown-menu a {
   color: transparent;
 }
 .theme-default .nivo-directionNav a.nivo-prevNav::after {
-  content: "" !important;
+  content: '' !important;
   font-family: "Font Awesome 5 Free" !important;
   font-weight: 900;
   color: #EFC03D;
@@ -22422,7 +22422,7 @@ header .dropdown-menu a {
   color: transparent;
 }
 .theme-default .nivo-directionNav a.nivo-nextNav::after {
-  content: "" !important;
+  content: '' !important;
   font-family: "Font Awesome 5 Free" !important;
   font-weight: 900;
   color: #EFC03D;
@@ -22494,13 +22494,13 @@ header .dropdown-menu a {
   flex-direction: row;
 }
 .cfg-tab-total {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 .cfg-tab-total .nav-link.disabled {
   color: #212121;
 }
 .cfg-price {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 .blog-preview-author {
   font-weight: bold;
@@ -22515,7 +22515,7 @@ header .dropdown-menu a {
   border-bottom: 4px solid #212121;
 }
 .pagination-wrapper {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 .pagination-wrapper:not(.pagination-no-wrapper) {
   border-top: 1px solid #212121;
@@ -22572,10 +22572,10 @@ header .dropdown-menu a {
   text-decoration: none;
 }
 .productbox-inner .productbox-title {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 .product-wrapper-product {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 .productbox-ribbon.ribbon {
   top: 3rem;
@@ -22684,7 +22684,7 @@ aside .dropdown-toggle:not(.btn-secondary)::after, aside :not(.navbar-toggler)[d
   line-height: inherit;
 }
 .price-range-inputs {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 .price-range-inputs .input-group-prepend .input-group-text {
   font-weight: 400;
@@ -22707,7 +22707,7 @@ aside .dropdown-toggle:not(.btn-secondary)::after, aside :not(.navbar-toggler)[d
   border-bottom: inherit;
 }
 .badge, .custom-select, .price-col, .order-details-date, .price_overall, .checkout-items-item-price-single, .cart-items-single-price, .account-orders-item .order-1, .order-details .order-details-date, .credit-amount {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 .badge-primary {
   color: #ffffff;
@@ -22781,7 +22781,7 @@ aside .dropdown-toggle:not(.btn-secondary)::after, aside :not(.navbar-toggler)[d
   color: #212121;
 }
 .productlist-page-nav, .selection-wizard-answer, .content-cats-small .sub-categories a, .product-offer .variations, .stock-information, .price_wrapper {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 .box-filter-hr {
   border-top: 1px solid #f5f5f5;
@@ -22792,7 +22792,7 @@ aside .dropdown-toggle:not(.btn-secondary)::after, aside :not(.navbar-toggler)[d
   }
 }
 .form-control {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 300;
 }
 /*# sourceMappingURL=blackline.css.map */

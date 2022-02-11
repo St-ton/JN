@@ -18,28 +18,28 @@ class TwoFA
     /**
      * TwoFactorAuth-object
      *
-     * @var PHPGangsta_GoogleAuthenticator
+     * @var PHPGangsta_GoogleAuthenticator|null
      */
-    private $authenticator;
+    private ?PHPGangsta_GoogleAuthenticator $authenticator;
 
     /**
      * user-account data
      *
-     * @var stdClass
+     * @var stdClass|null
      */
-    private $userTuple;
+    private ?stdClass $userTuple;
 
     /**
      * the name of the current shop
      *
      * @var string
      */
-    private $shopName;
+    private string $shopName;
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * TwoFA constructor.
@@ -223,7 +223,7 @@ class TwoFA
      *
      * @return string - object-data
      */
-    public function __toString()
+    public function __toString(): string
     {
         return \print_r($this->userTuple, true);
     }

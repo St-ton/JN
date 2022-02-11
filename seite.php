@@ -33,7 +33,7 @@ if ($link === null || !$link->isVisible()) {
     $link->setRedirectCode(301);
 }
 $requestURL = URL::buildURL($link, URLART_SEITE);
-if (mb_strpos($requestURL, '.php') === false) {
+if (!str_contains($requestURL, '.php')) {
     $cCanonicalURL = $link->getURL();
 }
 if ($link->getLinkType() === LINKTYP_STARTSEITE) {
@@ -43,9 +43,9 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         exit();
     }
     $smarty->assign('StartseiteBoxen', CMS::getHomeBoxes())
-           ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y'
-               ? CMS::getHomeNews($conf)
-               : []);
+        ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y'
+            ? CMS::getHomeNews($conf)
+            : []);
     Wizard::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguageID(), $smarty);
 } elseif ($link->getLinkType() === LINKTYP_AGB) {
     $smarty->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
@@ -79,7 +79,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         $alertHelper->addAlert(Alert::TYPE_WARNING, Shop::Lang()->get('noDataAvailable'), 'noDataAvailable');
     }
     $smarty->assign('LivesucheTop', $liveSearchTop)
-           ->assign('LivesucheLast', $liveSearchLast);
+        ->assign('LivesucheLast', $liveSearchLast);
 } elseif ($link->getLinkType() === LINKTYP_HERSTELLER) {
     $smarty->assign('oHersteller_arr', Hersteller::getAll());
 } elseif ($link->getLinkType() === LINKTYP_NEWSLETTERARCHIV) {
@@ -124,9 +124,9 @@ if (($pluginID = $link->getPluginID()) > 0 && $link->getPluginEnabled() === true
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 $smarty->assign('Link', $link)
-       ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
-       ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
-       ->assign('meta_language', Text::convertISO2ISO639(Shop::getLanguageCode()));
+    ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
+    ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
+    ->assign('meta_language', Text::convertISO2ISO639(Shop::getLanguageCode()));
 
 executeHook(HOOK_SEITE_PAGE);
 

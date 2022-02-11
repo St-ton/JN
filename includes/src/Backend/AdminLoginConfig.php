@@ -4,7 +4,7 @@ namespace JTL\Backend;
 
 /**
  * Class AdminLoginConfig
- * @package Backend
+ * @package JTL\Backend
  */
 abstract class AdminLoginConfig
 {

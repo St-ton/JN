@@ -25,27 +25,27 @@ class AuthToken
     /**
      * @var string|null
      */
-    private $authCode;
+    private ?string $authCode;
 
     /**
      * @var string|null
      */
-    private $token;
+    private ?string $token;
 
     /**
      * @var string|null
      */
-    private $hash;
+    private ?string $hash;
 
     /**
      * @var string|null
      */
-    private $verified;
+    private ?string $verified;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * AuthToken constructor.

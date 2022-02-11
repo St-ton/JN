@@ -175,7 +175,7 @@ function processImport(array $fmt, array $data): string
                 ->bypassSendingPermission()
                 ->createOptin($refData)
                 ->activateOptin();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Shop::Container()->getLogService()->notice('optin creation failed during import, for ' .
                 $rowData->cEmail .
                 ' cause: ' . $e->getMessage());

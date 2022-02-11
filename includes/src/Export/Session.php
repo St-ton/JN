@@ -19,14 +19,14 @@ use function Functional\first;
 class Session
 {
     /**
-     * @var stdClass
+     * @var stdClass|null
      */
-    private $oldSession;
+    private ?stdClass $oldSession;
 
     /**
      * @var Currency
      */
-    private $currency;
+    private Currency $currency;
 
     /**
      * @return Currency

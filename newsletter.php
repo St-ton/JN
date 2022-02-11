@@ -37,13 +37,21 @@ $link          = $linkHelper->getPageLink($kLink);
 $cCanonicalURL = '';
 $option        = 'eintragen';
 if ($valid && Request::verifyGPCDataInt('abonnieren') > 0) {
-    $post = Text::filterXSS($_POST);
+    $post     = Text::filterXSS($_POST);
+    $customer = Frontend::getCustomer();
+    if ($customer->getID() > 0) {
+        $post['cAnrede']   = $post['cAnrede'] ?? $customer->cAnrede;
+        $post['cVorname']  = $post['cVorname'] ?? $customer->cVorname;
+        $post['cNachname'] = $post['cNachname'] ?? $customer->cNachname;
+        $post['kKunde']    = $customer->getID();
+    }
     if (Text::filterEmailAddress($post['cEmail']) !== false) {
         $refData = (new OptinRefData())
             ->setSalutation($post['cAnrede'] ?? '')
             ->setFirstName($post['cVorname'] ?? '')
             ->setLastName($post['cNachname'] ?? '')
             ->setEmail($post['cEmail'] ?? '')
+            ->setCustomerID((int)($post['kKunde'] ?? 0))
             ->setLanguageID(Shop::getLanguageID())
             ->setRealIP(Request::getRealIP());
         try {

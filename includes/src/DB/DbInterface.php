@@ -70,6 +70,14 @@ interface DbInterface extends \Serializable
     public function insertRow(string $tableName, object $object, bool $echo = false): int;
 
     /**
+     * @param string     $tableName
+     * @param stdClass[] $objects
+     * @param bool       $upsert
+     * @return int
+     */
+    public function insertBatch(string $tableName, array $objects, bool $upsert = false): int;
+
+    /**
      * @param string $tableName
      * @param object $object
      * @param bool   $echo

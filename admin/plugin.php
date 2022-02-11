@@ -92,16 +92,14 @@ if ($pluginID > 0) {
             $notice = __('successConfigSave');
         }
         $loader = Helper::getLoaderByPluginID($pluginID, $db, $cache);
-        if ($loader !== null) {
-            try {
-                $plugin = $loader->init($pluginID, $invalidateCache);
-            } catch (InvalidArgumentException $e) {
-                $pluginNotFound = true;
-            }
+        try {
+            $plugin = $loader->init($pluginID, $invalidateCache);
+        } catch (InvalidArgumentException $e) {
+            $pluginNotFound = true;
+        }
 
-            if ($plugin !== null && $plugin->isBootstrap()) {
-                Helper::updatePluginInstance($plugin);
-            }
+        if ($plugin !== null && $plugin->isBootstrap()) {
+            Helper::updatePluginInstance($plugin);
         }
     }
     if (Request::verifyGPCDataInt('kPluginAdminMenu') > 0) {

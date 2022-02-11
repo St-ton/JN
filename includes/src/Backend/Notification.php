@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
@@ -24,12 +24,12 @@ class Notification implements IteratorAggregate, Countable
     /**
      * @var NotificationEntry[]
      */
-    private $array = [];
+    private array $array = [];
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var Notification
@@ -163,6 +163,14 @@ class Notification implements IteratorAggregate, Countable
                 \__('validFolderPermissionsMessage'),
                 $adminURL . 'permissioncheck.php',
                 $hash
+            );
+        }
+        $times = $status->hasMysqlPhpTimeMismatch();
+        if ($times['diff'] > 1) {
+            $this->add(
+                NotificationEntry::TYPE_WARNING,
+                \__('mysqlTimeErrorTitle'),
+                \sprintf(\__('mysqlTimeErrorMessage'), $times['db'], $times['php'])
             );
         }
 

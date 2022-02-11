@@ -30,7 +30,7 @@ class Bots extends AbstractWidget
      * @param int $limit
      * @return array
      */
-    public function getBotsOfMonth(int $year, int $month, int $limit = 10)
+    public function getBotsOfMonth(int $year, int $month, int $limit = 10): array
     {
         return (new Statistik(\firstDayOfMonth($month, $year), \time()))->holeBotStats($limit);
     }

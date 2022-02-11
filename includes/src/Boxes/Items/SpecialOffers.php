@@ -6,7 +6,6 @@ use JTL\Catalog\Product\ArtikelListe;
 use JTL\Helpers\SearchSpecial;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use function Functional\map;
 
 /**
  * Class SpecialOffers
@@ -29,11 +28,11 @@ final class SpecialOffers extends AbstractBox
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
             $limit          = $config['boxen']['box_sonderangebote_anzahl_basis'];
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
-            $cacheID        = 'box_special_offer_' . $customerGroupID . '_' .
-                $limit . \md5($stockFilterSQL . $parentSQL);
+            $cacheID        = 'box_spclffr_' . $customerGroupID
+                . '_' . $limit . \md5($stockFilterSQL . $parentSQL);
             if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached     = false;
-                $productIDs = Shop::Container()->getDB()->getObjects(
+                $productIDs = Shop::Container()->getDB()->getInts(
                     "SELECT tartikel.kArtikel
                         FROM tartikel
                         JOIN tartikelsonderpreis 
@@ -51,17 +50,13 @@ final class SpecialOffers extends AbstractBox
                             AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE()) " .
                             $stockFilterSQL . $parentSQL . '
                         LIMIT :lmt',
+                    'kArtikel',
                     ['lmt' => $limit, 'cgid' => $customerGroupID]
                 );
                 Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
             \shuffle($productIDs);
-            $res = map(
-                \array_slice($productIDs, 0, $config['boxen']['box_sonderangebote_anzahl_anzeige']),
-                static function ($productID) {
-                    return (int)$productID->kArtikel;
-                }
-            );
+            $res = \array_slice($productIDs, 0, $config['boxen']['box_sonderangebote_anzahl_anzeige']);
 
             if (\count($res) > 0) {
                 $this->setShow(true);

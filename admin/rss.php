@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
@@ -36,6 +36,6 @@ if (!is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
         'errorRSSCreatePermissions'
     );
 }
-$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_RSS))
-       ->assign('alertError', $alertHelper->alertTypeExists(Alert::TYPE_ERROR))
-       ->display('rss.tpl');
+getAdminSectionSettings(CONF_RSS);
+$smarty->assign('alertError', $alertHelper->alertTypeExists(Alert::TYPE_ERROR))
+    ->display('rss.tpl');

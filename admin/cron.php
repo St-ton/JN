@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Cron\Admin\Controller;
@@ -36,11 +36,11 @@ if (Form::validateToken()) {
         );
     }
 }
+getAdminSectionSettings(CONF_CRON);
 $smarty->assign('jobs', $admin->getJobs())
     ->assign('deleted', $deleted)
     ->assign('updated', $updated)
     ->assign('inserted', $inserted)
     ->assign('available', $admin->getAvailableCronJobs())
     ->assign('tab', $tab)
-    ->assign('oConfig_arr', getAdminSectionSettings(CONF_CRON))
     ->display('cron.tpl');

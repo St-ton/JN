@@ -3,8 +3,8 @@
 namespace JTL;
 
 use InvalidArgumentException;
-use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
+use JTL\DB\DbInterface;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -120,11 +120,12 @@ class CheckBox
     private $db;
 
     /**
-     * @param int $id
+     * @param int              $id
+     * @param DbInterface|null $db
      */
-    public function __construct(int $id = 0)
+    public function __construct(int $id = 0, DbInterface $db = null)
     {
-        $this->db    = Shop::Container()->getDB();
+        $this->db    = $db ?? Shop::Container()->getDB();
         $this->oLink = new Link($this->db);
         $this->loadFromDB($id);
     }
@@ -261,8 +262,8 @@ class CheckBox
                     " . $sql . '
                 ORDER BY nSort'
         )
-            ->map(static function ($e) {
-                return new self((int)$e->id);
+            ->map(function ($e) {
+                return new self((int)$e->id, $this->db);
             })
             ->all();
         \executeHook(\HOOK_CHECKBOX_CLASS_GETCHECKBOXFRONTEND, [
@@ -412,8 +413,8 @@ class CheckBox
                 FROM tcheckbox' . ($active ? ' WHERE nAktiv = 1' : '') . '
                 ORDER BY nSort ' . $limitSQL
         )
-            ->map(static function ($e) {
-                return new self((int)$e->id);
+            ->map(function ($e) {
+                return new self((int)$e->id, $this->db);
             })->all();
     }
 
@@ -654,15 +655,15 @@ class CheckBox
         if (!isset($customer->cVorname, $customer->cNachname, $customer->cMail)) {
             return false;
         }
-        $conf = Shop::getSettings([\CONF_EMAILS]);
-        if (!empty($conf['emails']['email_master_absender'])) {
+        $conf = Shop::getSettingSection(\CONF_EMAILS);
+        if (!empty($conf['email_master_absender'])) {
             $data                = new stdClass();
             $data->oCheckBox     = $checkBox;
             $data->oKunde        = $customer;
             $data->cAnzeigeOrt   = $this->mappeCheckBoxOrte($location);
             $data->mail          = new stdClass();
-            $data->mail->toEmail = $conf['emails']['email_master_absender'];
-            $data->mail->toName  = $conf['emails']['email_master_absender_name'];
+            $data->mail->toEmail = $conf['email_master_absender'];
+            $data->mail->toName  = $conf['email_master_absender_name'];
 
             $mailer = Shop::Container()->get(Mailer::class);
             $mail   = new Mail();

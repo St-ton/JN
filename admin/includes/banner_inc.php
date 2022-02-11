@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\ImageMap;
 use JTL\IO\IOResponse;
@@ -9,9 +9,7 @@ use JTL\Shop;
  */
 function holeAlleBanner(): array
 {
-    $banner = new ImageMap(Shop::Container()->getDB());
-
-    return $banner->fetchAll();
+    return (new ImageMap(Shop::Container()->getDB()))->fetchAll();
 }
 
 /**
@@ -21,9 +19,7 @@ function holeAlleBanner(): array
  */
 function holeBanner(int $imageMapID, bool $fill = true)
 {
-    $banner = new ImageMap(Shop::Container()->getDB());
-
-    return $banner->fetch($imageMapID, true, $fill);
+    return (new ImageMap(Shop::Container()->getDB()))->fetch($imageMapID, true, $fill);
 }
 
 /**

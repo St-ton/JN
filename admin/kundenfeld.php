@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Backend\CustomerFields;
@@ -15,10 +15,10 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('ORDER_CUSTOMERFIELDS_VIEW', true, true);
 setzeSprache();
 $languageID  = (int)$_SESSION['editLanguageID'];
-$cf          = CustomerFields::getInstance($languageID);
+$cf          = CustomerFields::getInstance($languageID, Shop::Container()->getDB());
 $step        = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
-$smarty->assign('cTab', $step ?? null);
+$smarty->assign('cTab', $step);
 
 if (Request::postInt('einstellungen') > 0) {
     $alertHelper->addAlert(
@@ -106,8 +106,8 @@ if (Request::postInt('einstellungen') > 0) {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
             }
             $smarty->assign('xPlausiVar_arr', $check->getPlausiVar())
-                   ->assign('xPostVar_arr', $check->getPostVar())
-                   ->assign('kKundenfeld', $customerField->kKundenfeld);
+                ->assign('xPostVar_arr', $check->getPostVar())
+                ->assign('kKundenfeld', $customerField->kKundenfeld);
         }
     }
 } elseif (Request::verifyGPDataString('a') === 'edit') {
@@ -138,10 +138,9 @@ if ($preLastElement === false) {
     $highestSortDiff = $lastElement->nSort - $preLastElement->nSort;
 }
 reset($fields); // we leave the array in a safe state
-
+getAdminSectionSettings(CONF_KUNDENFELD);
 $smarty->assign('oKundenfeld_arr', $fields)
-       ->assign('nHighestSortValue', $highestSortValue)
-       ->assign('nHighestSortDiff', $highestSortDiff)
-       ->assign('oConfig_arr', getAdminSectionSettings(CONF_KUNDENFELD))
-       ->assign('step', $step)
-       ->display('kundenfeld.tpl');
+    ->assign('nHighestSortValue', $highestSortValue)
+    ->assign('nHighestSortDiff', $highestSortDiff)
+    ->assign('step', $step)
+    ->display('kundenfeld.tpl');

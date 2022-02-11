@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Alert;
 
@@ -123,9 +123,9 @@ class Alert
     public function __construct(string $type, string $message, string $key, array $options = null)
     {
         $this->setType($type)
-             ->setMessage($message)
-             ->setKey($key)
-             ->setOptions($options);
+            ->setMessage($message)
+            ->setKey($key)
+            ->setOptions($options);
 
         $this->initAlert();
     }

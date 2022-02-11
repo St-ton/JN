@@ -15,19 +15,19 @@
         {/if}
     {/if}
     <div id="pageCheck">
-        {if $cDBFileStruct_arr|@count > 0}
+        {if $cDBFileStruct_arr|count > 0}
             {if isset($engineUpdate)}
                 {include file='tpl_inc/dbcheck_engineupdate.tpl'}
             {else}
-                <div class="alert alert-info"><strong>{__('countTables')}:</strong> {$cDBFileStruct_arr|@count}<br /><strong>{__('showModifiedTables')}:</strong> {$cDBError_arr|@count}</div>
+                <div class="alert alert-info"><strong>{__('countTables')}:</strong> {$cDBFileStruct_arr|count}<br /><strong>{__('showModifiedTables')}:</strong> {$cDBError_arr|count}</div>
             {/if}
-            <form action="dbcheck.php" method="post">
+            <form action="{$adminURL}/dbcheck.php" method="post">
                 {$jtl_token}
                 <div id="contentCheck" class="card">
                     <div class="card-header">
                         <div class="subheading1">{__('databaseStructure')}</div>
                     </div>
-                    <table class="table req">
+                    <table class="table table-striped req">
                         <thead>
                         <tr>
                             <th>{__('table')}</th>
@@ -39,14 +39,14 @@
                             <th class="centered">{__('action')}</th>
                         </tr>
                         </thead>
-                        {foreach name=datei from=$cDBFileStruct_arr key=cTable item=oDatei}
+                        {foreach $cDBFileStruct_arr as $cTable => $oDatei}
                             {assign var=hasError value=$cTable|array_key_exists:$cDBError_arr}
-                            <tr class="filestate mod{$smarty.foreach.datei.iteration%2} {if !$cTable|array_key_exists:$cDBError_arr}unmodified{else}modified{/if}">
+                            <tr class="filestate {if !$cTable|array_key_exists:$cDBError_arr}unmodified{else}modified{/if}">
                                 <td>
                                     {if $hasError}
                                         {$cTable}
                                     {else}
-                                        <label for="check-{$smarty.foreach.datei.iteration}">{$cTable}</label>
+                                        <label for="check-{$oDatei@iteration}">{$cTable}</label>
                                     {/if}
                                 </td>
                                 <td>
@@ -82,8 +82,8 @@
                                             <a href="#" class="btn btn-default btn-migrate" data-action="migrate" data-table="{$cTable}" data-step="2"><i class="fa fa-cogs"></i></a>
                                         {/if}
                                         <div class="custom-control custom-checkbox{if $hasError} d-none{/if}">
-                                            <input class="custom-control-input" id="check-{$smarty.foreach.datei.iteration}" type="checkbox" name="check[]" value="{$cTable}" />
-                                            <label class="custom-control-label" for="check-{$smarty.foreach.datei.iteration}"></label>
+                                            <input class="custom-control-input" id="check-{$oDatei@iteration}" type="checkbox" name="check[]" value="{$cTable}" />
+                                            <label class="custom-control-label" for="check-{$oDatei@iteration}"></label>
                                         </div>
                                     {/if}
                                 </td>
@@ -111,7 +111,7 @@
                         <div class="col-sm-6 col-xl-auto">
                             <button type="submit" class="btn btn-primary">{__('send')}</button>
                         </div>
-                        {if $cDBError_arr|@count > 0}
+                        {if $cDBError_arr|count > 0}
                         <div class="col-sm-6 col-xl-auto ml-auto">
                             <button id="viewAll" name="viewAll" type="button" class="btn btn-primary fade" value="Alle anzeigen"><i class="fa fa-share"></i> {__('showAll')}</button>
                             <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified fade show" value="Modifizierte anzeigen"><i class="fal fa-exclamation-triangle"></i> {__('showModified')}</button>

@@ -9,25 +9,24 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
 
 Shop::setPageType(PAGE_KONTAKT);
 $smarty         = Shop::Smarty();
 $conf           = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
 $linkHelper     = Shop::Container()->getLinkService();
-$kLink          = $linkHelper->getSpecialPageID(LINKTYP_KONTAKT);
-$link           = $linkHelper->getPageLink($kLink);
+$link           = $linkHelper->getSpecialPage(LINKTYP_KONTAKT);
 $cCanonicalURL  = '';
 $specialContent = new stdClass();
 $alertHelper    = Shop::Container()->getAlertService();
 $lang           = Shop::getLanguageCode();
 if (Form::checkSubject()) {
+    $db          = Shop::Container()->getDB();
     $step        = 'formular';
     $missingData = [];
     if (Request::postInt('kontakt') === 1 && Form::validateToken()) {
         $missingData     = Form::getMissingContactFormData();
         $customerGroupID = Frontend::getCustomerGroup()->getID();
-        $checkBox        = new CheckBox();
+        $checkBox        = new CheckBox(0, $db);
         $missingData     = array_merge(
             $missingData,
             $checkBox->validateCheckBox(CHECKBOX_ORT_KONTAKT, $customerGroupID, $_POST, true)
@@ -53,7 +52,7 @@ if (Form::checkSubject()) {
         }
     }
 
-    $contents = Shop::Container()->getDB()->selectAll(
+    $contents = $db->selectAll(
         'tspezialcontentsprache',
         ['nSpezialContent', 'cISOSprache'],
         [(int)SC_KONTAKTFORMULAR, $lang]
@@ -61,7 +60,7 @@ if (Form::checkSubject()) {
     foreach ($contents as $content) {
         $specialContent->{$content->cTyp} = $content->cContent;
     }
-    $subjects = Shop::Container()->getDB()->getObjects(
+    $subjects = $db->getObjects(
         "SELECT *
             FROM tkontaktbetreff
             WHERE (cKundengruppen = 0
@@ -70,7 +69,7 @@ if (Form::checkSubject()) {
         ['customerGroupID' => Frontend::getCustomerGroup()->getID()]
     );
     foreach ($subjects as $subject) {
-        $localization             = Shop::Container()->getDB()->select(
+        $localization             = $db->select(
             'tkontaktbetreffsprache',
             'kKontaktBetreff',
             (int)$subject->kKontaktBetreff,
@@ -91,11 +90,11 @@ if (Form::checkSubject()) {
     $cCanonicalURL = $linkHelper->getStaticRoute('kontakt.php');
 
     $smarty->assign('step', $step)
-           ->assign('code', false)
-           ->assign('betreffs', $subjects)
-           ->assign('Vorgaben', Form::baueKontaktFormularVorgaben($step === 'nachricht versendet'))
-           ->assign('fehlendeAngaben', $missingData)
-           ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
+        ->assign('code', false)
+        ->assign('betreffs', $subjects)
+        ->assign('Vorgaben', Form::baueKontaktFormularVorgaben($step === 'nachricht versendet'))
+        ->assign('fehlendeAngaben', $missingData)
+        ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
 } else {
     Shop::Container()->getLogService()->error('Kein Kontaktbetreff vorhanden! Bitte im Backend unter ' .
         'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.');
@@ -104,7 +103,7 @@ if (Form::checkSubject()) {
 }
 
 $smarty->assign('Link', $link)
-       ->assign('Spezialcontent', $specialContent);
+    ->assign('Spezialcontent', $specialContent);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_KONTAKT_PAGE);

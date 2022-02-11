@@ -196,6 +196,7 @@ class Exportformat
      */
     public function __construct(int $id = 0, DbInterface $db = null)
     {
+        \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         $this->db = $db ?? Shop::Container()->getDB();
         if ($id > 0) {
             $this->loadFromDB($id);
@@ -747,57 +748,6 @@ class Exportformat
     }
 
     /**
-     * @param array $config
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function insertEinstellungen(array $config): bool
-    {
-        $ok = true;
-        foreach ($config as $item) {
-            $ins = new stdClass();
-            if (\is_array($item) && \count($item) > 0) {
-                foreach (\array_keys($item) as $cMember) {
-                    $ins->$cMember = $item[$cMember];
-                }
-                $ins->kExportformat = $this->getExportformat();
-            }
-            $ok = $ok && ($this->db->insert('texportformateinstellungen', $ins) > 0);
-        }
-
-        return $ok;
-    }
-
-    /**
-     * @param array $config
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function updateEinstellungen(array $config): bool
-    {
-        $ok = true;
-        foreach ($config as $conf) {
-            $import = [
-                'exportformate_semikolon',
-                'exportformate_equot',
-                'exportformate_quot'
-            ];
-            if (\in_array($conf['cName'], $import, true)) {
-                $_upd        = new stdClass();
-                $_upd->cWert = $conf['cWert'];
-                $ok          = $ok && ($this->db->update(
-                    'tboxensichtbar',
-                    ['kExportformat', 'cName'],
-                    [$this->getExportformat(), $conf['cName']],
-                    $_upd
-                ) >= 0);
-            }
-        }
-
-        return $ok;
-    }
-
-    /**
      * @return Exportformat
      */
     private function initSmarty(): self
@@ -901,10 +851,7 @@ class Exportformat
         }
 
         $condition = 'AND (tartikel.dErscheinungsdatum IS NULL OR NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE()))';
-        $conf      = Shop::getSettings([\CONF_GLOBAL]);
-        if (isset($conf['global']['global_erscheinende_kaeuflich'])
-            && $conf['global']['global_erscheinende_kaeuflich'] === 'Y'
-        ) {
+        if (Shop::getSettingValue(\CONF_GLOBAL, 'global_erscheinende_kaeuflich') === 'Y') {
             $condition = "AND (
                 tartikel.dErscheinungsdatum IS NULL 
                 OR NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE())
@@ -951,9 +898,9 @@ class Exportformat
     }
 
     /**
-     * @return QueueEntry
+     * @return QueueEntry|null
      */
-    public function getQueue()
+    public function getQueue(): ?QueueEntry
     {
         return $this->queue;
     }
@@ -1172,7 +1119,7 @@ class Exportformat
         $product->Versandkosten         = ShippingMethod::getLowestShippingFees(
             $this->config['exportformate_lieferland'] ?? '',
             $product,
-            0,
+            false,
             $this->kKundengruppe
         );
         if ($product->Versandkosten !== -1) {
@@ -1334,7 +1281,7 @@ class Exportformat
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
         foreach ($this->db->getObjects($this->getExportSQL()) as $productData) {
-            $product = new Artikel();
+            $product = new Artikel($this->db);
             $product->fuelleArtikel(
                 (int)$productData->kArtikel,
                 $options,
@@ -1355,7 +1302,7 @@ class Exportformat
                 ++$cacheMisses;
             }
             $product           = $this->augmentProduct($product, $findTwo, $replaceTwo);
-            $productCategoryID = $product->gibKategorie();
+            $productCategoryID = $product->gibKategorie($this->kKundengruppe);
             if ($categoryFallback === true) {
                 // since 4.05 the product class only stores category IDs in Artikel::oKategorie_arr
                 // but old google base exports rely on category attributes that wouldn't be available anymore
@@ -1667,7 +1614,7 @@ class Exportformat
                 AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1"
         );
         if ($productData !== null && $productData->kArtikel > 0) {
-            $product = new Artikel();
+            $product = new Artikel($this->db);
             $product->fuelleArtikel($productData->kArtikel, Artikel::getExportOptions());
             $product->cDeeplink             = '';
             $product->Artikelbild           = '';
@@ -1700,6 +1647,7 @@ class Exportformat
      */
     public static function ioCheckSyntax(int $id): stdClass
     {
+        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         \ini_set('html_errors', '0');
         \ini_set('display_errors', '1');
         \ini_set('log_errors', '0');

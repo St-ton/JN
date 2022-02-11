@@ -82,37 +82,6 @@ class GroupLocalization implements JsonSerializable
     }
 
     /**
-     * @param bool $primary
-     * @return bool|int
-     * @deprecated since 5.0.0
-     */
-    public function save(bool $primary = true)
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return false;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function update(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function delete(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
      * @param int $kKonfiggruppe
      * @return $this
      */
@@ -140,7 +109,7 @@ class GroupLocalization implements JsonSerializable
      */
     public function setName($name): self
     {
-        $this->cName = Shop::Container()->getDB()->escape($name);
+        $this->cName = $name;
 
         return $this;
     }
@@ -151,7 +120,7 @@ class GroupLocalization implements JsonSerializable
      */
     public function setBeschreibung($cBeschreibung): self
     {
-        $this->cBeschreibung = Shop::Container()->getDB()->escape($cBeschreibung);
+        $this->cBeschreibung = $cBeschreibung;
 
         return $this;
     }

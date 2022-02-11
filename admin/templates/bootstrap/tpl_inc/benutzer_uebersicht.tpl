@@ -38,12 +38,12 @@
                         {foreach $oAdminList_arr as $oAdmin}
                             <tr>
                                 <td class="text-left">{$oAdmin->kAdminlogin}</td>
-                                <td class="text-center">{$oAdmin->cLogin}</td>
+                                <td class="text-center">{JTL\Helpers\Text::filterXSS($oAdmin->cLogin)}</td>
                                 <td class="text-center">{if $oAdmin->b2FAauth}{__('stateON')}{else}{__('stateOFF')}{/if}</td>
-                                <td class="text-center">{$oAdmin->cMail}</td>
+                                <td class="text-center">{JTL\Helpers\Text::filterXSS($oAdmin->cMail)}</td>
                                 <td class="text-center">
                                     {if $oAdmin->kAdminlogingruppe > 1}
-                                        <form method="post" action="benutzerverwaltung.php">
+                                        <form method="post" action="{$adminURL}/benutzerverwaltung.php">
                                             {$jtl_token}
                                             <input type="hidden" name="id" value="{$oAdmin->kAdminlogingruppe}" />
                                             <button type="submit" class="btn btn-default" name="action" value="group_edit">{$oAdmin->cGruppe}</button>
@@ -56,7 +56,7 @@
                                 <td class="text-center">{if $oAdmin->dLetzterLogin && $oAdmin->dLetzterLogin !== null}{$oAdmin->dLetzterLogin|date_format:'%d.%m.%Y %H:%M:%S'}{else}---{/if}</td>
                                 <td class="text-center">{if !$oAdmin->bAktiv}gesperrt{else}{if $oAdmin->dGueltigBis && $oAdmin->dGueltigBis !== null}{$oAdmin->dGueltigBis|date_format:'%d.%m.%Y %H:%M:%S'}{else}---{/if}{/if}</td>
                                 <td class="text-center">
-                                    <form method="post" action="benutzerverwaltung.php">
+                                    <form method="post" action="{$adminURL}/benutzerverwaltung.php">
                                         {$jtl_token}
                                         <input type="hidden" name="id" value="{$oAdmin->kAdminlogin}" />
                                         <div class="btn-group">
@@ -104,7 +104,7 @@
                 <div class="save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <form action="benutzerverwaltung.php" method="post">
+                            <form action="{$adminURL}/benutzerverwaltung.php" method="post">
                                 {$jtl_token}
                                 <input type="hidden" name="action" value="account_edit" />
                                 <button type="submit" class="btn btn-primary btn-block">
@@ -138,7 +138,7 @@
                                 <td class="text-center">{$oGroup->nCount}</td>
                                 <td class="text-center">
                                     {if $oGroup->kAdminlogingruppe !== '1'}
-                                        <form method="post" action="benutzerverwaltung.php">
+                                        <form method="post" action="{$adminURL}/benutzerverwaltung.php">
                                             {$jtl_token}
                                             <input type="hidden" value="{$oGroup->kAdminlogingruppe}" name="id" />
                                             <div class="btn-group">
@@ -171,7 +171,7 @@
                 <div class="save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <form action="benutzerverwaltung.php" method="post">
+                            <form action="{$adminURL}/benutzerverwaltung.php" method="post">
                                 <input type="hidden" name="action" value="group_edit" />
                                 {$jtl_token}
                                 <button type="submit" class="btn btn-primary btn-block">

@@ -11,7 +11,7 @@ var pies = [];
 <div id="content">
     <div class="card">
         <div class="card-body">
-            <form class="delete-run" action="profiler.php" method="post">
+            <form class="delete-run" action="{$adminURL}/profiler.php" method="post">
                 {$jtl_token}
                 <input type="hidden" value="y" name="delete-all" />
                 <button type="submit" class="btn btn-danger" name="delete-run-submit"><i class="fas fa-trash-alt"></i> {__('deleteAll')}</button>
@@ -35,7 +35,7 @@ var pies = [];
         </nav>
         <div class="tab-content">
             <div id="plugins" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active show{/if}">
-                {if $pluginProfilerData|@count > 0}
+                {if $pluginProfilerData|count > 0}
                     <div class="accordion" id="accordion" role="tablist" aria-multiselectable="true">
                         {foreach $pluginProfilerData as $profile}
                         <div class="card">
@@ -61,7 +61,7 @@ var pies = [];
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    <form class="delete-run" action="profiler.php" method="post">
+                                    <form class="delete-run" action="{$adminURL}/profiler.php" method="post">
                                         {$jtl_token}
                                         <input type="hidden" value="{$profile->runID}" name="run-id" />
                                         <div class="row">
@@ -82,7 +82,7 @@ var pies = [];
                 {/if}
             </div>
             <div id="sqlprofiler" class="tab-pane fade{if isset($tab) && $tab === 'sqlprofiler'} active show{/if}">
-                {if $sqlProfilerData !== null && $sqlProfilerData|@count > 0}
+                {if $sqlProfilerData !== null && $sqlProfilerData|count > 0}
                     <div class="accordion" id="accordion2" role="tablist" aria-multiselectable="true">
                         {foreach $sqlProfilerData as $run}
                             <div class="card">
@@ -106,7 +106,7 @@ var pies = [];
                                                         <strong>{__('statement')}:</strong> <code class="sql">{$query->statement}</code><br />
                                                     {/if}
                                                     {if $query->data !== null}
-                                                        {assign var=data value=$query->data|@unserialize}
+                                                        {assign var=data value=$query->data|unserialize}
                                                         <strong>{__('backtrace')}:</strong>
                                                         <ol class="backtrace">
                                                             {foreach $data.backtrace as $backtrace}
@@ -123,7 +123,7 @@ var pies = [];
                                         </ul>
                                     </div>
                                     <div class="card-footer save-wrapper">
-                                        <form class="delete-run" action="profiler.php" method="post">
+                                        <form class="delete-run" action="{$adminURL}/profiler.php" method="post">
                                             {$jtl_token}
                                             <input type="hidden" value="{$run->runID}" name="run-id" />
                                             <div class="row">

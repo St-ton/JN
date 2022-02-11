@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Session\Handler;
 
@@ -23,7 +23,7 @@ class Bot extends JTLDefault
     /**
      * @param bool $doSave - when true, session is saved, otherwise it will be discarded immediately
      */
-    public function __construct($doSave = false)
+    public function __construct(bool $doSave = false)
     {
         $this->sessionID = \session_id();
         $this->doSave    = $doSave;

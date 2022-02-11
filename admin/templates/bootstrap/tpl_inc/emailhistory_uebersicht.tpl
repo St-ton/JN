@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('emailhistory') cBeschreibung=__('emailhistoryDesc') cDokuURL=__('emailhistoryURL')}
 <div id="content">
-    {if $oEmailhistory_arr|@count > 0 && $oEmailhistory_arr}
+    {if $oEmailhistory_arr|count > 0 && $oEmailhistory_arr}
         <div class="card">
             <div class="card-header">
                 <div class="subheading1">{__('emailhistory')}</div>
@@ -8,7 +8,7 @@
             </div>
             <div class="card-body">
                 {include file='tpl_inc/pagination.tpl' pagination=$pagination}
-                <form name="emailhistory" method="post" action="emailhistory.php">
+                <form name="emailhistory" method="post" action="{$adminURL}/emailhistory.php">
                     {$jtl_token}
                     <script>
                         {literal}

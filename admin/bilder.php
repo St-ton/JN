@@ -95,9 +95,9 @@ $indices = [
     'news'          => __('news'),
     'newskategorie' => __('newscategory')
 ];
-$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_BILDER))
-    ->assign('oConfig', Shop::getSettings([CONF_BILDER])['bilder'])
-    ->assign('indices', $indices)
+getAdminSectionSettings(CONF_BILDER);
+$smarty->assign('indices', $indices)
+    ->assign('imgConf', Shop::getSettingSection(CONF_BILDER))
     ->assign('sizes', ['mini', 'klein', 'normal', 'gross'])
     ->assign('dims', ['breite', 'hoehe'])
     ->display('bilder.tpl');

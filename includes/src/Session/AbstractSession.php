@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Session;
 
@@ -33,7 +33,7 @@ abstract class AbstractSession
         self::$sessionName = $sessionName;
         \session_name(self::$sessionName);
         self::$handler = (new Storage())->getHandler();
-        $this->initCookie(Shop::getSettings([\CONF_GLOBAL])['global'], $start);
+        $this->initCookie(Shop::getSettingSection(\CONF_GLOBAL), $start);
         self::$handler->setSessionData($_SESSION);
     }
 

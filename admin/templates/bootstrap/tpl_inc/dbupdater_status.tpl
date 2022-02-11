@@ -19,7 +19,7 @@
                     <tbody>
                       {$migrationIndex = 1}
                       {$executedMigrations = $manager->getExecutedMigrations()}
-                      {foreach $manager->getMigrations()|@array_reverse as $m}
+                      {foreach $manager->getMigrations()|array_reverse as $m}
                           {$executed = $m->getId()|in_array:$executedMigrations}
                           {if $filter === 0 || ($filter === 1 && $executed) || ($filter === 2 && !$executed)}
                               <tr>
@@ -74,7 +74,7 @@
             </div>
             <div id="btn-update-group" class="row">
                 <div class="col-sm-6 col-xl-auto mb-3">
-                    <a href="dbupdater.php?action=update" class="btn btn-success btn-block" data-callback="update"><i class="fa fa-flash"></i> {__('buttonUpdateNow')}</a>
+                    <a href="{$adminURL}/dbupdater.php?action=update" class="btn btn-success btn-block" data-callback="update"><i class="fa fa-flash"></i> {__('buttonUpdateNow')}</a>
                 </div>
                 <div class="col-sm-6 col-xl-auto">
                     <button id="backup-button" type="button" class="btn btn-outline-primary btn-block dropdown-toggle ladda-button" data-size="l" data-style="zoom-out" data-spinner-color="#000" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

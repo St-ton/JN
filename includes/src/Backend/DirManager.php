@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
 /**
  * Class DirManager
- * @package Backend
+ * @package JTL\Backend
  */
 class DirManager
 {

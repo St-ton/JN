@@ -60,7 +60,8 @@
                     {/block}
                     {block name='basket-cart-items-items-main-content'}
                         {col cols=$cols xl=$itemInfoCols class="ml-auto-util"}
-                        {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK}
+                        {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL
+                        || $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK}
                             {block name='basket-cart-items-product-link'}
                                 {link class="cart-items-name" href=$oPosition->Artikel->cURLFull title=$posName}{$oPosition->cName|trans}{/link}
                             {/block}
@@ -83,7 +84,7 @@
                                     {/if}
                                     {if $oPosition->Artikel->cLocalizedVPE
                                         && $oPosition->Artikel->cVPE !== 'N'
-                                        && $oPosition->nPosTyp != $C_WARENKORBPOS_TYP_GRATISGESCHENK
+                                        && $oPosition->nPosTyp !== $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK
                                     }
                                         {block name='basket-cart-items-product-data-base-price'}
                                             <li class="baseprice"><strong>{lang key='basePrice'}:</strong> {$oPosition->Artikel->cLocalizedVPE[$NettoPreise]}</li>
@@ -219,7 +220,7 @@
                             {/block}
                         {/if}
 
-                        {if !empty($oPosition->Artikel->kStueckliste) && !empty($oPosition->Artikel->oStueckliste_arr)}
+                        {if $Einstellungen.kaufabwicklung.bestellvorgang_partlist === 'Y' && !empty($oPosition->Artikel->kStueckliste) && !empty($oPosition->Artikel->oStueckliste_arr)}
                             {block name='basket-cart-items-product-partlist-items'}
                                 <ul class="partlist-items text-muted-util small">
                                     {foreach $oPosition->Artikel->oStueckliste_arr as $partListItem}
@@ -236,7 +237,8 @@
                         {block name='basket-cart-items-price-single'}
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
                                 {col cols=$cols xl=2 class="cart-items-single-price"}
-                                {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL && (!$oPosition->istKonfigVater() || !isset($oPosition->oKonfig_arr) || $oPosition->oKonfig_arr|count === 0)}
+                                {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL
+                                && (!$oPosition->istKonfigVater() || !isset($oPosition->oKonfig_arr) || $oPosition->oKonfig_arr|count === 0)}
                                     <strong class="cart-items-price-text">
                                         {lang key="pricePerUnit" section="productDetails"}:
                                     </strong>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
@@ -247,7 +249,7 @@
 
                         {col cols=$cols xl=3 class="cart-items-quantity"}
                         {block name='basket-cart-items-quantity'}
-                            {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
+                            {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL}
                                 {if $oPosition->istKonfigVater()}
                                     <div class="qty-wrapper max-w-sm">
                                         {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
@@ -274,7 +276,10 @@
                                                 id="quantity[{$oPosition@index}]" class="quantity" name="anzahl[{$oPosition@index}]"
                                                 aria=["label"=>"{lang key='quantity'}"]
                                                 value=$oPosition->nAnzahl
-                                                data=["decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall}]
+                                                data=[
+                                                    "decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall},
+                                                    "product-id"=>"{if isset($oPosition->Artikel->kVariKindArtikel)}{$oPosition->Artikel->kVariKindArtikel}{else}{$oPosition->Artikel->kArtikel}{/if}"
+                                                ]
                                             }
                                             {inputgroupappend}
                                                 {button variant="" class="btn-increment"
@@ -286,7 +291,7 @@
                                         {/inputgroup}
                                     </div>
                                 {/if}
-                            {elseif $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK}
+                            {elseif $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK}
                                 {input name="anzahl[{$oPosition@index}]" type="hidden" value="1"}
                             {/if}
                         {/block}
@@ -305,11 +310,12 @@
                         {/col}
                     {/block}
                     {block name='basket-cart-items-cart-submit'}
-                        {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL
-                        || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK
+                        {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL
+                        || $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK
                         }
                             {col cols=$cols xl=10 class='cart-items-delete' data=['toggle'=>'product-actions']}
-                                {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y' && $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
+                                {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'
+                                && $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL}
                                     {block name='basket-cart-items-cart-submit-include-wishlist-button'}
                                         {include file='snippets/wishlist_button.tpl' Artikel=$oPosition->Artikel buttonAndText=true}
                                     {/block}

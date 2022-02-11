@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
@@ -26,8 +26,7 @@ if (!empty($_POST) && Form::validateToken()) {
 
     if (isset($postData['test'])) {
         try {
-            $config  = Shop::getSettings([CONF_FS])['fs'];
-            $factory = new AdapterFactory($config);
+            $factory = new AdapterFactory(Shop::getSettingSection(CONF_FS));
             $factory->setFtpConfig([
                 'ftp_host'     => $postData['ftp_hostname'],
                 'ftp_port'     => (int)($postData['ftp_port'] ?? 21),
@@ -57,7 +56,5 @@ if (!empty($_POST) && Form::validateToken()) {
         }
     }
 }
-$config = getAdminSectionSettings(CONF_FS);
-Shop::Container()->getGetText()->localizeConfigs($config);
-$smarty->assign('oConfig_arr', $config)
-    ->display('filesystem.tpl');
+getAdminSectionSettings(CONF_FS);
+$smarty->display('filesystem.tpl');

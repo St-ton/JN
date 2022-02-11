@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -370,7 +370,7 @@ class Text
      * @param string $input
      * @return int
      */
-    public static function is_utf8(string $input)
+    public static function is_utf8(string $input): int
     {
         $res = \preg_match(
             '%^(?:[\x09\x0A\x0D\x20-\x7E]  # ASCII
@@ -385,8 +385,8 @@ class Text
             $input
         );
         if ($res === false) {
-            //some kind of pcre error happend - probably PREG_JIT_STACKLIMIT_ERROR.
-            //we could check this via preg_last_error()
+            // some kind of pcre error happend - probably PREG_JIT_STACKLIMIT_ERROR.
+            // we could check this via preg_last_error()
             $res = (int)(\mb_detect_encoding($input, 'UTF-8', true) === 'UTF-8');
         }
 
@@ -614,7 +614,7 @@ class Text
      */
     public static function filterURL($input, bool $validate = true, bool $setHTTP = false)
     {
-        if (!\is_string($input)) {
+        if (!\is_string($input) || $input === '') {
             return false;
         }
         if (\mb_detect_encoding($input) !== 'UTF-8' || !self::is_utf8($input)) {
@@ -626,9 +626,8 @@ class Text
         }
         $hasScheme = isset($parsed['scheme']);
         $domain    = $parsed['host'] ?? $parsed['path'];
-
         $idnDomain = \idn_to_ascii($domain, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46);
-        if ($idnDomain !== $domain) {
+        if ($idnDomain !== false && $idnDomain !== $domain) {
             $input = \str_replace($domain, $idnDomain, $input);
         }
         if ($setHTTP && $hasScheme === false) {
@@ -645,17 +644,13 @@ class Text
      * Build an URL string from a given associative array of parts according to PHP's \parse_url()
      *
      * @param array $parts
-     * @return string - the resulting URL
+     * @return string
+     * @deprecated since 5.1.1
      */
     public static function buildUrl(array $parts): string
     {
-        return (isset($parts['scheme']) ? $parts['scheme'] . '://' : '') .
-            (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '') . '@' : '') .
-            ($parts['host'] ?? '') .
-            (isset($parts['port']) ? ':' . $parts['port'] : '') .
-            ($parts['path'] ?? '') .
-            (isset($parts['query']) ? '?' . $parts['query'] : '') .
-            (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
+        \trigger_error(__METHOD__ . ' is deprecated. Use JTL\Helpers\URL::unparseURL() instead.', \E_USER_DEPRECATED);
+        return URL::unparseURL($parts);
     }
 
     /**

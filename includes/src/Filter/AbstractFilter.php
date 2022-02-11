@@ -868,6 +868,9 @@ abstract class AbstractFilter implements FilterInterface
         $value     = $this->getValue();
         $valuePart = $value === null ? '' : \json_encode($value);
 
-        return 'fltr_' . \str_replace('\\', '', static::class) . \md5($query) . $valuePart;
+        return 'fltr_' . \str_replace('\\', '', static::class)
+            . '_' . $this->getLanguageID()
+            . '_' . \md5($query)
+            . $valuePart;
     }
 }

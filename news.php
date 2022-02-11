@@ -13,8 +13,6 @@ use JTL\Shop;
 use JTL\Shopsetting;
 
 require_once __DIR__ . '/includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'news_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 
 $NaviFilter       = Shop::run();
 $params           = Shop::getParameters();
@@ -28,8 +26,7 @@ $cMetaDescription = '';
 $cMetaKeywords    = '';
 $conf             = Shopsetting::getInstance()->getAll();
 $customerGroupID  = Frontend::getCustomerGroup()->getID();
-$linkService      = Shop::Container()->getLinkService();
-$link             = $linkService->getPageLink($linkService->getSpecialPageID(LINKTYP_NEWS));
+$link             = Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_NEWS);
 $smarty           = Shop::Smarty();
 $controller       = new Controller($db, $conf, $smarty);
 $alertHelper      = Shop::Container()->getAlertService();

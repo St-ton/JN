@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('order') cBeschreibung=__('orderDesc') cDokuURL=__('orderURL')}
 <div id="content">
-    {if $orders|@count > 0}
+    {if $orders|count > 0}
         <div class="card">
             <div class="card-header">
                 <div class="subheading1">{__('order')}</div>
@@ -8,7 +8,7 @@
             </div>
             <div class="card-body">
                 <div class="search-toolbar mb-3">
-                    <form name="bestellungen" method="post" action="bestellungen.php">
+                    <form name="bestellungen" method="post" action="{$adminURL}/bestellungen.php">
                         {$jtl_token}
                         <input type="hidden" name="Suche" value="1" />
                         <div class="form-row">
@@ -23,7 +23,7 @@
                     </form>
                 </div>
                 {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['cSuche'=>$cSuche]}
-                <form name="bestellungen" method="post" action="bestellungen.php">
+                <form name="bestellungen" method="post" action="{$adminURL}/bestellungen.php">
                     {$jtl_token}
                     <input type="hidden" name="zuruecksetzen" value="1" />
                     {if isset($cSuche) && $cSuche|strlen > 0}

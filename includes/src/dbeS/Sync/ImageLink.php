@@ -1,10 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
 use JTL\dbeS\Starter;
 use JTL\Media\Image\Product;
 use SimpleXMLElement;
+use stdClass;
 use function Functional\flatten;
 use function Functional\map;
 
@@ -21,7 +22,7 @@ final class ImageLink extends AbstractSync
     public function handle(Starter $starter)
     {
         $productIDs = [];
-        foreach ($starter->getXML(true) as $i => $item) {
+        foreach ($starter->getXML(true) as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             if (\strpos($file, 'del_bildartikellink.xml') !== false) {
                 $productIDs[] = $this->handleDeletes($xml);
@@ -75,9 +76,9 @@ final class ImageLink extends AbstractSync
     }
 
     /**
-     * @param \stdClass $item
+     * @param stdClass $item
      */
-    private function deleteImageItem($item): void
+    private function deleteImageItem(stdClass $item): void
     {
         $image = $this->db->select('tartikelpict', 'kArtikel', $item->kArtikel, 'nNr', $item->nNr);
         if (!\is_object($image)) {

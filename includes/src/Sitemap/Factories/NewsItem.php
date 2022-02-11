@@ -3,6 +3,7 @@
 namespace JTL\Sitemap\Factories;
 
 use Generator;
+use JTL\Language\LanguageModel;
 use JTL\Sitemap\Items\NewsItem as Item;
 use PDO;
 use function Functional\first;
@@ -19,8 +20,8 @@ final class NewsItem extends AbstractFactory
      */
     public function getCollection(array $languages, array $customerGroups): Generator
     {
-        $languageIDs = map($languages, static function ($e) {
-            return (int)$e->kSprache;
+        $languageIDs = map($languages, static function (LanguageModel $e) {
+            return $e->getId();
         });
         $res         = $this->db->getPDOStatement(
             "SELECT tnews.dGueltigVon AS dlm, tnews.kNews, tnews.cPreviewImage AS image, tseo.cSeo, 

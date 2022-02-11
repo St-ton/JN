@@ -2,7 +2,7 @@
 
 <script type="text/javascript">
     function changeStatType(elem) {ldelim}
-        window.location.href = "statistik.php?s=" + elem.options[elem.selectedIndex].value;
+        window.location.href = "{$adminURL}/statistik.php?s=" + elem.options[elem.selectedIndex].value;
     {rdelim}
 </script>
 {if $nTyp === $smarty.const.STATS_ADMIN_TYPE_BESUCHER}
@@ -57,7 +57,7 @@
             <div class="card-body">
                 {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['s' => $nTyp]}
                 {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['s' => $nTyp]}
-                {if isset($oStat_arr) && $oStat_arr|@count > 0}
+                {if isset($oStat_arr) && $oStat_arr|count > 0}
                     <div class="table-responsive">
                         <table class="table table-striped table-sm">
                             <thead>
@@ -68,10 +68,10 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {foreach name=stats key=i from=$oStat_arr item=oStat}
+                            {foreach $oStat_arr as $i => $oStat}
                                 {if $i >= $nPosAb && $i < $nPosBis}
                                     <tr>
-                                        {foreach name=member from=$cMember_arr[$i] key=j item=cMember}
+                                        {foreach $cMember_arr[$i] as $j => $cMember}
                                             {assign var=cMemberVar value=$cMember[0]}
                                             <td class="text-center">
                                                 {if $cMemberVar === 'nCount' && $nTyp === $smarty.const.STATS_ADMIN_TYPE_UMSATZ}

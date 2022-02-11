@@ -23,11 +23,9 @@ use JTL\News\CommentList;
 use JTL\News\Controller as FrontendController;
 use JTL\News\Item;
 use JTL\News\ItemList;
-use JTL\OPC\PageDB;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
-use function Functional\map;
 
 /**
  * Class Controller
@@ -337,7 +335,7 @@ final class Controller
             $author->clearAuthor('NEWS', $newsItemID);
             $newsData = $this->db->select('tnews', 'kNews', $newsItemID);
             $this->db->delete('tnews', 'kNews', $newsItemID);
-            \loescheNewsBilderDir($newsItemID, self::UPLOAD_DIR);
+            self::deleteImageDir($newsItemID);
             $this->db->delete('tnewskommentar', 'kNews', $newsItemID);
             $this->db->delete('tseo', ['cKey', 'kKey'], ['kNews', $newsItemID]);
             $this->db->delete('tnewskategorienews', 'kNews', $newsItemID);
@@ -403,15 +401,14 @@ final class Controller
      */
     private function getCategoryAndChildrenByID(int $categoryID): array
     {
-        return map($this->db->getObjects(
+        return $this->db->getInts(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node, tnewskategorie AS parent
                 WHERE node.lft BETWEEN parent.lft AND parent.rght
                     AND parent.kNewsKategorie = :cid',
+            'id',
             ['cid' => $categoryID]
-        ), static function ($e) {
-            return (int)$e->id;
-        });
+        );
     }
 
     /**
@@ -676,12 +673,10 @@ final class Controller
     public function getAllNews(): Collection
     {
         $itemList = new ItemList($this->db);
-        $ids      = map($this->db->getObjects(
-            'SELECT kNews FROM tnews'
-        ), static function ($e) {
-            return (int)$e->kNews;
-        });
-        $itemList->createItems($ids);
+        $itemList->createItems($this->db->getInts(
+            'SELECT kNews FROM tnews',
+            'kNews'
+        ));
 
         return $itemList->getItems()->sortByDesc(static function (Item $e) {
             return $e->getDateCreated();
@@ -694,17 +689,16 @@ final class Controller
     public function getNonActivatedComments(): Collection
     {
         $itemList = new CommentList($this->db);
-        $ids      = map($this->db->getObjects(
+        $ids      = $this->db->getInts(
             'SELECT tnewskommentar.kNewsKommentar AS id
                 FROM tnewskommentar
                 JOIN tnews 
                     ON tnews.kNews = tnewskommentar.kNews
                 JOIN tnewssprache t 
                     ON tnews.kNews = t.kNews
-                WHERE tnewskommentar.nAktiv = 0'
-        ), static function ($e) {
-            return (int)$e->id;
-        });
+                WHERE tnewskommentar.nAktiv = 0',
+            'id'
+        );
         $itemList->createItems($ids, false);
 
         return $itemList->getItems();
@@ -717,17 +711,16 @@ final class Controller
     public function getAllNewsCategories(bool $showOnlyActive = false): Collection
     {
         $itemList = new CategoryList($this->db);
-        $ids      = map($this->db->getObjects(
+        $ids      = $this->db->getInts(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node 
                 INNER JOIN tnewskategorie AS parent
                 WHERE node.lvl > 0 
                     AND parent.lvl > 0 ' . ($showOnlyActive ? ' AND node.nAktiv = 1 ' : '') .
             ' GROUP BY node.kNewsKategorie
-                ORDER BY node.lft, node.nSort ASC'
-        ), static function ($e) {
-            return (int)$e->id;
-        });
+                ORDER BY node.lft, node.nSort ASC',
+            'id'
+        );
         $itemList->createItems($ids);
 
         return $itemList->generateTree();
@@ -876,11 +869,11 @@ final class Controller
 
 
     /**
-     * @param string     $tab
-     * @param string     $msg
-     * @param array|null $urlParams
+     * @param string      $tab
+     * @param string|null $msg
+     * @param array|null  $urlParams
      */
-    public function newsRedirect(string $tab = '', string $msg = '', ?array $urlParams = null): void
+    public function newsRedirect(string $tab = '', ?string $msg = '', ?array $urlParams = null): void
     {
         $tabPageMapping = [
             'inaktiv'    => 's1',
@@ -927,6 +920,26 @@ final class Controller
     public function getImageType(): string
     {
         return Image::TYPE_NEWS;
+    }
+
+    /**
+     * @param int $newsID
+     * @return bool
+     */
+    public static function deleteImageDir(int $newsID): bool
+    {
+        if (!\is_dir(self::UPLOAD_DIR . $newsID)) {
+            return false;
+        }
+        $handle = \opendir(self::UPLOAD_DIR . $newsID);
+        while (($file = \readdir($handle)) !== false) {
+            if ($file !== '.' && $file !== '..') {
+                \unlink(self::UPLOAD_DIR . $newsID . '/' . $file);
+            }
+        }
+        \rmdir(self::UPLOAD_DIR . $newsID);
+
+        return true;
     }
 
     /**
@@ -1111,7 +1124,7 @@ final class Controller
     public function hasOPCContent(array $languages, int $newsId): bool
     {
         $pageService = Shop::Container()->getOPCPageService();
-        
+
         foreach ($languages as $language) {
             $pageID = $pageService->createGenericPageId('news', $newsId, $language->getId());
             if ($pageService->getDraftCount($pageID) > 0) {

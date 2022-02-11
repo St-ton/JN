@@ -7,20 +7,21 @@ use JTL\Language\LanguageHelper;
 use JTL\Plugin\Helper;
 use JTL\Shop;
 
-define('DEFINES_PFAD', __DIR__ . '/../includes/');
-define('FREIDEFINIERBARER_FEHLER', 8);
+const DEFINES_PFAD             = __DIR__ . '/../includes/';
+const FREIDEFINIERBARER_FEHLER = 8;
 
 require_once DEFINES_PFAD . 'config.JTL-Shop.ini.php';
 require_once DEFINES_PFAD . 'defines.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
 /**
  * @param string $error
  * @return string
  */
-function translateError($error)
+function translateError(string $error): string
 {
     if (preg_match('/Maximum execution time of (\d+) second.? exceeded/', $error, $matches)) {
         $seconds = (int)$matches[1];
@@ -37,15 +38,16 @@ function translateError($error)
  * @param mixed $output
  * @return string
  */
-function handleError($output)
+function handleError($output): string
 {
     $error = error_get_last();
-    if ($error !== null && $error['type'] === 1) {
+    if ($error !== null && $error['type'] === E_ERROR) {
         $error  = translateError($error['message']) . "\n";
-        $error .= 'Datei: ' . $error['file'] ?? '';
+        $error .= 'Datei: ' . ($error['file'] ?? '');
         Shop::Container()->getLogService()->error($error);
-
-        return $error;
+        if (ini_get('display_errors') !== '0') {
+            return $error;
+        }
     }
 
     return $output;
@@ -66,8 +68,8 @@ function handleError($output)
  * 8: HTTP_CUSTOMERR
  * 9: HTTP_EBAYERROR
  *
- * @param string $msg Exception Message
- * @param int    $wawiExceptionCode int code (0-9)
+ * @param string   $msg - Exception Message
+ * @param int|null $wawiExceptionCode - code (0-9)
  */
 function syncException(string $msg, int $wawiExceptionCode = null)
 {
@@ -82,20 +84,6 @@ function syncException(string $msg, int $wawiExceptionCode = null)
 
 $shop = Shop::getInstance();
 error_reporting(SYNC_LOG_LEVEL);
-
-require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
-
-if (!function_exists('Shop')) {
-    /**
-     * @return Shop
-     */
-    function Shop()
-    {
-        return Shop::getInstance();
-    }
-}
-
 $db          = Shop::Container()->getDB();
 $cache       = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
@@ -106,6 +94,5 @@ $language    = LanguageHelper::getInstance($db, $cache);
 $fileID      = $_REQUEST['id'] ?? null;
 Shop::bootstrap();
 ob_start('handleError');
-
 $starter = new Starter(new Synclogin($db, $logger), new FileHandler($logger), $db, $cache, $logger);
 $starter->start($fileID, $_POST, $_FILES);

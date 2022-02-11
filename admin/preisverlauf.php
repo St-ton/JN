@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Request;
@@ -17,5 +17,5 @@ if (Request::postInt('einstellungen') === 1) {
         'saveSettings'
     );
 }
-$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_PREISVERLAUF))
-    ->display('preisverlauf.tpl');
+getAdminSectionSettings(CONF_PREISVERLAUF);
+$smarty->display('preisverlauf.tpl');

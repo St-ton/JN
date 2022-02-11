@@ -1,6 +1,6 @@
-<form method="post" action="zusatzverpackung.php">
+<form method="post" action="{$adminURL}/zusatzverpackung.php">
     {$jtl_token}
-    {if $packagings|@count > 0}
+    {if $packagings|count > 0}
     <div class="card">
         <div class="table-responsive card-body">
             {include file='tpl_inc/pagination.tpl' pagination=$pagination}
@@ -44,7 +44,7 @@
                         </td>
                         <td class="text-center">
                             <div class="btn-group">
-                                <a href="zusatzverpackung.php?kVerpackung={$packaging->kVerpackung}&token={$smarty.session.jtl_token}"
+                                <a href="{$adminURL}/zusatzverpackung.php?kVerpackung={$packaging->kVerpackung}&token={$smarty.session.jtl_token}"
                                    class="btn btn-link px-2"
                                    title="{__('modify')}"
                                    data-toggle="tooltip">
@@ -65,7 +65,7 @@
         {/if}
         <div class="card-footer save-wrapper">
             <div class="row">
-                {if $packagings|@count > 0}
+                {if $packagings|count > 0}
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         <button type="submit" name="action" value="delete" class="btn btn-danger btn-block">
                             <i class="fas fa-trash-alt"></i> {__('delete')}
@@ -77,8 +77,8 @@
                         </button>
                     </div>
                 {/if}
-                <div class="{if $packagings|@count === 0}ml-auto{/if} col-sm-6 col-xl-auto">
-                    <a href="zusatzverpackung.php?kVerpackung=0&token={$smarty.session.jtl_token}"
+                <div class="{if $packagings|count === 0}ml-auto{/if} col-sm-6 col-xl-auto">
+                    <a href="{$adminURL}/zusatzverpackung.php?kVerpackung=0&token={$smarty.session.jtl_token}"
                        class="btn btn-primary btn-block" title="{__('modify')}">
                         <i class="fa fa-share"></i> {__('zusatzverpackungCreate')}
                     </a>

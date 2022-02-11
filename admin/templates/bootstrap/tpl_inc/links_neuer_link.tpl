@@ -36,7 +36,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('newLinks') cBeschreibung=$description}
 <div id="content">
     <div id="settings">
-        <form id="create_link" name="link_erstellen" method="post" action="links.php" enctype="multipart/form-data">
+        <form id="create_link" name="link_erstellen" method="post" action="{$adminURL}/links.php" enctype="multipart/form-data">
             {$jtl_token}
             <input type="hidden" name="action" value="create-or-update-link" />
             <input type="hidden" name="kLinkgruppe" value="{$Link->getLinkGroupID()}" />
@@ -308,7 +308,7 @@
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             <input class="form-control" type="text" name="cMetaTitle_{$cISO}"
                                                    id="cMetaTitle_{$cISO}"
-                                                   value="{if isset($xPostVar_arr.$cMetaTitle_ISO) && $xPostVar_arr.$cMetaTitle_ISO}{$xPostVar_arr.$cMetaTitle_ISO|@htmlspecialchars}{elseif !empty($Link->getMetaTitle($langID))}{$Link->getMetaTitle($langID)|@htmlspecialchars}{/if}"
+                                                   value="{if isset($xPostVar_arr.$cMetaTitle_ISO) && $xPostVar_arr.$cMetaTitle_ISO}{$xPostVar_arr.$cMetaTitle_ISO|htmlspecialchars}{elseif !empty($Link->getMetaTitle($langID))}{$Link->getMetaTitle($langID)|htmlspecialchars}{/if}"
                                                    tabindex="9" />
                                         </div>
                                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
@@ -324,7 +324,7 @@
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             <input class="form-control" type="text"
                                                    name="cMetaKeywords_{$cISO}" id="cMetaKeywords_{$cISO}"
-                                                   value="{if isset($xPostVar_arr.$cMetaKeywords_ISO) && $xPostVar_arr.$cMetaKeywords_ISO}{$xPostVar_arr.$cMetaKeywords_ISO|@htmlspecialchars}{elseif !empty($Link->getMetaKeyword($langID))}{$Link->getMetaKeyword($langID)|@htmlspecialchars}{/if}"
+                                                   value="{if isset($xPostVar_arr.$cMetaKeywords_ISO) && $xPostVar_arr.$cMetaKeywords_ISO}{$xPostVar_arr.$cMetaKeywords_ISO|htmlspecialchars}{elseif !empty($Link->getMetaKeyword($langID))}{$Link->getMetaKeyword($langID)|htmlspecialchars}{/if}"
                                                    tabindex="9" />
                                         </div>
                                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
@@ -340,7 +340,7 @@
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             <input class="form-control" type="text"
                                                    name="cMetaDescription_{$cISO}" id="cMetaDescription_{$cISO}"
-                                                   value="{if isset($xPostVar_arr.$cMetaDescription_ISO) && $xPostVar_arr.$cMetaDescription_ISO}{$xPostVar_arr.$cMetaDescription_ISO|@htmlspecialchars}{elseif !empty($Link->getMetaDescription($langID))}{$Link->getMetaDescription($langID)|@htmlspecialchars}{/if}"
+                                                   value="{if isset($xPostVar_arr.$cMetaDescription_ISO) && $xPostVar_arr.$cMetaDescription_ISO}{$xPostVar_arr.$cMetaDescription_ISO|htmlspecialchars}{elseif !empty($Link->getMetaDescription($langID))}{$Link->getMetaDescription($langID)|htmlspecialchars}{/if}"
                                                    tabindex="9" />
                                         </div>
                                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
@@ -356,7 +356,7 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-outline-primary btn-block" href="links.php">
+                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}/links.php">
                             {__('cancelWithIcon')}
                         </a>
                     </div>

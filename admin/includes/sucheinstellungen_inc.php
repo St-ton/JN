@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Helpers\Text;
 use JTL\IO\IOError;
@@ -13,7 +13,6 @@ use JTL\Shopsetting;
 function createSearchIndex($index, $create)
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/sucheinstellungen');
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
     $index    = mb_convert_case(Text::xssClean($index), MB_CASE_LOWER);
     $notice   = '';

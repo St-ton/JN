@@ -17,39 +17,39 @@ use JTL\Smarty\JTLSmarty;
 class HookManager
 {
     /**
-     * @var HookManager
+     * @var HookManager|null
      */
-    private static $instance;
+    private static ?HookManager $instance;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var TimeDataCollector
      */
-    private $timer;
+    private TimeDataCollector $timer;
 
     /**
      * @var array
      */
-    private $hookList;
+    private array $hookList;
 
     /**
      * @var Dispatcher
      */
-    private $dispatcher;
+    private Dispatcher $dispatcher;
 
     /**
      * @var int
      */
-    private $lockedForPluginID = 0;
+    private int $lockedForPluginID = 0;
 
     /**
      * HookManager constructor.
@@ -132,9 +132,6 @@ class HookManager
     {
         if (\SAFE_MODE === true) {
             return;
-        }
-        if ($this->lockedForPluginID > 0) {
-            Shop::dbg($this->lockedForPluginID, false, 'locked@hook ' . $hookID);
         }
         $this->timer->startMeasure('shop.hook.' . $hookID);
         $this->dispatcher->fire('shop.hook.' . $hookID, \array_merge((array)$hookID, $args));

@@ -11,47 +11,47 @@ class Log
     /**
      * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @var int
      */
-    private $adminId;
+    private int $adminID;
 
     /**
      * @var string
      */
-    private $adminName;
+    private string $adminName;
 
     /**
      * @var string
      */
-    private $changerIp;
+    private string $changerIp;
 
     /**
      * @var string
      */
-    private $settingName;
+    private string $settingName;
 
     /**
      * @var string
      */
-    private $settingType;
+    private string $settingType;
 
     /**
      * @var string
      */
-    private $valueOld;
+    private string $valueOld;
 
     /**
      * @var string
      */
-    private $valueNew;
+    private string $valueNew;
 
     /**
      * @var string
      */
-    private $date;
+    private string $date;
 
     /**
      * Log constructor.
@@ -66,10 +66,10 @@ class Log
      */
     public function init(\stdClass $data): self
     {
-        $this->setId((int)$data->kEinstellungenLog);
-        $this->setAdminId((int)$data->kAdminlogin);
+        $this->setID((int)$data->kEinstellungenLog);
+        $this->setAdminID((int)$data->kAdminlogin);
         $this->setAdminName($data->adminName ?? \__('unknown') . '(' . $data->kAdminlogin . ')');
-        $this->setChangerIp($data->cIP ?? '');
+        $this->setChangerIP($data->cIP ?? '');
         $this->setSettingType($data->settingType);
         $this->setSettingName($data->cEinstellungenName);
         $this->setValueNew($data->cEinstellungenWertNeu);
@@ -82,7 +82,7 @@ class Log
     /**
      * @return int
      */
-    public function getId(): int
+    public function getID(): int
     {
         return $this->id;
     }
@@ -90,7 +90,7 @@ class Log
     /**
      * @param int $id
      */
-    public function setId(int $id): void
+    public function setID(int $id): void
     {
         $this->id = $id;
     }
@@ -98,17 +98,17 @@ class Log
     /**
      * @return int
      */
-    public function getAdminId(): int
+    public function getAdminID(): int
     {
-        return $this->adminId;
+        return $this->adminID;
     }
 
     /**
      * @param int $adminId
      */
-    public function setAdminId(int $adminId): void
+    public function setAdminID(int $adminId): void
     {
-        $this->adminId = $adminId;
+        $this->adminID = $adminId;
     }
 
     /**
@@ -194,17 +194,17 @@ class Log
     /**
      * @return string
      */
-    public function getChangerIp(): string
+    public function getChangerIP(): string
     {
         return $this->changerIp;
     }
 
     /**
-     * @param $cIp
+     * @param string $ip
      */
-    public function setChangerIp($cIP): void
+    public function setChangerIP(string $ip): void
     {
-        $this->changerIp = $cIP;
+        $this->changerIp = $ip;
     }
 
     /**

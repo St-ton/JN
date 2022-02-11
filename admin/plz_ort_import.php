@@ -17,6 +17,7 @@ $messages   = [
 $landIsoMap = [];
 $itemBatch  = [];
 $db         = Shop::Container()->getDB();
+$service    = Shop::Container()->getCountryService();
 $res        = handleCsvImportAction(
     'plz',
     static function ($entry, &$importDeleteDone, $importType) use ($db, &$landIsoMap, &$itemBatch) {
@@ -49,28 +50,26 @@ $res        = handleCsvImportAction(
     },
     ['plz', 'ort', 'land']
 );
-
-$oPlzOrt_arr = Shop::Container()->getDB()->getObjects(
+$data       = $db->getObjects(
     'SELECT tplz.cLandISO, tland.cDeutsch, tland.cKontinent, COUNT(tplz.kPLZ) AS nPLZOrte, backup.nBackup
-            FROM tplz
-            INNER JOIN tland ON tland.cISO = tplz.cLandISO
-            LEFT JOIN (
-                SELECT tplz_backup.cLandISO, COUNT(tplz_backup.kPLZ) AS nBackup
-                FROM tplz_backup
-                GROUP BY tplz_backup.cLandISO
-            ) AS backup ON backup.cLandISO = tplz.cLandISO
-            GROUP BY tplz.cLandISO, tland.cDeutsch, tland.cKontinent
-            ORDER BY tplz.cLandISO'
+        FROM tplz
+        INNER JOIN tland ON tland.cISO = tplz.cLandISO
+        LEFT JOIN (
+            SELECT tplz_backup.cLandISO, COUNT(tplz_backup.kPLZ) AS nBackup
+            FROM tplz_backup
+            GROUP BY tplz_backup.cLandISO
+        ) AS backup ON backup.cLandISO = tplz.cLandISO
+        GROUP BY tplz.cLandISO, tland.cDeutsch, tland.cKontinent
+        ORDER BY tplz.cLandISO'
 );
 
-foreach ($oPlzOrt_arr as $item) {
-    $country = Shop::Container()->getCountryService()->getCountry($item->cLandISO);
+foreach ($data as $item) {
+    $country = $service->getCountry($item->cLandISO);
     if ($country !== null) {
         $item->cDeutsch   = $country->getName();
         $item->cKontinent = $country->getContinent();
     }
 }
 
-$smarty
-    ->assign('oPlzOrt_arr', $oPlzOrt_arr)
+$smarty->assign('oPlzOrt_arr', $data)
     ->display('plz_ort_import.tpl');

@@ -20,14 +20,14 @@ final class Dispatcher
      *
      * @var array
      */
-    public $listeners = [];
+    private array $listeners = [];
 
     /**
      * The wildcard listeners.
      *
      * @var array
      */
-    private $wildcards = [];
+    private array $wildcards = [];
 
     /**
      * Determine if a given event has listeners.

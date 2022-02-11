@@ -336,8 +336,8 @@ final class Admin
         $tpl->kNewslettervorlageStd = $defaultTplID;
         $tpl->kKampagne             = (int)$post['kKampagne'];
         $tpl->kSprache              = (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache']);
-        $tpl->cName                 = $post['cName'];
-        $tpl->cBetreff              = $post['cBetreff'];
+        $tpl->cName                 = Text::filterXSS($post['cName']);
+        $tpl->cBetreff              = Text::filterXSS($post['cBetreff']);
         $tpl->cArt                  = $post['cArt'];
         $tpl->cArtikel              = $productIDs;
         $tpl->cHersteller           = $manufacturerIDs;
@@ -529,8 +529,8 @@ final class Admin
             }
             $tpl->kSprache      = (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache']);
             $tpl->kKampagne     = $campaignID;
-            $tpl->cName         = $post['cName'];
-            $tpl->cBetreff      = $post['cBetreff'];
+            $tpl->cName         = Text::filterXSS($post['cName']);
+            $tpl->cBetreff      = Text::filterXSS($post['cBetreff']);
             $tpl->cArt          = $post['cArt'];
             $tpl->cArtikel      = $productIDs;
             $tpl->cHersteller   = $manufacturerIDs;

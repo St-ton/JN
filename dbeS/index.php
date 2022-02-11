@@ -40,12 +40,14 @@ function translateError($error)
 function handleError($output)
 {
     $error = error_get_last();
-    if ($error !== null && $error['type'] === 1) {
+    if ($error !== null && $error['type'] === E_ERROR) {
         $error  = translateError($error['message']) . "\n";
-        $error .= 'Datei: ' . $error['file'] ?? '';
+        $error .= 'Datei: ' . ($error['file'] ?? '');
         Shop::Container()->getLogService()->error($error);
 
-        return $error;
+        if (ini_get('display_errors') !== '0') {
+            return $error;
+        }
     }
 
     return $output;

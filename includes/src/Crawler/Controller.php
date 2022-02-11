@@ -7,6 +7,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Services\JTL\AlertServiceInterface;
 use stdClass;
 
@@ -87,7 +88,7 @@ class Controller
         }
         $crawlers = $this->getAllCrawlers();
         $result   = \array_filter($crawlers, static function ($item) use ($userAgent) {
-            return \mb_stripos($item->cUserAgent, $userAgent) !== false;
+            return $item->cUserAgent !== '' && \mb_stripos($userAgent, $item->cUserAgent) !== false;
         });
         $result   = \array_values($result);
 
@@ -152,9 +153,9 @@ class Controller
         if (Request::postInt('save_crawler') === 1) {
             if (!empty(Request::postVar('useragent')) && !empty(Request::postVar('description'))) {
                 $item                = new stdClass();
-                $item->kBesucherBot  = (int)Request::postInt('id');
-                $item->cUserAgent    = Request::postVar('useragent');
-                $item->cBeschreibung = Request::postVar('description');
+                $item->kBesucherBot  = Request::postInt('id');
+                $item->cUserAgent    = Text::filterXSS(Request::postVar('useragent'));
+                $item->cBeschreibung = Text::filterXSS(Request::postVar('description'));
                 $result              = $this->saveCrawler($item);
                 if ($result === -1) {
                     $this->alertService->addAlert(

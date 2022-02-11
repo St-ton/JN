@@ -39,6 +39,7 @@
         {elseif $cnf->getInputType() === 'color'}
             {include file='snippets/colorpicker.tpl'
             cpID="config-{$cnf->getValueName()}"
+            useAlpha=$cnf->getValueName() === 'bilder_hintergrundfarbe'
             cpName=$cnf->getValueName()
             cpValue=$cnf->getSetValue()}
         {elseif $cnf->getInputType() === 'pass'}

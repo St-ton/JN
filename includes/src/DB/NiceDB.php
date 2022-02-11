@@ -426,7 +426,66 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function insert(string $tableName, object $object, bool $echo = false): int
+    public function insertBatch(string $tableName, array $objects, bool $upsert = false): int
+    {
+        $this->validateEntityName($tableName);
+        $keys    = []; //column names
+        $values  = []; //column values - either sql statement like "now()" or prepared like ":my-var-name"
+        $assigns = []; //assignments from prepared var name to values, will be inserted in ->prepare()
+        $i       = 0;
+        $j       = 0;
+        $v       = [];
+        foreach ($objects as $object) {
+            $this->validateDbObject($object);
+            foreach (\get_object_vars($object) as $col => $val) {
+                if ($i === 0) {
+                    $keys[] = '`' . $col . '`';
+                }
+                if ($val === '_DBNULL_') {
+                    $val = null;
+                } elseif ($val === null) {
+                    $val = '';
+                }
+                $lc = \mb_convert_case((string)$val, \MB_CASE_LOWER);
+                if ($lc === 'now()' || $lc === 'current_timestamp') {
+                    $values[] = $val;
+                } else {
+                    $values[]           = ':a' . $j;
+                    $assigns[':a' . $j] = $val;
+                }
+                ++$j;
+            }
+            $v[] = '(' . \implode(', ', $values) . ')';
+            ++$i;
+            $values = [];
+        }
+        if ($upsert) {
+            $stmt = 'REPLACE INTO ';
+        } else {
+            $stmt = 'INSERT IGNORE INTO ';
+        }
+        $stmt .= $tableName . ' (' . \implode(', ', $keys) . ') VALUES ' . \implode(',', $v);
+        try {
+            $s   = $this->pdo->prepare($stmt);
+            $res = $s->execute($assigns);
+        } catch (PDOException $e) {
+            $this->handleException($e, $stmt, $assigns);
+
+            return 0;
+        }
+        if (!$res) {
+            $this->logError($stmt);
+
+            return 0;
+        }
+
+        return $s->rowCount();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function insert(string $tableName, $object, bool $echo = false): int
     {
         return $this->insertRow($tableName, $object, $echo);
     }

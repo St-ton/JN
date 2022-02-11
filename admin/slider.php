@@ -55,9 +55,9 @@ switch ($action) {
     default:
         $smarty->assign('disabled', '');
         if (!empty($_POST) && Form::validateToken()) {
+            $filtered = Text::filterXSS($_POST);
             $slider   = new Slider($db);
             $_kSlider = Request::postInt('kSlider');
-            $filtered = Text::filterXSS($_POST);
             $slider->load($kSlider, false);
             $slider->set((object)$filtered);
             // extensionpoint

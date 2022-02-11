@@ -314,6 +314,9 @@ msgstr "Fehlerhafte Cookie-Einstellungen: Anmeldung nicht möglich. Bitte wenden
 msgid "errorSessionExpired"
 msgstr "Ihre Sitzung wurde zurückgesetzt. Bitte melden Sie sich neu an."
 
+msgid "errorLoginTemporaryNotPossible"
+msgstr "Anmeldung zurzeit nicht möglich."
+
 msgid "row"
 msgstr "Zeile"
 

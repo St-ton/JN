@@ -377,13 +377,13 @@ class JTLSmarty extends BC
         if (\str_starts_with($resourceName, 'string:') || \str_contains($resourceName, '[')) {
             return $resourceName;
         }
-        $mapped = $this->mapping[$resourceName] ?? null;
-        if ($mapped !== null) {
-            return $mapped;
-        }
         if (\str_starts_with($resourceName, 'file:')) {
             $resourceName = \str_replace('file:', '', $resourceName);
             $transform    = true;
+        }
+        $mapped = $this->mapping[$resourceName] ?? null;
+        if ($mapped !== null) {
+            return $mapped;
         }
         $resource_custom_name = $this->getCustomFile($resourceName);
         $resource_cfb_name    = $resource_custom_name;

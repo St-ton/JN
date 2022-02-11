@@ -24,8 +24,7 @@ $conf  = Shop::getSettings([
     CONF_KUNDENFELD,
     CONF_NEWSLETTER
 ]);
-$kLink = $linkHelper->getSpecialPageID(LINKTYP_REGISTRIEREN);
-$link  = $linkHelper->getPageLink($kLink);
+$link  = $linkHelper->getSpecialPage(LINKTYP_REGISTRIEREN);
 $step  = 'formular';
 $titel = Shop::Lang()->get('newAccount', 'login');
 $edit  = Request::getInt('editRechnungsadresse');

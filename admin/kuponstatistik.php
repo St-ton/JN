@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Catalog\Product\Preise;
 use JTL\Checkout\KuponBestellung;

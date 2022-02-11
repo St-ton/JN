@@ -8,6 +8,7 @@ use JTL\Console\ConsoleIO;
 use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
 use ScssPhp\ScssPhp\Compiler;
+use ScssPhp\ScssPhp\OutputStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -92,13 +93,13 @@ class SASSCommand extends Command
         }
         $input = $directory . 'sass/' . $theme . '.scss';
         if (!\file_exists($input)) {
-            $io->error("Theme scss file: $input does not exist. ");
+            $io->error('Theme scss file ' .  $input . ' does not exist.');
 
             return false;
         }
         try {
             $this->compileSass($input, $directory . $theme . '.css', $directory);
-            $critical = $input = $directory . 'sass/' . $theme . '_crit.scss';
+            $critical = $directory . 'sass/' . $theme . '_crit.scss';
             if (\file_exists($critical)) {
                 $this->compileSass($critical, $directory . $theme . '_crit.css', $directory);
                 $io->writeln('<info>' . $theme . '_crit.css was compiled successfully.</info>');
@@ -123,11 +124,16 @@ class SASSCommand extends Command
         $baseDir  = $directory . 'sass/';
         $critical = \strpos($file, '_crit') !== false;
         $compiler = new Compiler();
-        $compiler->setSourceMap($critical ? Compiler::SOURCE_MAP_NONE : Compiler::SOURCE_MAP_FILE);
-        $compiler->setSourceMapOptions([
-            'sourceMapURL'      => \basename($target) . '.map',
-            'sourceMapBasepath' => $directory,
-        ]);
+        if ($critical === true) {
+            $compiler->setOutputStyle(OutputStyle::COMPRESSED);
+            $compiler->setSourceMap(Compiler::SOURCE_MAP_NONE);
+        } else {
+            $compiler->setSourceMap(Compiler::SOURCE_MAP_FILE);
+            $compiler->setSourceMapOptions([
+                'sourceMapURL'      => \basename($target) . '.map',
+                'sourceMapBasepath' => $directory,
+            ]);
+        }
         $compiler->addImportPath($baseDir);
         $result = $compiler->compileString(\file_get_contents($file));
         \file_put_contents($target, $result->getCss());

@@ -3,6 +3,7 @@
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Pagination\DataType;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Operation;
@@ -76,8 +77,8 @@ if (Form::validateToken()) {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');
                 $smarty
                     ->assign('cTab', 'new_redirect')
-                    ->assign('cFromUrl', Request::verifyGPDataString('cFromUrl'))
-                    ->assign('cToUrl', Request::verifyGPDataString('cToUrl'));
+                    ->assign('cFromUrl', Text::filterXSS(Request::verifyGPDataString('cFromUrl')))
+                    ->assign('cToUrl', Text::filterXSS(Request::verifyGPDataString('cToUrl')));
             }
             break;
         default:

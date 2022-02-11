@@ -169,6 +169,7 @@
         {block name='snippets-categories-mega-top-links-hr'}
             <li class="d-lg-none"><hr></li>
         {/block}
+        {block name='snippets-categories-mega-wishlist'}
         {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
             {navitem href="{get_static_route id='wunschliste.php'}" class="wl-nav-scrollbar-item nav-scrollbar-item"}
                 {badge id="badge-wl-count" variant="primary" class="product-count"}
@@ -180,6 +181,8 @@
                 {/badge}
             {/navitem}
         {/if}
+        {/block}
+        {block name='snippets-categories-mega-comparelist'}
         {if $Einstellungen.vergleichsliste.vergleichsliste_anzeigen === 'Y'}
             {navitem href="{get_static_route id='vergleichsliste.php'}" class="comparelist-nav-scrollbar-item nav-scrollbar-item"}
                 {lang key='compare'}
@@ -188,6 +191,7 @@
                 {/badge}
             {/navitem}
         {/if}
+        {/block}
         {if $linkgroups->getLinkGroupByTemplate('Kopf') !== null}
         {block name='snippets-categories-mega-top-links'}
             {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}

@@ -273,15 +273,15 @@ if ($step === 'einstellungen bearbeiten') {
         $sectionItem->setValue($config, $setValue);
         $oSections[(int)$config->kEinstellungenSektion] = $sectionItem;
     }
-
+    $group = Text::filterXSS(Request::verifyGPDataString('group'));
     $smarty->assign('Sektion', $section)
            ->assign('Conf', mb_strlen($search) > 0
                ? $confData
                : filteredConfData($confData, Request::verifyGPDataString('group')))
            ->assign(
                'title',
-               __('settings') . ': ' . (Request::verifyGPDataString('group') !== ''
-                   ? __(Request::verifyGPDataString('group'))
+               __('settings') . ': ' . ($group !== ''
+                   ? __($group)
                    : __($section->cName)
                )
            )

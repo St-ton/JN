@@ -58,7 +58,6 @@ switch ($action) {
             $filtered = Text::filterXSS($_POST);
             $slider   = new Slider($db);
             $_kSlider = Request::postInt('kSlider');
-            $filtered = Text::filterXSS($_POST);
             $slider->load($kSlider, false);
             $slider->set((object)$filtered);
             // extensionpoint

@@ -121,7 +121,7 @@ class Newsletter
         $groupIDs = Text::parseSSKint($data->cKundengruppe);
         $cSQL     = '';
         if (\count($groupIDs) > 0) {
-            $noGroup  = \in_array(0, $groupIDs, true);
+            $noGroup = \in_array(0, $groupIDs, true);
             if ($noGroup === false || \count($groupIDs) > 1) {
                 $cSQL = 'AND ((tkunde.kKundengruppe IN (' . \implode(',', $groupIDs) . ')';
                 if ($noGroup === true) {

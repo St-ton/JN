@@ -55,7 +55,7 @@ final class QuickSync extends AbstractSync
     }
 
     /**
-     * @param array $products
+     * @param stdClass[] $products
      */
     private function insertProducts(array $products): void
     {

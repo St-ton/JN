@@ -1124,7 +1124,7 @@ define('HOOK_FILTER_INC_GIBNAVIMETATITLE', 150);
  * in bearbeiteInsert() after inserting an article into the database
  *
  * @file Artikel_xml.php
- * @param oArtikel
+ * @param stdClass oArtikel
  */
 define('HOOK_ARTIKEL_XML_BEARBEITEINSERT', 151);
 
@@ -1132,7 +1132,7 @@ define('HOOK_ARTIKEL_XML_BEARBEITEINSERT', 151);
  * in bearbeiteDeletes() after deleting an article from the database
  *
  * @file Artikel_xml.php
- * @param kArtikel - article ID
+ * @param int kArtikel - product ID
  */
 define('HOOK_ARTIKEL_XML_BEARBEITEDELETES', 152);
 
@@ -1683,7 +1683,7 @@ define('HOOK_BOXEN_HOME', 224);
  * in bearbeiteInsert() after inserting an article into the database
  *
  * @file QuickSync_xml.php
- * @param oArtikel
+ * @param stdClass oArtikel
  */
 define('HOOK_QUICKSYNC_XML_BEARBEITEINSERT', 225);
 

@@ -66,24 +66,24 @@ function holeKampagneGesamtStats($oKampagne_arr, $oKampagneDef_arr)
     $cDatum_arr        = gibDatumTeile($_SESSION['Kampagne']->cStamp);
     switch ((int)$_SESSION['Kampagne']->nAnsicht) {
         case 1:    // Monat
-            $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . "-" . 
+            $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . "-" .
                 $cDatum_arr['cMonat'] . "' = DATE_FORMAT(dErstellt, '%Y-%m')";
             break;
         case 2:    // Woche
-            $cDatum_arr = ermittleDatumWoche($cDatum_arr['cJahr'] . "-" . 
+            $cDatum_arr = ermittleDatumWoche($cDatum_arr['cJahr'] . "-" .
                 $cDatum_arr['cMonat'] . "-" . $cDatum_arr['cTag']);
-            $cSQL       = "WHERE dErstellt BETWEEN FROM_UNIXTIME(" . 
-                $cDatum_arr[0] . ", '%Y-%m-%d %H:%i:%s') AND FROM_UNIXTIME(" . 
+            $cSQL       = "WHERE dErstellt BETWEEN FROM_UNIXTIME(" .
+                $cDatum_arr[0] . ", '%Y-%m-%d %H:%i:%s') AND FROM_UNIXTIME(" .
                 $cDatum_arr[1] . ", '%Y-%m-%d %H:%i:%s')";
             break;
         case 3:    // Tag
-            $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . '-' . 
-                $cDatum_arr['cMonat'] . '-' . 
+            $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . '-' .
+                $cDatum_arr['cMonat'] . '-' .
                 $cDatum_arr['cTag'] . "' = DATE_FORMAT(dErstellt, '%Y-%m-%d')";
             break;
     }
 
-    if (is_array($oKampagne_arr) && count($oKampagne_arr) > 0 && 
+    if (is_array($oKampagne_arr) && count($oKampagne_arr) > 0 &&
         is_array($oKampagneDef_arr) && count($oKampagneDef_arr)) {
         foreach ($oKampagne_arr as $oKampagne) {
             foreach ($oKampagneDef_arr as $oKampagneDef) {
@@ -401,8 +401,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         $cEinstiegsseite      = isset($cCustomDataParts_arr [0]) ? $cCustomDataParts_arr [0] : '';
                         $cReferer             = isset($cCustomDataParts_arr [1]) ? $cCustomDataParts_arr [1] : '';
 
-                        $oDaten_arr[$i]->cEinstiegsseite = $cEinstiegsseite;
-                        $oDaten_arr[$i]->cReferer        = $cReferer;
+                        $oDaten_arr[$i]->cEinstiegsseite = StringHandler::filterXSS($cEinstiegsseite);
+                        $oDaten_arr[$i]->cReferer        = StringHandler::filterXSS($cReferer);
                     }
 
                     $cMember_arr = [

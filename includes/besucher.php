@@ -34,7 +34,7 @@ if (!isset($_SESSION['oBesucher'])) {
         $besucher->cReferer          = gibReferer();
         $besucher->cUserAgent        = StringHandler::filterXSS($userAgent);
         $besucher->cBrowser          = gibBrowser();
-        $besucher->cAusstiegsseite   = $_SERVER['REQUEST_URI'];
+        $besucher->cAusstiegsseite   = StringHandler::filterXSS($_SERVER['REQUEST_URI']);
         $besucher->dLetzteAktivitaet = 'now()';
         $besucher->dZeit             = 'now()';
         $besucher->kBesucherBot      = $kBesucherBot;
@@ -54,7 +54,7 @@ if (!isset($_SESSION['oBesucher'])) {
 if (isset($_SESSION['oBesucher']->kBesucher) && $_SESSION['oBesucher']->kBesucher > 0) {
     $_upd                    = new stdClass();
     $_upd->dLetzteAktivitaet = 'now()';
-    $_upd->cAusstiegsseite   = $_SERVER['REQUEST_URI'];
+    $_upd->cAusstiegsseite   = StringHandler::filterXSS($_SERVER['REQUEST_URI']);
     Shop::DB()->update('tbesucher', 'kBesucher', (int)$_SESSION['oBesucher']->kBesucher, $_upd);
 }
 

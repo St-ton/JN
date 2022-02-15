@@ -359,6 +359,9 @@ msgstr "Aktion"
 msgid "available"
 msgstr "Vorhanden"
 
+msgid "Version %s available"
+msgstr "Version %s verfügbar"
+
 msgid "html"
 msgstr "HTML"
 

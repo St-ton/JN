@@ -196,3 +196,6 @@ msgstr "Shopversion zu niedrig oder Subscription abgelaufen"
 
 msgid "Key"
 msgstr "Key"
+
+msgid "Invalid token."
+msgstr "Ungültiger Token."

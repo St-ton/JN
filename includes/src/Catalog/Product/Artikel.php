@@ -4879,7 +4879,7 @@ class Artikel
 
             if ($piecesNotInShop !== null && (int)$piecesNotInShop->nAnzahl > 0) {
                 // this list has potentially invisible parts and can't calculated correctly
-                // handle this parts list as an normal product
+                // handle this parts list as a normal product
                 $isPartsList = false;
             } else {
                 // all parts of this list are accessible
@@ -4907,6 +4907,8 @@ class Artikel
             }
         }
         if ($this->bHasKonfig && !empty($this->oKonfig_arr)) {
+            $parentMinDeliveryDays = $minDeliveryDays;
+            $parentMaxDeliveryDays = $maxDeliveryDays;
             foreach ($this->oKonfig_arr as $gruppe) {
                 /** @var Item $piece */
                 foreach ($gruppe->oItem_arr as $piece) {
@@ -4929,6 +4931,8 @@ class Artikel
                     }
                 }
             }
+            $minDeliveryDays = \max($minDeliveryDays, $parentMinDeliveryDays);
+            $maxDeliveryDays = \max($maxDeliveryDays, $parentMaxDeliveryDays);
         }
         if ((!$isPartsList && $this->nBearbeitungszeit > 0)
             || (isset($this->FunktionsAttribute['processingtime']) && $this->FunktionsAttribute['processingtime'] > 0)

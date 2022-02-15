@@ -621,6 +621,12 @@ final class Products extends AbstractSync
         }
         $characteristics = $this->mapper->mapArray($xml['tartikel'], 'teigenschaft', 'mEigenschaft');
         $cCount          = \count($characteristics);
+        foreach ($characteristics as $characteristic) {
+            if (empty($characteristic->cTyp)) {
+                $this->logger->error('teigenschaft.cTyp cannot be NULL. Product: ' . $xml['tartikel']['cName']);
+                break;
+            }
+        }
         for ($i = 0; $i < $cCount; ++$i) {
             if ($cCount < 2) {
                 $this->deleteProperty((int)$xml['tartikel']['teigenschaft attr']['kEigenschaft']);

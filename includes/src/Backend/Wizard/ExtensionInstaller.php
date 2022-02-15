@@ -10,6 +10,7 @@ use JTL\DB\DbInterface;
 use JTL\Helpers\Text;
 use JTL\License\AjaxResponse;
 use JTL\License\Exception\ApiResultCodeException;
+use JTL\License\Exception\AuthException;
 use JTL\License\Exception\ChecksumValidationException;
 use JTL\License\Exception\DownloadValidationException;
 use JTL\License\Exception\FilePermissionException;
@@ -118,6 +119,8 @@ class ExtensionInstaller
                                 Text::htmlentities($e->getMessage())
                             );
                         }
+                    } catch (AuthException $e) {
+                        $errorMsg .= $e->getMessage();
                     }
                 }
             }

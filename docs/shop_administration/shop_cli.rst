@@ -122,25 +122,57 @@ werden.
 ``cache:dbes:delete``
 .....................
 
-löscht temporäre dbeS-Dateien (normalerweise automatisch, Konstante kann dies verhindern KEEP_SYNC_FILES)
+Der Abgleich von JTL-Wawi und JTL-Shop erzeugt temporäre Dateien, die standardmäßig automatisch gelöscht werden. |br|
+Wird dieses automatische Löschen durch die config-Konstante ``KEEP_SYNC_FILES`` unterbunden, können diese temporären
+Dateien mit diesem Befehl gelöscht werden.
 
 ``cache:file:delete``
 .....................
 
-alles in templates_c/filecache/ ... (wenn Objekt-Cache-Methode "Dateien" und "Dateien (erweitert)" (Methoden-Namen?) gesetzt ist)
+Sobald für JTL-Shop die Caching-Methode "Datein" (und "Dateien (erweitert)") eingestellt ist, werden diese Dateien
+unter ``templates_c/filecache/`` gespeichert. JTL-Shop verwaltet das Verzeichnis ``filecache/`` automatisch.
+
+Bei Bedarf kann mithilfe der Shop CLI und diesem Befehl das Verzeichnis geleert und entfernt werden.
 
 ``cache:tpl:delete``
 ....................
 
-alles in templates_c/NOVA/ (für aktives Template)
+Für jedes aktivierte Template in JTL-Shop existiert ein Verzeichnis unterhalb des Ordners ``templates_c/``. Hier
+werden alle, durch Smarty vor-compilierten, Dateien des jeweiligen Templates abgelegt. |br|
+
+Mit diesem Sub-Befehl kann dieser Ordner bei Bedarf auch manuell geleert und entfernt werden.
 
 ``cache:clear``
 ...............
 
-der OBJ-Cache der aktuell aktiven Methode
+Dieser Sub-Befehl leert den jeweiligen Speicher der aktuell aktivierten Objekt-Cache-Methode. |br|
+(wie im Backende eingestellt, siehe: *System -> Cache -> Einstellungen -> Methode:*)
 
 ``cache:warm``
 ..............
+
+Dieser Sub-Befehl führt ein s.g. "cache warmup" durch, wobei bereits verschiedene Inhalte im Cache aufbereitet werden,
+um sie schneller zur Verfügung stellen zu können.
+
+Mit einem entsprechenden Parameter können Sie gesondert festlegen, welche Bereiche des Cache "aufgewärmt"
+werden sollen:
+
+.. code-block:: text
+
+    -d, --details         Artikeldetails vorbereiten
+    -l, --list            Artikellisten vorbereiten
+    -k, --childproducts   Kindartikel vorbereiten
+    -g, --linkgroups      Linkgruppen vorbereiten
+    -c, --categories      Kategorien vorbereiten
+    -m, --manufacturers   Hersteller vorbereiten
+
+Mit dem folgenden Paramter kann man das Leeren des Caches, vor dem Aufwärmen, erzwingen:
+
+.. code-block:: text
+
+    -p, --preflush        Cache löschen vor dem Aufwärmen
+
+Diese Parameter können beliebig kombiniert werden.
 
 
 compile
@@ -270,9 +302,12 @@ Hier ein Beispiel:
       --settingstypes=${SETTINGSTYPES}         \
 
 Nicht alle Parameter sind Pflichtangaben.
+
+
+
 Für den Parameter SETTINGSTYPES sind die Werte von ..(interner Link zu info.xml).. gültig
 
 Settings-Typen
- ... (steht das schon irgendwo .... unter: plugin -> info.xml -> setting -> links)
- ab shop5 zusätzlich type 'none'
+... (steht das schon irgendwo .... unter: plugin -> info.xml -> setting -> links)
+ab shop5 zusätzlich type 'none'
 

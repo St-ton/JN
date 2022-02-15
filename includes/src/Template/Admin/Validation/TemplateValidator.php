@@ -34,12 +34,12 @@ class TemplateValidator implements ValidatorInterface
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var string
      */
-    protected $dir;
+    protected string $dir;
 
     /**
      * AbstractValidator constructor.

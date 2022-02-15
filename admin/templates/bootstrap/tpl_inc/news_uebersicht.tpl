@@ -1,3 +1,4 @@
+
 <script type="text/javascript" src="{$templateBaseURL}js/sorttable.js"></script>
 <script>
     $(window).on('load', function(){
@@ -71,7 +72,7 @@
         </nav>
         <div class="tab-content">
             <div id="inaktiv" class="tab-pane fade{if $cTab === '' || $cTab === 'inaktiv'} active show{/if}">
-                {if $comments && $comments|@count > 0}
+                {if $comments && $comments|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiKommentar cAnchor='inaktiv'}
                     <form method="post" action="news.php">
                         {$jtl_token}
@@ -105,11 +106,7 @@
                                             </td>
                                             <td class="TD2">
                                                 <label for="comment-{$comment->getID()}">
-                                                {*{if $comment->cVorname|strlen > 0}*}
-                                                    {*{$comment->cVorname} {$comment->cNachname}*}
-                                                {*{else}*}
-                                                    {$comment->getName()}
-                                                {*{/if}*}
+                                                    {$comment->getName()} ({$comment->getMail()})
                                                 </label>
                                             </td>
                                             <td class="TD3">{$comment->getNewsTitle()|truncate:50:'...'}</td>

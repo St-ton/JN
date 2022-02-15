@@ -24,13 +24,13 @@ msgid "artikel_lagerampel_gruen_name"
 msgstr "Lagerbestand grün"
 
 msgid "artikel_lagerampel_gruen_desc"
-msgstr "Geben Sie hier ein, ab welchem Lagerbestand der Inhalt der Sprachvariable „ampel gruen“ angezeigt wird. Zwischen diesem Lagerbestand und dem Lagerbestand unter „Lagerbestand rot“ wird der Inhalt der Sprachvariable „ampel gelb“ angezeigt."
+msgstr "Wenn Sie den Lagerbestand als Ampel anzeigen, geben Sie hier ein, ab welchem Lagerbestand der Inhalt der Sprachvariable „ampel gruen“ angezeigt wird. Zwischen diesem Lagerbestand und dem Lagerbestand unter „Lagerbestand rot“ wird der Inhalt der Sprachvariable „ampel gelb“ angezeigt. ür alle weiteren Optionen der Einstellung „Lagerbestandsanzeige“ ändert sich mit dieser Einstellung nur die Farbe der Lagerbestandsanzeige."
 
 msgid "artikel_lagerampel_rot_name"
 msgstr "Lagerbestand rot"
 
 msgid "artikel_lagerampel_rot_desc"
-msgstr "Geben Sie hier ein, bis zu welchem Lagerbestand der Inhalt der Sprachvariable „ampel rot“ angezeigt wird. Zwischen diesem Lagerbestand und dem Lagerbestand unter „Lagerbestand grün“ wird der Inhalt der Sprachvariable „ampel gelb“ angezeigt."
+msgstr "Wenn Sie den Lagerbestand als Ampel anzeigen, geben Sie hier ein, bis zu welchem Lagerbestand der Inhalt der Sprachvariable „ampel rot“ angezeigt wird. Zwischen diesem Lagerbestand und dem Lagerbestand unter „Lagerbestand grün“ wird der Inhalt der Sprachvariable „ampel gelb“ angezeigt. Für alle weiteren Optionen der Einstellung „Lagerbestandsanzeige“ ändert sich mit dieser Einstellung nur die Farbe der Lagerbestandsanzeige."
 
 msgid "artikel_ampel_lagernull_gruen_name"
 msgstr "Lagerbestand grün bei „Überverkäufe möglich“"
@@ -96,7 +96,7 @@ msgid "artikel_lagerampel_keinlager_name"
 msgstr "Lagerbestandsanzeige (ohne Bestandsführung)"
 
 msgid "artikel_lagerampel_keinlager_desc"
-msgstr "Hier legen Sie fest, welcher Text bei Artikeln angezeigt wird, die ohne Bestandsführung arbeiten."
+msgstr "Wenn Sie den Lagerbestand als Ampel anzeigen, können Sie hier festlegen, welcher Text und welche Farbe bei Artikeln angezeigt wird, die ohne Bestandsführung arbeiten. Für alle weiteren Optionen der Einstellung „Lagerbestandsanzeige“ änder sich mit dieser Einstellung nur die Farbe der Lagerbestandsanzeige."
 
 msgid "global_shopname_name"
 msgstr "Name des Onlineshops"
@@ -729,7 +729,7 @@ msgid "artikel_variationspreisanzeige_desc"
 msgstr "Hier legen Sie fest, wie Variationsaufpreise angezeigt werden."
 
 msgid "artikel_lagerbestandsanzeige_name"
-msgstr "Lagerbestand anzeigen"
+msgstr "Lagerbestandsanzeige"
 
 msgid "artikel_lagerbestandsanzeige_desc"
 msgstr "Hier legen Sie fest, wie der Lagerbestand eines Artikels angezeigt wird. (Einzelansicht)"

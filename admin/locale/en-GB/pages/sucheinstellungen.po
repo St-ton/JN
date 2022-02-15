@@ -17,6 +17,9 @@ msgstr "Full-text index for %s deleted successfully."
 msgid "errorFulltextSearchMYSQL"
 msgstr "The full-text search requires MySQL version 5.6 or higher."
 
+msgid "errorFulltextSearchMinLen"
+msgstr "The \"Minimum number of characters for search\" has been adjusted to the database parameter ft_min_word_len."
+
 msgid "successSearchActivate"
 msgstr "Full-text search activated successfully."
 

@@ -611,7 +611,7 @@ final class LinkAdmin
             $this->db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $code]);
             $localized->cSeo = $link->nLinkart === \LINKTYP_EXTERNE_URL
                 ? $localized->cSeo
-                : Seo::getSeo($localized->cSeo);
+                : Seo::getSeo($localized->cSeo, true);
             $this->db->insert('tlinksprache', $localized);
             $prev = $this->db->select(
                 'tseo',

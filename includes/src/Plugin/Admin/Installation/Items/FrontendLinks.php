@@ -79,7 +79,7 @@ class FrontendLinks extends AbstractItem
                 if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
                     $linkLang->cISOSprache = \mb_convert_case($localized['iso'], \MB_CASE_LOWER);
                 } elseif (\mb_strlen($hits2[0]) === \mb_strlen($l)) {
-                    $linkLang->cSeo             = Seo::checkSeo(Seo::getSeo($localized['Seo']));
+                    $linkLang->cSeo             = Seo::checkSeo(Seo::getSeo($localized['Seo'], true));
                     $linkLang->cName            = $localized['Name'];
                     $linkLang->cTitle           = $localized['Title'];
                     $linkLang->cContent         = '';
@@ -104,7 +104,7 @@ class FrontendLinks extends AbstractItem
                             ]
                         );
                         $seo           = new stdClass();
-                        $seo->cSeo     = Seo::checkSeo(Seo::getSeo($localized['Seo']));
+                        $seo->cSeo     = Seo::checkSeo(Seo::getSeo($localized['Seo'], true));
                         $seo->cKey     = 'kLink';
                         $seo->kKey     = $linkID;
                         $seo->kSprache = $allLanguages[$linkLang->cISOSprache]->kSprache;
@@ -145,7 +145,7 @@ class FrontendLinks extends AbstractItem
                 ['kLink', $linkID, (int)$language->kSprache]
             );
             $seo           = new stdClass();
-            $seo->cSeo     = Seo::checkSeo(Seo::getSeo($defaultLang->cSeo));
+            $seo->cSeo     = Seo::checkSeo(Seo::getSeo($defaultLang->cSeo, true));
             $seo->cKey     = 'kLink';
             $seo->kKey     = $linkID;
             $seo->kSprache = $language->kSprache;

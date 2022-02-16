@@ -43,7 +43,8 @@
                 ignoreEmptyParagraph : false,
                 fillEmptyBlocks : false,
                 autoParagraph : false,
-                removePlugins : 'exportpdf,language,iframe,flash'
+                removePlugins : 'exportpdf,language,iframe,flash',
+                allowedContent: true
                 /* custom config end */
             },
         );

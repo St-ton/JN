@@ -30,7 +30,7 @@ if (!isset($_SESSION['oBesucher'])) {
         $besucher->cID               = md5($userAgent . gibIP());
         $besucher->kKunde            = 0;
         $besucher->kBestellung       = 0;
-        $besucher->cEinstiegsseite   = $_SERVER['REQUEST_URI'];
+        $besucher->cEinstiegsseite   = StringHandler::filterXSS($_SERVER['REQUEST_URI']);
         $besucher->cReferer          = gibReferer();
         $besucher->cUserAgent        = StringHandler::filterXSS($userAgent);
         $besucher->cBrowser          = gibBrowser();

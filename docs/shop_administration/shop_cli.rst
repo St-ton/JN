@@ -192,6 +192,9 @@ Alle *Themes* des EVO-Templates enthalten ``.less``-Dateien. |br|
 Sollten Sie die ``.less``-Dateien in einem *Theme* an Ihre Bedürfnisse angepaßt haben, können Sie mit diesen Befehl
 alle ``.less``-Dateien, aller Themes des EVO-Templates, in ``.css``-Dateien übersetzen.
 
+Mit dem Parameter ``--theme=[Theme-Name]`` können Sie ein bestimmtes *Theme* angeben. |br|
+Mit dem Parameter ``--templateDir=[Template-Name]`` bestimmen Sie ein anderes Template-Verzeichnis.
+
 ``compile:sass``
 ................
 
@@ -201,6 +204,8 @@ alle ``.scss``-Dateien, aller Themes des NOVA-Templates, in ``.css``-Dateien üb
 
 Dieser Befehl übersetzt ebenso das "*critical SCSS*", welches im Seitenkopf immer mit übertragen wird.
 
+Mit dem Parameter ``--theme=[Theme-Name]`` können Sie ein bestimmtes *Theme* angeben. |br|
+Mit dem Parameter ``--templateDir=[Template-Name]`` bestimmen Sie ein anderes Template-Verzeichnis.
 
 generate
 ........

@@ -54,7 +54,6 @@
     function update($element)
     {
         var url = $element.attr('href');
-
         disableUpdateControl(true);
         pushEvent('Starte Update');
 
@@ -63,7 +62,6 @@
                 var message = error
                     ? '{/literal}{__('infoUpdatePause')}{literal}' + error.message
                     : '{/literal}{__('successUpdate')}{literal}'
-
                 showNotify(error ? 'danger' : 'success', 'Update', message);
                 disableUpdateControl(false);
             };
@@ -71,8 +69,7 @@
             if (error) {
                 pushEvent('Fehler bei Update: ' + error.message);
                 _once();
-            }
-            else {
+            } else {
                 pushEvent('     Update auf ' + formatVersion(data.result) + ' erfolgreich');
                 if (!data.availableUpdate) {
                     //pushEvent('Update beendet');

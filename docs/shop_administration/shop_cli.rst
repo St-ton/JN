@@ -261,53 +261,50 @@ Hier ein Beispiel:
 
     #!/bin/env bash
 
-    PLUGIN_NAME="TestPlugin"                 # Name des Plugins
-    PLUGIN_VERSION="1.0.0"                   # Version des Plugin (SemVer-konform)
-    DESCRIPTION="Dies ist eine Test-Plugin"  # Beschreibungstext des Plugins
-    AUTHOR="Max Mustermann"                  # Name des Authors
-    URL="http://example.com/info.html"       # URL zur Info-Seite
-    ID="test_plugin"                         # Plugin-ID (Verzeichnisname, in dem das Plugin angelegt wird)
-    FLUSH_TAGS="CACHING_GROUP_PRODUCT"       # Caching-Gruppen-Konstanten, die bei Installation gelöscht werden sollen (kommagetrennte Liste)
-    MINSHOPVERSION="5.0.0"                   # minimale Shop-Version, in der das Plugin noch lauffähig ist (SemVer-konform)
-    MAXSHOPVERSION="5.1.3"                   # maximale Shop-Version, in der das Plugin noch lauffähig ist (SemVer-konform)
-    CREATE_MIGRATIONS="tplugin_table"        # Migrations zur Tabellerstellung erzeugen (mehrere Tabellen getrennt durch Komma)
-    CREATE_MODELS="Yes"                      # Model erstellen, für neue Tabellen? (Yes/No)
-    HOOKS="61,62"                            # Hooks, die genutzt werden sollen (kommagetrennt und numerisch)
-    JS="main.js"                             # Javascript-Dateien, die erzeugt werden sollen (kommagetrennte Liste)
-    CSS="main.css"                           # CSS-Dateien, die erzeugt werden sollen (kommagetrennte Liste)
-    DELETE="Yes"                             # Soll das Plugin, bei Installation, eine alte Version ersetzen? (Yes/No)
-    LINKS="test-plugin"                      # Frontend-Link-Name des Plugins (SEO-konformer, kommagetrennte Liste)
-    SETTINGS="Textarea Test,Checkbox Test"   # Backend-Setting-Name (kommagetrennte Liste, muß mit Settings-Typ deckungsgleich sein)
-    SETTINGSTYPES="textarea,checkbox"        # Typ des Backend-Settings (kommagetrennte Liste)
+    PLUGIN_NAME='TestPlugin'                 # Name des Plugins
+    PLUGIN_VERSION='1.0.0'                   # Version des Plugin (SemVer-konform)
+    DESCRIPTION='Dies ist eine Test-Plugin'  # Beschreibungstext des Plugins
+    AUTHOR='Max Mustermann'                  # Name des Authors
+    URL='http://example.com'                 # URL, beispielsweise zur Homepage des Authors
+    ID='test_plugin'                         # Plugin-ID (Plugin-Verzeichnisname und Shop-interne ID)
+    FLUSH_TAGS='CACHING_GROUP_PRODUCT'       # Caching-Gruppen-Konstanten, die bei Installation gelöscht werden sollen (kommagetrennte Liste)
+    MINSHOPVERSION='5.0.0'                   # minimale Shop-Version, in der das Plugin noch lauffähig ist (SemVer-konform)
+    MAXSHOPVERSION='5.1.3'                   # maximale Shop-Version, in der das Plugin noch lauffähig ist (SemVer-konform)
+    CREATE_MIGRATIONS='tplugin_table'        # Migrations zur Tabellerstellung erzeugen (kommagetrennte Liste)
+    CREATE_MODELS='Yes'                      # Model erstellen, für neue Tabellen? (Yes/No)
+    HOOKS='61,62'                            # Hooks, die genutzt werden sollen (kommagetrennt und numerisch)
+    JS='main.js'                             # Javascript-Dateien, die erzeugt werden sollen (kommagetrennte Liste)
+    CSS='main.css'                           # CSS-Dateien, die erzeugt werden sollen (kommagetrennte Liste)
+    DELETE='Yes'                             # Soll das Plugin, bei Installation, eine alte Version ersetzen? (Yes/No)
+    LINKS='test-plugin'                      # Frontend-Link-Name des Plugins (SEO-konformer, kommagetrennte Liste)
+    SETTINGS='Textarea Test,Checkbox Test'   # Backend-Setting-Name (kommagetrennte Liste, muß mit Settings-Typ deckungsgleich sein)
+    SETTINGSTYPES='textarea,checkbox'        # Typ des Backend-Settings (kommagetrennte Liste)
 
 
-    php cli jtl_plugin_bootstrapper:create     \
-      --name=${PLUGIN_NAME}                    \
-      --plugin-version=${PLUGIN_VERSION}       \
-      --description=${DESCRIPTION}             \
-      --author=${AUTHOR}                       \
-      --url=${URL}                             \
-      --id=${ID}                               \
-      --flush-tags=${FLUSH_TAGS}               \
-      --minshopversion=${MINSHOPVERSION}       \
-      --maxshopversion=${MAXSHOPVERSION}       \
-      --create-migrations=${CREATE_MIGRATIONS} \
-      --create-models=${CREATE_MODELS}         \
-      --hooks=${HOOKS}                         \
-      --js=${JS}                               \
-      --css=${CSS}                             \
-      --delete=${DELETE}                       \
-      --links=${LINKS}                         \
-      --settings=${SETTINGS}                   \
-      --settingstypes=${SETTINGSTYPES}         \
+    php cli jtl_plugin_bootstrapper:create-plugin  \
+      --name="${PLUGIN_NAME}"                      \
+      --plugin-version="${PLUGIN_VERSION}"         \
+      --description="${DESCRIPTION}"               \
+      --author="${AUTHOR}"                         \
+      --url="${URL}"                               \
+      --id="${ID}"                                 \
+      --flush-tags="${FLUSH_TAGS}"                 \
+      --minshopversion="${MINSHOPVERSION}"         \
+      --maxshopversion="${MAXSHOPVERSION}"         \
+      --create-migrations="${CREATE_MIGRATIONS}"   \
+      --create-models="${CREATE_MODELS}"           \
+      --hooks="${HOOKS}"                           \
+      --js="${JS}"                                 \
+      --css="${CSS}"                               \
+      --delete="${DELETE}"                         \
+      --links="${LINKS}"                           \
+      --settings="${SETTINGS}"                     \
+      --settingstypes="${SETTINGSTYPES}"           \
 
-Nicht alle Parameter sind Pflichtangaben.
+Nicht alle Parameter sind Pflichtangaben. Bei interaktiver Ausführung wird nur der grundlegende Teil abgefragt.
 
-
-
-Für den Parameter SETTINGSTYPES sind die Werte von ..(interner Link zu info.xml).. gültig
-
-Settings-Typen
-... (steht das schon irgendwo .... unter: plugin -> info.xml -> setting -> links)
-ab shop5 zusätzlich type 'none'
+Für den Parameter ``SETTINGSTYPES`` sind die Werte, die im Abschnitt ``info.xml``
+in der Tabellenzeile ":ref:`Attribut Typ <label_infoxml_settingtypes>`" gelistet sind, gültig. |br|
+``SETTINGS`` (die Einstellungsnamen) und ``SETTINGSTYPES`` müssen zwei "deckungsgleiche" Arrays sein, bei denen
+beispielsweise Wert 1 im Array ``SETTINGS`` auch dem Wert 1 im Array ``SETTINGSTYPES`` entspricht.
 

@@ -1096,6 +1096,8 @@ Backend konfiguriert und dann im eigenen Plugin-Code abgefragt werden.
 
 (*)Pflichtfelder
 
+.. _label_infoxml_settingtypes:
+
 ``<Setting>``:
 
 +------------------------------+-------------------------------------------------------------------------------------------+

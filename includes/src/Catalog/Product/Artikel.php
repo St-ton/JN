@@ -4020,12 +4020,20 @@ class Artikel
                         ON d.kPreis = p.kPreis
                     LEFT JOIN tartikelsonderpreis AS asp
                         ON asp.kArtikel = a.kArtikel
+                            AND asp.cAktiv = \'Y\'
+                                AND asp.dStart <= CURDATE()
+                                AND (asp.dEnde IS NULL OR asp.dEnde >= CURDATE())
+                                AND (asp.nAnzahl <= a.fLagerbestand OR asp.nIstAnzahl = 0)
                     LEFT JOIN tsonderpreise AS sp
                         ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
                         AND sp.kKundengruppe = :cgid
                     WHERE a.kVaterArtikel = :pid
-                        AND COALESCE(sp.fNettoPreis, d.fVKNetto) - ' . $net . ' > 0.0001',
-                ['cgid' => $customerGroupID, 'pid' => (int)$this->kArtikel]
+                        AND COALESCE(sp.fNettoPreis, d.fVKNetto) - :cmpNet > 0.0001',
+                [
+                    'cgid'   => $customerGroupID,
+                    'pid'    => (int)$this->kArtikel,
+                    'cmpNet' => $net,
+                ]
             );
 
             $this->nVariationsAufpreisVorhanden = (int)($specialPrice->specialPrices ?? 0) > 0 ? 1 : 0;

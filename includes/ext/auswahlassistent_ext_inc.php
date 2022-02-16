@@ -29,9 +29,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             }
             if ((int)$kKey > 0 && (int)$kSprache > 0 && strlen($cKey) > 0) {
                 $Einstellungen = Shop::getSettings([
-                    CONF_GLOBAL, 
-                    CONF_RSS, 
-                    CONF_ARTIKELUEBERSICHT, 
+                    CONF_GLOBAL,
+                    CONF_RSS,
+                    CONF_ARTIKELUEBERSICHT,
                     CONF_AUSWAHLASSISTENT
                 ]);
                 if (isset($_GET['aaParams']) && strlen($_GET['aaParams']) > 0) {
@@ -104,7 +104,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 }
                 $smarty->assign('oAuswahlAssistent', $_SESSION['AuswahlAssistent']->oAuswahlAssistent)
                        ->assign('Einstellungen', $Einstellungen)
-                       ->assign('cRequestURI', $cRequestURI);
+                       ->assign('cRequestURI', StringHandler::filterXSS($cRequestURI));
             }
         }
 

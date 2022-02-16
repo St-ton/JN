@@ -47,13 +47,19 @@ class ZahlungsLog
     {
         $nLevel    = (int)$nLevel;
         $cSQLLevel = ($nLevel >= 0) ? ('AND nLevel = ' . $nLevel) : '';
-
-        return Shop::DB()->query(
+        $res       = Shop::DB()->query(
             "SELECT * FROM tzahlungslog
                 WHERE cModulId = '" . $this->cModulId . "' " . $cSQLLevel . "
                 ORDER BY dDatum DESC, kZahlunglog DESC 
                 LIMIT " . (int)$nStart . ", " . (int)$nLimit, 2
         );
+        foreach ($res as $item) {
+            $item->kZahlunglog = (int)$item->kZahlunglog;
+            $item->cLog        = StringHandler::filterXSS($item->cLog);
+            $item->nLevel      = (int)$item->nLevel;
+        }
+
+        return $res;
     }
 
     /**

@@ -56,8 +56,8 @@ if (validateToken()) {
                 $cFehler = 'Fehler: Bitte pr&uuml;fen Sie Ihre Eingaben';
                 $smarty
                     ->assign('cTab', 'new_redirect')
-                    ->assign('cFromUrl', verifyGPDataString('cFromUrl'))
-                    ->assign('cToUrl', verifyGPDataString('cToUrl'));
+                    ->assign('cFromUrl', StringHandler::filterXSS(verifyGPDataString('cFromUrl')))
+                    ->assign('cToUrl', StringHandler::filterXSS(verifyGPDataString('cToUrl')));
             }
             break;
         case 'csvimport':

@@ -36,6 +36,8 @@ class WidgetVisitorsOnline extends WidgetBase
         if (is_array($oVisitors_arr)) {
             foreach ($oVisitors_arr as $i => $oVisitor) {
                 $oVisitors_arr[$i]->cNachname = trim(entschluesselXTEA($oVisitor->cNachname));
+                $oVisitors_arr[$i]->cEinstiegsseite = StringHandler::filterXSS($oVisitor->cEinstiegsseite);
+                $oVisitors_arr[$i]->cAusstiegsseite = StringHandler::filterXSS($oVisitor->cAusstiegsseite);
                 if ($oVisitor->kBestellung > 0) {
                     $oVisitors_arr[$i]->fGesamtsumme = gibPreisStringLocalized($oVisitor->fGesamtsumme);
                 }

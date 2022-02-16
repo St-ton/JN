@@ -64,18 +64,22 @@ die bis zum aktuellen Zeitpunkt noch nicht ausgeführt wurden.
 ``migrate:create``
 ..................
 
-Erzeugt den Objektrumpf einer neuen Migration. |br|
+Der Befehl ``create`` erzeugt den Objektrumpf einer neuen Migration. |br|
 Diese neue Migration enthält zwei leere Methoden (``up()``, ``down()``), die vom Entwickler zu implementieren sind.
 
 ``migrate:innodbutf8``
 ......................
 
-Führt InnoDB- und UTF8-Migrationen aus.
+Der Befehl ``innodbutf8`` konvertiert alle Tabellen der Datenbank auf die *Engine* "InnoDB", die bis dato noch mit
+der Engine "MyISAM" laufen. |br|
+Zudem werden all diese Tabellen auf den Zeichensatz ``CHARACTER SET 'utf8'`` und die Sortierungsregel
+``COLLATE 'utf8_unicode_ci'`` umgestellt.
 
 ``migrate:status``
 ..................
 
-Gibt eine Liste aller Migrationen und deren Ausführungsstatus aus.
+Mit dem Befehl ``status`` können Sie sich eine Liste aller Migrationen und deren Ausführungsstatus ausgeben lassen.
+
 
 backup
 ......
@@ -184,12 +188,18 @@ werden.
 ``compile:less``
 ................
 
-Übersetzt alle ``.less``-Dateien im JTL-Shop.
+Alle *Themes* des EVO-Templates enthalten ``.less``-Dateien. |br|
+Sollten Sie die ``.less``-Dateien in einem *Theme* an Ihre Bedürfnisse angepaßt haben, können Sie mit diesen Befehl
+alle ``.less``-Dateien, aller Themes des EVO-Templates, in ``.css``-Dateien übersetzen.
 
 ``compile:sass``
 ................
 
-Übersetzt alle ``.sass``-Dateien im JTL-Shop.
+Alle *Themes* des NOVA-Templates enthalten ``.scss``-Dateien. |br|
+Sollten Sie die ``.scss``-Dateien in einem *Theme* an Ihre Bedürfnisse angepaßt haben, können Sie mit diesen Befehl
+alle ``.scss``-Dateien, aller Themes des NOVA-Templates, in ``.css``-Dateien übersetzen.
+
+Dieser Befehl übersetzt ebenso das "*critical SCSS*", welches im Seitenkopf immer mit übertragen wird.
 
 
 generate
@@ -201,8 +211,8 @@ Sub-Befehl aufgerufen werden soll.
 ``generate:demodata``
 .....................
 
-Demodaten sind einfache Artikel und Kategorien, die dieser Befehl anlegen kann, um die allgemeine Funktionalität
-des JTL-Shop zu demonstrieren.
+Mit diesem Befehl können Sie einfache Artikel und Kategorien in einem noch leeren JTL-Shop erzeugen,
+um die grundlegende Funktion von JTL-Shop zu demonstrieren.
 
 
 mailtemplates
@@ -243,19 +253,21 @@ welche die angegebene Tabelle abbildet.
 Erweiterung durch Plugin
 ------------------------
 
-Das Plugin "*jtl_plugin_bootstrapper*" erweitert die Shop CLI um den Befehl "*create-plugin*". |br|
-Wenn dieses Plugin in JTL-Shop installiert ist, können mit der Shop CLI den Befehl
-``jtl_plugin_bootstrapper:create-plugin`` aufrufen, um sich die grundlegende Struktur eines Plugins erzeugen
+Das Plugin `jtl_plugin_bootstrapper <https://gitlab.com/jtl-software/jtl-shop/plugins/jtl_plugin_bootstrapper>`_
+erweitert die Shop CLI um den Befehl "*create-plugin*". |br|
+Wenn dieses Plugin in JTL-Shop installiert ist, können Sie mit der Shop CLI den Befehl
+``jtl_plugin_bootstrapper:create-plugin`` aufrufen, um sich die grundlegende Struktur eines JTL-Shop Plugins erzeugen
 zu lassen.
 
 Der Befehl ``jtl_plugin_bootstrapper`` kann alleinstehend aufgerufen werden, fragt aber dann interaktiv, ob der
 einzige Sub-Befehl ``create-plugin`` aufgerufen werden soll. |br|
-Der Sub-Befehl ``create-plugin`` fragt nun interaktiv alle erforderlichen Parameter ab und erzeugt sodann
-alle erforderlichen Verzeichnisse und Dateien im Ordner ``plugins/``.
+Der Sub-Befehl ``create-plugin`` fragt dann seinerseits interaktiv alle erforderlichen Parameter ab und erzeugt sodann
+die grundlegend erforderlichen Verzeichnisse und Dateien im Ordner ``plugins/``.
 
-Ist ein Ausführen des Sub-Befehl ``create-plugin`` per Script gewünscht, können alle Parameter
+Ist ein Ausführen des Sub-Befehls ``create-plugin`` per Script gewünscht, können alle Parameter
 auch in einem Shell-Script übergeben werden. |br|
-Hier ein Beispiel:
+
+Beispiel:
 
 .. code-block:: sh
 
@@ -267,7 +279,7 @@ Hier ein Beispiel:
     AUTHOR='Max Mustermann'                  # Name des Authors
     URL='http://example.com'                 # URL, beispielsweise zur Homepage des Authors
     ID='test_plugin'                         # Plugin-ID (Plugin-Verzeichnisname und Shop-interne ID)
-    FLUSH_TAGS='CACHING_GROUP_PRODUCT'       # Caching-Gruppen-Konstanten, die bei Installation gelöscht werden sollen (kommagetrennte Liste)
+    FLUSH_TAGS='CACHING_GROUP_PRODUCT'       # Caching-Gruppen, die bei Installation gelöscht werden sollen (kommagetrennte Liste)
     MINSHOPVERSION='5.0.0'                   # minimale Shop-Version, in der das Plugin noch lauffähig ist (SemVer-konform)
     MAXSHOPVERSION='5.1.3'                   # maximale Shop-Version, in der das Plugin noch lauffähig ist (SemVer-konform)
     CREATE_MIGRATIONS='tplugin_table'        # Migrations zur Tabellerstellung erzeugen (kommagetrennte Liste)
@@ -301,10 +313,14 @@ Hier ein Beispiel:
       --settings="${SETTINGS}"                     \
       --settingstypes="${SETTINGSTYPES}"           \
 
-Nicht alle Parameter sind Pflichtangaben. Bei interaktiver Ausführung wird nur der grundlegende Teil abgefragt.
+Nicht alle Parameter sind Pflichtangaben. |br|
+Bei interaktiver Ausführung wird nur der grundlegende Teil abgefragt.
 
 Für den Parameter ``SETTINGSTYPES`` sind die Werte, die im Abschnitt ``info.xml``
 in der Tabellenzeile ":ref:`Attribut Typ <label_infoxml_settingtypes>`" gelistet sind, gültig. |br|
 ``SETTINGS`` (die Einstellungsnamen) und ``SETTINGSTYPES`` müssen zwei "deckungsgleiche" Arrays sein, bei denen
 beispielsweise Wert 1 im Array ``SETTINGS`` auch dem Wert 1 im Array ``SETTINGSTYPES`` entspricht.
+
+Der Parameter ``--flush-tags`` bezieht sich auf die Caching-Group-Konstanten, die in den Datei ``includes/defines_inc.php``
+zu finden sind.
 

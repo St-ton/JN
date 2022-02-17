@@ -392,7 +392,7 @@ function saveShippingSurcharge(array $data): stdClass
                 ->setTitle($post['cName'])
                 ->setSurcharge($surcharge);
         }
-        foreach (Sprache::getAllLanguages(0, true) as $lang) {
+        foreach (LanguageHelper::getAllLanguages(0, true) as $lang) {
             $idx = 'cName_' . $lang->getCode();
             if (isset($post[$idx])) {
                 $surchargeTMP->setName($post[$idx] ?: $post['cName'], $lang->getId());

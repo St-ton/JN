@@ -399,7 +399,7 @@ function holeGlobaleMetaAngaben()
 function holeExcludedKeywords()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Metadata::getExcludes();
+    return [];
 }
 
 /**

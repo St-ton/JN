@@ -23,6 +23,10 @@ class Extractor
 
     private const GIT_REGEX = '/(.*)((-master)|(-[a-zA-Z0-9]{40}))\/(.*)/';
 
+    private const TAG_REGEX = '/(.*)-v?(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-'
+    . '(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]'
+    . '*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?\//';
+
     /**
      * @var InstallationResponse
      */
@@ -242,14 +246,18 @@ class Extractor
         for ($i = 0; $i < $zip->numFiles; $i++) {
             if ($i === 0) {
                 $dirName = $zip->getNameIndex($i);
-                if (\mb_strpos($dirName, '.') !== false) {
-                    $this->handlExtractionErrors(0, \__('pluginInstallInvalidArchive'));
-
-                    return $dirName;
-                }
                 \preg_match(self::GIT_REGEX, $dirName, $hits);
                 if (\count($hits) >= 3) {
                     $dirName = \str_replace($hits[2], '', $dirName);
+                } else {
+                    \preg_match(self::TAG_REGEX, $dirName, $hits);
+                    if (\count($hits) >= 5) {
+                        $dirName = \str_replace($hits[0], $hits[1] . '/', $dirName);
+                    } elseif (\mb_strpos($dirName, '.') === 0) {
+                        $this->handlExtractionErrors(0, \__('pluginInstallInvalidArchive'));
+
+                        return $dirName;
+                    }
                 }
                 $this->response->setDirName($dirName);
             }
@@ -258,6 +266,12 @@ class Extractor
             if (\count($hits) >= 3) {
                 $zip->renameIndex($i, \str_replace($hits[2], '', $filename));
                 $filename = $zip->getNameIndex($i);
+            } else {
+                \preg_match(self::TAG_REGEX, $filename, $hits);
+                if (\count($hits) >= 5) {
+                    $zip->renameIndex($i, \str_replace($hits[0], $hits[1] . '/', $filename));
+                    $filename = $zip->getNameIndex($i);
+                }
             }
             if ($zip->extractTo(self::UNZIP_DIR, $filename)) {
                 $this->response->addFileUnpacked($filename);

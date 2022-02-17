@@ -4009,26 +4009,7 @@ class Artikel
     private function checkVariationExtraCharge(int $customerGroupID, DbInterface $db): void
     {
         if ($this->kVaterArtikel === 0 && $this->nIstVater === 1 && \is_object($this->Preise)) {
-            $net          = $this->Preise->fVKNetto ?? 0.0;
-            $specialPrice = $db->getSingleObject(
-                'SELECT COUNT(a.kArtikel) AS specialPrices
-                    FROM tartikel AS a
-                    JOIN tpreis AS p
-                        ON p.kArtikel = a.kArtikel
-                        AND p.kKundengruppe = :cgid
-                    JOIN tpreisdetail AS d
-                        ON d.kPreis = p.kPreis
-                    LEFT JOIN tartikelsonderpreis AS asp
-                        ON asp.kArtikel = a.kArtikel
-                    LEFT JOIN tsonderpreise AS sp
-                        ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
-                        AND sp.kKundengruppe = :cgid
-                    WHERE a.kVaterArtikel = :pid
-                        AND COALESCE(sp.fNettoPreis, d.fVKNetto) - ' . $net . ' > 0.0001',
-                ['cgid' => $customerGroupID, 'pid' => (int)$this->kArtikel]
-            );
-
-            $this->nVariationsAufpreisVorhanden = (int)($specialPrice->specialPrices ?? 0) > 0 ? 1 : 0;
+            $this->nVariationsAufpreisVorhanden = $this->Preise->oPriceRange->isRange();
         }
     }
 

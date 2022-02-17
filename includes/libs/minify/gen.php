@@ -20,8 +20,8 @@ $send_301 = static function ($url) {
  * @return null|string null if missing or can't create
  */
 $get_cache_time = static function (bool $auto_create = true) {
-    foreach (\scandir(\PFAD_ROOT . \PATH_STATIC_MINIFY) as $entry) {
-        if (\ctype_digit($entry)) {
+    foreach (scandir(PFAD_ROOT . PATH_STATIC_MINIFY) as $entry) {
+        if (ctype_digit($entry)) {
             return $entry;
         }
     }
@@ -30,8 +30,8 @@ $get_cache_time = static function (bool $auto_create = true) {
         return null;
     }
 
-    $time = (string)\time();
-    $dir  = \PFAD_ROOT . \PATH_STATIC_MINIFY . $time;
+    $time = (string)time();
+    $dir  = PFAD_ROOT . PATH_STATIC_MINIFY . $time;
     if (!mkdir($dir) && !is_dir($dir)) {
         return null;
     }
@@ -46,7 +46,7 @@ if (!$app->config->enableStatic) {
     die('Minify static serving is not enabled. Set $min_enableStatic = true; in config.php');
 }
 
-if (!is_writable(\PFAD_ROOT . \PATH_STATIC_MINIFY)) {
+if (!is_writable(PFAD_ROOT . PATH_STATIC_MINIFY)) {
     http_response_code(500);
     die('Directory is not writable.');
 }
@@ -125,7 +125,7 @@ if ($cache_time !== $requested_cache_dir) {
 $content = $app->minify->combine($sources);
 
 // save and send file
-$file = \PFAD_ROOT . \PATH_STATIC_MINIFY . $cache_time . '/' . $query;
+$file = PFAD_ROOT . PATH_STATIC_MINIFY . $cache_time . '/' . $query;
 if (!is_dir(dirname($file))) {
     mkdir(dirname($file), 0777, true);
 }

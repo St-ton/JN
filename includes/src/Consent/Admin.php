@@ -3,7 +3,7 @@
 namespace JTL\Consent;
 
 use JTL\Model\GenericAdmin;
-use Shop;
+use JTL\Shop;
 
 /**
  * Class Admin

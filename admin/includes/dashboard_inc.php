@@ -263,7 +263,7 @@ function getShopInfoIO(string $tpl, string $wrapperID): IOResponse
     Shop::Container()->getGetText()->loadAdminLocale('widgets');
 
     $response = new IOResponse();
-    /** @var \JTLApi $api */
+    /** @var JTLApi $api */
     $api           = Shop::Container()->get(JTLApi::class);
     $latestVersion = $api->getLatestVersion();
 

@@ -14,7 +14,7 @@ use JTL\Shop;
 class PaymentMethod
 {
     /**
-     * @param \PaymentMethod|Zahlungsart $paymentMethod
+     * @param Zahlungsart $paymentMethod
      * @return bool
      */
     public static function shippingMethodWithValidPaymentMethod($paymentMethod): bool

@@ -34,6 +34,19 @@
                                 required
                                 />
                             </div>
+                            {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
+                            isset($Einstellungen.global.anti_spam_method) && $Einstellungen.global.anti_spam_method !== 'N' && empty($smarty.session.Kunde->kKunde)}
+                                <hr>
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-12">
+                                        <div class="g-recaptcha form-group" data-sitekey="{$Einstellungen.global.global_google_recaptcha_public}" data-callback="captcha_filled"></div>
+                                        {if !empty($fehlendeAngaben.captcha)}
+                                            <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>{lang key="invalidToken" section="global"}</div>
+                                        {/if}
+                                        <hr>
+                                    </div>
+                                </div>
+                            {/if}
                             <div class="form-group">
                                 {if $bExclusive === true}
                                   <input type="hidden" name="exclusive_content" value="1" />

@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Shop;
+
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty
  * @global \JTL\Backend\AdminAccount $oAccount

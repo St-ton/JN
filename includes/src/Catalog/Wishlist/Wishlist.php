@@ -18,9 +18,7 @@ use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
-use Kunde;
 use stdClass;
-use WunschlistePos;
 use function Functional\select;
 
 /**
@@ -105,7 +103,7 @@ class Wishlist
         if ($this->kKunde === null) {
             return;
         }
-        $this->oKunde = new Kunde($this->kKunde);
+        $this->oKunde = new Customer($this->kKunde);
     }
 
     /**
@@ -1575,7 +1573,7 @@ class Wishlist
     }
 
     /**
-     * @return WunschlistePos[]
+     * @return WishlistItem[]
      */
     public function getItems(): array
     {
@@ -1583,7 +1581,7 @@ class Wishlist
     }
 
     /**
-     * @param WunschlistePos[] $items
+     * @param WishlistItem[] $items
      */
     public function setItems(array $items): void
     {
@@ -1592,9 +1590,9 @@ class Wishlist
     }
 
     /**
-     * @param WunschlistePos $item
+     * @param WishlistItem $item
      */
-    public function addItem(WunschlistePos $item): void
+    public function addItem(WishlistItem $item): void
     {
         $this->CWunschlistePos_arr[] = $item;
         $this->setProductCount(\count($this->CWunschlistePos_arr));

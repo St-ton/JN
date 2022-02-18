@@ -262,17 +262,15 @@ function getShopInfoIO(string $tpl, string $wrapperID): IOResponse
 {
     Shop::Container()->getGetText()->loadAdminLocale('widgets');
 
-    $response         = new IOResponse();
-    $api              = Shop::Container()->get(JTLApi::class);
-    $oLatestVersion   = $api->getLatestVersion();
-    $strLatestVersion = $oLatestVersion
-        ? sprintf('%d.%02d', $oLatestVersion->getMajor(), $oLatestVersion->getMinor())
-        : null;
+    $response = new IOResponse();
+    /** @var JTLApi $api */
+    $api           = Shop::Container()->get(JTLApi::class);
+    $latestVersion = $api->getLatestVersion();
 
     $wrapper = Shop::Smarty()
         ->assign('oSubscription', $api->getSubscription())
-        ->assign('oVersion', $oLatestVersion)
-        ->assign('strLatestVersion', $strLatestVersion)
+        ->assign('oVersion', $latestVersion)
+        ->assign('strLatestVersion', $latestVersion->getOriginalVersion())
         ->assign('bUpdateAvailable', $api->hasNewerVersion())
         ->fetch('tpl_inc/' . $tpl);
 

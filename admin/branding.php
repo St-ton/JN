@@ -46,9 +46,9 @@ $smarty->assign('cRnd', time())
     ->display('branding.tpl');
 
 /**
- * @return mixed
+ * @return array
  */
-function gibBrandings()
+function gibBrandings(): array
 {
     return Shop::Container()->getDB()->selectAll('tbranding', [], [], '*', 'cBildKategorie');
 }

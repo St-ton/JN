@@ -11,7 +11,7 @@ use JTL\Plugin\Data\Config;
 use JTL\Plugin\Helper;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\Plugin;
-use \JTL\Plugin\State;
+use JTL\Plugin\State;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';

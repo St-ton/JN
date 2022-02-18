@@ -3,6 +3,7 @@
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Text;
+use JTL\Media\Image;
 use JTL\Media\IMedia;
 use JTL\Media\Media;
 use JTL\Shop;

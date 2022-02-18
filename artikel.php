@@ -174,7 +174,8 @@ if (Frontend::getCustomer()->getID() > 0) {
     $rated = Product::getRatedByCurrentCustomer($AktuellerArtikel->kArtikel, $AktuellerArtikel->kVaterArtikel);
 }
 
-$pagination                                = (new Pagination('ratings'))
+$pagination = new Pagination('ratings');
+$pagination
     ->setItemArray($ratings)
     ->setItemsPerPageOptions([(int)$conf['bewertung']['bewertung_anzahlseite']])
     ->setDefaultItemsPerPage($conf['bewertung']['bewertung_anzahlseite'])
@@ -184,6 +185,26 @@ $pagination                                = (new Pagination('ratings'))
         ['nHilfreich', Shop::Lang()->get('paginationOrderUsefulness')]
     ])
     ->setDefaultSortByDir((int)$conf['bewertung']['bewertung_sortierung'])
+    ->setSortFunction(static function ($a, $b) use ($pagination, $languageID) {
+        $cSortBy  = $pagination->getSortByCol();
+        $nSortFac = $pagination->getSortDirSQL() === 0 ? +1 : -1;
+        $valueA   = \is_string($a->$cSortBy) ? \mb_convert_case($a->$cSortBy, \MB_CASE_LOWER) : $a->$cSortBy;
+        $valueB   = \is_string($b->$cSortBy) ? \mb_convert_case($b->$cSortBy, \MB_CASE_LOWER) : $b->$cSortBy;
+
+        if ($b->kSprache === $languageID && $a->kSprache !== $languageID) {
+            return +1;
+        }
+        if ($a->kSprache === $languageID && $b->kSprache !== $languageID) {
+            return -1;
+        }
+        if ($valueA === $valueB) {
+            return 0;
+        }
+        if ($valueA < $valueB) {
+            return -$nSortFac;
+        }
+        return +$nSortFac;
+    })
     ->assemble();
 $AktuellerArtikel->Bewertungen->Sortierung = $sorting;
 

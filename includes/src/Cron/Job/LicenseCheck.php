@@ -7,6 +7,7 @@ use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
 use JTL\Cron\QueueEntry;
 use JTL\License\Checker;
+use JTL\License\Exception\AuthException;
 use JTL\License\Manager;
 
 /**
@@ -27,7 +28,7 @@ final class LicenseCheck extends Job
             if ($res <= 0) {
                 return $this;
             }
-        } catch (RequestException $e) {
+        } catch (RequestException | AuthException $e) {
             return $this;
         }
         $checker = new Checker($this->logger, $this->db, $this->cache);

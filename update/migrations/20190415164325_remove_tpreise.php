@@ -26,6 +26,7 @@ class Migration_20190415164325 extends Migration implements IMigration
         $this->execute('ANALYZE TABLE tpreis');
         $this->execute('ANALYZE TABLE tpreisverlauf');
         $this->execute('UPDATE tpreis SET kKunde = 0 WHERE kKunde IS NULL');
+        $this->execute('ANALYZE TABLE tpreis');
         $this->execute(
             'DELETE FROM tpreis
                  WHERE kPreis IN (SELECT * FROM (

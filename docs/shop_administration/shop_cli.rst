@@ -9,7 +9,7 @@ Shop CLI
 Die Shop CLI ist ein Kommandozeilen-Tool, welches mit dem PHP-Kommandozeileninterpreter
 verwendet wird und die Möglichkeit bietet, administrative Aufgaben ohne Shop-Backend
 auszuführen. |br|
-Um die Shop CLI verwenden zu können, muß PHP als Kommandozeileninterpreter verfügbar sein.
+Um die Shop CLI verwenden zu können, muss PHP als Kommandozeileninterpreter verfügbar sein.
 (siehe: PHP-Konfiguration des jeweiligen Servers)
 
 
@@ -39,7 +39,7 @@ Werden solche Befehle angegeben, fragt die Shop CLI interaktiv, ob der eine Sub-
 Hilfe zu Befehlen
 -----------------
 
-Mit dem Befehl ``help`` vor einem Befehl, wie auch mit den Parametern ``-h`` und ``--help`` nach
+Mit ``help`` vor einem Befehl, wie auch mit den Parametern ``-h`` und ``--help`` nach
 einem Befehl, erhält man Hilfe zu diesem spezifischen Befehl.
 
 .. code-block:: text
@@ -142,7 +142,7 @@ Bei Bedarf kann mithilfe der Shop CLI und diesem Befehl das Verzeichnis geleert 
 ....................
 
 Für jedes aktivierte Template in JTL-Shop existiert ein Verzeichnis unterhalb des Ordners ``templates_c/``. Hier
-werden alle, durch Smarty vor-compilierten, Dateien des jeweiligen Templates abgelegt. |br|
+werden alle durch Smarty vor-compilierten Dateien des jeweiligen Templates abgelegt. |br|
 
 Mit diesem Sub-Befehl kann dieser Ordner bei Bedarf auch manuell geleert und entfernt werden.
 
@@ -253,7 +253,7 @@ welche die angegebene Tabelle abbildet.
 
 .. caution::
 
-    Zum Speichern der neuen Objekte muß ein Ordner names ``models/`` im Hauptverzeichnis des Shops vorhanden und von
+    Zum Speichern der neuen Objekte muss ein Ordner names ``models/`` im Hauptverzeichnis des Shops vorhanden und von
     der PHP CLI beschreibbar sein.
 
 
@@ -298,7 +298,7 @@ Beispiel:
     CSS='main.css'                           # CSS-Dateien, die erzeugt werden sollen (kommagetrennte Liste)
     DELETE='Yes'                             # Soll das Plugin, bei Installation, eine alte Version ersetzen? (Yes/No)
     LINKS='test-plugin'                      # Frontend-Link-Name des Plugins (SEO-konformer, kommagetrennte Liste)
-    SETTINGS='Textarea Test,Checkbox Test'   # Backend-Setting-Name (kommagetrennte Liste, muß mit Settings-Typ deckungsgleich sein)
+    SETTINGS='Textarea Test,Checkbox Test'   # Backend-Setting-Name (kommagetrennte Liste, muss mit Settings-Typ deckungsgleich sein)
     SETTINGSTYPES='textarea,checkbox'        # Typ des Backend-Settings (kommagetrennte Liste)
 
 

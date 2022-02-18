@@ -3,7 +3,6 @@
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\News\Admin\Controller as NewsController;
 use JTL\Shop;
 use JTL\Reset\Reset;
 use JTL\Reset\ResetContentType;

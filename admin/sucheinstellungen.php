@@ -7,7 +7,6 @@ use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Shopsetting;
 

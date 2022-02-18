@@ -51,9 +51,9 @@ class ContentAuthor
      * @param string $realm
      * @param int    $contentID
      * @param bool   $activeOnly
-     * @return object|bool
+     * @return stdClass|null
      */
-    public function getAuthor(string $realm, int $contentID, bool $activeOnly = false)
+    public function getAuthor(string $realm, int $contentID, bool $activeOnly = false): ?stdClass
     {
         $filter = $activeOnly
             ? ' AND tadminlogin.bAktiv = 1

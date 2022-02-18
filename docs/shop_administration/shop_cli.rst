@@ -23,7 +23,7 @@ Die Shop CLI wird Im Hauptverzeichnis (Installationsverzeichnis) von JTL-Shop au
     $> php cli [befehl:sub-befehl [parameter]]
 
 Ein Aufruf ohne Befehle, wie auch der Aufruf mit dem Befehl ``list``, gibt eine kurze
-Liste aller verfügbaren Befehlen aus.
+Liste aller verfügbaren Befehle aus.
 
 .. code-block:: text
 
@@ -169,6 +169,10 @@ werden sollen:
     -g, --linkgroups      Linkgruppen vorbereiten
     -c, --categories      Kategorien vorbereiten
     -m, --manufacturers   Hersteller vorbereiten
+
+.. caution::
+
+    Das Aufwärmen des Caches kann, abhängig von der Größe Ihres JTL-Shop, einige Zeit in Anspruch nehmen.
 
 Mit dem folgenden Paramter kann man das Leeren des Caches, vor dem Aufwärmen, erzwingen:
 

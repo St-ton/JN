@@ -268,7 +268,7 @@ class DB
         }
         $portlet = new MissingPortlet('MissingPortlet', 0, 0);
         $portlet->setMissingClass($class)
-            ->setTitle(__('missingPortlet') . ' "' . $class . '"')
+            ->setTitle(\__('missingPortlet') . ' "' . $class . '"')
             ->setGroup('hidden')
             ->setActive(false);
 

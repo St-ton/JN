@@ -70,7 +70,7 @@ function updatePlugin(int $pluginID)
  * Versucht ein ausgewähltes Plugin vorzubereiten und danach zu installieren
  *
  * @param string     $dir
- * @param int|Plugin $oldPlugin
+ * @param int|\JTL\Plugin\PluginInterface $oldPlugin
  * @return int
  * @deprecated since 5.0.0
  */

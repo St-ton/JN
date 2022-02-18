@@ -2,7 +2,6 @@
 
 namespace JTL\Catalog\Category;
 
-use JTL\DB\DbInterface;
 use JTL\Helpers\Category;
 use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;

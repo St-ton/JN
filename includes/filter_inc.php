@@ -390,7 +390,7 @@ function checkMerkmalWertVorhanden()
 function gibArtikelsortierung($NaviFilter)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return updateNaviFilter($NaviFilter)->getFilterSQL()->getOrder()->orderBy;
+    return '';
 }
 
 /**

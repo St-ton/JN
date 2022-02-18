@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Backend\AdminAccount;
 use JTL\Backend\AdminLoginStatus;
 use JTL\Backend\Status;
 use JTL\Helpers\Form;
@@ -14,7 +15,7 @@ use JTLShop\SemVer\Version;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty     $smarty */
-/** @global \JTL\Backend\AdminAccount $oAccount */
+/** @global AdminAccount $oAccount */
 $db          = Shop::Container()->getDB();
 $alertHelper = Shop::Container()->getAlertService();
 $cache       = Shop::Container()->getCache();

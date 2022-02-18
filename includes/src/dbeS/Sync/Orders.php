@@ -77,7 +77,7 @@ final class Orders extends AbstractSync
 
     /**
      * @param int $orderID
-     * @return bool|\PaymentMethod
+     * @return bool|LegacyMethod
      */
     private function getPaymentMethod(int $orderID)
     {

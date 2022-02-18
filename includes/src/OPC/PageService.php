@@ -285,7 +285,7 @@ class PageService
                 $pageIdObj->manufacturerFilter = $params['kHerstellerFilter'];
             }
         }
-        return \json_encode($pageIdObj);
+        return \json_encode($pageIdObj, \JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
     /**

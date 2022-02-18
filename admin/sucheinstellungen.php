@@ -45,7 +45,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken())
             $currentVal = $db->getSingleObject('SELECT @@ft_min_word_len AS ft_min_word_len');
             if (($currentVal->ft_min_word_len ?? $_POST['suche_min_zeichen']) !== $_POST['suche_min_zeichen']) {
                 $_POST['suche_min_zeichen'] = $currentVal->ft_min_word_len;
-                $alertHelper->addAlert(
+                $alertService->addAlert(
                     Alert::TYPE_WARNING,
                     __('errorFulltextSearchMinLen'),
                     'errorFulltextSearchMinLen'

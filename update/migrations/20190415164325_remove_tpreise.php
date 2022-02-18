@@ -22,6 +22,7 @@ class Migration_20190415164325 extends Migration implements IMigration
      */
     public function up()
     {
+        $this->execute('UPDATE tpreis SET kKunde = 0 WHERE kKunde IS NULL');
         $this->execute(
             'DELETE FROM tpreis
                  WHERE kPreis IN (SELECT * FROM (

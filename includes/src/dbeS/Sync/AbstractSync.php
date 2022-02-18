@@ -205,18 +205,22 @@ abstract class AbstractSync
         if ($product->kArtikel <= 0) {
             return;
         }
-        $stockRatio    = $conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100;
-        $stockRelevanz = ($product->cLagerKleinerNull ?? '') !== 'Y' && ($product->cLagerBeachten ?? 'Y') === 'Y';
-        $subscriptions = $this->db->selectAll(
+        $sendMails      = true;
+        $stockRatio     = $conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100;
+        $stockRelevance = ($product->cLagerKleinerNull ?? '') !== 'Y' && ($product->cLagerBeachten ?? 'Y') === 'Y';
+        $subscriptions  = $this->db->selectAll(
             'tverfuegbarkeitsbenachrichtigung',
             ['nStatus', 'kArtikel'],
             [0, $product->kArtikel]
         );
-        $subCount      = \count($subscriptions);
-        if ($subCount === 0 || (
-                $stockRelevanz && ($product->fLagerbestand <= 0 || ($product->fLagerbestand / $subCount) < $stockRatio)
-            )
-        ) {
+        \executeHook(\HOOK_SYNC_SEND_AVAILABILITYMAILS, [
+            'sendMails'     => &$sendMails,
+            'product'       => $product,
+            'subscriptions' => &$subscriptions,
+        ]);
+        $subCount = \count($subscriptions);
+        $noStock  = ($product->fLagerbestand <= 0 || ($product->fLagerbestand / $subCount) < $stockRatio);
+        if ($sendMails === false || $subCount === 0 || ($stockRelevance && $noStock)) {
             return;
         }
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
@@ -253,7 +257,7 @@ abstract class AbstractSync
 
             $mailer = Shop::Container()->get(Mailer::class);
             $mail   = new Mail();
-            
+
             // if original language was deleted between ActivationOptIn and now, try to send it in english,
             // if there is no english, use the shop-default.
             $mail->setLanguage(
@@ -261,7 +265,7 @@ abstract class AbstractSync
                 LanguageHelper::getAllLanguages(2)['eng'] ??
                 LanguageHelper::getDefaultLanguage()
             );
-            
+
             $mail->setToMail($tplMail->toEmail);
             $mail->setToName($tplMail->toName);
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $tplData));

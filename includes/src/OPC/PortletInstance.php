@@ -102,14 +102,14 @@ class PortletInstance implements \JsonSerializable
             $root->setAttribute('data-portlet', \json_encode($this->getData()));
             $result = $dom->saveHTML($root);
         } else {
-            $result = "
-                <div data-portlet=\"" . \htmlspecialchars(\json_encode($this->getData()), ENT_QUOTES) . "\"
-                    style=\"text-align:center;height:4em;line-height:4em;" .
-                        "background-color:#ffe1dd;color:red;border:1px dashed red;\">
-                        <i class=\"fas fa-exclamation-circle\"></i>
-                    " . __('missingPortletHTML') . "
+            $result = '
+                <div data-portlet="' . \htmlspecialchars(\json_encode($this->getData()), \ENT_QUOTES) . '"
+                    style="text-align:center;height:4em;line-height:4em;'
+                    . 'background-color:#ffe1dd;color:red;border:1px dashed red;">
+                        <i class="fas fa-exclamation-circle"></i> '
+                    . \__('missingPortletHTML') . '
                 </div>
-            ";
+            ';
         }
 
         Shop::fire('shop.OPC.PortletInstance.getPreviewHtml', [

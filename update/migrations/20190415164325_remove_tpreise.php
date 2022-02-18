@@ -22,6 +22,9 @@ class Migration_20190415164325 extends Migration implements IMigration
      */
     public function up()
     {
+        $this->execute('DROP TABLE IF EXISTS tpreise');
+        $this->execute('ANALYZE TABLE tpreis');
+        $this->execute('ANALYZE TABLE tpreisverlauf');
         $this->execute('UPDATE tpreis SET kKunde = 0 WHERE kKunde IS NULL');
         $this->execute(
             'DELETE FROM tpreis
@@ -86,5 +89,24 @@ class Migration_20190415164325 extends Migration implements IMigration
             $this->execute('DROP INDEX kArtikel ON tpreis');
         }
         $this->execute('CREATE INDEX kArtikel on tpreis(kArtikel, kKundengruppe, kKunde)');
+        $this->execute(
+            'CREATE TABLE tpreise (
+                kKundengruppe   INT UNSIGNED DEFAULT 0  NOT NULL,
+                kArtikel        INT UNSIGNED DEFAULT 0  NOT NULL,
+                fVKNetto        DOUBLE                      NULL,
+                nAnzahl1        INT UNSIGNED                NULL,
+                nAnzahl2        INT UNSIGNED                NULL,
+                nAnzahl3        INT UNSIGNED                NULL,
+                nAnzahl4        INT UNSIGNED                NULL,
+                nAnzahl5        INT UNSIGNED                NULL,
+                fPreis1         DOUBLE                      NULL,
+                fPreis2         DOUBLE                      NULL,
+                fPreis3         DOUBLE                      NULL,
+                fPreis4         DOUBLE                      NULL,
+                fPreis5         DOUBLE                      NULL,
+                PRIMARY KEY (kArtikel, kKundengruppe),
+                KEY fVKNetto (fVKNetto)
+            ) ENGINE = InnoDB COLLATE = utf8_unicode_ci'
+        );
     }
 }

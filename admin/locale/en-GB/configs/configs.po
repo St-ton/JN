@@ -1832,24 +1832,6 @@ msgstr "Maximum order value"
 msgid "zahlungsart_nachnahme_max_desc"
 msgstr "Specify the basket value up to which a payment method is available for selection."
 
-msgid "zahlungsart_kreditkarte_min_bestellungen_name"
-msgstr "Number of required orders"
-
-msgid "zahlungsart_kreditkarte_min_bestellungen_desc"
-msgstr "Specify the minimum number of orders a customer must have placed to be offered this payment method."
-
-msgid "zahlungsart_kreditkarte_min_name"
-msgstr "Minimum order value"
-
-msgid "zahlungsart_kreditkarte_min_desc"
-msgstr "Specify the minimum basket value required for a payment method to be available for selection."
-
-msgid "zahlungsart_kreditkarte_max_name"
-msgstr "Maximum order value"
-
-msgid "zahlungsart_kreditkarte_max_desc"
-msgstr "Specify the basket value up to which a payment method is available for selection."
-
 msgid "zahlungsart_rechnung_min_bestellungen_name"
 msgstr "Number of required orders"
 

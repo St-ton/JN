@@ -7,7 +7,7 @@
             {container fluid=$Link->getIsFluid()}
                 {if isset($smarty.session.Zahlungsart->nWaehrendBestellung) && $smarty.session.Zahlungsart->nWaehrendBestellung == 1}
                     <h2>{lang key='orderCompletedPre' section='checkout'}</h2>
-                {elseif $Bestellung->Zahlungsart->cModulId !== 'za_kreditkarte_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_lastschrift_jtl'}
+                {elseif $Bestellung->Zahlungsart->cModulId !== 'za_lastschrift_jtl'}
                     <h2>{lang key='orderCompletedPost' section='checkout'}</h2>
                 {/if}
             {/container}

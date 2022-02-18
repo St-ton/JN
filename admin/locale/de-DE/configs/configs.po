@@ -1832,24 +1832,6 @@ msgstr "Maximaler Bestellwert"
 msgid "zahlungsart_nachnahme_max_desc"
 msgstr "Hier legen Sie fest, bis zu welchem Warenkorbwert eine Zahlungsart angeboten wird."
 
-msgid "zahlungsart_kreditkarte_min_bestellungen_name"
-msgstr "Anzahl nötiger Bestellungen"
-
-msgid "zahlungsart_kreditkarte_min_bestellungen_desc"
-msgstr "Hier legen Sie fest, wie oft ein Kunde mindestens bei Ihnen bestellt haben muss, damit ihm diese Zahlungsart angeboten wird."
-
-msgid "zahlungsart_kreditkarte_min_name"
-msgstr "Mindestbestellwert"
-
-msgid "zahlungsart_kreditkarte_min_desc"
-msgstr "Hier legen Sie fest, wie hoch der Warenkorbwert mindestens sein muss, damit eine Zahlungsart angeboten wird."
-
-msgid "zahlungsart_kreditkarte_max_name"
-msgstr "Maximaler Bestellwert"
-
-msgid "zahlungsart_kreditkarte_max_desc"
-msgstr "Hier legen Sie fest, bis zu welchem Warenkorbwert eine Zahlungsart angeboten wird."
-
 msgid "zahlungsart_rechnung_min_bestellungen_name"
 msgstr "Anzahl nötiger Bestellungen"
 

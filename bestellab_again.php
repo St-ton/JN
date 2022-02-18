@@ -45,26 +45,6 @@ $smarty->assign('Bestellung', $order)
 if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
     $hasAdditionalInformation = false;
     switch ($moduleID) {
-        case 'za_kreditkarte_jtl':
-            if ($_POST['kreditkartennr']
-                && $_POST['gueltigkeit']
-                && $_POST['cvv']
-                && $_POST['kartentyp']
-                && $_POST['inhaber']
-            ) {
-                $_SESSION['Zahlungsart']->ZahlungsInfo->cKartenNr    =
-                    Text::htmlentities(stripslashes($_POST['kreditkartennr']), ENT_QUOTES);
-                $_SESSION['Zahlungsart']->ZahlungsInfo->cGueltigkeit =
-                    Text::htmlentities(stripslashes($_POST['gueltigkeit']), ENT_QUOTES);
-                $_SESSION['Zahlungsart']->ZahlungsInfo->cCVV         =
-                    Text::htmlentities(stripslashes($_POST['cvv']), ENT_QUOTES);
-                $_SESSION['Zahlungsart']->ZahlungsInfo->cKartenTyp   =
-                    Text::htmlentities(stripslashes($_POST['kartentyp']), ENT_QUOTES);
-                $_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber     =
-                    Text::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
-                $hasAdditionalInformation                            = true;
-            }
-            break;
         case 'za_lastschrift_jtl':
             if (($_POST['bankname']
                     && $_POST['blz']
@@ -89,6 +69,8 @@ if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
                     Text::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
                 $hasAdditionalInformation                         = true;
             }
+            break;
+        default:
             break;
     }
 

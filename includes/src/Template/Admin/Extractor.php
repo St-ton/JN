@@ -85,7 +85,7 @@ class Extractor
         try {
             $this->manager->createDirectory('tpl://' . $base . $dirName);
         } catch (Throwable $e) {
-            $this->handlExtractionErrors(0, \__('errorDirCreate') . $base . $dirName);
+            $this->handlExtractionErrors(0, \__('errorDirCreate') . $base . $dirName . ' - ' . $e->getMessage());
 
             return false;
         }

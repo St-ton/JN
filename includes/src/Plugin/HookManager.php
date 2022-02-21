@@ -97,7 +97,8 @@ class HookManager
                     'shop.hook.' . $hookID,
                     function (array $args) use ($pluginData, $hookID) {
                         global $smarty, $args_arr, $oPlugin;
-                        $plugin = $this->getPluginInstance($pluginData->kPlugin);
+                        $prevPlugin = $oPlugin;
+                        $plugin     = $this->getPluginInstance($pluginData->kPlugin);
                         if ($plugin === null) {
                             return;
                         }
@@ -117,6 +118,7 @@ class HookManager
                         if ($smarty !== null) {
                             $smarty->clearAssign('oPlugin_' . $plugin->getPluginID());
                         }
+                        $oPlugin = $prevPlugin;
                     },
                     $pluginData->nPriority
                 );

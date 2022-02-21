@@ -75,14 +75,14 @@ class Helper
 
     /**
      * @param string $itemID
-     * @return ResponseInterface|string
+     * @return string
      * @throws DownloadValidationException
      * @throws InvalidArgumentException
      * @throws ApiResultCodeException
      * @throws FilePermissionException
      * @throws ChecksumValidationException
      */
-    public function getDownload(string $itemID)
+    public function getDownload(string $itemID): string
     {
         $licenseData = $this->manager->getLicenseByItemID($itemID);
         if ($licenseData === null) {

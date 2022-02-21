@@ -14,52 +14,52 @@ class Item implements ItemInterface
     /**
      * @var int
      */
-    private $id;
+    private int $id = 0;
 
     /**
      * @var int
      */
-    private $pluginID;
+    private int $pluginID = 0;
 
     /**
      * @var string
      */
-    private $itemID;
+    private string $itemID = '';
 
     /**
      * @var string[]
      */
-    private $name;
+    private array $name = [];
 
     /**
      * @var string[]
      */
-    private $description;
+    private array $description = [];
 
     /**
      * @var string[]
      */
-    private $purpose;
+    private array $purpose = [];
 
     /**
      * @var string[]
      */
-    private $company;
+    private array $company = [];
 
     /**
      * @var string[]
      */
-    private $privacyPolicy;
+    private array $privacyPolicy = [];
 
     /**
      * @var int
      */
-    private $currentLanguageID;
+    private int $currentLanguageID;
 
     /**
      * @var bool
      */
-    private $active;
+    private bool $active = false;
 
     /**
      * Item constructor.

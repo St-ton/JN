@@ -2,7 +2,6 @@
 
 use JTL\Alert\Alert;
 use JTL\Backend\Settings\Manager;
-use JTL\Backend\Settings\SectionFactory;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;

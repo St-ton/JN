@@ -2,7 +2,7 @@
 
 namespace JTL\Backend\Settings;
 
-use MagicCompatibilityTrait;
+use JTL\MagicCompatibilityTrait;
 use stdClass;
 
 /**

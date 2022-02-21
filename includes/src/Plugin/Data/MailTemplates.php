@@ -16,12 +16,12 @@ class MailTemplates
     /**
      * @var array
      */
-    private $templates = [];
+    private array $templates = [];
 
     /**
      * @var array
      */
-    private $templatesAssoc = [];
+    private array $templatesAssoc = [];
 
     /**
      * @param array $data

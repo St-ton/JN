@@ -27,12 +27,12 @@ class LegacyMethod
     /**
      * @var Method
      */
-    private $methodInstance;
+    private MethodInterface $methodInstance;
 
     /**
      * @var array
      */
-    private $dynamics = [];
+    private array $dynamics = [];
 
     /**
      * @param string $moduleID
@@ -56,7 +56,7 @@ class LegacyMethod
      */
     public function __get($name)
     {
-        if ($this->methodInstance === null || !\property_exists($this->methodInstance, $name)) {
+        if (!\property_exists($this->methodInstance, $name)) {
             return $this->dynamics[$name] ?? null;
         }
 
@@ -69,7 +69,7 @@ class LegacyMethod
      */
     public function __set($name, $value)
     {
-        if ($this->methodInstance === null || !\property_exists($this->methodInstance, $name)) {
+        if (!\property_exists($this->methodInstance, $name)) {
             $this->dynamics[$name] = $value;
         } else {
             $this->methodInstance->$name = $value;
@@ -82,7 +82,7 @@ class LegacyMethod
      */
     public function __isset($name)
     {
-        if ($this->methodInstance === null || !\property_exists($this->methodInstance, $name)) {
+        if (!\property_exists($this->methodInstance, $name)) {
             return isset($this->dynamics[$name]);
         }
 

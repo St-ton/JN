@@ -17,17 +17,17 @@ abstract class AbstractValidator implements ValidatorInterface
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $dir;
+    protected ?string $dir = null;
 
     /**
      * @var XMLParser
      */
-    protected $parser;
+    protected XMLParser $parser;
 
     /**
      * AbstractValidator constructor.

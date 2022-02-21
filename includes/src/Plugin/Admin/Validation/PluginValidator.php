@@ -17,7 +17,7 @@ final class PluginValidator extends AbstractValidator
     /**
      * @inheritdoc
      */
-    public function pluginPlausiIntern($xml, bool $forUpdate): int
+    public function pluginPlausiIntern(?array $xml, bool $forUpdate): int
     {
         $baseNode       = $xml['jtlshopplugin'][0] ?? null;
         $shopVersion    = Version::parse(\APPLICATION_VERSION);
@@ -49,16 +49,14 @@ final class PluginValidator extends AbstractValidator
             try {
                 $minShopVersion = Version::parse($baseNode['MinShopVersion']);
             } catch (InvalidArgumentException $e) {
-                $minShopVersion = null;
             }
         } elseif (isset($baseNode['ShopVersion'])) {
             try {
                 $minShopVersion = Version::parse($baseNode['ShopVersion']);
             } catch (InvalidArgumentException $e) {
-                $minShopVersion = null;
             }
         }
-        if (empty($shopVersion) || empty($minShopVersion) || $minShopVersion->greaterThan($shopVersion)) {
+        if ($shopVersion === null || $minShopVersion === null || $minShopVersion->greaterThan($shopVersion)) {
             return InstallCode::SHOP_VERSION_COMPATIBILITY;
         }
 
@@ -81,13 +79,11 @@ final class PluginValidator extends AbstractValidator
     }
 
     /**
-     * @param array $node
+     * @param array|null $node
      * @return int|string
      */
-    private function getVersion($node)
+    private function getVersion(?array $node)
     {
-        return !isset($node['Version']) || \is_array($node['Version'])
-            ? InstallCode::INVALID_VERSION_NUMBER
-            : $node['Version'];
+        return $node['Version'] ?? InstallCode::INVALID_VERSION_NUMBER;
     }
 }

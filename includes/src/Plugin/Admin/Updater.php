@@ -17,12 +17,12 @@ class Updater
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var Installer
      */
-    private $installer;
+    private Installer $installer;
 
     /**
      * Updater constructor.

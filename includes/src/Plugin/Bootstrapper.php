@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Plugin;
 
@@ -24,27 +24,27 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @var string
      */
-    private $pluginId;
+    private string $pluginID;
 
     /**
      * @var array
      */
-    private $notifications = [];
+    private array $notifications = [];
 
     /**
      * @var PluginInterface
      */
-    private $plugin;
+    private PluginInterface $plugin;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * Bootstrapper constructor.
@@ -55,7 +55,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     final public function __construct(PluginInterface $plugin, DbInterface $db, JTLCacheInterface $cache)
     {
         $this->plugin   = $plugin;
-        $this->pluginId = $plugin->getPluginID();
+        $this->pluginID = $plugin->getPluginID();
         $this->db       = $db;
         $this->cache    = $cache;
     }
@@ -78,7 +78,7 @@ abstract class Bootstrapper implements BootstrapperInterface
      */
     final public function addNotify($type, $title, $description = null): void
     {
-        $this->notifications[] = (new NotificationEntry($type, $title, $description))->setPluginId($this->pluginId);
+        $this->notifications[] = (new NotificationEntry($type, $title, $description))->setPluginId($this->pluginID);
     }
 
     /**
@@ -205,7 +205,7 @@ abstract class Bootstrapper implements BootstrapperInterface
      */
     public function loaded(): int
     {
-        if (\PLUGIN_DEV_MODE !== true || $this->plugin === null) {
+        if (\PLUGIN_DEV_MODE !== true) {
             return -1;
         }
         $parser       = new XMLParser();

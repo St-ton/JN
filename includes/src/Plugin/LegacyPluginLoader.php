@@ -23,7 +23,7 @@ class LegacyPluginLoader extends AbstractLoader
     /**
      * @var LegacyPlugin|null
      */
-    protected $plugin;
+    protected ?PluginInterface $plugin = null;
 
     /**
      * PluginLoader constructor.

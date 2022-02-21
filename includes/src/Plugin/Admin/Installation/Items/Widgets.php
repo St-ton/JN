@@ -39,7 +39,7 @@ class Widgets extends AbstractItem
             $widget               = new stdClass();
             $widget->kPlugin      = $this->plugin->kPlugin;
             $widget->cTitle       = $widgetData['Title'];
-            $widget->cClass       = $this->plugin->bExtension === 1 // @todo
+            $widget->cClass       = $this->plugin->bExtension === 1
                 ? $widgetData['Class']
                 : $widgetData['Class'] . '_' . $this->plugin->cPluginID;
             $widget->cDescription = $widgetData['Description'];

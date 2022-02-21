@@ -11,28 +11,27 @@ class Hook
     /**
      * @var string
      */
-    private $file;
+    private string $file;
 
     /**
      * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @var int
      */
-    private $pluginID;
+    private int $pluginID;
 
     /**
      * @var int
      */
-    private $priority;
+    private int $priority;
 
     /**
      * @var int
-     * @todo
      */
-    private $calledHookID = -1;
+    private int $calledHookID = -1;
 
     /**
      * @return string

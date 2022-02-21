@@ -25,22 +25,22 @@ class StateChanger
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var ValidatorInterface|LegacyPluginValidator
      */
-    private $legacyValidator;
+    private ValidatorInterface $legacyValidator;
 
     /**
      * @var ValidatorInterface|PluginValidator
      */
-    protected $pluginValidator;
+    protected ValidatorInterface $pluginValidator;
 
     /**
      * StateChanger constructor.

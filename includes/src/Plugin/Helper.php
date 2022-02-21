@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Plugin;
 
@@ -21,17 +21,17 @@ class Helper
     /**
      * @var array|null
      */
-    private static $hookList;
+    private static ?array $hookList = null;
 
     /**
-     * @var array
+     * @var array|null
      */
-    private static $templatePaths;
+    private static ?array $templatePaths = null;
 
     /**
      * @var BootstrapperInterface[]
      */
-    private static $bootstrapper = [];
+    private static array $bootstrapper = [];
 
     /**
      * Holt ein Array mit allen Hooks die von Plugins benutzt werden.
@@ -347,7 +347,7 @@ class Helper
                 WHERE t.kPlugin = :pid' . $sql,
             $prep
         );
-        if (!\is_array($langVars) || \count($langVars) < 1) {
+        if (\count($langVars) < 1) {
             $prep['iso'] = \mb_convert_case($iso, \MB_CASE_UPPER);
             $langVars    = Shop::Container()->getDB()->getArrays(
                 "SELECT tpluginsprachvariable.kPluginSprachvariable,
@@ -575,13 +575,7 @@ class Helper
             ? new PluginLoader($db, $cache)
             : new LegacyPluginLoader($db, $cache);
         try {
-            $plugin = $loader->init($pluginID);
-            if ($plugin === null) {
-                $result->code    = InstallCode::NO_PLUGIN_FOUND;
-                $result->message = \__('errorPluginNotFound');
-
-                return $result;
-            }
+            $loader->init($pluginID);
             $boot = self::bootstrap($pluginID, $loader);
             if ($boot === null) {
                 $result->code = InstallCode::OK;
@@ -595,7 +589,7 @@ class Helper
                 return $result;
             }
         } catch (Exception $e) {
-            $result->code    = $e->getCode();
+            $result->code    = InstallCode::NO_PLUGIN_FOUND;
             $result->message = $e->getMessage();
         }
 

@@ -80,9 +80,9 @@ class Method implements MethodInterface
     public $kZahlungsart;
 
     /**
-     * @var DbInterface|null
+     * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @param string $moduleID

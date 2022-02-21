@@ -17,7 +17,7 @@ class Links
     /**
      * @var Collection
      */
-    private $links;
+    private Collection $links;
 
     /**
      * Links constructor.

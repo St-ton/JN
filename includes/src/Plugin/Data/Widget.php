@@ -15,7 +15,7 @@ class Widget
     /**
      * @var Collection
      */
-    private $widgets;
+    private Collection $widgets;
 
     /**
      * Widget constructor.

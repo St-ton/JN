@@ -29,12 +29,12 @@ final class MigrationHelper
     /**
      * @var string
      */
-    private $path;
+    private string $path;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * MigrationHelper constructor.
@@ -71,7 +71,7 @@ final class MigrationHelper
      * @param string $fileName File Name
      * @return int|null
      */
-    public function getIdFromFileName($fileName): ?int
+    public function getIdFromFileName(string $fileName): ?int
     {
         $matches = [];
 
@@ -102,7 +102,7 @@ final class MigrationHelper
      * @param string $fileName File Name
      * @return bool|int
      */
-    public function isValidMigrationFileName($fileName)
+    public function isValidMigrationFileName(string $fileName)
     {
         $matches = [];
 
@@ -158,7 +158,7 @@ final class MigrationHelper
      * @param bool        $idxUnique
      * @return bool
      */
-    public function createIndex(string $idxTable, array $idxColumns, $idxName = null, $idxUnique = false): bool
+    public function createIndex(string $idxTable, array $idxColumns, ?string $idxName = null, $idxUnique = false): bool
     {
         if (empty($idxName)) {
             $idxName = \implode('_', $idxColumns) . '_' . ($idxUnique ? 'UQ' : 'IDX');
@@ -169,7 +169,7 @@ final class MigrationHelper
                 . ' INDEX `' . $idxName . '` ON `' . $idxTable . '` '
                 . '(`' . \implode('`, `', $idxColumns) . '`)';
 
-            return !$this->db->query($ddl) ? false : true;
+            return (bool)$this->db->query($ddl);
         }
 
         return false;
@@ -183,9 +183,7 @@ final class MigrationHelper
     public function dropIndex(string $idxTable, string $idxName): bool
     {
         if (\count($this->indexColumns($idxTable, $idxName)) > 0) {
-            return !$this->db->query(
-                'DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` '
-            ) ? false : true;
+            return (bool)$this->db->query('DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` ');
         }
 
         return true;
@@ -197,7 +195,7 @@ final class MigrationHelper
      * @param string $className File Name
      * @return int|null
      */
-    public static function mapClassNameToId($className): ?int
+    public static function mapClassNameToId(string $className): ?int
     {
         $matches = [];
 

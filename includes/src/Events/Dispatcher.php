@@ -2,7 +2,6 @@
 
 namespace JTL\Events;
 
-use JTL\Shop;
 use JTL\SingletonTrait;
 use stdClass;
 use function Functional\pluck;
@@ -79,7 +78,7 @@ final class Dispatcher
      */
     public function forget(string $eventName): void
     {
-        if (\mb_strpos($eventName, '*') !== false) {
+        if (\str_contains($eventName, '*')) {
             if (isset($this->wildcards[$eventName])) {
                 unset($this->wildcards[$eventName]);
             }
@@ -126,10 +125,10 @@ final class Dispatcher
         $wildcards = [];
         foreach ($this->wildcards as $key => $listeners) {
             if (\fnmatch($key, $eventName)) {
-                $wildcards = \array_merge($wildcards, $listeners);
+                $wildcards[] = $listeners;
             }
         }
 
-        return $wildcards;
+        return \array_merge(...$wildcards);
     }
 }

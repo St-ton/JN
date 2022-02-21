@@ -12,7 +12,7 @@ class Markdown extends Parsedown
     /**
      * @var string|null
      */
-    private $imagePrefixURL;
+    private ?string $imagePrefixURL = null;
 
     /**
      * @param string $url

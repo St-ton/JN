@@ -31,17 +31,17 @@ abstract class AbstractLoader implements LoaderInterface
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    protected $cache;
+    protected JTLCacheInterface $cache;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $cacheID;
+    protected ?string $cacheID = null;
 
     /**
      * @inheritdoc

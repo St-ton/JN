@@ -33,10 +33,10 @@ interface ValidatorInterface
     public function validateByPluginID(int $pluginID, bool $forUpdate = false): int;
 
     /**
-     * @param array $xml
-     * @param bool  $forUpdate
+     * @param array|null $xml
+     * @param bool       $forUpdate
      * @return int
      * @former pluginPlausiIntern()
      */
-    public function pluginPlausiIntern($xml, bool $forUpdate): int;
+    public function pluginPlausiIntern(?array $xml, bool $forUpdate): int;
 }

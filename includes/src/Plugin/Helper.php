@@ -53,8 +53,7 @@ class Helper
         $hook     = null;
         $hooks    = [];
         $hookData = Shop::Container()->getDB()->getObjects(
-            'SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.cVerzeichnis, tplugin.nVersion, 
-                tpluginhook.cDateiname, tpluginhook.nPriority
+            'SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.nVersion, tpluginhook.cDateiname, tpluginhook.nPriority
                 FROM tplugin
                 JOIN tpluginhook
                     ON tpluginhook.kPlugin = tplugin.kPlugin
@@ -63,13 +62,12 @@ class Helper
             ['state' => State::ACTIVATED]
         );
         foreach ($hookData as $hook) {
-            $plugin             = new stdClass();
-            $plugin->kPlugin    = (int)$hook->kPlugin;
-            $plugin->nVersion   = (int)$hook->nVersion;
-            $plugin->nPriority  = (int)$hook->nPriority;
-            $plugin->cDateiname = $hook->cDateiname;
+            $hook->kPlugin   = (int)$hook->kPlugin;
+            $hook->nVersion  = (int)$hook->nVersion;
+            $hook->nPriority = (int)$hook->nPriority;
+            $hook->nHook     = (int)$hook->nHook;
 
-            $hooks[$hook->nHook][$hook->kPlugin] = $plugin;
+            $hooks[$hook->nHook][$hook->kPlugin] = $hook;
         }
         // Schauen, ob die Hookliste einen Hook als Frontende Link hat.
         // Falls ja, darf die Liste den Seiten Link Plugin Handler nur einmal ausführen bzw. nur einmal beinhalten

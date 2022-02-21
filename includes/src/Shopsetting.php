@@ -138,7 +138,8 @@ final class Shopsetting implements ArrayAccess
      * @param mixed $offset
      * @return mixed|null
      */
-    public function offsetGet($offset): mixed
+    #[\ReturnTypeWillChange]
+    public function offsetGet($offset)
     {
         if (isset($this->container[$offset])) {
             return $this->container[$offset];

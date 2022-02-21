@@ -7,7 +7,6 @@ use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
 use JTL\Cron\QueueEntry;
 use JTL\Export\ExporterFactory;
-use JTL\Export\FormatExporter;
 use stdClass;
 
 /**

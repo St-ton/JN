@@ -9,7 +9,6 @@ use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
 use JTL\L10n\GetText;
 use JTL\MagicCompatibilityTrait;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
 use function Functional\filter;

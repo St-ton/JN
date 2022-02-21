@@ -1,4 +1,7 @@
 <?php
+
+use JTL\Shop;
+
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty
  * @global \JTL\Backend\AdminAccount $oAccount
@@ -26,7 +29,7 @@ $res        = handleCsvImportAction(
             $importDeleteDone = true;
         }
         $iso = null;
-        if (\array_key_exists($entry->land, $landIsoMap)) {
+        if (array_key_exists($entry->land, $landIsoMap)) {
             $iso = $landIsoMap[$entry->land];
         } else {
             $land = $db->getSingleObject('SELECT cIso FROM tland WHERE cDeutsch = :land', ['land' => $entry->land]);
@@ -43,7 +46,7 @@ $res        = handleCsvImportAction(
             ];
             $itemBatch[] = $importEntry;
         }
-        if (\count($itemBatch) === 1024) {
+        if (count($itemBatch) === 1024) {
             $db->insertBatch('tplz', $itemBatch, $importType !== 2);
             $itemBatch = [];
         }

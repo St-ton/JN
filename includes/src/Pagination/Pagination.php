@@ -141,6 +141,11 @@ class Pagination
     private $defaultSortByDir = 0;
 
     /**
+     * @var callable|null
+     */
+    private $sortFunction = null;
+
+    /**
      * Pagination constructor.
      * @param string|null $id
      */
@@ -255,6 +260,17 @@ class Pagination
     }
 
     /**
+     * @param ?callable $func
+     * @return $this
+     */
+    public function setSortFunction(?callable $func): self
+    {
+        $this->sortFunction = $func;
+
+        return $this;
+    }
+
+    /**
      * Load parameters from GET, POST or SESSION store
      * @return $this
      */
@@ -328,12 +344,18 @@ class Pagination
             $nSortFac         = $this->sortDir === 0 ? +1 : -1;
             $cSortBy          = $this->sortBySQL;
             if (\is_array($this->items)) {
-                \usort($this->items, static function ($a, $b) use ($cSortBy, $nSortFac) {
-                    $valueA = \is_string($a->$cSortBy) ? \mb_convert_case($a->$cSortBy, \MB_CASE_LOWER) : $a->$cSortBy;
-                    $valueB = \is_string($b->$cSortBy) ? \mb_convert_case($b->$cSortBy, \MB_CASE_LOWER) : $b->$cSortBy;
+                $func = $this->sortFunction;
+                if ($func === null) {
+                    $func = static function ($a, $b) use ($cSortBy, $nSortFac) {
+                        $valueA = \is_string($a->$cSortBy)
+                            ? \mb_convert_case($a->$cSortBy, \MB_CASE_LOWER) : $a->$cSortBy;
+                        $valueB = \is_string($b->$cSortBy)
+                            ? \mb_convert_case($b->$cSortBy, \MB_CASE_LOWER) : $b->$cSortBy;
 
-                    return $valueA == $valueB ? 0 : ($valueA < $valueB ? -$nSortFac : +$nSortFac);
-                });
+                        return $valueA == $valueB ? 0 : ($valueA < $valueB ? -$nSortFac : +$nSortFac);
+                    };
+                }
+                \usort($this->items, $func);
             }
         }
         $this->limitSQL = $this->firstPageItem . ',' . $this->pageItemCount;

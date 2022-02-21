@@ -25,6 +25,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Plugin\Helper;
+use JTL\Plugin\Payment\MethodInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
@@ -944,7 +945,7 @@ function setzeSmartyWeiterleitung(Bestellung $order): void
                 return;
             }
             $className = $pluginPaymentMethod->getClassName();
-            /** @var PaymentMethod $paymentMethod */
+            /** @var MethodInterface $paymentMethod */
             $paymentMethod           = new $className($moduleID);
             $paymentMethod->cModulId = $moduleID;
             $paymentMethod->preparePaymentProcess($order);

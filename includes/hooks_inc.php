@@ -1063,6 +1063,7 @@ const HOOK_FILTER_INC_GIBNAVIMETATITLE = 150;
 /**
  * in bearbeiteInsert() after inserting an article into the database
  *
+ * @file Artikel_xml.php
  * @param stdClass oArtikel
  */
 const HOOK_ARTIKEL_XML_BEARBEITEINSERT = 151;
@@ -1070,6 +1071,7 @@ const HOOK_ARTIKEL_XML_BEARBEITEINSERT = 151;
 /**
  * in bearbeiteDeletes() after deleting an article from the database
  *
+ * @file Artikel_xml.php
  * @param int kArtikel - product ID
  */
 const HOOK_ARTIKEL_XML_BEARBEITEDELETES = 152;
@@ -1544,6 +1546,7 @@ const HOOK_BOXEN_HOME = 224;
 /**
  * in bearbeiteInsert() after inserting an article into the database
  *
+ * @file QuickSync_xml.php
  * @param stdClass oArtikel
  */
 const HOOK_QUICKSYNC_XML_BEARBEITEINSERT = 225;

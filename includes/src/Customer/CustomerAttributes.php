@@ -195,6 +195,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if (!isset($this->attributes[$offset])) {

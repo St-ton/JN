@@ -689,7 +689,7 @@ final class Mapper
     public function map(SimpleXMLElement $xmlTree, string $toMap): stdClass
     {
         $mapped = new stdClass();
-        foreach ($xmlTree->Attributes() as $key => $val) {
+        foreach ($xmlTree->attributes() as $key => $val) {
             $mapped->$key = (string)$val;
         }
         foreach (self::getTableMapping($toMap) as $mapping) {

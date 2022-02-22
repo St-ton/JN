@@ -39,7 +39,7 @@ class JobTypeToJob
                 return GeneralDataProtect::class;
             case Type::STORE:
                 return Store::class;
-            case TYPE::LICENSE_CHECK:
+            case Type::LICENSE_CHECK:
                 return LicenseCheck::class;
             default:
                 $mapping = null;

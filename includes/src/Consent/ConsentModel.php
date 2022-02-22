@@ -119,7 +119,7 @@ final class ConsentModel extends DataModel
                 if (!$existingLanguageIDs->containsStrict($langID)) {
                     /** @var ConsentLocalizationModel $default */
                     $default->setLanguageID($languageModel->getId());
-                    $default->setId(0);
+                    $default->setID(0);
                     $loc->add($default);
                 }
             }

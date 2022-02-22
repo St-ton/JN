@@ -341,7 +341,7 @@ class BC extends Smarty
     public function config_load($file, $section = null, $scope = 'global'): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use ConfigLoad() instead.', \E_USER_DEPRECATED);
-        $this->ConfigLoad($file, $section, $scope);
+        $this->configLoad($file, $section, $scope);
     }
 
     /**

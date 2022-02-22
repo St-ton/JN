@@ -397,7 +397,6 @@ class Controller
     public static function getFilterSQL(bool $activeOnly = false): stdClass
     {
         $sql              = new stdClass();
-        $sql->cSortSQL    = '';
         $sql->cDatumSQL   = '';
         $sql->cNewsKatSQL = '';
         switch ($_SESSION['NewsNaviFilter']->nSort) {

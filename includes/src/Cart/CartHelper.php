@@ -288,9 +288,9 @@ class CartHelper
     }
 
     /**
-     * @return Customer
+     * @return Customer|null
      */
-    public function getCustomer(): Customer
+    public function getCustomer(): ?Customer
     {
         return Frontend::getCustomer();
     }

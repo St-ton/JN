@@ -97,8 +97,8 @@ $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
     ->assign('Link', $link)
     ->assign('Kunde', $_SESSION['Kunde'] ?? null)
     ->assign('bOrderConf', true)
-    ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
-    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
+    ->assignDeprecated('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL, '5.0.0')
+    ->assignDeprecated('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK, '5.0.0');
 
 $kPlugin = isset($bestellung->Zahlungsart->cModulId)
     ? Helper::getIDByModuleID($bestellung->Zahlungsart->cModulId)
@@ -108,7 +108,7 @@ if ($kPlugin > 0) {
     try {
         $plugin = $loader->init($kPlugin);
         $smarty->assign('oPlugin', $plugin)
-               ->assign('plugin', $plugin);
+            ->assign('plugin', $plugin);
     } catch (InvalidArgumentException $e) {
         Shop::Container()->getLogService()->error(
             'Associated plugin for payment method ' . $bestellung->Zahlungsart->cModulId . ' not found'

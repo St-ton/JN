@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Backend\AdminFavorite;
 use JTL\Backend\Notification;
 use JTL\Backend\Settings\Manager;

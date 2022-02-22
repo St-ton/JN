@@ -2357,6 +2357,9 @@ msgstr "Dateien (erweitert)"
 msgid "caching_method_value(redisCluster)"
 msgstr "RedisCluster"
 
+msgid "caching_method_value(sqlite)"
+msgstr "SQLite3"
+
 msgid "caching_redis_persistent_value(N)"
 msgstr "Nein"
 

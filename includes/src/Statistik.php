@@ -488,7 +488,7 @@ class Statistik
                         if (\date('H', $item->dZeit) === $tmpItem->nHour) {
                             $item->nCount = $tmpItem->nCount;
                             $item->dZeit  = $tmpItem->nHour;
-                            $break         = true;
+                            $break        = true;
                         }
                         break;
 
@@ -496,7 +496,7 @@ class Statistik
                         if (\date('d.m.', $item->dZeit) === $tmpItem->nDay . '.' . $tmpItem->nMonth . '.') {
                             $item->nCount = $tmpItem->nCount;
                             $item->dZeit  = $tmpItem->nDay . '.' . $tmpItem->nMonth . '.';
-                            $break         = true;
+                            $break        = true;
                         }
                         break;
 
@@ -504,7 +504,7 @@ class Statistik
                         if (\date('m.Y', $item->dZeit) === $tmpItem->nMonth . '.' . $tmpItem->nYear) {
                             $item->nCount = $tmpItem->nCount;
                             $item->dZeit  = $tmpItem->nMonth . '.' . $tmpItem->nYear;
-                            $break         = true;
+                            $break        = true;
                         }
                         break;
 
@@ -512,7 +512,7 @@ class Statistik
                         if (\date('Y', $item->dZeit) === $tmpItem->nYear) {
                             $item->nCount = $tmpItem->nCount;
                             $item->dZeit  = $tmpItem->nYear;
-                            $break         = true;
+                            $break        = true;
                         }
                         break;
                 }

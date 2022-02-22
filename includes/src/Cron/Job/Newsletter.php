@@ -86,7 +86,7 @@ final class Newsletter extends Job
             $shopURL = Shop::getURL();
             foreach ($recipients as $recipient) {
                 $recipient->cLoeschURL = $shopURL . '/?oc=' . $recipient->cLoeschCode;
-                $cgID                  = (int)$recipient->kKundengruppe > 0 ? (int)$recipient->kKundengruppe : 0;
+                $cgID                  = \max((int)$recipient->kKundengruppe, 0);
                 $instance->send(
                     $jobData,
                     $recipient,

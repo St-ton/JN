@@ -68,15 +68,15 @@ class DBManager
 
             $list[$index->Key_name]->Columns[$index->Column_name] = $index;
         }
-        foreach ($list as $key => $item) {
+        foreach ($list as $item) {
             if (\count($item->Columns) > 0) {
                 $column = \reset($item->Columns);
                 if ($column->Key_name === 'PRIMARY') {
-                    $list[$key]->Index_type = 'PRIMARY';
+                    $item->Index_type = 'PRIMARY';
                 } elseif ($column->Index_type === 'FULLTEXT') {
-                    $list[$key]->Index_type = 'FULLTEXT';
+                    $item->Index_type = 'FULLTEXT';
                 } elseif ((int)$column->Non_unique === 0) {
-                    $list[$key]->Index_type = 'UNIQUE';
+                    $item->Index_type = 'UNIQUE';
                 }
             }
         }

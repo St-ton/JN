@@ -374,7 +374,7 @@ final class ReviewAdminController extends BaseController
             $customer = $this->db->select('tkunde', 'kKunde', $bonusItem->getCustomerID());
             if ($customer !== null && $customer->kKunde > 0) {
                 $balance = $customer->fGuthaben - $bonusItem->getBonus();
-                $upd     = (object)['fGuthaben' => $balance > 0 ? $balance : 0];
+                $upd     = (object)['fGuthaben' => \max($balance, 0)];
                 $this->db->update('tkunde', 'kKunde', $bonusItem->getCustomerID(), $upd);
                 ++$affected;
             }

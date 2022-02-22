@@ -13,47 +13,47 @@ class OptinRefData
     /**
      * @var string
      */
-    private $optinClass;
+    private string $optinClass;
 
     /**
      * @var int
      */
-    private $languageID;
+    private int $languageID;
 
     /**
      * @var int
      */
-    private $customerID;
+    private int $customerID;
 
     /**
      * @var string
      */
-    private $salutation = '';
+    private string $salutation = '';
 
     /**
      * @var string
      */
-    private $firstName = '';
+    private string $firstName = '';
 
     /**
      * @var string
      */
-    private $lastName = '';
+    private string $lastName = '';
 
     /**
      * @var string
      */
-    private $email = '';
+    private string $email = '';
 
     /**
      * @var string
      */
-    private $realIP = '';
+    private string $realIP = '';
 
     /**
      * @var int
      */
-    private $productID;
+    private int $productID;
 
     /**
      * @return array

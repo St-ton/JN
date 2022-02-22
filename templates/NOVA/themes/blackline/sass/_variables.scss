@@ -341,6 +341,7 @@ $ribbon-bg-colors: map-merge((
         '8' : $ribbon-bg-8,
         '9' : $ribbon-bg-9
 ), $ribbon-bg-colors);
+$ribbon-font-size: rem(9px);
 
 /* navs */
 

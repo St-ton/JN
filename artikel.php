@@ -247,6 +247,7 @@ if (($AktuellerArtikel->kVariKindArtikel ?? 0) === 0 && $AktuellerArtikel->nIstV
             ? $AktuellerArtikel->kVariKindArtikel
             : $AktuellerArtikel->kArtikel));
 }
+
 $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
     ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
     ->assign('oAehnlicheArtikel_arr', $similarProducts)
@@ -255,7 +256,7 @@ $smarty->assign('showMatrix', $AktuellerArtikel->showMatrix())
     ->assign('Artikel', $AktuellerArtikel)
     ->assign('Xselling', !empty($AktuellerArtikel->kVariKindArtikel)
         ? Product::getXSelling($AktuellerArtikel->kVariKindArtikel, null, $conf['artikeldetails'])
-        : Product::getXSelling($AktuellerArtikel->kArtikel, $AktuellerArtikel->nIstVater > 0, $conf['artikeldetails']))
+        : Product::buildXSellersFromIDs($AktuellerArtikel->similarProducts, $AktuellerArtikel->kArtikel))
     ->assign('Artikelhinweise', $productNotices)
     ->assign(
         'verfuegbarkeitsBenachrichtigung',

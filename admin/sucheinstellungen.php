@@ -7,7 +7,6 @@ use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Shopsetting;
 
@@ -45,7 +44,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken())
             $currentVal = $db->getSingleObject('SELECT @@ft_min_word_len AS ft_min_word_len');
             if (($currentVal->ft_min_word_len ?? $_POST['suche_min_zeichen']) !== $_POST['suche_min_zeichen']) {
                 $_POST['suche_min_zeichen'] = $currentVal->ft_min_word_len;
-                $alertHelper->addAlert(
+                $alertService->addAlert(
                     Alert::TYPE_WARNING,
                     __('errorFulltextSearchMinLen'),
                     'errorFulltextSearchMinLen'
@@ -55,11 +54,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken())
     }
 
     $shopSettings = Shopsetting::getInstance();
-    $alertService->addAlert(
-        Alert::TYPE_SUCCESS,
-        saveAdminSectionSettings($sectionID, $_POST),
-        'saveSettings'
-    );
+    saveAdminSectionSettings($sectionID, $_POST);
 
     Shop::Container()->getCache()->flushTags(
         [CACHING_GROUP_OPTION, CACHING_GROUP_CORE, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]

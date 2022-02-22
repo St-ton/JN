@@ -307,11 +307,11 @@ class CMS
         } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
             $sort = ' ORDER BY tartikel.fLagerbestand DESC';
         }
-        $limit    = ((int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
+        $limit          = ((int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
             ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
             : '';
-        $db       = Shop::Container()->getDB();
-        $tmpGifts = $db->getObjects(
+        $db             = Shop::Container()->getDB();
+        $tmpGifts       = $db->getObjects(
             'SELECT tartikel.kArtikel, tartikelattribut.cWert
                 FROM tartikel
                 JOIN tartikelattribut 
@@ -324,7 +324,6 @@ class CMS
             . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . $sort . $limit,
             ['cgid' => $customerGroupID, 'an' => \FKT_ATTRIBUT_GRATISGESCHENK]
         );
-
         $currency       = Frontend::getCurrency();
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($tmpGifts as $item) {

@@ -3,7 +3,6 @@
 namespace JTL\Crawler;
 
 use JTL\MagicCompatibilityTrait;
-use Shop;
 
 /**
  * Class Crawler

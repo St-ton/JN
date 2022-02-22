@@ -3584,7 +3584,7 @@ class Artikel
     /**
      * @param int $productID
      * @param int $customerGroupID
-     * @return string
+     * @return SqlObject
      */
     private function getProductSQL(int $productID, int $customerGroupID): SqlObject
     {
@@ -5004,9 +5004,9 @@ class Artikel
 
     /**
      * @param string $type
-     * @return int|stdClass
+     * @return stdClass
      */
-    private function mapMediaType(string $type)
+    private function mapMediaType(string $type): stdClass
     {
         $mapping            = new stdClass();
         $mapping->videoType = null;
@@ -5129,17 +5129,23 @@ class Artikel
     public function getSimilarProducts(): array
     {
         $productID = (int)$this->kArtikel;
-        $return    = ['kArtikelXSellerKey_arr', 'oArtikelArr'];
+        $return    = [
+            'kArtikelXSellerKey_arr' => [],
+            'oArtikelArr'            => [],
+            'Standard'               => null,
+            'Kauf'                   => null,
+        ];
         $limitSQL  = ' LIMIT 3';
         // Gibt es X-Seller? Aus der Artikelmenge der änhlichen Artikel, dann alle X-Seller rausfiltern
-        $xSeller  = ProductHelper::getXSelling($productID, $this->nIstVater > 0, $this->conf['artikeldetails']);
+        $xSeller  = ProductHelper::getXSellingIDs($productID, $this->nIstVater > 0, $this->conf['artikeldetails']);
         $xSellIDs = [];
         if ($xSeller !== null) {
+            $return['Standard'] = $xSeller->Standard;
+            $return['Kauf']     = $xSeller->Kauf ?? null;
             foreach ($xSeller->Standard->XSellGruppen as $group) {
-                foreach ($group->Artikel as $item) {
-                    $id = (int)$item->kArtikel;
-                    if (!\in_array($id, $xSellIDs, true)) {
-                        $xSellIDs[] = $id;
+                foreach ($group->productIDs as $item) {
+                    if (!\in_array($item, $xSellIDs, true)) {
+                        $xSellIDs[] = $item;
                     }
                 }
             }
@@ -5209,6 +5215,10 @@ class Artikel
                     ORDER BY COUNT(*) DESC ' . $limitSQL,
                 ['pid' => $productID, 'cgid' => $customerGroupID]
             );
+        }
+        foreach ($return['oArtikelArr'] as $item) {
+            $item->kArtikel      = (int)$item->kArtikel;
+            $item->kVaterArtikel = (int)$item->kVaterArtikel;
         }
 
         return $return;

@@ -16,16 +16,12 @@ class DBManager
      */
     public static function getTables(): array
     {
-        $tables = [];
-        $rows   = Shop::Container()->getDB()->getObjects(
+        return Shop::Container()->getDB()->getCollection(
             "SHOW FULL TABLES 
                 WHERE Table_type='BASE TABLE'"
-        );
-        foreach ($rows as $row) {
-            $tables[] = \current($row);
-        }
-
-        return $tables;
+        )->map(static function (stdClass $ele) {
+            return \current((array)$ele);
+        })->toArray();
     }
 
     /**

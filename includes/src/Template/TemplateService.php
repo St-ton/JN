@@ -142,15 +142,7 @@ class TemplateService implements TemplateServiceInterface
                 'attributes' => &$attributes,
                 'service'    => $this
             ]);
-            if (($activeTemplate = $this->cache->get($this->cacheID)) === false) {
-                $this->activeTemplate = $this->loadFull(['type' => 'standard'], $withLicense);
-            } else {
-                $this->activeTemplate = $activeTemplate;
-                // cached instance will not have the db instance available
-                $this->activeTemplate->setDB($this->db);
-                $this->activeTemplate->getConfig()->setDB($this->db);
-                $this->loaded = true;
-            }
+            $this->activeTemplate = $this->loadFull($attributes, $withLicense);
         }
         $_SESSION['cTemplate'] = $this->activeTemplate->getTemplate();
 

@@ -313,6 +313,7 @@ class AdminAccount
             }
             $admin->cISO       = Shop::Lang()->getIsoFromLangID((int)$admin->kSprache)->cISO;
             $admin->attributes = $this->getAttributes((int)$admin->kAdminlogin);
+            \session_regenerate_id();
             $this->toSession($admin);
             $this->checkAndUpdateHash($cPass);
             if (!$this->getIsTwoFaAuthenticated()) {
@@ -373,6 +374,8 @@ class AdminAccount
     {
         $this->loggedIn = false;
         \session_destroy();
+        new Backend();
+        \session_regenerate_id(true);
 
         return $this;
     }

@@ -137,14 +137,11 @@ class TemplateService implements TemplateServiceInterface
     public function getActiveTemplate(bool $withLicense = true): Model
     {
         if ($this->activeTemplate === null) {
-<<<<<<< HEAD
             $attributes = ['type' => 'standard'];
             \executeHook(\HOOK_TPL_LOAD_PRE, [
                 'attributes' => &$attributes,
                 'service'    => $this
             ]);
-            $this->activeTemplate = $this->loadFull($attributes, $withLicense);
-=======
             if (($activeTemplate = $this->cache->get($this->cacheID)) === false) {
                 $this->activeTemplate = $this->loadFull(['type' => 'standard'], $withLicense);
             } else {
@@ -154,7 +151,6 @@ class TemplateService implements TemplateServiceInterface
                 $this->activeTemplate->getConfig()->setDB($this->db);
                 $this->loaded = true;
             }
->>>>>>> wip/5.2
         }
         $_SESSION['cTemplate'] = $this->activeTemplate->getTemplate();
 

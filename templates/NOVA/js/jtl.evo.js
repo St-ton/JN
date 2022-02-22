@@ -837,6 +837,10 @@
                 $priceRangeTo = $("#" + priceRangeID + "-to"),
                 $priceSlider = document.getElementById(priceRangeID);
 
+            if($priceSlider === null) {
+                return;
+            }
+
             if (priceRange) {
                 let priceRangeMinMax = priceRange.split('_');
                 currentPriceMin = priceRangeMinMax[0];

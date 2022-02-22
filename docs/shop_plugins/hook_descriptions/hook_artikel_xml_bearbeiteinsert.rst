@@ -9,5 +9,5 @@ Nach dem Einfügen eines Artikels in die Datenbank (in dbeS)
 Parameter
 """""""""
 
-``JTL\Catalog\Product\Artikel`` **oArtikel**
-    **oArtikel** Artikel-Objekt
+``stdClass`` **oArtikel**
+    **oArtikel** Artikelobjekt

@@ -1,3 +1,4 @@
+
 <script type="text/javascript" src="{$templateBaseURL}js/sorttable.js"></script>
 <script>
     $(window).on('load', function(){
@@ -105,11 +106,7 @@
                                             </td>
                                             <td class="TD2">
                                                 <label for="comment-{$comment->getID()}">
-                                                {*{if $comment->cVorname|strlen > 0}*}
-                                                    {*{$comment->cVorname} {$comment->cNachname}*}
-                                                {*{else}*}
-                                                    {$comment->getName()}
-                                                {*{/if}*}
+                                                    {$comment->getName()} ({$comment->getMail()})
                                                 </label>
                                             </td>
                                             <td class="TD3">{$comment->getNewsTitle()|truncate:50:'...'}</td>

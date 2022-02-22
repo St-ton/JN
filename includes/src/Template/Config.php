@@ -14,12 +14,12 @@ class Config
     /**
      * @var string
      */
-    private $currentTemplateDir;
+    private string $currentTemplateDir;
 
     /**
-     * @var DbInterface
+     * @var DbInterface|null - this class can be cached so $db will be NULL after __wakeup()
      */
-    private $db;
+    private ?DbInterface $db;
 
     /**
      * Config constructor.
@@ -105,5 +105,37 @@ class Config
         }
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrentTemplateDir(): string
+    {
+        return $this->currentTemplateDir;
+    }
+
+    /**
+     * @param string $currentTemplateDir
+     */
+    public function setCurrentTemplateDir(string $currentTemplateDir): void
+    {
+        $this->currentTemplateDir = $currentTemplateDir;
+    }
+
+    /**
+     * @return DbInterface|null
+     */
+    public function getDB(): ?DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
     }
 }

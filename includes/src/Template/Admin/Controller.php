@@ -30,32 +30,32 @@ class Controller
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var AlertServiceInterface
      */
-    private $alertService;
+    private AlertServiceInterface $alertService;
 
     /**
      * @var string|null
      */
-    private $currentTemplateDir;
+    private ?string $currentTemplateDir = null;
 
     /**
      * @var JTLSmarty
      */
-    private $smarty;
+    private JTLSmarty $smarty;
 
     /**
      * @var Config
      */
-    private $config;
+    private Config $config;
 
     /**
      * Controller constructor.

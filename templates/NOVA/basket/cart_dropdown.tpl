@@ -17,7 +17,8 @@
                                         {break}
                                     {/if}
                                     {if !$oPosition->istKonfigKind()}
-                                        {if $oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK}
+                                        {if $oPosition->nPosTyp == $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL
+                                        || $oPosition->nPosTyp == $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK}
                                             <tr>
                                                 <td>
                                                     {formrow}

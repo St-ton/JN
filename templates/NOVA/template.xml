@@ -62,6 +62,10 @@
                 <Option Value="desktop">Nur Desktop</Option>
                 <Option Value="N">Inaktiv</Option>
             </Setting>
+            <Setting Description="Mobile Geräte: Menü in aktueller Kategorie öffnen" Key="mobile_start_category" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
             <Setting Description="Kategoriebilder für erste Unterkategorie" Key="show_category_images" Type="select" Value="N">
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>

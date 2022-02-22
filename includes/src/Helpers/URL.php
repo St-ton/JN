@@ -5,7 +5,6 @@ namespace JTL\Helpers;
 use JTL\Catalog\Category\MenuItem;
 use JTL\Language\LanguageHelper;
 use JTL\Link\LinkInterface;
-use JTL\Link\SpecialPageNotFoundException;
 use JTL\News\Item;
 use JTL\Shop;
 
@@ -389,9 +388,6 @@ class URL
     }
 
     /**
-     * @param mixed $obj
-     * @param int   $type
-     * @param bool  $full
      * @return string
      */
     private static function getLocalizedFallback(): string

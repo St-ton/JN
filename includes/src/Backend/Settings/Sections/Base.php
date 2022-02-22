@@ -263,11 +263,31 @@ class Base implements SectionInterface
     }
 
     /**
+     * @param int      $min
+     * @param int      $max
+     * @param Item $item
+     * @param mixed $confValue
+     * @return bool
+     */
+    protected function validateNumberRange(int $min, int $max, Item $item, $confValue): bool
+    {
+        return $min <= $confValue && $confValue <= $max;
+    }
+
+
+    /**
      * @inheritdoc
      */
-    public function validate($conf, &$confValue): bool
+    public function validate(Item $conf, $confValue): bool
     {
-        return true;
+        switch ($conf->getValueName()) {
+            case 'bilder_jpg_quali':
+                return $this->validateNumberRange(0, 100, $conf, $confValue);
+            case 'cron_freq':
+                return $this->validateNumberRange(10, 999999, $conf, $confValue);
+            default:
+                return true;
+        }
     }
 
     /**

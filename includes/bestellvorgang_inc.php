@@ -2519,7 +2519,7 @@ function getKundendaten(array $post, $customerAccount, $htmlentities = 1)
  */
 function getKundenattribute(array $post): CustomerAttributes
 {
-    $customerAttributes = new CustomerAttributes(Session::getCustomer()->getID());
+    $customerAttributes = new CustomerAttributes(Frontend::getCustomer()->getID());
     /** @var CustomerAttribute $customerAttribute */
     foreach ($customerAttributes as $customerAttribute) {
         if ($customerAttribute->isEditable()) {

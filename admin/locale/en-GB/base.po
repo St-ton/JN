@@ -317,6 +317,9 @@ msgstr "Faulty cookie settings: login not possible. Please contact the Support t
 msgid "errorSessionExpired"
 msgstr "Your session has been reset. Please log in again."
 
+msgid "errorLoginTemporaryNotPossible"
+msgstr "Login temporarily unavailable."
+
 msgid "row"
 msgstr "Row"
 
@@ -358,6 +361,9 @@ msgstr "Action"
 
 msgid "available"
 msgstr "Available"
+
+msgid "Version %s available"
+msgstr "Version %s available"
 
 msgid "html"
 msgstr "HTML"

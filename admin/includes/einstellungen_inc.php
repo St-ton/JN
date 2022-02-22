@@ -1,25 +1,14 @@
 <?php declare(strict_types=1);
 
-use JTL\Helpers\Request;
-
 /**
- *  settings page is separated but has same config group as parent config page, get separate description
- *
  * @param int $sectionID
  * @return string
+ * @deprecated since 5.2.0
  */
 function filteredConfDescription(int $sectionID): string
 {
-    switch (Request::verifyGPDataString('group')) {
-        case 'configgroup_5_product_question':
-            $desc = __('prefDesc5ProductQuestion');
-            break;
-        default:
-            $desc = __('prefDesc' . $sectionID);
-            break;
-    }
-
-    return $desc;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return __('prefDesc' . $sectionID);
 }
 
 /**
@@ -36,7 +25,7 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false): stdClass
 
 /**
  * @param stdClass $sql
- * @param bool   $save
+ * @param bool     $save
  * @return stdClass
  * @deprecated since 5.2.0
  */
@@ -48,8 +37,8 @@ function holeEinstellungen(stdClass $sql, bool $save): stdClass
 
 /**
  * @param stdClass $sql
- * @param int    $sort
- * @param int    $sectionID
+ * @param int      $sort
+ * @param int      $sectionID
  * @return stdClass
  * @deprecated since 5.2.0
  */
@@ -119,7 +108,7 @@ function getSettingsAnchor(int $sectionID, $groupName): string
 }
 
 /**
- * @param int $sectionID
+ * @param int    $sectionID
  * @param string $groupName
  * @return stdClass
  * @deprecated since 5.2.0

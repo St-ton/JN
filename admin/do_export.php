@@ -2,7 +2,6 @@
 
 use JTL\Cron\QueueEntry;
 use JTL\Export\ExporterFactory;
-use JTL\Export\FormatExporter;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;

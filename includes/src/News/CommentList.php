@@ -56,8 +56,7 @@ final class CommentList implements ItemListInterface
                 WHERE kNewsKommentar IN (' . \implode(',', $itemIDs) . ')'
                 . ($activeOnly ? ' AND nAktiv = 1 ' : '') . '
                 GROUP BY tnewskommentar.kNewsKommentar
-                ORDER BY tnewskommentar.dErstellt DESC',
-            ['nid' => $this->newsID]
+                ORDER BY tnewskommentar.dErstellt DESC'
         );
         $items = map(group($data, static function ($e) {
             return (int)$e->kNewsKommentar;

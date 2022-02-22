@@ -3583,7 +3583,7 @@ class Artikel
     /**
      * @param int $productID
      * @param int $customerGroupID
-     * @return string
+     * @return SqlObject
      */
     private function getProductSQL(int $productID, int $customerGroupID): SqlObject
     {
@@ -5003,9 +5003,9 @@ class Artikel
 
     /**
      * @param string $type
-     * @return int|stdClass
+     * @return stdClass
      */
-    private function mapMediaType(string $type)
+    private function mapMediaType(string $type): stdClass
     {
         $mapping            = new stdClass();
         $mapping->videoType = null;

@@ -58,7 +58,7 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
 }
 if ((Request::postInt('einstellungen') === 1 || Request::verifyGPCDataInt('news') === 1) && Form::validateToken()) {
     if (Request::postInt('einstellungen') > 0) {
-        $controller->setMsg(saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]));
+        saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]);
         if (count($languages) > 0) {
             $db->query('TRUNCATE tnewsmonatspraefix');
             foreach ($languages as $lang) {

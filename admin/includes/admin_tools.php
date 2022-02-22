@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Backend\AdminFavorite;
 use JTL\Backend\Notification;
 use JTL\Backend\Settings\Manager;
@@ -218,17 +217,23 @@ function bearbeiteListBox($listBoxes, string $valueName, int $configSectionID): 
  */
 function saveAdminSectionSettings(int $configSectionID, array $post, array $tags = [CACHING_GROUP_OPTION]): string
 {
-    Shop::Container()->getGetText()->loadAdminLocale('configs/configs');
+    $alertService = Shop::Container()->getAlertService();
     if (!Form::validateToken()) {
-        return __('errorCSRF');
+        $msg = __('errorCSRF');
+        $alertService->addAlert(
+            Alert::TYPE_ERROR,
+            $msg,
+            'saveSettingsErrCsrf'
+        );
+
+        return $msg;
     }
-    $db      = Shop::Container()->getDB();
     $manager = new Manager(
-        $db,
+        Shop::Container()->getDB(),
         Shop::Smarty(),
         Shop::Container()->getAdminAccount(),
         Shop::Container()->getGetText(),
-        Shop::Container()->getAlertService()
+        $alertService
     );
     if (Request::postVar('resetSetting') !== null) {
         $manager->resetSetting(Request::postVar('resetSetting'));
@@ -239,10 +244,23 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
     $invalid = $section->getUpdateErrors();
 
     if ($invalid > 0) {
-        return __('errorConfigSave');
-    }
+        $msg = __('errorConfigSave');
+        $alertService->addAlert(
+            Alert::TYPE_ERROR,
+            $msg,
+            'saveSettingsErr'
+        );
 
-    return __('successConfigSave');
+        return $msg;
+    }
+    $msg = __('successConfigSave');
+    $alertService->addAlert(
+        Alert::TYPE_SUCCESS,
+        $msg,
+        'saveSettings'
+    );
+
+    return $msg;
 }
 
 /**

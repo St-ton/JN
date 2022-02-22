@@ -253,3 +253,6 @@ msgstr "The following special pages are missing:"
 
 msgid "Please create the missing pages manually."
 msgstr "Please create the missing pages manually."
+
+msgid "cSeoDescription"
+msgstr "Please enter full URLs including the scheme for external links (e.g. https://example.com)"

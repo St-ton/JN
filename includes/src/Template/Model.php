@@ -249,6 +249,14 @@ final class Model extends DataModel
     }
 
     /**
+     * @param string $type
+     */
+    public function setTemplateType(string $type): void
+    {
+        $this->type = $type;
+    }
+
+    /**
      * @inheritdoc
      */
     public function getAttributes(): array

@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Cron\Admin\Controller;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -26,14 +25,7 @@ if (Form::validateToken()) {
         $tab      = 'add-cron';
     } elseif (Request::postVar('a') === 'saveSettings') {
         $tab = 'settings';
-        if (isset($_POST['cron_freq'])) {
-            $_POST['cron_freq'] = max(1, $_POST['cron_freq']);
-        }
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_SUCCESS,
-            saveAdminSectionSettings(CONF_CRON, $_POST),
-            'saveSettings'
-        );
+        saveAdminSectionSettings(CONF_CRON, $_POST);
     }
 }
 getAdminSectionSettings(CONF_CRON);

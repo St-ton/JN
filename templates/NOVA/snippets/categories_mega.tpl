@@ -40,7 +40,11 @@
                             || ((isset($activeParent)
                                 && isset($activeParent->kKategorie))
                                 && $activeParent->kKategorie == $category->getID())} active{/if}">
-                                {link href=$category->getURL() title=$category->getName()|escape:'html' class="nav-link dropdown-toggle" target="_self"}
+                                {link href=$category->getURL()
+                                    title=$category->getName()|escape:'html'
+                                    class="nav-link dropdown-toggle"
+                                    target="_self"
+                                    data=["category-id"=>$category->getID()]}
                                     <span class="nav-mobile-heading">{$category->getShortName()}</span>
                                 {/link}
                                 <div class="dropdown-menu">
@@ -79,7 +83,8 @@
                             {navitem href=$category->getURL() title=$category->getName()|escape:'html'
                                 class="nav-scrollbar-item {if $Einstellungen.template.megamenu.show_categories === 'mobile'} d-lg-none
                                     {elseif $Einstellungen.template.megamenu.show_categories === 'desktop'} d-none d-lg-inline-block {/if}
-                                    {if $category->getID() === $activeId}active{/if}"}
+                                    {if $category->getID() === $activeId}active{/if}"
+                                data=["category-id"=>$category->getID()]}
                                 <span class="text-truncate d-block">{$category->getShortName()}</span>
                             {/navitem}
                         {/block}
@@ -169,8 +174,10 @@
         {block name='snippets-categories-mega-top-links-hr'}
             <li class="d-lg-none"><hr></li>
         {/block}
+        {block name='snippets-categories-mega-wishlist'}
         {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
             {navitem href="{get_static_route id='wunschliste.php'}" class="wl-nav-scrollbar-item nav-scrollbar-item"}
+                {lang key='wishlist'}
                 {badge id="badge-wl-count" variant="primary" class="product-count"}
                     {if \JTL\Session\Frontend::getWishlist()->getID() > 0}
                         {\JTL\Session\Frontend::getWishlist()->getItems()|count}
@@ -180,6 +187,8 @@
                 {/badge}
             {/navitem}
         {/if}
+        {/block}
+        {block name='snippets-categories-mega-comparelist'}
         {if $Einstellungen.vergleichsliste.vergleichsliste_anzeigen === 'Y'}
             {navitem href="{get_static_route id='vergleichsliste.php'}" class="comparelist-nav-scrollbar-item nav-scrollbar-item"}
                 {lang key='compare'}
@@ -188,6 +197,7 @@
                 {/badge}
             {/navitem}
         {/if}
+        {/block}
         {if $linkgroups->getLinkGroupByTemplate('Kopf') !== null}
         {block name='snippets-categories-mega-top-links'}
             {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}

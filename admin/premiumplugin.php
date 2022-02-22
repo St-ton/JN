@@ -9,6 +9,7 @@ use JTL\License\Admin;
 use JTL\License\Checker;
 use JTL\License\Manager as LicenseManager;
 use JTL\Recommendation\Manager;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */

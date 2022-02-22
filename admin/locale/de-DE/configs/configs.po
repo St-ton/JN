@@ -1254,7 +1254,7 @@ msgid "warenkorb_versandermittlung_anzeigen_name"
 msgstr "Versandkostenermittlung anzeigen"
 
 msgid "warenkorb_versandermittlung_anzeigen_desc"
-msgstr "Hier legen Sie fest, ob die Versandkostenermittlung auf der Spezialseite „Versand“ angezeigt wird."
+msgstr "Hier legen Sie fest, ob die Versandkostenermittlung auf der Spezialseite „Warenkorb“ angezeigt wird."
 
 msgid "warenkorb_kupon_anzeigen_name"
 msgstr "Coupons bereits im Warenkorb abfragen"

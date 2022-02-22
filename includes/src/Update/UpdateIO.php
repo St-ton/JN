@@ -12,7 +12,7 @@ use JTL\Plugin\PluginLoader;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTLShop\SemVer\Version;
-use JTLSmarty;
+use JTL\Smarty\JTLSmarty;
 use SmartyException;
 
 /**

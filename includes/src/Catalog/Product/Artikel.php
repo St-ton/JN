@@ -3355,7 +3355,7 @@ class Artikel
         if ($this->getOption('nVariationen', 0) === 1) {
             $this->holVariationen($customerGroupID, $workaround);
         }
-        $this->checkVariationExtraCharge($customerGroupID);
+        $this->checkVariationExtraCharge();
         if ($this->nIstVater === 1 && $this->getOption('nVariationDetailPreis', 0) === 1) {
             $this->getVariationDetailPrice($customerGroupID);
         }
@@ -3583,7 +3583,7 @@ class Artikel
     /**
      * @param int $productID
      * @param int $customerGroupID
-     * @return string
+     * @return SqlObject
      */
     private function getProductSQL(int $productID, int $customerGroupID): SqlObject
     {
@@ -4034,15 +4034,7 @@ class Artikel
         // Top bewertet
         // No need to check with custom function.. this value is set in fuelleArtikel()?
         $specials[\SEARCHSPECIALS_TOPREVIEWS] = (int)$this->bIsTopBewertet === 1;
-        // Variationen Lagerbestand 0
-        if ($this->cLagerBeachten === 'Y'
-            && $this->cLagerKleinerNull === 'N'
-            && $this->cLagerVariation === 'Y'
-            && \is_array($this->Variationen)
-            && \count($this->Variationen) > 0
-        ) {
-            $specials[\SEARCHSPECIALS_OUTOFSTOCK] = $this->nVariationenVerfuegbar === 0;
-        }
+
         // VariationskombiKinder Lagerbestand 0
         if ($this->kVaterArtikel > 0) {
             $variChildren = $this->getDB()->selectAll(
@@ -4090,31 +4082,11 @@ class Artikel
      * Sobald ein KindArtikel teurer ist als der Vaterartikel, muss nVariationsAufpreisVorhanden auf 1
      * gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
      * aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist
-     * @param int $customerGroupID
      */
-    private function checkVariationExtraCharge(int $customerGroupID): void
+    private function checkVariationExtraCharge(): void
     {
         if ($this->kVaterArtikel === 0 && $this->nIstVater === 1 && \is_object($this->Preise)) {
-            $net          = $this->Preise->fVKNetto ?? 0.0;
-            $specialPrice = $this->getDB()->getSingleObject(
-                'SELECT COUNT(a.kArtikel) AS specialPrices
-                    FROM tartikel AS a
-                    JOIN tpreis AS p
-                        ON p.kArtikel = a.kArtikel
-                        AND p.kKundengruppe = :cgid
-                    JOIN tpreisdetail AS d
-                        ON d.kPreis = p.kPreis
-                    LEFT JOIN tartikelsonderpreis AS asp
-                        ON asp.kArtikel = a.kArtikel
-                    LEFT JOIN tsonderpreise AS sp
-                        ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
-                        AND sp.kKundengruppe = :cgid
-                    WHERE a.kVaterArtikel = :pid
-                        AND COALESCE(sp.fNettoPreis, d.fVKNetto) - ' . $net . ' > 0.0001',
-                ['cgid' => $customerGroupID, 'pid' => (int)$this->kArtikel]
-            );
-
-            $this->nVariationsAufpreisVorhanden = (int)($specialPrice->specialPrices ?? 0) > 0 ? 1 : 0;
+            $this->nVariationsAufpreisVorhanden = $this->Preise->oPriceRange->isRange();
         }
     }
 
@@ -4887,7 +4859,7 @@ class Artikel
 
             if ($piecesNotInShop !== null && (int)$piecesNotInShop->nAnzahl > 0) {
                 // this list has potentially invisible parts and can't calculated correctly
-                // handle this parts list as an normal product
+                // handle this parts list as a normal product
                 $isPartsList = false;
             } else {
                 // all parts of this list are accessible
@@ -4915,6 +4887,8 @@ class Artikel
             }
         }
         if ($this->bHasKonfig && !empty($this->oKonfig_arr)) {
+            $parentMinDeliveryDays = $minDeliveryDays;
+            $parentMaxDeliveryDays = $maxDeliveryDays;
             foreach ($this->oKonfig_arr as $gruppe) {
                 /** @var Item $piece */
                 foreach ($gruppe->oItem_arr as $piece) {
@@ -4937,6 +4911,8 @@ class Artikel
                     }
                 }
             }
+            $minDeliveryDays = \max($minDeliveryDays, $parentMinDeliveryDays);
+            $maxDeliveryDays = \max($maxDeliveryDays, $parentMaxDeliveryDays);
         }
         if ((!$isPartsList && $this->nBearbeitungszeit > 0)
             || (isset($this->FunktionsAttribute['processingtime']) && $this->FunktionsAttribute['processingtime'] > 0)
@@ -5027,9 +5003,9 @@ class Artikel
 
     /**
      * @param string $type
-     * @return int|stdClass
+     * @return stdClass
      */
-    private function mapMediaType(string $type)
+    private function mapMediaType(string $type): stdClass
     {
         $mapping            = new stdClass();
         $mapping->videoType = null;

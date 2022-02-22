@@ -28,27 +28,27 @@ class Admin
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var AlertServiceInterface
      */
-    private $alertService;
+    private AlertServiceInterface $alertService;
 
     /**
      * @var JTLSmarty
      */
-    private $smarty;
+    private JTLSmarty $smarty;
 
     /**
      * @var string
      */
-    private $step = 'overview';
+    private string $step = 'overview';
 
     /**
      * @var Export
      */
-    private $config;
+    private Export $config;
 
     /**
      * Admin constructor.
@@ -169,6 +169,10 @@ class Admin
             $_POST['exportID'] = $exportID;
             $this->config->update($_POST, true, []);
             $this->step = 'overview';
+            if (Request::postInt('saveAndContinue') === 1) {
+                $this->step = 'edit';
+                $this->view();
+            }
         } else {
             $_POST['cContent']   = \str_replace('<tab>', "\t", $_POST['cContent']);
             $_POST['cKopfzeile'] = \str_replace('<tab>', "\t", Request::postVar('cKopfzeile', ''));
@@ -201,27 +205,27 @@ class Admin
 
         if (Request::postInt('kExportformat') > 0) {
             try {
-                $exportformat = Model::load(
+                $model = Model::load(
                     ['id' => Request::postInt('kExportformat')],
                     $this->db,
                     Model::ON_NOTEXISTS_FAIL
                 );
-                /** @var Model $exportformat */
-                $exportformat->setHeader(\str_replace("\t", '<tab>', $exportformat->getHeader()));
-                $exportformat->setContent(Text::htmlentities(\str_replace("\t", '<tab>', $exportformat->getContent())));
-                $exportformat->setFooter(\str_replace("\t", '<tab>', $exportformat->getFooter()));
+                /** @var Model $model */
+                $model->setHeader(\str_replace("\t", '<tab>', $model->getHeader()));
+                $model->setContent(Text::htmlentities(\str_replace("\t", '<tab>', $model->getContent())));
+                $model->setFooter(\str_replace("\t", '<tab>', $model->getFooter()));
             } catch (Exception $e) {
-                $exportformat = null;
+                $model = null;
             }
         } else {
-            $exportformat = Model::newInstance($this->db);
-            $exportformat->setUseCache(1);
+            $model = Model::newInstance($this->db);
+            $model->setUseCache(1);
         }
         $sql = new SqlObject();
         $sql->setWhere('kExportformat = :eid');
-        $sql->addParam(':eid', (int)($exportformat->kExportformat ?? 0));
+        $sql->addParam(':eid', $model->getId());
         $this->config->load($sql);
-        $this->smarty->assign('Exportformat', $exportformat)
+        $this->smarty->assign('Exportformat', $model)
             ->assign('settings', $this->config->getItems());
     }
 
@@ -240,9 +244,9 @@ class Admin
         }
         $realBase   = \realpath(\PFAD_ROOT . \PFAD_EXPORT);
         $real       = \realpath(\PFAD_ROOT . \PFAD_EXPORT . $exportformat->cDateiname);
-        $ok1        = \is_string($real) && \strpos($real, $realBase) === 0;
+        $ok1        = \is_string($real) && \str_starts_with($real, $realBase);
         $realZipped = \realpath(\PFAD_ROOT . \PFAD_EXPORT . $exportformat->cDateiname . '.zip');
-        $ok2        = \is_string($realZipped) && \strpos($realZipped, $realBase) === 0;
+        $ok2        = \is_string($realZipped) && \str_starts_with($realZipped, $realBase);
         if ($ok1 === true || $ok2 === true || (int)($exportformat->nSplitgroesse ?? 0) > 0) {
             if (empty($_GET['hasError'])) {
                 $this->alertService->addAlert(
@@ -316,7 +320,7 @@ class Admin
             return;
         }
         $real = \realpath(\PFAD_ROOT . \PFAD_EXPORT . $file);
-        if ($real !== false && \strpos($real, \realpath(\PFAD_ROOT . \PFAD_EXPORT)) === 0) {
+        if ($real !== false && \str_starts_with($real, \realpath(\PFAD_ROOT . \PFAD_EXPORT))) {
             \header('Content-type: text/plain');
             \header('Content-Disposition: attachment; filename=' . $file);
             echo \file_get_contents($real);

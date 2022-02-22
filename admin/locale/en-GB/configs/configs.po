@@ -1254,7 +1254,7 @@ msgid "warenkorb_versandermittlung_anzeigen_name"
 msgstr "Show shipping cost determination"
 
 msgid "warenkorb_versandermittlung_anzeigen_desc"
-msgstr "Specify whether to display the shipping cost determination on the special page \"Shipments\"."
+msgstr "Specify whether to display the shipping cost determination on the special page \"Basket\"."
 
 msgid "warenkorb_kupon_anzeigen_name"
 msgstr "Prompt coupons in basket"

@@ -150,7 +150,7 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
     }
 }
 $oNavigationsinfo = $NaviFilter->getMetaData()->getNavigationInfo($AktuelleKategorie, $expandedCategories);
-if (mb_strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
+if (!str_contains(basename($NaviFilter->getFilterURL()->getURL()), '.php')) {
     $cCanonicalURL = $NaviFilter->getFilterURL()->getURL(null, true) . ($pages->getCurrentPage() > 1
         ? SEP_SEITE . $pages->getCurrentPage()
         : '');

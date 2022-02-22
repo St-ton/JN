@@ -29,8 +29,7 @@ Shop::setPageType(PAGE_WARENKORB);
 $linkHelper      = Shop::Container()->getLinkService();
 $couponCodeValid = true;
 $cart            = Frontend::getCart();
-$kLink           = $linkHelper->getSpecialPageID(LINKTYP_WARENKORB);
-$link            = $linkHelper->getPageLink($kLink);
+$link            = $linkHelper->getSpecialPage(LINKTYP_WARENKORB);
 $alertHelper     = Shop::Container()->getAlertService();
 $valid           = Form::validateToken();
 // Warenkorbaktualisierung?
@@ -45,8 +44,7 @@ if ($valid && isset($_POST['land'], $_POST['plz'])
     $warning = Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages');
 }
 if ($valid
-    && isset($_POST['Kuponcode'])
-    && mb_strlen($_POST['Kuponcode']) > 0
+    && Request::postVar('Kuponcode', '') !== ''
     && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
 ) {
     // Kupon darf nicht im leeren Warenkorb eingelöst werden
@@ -171,10 +169,10 @@ $smarty->assign('MsgWarning', $warning)
         : null))
     ->assign('xselling', CartHelper::getXSelling())
     ->assign('oArtikelGeschenk_arr', CartHelper::getFreeGifts($conf))
-    ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
-    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
     ->assign('KuponcodeUngueltig', !$couponCodeValid)
-    ->assign('Warenkorb', $cart);
+    ->assign('Warenkorb', $cart)
+    ->assignDeprecated('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL, '5.0.0')
+    ->assignDeprecated('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK, '5.0.0');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

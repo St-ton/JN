@@ -26,8 +26,7 @@ $cMetaDescription = '';
 $cMetaKeywords    = '';
 $conf             = Shopsetting::getInstance()->getAll();
 $customerGroupID  = Frontend::getCustomerGroup()->getID();
-$linkService      = Shop::Container()->getLinkService();
-$link             = $linkService->getPageLink($linkService->getSpecialPageID(LINKTYP_NEWS));
+$link             = Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_NEWS);
 $smarty           = Shop::Smarty();
 $controller       = new Controller($db, $conf, $smarty);
 $alertHelper      = Shop::Container()->getAlertService();
@@ -39,7 +38,7 @@ switch ($controller->getPageType($params)) {
         $newsItemID = $params['kNews'];
         $newsItem   = new Item($db);
         $newsItem->load($newsItemID);
-        $newsItem->checkVisibility(Frontend::getCustomer()->getGroupID());
+        $newsItem->checkVisibility($customerGroupID);
 
         $cMetaTitle       = $newsItem->getMetaTitle();
         $cMetaDescription = $newsItem->getMetaDescription();

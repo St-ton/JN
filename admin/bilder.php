@@ -2,6 +2,8 @@
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
+use JTL\Helpers\Text;
+use JTL\Media\Image;
 use JTL\Media\IMedia;
 use JTL\Media\Media;
 use JTL\Shop;
@@ -19,7 +21,7 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
         Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(
             CONF_BILDER,
-            $_POST,
+            Text::filterXSS($_POST),
             [CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]
         ),
         'saveSettings'

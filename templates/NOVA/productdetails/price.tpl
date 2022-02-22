@@ -49,7 +49,7 @@
                         {if $Artikel->Preise->oPriceRange->isRange()}
                             {$priceNoCurr = $Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata}
                         {else}
-                            {$priceNoCurr = $Artikel->Preise->fVKBrutto|string_format:"%.2f"}
+                            {$priceNoCurr = $Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata}
                         {/if}
                         <meta itemprop="price" content="{$priceNoCurr}">
                         <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
@@ -73,7 +73,7 @@
                             {if !empty($Artikel->cLocalizedVPE)}
                                 {block name='productdetails-price-detail-base-price'}
                                     <div class="base-price text-nowrap-util" itemprop="priceSpecification" itemscope itemtype="https://schema.org/UnitPriceSpecification">
-                                        <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{($Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}{else}{($Artikel->Preise->fVKBrutto/$Artikel->fVPEWert)|string_format:"%.2f"}{/if}">
+                                        <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{($Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}{else}{($Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}{/if}">
                                         <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
                                         <span class="value" itemprop="referenceQuantity" itemscope itemtype="https://schema.org/QuantitativeValue">
                                             {$Artikel->cLocalizedVPE[$NettoPreise]}

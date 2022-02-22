@@ -386,11 +386,11 @@ class Wizard
 
     /**
      * @param string $name
-     * @return string
+     * @return string|null
      */
     public function getConf(string $name): ?string
     {
-        return $this->config[$name];
+        return $this->config[$name] ?? null;
     }
 
     /**

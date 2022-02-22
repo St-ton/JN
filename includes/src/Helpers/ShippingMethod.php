@@ -153,7 +153,7 @@ class ShippingMethod
      * @param int $filterPaymentID
      * @return array
      */
-    public static function getPaymentMethods(int $shippingMethodID, int $cgroupID, int $filterPaymentID = 0): ?array
+    public static function getPaymentMethods(int $shippingMethodID, int $cgroupID, int $filterPaymentID = 0): array
     {
         $filterSQL = '';
         $params    = [

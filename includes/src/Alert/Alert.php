@@ -390,7 +390,7 @@ class Alert
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getId(): ?string
     {

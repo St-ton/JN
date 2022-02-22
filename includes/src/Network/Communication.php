@@ -50,7 +50,7 @@ final class Communication
      * @param string $url
      * @param array  $data
      * @param bool   $bPost
-     * @return string
+     * @return string|null
      * @throws Exception
      */
     public static function postData(string $url, $data = [], bool $bPost = true): ?string

@@ -228,8 +228,8 @@ class Exportformat
     }
 
     /**
-     * @param string     $msg
-     * @param null|array $context
+     * @param string $msg
+     * @param array  $context
      */
     private function log(string $msg, array $context = []): void
     {

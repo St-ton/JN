@@ -272,7 +272,7 @@ class CartHelper
     }
 
     /**
-     * @return Rechnungsadresse
+     * @return Rechnungsadresse|null
      */
     public function getBillingAddress(): ?Rechnungsadresse
     {
@@ -290,7 +290,7 @@ class CartHelper
     /**
      * @return Customer
      */
-    public function getCustomer(): ?Customer
+    public function getCustomer(): Customer
     {
         return Frontend::getCustomer();
     }

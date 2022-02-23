@@ -655,15 +655,15 @@ class CheckBox
         if (!isset($customer->cVorname, $customer->cNachname, $customer->cMail)) {
             return false;
         }
-        $conf = Shop::getSettings([\CONF_EMAILS]);
-        if (!empty($conf['emails']['email_master_absender'])) {
+        $conf = Shop::getSettingSection(\CONF_EMAILS);
+        if (!empty($conf['email_master_absender'])) {
             $data                = new stdClass();
             $data->oCheckBox     = $checkBox;
             $data->oKunde        = $customer;
             $data->cAnzeigeOrt   = $this->mappeCheckBoxOrte($location);
             $data->mail          = new stdClass();
-            $data->mail->toEmail = $conf['emails']['email_master_absender'];
-            $data->mail->toName  = $conf['emails']['email_master_absender_name'];
+            $data->mail->toEmail = $conf['email_master_absender'];
+            $data->mail->toName  = $conf['email_master_absender_name'];
 
             $mailer = Shop::Container()->get(Mailer::class);
             $mail   = new Mail();

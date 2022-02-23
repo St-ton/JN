@@ -2,7 +2,7 @@
 <div class="captcha">
     <img src="{$captchaCodeURL}" alt="{__('code')}" id="captcha" />
 </div>
-<a href="index.php" class="captcha">{__('reloadCaptcha')}</a>
+<a href="{$adminURL}/index.php" class="captcha">{__('reloadCaptcha')}</a>
 <p>
     <input class="form-control" type="text" name="captcha" tabindex="30" id="captcha_text" placeholder="{__('enterCode')}" />
 </p>

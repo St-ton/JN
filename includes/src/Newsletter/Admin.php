@@ -28,12 +28,12 @@ final class Admin
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var AlertServiceInterface
      */
-    private $alertService;
+    private AlertServiceInterface $alertService;
 
     /**
      * Admin constructor.
@@ -79,7 +79,7 @@ final class Admin
         if (empty($name)) {
             $checks['cName'] = 1;
         }
-        if (!\is_array($customerGroups) || \count($customerGroups) === 0) {
+        if (\count($customerGroups) === 0) {
             $checks['kKundengruppe_arr'] = 1;
         }
         if (empty($subject)) {
@@ -111,12 +111,12 @@ final class Admin
     }
 
     /**
-     * @param string $text
-     * @param array  $stdVars
-     * @param bool   $noHTML
-     * @return mixed|string
+     * @param string      $text
+     * @param array|mixed $stdVars
+     * @param bool        $noHTML
+     * @return string
      */
-    public function mapDefaultTemplate($text, $stdVars, bool $noHTML = false)
+    public function mapDefaultTemplate(string $text, $stdVars, bool $noHTML = false): string
     {
         if (!\is_array($stdVars) || \count($stdVars) === 0) {
             return $text;
@@ -302,7 +302,7 @@ final class Admin
             $post['cArt'] ?? ''
         );
 
-        if (!\is_array($checks) || \count($checks) !== 0) {
+        if (\count($checks) !== 0) {
             return $checks;
         }
         $day         = $post['dTag'];
@@ -337,8 +337,8 @@ final class Admin
         $tpl->kNewslettervorlageStd = $defaultTplID;
         $tpl->kKampagne             = (int)$post['kKampagne'];
         $tpl->kSprache              = (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache']);
-        $tpl->cName                 = $post['cName'];
-        $tpl->cBetreff              = $post['cBetreff'];
+        $tpl->cName                 = Text::filterXSS($post['cName']);
+        $tpl->cBetreff              = Text::filterXSS($post['cBetreff']);
         $tpl->cArt                  = $post['cArt'];
         $tpl->cArtikel              = $productIDs;
         $tpl->cHersteller           = $manufacturerIDs;
@@ -498,15 +498,15 @@ final class Admin
 
         $alertHelper = Shop::Container()->getAlertService();
         $checks      = $this->checkTemplate(
-            $post['cName'],
-            $post['kKundengruppe'] ?? '',
-            $post['cBetreff'],
-            $post['cArt'],
-            $post['cHtml'],
-            $post['cText']
+            $post['cName'] ?? '',
+            $post['kKundengruppe'] ?? [],
+            $post['cBetreff'] ?? '',
+            $post['cArt'] ?? '',
+            $post['cHtml'] ?? '',
+            $post['cText' ?? '']
         );
 
-        if (\is_array($checks) && \count($checks) === 0) {
+        if (\count($checks) === 0) {
             $day         = $post['dTag'];
             $month       = $post['dMonat'];
             $year        = $post['dJahr'];
@@ -530,8 +530,8 @@ final class Admin
             }
             $tpl->kSprache      = (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache']);
             $tpl->kKampagne     = $campaignID;
-            $tpl->cName         = $post['cName'];
-            $tpl->cBetreff      = $post['cBetreff'];
+            $tpl->cName         = Text::filterXSS($post['cName']);
+            $tpl->cBetreff      = Text::filterXSS($post['cBetreff']);
             $tpl->cArt          = $post['cArt'];
             $tpl->cArtikel      = $productIDs;
             $tpl->cHersteller   = $manufacturerIDs;
@@ -591,13 +591,19 @@ final class Admin
      * @param string $text
      * @return array
      */
-    public function checkTemplate($name, $customerGroups, $subject, $type, $html, $text): array
-    {
+    public function checkTemplate(
+        string $name,
+        array $customerGroups,
+        string $subject,
+        string $type,
+        string $html,
+        string $text
+    ): array {
         $checks = [];
         if (empty($name)) {
             $checks['cName'] = 1;
         }
-        if (!\is_array($customerGroups) || \count($customerGroups) === 0) {
+        if (\count($customerGroups) === 0) {
             $checks['kKundengruppe_arr'] = 1;
         }
         if (empty($subject)) {
@@ -620,7 +626,7 @@ final class Admin
      * @param string $productString
      * @return stdClass
      */
-    public function getProductData($productString): stdClass
+    public function getProductData(string $productString): stdClass
     {
         $productIDs                = \explode(';', $productString);
         $productData               = new stdClass();
@@ -679,9 +685,9 @@ final class Admin
      * @param array $recipientIDs
      * @return bool
      */
-    public function activateSubscribers($recipientIDs): bool
+    public function activateSubscribers(array $recipientIDs): bool
     {
-        if (!\is_array($recipientIDs) || \count($recipientIDs) === 0) {
+        if (\count($recipientIDs) === 0) {
             return false;
         }
         $where      = ' IN (' . \implode(',', \array_map('\intval', $recipientIDs)) . ')';
@@ -972,7 +978,7 @@ final class Admin
             $filteredPost,
             $templateID
         );
-        if (\is_array($checks) && \count($checks) > 0) {
+        if (\count($checks) > 0) {
             $smarty->assign('cPlausiValue_arr', $checks)
                 ->assign('cPostVar_arr', $filteredPost)
                 ->assign('oNewslettervorlageStd', $tpl);

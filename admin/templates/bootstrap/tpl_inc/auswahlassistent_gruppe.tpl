@@ -10,7 +10,7 @@
 
 <div id="content">
     {if !isset($noModule) || !$noModule}
-        <form class="settings" method="post" action="auswahlassistent.php">
+        <form class="settings" method="post" action="{$adminURL}/auswahlassistent.php">
             {$jtl_token}
             <input name="kSprache" type="hidden" value="{$languageID}">
             <input name="tab" type="hidden" value="gruppe">
@@ -156,7 +156,7 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a href="auswahlassistent.php" class="btn btn-outline-primary btn-block">{__('cancelWithIcon')}</a>
+                            <a href="{$adminURL}/auswahlassistent.php" class="btn btn-outline-primary btn-block">{__('cancelWithIcon')}</a>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
                             <button name="speicherGruppe" type="submit" value="save" class="btn btn-primary btn-block">

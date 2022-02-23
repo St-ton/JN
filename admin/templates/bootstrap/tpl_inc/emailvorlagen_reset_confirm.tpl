@@ -2,7 +2,7 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            <form method="post" action="emailvorlagen.php">
+            <form method="post" action="{$adminURL}/emailvorlagen.php">
                 {$jtl_token}
                 <input type="hidden" name="resetEmailvorlage" value="1" />
                 {if $mailTemplate->getPluginID() > 0}

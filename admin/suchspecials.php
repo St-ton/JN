@@ -12,18 +12,14 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('SETTINGS_SPECIALPRODUCTS_VIEW', true, true);
-$step        = 'suchspecials';
-$db          = Shop::Container()->getDB();
-$alertHelper = Shop::Container()->getAlertService();
+$step         = 'suchspecials';
+$db           = Shop::Container()->getDB();
+$alertService = Shop::Container()->getAlertService();
 setzeSprache();
 $languageID = (int)$_SESSION['editLanguageID'];
 $postData   = Text::filterXSS($_POST);
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
-    $alertHelper->addAlert(
-        Alert::TYPE_SUCCESS,
-        saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST),
-        'saveSettings'
-    );
+    saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST);
 } elseif (Request::postInt('suchspecials') === 1 && Form::validateToken()) {
     $searchSpecials   = $db->selectAll(
         'tseo',
@@ -48,7 +44,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $bestSellerSeo = Seo::checkSeo(Seo::getSeo($bestSellerSeo));
 
         if ($bestSellerSeo !== $postData['bestseller']) {
-            $alertHelper->addAlert(
+            $alertService->addAlert(
                 Alert::TYPE_NOTE,
                 sprintf(
                     __('errorBestsellerExistRename'),
@@ -75,7 +71,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $specialOffersSeo = Seo::checkSeo(Seo::getSeo($specialOffersSeo));
 
         if ($specialOffersSeo !== $postData['sonderangebote']) {
-            $alertHelper->addAlert(
+            $alertService->addAlert(
                 Alert::TYPE_NOTE,
                 sprintf(
                     __('errorSpecialExistRename'),
@@ -103,7 +99,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $newProductsSeo = Seo::checkSeo(Seo::getSeo($newProductsSeo));
 
         if ($newProductsSeo !== $postData['neu_im_sortiment']) {
-            $alertHelper->addAlert(
+            $alertService->addAlert(
                 Alert::TYPE_NOTE,
                 sprintf(
                     __('errorNewExistRename'),
@@ -131,7 +127,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $topOffersSeo = Seo::checkSeo(Seo::getSeo($topOffersSeo));
 
         if ($topOffersSeo !== $postData['top_angebote']) {
-            $alertHelper->addAlert(
+            $alertService->addAlert(
                 Alert::TYPE_NOTE,
                 sprintf(
                     __('errorTopProductsExistRename'),
@@ -158,7 +154,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
     )) {
         $releaseSeo = Seo::checkSeo(Seo::getSeo($releaseSeo));
         if ($releaseSeo !== $postData['in_kuerze_verfuegbar']) {
-            $alertHelper->addAlert(
+            $alertService->addAlert(
                 Alert::TYPE_NOTE,
                 sprintf(
                     __('errorSoonExistRename'),
@@ -186,7 +182,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $topRatedSeo = Seo::checkSeo(Seo::getSeo($topRatedSeo));
 
         if ($topRatedSeo !== $postData['top_bewertet']) {
-            $alertHelper->addAlert(
+            $alertService->addAlert(
                 Alert::TYPE_NOTE,
                 sprintf(
                     __('errorTopRatingExistRename'),
@@ -235,7 +231,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
                     AND kKey IN (' . implode(',', $ssToDelete) . ')'
         );
     }
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSeoSave'), 'successSeoSave');
+    $alertService->addAlert(Alert::TYPE_SUCCESS, __('successSeoSave'), 'successSeoSave');
 }
 
 $ssSeoData      = $db->selectAll(
@@ -249,9 +245,8 @@ $searchSpecials = [];
 foreach ($ssSeoData as $searchSpecial) {
     $searchSpecials[$searchSpecial->kKey] = $searchSpecial->cSeo;
 }
-
-$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SUCHSPECIAL))
-    ->assign('oSuchSpecials_arr', $searchSpecials)
+getAdminSectionSettings(CONF_SUCHSPECIAL);
+$smarty->assign('oSuchSpecials_arr', $searchSpecials)
     ->assign('step', $step)
     ->display('suchspecials.tpl');
 

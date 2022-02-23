@@ -189,10 +189,7 @@ class Redirect
                 $item = $this->find($url);
             }
             if ($item === null) {
-                $conf = Shop::getSettings([\CONF_GLOBAL]);
-                if (!isset($_GET['notrack'])
-                    && (!isset($conf['global']['redirect_save_404']) || $conf['global']['redirect_save_404'] === 'Y')
-                ) {
+                if (!isset($_GET['notrack']) && Shop::getSettingValue(\CONF_GLOBAL, 'redirect_save_404') === 'Y') {
                     $item           = new self();
                     $item->cFromUrl = $url . (!empty($queryString) ? '?' . $queryString : '');
                     $item->cToUrl   = '';

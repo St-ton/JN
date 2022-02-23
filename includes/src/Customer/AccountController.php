@@ -470,7 +470,7 @@ class AccountController
     }
 
     /**
-     * @return array
+     * @return Kupon[]
      */
     private function getCoupons(): array
     {
@@ -480,7 +480,7 @@ class AccountController
         $coupons[] = !empty($_SESSION['NeukundenKupon']) ? $_SESSION['NeukundenKupon'] : null;
         $coupons[] = !empty($_SESSION['Kupon']) ? $_SESSION['Kupon'] : null;
 
-        return $coupons;
+        return \array_filter($coupons);
     }
 
     /**
@@ -492,7 +492,7 @@ class AccountController
             if (empty($coupon)) {
                 continue;
             }
-            $error      = Kupon::checkCoupon($coupon);
+            $error      = $coupon->check();
             $returnCode = \angabenKorrekt($error);
             \executeHook(\HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
                 'error'        => &$error,
@@ -500,7 +500,7 @@ class AccountController
             ]);
             if ($returnCode) {
                 if (isset($coupon->kKupon) && $coupon->kKupon > 0 && $coupon->cKuponTyp === Kupon::TYPE_STANDARD) {
-                    Kupon::acceptCoupon($coupon);
+                    $coupon->accept();
                     \executeHook(\HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
                 } elseif (!empty($coupon->kKupon) && $coupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                     // Versandfrei Kupon

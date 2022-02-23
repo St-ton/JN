@@ -5,6 +5,7 @@ use JTL\Emailhistory;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Pagination\Pagination;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
@@ -29,13 +30,10 @@ if ($action === 'delete') {
     }
 }
 
-if ($step === 'uebersicht') {
-    $pagination = (new Pagination('emailhist'))
-        ->setItemCount($history->getCount())
-        ->assemble();
-    $smarty->assign('pagination', $pagination)
-        ->assign('oEmailhistory_arr', $history->getAll(' LIMIT ' . $pagination->getLimitSQL()));
-}
-
-$smarty->assign('step', $step)
+$pagination = (new Pagination('emailhist'))
+    ->setItemCount($history->getCount())
+    ->assemble();
+$smarty->assign('pagination', $pagination)
+    ->assign('oEmailhistory_arr', $history->getAll(' LIMIT ' . $pagination->getLimitSQL()))
+    ->assign('step', $step)
     ->display('emailhistory.tpl');

@@ -799,17 +799,14 @@ class Metadata implements MetadataInterface
     /**
      * return trimmed description without (double) line breaks
      *
-     * @param string $cDesc
+     * @param string $description
      * @return string
      */
-    public static function truncateMetaDescription(string $cDesc): string
+    public static function truncateMetaDescription(string $description): string
     {
-        $conf      = Shop::getSettings([\CONF_METAANGABEN]);
-        $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_description'])
-            ? (int)$conf['metaangaben']['global_meta_maxlaenge_description']
-            : 0;
+        $maxLength = (int)Shop::getSettingValue(\CONF_METAANGABEN, 'global_meta_maxlaenge_description');
 
-        return self::prepareMeta($cDesc, null, $maxLength);
+        return self::prepareMeta($description, null, $maxLength);
     }
 
     /**

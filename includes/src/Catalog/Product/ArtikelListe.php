@@ -229,8 +229,8 @@ class ArtikelListe
         $customerGroupID = Frontend::getCustomerGroup()->getID();
         $db              = Shop::Container()->getDB();
         if ($items === false && \count($categoryIDs) > 0) {
-            $conf           = Shop::getSettings([\CONF_ARTIKELUEBERSICHT]);
-            $limitSql       = 'LIMIT ' . (int)($conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'] ?? 6);
+            $conf           = Shop::getSettingValue(\CONF_ARTIKELUEBERSICHT, 'artikelubersicht_topbest_anzahl');
+            $limitSql       = 'LIMIT ' . (int)($conf ?? 6);
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $items          = $db->getObjects(
                 'SELECT DISTINCT (tartikel.kArtikel)
@@ -319,8 +319,8 @@ class ArtikelListe
                     ? ' AND tartikel.kArtikel NOT IN (' . \implode(',', $exclude) . ') '
                     : '';
             }
-            $conf           = Shop::getSettings([\CONF_ARTIKELUEBERSICHT]);
-            $limitSQL       = 'LIMIT ' . (int)($conf['artikeluebersicht']['artikelubersicht_topbest_anzahl'] ?? 6);
+            $conf           = Shop::getSettingValue(\CONF_ARTIKELUEBERSICHT, 'artikelubersicht_topbest_anzahl');
+            $limitSQL       = 'LIMIT ' . (int)($conf ?? 6);
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $items          = $db->getObjects(
                 'SELECT DISTINCT (tartikel.kArtikel)

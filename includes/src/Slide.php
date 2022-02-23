@@ -184,7 +184,7 @@ class Slide
             } else {
                 $this->setThumbnail(\STORAGE_OPC . '.tmb/' . \basename($this->getThumbnail()));
             }
-            $path = \parse_url(\Shop::getURL() . '/', \PHP_URL_PATH);
+            $path = \parse_url(Shop::getURL() . '/', \PHP_URL_PATH);
             if (Text::startsWith($this->image, $path)) {
                 $this->image = \ltrim(\substr($this->image, \mb_strlen($path)), '/');
             }

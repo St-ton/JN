@@ -64,7 +64,7 @@ class ReviewReminder
      */
     public function __construct()
     {
-        $this->settings       = Shop::getSettings([\CONF_BEWERTUNG])['bewertung'];
+        $this->settings       = Shop::getSettingSection(\CONF_BEWERTUNG);
         $this->customerGroups = $this->settings['bewertungserinnerung_kundengruppen'];
     }
 

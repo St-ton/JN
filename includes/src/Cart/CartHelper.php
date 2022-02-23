@@ -808,7 +808,7 @@ class CartHelper
         $cart          = Frontend::getCart();
         $productID     = (int)$product->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
         $redirectParam = [];
-        $conf          = Shop::getSettings([\CONF_GLOBAL]);
+        $conf          = Shop::getSettingSection(\CONF_GLOBAL);
         if ($product->fAbnahmeintervall > 0 && !self::isMultiple($qty, (float)$product->fAbnahmeintervall)) {
             $redirectParam[] = \R_ARTIKELABNAHMEINTERVALL;
         }
@@ -842,7 +842,7 @@ class CartHelper
             $redirectParam[] = \R_LOGIN;
         }
         // kein vorbestellbares Produkt, aber mit Erscheinungsdatum in Zukunft
-        if ($product->nErscheinendesProdukt && $conf['global']['global_erscheinende_kaeuflich'] === 'N') {
+        if ($product->nErscheinendesProdukt && $conf['global_erscheinende_kaeuflich'] === 'N') {
             $redirectParam[] = \R_VORBESTELLUNG;
         }
         // Die maximale Bestellmenge des Artikels wurde überschritten
@@ -876,7 +876,7 @@ class CartHelper
         /** @noinspection MissingIssetImplementationInspection */
         if (($product->bHasKonfig === false && empty($product->isKonfigItem))
             && (!isset($product->Preise->fVKNetto) || (float)$product->Preise->fVKNetto === 0.0)
-            && $conf['global']['global_preis0'] === 'N'
+            && $conf['global_preis0'] === 'N'
         ) {
             $redirectParam[] = \R_AUFANFRAGE;
         }
@@ -987,11 +987,7 @@ class CartHelper
      */
     public static function roundOptional($total)
     {
-        $conf = Shop::getSettings([\CONF_KAUFABWICKLUNG]);
-
-        if (isset($conf['kaufabwicklung']['bestellabschluss_runden5'])
-            && (int)$conf['kaufabwicklung']['bestellabschluss_runden5'] === 1
-        ) {
+        if ((int)Shop::getSettingValue(\CONF_KAUFABWICKLUNG, 'bestellabschluss_runden5') === 1) {
             return \round($total * 20) / 20;
         }
 
@@ -1954,28 +1950,29 @@ class CartHelper
                 return (int)$p->Artikel->kArtikel;
             }
         );
-        if (\count($productIDs) > 0) {
-            $db         = Shop::Container()->getDB();
-            $productIDs = \implode(', ', $productIDs);
-            $xsellData  = $db->getObjects(
-                'SELECT DISTINCT kXSellArtikel
-                    FROM txsellkauf
-                    WHERE kArtikel IN (' . $productIDs . ')
-                        AND kXSellArtikel NOT IN (' . $productIDs .')
-                    ORDER BY nAnzahl DESC
-                    LIMIT ' . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl']
-            );
-            if (\count($xsellData) > 0) {
-                $xSelling->Kauf          = new stdClass();
-                $xSelling->Kauf->Artikel = [];
-                $defaultOptions          = Artikel::getDefaultOptions();
-                foreach ($xsellData as $item) {
-                    $product = (new Artikel($db))->fuelleArtikel((int)$item->kXSellArtikel, $defaultOptions);
-                    if ($product !== null
-                        && (int)$product->kArtikel > 0
-                        && $product->aufLagerSichtbarkeit()) {
-                        $xSelling->Kauf->Artikel[] = $product;
-                    }
+        if (\count($productIDs) === 0) {
+            return $xSelling;
+        }
+        $db         = Shop::Container()->getDB();
+        $productIDs = \implode(', ', $productIDs);
+        $xsellData  = $db->getInts(
+            'SELECT DISTINCT kXSellArtikel
+                FROM txsellkauf
+                WHERE kArtikel IN (' . $productIDs . ')
+                    AND kXSellArtikel NOT IN (' . $productIDs .')
+                ORDER BY nAnzahl DESC
+                LIMIT ' . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'],
+            'kXSellArtikel'
+        );
+        if (\count($xsellData) > 0) {
+            $xSelling->Kauf          = new stdClass();
+            $xSelling->Kauf->Artikel = [];
+            $defaultOptions          = Artikel::getDefaultOptions();
+            foreach ($xsellData as $productID) {
+                $product = new Artikel($db);
+                $product->fuelleArtikel($productID, $defaultOptions);
+                if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
+                    $xSelling->Kauf->Artikel[] = $product;
                 }
             }
         }
@@ -2024,9 +2021,9 @@ class CartHelper
         );
 
         foreach ($giftsTmp as $gift) {
-            $product = (new Artikel($db))->fuelleArtikel((int)$gift->kArtikel, Artikel::getDefaultOptions());
-            if ($product !== null
-                && (int)$product->kArtikel > 0
+            $product = new Artikel($db);
+            $product->fuelleArtikel((int)$gift->kArtikel, Artikel::getDefaultOptions());
+            if ($product->kArtikel > 0
                 && ($product->kEigenschaftKombi > 0
                     || !\is_array($product->Variationen)
                     || \count($product->Variationen) === 0)

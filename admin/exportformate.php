@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use JTL\Backend\Status;
 use JTL\Export\Admin;
 use JTL\Shop;
 

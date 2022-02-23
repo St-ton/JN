@@ -521,7 +521,6 @@ final class LinkService implements LinkServiceInterface
         $linkAGB     = null;
         $linkWRB     = null;
         $linkWRBForm = null;
-        $conf        = Shop::getSettings([\CONF_KAUFABWICKLUNG])['kaufabwicklung'];
         // kLink für AGB und WRB suchen
         foreach ($this->getSpecialPages() as $sp) {
             /** @var LinkInterface $sp */
@@ -577,7 +576,7 @@ final class LinkService implements LinkServiceInterface
         $data->kLinkWRB     = $linkWRB !== null ? $linkWRB->getID() : 0;
         $data->kLinkWRBForm = $linkWRBForm !== null ? $linkWRBForm->getID() : 0;
 
-        $data->agbWrbNotice = (int)$conf['bestellvorgang_wrb_anzeigen'] === 1
+        $data->agbWrbNotice = ((int)Shop::getSettingValue(\CONF_KAUFABWICKLUNG, 'bestellvorgang_wrb_anzeigen')) === 1
         ? \sprintf(
             Shop::Lang()->get('termsCancelationNotice', 'checkout'),
             $data->cURLAGB,

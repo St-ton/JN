@@ -113,11 +113,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             }
         } elseif ($postData['a'] === 'saveSettings') {
             $step = 'uebersicht';
-            $alertHelper->addAlert(
-                Alert::TYPE_SUCCESS,
-                saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $postData),
-                'saveSettings'
-            );
+            saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $postData);
         }
     } elseif ($csrfOK && Request::getVar('a') === 'editGrp' && Request::getInt('g') > 0) {
         $step = 'edit-group';
@@ -154,8 +150,8 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
 } else {
     $smarty->assign('noModule', true);
 }
+getAdminSectionSettings(CONF_AUSWAHLASSISTENT);
 $smarty->assign('step', $step)
     ->assign('cTab', $tab)
     ->assign('languageID', $languageID)
-    ->assign('oConfig_arr', getAdminSectionSettings(CONF_AUSWAHLASSISTENT))
     ->display('auswahlassistent.tpl');

@@ -90,7 +90,6 @@ use JTLShop\SemVer\Version;
 use League\Flysystem\Config as FlysystemConfig;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\Visibility;
-use LinkHelper;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -689,6 +688,15 @@ final class Shop
     }
 
     /**
+     * @param int $sectionID
+     * @return array|null
+     */
+    public static function getSettingSection(int $sectionID): ?array
+    {
+        return (self::$settings ?? Shopsetting::getInstance())->getSection($sectionID);
+    }
+
+    /**
      * @param array|int $config
      * @return array
      */
@@ -1279,7 +1287,7 @@ final class Shop
         }
         // Link active?
         if ($oSeo !== null && $oSeo->cKey === 'kLink') {
-            $link = LinkHelper::getInstance()->getLinkByID($oSeo->kKey);
+            $link = LinkService::getInstance()->getLinkByID($oSeo->kKey);
             if ($link !== null && $link->getIsEnabled() === false) {
                 $oSeo = null;
             }
@@ -1669,8 +1677,7 @@ final class Shop
     public static function getLogo(bool $fullUrl = false): ?string
     {
         $ret  = null;
-        $conf = self::getSettings([\CONF_LOGO]);
-        $logo = $conf['logo']['shop_logo'] ?? null;
+        $logo = self::getSettingValue(\CONF_LOGO, 'shop_logo');
         if ($logo !== null && $logo !== '') {
             $ret = \PFAD_SHOPLOGO . $logo;
         } elseif (\is_dir(\PFAD_ROOT . \PFAD_SHOPLOGO)) {

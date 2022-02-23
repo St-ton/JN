@@ -14,7 +14,7 @@ use JTL\Shop;
 class PaymentMethod
 {
     /**
-     * @param \PaymentMethod|Zahlungsart $paymentMethod
+     * @param Zahlungsart $paymentMethod
      * @return bool
      */
     public static function shippingMethodWithValidPaymentMethod($paymentMethod): bool
@@ -23,7 +23,7 @@ class PaymentMethod
             return false;
         }
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
-        $conf                         = Shop::getSettings([\CONF_ZAHLUNGSARTEN])['zahlungsarten'];
+        $conf                         = Shop::getSettingSection(\CONF_ZAHLUNGSARTEN);
         $paymentMethod->einstellungen = $conf;
         switch ($paymentMethod->cModulId) {
             case 'za_ueberweisung_jtl':

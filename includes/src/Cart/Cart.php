@@ -1608,6 +1608,7 @@ class Cart
         if (!isset($_SESSION['Kupon']->kKupon)) {
             return $isValid;
         }
+        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
         if ($this->posTypEnthalten(\C_WARENKORBPOS_TYP_KUPON)) {
             // Kupon darf nicht im leeren Warenkorb eingelöst werden
             if (isset($_SESSION['Warenkorb']) && $this->gibAnzahlArtikelExt([\C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
@@ -1663,6 +1664,7 @@ class Cart
         if (!isset($_SESSION['Kupon']) || $_SESSION['Kupon']->cWertTyp !== 'festpreis') {
             return;
         }
+        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
         $coupon        = $_SESSION['Kupon'];
         $maxPreisKupon = $coupon->fWert;
         if ($coupon->fWert > $this->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)) {

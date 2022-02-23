@@ -851,10 +851,7 @@ class Exportformat
         }
 
         $condition = 'AND (tartikel.dErscheinungsdatum IS NULL OR NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE()))';
-        $conf      = Shop::getSettings([\CONF_GLOBAL]);
-        if (isset($conf['global']['global_erscheinende_kaeuflich'])
-            && $conf['global']['global_erscheinende_kaeuflich'] === 'Y'
-        ) {
+        if (Shop::getSettingValue(\CONF_GLOBAL, 'global_erscheinende_kaeuflich') === 'Y') {
             $condition = "AND (
                 tartikel.dErscheinungsdatum IS NULL 
                 OR NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE())

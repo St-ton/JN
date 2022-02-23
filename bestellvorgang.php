@@ -220,8 +220,6 @@ if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
     Cart::refreshChecksum($cart);
     $_SESSION['AktiveZahlungsart'] = $savedPayment;
 }
-$kLink = $linkService->getSpecialPageID(LINKTYP_BESTELLVORGANG);
-$link  = $linkService->getPageLink($kLink);
 CartHelper::addVariationPictures($cart);
 Shop::Smarty()->assign(
     'AGB',
@@ -232,7 +230,7 @@ Shop::Smarty()->assign(
 )
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
     ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
-    ->assign('Link', $link)
+    ->assign('Link', $linkService->getSpecialPage(LINKTYP_BESTELLVORGANG))
     ->assign('alertNote', $alertService->alertTypeExists(Alert::TYPE_NOTE))
     ->assign('step', $step)
     ->assign(
@@ -243,9 +241,9 @@ Shop::Smarty()->assign(
     ->assign('Warensumme', $cart->gibGesamtsummeWaren())
     ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
     ->assign('bestellschritt', gibBestellschritt($step))
-    ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
-    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
-    ->assign('unregForm', Request::verifyGPCDataInt('unreg_form'));
+    ->assign('unregForm', Request::verifyGPCDataInt('unreg_form'))
+    ->assignDeprecated('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL, '5.0.0')
+    ->assignDeprecated('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK, '5.0.0');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_BESTELLVORGANG_PAGE);

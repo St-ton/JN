@@ -16,12 +16,12 @@ class Revision
     /**
      * @var array
      */
-    private $mapping;
+    private array $mapping;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * Revision constructor.

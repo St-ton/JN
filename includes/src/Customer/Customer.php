@@ -304,33 +304,22 @@ class Customer
      */
     public function verifyLoginCaptcha(array $post)
     {
-        $conf = Shop::getSettings([\CONF_KUNDEN]);
-        $name = $post['email'];
-        if ($name !== ''
-            && isset($conf['kunden']['kundenlogin_max_loginversuche'])
-            && $conf['kunden']['kundenlogin_max_loginversuche'] !== ''
-            && $conf['kunden']['kundenlogin_max_loginversuche'] > 1
-        ) {
-            $attempts = Shop::Container()->getDB()->select(
-                'tkunde',
-                'cMail',
-                Text::filterXSS($name),
-                'nRegistriert',
-                1,
-                null,
-                null,
-                false,
-                'nLoginversuche'
+        $conf = Shop::getSettingValue(\CONF_KUNDEN, 'kundenlogin_max_loginversuche');
+        $mail = $post['email'] ?? '';
+        if ($mail !== '' && $conf > 1) {
+            $attempts = Shop::Container()->getDB()->getSingleInt(
+                'SELECT nLoginversuche
+                    FROM tkunde
+                    WHERE cMail = :ml AND nRegistriert = 1',
+                'nLoginversuche',
+                ['ml' => $mail]
             );
-            if ($attempts !== null
-                && isset($attempts->nLoginversuche)
-                && (int)$attempts->nLoginversuche >= (int)$conf['kunden']['kundenlogin_max_loginversuche']
-            ) {
+            if ($attempts >= (int)$conf) {
                 if (Form::validateCaptcha($_POST)) {
                     return true;
                 }
 
-                return (int)$attempts->nLoginversuche;
+                return $attempts;
             }
         }
 

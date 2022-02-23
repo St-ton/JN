@@ -221,8 +221,9 @@ abstract class AbstractSync
 
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
-        $product                             = (new Artikel($this->db))->fuelleArtikel($data->kArtikel, $options);
-        if ($product === null) {
+        $product                             = new Artikel($this->db);
+        $product->fuelleArtikel($data->kArtikel, $options);
+        if ($product->kArtikel === null) {
             return;
         }
         $campaign = new Campaign(\KAMPAGNE_INTERN_VERFUEGBARKEIT);
@@ -422,15 +423,13 @@ abstract class AbstractSync
      * @param int $productID
      * @param int $customerGroupID
      * @param int $customerID
-     * @return mixed
      */
-    protected function handlePriceFormat(int $productID, int $customerGroupID, int $customerID = 0)
+    protected function handlePriceFormat(int $productID, int $customerGroupID, int $customerID = 0): void
     {
         if ($customerID > 0) {
             $this->flushCustomerPriceCache($customerID);
         }
-
-        return $this->db->queryPrepared(
+        $this->db->queryPrepared(
             'INSERT INTO tpreis (kArtikel, kKundengruppe, kKunde)
                 VALUES (:productID, :customerGroup, :customerID)
                 ON DUPLICATE KEY UPDATE

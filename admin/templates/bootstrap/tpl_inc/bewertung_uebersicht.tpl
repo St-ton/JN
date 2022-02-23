@@ -2,7 +2,7 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            {include file='tpl_inc/language_switcher.tpl' action='bewertung.php'}
+            {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:'/bewertung.php'}
         </div>
     </div>
     <div class="tabs">
@@ -34,7 +34,7 @@
             <div id="freischalten" class="tab-pane fade {if $cTab === '' || $cTab === 'freischalten'} active show{/if}">
                 {if $inactiveReviews|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiv cAnchor='freischalten'}
-                    <form method="post" action="bewertung.php">
+                    <form method="post" action="{$adminURL}/bewertung.php">
                         {$jtl_token}
                         <input type="hidden" name="bewertung_nicht_aktiv" value="1" />
                         <input type="hidden" name="tab" value="freischalten" />
@@ -74,7 +74,7 @@
                                                 <td class="text-center">{$review->Datum}</td>
                                                 <td class="text-center">
                                                     <div class="btn-group">
-                                                        <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
+                                                        <a href="{$adminURL}/bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
                                                            class="btn btn-link px-2"
                                                            title="{__('modify')}"
                                                            data-toggle="tooltip">
@@ -120,7 +120,7 @@
             <div id="letzten50" class="tab-pane fade {if $cTab === 'letzten50'} active show{/if}">
                 {if $activeReviews|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='letzten50'}
-                    <form name="letzten50" method="post" action="bewertung.php">
+                    <form name="letzten50" method="post" action="{$adminURL}/bewertung.php">
                         {$jtl_token}
                         <input type="hidden" name="bewertung_aktiv" value="1" />
                         <input type="hidden" name="tab" value="letzten50" />
@@ -168,7 +168,7 @@
                                             <td class="text-center">{$review->Datum}</td>
                                             <td class="text-center">
                                                 {if !empty($review->cAntwort)}
-                                                    <a href="bewertung.php?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}/bewertung.php?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2 delete-confirm"
                                                        title="{__('removeReply')}"
                                                        data-toggle="tooltip"
@@ -189,7 +189,7 @@
                                                         <span class="fas fa-external-link"></span>
                                                     </span>
                                                 </a>
-                                                <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                                <a href="{$adminURL}/bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
                                                    class="btn btn-link px-2"
                                                    title="{__('modify')}"
                                                    data-toggle="tooltip">
@@ -225,7 +225,7 @@
                 {/if}
             </div>
             <div id="artikelbewertung" class="tab-pane fade {if $cTab === 'artikelbewertung'} active show{/if}">
-                <form name="artikelbewertung" method="post" action="bewertung.php">
+                <form name="artikelbewertung" method="post" action="{$adminURL}/bewertung.php">
                     <div class="mb-3">
                         {$jtl_token}
                         <div class="form-row">
@@ -284,7 +284,7 @@
                                             <td class="text-center">{$review->nSterne}</td>
                                             <td class="text-center">{$review->Datum}</td>
                                             <td class="text-center">
-                                                <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=artikelbewertung"
+                                                <a href="{$adminURL}/bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=artikelbewertung"
                                                    class="btn btn-link px-2"
                                                    title="{__('modify')}"
                                                    data-toggle="tooltip">
@@ -317,92 +317,33 @@
                 </form>
             </div>
             <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
-                <form name="einstellen" method="post" action="bewertung.php">
-                    {$jtl_token}
-                    <input type="hidden" name="einstellungen" value="1" />
-                    <input type="hidden" name="tab" value="einstellungen" />
-                    <div class="settings">
-                        <span class="subheading1">{__('settings')}</span>
-                        <hr class="mb-3">
-                        <div>
-                            {foreach $oConfig_arr as $oConfig}
-                                {if $oConfig->cConf === 'Y'}
-                                    <div class="form-group form-row align-items-center">
-                                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">
-                                            {$oConfig->cName}{if $oConfig->cWertName|strpos:'_guthaben'} <span id="EinstellungAjax_{$oConfig->cWertName}"></span>:{else}:{/if}
-                                        </label>
-                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $oConfig->cInputTyp === 'number'}config-type-number{/if}">
-                                            {if $oConfig->cInputTyp === 'selectbox'}
-                                                <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="custom-select combo">
-                                                    {foreach $oConfig->ConfWerte as $wert}
-                                                        <option value="{$wert->cWert}" {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
-                                                    {/foreach}
-                                                </select>
-                                            {elseif $oConfig->cInputTyp === 'listbox'}
-                                                <select name="{$oConfig->cWertName}[]"
-                                                        id="{$oConfig->cWertName}"
-                                                        multiple="multiple"
-                                                        class="selectpicker custom-select combo"
-                                                        data-selected-text-format="count > 2"
-                                                        data-size="5">
-                                                    {foreach $oConfig->ConfWerte as $wert}
-                                                        <option value="{$wert->kKundengruppe}" {foreach $oConfig->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
-                                                    {/foreach}
-                                                </select>
-                                            {elseif $oConfig->cInputTyp === 'number'}
-                                                <div class="input-group form-counter">
-                                                    <div class="input-group-prepend">
-                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                                            <span class="fas fa-minus"></span>
-                                                        </button>
-                                                    </div>
-                                                    <input class="form-control" type="number" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}"  value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1"{if $oConfig->cWertName|strpos:"_guthaben"} onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$oConfig->cWertName}', this);"{/if} />
-                                                    <div class="input-group-append">
-                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                                            <span class="fas fa-plus"></span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            {else}
-                                                <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}"  value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1"{if $oConfig->cWertName|strpos:"_guthaben"} onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$oConfig->cWertName}', this);"{/if} />
-                                            {/if}
-                                        </div>
-                                        {include file='snippets/einstellungen_icons.tpl' cnf=$oConfig}
-                                    </div>
-                                {else}
-                                    {if $oConfig->cBeschreibung}
-                                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                                            {getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->kEinstellungenConf}
-                                        </div>
-                                    {/if}
-                                {/if}
-                            {/foreach}
-                        </div>
-                        <div class="card-footer save-wrapper">
-                            <div class="row">
-                                <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">{__('saveWithIcon')}</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                {include file='tpl_inc/config_section.tpl'
+                    name='einstellen'
+                    action=$adminURL|cat:'/bewertung.php'
+                    buttonCaption=__('saveWithIcon')
+                    title=__('settings')
+                    tab='einstellungen'
+                }
             </div>
         </div>
     </div>
 </div>
 
 <script type="text/javascript">
-    {foreach $oConfig_arr as $oConfig}
-        {if $oConfig->cWertName|strpos:'_guthaben'}
-            ioCall(
-                'getCurrencyConversion',
-                [0, $('#{$oConfig->cWertName}').val(), 'EinstellungAjax_{$oConfig->cWertName}'],
-                undefined,
-                undefined,
-                undefined,
-                true
-            );
-        {/if}
+    {foreach $sections as $section}
+        {foreach $section->getSubsections() as $subsection}
+            {foreach $subsection->getItems() as $config}
+                {if $config->getValueName()|strpos:'_guthaben'}
+                    ioCall(
+                        'getCurrencyConversion',
+                        [0, $('#{$config->getValueName()}').val(), 'EinstellungAjax_{$config->getValueName()}'],
+                        undefined,
+                        undefined,
+                        undefined,
+                        true
+                    );
+                {/if}
+            {/foreach}
+        {/foreach}
     {/foreach}
 </script>

@@ -29,47 +29,47 @@ class AdminAccount
     /**
      * @var bool
      */
-    private $loggedIn = false;
+    private bool $loggedIn = false;
 
     /**
      * @var bool
      */
-    private $twoFaAuthenticated = false;
+    private bool $twoFaAuthenticated = false;
 
     /**
      * @var Loggerinterface
      */
-    private $authLogger;
+    private LoggerInterface $authLogger;
 
     /**
      * @var AdminLoginStatusToLogLevel
      */
-    private $levelMapper;
+    private AdminLoginStatusToLogLevel $levelMapper;
 
     /**
      * @var AdminLoginStatusMessageMapper
      */
-    private $messageMapper;
+    private AdminLoginStatusMessageMapper $messageMapper;
 
     /**
      * @var int
      */
-    private $lockedMinutes = 0;
+    private int $lockedMinutes = 0;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var GetText
      */
-    private $getText;
+    private GetText $getText;
 
     /**
      * @var AlertServiceInterface
      */
-    private $alertService;
+    private AlertServiceInterface $alertService;
 
     /**
      * AdminAccount constructor.
@@ -300,10 +300,9 @@ class AdminAccount
             $verified = \password_verify($cPass, $admin->cPass);
         }
         if ($verified === true || ($crypted !== null && $admin->cPass === $crypted)) {
-            $settings = Shop::getSettings(\CONF_GLOBAL);
             if (\is_array($_SESSION)
-                && $settings['global']['wartungsmodus_aktiviert'] === 'N'
                 && \count($_SESSION) > 0
+                && Shop::getSettingValue(\CONF_GLOBAL, 'wartungsmodus_aktiviert') === 'N'
             ) {
                 foreach (\array_keys($_SESSION) as $i) {
                     unset($_SESSION[$i]);

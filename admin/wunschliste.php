@@ -105,9 +105,8 @@ $wishListPositions = Shop::Container()->getDB()->getObjects(
         ORDER BY Anzahl DESC
         LIMIT " . $productPagination->getLimitSQL()
 );
-
-$smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs, true))
-    ->assign('oPagiPos', $posPagination)
+getAdminSectionSettings($settingsIDs, true);
+$smarty->assign('oPagiPos', $posPagination)
     ->assign('oPagiArtikel', $productPagination)
     ->assign('oPagiFreunde', $friendsPagination)
     ->assign('CWunschlisteVersand_arr', $sentWishLists)

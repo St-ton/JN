@@ -596,13 +596,17 @@ $failedQueries  = $db->getObjects(
         LIMIT ' . $paginationFailed->getLimitSQL(),
     ['lid' => $languageID]
 );
-$queryBlacklist = $db->getObjects(
+$queryBlacklist = $db->getCollection(
     'SELECT *
         FROM tsuchanfrageblacklist
         WHERE kSprache = :lid
         ORDER BY kSuchanfrageBlacklist',
     ['lid' => $languageID]
-);
+)->each(static function (stdClass $item) {
+    $item->cSuche = htmlentities($item->cSuche);
+
+    return $item;
+})->toArray();
 $queryMapping   = $db->getObjects(
     'SELECT *
         FROM tsuchanfragemapping
@@ -610,8 +614,8 @@ $queryMapping   = $db->getObjects(
         LIMIT ' . $paginationMapping->getLimitSQL(),
     ['lid' => $languageID]
 );
-$smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs, true))
-    ->assign('Suchanfragen', $searchQueries)
+getAdminSectionSettings($settingsIDs, true);
+$smarty->assign('Suchanfragen', $searchQueries)
     ->assign('Suchanfragenerfolglos', $failedQueries)
     ->assign('Suchanfragenblacklist', $queryBlacklist)
     ->assign('Suchanfragenmapping', $queryMapping)

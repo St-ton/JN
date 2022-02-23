@@ -56,7 +56,6 @@ $metaData = [];
 foreach ($meta as $item) {
     $metaData[$item->cName] = $item->cWertName;
 }
-
-$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_METAANGABEN))
-    ->assign('oMetaangaben_arr', $metaData)
+getAdminSectionSettings(CONF_METAANGABEN);
+$smarty->assign('oMetaangaben_arr', $metaData)
     ->display('globalemetaangaben.tpl');

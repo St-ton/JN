@@ -18,7 +18,6 @@ $oAccount->permission('UNLOCK_CENTRAL_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'freischalten_inc.php';
 setzeSprache();
 
-$step          = 'freischalten_uebersicht';
 $ratingsSQL    = new SqlObject();
 $liveSearchSQL = new SqlObject();
 $commentsSQL   = new SqlObject();
@@ -29,7 +28,7 @@ $tab         = Request::verifyGPDataString('tab');
 $alertHelper = Shop::Container()->getAlertService();
 
 if (Request::verifyGPCDataInt('Suche') === 1) {
-    $search = Shop::Container()->getDB()->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
+    $search = Text::filterXSS(Request::verifyGPDataString('cSuche'));
 
     if (mb_strlen($search) > 0) {
         switch (Request::verifyGPDataString('cSuchTyp')) {
@@ -65,7 +64,7 @@ if (Request::verifyGPCDataInt('Suche') === 1) {
         }
 
         $smarty->assign('cSuche', $search)
-               ->assign('cSuchTyp', Request::verifyGPDataString('cSuchTyp'));
+            ->assign('cSuchTyp', Request::verifyGPDataString('cSuchTyp'));
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSearchTermMissing'), 'errorSearchTermMissing');
     }
@@ -106,7 +105,6 @@ if (Request::verifyGPCDataInt('nSort') > 0) {
     $smarty->assign('nLivesucheSort', -1);
 }
 
-// Freischalten
 if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
     // Bewertungen
     if (Request::verifyGPCDataInt('bewertungen') === 1) {
@@ -231,35 +229,31 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
         }
     }
 }
+$pagiRatings    = (new Pagination('bewertungen'))
+    ->setItemCount(gibMaxBewertungen())
+    ->assemble();
+$pagiQueries    = (new Pagination('suchanfragen'))
+    ->setItemCount(gibMaxSuchanfragen())
+    ->assemble();
+$pagiComments   = (new Pagination('newskommentare'))
+    ->setItemCount(gibMaxNewskommentare())
+    ->assemble();
+$pagiRecipients = (new Pagination('newsletter'))
+    ->setItemCount(gibMaxNewsletterEmpfaenger())
+    ->assemble();
 
-if ($step === 'freischalten_uebersicht') {
-    $pagiRatings    = (new Pagination('bewertungen'))
-        ->setItemCount(gibMaxBewertungen())
-        ->assemble();
-    $pagiQueries    = (new Pagination('suchanfragen'))
-        ->setItemCount(gibMaxSuchanfragen())
-        ->assemble();
-    $pagiComments   = (new Pagination('newskommentare'))
-        ->setItemCount(gibMaxNewskommentare())
-        ->assemble();
-    $pagiRecipients = (new Pagination('newsletter'))
-        ->setItemCount(gibMaxNewsletterEmpfaenger())
-        ->assemble();
-
-    $reviews      = gibBewertungFreischalten(' LIMIT ' . $pagiRatings->getLimitSQL(), $ratingsSQL);
-    $queries      = gibSuchanfrageFreischalten(' LIMIT ' . $pagiQueries->getLimitSQL(), $liveSearchSQL);
-    $newsComments = gibNewskommentarFreischalten(' LIMIT ' . $pagiComments->getLimitSQL(), $commentsSQL);
-    $recipients   = gibNewsletterEmpfaengerFreischalten(' LIMIT ' . $pagiRecipients->getLimitSQL(), $recipientsSQL);
-    $smarty->assign('ratings', $reviews)
-        ->assign('searchQueries', $queries)
-        ->assign('comments', $newsComments)
-        ->assign('recipients', $recipients)
-        ->assign('oPagiBewertungen', $pagiRatings)
-        ->assign('oPagiSuchanfragen', $pagiQueries)
-        ->assign('oPagiNewskommentare', $pagiComments)
-        ->assign('oPagiNewsletterEmpfaenger', $pagiRecipients);
-}
-
-$smarty->assign('step', $step)
+$reviews      = gibBewertungFreischalten(' LIMIT ' . $pagiRatings->getLimitSQL(), $ratingsSQL);
+$queries      = gibSuchanfrageFreischalten(' LIMIT ' . $pagiQueries->getLimitSQL(), $liveSearchSQL);
+$newsComments = gibNewskommentarFreischalten(' LIMIT ' . $pagiComments->getLimitSQL(), $commentsSQL);
+$recipients   = gibNewsletterEmpfaengerFreischalten(' LIMIT ' . $pagiRecipients->getLimitSQL(), $recipientsSQL);
+$smarty->assign('ratings', $reviews)
+    ->assign('searchQueries', $queries)
+    ->assign('comments', $newsComments)
+    ->assign('recipients', $recipients)
+    ->assign('oPagiBewertungen', $pagiRatings)
+    ->assign('oPagiSuchanfragen', $pagiQueries)
+    ->assign('oPagiNewskommentare', $pagiComments)
+    ->assign('oPagiNewsletterEmpfaenger', $pagiRecipients)
+    ->assign('step', 'freischalten_uebersicht')
     ->assign('cTab', $tab)
     ->display('freischalten.tpl');

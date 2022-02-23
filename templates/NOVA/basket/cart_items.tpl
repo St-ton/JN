@@ -38,7 +38,7 @@
             {/row}
         {/block}
         {block name='basket-cart-items-order-items-main'}
-        {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
+        {foreach JTL\Session\Frontend::getCart()->PositionenArr as $oPosition}
             {if !$oPosition->istKonfigKind()}
                 {$posName=$oPosition->cName|trans|escape:'html'}
                 {row class="cart-items-body type-{$oPosition->nPosTyp}"}
@@ -189,7 +189,7 @@
                             {block name='basket-cart-items-product-cofig-items'}
                                 <ul class="config-items text-muted-util small">
                                     {$labeled=false}
-                                    {foreach $smarty.session.Warenkorb->PositionenArr as $KonfigPos}
+                                    {foreach JTL\Session\Frontend::getCart()->PositionenArr as $KonfigPos}
                                         {block name='product-config-item'}
                                             {if $oPosition->cUnique == $KonfigPos->cUnique && $KonfigPos->kKonfigitem > 0
                                             && !$KonfigPos->isIgnoreMultiplier()}

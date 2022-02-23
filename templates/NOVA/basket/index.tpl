@@ -7,16 +7,16 @@
         {container fluid=$Link->getIsFluid() class="basket {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
             {row}
                 {block name='basket-index-main'}
-                {col cols=12 lg="{if ($Warenkorb->PositionenArr|@count > 0)}7{else}12{/if}"}
+                {col cols=12 lg="{if ($Warenkorb->PositionenArr|count > 0)}7{else}12{/if}"}
                     {opcMountPoint id='opc_before_heading'}
                     {block name='basket-index-heading'}
-                        <h1 class="h2 basket-heading">{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h1>
+                        <h1 class="h2 basket-heading">{lang key='basket'} ({count(JTL\Session\Frontend::getCart()->PositionenArr)} {lang key='products'})</h1>
                     {/block}
                     {block name='basket-index-include-extension'}
                         {include file='snippets/extension.tpl'}
                     {/block}
 
-                    {if ($Warenkorb->PositionenArr|@count > 0)}
+                    {if ($Warenkorb->PositionenArr|count > 0)}
                         {block name='basket-index-basket'}
                             {opcMountPoint id='opc_before_basket'}
                             <div class="basket_wrapper">
@@ -45,10 +45,10 @@
                                             {/form}
                                         {/block}
                                     {/if}
-                                    {if $oArtikelGeschenk_arr|@count > 0}
+                                    {if $oArtikelGeschenk_arr|count > 0}
                                         {block name='basket-index-freegifts-content'}
                                             {$selectedFreegift=0}
-                                            {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
+                                            {foreach JTL\Session\Frontend::getCart()->PositionenArr as $oPosition}
                                                 {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK}
                                                     {$selectedFreegift=$oPosition->Artikel->kArtikel}
                                                 {/if}
@@ -112,7 +112,7 @@
                     {/if}
                 {/col}
                 {/block}
-                {if ($Warenkorb->PositionenArr|@count > 0)}
+                {if ($Warenkorb->PositionenArr|count > 0)}
                     {block name='basket-index-side'}
                     {col class='ml-auto-util' cols=12 lg=4}
                         <div class="sticky-top cart-summary">
@@ -167,7 +167,7 @@
                                         {/block}
                                     {/if}
 
-                                    {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|@count > 0}
+                                    {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|count > 0}
                                         {block name='basket-index-tax'}
                                             {foreach $Steuerpositionen as $Steuerposition}
                                                 {row class="tax"}
@@ -220,7 +220,7 @@
                                     {/link}
                                 {/block}
                             {/card}
-                            {if !empty($WarenkorbVersandkostenfreiHinweis) && $Warenkorb->PositionenArr|@count > 0}
+                            {if !empty($WarenkorbVersandkostenfreiHinweis) && $Warenkorb->PositionenArr|count > 0}
                                 {block name='basket-index-alert'}
                                     {row class="basket-summary-notice basket-summary-top"}
                                         {col cols=1}<i class="fas fa-truck"></i>{/col}

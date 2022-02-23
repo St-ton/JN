@@ -49,7 +49,7 @@
                                     {link href=$oPosition->Artikel->cURLFull title=$posName}
                                         {image lazy=true
                                             webp=true
-                                            src=$oPosition->Artikel->cVorschaubild
+                                            src=$oPosition->Artikel->cVorschaubildURL
                                             alt=$posName
                                             fluid-grow=true
                                         }

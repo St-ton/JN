@@ -77,7 +77,8 @@ class Bootstrap extends Bootstrapper
             ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'seofy', [$plugins, 'seofy'])
             ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getUploaderLang', [$plugins, 'getUploaderLang'])
             ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getCountry', [$plugins, 'getCountry'])
-            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'sanitizeTitle', [$plugins, 'sanitizeTitle']);
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'sanitizeTitle', [$plugins, 'sanitizeTitle'])
+            ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'formatForMicrodata', [$plugins, 'formatForMicrodata']);
     }
 
     /**

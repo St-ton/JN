@@ -43,10 +43,15 @@
                 {block name='productdetails-price-snippets'}
                     {if $tplscope !== 'box'}
                         {if $Artikel->Preise->oPriceRange->isRange()}
-                            <meta itemprop="minPrice" content="{$Artikel->Preise->oPriceRange->minBruttoPrice}">
-                            <meta itemprop="maxPrice" content="{$Artikel->Preise->oPriceRange->maxBruttoPrice}">
+                            <meta itemprop="minPrice" content="{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata}">
+                            <meta itemprop="maxPrice" content="{$Artikel->Preise->oPriceRange->getMaxLocalized($NettoPreise)|formatForMicrodata}">
                         {/if}
-                        <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{$Artikel->Preise->oPriceRange->minBruttoPrice}{else}{$Artikel->Preise->fVKBrutto}{/if}">
+                        {if $Artikel->Preise->oPriceRange->isRange()}
+                            {$priceNoCurr = $Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata}
+                        {else}
+                            {$priceNoCurr = $Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata}
+                        {/if}
+                        <meta itemprop="price" content="{$priceNoCurr}">
                         <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
                         {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== null && $Artikel->dSonderpreisEnde_en !== null}
                             <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">
@@ -68,7 +73,7 @@
                             {if !empty($Artikel->cLocalizedVPE)}
                                 {block name='productdetails-price-detail-base-price'}
                                     <div class="base-price text-nowrap-util" itemprop="priceSpecification" itemscope itemtype="https://schema.org/UnitPriceSpecification">
-                                        <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{($Artikel->Preise->oPriceRange->minBruttoPrice/$Artikel->fVPEWert)|string_format:"%.2f"}{else}{($Artikel->Preise->fVKBrutto/$Artikel->fVPEWert)|string_format:"%.2f"}{/if}">
+                                        <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{($Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}{else}{($Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}{/if}">
                                         <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
                                         <span class="value" itemprop="referenceQuantity" itemscope itemtype="https://schema.org/QuantitativeValue">
                                             {$Artikel->cLocalizedVPE[$NettoPreise]}
@@ -178,7 +183,7 @@
                         {if !empty($Artikel->cLocalizedVPE) && !$Artikel->Preise->oPriceRange->isRange()}
                             {block name='productdetails-price-list-base-price'}
                                 <div class="base_price" itemprop="priceSpecification" itemscope itemtype="https://schema.org/UnitPriceSpecification">
-                                    <meta itemprop="price" content="{($Artikel->Preise->fVKBrutto/$Artikel->fVPEWert)|string_format:"%.2f"}">
+                                    <meta itemprop="price" content="{($Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}">
                                     <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
                                     <span class="value" itemprop="referenceQuantity" itemscope itemtype="https://schema.org/QuantitativeValue">
                                         {$Artikel->cLocalizedVPE[$NettoPreise]}

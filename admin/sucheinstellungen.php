@@ -54,11 +54,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken())
     }
 
     $shopSettings = Shopsetting::getInstance();
-    $alertService->addAlert(
-        Alert::TYPE_SUCCESS,
-        saveAdminSectionSettings($sectionID, $_POST),
-        'saveSettings'
-    );
+    saveAdminSectionSettings($sectionID, $_POST);
 
     Shop::Container()->getCache()->flushTags(
         [CACHING_GROUP_OPTION, CACHING_GROUP_CORE, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]

@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Backend\Settings\Manager;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -15,13 +14,12 @@ Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
 $db             = Shop::Container()->getDB();
-$alertService   = Shop::Container()->getAlertService();
 $settingManager = new Manager(
     $db,
     Shop::Smarty(),
     $oAccount,
     Shop::Container()->getGetText(),
-    $alertService
+    Shop::Container()->getAlertService()
 );
 if (!isset($_SESSION['Vergleichsliste'])) {
     $_SESSION['Vergleichsliste'] = new stdClass();
@@ -34,11 +32,7 @@ if (Request::postInt('zeitfilter') === 1) {
 }
 
 if ((Request::postInt('einstellungen') === 1 || Request::postVar('resetSetting') !== null) && Form::validateToken()) {
-    Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_SUCCESS,
-        saveAdminSectionSettings(CONF_VERGLEICHSLISTE, $_POST),
-        'saveSettings'
-    );
+    saveAdminSectionSettings(CONF_VERGLEICHSLISTE, $_POST);
 }
 
 $listCount  = (int)$db->getSingleObject(

@@ -287,18 +287,19 @@ class CMS
      */
     public static function getFreeGifts(array $conf): array
     {
-        $gifts = [];
-        $sort  = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $gifts           = [];
+        $sort            = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
         if ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'N') {
             $sort = ' ORDER BY tartikel.cName';
         } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
             $sort = ' ORDER BY tartikel.fLagerbestand DESC';
         }
-        $limit    = ((int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
+        $limit          = ((int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
             ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
             : '';
-        $db       = Shop::Container()->getDB();
-        $tmpGifts = $db->getObjects(
+        $db             = Shop::Container()->getDB();
+        $tmpGifts       = $db->getObjects(
             'SELECT tartikel.kArtikel, tartikelattribut.cWert
                 FROM tartikel
                 JOIN tartikelattribut 
@@ -309,14 +310,14 @@ class CMS
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikelattribut.cName = :an'
             . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . $sort . $limit,
-            ['cgid' => Frontend::getCustomerGroup()->getID(), 'an' => \FKT_ATTRIBUT_GRATISGESCHENK]
+            ['cgid' => $customerGroupID, 'an' => \FKT_ATTRIBUT_GRATISGESCHENK]
         );
-
         $currency       = Frontend::getCurrency();
         $defaultOptions = Artikel::getDefaultOptions();
+        $languageID     = Shop::getLanguageID();
         foreach ($tmpGifts as $item) {
             $product = new Artikel($db);
-            $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
+            $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
             $product->cBestellwert = Preise::getLocalizedPriceString((float)$item->cWert, $currency);
             if ($product->kEigenschaftKombi > 0 || \count($product->Variationen) === 0) {
                 $gifts[] = $product;

@@ -113,6 +113,18 @@ class Controller
                 $this->saveConfig();
                 $this->displayOverview();
                 break;
+            case 'unsetPreview':
+                $this->unsetPreview();
+                $this->displayOverview();
+                break;
+            case 'setPreview':
+                $this->switch('test');
+                if (Request::verifyGPCDataInt('config') === 1) {
+                    $this->displayTemplateSettings();
+                } else {
+                    $this->displayOverview();
+                }
+                break;
             case 'upload':
                 $this->upload($_FILES['template-install-upload']);
                 break;
@@ -154,6 +166,11 @@ class Controller
         die($response->toJson());
     }
 
+    private function unsetPreview(): void
+    {
+        $this->db->delete('ttemplate', 'eTyp', 'test');
+    }
+
     private function saveConfig(): void
     {
         $parentFolder = null;
@@ -188,7 +205,8 @@ class Controller
                 $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
             }
         }
-        $check = Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir);
+        $type  = $_POST['eTyp'] ?? 'standard';
+        $check = Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir, $type);
         if ($check) {
             $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successTemplateSave'), 'successTemplateSave');
         } else {
@@ -268,12 +286,15 @@ class Controller
         return $this->db->select('ttemplate', 'eTyp', 'standard')->cTemplate ?? null;
     }
 
-    private function switch(): void
+    /**
+     * @param string $type
+     */
+    private function switch(string $type = 'standard'): void
     {
         if (($bootstrapper = BootChecker::bootstrap($this->getPreviousTemplate())) !== null) {
             $bootstrapper->disabled();
         }
-        if (Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir)) {
+        if (Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir, $type)) {
             if (($bootstrapper = BootChecker::bootstrap($this->currentTemplateDir)) !== null) {
                 $bootstrapper->enabled();
             }

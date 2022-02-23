@@ -69,6 +69,11 @@ final class Listing
         return Model::loadByAttributes(['type' => 'standard'], $this->db);
     }
 
+    private function getPreviewTemplate(): ?Model
+    {
+        return Model::loadByAttributes(['type' => 'test'], $this->db);
+    }
+
     /**
      * @param XMLParser $parser
      * @param string    $templateDir
@@ -79,11 +84,19 @@ final class Listing
         if (!\is_dir($templateDir)) {
             return $this->items;
         }
+        $preview = null;
         try {
             $active = $this->getActiveTemplate();
         } catch (Exception $e) {
             $active = new Model($this->db);
             $active->setTemplate('no-template');
+        }
+        try {
+            $tpl = $this->getPreviewTemplate();
+            if ($tpl !== null) {
+                $preview = $tpl->getTemplate();
+            }
+        } catch (Exception $e) {
         }
         $gettext = Shop::Container()->getGetText();
         foreach (new DirectoryIterator($templateDir) as $fileinfo) {
@@ -103,6 +116,7 @@ final class Listing
             $item->parseXML($xml, $code);
             $item->setPath($templateDir . $dir);
             $item->setActive($item->getDir() === $active->getTemplate());
+            $item->setIsPreview($preview !== null && $item->getDir() === $preview);
 
             $gettext->loadTemplateItemLocale('base', $item);
             $msgid = $item->getFramework() . '_desc';

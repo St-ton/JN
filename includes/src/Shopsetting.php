@@ -141,13 +141,16 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param string $section
+     * @param int    $sectionID
      * @param array  $value
      */
-    public function overrideSection(string $section, array $value): void
+    public function overrideSection(int $sectionID, array $value): void
     {
-        $this->container[$section]   = $value;
-        $this->allSettings[$section] = $value;
+        $mapping = self::mapSettingName($sectionID);
+        if ($mapping !== null) {
+            $this->container[$mapping]   = $value;
+            $this->allSettings[$mapping] = $value;
+        }
     }
 
     /**

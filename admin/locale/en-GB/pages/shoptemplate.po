@@ -44,6 +44,12 @@ msgstr "Yes (optimised for mobile devices)"
 msgid "activateTemplate"
 msgstr "Activate template"
 
+msgid "Enable preview"
+msgstr "Enable preview"
+
+msgid "Disable preview"
+msgstr "Disable preview"
+
 msgid "inheritsFrom"
 msgstr "Inherits from %s"
 

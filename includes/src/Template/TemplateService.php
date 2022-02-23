@@ -10,6 +10,7 @@ use JTL\License\Struct\ExpiredExsLicense;
 use JTL\Model\DataModelInterface;
 use JTL\Plugin\InstallCode;
 use JTL\Shop;
+use JTL\Shopsetting;
 use JTL\Template\Admin\Installation\TemplateInstallerFactory;
 use SimpleXMLElement;
 
@@ -138,6 +139,16 @@ class TemplateService implements TemplateServiceInterface
     {
         if ($this->activeTemplate === null) {
             $attributes = ['type' => 'standard'];
+            if (isset($_GET['preview']) || Shop::isAdmin()) {
+                $check = $this->db->getSingleObject(
+                    'SELECT cTemplate FROM ttemplate WHERE eTyp = :type',
+                    ['type' => 'test']
+                );
+                if ($check !== null) {
+                    $attributes = ['type' => 'test'];
+                    Shopsetting::getInstance()->overrideSection(\CONF_TEMPLATE, $this->getPreviewTemplateConfig());
+                }
+            }
             \executeHook(\HOOK_TPL_LOAD_PRE, [
                 'attributes' => &$attributes,
                 'service'    => $this
@@ -147,6 +158,27 @@ class TemplateService implements TemplateServiceInterface
         $_SESSION['cTemplate'] = $this->activeTemplate->getTemplate();
 
         return $this->activeTemplate;
+    }
+
+    /**
+     * @return array
+     */
+    private function getPreviewTemplateConfig(): array
+    {
+        $data     = $this->getDB()->getObjects(
+            "SELECT cSektion AS sec, cWert AS val, cName AS name 
+                FROM ttemplateeinstellungen 
+                WHERE cTemplate = (SELECT cTemplate FROM ttemplate WHERE eTyp = 'test')"
+        );
+        $settings = [];
+        foreach ($data as $setting) {
+            if (!isset($settings[$setting->sec])) {
+                $settings[$setting->sec] = [];
+            }
+            $settings[$setting->sec][$setting->name] = $setting->val;
+        }
+
+        return $settings;
     }
 
     /**

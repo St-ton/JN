@@ -87,10 +87,10 @@ class AuthToken
                 LIMIT 1'
         );
         if ($token) {
-            $this->authCode = $token->auth_code;
-            $this->token    = $token->access_token;
-            $this->hash     = \sha1($token->hash);
-            $this->verified = $token->verified;
+            $this->authCode = $token->auth_code ?? null;
+            $this->token    = $token->access_token ?? null;
+            $this->hash     = \sha1($token->hash ?? '');
+            $this->verified = $token->verified ?? null;
         }
     }
 

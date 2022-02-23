@@ -45,7 +45,15 @@ class UpdateIO
     {
         $updater = new Updater($this->db);
         try {
+            $disabledPlugins = 0;
             $dbVersion       = $updater->getCurrentDatabaseVersion();
+            if ($dbVersion->getMajor() === 4) {
+                $disabledPlugins = $updater->disablePlugins();
+                $updater->forceMaintenanceMode();
+                if ($disabledPlugins > 0) {
+                    $_SESSION['disabledPlugins'] = $disabledPlugins;
+                }
+            }
             $updateResult    = $updater->update();
             $availableUpdate = $updater->hasPendingUpdates();
             if ($updateResult instanceof IMigration) {
@@ -64,7 +72,8 @@ class UpdateIO
                 'currentVersion'  => $dbVersion,
                 'updatedVersion'  => $dbVersion,
                 'availableUpdate' => $availableUpdate,
-                'action'          => 'update'
+                'action'          => 'update',
+                'disabledPlugins' => $disabledPlugins
             ];
         } catch (Exception $e) {
             return new IOError($e->getMessage());

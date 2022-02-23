@@ -45,7 +45,7 @@
                     {block name='basket-cart-items-image'}
                         {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                             {col cols=3 xl=2 class="cart-items-image"}
-                                {if !empty($oPosition->Artikel->cVorschaubild)}
+                                {if !empty($oPosition->Artikel->cVorschaubildURL)}
                                     {link href=$oPosition->Artikel->cURLFull title=$posName}
                                         {image lazy=true
                                             webp=true

@@ -8,11 +8,11 @@
                     {col cols=12 md="{if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}6{else}8{/if}"}
                         {row}
                             {col cols=3 md=4 class='order-item-image-wrapper'}
-                                {if !empty($oPosition->Artikel->cVorschaubild)}
+                                {if !empty($oPosition->Artikel->cVorschaubildURL)}
                                     {block name='account-order-item-image'}
                                         {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
                                             {image webp=true fluid=true lazy=true
-                                                src=$oPosition->Artikel->cVorschaubild
+                                                src=$oPosition->Artikel->cVorschaubildURL
                                                 alt=$oPosition->cName|trans|escape:'html'
                                             }
                                         {/link}

@@ -21968,6 +21968,11 @@ label {
   left: -0.5rem;
   transition: all 0.2s ease-in-out;
 }
+@media (max-width: 991.98px) {
+  .productbox-ribbon.ribbon {
+    font-size: 0.5625rem;
+  }
+}
 
 .productbox-sale-percentage {
   position: relative;

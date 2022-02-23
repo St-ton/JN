@@ -60,7 +60,7 @@ final class Characteristics extends AbstractSync
      */
     private function handleInserts(array $xml): void
     {
-        $defaultLangID = LanguageHelper::getDefaultLanguage()->kSprache ?? -1;
+        $defaultLangID = LanguageHelper::getDefaultLanguage()->getId();
         $charValues    = $this->insertCharacteristics($xml, $defaultLangID);
         $this->insertCharacteristicValues($xml, $charValues, $defaultLangID);
     }
@@ -140,7 +140,7 @@ final class Characteristics extends AbstractSync
                             ]
                         );
                         $loc->cSeo = \trim($loc->cSeo)
-                            ? Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($loc->cSeo), true))
+                            ? Seo::checkSeo(Seo::getSeo($loc->cSeo, true))
                             : Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($loc->cWert)));
                         $this->upsert(
                             'tmerkmalwertsprache',
@@ -230,7 +230,7 @@ final class Characteristics extends AbstractSync
                     ]
                 );
                 $loc->cSeo = \trim($loc->cSeo)
-                    ? Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($loc->cSeo), true))
+                    ? Seo::checkSeo(Seo::getSeo($loc->cSeo, true))
                     : Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($loc->cWert)));
 
                 $this->upsert('tmerkmalwertsprache', [$loc], 'kMerkmalWert', 'kSprache');

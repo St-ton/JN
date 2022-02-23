@@ -113,11 +113,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             }
         } elseif ($postData['a'] === 'saveSettings') {
             $step = 'uebersicht';
-            $alertHelper->addAlert(
-                Alert::TYPE_SUCCESS,
-                saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $postData),
-                'saveSettings'
-            );
+            saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $postData);
         }
     } elseif ($csrfOK && Request::getVar('a') === 'editGrp' && Request::getInt('g') > 0) {
         $step = 'edit-group';

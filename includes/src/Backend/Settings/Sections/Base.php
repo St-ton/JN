@@ -2,6 +2,7 @@
 
 namespace JTL\Backend\Settings\Sections;
 
+use JTL\Alert\Alert;
 use JTL\Backend\Settings\Item;
 use JTL\Backend\Settings\Manager;
 use JTL\DB\DbInterface;
@@ -263,15 +264,24 @@ class Base implements SectionInterface
     }
 
     /**
-     * @param int      $min
-     * @param int      $max
-     * @param Item $item
+     * @param int   $min
+     * @param int   $max
+     * @param Item  $item
      * @param mixed $confValue
      * @return bool
      */
     protected function validateNumberRange(int $min, int $max, Item $item, $confValue): bool
     {
-        return $min <= $confValue && $confValue <= $max;
+        if ($min <= $confValue && $confValue <= $max) {
+            return true;
+        }
+        $this->manager->getAlertService()->addAlert(
+            Alert::TYPE_DANGER,
+            \sprintf(\__('errrorNumberRange'), \__($item->getName()), $min, $max),
+            'errrorNumberRange'
+        );
+
+        return false;
     }
 
 

@@ -794,4 +794,17 @@ class Plugins
     {
         return \htmlspecialchars($params['title'], \ENT_COMPAT, \JTL_CHARSET, false);
     }
+
+    /**
+     * format price strings to have a '.' to indicate decimal separator. (https://schema.org/price)
+     * @param String $price
+     * @return String
+     */
+    public function formatForMicrodata(string $price = ''): string
+    {
+        $currSep = Frontend::getCurrency()->getDecimalSeparator();
+        $currTho = Frontend::getCurrency()->getThousandsSeparator();
+
+        return \sprintf("%.2f", \str_replace($currSep, '.', \str_replace($currTho, '', ($price))));
+    }
 }

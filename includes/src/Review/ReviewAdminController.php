@@ -93,11 +93,7 @@ final class ReviewAdminController extends BaseController
             return false;
         }
         $this->cache->flushTags([\CACHING_GROUP_ARTICLE]);
-        $this->alertService->addAlert(
-            Alert::TYPE_SUCCESS,
-            \saveAdminSectionSettings(\CONF_BEWERTUNG, $data),
-            'saveConf'
-        );
+        \saveAdminSectionSettings(\CONF_BEWERTUNG, $data);
 
         return true;
     }

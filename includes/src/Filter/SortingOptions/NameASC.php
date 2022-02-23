@@ -29,10 +29,10 @@ class NameASC extends AbstractSortingOption
             $join = new Join();
             $join->setComment('join from ' . __CLASS__ . ' for non-default language');
             $join->setType('LEFT JOIN');
-            $join->setTable('tartikelsprache');
-            $join->setOn('tartikelsprache.kArtikel = tartikel.kArtikel');
+            $join->setTable('tartikelsprache tass');
+            $join->setOn('tass.kArtikel = tartikel.kArtikel');
             $this->setJoin($join);
-            $this->setOrderBy('COALESCE(tartikelsprache.cName, tartikel.cName)');
+            $this->setOrderBy('COALESCE(tass.cName, tartikel.cName)');
         }
     }
 }

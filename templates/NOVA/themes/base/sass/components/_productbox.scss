@@ -45,7 +45,11 @@
 	.btn { margin: map-get($spacers, 1); }
 }
 
-.productbox-ribbon.ribbon { position: absolute; z-index: 1; top: $spacer; left: -(map-get($spacers, 2)); transition: $transition-base; }
+.productbox-ribbon.ribbon { position: absolute; z-index: 1; top: $spacer; left: -(map-get($spacers, 2)); transition: $transition-base;
+	@include media-breakpoint-down(md) {
+		font-size: $ribbon-font-size;
+	}
+}
 
 .productbox-sale-percentage { position: relative; top: -(map-get($spacers, 7)); }
 

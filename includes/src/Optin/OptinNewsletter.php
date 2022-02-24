@@ -92,7 +92,6 @@ class OptinNewsletter extends OptinBase implements OptinInterface
         $this->optCode = $this->generateUniqOptinCode();
 
         if (!SimpleMail::checkBlacklist($this->refData->getEmail())) {
-            // the following code replaces the function from "newsletter_inc.php"
             $checks              = new stdClass();
             $checks->nPlausi_arr = [];
             $nlCustomer          = null;

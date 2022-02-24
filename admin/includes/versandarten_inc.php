@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Checkout\ShippingSurcharge;
@@ -17,7 +17,7 @@ use JTL\Smarty\JTLSmarty;
  * @param float|string $taxRate
  * @return float
  */
-function berechneVersandpreisBrutto($price, $taxRate)
+function berechneVersandpreisBrutto($price, $taxRate): float
 {
     return $price > 0
         ? round((float)($price * ((100 + $taxRate) / 100)), 2)
@@ -29,7 +29,7 @@ function berechneVersandpreisBrutto($price, $taxRate)
  * @param float|string $taxRate
  * @return float
  */
-function berechneVersandpreisNetto($price, $taxRate)
+function berechneVersandpreisNetto($price, $taxRate): float
 {
     return $price > 0
         ? round($price * ((100 / (100 + $taxRate)) * 100) / 100, 2)
@@ -41,21 +41,19 @@ function berechneVersandpreisNetto($price, $taxRate)
  * @param string $key
  * @return array
  */
-function reorganizeObjectArray($objects, $key): array
+function reorganizeObjectArray(array $objects, string $key): array
 {
     $res = [];
-    if (is_array($objects)) {
-        foreach ($objects as $obj) {
-            $arr  = get_object_vars($obj);
-            $keys = array_keys($arr);
-            if (in_array($key, $keys)) {
-                $res[$obj->$key]           = new stdClass();
-                $res[$obj->$key]->checked  = 'checked';
-                $res[$obj->$key]->selected = 'selected';
-                foreach ($keys as $k) {
-                    if ($key != $k) {
-                        $res[$obj->$key]->$k = $obj->$k;
-                    }
+    foreach ($objects as $obj) {
+        $arr  = get_object_vars($obj);
+        $keys = array_keys($arr);
+        if (in_array($key, $keys, true)) {
+            $res[$obj->$key]           = new stdClass();
+            $res[$obj->$key]->checked  = 'checked';
+            $res[$obj->$key]->selected = 'selected';
+            foreach ($keys as $k) {
+                if ($key !== $k) {
+                    $res[$obj->$key]->$k = $obj->$k;
                 }
             }
         }
@@ -134,7 +132,7 @@ function gibGesetzteVersandklassen(string $shippingClasses): array
  * @param string $shippingClasses
  * @return array
  */
-function gibGesetzteVersandklassenUebersicht($shippingClasses)
+function gibGesetzteVersandklassenUebersicht($shippingClasses): array
 {
     if (trim($shippingClasses) === '-1') {
         return ['Alle'];
@@ -172,13 +170,13 @@ function gibGesetzteKundengruppen(string $customerGroupsString): array
 {
     $activeGroups = [];
     $groups       = Text::parseSSKint($customerGroupsString);
-    $groupData    = Shop::Container()->getDB()->getObjects(
+    $groupData    = Shop::Container()->getDB()->getInts(
         'SELECT kKundengruppe
             FROM tkundengruppe
-            ORDER BY kKundengruppe'
+            ORDER BY kKundengruppe',
+        'kKundengruppe'
     );
-    foreach ($groupData as $group) {
-        $id                = (int)$group->kKundengruppe;
+    foreach ($groupData as $id) {
         $activeGroups[$id] = in_array($id, $groups, true);
     }
     $activeGroups['alle'] = $customerGroupsString === '-1';
@@ -385,14 +383,14 @@ function saveShippingSurcharge(array $data): stdClass
             $surchargeTMP = (new ShippingSurcharge())
                 ->setISO($post['cISO'])
                 ->setSurcharge($surcharge)
-                ->setShippingMethod($post['kVersandart'])
+                ->setShippingMethod((int)$post['kVersandart'])
                 ->setTitle($post['cName']);
         } else {
             $surchargeTMP = (new ShippingSurcharge((int)$post['kVersandzuschlag']))
                 ->setTitle($post['cName'])
                 ->setSurcharge($surcharge);
         }
-        foreach (Sprache::getAllLanguages(0, true) as $lang) {
+        foreach (LanguageHelper::getAllLanguages(0, true) as $lang) {
             $idx = 'cName_' . $lang->getCode();
             if (isset($post[$idx])) {
                 $surchargeTMP->setName($post[$idx] ?: $post['cName'], $lang->getId());

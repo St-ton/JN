@@ -1,6 +1,6 @@
 {if $oPlugin !== null}
     <div class="settings-content">
-        <form method="post" action="plugin.php?kPlugin={$oPlugin->getID()}" class="navbar-form">
+        <form method="post" action="{$adminURL}/plugin.php?kPlugin={$oPlugin->getID()}" class="navbar-form">
             {$jtl_token}
             <input type="hidden" name="kPlugin" value="{$oPlugin->getID()}" />
             <input type="hidden" name="kPluginAdminMenu" value="{$oPluginAdminMenu->kPluginAdminMenu}" />

@@ -44,15 +44,14 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
      * @param OptinRefData $refData
      * @param int $location
      * @return OptinInterface
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
     public function createOptin(OptinRefData $refData, int $location = 0): OptinInterface
     {
         $this->refData                       = $refData;
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
-        $this->product                       = (new Artikel())->fuelleArtikel($this->refData->getProductId(), $options);
+        $this->product                       = new Artikel($this->dbHandler);
+        $this->product->fuelleArtikel($this->refData->getProductId(), $options);
         $this->saveOptin($this->generateUniqOptinCode());
 
         return $this;

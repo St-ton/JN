@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS;
 
@@ -117,7 +117,7 @@ class NetSyncHandler
      * @param string $mimetype
      * @param string $outname
      */
-    public function streamFile($filename, $mimetype, $outname = ''): void
+    public function streamFile(string $filename, string $mimetype, string $outname = ''): void
     {
         $browser = $this->getBrowser($_SERVER['HTTP_USER_AGENT'] ?? '');
         if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {

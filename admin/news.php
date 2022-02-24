@@ -20,7 +20,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 
 $uploadDir      = PFAD_ROOT . PFAD_NEWSBILDER;
 $uploadDirCat   = PFAD_ROOT . PFAD_NEWSKATEGORIEBILDER;
@@ -40,32 +39,32 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
         case 'inaktiv':
             if (Request::verifyGPCDataInt('s1') > 1) {
                 $smarty->assign('cBackPage', 'tab=inaktiv&s1=' . Request::verifyGPCDataInt('s1'))
-                       ->assign('cSeite', Request::verifyGPCDataInt('s1'));
+                    ->assign('cSeite', Request::verifyGPCDataInt('s1'));
             }
             break;
         case 'aktiv':
             if (Request::verifyGPCDataInt('s2') > 1) {
                 $smarty->assign('cBackPage', 'tab=aktiv&s2=' . Request::verifyGPCDataInt('s2'))
-                       ->assign('cSeite', Request::verifyGPCDataInt('s2'));
+                    ->assign('cSeite', Request::verifyGPCDataInt('s2'));
             }
             break;
         case 'kategorien':
             if (Request::verifyGPCDataInt('s3') > 1) {
                 $smarty->assign('cBackPage', 'tab=kategorien&s3=' . Request::verifyGPCDataInt('s3'))
-                       ->assign('cSeite', Request::verifyGPCDataInt('s3'));
+                    ->assign('cSeite', Request::verifyGPCDataInt('s3'));
             }
             break;
     }
 }
-if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
+if ((Request::postInt('einstellungen') === 1 || Request::verifyGPCDataInt('news') === 1) && Form::validateToken()) {
     if (Request::postInt('einstellungen') > 0) {
-        $controller->setMsg(saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]));
+        saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]);
         if (count($languages) > 0) {
             $db->query('TRUNCATE tnewsmonatspraefix');
             foreach ($languages as $lang) {
                 $monthPrefix           = new stdClass();
                 $monthPrefix->kSprache = $lang->getId();
-                if (mb_strlen($_POST['praefix_' . $lang->getIso()]) > 0) {
+                if (!empty($_POST['praefix_' . $lang->getIso()])) {
                     $monthPrefix->cPraefix = htmlspecialchars(
                         $_POST['praefix_' . $lang->getIso()],
                         ENT_COMPAT | ENT_HTML401,
@@ -87,8 +86,8 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $newsItem = new Item($db);
             $controller->setStep('news_erstellen');
             $smarty->assign('oNewsKategorie_arr', $newsCategories)
-                   ->assign('oNews', $newsItem)
-                   ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
+                ->assign('oNews', $newsItem)
+                ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
         } else {
             $controller->setErrorMsg(__('errorNewsCatFirst'));
             $controller->setStep('news_uebersicht');
@@ -191,7 +190,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $newsCategory->load(Request::getInt('kNewsKategorie'), false);
             if ($newsCategory->getID() > 0) {
                 $smarty->assign('oNewsKategorie', $newsCategory)
-                       ->assign('files', $controller->getCategoryImages($newsCategory->getID(), $uploadDirCat));
+                    ->assign('files', $controller->getCategoryImages($newsCategory->getID(), $uploadDirCat));
             } else {
                 $controller->setStep('news_uebersicht');
                 $controller->setErrorMsg(sprintf(__('errorNewsCatNotFound'), Request::getInt('kNewsKategorie')));
@@ -232,8 +231,8 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
 
         if ($newsItemID > 0 && count($newsCategories) > 0) {
             $smarty->assign('oNewsKategorie_arr', $controller->getAllNewsCategories())
-                   ->assign('oAuthor', $author->getAuthor('NEWS', $newsItemID))
-                   ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
+                ->assign('oAuthor', $author->getAuthor('NEWS', $newsItemID))
+                ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
             $controller->setStep('news_editieren');
             $newsItem = new Item($db);
             $newsItem->load($newsItemID);
@@ -243,8 +242,8 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
                     $controller->setMsg(__('OPC content available'));
                 }
                 $smarty->assign('oNewsKategorie_arr', $controller->getAllNewsCategories())
-                       ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
-                       ->assign('oNews', $newsItem);
+                    ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
+                    ->assign('oNews', $newsItem);
             }
         } else {
             $controller->setErrorMsg(__('errorNewsCatFirst'));
@@ -261,8 +260,8 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
                 $controller->deleteComments($_POST['kNewsKommentar'] ?? [], $newsItem);
             }
             $smarty->assign('oNews', $newsItem)
-                   ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
-                   ->assign('comments', $newsItem->getComments()->getThreadedItems());
+                ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
+                ->assign('comments', $newsItem->getComments()->getThreadedItems());
         }
     }
 }
@@ -295,17 +294,17 @@ if ($controller->getStep() === 'news_uebersicht') {
     $categoryPagination = (new Pagination('kats'))
         ->setItemArray($newsCategories)
         ->assemble();
-    $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_NEWS))
-           ->assign('comments', $commentPagination->getPageItems())
-           ->assign('oNews_arr', $itemPagination->getPageItems())
-           ->assign('oNewsKategorie_arr', $categoryPagination->getPageItems())
-           ->assign('oNewsMonatsPraefix_arr', $prefixes)
-           ->assign('oPagiKommentar', $commentPagination)
-           ->assign('oPagiNews', $itemPagination)
-           ->assign('oPagiKats', $categoryPagination);
+    getAdminSectionSettings(CONF_NEWS);
+    $smarty->assign('comments', $commentPagination->getPageItems())
+        ->assign('oNews_arr', $itemPagination->getPageItems())
+        ->assign('oNewsKategorie_arr', $categoryPagination->getPageItems())
+        ->assign('oNewsMonatsPraefix_arr', $prefixes)
+        ->assign('oPagiKommentar', $commentPagination)
+        ->assign('oPagiNews', $itemPagination)
+        ->assign('oPagiKats', $categoryPagination);
 } elseif ($controller->getStep() === 'news_kategorie_erstellen') {
     $smarty->assign('oNewsKategorie_arr', $controller->getAllNewsCategories())
-           ->assign('oNewsKategorie', $newsCategory);
+        ->assign('oNewsKategorie', $newsCategory);
 }
 
 $maxFileSize  = getMaxFileSize(ini_get('upload_max_filesize'));
@@ -314,6 +313,6 @@ $alertService->addAlert(Alert::TYPE_NOTE, $controller->getMsg(), 'newsMessage');
 $alertService->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'newsError');
 
 $smarty->assign('customerGroups', CustomerGroup::getGroups())
-       ->assign('step', $controller->getStep())
-       ->assign('nMaxFileSize', $maxFileSize)
-       ->display('news.tpl');
+    ->assign('step', $controller->getStep())
+    ->assign('nMaxFileSize', $maxFileSize)
+    ->display('news.tpl');

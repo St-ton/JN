@@ -36,6 +36,9 @@
             {$showTitle = in_array($Einstellungen['navigationsfilter']['kategorie_bild_anzeigen'], ['Y', 'BT'])}
             {$showImage = in_array($Einstellungen['navigationsfilter']['kategorie_bild_anzeigen'], ['B', 'BT'])}
             {$navData = $oNavigationsinfo->getCategory()}
+            {if $Einstellungen.template.megamenu.mobile_start_category === 'Y'}
+                <input type="hidden" id="category-id" value="{$oNavigationsinfo->getCategory()->getID()}">
+            {/if}
         {elseif $oNavigationsinfo->getManufacturer() !== null}
             {$showImage = in_array($Einstellungen['navigationsfilter']['hersteller_bild_anzeigen'], ['B', 'BT'])}
             {$showTitle = in_array($Einstellungen['navigationsfilter']['hersteller_bild_anzeigen'], ['Y', 'BT'])}

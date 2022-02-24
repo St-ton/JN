@@ -175,9 +175,7 @@ class PageDB
      */
     public function getRevisionList(int $key): array
     {
-        $revision = new Revision($this->shopDB);
-
-        return $revision->getRevisions('opcpage', $key);
+        return (new Revision($this->shopDB))->getRevisions('opcpage', $key);
     }
 
     /**

@@ -10,8 +10,6 @@ use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
 use JTL\Shop;
 use stdClass;
-use function Functional\flatten;
-use function Functional\map;
 
 /**
  * Class Category
@@ -210,16 +208,15 @@ class Category implements CategoryInterface
         if (($preview = $this->getPreviewImage()) !== '') {
             $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $preview));
         }
-        $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->getArrays(
+        $this->items = (new ItemList($this->db))->createItems($this->db->getInts(
             'SELECT tnewskategorienews.kNews
                 FROM tnewskategorienews
                 JOIN tnews
                     ON tnews.kNews = tnewskategorienews.kNews 
                 WHERE kNewsKategorie = :cid' . ($activeOnly ? ' AND tnews.dGueltigVon <= NOW()' : ''),
+            'kNews',
             ['cid' => $this->id]
-        )), static function ($e) {
-            return (int)$e;
-        }));
+        ));
 
         return $this;
     }
@@ -252,7 +249,7 @@ class Category implements CategoryInterface
             Shop::getLanguageID()
         );
 
-        $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->getArrays(
+        $this->items = (new ItemList($this->db))->createItems($this->db->getInts(
             'SELECT tnews.kNews
                 FROM tnews
                 JOIN tnewskategorienews 
@@ -262,13 +259,12 @@ class Category implements CategoryInterface
                     AND tnewskategorie.nAktiv = 1
                 WHERE MONTH(tnews.dGueltigVon) = :mnth 
                     AND YEAR(tnews.dGueltigVon) = :yr',
+            'kNews',
             [
                 'mnth' => (int)$overview->nMonat,
                 'yr'   => (int)$overview->nJahr
             ]
-        )), static function ($e) {
-            return (int)$e;
-        }));
+        ));
 
         return $this;
     }
@@ -280,7 +276,7 @@ class Category implements CategoryInterface
     public function getOverview(stdClass $filterSQL): Category
     {
         $this->setID(0);
-        $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->getArrays(
+        $this->items = (new ItemList($this->db))->createItems($this->db->getInts(
             'SELECT tnews.kNews
                 FROM tnews
                 JOIN tnewssprache 
@@ -290,10 +286,9 @@ class Category implements CategoryInterface
                 JOIN tnewskategorie 
                     ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
             WHERE tnewskategorie.nAktiv = 1 AND tnews.dGueltigVon <= NOW() '
-                . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL
-        )), static function ($e) {
-            return (int)$e;
-        }));
+                . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL,
+            'kNews'
+        ));
 
         return $this;
     }

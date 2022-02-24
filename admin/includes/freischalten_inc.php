@@ -1,17 +1,18 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Customer\Customer;
+use JTL\DB\SqlObject;
 use JTL\Helpers\Seo;
 use JTL\Review\ReviewAdminController;
 use JTL\Shop;
 
 /**
  * @param string   $sql
- * @param stdClass $searchSQL
- * @param bool     $checkLanguage
+ * @param SqlObject $searchSQL
+ * @param bool $checkLanguage
  * @return stdClass[]
  */
-function gibBewertungFreischalten(string $sql, stdClass $searchSQL, bool $checkLanguage = true): array
+function gibBewertungFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
         ? 'tbewertung.kSprache = ' . (int)$_SESSION['editLanguageID'] . ' AND '
@@ -23,18 +24,19 @@ function gibBewertungFreischalten(string $sql, stdClass $searchSQL, bool $checkL
             LEFT JOIN tartikel 
                 ON tbewertung.kArtikel = tartikel.kArtikel
             WHERE " . $cond . 'tbewertung.nAktiv = 0
-                ' . $searchSQL->cWhere . '
-            ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC' . $sql
+                ' . $searchSQL->getWhere() . '
+            ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC' . $sql,
+        $searchSQL->getParams()
     );
 }
 
 /**
- * @param string   $sql
- * @param stdClass $searchSQL
- * @param bool     $checkLanguage
+ * @param string    $sql
+ * @param SqlObject $searchSQL
+ * @param bool      $checkLanguage
  * @return stdClass[]
  */
-function gibSuchanfrageFreischalten(string $sql, stdClass $searchSQL, bool $checkLanguage = true): array
+function gibSuchanfrageFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
         ? 'AND kSprache = ' . (int)$_SESSION['editLanguageID'] . ' '
@@ -43,18 +45,19 @@ function gibSuchanfrageFreischalten(string $sql, stdClass $searchSQL, bool $chec
     return Shop::Container()->getDB()->getObjects(
         "SELECT *, DATE_FORMAT(dZuletztGesucht, '%d.%m.%Y %H:%i') AS dZuletztGesucht_de
             FROM tsuchanfrage
-            WHERE nAktiv = 0 " . $cond . $searchSQL->cWhere . '
-            ORDER BY ' . $searchSQL->cOrder . $sql
+            WHERE nAktiv = 0 " . $cond . $searchSQL->getWhere() . '
+            ORDER BY ' . $searchSQL->getOrder() . $sql,
+        $searchSQL->getParams()
     );
 }
 
 /**
- * @param string   $sql
- * @param stdClass $searchSQL
- * @param bool     $checkLanguage
+ * @param string    $sql
+ * @param SqlObject $searchSQL
+ * @param bool      $checkLanguage
  * @return stdClass[]
  */
-function gibNewskommentarFreischalten(string $sql, stdClass $searchSQL, bool $checkLanguage = true): array
+function gibNewskommentarFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
 {
     $cond         = $checkLanguage === true
         ? ' AND t.languageID = ' . (int)$_SESSION['editLanguageID'] . ' '
@@ -70,7 +73,8 @@ function gibNewskommentarFreischalten(string $sql, stdClass $searchSQL, bool $ch
             LEFT JOIN tkunde 
                 ON tkunde.kKunde = tnewskommentar.kKunde
             WHERE tnewskommentar.nAktiv = 0" .
-            $searchSQL->cWhere . $cond . $sql
+            $searchSQL->getWhere() . $cond . $sql,
+        $searchSQL->getParams()
     );
     foreach ($newsComments as $comment) {
         $customer = new Customer(isset($comment->kKunde) ? (int)$comment->kKunde : null);
@@ -82,12 +86,12 @@ function gibNewskommentarFreischalten(string $sql, stdClass $searchSQL, bool $ch
 }
 
 /**
- * @param string   $sql
- * @param stdClass $searchSQL
- * @param bool     $checkLanguage
+ * @param string    $sql
+ * @param SqlObject $searchSQL
+ * @param bool      $checkLanguage
  * @return stdClass[]
  */
-function gibNewsletterEmpfaengerFreischalten(string $sql, stdClass $searchSQL, bool $checkLanguage = true): array
+function gibNewsletterEmpfaengerFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
         ? ' AND kSprache = ' . (int)$_SESSION['editLanguageID']
@@ -98,8 +102,9 @@ function gibNewsletterEmpfaengerFreischalten(string $sql, stdClass $searchSQL, b
             DATE_FORMAT(dLetzterNewsletter, '%d.%m.%Y  %H:%i') AS dLetzterNewsletter_de
             FROM tnewsletterempfaenger
             WHERE nAktiv = 0
-                " . $searchSQL->cWhere . $cond .
-        ' ORDER BY ' . $searchSQL->cOrder . $sql
+                " . $searchSQL->getWhere() . $cond .
+        ' ORDER BY ' . $searchSQL->getOrder() . $sql,
+        $searchSQL->getParams()
     );
 }
 

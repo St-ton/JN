@@ -21968,6 +21968,11 @@ label {
   left: -0.5rem;
   transition: all 0.2s ease-in-out;
 }
+@media (max-width: 991.98px) {
+  .productbox-ribbon.ribbon {
+    font-size: 0.5625rem;
+  }
+}
 
 .productbox-sale-percentage {
   position: relative;
@@ -23106,7 +23111,7 @@ ul.partlist-items {
 }
 
 .img-xs {
-  width: 24px;
+  width: auto;
   height: 24px;
   object-fit: contain;
 }
@@ -26387,6 +26392,13 @@ header #burger-menu {
 .cart-items-body .cart-items-name {
   display: block;
   margin-bottom: 1rem;
+}
+
+.item-overflow-notice {
+  padding: 0 0.75rem;
+}
+.item-overflow-notice a {
+  text-decoration: underline;
 }
 
 /* contact */

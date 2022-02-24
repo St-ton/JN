@@ -223,13 +223,13 @@ abstract class AbstractItem implements ItemInterface
      */
     public function setLanguageData(array $languages, int $currentLangID): void
     {
-        $lang = first($languages, static function ($e) use ($currentLangID) {
-            return $e->kSprache === $currentLangID;
+        $lang = first($languages, static function (LanguageModel $e) use ($currentLangID) {
+            return $e->getId() === $currentLangID;
         });
         /** @var LanguageModel $lang */
         if ($lang !== null) {
-            $this->setLanguageCode($lang->iso);
-            $this->setLanguageID($lang->id);
+            $this->setLanguageCode($lang->getCode());
+            $this->setLanguageID($lang->getId());
             $this->setLanguageCode639($lang->getIso639());
         }
     }

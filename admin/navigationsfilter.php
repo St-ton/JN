@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;
@@ -14,11 +13,7 @@ $oAccount->permission('SETTINGS_NAVIGATION_FILTER_VIEW', true, true);
 
 $db = Shop::Container()->getDB();
 if (isset($_POST['speichern']) && Form::validateToken()) {
-    Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_SUCCESS,
-        saveAdminSectionSettings(CONF_NAVIGATIONSFILTER, $_POST),
-        'saveSettings'
-    );
+    saveAdminSectionSettings(CONF_NAVIGATIONSFILTER, $_POST);
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_CATEGORY]);
     if (GeneralObject::hasCount('nVon', $_POST) && GeneralObject::hasCount('nBis', $_POST)) {
         $db->query('TRUNCATE TABLE tpreisspannenfilter');
@@ -33,7 +28,6 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
 }
 
 $priceRangeFilters = $db->getObjects('SELECT * FROM tpreisspannenfilter');
-
-$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_NAVIGATIONSFILTER))
-       ->assign('oPreisspannenfilter_arr', $priceRangeFilters)
-       ->display('navigationsfilter.tpl');
+getAdminSectionSettings(CONF_NAVIGATIONSFILTER);
+$smarty->assign('oPreisspannenfilter_arr', $priceRangeFilters)
+    ->display('navigationsfilter.tpl');

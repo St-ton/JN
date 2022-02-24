@@ -71,7 +71,13 @@
                 {/block}
             {/if}
 
-            {if isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0 && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1) && isset($Artikel->cMassMenge)}
+            {if $Einstellungen.artikeldetails.artikeldetails_inhalt_anzeigen === 'Y'
+                && isset($Artikel->cMasseinheitName)
+                && isset($Artikel->fMassMenge)
+                && $Artikel->fMassMenge > 0
+                && $Artikel->cTeilbar !== 'Y'
+                && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
+                && isset($Artikel->cMassMenge)}
                 {block name='productdetails-attributes-unit'}
                     <tr class="attr-contents">
                         <td class="h6">{lang key='contents' section='productDetails'}: </td>

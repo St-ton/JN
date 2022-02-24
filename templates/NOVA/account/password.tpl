@@ -33,6 +33,13 @@
                                                 {lang key='emailadress'}, true
                                             ]
                                         }
+                                        {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true)
+                                        && ($Einstellungen.kunden.forgot_password_captcha|default:'N')}
+                                            <div class="form-group float-label-control{if isset($fehlendeAngaben.captcha) && $fehlendeAngaben.captcha !== false} has-error{/if}">
+                                                {captchaMarkup getBody=true}
+                                            </div>
+                                            <hr>
+                                        {/if}
                                         {block name='account-password-form-reset-submit'}
                                             {row}
                                                 {col class='col-md-auto ml-md-auto'}

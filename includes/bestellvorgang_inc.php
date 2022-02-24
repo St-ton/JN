@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Alert\Alert;
+use JTL\Cart\Cart;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
@@ -33,8 +34,6 @@ use JTL\SimpleMail;
 use JTL\Staat;
 use JTL\VerificationVAT\VATCheck;
 use function Functional\none;
-
-require_once __DIR__ . '/bestellvorgang_inc.deprecated.php';
 
 /**
  *
@@ -239,17 +238,17 @@ function pruefeLieferdaten($post, &$missingData = null): void
         }
     } elseif ((int)$post['kLieferadresse'] > 0) {
         // vorhandene lieferadresse
-        $addressData = Shop::Container()->getDB()->getSingleObject(
+        $addressID = Shop::Container()->getDB()->getSingleInt(
             'SELECT kLieferadresse
                 FROM tlieferadresse
                 WHERE kKunde = :cid
                     AND kLieferadresse = :daid',
+            'kLieferadresse',
             ['cid' => Frontend::getCustomer()->getID(), 'daid' => (int)$post['kLieferadresse']]
         );
-        if ($addressData !== null && $addressData->kLieferadresse > 0) {
-            $deliveryAddress           = new Lieferadresse((int)$addressData->kLieferadresse);
+        if ($addressID > 0) {
+            $deliveryAddress           = new Lieferadresse($addressID);
             $_SESSION['Lieferadresse'] = $deliveryAddress;
-
             executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_VORHANDENELIEFERADRESSE);
         }
     } elseif ((int)$post['kLieferadresse'] === 0 && isset($_SESSION['Kunde'])) {
@@ -437,9 +436,9 @@ function pruefeLieferadresseStep($get): void
     //sondersteps Lieferadresse ändern
     if (!empty($_SESSION['Lieferadresse'])) {
         $Lieferadresse = $_SESSION['Lieferadresse'];
-        if (isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1
-            || isset($_SESSION['preferredDeliveryCountryCode'])
-            && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand
+        if ((isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1)
+            || (isset($_SESSION['preferredDeliveryCountryCode'])
+            && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand)
         ) {
             Kupon::resetNewCustomerCoupon();
             unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
@@ -964,7 +963,7 @@ function gibStepVersand(): void
  * @param array $post
  * @return array|int
  */
-function plausiKupon($post)
+function plausiKupon(array $post)
 {
     $errors = [];
     if (isset($post['Kuponcode'])
@@ -973,9 +972,9 @@ function plausiKupon($post)
         $coupon = new Kupon();
         $coupon = $coupon->getByCode($_POST['Kuponcode']);
         if ($coupon !== false && $coupon->kKupon > 0) {
-            $errors = Kupon::checkCoupon($coupon);
+            $errors = $coupon->check();
             if (angabenKorrekt($errors)) {
-                Kupon::acceptCoupon($coupon);
+                $coupon->accept();
                 if ($coupon->cKuponTyp === Kupon::TYPE_SHIPPING) { // Versandfrei Kupon
                     $_SESSION['oVersandfreiKupon'] = $coupon;
                 }
@@ -1004,9 +1003,10 @@ function plausiNeukundenKupon()
     if ((!isset($_SESSION['Kupon']->cKuponTyp) || $_SESSION['Kupon']->cKuponTyp !== 'standard')
         && !empty($customer->cMail)
     ) {
-        $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
-        if ($customer->getID() <= 0 && $conf['kaufabwicklung']['bestellvorgang_unregneukundenkupon_zulassen'] === 'N') {
-            //unregistrierte Neukunden, keine Kupons für Gastbestellungen zugelassen
+        if ($customer->getID() <= 0
+            && Shop::getSettingValue(CONF_KAUFABWICKLUNG, 'bestellvorgang_unregneukundenkupon_zulassen') === 'N'
+        ) {
+            // unregistrierte Neukunden, keine Kupons für Gastbestellungen zugelassen
             return;
         }
         // not for already registered customers with order(s)
@@ -1026,8 +1026,8 @@ function plausiNeukundenKupon()
         $coupons = (new Kupon())->getNewCustomerCoupon();
         if (!empty($coupons) && !Kupon::newCustomerCouponUsed($customer->cMail)) {
             foreach ($coupons as $coupon) {
-                if (angabenKorrekt(Kupon::checkCoupon($coupon))) {
-                    Kupon::acceptCoupon($coupon);
+                if (angabenKorrekt($coupon->check())) {
+                    $coupon->accept();
                     break;
                 }
             }
@@ -1047,7 +1047,6 @@ function checkAdditionalPayment($paymentMethod): array
         }
     }
 
-    $conf   = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
     $post   = Text::filterXSS($_POST);
     $errors = [];
     switch ($paymentMethod->cModulId) {
@@ -1070,18 +1069,15 @@ function checkAdditionalPayment($paymentMethod): array
             break;
 
         case 'za_lastschrift_jtl':
-            if (empty($post['bankname'])
-                && $conf['zahlungsarten']['zahlungsart_lastschrift_kreditinstitut_abfrage'] === 'Y'
-            ) {
+            $conf = Shop::getSettingSection(CONF_ZAHLUNGSARTEN);
+            if (empty($post['bankname']) && $conf['zahlungsart_lastschrift_kreditinstitut_abfrage'] === 'Y') {
                 $errors['bankname'] = 1;
             }
-            if (empty($post['inhaber'])
-                && $conf['zahlungsarten']['zahlungsart_lastschrift_kontoinhaber_abfrage'] === 'Y'
-            ) {
+            if (empty($post['inhaber']) && $conf['zahlungsart_lastschrift_kontoinhaber_abfrage'] === 'Y') {
                 $errors['inhaber'] = 1;
             }
             if (empty($post['bic'])) {
-                if ($conf['zahlungsarten']['zahlungsart_lastschrift_bic_abfrage'] === 'Y') {
+                if ($conf['zahlungsart_lastschrift_bic_abfrage'] === 'Y') {
                     $errors['bic'] = 1;
                 }
             } elseif (!checkBIC($post['bic'])) {
@@ -1471,18 +1467,18 @@ function gibZahlungsart(int $paymentMethodID)
 {
     $method = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
     foreach (Frontend::getLanguages() as $language) {
-        $localized                                = Shop::Container()->getDB()->select(
+        $localized                                     = Shop::Container()->getDB()->select(
             'tzahlungsartsprache',
             'kZahlungsart',
             $paymentMethodID,
             'cISOSprache',
-            $language->cISO,
+            $language->getCode(),
             null,
             null,
             false,
             'cName'
         );
-        $method->angezeigterName[$language->cISO] = $localized->cName ?? null;
+        $method->angezeigterName[$language->getCode()] = $localized->cName ?? null;
     }
     $confData = Shop::Container()->getDB()->getObjects(
         'SELECT *
@@ -1564,7 +1560,8 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
             ['sid' => $shippingMethodID, 'cgid' => $customerGroupID]
         );
     }
-    $valid = [];
+    $valid    = [];
+    $currency = Frontend::getCurrency();
     foreach ($methods as $method) {
         if (!$method->kZahlungsart) {
             continue;
@@ -1618,7 +1615,7 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
         if ($method->cAufpreisTyp === 'festpreis') {
             $method->fAufpreis *= ((100 + $taxRate) / 100);
         }
-        $method->cPreisLocalized = Preise::getLocalizedPriceString($method->fAufpreis);
+        $method->cPreisLocalized = Preise::getLocalizedPriceString($method->fAufpreis, $currency);
         if ($method->cAufpreisTyp === 'prozent') {
             $method->cPreisLocalized  = ($method->fAufpreis < 0) ? ' ' : '+ ';
             $method->cPreisLocalized .= $method->fAufpreis . '%';
@@ -1942,8 +1939,13 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
     if ($shippingMethod === null || $shippingMethod->kVersandart <= 0) {
         return false;
     }
-    $shippingMethod->Zuschlag  = ShippingMethod::getAdditionalFees($shippingMethod, $countryCode, $poCode);
-    $shippingMethod->fEndpreis = ShippingMethod::calculateShippingFees($shippingMethod, $countryCode, null);
+    $shippingMethod->kVersandart        = (int)$shippingMethod->kVersandart;
+    $shippingMethod->kVersandberechnung = (int)$shippingMethod->kVersandberechnung;
+    $shippingMethod->nSort              = (int)$shippingMethod->nSort;
+    $shippingMethod->nMinLiefertage     = (int)$shippingMethod->nMinLiefertage;
+    $shippingMethod->nMaxLiefertage     = (int)$shippingMethod->nMaxLiefertage;
+    $shippingMethod->Zuschlag           = ShippingMethod::getAdditionalFees($shippingMethod, $countryCode, $poCode);
+    $shippingMethod->fEndpreis          = ShippingMethod::calculateShippingFees($shippingMethod, $countryCode, null);
     if ($shippingMethod->fEndpreis == -1) {
         return false;
     }
@@ -2290,7 +2292,7 @@ function checkKundenFormular(int $customerAccount, $checkpass = 1): array
 function checkLieferFormularArray($data): array
 {
     $ret  = [];
-    $conf = Shop::getSettings([CONF_KUNDEN]);
+    $conf = Shop::getSettingSection(CONF_KUNDEN);
 
     foreach (['nachname', 'strasse', 'hausnummer', 'plz', 'ort', 'land'] as $dataKey) {
         $data[$dataKey] = isset($data[$dataKey]) ? trim($data[$dataKey]) : null;
@@ -2304,7 +2306,7 @@ function checkLieferFormularArray($data): array
              'lieferadresse_abfragen_adresszusatz' => 'adresszusatz',
              'lieferadresse_abfragen_bundesland' => 'bundesland',
              ] as $confKey => $dataKey) {
-        if ($conf['kunden'][$confKey] === 'Y') {
+        if ($conf[$confKey] === 'Y') {
             $data[$dataKey] = isset($data[$dataKey]) ? trim($data[$dataKey]) : null;
 
             if (!$data[$dataKey]) {
@@ -2313,11 +2315,11 @@ function checkLieferFormularArray($data): array
         }
     }
 
-    if ($conf['kunden']['lieferadresse_abfragen_email'] !== 'N') {
+    if ($conf['lieferadresse_abfragen_email'] !== 'N') {
         $data['email'] = trim($data['email']);
 
         if (empty($data['email'])) {
-            if ($conf['kunden']['lieferadresse_abfragen_email'] === 'Y') {
+            if ($conf['lieferadresse_abfragen_email'] === 'Y') {
                 $ret['email'] = 1;
             }
         } elseif (Text::filterEmailAddress($data['email']) === false) {
@@ -2326,9 +2328,9 @@ function checkLieferFormularArray($data): array
     }
 
     foreach (['tel', 'mobil', 'fax'] as $telType) {
-        if ($conf['kunden']['lieferadresse_abfragen_' . $telType] !== 'N') {
+        if ($conf['lieferadresse_abfragen_' . $telType] !== 'N') {
             $result = Text::checkPhoneNumber($data[$telType]);
-            if ($result === 1 && $conf['kunden']['lieferadresse_abfragen_' . $telType] === 'Y') {
+            if ($result === 1 && $conf['lieferadresse_abfragen_' . $telType] === 'Y') {
                 $ret[$telType] = 1;
             } elseif ($result > 1) {
                 $ret[$telType] = $result;
@@ -2336,7 +2338,7 @@ function checkLieferFormularArray($data): array
         }
     }
 
-    if (empty($_SESSION['check_liefer_plzort']) && $conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y') {
+    if (empty($_SESSION['check_liefer_plzort']) && $conf['kundenregistrierung_abgleichen_plz'] === 'Y') {
         if (!valid_plzort($data['plz'], $data['ort'], $data['land'])) {
             $ret['plz']                      = 2;
             $ret['ort']                      = 2;
@@ -2517,7 +2519,7 @@ function getKundendaten(array $post, $customerAccount, $htmlentities = 1)
  */
 function getKundenattribute(array $post): CustomerAttributes
 {
-    $customerAttributes = new CustomerAttributes(Session::getCustomer()->getID());
+    $customerAttributes = new CustomerAttributes(Frontend::getCustomer()->getID());
     /** @var CustomerAttribute $customerAttribute */
     foreach ($customerAttributes as $customerAttribute) {
         if ($customerAttribute->isEditable()) {
@@ -2577,11 +2579,12 @@ function guthabenMoeglich(): bool
 }
 
 /**
+ * @param Cart|null $cart
  * @return bool
  */
-function freeGiftStillValid(): bool
+function freeGiftStillValid(Cart $cart = null): bool
 {
-    $cart  = Frontend::getCart();
+    $cart  = $cart ?? Frontend::getCart();
     $valid = true;
     foreach ($cart->PositionenArr as $item) {
         if ($item->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK) {
@@ -2770,15 +2773,16 @@ function pruefeAjaxEinKlick(): int
     }
     // Hat der Kunde eine Lieferadresse angegeben?
     if ($lastOrder->kLieferadresse > 0) {
-        $addressData = Shop::Container()->getDB()->getSingleObject(
+        $addressID = Shop::Container()->getDB()->getSingleInt(
             'SELECT kLieferadresse
                 FROM tlieferadresse
                 WHERE kKunde = :cid
                     AND kLieferadresse = :daid',
+            'kLieferadresse',
             ['cid' => $customerID, 'daid' => (int)$lastOrder->kLieferadresse]
         );
-        if ($addressData !== null && $addressData->kLieferadresse > 0) {
-            $addressData               = new Lieferadresse((int)$addressData->kLieferadresse);
+        if ($addressID > 0) {
+            $addressData               = new Lieferadresse($addressID);
             $_SESSION['Lieferadresse'] = $addressData;
             if (!isset($_SESSION['Bestellung'])) {
                 $_SESSION['Bestellung'] = new stdClass();

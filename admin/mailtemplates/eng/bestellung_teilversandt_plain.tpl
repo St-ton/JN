@@ -2,7 +2,7 @@
 
 Dear {$Kunde->cVorname} {$Kunde->cNachname},
 
-the tracking status for order no. {$Bestellung->cBestellNr} has changed.
+The tracking status for order no. {$Bestellung->cBestellNr} has changed.
 
 {foreach $Bestellung->oLieferschein_arr as $oLieferschein}
     {if !$oLieferschein->getEmailVerschickt()}

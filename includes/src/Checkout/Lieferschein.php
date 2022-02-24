@@ -213,7 +213,7 @@ class Lieferschein
      */
     public function setLieferscheinNr($cLieferscheinNr): self
     {
-        $this->cLieferscheinNr = Shop::Container()->getDB()->escape($cLieferscheinNr);
+        $this->cLieferscheinNr = $cLieferscheinNr;
 
         return $this;
     }
@@ -224,7 +224,7 @@ class Lieferschein
      */
     public function setHinweis($cHinweis): self
     {
-        $this->cHinweis = Shop::Container()->getDB()->escape($cHinweis);
+        $this->cHinweis = $cHinweis;
 
         return $this;
     }
@@ -257,7 +257,7 @@ class Lieferschein
      */
     public function setErstellt($dErstellt): self
     {
-        $this->dErstellt = Shop::Container()->getDB()->escape($dErstellt);
+        $this->dErstellt = $dErstellt;
 
         return $this;
     }

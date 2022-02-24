@@ -29,7 +29,7 @@ class DbesTmpCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = $this->getIO();
         $fs = Shop::Container()->get(LocalFilesystem::class);
@@ -45,11 +45,11 @@ class DbesTmpCommand extends Command
             }
             $io->success('dbeS tmp cache deleted.');
 
-            return 0;
+            return Command::SUCCESS;
         } catch (Throwable $e) {
             $io->warning('Could not delete: ' . $e->getMessage());
 
-            return 1;
+            return Command::FAILURE;
         }
     }
 }

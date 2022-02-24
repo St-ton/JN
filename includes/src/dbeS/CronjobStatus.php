@@ -49,29 +49,29 @@ class CronjobStatus
     public $cNextStartDate;
 
     /**
-     * @param int    $kCron
-     * @param string $cExportformat
-     * @param string $cStartDate
-     * @param int    $nRepeat
-     * @param int    $nDone
-     * @param int    $nOverall
-     * @param string $cLastStartDate
-     * @param string $cNextStartDate
+     * @param int         $kCron
+     * @param string      $cExportformat
+     * @param string      $cStartDate
+     * @param int         $frequency
+     * @param int         $nDone
+     * @param int         $nOverall
+     * @param string|null $cLastStartDate
+     * @param string|null $cNextStartDate
      */
     public function __construct(
-        $kCron,
-        $cExportformat,
-        $cStartDate,
-        $nRepeat,
-        $nDone,
-        $nOverall,
-        $cLastStartDate,
-        $cNextStartDate
+        int $kCron,
+        string $cExportformat,
+        string $cStartDate,
+        int $frequency,
+        int $nDone,
+        int $nOverall,
+        ?string $cLastStartDate,
+        ?string $cNextStartDate
     ) {
         $this->kCron          = $kCron;
         $this->cExportformat  = $cExportformat;
         $this->cStartDate     = $cStartDate;
-        $this->nRepeat        = $nRepeat;
+        $this->nRepeat        = $frequency;
         $this->nDone          = $nDone;
         $this->nOverall       = $nOverall;
         $this->cLastStartDate = $cLastStartDate;

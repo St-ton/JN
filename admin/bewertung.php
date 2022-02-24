@@ -9,7 +9,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $oAccount->permission('MODULE_VOTESYSTEM_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 setzeSprache();
 $cache       = Shop::Container()->getCache();
 $alertHelper = Shop::Container()->getAlertService();

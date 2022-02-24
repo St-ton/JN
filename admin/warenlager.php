@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Catalog\Warehouse;
@@ -43,9 +43,6 @@ if ($action === 'update') {
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successStoreRefresh'), 'successStoreRefresh');
 }
 
-if ($step === 'uebersicht') {
-    $smarty->assign('warehouses', Warehouse::getAll(false, true));
-}
-
 $smarty->assign('step', $step)
+    ->assign('warehouses', Warehouse::getAll(false, true))
     ->display('warenlager.tpl');

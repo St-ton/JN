@@ -112,8 +112,8 @@ if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
 $pluginID = Helper::getIDByModuleID($moduleID);
 if ($pluginID > 0) {
     $loader = Helper::getLoaderByPluginID($pluginID, $db);
-    $plugin = $loader->init($pluginID);
-    if ($plugin !== null) {
+    try {
+        $plugin        = $loader->init($pluginID);
         $paymentMethod = LegacyMethod::create($moduleID, 1);
         if ($paymentMethod !== null) {
             if ($paymentMethod->validateAdditional()) {
@@ -125,6 +125,7 @@ if ($pluginID > 0) {
 
         $smarty->assign('oPlugin', $plugin)
             ->assign('plugin', $plugin);
+    } catch (InvalidArgumentException $e) {
     }
 } elseif ($moduleID === 'za_lastschrift_jtl') {
     $customerAccountData = gibKundenKontodaten(Frontend::getCustomer()->getID());

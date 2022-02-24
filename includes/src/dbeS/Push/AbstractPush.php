@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Push;
 
@@ -60,11 +60,11 @@ abstract class AbstractPush
     abstract public function getData();
 
     /**
-     * @param array $arr
-     * @param array $excludes
+     * @param array|mixed $arr
+     * @param array       $excludes
      * @return array
      */
-    protected function buildAttributes(&$arr, $excludes = []): array
+    protected function buildAttributes(&$arr, array $excludes = []): array
     {
         $attributes = [];
         if (!\is_array($arr)) {
@@ -87,7 +87,7 @@ abstract class AbstractPush
      */
     public function zipRedirect(string $zip, $xml, string $wawiVersion): void
     {
-        $xmlfile       = \fopen(self::TEMP_DIR . self::XML_FILE, 'w');
+        $xmlfile       = \fopen(self::TEMP_DIR . self::XML_FILE, 'wb');
         $serializedXML = $wawiVersion === 'unknown'
             ? \strtr(Text::convertISO(XML::serialize($xml)), "\0", ' ')
             : XML::serialize($xml);

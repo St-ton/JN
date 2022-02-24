@@ -1,13 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
 use JTL\dbeS\Starter;
 use JTL\Media\Image;
-use JTL\Media\Image\Category;
-use JTL\Media\Image\Characteristic;
-use JTL\Media\Image\CharacteristicValue;
-use JTL\Media\Image\Manufacturer;
 use JTL\Media\IMedia;
 use JTL\Media\Media;
 use JTL\Shop;
@@ -43,9 +39,9 @@ final class Images extends AbstractSync
     public function handle(Starter $starter)
     {
         $this->brandingConfig = $this->initBrandingConfig();
-        $this->config         = Shop::getSettings([\CONF_BILDER])['bilder'];
+        $this->config         = Shop::getSettingSection(\CONF_BILDER);
         $this->db->query('START TRANSACTION');
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             switch (\pathinfo($file)['basename']) {
                 case 'bilder_ka.xml':
@@ -112,7 +108,7 @@ final class Images extends AbstractSync
      * @param array  $xml
      * @param string $unzipPath
      */
-    private function handleInserts($xml, string $unzipPath): void
+    private function handleInserts(array $xml, string $unzipPath): void
     {
         if (!\is_array($xml['bilder'])) {
             return;
@@ -160,6 +156,7 @@ final class Images extends AbstractSync
      */
     private function handleConfigGroupImages(array $images): void
     {
+        $flushIDs = [];
         foreach ($images as $image) {
             if (empty($image->cPfad) || empty($image->kKonfiggruppe)) {
                 continue;
@@ -169,6 +166,7 @@ final class Images extends AbstractSync
             $item->kKonfiggruppe = (int)$image->kKonfiggruppe;
             $original            = $this->unzipPath . $item->cBildPfad;
             $extension           = $this->getExtension($original);
+            $flushIDs[]          = $item->kKonfiggruppe;
             if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Konfiggruppenbildes konnte nicht ermittelt werden. Datei ' .
@@ -194,11 +192,7 @@ final class Images extends AbstractSync
             }
             \unlink($original);
         }
-        if (\count($images) > 0) {
-            $instance = Media::getClass(Image::TYPE_CONFIGGROUP);
-            /** @var IMedia $instance */
-            $instance::clearCache();
-        }
+        $this->clearImageCache(Image::TYPE_CONFIGGROUP, $flushIDs);
     }
 
     /**
@@ -206,13 +200,15 @@ final class Images extends AbstractSync
      */
     private function handleCharacteristicValueImages(array $images): void
     {
+        $flushIDs = [];
         foreach ($images as $image) {
             $image->kMerkmalWert = (int)$image->kMerkmalWert;
             if (empty($image->cPfad) || $image->kMerkmalWert <= 0) {
                 continue;
             }
-            $original  = $this->unzipPath . $image->cPfad;
-            $extension = $this->getExtension($original);
+            $original   = $this->unzipPath . $image->cPfad;
+            $extension  = $this->getExtension($original);
+            $flushIDs[] = $image->kMerkmalWert;
             if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Merkmalwertbildes konnte nicht ermittelt werden. Datei ' .
@@ -251,6 +247,7 @@ final class Images extends AbstractSync
             }
             \unlink($original);
         }
+        $this->clearImageCache(Image::TYPE_CHARACTERISTIC_VALUE, $flushIDs);
     }
 
     /**
@@ -258,6 +255,7 @@ final class Images extends AbstractSync
      */
     private function handleCharacteristicImages(array $images): void
     {
+        $flushIDs = [];
         foreach ($images as $image) {
             if (empty($image->cPfad) || empty($image->kMerkmal)) {
                 continue;
@@ -265,6 +263,7 @@ final class Images extends AbstractSync
             $image->kMerkmal = (int)$image->kMerkmal;
             $original        = $this->unzipPath . $image->cPfad;
             $extension       = $this->getExtension($original);
+            $flushIDs[]      = $image->kMerkmal;
             if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Merkmalbildes konnte nicht ermittelt werden. Datei ' .
@@ -298,6 +297,7 @@ final class Images extends AbstractSync
             }
             \unlink($original);
         }
+        $this->clearImageCache(Image::TYPE_CHARACTERISTIC, $flushIDs);
     }
 
     /**
@@ -305,6 +305,7 @@ final class Images extends AbstractSync
      */
     private function handleManufacturerImages(array $images): void
     {
+        $flushIDs = [];
         foreach ($images as $image) {
             if (empty($image->cPfad) || empty($image->kHersteller)) {
                 continue;
@@ -312,6 +313,7 @@ final class Images extends AbstractSync
             $image->kHersteller = (int)$image->kHersteller;
             $original           = $this->unzipPath . $image->cPfad;
             $extension          = $this->getExtension($original);
+            $flushIDs[]         = $image->kHersteller;
             if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Herstellerbildes konnte nicht ermittelt werden. Datei ' .
@@ -355,6 +357,7 @@ final class Images extends AbstractSync
             $this->cache->flushTags($cacheTags);
             \unlink($original);
         }
+        $this->clearImageCache(Image::TYPE_MANUFACTURER, $flushIDs);
     }
 
     /**
@@ -362,12 +365,15 @@ final class Images extends AbstractSync
      */
     private function handlePropertyImages(array $images): void
     {
+        $flushIDs = [];
         foreach ($images as $image) {
             if (empty($image->cPfad)) {
                 continue;
             }
-            $original  = $this->unzipPath . $image->cPfad;
-            $extension = $this->getExtension($original);
+            $image->kEigenschaftWert = (int)($image->kEigenschaftWert ?? 0);
+            $flushIDs[]              = $image->kEigenschaftWert;
+            $original                = $this->unzipPath . $image->cPfad;
+            $extension               = $this->getExtension($original);
             if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Eigenschaftwertbildes konnte nicht ermittelt werden. Datei ' .
@@ -404,6 +410,7 @@ final class Images extends AbstractSync
             }
             \unlink($original);
         }
+        $this->clearImageCache(Image::TYPE_VARIATION, $flushIDs);
     }
 
     /**
@@ -411,12 +418,14 @@ final class Images extends AbstractSync
      */
     private function handleCategoryImages(array $images): void
     {
+        $flushIDs = [];
         foreach ($images as $image) {
             if (empty($image->cPfad)) {
                 continue;
             }
-            $original  = $this->unzipPath . $image->cPfad;
-            $extension = $this->getExtension($original);
+            $flushIDs[] = (int)$image->kKategorie;
+            $original   = $this->unzipPath . $image->cPfad;
+            $extension  = $this->getExtension($original);
             if (!$extension) {
                 $this->logger->error(
                     'Bildformat des Kategoriebildes konnte nicht ermittelt werden. Datei ' .
@@ -438,14 +447,15 @@ final class Images extends AbstractSync
             }
             \unlink($original);
         }
+        $this->clearImageCache(Image::TYPE_CATEGORY, $flushIDs);
     }
 
     /**
-     * @param object $image
-     * @param string $extension
+     * @param stdClass $image
+     * @param string   $extension
      * @return string
      */
-    private function getPropertiesImageName($image, string $extension): string
+    private function getPropertiesImageName(stdClass $image, string $extension): string
     {
         if (empty($image->kEigenschaftWert) || !$this->config['bilder_variation_namen']) {
             return (\stripos(\strrev($image->cPfad), \strrev($extension)) === 0)
@@ -456,11 +466,11 @@ final class Images extends AbstractSync
             'SELECT kEigenschaftWert, cArtNr, cName, kEigenschaft
                 FROM teigenschaftwert
                 WHERE kEigenschaftWert = :aid',
-            ['aid' => (int)$image->kEigenschaftWert]
+            ['aid' => $image->kEigenschaftWert]
         );
         if ($propValue === null) {
             $this->logger->warning(
-                'Eigenschaftswertbild fuer nicht existierenden Eigenschaftswert ' . (int)$image->kEigenschaftWert
+                'Eigenschaftswertbild fuer nicht existierenden Eigenschaftswert ' . $image->kEigenschaftWert
             );
             return $image->cPfad;
         }
@@ -486,7 +496,7 @@ final class Images extends AbstractSync
                                 AND tsprache.cShopStandard = 'Y'
                                 AND teigenschaft.kArtikel = tartikel.kArtikel
                                 AND teigenschaftwert.kEigenschaftWert = :cid",
-                        ['cid' => (int)$image->kEigenschaftWert]
+                        ['cid' => $image->kEigenschaftWert]
                     );
                     if ($product !== null && !empty($product->cArtNr) && !empty($propValue->cArtNr)) {
                         $imageName = $this->convertUmlauts($product->cArtNr) .
@@ -596,7 +606,7 @@ final class Images extends AbstractSync
      * @param string   $ext
      * @return string
      */
-    private function getCharacteristicValueImageName(stdClass$image, string $ext): string
+    private function getCharacteristicValueImageName(stdClass $image, string $ext): string
     {
         $conf = (int)$this->config['bilder_merkmalwert_namen'];
         if ($conf === 2) {
@@ -623,7 +633,7 @@ final class Images extends AbstractSync
 
     /**
      * @param stdClass $image
-     * @param string $ext
+     * @param string   $ext
      * @return string
      */
     private function getCharacteristicImageName(stdClass $image, string $ext): string
@@ -768,7 +778,7 @@ final class Images extends AbstractSync
         foreach ($ids as $id) {
             $this->db->delete('tkategoriepict', 'kKategorie', $id);
         }
-        Category::clearCache($ids);
+        $this->clearImageCache(Image::TYPE_CATEGORY, $ids);
     }
 
     /**
@@ -799,7 +809,7 @@ final class Images extends AbstractSync
             }
         }
         $this->cache->flushTags($cacheTags);
-        Manufacturer::clearCache($ids);
+        $this->clearImageCache(Image::TYPE_MANUFACTURER, $ids);
     }
 
     /**
@@ -820,7 +830,7 @@ final class Images extends AbstractSync
                 (object)['cBildpfad' => '']
             );
         }
-        Characteristic::clearCache($ids);
+        $this->clearImageCache(Image::TYPE_CHARACTERISTIC, $ids);
     }
 
     /**
@@ -842,15 +852,15 @@ final class Images extends AbstractSync
             );
             $this->db->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$attrValID);
         }
-        CharacteristicValue::clearCache($ids);
+        $this->clearImageCache(Image::TYPE_CHARACTERISTIC_VALUE, $ids);
     }
 
     /**
      * @param resource|\GdImage $im
-     * @param object|null      $config
+     * @param stdClass|null     $config
      * @return mixed
      */
-    private function brandImage($im, $config)
+    private function brandImage($im, ?stdClass $config)
     {
         if ($config === null
             || (isset($config->nAktiv) && (int)$config->nAktiv === 0)
@@ -1000,7 +1010,6 @@ final class Images extends AbstractSync
         $h = \imagesy($srcImg);
         // Turn alpha blending off
         \imagealphablending($srcImg, false);
-        $minalpha = 0;
         // loop through image pixels and modify alpha
         for ($x = 0; $x < $w; $x++) {
             for ($y = 0; $y < $h; $y++) {
@@ -1008,11 +1017,7 @@ final class Images extends AbstractSync
                 $colorxy = \imagecolorat($srcImg, $x, $y);
                 $alpha   = ($colorxy >> 24) & 0xFF;
                 // calculate new alpha
-                if ($minalpha !== 127) {
-                    $alpha = 127 + 127 * $pct * ($alpha - 127) / (127 - $minalpha);
-                } else {
-                    $alpha += 127 * $pct;
-                }
+                $alpha = 127 + 127 * $pct * ($alpha - 127) / 127;
                 // get the color index with new alpha
                 $alphacolorxy = \imagecolorallocatealpha(
                     $srcImg,
@@ -1133,7 +1138,7 @@ final class Images extends AbstractSync
             $posX = ($containerWidth / 2) - ($width / 2);
             $posY = ($containerHeight / 2) - ($height / 2);
         }
-        \imagecopyresampled($newImg, $im, $posX, $posY, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
+        \imagecopyresampled($newImg, $im, (int)$posX, (int)$posY, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
 
         return $newImg;
     }
@@ -1219,5 +1224,20 @@ final class Images extends AbstractSync
         }
 
         return [\hexdec($r), \hexdec($g), \hexdec($b)];
+    }
+
+    /**
+     * @param string $class
+     * @param array  $ids
+     * @return bool
+     */
+    private function clearImageCache(string $class, array $ids): bool
+    {
+        if (\count($ids) === 0) {
+            return false;
+        }
+        $instance = Media::getClass($class);
+        /** @var IMedia $instance */
+        return $instance::clearCache($ids);
     }
 }

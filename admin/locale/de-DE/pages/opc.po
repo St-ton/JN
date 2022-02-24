@@ -498,3 +498,9 @@ msgstr "Ausrichtung"
 
 msgid "targetBlank"
 msgstr "Link in neuem Tab öffnen"
+
+msgid "missingPortlet"
+msgstr "Fehlendes Portlet"
+
+msgid "missingPortletHTML"
+msgstr "Portlet Template hat kein Markup erzeugt"

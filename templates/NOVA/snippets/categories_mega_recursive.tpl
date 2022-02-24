@@ -5,7 +5,8 @@
     {block name='snippets-categories-mega-recursive-main-link'}
         {link href=$mainCategory->getURL()
             class="categories-recursive-link d-lg-block {if $firstChild}submenu-headline submenu-headline-toplevel{/if} {$subCategory} {if $mainCategory->hasChildren() && $subCategory < $max_subsub_items && $Einstellungen.template.megamenu.show_subcategories !== 'N'}nav-link dropdown-toggle{/if}"
-            aria=["expanded"=>"false"]}
+            aria=["expanded"=>"false"]
+            data=["category-id"=>$mainCategory->getID()]}
             {if $firstChild
                 && $Einstellungen.template.megamenu.show_category_images !== 'N'
                 && (!$isMobile || $isTablet)}
@@ -45,7 +46,7 @@
                                 {/block}
                             {else}
                                 {block name='snippets-categories-mega-recursivechild-category-no-child'}
-                                    {navitem href=$category->getURL()}
+                                    {navitem href=$category->getURL() data=["category-id"=>$category->getID()]}
                                         <span class="text-truncate d-block">
                                             {$category->getShortName()}{if $category->hasChildren()}<span class="more-subcategories">&nbsp;({$category->getChildren()|count})</span>{/if}
                                         </span>

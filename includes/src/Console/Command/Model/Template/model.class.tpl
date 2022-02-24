@@ -6,6 +6,7 @@ use DateTime;
 use Exception;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
+use JTL\Model\ModelHelper;
 
 /**
  * Class {$modelName}
@@ -13,9 +14,9 @@ use JTL\Model\DataModel;
  *
  * @package JTL\ChangeMe
 {foreach $tableDesc as $attribute}
- * @property {$attribute->phpType} ${$attribute->phpName}
- * @method {$attribute->phpType} get{$attribute->phpName|capitalize}()
- * @method void set{$attribute->phpName|capitalize}({$attribute->phpType} $value)
+ * @property {$attribute->phpType} ${$attribute->name}
+ * @method {$attribute->phpType} get{$attribute->name|capitalize}()
+ * @method void set{$attribute->name|capitalize}({$attribute->phpType} $value)
 {/foreach}
  */
 final class {$modelName} extends DataModel
@@ -45,40 +46,39 @@ final class {$modelName} extends DataModel
     {
         parent::onRegisterHandlers();
 {foreach $tableDesc as $attribute}
-    {if $attribute->dataType === 'datetime'}
-        $this->registerGetter({$attribute->name}, static function ($value, $default) {
+{if $attribute->dataType === 'datetime'}
+        $this->registerGetter('{$attribute->name}', static function ($value, $default) {
             return ModelHelper::fromStrToDateTime($value, $default);
         });
-        $this->registerSetter({$attribute->name}, static function ($value) {
+        $this->registerSetter('{$attribute->name}', static function ($value) {
             return ModelHelper::fromDateTimeToStr($value);
         });
-    {/if}
-    {if $attribute->dataType === 'date'}
-        $this->registerGetter({$attribute->name}, static function ($value, $default) {
+{/if}
+{if $attribute->dataType === 'date'}
+        $this->registerGetter('{$attribute->name}', static function ($value, $default) {
             return ModelHelper::fromStrToDate($value, $default);
         });
-        $this->registerSetter({$attribute->name}, static function ($value) {
+        $this->registerSetter('{$attribute->name}', static function ($value) {
             return ModelHelper::fromDateToStr($value);
         });
-    {/if}
-    {if $attribute->dataType === 'time'}
-        $this->registerGetter({$attribute->name}, static function ($value, $default) {
+{/if}
+{if $attribute->dataType === 'time'}
+        $this->registerGetter('{$attribute->name}', static function ($value, $default) {
             return ModelHelper::fromStrToTime($value, $default);
         });
-        $this->registerSetter({$attribute->name}, static function ($value) {
+        $this->registerSetter('{$attribute->name}', static function ($value) {
             return ModelHelper::fromTimeToStr($value);
         });
-    {/if}
-    {if $attribute->dataType === 'timestamp'}
-        $this->registerGetter({$attribute->name}, static function ($value, $default) {
+{/if}
+{if $attribute->dataType === 'timestamp'}
+        $this->registerGetter('{$attribute->name}', static function ($value, $default) {
             return ModelHelper::fromStrToTimestamp($value, $default);
         });
-        $this->registerSetter({$attribute->name}, static function ($value) {
+        $this->registerSetter('{$attribute->name}', static function ($value) {
             return ModelHelper::fromTimestampToStr($value);
         });
-    {/if}
+{/if}
 {/foreach}
-
     }
 
     /**
@@ -90,7 +90,7 @@ final class {$modelName} extends DataModel
         if ($attributes === null) {
             $attributes   = [];
 {foreach $tableDesc as $attribute}
-            $attributes[{$attribute->name}] = DataAttribute::create({$attribute->name}, {$attribute->dataType}, {$attribute->default}, {$attribute->nullable}, {$attribute->isPrimaryKey});
+            $attributes['{$attribute->name}'] = DataAttribute::create('{$attribute->name}', '{$attribute->dataType}', {$attribute->default}, {$attribute->nullable}, {$attribute->isPrimaryKey});
 {/foreach}
         }
 

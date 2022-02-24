@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
@@ -85,7 +85,7 @@ if (Form::validateToken()) {
 
     if (Request::postInt('clone') > 0) {
         $step = 'uebersicht';
-        if (Versandart::cloneShipping($postData['clone'])) {
+        if (Versandart::cloneShipping((int)$postData['clone'])) {
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
                 __('successShippingMethodDuplicated'),
@@ -560,12 +560,14 @@ if ($step === 'Zuschlagsliste') {
         'fZuschlag'
     );
     foreach ($fees as $item) {
-        $item->zuschlagplz     = $db->selectAll(
+        $item->kVersandzuschlag = (int)$item->kVersandzuschlag;
+        $item->kVersandart      = (int)$item->kVersandart;
+        $item->zuschlagplz      = $db->selectAll(
             'tversandzuschlagplz',
             'kVersandzuschlag',
             $item->kVersandzuschlag
         );
-        $item->angezeigterName = getZuschlagNames($item->kVersandzuschlag);
+        $item->angezeigterName  = getZuschlagNames($item->kVersandzuschlag);
     }
     $smarty->assign('Versandart', $shippingMethod)
         ->assign('Zuschlaege', $fees)

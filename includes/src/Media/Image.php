@@ -360,8 +360,7 @@ class Image
         $manager   = new ImageManager(['driver' => self::getImageDriver()]);
         $img       = $manager->make($rawPath);
         $regExt    = $req->getExt();
-
-        if (($regExt === 'jpg' || $regExt === 'jpeg') && str_starts_with($settings['background'], 'rgba')) {
+        if (($regExt === 'jpg' || $regExt === 'jpeg') && \str_starts_with($settings['background'], 'rgba(')) {
             $settings['background'] = self::rgba2rgb($settings['background']);
         }
         if ($settings['container'] === true) {
@@ -506,16 +505,16 @@ class Image
     public static function rgba2rgb(string $color): string
     {
         $background = [255, 255, 255];
-        $rgbaColor  = \explode(',', \rtrim(\substr($color, \strpos($color,'(')), ')'));
-        $red        = sprintf('%d', $rgbaColor[0]);
-        $green      = sprintf('%d', $rgbaColor[1]);
-        $blue       = sprintf('%d', $rgbaColor[2]);
-        $alpha      = sprintf('%.2f', $rgbaColor[3] ?? 1);
+        $rgbaColor  = \explode(',', \rtrim(\substr($color, \strpos($color, '(')), ')'));
+        $red        = \sprintf('%d', $rgbaColor[0]);
+        $green      = \sprintf('%d', $rgbaColor[1]);
+        $blue       = \sprintf('%d', $rgbaColor[2]);
+        $alpha      = \sprintf('%.2f', $rgbaColor[3]);
 
         $ored   = ((1 - $alpha) * $background[0]) + ($alpha * $red);
         $ogreen = ((1 - $alpha) * $background[1]) + ($alpha * $green);
         $oblue  = ((1 - $alpha) * $background[2]) + ($alpha * $blue);
 
-        return 'rgb(' . sprintf('%d', $ored) . ', ' . sprintf('%d', $ogreen) . ', ' . sprintf('%d', $oblue) . ')';
+        return 'rgb(' . \sprintf('%d', $ored) . ', ' . \sprintf('%d', $ogreen) . ', ' . \sprintf('%d', $oblue) . ')';
     }
 }

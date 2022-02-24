@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Backend\FileCheck;
@@ -40,7 +40,6 @@ if ($modifiedFilesCheck !== FileCheck::OK) {
             $modifiedFilesError = __('errorFileListEmpty');
             break;
         default:
-            $modifiedFilesError = '';
             break;
     }
 }
@@ -53,7 +52,6 @@ if ($orphanedFilesCheck !== FileCheck::OK) {
             $orphanedFilesError = __('errorFileListEmpty');
             break;
         default:
-            $orphanedFilesError = '';
             break;
     }
 } elseif (Request::verifyGPCDataInt('delete-orphans') === 1 && Form::validateToken()) {

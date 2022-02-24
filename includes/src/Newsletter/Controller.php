@@ -75,7 +75,7 @@ final class Controller
      * @param bool              $validate
      * @return stdClass
      */
-    public function addSubscriber($customer, $validate = false): stdClass
+    public function addSubscriber($customer, bool $validate = false): stdClass
     {
         $alertHelper         = Shop::Container()->getAlertService();
         $plausi              = new stdClass();
@@ -363,21 +363,22 @@ final class Controller
      * @param string $groupKeys
      * @return bool
      */
-    private function checkHistory(int $groupID, $groupKeys): bool
+    private function checkHistory(int $groupID, string $groupKeys): bool
     {
-        if (\mb_strlen($groupKeys) > 0) {
-            $groupIDs = [];
-            foreach (\explode(';', $groupKeys) as $id) {
-                if ((int)$id > 0 || (\mb_strlen($id) > 0 && (int)$id === 0)) {
-                    $groupIDs[] = (int)$id;
-                }
+        if (\mb_strlen($groupKeys) === 0) {
+            return false;
+        }
+        $groupIDs = [];
+        foreach (\explode(';', $groupKeys) as $id) {
+            if ((int)$id > 0 || (\mb_strlen($id) > 0 && (int)$id === 0)) {
+                $groupIDs[] = (int)$id;
             }
-            if (\in_array(0, $groupIDs, true)) {
-                return true;
-            }
-            if ($groupID > 0 && \in_array($groupID, $groupIDs, true)) {
-                return true;
-            }
+        }
+        if (\in_array(0, $groupIDs, true)) {
+            return true;
+        }
+        if ($groupID > 0 && \in_array($groupID, $groupIDs, true)) {
+            return true;
         }
 
         return false;

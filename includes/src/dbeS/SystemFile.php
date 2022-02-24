@@ -49,32 +49,32 @@ class SystemFile
     public $nBytes;
 
     /**
-     * @param int    $kFileID
-     * @param string $cFilepath
-     * @param string $cRelFilepath
-     * @param string $cFilename
-     * @param string $cDirname
-     * @param string $cExtension
-     * @param int    $nUploaded
-     * @param int    $nBytes
+     * @param int    $fileID
+     * @param string $filePath
+     * @param string $relFilePath
+     * @param string $fileName
+     * @param string $dirName
+     * @param string $extension
+     * @param int    $dateUploaded
+     * @param int    $bytes
      */
     public function __construct(
-        $kFileID,
-        $cFilepath,
-        $cRelFilepath,
-        $cFilename,
-        $cDirname,
-        $cExtension,
-        $nUploaded,
-        $nBytes
+        int $fileID,
+        string $filePath,
+        string $relFilePath,
+        string $fileName,
+        string $dirName,
+        string $extension,
+        int $dateUploaded,
+        int $bytes
     ) {
-        $this->kFileID      = $kFileID;
-        $this->cFilepath    = $cFilepath;
-        $this->cRelFilepath = $cRelFilepath;
-        $this->cFilename    = $cFilename;
-        $this->cDirname     = $cDirname;
-        $this->cExtension   = $cExtension;
-        $this->nUploaded    = $nUploaded;
-        $this->nBytes       = $nBytes;
+        $this->kFileID      = $fileID;
+        $this->cFilepath    = $filePath;
+        $this->cRelFilepath = $relFilePath;
+        $this->cFilename    = $fileName;
+        $this->cDirname     = $dirName;
+        $this->cExtension   = $extension;
+        $this->nUploaded    = $dateUploaded;
+        $this->nBytes       = $bytes;
     }
 }

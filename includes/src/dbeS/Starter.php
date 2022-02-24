@@ -389,7 +389,6 @@ class Starter
         if (!$this->checkAuth($post)) {
             return self::ERROR_NOT_AUTHORIZED;
         }
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
         $this->setPostData($post);
         $this->setData($files['data']['tmp_name'] ?? null);

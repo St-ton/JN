@@ -42,7 +42,7 @@
 				<tr>
 					<td align="left" valign="top">
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							{$Artikel->cName}
+							<a href="{$Artikel->cURLFull}">{$Artikel->cName}</a>
 						</font>
 					</td>
 				</tr>

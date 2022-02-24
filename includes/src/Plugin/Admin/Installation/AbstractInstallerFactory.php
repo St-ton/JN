@@ -60,7 +60,7 @@ abstract class AbstractInstallerFactory
      * @param stdClass|null        $plugin
      * @param PluginInterface|null $oldPlugin
      */
-    public function __construct(DbInterface $db, array $xml, ?stdClass $plugin, $oldPlugin = null)
+    public function __construct(DbInterface $db, array $xml, ?stdClass $plugin, ?PluginInterface $oldPlugin = null)
     {
         $this->db        = $db;
         $this->baseNode  = $xml['jtlshopplugin'][0] ?? $xml['jtlshop3plugin'][0] ?? null;

@@ -147,8 +147,7 @@ class Hersteller
         // noCache param to avoid problem with de-serialization of class properties with jtl search
         $languageID = $languageID > 0 ? $languageID : Shop::getLanguageID();
         if ($languageID === 0) {
-            $language   = LanguageHelper::getDefaultLanguage();
-            $languageID = (int)$language->kSprache;
+            $languageID = LanguageHelper::getDefaultLanguage()->getId();
         }
         $cacheID   = 'manuf_' . $id . '_' . $languageID . Shop::Container()->getCache()->getBaseID();
         $cacheTags = [\CACHING_GROUP_MANUFACTURER];

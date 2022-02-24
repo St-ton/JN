@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Backend\DirManager;
 use JTL\Exceptions\CircularReferenceException;
@@ -281,8 +281,6 @@ function determineEngineUpdate(array $dbStruct): stdClass
     $result             = new stdClass();
     $result->tableCount = 0;
     $result->dataSize   = 0;
-    $result->estimated  = [];
-
     foreach ($dbStruct as $meta) {
         if (isset($meta->Migration) && $meta->Migration !== DBMigrationHelper::MIGRATE_NONE) {
             $result->tableCount++;

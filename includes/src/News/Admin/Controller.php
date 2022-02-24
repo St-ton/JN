@@ -169,7 +169,7 @@ final class Controller
                 $seoData->cKey     = 'kNews';
                 $seoData->kKey     = $newsItemID;
                 $seoData->kSprache = $langID;
-                $seoData->cSeo     = Seo::checkSeo(Seo::getSeo($this->getSeo($post, $languages, $iso), !empty($post['cSeo_' . $iso])));
+                $seoData->cSeo     = Seo::checkSeo($this->getSeo($post, $languages, $iso));
                 $this->db->insert('tnewssprache', $loc);
                 $this->db->insert('tseo', $seoData);
 
@@ -439,7 +439,7 @@ final class Controller
         if ($iso !== null) {
             $idx = 'cSeo_' . $iso;
             if (!empty($post[$idx])) {
-                return $post[$idx];
+                return Seo::getSeo($post[$idx], true);
             }
             $idx = 'cName_' . $iso;
             if (!empty($post[$idx])) {
@@ -512,7 +512,7 @@ final class Controller
             $seoData->cKey     = 'kNewsKategorie';
             $seoData->kKey     = $categoryID;
             $seoData->kSprache = $loc->languageID;
-            $seoData->cSeo     = Seo::checkSeo(Seo::getSeo($seo, !empty($post['cSeo_' . $iso])));
+            $seoData->cSeo     = Seo::checkSeo($seo);
             if (empty($seoData->cSeo)) {
                 continue;
             }

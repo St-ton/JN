@@ -1213,11 +1213,15 @@ final class Images extends AbstractSync
                 $color[2] . $color[2]
             ];
         } elseif (\str_starts_with($color, 'rgb')) {
-            $rgbaColor = \explode(',', \rtrim(\substr($color, \strpos($color, '(')), ')'));
+            if (\str_starts_with($color, 'rgba(')) {
+                $color = Image::rgba2rgb($color);
+            }
+            $rgbaColor = \explode(',', \rtrim(\substr($color, \strlen('rgb(')), ')'));
+
             return [
-                sprintf('%d', $rgbaColor[0]),
-                sprintf('%d', $rgbaColor[1]),
-                sprintf('%d', $rgbaColor[2])
+                (int)$rgbaColor[0],
+                (int)$rgbaColor[1],
+                (int)$rgbaColor[2]
             ];
         } else {
             return false;

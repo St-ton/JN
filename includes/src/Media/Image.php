@@ -505,7 +505,7 @@ class Image
     public static function rgba2rgb(string $color): string
     {
         $background = [255, 255, 255];
-        $rgbaColor  = \explode(',', \rtrim(\substr($color, \strpos($color, '(')), ')'));
+        $rgbaColor  = \explode(',', \rtrim(\substr($color, \strlen('rgba(')), ')'));
         $red        = \sprintf('%d', $rgbaColor[0]);
         $green      = \sprintf('%d', $rgbaColor[1]);
         $blue       = \sprintf('%d', $rgbaColor[2]);

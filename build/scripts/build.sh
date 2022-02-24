@@ -97,8 +97,8 @@ build_create_md5_hashfile()
       -or -name "rss.xml" -or -name "shopinfo.xml" \
       -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" \
     | grep -v -f "${REPOSITORY_DIR}/build/scripts/md5_excludes.lst" \
-    | xargs md5sum | awk '{ print $1";"$2; }' \
-    | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
+    | xargs md5sum | awk '{ print $2";"$1; }' \
+    | sort --field-separator=';' -k1 -k2 > ${MD5_HASH_FILENAME};
     
     find -type f -name '.htaccess' \
         -and \( \

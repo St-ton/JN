@@ -105,22 +105,39 @@ class FileCheck
      */
     public function deleteOrphanedFiles(array &$orphanedFiles, string $backupFile): int
     {
-        $count  = 0;
+        /** @var Filesystem $fs */
         $fs     = Shop::Container()->get(Filesystem::class);
+        $count  = 0;
+        $files  = [];
+        $dirs   = [];
         $finder = new Finder();
         $finder->append(map($orphanedFiles, static function (stdClass $e) {
             return \PFAD_ROOT . $e->name;
         }));
+        foreach ($finder as $file) {
+            if ($file->getType() === 'dir') {
+                $dirs[] = $file->getPathname();
+            } else {
+                $files[] = $file->getPathname();
+            }
+        }
+        $zipFinder = new Finder();
+        $zipFinder->in($dirs);
+        $zipFinder->append($files);
         try {
-            $fs->zip($finder, $backupFile);
+            $fs->zip($zipFinder, $backupFile);
         } catch (Exception $e) {
             return -1;
         }
-        /** @var Filesystem $fs */
-        foreach ($orphanedFiles as $i => $file) {
+        foreach ($finder as $file) {
             try {
-                $fs->delete($file->name);
-                unset($orphanedFiles[$i]);
+                $fsPath = \mb_substr($file->getPathname(), \mb_strlen(\PFAD_ROOT));
+                if ($file->getType() === 'dir') {
+                    $fs->deleteDirectory($fsPath);
+                } else {
+                    $fs->delete($fsPath);
+                }
+                unset($orphanedFiles[$count]);
                 ++$count;
             } catch (Exception $e) {
             }

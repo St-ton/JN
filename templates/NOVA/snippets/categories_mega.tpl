@@ -141,7 +141,7 @@
                                     {foreach $manufacturers as $mft}
                                         {col lg=4 xl=3 class='nav-item-lg-m nav-item'}
                                             {block name='snippets-categories-mega-manufacturers-link'}
-                                                {link href=$mft->cURLFull title=$mft->cSeo class='submenu-headline submenu-headline-toplevel nav-link '}
+                                                {link href=$mft->getURL() title=$mft->getName() class='submenu-headline submenu-headline-toplevel nav-link '}
                                                     {if $Einstellungen.template.megamenu.show_manufacturer_images !== 'N'
                                                         && (!$isMobile || $isTablet)}
                                                         {include file='snippets/image.tpl'

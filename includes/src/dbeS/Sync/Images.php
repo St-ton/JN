@@ -1191,7 +1191,7 @@ final class Images extends AbstractSync
      */
     private function html2rgb(string $color)
     {
-        if (\strpos($color, '#') === 0) {
+        if (\str_starts_with($color, '#')) {
             $color = \substr($color, 1);
         }
 
@@ -1206,6 +1206,13 @@ final class Images extends AbstractSync
                 $color[0] . $color[0],
                 $color[1] . $color[1],
                 $color[2] . $color[2]
+            ];
+        } elseif (\str_starts_with($color, 'rgb')) {
+            $rgbaColor = \explode(',', \rtrim(\substr($color, \strpos($color, '(')), ')'));
+            return [
+                sprintf('%d', $rgbaColor[0]),
+                sprintf('%d', $rgbaColor[1]),
+                sprintf('%d', $rgbaColor[2])
             ];
         } else {
             return false;

@@ -506,11 +506,11 @@ class Image
     public static function rgba2rgb(string $color): string
     {
         $background = [255, 255, 255];
-        $rgbaColor  = explode(',', substr($color, 5));
+        $rgbaColor  = \explode(',', \rtrim(\substr($color, \strpos($color,'(')), ')'));
         $red        = sprintf('%d', $rgbaColor[0]);
         $green      = sprintf('%d', $rgbaColor[1]);
         $blue       = sprintf('%d', $rgbaColor[2]);
-        $alpha      = sprintf('%.2f', $rgbaColor[3]);
+        $alpha      = sprintf('%.2f', $rgbaColor[3] ?? 1);
 
         $ored   = ((1 - $alpha) * $background[0]) + ($alpha * $red);
         $ogreen = ((1 - $alpha) * $background[1]) + ($alpha * $green);

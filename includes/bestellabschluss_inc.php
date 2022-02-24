@@ -25,6 +25,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Plugin\Helper;
+use JTL\Plugin\Payment\MethodInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
@@ -709,11 +710,13 @@ function aktualisiereStuecklistenLagerbestand(Artikel $bomProduct, $amount)
 
     if (count($components) > 0) {
         // wenn ja, dann wird für diese auch der Bestand aktualisiert
+        $customerGroupID                     = Frontend::getCustomerGroup()->getID();
+        $languageID                          = Shop::getLanguageID();
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
         foreach ($components as $component) {
             $tmpArtikel = new Artikel($db);
-            $tmpArtikel->fuelleArtikel($component->kArtikel, $options);
+            $tmpArtikel->fuelleArtikel($component->kArtikel, $options, $customerGroupID, $languageID);
             $compStockLevel = floor(
                 aktualisiereLagerbestand(
                     $tmpArtikel,
@@ -944,7 +947,7 @@ function setzeSmartyWeiterleitung(Bestellung $order): void
                 return;
             }
             $className = $pluginPaymentMethod->getClassName();
-            /** @var PaymentMethod $paymentMethod */
+            /** @var MethodInterface $paymentMethod */
             $paymentMethod           = new $className($moduleID);
             $paymentMethod->cModulId = $moduleID;
             $paymentMethod->preparePaymentProcess($order);

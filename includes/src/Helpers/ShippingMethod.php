@@ -833,12 +833,12 @@ class ShippingMethod
         $netPricesActive = Frontend::getCustomerGroup()->isMerchant();
         $currency        = Frontend::getCurrency();
         // Steuersatz nur benötigt, wenn Nettokunde
-        if ($netPricesActive === true) {
+        if ($netPricesActive === true && ($sClassID = Frontend::getCart()->gibVersandkostenSteuerklasse()) > 0) {
             $taxRate = Shop::Container()->getDB()->select(
                 'tsteuersatz',
                 'kSteuerklasse',
-                Frontend::getCart()->gibVersandkostenSteuerklasse()
-            )->fSteuersatz;
+                $sClassID
+            )->fSteuersatz ?? null;
         }
         // gestaffelte
         if (!empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT])) {

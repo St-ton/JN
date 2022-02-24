@@ -129,28 +129,25 @@ class FileHandler
     private function getErrorMessage(int $code): string
     {
         switch ($code) {
-            case 0:
-                $error = 'Datei kam an, aber Dateigröße 0 [0]';
-                break;
-            case 1:
+            case \UPLOAD_ERR_INI_SIZE:
                 $error = 'Dateigröße > upload_max_filesize directive in php.ini [1]';
                 break;
-            case 2:
+            case \UPLOAD_ERR_FORM_SIZE:
                 $error = 'Dateigröße > MAX_FILE_SIZE [2]';
                 break;
-            case 3:
+            case \UPLOAD_ERR_PARTIAL:
                 $error = 'Datei wurde nur zum Teil hochgeladen [3]';
                 break;
-            case 4:
+            case \UPLOAD_ERR_NO_FILE:
                 $error = 'Es wurde keine Datei hochgeladen [4]';
                 break;
-            case 6:
+            case \UPLOAD_ERR_NO_TMP_DIR:
                 $error = 'Es fehlt ein TMP-Verzeichnis für HTTP Datei-Uploads! Bitte an Hoster wenden! [6]';
                 break;
-            case 7:
+            case \UPLOAD_ERR_CANT_WRITE:
                 $error = 'Datei konnte nicht auf Datenträger gespeichert werden! [7]';
                 break;
-            case 8:
+            case \UPLOAD_ERR_EXTENSION:
                 $error = 'Dateiendung nicht akzeptiert, bitte an Hoster werden! [8]';
                 break;
             default:
@@ -177,7 +174,7 @@ class FileHandler
                 'ERROR: incoming: ' . $files['data']['name'] . ' size:' . $files['data']['size'] .
                 ' err:' . $files['data']['error']
             );
-            $error = $this->getErrorMessage($files['data']['error']);
+            $error = $this->getErrorMessage($files['data']['error'] ?? 0);
             \syncException($error . "\n" . \print_r($files, true), \FREIDEFINIERBARER_FEHLER);
         }
         $target = self::TEMP_DIR . \basename($files['data']['tmp_name']);

@@ -13,102 +13,102 @@ class Paths
     /**
      * @var string - like '/var/www/shop/templates/'
      */
-    private $rootDir = \PFAD_ROOT . \PFAD_TEMPLATES;
+    private string $rootDir = \PFAD_ROOT . \PFAD_TEMPLATES;
 
     /**
      * @var string - like '/var/www/shop/templates_c/mytemplate/'
      */
-    private $compileDir;
+    private string $compileDir;
 
     /**
      * @var string - like '/var/www/shop/templates_c/mytemplate/page_cache/'
      */
-    private $cacheDir;
+    private string $cacheDir;
 
     /**
      * @var string - like 'https://example.com/templates/'
      */
-    private $rootURL;
+    private string $rootURL;
 
     /**
      * @var string - like '/var/www/shop/templates/mytemplate/'
      */
-    private $baseDir;
+    private string $baseDir;
 
     /**
      * @var string - like 'templates/mytemplate/'
      */
-    private $baseRelDir;
+    private string $baseRelDir;
 
     /**
      * @var string - like 'mytemplate'
      */
-    private $baseDirName;
+    private string $baseDirName;
 
     /**
      * @var string - like 'https://example.com/templates/mytemplate/'
      */
-    private $baseURL;
+    private string $baseURL;
 
     /**
      * @var string|null - like '/var/www/shop/templates/NOVA/'
      */
-    private $parentDir;
+    private ?string $parentDir = null;
 
     /**
      * @var string|null - like 'templates/NOVA/'
      */
-    private $parentRelDir;
+    private ?string $parentRelDir = null;
 
     /**
      * @var string|null - like 'NOVA'
      */
-    private $parentDirName;
+    private ?string $parentDirName;
 
     /**
      * @var string - like 'https://example.com/templates/NOVA/'
      */
-    private $parentURL;
+    private string $parentURL;
 
     /**
      * @var string - like '/var/www/shop/templates/mytemplate/themes/mytheme'
      */
-    private $themeDir = '';
+    private string $themeDir = '';
 
     /**
      * @var string - like 'templates/mytemplate/themes/mytheme'
      */
-    private $themeRelDir = '';
+    private string $themeRelDir = '';
 
     /**
      * @var string - like 'mytheme'
      */
-    private $themeDirName = '';
+    private string $themeDirName = '';
 
     /**
      * @var string - like 'https://example.com/templates/mytemplate/themes/mytheme/'
      */
-    private $themeURL;
+    private string $themeURL;
 
     /**
      * @var string - like 'mytheme' if realThemeDir exists - parent theme dir otherwise
      */
-    private $realThemeDirName;
+    private string $realThemeDirName;
 
     /**
      * @var string - like '/var/www/shop/templates/mytemplate/themes/mytheme' if exists - parent otherwise
      */
-    private $realThemeDir;
+    private string $realThemeDir;
 
     /**
      * @var string - like 'templates/mytemplate/themes/mytheme' if exists - parent otherwise
      */
-    private $realRelThemeDir;
+    private string $realRelThemeDir;
 
     /**
      * @var string - like 'https://example.com/templates/mytemplate/themes/mytheme/' if exists - parent otherwise
      */
-    private $realThemeURL;
+    private string $realThemeURL;
 
     /**
      * @param string      $themeBaseDir

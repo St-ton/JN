@@ -425,6 +425,7 @@ class Service
             $config['navigationsfilter']['bewertungsfilter_benutzen']             = 'Y';
             $config['navigationsfilter']['preisspannenfilter_benutzen']           = 'Y';
             $config['navigationsfilter']['merkmalfilter_verwenden']               = 'Y';
+            $config['navigationsfilter']['allgemein_suchspecialfilter_benutzen']  = 'Y';
             $config['navigationsfilter']['kategoriefilter_anzeigen_als']          = 'KA';
             $pf->getFilterConfig()->setConfig($config);
         }

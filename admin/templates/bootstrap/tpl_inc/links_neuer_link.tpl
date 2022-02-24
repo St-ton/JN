@@ -257,7 +257,7 @@
                                                    value="{if isset($xPostVar_arr.$cName_ISO) && $xPostVar_arr.$cName_ISO}{$xPostVar_arr.$cName_ISO}{elseif !empty($Link->getName($langID))}{$Link->getName($langID)}{/if}" tabindex="7" />
                                         </div>
                                     </div>
-                                    <div class="form-group form-row align-items-center">
+                                    <div class="form-group form-row align-items-center{if isset($xPlausiVar_arr.scheme)} form-error{/if}">
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="cSeo_{$cISO}">
                                             {__('linkSeo')}:
                                         </label>
@@ -267,6 +267,9 @@
                                                    id="cSeo_{$cISO}"
                                                    value="{if isset($xPostVar_arr.$cSeo_ISO) && $xPostVar_arr.$cSeo_ISO}{$xPostVar_arr.$cSeo_ISO}{elseif !empty($Link->getSEO($langID))}{$Link->getSEO($langID)}{/if}"
                                                    tabindex="7" />
+                                        </div>
+                                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                                            {getHelpDesc cDesc=__('cSeoDescription')}
                                         </div>
                                     </div>
                                     {assign var=cTitle_ISO value='cTitle_'|cat:$cISO}

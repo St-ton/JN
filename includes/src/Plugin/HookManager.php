@@ -99,7 +99,7 @@ class HookManager
             return;
         }
         global $smarty, $args_arr, $oPlugin;
-
+        $previousPlugin = $oPlugin;
         $this->timer->startMeasure('shop.hook.' . $hookID);
         $this->dispatcher->fire('shop.hook.' . $hookID, \array_merge((array)$hookID, $args));
         if (empty($this->hookList[$hookID])) {
@@ -143,6 +143,10 @@ class HookManager
                 $smarty->clearAssign('oPlugin_' . $plugin->getPluginID());
             }
         }
+        // restore global variable to original value to avoid conflicts between admin/plugin.php and
+        // running hooks from other plugins
+        $oPlugin = $previousPlugin;
+
         $this->timer->stopMeasure('shop.hook.' . $hookID);
     }
 

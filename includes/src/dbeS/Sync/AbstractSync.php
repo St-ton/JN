@@ -221,8 +221,9 @@ abstract class AbstractSync
 
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
-        $product                             = (new Artikel($this->db))->fuelleArtikel($data->kArtikel, $options);
-        if ($product === null) {
+        $product                             = new Artikel($this->db);
+        $product->fuelleArtikel($data->kArtikel, $options);
+        if ($product->kArtikel === null) {
             return;
         }
         $campaign = new Campaign(\KAMPAGNE_INTERN_VERFUEGBARKEIT);

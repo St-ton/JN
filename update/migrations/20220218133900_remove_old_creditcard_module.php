@@ -16,27 +16,16 @@ class Migration_20220218133900 extends Migration implements IMigration
      */
     public function up()
     {
-        $pmid = $this->getDB()->getSingleInt(
-            'SELECT kZahlungsart
+        $this->execute(
+            "DELETE tzahlungsart, tzahlungsartsprache, tversandartzahlungsart
                 FROM tzahlungsart
-                WHERE cModulId = :pmid',
-            'kZahlungsart',
-            ['pmid' => 'za_kreditkarte_jtl']
+                LEFT JOIN tzahlungsartsprache
+                    ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
+                LEFT JOIN tversandartzahlungsart
+                    ON tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
+                WHERE tzahlungsart.cModulId = 'za_kreditkarte_jtl'"
         );
-        if ($pmid > 0) {
-            $this->getDB()->queryPrepared(
-                'DELETE FROM
-                    tzahlungsart
-                    WHERE kZahlungsart = :pmid',
-                ['pmid' => $pmid]
-            );
-            $this->getDB()->queryPrepared(
-                'DELETE FROM
-                    tzahlungsartsprache
-                    WHERE kZahlungsart = :pmid',
-                ['pmid' => $pmid]
-            );
-        }
+        $this->execute("UPDATE tzahlungsinfo SET cKartenNr = '', cCVV = ''");
         $this->removeConfig('zahlungsart_kreditkarte_max');
         $this->removeConfig('zahlungsart_kreditkarte_min');
         $this->removeConfig('zahlungsart_kreditkarte_min_bestellungen');

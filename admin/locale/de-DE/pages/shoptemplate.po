@@ -50,6 +50,9 @@ msgstr "Vorschau aktivieren"
 msgid "Disable preview"
 msgstr "Vorschau deaktivieren"
 
+msgid "Might not work correctly in preview mode"
+msgstr "Funktioniert evtl. nicht korrekt im Vorschaumodus"
+
 msgid "inheritsFrom"
 msgstr "Erbt von %s"
 

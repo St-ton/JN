@@ -1925,3 +1925,9 @@ const HOOK_EXPORT_START = 341;
  * @param JTL\Export\Model          $model
  */
 const HOOK_EXPORT_FACTORY_GET_EXPORTER = 342;
+
+/**
+ * @since 5.2.0
+ * @param JTL\News\Item $item
+ */
+const HOOK_NEWS_ITEM_MAPPED = 350;

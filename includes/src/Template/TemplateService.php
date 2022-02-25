@@ -177,6 +177,9 @@ class TemplateService implements TemplateServiceInterface
             }
             $settings[$setting->sec][$setting->name] = $setting->val;
         }
+        if (($settings['general']['use_minify'] ?? 'N') === 'static') {
+            $settings['general']['use_minify'] = 'Y';
+        }
 
         return $settings;
     }
@@ -186,7 +189,8 @@ class TemplateService implements TemplateServiceInterface
      */
     public function loadFull(array $attributes, bool $withLicense = true): Model
     {
-        $this->cacheID = 'active_tpl_' . ($attributes['type'] ?? 'default');
+        $type          = $attributes['type'] ?? 'default';
+        $this->cacheID = 'active_tpl_' . $type;
         if (($model = $this->cache->get($this->cacheID)) !== false) {
             $this->loaded = true;
 
@@ -198,6 +202,7 @@ class TemplateService implements TemplateServiceInterface
             $template = new Model($this->db);
             $template->setTemplate('no-template');
         }
+        $template->setIsPreview(($type === 'test'));
         $reader    = new XMLReader();
         $tplXML    = $reader->getXML($template->getTemplate(), $template->getTemplateType() === 'admin');
         $parentXML = ($tplXML === null || empty($tplXML->Parent)) ? null : $reader->getXML((string)$tplXML->Parent);

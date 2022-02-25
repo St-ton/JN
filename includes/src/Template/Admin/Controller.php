@@ -85,6 +85,7 @@ class Controller
             $this->currentTemplateDir = null;
             $valid                    = false;
         }
+        $this->smarty->assign('action', $action);
         $this->config = new Config($this->currentTemplateDir, $this->db);
         if (!empty($_FILES['template-install-upload'])) {
             $action = 'upload';

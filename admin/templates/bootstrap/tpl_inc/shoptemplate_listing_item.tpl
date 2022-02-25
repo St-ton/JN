@@ -127,6 +127,7 @@
                     <a class="btn btn-secondary" href="{$adminURL}/shoptemplate.php?action=setPreview&dir={$listingItem->getDir()}{if $listingItem->getOptionsCount() > 0}&config=1{/if}&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('Enable preview')}</a>
                 {else}
                     <a class="btn btn-danger" href="{$adminURL}/shoptemplate.php?action=unsetPreview&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('Disable preview')}</a>
+                    <a class="btn btn-outline-primary" href="{$adminURL}/shoptemplate.php?action=config&dir={$listingItem->getDir()}&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('settings')}</a>
                 {/if}
             {else}
                 {if $listingItem->getOptionsCount() > 0}

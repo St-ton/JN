@@ -114,7 +114,7 @@ final class LastJob
         $this->db->query(
             'UPDATE thersteller
                 SET nAktiv = IF(
-                    (SELECT COUNT(*) FROM tartikel WHERE kHersteller = thersteller.kHersteller) > 0, 1, 0)'
+                    EXISTS (SELECT 1 FROM tartikel WHERE tartikel.kHersteller = thersteller.kHersteller), 1, 0)'
         );
     }
 

@@ -1885,7 +1885,12 @@ class Cart
                     OR ( va.kVersandberechnung = 4 AND vas.fBis > 0 AND :itemCount <= vas.fBis)
                     OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND :totalWeight <= vas.fBis )
                     OR ( va.kVersandberechnung = 3 
-                        AND vas.fBis = (SELECT MIN(fBis) FROM tversandartstaffel WHERE fBis > :maxPrices)
+                        AND vas.fBis = (
+                          SELECT MIN(fBis)
+                            FROM tversandartstaffel
+                            WHERE fBis > :maxPrices
+                              AND tversandartstaffel.kVersandart = va.kVersandart
+                          )
                         )
                     )
                 AND va.kVersandart IN (' . \implode(', ', $shippingMethods) . ')

@@ -4,8 +4,8 @@
         {assign var=titles value=false}
         <div class="mediafiles card-columns {if $mediaType->count < 3}card-columns-2{/if}">
         {foreach $Artikel->oMedienDatei_arr as $oMedienDatei}
-            {if ($mediaType->name == $oMedienDatei->cMedienTyp && $oMedienDatei->cAttributTab|count_characters == 0)
-            || ($oMedienDatei->cAttributTab|count_characters > 0 && $mediaType->name == $oMedienDatei->cAttributTab)}
+            {if ($mediaType->name == $oMedienDatei->cMedienTyp && $oMedienDatei->cAttributTab|strlen == 0)
+            || ($oMedienDatei->cAttributTab|strlen > 0 && $mediaType->name == $oMedienDatei->cAttributTab)}
                 {if $oMedienDatei->nErreichbar == 0}
                     {block name='productdetails-mediafilealert'}
                         {col class="mediafiles-no-media"}
@@ -25,7 +25,7 @@
                     {if $oMedienDatei->nMedienTyp === 1}
                         {block name='productdetails-mediafile-images'}
                             {$cMediaAltAttr = ""}
-                            {if isset($oMedienDatei->oMedienDateiAttribut_arr) && $oMedienDatei->oMedienDateiAttribut_arr|@count > 0}
+                            {if isset($oMedienDatei->oMedienDateiAttribut_arr) && $oMedienDatei->oMedienDateiAttribut_arr|count > 0}
                                 {foreach $oMedienDatei->oMedienDateiAttribut_arr as $oAttribut}
                                     {if $oAttribut->cName === 'img_alt'}
                                         {assign var=cMediaAltAttr value=$oAttribut->cWert}

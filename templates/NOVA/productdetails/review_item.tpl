@@ -1,5 +1,5 @@
 {block name='productdetails-review-item'}
-    {row id="comment{$oBewertung->kBewertung}" class="review-comment {if $Einstellungen.bewertung.bewertung_hilfreich_anzeigen === 'Y' && isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde > 0 && $smarty.session.Kunde->kKunde != $oBewertung->kKunde}use_helpful{/if} {if isset($bMostUseful) && $bMostUseful}most_useful{/if}"}
+    {row id="comment{$oBewertung->kBewertung}" class="review-comment {if $Einstellungen.bewertung.bewertung_hilfreich_anzeigen === 'Y' && JTL\Session\Frontend::getCustomer()->getID() > 0 && JTL\Session\Frontend::getCustomer()->getID() !== $oBewertung->kKunde}use_helpful{/if} {if isset($bMostUseful) && $bMostUseful}most_useful{/if}"}
         {block name='productdetails-review-itme-helpful'}
             {if $oBewertung->nHilfreich > 0}
             {col cols=12 class="review-helpful-total"}
@@ -38,7 +38,7 @@
                                 </small>
                             {/block}
                             {if $Einstellungen.bewertung.bewertung_hilfreich_anzeigen === 'Y'}
-                                {if isset($smarty.session.Kunde) && $smarty.session.Kunde->kKunde > 0 && $smarty.session.Kunde->kKunde != $oBewertung->kKunde}
+                                {if JTL\Session\Frontend::getCustomer()->getID() > 0 && JTL\Session\Frontend::getCustomer()->getID() !== $oBewertung->kKunde}
                                     {block name='productdetails-review-item-buttons'}
                                         {formrow class="review-helpful" id="help{$oBewertung->kBewertung}"}
                                             {col}

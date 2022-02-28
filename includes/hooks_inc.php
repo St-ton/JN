@@ -2037,3 +2037,12 @@ define('HOOK_CART_GET_LOCALIZED_SUM', 331);
  * @param float $customerCredit
  */
 define('HOOK_BESTELLUNG_SETZEGUTHABEN', 335);
+
+/**
+ * @since 5.1.3
+ * @file includes/src/dbeS/Sync/AbstractSync.php
+ * @param bool   &sendMails
+ * @param object product
+ * @param array  subscriptions
+ */
+define('HOOK_SYNC_SEND_AVAILABILITYMAILS', 336);

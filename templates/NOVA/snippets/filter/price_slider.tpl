@@ -6,7 +6,7 @@
                     {input id="{$id}-from" class="price-range-input" placeholder=0 aria=["label" => {lang key='differentialPriceFrom' section='productOverview'}]}
                     {inputgroupaddon prepend=true}
                         {inputgrouptext}
-                            {$smarty.session.Waehrung->getName()}
+                            {JTL\Session\Frontend::getCurrency()->getName()}
                         {/inputgrouptext}
                     {/inputgroupaddon}
                 {/inputgroup}
@@ -16,7 +16,7 @@
                     {input id="{$id}-to" class="price-range-input"  placeholder=$priceRangeMax aria=["label" => {lang key='differentialPriceTo' section='productOverview'}]}
                     {inputgroupaddon prepend=true}
                         {inputgrouptext}
-                            {$smarty.session.Waehrung->getName()}
+                            {JTL\Session\Frontend::getCurrency()->getName()}
                         {/inputgrouptext}
                     {/inputgroupaddon}
                 {/inputgroup}

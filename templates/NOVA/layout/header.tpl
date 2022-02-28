@@ -194,8 +194,9 @@
                       href="{$ShopURL}/rss.xml">
             {/if}
             {* Languages *}
-            {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
-                {foreach $smarty.session.Sprachen as $language}
+            {$languages = JTL\Session\Frontend::getLanguages()}
+            {if $languages|count > 1}
+                {foreach $languages as $language}
                     <link rel="alternate"
                           hreflang="{$language->getIso639()}"
                           href="{if $language->getShopDefault() === 'Y' && isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}{$ShopURL}/{else}{$language->getUrl()}{/if}">

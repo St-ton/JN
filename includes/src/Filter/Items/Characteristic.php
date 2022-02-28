@@ -452,7 +452,7 @@ class Characteristic extends BaseCharacteristic
         }
         $state     = $this->getState($mixed['oAktuelleKategorie'] ?? null);
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($state);
-        $cacheID   = $this->getCacheID($baseQuery);
+        $cacheID   = $this->getCacheID($baseQuery) . '_' . $limit . '_' . $valueLimit;
         if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
             $this->options = $cached;
 

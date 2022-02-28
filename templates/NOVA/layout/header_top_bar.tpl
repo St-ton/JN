@@ -3,14 +3,16 @@
         {nav tag='ul' class='topbar-main nav-dividers'}
             {block name='layout-header-top-bar-user-settings'}
                 {block name='layout-header-top-bar-user-settings-currency'}
-                    {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
+                    {$allCurrencies = JTL\Session\Frontend::getCurrencies()}
+                    {$currentCurrency = JTL\Session\Frontend::getCurrency()}
+                    {if $allCurrencies|count > 1}
                         {navitemdropdown
                             class="currency-dropdown"
                             right=true
-                            text=$smarty.session.Waehrung->getName()
+                            text=$currentCurrency->getName()
                         }
-                            {foreach $smarty.session.Waehrungen as $currency}
-                                {dropdownitem href=$currency->getURLFull() rel="nofollow" active=($smarty.session.Waehrung->getName() === $currency->getName())}
+                            {foreach $allCurrencies as $currency}
+                                {dropdownitem href=$currency->getURLFull() rel="nofollow" active=($currentCurrency->getName() === $currency->getName())}
                                     {$currency->getName()}
                                 {/dropdownitem}
                             {/foreach}

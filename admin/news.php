@@ -103,7 +103,7 @@ if ((Request::postInt('einstellungen') === 1 || Request::verifyGPCDataInt('news'
                 $controller->setMsg(__('successNewsCommmentEdit'));
 
                 if (Request::verifyGPCDataInt('nFZ') === 1) {
-                    header('Location: freischalten.php');
+                    header('Location: ' . Shop::getAdminURL() . '/freischalten.php');
                     exit();
                 }
                 $tab = Request::verifyGPDataString('tab');
@@ -120,11 +120,10 @@ if ((Request::postInt('einstellungen') === 1 || Request::verifyGPCDataInt('news'
             } else {
                 $controller->setStep('news_kommentar_editieren');
                 $controller->setErrorMsg(__('errorCheckInput'));
-                $comment                 = new stdClass();
-                $comment->kNewsKommentar = (int)$_POST['kNewsKommentar'];
-                $comment->kNews          = (int)$_POST['kNews'];
-                $comment->cName          = Text::filterXSS($_POST['cName']);
-                $comment->cKommentar     = Text::filterXSS($_POST['cKommentar']);
+                $comment = new Comment($db);
+                $comment->load((int)$_POST['kNewsKommentar']);
+                $comment->setName(Text::filterXSS($_POST['cName']));
+                $comment->setText(Text::filterXSS($_POST['cKommentar']));
                 $smarty->assign('oNewsKommentar', $comment);
             }
         } else {
@@ -197,12 +196,9 @@ if ((Request::postInt('einstellungen') === 1 || Request::verifyGPCDataInt('news'
             }
         }
     } elseif (Request::postInt('newskommentar_freischalten') > 0 && !isset($_POST['kommentareloeschenSubmit'])) {
-        $deleteIDs = Request::verifyGPDataIntegerArray('kNewsKommentar');
-        if (count($deleteIDs) > 0) {
-            foreach ($deleteIDs as $id) {
-                $db->update('tnewskommentar', 'kNewsKommentar', $id, (object)['nAktiv' => 1]);
-            }
-            $controller->setMsg(__('successNewsCommentUnlock'));
+        $commentIDs = Request::verifyGPDataIntegerArray('kNewsKommentar');
+        if (count($commentIDs) > 0) {
+            $controller->activateComments($commentIDs);
             $tab = Request::verifyGPDataString('tab');
             $controller->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $controller->getMsg());
         } else {

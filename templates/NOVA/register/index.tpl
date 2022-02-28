@@ -12,7 +12,7 @@
                     {/container}
                 {/block}
                 {block name='register-index-heading'}
-                    {if !empty($smarty.session.Kunde->kKunde)}
+                    {if JTL\Session\Frontend::getCustomer()->getID() > 0}
                         {lang key='changeBillingAddress' section='account data' assign='panel_heading'}
                     {else}
                         {lang key='createNewAccount' section='account data' assign='panel_heading'}
@@ -39,7 +39,7 @@
                 {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                     {row id="new_customer"}
                         {col cols=12}
-                            {if !isset($checkout) && empty($smarty.session.Kunde->kKunde)}
+                            {if !isset($checkout) && JTL\Session\Frontend::getCustomer()->getID() === 0}
                                 {opcMountPoint id='opc_before_heading'}
                                 {block name='register-index-new-customer-heading'}
                                     <h1 class="h2">{lang key='createNewAccount' section='account data'}</h1>

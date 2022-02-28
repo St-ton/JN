@@ -27,13 +27,13 @@
             <hr class="checkout-items-header-hr d-none d-lg-flex">
         {/block}
         {block name='checkout-inc-order-items-order-items-main'}
-        {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
+        {foreach JTL\Session\Frontend::getCart()->PositionenArr as $oPosition}
             {if !$oPosition->istKonfigKind()}
                 {row class="type-{$oPosition->nPosTyp} checkout-items-item"}
                     {block name='checkout-inc-order-items-image'}
                         {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                             {col cols=3 lg=2 class="checkout-items-item-image-wrapper"}
-                                {if !empty($oPosition->Artikel->cVorschaubild)}
+                                {if !empty($oPosition->Artikel->cVorschaubildURL)}
                                     {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
                                         {include file='snippets/image.tpl' item=$oPosition->Artikel square=false srcSize='sm'}
                                     {/link}
@@ -171,7 +171,7 @@
                                 {block name='checkout-inc-order-items-product-cofig-items'}
                                     <ul class="config-items text-muted-util small">
                                         {$labeled=false}
-                                        {foreach $smarty.session.Warenkorb->PositionenArr as $KonfigPos}
+                                        {foreach JTL\Session\Frontend::getCart()->PositionenArr as $KonfigPos}
                                             {block name='product-config-item'}
                                                 {if $oPosition->cUnique == $KonfigPos->cUnique && $KonfigPos->kKonfigitem > 0
                                                     && !$KonfigPos->isIgnoreMultiplier()}
@@ -271,7 +271,7 @@
                         {/block}
                     {/if}
 
-                    {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|@count > 0}
+                    {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|count > 0}
                         {block name='checkout-inc-order-items-tax'}
                             {foreach $Steuerpositionen as $Steuerposition}
                                 {row class="tax"}
@@ -332,9 +332,9 @@
                         {/if}
                     {/if}
                 {/block}
-                {if !empty($smarty.session.Warenkorb->OrderAttributes)}
+                {if !empty(JTL\Session\Frontend::getCart()->OrderAttributes)}
                     {block name='checkout-inc-order-items-finance'}
-                        {foreach $smarty.session.Warenkorb->OrderAttributes as $attribute}
+                        {foreach JTL\Session\Frontend::getCart()->OrderAttributes as $attribute}
                             {if $attribute->cName === 'Finanzierungskosten'}
                                 <hr>
                                 {row class="checkout-items-total-finance-item type-{$smarty.const.C_WARENKORBPOS_TYP_ZINSAUFSCHLAG}"}

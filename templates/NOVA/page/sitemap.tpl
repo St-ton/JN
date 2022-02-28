@@ -23,7 +23,7 @@
             {/container}
         {/block}
     {/if}
-    {if $Einstellungen.sitemap.sitemap_kategorien_anzeigen === 'Y' && isset($oKategorieliste->elemente) && $oKategorieliste->elemente|@count > 0}
+    {if $Einstellungen.sitemap.sitemap_kategorien_anzeigen === 'Y' && isset($oKategorieliste->elemente) && $oKategorieliste->elemente|count > 0}
         {block name='page-sitemap-categories'}
             {opcMountPoint id='opc_before_categories' inContainer=false}
             {container fluid=$Link->getIsFluid() class="sitemap-wrapper-categories {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
@@ -31,7 +31,7 @@
                     {block name='page-sitemap-categories-content'}
                         {row}
                             {foreach $oKategorieliste->elemente as $oKategorie}
-                                {if $oKategorie->getChildren()|@count > 0}
+                                {if $oKategorie->getChildren()|count > 0}
                                     {col cols=12 md=4 lg=3}
                                         <ul class="list-unstyled">
                                             <li>
@@ -45,7 +45,7 @@
                                                         {$oSubKategorie->getShortName()}
                                                     {/link}
                                                 </li>
-                                                {if $oSubKategorie->getChildren()|@count > 0}
+                                                {if $oSubKategorie->getChildren()|count > 0}
                                                     <li>
                                                         <ul class="sub-categories list-unstyled">
                                                             {foreach $oSubKategorie->getChildren() as $oSubSubKategorie}
@@ -68,7 +68,7 @@
                             {col cols=12 md=4 lg=3}
                                 <ul class="list-unstyled">
                                     {foreach $oKategorieliste->elemente as $oKategorie}
-                                        {if $oKategorie->getChildren()|@count == 0}
+                                        {if $oKategorie->getChildren()|count == 0}
                                             <li>
                                                 &nbsp;&nbsp;{link href=$oKategorie->getURL() title=$oKategorie->getName()|escape:'html' class="nice-deco"}
                                                     {$oKategorie->getShortName()}
@@ -84,7 +84,7 @@
             {/container}
         {/block}
     {/if}
-    {if $Einstellungen.sitemap.sitemap_hersteller_anzeigen === 'Y' && $oHersteller_arr|@count > 0}
+    {if $Einstellungen.sitemap.sitemap_hersteller_anzeigen === 'Y' && $oHersteller_arr|count > 0}
         {block name='page-sitemap-manufacturer'}
             {opcMountPoint id='opc_before_manufacturers' inContainer=false}
             {container fluid=$Link->getIsFluid() class="sitemap-wrapper-manufacturer {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
@@ -102,7 +102,7 @@
             {/container}
         {/block}
     {/if}
-    {if $Einstellungen.news.news_benutzen === 'Y' && $Einstellungen.sitemap.sitemap_news_anzeigen === 'Y' && !empty($oNewsMonatsUebersicht_arr) && $oNewsMonatsUebersicht_arr|@count > 0}
+    {if $Einstellungen.news.news_benutzen === 'Y' && $Einstellungen.sitemap.sitemap_news_anzeigen === 'Y' && !empty($oNewsMonatsUebersicht_arr) && $oNewsMonatsUebersicht_arr|count > 0}
         {block name='page-sitemap-news'}
             {opcMountPoint id='opc_before_news' inContainer=false}
             {container fluid=$Link->getIsFluid() class="sitemap-wrapper-news {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
@@ -110,7 +110,7 @@
                     {block name='page-sitemap-news-content'}
                         {row}
                             {foreach $oNewsMonatsUebersicht_arr as $oNewsMonatsUebersicht}
-                                {if $oNewsMonatsUebersicht->oNews_arr|@count > 0}
+                                {if $oNewsMonatsUebersicht->oNews_arr|count > 0}
                                     {math equation='x-y' x=$oNewsMonatsUebersicht@iteration y=1 assign='i'}
                                     {col cols=12 md=4 lg=3}
                                         <strong>{link href=$oNewsMonatsUebersicht->cURLFull class="nice-deco"}{$oNewsMonatsUebersicht->cName}{/link}</strong>
@@ -131,7 +131,7 @@
     {if $Einstellungen.news.news_benutzen === 'Y'
         && $Einstellungen.sitemap.sitemap_newskategorien_anzeigen === 'Y'
         && !empty($oNewsKategorie_arr)
-        && $oNewsKategorie_arr|@count > 0
+        && $oNewsKategorie_arr|count > 0
     }
         {block name='page-sitemap-news-categories'}
             {opcMountPoint id='opc_before_news_categories' inContainer=false}
@@ -140,7 +140,7 @@
                     {block name='page-sitemap-news-categories-content'}
                         {row}
                             {foreach $oNewsKategorie_arr as $oNewsKategorie}
-                                {if $oNewsKategorie->oNews_arr|@count > 0}
+                                {if $oNewsKategorie->oNews_arr|count > 0}
                                     {col cols=12 md=4 lg=3}
                                         <strong>{link href=$oNewsKategorie->cURLFull}{$oNewsKategorie->cName}{/link}</strong>
                                         <ul class="list-unstyled">

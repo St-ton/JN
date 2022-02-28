@@ -32,7 +32,7 @@
                     id="cllps-box{$oBox->getID()}-{$characteristic->getID()}"
                     visible=$characteristic->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                     {block name='boxes-box-filter-characteristics-characteristics'}
-                        {if ($characteristic->getData('cTyp') === 'SELECTBOX') && $characteristic->getOptions()|@count > 0}
+                        {if ($characteristic->getData('cTyp') === 'SELECTBOX') && $characteristic->getOptions()|count > 0}
                             {block name='boxes-box-filter-characteristics-select'}
                                 {dropdown variant="outline-secondary" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block text-left-util"}
                                 {block name='boxes-box-filter-characteristics-include-characteristics-dropdown'}

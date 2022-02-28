@@ -38,18 +38,18 @@
             {/row}
         {/block}
         {block name='basket-cart-items-order-items-main'}
-        {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
+        {foreach JTL\Session\Frontend::getCart()->PositionenArr as $oPosition}
             {if !$oPosition->istKonfigKind()}
                 {$posName=$oPosition->cName|trans|escape:'html'}
                 {row class="cart-items-body type-{$oPosition->nPosTyp}"}
                     {block name='basket-cart-items-image'}
                         {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                             {col cols=3 xl=2 class="cart-items-image"}
-                                {if !empty($oPosition->Artikel->cVorschaubild)}
+                                {if !empty($oPosition->Artikel->cVorschaubildURL)}
                                     {link href=$oPosition->Artikel->cURLFull title=$posName}
                                         {image lazy=true
                                             webp=true
-                                            src=$oPosition->Artikel->cVorschaubild
+                                            src=$oPosition->Artikel->cVorschaubildURL
                                             alt=$posName
                                             fluid-grow=true
                                         }
@@ -189,7 +189,7 @@
                             {block name='basket-cart-items-product-cofig-items'}
                                 <ul class="config-items text-muted-util small">
                                     {$labeled=false}
-                                    {foreach $smarty.session.Warenkorb->PositionenArr as $KonfigPos}
+                                    {foreach JTL\Session\Frontend::getCart()->PositionenArr as $KonfigPos}
                                         {block name='product-config-item'}
                                             {if $oPosition->cUnique == $KonfigPos->cUnique && $KonfigPos->kKonfigitem > 0
                                             && !$KonfigPos->isIgnoreMultiplier()}

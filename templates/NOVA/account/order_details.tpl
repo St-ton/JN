@@ -180,7 +180,7 @@
             {include file='account/uploads.tpl'}
         {/block}
 
-        {if $Bestellung->oLieferschein_arr|@count > 0}
+        {if $Bestellung->oLieferschein_arr|count > 0}
             {block name='account-order-details-delivery-note-content'}
                 <div class="h2">{if $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_TEILVERSANDT}{lang key='partialShipped' section='order'}{else}{lang key='shipped' section='order'}{/if}</div>
                 <div class="table-responsive mb-3">
@@ -227,7 +227,7 @@
                                     <strong>{lang key='shippedOn' section='login'}</strong>: {$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}<br />
                                 </div>
                             {/block}
-                            {if $oLieferschein->getHinweis()|@count_characters > 0}
+                            {if $oLieferschein->getHinweis()|strlen > 0}
                                 {block name='account-order-details-delivery-note-popup-alert'}
                                     {alert variant="info" class="shipping-order-modal-mb"}{$oLieferschein->getHinweis()}{/alert}
                                 {/block}

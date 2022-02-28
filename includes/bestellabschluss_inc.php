@@ -962,7 +962,7 @@ function setzeSmartyWeiterleitung(Bestellung $order): void
             Shop::Smarty()->assign('oPlugin', $plugin)
                 ->assign('plugin', $plugin);
         }
-    } elseif ($moduleID === 'za_kreditkarte_jtl' || $moduleID === 'za_lastschrift_jtl') {
+    } elseif ($moduleID === 'za_lastschrift_jtl') {
         Shop::Smarty()->assign('abschlussseite', 1);
     }
 

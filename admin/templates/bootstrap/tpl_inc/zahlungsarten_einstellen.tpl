@@ -121,8 +121,7 @@
                     'za_ueberweisung_jtl',
                     'za_rechnung_jtl',
                     'za_barzahlung_jtl',
-                    'za_lastschrift_jtl',
-                    'za_kreditkarte_jtl'
+                    'za_lastschrift_jtl'
                 ]}
 
                 {if !$zahlungsart->cModulId|in_array:$filters}

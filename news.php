@@ -79,6 +79,7 @@ switch ($controller->getPageType($params)) {
         Shop::setPageType(PAGE_NEWS);
         $newsCategoryID = 0;
         $overview       = $controller->displayOverview($pagination, $newsCategoryID, 0, $customerGroupID);
+        $cCanonicalURL  = $overview->getURL();
         break;
     case ViewType::NEWS_MONTH_OVERVIEW:
         Shop::setPageType(PAGE_NEWSMONAT);

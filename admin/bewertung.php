@@ -10,10 +10,10 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('MODULE_VOTESYSTEM_VIEW', true, true);
 
 setzeSprache();
-Shop::dbg($_GET);
-if (!empty($_POST)) {
-    Shop::dbg($_POST, true);
-}
+//Shop::dbg($_GET);
+//if (!empty($_POST)) {
+//    Shop::dbg($_POST, true);
+//}
 $cache       = Shop::Container()->getCache();
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();

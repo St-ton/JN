@@ -3,10 +3,12 @@
 namespace JTL\CSV;
 
 use InvalidArgumentException;
+use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Request;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
+use JTL\Shop;
 use stdClass;
 use TypeError;
 
@@ -104,8 +106,11 @@ class Import
         if (\count($fields) === 0) {
             $fields = \fgetcsv($fs, 0, $delim);
         }
-        $articleNoPresent = false;
-        $destUrlPresent   = false;
+        $customerIDPresent = false;
+        $customerNoPresent = false;
+        $articleNoPresent  = false;
+        $destUrlPresent    = false;
+        Shop::dbg($fields, false, 'fields:');
         foreach ($fields as &$field) {
             if ($field === 'sourceurl') {
                 $field             = 'cFromUrl';
@@ -121,6 +126,12 @@ class Import
             } elseif ($field === 'languageiso') {
                 $field             = 'cIso';
                 $oldRedirectFormat = true;
+            } elseif ($field === 'cArtNr') {
+                $articleNoPresent = true;
+            } elseif ($field === 'kKunde') {
+                $customerIDPresent = true;
+            } elseif ($field === 'cKundenNr') {
+                $customerNoPresent = true;
             }
         }
         unset($field);
@@ -153,7 +164,7 @@ class Import
                 $obj->cFromUrl = $from;
             }
             if ($articleNoPresent) {
-                $obj->cToUrl = $this->getArtNrUrl($obj->cArtNr, $obj->cIso ?? $defLanguage->cISO);
+                $this->addProductDataByArtNo($obj, $obj->cIso ?? $defLanguage->cISO);
                 if (empty($obj->cToUrl)) {
                     ++$errorCount;
                     $this->errors[] = \sprintf(\__('csvImportArtNrNotFound'), $obj->cArtNr);
@@ -161,13 +172,18 @@ class Import
                 }
                 unset($obj->cArtNr, $obj->cIso);
             }
+            if ($customerNoPresent && !$customerIDPresent) {
+                $this->addCustomerDataByCustomerNo($obj);
+            } elseif ($customerIDPresent) {
+                $this->addCustomerDataByCustomerID($obj);
+            }
             if (\is_callable($target)) {
                 if ($target($obj, $importDeleteDone, $importType) === false) {
                     ++$errorCount;
                 }
             } else { // is_string($target)
                 $table = $target;
-                if ($importType === 1) {
+                if ($importType === self::TYPE_OVERWRITE_EXISTING) {
                     $this->db->delete($target, $fields, $row);
                 }
                 if ($this->db->insert($table, $obj) === 0) {
@@ -180,6 +196,31 @@ class Import
         }
 
         return $errorCount;
+    }
+
+    protected function addCustomerDataByCustomerID(stdClass $obj): void
+    {
+        $customerID = $obj->kKunde ?? null;
+        if ($customerID === null || $customerID < 1) {
+            return;
+        }
+        $obj->customer = new Customer($obj->kKunde);
+    }
+
+    protected function addCustomerDataByCustomerNo(stdClass $obj): void
+    {
+        $customerNo = $obj->cKundenNr ?? $obj->kundenNr ?? $obj->customerNo ?? null;
+        if ($customerNo === null) {
+            return;
+        }
+        $obj->kKunde = $this->db->getSingleInt(
+            'SELECT kKunde
+                FROM tkunde
+                WHERE cKundenNr = :cn',
+            'kKunde',
+            ['cn' => $customerNo]
+        );
+        $this->addCustomerDataByCustomerID($obj);
     }
 
     /**
@@ -204,18 +245,17 @@ class Import
     }
 
     /**
-     * @param string $artNo
-     * @param string $iso
-     * @return string|null
+     * @param stdClass $data
+     * @param string   $iso
      */
-    protected function getArtNrUrl(string $artNo, string $iso): ?string
+    protected function addProductDataByArtNo(stdClass $data, string $iso): void
     {
-        if ($artNo === '') {
-            return null;
+        if (!isset($data->cArtNr)) {
+            return;
         }
 
         $item = $this->db->getSingleObject(
-            "SELECT tartikel.kArtikel, tseo.cSeo
+            "SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo
                 FROM tartikel
                 LEFT JOIN tsprache
                     ON tsprache.cISO = :iso
@@ -225,10 +265,24 @@ class Import
                     AND tseo.kSprache = tsprache.kSprache
                 WHERE tartikel.cArtNr = :artno
                 LIMIT 1",
-            ['iso' => mb_convert_case($iso, MB_CASE_LOWER), 'artno' => $artNo]
+            ['iso' => mb_convert_case($iso, MB_CASE_LOWER), 'artno' => $data->cArtNr]
         );
-
-        return URL::buildURL($item, \URLART_ARTIKEL);
+        if ($item === null) {
+            return;
+        }
+        $data->cToUrl = URL::buildURL($item, \URLART_ARTIKEL);
+        if (!isset($data->cSeo)) {
+            $data->cSeo = $item->cSeo;
+        }
+        if (!isset($data->kArtikel)) {
+            $data->kArtikel = (int)$item->kArtikel;
+        }
+        if (!isset($data->cName)) {
+            $data->cName = $item->cName;
+        }
+        if (!isset($data->productName)) {
+            $data->productName = $item->cName;
+        }
     }
 
     /**

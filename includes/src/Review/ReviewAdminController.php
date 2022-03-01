@@ -31,6 +31,11 @@ final class ReviewAdminController extends BaseController
     private int $languageID;
 
     /**
+     * @var int[]
+     */
+    private array $importedProductIDs = [];
+
+    /**
      * ReviewAdminController constructor.
      * @param DbInterface                $db
      * @param JTLCacheInterface          $cache
@@ -86,7 +91,7 @@ final class ReviewAdminController extends BaseController
         } elseif (Request::verifyGPCDataInt('bewertung_aktiv') === 1) {
             $this->handleActive($_POST, $action);
         } elseif ($action === 'csvExport') {
-            $this->export(Request::verifyGPDataString('exportcsv' === 'exportActiveRatings'));
+            $this->export(Request::verifyGPDataString('exportcsv') === 'exportActiveRatings');
         } elseif ($action === 'csvImport') {
             $this->import(Request::verifyGPCDataInt('importType'));
         }
@@ -120,10 +125,87 @@ final class ReviewAdminController extends BaseController
     {
         $import = new Import($this->db);
         $import->handleCsvImportAction('importRatings', [$this, 'insertImportItem']);
+        foreach (\array_unique($this->importedProductIDs) as $id) {
+            $this->updateAverage($id, $this->config['bewertung']['bewertung_freischalten']);
+        }
     }
 
-    public function insertImportItem()
+    /**
+     * callback for Import
+     *
+     * @param stdClass $obj
+     * @param bool     $importDeleteDone
+     * @param int      $importType
+     * @return bool
+     */
+    public function insertImportItem(stdClass $obj, bool &$importDeleteDone, int $importType): bool
     {
+        if (!$this->isValidImportRow($obj)) {
+            return false;
+        }
+        if ($importType === Import::TYPE_TRUNCATE_BEFORE && $importDeleteDone === false) {
+            $this->db->query('TRUNCATE TABLE tbewertung');
+            $importDeleteDone = true;
+        } elseif ($importType === Import::TYPE_OVERWRITE_EXISTING && isset($obj->kBewertung)) {
+            $this->db->delete('tbewertung', 'kBewertung', (int)$obj->kBewertung);
+        }
+        $ins                  = new stdClass();
+        $ins->kArtikel        = (int)$obj->kArtikel;
+        $ins->kKunde          = (int)$obj->kKunde;
+        $ins->kSprache        = (int)$obj->kSprache;
+        $ins->cName           = $obj->cName;
+        $ins->cTitel          = $obj->cTitel;
+        $ins->cText           = $obj->cText;
+        $ins->nHilfreich      = (int)($obj->nHilfreich ?? 0);
+        $ins->nNichtHilfreich = (int)($obj->nNichtHilfreich ?? 0);
+        $ins->nSterne         = (int)$obj->nSterne;
+        if ($obj->nAktiv === 'Y' || $obj->nAktiv === 'y') {
+            $ins->nAktiv = 1;
+        } elseif ($obj->nAktiv === 'N' || $obj->nAktiv === 'n') {
+            $ins->nAktiv = 0;
+        } else {
+            $ins->nAktiv = (int)$obj->nAktiv;
+        }
+        $ins->dDatum = $obj->dDatum;
+        if (isset($obj->cAntwort)) {
+            $ins->cAntwort = $obj->cAntwort;
+        }
+        if (isset($obj->dAntwortDatum)) {
+            $ins->dAntwortDatum = $obj->dAntwortDatum;
+        }
+        $ok = $this->db->insert('tbewertung', $ins) > 0;
+        if ($ok === true) {
+            $this->importedProductIDs[] = $ins->kArtikel;
+        }
+
+        return $ok;
+    }
+
+    /**
+     * @param stdClass $rowData
+     * @return bool
+     */
+    private function isValidImportRow(stdClass $rowData): bool
+    {
+        $required = [
+            'kArtikel',
+            'kKunde',
+            'kSprache',
+            'cName',
+            'cTitel',
+            'cText',
+            'nAktiv',
+            'nSterne',
+            'dDatum'
+        ];
+        $existing = \array_keys(\get_object_vars($rowData));
+        foreach ($required as $key) {
+            if (!\in_array($key, $existing, true)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -147,7 +229,7 @@ final class ReviewAdminController extends BaseController
     /**
      * handle request param 'bewertung_nicht_aktiv'
      *
-     * @param array $data
+     * @param array  $data
      * @param string $action
      * @return bool
      */
@@ -176,7 +258,7 @@ final class ReviewAdminController extends BaseController
     }
 
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $action
      * @return bool
      */

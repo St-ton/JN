@@ -73,3 +73,6 @@ msgstr "Antwort wurde erfolgreich gelöscht."
 
 msgid "linkItemShop"
 msgstr "Artikel im Onlineshop ansehen"
+
+msgid "Export"
+msgstr "Exportieren"

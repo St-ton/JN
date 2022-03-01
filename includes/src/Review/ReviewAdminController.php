@@ -5,6 +5,8 @@ namespace JTL\Review;
 use Exception;
 use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
+use JTL\CSV\Export;
+use JTL\CSV\Import;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -14,6 +16,7 @@ use JTL\Pagination\Pagination;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use stdClass;
 use function Functional\map;
 
 /**
@@ -22,7 +25,10 @@ use function Functional\map;
  */
 final class ReviewAdminController extends BaseController
 {
-    private $languageID;
+    /**
+     * @var int
+     */
+    private int $languageID;
 
     /**
      * ReviewAdminController constructor.
@@ -54,6 +60,10 @@ final class ReviewAdminController extends BaseController
         if (!Form::validateToken()) {
             return $step;
         }
+        $action = Request::verifyGPDataString('action');
+        if (Request::verifyGPDataString('importcsv') === 'importRatings') {
+            $action = 'csvImport';
+        }
         if (Request::verifyGPCDataInt('bewertung_editieren') === 1) {
             $step = 'bewertung_editieren';
             if ($this->edit(Text::filterXSS($_POST))) {
@@ -72,12 +82,48 @@ final class ReviewAdminController extends BaseController
         if (Request::verifyGPCDataInt('einstellungen') === 1) {
             $this->setConfig($_POST);
         } elseif (Request::verifyGPCDataInt('bewertung_nicht_aktiv') === 1) {
-            $this->handleInactive($_POST);
+            $this->handleInactive($_POST, $action);
         } elseif (Request::verifyGPCDataInt('bewertung_aktiv') === 1) {
-            $this->handleActive($_POST);
+            $this->handleActive($_POST, $action);
+        } elseif ($action === 'csvExport') {
+            $this->export(Request::verifyGPDataString('exportcsv' === 'exportActiveRatings'));
+        } elseif ($action === 'csvImport') {
+            $this->import(Request::verifyGPCDataInt('importType'));
         }
 
         return $step;
+    }
+
+    /**
+     * @param bool $active
+     * @return void
+     */
+    private function export(bool $active): void
+    {
+        $export = new Export();
+        if ($active === true) {
+            $export->handleCsvExportAction(
+                'activereviews',
+                'active_reviews.csv',
+                [$this, 'getActiveReviews'],
+            );
+        } else {
+            $export->handleCsvExportAction(
+                'inactivereviews',
+                'inactive_reviews.csv',
+                [$this, 'getInactiveReviews'],
+            );
+        }
+    }
+
+    private function import(int $type)
+    {
+        $import = new Import($this->db);
+        $import->handleCsvImportAction('importRatings', [$this, 'insertImportItem']);
+    }
+
+    public function insertImportItem()
+    {
     }
 
     /**
@@ -102,11 +148,12 @@ final class ReviewAdminController extends BaseController
      * handle request param 'bewertung_nicht_aktiv'
      *
      * @param array $data
+     * @param string $action
      * @return bool
      */
-    private function handleInactive(array $data): bool
+    private function handleInactive(array $data, string $action): bool
     {
-        if (isset($data['aktivieren']) && GeneralObject::hasCount('kBewertung', $data)) {
+        if ($action === 'activate' && GeneralObject::hasCount('kBewertung', $data)) {
             $this->alertService->addAlert(
                 Alert::TYPE_SUCCESS,
                 $this->activate($data['kBewertung']) . \__('successRatingUnlock'),
@@ -115,7 +162,7 @@ final class ReviewAdminController extends BaseController
 
             return true;
         }
-        if (isset($data['loeschen']) && GeneralObject::hasCount('kBewertung', $data)) {
+        if ($action === 'delete' && GeneralObject::hasCount('kBewertung', $data)) {
             $this->alertService->addAlert(
                 Alert::TYPE_SUCCESS,
                 $this->delete($_POST['kBewertung']) . \__('successRatingDelete'),
@@ -130,18 +177,19 @@ final class ReviewAdminController extends BaseController
 
     /**
      * @param array $data
+     * @param string $action
      * @return bool
      */
-    private function handleActive(array $data): bool
+    private function handleActive(array $data, string $action): bool
     {
-        if (isset($data['loeschen']) && GeneralObject::hasCount('kBewertung', $data)) {
+        if ($action === 'delete' && GeneralObject::hasCount('kBewertung', $data)) {
             $this->alertService->addAlert(
                 Alert::TYPE_SUCCESS,
                 $this->delete($data['kBewertung']) . \__('successRatingDelete'),
                 'successRatingDelete'
             );
         }
-        if (isset($data['cArtNr'])) {
+        if ($action === 'search' && isset($data['cArtNr'])) {
             $filtered = $this->db->getObjects(
                 "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
                     FROM tbewertung
@@ -174,45 +222,77 @@ final class ReviewAdminController extends BaseController
         }
         $activePagination   = $this->getActivePagination();
         $inactivePagination = $this->getInactivePagination();
-        $sanitize           = static function ($e) {
-            $e->kBewertung      = (int)$e->kBewertung;
-            $e->kArtikel        = (int)$e->kArtikel;
-            $e->kKunde          = (int)$e->kKunde;
-            $e->kSprache        = (int)$e->kSprache;
-            $e->nHilfreich      = (int)$e->nHilfreich;
-            $e->nNichtHilfreich = (int)$e->nNichtHilfreich;
-            $e->nSterne         = (int)$e->nSterne;
-            $e->nAktiv          = (int)$e->nAktiv;
-            $e->cText           = Text::filterXSS($e->cText);
-            $e->cTitel          = Text::filterXSS($e->cTitel);
-        };
-        $inactiveReviews    = $this->db->getCollection(
+        \getAdminSectionSettings(\CONF_BEWERTUNG);
+        $this->smarty->assign('oPagiInaktiv', $inactivePagination)
+            ->assign('oPagiAktiv', $activePagination)
+            ->assign('inactiveReviews', $this->getInactiveReviews($inactivePagination))
+            ->assign('activeReviews', $this->getActiveReviews($activePagination));
+    }
+
+    /**
+     * @param stdClass $ratingData
+     * @return stdClass
+     */
+    public function sanitize(stdClass $ratingData): stdClass
+    {
+        $ratingData->kBewertung      = (int)$ratingData->kBewertung;
+        $ratingData->kArtikel        = (int)$ratingData->kArtikel;
+        $ratingData->kKunde          = (int)$ratingData->kKunde;
+        $ratingData->kSprache        = (int)$ratingData->kSprache;
+        $ratingData->nHilfreich      = (int)$ratingData->nHilfreich;
+        $ratingData->nNichtHilfreich = (int)$ratingData->nNichtHilfreich;
+        $ratingData->nSterne         = (int)$ratingData->nSterne;
+        $ratingData->nAktiv          = (int)$ratingData->nAktiv;
+        $ratingData->cText           = Text::filterXSS($ratingData->cText);
+        $ratingData->cTitel          = Text::filterXSS($ratingData->cTitel);
+
+        return $ratingData;
+    }
+
+    /**
+     * @param Pagination|null $pagination
+     * @return stdClass[]
+     */
+    public function getInactiveReviews(?Pagination $pagination = null): array
+    {
+        $limit = '';
+        if ($pagination !== null) {
+            $limit = ' LIMIT ' . $pagination->getLimitSQL();
+        }
+
+        return $this->db->getCollection(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
                 FROM tbewertung
                 LEFT JOIN tartikel 
                     ON tbewertung.kArtikel = tartikel.kArtikel
                 WHERE tbewertung.kSprache = :lid
                     AND tbewertung.nAktiv = 0
-                ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC
-                LIMIT " . $inactivePagination->getLimitSQL(),
+                ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC" . $limit,
             ['lid' => $this->languageID]
-        )->each($sanitize)->toArray();
-        $activeReviews      = $this->db->getCollection(
+        )->each([$this, 'sanitize'])->toArray();
+    }
+
+    /**
+     * @param Pagination|null $pagination
+     * @return stdClass[]
+     */
+    public function getActiveReviews(?Pagination $pagination = null): array
+    {
+        $limit = '';
+        if ($pagination !== null) {
+            $limit = ' LIMIT ' . $pagination->getLimitSQL();
+        }
+
+        return $this->db->getCollection(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
                 FROM tbewertung
                 LEFT JOIN tartikel 
                     ON tbewertung.kArtikel = tartikel.kArtikel
                 WHERE tbewertung.kSprache = :lid
                     AND tbewertung.nAktiv = 1
-                ORDER BY tbewertung.dDatum DESC
-                LIMIT " . $activePagination->getLimitSQL(),
+                ORDER BY tbewertung.dDatum DESC" . $limit,
             ['lid' => $this->languageID]
-        )->each($sanitize)->toArray();
-        \getAdminSectionSettings(\CONF_BEWERTUNG);
-        $this->smarty->assign('oPagiInaktiv', $inactivePagination)
-            ->assign('oPagiAktiv', $activePagination)
-            ->assign('inactiveReviews', $inactiveReviews)
-            ->assign('activeReviews', $activeReviews);
+        )->each([$this, 'sanitize'])->toArray();
     }
 
     /**
@@ -220,13 +300,14 @@ final class ReviewAdminController extends BaseController
      */
     private function getInactivePagination(): Pagination
     {
-        $totalCount = (int)$this->db->getSingleObject(
-            'SELECT COUNT(*) AS nAnzahl
+        $totalCount = $this->db->getSingleInt(
+            'SELECT COUNT(*) AS cnt
                 FROM tbewertung
                 WHERE kSprache = :lid
                     AND nAktiv = 0',
+            'cnt',
             ['lid' => $this->languageID]
-        )->nAnzahl;
+        );
 
         return (new Pagination('inactive'))
             ->setItemCount($totalCount)
@@ -238,13 +319,14 @@ final class ReviewAdminController extends BaseController
      */
     private function getActivePagination(): Pagination
     {
-        $activeCount = (int)$this->db->getSingleObject(
-            'SELECT COUNT(*) AS nAnzahl
+        $activeCount = $this->db->getSingleInt(
+            'SELECT COUNT(*) AS cnt
                 FROM tbewertung
                 WHERE kSprache = :lid
                     AND nAktiv = 1',
+            'cnt',
             ['lid' => $this->languageID]
-        )->nAnzahl;
+        );
 
         return (new Pagination('active'))
             ->setItemCount($activeCount)

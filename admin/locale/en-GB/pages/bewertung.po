@@ -73,3 +73,6 @@ msgstr "Answer deleted successfully."
 
 msgid "linkItemShop"
 msgstr "View item in online shop"
+
+msgid "Export"
+msgstr "Export"

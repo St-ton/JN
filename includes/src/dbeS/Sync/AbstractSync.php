@@ -8,7 +8,6 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Campaign;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\dbeS\Mapper;
 use JTL\dbeS\Starter;
 use JTL\Exceptions\CircularReferenceException;
@@ -676,22 +675,19 @@ abstract class AbstractSync
             return false;
         }
 
-        $oldRedirects = $this->db->queryPrepared(
+        $oldRedirects = $this->db->getObjects(
             'SELECT * FROM tredirect WHERE cToUrl = :oldSeo',
-            ['oldSeo' => $oldSeo],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['oldSeo' => $oldSeo]
         );
-
         foreach ($oldRedirects as $oldRedirect) {
             $oldRedirect->cToUrl = $newSeo;
             if (Text::endsWith($oldRedirect->cFromUrl, '/' . $newSeo)) {
-                $this->db->delete('tredirect', 'kRedirect', $oldRedirect->kRedirect);
+                $this->db->delete('tredirect', 'kRedirect', (int)$oldRedirect->kRedirect);
             } else {
-                $this->db->updateRow('tredirect', 'kRedirect', $oldRedirect->kRedirect, $oldRedirect);
+                $this->db->updateRow('tredirect', 'kRedirect', (int)$oldRedirect->kRedirect, $oldRedirect);
             }
         }
 
-        $redirect = new Redirect();
-        return $redirect->saveExt('/' . $oldSeo, $newSeo, true);
+        return (new Redirect())->saveExt('/' . $oldSeo, $newSeo, true);
     }
 }

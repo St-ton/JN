@@ -222,7 +222,7 @@ abstract class AbstractSync
         if ($subCount === 0) {
             return;
         }
-        $noStock  = ($product->fLagerbestand <= 0 || ($product->fLagerbestand / $subCount) < $stockRatio);
+        $noStock = ($product->fLagerbestand <= 0 || ($product->fLagerbestand / $subCount) < $stockRatio);
         if ($sendMails === false || ($stockRelevance && $noStock)) {
             return;
         }

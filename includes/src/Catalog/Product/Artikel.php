@@ -5683,7 +5683,7 @@ class Artikel
      */
     public function getShippingAndTaxData(): array
     {
-        if (!isset($_SESSION['Kundengruppe'])) {
+        if (!isset($_SESSION['Kundengruppe']) || !\is_a($_SESSION['Kundengruppe'], CustomerGroup::class)) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
         }
         if (!isset($_SESSION['Link_Versandseite'])) {

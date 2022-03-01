@@ -8,6 +8,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Campaign;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 use JTL\dbeS\Mapper;
 use JTL\dbeS\Starter;
 use JTL\Exceptions\CircularReferenceException;
@@ -670,12 +671,27 @@ abstract class AbstractSync
      */
     protected function checkDbeSXmlRedirect($oldSeo, $newSeo): bool
     {
-        // Insert into tredirect weil sich das SEO von der Kategorie geändert hat
+        // Insert into tredirect weil sich SEO von Kategorie oder Artikel geändert hat
         if ($oldSeo === $newSeo || $oldSeo === '' || $newSeo === '') {
             return false;
         }
-        $redirect = new Redirect();
 
+        $oldRedirects = $this->db->queryPrepared(
+            'SELECT * FROM tredirect WHERE cToUrl = :oldSeo',
+            ['oldSeo' => $oldSeo],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+
+        foreach ($oldRedirects as $oldRedirect) {
+            $oldRedirect->cToUrl = $newSeo;
+            if (Text::endsWith($oldRedirect->cFromUrl, '/' . $newSeo)) {
+                $this->db->delete('tredirect', 'kRedirect', $oldRedirect->kRedirect);
+            } else {
+                $this->db->updateRow('tredirect', 'kRedirect', $oldRedirect->kRedirect, $oldRedirect);
+            }
+        }
+
+        $redirect = new Redirect();
         return $redirect->saveExt('/' . $oldSeo, $newSeo, true);
     }
 }

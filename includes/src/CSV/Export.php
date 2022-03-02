@@ -26,7 +26,7 @@ class Export
      * @param bool           $head
      * @return void|bool - false = failure or exporter-id-mismatch
      */
-    public function handleCsvExportAction(
+    public function export(
         string $id,
         string $fileName,
         $source,

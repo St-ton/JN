@@ -5,6 +5,20 @@
             {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:'/bewertung.php'}
         </div>
     </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-6 col-xl-auto">
+                    {include file='tpl_inc/csv_export_btn.tpl' exporterId='exportRatings'}
+                </div>
+                <div class="col-sm-6 col-xl-auto">
+                    {include file='tpl_inc/csv_import_btn.tpl' importerId='importRatings'}
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="tabs">
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">
@@ -92,24 +106,18 @@
                             </div>
                             <div class="card-footer save-wrapper">
                                 <div class="row">
-                                    <div class="col-sm-3 col-xl-auto text-left">
+                                    <div class="col-sm-4 col-xl-auto text-left">
                                         <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                             <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
                                         </div>
                                     </div>
-                                    <div class="ml-auto col-sm-2 col-xl-auto">
-                                        {include file='tpl_inc/csv_export_btn.tpl' exporterId='exportInactiveRatings'}
-                                    </div>
-                                    <div class="col-sm-2 col-xl-auto">
-                                        {include file='tpl_inc/csv_import_btn.tpl' importerId='importRatings'}
-                                    </div>
-                                    <div class="col-sm-2 col-xl-auto">
+                                    <div class="ml-auto col-sm-4 col-xl-auto">
                                         <button name="action" type="submit" value="delete" class="btn btn-danger btn-block">
                                             <i class="fas fa-trash-alt"></i> {__('delete')}
                                         </button>
                                     </div>
-                                    <div class="col-sm-3 col-xl-auto">
+                                    <div class="col-sm-4 col-xl-auto">
                                         <button name="action" type="submit" value="activate" class="btn btn-primary btn-block">
                                             <i class="fa fa-thumbs-up"></i> {__('activate')}
                                         </button>
@@ -212,17 +220,13 @@
                             </div>
                             <div class="card-footer save-wrapper">
                                 <div class="row">
-                                    <div class="col-sm-4 col-xl-auto text-left">
+                                    <div class="col-sm-6 col-xl-auto text-left">
                                         <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
                                             <label class="custom-control-label" for="ALLMSGS3">{__('globalSelectAll')}</label>
                                         </div>
                                     </div>
-
-                                    <div class="ml-auto col-sm-4 col-xl-auto">
-                                        {include file='tpl_inc/csv_export_btn.tpl' exporterId='exportActiveRatings'}
-                                    </div>
-                                    <div class="col-sm-4 col-xl-auto">
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
                                         <button name="action" type="submit" value="delete" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
                                     </div>
                                 </div>

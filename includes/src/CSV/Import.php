@@ -113,6 +113,7 @@ class Import
         if (\count($fields) === 0) {
             $fields = \fgetcsv($fs, 0, $delim);
         }
+        $columns           = [];
         $customerIDPresent = false;
         $customerNoPresent = false;
         $articleNoPresent  = false;
@@ -154,8 +155,11 @@ class Import
                 $this->errors[] = \__('csvImportArtNrAndDestUrlError');
             }
         }
-        if ($importType === 0 && \is_string($target)) {
-            $this->db->query('TRUNCATE ' . $target);
+        if (\is_string($target)) {
+            if ($importType === 0) {
+                $this->db->query('TRUNCATE ' . $target);
+            }
+            $columns = $this->db->getCollection('SHOW COLUMNS FROM ' . $target)->pluck('Field')->toArray();
         }
         while (($row = \fgetcsv($fs, 0, $delim)) !== false) {
             $obj = new stdClass();
@@ -171,7 +175,7 @@ class Import
                 $obj->cFromUrl = $from;
             }
             if ($articleNoPresent) {
-                $this->addProductDataByArtNo($obj, $obj->cIso ?? $defLanguage->cISO);
+                $this->addProductDataByArtNo($obj, $obj->cIso ?? $defLanguage->getCode());
                 if (empty($obj->cToUrl)) {
                     ++$this->errorCount;
                     $this->errors[] = \sprintf(\__('csvImportArtNrNotFound'), $obj->cArtNr);
@@ -195,6 +199,11 @@ class Import
                 if ($importType === self::TYPE_OVERWRITE_EXISTING) {
                     $this->db->delete($target, $fields, $row);
                 }
+                foreach (\get_object_vars($obj) as $key => $value) {
+                    if (!\in_array($key, $columns, true)) {
+                        unset($obj->$key);
+                    }
+                }
                 if ($this->db->insert($table, $obj) === 0) {
                     ++$this->errorCount;
                     $this->errors[] = \sprintf(\__('csvImportSaveError'), $rowIndex);
@@ -217,7 +226,7 @@ class Import
         if ($customerID === null || $customerID < 1) {
             return;
         }
-        $obj->customer = new Customer($obj->kKunde);
+        $obj->customer = new Customer((int)$obj->kKunde);
     }
 
     /**
@@ -268,7 +277,6 @@ class Import
         if (!isset($data->cArtNr)) {
             return;
         }
-
         $item = $this->db->getSingleObject(
             "SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo
                 FROM tartikel

@@ -91,7 +91,7 @@ final class ReviewAdminController extends BaseController
         } elseif (Request::verifyGPCDataInt('bewertung_aktiv') === 1) {
             $this->handleActive($_POST, $action);
         } elseif ($action === 'csvExport') {
-            $this->export(Request::verifyGPDataString('exportcsv') === 'exportActiveRatings');
+            $this->export();
         } elseif ($action === 'csvImport') {
             $this->import(Request::verifyGPCDataInt('importType'));
         }
@@ -100,24 +100,16 @@ final class ReviewAdminController extends BaseController
     }
 
     /**
-     * @param bool $active
+     * @return void
      */
-    private function export(bool $active): void
+    private function export(): void
     {
         $export = new Export();
-        if ($active === true) {
-            $export->handleCsvExportAction(
-                'activereviews',
-                'active_reviews.csv',
-                [$this, 'getActiveReviews'],
-            );
-        } else {
-            $export->handleCsvExportAction(
-                'inactivereviews',
-                'inactive_reviews.csv',
-                [$this, 'getInactiveReviews'],
-            );
-        }
+        $export->export(
+            'activereviews',
+            'reviews.csv',
+            [$this, 'getAllReviews'],
+        );
     }
 
     /**
@@ -126,7 +118,7 @@ final class ReviewAdminController extends BaseController
     private function import(int $type): void
     {
         $import = new Import($this->db);
-        $import->import('importRatings', [$this, 'insertImportItem']);
+        $import->import('importRatings', [$this, 'insertImportItem'], [], null, $type);
         $imported = $import->getImportCount();
         foreach ($import->getErrors() as $i => $error) {
             $this->alertService->addError($error, 'importErr' . $i);
@@ -158,8 +150,6 @@ final class ReviewAdminController extends BaseController
         if ($importType === Import::TYPE_TRUNCATE_BEFORE && $importDeleteDone === false) {
             $this->db->query('TRUNCATE TABLE tbewertung');
             $importDeleteDone = true;
-        } elseif ($importType === Import::TYPE_OVERWRITE_EXISTING && isset($obj->kBewertung)) {
-            $this->db->delete('tbewertung', 'kBewertung', (int)$obj->kBewertung);
         }
         $ins                  = new stdClass();
         $ins->kArtikel        = (int)$obj->kArtikel;
@@ -170,7 +160,8 @@ final class ReviewAdminController extends BaseController
         $ins->cText           = $obj->cText;
         $ins->nHilfreich      = (int)($obj->nHilfreich ?? 0);
         $ins->nNichtHilfreich = (int)($obj->nNichtHilfreich ?? 0);
-        $ins->nSterne         = (int)$obj->nSterne;
+        $ins->nSterne         = \min((int)$obj->nSterne, 5);
+        $ins->nSterne         = \max($ins->nSterne, 0);
         if ($obj->nAktiv === 'Y' || $obj->nAktiv === 'y') {
             $ins->nAktiv = 1;
         } elseif ($obj->nAktiv === 'N' || $obj->nAktiv === 'n') {
@@ -179,13 +170,18 @@ final class ReviewAdminController extends BaseController
             $ins->nAktiv = (int)$obj->nAktiv;
         }
         $ins->dDatum = $obj->dDatum;
-        if (isset($obj->cAntwort)) {
+        if (isset($obj->cAntwort) && $obj->cAntwort !== '') {
             $ins->cAntwort = $obj->cAntwort;
         }
-        if (isset($obj->dAntwortDatum)) {
+        if (isset($obj->dAntwortDatum) && $obj->dAntwortDatum !== '') {
             $ins->dAntwortDatum = $obj->dAntwortDatum;
         }
-        $ok = $this->db->insert('tbewertung', $ins) > 0;
+        if ($importType === Import::TYPE_OVERWRITE_EXISTING && isset($obj->kBewertung)) {
+            $ins->kBewertung = (int)$obj->kBewertung;
+            $ok              = $this->db->upsert('tbewertung', $ins) >= 0;
+        } else {
+            $ok = $this->db->insert('tbewertung', $ins) > 0;
+        }
         if ($ok === true) {
             $this->importedProductIDs[] = $ins->kArtikel;
         }
@@ -325,6 +321,18 @@ final class ReviewAdminController extends BaseController
         $ratingData->cTitel          = Text::filterXSS($ratingData->cTitel);
 
         return $ratingData;
+    }
+
+    /**
+     * @return stdClass[]
+     */
+    public function getAllReviews(): array
+    {
+        return $this->db->getCollection(
+            'SELECT *
+                FROM tbewertung
+                ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC',
+        )->each([$this, 'sanitize'])->toArray();
     }
 
     /**

@@ -1,7 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Checkout\Kupon;
+use JTL\CSV\Export;
+use JTL\CSV\Import;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -19,88 +21,96 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_COUPON_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
-$action      = '';
+$action      = Request::verifyGPDataString('action');
 $tab         = Kupon::TYPE_STANDARD;
 $languages   = LanguageHelper::getAllLanguages(0, true);
 $coupon      = null;
 $alertHelper = Shop::Container()->getAlertService();
 $errors      = [];
-$res         = handleCsvImportAction('kupon', static function ($obj, &$importDeleteDone, $importType = 2) {
-    $db          = Shop::Container()->getDB();
-    $couponNames = [];
-    $cols        = $db->getCollection(
-        'SELECT `column_name` AS name
-            FROM information_schema.columns 
-            WHERE `table_schema` = :sma
-                AND `table_name` = :tn',
-        ['sma' => DB_NAME, 'tn' => 'tkupon']
-    )->map(static function ($e) {
-        return $e->name;
-    })->toArray();
-
-    foreach (get_object_vars($obj) as $key => $val) {
-        if (mb_strpos($key, 'cName_') === 0) {
-            $couponNames[mb_substr($key, 6)] = Text::filterXSS($val);
-            unset($obj->$key);
-        }
-        if (!in_array($key, $cols, true)) {
-            unset($obj->$key);
-        }
-    }
-    if (!isset(
-        $obj->cCode,
-        $obj->nGanzenWKRabattieren,
-        $obj->cKunden,
-        $obj->cKategorien,
-        $obj->cHersteller,
-        $obj->cArtikel
-    )) {
-        return false;
-    }
-    if ($importType === 0 && $importDeleteDone === false) {
-        $db->query('TRUNCATE TABLE tkupon');
-        $db->query('TRUNCATE TABLE tkuponsprache');
-        $importDeleteDone = true;
-    }
-
-    if ($db->select('tkupon', 'cCode', $obj->cCode) !== null) {
-        return false;
-    }
-
-    unset($obj->dLastUse);
-    $obj->cCode = Text::filterXSS($obj->cCode);
-    $obj->cName = Text::filterXSS($obj->cName);
-    $couponID   = $db->insert('tkupon', $obj);
-    if ($couponID === 0) {
-        return false;
-    }
-
-    foreach ($couponNames as $key => $val) {
-        $res = $db->insert('tkuponsprache', (object)['kKupon' => $couponID, 'cISOSprache' => $key, 'cName' => $val]);
-        if ($res === 0) {
-            return false;
-        }
-    }
-
-    return true;
-}, [], null, 2, $errors);
-
-if ($res > 0) {
-    if (count($errors) > 0) {
-        foreach ($errors as $key => $error) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'errorImportCSV_' . $key);
-        }
-    } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImportCSV'), 'errorImportCSV');
-    }
-} elseif ($res === 0) {
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImportCSV'), 'successImportCSV');
-}
-
+$importer    = Request::verifyGPDataString('importcsv');
+$db          = Shop::Container()->getDB();
 if (Form::validateToken()) {
+    if ($importer !== '') {
+        $import = new Import($db);
+        $import->import('kupon', static function ($obj, &$importDeleteDone, $importType = 2) use ($db) {
+            $couponNames = [];
+            $cols        = $db->getCollection(
+                'SELECT `column_name` AS name
+                    FROM information_schema.columns 
+                    WHERE `table_schema` = :sma
+                        AND `table_name` = :tn',
+                ['sma' => DB_NAME, 'tn' => 'tkupon']
+            )->map(static function ($e) {
+                return $e->name;
+            })->toArray();
+
+            foreach (get_object_vars($obj) as $key => $val) {
+                if (mb_strpos($key, 'cName_') === 0) {
+                    $couponNames[mb_substr($key, 6)] = Text::filterXSS($val);
+                    unset($obj->$key);
+                }
+                if (!in_array($key, $cols, true)) {
+                    unset($obj->$key);
+                }
+            }
+            if (!isset(
+                $obj->cCode,
+                $obj->nGanzenWKRabattieren,
+                $obj->cKunden,
+                $obj->cKategorien,
+                $obj->cHersteller,
+                $obj->cArtikel
+            )) {
+                return false;
+            }
+            if ($importType === 0 && $importDeleteDone === false) {
+                $db->query('TRUNCATE TABLE tkupon');
+                $db->query('TRUNCATE TABLE tkuponsprache');
+                $importDeleteDone = true;
+            }
+            if (isset($obj->cKuponTyp)
+                && $obj->cKuponTyp !== 'neukundenkupon'
+                && $db->select('tkupon', 'cCode', $obj->cCode) !== null
+            ) {
+                return false;
+            }
+
+            unset($obj->dLastUse);
+            if (isset($obj->dGueltigBis) && $obj->dGueltigBis === '') {
+                unset($obj->dGueltigBis);
+            }
+            if (isset($obj->dGueltigAb) && $obj->dGueltigAb === '') {
+                unset($obj->dGueltigAb);
+            }
+            $obj->cCode = Text::filterXSS($obj->cCode);
+            $obj->cName = Text::filterXSS($obj->cName);
+            $couponID   = $db->insert('tkupon', $obj);
+            if ($couponID === 0) {
+                return false;
+            }
+
+            foreach ($couponNames as $key => $val) {
+                $res = $db->insert(
+                    'tkuponsprache',
+                    (object)['kKupon' => $couponID, 'cISOSprache' => $key, 'cName' => $val]
+                );
+                if ($res === 0) {
+                    return false;
+                }
+            }
+
+            return true;
+        }, [], null, Request::verifyGPCDataInt('importType'));
+        $errorCount = $import->getErrorCount();
+        if ($errorCount > 0) {
+            foreach ($import->getErrors() as $key => $error) {
+                $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'errorImportCSV_' . $key);
+            }
+        } else {
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImportCSV'), 'successImportCSV');
+        }
+    }
     if (isset($_POST['action'])) {
         if ($_POST['action'] === 'speichern') {
             $action = 'speichern';
@@ -161,7 +171,7 @@ if ($action === 'bearbeiten') {
     }
 }
 if ($action === 'bearbeiten') {
-    $taxClasses  = Shop::Container()->getDB()->getObjects('SELECT kSteuerklasse, cName FROM tsteuerklasse');
+    $taxClasses  = $db->getObjects('SELECT kSteuerklasse, cName FROM tsteuerklasse');
     $customerIDs = array_filter(
         Text::parseSSKint($coupon->cKunden),
         static function ($customerID) {
@@ -238,33 +248,46 @@ if ($action === 'bearbeiten') {
     $nKuponVersandTotal   = getCouponCount(Kupon::TYPE_SHIPPING);
     $nKuponNeukundenTotal = getCouponCount(Kupon::TYPE_NEWCUSTOMER);
 
-    handleCsvExportAction(
+    $validExportTypes = [
         Kupon::TYPE_STANDARD,
-        Kupon::TYPE_STANDARD . '.csv',
-        static function () use ($filterStandard) {
-            return getExportableCoupons(Kupon::TYPE_STANDARD, $filterStandard->getWhereSQL());
-        },
-        [],
-        ['kKupon']
-    );
-    handleCsvExportAction(
         Kupon::TYPE_SHIPPING,
-        Kupon::TYPE_SHIPPING . '.csv',
-        static function () use ($filterVersand) {
-            return getExportableCoupons(Kupon::TYPE_SHIPPING, $filterVersand->getWhereSQL());
-        },
-        [],
-        ['kKupon']
-    );
-    handleCsvExportAction(
-        Kupon::TYPE_NEWCUSTOMER,
-        Kupon::TYPE_NEWCUSTOMER . '.csv',
-        static function () use ($filterNeukunden) {
-            return getExportableCoupons(Kupon::TYPE_NEWCUSTOMER, $filterNeukunden->getWhereSQL());
-        },
-        [],
-        ['kKupon']
-    );
+        Kupon::TYPE_NEWCUSTOMER
+    ];
+    $exportID         = Request::verifyGPDataString('exportcsv');
+    if ($action === 'csvExport' && in_array($exportID, $validExportTypes, true) && Form::validateToken()) {
+        $export = new Export();
+        if ($exportID === Kupon::TYPE_STANDARD) {
+            $export->export(
+                $exportID,
+                $exportID . '.csv',
+                static function () use ($filterStandard) {
+                    return getExportableCoupons(Kupon::TYPE_STANDARD, $filterStandard->getWhereSQL());
+                },
+                [],
+                ['kKupon']
+            );
+        } elseif ($exportID === Kupon::TYPE_STANDARD) {
+            $export->export(
+                $exportID,
+                $exportID . '.csv',
+                static function () use ($filterVersand) {
+                    return getExportableCoupons(Kupon::TYPE_SHIPPING, $filterVersand->getWhereSQL());
+                },
+                [],
+                ['kKupon']
+            );
+        } elseif ($exportID === Kupon::TYPE_NEWCUSTOMER) {
+            $export->export(
+                $exportID,
+                $exportID . '.csv',
+                static function () use ($filterNeukunden) {
+                    return getExportableCoupons(Kupon::TYPE_NEWCUSTOMER, $filterNeukunden->getWhereSQL());
+                },
+                [],
+                ['kKupon']
+            );
+        }
+    }
     $paginationStandard  = (new Pagination(Kupon::TYPE_STANDARD))
         ->setSortByOptions($sortByOptions)
         ->setItemCount($nKuponStandardCount)

@@ -3,7 +3,6 @@
 namespace JTL\Review;
 
 use Exception;
-use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
 use JTL\CSV\Export;
 use JTL\CSV\Import;
@@ -12,6 +11,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Model\DataModelInterface;
 use JTL\Pagination\Pagination;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
@@ -73,13 +73,13 @@ final class ReviewAdminController extends BaseController
             $step = 'bewertung_editieren';
             if ($this->edit(Text::filterXSS($_POST))) {
                 $step = 'bewertung_uebersicht';
-                $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successRatingEdit'), 'successRatingEdit');
+                $this->alertService->addSuccess(\__('successRatingEdit'), 'successRatingEdit');
                 if (Request::verifyGPCDataInt('nFZ') === 1) {
                     \header('Location: freischalten.php');
                     exit();
                 }
             } else {
-                $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorFillRequired'), 'errorFillRequired');
+                $this->alertService->addError(\__('errorFillRequired'), 'errorFillRequired');
             }
 
             return $step;
@@ -101,7 +101,6 @@ final class ReviewAdminController extends BaseController
 
     /**
      * @param bool $active
-     * @return void
      */
     private function export(bool $active): void
     {
@@ -121,17 +120,30 @@ final class ReviewAdminController extends BaseController
         }
     }
 
-    private function import(int $type)
+    /**
+     * @param int $type
+     */
+    private function import(int $type): void
     {
         $import = new Import($this->db);
-        $import->handleCsvImportAction('importRatings', [$this, 'insertImportItem']);
-        foreach (\array_unique($this->importedProductIDs) as $id) {
-            $this->updateAverage($id, $this->config['bewertung']['bewertung_freischalten']);
+        $import->import('importRatings', [$this, 'insertImportItem']);
+        $imported = $import->getImportCount();
+        foreach ($import->getErrors() as $i => $error) {
+            $this->alertService->addError($error, 'importErr' . $i);
+        }
+        if ($imported > 0) {
+            foreach (\array_unique($this->importedProductIDs) as $id) {
+                $this->updateAverage($id, $this->config['bewertung']['bewertung_freischalten']);
+            }
+            $this->alertService->addSuccess(
+                \sprintf(\__('%d item(s) successfully imported.'), $imported),
+                'importSuccess'
+            );
         }
     }
 
     /**
-     * callback for Import
+     * callback for import
      *
      * @param stdClass $obj
      * @param bool     $importDeleteDone
@@ -201,6 +213,11 @@ final class ReviewAdminController extends BaseController
         $existing = \array_keys(\get_object_vars($rowData));
         foreach ($required as $key) {
             if (!\in_array($key, $existing, true)) {
+                $this->alertService->addError(
+                    \sprintf(\__('Required attribute %s not found in row.'), $key),
+                    \uniqid('importerr', true)
+                );
+
                 return false;
             }
         }
@@ -210,20 +227,17 @@ final class ReviewAdminController extends BaseController
 
     /**
      * @param array $data
-     * @return bool
      */
-    private function setConfig(array $data): bool
+    private function setConfig(array $data): void
     {
         if (Request::verifyGPDataString('bewertung_guthaben_nutzen') === 'Y'
             && Request::verifyGPDataString('bewertung_freischalten') !== 'Y'
         ) {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorCreditUnlock'), 'errorCreditUnlock');
-            return false;
+            $this->alertService->addError(\__('errorCreditUnlock'), 'errorCreditUnlock');
+            return;
         }
         $this->cache->flushTags([\CACHING_GROUP_ARTICLE]);
         \saveAdminSectionSettings(\CONF_BEWERTUNG, $data);
-
-        return true;
     }
 
     /**
@@ -231,42 +245,30 @@ final class ReviewAdminController extends BaseController
      *
      * @param array  $data
      * @param string $action
-     * @return bool
      */
-    private function handleInactive(array $data, string $action): bool
+    private function handleInactive(array $data, string $action): void
     {
         if ($action === 'activate' && GeneralObject::hasCount('kBewertung', $data)) {
-            $this->alertService->addAlert(
-                Alert::TYPE_SUCCESS,
+            $this->alertService->addSuccess(
                 $this->activate($data['kBewertung']) . \__('successRatingUnlock'),
                 'successRatingUnlock'
             );
-
-            return true;
-        }
-        if ($action === 'delete' && GeneralObject::hasCount('kBewertung', $data)) {
-            $this->alertService->addAlert(
-                Alert::TYPE_SUCCESS,
+        } elseif ($action === 'delete' && GeneralObject::hasCount('kBewertung', $data)) {
+            $this->alertService->addSuccess(
                 $this->delete($_POST['kBewertung']) . \__('successRatingDelete'),
                 'successRatingDelete'
             );
-
-            return true;
         }
-
-        return false;
     }
 
     /**
      * @param array  $data
      * @param string $action
-     * @return bool
      */
-    private function handleActive(array $data, string $action): bool
+    private function handleActive(array $data, string $action): void
     {
         if ($action === 'delete' && GeneralObject::hasCount('kBewertung', $data)) {
-            $this->alertService->addAlert(
-                Alert::TYPE_SUCCESS,
+            $this->alertService->addSuccess(
                 $this->delete($data['kBewertung']) . \__('successRatingDelete'),
                 'successRatingDelete'
             );
@@ -285,8 +287,6 @@ final class ReviewAdminController extends BaseController
             $this->smarty->assign('cArtNr', Text::filterXSS($data['cArtNr']))
                 ->assign('filteredReviews', $filtered);
         }
-
-        return true;
     }
 
     /**
@@ -296,11 +296,7 @@ final class ReviewAdminController extends BaseController
     {
         if (Request::verifyGPDataString('a') === 'delreply' && Form::validateToken()) {
             $this->removeReply(Request::verifyGPCDataInt('kBewertung'));
-            $this->alertService->addAlert(
-                Alert::TYPE_SUCCESS,
-                \__('successRatingCommentDelete'),
-                'successRatingCommentDelete'
-            );
+            $this->alertService->addSuccess(\__('successRatingCommentDelete'), 'successRatingCommentDelete');
         }
         $activePagination   = $this->getActivePagination();
         $inactivePagination = $this->getInactivePagination();
@@ -422,7 +418,7 @@ final class ReviewAdminController extends BaseController
     public function getReview(int $id): ?ReviewModel
     {
         try {
-            return ReviewModel::load(['id' => $id], $this->db, ReviewModel::ON_NOTEXISTS_FAIL);
+            return ReviewModel::load(['id' => $id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
         } catch (Exception $e) {
             return null;
         }
@@ -436,7 +432,7 @@ final class ReviewAdminController extends BaseController
     {
         $id = Request::verifyGPCDataInt('kBewertung');
         try {
-            $review = ReviewModel::load(['id' => $id], $this->db, ReviewModel::ON_NOTEXISTS_FAIL);
+            $review = ReviewModel::load(['id' => $id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
         } catch (Exception $e) {
             return false;
         }
@@ -465,7 +461,7 @@ final class ReviewAdminController extends BaseController
         $cacheTags = [];
         foreach (\array_map('\intval', $ids) as $id) {
             try {
-                $model = ReviewModel::load(['id' => $id], $this->db, ReviewModel::ON_NOTEXISTS_FAIL);
+                $model = ReviewModel::load(['id' => $id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
             } catch (Exception $e) {
                 continue;
             }
@@ -490,7 +486,7 @@ final class ReviewAdminController extends BaseController
         $cacheTags = [];
         foreach (\array_map('\intval', $ids) as $id) {
             try {
-                $model = ReviewModel::load(['id' => $id], $this->db, ReviewModel::ON_NOTEXISTS_FAIL);
+                $model = ReviewModel::load(['id' => $id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
             } catch (Exception $e) {
                 continue;
             }
@@ -513,7 +509,7 @@ final class ReviewAdminController extends BaseController
     private function removeReply(int $id): void
     {
         try {
-            $model = ReviewModel::load(['id' => $id], $this->db, ReviewModel::ON_NOTEXISTS_FAIL);
+            $model = ReviewModel::load(['id' => $id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
         } catch (Exception $e) {
             return;
         }
@@ -524,22 +520,17 @@ final class ReviewAdminController extends BaseController
 
     /**
      * @param ReviewModel $review
-     * @return int
      */
-    private function deleteReviewReward(ReviewModel $review): int
+    private function deleteReviewReward(ReviewModel $review): void
     {
-        $affected = 0;
         foreach ($review->getBonus() as $bonusItem) {
             /** @var ReviewBonusModel $bonusItem */
             $customer = $this->db->select('tkunde', 'kKunde', $bonusItem->getCustomerID());
             if ($customer !== null && $customer->kKunde > 0) {
                 $balance = $customer->fGuthaben - $bonusItem->getBonus();
-                $upd     = (object)['fGuthaben' => $balance > 0 ? $balance : 0];
+                $upd     = (object)['fGuthaben' => \max($balance, 0)];
                 $this->db->update('tkunde', 'kKunde', $bonusItem->getCustomerID(), $upd);
-                ++$affected;
             }
         }
-
-        return $affected;
     }
 }

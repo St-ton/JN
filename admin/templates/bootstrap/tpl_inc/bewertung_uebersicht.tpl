@@ -220,7 +220,7 @@
                                     </div>
 
                                     <div class="ml-auto col-sm-4 col-xl-auto">
-                                        {include file='tpl_inc/csv_export_btn.tpl' exporterId='exportInactiveRatings'}
+                                        {include file='tpl_inc/csv_export_btn.tpl' exporterId='exportActiveRatings'}
                                     </div>
                                     <div class="col-sm-4 col-xl-auto">
                                         <button name="action" type="submit" value="delete" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>

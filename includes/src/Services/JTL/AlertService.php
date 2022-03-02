@@ -14,7 +14,7 @@ class AlertService implements AlertServiceInterface
     /**
     * @var Collection
     */
-    private $alertList;
+    private Collection $alertList;
 
     /**
      * Alertservice constructor.
@@ -30,14 +30,10 @@ class AlertService implements AlertServiceInterface
      */
     public function initFromSession(): void
     {
-        $alerts = $_SESSION['alerts'] ?? '';
-
-        if (!empty($alerts)) {
-            foreach ($alerts as $alertSerialized) {
-                $alert = \unserialize($alertSerialized, ['allowed_classes', Alert::class]);
-                if ($alert !== false) {
-                    $this->pushAlert($alert);
-                }
+        foreach ($_SESSION['alerts'] ?? [] as $alertSerialized) {
+            $alert = \unserialize($alertSerialized, ['allowed_classes', Alert::class]);
+            if ($alert !== false) {
+                $this->pushAlert($alert);
             }
         }
     }
@@ -54,6 +50,38 @@ class AlertService implements AlertServiceInterface
         $this->pushAlert($alert);
 
         return $alert;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function addError(string $message, string $key, array $options = null): ?Alert
+    {
+        return $this->addAlert(Alert::TYPE_ERROR, $message, $key, $options);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function addWarning(string $message, string $key, array $options = null): ?Alert
+    {
+        return $this->addAlert(Alert::TYPE_WARNING, $message, $key, $options);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function addInfo(string $message, string $key, array $options = null): ?Alert
+    {
+        return $this->addAlert(Alert::TYPE_INFO, $message, $key, $options);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function addSuccess(string $message, string $key, array $options = null): ?Alert
+    {
+        return $this->addAlert(Alert::TYPE_SUCCESS, $message, $key, $options);
     }
 
     /**
@@ -99,11 +127,11 @@ class AlertService implements AlertServiceInterface
      */
     public function removeAlertByKey(string $key): void
     {
-        $key = $this->getAlertList()->search(static function (Alert $alert) use ($key) {
+        $id = $this->getAlertList()->search(static function (Alert $alert) use ($key) {
             return $alert->getKey() === $key;
         });
-        if ($key !== false) {
-            $this->getAlertList()->pull($key);
+        if ($id !== false) {
+            $this->getAlertList()->pull($id);
         }
     }
 

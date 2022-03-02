@@ -5,10 +5,8 @@ namespace JTL\CSV;
 use InvalidArgumentException;
 use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
-use JTL\Helpers\Request;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
-use JTL\Shop;
 use stdClass;
 use TypeError;
 
@@ -28,6 +26,16 @@ class Import
      * @var string[]
      */
     private array $errors = [];
+
+    /**
+     * @var int
+     */
+    private int $importCount = 0;
+
+    /**
+     * @var int
+     */
+    private int $errorCount = 0;
 
     /**
      * @var DbInterface
@@ -59,22 +67,19 @@ class Import
      *      0 = clear table, then import (careful!!! again: this will clear the table denoted by $target)
      *      1 = insert new, overwrite existing
      *      2 = insert only non-existing
-     * @return int - -1 if importer-id-mismatch / 0 on success / >1 import error count
+     * @return bool
      * @throws TypeError
      * @throws InvalidArgumentException
      */
-    public function handleCsvImportAction(
+    public function import(
         string $id,
         $target,
         array $fields = [],
         ?string $delim = null,
         int $importType = self::TYPE_INSERT_NEW
-    ): int {
+    ): bool {
         if (!\is_string($target) && !\is_callable($target)) {
             throw new TypeError('Argument $target must be either a string or a callable');
-        }
-        if (isset($_REQUEST['importType'])) {
-            $importType = Request::verifyGPCDataInt('importType');
         }
         if ($importType !== 0 && $importType !== 1 && $importType !== 2) {
             throw new InvalidArgumentException('$importType must be 0, 1 or 2');
@@ -91,14 +96,16 @@ class Import
             'application/vnd.msexcel'
         ];
         if (!\in_array($csvMime, $allowed, true)) {
-            $this->errors[] = \__('csvImportInvalidMime');
+            $this->errors[]   = \__('csvImportInvalidMime');
+            $this->errorCount = 1;
 
-            return 1;
+            return false;
         }
 
         $delim             = $delim ?? $this->getCsvDelimiter($csvFilename);
         $fs                = \fopen($_FILES['csvfile']['tmp_name'], 'rb');
-        $errorCount        = 0;
+        $this->errorCount  = 0;
+        $this->importCount = 0;
         $importDeleteDone  = false;
         $oldRedirectFormat = false;
         $defLanguage       = LanguageHelper::getDefaultLanguage();
@@ -110,7 +117,6 @@ class Import
         $customerNoPresent = false;
         $articleNoPresent  = false;
         $destUrlPresent    = false;
-        Shop::dbg($fields, false, 'fields:');
         foreach ($fields as &$field) {
             if ($field === 'sourceurl') {
                 $field             = 'cFromUrl';
@@ -138,9 +144,10 @@ class Import
 
         if ($oldRedirectFormat) {
             if ($destUrlPresent === false && $articleNoPresent === false) {
-                $this->errors[] = \__('csvImportNoArtNrOrDestUrl');
+                $this->errors[]   = \__('csvImportNoArtNrOrDestUrl');
+                $this->errorCount = 1;
 
-                return 1;
+                return false;
             }
 
             if ($destUrlPresent === true && $articleNoPresent === true) {
@@ -166,7 +173,7 @@ class Import
             if ($articleNoPresent) {
                 $this->addProductDataByArtNo($obj, $obj->cIso ?? $defLanguage->cISO);
                 if (empty($obj->cToUrl)) {
-                    ++$errorCount;
+                    ++$this->errorCount;
                     $this->errors[] = \sprintf(\__('csvImportArtNrNotFound'), $obj->cArtNr);
                     continue;
                 }
@@ -179,7 +186,9 @@ class Import
             }
             if (\is_callable($target)) {
                 if ($target($obj, $importDeleteDone, $importType) === false) {
-                    ++$errorCount;
+                    ++$this->errorCount;
+                } else {
+                    ++$this->importCount;
                 }
             } else { // is_string($target)
                 $table = $target;
@@ -187,17 +196,21 @@ class Import
                     $this->db->delete($target, $fields, $row);
                 }
                 if ($this->db->insert($table, $obj) === 0) {
-                    ++$errorCount;
+                    ++$this->errorCount;
                     $this->errors[] = \sprintf(\__('csvImportSaveError'), $rowIndex);
+                } else {
+                    ++$this->importCount;
                 }
             }
-
             ++$rowIndex;
         }
 
-        return $errorCount;
+        return $this->errorCount === 0;
     }
 
+    /**
+     * @param stdClass $obj
+     */
     protected function addCustomerDataByCustomerID(stdClass $obj): void
     {
         $customerID = $obj->kKunde ?? null;
@@ -207,6 +220,9 @@ class Import
         $obj->customer = new Customer($obj->kKunde);
     }
 
+    /**
+     * @param stdClass $obj
+     */
     protected function addCustomerDataByCustomerNo(stdClass $obj): void
     {
         $customerNo = $obj->cKundenNr ?? $obj->kundenNr ?? $obj->customerNo ?? null;
@@ -231,7 +247,6 @@ class Import
     {
         $file      = \fopen($filename, 'rb');
         $firstLine = \fgets($file);
-
         foreach ([';', ',', '|', '\t'] as $delim) {
             if (mb_strpos($firstLine, $delim) !== false) {
                 \fclose($file);
@@ -299,6 +314,38 @@ class Import
     public function setErrors(array $errors): void
     {
         $this->errors = $errors;
+    }
+
+    /**
+     * @return int
+     */
+    public function getImportCount(): int
+    {
+        return $this->importCount;
+    }
+
+    /**
+     * @param int $importCount
+     */
+    public function setImportCount(int $importCount): void
+    {
+        $this->importCount = $importCount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getErrorCount(): int
+    {
+        return $this->errorCount;
+    }
+
+    /**
+     * @param int $errorCount
+     */
+    public function setErrorCount(int $errorCount): void
+    {
+        $this->errorCount = $errorCount;
     }
 
     /**

@@ -453,6 +453,7 @@ function saveCoupon(Kupon $coupon, array $languages)
  * Send notification emails to all customers admitted to this Kupon
  *
  * @param Kupon $coupon
+ * @deprecated since 5.2.0 (disabled via template SHOP-5794)
  */
 function informCouponCustomers(Kupon $coupon)
 {

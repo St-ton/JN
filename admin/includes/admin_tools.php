@@ -220,11 +220,7 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
     $alertService = Shop::Container()->getAlertService();
     if (!Form::validateToken()) {
         $msg = __('errorCSRF');
-        $alertService->addAlert(
-            Alert::TYPE_ERROR,
-            $msg,
-            'saveSettingsErrCsrf'
-        );
+        $alertService->addError($msg, 'saveSettingsErrCsrf');
 
         return $msg;
     }
@@ -245,20 +241,12 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
 
     if ($invalid > 0) {
         $msg = __('errorConfigSave');
-        $alertService->addAlert(
-            Alert::TYPE_ERROR,
-            $msg,
-            'saveSettingsErr'
-        );
+        $alertService->addError($msg, 'saveSettingsErr');
 
         return $msg;
     }
     $msg = __('successConfigSave');
-    $alertService->addAlert(
-        Alert::TYPE_SUCCESS,
-        $msg,
-        'saveSettings'
-    );
+    $alertService->addSuccess($msg, 'saveSettings');
 
     return $msg;
 }

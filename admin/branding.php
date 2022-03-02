@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Media\Image;
@@ -27,9 +26,9 @@ if (Request::verifyGPCDataInt('branding') === 1) {
     $step = 'branding_detail';
     if (Request::postInt('speicher_einstellung') === 1 && Form::validateToken()) {
         if (speicherEinstellung(Request::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
+            $alertHelper->addSuccess(__('successConfigSave'), 'successConfigSave');
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
+            $alertHelper->addError(__('errorFillRequired'), 'errorFillRequired');
         }
     }
     if (Request::verifyGPCDataInt('kBranding') > 0) {

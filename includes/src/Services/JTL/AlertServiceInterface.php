@@ -58,6 +58,22 @@ interface AlertServiceInterface
     public function addSuccess(string $message, string $key, array $options = null): ?Alert;
 
     /**
+     * @param string $message
+     * @param string $key
+     * @param array|null $options
+     * @return Alert|null
+     */
+    public function addDanger(string $message, string $key, array $options = null): ?Alert;
+
+    /**
+     * @param string $message
+     * @param string $key
+     * @param array|null $options
+     * @return Alert|null
+     */
+    public function addNotice(string $message, string $key, array $options = null): ?Alert;
+
+    /**
      * @param string $key
      * @return null|Alert
      */

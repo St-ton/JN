@@ -6,7 +6,6 @@ use DateTime;
 use DirectoryIterator;
 use Exception;
 use Illuminate\Support\Collection;
-use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\Cache\JTLCacheInterface;
 use JTL\ContentAuthor;
@@ -884,15 +883,10 @@ final class Controller
         if (empty($msg)) {
             $alertService->removeAlertByKey('newsMessage');
         } else {
-            $alertService->addAlert(Alert::TYPE_NOTE, $msg, 'newsMessage', ['saveInSession' => true]);
+            $alertService->addNotice($msg, 'newsMessage', ['saveInSession' => true]);
         }
         if ($this->isAllEmpty()) {
-            $alertService->addAlert(
-                Alert::TYPE_WARNING,
-                \__('All content is empty'),
-                'newsAllEmpty',
-                ['saveInSession' => true]
-            );
+            $alertService->addWarning(\__('All content is empty'), 'newsAllEmpty', ['saveInSession' => true]);
         }
 
         if (!empty($tab)) {

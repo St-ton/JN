@@ -6,7 +6,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('FILESYSTEM_VIEW', true, true);
 
-use JTL\Alert\Alert;
 use JTL\Filesystem\AdapterFactory;
 use JTL\Filesystem\Filesystem;
 use JTL\Helpers\Form;
@@ -47,12 +46,12 @@ if (!empty($_POST) && Form::validateToken()) {
             $fs         = new Filesystem($factory->getAdapter());
             $isShopRoot = $fs->fileExists('includes/config.JTL-Shop.ini.php');
             if ($isShopRoot) {
-                $alertService->addAlert(Alert::TYPE_INFO, __('fsValidConnection'), 'fsValidConnection');
+                $alertService->addInfo(__('fsValidConnection'), 'fsValidConnection');
             } else {
-                $alertService->addAlert(Alert::TYPE_ERROR, __('fsInvalidShopRoot'), 'fsInvalidShopRoot');
+                $alertService->addError(__('fsInvalidShopRoot'), 'fsInvalidShopRoot');
             }
         } catch (Exception $e) {
-            $alertService->addAlert(Alert::TYPE_ERROR, $e->getMessage(), 'errorFS');
+            $alertService->addError($e->getMessage(), 'errorFS');
         }
     }
 }

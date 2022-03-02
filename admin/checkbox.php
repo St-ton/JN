@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\CheckBox;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
@@ -31,13 +30,13 @@ if (isset($_POST['erstellenShowButton'])) {
     $checkboxIDs = Request::verifyGPDataIntegerArray('kCheckBox');
     if (isset($_POST['checkboxAktivierenSubmit'])) {
         $checkbox->activate($checkboxIDs);
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxActivate'), 'successCheckboxActivate');
+        $alertHelper->addSuccess(__('successCheckboxActivate'), 'successCheckboxActivate');
     } elseif (isset($_POST['checkboxDeaktivierenSubmit'])) {
         $checkbox->deactivate($checkboxIDs);
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxDeactivate'), 'successCheckboxDeactivate');
+        $alertHelper->addSuccess(__('successCheckboxDeactivate'), 'successCheckboxDeactivate');
     } elseif (isset($_POST['checkboxLoeschenSubmit'])) {
         $checkbox->delete($checkboxIDs);
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxDelete'), 'successCheckboxDelete');
+        $alertHelper->addSuccess(__('successCheckboxDelete'), 'successCheckboxDelete');
     }
 } elseif (Request::verifyGPCDataInt('edit') > 0) {
     $checkboxID = Request::verifyGPCDataInt('edit');
@@ -53,9 +52,9 @@ if (isset($_POST['erstellenShowButton'])) {
     if (count($checks) === 0) {
         $checkbox = speicherCheckBox($post, $languages);
         $step     = 'uebersicht';
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxCreate'), 'successCheckboxCreate');
+        $alertHelper->addSuccess(__('successCheckboxCreate'), 'successCheckboxCreate');
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
+        $alertHelper->addError(__('errorFillRequired'), 'errorFillRequired');
         $smarty->assign('cPost_arr', $post)
             ->assign('cPlausi_arr', $checks);
         if ($checkboxID > 0) {

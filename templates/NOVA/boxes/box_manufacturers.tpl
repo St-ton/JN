@@ -22,7 +22,7 @@
                 visible=false
                 id="crd-cllps-{$oBox->getID()}"
                 aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}
-                    {if $oBox->getManufacturers()|@count > 8}
+                    {if $oBox->getManufacturers()|count > 8}
                         {block name='boxes-box-manufacturers-dropdown'}
                             {dropdown class="w-100-util" variant="secondary btn-block" text="{lang key='selectManufacturer'}<span class='caret'></span>"}
                                 {foreach $oBox->getManufacturers() as $manufacturer}

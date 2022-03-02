@@ -205,16 +205,25 @@ abstract class AbstractSync
         if ($data->kArtikel <= 0) {
             return;
         }
-        $stockRatio    = $conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100;
-        $stockCheck    = ($data->cLagerKleinerNull ?? '') !== 'Y' && ($data->cLagerBeachten ?? 'Y') === 'Y';
-        $subscriptions = $this->db->selectAll(
+        $sendMails      = true;
+        $stockRatio     = $conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100;
+        $stockRelevance = ($data->cLagerKleinerNull ?? '') !== 'Y' && ($data->cLagerBeachten ?? 'Y') === 'Y';
+        $subscriptions  = $this->db->selectAll(
             'tverfuegbarkeitsbenachrichtigung',
             ['nStatus', 'kArtikel'],
             [0, $data->kArtikel]
         );
-        $subs          = \count($subscriptions);
-        $stock         = $data->fLagerbestand;
-        if ($subs === 0 || ( $stockCheck && ($stock <= 0 || ($stock / $subs) < $stockRatio))) {
+        \executeHook(\HOOK_SYNC_SEND_AVAILABILITYMAILS, [
+            'sendMails'     => &$sendMails,
+            'product'       => $data,
+            'subscriptions' => &$subscriptions,
+        ]);
+        $subCount = \count($subscriptions);
+        if ($subCount === 0) {
+            return;
+        }
+        $noStock = ($data->fLagerbestand <= 0 || ($data->fLagerbestand / $subCount) < $stockRatio);
+        if ($sendMails === false || ($stockRelevance && $noStock)) {
             return;
         }
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';

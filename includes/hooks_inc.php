@@ -1901,6 +1901,15 @@ const HOOK_CART_GET_LOCALIZED_SUM = 331;
 const HOOK_BESTELLUNG_SETZEGUTHABEN = 335;
 
 /**
+ * @since 5.1.3
+ * @file includes/src/dbeS/Sync/AbstractSync.php
+ * @param bool   &sendMails
+ * @param object product
+ * @param array  subscriptions
+ */
+const HOOK_SYNC_SEND_AVAILABILITYMAILS = 336;
+
+/**
  * @since 5.2.0
  * @param JTL\Export\Product        $product
  * @param JTL\Export\FormatExporter $exporter

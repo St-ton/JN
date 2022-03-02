@@ -4053,7 +4053,12 @@ class Artikel
             $specials[\SEARCHSPECIALS_OUTOFSTOCK] = ($this->fLagerbestand <= 0
                 && $this->cLagerBeachten === 'Y'
                 && $this->cLagerKleinerNull !== 'Y')
-                || ($this->inWarenkorbLegbar !== null && $this->inWarenkorbLegbar <= 0);
+                || ($this->inWarenkorbLegbar !== null
+                    && (
+                        $this->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGER
+                        || $this->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGERVAR
+                    )
+                );
         }
         // Auf Lager
         $specials[\SEARCHSPECIALS_ONSTOCK] = ($this->fLagerbestand > 0 && $this->cLagerBeachten === 'Y');
@@ -4752,10 +4757,16 @@ class Artikel
                         FROM tversandartzahlungsart vaza
                         WHERE kZahlungsart = 6)
                 AND (
-                    va.kVersandberechnung = 1 OR va.kVersandberechnung = 4
+                    va.kVersandberechnung = 1
+                    OR va.kVersandberechnung = 4
                     OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND :wght <= vas.fBis )
                     OR ( va.kVersandberechnung = 3
-                        AND vas.fBis = (SELECT MIN(fBis) FROM tversandartstaffel WHERE fBis > :net)
+                        AND vas.fBis = (
+                          SELECT MIN(fBis)
+                            FROM tversandartstaffel
+                            WHERE fBis > :net
+                              AND tversandartstaffel.kVersandart = va.kVersandart
+                          )
                         )
                     ) ' . $dep . '
                 ORDER BY minPrice, nSort ASC LIMIT 1',

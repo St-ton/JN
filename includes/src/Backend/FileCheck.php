@@ -8,6 +8,7 @@ use JTL\Shop;
 use JTLShop\SemVer\Version;
 use stdClass;
 use Symfony\Component\Finder\Finder;
+use ZipArchive;
 use function Functional\map;
 
 /**
@@ -105,28 +106,77 @@ class FileCheck
      */
     public function deleteOrphanedFiles(array &$orphanedFiles, string $backupFile): int
     {
-        $count  = 0;
+        /** @var Filesystem $fs */
         $fs     = Shop::Container()->get(Filesystem::class);
         $finder = new Finder();
         $finder->append(map($orphanedFiles, static function (stdClass $e) {
             return \PFAD_ROOT . $e->name;
         }));
-        try {
-            $fs->zip($finder, $backupFile);
-        } catch (Exception $e) {
+        $count = 0;
+        $zip   = new ZipArchive();
+        if ($zip->open($backupFile, ZipArchive::CREATE) !== true) {
             return -1;
         }
-        /** @var Filesystem $fs */
-        foreach ($orphanedFiles as $i => $file) {
+        foreach ($finder->files() as $file) {
+            /** @var \SplFileInfo $file */
+            $path = $file->getPathname();
+            $pos  = \strpos($path, \PFAD_ROOT);
+            if ($pos === 0) {
+                $path = \substr_replace($path, '', $pos, \strlen(\PFAD_ROOT));
+            }
+            if ($file->getType() === 'file') {
+                $zip->addFile(PFAD_ROOT . $path, $path);
+            } elseif ($file->getType() === 'dir') {
+                $this->folderToZip(PFAD_ROOT . $path, $zip, \strlen(PFAD_ROOT));
+            }
+        }
+        $zip->close();
+        $i = 0;
+        foreach ($finder->files() as $file) {
+            /** @var \SplFileInfo $file */
+            $path = \substr($file->getPathname(), \strlen(\PFAD_ROOT));
             try {
-                $fs->delete($file->name);
-                unset($orphanedFiles[$i]);
-                ++$count;
+                if ($file->getType() === 'file') {
+                    $fs->delete($path);
+                    unset($orphanedFiles[$i]);
+                    ++$count;
+                } elseif ($file->getType() === 'dir') {
+                    $fs->deleteDirectory($path);
+                    ++$count;
+                    unset($orphanedFiles[$i]);
+                }
             } catch (Exception $e) {
             }
+            $i++;
         }
 
         return $count;
+    }
+
+    /**
+     * @param string     $folder
+     * @param ZipArchive $zipFile
+     * @param int        $exclusiveLength
+     */
+    private function folderToZip(string $folder, ZipArchive $zipFile, int $exclusiveLength): void
+    {
+        $handle = \opendir($folder);
+        while (($f = \readdir($handle)) !== false) {
+            if ($f === '.' || $f === '..') {
+                continue;
+            }
+            $filePath = $folder . '/' . $f;
+            // Remove prefix from file path before adding to zip.
+            $localPath = \substr($filePath, $exclusiveLength);
+            if (\is_file($filePath)) {
+                $zipFile->addFile($filePath, $localPath);
+            } elseif (\is_dir($filePath)) {
+                // Add sub-directory.
+                $zipFile->addEmptyDir($localPath);
+                $this->folderToZip($filePath, $zipFile, $exclusiveLength);
+            }
+        }
+        \closedir($handle);
     }
 
     /**

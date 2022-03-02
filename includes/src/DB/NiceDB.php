@@ -998,7 +998,7 @@ class NiceDB implements DbInterface
             case ReturnType::SINGLE_ASSOC_ARRAY:
                 return [];
             case ReturnType::SINGLE_OBJECT:
-                return new stdClass();
+                return null;
             case ReturnType::QUERYSINGLE:
                 return new PDOStatement();
             case ReturnType::DEFAULT:

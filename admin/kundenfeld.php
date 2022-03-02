@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Backend\CustomerFields;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -31,20 +30,12 @@ if (Request::postInt('einstellungen') > 0) {
                 $success = $success && $cf->delete((int)$fieldID);
             }
             if ($success) {
-                $alertService->addAlert(
-                    Alert::TYPE_SUCCESS,
-                    __('successCustomerFieldDelete'),
-                    'successCustomerFieldDelete'
-                );
+                $alertService->addSuccess(__('successCustomerFieldDelete'), 'successCustomerFieldDelete');
             } else {
-                $alertService->addAlert(Alert::TYPE_ERROR, __('errorCustomerFieldDelete'), 'errorCustomerFieldDelete');
+                $alertService->addError(__('errorCustomerFieldDelete'), 'errorCustomerFieldDelete');
             }
         } else {
-            $alertService->addAlert(
-                Alert::TYPE_ERROR,
-                __('errorAtLeastOneCustomerField'),
-                'errorAtLeastOneCustomerField'
-            );
+            $alertService->addError(__('errorAtLeastOneCustomerField'), 'errorAtLeastOneCustomerField');
         }
     } elseif (isset($_POST['aktualisieren'])) {
         foreach ($cf->getCustomerFields() as $customerField) {
@@ -52,17 +43,9 @@ if (Request::postInt('einstellungen') > 0) {
             $success              = $success && $cf->save($customerField);
         }
         if ($success) {
-            $alertService->addAlert(
-                Alert::TYPE_SUCCESS,
-                __('successCustomerFieldUpdate'),
-                'successCustomerFieldUpdate'
-            );
+            $alertService->addSuccess(__('successCustomerFieldUpdate'), 'successCustomerFieldUpdate');
         } else {
-            $alertService->addAlert(
-                Alert::TYPE_ERROR,
-                __('errorCustomerFieldUpdate'),
-                'errorCustomerFieldUpdate'
-            );
+            $alertService->addError(__('errorCustomerFieldUpdate'), 'errorCustomerFieldUpdate');
         }
     } else { // Speichern
         $customerField = (object)[
@@ -86,20 +69,16 @@ if (Request::postInt('einstellungen') > 0) {
 
         if (count($check->getPlausiVar()) === 0) {
             if ($cf->save($customerField, $cfValues)) {
-                $alertService->addAlert(Alert::TYPE_SUCCESS, __('successCustomerFieldSave'), 'successCustomerFieldSave');
+                $alertService->addSuccess(__('successCustomerFieldSave'), 'successCustomerFieldSave');
             } else {
-                $alertService->addAlert(Alert::TYPE_ERROR, __('errorCustomerFieldSave'), 'errorCustomerFieldSave');
+                $alertService->addError(__('errorCustomerFieldSave'), 'errorCustomerFieldSave');
             }
         } else {
             $erroneousFields = $check->getPlausiVar();
             if (isset($erroneousFields['cName']) && $erroneousFields['cName'] === 2) {
-                $alertService->addAlert(
-                    Alert::TYPE_ERROR,
-                    __('errorCustomerFieldNameExists'),
-                    'errorCustomerFieldNameExists'
-                );
+                $alertService->addError(__('errorCustomerFieldNameExists'), 'errorCustomerFieldNameExists');
             } else {
-                $alertService->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
+                $alertService->addError(__('errorFillRequired'), 'errorFillRequired');
             }
             $smarty->assign('xPlausiVar_arr', $check->getPlausiVar())
                 ->assign('xPostVar_arr', $check->getPostVar())

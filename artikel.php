@@ -39,16 +39,16 @@ if ($productNote = Product::mapErrorCode(
     Request::verifyGPDataString('cHinweis'),
     ((float)Request::getVar('fB', 0) > 0) ? (float)$_GET['fB'] : 0.0
 )) {
-    $alertHelper->addAlert(Alert::TYPE_NOTE, $productNote, 'productNote', ['showInAlertListTemplate' => false]);
+    $alertHelper->addNotice($productNote, 'productNote', ['showInAlertListTemplate' => false]);
 }
 if ($productError = Product::mapErrorCode(Request::verifyGPDataString('cFehler'))) {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, $productError, 'productError');
+    $alertHelper->addError($productError, 'productError');
 }
 if ($valid && isset($_POST['a'])
     && Request::verifyGPCDataInt('addproductbundle') === 1
     && Product::addProductBundleToCart(Request::verifyGPCDataInt('a'))
 ) {
-    $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('basketAllAdded', 'messages'), 'allAdded');
+    $alertHelper->addNotice(Shop::Lang()->get('basketAllAdded', 'messages'), 'allAdded');
     Shop::$kArtikel = Request::postInt('aBundle');
 }
 $AktuellerArtikel = (new Artikel())->fuelleArtikel(
@@ -136,7 +136,7 @@ if ($valid && Request::postInt('fragezumprodukt') === 1) {
     $productNotices = Product::checkAvailabilityMessage($productNotices, $conf['artikeldetails']);
 }
 foreach ($productNotices as $productNoticeKey => $productNotice) {
-    $alertHelper->addAlert(Alert::TYPE_DANGER, $productNotice, 'productNotice' . $productNoticeKey);
+    $alertHelper->addDanger($productNotice, 'productNotice' . $productNoticeKey);
 }
 $AktuelleKategorie  = new Kategorie($AktuellerArtikel->gibKategorie($customerGroupID), $languageID, $customerGroupID);
 $expandedCategories = new KategorieListe();

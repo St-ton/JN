@@ -125,11 +125,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         );
 
         if (empty($shippingMethods)) {
-            $alertService->addAlert(
-                Alert::TYPE_DANGER,
-                Shop::Lang()->get('noShippingAvailable', 'checkout'),
-                'noShippingAvailable'
-            );
+            $alertService->addDanger(Shop::Lang()->get('noShippingAvailable', 'checkout'), 'noShippingAvailable');
         } else {
             $activeVersandart = gibAktiveVersandart($shippingMethods);
             pruefeVersandartWahl(
@@ -145,11 +141,7 @@ if (empty($_SESSION['Kunde']->cPasswort) && Download::hasDownloads($cart)) {
     // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
     $step = 'accountwahl';
 
-    $alertService->addAlert(
-        Alert::TYPE_NOTE,
-        Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout'),
-        'digitalProductsRegisterInfo'
-    );
+    $alertService->addNotice(Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout'), 'digiProdRegisterInfo');
 
     unset($_SESSION['Kunde']);
     // unset not needed values to ensure the correct $step

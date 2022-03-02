@@ -51,10 +51,10 @@ if ($action === 'save') {
         $packaging->kSteuerklasse = 0;
     }
     if (!(isset($postData[$nameIDX]) && mb_strlen($postData[$nameIDX]) > 0)) {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNameMissing'), 'errorNameMissing');
+        $alertHelper->addError(__('errorNameMissing'), 'errorNameMissing');
     }
     if (!(is_array($customerGroupIDs) && count($customerGroupIDs) > 0)) {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCustomerGroupMissing'), 'errorCustomerGroupMissing');
+        $alertHelper->addError(__('errorCustomerGroupMissing'), 'errorCustomerGroupMissing');
     }
 
     if ($alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
@@ -98,11 +98,7 @@ if ($action === 'save') {
                 );
             $db->insert('tverpackungsprache', $localized);
         }
-        $alertHelper->addAlert(
-            Alert::TYPE_SUCCESS,
-            sprintf(__('successPackagingSave'), $postData[$nameIDX]),
-            'successPackagingSave'
-        );
+        $alertHelper->addSuccess(sprintf(__('successPackagingSave'), $postData[$nameIDX]), 'successPackagingSave');
     }
 } elseif ($action === 'edit' && Request::verifyGPCDataInt('kVerpackung') > 0) { // Editieren
     $packagingID = Request::verifyGPCDataInt('kVerpackung');
@@ -133,9 +129,9 @@ if ($action === 'save') {
             $db->delete('tverpackung', 'kVerpackung', $packagingID);
             $db->delete('tverpackungsprache', 'kVerpackung', $packagingID);
         }
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPackagingDelete'), 'successPackagingDelete');
+        $alertHelper->addSuccess(__('successPackagingDelete'), 'successPackagingDelete');
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOnePackaging'), 'errorAtLeastOnePackaging');
+        $alertHelper->addError(__('errorAtLeastOnePackaging'), 'errorAtLeastOnePackaging');
     }
 } elseif ($action === 'refresh') {
     if (isset($_POST['nAktivTMP']) && is_array($_POST['nAktivTMP']) && count($_POST['nAktivTMP']) > 0) {
@@ -144,7 +140,7 @@ if ($action === 'save') {
             $upd->nAktiv = isset($_POST['nAktiv']) && in_array($packagingID, $_POST['nAktiv'], true) ? 1 : 0;
             $db->update('tverpackung', 'kVerpackung', (int)$packagingID, $upd);
         }
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPackagingSaveMultiple'), 'successPackagingSaveMultiple');
+        $alertHelper->addSuccess(__('successPackagingSaveMultiple'), 'successPackagingSaveMultiple');
     }
 }
 $taxClasses = $db->getObjects('SELECT * FROM tsteuerklasse');

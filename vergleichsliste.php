@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\ComparisonList;
 use JTL\Helpers\Request;
@@ -19,11 +18,7 @@ if (Request::verifyGPCDataInt('addToCart') !== 0) {
         Request::verifyGPCDataInt('addToCart'),
         Request::verifyGPDataString('anzahl')
     );
-    Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_NOTE,
-        Shop::Lang()->get('basketAdded', 'messages'),
-        'basketAdded'
-    );
+    Shop::Container()->getAlertService()->addNotice(Shop::Lang()->get('basketAdded', 'messages'), 'basketAdded');
 }
 
 $colWidth = ($conf['vergleichsliste']['vergleichsliste_spaltengroesse'] > 0)

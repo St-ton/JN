@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Customer\Customer;
 use JTL\Helpers\Form;
@@ -24,11 +23,7 @@ $settingsIDs = [
     'global_wunschliste_artikel_loeschen_nach_kauf'
 ];
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
-    $alertHelper->addAlert(
-        Alert::TYPE_SUCCESS,
-        saveAdminSettings($settingsIDs, $_POST, [CACHING_GROUP_OPTION], true),
-        'saveSettings'
-    );
+    $alertHelper->addSuccess(saveAdminSettings($settingsIDs, $_POST, [CACHING_GROUP_OPTION], true), 'saveSettings');
 }
 if (Request::getInt('delete') > 0 && Form::validateToken()) {
     Wishlist::delete(Request::getInt('delete'), true);

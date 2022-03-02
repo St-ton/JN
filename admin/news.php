@@ -1,6 +1,5 @@
 <?php
 
-use JTL\Alert\Alert;
 use JTL\ContentAuthor;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
@@ -309,8 +308,8 @@ if ($controller->getStep() === 'news_uebersicht') {
 
 $maxFileSize  = getMaxFileSize(ini_get('upload_max_filesize'));
 $alertService = Shop::Container()->getAlertService();
-$alertService->addAlert(Alert::TYPE_NOTE, $controller->getMsg(), 'newsMessage');
-$alertService->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'newsError');
+$alertService->addNotice($controller->getMsg(), 'newsMessage');
+$alertService->addError($controller->getErrorMsg(), 'newsError');
 
 $smarty->assign('customerGroups', CustomerGroup::getGroups())
     ->assign('step', $controller->getStep())

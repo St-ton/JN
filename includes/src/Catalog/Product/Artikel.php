@@ -3977,7 +3977,12 @@ class Artikel
             $specials[\SEARCHSPECIALS_OUTOFSTOCK] = ($this->fLagerbestand <= 0
                 && $this->cLagerBeachten === 'Y'
                 && $this->cLagerKleinerNull !== 'Y')
-                || ($this->inWarenkorbLegbar !== null && $this->inWarenkorbLegbar <= 0);
+                || ($this->inWarenkorbLegbar !== null
+                    && (
+                        $this->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGER
+                        || $this->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGERVAR
+                    )
+                );
         }
         // Auf Lager
         $specials[\SEARCHSPECIALS_ONSTOCK] = ($this->fLagerbestand > 0 && $this->cLagerBeachten === 'Y');

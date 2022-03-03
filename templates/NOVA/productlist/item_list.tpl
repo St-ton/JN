@@ -142,7 +142,7 @@
                                         <div class="form-row productbox-onhover productbox-actions item-list-basket-details">
                                             {if ($Artikel->inWarenkorbLegbar === 1
                                                     || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))
-                                                && (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0)
+                                                && (($Artikel->nIstVater === 0 && $Artikel->Variationen|count === 0)
                                                     || $hasOnlyListableVariations === 1)
                                                 && !$Artikel->bHasKonfig
                                                 && $Einstellungen.template.productlist.buy_productlist === 'Y'}

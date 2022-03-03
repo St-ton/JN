@@ -8,6 +8,7 @@ use JTL\Shop;
 use JTLShop\SemVer\Version;
 use stdClass;
 use Symfony\Component\Finder\Finder;
+use ZipArchive;
 use function Functional\map;
 
 /**
@@ -144,6 +145,32 @@ class FileCheck
         }
 
         return $count;
+    }
+
+    /**
+     * @param string     $folder
+     * @param ZipArchive $zipFile
+     * @param int        $exclusiveLength
+     */
+    private function folderToZip(string $folder, ZipArchive $zipFile, int $exclusiveLength): void
+    {
+        $handle = \opendir($folder);
+        while (($f = \readdir($handle)) !== false) {
+            if ($f === '.' || $f === '..') {
+                continue;
+            }
+            $filePath = $folder . '/' . $f;
+            // Remove prefix from file path before adding to zip.
+            $localPath = \substr($filePath, $exclusiveLength);
+            if (\is_file($filePath)) {
+                $zipFile->addFile($filePath, $localPath);
+            } elseif (\is_dir($filePath)) {
+                // Add sub-directory.
+                $zipFile->addEmptyDir($localPath);
+                $this->folderToZip($filePath, $zipFile, $exclusiveLength);
+            }
+        }
+        \closedir($handle);
     }
 
     /**

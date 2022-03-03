@@ -128,7 +128,7 @@
                                                     {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
                                                     <p class="cfg-item-description">
                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
-                                                        {if $smarty.session.Kundengruppe->mayViewPrices()}
+                                                        {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
                                                             {badge variant="light"}
                                                             {if $oItem->hasRabatt() && $oItem->showRabatt()}
                                                                 <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
@@ -200,7 +200,7 @@
                                                     {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
                                                     <p class="cfg-item-description">
                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
-                                                        {if $smarty.session.Kundengruppe->mayViewPrices()}
+                                                        {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
                                                             {badge variant="light"}
                                                                 {if $oItem->hasRabatt() && $oItem->showRabatt()}
                                                                     <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
@@ -285,7 +285,7 @@
                                                     {if isset($nKonfigitem_arr)} data-selected="{if in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}true{else}false{/if}"
                                                     {else}{if $oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr)}selected="selected"{/if}{/if}>
                                                 {$oItem->getName()}{if empty($bSelectable)} - {lang section='productDetails' key='productOutOfStock'}{/if}
-                                                {if $smarty.session.Kundengruppe->mayViewPrices()}
+                                                {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
                                                     &nbsp;&nbsp;&nbsp;&nbsp;
                                                     {if $oItem->hasRabatt() && $oItem->showRabatt()}({$oItem->getRabattLocalized()} {lang key='discount'})&nbsp;{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}({$oItem->getZuschlagLocalized()} {lang key='additionalCharge'})&nbsp;{/if}
                                                     {$oItem->getPreisLocalized()}
@@ -314,7 +314,7 @@
                                                 {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
                                                 <p class="cfg-item-description">
                                                     {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
-                                                    {if $smarty.session.Kundengruppe->mayViewPrices()}
+                                                    {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
                                                         {badge variant="light"}
                                                             {if $oItem->hasRabatt() && $oItem->showRabatt()}
                                                                 <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}

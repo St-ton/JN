@@ -98,7 +98,7 @@
     {/block}
 
     {block name='productlist-header-subcategories'}
-        {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
+        {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|count > 0}
             {opcMountPoint id='opc_before_subcategories'}
             {row class="row-eq-height content-cats-small"}
                 {foreach $oUnterKategorien_arr as $subCategory}
@@ -160,8 +160,8 @@
         {include file='selectionwizard/index.tpl' container=false}
     {/block}
 
-    {if $Suchergebnisse->getProducts()|@count <= 0 && isset($KategorieInhalt)}
-        {if isset($KategorieInhalt->TopArtikel->elemente) && $KategorieInhalt->TopArtikel->elemente|@count > 0}
+    {if $Suchergebnisse->getProducts()|count < 1 && isset($KategorieInhalt)}
+        {if isset($KategorieInhalt->TopArtikel->elemente) && $KategorieInhalt->TopArtikel->elemente|count > 0}
             {block name='productlist-header-include-product-slider-top'}
                 {opcMountPoint id='opc_before_category_top'}
                 {lang key='topOffer' assign='slidertitle'}
@@ -170,7 +170,7 @@
             {/block}
         {/if}
 
-        {if isset($KategorieInhalt->BestsellerArtikel->elemente) && $KategorieInhalt->BestsellerArtikel->elemente|@count > 0}
+        {if isset($KategorieInhalt->BestsellerArtikel->elemente) && $KategorieInhalt->BestsellerArtikel->elemente|count > 0}
             {block name='productlist-header-include-product-slider-bestseller'}
                 {opcMountPoint id='opc_before_category_bestseller'}
                 {lang key='bestsellers'  assign='slidertitle'}

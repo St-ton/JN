@@ -133,7 +133,7 @@
                                         {/block}
                                     {/col}
                                 {/if}
-                                {if $oPagination->getSortByOptions()|@count > 0 && in_array('sort', $parts)}
+                                {if $oPagination->getSortByOptions()|count > 0 && in_array('sort', $parts)}
                                     {col cols=12 md='auto'}
                                         {block name='snippets-pagination-form-sort'}
                                             {select class="custom-select pagination-selects-sort col-md-auto"

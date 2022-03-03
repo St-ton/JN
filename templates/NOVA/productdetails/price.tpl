@@ -52,7 +52,7 @@
                             {$priceNoCurr = $Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata}
                         {/if}
                         <meta itemprop="price" content="{$priceNoCurr}">
-                        <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
+                        <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
                         {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== null && $Artikel->dSonderpreisEnde_en !== null}
                             <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">
                             <meta itemprop="validThrough" content="{$Artikel->dSonderpreisEnde_en}">
@@ -74,7 +74,7 @@
                                 {block name='productdetails-price-detail-base-price'}
                                     <div class="base-price text-nowrap-util" itemprop="priceSpecification" itemscope itemtype="https://schema.org/UnitPriceSpecification">
                                         <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{($Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}{else}{($Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}{/if}">
-                                        <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
+                                        <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
                                         <span class="value" itemprop="referenceQuantity" itemscope itemtype="https://schema.org/QuantitativeValue">
                                             {$Artikel->cLocalizedVPE[$NettoPreise]}
                                             <meta itemprop="value" content="{$Artikel->fGrundpreisMenge}">
@@ -184,7 +184,7 @@
                             {block name='productdetails-price-list-base-price'}
                                 <div class="base_price" itemprop="priceSpecification" itemscope itemtype="https://schema.org/UnitPriceSpecification">
                                     <meta itemprop="price" content="{($Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}">
-                                    <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
+                                    <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
                                     <span class="value" itemprop="referenceQuantity" itemscope itemtype="https://schema.org/QuantitativeValue">
                                         {$Artikel->cLocalizedVPE[$NettoPreise]}
                                         <meta itemprop="value" content="{$Artikel->fGrundpreisMenge}">

@@ -313,7 +313,7 @@
 
         {block name='layout-header-header'}
             {block name='layout-header-branding-top-bar'}
-                <div id="header-top-bar" class="d-none topbar-wrapper {if $Einstellungen.template.megamenu.jtl_header_menu_single_row === 'Y'}full-width-mega{/if} {if $Einstellungen.template.header.header_full_width === 'Y'}is-fullwidth{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
+                <div id="header-top-bar" class="d-none topbar-wrapper {if $Einstellungen.template.header.menu_single_row === 'Y'}full-width-mega{/if} {if $Einstellungen.template.header.header_full_width === 'Y'}is-fullwidth{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
                     <div class="container-fluid {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
                         {include file='layout/header_top_bar.tpl'}
                     </div>
@@ -323,32 +323,9 @@
                 {block name='layout-header-container-inner'}
                     <div class="container-fluid {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if}">
                     {block name='layout-header-category-nav'}
-                        <div class="toggler-logo-wrapper">
-                            {block name='layout-header-navbar-toggle'}
-                                <button id="burger-menu" class="burger-menu-wrapper navbar-toggler collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
-                                    <span class="navbar-toggler-icon"></span>
-                                </button>
-                            {/block}
-
-                            {block name='layout-header-logo'}
-                                <div id="logo" class="logo-wrapper" itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
-                                    <span itemprop="name" class="d-none">{$meta_publisher}</span>
-                                    <meta itemprop="url" content="{$ShopHomeURL}">
-                                    <meta itemprop="logo" content="{$ShopLogoURL}">
-                                    {link class="navbar-brand" href=$ShopHomeURL title=$Einstellungen.global.global_shopname}
-                                    {if isset($ShopLogoURL)}
-                                        {image width=180 height=50 src=$ShopLogoURL
-                                            alt=$Einstellungen.global.global_shopname
-                                            id="shop-logo"
-                                            class="img-aspect-ratio"
-                                        }
-                                    {else}
-                                        <span class="h1">{$Einstellungen.global.global_shopname}</span>
-                                    {/if}
-                                    {/link}
-                                </div>
-                            {/block}
-                        </div>
+                        {block name='layout-header-category-nav-logo'}
+                            {include file='layout/header_logo.tpl'}
+                        {/block}
                         {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center-util{else}align-items-lg-end{/if}"}
                            {block name='layout-header-search'}
                                 {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
@@ -381,42 +358,8 @@
                                     {/nav}
                                 {/block}
 
-                                {*categories*}
                                 {block name='layout-header-include-categories-mega'}
-                                    <div id="mainNavigation" class="collapse navbar-collapse nav-scrollbar">
-                                        {block name='layout-header-include-include-categories-header'}
-                                            <div class="nav-mobile-header d-lg-none">
-                                                {row class="align-items-center-util"}
-                                                    {col class="nav-mobile-header-toggler"}
-                                                        {block name='layout-header-include-categories-mega-toggler'}
-                                                            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
-                                                                <span class="navbar-toggler-icon"></span>
-                                                            </button>
-                                                        {/block}
-                                                    {/col}
-                                                    {col class="col-auto nav-mobile-header-name ml-auto-util"}
-                                                        <span class="nav-offcanvas-title">{lang key='menuName'}</span>
-                                                        {block name='layout-header-include-categories-mega-back'}
-                                                            {link href="#" class="nav-offcanvas-title d-none" data=["menu-back"=>""]}
-                                                                <span class="fas fa-chevron-left icon-mr-2"></span>
-                                                                <span>{lang key='back'}</span>
-                                                            {/link}
-                                                        {/block}
-                                                    {/col}
-                                                {/row}
-                                                <hr class="nav-mobile-header-hr" />
-                                            </div>
-                                        {/block}
-                                        {block name='layout-header-include-include-categories-body'}
-                                            <div class="nav-mobile-body">
-                                                {navbarnav class="nav-scrollbar-inner mr-auto"}
-                                                    {block name='layout-header-include-include-categories-mega'}
-                                                        {include file='snippets/categories_mega.tpl'}
-                                                    {/block}
-                                                {/navbarnav}
-                                            </div>
-                                        {/block}
-                                    </div>
+                                    {include file='layout/header_categories.tpl'}
                                 {/block}
                             {/if}
                         {/navbar}

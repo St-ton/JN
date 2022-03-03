@@ -1216,8 +1216,7 @@ class NiceDB implements DbInterface
     /**
      * Quotes a string for use in a query.
      *
-     * @param string $string
-     * @return string
+     * @inheritdoc
      */
     public function escape($string): string
     {

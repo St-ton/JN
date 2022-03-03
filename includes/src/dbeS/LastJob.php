@@ -26,12 +26,12 @@ final class LastJob
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * LastJob constructor.
@@ -50,6 +50,7 @@ final class LastJob
         if (!\KEEP_SYNC_FILES) {
             FileSystem::delDirRecursively(\PFAD_ROOT . \PFAD_DBES_TMP);
         }
+        $this->disableUnsedManufacturers();
         $this->finishStdJobs();
         $GLOBALS['nIntervall'] = \defined('LASTJOBS_INTERVALL') ? \LASTJOBS_INTERVALL : 12;
         $jobs                  = $this->getRepeatedJobs($GLOBALS['nIntervall']);
@@ -106,6 +107,15 @@ final class LastJob
                     break;
             }
         }
+    }
+
+    private function disableUnsedManufacturers(): void
+    {
+        $this->db->query(
+            'UPDATE thersteller
+                SET nAktiv = IF(
+                    EXISTS (SELECT 1 FROM tartikel WHERE tartikel.kHersteller = thersteller.kHersteller), 1, 0)'
+        );
     }
 
     /**

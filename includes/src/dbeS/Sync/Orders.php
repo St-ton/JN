@@ -639,7 +639,7 @@ final class Orders extends AbstractSync
         $methodName  = $this->db->escape($order->cZahlungsartName);
         $clearedDate = $this->db->escape($order->dBezahltDatum);
         $shippedDate = $this->db->escape($order->dVersandt);
-        if ($shippedDate === null || $shippedDate === '') {
+        if ($shippedDate === '') {
             $shippedDate = '_DBNULL_';
         }
 
@@ -720,7 +720,6 @@ final class Orders extends AbstractSync
      */
     private function sendPaymentMail(stdClass $shopOrder, stdClass $order, Customer $customer): void
     {
-
         if (!$shopOrder->dBezahltDatum && $order->dBezahltDatum && $customer->kKunde > 0) {
             $earlier = new DateTime(\date('Y-m-d', \strtotime($order->dBezahltDatum)));
             $now     = new DateTime(\date('Y-m-d'));

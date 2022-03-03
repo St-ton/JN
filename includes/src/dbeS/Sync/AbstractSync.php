@@ -33,22 +33,22 @@ abstract class AbstractSync
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
      * @var JTLCacheInterface
      */
-    protected $cache;
+    protected JTLCacheInterface $cache;
 
     /**
      * @var Mapper
      */
-    protected $mapper;
+    protected Mapper $mapper;
 
     /**
      * Products constructor.
@@ -133,13 +133,6 @@ abstract class AbstractSync
     protected function insertOnExistUpdate(string $tableName, array $objects, array $pks): array
     {
         $result = \array_fill_keys($pks, []);
-        if (!\is_array($objects)) {
-            return $result;
-        }
-        if (!\is_array($pks)) {
-            $pks = [(string)$pks];
-        }
-
         foreach ($objects as $object) {
             foreach ($pks as $pk) {
                 if (!isset($object->$pk)) {
@@ -294,9 +287,6 @@ abstract class AbstractSync
      */
     protected function handlePriceHistory(int $productID, array $xml): void
     {
-        if (!\is_array($xml)) {
-            return;
-        }
         // Delete price history from not existing customer groups
         $this->db->queryPrepared(
             'DELETE tpreisverlauf
@@ -491,10 +481,6 @@ abstract class AbstractSync
      */
     protected function handleNewPriceFormat(int $productID, array $xml): void
     {
-        if (!\is_array($xml)) {
-            return;
-        }
-
         $prices = isset($xml['tpreis']) ? $this->mapper->mapArray($xml, 'tpreis', 'mPreis') : [];
         // Delete prices and price details from not existing customer groups
         $this->db->queryPrepared(

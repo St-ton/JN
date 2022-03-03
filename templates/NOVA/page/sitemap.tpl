@@ -93,7 +93,7 @@
                         {row}
                             {foreach $oHersteller_arr as $oHersteller}
                                 {col cols=12 md=4 lg=3 class="sitemap-group-item"}
-                                    {link href=$oHersteller->cURL  class="nice-deco"}{$oHersteller->cName}{/link}
+                                    {link href=$oHersteller->getURL()  class="nice-deco"}{$oHersteller->getName()}{/link}
                                 {/col}
                             {/foreach}
                         {/row}

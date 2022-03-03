@@ -55,6 +55,32 @@
             </Setting>
             <Setting Description="Favicon" Key="favicon" Type="upload" Value="favicon.ico" maxFileSize="123456" showPreview="false" allowedFileExtensions="['ico','png']" accept="image/*" target="themes/base/images/" targetFileName="favicon.ico"/>
         </Section>
+        <Section Name="Header" Key="header">
+            <Setting Description="Menü in eigener Zeile anzeigen" Key="jtl_header_menu_single_row" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+            <Setting Description="Anzeige bei vielen Menüeinträgen" Key="jtl_header_menu_multiple_rows" Type="select" Value="scroll">
+                <Option Value="multiple">Mehrzeilig</Option>
+                <Option Value="scroll">Pfeile zum scrollen in einer Zeile</Option>
+            </Setting>
+            <Setting Description="Menüausrichtung" Key="jtl_header_menu_center" Type="select" Value="center">
+                <Option Value="center">Ja</Option>
+                <Option Value="left">Nein</Option>
+            </Setting>
+            <Setting Description="Anzeige beim Scrollen" Key="jtl_header_menu_scroll" Type="select" Value="menu">
+                <Option Value="menu">Menü</Option>
+                <Option Value="all">Menü, Logo, Suche</Option>
+            </Setting>
+            <Setting Description="Logo Höhe (in px)" Key="jtl_header_menu_logoheight" Type="number" Value="49"/>
+            <Setting Description="Suchfeld Breite (in px)" Key="jtl_header_menu_search_width" Type="number" Value="0"/>
+            <Setting Description="Suchfeld Positionierung" Key="jtl_header_menu_search_position" Type="select" Value="center">
+                <Option Value="left">Links</Option>
+                <Option Value="right">Rechts</Option>
+                <Option Value="center">Zentriert</Option>
+            </Setting>
+            <Setting Description="Suchfeld Positionierung" Key="jtl_header_menu_search_margin_right" Type="number" Value="0"/>
+        </Section>
         <Section Name="Megamenu" Key="megamenu">
             <Setting Description="Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)" Key="show_categories" Type="select" Value="Y">
                 <Option Value="Y">Auf Desktop und mobilen Geräten</Option>

@@ -20,17 +20,17 @@ final class Images extends AbstractSync
     /**
      * @var array
      */
-    private $config;
+    private array $config;
 
     /**
      * @var array
      */
-    private $brandingConfig;
+    private array $brandingConfig;
 
     /**
      * @var string
      */
-    private $unzipPath;
+    private string $unzipPath;
 
     /**
      * @param Starter $starter

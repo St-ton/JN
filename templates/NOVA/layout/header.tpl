@@ -313,15 +313,15 @@
 
         {block name='layout-header-header'}
             {block name='layout-header-branding-top-bar'}
-                <div id="header-top-bar" class="d-none topbar-wrapper {if $Einstellungen.template.megamenu.header_full_width === 'Y'}is-fullwidth{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
-                    <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
+                <div id="header-top-bar" class="d-none topbar-wrapper {if $Einstellungen.template.megamenu.jtl_header_menu_single_row === 'Y'}full-width-mega{/if} {if $Einstellungen.template.header.header_full_width === 'Y'}is-fullwidth{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
+                    <div class="container-fluid {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
                         {include file='layout/header_top_bar.tpl'}
                     </div>
                 </div>
             {/block}
             <header class="d-print-none {if !$isMobile || $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar" id="jtl-nav-wrapper">
                 {block name='layout-header-container-inner'}
-                    <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if}">
+                    <div class="container-fluid {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if}">
                     {block name='layout-header-category-nav'}
                         <div class="toggler-logo-wrapper">
                             {block name='layout-header-navbar-toggle'}

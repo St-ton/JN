@@ -443,19 +443,19 @@ final class Controller
             }
             $idx = 'cName_' . $iso;
             if (!empty($post[$idx])) {
-                return $post[$idx];
+                return Seo::getSeo($post[$idx]);
             }
         }
         foreach ($languages as $language) {
             $idx = 'cSeo_' . $language->getCode();
             if (!empty($post[$idx])) {
-                return $post[$idx];
+                return Seo::getSeo($post[$idx]);
             }
         }
         foreach ($languages as $language) {
             $idx = 'cName_' . $language->getCode();
             if (!empty($post[$idx])) {
-                return $post[$idx];
+                return Seo::getSeo($post[$idx]);
             }
         }
 

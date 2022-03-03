@@ -60,13 +60,13 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
-            <Setting Description="Anzeige bei vielen Menüeinträgen" Key="jtl_header_menu_multiple_rows" Type="select" Value="scroll">
+            <Setting Description="Anzeige bei vielen Menüeinträgen" Key="menu_multiple_rows" Type="select" Value="scroll">
                 <Option Value="multiple">Mehrzeilig</Option>
                 <Option Value="scroll">Pfeile zum scrollen in einer Zeile</Option>
             </Setting>
             <Setting Description="Menüausrichtung" Key="jtl_header_menu_center" Type="select" Value="center">
-                <Option Value="center">Ja</Option>
-                <Option Value="left">Nein</Option>
+                <Option Value="center">zentriert</Option>
+                <Option Value="left">linksbündig</Option>
             </Setting>
             <Setting Description="Anzeige beim Scrollen" Key="jtl_header_menu_scroll" Type="select" Value="menu">
                 <Option Value="menu">Menü</Option>

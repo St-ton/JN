@@ -1,5 +1,5 @@
 {block name='layout-header-categories'}
-    <div id="mainNavigation" class="collapse navbar-collapse nav-scrollbar">
+    <div id="mainNavigation" class="collapse navbar-collapse {if $menuMultipleRows|default:false}nav-multiple-row{else}nav-scrollbar{/if}">
         {block name='layout-header-categories-include-include-categories-header'}
             <div class="nav-mobile-header d-lg-none">
                 {row class="align-items-center-util"}

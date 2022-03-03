@@ -319,53 +319,153 @@
                     </div>
                 </div>
             {/block}
-            <header class="d-print-none {if !$isMobile || $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar" id="jtl-nav-wrapper">
-                {block name='layout-header-container-inner'}
-                    <div class="container-fluid {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if}">
-                    {block name='layout-header-category-nav'}
-                        {block name='layout-header-category-nav-logo'}
-                            {include file='layout/header_logo.tpl'}
-                        {/block}
-                        {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center-util{else}align-items-lg-end{/if}"}
-                           {block name='layout-header-search'}
-                                {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
-                                    <div class="d-lg-none search-form-wrapper-fixed container-fluid container-fluid-xl order-1">
-                                        {include file='snippets/search_form.tpl' id='search-header-mobile-top'}
-                                    </div>
-                                {/if}
-                            {/block}
+            <header class="d-print-none {if $Einstellungen.template.header.menu_single_row === 'Y'}full-width-mega{/if} {if !$isMobile || $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar theme-{$Einstellungen.template.theme.theme_default}"
+                    id="jtl-nav-wrapper">
+                {if $Einstellungen.template.header.menu_single_row === 'Y'}
 
-                            {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
-                                {block name='layout-header-secure-checkout'}
-                                    <div class="secure-checkout-icon ml-auto-util ml-lg-0">
-                                        {block name='layout-header-secure-checkout-title'}
-                                            <i class="fas fa-lock icon-mr-2"></i>{lang key='secureCheckout' section='checkout'}
-                                        {/block}
-                                    </div>
-                                    <div class="secure-checkout-topbar ml-auto-util d-none d-lg-block">
-                                        {block name='layout-header-secure-include-header-top-bar'}
-                                            {include file='layout/header_top_bar.tpl'}
-                                        {/block}
-                                    </div>
-                                {/block}
+                    {block name='layout-header-head-resources-crit'}
+                        <style>
+                        .main-search-wrapper {
+                            max-width: {$Einstellungen.template.header.jtl_header_menu_search_width};
+                        }
+                        .nav-logo-wrapper {
+                            margin-right: auto;
+                        }
+                        @media (min-width: 992px) {
+                        {if $Einstellungen.template.header.jtl_header_menu_logoheight !== 0 && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}
+                            header .navbar-brand img {
+                            height: {$Einstellungen.template.header.jtl_header_menu_logoheight};
+                            }
+                        {/if}
+                        {if $Einstellungen.template.header.jtl_header_menu_search_position === 'center'}
+                            .main-search-wrapper {
+                            margin-right: auto;
+                            }
+                        {elseif $Einstellungen.template.header.jtl_header_menu_search_position === 'left'}
+                            .main-search-wrapper {
+                            margin-right: auto;
+                            }
+                            .nav-logo-wrapper {
+                            margin-right: initial;
+                            }
+                        {/if}
+                        }
+                        {if $Einstellungen.template.header.jtl_header_menu_center === 'center'}
+                            {if $Einstellungen.template.header.menu_multiple_rows === 'multiple'}
+                                .nav-scrollbar-inner {
+                                    justify-content: center;
+                                }
                             {else}
-                                {block name='layout-header-branding-shop-nav'}
-                                    {nav id="shop-nav" right=true class="nav-right order-lg-last nav-icons"}
+                                .nav-scrollbar-inner::before, .nav-scrollbar-inner::after {
+                                    content: '';
+                                    margin: auto;
+                                }
+                            {/if}
+                        {/if}
+                        </style>
+                    {/block}
+                    {block name='layout-header-container-inner'}
+                        {block name='layout-header-category-nav'}
+                            <div class="container-fluid {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if}">
+                                {navbar toggleable=true fill=true type="expand-lg" class="row justify-content-center align-items-center-util"}
+                                    {col class="col-auto nav-logo-wrapper"}
+                                        {block name='layout-header-category-nav-logo'}
+                                            {include file='layout/header_logo.tpl'}
+                                        {/block}
+                                    {/col}
+                                {block name='layout-header-search'}
+                                    {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
+                                        <div class="d-lg-none search-form-wrapper-fixed container-fluid container-fluid-xl order-1">
+                                            {include file='snippets/search_form.tpl' id='search-header-mobile-top'}
+                                        </div>
+                                    {/if}
+                                {/block}
+                                {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
+                                    {block name='layout-header-secure-checkout'}
+                                        <div class="secure-checkout-icon ml-auto-util ml-lg-0">
+                                            {block name='layout-header-secure-checkout-title'}
+                                                <i class="fas fa-lock icon-mr-2"></i>{lang key='secureCheckout' section='checkout'}
+                                            {/block}
+                                        </div>
+                                        <div class="secure-checkout-topbar ml-auto-util d-none d-lg-block">
+                                            {block name='layout-header-secure-include-header-top-bar'}
+                                                {include file='layout/header_top_bar.tpl'}
+                                            {/block}
+                                        </div>
+                                    {/block}
+                                {else}
+                                    {col class="col-auto nav-icons-wrapper"}
+                                    {block name='layout-header-branding-shop-nav'}
+                                        {nav id="shop-nav" right=true class="nav-right order-lg-last nav-icons"}
                                         {block name='layout-header-branding-shop-nav-include-language-dropdown'}
                                             {include file='snippets/language_dropdown.tpl' dropdownClass='d-flex d-lg-none'}
                                         {/block}
-                                        {include file='layout/header_nav_icons.tpl'}
-                                    {/nav}
+                                            {include file='layout/header_nav_icons.tpl'}
+                                        {/nav}
+                                    {/block}
+                                    {/col}
+                                {/if}
+                                {/navbar}
+                            </div>
+                            {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}
+                                <div class="container-fluid {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if}">
+                                    {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center-util{else}align-items-lg-end{/if}"}
+                                        {block name='layout-header-include-categories-mega'}
+                                            {include file='layout/header_categories.tpl' menuMultipleRows=($Einstellungen.template.header.menu_multiple_rows === 'multiple')}
+                                        {/block}
+                                    {/navbar}
+                                </div>
+                            {/if}
+                        {/block}
+                    {/block}
+                {else}
+                    {block name='layout-header-container-inner'}
+                        <div class="container-fluid {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if}">
+                        {block name='layout-header-category-nav'}
+                            {block name='layout-header-category-nav-logo'}
+                                {include file='layout/header_logo.tpl'}
+                            {/block}
+                            {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center-util{else}align-items-lg-end{/if}"}
+                               {block name='layout-header-search'}
+                                    {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
+                                        <div class="d-lg-none search-form-wrapper-fixed container-fluid container-fluid-xl order-1">
+                                            {include file='snippets/search_form.tpl' id='search-header-mobile-top'}
+                                        </div>
+                                    {/if}
                                 {/block}
 
-                                {block name='layout-header-include-categories-mega'}
-                                    {include file='layout/header_categories.tpl'}
-                                {/block}
-                            {/if}
-                        {/navbar}
+                                {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
+                                    {block name='layout-header-secure-checkout'}
+                                        <div class="secure-checkout-icon ml-auto-util ml-lg-0">
+                                            {block name='layout-header-secure-checkout-title'}
+                                                <i class="fas fa-lock icon-mr-2"></i>{lang key='secureCheckout' section='checkout'}
+                                            {/block}
+                                        </div>
+                                        <div class="secure-checkout-topbar ml-auto-util d-none d-lg-block">
+                                            {block name='layout-header-secure-include-header-top-bar'}
+                                                {include file='layout/header_top_bar.tpl'}
+                                            {/block}
+                                        </div>
+                                    {/block}
+                                {else}
+                                    {block name='layout-header-branding-shop-nav'}
+                                        {nav id="shop-nav" right=true class="nav-right order-lg-last nav-icons"}
+                                            {block name='layout-header-branding-shop-nav-include-language-dropdown'}
+                                                {include file='snippets/language_dropdown.tpl' dropdownClass='d-flex d-lg-none'}
+                                            {/block}
+                                            {include file='layout/header_nav_icons.tpl'}
+                                        {/nav}
+                                    {/block}
+
+                                    {block name='layout-header-include-categories-mega'}
+                                        {include file='layout/header_categories.tpl'}
+                                    {/block}
+                                {/if}
+                            {/navbar}
+                        {/block}
+                        </div>
                     {/block}
-                    </div>
-                {/block}
+                {/if}
             </header>
             {block name='layout-header-search-fixed'}
                 {if $Einstellungen.template.theme.mobile_search_type === 'fixed' && $isMobile}

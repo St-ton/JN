@@ -94,15 +94,54 @@ function processImport(array $fmt, array $data): string
 {
     $recipient = new class
     {
+        /**
+         * @var string
+         */
         public $cAnrede;
+
+        /**
+         * @var string
+         */
         public $cEmail;
+
+        /**
+         * @var string
+         */
         public $cVorname;
+
+        /**
+         * @var string
+         */
         public $cNachname;
+
+        /**
+         * @var int
+         */
         public $kKunde = 0;
+
+        /**
+         * @var int
+         */
         public $kSprache;
+
+        /**
+         * @var string
+         */
         public $cOptCode;
+
+        /**
+         * @var string
+         */
         public $cLoeschCode;
+
+        /**
+         * @var string
+         */
         public $dEingetragen;
+
+        /**
+         * @var int
+         */
         public $nAktiv = 1;
     };
     $cnt       = count($fmt); // only columns that have no empty header jtl-shop/issues#296

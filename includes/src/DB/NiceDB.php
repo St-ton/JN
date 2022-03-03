@@ -135,6 +135,13 @@ class NiceDB implements DbInterface
         if (\DB_DEFAULT_SQL_MODE !== true) {
             $this->pdo->exec("SET SQL_MODE=''");
         }
+        if (\DB_STARTUP_SQL !== '') {
+            foreach (\explode(';', \DB_STARTUP_SQL) as $sql) {
+                if (!empty($sql)) {
+                    $this->pdo->exec($sql);
+                }
+            }
+        }
         $this->initDebugging($forceDebug);
         $this->isConnected = true;
         self::$instance    = $this;

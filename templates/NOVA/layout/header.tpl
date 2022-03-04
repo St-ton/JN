@@ -381,11 +381,13 @@
                         {block name='layout-header-category-nav'}
                             <div class="container-fluid hide-navbar {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if}">
                                 {navbar toggleable=true fill=true type="expand-lg" class="row justify-content-center align-items-center-util"}
+                                {if $Einstellungen.template.header.menu_logo_centered === 'N'}
                                     {col class="col-auto nav-logo-wrapper"}
                                         {block name='layout-header-category-nav-logo'}
                                             {include file='layout/header_logo.tpl'}
                                         {/block}
                                     {/col}
+                                {/if}
                                 {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
                                     {block name='layout-header-secure-checkout'}
                                         <div class="secure-checkout-icon ml-auto-util ml-lg-0">
@@ -405,6 +407,13 @@
                                             {include file='layout/header_nav_search.tpl'}
                                         {/block}
                                     {/col}
+                                    {if $Einstellungen.template.header.menu_logo_centered === 'Y'}
+                                        {col class="col-auto nav-logo-wrapper m-auto"}
+                                        {block name='layout-header-category-nav-logo'}
+                                            {include file='layout/header_logo.tpl'}
+                                        {/block}
+                                        {/col}
+                                    {/if}
                                     {col class="col-auto nav-icons-wrapper"}
                                     {block name='layout-header-branding-shop-nav'}
                                         {nav id="shop-nav" right=true class="nav-right order-lg-last nav-icons"}

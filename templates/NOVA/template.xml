@@ -73,6 +73,10 @@
                 <Option Value="all">Menü, Logo, Suche</Option>
             </Setting>
             <Setting Description="Logo Höhe (in px)" Key="jtl_header_menu_logoheight" Type="number" Value="49"/>
+            <Setting Description="Logo zentriert" Key="menu_logo_centered" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
             <Setting Description="Suchfeld Breite (in px)" Key="jtl_header_menu_search_width" Type="number" Value="0"/>
             <Setting Description="Suchfeld Positionierung" Key="jtl_header_menu_search_position" Type="select" Value="center">
                 <Option Value="left">Links</Option>

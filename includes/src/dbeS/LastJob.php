@@ -168,7 +168,7 @@ final class LastJob
     {
         $job = $this->getJob($jobID);
         if ($job === null) {
-            $job = (object)[
+            $job       = (object)[
                 'cType'     => 'STD',
                 'nJob'      => $jobID,
                 'cJobName'  => $className,

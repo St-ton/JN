@@ -60,51 +60,55 @@ final class LastJob
         foreach ($jobs as $job) {
             switch ((int)$job->nJob) {
                 case \LASTJOBS_BEWERTUNGSERINNNERUNG:
-                    if ($config['bewertung']['bewertung_anzeigen'] === 'Y') {
-                        $recipients = (new ReviewReminder())->getRecipients();
-                        $mailer     = Shop::Container()->get(Mailer::class);
-                        $mail       = new Mail();
-                        foreach ($recipients as $recipient) {
-                            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BEWERTUNGERINNERUNG, $recipient));
-                        }
-                        $this->restartJob(\LASTJOBS_BEWERTUNGSERINNNERUNG);
+                    if ($config['bewertung']['bewertung_anzeigen'] !== 'Y') {
+                        break;
                     }
+                    $recipients = (new ReviewReminder())->getRecipients();
+                    $mailer     = Shop::Container()->get(Mailer::class);
+                    $mail       = new Mail();
+                    foreach ($recipients as $recipient) {
+                        $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BEWERTUNGERINNERUNG, $recipient));
+                    }
+                    $this->restartJob(\LASTJOBS_BEWERTUNGSERINNNERUNG);
                     break;
                 case \LASTJOBS_SITEMAP:
-                    if ($config['sitemap']['sitemap_wawiabgleich'] === 'Y') {
-                        $exportConfig = new DefaultConfig(
-                            $this->db,
-                            $config,
-                            Shop::getURL() . '/',
-                            Shop::getImageBaseURL()
-                        );
-                        $exporter     = new Export(
-                            $this->db,
-                            $this->logger,
-                            new DefaultRenderer(),
-                            new DefaultSchemaRenderer(),
-                            $config
-                        );
-                        $exporter->generate(
-                            [CustomerGroup::getDefaultGroupID()],
-                            LanguageHelper::getAllLanguages(),
-                            $exportConfig->getFactories()
-                        );
-                        $this->restartJob(\LASTJOBS_SITEMAP);
+                    if ($config['sitemap']['sitemap_wawiabgleich'] !== 'Y') {
+                        break;
                     }
+                    $exportConfig = new DefaultConfig(
+                        $this->db,
+                        $config,
+                        Shop::getURL() . '/',
+                        Shop::getImageBaseURL()
+                    );
+                    $exporter     = new Export(
+                        $this->db,
+                        $this->logger,
+                        new DefaultRenderer(),
+                        new DefaultSchemaRenderer(),
+                        $config
+                    );
+                    $exporter->generate(
+                        [CustomerGroup::getDefaultGroupID()],
+                        LanguageHelper::getAllLanguages(),
+                        $exportConfig->getFactories()
+                    );
+                    $this->restartJob(\LASTJOBS_SITEMAP);
                     break;
                 case \LASTJOBS_RSS:
-                    if ($config['rss']['rss_wawiabgleich'] === 'Y') {
-                        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'rss_inc.php';
-                        \generiereRSSXML();
-                        $this->restartJob(\LASTJOBS_RSS);
+                    if ($config['rss']['rss_wawiabgleich'] !== 'Y') {
+                        break;
                     }
+                    require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'rss_inc.php';
+                    \generiereRSSXML();
+                    $this->restartJob(\LASTJOBS_RSS);
                     break;
                 case \LASTJOBS_GARBAGECOLLECTOR:
-                    if ($config['global']['garbagecollector_wawiabgleich'] === 'Y') {
-                        Shop::Container()->getDBServiceGC()->run();
-                        $this->restartJob(\LASTJOBS_GARBAGECOLLECTOR);
+                    if ($config['global']['garbagecollector_wawiabgleich'] !== 'Y') {
+                        break;
                     }
+                    Shop::Container()->getDBServiceGC()->run();
+                    $this->restartJob(\LASTJOBS_GARBAGECOLLECTOR);
                     break;
                 default:
                     break;

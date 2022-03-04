@@ -56,17 +56,19 @@ final class LastJob
         $GLOBALS['nIntervall'] = \defined('LASTJOBS_INTERVALL') ? \LASTJOBS_INTERVALL : 12;
         $jobs                  = $this->getRepeatedJobs($GLOBALS['nIntervall']);
         \executeHook(\HOOK_LASTJOBS_HOLEJOBS, ['jobs' => &$jobs]);
-        $config = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_SITEMAP]);
+        $config = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_SITEMAP, \CONF_BEWERTUNG]);
         foreach ($jobs as $job) {
             switch ((int)$job->nJob) {
                 case \LASTJOBS_BEWERTUNGSERINNNERUNG:
-                    $recipients = (new ReviewReminder())->getRecipients();
-                    $mailer     = Shop::Container()->get(Mailer::class);
-                    $mail       = new Mail();
-                    foreach ($recipients as $recipient) {
-                        $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BEWERTUNGERINNERUNG, $recipient));
+                    if ($config['bewertung']['bewertung_anzeigen'] === 'Y') {
+                        $recipients = (new ReviewReminder())->getRecipients();
+                        $mailer     = Shop::Container()->get(Mailer::class);
+                        $mail       = new Mail();
+                        foreach ($recipients as $recipient) {
+                            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BEWERTUNGERINNERUNG, $recipient));
+                        }
+                        $this->restartJob(\LASTJOBS_BEWERTUNGSERINNNERUNG);
                     }
-                    $this->restartJob(\LASTJOBS_BEWERTUNGSERINNNERUNG);
                     break;
                 case \LASTJOBS_SITEMAP:
                     if ($config['sitemap']['sitemap_wawiabgleich'] === 'Y') {

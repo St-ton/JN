@@ -8,7 +8,6 @@ namespace JTL\Services\JTL;
  */
 interface PasswordServiceInterface
 {
-
     /**
      * only use for upgrading from shop 4 --> 5!
      *

@@ -99,19 +99,7 @@
                                 {/block}
                                 {block name='layout-header-menu-single-row-icons'}
                                     {col class="col-auto nav-icons-wrapper"}
-                                        {nav id="shop-nav" right=true class="nav-right order-lg-last nav-icons"}
-                                            {block name='layout-header-menu-single-row-include-currency-dropdown'}
-                                                {if $Einstellungen.template.header.menu_show_topbar === 'N'}
-                                                    {include file='snippets/currency_dropdown.tpl'}
-                                                {/if}
-                                            {/block}
-                                            {block name='layout-header-menu-single-row-include-language-dropdown'}
-                                                {include file='snippets/language_dropdown.tpl' dropdownClass="d-flex {if $Einstellungen.template.header.menu_show_topbar === 'Y'}d-lg-none{/if}"}
-                                            {/block}
-                                            {block name='layout-header-menu-single-row-icons-main'}
-                                                {include file='layout/header_nav_icons.tpl'}
-                                            {/block}
-                                        {/nav}
+                                        {include file='layout/header_nav_icons.tpl'}
                                     {/col}
                                 {/block}
                             {/if}

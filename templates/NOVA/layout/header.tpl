@@ -312,7 +312,9 @@
         {/if}
 
         {block name='layout-header-header'}
-            {if !$Einstellungen.template.header.jtl_header_menu_scroll === 'menu'
+            {if (($Einstellungen.template.header.jtl_header_menu_scroll !== 'menu' && $Einstellungen.template.header.menu_single_row === 'Y')
+                    || $Einstellungen.template.header.menu_single_row === 'N'
+                )
                 && $Einstellungen.template.header.menu_show_topbar === 'Y'
                 && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}
                 {block name='layout-header-branding-top-bar'}
@@ -352,12 +354,7 @@
                                     {/block}
                                 {else}
                                     {block name='layout-header-branding-shop-nav'}
-                                        {nav id="shop-nav" right=true class="nav-right order-lg-last nav-icons"}
-                                            {block name='layout-header-branding-shop-nav-include-language-dropdown'}
-                                                {include file='snippets/language_dropdown.tpl' dropdownClass='d-flex d-lg-none'}
-                                            {/block}
-                                            {include file='layout/header_nav_icons.tpl'}
-                                        {/nav}
+                                        {include file='layout/header_nav_icons.tpl'}
                                     {/block}
 
                                     {block name='layout-header-include-categories-mega'}

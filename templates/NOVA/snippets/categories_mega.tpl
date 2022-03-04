@@ -98,9 +98,7 @@
 
     {block name='snippets-categories-mega-manufacturers'}
     {if $Einstellungen.template.megamenu.show_manufacturers !== 'N'
-        && ($Einstellungen.global.global_sichtbarkeit != 3
-            || isset($smarty.session.Kunde->kKunde)
-            && $smarty.session.Kunde->kKunde != 0)}
+        && ($Einstellungen.global.global_sichtbarkeit != 3 || JTL\Session\Frontend::getCustomer()->getID() > 0)}
         {get_manufacturers assign='manufacturers'}
         {if !empty($manufacturers)}
             {assign var=manufacturerOverview value=null}
@@ -141,7 +139,7 @@
                                     {foreach $manufacturers as $mft}
                                         {col lg=4 xl=3 class='nav-item-lg-m nav-item'}
                                             {block name='snippets-categories-mega-manufacturers-link'}
-                                                {link href=$mft->cURLFull title=$mft->cSeo class='submenu-headline submenu-headline-toplevel nav-link '}
+                                                {link href=$mft->getURL() title=$mft->getName() class='submenu-headline submenu-headline-toplevel nav-link '}
                                                     {if $Einstellungen.template.megamenu.show_manufacturer_images !== 'N'
                                                         && (!$isMobile || $isTablet)}
                                                         {include file='snippets/image.tpl'
@@ -193,7 +191,7 @@
             {navitem href="{get_static_route id='vergleichsliste.php'}" class="comparelist-nav-scrollbar-item nav-scrollbar-item"}
                 {lang key='compare'}
                 {badge id="comparelist-badge" variant="primary" class="product-count"}
-                    {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{else}0{/if}
+                    {if JTL\Session\Frontend::getCompareList()->oArtikel_arr|count}{else}0{/if}
                 {/badge}
             {/navitem}
         {/if}
@@ -209,7 +207,7 @@
         {/if}
         {block name='layout-header-top-bar-user-settings'}
             {block name='layout-header-top-bar-user-settings-currency'}
-                {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
+                {if JTL\Session\Frontend::getCurrencies()|count > 1}
                     <li class="currency-nav-scrollbar-item nav-item nav-scrollbar-item dropdown dropdown-full d-lg-none">
                         {block name='layout-header-top-bar-user-settings-currency-link'}
                             {link id='currency-dropdown' href='#' title={lang key='currency'} class="nav-link dropdown-toggle" target="_self"}
@@ -226,10 +224,10 @@
                                                     <strong class="nav-mobile-heading">{lang key='currency'}</strong>
                                                 {/block}
                                             {/col}
-                                            {foreach $smarty.session.Waehrungen as $currency}
+                                            {foreach JTL\Session\Frontend::getCurrencies() as $currency}
                                                 {col lg=4 xl=3 class='nav-item-lg-m nav-item'}
                                                     {block name='layout-header-top-bar-user-settings-currency-header-items'}
-                                                        {dropdownitem href=$currency->getURLFull() rel="nofollow" active=($smarty.session.Waehrung->getName() === $currency->getName())}
+                                                        {dropdownitem href=$currency->getURLFull() rel="nofollow" active=(JTL\Session\Frontend::getCurrency()->getName() === $currency->getName())}
                                                             {$currency->getName()}
                                                         {/dropdownitem}
                                                     {/block}

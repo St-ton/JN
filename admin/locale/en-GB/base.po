@@ -1985,9 +1985,6 @@ msgstr "Bank transfer"
 msgid "za_nachnahme_jtl"
 msgstr "Cash on Delivery"
 
-msgid "za_kreditkarte_jtl"
-msgstr "Creditcard"
-
 msgid "za_rechnung_jtl"
 msgstr "Invoice Payment"
 

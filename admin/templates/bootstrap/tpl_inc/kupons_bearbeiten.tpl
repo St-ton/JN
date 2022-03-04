@@ -513,7 +513,8 @@
                             {include file='snippets/searchpicker_button.tpl' target='#customerPicker-modal'}
                         </div>
                     </div>
-                    <div class="form-group form-row align-items-center{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="informCustomers">
+                    {* disabled with d-none because of SHOP-5794 *}
+                    <div class="form-group form-row align-items-center d-none {if isset($oKupon->massCreationCoupon)} hidden{/if}" id="informCustomers">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="informieren">{__('informCustomers')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <div class="custom-control custom-checkbox">

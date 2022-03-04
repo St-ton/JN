@@ -13,7 +13,7 @@
                 labels:   [],
                 datasets: [
                     {
-                        label:            "{lang section='productDetails' key='PriceFlowTitle' printf=(string)$Einstellungen.preisverlauf.preisverlauf_anzahl_monate} " + "({$smarty.session.Waehrung->getName()})",
+                        label:            "{lang section='productDetails' key='PriceFlowTitle' printf=(string)$Einstellungen.preisverlauf.preisverlauf_anzahl_monate} " + "({JTL\Session\Frontend::getCurrency()->getName()})",
                         backgroundColor:  "rgba(248,191,0,0.2)",
                         borderColor:      "#F8BF00",
                         fill:             false,

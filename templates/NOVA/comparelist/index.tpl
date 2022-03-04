@@ -19,7 +19,7 @@
             {include file='snippets/extension.tpl'}
         {/block}
 
-        {if $oVergleichsliste->oArtikel_arr|@count > 0}
+        {if $oVergleichsliste->oArtikel_arr|count > 0}
             {block name='comparelist-index-filter'}
                 {opcMountPoint id='opc_before_filter' inContainer=false}
                 {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
@@ -259,7 +259,7 @@
                                                 {/block}
                                                 {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
                                                     <td data-product-id-cl="{$oArtikel->kArtikel}">
-                                                        {if isset($oArtikel->oVariationenNurKind_arr) && $oArtikel->oVariationenNurKind_arr|@count > 0}
+                                                        {if isset($oArtikel->oVariationenNurKind_arr) && $oArtikel->oVariationenNurKind_arr|count > 0}
                                                             {foreach $oArtikel->oVariationenNurKind_arr as $oVariationenArtikel}
                                                                 {if $oVariationen->cName == $oVariationenArtikel->cName}
                                                                     {foreach $oVariationenArtikel->Werte as $oVariationsWerte}
@@ -271,7 +271,7 @@
                                                                     {/foreach}
                                                                 {/if}
                                                             {/foreach}
-                                                        {elseif $oArtikel->Variationen|@count > 0}
+                                                        {elseif $oArtikel->Variationen|count > 0}
                                                             {foreach $oArtikel->Variationen as $oVariationenArtikel}
                                                                 {if $oVariationen->cName == $oVariationenArtikel->cName}
                                                                     {foreach $oVariationenArtikel->Werte as $oVariationsWerte}

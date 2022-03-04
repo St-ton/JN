@@ -3902,18 +3902,18 @@ class Artikel
         }
         $manufacturer = new Hersteller($this->kHersteller, $this->kSprache);
 
-        $this->cHersteller                = $manufacturer->cName;
-        $this->cHerstellerSeo             = $manufacturer->cSeo;
+        $this->cHersteller                = $manufacturer->getName();
+        $this->cHerstellerSeo             = $manufacturer->getSeo();
         $this->cHerstellerURL             = URL::buildURL($manufacturer, \URLART_HERSTELLER);
-        $this->cHerstellerHomepage        = $manufacturer->cHomepage;
-        $this->cHerstellerMetaTitle       = $manufacturer->cMetaTitle;
-        $this->cHerstellerMetaKeywords    = $manufacturer->cMetaKeywords;
-        $this->cHerstellerMetaDescription = $manufacturer->cMetaDescription;
-        $this->cHerstellerBeschreibung    = $manufacturer->cBeschreibung;
-        $this->cHerstellerSortNr          = $manufacturer->nSortNr;
-        if ($manufacturer->cBildpfad !== null && \mb_strlen($manufacturer->cBildpfad) > 0) {
-            $this->cHerstellerBildKlein     = \PFAD_HERSTELLERBILDER_KLEIN . $manufacturer->cBildpfad;
-            $this->cHerstellerBildNormal    = \PFAD_HERSTELLERBILDER_NORMAL . $manufacturer->cBildpfad;
+        $this->cHerstellerHomepage        = $manufacturer->getHomepage();
+        $this->cHerstellerMetaTitle       = $manufacturer->getMetaTitle();
+        $this->cHerstellerMetaKeywords    = $manufacturer->getMetaKeywords();
+        $this->cHerstellerMetaDescription = $manufacturer->getMetaDescription();
+        $this->cHerstellerBeschreibung    = $manufacturer->getDesciption();
+        $this->cHerstellerSortNr          = $manufacturer->getSortNo();
+        if ($manufacturer->getImagePath() !== '') {
+            $this->cHerstellerBildKlein     = $manufacturer->getImagePathSmall();
+            $this->cHerstellerBildNormal    = $manufacturer->getImagePathNormal();
             $this->cBildpfad_thersteller    = $manufacturer->getImage(Image::SIZE_XS);
             $this->cHerstellerBildURLKlein  = $this->cBildpfad_thersteller;
             $this->cHerstellerBildURLNormal = $manufacturer->getImage(Image::SIZE_MD);
@@ -4057,7 +4057,12 @@ class Artikel
             $specials[\SEARCHSPECIALS_OUTOFSTOCK] = ($this->fLagerbestand <= 0
                 && $this->cLagerBeachten === 'Y'
                 && $this->cLagerKleinerNull !== 'Y')
-                || ($this->inWarenkorbLegbar !== null && $this->inWarenkorbLegbar <= 0);
+                || ($this->inWarenkorbLegbar !== null
+                    && (
+                        $this->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGER
+                        || $this->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGERVAR
+                    )
+                );
         }
         // Auf Lager
         $specials[\SEARCHSPECIALS_ONSTOCK] = ($this->fLagerbestand > 0 && $this->cLagerBeachten === 'Y');
@@ -4756,10 +4761,16 @@ class Artikel
                         FROM tversandartzahlungsart vaza
                         WHERE kZahlungsart = 6)
                 AND (
-                    va.kVersandberechnung = 1 OR va.kVersandberechnung = 4
+                    va.kVersandberechnung = 1
+                    OR va.kVersandberechnung = 4
                     OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND :wght <= vas.fBis )
                     OR ( va.kVersandberechnung = 3
-                        AND vas.fBis = (SELECT MIN(fBis) FROM tversandartstaffel WHERE fBis > :net)
+                        AND vas.fBis = (
+                          SELECT MIN(fBis)
+                            FROM tversandartstaffel
+                            WHERE fBis > :net
+                              AND tversandartstaffel.kVersandart = va.kVersandart
+                          )
                         )
                     ) ' . $dep . '
                 ORDER BY minPrice, nSort ASC LIMIT 1',
@@ -5728,7 +5739,7 @@ class Artikel
      */
     public function getShippingAndTaxData(): array
     {
-        if (!isset($_SESSION['Kundengruppe'])) {
+        if (!isset($_SESSION['Kundengruppe']) || !\is_a($_SESSION['Kundengruppe'], CustomerGroup::class)) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
         }
         if (!isset($_SESSION['Link_Versandseite'])) {

@@ -5,6 +5,7 @@ namespace JTL\dbeS;
 use JTL\Catalog\ReviewReminder;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
+use JTL\dbeS\Job\JobInterface;
 use JTL\Helpers\FileSystem;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
@@ -158,22 +159,21 @@ final class LastJob
 
     /**
      * @param int         $jobID
-     * @param string|null $name
+     * @param string|null $className
      * @return stdClass
      */
-    public function run(int $jobID, string $name = null): stdClass
+    public function run(int $jobID, string $className = null): stdClass
     {
         $job = $this->getJob($jobID);
         if ($job === null) {
             $job = (object)[
                 'cType'     => 'STD',
                 'nJob'      => $jobID,
-                'cJobName'  => $name,
+                'cJobName'  => $className,
                 'nCounter'  => 1,
                 'dErstellt' => \date('Y-m-d H:i:s'),
                 'nFinished' => 0,
             ];
-
             $job->kJob = $this->db->insert('tlastjob', $job);
         } else {
             $job->nCounter++;
@@ -187,11 +187,10 @@ final class LastJob
 
     /**
      * @param int $jobID
-     * @return int
      */
-    private function restartJob(int $jobID): int
+    private function restartJob(int $jobID): void
     {
-        return $this->db->update(
+        $this->db->update(
             'tlastjob',
             'nJob',
             $jobID,
@@ -204,36 +203,26 @@ final class LastJob
     }
 
     /**
-     * @param int|null $jobID
-     * @return int
+     * @return void
      */
-    private function finishStdJobs(int $jobID = null): int
+    private function finishStdJobs(): void
     {
         $keys    = ['cType', 'nFinished'];
         $keyVals = ['STD', 0];
-
-        if ($jobID > 0) {
-            $keys[]    = 'nJob';
-            $keyVals[] = $jobID;
-        }
-
         $this->db->update('tlastjob', $keys, $keyVals, (object)['nFinished' => 1]);
 
         $keyVals[1] = 1;
         $jobs       = $this->getStdJobs();
         foreach ($jobs as $job) {
-            $fileName   = \PFAD_ROOT . \PFAD_DBES . $job->cJobName . '.inc.php';
-            $finishProc = $job->cJobName . '_Finish';
-
-            if (\is_file($fileName)) {
-                require_once $fileName;
-
-                if (\function_exists($finishProc)) {
-                    $finishProc();
-                }
+            $class = $job->cJobName;
+            $full  = 'JTL\\dbeS\\Job\\' . $class;
+            if (!\class_exists($full) || !\in_array(JobInterface::class, \class_implements($full), true)) {
+                continue;
             }
+            /** @var JobInterface $instance */
+            $instance = new $full($this->db, Shop::Container()->getCache());
+            $instance->run();
         }
-
-        return $this->db->delete('tlastjob', $keys, $keyVals);
+        $this->db->delete('tlastjob', $keys, $keyVals);
     }
 }

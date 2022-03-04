@@ -1,6 +1,8 @@
 {block name='layout-header-nav-icons'}
     {block name='layout-header-nav-icons-include-header-nav-search'}
-        {include file='layout/header_nav_search.tpl'}
+        {if $Einstellungen.template.header.menu_single_row !== 'Y'}
+            {include file='layout/header_nav_search.tpl'}
+        {/if}
     {/block}
     {block name='layout-header-nav-icons-include-header-shop-nav-account'}
         {include file='layout/header_shop_nav_account.tpl'}

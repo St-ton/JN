@@ -26,6 +26,15 @@
         {block name='layout-header-categories-include-include-categories-body'}
             <div class="nav-mobile-body">
                 {navbarnav class="nav-scrollbar-inner mr-auto"}
+                {if $menuScroll|default:false}
+                    {block name='layout-header-jtl-header-include-include-categories-mega-home'}
+                        <li class="nav-home-button nav-item nav-scrollbar-item d-none">
+                            {link class="nav-link" href=$ShopURL title=$Einstellungen.global.global_shopname}
+                                <span class="fas fa-home"></span>
+                            {/link}
+                        </li>
+                    {/block}
+                {/if}
                 {block name='layout-header-categories-include-include-categories-mega'}
                     {include file='snippets/categories_mega.tpl'}
                 {/block}

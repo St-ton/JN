@@ -34,7 +34,7 @@ $alertHelper        = Shop::Container()->getAlertService();
 if ($modifiedFilesCheck !== FileCheck::OK) {
     switch ($modifiedFilesCheck) {
         case FileCheck::ERROR_INPUT_FILE_MISSING:
-            $modifiedFilesError = __('errorFileNotFound');
+            $modifiedFilesError = sprintf(__('errorFileNotFound'), $coreMD5HashFile);
             break;
         case FileCheck::ERROR_NO_HASHES_FOUND:
             $modifiedFilesError = __('errorFileListEmpty');
@@ -47,7 +47,7 @@ if ($modifiedFilesCheck !== FileCheck::OK) {
 if ($orphanedFilesCheck !== FileCheck::OK) {
     switch ($orphanedFilesCheck) {
         case FileCheck::ERROR_INPUT_FILE_MISSING:
-            $orphanedFilesError = __('errorFileNotFound');
+            $orphanedFilesError = sprintf(__('errorFileNotFound'), $orphanedFilesFile);
             break;
         case FileCheck::ERROR_NO_HASHES_FOUND:
             $orphanedFilesError = __('errorFileListEmpty');

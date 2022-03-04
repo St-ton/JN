@@ -64,6 +64,7 @@
                                             jtl_header_menu_search_width: '200',
                                             jtl_header_menu_search_position: 'right',
                                             header_full_width: 'N',
+                                            menu_show_topbar: 'Y',
                                         }
                                     },
                                     {
@@ -78,6 +79,7 @@
                                             jtl_header_menu_search_width: '200',
                                             jtl_header_menu_search_position: 'right',
                                             header_full_width: 'N',
+                                            menu_show_topbar: 'Y',
                                         }
                                     },
                                     {
@@ -92,11 +94,27 @@
                                             jtl_header_menu_search_width: '0',
                                             jtl_header_menu_search_position: 'left',
                                             header_full_width: 'N',
+                                            menu_show_topbar: 'Y',
+                                        }
+                                    },
+                                    {
+                                        name: 'notopbar',
+                                        settings: {
+                                            menu_single_row: 'Y',
+                                            menu_multiple_rows: 'scroll',
+                                            jtl_header_menu_center: 'center',
+                                            jtl_header_menu_scroll: 'all',
+                                            jtl_header_menu_logoheight: '80',
+                                            menu_logo_centered: 'N',
+                                            jtl_header_menu_search_width: '0',
+                                            jtl_header_menu_search_position: 'left',
+                                            header_full_width: 'N',
+                                            menu_show_topbar: 'N',
                                         }
                                     },
                                 ];
                                 $.each(presets, function (key, value) {
-                                    $('#preset-wrapper').append('<div class="col-3"><button type="button" id="' + value.name + '" class="preset-button">' + value.name + '</button></div>')
+                                    $('#preset-items').append('<div class="col col-auto"><button type="button" id="' + value.name + '" class="btn btn-outline-primary preset-button">' + value.name + '</button></div>')
                                 });
                                 $('.preset-button').on('click', function () {
                                     let presetId = $(this).prop('id');
@@ -111,8 +129,13 @@
                             });
                         </script>
 
-                        <div id="preset-wrapper" class="row">
+                        <div id="preset-wrapper">
+                            <div id="preset-description">
+                                Wählen Sie ein vorgefertigtes Layout aus:
+                            </div>
+                            <div id="preset-items" class="row mt-3 mb-4">
 
+                            </div>
                         </div>
                     {/if}
                     <div class="row">

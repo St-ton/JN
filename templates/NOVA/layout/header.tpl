@@ -312,15 +312,15 @@
         {/if}
 
         {block name='layout-header-header'}
-            {$menuScroll=$Einstellungen.template.header.jtl_header_menu_scroll === 'menu'}
-            {if !$menuScroll}
-            {block name='layout-header-branding-top-bar'}
-                <div id="header-top-bar" class="d-none topbar-wrapper {if $Einstellungen.template.header.menu_single_row === 'Y'}full-width-mega{/if} {if $Einstellungen.template.header.header_full_width === 'Y'}is-fullwidth{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
-                    <div class="container-fluid {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
-                        {include file='layout/header_top_bar.tpl'}
+            {$menuScroll=$Einstellungen.template.header.jtl_header_menu_scroll === 'menu' && $Einstellungen.template.header.menu_single_row === 'Y'}
+            {if !$menuScroll && $Einstellungen.template.header.menu_show_topbar === 'Y'}
+                {block name='layout-header-branding-top-bar'}
+                    <div id="header-top-bar" class="d-none topbar-wrapper {if $Einstellungen.template.header.menu_single_row === 'Y'}full-width-mega{/if} {if $Einstellungen.template.header.header_full_width === 'Y'}is-fullwidth{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
+                        <div class="container-fluid {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
+                            {include file='layout/header_top_bar.tpl'}
+                        </div>
                     </div>
-                </div>
-            {/block}
+                {/block}
             {/if}
             <header class="d-print-none {if $Einstellungen.template.header.menu_single_row === 'Y'}full-width-mega{/if} {if !$isMobile || $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar theme-{$Einstellungen.template.theme.theme_default}"
                     id="jtl-nav-wrapper">
@@ -369,7 +369,7 @@
                         </style>
                     {/block}
                     {block name='layout-header-container-inner'}
-                        {if $menuScroll}
+                        {if $menuScroll && $Einstellungen.template.header.menu_show_topbar === 'Y'}
                             {block name='layout-header-branding-top-bar'}
                                 <div id="header-top-bar" class="d-none topbar-wrapper full-width-mega {if $Einstellungen.template.header.header_full_width === 'Y'}is-fullwidth{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
                                     <div class="container-fluid {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
@@ -417,9 +417,12 @@
                                     {col class="col-auto nav-icons-wrapper"}
                                     {block name='layout-header-branding-shop-nav'}
                                         {nav id="shop-nav" right=true class="nav-right order-lg-last nav-icons"}
-                                        {block name='layout-header-branding-shop-nav-include-language-dropdown'}
-                                            {include file='snippets/language_dropdown.tpl' dropdownClass='d-flex d-lg-none'}
-                                        {/block}
+                                            {if $Einstellungen.template.header.menu_show_topbar === 'N'}
+                                                {include file='snippets/currency_dropdown.tpl'}
+                                            {/if}
+                                            {block name='layout-header-branding-shop-nav-include-language-dropdown'}
+                                                {include file='snippets/language_dropdown.tpl' dropdownClass="d-flex {if $Einstellungen.template.header.menu_show_topbar === 'Y'}d-lg-none{/if}"}
+                                            {/block}
                                             {include file='layout/header_nav_icons.tpl'}
                                         {/nav}
                                     {/block}
@@ -441,47 +444,47 @@
                         {/block}
                     {/block}
                 {if $menuScroll}
-                {block name='layout-header-jtl-header-scripts'}
-                {inline_script}
-                    <script>
-                        let lastScroll = 0,
-                            timeoutSc,
-                            $navbar = $('.hide-navbar'),
-                            $topbar = $('#header-top-bar'),
-                            $home   = $('.nav-home-button'),
-                            scrollTopActive = false;
-                        $(document).on('scroll wheel', function (e) {
-                            if (window.innerWidth < globals.breakpoints.lg || $('.secure-checkout-topbar').length) {
-                                return;
-                            }
-                            window.clearTimeout(timeoutSc);
-                            timeoutSc = window.setTimeout(function () {
-                                let newScroll = $(this).scrollTop();
-                                if (newScroll < lastScroll || $(window).scrollTop() === 0) {
-                                    if ($(window).scrollTop() === 0 && (lastScroll > 100 || e.type === 'wheel' || scrollTopActive)) {
-                                        $topbar.addClass('d-lg-flex');
-                                        $navbar.removeClass('d-none');
-                                        $home.removeClass('d-lg-block');
-                                        scrollTopActive = false;
+                    {block name='layout-header-jtl-header-scripts'}
+                    {inline_script}
+                        <script>
+                            let lastScroll = 0,
+                                timeoutSc,
+                                $navbar = $('.hide-navbar'),
+                                $topbar = $('#header-top-bar'),
+                                $home   = $('.nav-home-button'),
+                                scrollTopActive = false;
+                            $(document).on('scroll wheel', function (e) {
+                                if (window.innerWidth < globals.breakpoints.lg || $('.secure-checkout-topbar').length) {
+                                    return;
+                                }
+                                window.clearTimeout(timeoutSc);
+                                timeoutSc = window.setTimeout(function () {
+                                    let newScroll = $(this).scrollTop();
+                                    if (newScroll < lastScroll || $(window).scrollTop() === 0) {
+                                        if ($(window).scrollTop() === 0 && (lastScroll > 100 || e.type === 'wheel' || scrollTopActive)) {
+                                            $topbar.addClass('d-lg-flex');
+                                            $navbar.removeClass('d-none');
+                                            $home.removeClass('d-lg-block');
+                                            scrollTopActive = false;
+                                        } else {
+                                            $topbar.removeClass('d-lg-flex');
+                                            $navbar.addClass('d-none');
+                                            $home.addClass('d-lg-block');
+                                        }
                                     } else {
                                         $topbar.removeClass('d-lg-flex');
                                         $navbar.addClass('d-none');
                                         $home.addClass('d-lg-block');
                                     }
-                                } else {
-                                    $topbar.removeClass('d-lg-flex');
-                                    $navbar.addClass('d-none');
-                                    $home.addClass('d-lg-block');
-                                }
-                                lastScroll = newScroll;
-                            }, 20);
-                        });
-                        $('.smoothscroll-top').on('click', function () {
-                            scrollTopActive = true;
-                        });
-                    </script>
-                {/inline_script}
-                {/block}
+                                    lastScroll = newScroll;
+                                }, 20);
+                            });
+                            $('.smoothscroll-top').on('click', function () {
+                                scrollTopActive = true;
+                            });
+                        </script>
+                    {/inline_script}
+                    {/block}
                 {/if}
                 {else}
                     {block name='layout-header-container-inner'}
@@ -515,7 +518,7 @@
                                     {/block}
 
                                     {block name='layout-header-include-categories-mega'}
-                                        {include file='layout/header_categories.tpl'}
+                                        {include file='layout/header_categories.tpl' menuMultipleRows=false}
                                     {/block}
                                 {/if}
                             {/navbar}

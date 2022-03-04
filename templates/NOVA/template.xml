@@ -77,6 +77,10 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
+            <Setting Description="Topbar anzeigen" Key="menu_show_topbar" Type="select" Value="Y">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
             <Setting Description="Suchfeld Breite (in px)" Key="jtl_header_menu_search_width" Type="number" Value="0"/>
             <Setting Description="Suchfeld Positionierung" Key="jtl_header_menu_search_position" Type="select" Value="center">
                 <Option Value="left">Links</Option>

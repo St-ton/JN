@@ -37,6 +37,84 @@
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body">
+                    {if $section->key === 'header'}
+                        <script>
+                            $(document).ready(function(){
+                                let settings = {
+                                    menu_single_row: 'menu_single_row',
+                                    menu_multiple_rows: 'menu_multiple_rows',
+                                    jtl_header_menu_center: 'jtl_header_menu_center',
+                                    jtl_header_menu_scroll: 'jtl_header_menu_scroll',
+                                    jtl_header_menu_logoheight: 'jtl_header_menu_logoheight',
+                                    menu_logo_centered: 'menu_logo_centered',
+                                    jtl_header_menu_search_width: 'jtl_header_menu_search_width',
+                                    jtl_header_menu_search_position: 'jtl_header_menu_search_position',
+                                    header_full_width: 'header_full_width',
+                                };
+                                let presets = [
+                                    {
+                                        name: 'standard',
+                                        settings: {
+                                            menu_single_row: 'N',
+                                            menu_multiple_rows: 'multiple',
+                                            jtl_header_menu_center: 'center',
+                                            jtl_header_menu_scroll: 'menu',
+                                            jtl_header_menu_logoheight: '120',
+                                            menu_logo_centered: 'Y',
+                                            jtl_header_menu_search_width: '200',
+                                            jtl_header_menu_search_position: 'right',
+                                            header_full_width: 'N',
+                                        }
+                                    },
+                                    {
+                                        name: 'centered',
+                                        settings: {
+                                            menu_single_row: 'Y',
+                                            menu_multiple_rows: 'multiple',
+                                            jtl_header_menu_center: 'center',
+                                            jtl_header_menu_scroll: 'menu',
+                                            jtl_header_menu_logoheight: '120',
+                                            menu_logo_centered: 'Y',
+                                            jtl_header_menu_search_width: '200',
+                                            jtl_header_menu_search_position: 'right',
+                                            header_full_width: 'N',
+                                        }
+                                    },
+                                    {
+                                        name: 'normal',
+                                        settings: {
+                                            menu_single_row: 'Y',
+                                            menu_multiple_rows: 'scroll',
+                                            jtl_header_menu_center: 'center',
+                                            jtl_header_menu_scroll: 'all',
+                                            jtl_header_menu_logoheight: '80',
+                                            menu_logo_centered: 'N',
+                                            jtl_header_menu_search_width: '0',
+                                            jtl_header_menu_search_position: 'left',
+                                            header_full_width: 'N',
+                                        }
+                                    },
+                                ];
+                                $.each(presets, function (key, value) {
+                                    $('#preset-wrapper').append('<div class="col-3"><button type="button" id="' + value.name + '" class="preset-button">' + value.name + '</button></div>')
+                                });
+                                $('.preset-button').on('click', function () {
+                                    let presetId = $(this).prop('id');
+                                    $.each(presets, function (key, value) {
+                                        if (presetId === value.name) {
+                                            $.each(value.settings, function (presetKey, presetValue) {
+                                                $('#header_' + presetKey).val(presetValue);
+                                            });
+                                        }
+                                    });
+                                });
+                            });
+                        </script>
+
+                        <div id="preset-wrapper" class="row">
+
+                        </div>
+                    {/if}
                     <div class="row">
                         {foreach $section->settings as $setting}
                             {if $setting->key === 'theme_default' && isset($themePreviews) && $themePreviews !== null}

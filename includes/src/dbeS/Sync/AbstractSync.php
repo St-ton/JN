@@ -676,21 +676,6 @@ abstract class AbstractSync
             return false;
         }
 
-        $oldRedirects = $this->db->queryPrepared(
-            'SELECT * FROM tredirect WHERE cToUrl = :oldSeo',
-            ['oldSeo' => $oldSeo],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-
-        foreach ($oldRedirects as $oldRedirect) {
-            $oldRedirect->cToUrl = $newSeo;
-            if (Text::endsWith($oldRedirect->cFromUrl, '/' . $newSeo)) {
-                $this->db->delete('tredirect', 'kRedirect', $oldRedirect->kRedirect);
-            } else {
-                $this->db->updateRow('tredirect', 'kRedirect', $oldRedirect->kRedirect, $oldRedirect);
-            }
-        }
-
         $redirect = new Redirect();
         return $redirect->saveExt('/' . $oldSeo, $newSeo, true);
     }

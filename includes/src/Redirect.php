@@ -2,6 +2,8 @@
 
 namespace JTL;
 
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 use JTL\Filter\FilterInterface;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -41,10 +43,17 @@ class Redirect
     public $nCount = 0;
 
     /**
+     * @var DbInterface
+     */
+    protected $db;
+
+    /**
      * @param int $id
      */
     public function __construct(int $id = 0)
     {
+        $this->db = Shop::Container()->getDB();
+
         if ($id > 0) {
             $this->loadFromDB($id);
         }
@@ -56,7 +65,7 @@ class Redirect
      */
     public function loadFromDB(int $id): self
     {
-        $obj = Shop::Container()->getDB()->select('tredirect', 'kRedirect', $id);
+        $obj = $this->db->select('tredirect', 'kRedirect', $id);
         if ($obj !== null && $obj->kRedirect > 0) {
             $members = \array_keys(\get_object_vars($obj));
             foreach ($members as $member) {
@@ -94,7 +103,7 @@ class Redirect
      */
     public function find(string $url): ?stdClass
     {
-        return Shop::Container()->getDB()->select(
+        return $this->db->select(
             'tredirect',
             'cFromUrl',
             \mb_substr($this->normalize($url), 0, 255)
@@ -109,7 +118,7 @@ class Redirect
      */
     public function getRedirectByTarget(string $targetURL): ?stdClass
     {
-        return Shop::Container()->getDB()->select('tredirect', 'cToUrl', $this->normalize($targetURL));
+        return $this->db->select('tredirect', 'cToUrl', $this->normalize($targetURL));
     }
 
     /**
@@ -121,7 +130,7 @@ class Redirect
     {
         $parsed      = \parse_url(Shop::getURL());
         $destination = isset($parsed['path']) ? $parsed['path'] . '/' . $destination : $destination;
-        $redirect    = Shop::Container()->getDB()->select('tredirect', 'cFromUrl', $destination, 'cToUrl', $source);
+        $redirect    = $this->db->select('tredirect', 'cFromUrl', $destination, 'cToUrl', $source);
 
         return $redirect !== null && (int)$redirect->kRedirect > 0;
     }
@@ -134,15 +143,35 @@ class Redirect
      */
     public function saveExt(string $source, string $destination, bool $force = false): bool
     {
-        if (\mb_strlen($source) > 0 && $source[0] !== '/') {
-            $source = '/' . $source;
+        if (\mb_strlen($source) > 0) {
+            $source = $this->normalize($source);
+        }
+        if (\mb_strlen($destination) > 0) {
+            $destination = $this->normalize($destination);
+        }
+        if ($source === $destination) {
+            return false;
+        }
+
+        $oldRedirects = $this->db->queryPrepared(
+            'SELECT * FROM tredirect WHERE cToUrl = :source',
+            ['source' => $source],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+
+        foreach ($oldRedirects as $oldRedirect) {
+            $oldRedirect->cToUrl = $destination;
+            if ($oldRedirect->cFromUrl === $destination) {
+                $this->db->delete('tredirect', 'kRedirect', $oldRedirect->kRedirect);
+            } else {
+                $this->db->updateRow('tredirect', 'kRedirect', $oldRedirect->kRedirect, $oldRedirect);
+            }
         }
 
         if ($force
             || (self::checkAvailability($destination)
                 && \mb_strlen($source) > 1
-                && \mb_strlen($destination) > 1
-                && $source !== $destination)
+                && \mb_strlen($destination) > 1)
         ) {
             if ($this->isDeadlock($source, $destination)) {
                 Shop::Container()->getDB()->delete('tredirect', ['cToUrl', 'cFromUrl'], [$source, $destination]);
@@ -167,12 +196,12 @@ class Redirect
                 if ($kRedirect > 0) {
                     return true;
                 }
-            } elseif ($this->normalize($redirect->cFromUrl) === $this->normalize($source)
+            } elseif ($this->normalize($redirect->cFromUrl) === $source
                 && empty($redirect->cToUrl)
                 && Shop::Container()->getDB()->update(
                     'tredirect',
                     'cFromUrl',
-                    $this->normalize($source),
+                    $source,
                     (object)['cToUrl' => Text::convertUTF8($destination)]
                 ) > 0
             ) {

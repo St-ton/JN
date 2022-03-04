@@ -146,6 +146,11 @@ function handleCsvImportAction(
             unset($obj->cArtNr, $obj->cIso);
         }
 
+        $isRedirectImport = false;
+        if (isset($obj->cFromUrl, $obj->cToUrl)) {
+            $isRedirectImport = true;
+        }
+
         if (is_callable($target)) {
             $res = $target($obj, $importDeleteDone, $importType);
 
@@ -159,11 +164,18 @@ function handleCsvImportAction(
                 Shop::Container()->getDB()->delete($target, $fields, $row);
             }
 
-            $res = Shop::Container()->getDB()->insert($table, $obj);
-
-            if ($res === 0) {
-                ++$nErrors;
-                $errors[] = sprintf(__('csvImportSaveError'), $rowIndex);
+            if ($isRedirectImport) {
+                $redirect = new Redirect();
+                if (!$redirect->saveExt($obj->cFromUrl, $obj->cToUrl)) {
+                    ++$nErrors;
+                    $errors[] = sprintf(__('csvImportSaveError'), $rowIndex);
+                }
+            } else {
+                $res = Shop::Container()->getDB()->insert($table, $obj);
+                if ($res === 0) {
+                    ++$nErrors;
+                    $errors[] = sprintf(__('csvImportSaveError'), $rowIndex);
+                }
             }
         }
 

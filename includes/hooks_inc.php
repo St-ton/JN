@@ -1875,12 +1875,12 @@ const HOOK_RECALCULATED_NET_PRICE = 321;
 /**
  * @since 5.1.0
  * @file Preise.php
- * @param float|string $price
- * @param mixed        $currency
- * @param bool         $html
- * @param int          $decimals
- * @param string       $currencyName
- * @param string       $localized
+ * @param float|string price
+ * @param mixed        currency
+ * @param bool         html
+ * @param int          decimals
+ * @param string       currencyName
+ * @param string       localized
  */
 const HOOK_LOCALIZED_PRICE_STRING = 330;
 
@@ -1894,9 +1894,9 @@ const HOOK_CART_GET_LOCALIZED_SUM = 331;
 /**
  * @since 5.1.0
  * @file includes/src/Helpers/Order.php
- * @param float &$creditToUse
- * @param float $cartTotal
- * @param float $customerCredit
+ * @param float &creditToUse
+ * @param float cartTotal
+ * @param float customerCredit
  */
 const HOOK_BESTELLUNG_SETZEGUTHABEN = 335;
 
@@ -1911,26 +1911,32 @@ const HOOK_SYNC_SEND_AVAILABILITYMAILS = 336;
 
 /**
  * @since 5.2.0
- * @param JTL\Export\Product        $product
- * @param JTL\Export\FormatExporter $exporter
- * @param int                       $exportID
+ * @param JTL\Export\Product        product
+ * @param JTL\Export\FormatExporter exporter
+ * @param int                       exportID
  */
 const HOOK_EXPORT_PRE_RENDER = 340;
 
 /**
  * @since 5.2.0
- * @param JTL\Export\FormatExporter $exporter
- * @param int                       $exportID
- * @param int                       $max
- * @param bool                      $isAsync
- * @param bool                      $isCron
+ * @param JTL\Export\FormatExporter exporter
+ * @param int                       exportID
+ * @param int                       max
+ * @param bool                      isAsync
+ * @param bool                      isCron
  */
 const HOOK_EXPORT_START = 341;
 
 /**
  * @since 5.2.0
- * @param JTL\Export\FormatExporter $exporter
- * @param int                       $exportID
- * @param JTL\Export\Model          $model
+ * @param JTL\Export\FormatExporter exporter
+ * @param int                       exportID
+ * @param JTL\Export\Model          model
  */
 const HOOK_EXPORT_FACTORY_GET_EXPORTER = 342;
+
+/**
+ * @since 5.2.0
+ * @param JTL\News\Item item
+ */
+const HOOK_NEWS_ITEM_MAPPED = 350;

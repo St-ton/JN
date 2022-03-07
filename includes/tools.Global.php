@@ -3195,10 +3195,11 @@ function baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKa
 function baueUnterkategorieListeHTML($AktuelleKategorie)
 {
     if (isset($AktuelleKategorie->kKategorie) && $AktuelleKategorie->kKategorie > 0) {
-        $cacheID = 'ukl_' . $AktuelleKategorie->kKategorie . '_' . Shop::$kSprache;
+        $cgid    = isset($_SESSION['Kundengruppe']->kKundengruppe) ? (int)$_SESSION['Kundengruppe']->kKundengruppe : 0;
+        $cacheID = 'ukl_' . $AktuelleKategorie->kKategorie . '_' . Shop::$kSprache . '_' . $cgid;
         if (($UnterKatListe = Shop::Cache()->get($cacheID)) === false || !is_object($UnterKatListe)) {
             $UnterKatListe = new KategorieListe();
-            $UnterKatListe->getAllCategoriesOnLevel($AktuelleKategorie->kKategorie);
+            $UnterKatListe->getAllCategoriesOnLevel($AktuelleKategorie->kKategorie, $cgid);
             // Bildpfad vorbereiten
             if (is_array($UnterKatListe->elemente) && count($UnterKatListe->elemente) > 0) {
                 foreach ($UnterKatListe->elemente as $i => $oUnterKat) {

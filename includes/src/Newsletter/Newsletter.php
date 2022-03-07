@@ -401,7 +401,7 @@ class Newsletter
             Frontend::getCustomerGroup()->setMayViewPrices(1);
             $product = new Artikel();
             $product->fuelleArtikel($id, $defaultOptions, $customerGroupID, $langID);
-            if (!($product->kArtikel > 0)) {
+            if ($product->kArtikel <= 0) {
                 Shop::Container()->getLogService()->notice(
                     'Newsletter Cron konnte den Artikel ' . $id . ' für Kundengruppe ' .
                     $customerGroupID . ' und Sprache ' . $langID . ' nicht laden (Sichtbarkeit?)'
@@ -449,6 +449,9 @@ class Newsletter
                 continue;
             }
             $manufacturer = new Hersteller($id, $langID);
+            if ($manufacturer->kHersteller <= 0) {
+                continue;
+            }
             if (\mb_strpos($manufacturer->cURL, $shopURL) === false) {
                 $manufacturer->cURL = $manufacturer->cURL = $shopURL . $manufacturer->cURL;
             }
@@ -485,6 +488,9 @@ class Newsletter
                 continue;
             }
             $category = new Kategorie($id);
+            if ($category->kKategorie <= 0) {
+                continue;
+            }
             if (\mb_strpos($category->cURL, $shopURL) === false) {
                 $category->cURL = $shopURL . $category->cURL;
             }

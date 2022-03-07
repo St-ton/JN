@@ -153,18 +153,17 @@ class Redirect
             return false;
         }
 
-        $oldRedirects = $this->db->queryPrepared(
+        $oldRedirects = $this->db->getObjects(
             'SELECT * FROM tredirect WHERE cToUrl = :source',
-            ['source' => $source],
-            ReturnType::ARRAY_OF_OBJECTS
+            ['source' => $source]
         );
 
         foreach ($oldRedirects as $oldRedirect) {
             $oldRedirect->cToUrl = $destination;
             if ($oldRedirect->cFromUrl === $destination) {
-                $this->db->delete('tredirect', 'kRedirect', $oldRedirect->kRedirect);
+                $this->db->delete('tredirect', 'kRedirect', (int)$oldRedirect->kRedirect);
             } else {
-                $this->db->updateRow('tredirect', 'kRedirect', $oldRedirect->kRedirect, $oldRedirect);
+                $this->db->updateRow('tredirect', 'kRedirect', (int)$oldRedirect->kRedirect, $oldRedirect);
             }
         }
 

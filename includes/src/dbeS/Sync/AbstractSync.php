@@ -673,12 +673,10 @@ abstract class AbstractSync
      */
     protected function checkDbeSXmlRedirect($oldSeo, $newSeo): bool
     {
-        // Insert into tredirect weil sich das SEO von der Kategorie geändert hat
+        // Insert into tredirect weil sich SEO von Kategorie oder Artikel geändert hat
         if ($oldSeo === $newSeo || $oldSeo === '' || $newSeo === '') {
             return false;
         }
-        $redirect = new Redirect();
-
-        return $redirect->saveExt('/' . $oldSeo, $newSeo, true);
+        return (new Redirect())->saveExt('/' . $oldSeo, $newSeo, true);
     }
 }

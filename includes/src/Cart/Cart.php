@@ -2042,4 +2042,21 @@ class Cart
             ?? Frontend::getCustomer()->cLand
             ?? Frontend::get('cLieferlandISO');
     }
+
+    /**
+     * @return Cart
+     */
+    public function removeParentItems(): self
+    {
+        foreach ($this->PositionenArr as $i => $item) {
+            if ($item->Artikel === C_WARENKORBPOS_TYP_ARTIKEL
+                && $item->Artikel->nIstVater === 1
+            ) {
+                unset($this->PositionenArr[$i]);
+            }
+        }
+        $this->PositionenArr = \array_merge($this->PositionenArr);
+
+        return $this;
+    }
 }

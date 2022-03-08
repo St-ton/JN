@@ -1179,6 +1179,8 @@ function pruefeVerfuegbarkeit(): array
  */
 function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
 {
+    Frontend::getCart()->removeParentItems();
+
     $obj                      = new stdClass();
     $obj->cVerfuegbarkeit_arr = pruefeVerfuegbarkeit();
 

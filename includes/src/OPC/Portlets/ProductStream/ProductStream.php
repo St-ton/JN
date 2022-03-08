@@ -7,7 +7,9 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Filter\Config;
+use JTL\Filter\Items\Manufacturer;
 use JTL\Filter\ProductFilter;
+use JTL\Filter\States\DummyState;
 use JTL\Filter\Type;
 use JTL\Helpers\Product;
 use JTL\OPC\InputType;
@@ -78,7 +80,12 @@ class ProductStream extends Portlet
      */
     public function getFilteredProductIds(PortletInstance $instance): Collection
     {
-        $params         = ['MerkmalFilter_arr' => [], 'SuchFilter_arr' => [], 'SuchFilter' => []];
+        $params         = [
+            'MerkmalFilter_arr'   => [],
+            'SuchFilter_arr'      => [],
+            'SuchFilter'          => [],
+            'manufacturerFilters' => []
+        ];
         $enabledFilters = $instance->getProperty('filters');
         $pf             = new ProductFilter(
             Config::getDefault(),
@@ -86,13 +93,16 @@ class ProductStream extends Portlet
             Shop::Container()->getCache()
         );
         $service        = Shop::Container()->getOPC();
+        $pf->setBaseState((new DummyState($pf))->init(0));
         foreach ($enabledFilters as $enabledFilter) {
             $service->getFilterClassParamMapping($enabledFilter['class'], $params, $enabledFilter['value'], $pf);
         }
         $service->overrideConfig($pf);
-        $pf->initStates($params);
+        $pf->initStates($params, false);
         foreach ($pf->getActiveFilters() as $filter) {
-            $filter->setType(Type::AND);
+            if ($filter->getClassName() !== Manufacturer::class) {
+                $filter->setType(Type::AND);
+            }
         }
 
         return $pf->getProductKeys()->slice(0, $instance->getProperty('maxProducts'));

@@ -8,8 +8,8 @@
         <div class="card-body">
             {$oNews->getContent()}
 
-        {if $comments|@count > 0}
-            <form method="post" action="news.php">
+        {if $comments|count > 0}
+            <form method="post" action="{$adminURL}/news.php">
                 {$jtl_token}
                 <input type="hidden" name="news" value="1" />
                 <input type="hidden" name="kNews" value="{$oNews->getID()}" />
@@ -31,9 +31,9 @@
                             <div class="form-check">
                                 <div class="custom-control custom-checkbox">
                                     <input class="custom-control-input form-check-input" name="kNewsKommentar[]" type="checkbox" value="{$comment->getID()}" id="nk-{$comment->getID()}" />
-                                    <label class="custom-control-label form-check-label" for="nk-{$comment->getID()}">{$comment->getName()}, {$comment->getDateCreated()->format('d.m.Y H:i')}</label>
+                                    <label class="custom-control-label form-check-label" for="nk-{$comment->getID()}">{$comment->getName()} ({$comment->getMail()}), {$comment->getDateCreated()->format('d.m.Y H:i')}</label>
                                     <div class="btn-group">
-                                        <a href="news.php?news=1&kNews={$oNews->getID()}&kNewsKommentar={$comment->getID()}{if isset($cBackPage)}&{$cBackPage}{elseif isset($cTab)}&tab={$cTab}{/if}&nkedit=1&token={$smarty.session.jtl_token}"
+                                        <a href="{$adminURL}/news.php?news=1&kNews={$oNews->getID()}&kNewsKommentar={$comment->getID()}{if isset($cBackPage)}&{$cBackPage}{elseif isset($cTab)}&tab={$cTab}{/if}&nkedit=1&token={$smarty.session.jtl_token}"
                                            class="btn btn-link px-2"
                                            title="{__('modify')}"
                                            data-toggle="tooltip">
@@ -42,7 +42,7 @@
                                             <span class="fas fa-edit"></span>
                                         </span>
                                         </a>
-                                        <a href="news.php?news=1&kNews={$oNews->getID()}&parentCommentID={$comment->getID()}{if isset($cBackPage)}&{$cBackPage}{elseif isset($cTab)}&tab={$cTab}{/if}&nkanswer=1&token={$smarty.session.jtl_token}"
+                                        <a href="{$adminURL}/news.php?news=1&kNews={$oNews->getID()}&parentCommentID={$comment->getID()}{if isset($cBackPage)}&{$cBackPage}{elseif isset($cTab)}&tab={$cTab}{/if}&nkanswer=1&token={$smarty.session.jtl_token}"
                                            class="btn btn-link px-2"
                                            title="{__('answerComment')}"
                                            data-toggle="tooltip">
@@ -89,7 +89,7 @@
                             </button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
-                            <a class="btn btn-outline-primary btn-block" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
+                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}/news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
                                 {__('goBack')}
                             </a>
                         </div>
@@ -100,7 +100,7 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-outline-primary btn-block" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
+                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}/news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
                             {__('goBack')}
                         </a>
                     </div>

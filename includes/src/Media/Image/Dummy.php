@@ -9,8 +9,7 @@ namespace JTL\Media\Image;
 class Dummy extends AbstractImage
 {
     /**
-     * @param string $request
-     * @return bool|mixed|void
+     * @inheritdoc
      */
     public function handle(string $request)
     {

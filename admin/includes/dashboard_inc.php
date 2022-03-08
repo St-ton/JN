@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Helpers\Request;
 use JTL\IO\IOResponse;
@@ -218,40 +218,6 @@ function expandWidget(int $kWidget, int $bExpand): void
 }
 
 /**
- * @param string $url
- * @param int    $timeout
- * @return mixed|string
- * @deprecated since 4.06
- */
-function getRemoteData(string $url, int $timeout = 15)
-{
-    $data = '';
-    if (function_exists('curl_init')) {
-        $curl = curl_init();
-
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
-        curl_setopt($curl, CURLOPT_MAXREDIRS, 5);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, false);
-        curl_setopt($curl, CURLOPT_REFERER, Shop::getURL());
-
-        $data = curl_exec($curl);
-        curl_close($curl);
-    } elseif (ini_get('allow_url_fopen')) {
-        @ini_set('default_socket_timeout', (string)$timeout);
-        $fileHandle = @fopen($url, 'r');
-        if ($fileHandle) {
-            @stream_set_timeout($fileHandle, $timeout);
-            $data = fgets($fileHandle);
-            fclose($fileHandle);
-        }
-    }
-
-    return $data;
-}
-
-/**
  * @param string      $url
  * @param string      $dataName
  * @param string      $tpl
@@ -296,17 +262,15 @@ function getShopInfoIO(string $tpl, string $wrapperID): IOResponse
 {
     Shop::Container()->getGetText()->loadAdminLocale('widgets');
 
-    $response         = new IOResponse();
-    $api              = Shop::Container()->get(JTLApi::class);
-    $oLatestVersion   = $api->getLatestVersion();
-    $strLatestVersion = $oLatestVersion
-        ? sprintf('%d.%02d', $oLatestVersion->getMajor(), $oLatestVersion->getMinor())
-        : null;
+    $response = new IOResponse();
+    /** @var JTLApi $api */
+    $api           = Shop::Container()->get(JTLApi::class);
+    $latestVersion = $api->getLatestVersion();
 
     $wrapper = Shop::Smarty()
         ->assign('oSubscription', $api->getSubscription())
-        ->assign('oVersion', $oLatestVersion)
-        ->assign('strLatestVersion', $strLatestVersion)
+        ->assign('oVersion', $latestVersion)
+        ->assign('strLatestVersion', $latestVersion->getOriginalVersion())
         ->assign('bUpdateAvailable', $api->hasNewerVersion())
         ->fetch('tpl_inc/' . $tpl);
 

@@ -2,6 +2,7 @@
 
 use JTL\Alert\Alert;
 use JTL\Backend\Revision;
+use JTL\Backend\Status;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;

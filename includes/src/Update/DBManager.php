@@ -120,9 +120,9 @@ class DBManager
 
     /**
      * @param string $type
-     * @return object
+     * @return stdClass
      */
-    public static function parseType($type)
+    public static function parseType(string $type): stdClass
     {
         $result = (object)[
             'Name'     => null,

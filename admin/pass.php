@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
@@ -28,7 +28,7 @@ if (isset($_POST['mail']) && Form::validateToken()) {
                     'successPasswordChange',
                     ['saveInSession' => true]
                 );
-                header('Location: index.php?pw_updated=true');
+                header('Location: ' . Shop::getAdminURL() . '/index.php?pw_updated=true');
             } else {
                 $alertService->addAlert(Alert::TYPE_ERROR, __('errorPasswordChange'), 'errorPasswordChange');
             }

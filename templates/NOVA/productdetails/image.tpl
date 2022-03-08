@@ -70,7 +70,7 @@
         {/block}
         {block name='productdetails-image-preview'}
             {col cols=12 align-self='end' class='product-detail-image-preview-bar'}
-            {$imageCount = $Artikel->Bilder|@count}
+            {$imageCount = $Artikel->Bilder|count}
             {$imageCountDefault = 5}
             {if $imageCount > 1}
                 <div id="gallery_preview_wrapper" class="product-thumbnails-wrapper">
@@ -120,7 +120,7 @@
         {/block}
 
         {block name='productdetails-image-variation-preview'}
-            {if !$isMobile && isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0}
+            {if !$isMobile && isset($Artikel->Variationen) && $Artikel->Variationen|count > 0}
                 {assign var=VariationsSource value='Variationen'}
                 {if isset($ohneFreifeld) && $ohneFreifeld}
                     {assign var=VariationsSource value='VariationenOhneFreifeld'}

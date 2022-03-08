@@ -56,7 +56,7 @@ final class ReviewAdminController extends BaseController
         }
         if (Request::verifyGPCDataInt('bewertung_editieren') === 1) {
             $step = 'bewertung_editieren';
-            if ($this->edit($_POST)) {
+            if ($this->edit(Text::filterXSS($_POST))) {
                 $step = 'bewertung_uebersicht';
                 $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successRatingEdit'), 'successRatingEdit');
                 if (Request::verifyGPCDataInt('nFZ') === 1) {
@@ -93,11 +93,7 @@ final class ReviewAdminController extends BaseController
             return false;
         }
         $this->cache->flushTags([\CACHING_GROUP_ARTICLE]);
-        $this->alertService->addAlert(
-            Alert::TYPE_SUCCESS,
-            \saveAdminSectionSettings(\CONF_BEWERTUNG, $data),
-            'saveConf'
-        );
+        \saveAdminSectionSettings(\CONF_BEWERTUNG, $data);
 
         return true;
     }
@@ -187,6 +183,8 @@ final class ReviewAdminController extends BaseController
             $e->nNichtHilfreich = (int)$e->nNichtHilfreich;
             $e->nSterne         = (int)$e->nSterne;
             $e->nAktiv          = (int)$e->nAktiv;
+            $e->cText           = Text::filterXSS($e->cText);
+            $e->cTitel          = Text::filterXSS($e->cTitel);
         };
         $inactiveReviews    = $this->db->getCollection(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
@@ -210,12 +208,11 @@ final class ReviewAdminController extends BaseController
                 LIMIT " . $activePagination->getLimitSQL(),
             ['lid' => $this->languageID]
         )->each($sanitize)->toArray();
-
+        \getAdminSectionSettings(\CONF_BEWERTUNG);
         $this->smarty->assign('oPagiInaktiv', $inactivePagination)
             ->assign('oPagiAktiv', $activePagination)
             ->assign('inactiveReviews', $inactiveReviews)
-            ->assign('activeReviews', $activeReviews)
-            ->assign('oConfig_arr', \getAdminSectionSettings(\CONF_BEWERTUNG));
+            ->assign('activeReviews', $activeReviews);
     }
 
     /**
@@ -327,7 +324,7 @@ final class ReviewAdminController extends BaseController
     public function activate(array $ids): int
     {
         $cacheTags = [];
-        foreach (\array_map('\intval', $ids) as $i => $id) {
+        foreach (\array_map('\intval', $ids) as $id) {
             try {
                 $model = ReviewModel::load(['id' => $id], $this->db, ReviewModel::ON_NOTEXISTS_FAIL);
             } catch (Exception $e) {

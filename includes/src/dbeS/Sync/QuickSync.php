@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -20,7 +20,7 @@ final class QuickSync extends AbstractSync
     public function handle(Starter $starter)
     {
         $this->db->query('START TRANSACTION');
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             if (\strpos($file, 'quicksync.xml') !== false) {
                 $this->handleInserts($xml);
@@ -55,7 +55,7 @@ final class QuickSync extends AbstractSync
     }
 
     /**
-     * @param array $products
+     * @param stdClass[] $products
      */
     private function insertProducts(array $products): void
     {

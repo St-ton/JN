@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
@@ -25,12 +25,9 @@ if (Form::validateToken()) {
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorConfigSave'), 'errorConfigSave');
         }
-        $step = 'statusemail_uebersicht';
     }
-}
-if ($step === 'statusemail_uebersicht') {
-    $smarty->assign('oStatusemailEinstellungen', $statusMail->loadConfig());
 }
 
 $smarty->assign('step', $step)
-       ->display('statusemail.tpl');
+    ->assign('oStatusemailEinstellungen', $statusMail->loadConfig())
+    ->display('statusemail.tpl');

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -726,7 +726,7 @@ class Category
      */
     public static function getDataByAttribute($attribute, $value, callable $callback = null)
     {
-        $res = self::$db->select('tkategorie', $attribute, $value);
+        $res = Shop::Container()->getDB()->select('tkategorie', $attribute, $value);
 
         return \is_callable($callback)
             ? $callback($res)

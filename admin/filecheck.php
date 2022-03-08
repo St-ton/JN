@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Backend\FileCheck;
@@ -34,26 +34,24 @@ $alertHelper        = Shop::Container()->getAlertService();
 if ($modifiedFilesCheck !== FileCheck::OK) {
     switch ($modifiedFilesCheck) {
         case FileCheck::ERROR_INPUT_FILE_MISSING:
-            $modifiedFilesError = __('errorFileNotFound');
+            $modifiedFilesError = sprintf(__('errorFileNotFound'), $coreMD5HashFile);
             break;
         case FileCheck::ERROR_NO_HASHES_FOUND:
             $modifiedFilesError = __('errorFileListEmpty');
             break;
         default:
-            $modifiedFilesError = '';
             break;
     }
 }
 if ($orphanedFilesCheck !== FileCheck::OK) {
     switch ($orphanedFilesCheck) {
         case FileCheck::ERROR_INPUT_FILE_MISSING:
-            $orphanedFilesError = __('errorFileNotFound');
+            $orphanedFilesError = sprintf(__('errorFileNotFound'), $orphanedFilesFile);
             break;
         case FileCheck::ERROR_NO_HASHES_FOUND:
             $orphanedFilesError = __('errorFileListEmpty');
             break;
         default:
-            $orphanedFilesError = '';
             break;
     }
 } elseif (Request::verifyGPCDataInt('delete-orphans') === 1 && Form::validateToken()) {

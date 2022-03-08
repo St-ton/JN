@@ -97,7 +97,7 @@ class Plugins
                 $params['kArtikel'] = [$params['kArtikel']];
             }
             foreach ($params['kArtikel'] as $productID) {
-                $product    = new Artikel();
+                $product    = new Artikel($this->db);
                 $products[] = $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
             }
         } else {
@@ -306,9 +306,9 @@ class Plugins
         $surcharge                     = new \stdClass();
         $surcharge->cAufpreisLocalized = '';
         $surcharge->cPreisInklAufpreis = '';
-
         if ((float)$params['fAufpreisNetto'] != 0) {
-            $fAufpreisNetto = (float)$params['fAufpreisNetto'];
+            $currency       = Frontend::getCurrency();
+            $netSurcharge   = (float)$params['fAufpreisNetto'];
             $fVKNetto       = (float)$params['fVKNetto'];
             $kSteuerklasse  = (int)$params['kSteuerklasse'];
             $fVPEWert       = (float)$params['fVPEWert'];
@@ -320,22 +320,22 @@ class Plugins
                 : 2;
 
             if ((int)$params['nNettoPreise'] === 1) {
-                $surcharge->cAufpreisLocalized = Preise::getLocalizedPriceString($fAufpreisNetto);
-                $surcharge->cPreisInklAufpreis = Preise::getLocalizedPriceString($fAufpreisNetto + $fVKNetto);
-                $surcharge->cAufpreisLocalized = ($fAufpreisNetto > 0)
+                $surcharge->cAufpreisLocalized = Preise::getLocalizedPriceString($netSurcharge, $currency);
+                $surcharge->cPreisInklAufpreis = Preise::getLocalizedPriceString($netSurcharge + $fVKNetto, $currency);
+                $surcharge->cAufpreisLocalized = ($netSurcharge > 0)
                     ? ('+ ' . $surcharge->cAufpreisLocalized)
                     : \str_replace('-', '- ', $surcharge->cAufpreisLocalized);
 
                 if ($fVPEWert > 0) {
                     $surcharge->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
-                            $fAufpreisNetto / $fVPEWert,
-                            Frontend::getCurrency()->getCode(),
+                            $netSurcharge / $fVPEWert,
+                            $currency,
                             true,
                             $precision
                         ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                     $surcharge->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
-                            ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
-                            Frontend::getCurrency()->getCode(),
+                            ($netSurcharge + $fVKNetto) / $fVPEWert,
+                            $currency,
                             true,
                             $precision
                         ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
@@ -345,28 +345,30 @@ class Plugins
                 }
             } else {
                 $surcharge->cAufpreisLocalized = Preise::getLocalizedPriceString(
-                    Tax::getGross($fAufpreisNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
+                    Tax::getGross($netSurcharge, $_SESSION['Steuersatz'][$kSteuerklasse], 4),
+                    $currency
                 );
                 $surcharge->cPreisInklAufpreis = Preise::getLocalizedPriceString(
-                    Tax::getGross($fAufpreisNetto + $fVKNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
+                    Tax::getGross($netSurcharge + $fVKNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4),
+                    $currency
                 );
-                $surcharge->cAufpreisLocalized = ($fAufpreisNetto > 0)
+                $surcharge->cAufpreisLocalized = ($netSurcharge > 0)
                     ? ('+ ' . $surcharge->cAufpreisLocalized)
                     : \str_replace('-', '- ', $surcharge->cAufpreisLocalized);
 
                 if ($fVPEWert > 0) {
                     $surcharge->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
-                            Tax::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
-                            Frontend::getCurrency()->getCode(),
+                            Tax::getGross($netSurcharge / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
+                            $currency,
                             true,
                             $precision
                         ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                     $surcharge->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
                             Tax::getGross(
-                                ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
+                                ($netSurcharge + $fVKNetto) / $fVPEWert,
                                 $_SESSION['Steuersatz'][$kSteuerklasse]
                             ),
-                            Frontend::getCurrency()->getCode(),
+                            $currency,
                             true,
                             $precision
                         ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
@@ -790,6 +792,19 @@ class Plugins
      */
     public function sanitizeTitle($params): string
     {
-        return \htmlspecialchars($params['title'], ENT_COMPAT, JTL_CHARSET, false);
+        return \htmlspecialchars($params['title'], \ENT_COMPAT, \JTL_CHARSET, false);
+    }
+
+    /**
+     * format price strings to have a '.' to indicate decimal separator. (https://schema.org/price)
+     * @param String $price
+     * @return String
+     */
+    public function formatForMicrodata(string $price = ''): string
+    {
+        $currSep = Frontend::getCurrency()->getDecimalSeparator();
+        $currTho = Frontend::getCurrency()->getThousandsSeparator();
+
+        return \sprintf("%.2f", \str_replace($currSep, '.', \str_replace($currTho, '', ($price))));
     }
 }

@@ -1,11 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Backend\AdminFavorite;
 use JTL\Backend\Notification;
 use JTL\Backend\Settings\Manager;
+use JTL\Backend\Settings\SectionFactory;
+use JTL\Backend\Settings\Sections\Subsection;
 use JTL\Campaign;
 use JTL\Catalog\Currency;
+use JTL\DB\SqlObject;
 use JTL\Filter\SearchResults;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -17,7 +19,7 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
-use JTL\XMLParser;
+use function Functional\pluck;
 
 /**
  * @param int|array $configSectionID
@@ -26,93 +28,57 @@ use JTL\XMLParser;
  */
 function getAdminSectionSettings($configSectionID, bool $byName = false): array
 {
-    $gettext = Shop::Container()->getGetText();
-    $gettext->loadConfigLocales();
-    $db = Shop::Container()->getDB();
-    if (is_array($configSectionID)) {
-        $where    = $byName
-            ? " WHERE ec.cWertName IN ('" . implode("','", $configSectionID) . "') "
-            : ' WHERE ec.kEinstellungenConf IN (' . implode(',', array_map('\intval', $configSectionID)) . ') ';
-        $confData = $db->getObjects(
-            'SELECT ec.*, e.cWert as defaultValue
+    $sections       = [];
+    $filterNames    = [];
+    $smarty         = Shop::Smarty();
+    $db             = Shop::Container()->getDB();
+    $getText        = Shop::Container()->getGetText();
+    $adminAccount   = Shop::Container()->getAdminAccount();
+    $alertService   = Shop::Container()->getAlertService();
+    $sectionFactory = new SectionFactory();
+    $settingManager = new Manager($db, $smarty, $adminAccount, $getText, $alertService);
+    if ($byName) {
+        $sql = new SqlObject();
+        $in  = [];
+        foreach ($configSectionID as $i => $item) {
+            $sql->addParam(':itm' . $i, $item);
+            $in[] = ':itm' . $i;
+        }
+        $sectionIDs      = $db->getObjects(
+            'SELECT DISTINCT ec.kEinstellungenSektion AS id
                 FROM teinstellungenconf AS ec
                 LEFT JOIN teinstellungen_default AS e
-                    ON e.cName = ec.cWertName
-                ' . $where . '
-                ORDER BY ec.nSort'
+                    ON e.cName = ec.cWertName 
+                    WHERE ec.cWertName IN (' . implode(',', $in) . ')
+                    ORDER BY ec.nSort',
+            $sql->getParams()
         );
-    } else {
-        $confData = $db->getObjects(
-            'SELECT ec.*, e.cWert AS defaultValue
-                FROM teinstellungenconf AS ec
-                LEFT JOIN teinstellungen_default AS e
-                    ON e.cName = ec.cWertName
-                WHERE '. ($byName ? 'ec.cWertName' : 'ec.kEinstellungenSektion') . ' = :configSection ' .
-                'ORDER BY ec.nSort',
-            ['configSection' => $configSectionID]
-        );
+        $filterNames     = $configSectionID;
+        $configSectionID = array_map('\intval', pluck($sectionIDs, 'id'));
     }
-    foreach ($confData as $conf) {
-        $conf->kEinstellungenSektion = (int)$conf->kEinstellungenSektion;
-        $conf->kEinstellungenConf    = (int)$conf->kEinstellungenConf;
-        $conf->nSort                 = (int)$conf->nSort;
-        $conf->nStandardAnzeigen     = (int)$conf->nStandardAnzeigen;
-        $conf->nModul                = (int)$conf->nModul;
-
-        $gettext->localizeConfig($conf);
-
-        if ($conf->cInputTyp === 'listbox') {
-            $conf->ConfWerte = $db->selectAll(
-                'tkundengruppe',
-                [],
-                [],
-                'kKundengruppe, cName',
-                'cStandard DESC'
-            );
-        } elseif ($conf->cInputTyp === 'selectkdngrp') {
-            $conf->ConfWerte = $db->getObjects(
-                'SELECT kKundengruppe, cName
-                    FROM tkundengruppe
-                    ORDER BY cStandard DESC'
-            );
-        } else {
-            $conf->ConfWerte = $db->selectAll(
-                'teinstellungenconfwerte',
-                'kEinstellungenConf',
-                $conf->kEinstellungenConf,
-                '*',
-                'nSort'
-            );
-            $gettext->localizeConfigValues($conf, $conf->ConfWerte);
-        }
-
-        if ($conf->cInputTyp === 'listbox') {
-            $setValue = $db->selectAll(
-                'teinstellungen',
-                ['kEinstellungenSektion', 'cName'],
-                [$conf->kEinstellungenSektion, $conf->cWertName],
-                'cWert'
-            );
-
-            $conf->gesetzterWert = $setValue;
-        } elseif ($conf->cInputTyp === 'selectkdngrp') {
-            $setValue            = $db->selectAll(
-                'teinstellungen',
-                ['kEinstellungenSektion', 'cName'],
-                [$conf->kEinstellungenSektion, $conf->cWertName]
-            );
-            $conf->gesetzterWert = $setValue;
-        } else {
-            $setValue            = $db->select(
-                'teinstellungen',
-                ['kEinstellungenSektion', 'cName'],
-                [$conf->kEinstellungenSektion, $conf->cWertName]
-            );
-            $conf->gesetzterWert = $setValue->cWert ?? null;
-        }
+    foreach ((array)$configSectionID as $id) {
+        $section = $sectionFactory->getSection($id, $settingManager);
+        $section->load();
+        $sections[] = $section;
     }
+    if (count($filterNames) > 0) {
+        $section    = $sectionFactory->getSection(1, $settingManager);
+        $subsection = new Subsection();
+        foreach ($sections as $_section) {
+            foreach ($_section->getSubsections() as $_subsection) {
+                foreach ($_subsection->getItems() as $item) {
+                    if (in_array($item->getValueName(), $filterNames, true)) {
+                        $subsection->addItem($item);
+                    }
+                }
+            }
+        }
+        $section->setSubsections([$subsection]);
+        $sections = [$section];
+    }
+    $smarty->assign('sections', $sections);
 
-    return $confData;
+    return $sections;
 }
 
 /**
@@ -138,6 +104,7 @@ function saveAdminSettings(
     );
     if (Request::postVar('resetSetting') !== null) {
         $settingManager->resetSetting(Request::postVar('resetSetting'));
+
         return __('successConfigReset');
     }
     $where    = $byName
@@ -250,97 +217,61 @@ function bearbeiteListBox($listBoxes, string $valueName, int $configSectionID): 
  */
 function saveAdminSectionSettings(int $configSectionID, array $post, array $tags = [CACHING_GROUP_OPTION]): string
 {
-    Shop::Container()->getGetText()->loadAdminLocale('configs/configs');
+    $alertService = Shop::Container()->getAlertService();
     if (!Form::validateToken()) {
-        return __('errorCSRF');
+        $msg = __('errorCSRF');
+        $alertService->addAlert(
+            Alert::TYPE_ERROR,
+            $msg,
+            'saveSettingsErrCsrf'
+        );
+
+        return $msg;
     }
-    $db             = Shop::Container()->getDB();
-    $settingManager = new Manager(
-        $db,
+    $manager = new Manager(
+        Shop::Container()->getDB(),
         Shop::Smarty(),
         Shop::Container()->getAdminAccount(),
         Shop::Container()->getGetText(),
-        Shop::Container()->getAlertService()
+        $alertService
     );
     if (Request::postVar('resetSetting') !== null) {
-        $settingManager->resetSetting(Request::postVar('resetSetting'));
+        $manager->resetSetting(Request::postVar('resetSetting'));
         return __('successConfigReset');
     }
-    $invalid  = 0;
-    $confData = $db->getObjects(
-        "SELECT ec.*, e.cWert AS currentValue
-            FROM teinstellungenconf AS ec
-            LEFT JOIN teinstellungen AS e
-                ON e.cName = ec.cWertName
-            WHERE ec.kEinstellungenSektion = :configSectionID
-              AND ec.cConf = 'Y'
-            ORDER BY ec.nSort",
-        ['configSectionID' => $configSectionID]
+    $section = (new SectionFactory())->getSection($configSectionID, $manager);
+    $section->update($post, true, $tags);
+    $invalid = $section->getUpdateErrors();
+
+    if ($invalid > 0) {
+        $msg = __('errorConfigSave');
+        $alertService->addAlert(
+            Alert::TYPE_ERROR,
+            $msg,
+            'saveSettingsErr'
+        );
+
+        return $msg;
+    }
+    $msg = __('successConfigSave');
+    $alertService->addAlert(
+        Alert::TYPE_SUCCESS,
+        $msg,
+        'saveSettings'
     );
-    foreach ($confData as $config) {
-        $val                        = new stdClass();
-        $val->cWert                 = $post[$config->cWertName] ?? null;
-        $val->cName                 = $config->cWertName;
-        $val->kEinstellungenSektion = $configSectionID;
-        $valid                      = true;
-        switch ($config->cInputTyp) {
-            case 'kommazahl':
-                $val->cWert = (float)str_replace(',', '.', $val->cWert);
-                break;
-            case 'zahl':
-            case 'number':
-                $val->cWert = (int)$val->cWert;
-                $valid      = validateSetting($val);
-                break;
-            case 'text':
-                $val->cWert = Text::filterXSS(mb_substr($val->cWert, 0, 255));
-                break;
-            case 'listbox':
-            case 'selectkdngrp':
-                bearbeiteListBox($val->cWert, $config->cWertName, $configSectionID);
-                break;
-            default:
-                break;
-        }
-        if ($valid && $config->cInputTyp !== 'listbox' && $config->cInputTyp !== 'selectkdngrp') {
-            $db->delete(
-                'teinstellungen',
-                ['kEinstellungenSektion', 'cName'],
-                [$configSectionID, $config->cWertName]
-            );
-            $db->insert('teinstellungen', $val);
 
-            $settingManager->addLog($config->cWertName, $config->currentValue, $post[$config->cWertName]);
-        }
-        if (!$valid) {
-            $invalid++;
-        }
-    }
-    Shop::Container()->getCache()->flushTags($tags);
-
-    if ($invalid > 0 || count($confData) === 0) {
-        return __('errorConfigSave');
-    }
-
-    return __('successConfigSave');
+    return $msg;
 }
 
 /**
  * @param stdClass $setting
  * @return bool
+ * @deprecated since 5.2.0
  */
 function validateSetting(stdClass $setting): bool
 {
-    $valid = true;
-    switch ($setting->cName) {
-        case 'bilder_jpg_quali':
-            $valid = validateNumberRange(0, 100, $setting);
-            break;
-        default:
-            break;
-    }
-
-    return $valid;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return false;
 }
 
 /**
@@ -348,20 +279,12 @@ function validateSetting(stdClass $setting): bool
  * @param int      $max
  * @param stdClass $setting
  * @return bool
+ * @deprecated since 5.2.0
  */
 function validateNumberRange(int $min, int $max, stdClass $setting): bool
 {
-    $valid = $min <= $setting->cWert && $setting->cWert <= $max;
-
-    if (!$valid) {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_DANGER,
-            sprintf(__('errrorNumberRange'), __($setting->cName . '_name'), $min, $max),
-            'errrorNumberRange'
-        );
-    }
-
-    return $valid;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return false;
 }
 
 /**
@@ -383,35 +306,22 @@ function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true):
         $interalSQL = ' WHERE kKampagne >= 1000';
     }
     $campaigns = [];
-    $items     = Shop::Container()->getDB()->getObjects(
+    $items     = Shop::Container()->getDB()->getInts(
         'SELECT kKampagne
             FROM tkampagne
             ' . $activeSQL . '
             ' . $interalSQL . '
-            ORDER BY kKampagne'
+            ORDER BY kKampagne',
+        'kKampagne'
     );
-    foreach ($items as $item) {
-        $campaign = new Campaign((int)$item->kKampagne);
+    foreach ($items as $campaignID) {
+        $campaign = new Campaign($campaignID);
         if ($campaign->kKampagne > 0) {
             $campaigns[$campaign->kKampagne] = $campaign;
         }
     }
 
     return $campaigns;
-}
-
-/**
- * @param array $xml
- * @param int   $level
- * @return array
- * @deprecated since 5.0.0
- */
-function getArrangedArray($xml, int $level = 1)
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $parser = new XMLParser();
-
-    return $parser->getArrangedArray($xml, $level);
 }
 
 /**

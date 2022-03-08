@@ -19,7 +19,12 @@
                     {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
 
                     {strip}
-                        <dt>{$Variation->cName}&nbsp;
+                        {block name='productdetails-variation-name-outer'}
+                        <dt>
+                            {block name='productdetails-variation-name'}
+                                {$Variation->cName}&nbsp;
+                            {/block}
+                            {block name='productdetails-variation-value-name'}
                             {if $Variation->cTyp === 'IMGSWATCHES'}
                                 <span class="swatches-selected text-success" data-id="{$Variation->kEigenschaft}">
                                 {foreach $Variation->Werte as $variationValue}
@@ -31,7 +36,9 @@
                                 {/foreach}
                                 </span>
                             {/if}
+                            {/block}
                         </dt>
+                        {/block}
                         <dd class="form-group text-left-util">
                             {if $Variation->cTyp === 'SELECTBOX'}
                                 {block name='productdetails-variation-select-outer'}

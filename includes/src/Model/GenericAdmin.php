@@ -129,10 +129,10 @@ class GenericAdmin
     {
         if ($this->updateFromPost($this->item, Text::filterXSS($_POST)) === true) {
             $_SESSION['modelid']         = $itemID;
-            $_SESSION['modelSuccessMsg'] = \sprintf(\__('successSave'));
+            $_SESSION['modelSuccessMsg'] = \__('successSave');
             $_SESSION['step']            = $continue ? 'detail' : 'overview';
         } else {
-            $_SESSION['modelErrorMsg'] = \sprintf(\__('errorSave'));
+            $_SESSION['modelErrorMsg'] = \__('errorSave');
         }
         $_SESSION['continue'] = $continue;
         $this->modelPRG();
@@ -145,10 +145,10 @@ class GenericAdmin
     protected function update(bool $continue, array $modelIDs): void
     {
         if ($this->deleteFromPost($modelIDs) === true) {
-            $_SESSION['modelSuccessMsg'] = \sprintf(\__('successDelete'));
+            $_SESSION['modelSuccessMsg'] = \__('successDelete');
             $_SESSION['step']            = $continue ? 'detail' : 'overview';
         } else {
-            $_SESSION['modelErrorMsg'] = \sprintf(\__('errorDelete'));
+            $_SESSION['modelErrorMsg'] = \__('errorDelete');
         }
         $this->modelPRG();
     }
@@ -179,7 +179,7 @@ class GenericAdmin
     protected function enable(array $ids): void
     {
         if ($this->setState($ids, 1)) {
-            $_SESSION['modelSuccessMsg'] = \sprintf(\__('successSave'));
+            $_SESSION['modelSuccessMsg'] = \__('successSave');
         }
     }
 
@@ -189,7 +189,7 @@ class GenericAdmin
     protected function disable(array $ids): void
     {
         if ($this->setState($ids, 0)) {
-            $_SESSION['modelSuccessMsg'] = \sprintf(\__('successSave'));
+            $_SESSION['modelSuccessMsg'] = \__('successSave');
         }
     }
 
@@ -303,10 +303,6 @@ class GenericAdmin
     public function saveSettings(): void
     {
         $this->tab = 'settings';
-        $this->alertService->addAlert(
-            Alert::TYPE_SUCCESS,
-            \saveAdminSectionSettings(\CONF_CONSENTMANAGER, $_POST),
-            'saveSettings'
-        );
+        \saveAdminSectionSettings(\CONF_CONSENTMANAGER, $_POST);
     }
 }

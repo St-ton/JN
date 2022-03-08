@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
@@ -29,47 +29,47 @@ class AdminAccount
     /**
      * @var bool
      */
-    private $loggedIn = false;
+    private bool $loggedIn = false;
 
     /**
      * @var bool
      */
-    private $twoFaAuthenticated = false;
+    private bool $twoFaAuthenticated = false;
 
     /**
      * @var Loggerinterface
      */
-    private $authLogger;
+    private LoggerInterface $authLogger;
 
     /**
      * @var AdminLoginStatusToLogLevel
      */
-    private $levelMapper;
+    private AdminLoginStatusToLogLevel $levelMapper;
 
     /**
      * @var AdminLoginStatusMessageMapper
      */
-    private $messageMapper;
+    private AdminLoginStatusMessageMapper $messageMapper;
 
     /**
      * @var int
      */
-    private $lockedMinutes = 0;
+    private int $lockedMinutes = 0;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var GetText
      */
-    private $getText;
+    private GetText $getText;
 
     /**
      * @var AlertServiceInterface
      */
-    private $alertService;
+    private AlertServiceInterface $alertService;
 
     /**
      * AdminAccount constructor.
@@ -294,16 +294,15 @@ class AdminAccount
             }
         } elseif (\mb_strlen($admin->cPass) === 40) {
             // default login until Shop4
-            $crypted = \cryptPasswort($cPass, $admin->cPass);
+            $crypted = Shop::Container()->getPasswordService()->cryptOldPasswort($cPass, $admin->cPass);
         } else {
             // new default login from 4.0 on
             $verified = \password_verify($cPass, $admin->cPass);
         }
         if ($verified === true || ($crypted !== null && $admin->cPass === $crypted)) {
-            $settings = Shop::getSettings(\CONF_GLOBAL);
             if (\is_array($_SESSION)
-                && $settings['global']['wartungsmodus_aktiviert'] === 'N'
                 && \count($_SESSION) > 0
+                && Shop::getSettingValue(\CONF_GLOBAL, 'wartungsmodus_aktiviert') === 'N'
             ) {
                 foreach (\array_keys($_SESSION) as $i) {
                     unset($_SESSION[$i]);
@@ -314,6 +313,7 @@ class AdminAccount
             }
             $admin->cISO       = Shop::Lang()->getIsoFromLangID((int)$admin->kSprache)->cISO;
             $admin->attributes = $this->getAttributes((int)$admin->kAdminlogin);
+            \session_regenerate_id();
             $this->toSession($admin);
             $this->checkAndUpdateHash($cPass);
             if (!$this->getIsTwoFaAuthenticated()) {
@@ -374,6 +374,8 @@ class AdminAccount
     {
         $this->loggedIn = false;
         \session_destroy();
+        new Backend();
+        \session_regenerate_id(true);
 
         return $this;
     }
@@ -443,7 +445,7 @@ class AdminAccount
      * @param bool   $showNoAccessPage
      * @return bool
      */
-    public function permission($permission, bool $redirectToLogin = false, bool $showNoAccessPage = false): bool
+    public function permission(string $permission, bool $redirectToLogin = false, bool $showNoAccessPage = false): bool
     {
         if ($redirectToLogin) {
             $this->redirectOnFailure();
@@ -497,10 +499,11 @@ class AdminAccount
                 'cPass',
                 $_SESSION['AdminAccount']->cPass
             );
-            $this->twoFaAuthenticated = (isset($account->b2FAauth) && $account->b2FAauth === '1')
-                ? (isset($_SESSION['AdminAccount']->TwoFA_valid) && $_SESSION['AdminAccount']->TwoFA_valid === true)
-                : true;
+            $this->twoFaAuthenticated = true;
             $this->loggedIn           = isset($account->cLogin);
+            if ((int)($account->b2FAauth ?? 0) === 1) {
+                $this->twoFaAuthenticated = ($_SESSION['AdminAccount']->TwoFA_valid ?? false) === true;
+            }
         }
 
         return $this;
@@ -637,17 +640,6 @@ class AdminAccount
         }
 
         return false;
-    }
-
-    /**
-     * @param string $password
-     * @return string
-     * @deprecated since 5.0
-     * @throws Exception
-     */
-    public static function generatePasswordHash(string $password): string
-    {
-        return Shop::Container()->getPasswordService()->hash($password);
     }
 
     /**

@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('customerImport') cBeschreibung=__('customerImportDesc') cDokuURL=__('customerImportURL')}
 <div id="content">
-    <form name="kundenimporter" method="post" action="kundenimport.php" enctype="multipart/form-data">
+    <form name="kundenimporter" method="post" action="{$adminURL}/kundenimport.php" enctype="multipart/form-data">
         {$jtl_token}
         <input type="hidden" name="kundenimport" value="1" />
         <div class="settings card">

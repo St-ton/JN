@@ -27,22 +27,22 @@ class AdminAccountManager
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLSmarty
      */
-    private $smarty;
+    private JTLSmarty $smarty;
 
     /**
      * @var AlertServiceInterface
      */
-    private $alertService;
+    private AlertServiceInterface $alertService;
 
     /**
      * @var array
      */
-    private $messages = [
+    private array $messages = [
         'notice' => '',
         'error'  => ''
     ];
@@ -238,9 +238,6 @@ class AdminAccountManager
      */
     public function saveAttributes(stdClass $account, array $extAttribs, array &$errorMap): bool
     {
-        if (!\is_array($extAttribs)) {
-            return true;
-        }
         $result = true;
         $this->validateAccount($extAttribs);
 
@@ -336,7 +333,7 @@ class AdminAccountManager
         }
 
         foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
-            $useVita_ISO = 'useVita_' . $language->cISO;
+            $useVita_ISO = 'useVita_' . $language->getCode();
             if (!empty($attribs[$useVita_ISO])) {
                 $shortText = Text::filterXSS($attribs[$useVita_ISO]);
                 $longtText = $attribs[$useVita_ISO];
@@ -476,7 +473,6 @@ class AdminAccountManager
         if ($adminID !== null) {
             $twoFA = new TwoFA($this->db);
             $twoFA->setUserByID($adminID);
-
             if ($twoFA->is2FAauthSecretExist() === true) {
                 $qrCode      = $twoFA->getQRcode();
                 $knownSecret = $twoFA->getSecret();
@@ -487,20 +483,21 @@ class AdminAccountManager
 
         if (isset($_POST['save'])) {
             $errors              = [];
+            $language            = Text::filterXSS($_POST['language']);
             $tmpAcc              = new stdClass();
             $tmpAcc->kAdminlogin = Request::postInt('kAdminlogin');
-            $tmpAcc->cName       = \htmlspecialchars(\trim($_POST['cName']), \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
-            $tmpAcc->cMail       = \htmlspecialchars(\trim($_POST['cMail']), \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
-            $tmpAcc->language    = $_POST['language'];
-            $tmpAcc->cLogin      = \trim($_POST['cLogin']);
+            $tmpAcc->cName       = Text::filterXSS(\trim($_POST['cName']));
+            $tmpAcc->cMail       = Text::filterXSS(\trim($_POST['cMail']));
+            $tmpAcc->language    = \array_key_exists($language, Shop::Container()->getGetText()->getAdminLanguages())
+                ? $language
+                : 'de-DE';
+            $tmpAcc->cLogin      = Text::filterXSS(\trim($_POST['cLogin']));
             $tmpAcc->cPass       = \trim($_POST['cPass']);
             $tmpAcc->b2FAauth    = Request::postInt('b2FAauth');
             $tmpAttribs          = $_POST['extAttribs'] ?? [];
-
             if (0 < \mb_strlen($_POST['c2FAsecret'])) {
                 $tmpAcc->c2FAauthSecret = \trim($_POST['c2FAsecret']);
             }
-
             $validUntil = Request::postInt('dGueltigBisAktiv') === 1;
             if ($validUntil) {
                 try {
@@ -729,18 +726,9 @@ class AdminAccountManager
             $errors                        = [];
             $adminGroup                    = new stdClass();
             $adminGroup->kAdminlogingruppe = Request::postInt('kAdminlogingruppe');
-            $adminGroup->cGruppe           = \htmlspecialchars(
-                \trim($_POST['cGruppe']),
-                \ENT_COMPAT | \ENT_HTML401,
-                \JTL_CHARSET
-            );
-            $adminGroup->cBeschreibung     = \htmlspecialchars(
-                \trim($_POST['cBeschreibung']),
-                \ENT_COMPAT | \ENT_HTML401,
-                \JTL_CHARSET
-            );
-            $groupPermissions              = $_POST['perm'] ?? [];
-
+            $adminGroup->cGruppe           = Text::filterXSS(\trim($_POST['cGruppe']));
+            $adminGroup->cBeschreibung     = Text::filterXSS(\trim($_POST['cBeschreibung']));
+            $groupPermissions              = Text::filterXSS($_POST['perm'] ?? []);
             if (\mb_strlen($adminGroup->cGruppe) === 0) {
                 $errors['cGruppe'] = 1;
             }
@@ -882,13 +870,17 @@ class AdminAccountManager
     public function actionQuickChangeLanguage(): void
     {
         $this->changeAdminUserLanguage(Request::verifyGPDataString('language'));
-        \header('Location: ' . Request::verifyGPDataString('referer'));
+        $url = Request::verifyGPDataString('referer');
+        if (!\str_starts_with($url, Shop::getAdminURL())) {
+            return;
+        }
+        \header('Location: ' . $url);
     }
 
     /**
      * @param string $tab
      */
-    public function benutzerverwaltungRedirect($tab = ''): void
+    public function benutzerverwaltungRedirect(string $tab = ''): void
     {
         if ($this->getNotice() !== '') {
             $_SESSION['benutzerverwaltung.notice'] = $this->getNotice();

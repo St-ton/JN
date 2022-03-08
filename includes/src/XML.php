@@ -96,9 +96,7 @@ class XML
      */
     public static function serialize($data, $level = 0, $prevKey = null)
     {
-        $parser = new XMLParser();
-
-        return $parser->serializeXML($data, $level, $prevKey);
+        return (new XMLParser())->serializeXML($data, $level, $prevKey);
     }
 
     /**

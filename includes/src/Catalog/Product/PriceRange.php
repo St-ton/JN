@@ -2,7 +2,6 @@
 
 namespace JTL\Catalog\Product;
 
-use JTL\Extensions\Config\Configurator;
 use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -76,30 +75,33 @@ class PriceRange
         if ($customerGroupID === 0) {
             $customerGroupID = Frontend::getCustomerGroup()->getID();
         }
-
         if ($customerID === 0) {
-            $customerID = Frontend::getCustomer()->kKunde ?? 0;
+            $customerID = Frontend::getCustomer()->getID();
         }
-
         $this->customerGroupID = $customerGroupID;
         $this->customerID      = $customerID;
         $this->discount        = 0;
-        $this->productData     = Shop::Container()->getDB()->selectSingleRow(
-            'tartikel',
-            'kArtikel',
-            $productID,
-            null,
-            null,
-            null,
-            null,
-            false,
-            'kArtikel, kSteuerklasse, fLagerbestand, fStandardpreisNetto fNettoPreis'
+        $this->productData     = Shop::Container()->getDB()->getSingleObject(
+            'SELECT tartikel.kArtikel, kSteuerklasse, fLagerbestand, fStandardpreisNetto fNettoPreis,
+                tartikelkonfiggruppe.kKonfiggruppe g1, tkonfigitem.kKonfiggruppe g2
+                FROM tartikel
+                LEFT JOIN tartikelkonfiggruppe
+                    ON tartikelkonfiggruppe.kArtikel = tartikel.kArtikel
+                LEFT JOIN tkonfigitem
+                    ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
+                        AND tartikelkonfiggruppe.kArtikel = :pid
+                WHERE tartikel.kArtikel = :pid',
+            ['pid' => $productID]
         );
         if ($this->productData !== null) {
             $this->productData->kArtikel      = (int)$this->productData->kArtikel;
             $this->productData->kSteuerklasse = (int)$this->productData->kSteuerklasse;
             $this->productData->fLagerbestand = (float)$this->productData->fLagerbestand;
             $this->productData->fNettoPreis   = (float)$this->productData->fNettoPreis;
+            $this->productData->kKonfiggruppe = 0;
+            if ($this->productData->g1 !== null && $this->productData->g1 === $this->productData->g2) {
+                $this->productData->kKonfiggruppe = (int)$this->productData->g1;
+            }
 
             $this->loadPriceRange();
         } else {
@@ -107,6 +109,7 @@ class PriceRange
                 'kArtikel'            => 0,
                 'kSteuerklasse'       => 0,
                 'fLagerbestand'       => 0,
+                'kKonfiggruppe'       => 0,
                 'fNettoPreis'         => 0.0,
             ];
         }
@@ -201,10 +204,12 @@ class PriceRange
         );
 
         if ($priceRange) {
+            $roundedMin              = \round($priceRange->specialPriceMin ?? 0, 2);
+            $roundedMax              = \round($priceRange->specialPriceMax ?? 0, 2);
             $this->minNettoPrice     = (float)$priceRange->fVKNettoMin;
             $this->maxNettoPrice     = (float)$priceRange->fVKNettoMax;
-            $this->isMinSpecialPrice = (\round($priceRange->specialPriceMin, 2) === \round($this->minNettoPrice, 2));
-            $this->isMaxSpecialPrice = (\round($priceRange->specialPriceMax, 2) === \round($this->maxNettoPrice, 2));
+            $this->isMinSpecialPrice = $roundedMin === \round($this->minNettoPrice, 2);
+            $this->isMaxSpecialPrice = $roundedMax === \round($this->maxNettoPrice, 2);
         } else {
             $this->minNettoPrice     = $this->productData->fNettoPreis;
             $this->maxNettoPrice     = $this->productData->fNettoPreis;
@@ -212,7 +217,7 @@ class PriceRange
             $this->isMaxSpecialPrice = false;
         }
 
-        if (Configurator::hasKonfig($this->productData->kArtikel)) {
+        if ($this->productData->kKonfiggruppe > 0) {
             $this->loadConfiguratorRange();
         }
 
@@ -392,27 +397,6 @@ class PriceRange
         return (int)$this->minNettoPrice !== 0
             ? 100 / $this->minNettoPrice * $this->maxNettoPrice - 100
             : 0;
-    }
-
-    /**
-     * get localized min - max strings
-     *
-     * @param int|null $netto
-     * @return string|string[]
-     * @deprecated since 5.0.0
-     */
-    public function getLocalized(int $netto = null)
-    {
-        $rangePrices = $this->getLocalizedArray($netto);
-
-        if ($netto !== null) {
-            return $rangePrices[0] . ' - '. $rangePrices[1];
-        }
-
-        return [
-            $rangePrices[0][0] . ' - '. $rangePrices[0][1],
-            $rangePrices[1][0] . ' - '. $rangePrices[1][1],
-        ];
     }
 
     /**

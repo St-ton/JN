@@ -3,6 +3,7 @@
 namespace JTL\Widgets;
 
 use JTL\Catalog\Product\Preise;
+use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Visitor;
 use stdClass;
@@ -60,7 +61,9 @@ class VisitorsOnline extends AbstractWidget
         );
         $cryptoService = Shop::Container()->getCryptoService();
         foreach ($visitors as $visitor) {
-            $visitor->cNachname = \trim($cryptoService->decryptXTEA($visitor->cNachname ?? ''));
+            $visitor->cNachname       = \trim($cryptoService->decryptXTEA($visitor->cNachname ?? ''));
+            $visitor->cEinstiegsseite = Text::filterXSS($visitor->cEinstiegsseite);
+            $visitor->cAusstiegsseite = Text::filterXSS($visitor->cAusstiegsseite);
             if ($visitor->kBestellung > 0) {
                 $visitor->fGesamtsumme = Preise::getLocalizedPriceString($visitor->fGesamtsumme);
             }

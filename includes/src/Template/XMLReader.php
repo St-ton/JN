@@ -34,7 +34,6 @@ class XMLReader
         if ($xml === false) {
             $xml = \simplexml_load_string(\file_get_contents($xmlFile));
         }
-
         if (\is_a($xml, SimpleXMLElement::class)) {
             $xml->dir = $dirName;
         } else {
@@ -118,7 +117,10 @@ class XMLReader
     protected function parseSettings(SimpleXMLElement $settings, array &$ignored, stdClass $section, string $dir): void
     {
         foreach ($settings as $XMLSetting) {
-            $attributes             = $XMLSetting->attributes();
+            $attributes = $XMLSetting->attributes();
+            if ($attributes === null) {
+                continue;
+            }
             $key                    = (string)$attributes->Key;
             $setting                = new stdClass();
             $setting->rawAttributes = [];
@@ -178,12 +180,10 @@ class XMLReader
                 }
             }
             if (\is_string($setting->isEditable)) {
-                $setting->isEditable = \mb_strlen($setting->isEditable) === 0
-                    ? true
-                    : (bool)(int)$setting->isEditable;
+                $setting->isEditable = \mb_strlen($setting->isEditable) === 0 || (bool)(int)$setting->isEditable;
             }
             if (isset($XMLSetting->Option)) {
-                $setting->options = [];
+                $setting->options = $setting->options ?? [];
                 foreach ($XMLSetting->Option as $XMLOption) {
                     $opt        = new stdClass();
                     $opt->name  = (string)$XMLOption;
@@ -198,7 +198,7 @@ class XMLReader
                 }
             }
             if (isset($XMLSetting->Optgroup)) {
-                $setting->optGroups = [];
+                $setting->optGroups = $setting->optGroups ?? [];
                 foreach ($XMLSetting->Optgroup as $XMLOptgroup) {
                     $optgroup         = new stdClass();
                     $optgroup->name   = (string)$XMLOptgroup->attributes()->label;

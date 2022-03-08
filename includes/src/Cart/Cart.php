@@ -2044,13 +2044,14 @@ class Cart
     }
 
     /**
-     * @return Cart
+     * @return int
      */
-    public function removeParentItems(): self
+    public function removeParentItems(): int
     {
+        $deletedItemCount = 0;
         foreach ($this->PositionenArr as $i => $item) {
             $delete = false;
-            if ($item->Artikel === C_WARENKORBPOS_TYP_ARTIKEL
+            if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
                 && $item->Artikel->nIstVater === 1
             ) {
                 $delete = true;
@@ -2060,12 +2061,13 @@ class Cart
                 ]);
             }
             if ($delete) {
+                $deletedItemCount++;
                 self::addDeletedPosition($item);
                 unset($this->PositionenArr[$i]);
             }
         }
         $this->PositionenArr = \array_merge($this->PositionenArr);
 
-        return $this;
+        return $deletedItemCount;
     }
 }

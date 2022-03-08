@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Campaign;
+use JTL\Alert\Alert;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
@@ -1179,8 +1180,16 @@ function pruefeVerfuegbarkeit(): array
  */
 function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
 {
-    Frontend::getCart()->removeParentItems();
-
+    if (Frontend::getCart()->removeParentItems() > 0) {
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_WARNING,
+            Shop::Lang()->get('warningCartContainedParentItems', 'checkout'),
+            'warningCartContainedParentItems',
+            ['saveInSession' => true]
+        );
+        header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php'), true, 303);
+        exit;
+    }
     $obj                      = new stdClass();
     $obj->cVerfuegbarkeit_arr = pruefeVerfuegbarkeit();
 

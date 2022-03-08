@@ -38,7 +38,7 @@ final class Categories extends AbstractSync
             return \CACHING_GROUP_CATEGORY . '_' . $categoryID;
         }));
         $lastJob = new LastJob($this->db, $this->logger);
-        $lastJob->run(\LASTJOBS_KATEGORIEUPDATE, 'Kategorien_xml');
+        $lastJob->run(\LASTJOBS_KATEGORIEUPDATE, 'CategoryUpdate');
         $this->db->query('COMMIT');
 
         return null;

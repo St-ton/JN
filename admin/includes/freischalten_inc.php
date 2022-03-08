@@ -178,6 +178,7 @@ function schalteNewskommentareFrei(array $newsComments): bool
             SET nAktiv = 1
             WHERE kNewsKommentar IN (' . implode(',', array_map('\intval', $newsComments)) . ')'
     );
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_NEWS]);
 
     return true;
 }
@@ -254,6 +255,7 @@ function loescheNewskommentare(array $comments): bool
         'DELETE FROM tnewskommentar
             WHERE kNewsKommentar IN (' . implode(',', array_map('\intval', $comments)) . ')'
     );
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_NEWS]);
 
     return true;
 }

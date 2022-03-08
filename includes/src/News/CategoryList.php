@@ -16,12 +16,12 @@ final class CategoryList implements ItemListInterface
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var Collection
      */
-    private $items;
+    private Collection $items;
 
     /**
      * LinkList constructor.

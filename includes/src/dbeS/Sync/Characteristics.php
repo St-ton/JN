@@ -297,7 +297,7 @@ final class Characteristics extends AbstractSync
                         ['lid' => $languageID, 'av' => $characteristicValue->kMerkmalWert]
                     );
                     //@todo: 1062: Duplicate entry '' for key 'PRIMARY'
-                    if ($slug !== '' && $slug !== null) {
+                    if ($slug !== '') {
                         $seo           = new stdClass();
                         $seo->cSeo     = $slug;
                         $seo->cKey     = 'kMerkmalWert';

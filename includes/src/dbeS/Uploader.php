@@ -26,7 +26,7 @@ class Uploader extends NetSyncHandler
                 if ($orderID > 0) {
                     $systemFiles = [];
                     $uploads     = Upload::gibBestellungUploads($orderID);
-                    if (\is_array($uploads) && \count($uploads)) {
+                    if (\count($uploads)) {
                         foreach ($uploads as $upload) {
                             $paths = \pathinfo($upload->cName);
                             $ext   = $paths['extension'];

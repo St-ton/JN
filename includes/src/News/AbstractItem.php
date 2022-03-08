@@ -15,7 +15,7 @@ abstract class AbstractItem implements ItemInterface
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'kNews'                => 'ID',
         'kSprache'             => 'LanguageID',
         'cKundengruppe'        => 'CustomerGroupsCompat',
@@ -59,9 +59,7 @@ abstract class AbstractItem implements ItemInterface
     {
         $groups = $this->getCustomerGroups();
 
-        return \is_array($groups) && \count($groups) > 0
-            ? \implode(';', $groups) . ';'
-            : null;
+        return \count($groups) > 0 ? \implode(';', $groups) . ';' : null;
     }
 
     /**

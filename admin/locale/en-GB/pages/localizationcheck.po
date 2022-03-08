@@ -1,0 +1,96 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Localization check"
+msgstr "Localization check"
+
+msgid "localizationCheckDesc"
+msgstr "This is a list of missing or excess localizations."
+
+msgid "localizationCheckURL"
+msgstr ""
+
+msgid "%d errors"
+msgstr "%d errors"
+
+msgid "Localization problems found."
+msgstr "Localization problems found."
+
+msgid "No problems detected."
+msgstr "No problems detected."
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Deleted %d item(s)."
+msgstr "Deleted %d item(s)."
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Language ID"
+msgstr "Language ID"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Excess translations"
+msgstr "Excess translations"
+
+msgid "Missing translations"
+msgstr "Missing translations"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Attributes"
+msgstr "Attributes"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Categories"
+msgstr "Categories"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Characteristics"
+msgstr "Characteristics"
+
+msgid "JTL\\Backend\\LocalizationCheck\\CharacteristicValues"
+msgstr "Characteristic values"
+
+msgid "JTL\\Backend\\LocalizationCheck\\ConfigGroups"
+msgstr "Config groups"
+
+msgid "JTL\\Backend\\LocalizationCheck\\ConfigItems"
+msgstr "Config items"
+
+msgid "JTL\\Backend\\LocalizationCheck\\CustomerGroups"
+msgstr "Customer groups"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Manufacturers"
+msgstr "Manufacturers"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Packagings"
+msgstr "Packagings"
+
+msgid "JTL\\Backend\\LocalizationCheck\\PaymentMethods"
+msgstr "Payment methods"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Products"
+msgstr "Products"
+
+msgid "JTL\\Backend\\LocalizationCheck\\ShippingFees"
+msgstr "Shipping fees"
+
+msgid "JTL\\Backend\\LocalizationCheck\\ShippingMethods"
+msgstr "Shipping methods"
+
+msgid "JTL\\Backend\\LocalizationCheck\\UnitsOfMeasurement"
+msgstr "Units of measurement"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Uploads"
+msgstr "Uploads schemes"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Varcombi"
+msgstr "Variation-combinations"
+
+msgid "JTL\\Backend\\LocalizationCheck\\VarcombiValues"
+msgstr "Variation-combination values"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Warehouses"
+msgstr "Warehouses"

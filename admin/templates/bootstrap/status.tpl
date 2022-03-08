@@ -65,6 +65,7 @@
                         {render_item title=__('server') val=$status->hasValidEnvironment() more=$adminURL|cat:'/systemcheck.php'}
                         {render_item title=__('orphanedCategories') val=$status->getOrphanedCategories() more=$adminURL|cat:'/categorycheck.php'}
                         {render_item title=__('newPluginVersions') val=!$status->hasNewPluginVersions() more=$adminURL|cat:'/pluginverwaltung.php'}
+                        {render_item title=__('Localizations') val=!$status->getLocalizationProblems() more=$adminURL|cat:'/localizationcheck.php'}
                         </tbody>
                     </table>
                 </div>

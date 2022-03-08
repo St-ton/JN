@@ -26,7 +26,7 @@ msgid "Animation für Schaltflächen beim Hovern"
 msgstr "Animation für Schaltflächen beim Hovern"
 
 msgid "Anzeige der Suche auf mobilen Geräten"
-msgstr "Anzeige der Suche auf mobilen Geräten"
+msgstr "Mobile Geräte: Anzeige der Suche"
 
 msgid "Schaltfläche „Nach oben scrollen“ anzeigen"
 msgstr "Schaltfläche „Nach oben scrollen“ anzeigen"
@@ -189,3 +189,6 @@ msgstr "Auf allen Seiten"
 
 msgid "Suchfeld in Filtern anzeigen ab x Einträgen"
 msgstr "Suchfeld in Filtern anzeigen ab x Einträgen"
+
+msgid "Mobile Geräte: Menü in aktueller Kategorie öffnen"
+msgstr "Mobile Geräte: Menü in aktueller Kategorie öffnen"

@@ -1063,6 +1063,7 @@ const HOOK_FILTER_INC_GIBNAVIMETATITLE = 150;
 /**
  * in bearbeiteInsert() after inserting an article into the database
  *
+ * @file Artikel_xml.php
  * @param stdClass oArtikel
  */
 const HOOK_ARTIKEL_XML_BEARBEITEINSERT = 151;
@@ -1070,6 +1071,7 @@ const HOOK_ARTIKEL_XML_BEARBEITEINSERT = 151;
 /**
  * in bearbeiteDeletes() after deleting an article from the database
  *
+ * @file Artikel_xml.php
  * @param int kArtikel - product ID
  */
 const HOOK_ARTIKEL_XML_BEARBEITEDELETES = 152;
@@ -1544,6 +1546,7 @@ const HOOK_BOXEN_HOME = 224;
 /**
  * in bearbeiteInsert() after inserting an article into the database
  *
+ * @file QuickSync_xml.php
  * @param stdClass oArtikel
  */
 const HOOK_QUICKSYNC_XML_BEARBEITEINSERT = 225;
@@ -1891,11 +1894,20 @@ const HOOK_CART_GET_LOCALIZED_SUM = 331;
 /**
  * @since 5.1.0
  * @file includes/src/Helpers/Order.php
- * @param float creditToUse
+ * @param float &creditToUse
  * @param float cartTotal
  * @param float customerCredit
  */
 const HOOK_BESTELLUNG_SETZEGUTHABEN = 335;
+
+/**
+ * @since 5.1.3
+ * @file includes/src/dbeS/Sync/AbstractSync.php
+ * @param bool   &sendMails
+ * @param object product
+ * @param array  subscriptions
+ */
+const HOOK_SYNC_SEND_AVAILABILITYMAILS = 336;
 
 /**
  * @since 5.2.0
@@ -1929,3 +1941,9 @@ const HOOK_EXPORT_FACTORY_GET_EXPORTER = 342;
  * @param int|string|float            qty
  */
 const HOOK_CARTHELPER_ADD_PRODUCT_ID_TO_CART = 345;
+
+/**
+ * @since 5.2.0
+ * @param JTL\News\Item item
+ */
+const HOOK_NEWS_ITEM_MAPPED = 350;

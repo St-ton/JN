@@ -278,6 +278,7 @@
                                                         {else}
                                                             {$comment->cName}
                                                         {/if}
+                                                        ({$comment->cEmail})
                                                     </label>
                                                 </td>
                                                 <td>{$comment->cBetreff|truncate:50:'...'}</td>

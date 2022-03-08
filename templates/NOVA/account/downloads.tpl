@@ -121,7 +121,7 @@
                                                             {col md=8}
                                                             {form method="post" action="{get_static_route id='jtl.php'}" slide=true}
                                                                 {input name="kBestellung" type="hidden" value=$oDownload->kBestellung}
-                                                                {input name="kKunde" type="hidden" value=$smarty.session.Kunde->kKunde}
+                                                                {input name="kKunde" type="hidden" value=JTL\Session\Frontend::getCustomer()->getID()}
                                                                 {if $cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT
                                                                 || $cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT
                                                                 || $cStatus == $smarty.const.BESTELLUNG_STATUS_TEILVERSANDT}

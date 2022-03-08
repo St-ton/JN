@@ -4,15 +4,16 @@ HOOK_EXPORT_PRE_RENDER (340)
 Triggerpunkt
 """"""""""""
 
-Vor dem Rendern eines Produktes innerhalb von Exporten.
-Mit diesem Hook können Eigenschaftes des zu exportierenden Produktes modifiziert werden.
-
+Vor dem Rendern eines einzelnen Artikels während eines Exportdurchgangs
 
 Parameter
 """""""""
+
 ``JTL\Export\Product`` **product**
-    **product** Instanz des zu exportierenden Produktes
+    **product** Instanz des aktuell exportierten Produkts
+
 ``JTL\Export\FormatExporter`` **exporter**
-    **exporter** Instanz der FormatExporter-Klasse selbst
+    **exporter** Instanz des aktiven Exporters
+
 ``int`` **exportID**
-    **exportID** Die ID (kExportformat) des aktuell laufenden Exports
+    **exportID** ID des aktiven Exportformats

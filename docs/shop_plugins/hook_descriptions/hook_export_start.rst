@@ -6,7 +6,6 @@ Triggerpunkt
 
 Vor dem Start eines Export-Durchlaufs.
 
-
 Parameter
 """""""""
 ``JTL\Export\FormatExporter`` **exporter**
@@ -14,7 +13,7 @@ Parameter
 ``int`` **exportID**
     **exportID** Die ID (kExportformat) des aktuell laufenden Exports
 ``int`` **max**
-    **max** Die ID (kExportformat) des aktuell laufenden Exports
+    **max** Maximale Anzahl an zu exportierenden Produkten für diesen Durchlauf
 ``bool`` **isAsync**
     **isAsync** Gibt an, ob der aktuelle Export aynchron aus dem Shopbackend heraus gestartet wurde
 ``bool`` **isCron**

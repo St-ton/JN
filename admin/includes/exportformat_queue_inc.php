@@ -8,7 +8,6 @@ use JTL\Cron\LegacyCron;
 use JTL\Cron\Queue;
 use JTL\Customer\CustomerGroup;
 use JTL\Export\ExporterFactory;
-use JTL\Export\FormatExporter;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;

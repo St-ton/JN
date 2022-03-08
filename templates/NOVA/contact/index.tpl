@@ -232,7 +232,7 @@
                             </fieldset>
                             {/block}
                             {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
-                                isset($Einstellungen.kontakt.kontakt_abfragen_captcha) && $Einstellungen.kontakt.kontakt_abfragen_captcha !== 'N' && empty($smarty.session.Kunde->kKunde)}
+                                isset($Einstellungen.kontakt.kontakt_abfragen_captcha) && $Einstellungen.kontakt.kontakt_abfragen_captcha !== 'N' && JTL\Session\Frontend::getCustomer()->getID() === 0}
                                 {block name='contact-index-form-captcha'}
                                     <hr>
                                     {row}

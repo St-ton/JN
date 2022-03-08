@@ -14,7 +14,7 @@ use JTL\Shop;
 class PaymentMethod
 {
     /**
-     * @param \PaymentMethod|Zahlungsart $paymentMethod
+     * @param Zahlungsart $paymentMethod
      * @return bool
      */
     public static function shippingMethodWithValidPaymentMethod($paymentMethod): bool
@@ -45,17 +45,6 @@ class PaymentMethod
                     return false;
                 }
                 if (!\pruefeZahlungsartMaxBestellwert($conf['zahlungsart_nachnahme_max'] ?? 0)) {
-                    return false;
-                }
-                break;
-            case 'za_kreditkarte_jtl':
-                if (!\pruefeZahlungsartMinBestellungen($conf['zahlungsart_kreditkarte_min_bestellungen'] ?? 0)) {
-                    return false;
-                }
-                if (!\pruefeZahlungsartMinBestellwert($conf['zahlungsart_kreditkarte_min'] ?? 0)) {
-                    return false;
-                }
-                if (!\pruefeZahlungsartMaxBestellwert($conf['zahlungsart_kreditkarte_max'] ?? 0)) {
                     return false;
                 }
                 break;

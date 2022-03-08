@@ -103,7 +103,7 @@ if (strlen($cSh) > 0) {
 
             if ($paymentMethod->finalizeOrder($order, $sessionHash, $_REQUEST)) {
                 $logger->debug('Session Hash: ' . $cSh . ' ergab finalizeOrder passed');
-                $order = finalisiereBestellung();
+                $order = finalisiereBestellung($order->cBestellNr ?? '');
                 $session->cleanUp();
 
                 if ($order->kBestellung > 0) {

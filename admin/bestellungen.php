@@ -3,6 +3,7 @@
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Shop;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 

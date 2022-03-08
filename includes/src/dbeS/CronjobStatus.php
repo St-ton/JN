@@ -11,42 +11,42 @@ class CronjobStatus
     /**
      * @var int
      */
-    public $kCron;
+    public int $kCron;
 
     /**
      * @var string
      */
-    public $cExportformat;
+    public string $cExportformat;
 
     /**
      * @var string
      */
-    public $cStartDate;
+    public string $cStartDate;
 
     /**
      * @var int
      */
-    public $nRepeat;
+    public int $nRepeat;
 
     /**
      * @var int
      */
-    public $nDone;
+    public int $nDone;
 
     /**
      * @var int
      */
-    public $nOverall;
+    public int $nOverall;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cLastStartDate;
+    public ?string $cLastStartDate;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cNextStartDate;
+    public ?string $cNextStartDate;
 
     /**
      * @param int         $kCron

@@ -78,4 +78,5 @@ Alternativ lassen sich E-Mails aber auch ohne Vorlage versenden:
     $mail->setBodyText('Testmail! Dies ist ein Test....');
     $mail->setSubject('Testbetreff');
     $mail->setFromMail('info@jtl-software.com');
+    $mail->setLanguage(JTL\Language\LanguageHelper::getDefaultLanguage());
     $mailer->send($mail);

@@ -2,6 +2,8 @@
 
 namespace JTL\Backend;
 
+use Carbon\Carbon;
+use JsonException;
 use JTL\DB\DbInterface;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
@@ -31,6 +33,11 @@ class AuthToken
      * @var string|null
      */
     private ?string $token;
+
+    /**
+     * @var string|null
+     */
+    private ?string $decryptedToken = null;
 
     /**
      * @var string|null
@@ -86,10 +93,10 @@ class AuthToken
                 LIMIT 1'
         );
         if ($token) {
-            $this->authCode = $token->auth_code;
-            $this->token    = $token->access_token;
-            $this->hash     = \sha1($token->hash);
-            $this->verified = $token->verified;
+            $this->authCode = $token->auth_code ?? null;
+            $this->token    = $token->access_token ?? null;
+            $this->hash     = \sha1($token->hash ?? '');
+            $this->verified = $token->verified ?? null;
         }
     }
 
@@ -141,13 +148,36 @@ class AuthToken
     }
 
     /**
+     * @param string $token
+     * @return bool
+     */
+    public function isExpired(string $token): bool
+    {
+        if ($token === '') {
+            return true;
+        }
+        $parts = \explode('.', $token);
+        if (!isset($parts[1])) {
+            return true;
+        }
+        $payload = \base64_decode($parts[1]);
+        try {
+            $expiration = Carbon::createFromTimestamp(\json_decode($payload, false, 512, \JSON_THROW_ON_ERROR)->exp);
+        } catch (JsonException $e) {
+            return true;
+        }
+
+        return Carbon::now()->diffInSeconds($expiration, false) < 0;
+    }
+
+    /**
      * @return bool
      */
     public function isValid(): bool
     {
-        $token = \rtrim($this->getCrypto()->decrypt($this->token ?? ''));
+        $token = $this->decryptToken();
 
-        return ($token !== '') && (\sha1($token) === $this->verified);
+        return $token !== '' && (\sha1($token) === $this->verified) && !$this->isExpired($token);
     }
 
     /**
@@ -155,7 +185,11 @@ class AuthToken
      */
     public function get(): string
     {
-        return $this->isValid() ? \rtrim($this->getCrypto()->decrypt($this->token ?? '')) : '';
+        if (!$this->isValid()) {
+            return '';
+        }
+
+        return $this->decryptToken();
     }
 
     /**
@@ -166,7 +200,6 @@ class AuthToken
         if (!self::isEditable()) {
             return;
         }
-
         $this->db->query('TRUNCATE TABLE tstoreauth');
         $this->load();
     }
@@ -251,5 +284,17 @@ class AuthToken
         $this->set($authCode, $token);
         \http_response_code($this->isValid() ? 200 : 404);
         exit;
+    }
+
+    /**
+     * @return string
+     */
+    private function decryptToken(): string
+    {
+        if ($this->decryptedToken === null) {
+            $this->decryptedToken = \rtrim($this->getCrypto()->decrypt($this->token ?? ''));
+        }
+
+        return $this->decryptedToken;
     }
 }

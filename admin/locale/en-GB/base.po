@@ -362,6 +362,9 @@ msgstr "Action"
 msgid "available"
 msgstr "Available"
 
+msgid "Version %s available"
+msgstr "Version %s available"
+
 msgid "html"
 msgstr "HTML"
 
@@ -1981,9 +1984,6 @@ msgstr "Bank transfer"
 
 msgid "za_nachnahme_jtl"
 msgstr "Cash on Delivery"
-
-msgid "za_kreditkarte_jtl"
-msgstr "Creditcard"
 
 msgid "za_rechnung_jtl"
 msgstr "Invoice Payment"

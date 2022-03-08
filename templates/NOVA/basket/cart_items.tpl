@@ -38,18 +38,18 @@
             {/row}
         {/block}
         {block name='basket-cart-items-order-items-main'}
-        {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
+        {foreach JTL\Session\Frontend::getCart()->PositionenArr as $oPosition}
             {if !$oPosition->istKonfigKind()}
                 {$posName=$oPosition->cName|trans|escape:'html'}
                 {row class="cart-items-body type-{$oPosition->nPosTyp}"}
                     {block name='basket-cart-items-image'}
                         {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                             {col cols=3 xl=2 class="cart-items-image"}
-                                {if !empty($oPosition->Artikel->cVorschaubild)}
+                                {if !empty($oPosition->Artikel->cVorschaubildURL)}
                                     {link href=$oPosition->Artikel->cURLFull title=$posName}
                                         {image lazy=true
                                             webp=true
-                                            src=$oPosition->Artikel->cVorschaubild
+                                            src=$oPosition->Artikel->cVorschaubildURL
                                             alt=$posName
                                             fluid-grow=true
                                         }
@@ -60,6 +60,7 @@
                     {/block}
                     {block name='basket-cart-items-items-main-content'}
                         {col cols=$cols xl=$itemInfoCols class="ml-auto-util"}
+                        {block name='basket-cart-items-items-main-content-inner'}
                         {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL
                         || $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK}
                             {block name='basket-cart-items-product-link'}
@@ -182,12 +183,13 @@
                                 {/if}
                             {/block}
                         {/if}
-
+                        {/block}
+                        {block name='basket-cart-items-product-cofig-items-outer'}
                         {if $oPosition->istKonfigVater()}
                             {block name='basket-cart-items-product-cofig-items'}
                                 <ul class="config-items text-muted-util small">
                                     {$labeled=false}
-                                    {foreach $smarty.session.Warenkorb->PositionenArr as $KonfigPos}
+                                    {foreach JTL\Session\Frontend::getCart()->PositionenArr as $KonfigPos}
                                         {block name='product-config-item'}
                                             {if $oPosition->cUnique == $KonfigPos->cUnique && $KonfigPos->kKonfigitem > 0
                                             && !$KonfigPos->isIgnoreMultiplier()}
@@ -219,7 +221,9 @@
                                 </ul>
                             {/block}
                         {/if}
+                        {/block}
 
+                        {block name='basket-cart-items-product-partlist-items-outer'}
                         {if $Einstellungen.kaufabwicklung.bestellvorgang_partlist === 'Y' && !empty($oPosition->Artikel->kStueckliste) && !empty($oPosition->Artikel->oStueckliste_arr)}
                             {block name='basket-cart-items-product-partlist-items'}
                                 <ul class="partlist-items text-muted-util small">
@@ -232,6 +236,7 @@
                                 </ul>
                             {/block}
                         {/if}
+                        {/block}
                         {/col}
 
                         {block name='basket-cart-items-price-single'}
@@ -246,7 +251,7 @@
                                 {/col}
                             {/if}
                         {/block}
-
+                        {block name='basket-cart-items-quantity-outer'}
                         {col cols=$cols xl=3 class="cart-items-quantity"}
                         {block name='basket-cart-items-quantity'}
                             {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL}
@@ -296,6 +301,7 @@
                             {/if}
                         {/block}
                         {/col}
+                        {/block}
                     {/block}
                     {block name='basket-cart-items-order-items-price-net'}
                         {col cols=$cols xl=2 class="cart-items-price price-col"}

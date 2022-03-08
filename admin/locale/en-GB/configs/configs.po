@@ -24,13 +24,13 @@ msgid "artikel_lagerampel_gruen_name"
 msgstr "Green stock level"
 
 msgid "artikel_lagerampel_gruen_desc"
-msgstr "Enter from which stock level on the content of the language variable \"ampel gruen\" is displayed. Between this stock level and the stock level for \"Red stock level\", the content of the language variable \"ampel gelb\" is displayed."
+msgstr "If the setting \"Stock level display > Stock level indicator in green, yellow and red\" is active, you can set here from which stock level the text of the language variable \"ampelGruen\" is displayed. Between this stock level and the stock level entered for \"Red stock level\", the text of the language variable \"ampelGelb\" is displayed. For all other options of the setting \"Stock level display\", only the colour of the stock level indicator changes. The text stays the same."
 
 msgid "artikel_lagerampel_rot_name"
 msgstr "Red stock level"
 
 msgid "artikel_lagerampel_rot_desc"
-msgstr "Enter until which stock level on the content of the language variable \"ampel rot\" is displayed. Between this stock level and the stock level for \"Green stock level\", the content of the language variable \"ampel gelb\" is displayed."
+msgstr "If the setting \"Stock level display > Stock level indicator in green, yellow and red\" is active, you can set here from which stock level the text of the language variable \"ampelRot\" is displayed. Between this stock level and the stock level entered for \"Green stock level\", the text of the language variable \"ampelGelb\" is displayed. For all other options of the setting \"Stock level display\", only the colour of the stock level indicator changes. The text stays the same."
 
 msgid "artikel_ampel_lagernull_gruen_name"
 msgstr "Green stock level with \"Allow negative stock\""
@@ -96,7 +96,7 @@ msgid "artikel_lagerampel_keinlager_name"
 msgstr "Coloured stock level indicator (non-inventory items)"
 
 msgid "artikel_lagerampel_keinlager_desc"
-msgstr "Specify the text that is to be displayed for non-inventory items."
+msgstr "If the setting \"Stock level display > Stock level indicator in green, yellow and red\" is active, you can set here which text and colour will be displayed for the stock level indicator with non-inventory items. For all other options of the setting \"Stock level display\", only the colour of the stock level indicator changes. The text stays the same."
 
 msgid "global_shopname_name"
 msgstr "Online shop name"
@@ -1830,24 +1830,6 @@ msgid "zahlungsart_nachnahme_max_name"
 msgstr "Maximum order value"
 
 msgid "zahlungsart_nachnahme_max_desc"
-msgstr "Specify the basket value up to which a payment method is available for selection."
-
-msgid "zahlungsart_kreditkarte_min_bestellungen_name"
-msgstr "Number of required orders"
-
-msgid "zahlungsart_kreditkarte_min_bestellungen_desc"
-msgstr "Specify the minimum number of orders a customer must have placed to be offered this payment method."
-
-msgid "zahlungsart_kreditkarte_min_name"
-msgstr "Minimum order value"
-
-msgid "zahlungsart_kreditkarte_min_desc"
-msgstr "Specify the minimum basket value required for a payment method to be available for selection."
-
-msgid "zahlungsart_kreditkarte_max_name"
-msgstr "Maximum order value"
-
-msgid "zahlungsart_kreditkarte_max_desc"
 msgstr "Specify the basket value up to which a payment method is available for selection."
 
 msgid "zahlungsart_rechnung_min_bestellungen_name"

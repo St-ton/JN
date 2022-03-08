@@ -29,6 +29,21 @@ if (!$updater->hasMinUpdateVersion()) {
     );
     $hasMinUpdateVersion = false;
 }
+if ((int)($_SESSION['disabledPlugins'] ?? 0) > 0) {
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_WARNING,
+        sprintf(
+            __('%d plugins were disabled for compatibility reasons. Please check your installed plugins manually.'),
+            (int)$_SESSION['disabledPlugins']
+        ),
+        'errorMinShopVersionRequired'
+    );
+    unset($_SESSION['disabledPlugins']);
+}
+if (($_SESSION['maintenance_forced'] ?? false) === true) {
+    $db->update('teinstellungen', 'cName', 'wartungsmodus_aktiviert', (object)['cWert' => 'N']);
+    Shop::Container()->getCache()->flushTags([\CACHING_GROUP_OPTION]);
+}
 $smarty->assign('updatesAvailable', $updater->hasPendingUpdates())
     ->assign('manager', ADMIN_MIGRATION ? new MigrationManager($db) : null)
     ->assign('isPluginManager', false)

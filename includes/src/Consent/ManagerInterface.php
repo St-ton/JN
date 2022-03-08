@@ -38,7 +38,7 @@ interface ManagerInterface
     public function hasConsent(string $itemID): bool;
 
     /**
-     * @param array $data
+     * @param array|mixed $data
      * @return array|null
      */
     public function save($data): ?array;

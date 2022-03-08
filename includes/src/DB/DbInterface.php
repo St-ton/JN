@@ -70,6 +70,14 @@ interface DbInterface extends \Serializable
     public function insertRow(string $tableName, object $object, bool $echo = false): int;
 
     /**
+     * @param string     $tableName
+     * @param stdClass[] $objects
+     * @param bool       $upsert
+     * @return int
+     */
+    public function insertBatch(string $tableName, array $objects, bool $upsert = false): int;
+
+    /**
      * @param string $tableName
      * @param object $object
      * @param bool   $echo
@@ -377,7 +385,7 @@ interface DbInterface extends \Serializable
     /**
      * Quotes a string with outer quotes for use in a query.
      *
-     * @param string|bool $string
+     * @param mixed $string
      * @return string
      */
     public function quote($string): string;
@@ -385,7 +393,7 @@ interface DbInterface extends \Serializable
     /**
      * Quotes a string for use in a query.
      *
-     * @param string $string
+     * @param mixed $string
      * @return string
      */
     public function escape($string): string;

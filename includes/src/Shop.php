@@ -90,7 +90,6 @@ use JTLShop\SemVer\Version;
 use League\Flysystem\Config as FlysystemConfig;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\Visibility;
-use LinkHelper;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -1288,7 +1287,7 @@ final class Shop
         }
         // Link active?
         if ($oSeo !== null && $oSeo->cKey === 'kLink') {
-            $link = LinkHelper::getInstance()->getLinkByID($oSeo->kKey);
+            $link = LinkService::getInstance()->getLinkByID($oSeo->kKey);
             if ($link !== null && $link->getIsEnabled() === false) {
                 $oSeo = null;
             }
@@ -1460,7 +1459,7 @@ final class Shop
                 \header('Location: ' . self::getURL(), true, 301);
                 exit;
             }
-            if ($requestFile === '/') {
+            if ($requestFile === '/' && !self::$is404) {
                 // special case: home page is accessible without seo url
                 self::setPageType(\PAGE_STARTSEITE);
                 self::$fileName = 'seite.php';

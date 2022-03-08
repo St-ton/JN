@@ -93,12 +93,12 @@ class ProductStream extends Portlet
             Shop::Container()->getCache()
         );
         $service        = Shop::Container()->getOPC();
-        $pf->setBaseState((new DummyState($pf))->init(0));
+        $pf->getBaseState()->init(0);
         foreach ($enabledFilters as $enabledFilter) {
             $service->getFilterClassParamMapping($enabledFilter['class'], $params, $enabledFilter['value'], $pf);
         }
         $service->overrideConfig($pf);
-        $pf->initStates($params, false);
+        $pf->initStates($params);
         foreach ($pf->getActiveFilters() as $filter) {
             if ($filter->getClassName() !== Manufacturer::class) {
                 $filter->setType(Type::AND);

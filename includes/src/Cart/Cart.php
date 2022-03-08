@@ -2049,9 +2049,18 @@ class Cart
     public function removeParentItems(): self
     {
         foreach ($this->PositionenArr as $i => $item) {
+            $delete = false;
             if ($item->Artikel === C_WARENKORBPOS_TYP_ARTIKEL
                 && $item->Artikel->nIstVater === 1
             ) {
+                $delete = true;
+                \executeHook(\HOOK_CART_DELETE_PARENT_ITEM_POS, [
+                    'positionItem' => $item,
+                    'delete'    => &$delete
+                ]);
+            }
+            if ($delete) {
+                self::addDeletedPosition($item);
                 unset($this->PositionenArr[$i]);
             }
         }

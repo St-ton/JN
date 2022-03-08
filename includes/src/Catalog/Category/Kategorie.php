@@ -161,7 +161,7 @@ class Kategorie
     /**
      * @var bool
      */
-    private $compressed = false;
+    private bool $compressed = false;
 
     /**
      * @param int  $id
@@ -298,7 +298,7 @@ class Kategorie
         ]);
         if (!$noCache) {
             $toSave = clone $this;
-            if (\COMPRESS_DESCRIPTION === true) {
+            if (\COMPRESS_DESCRIPTIONS === true) {
                 $toSave->cBeschreibung    = \gzcompress($toSave->cBeschreibung);
                 $toSave->cKurzbezeichnung = \gzcompress($toSave->cKurzbezeichnung);
                 $toSave->compressed       = true;

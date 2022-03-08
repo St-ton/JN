@@ -278,7 +278,7 @@ ifndef('SAFE_MODE', $GLOBALS['plgSafeMode'] ?? file_exists(PFAD_ROOT. PFAD_ADMIN
 
 ifndef('TRACK_VISITORS', true);
 
-ifndef('COMPRESS_DESCRIPTION', false);
+ifndef('COMPRESS_DESCRIPTIONS', false);
 
 /**
  * @param string $constant

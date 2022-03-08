@@ -9,7 +9,6 @@ use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Filter\Config;
 use JTL\Filter\Items\Manufacturer;
 use JTL\Filter\ProductFilter;
-use JTL\Filter\States\DummyState;
 use JTL\Filter\Type;
 use JTL\Helpers\Product;
 use JTL\OPC\InputType;

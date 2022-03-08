@@ -48,17 +48,6 @@ class PaymentMethod
                     return false;
                 }
                 break;
-            case 'za_kreditkarte_jtl':
-                if (!\pruefeZahlungsartMinBestellungen($conf['zahlungsart_kreditkarte_min_bestellungen'] ?? 0)) {
-                    return false;
-                }
-                if (!\pruefeZahlungsartMinBestellwert($conf['zahlungsart_kreditkarte_min'] ?? 0)) {
-                    return false;
-                }
-                if (!\pruefeZahlungsartMaxBestellwert($conf['zahlungsart_kreditkarte_max'] ?? 0)) {
-                    return false;
-                }
-                break;
             case 'za_rechnung_jtl':
                 if (!\pruefeZahlungsartMinBestellungen($conf['zahlungsart_rechnung_min_bestellungen'] ?? 0)) {
                     return false;

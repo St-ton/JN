@@ -1459,7 +1459,7 @@ final class Shop
                 \header('Location: ' . self::getURL(), true, 301);
                 exit;
             }
-            if ($requestFile === '/') {
+            if ($requestFile === '/' && !self::$is404) {
                 // special case: home page is accessible without seo url
                 self::setPageType(\PAGE_STARTSEITE);
                 self::$fileName = 'seite.php';

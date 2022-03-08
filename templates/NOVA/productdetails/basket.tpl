@@ -33,7 +33,7 @@
                                                 placeholder="{lang key='voucherFlexPlaceholder' section='productDetails' printf=$smarty.session.Waehrung->getName()}"}
                                             {inputgroupappend}
                                                 {inputgrouptext class="form-control"}
-                                                    {$smarty.session.Waehrung->getName()}
+                                                    {JTL\Session\Frontend::getCurrency()->getName()}
                                                 {/inputgrouptext}
                                             {/inputgroupappend}
                                         {/inputgroup}
@@ -120,7 +120,7 @@
                 {block name='productdetails-basket-alert-purchase-info'}
                     {alert variant="info" class="purchase-info"}
                         {assign var=units value=$Artikel->cEinheit}
-                        {if empty($Artikel->cEinheit) || $Artikel->cEinheit|@count_characters == 0}
+                        {if empty($Artikel->cEinheit) || $Artikel->cEinheit|strlen == 0}
                             <p>{lang key='units' section='productDetails' assign='units'}</p>
                         {/if}
 

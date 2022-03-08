@@ -102,6 +102,13 @@ class NiceDB implements DbInterface
         if (\DB_DEFAULT_SQL_MODE !== true) {
             $this->pdo->exec("SET SQL_MODE=''");
         }
+        if (\DB_STARTUP_SQL !== '') {
+            foreach (\explode(';', \DB_STARTUP_SQL) as $sql) {
+                if (!empty($sql)) {
+                    $this->pdo->exec($sql);
+                }
+            }
+        }
         $this->initDebugging($forceDebug);
         $this->isConnected = true;
         self::$instance    = $this;
@@ -998,7 +1005,7 @@ class NiceDB implements DbInterface
             case ReturnType::SINGLE_ASSOC_ARRAY:
                 return [];
             case ReturnType::SINGLE_OBJECT:
-                return new stdClass();
+                return null;
             case ReturnType::QUERYSINGLE:
                 return new PDOStatement();
             case ReturnType::DEFAULT:
@@ -1216,8 +1223,7 @@ class NiceDB implements DbInterface
     /**
      * Quotes a string for use in a query.
      *
-     * @param string $string
-     * @return string
+     * @inheritdoc
      */
     public function escape($string): string
     {

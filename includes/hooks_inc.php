@@ -1938,7 +1938,7 @@ const HOOK_EXPORT_FACTORY_GET_EXPORTER = 342;
 /**
  * @since 5.2.0
  * @param JTL\Catalog\Product\Artikel product
- * @param int|string|float            qty
+ * @param int|string|float            &qty
  */
 const HOOK_CARTHELPER_ADD_PRODUCT_ID_TO_CART = 345;
 

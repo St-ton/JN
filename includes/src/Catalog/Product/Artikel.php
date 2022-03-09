@@ -4918,13 +4918,13 @@ class Artikel
                 $deliverytime_outofstock = (int)$this->FunktionsAttribute['deliverytime_outofstock'];
                 $minDeliveryDays         = $deliverytime_outofstock; //overrides parcel and processingtime!
                 $maxDeliveryDays         = $deliverytime_outofstock; //overrides parcel and processingtime!
-            } elseif (($this->nAutomatischeLiefertageberechnung === 0 && $this->nLiefertageWennAusverkauft > 0)
+            } elseif ($this->nAutomatischeLiefertageberechnung === 0
                 || (isset($this->FunktionsAttribute['supplytime']) && $this->FunktionsAttribute['supplytime'] > 0)
             ) {
                 // attribute "supplytime" for merchants who do not use JTL-Wawis purchase-system
-                $supplyTime       = ($this->nLiefertageWennAusverkauft > 0)
-                    ? $this->nLiefertageWennAusverkauft
-                    : (int)$this->FunktionsAttribute['supplytime'];
+                $supplyTime       = ((int)$this->FunktionsAttribute['supplytime'] > 0)
+                    ? (int)$this->FunktionsAttribute['supplytime']
+                    : $this->nLiefertageWennAusverkauft;
                 $minDeliveryDays += $supplyTime;
                 $maxDeliveryDays += $supplyTime;
             } elseif ($this->dZulaufDatum !== null

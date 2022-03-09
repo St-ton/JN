@@ -1,25 +1,20 @@
-HOOK_EXPORT_START (241)
+HOOK_EXPORT_START (341)
 =======================
 
 Triggerpunkt
 """"""""""""
 
-Nach dem Laden eines Artikels
+Vor dem Start eines Export-Durchlaufs.
 
 Parameter
 """""""""
-
 ``JTL\Export\FormatExporter`` **exporter**
-    **&exporter** Instanz des FormatExporters
-
+    **exporter** Instanz der FormatExporter-Klasse selbst
 ``int`` **exportID**
-    **exportID** ID des Exportformats
-
+    **exportID** Die ID (kExportformat) des aktuell laufenden Exports
 ``int`` **max**
     **max** Maximale Anzahl an zu exportierenden Produkten für diesen Durchlauf
-
 ``bool`` **isAsync**
-    **isAsync** Gibt an, ob Export asynchron gestartet wurde
-
+    **isAsync** Gibt an, ob der aktuelle Export aynchron aus dem Shopbackend heraus gestartet wurde
 ``bool`` **isCron**
-    **isCron** Gibt an, ob Cronjob aktiv ist
+    **isCron** Gibt an, ob der aktuelle Export als Cronjob gestartet wurde

@@ -1937,6 +1937,13 @@ const HOOK_EXPORT_FACTORY_GET_EXPORTER = 342;
 
 /**
  * @since 5.2.0
+ * @param JTL\Catalog\Product\Artikel product
+ * @param int|string|float            &qty
+ */
+const HOOK_CARTHELPER_ADD_PRODUCT_ID_TO_CART = 345;
+
+/**
+ * @since 5.2.0
  * @param JTL\News\Item item
  */
 const HOOK_NEWS_ITEM_MAPPED = 350;

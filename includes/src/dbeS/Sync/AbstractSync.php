@@ -658,7 +658,7 @@ abstract class AbstractSync
      */
     protected function checkDbeSXmlRedirect(string $oldSeo, string $newSeo): bool
     {
-        // Insert into tredirect weil sich das SEO von der Kategorie geändert hat
+        // Insert into tredirect weil sich SEO von Kategorie oder Artikel geändert hat
         if ($oldSeo === $newSeo || $oldSeo === '' || $newSeo === '') {
             return false;
         }

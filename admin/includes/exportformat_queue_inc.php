@@ -10,6 +10,7 @@ use JTL\Customer\CustomerGroup;
 use JTL\Exportformat;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 
@@ -34,25 +35,32 @@ function holeExportformatCron(): array
     );
     foreach ($exports as $export) {
         $export->cAlleXStdToDays = rechneUmAlleXStunden((int)$export->frequency);
-        $export->Sprache         = Shop::Lang()->getLanguageByID((int)$export->kSprache);
-        $export->Waehrung        = $db->select(
+        try {
+            $export->Sprache = Shop::Lang()->getLanguageByID($export->kSprache);
+        } catch (Exception $e) {
+            $export->Sprache = LanguageHelper::getDefaultLanguage();
+            $export->Sprache->setLocalizedName('???');
+            $export->Sprache->setId(0);
+            $export->nFehlerhaft = 1;
+        }
+        $export->Waehrung       = $db->select(
             'twaehrung',
             'kWaehrung',
             (int)$export->kWaehrung
         );
-        $export->Kundengruppe    = $db->select(
+        $export->Kundengruppe   = $db->select(
             'tkundengruppe',
             'kKundengruppe',
             (int)$export->kKundengruppe
         );
-        $export->oJobQueue       = $db->getSingleObject(
+        $export->oJobQueue      = $db->getSingleObject(
             "SELECT *, DATE_FORMAT(lastStart, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
                 FROM tjobqueue 
                 WHERE cronID = :id",
             ['id' => (int)$export->cronID]
         );
-        $exportFormat            = new Exportformat($export->kExportformat, $db);
-        $export->nAnzahlArtikel  = (object)[
+        $exportFormat           = new Exportformat($export->kExportformat, $db);
+        $export->nAnzahlArtikel = (object)[
             'nAnzahl' => $exportFormat->getExportProductCount(),
         ];
     }

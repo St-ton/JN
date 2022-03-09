@@ -28,12 +28,12 @@
                             {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
                                 {block name='layout-header-menu-single-row-secure-checkout'}
                                     {block name='layout-header-menu-single-row-secure-checkout-title'}
-                                        {col class="secure-checkout-icon"}
+                                        {col class="secure-checkout-icon order-3"}
                                             <i class="fas fa-lock icon-mr-2"></i>{lang key='secureCheckout' section='checkout'}
                                         {/col}
                                     {/block}
                                     {block name='layout-header-menu-single-row-top-bar-inner'}
-                                        {col class="secure-checkout-topbar col-auto ml-auto-util d-none d-lg-block"}
+                                        {col class="secure-checkout-topbar col-auto ml-auto-util d-none d-lg-block order-4"}
                                             {include file='layout/header_top_bar.tpl'}
                                         {/col}
                                     {/block}

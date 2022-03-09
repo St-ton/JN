@@ -272,11 +272,6 @@ header {
 			right: 7%;
 		}
 	}
-	.toggler-logo-wrapper {
-		@include media-breakpoint-down(md) {
-			position: initial;
-		}
-	}
 	&#header-top-bar {
 		float: initial;
 		position: relative;
@@ -307,6 +302,9 @@ header {
 			width: auto;
 			max-width: 100%;
 			margin-left: auto;
+		}
+		.toggler-logo-wrapper {
+			position: initial;
 		}
 	}
 	.nav-icons-wrapper {
@@ -376,5 +374,11 @@ header {
 				}
 			}
 		}
+	}
+}
+
+@include media-breakpoint-up(lg) {
+	header.full-width-mega .nav-right .dropdown-menu {
+		@include box-shadow(0 0 7px $black);
 	}
 }

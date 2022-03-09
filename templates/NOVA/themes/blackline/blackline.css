@@ -26025,11 +26025,6 @@ header #burger-menu {
 .full-width-mega .main-search-wrapper .form-clear {
   right: 7%;
 }
-@media (max-width: 991.98px) {
-  .full-width-mega .toggler-logo-wrapper {
-    position: initial;
-  }
-}
 .full-width-mega#header-top-bar {
   float: initial;
   position: relative;
@@ -26060,6 +26055,9 @@ header #burger-menu {
     width: auto;
     max-width: 100%;
     margin-left: auto;
+  }
+  .full-width-mega .toggler-logo-wrapper {
+    position: initial;
   }
 }
 .full-width-mega .nav-icons-wrapper {
@@ -26108,6 +26106,11 @@ header #burger-menu {
   }
 }
 
+@media (min-width: 992px) {
+  header.full-width-mega .nav-right .dropdown-menu {
+    box-shadow: 0 0 7px #000000;
+  }
+}
 /* footer */
 #footer {
   margin-top: auto;

@@ -9,7 +9,7 @@ Nach dem Laden eines Export-Models und vor dessen Initialisierung
 Parameter
 """""""""
 
-``JTL\Export\FormatExporter`` **&exporter**
+``JTL\Export\FormatExporter`` **exporter**
     **exporter** Instanz von FormatExporter
 
 ``int`` **exportID**

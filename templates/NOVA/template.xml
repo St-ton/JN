@@ -27,10 +27,6 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
-            <Setting Description="Anzeige der Suche auf mobilen Geräten" Key="mobile_search_type" Type="select" Value="fixed">
-                <Option Value="fixed">Suche beim Hochscrollen einblenden</Option>
-                <Option Value="dropdown">Icon mit Dropdown</Option>
-            </Setting>
             <Setting Description="Wunschzettel und Vergleichsliste - Animation anzeigen" Key="wish_compare_animation" Type="select" Value="mobile">
                 <Option Value="both">Auf Desktop und mobilen Geräten</Option>
                 <Option Value="mobile">Nur mobil</Option>
@@ -91,6 +87,10 @@
             <Setting Description="Header über gesamte Bildschirmbreite darstellen" Key="header_full_width" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
+            </Setting>
+            <Setting Description="Anzeige der Suche auf mobilen Geräten" Key="mobile_search_type" Type="select" Value="fixed">
+                <Option Value="fixed">Suche beim Hochscrollen einblenden</Option>
+                <Option Value="dropdown">Icon mit Dropdown</Option>
             </Setting>
         </Section>
         <Section Name="Megamenu" Key="megamenu">

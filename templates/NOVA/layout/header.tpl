@@ -325,7 +325,7 @@
                     </div>
                 {/block}
             {/if}
-            <header class="d-print-none {if $Einstellungen.template.header.menu_single_row === 'Y'}full-width-mega{/if} {if !$isMobile || $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar theme-{$Einstellungen.template.theme.theme_default}"
+            <header class="d-print-none {if $Einstellungen.template.header.menu_single_row === 'Y'}full-width-mega{/if} {if !$isMobile || $Einstellungen.template.header.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar theme-{$Einstellungen.template.theme.theme_default}"
                     id="jtl-nav-wrapper">
                 {if $Einstellungen.template.header.menu_single_row === 'Y'}
                     {block name='layout-header-include-header-menu-single-row'}
@@ -367,7 +367,7 @@
                     {/block}
                 {/if}
                 {block name='layout-header-search'}
-                    {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
+                    {if $Einstellungen.template.header.mobile_search_type === 'fixed'}
                         <div class="d-lg-none search-form-wrapper-fixed container-fluid container-fluid-xl order-1">
                             {include file='snippets/search_form.tpl' id='search-header-mobile-top'}
                         </div>
@@ -375,7 +375,7 @@
                 {/block}
             </header>
             {block name='layout-header-search-fixed'}
-                {if $Einstellungen.template.theme.mobile_search_type === 'fixed' && $isMobile}
+                {if $Einstellungen.template.header.mobile_search_type === 'fixed' && $isMobile}
                     <div class="container-fluid container-fluid-xl fixed-search fixed-top smoothscroll-top-search d-lg-none d-none">
                         {include file='snippets/search_form.tpl' id='search-header-mobile-fixed'}
                     </div>

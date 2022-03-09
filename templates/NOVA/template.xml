@@ -60,15 +60,15 @@
                 <Option Value="multiple">Mehrzeilig</Option>
                 <Option Value="scroll">Pfeile zum scrollen in einer Zeile</Option>
             </Setting>
-            <Setting Description="Menüausrichtung" Key="jtl_header_menu_center" Type="select" Value="center">
+            <Setting Description="Menüausrichtung" Key="menu_center" Type="select" Value="center">
                 <Option Value="center">zentriert</Option>
                 <Option Value="left">linksbündig</Option>
             </Setting>
-            <Setting Description="Anzeige beim Scrollen" Key="jtl_header_menu_scroll" Type="select" Value="menu">
+            <Setting Description="Anzeige beim Scrollen" Key="menu_scroll" Type="select" Value="menu">
                 <Option Value="menu">Menü</Option>
                 <Option Value="all">Menü, Logo, Suche</Option>
             </Setting>
-            <Setting Description="Logo Höhe (in px)" Key="jtl_header_menu_logoheight" Type="number" Value="49"/>
+            <Setting Description="Logo Höhe (in px)" Key="menu_logoheight" Type="number" Value="49"/>
             <Setting Description="Logo zentriert" Key="menu_logo_centered" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
@@ -77,8 +77,8 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
-            <Setting Description="Suchfeld Breite (in px)" Key="jtl_header_menu_search_width" Type="number" Value="0"/>
-            <Setting Description="Suchfeld Positionierung" Key="jtl_header_menu_search_position" Type="select" Value="center">
+            <Setting Description="Suchfeld Breite (in px)" Key="menu_search_width" Type="number" Value="0"/>
+            <Setting Description="Suchfeld Positionierung" Key="menu_search_position" Type="select" Value="center">
                 <Option Value="left">Links</Option>
                 <Option Value="right">Rechts</Option>
                 <Option Value="center">Zentriert</Option>

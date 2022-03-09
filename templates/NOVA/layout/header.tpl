@@ -56,11 +56,32 @@
             {else}
                 {$templateDir = $parentTemplateDir}
             {/if}
-            <style id="criticalCSS">
-                {block name='layout-header-head-resources-crit'}
-                    {file_get_contents("{$currentThemeDir}{$Einstellungen.template.theme.theme_default}_crit.css")}
-                {/block}
-            </style>
+            {block name='layout-header-head-resources-crit-outer'}
+                <style id="criticalCSS">
+                    {block name='layout-header-head-resources-crit'}
+                        {file_get_contents("{$currentThemeDir}{$Einstellungen.template.theme.theme_default}_crit.css")}
+                    {/block}
+                    {block name='layout-header-menu-single-row-css'}
+                        {if (int)$Einstellungen.template.header.menu_search_width !== 0}
+                            .main-search-wrapper {
+                                max-width: {$Einstellungen.template.header.menu_search_width}px;
+                            }
+                        {/if}
+                        {if (int)$Einstellungen.template.header.menu_logoheight !== 0 && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}
+                            @media (min-width: 992px) {
+                                header .navbar-brand img {
+                                    height: {$Einstellungen.template.header.menu_logoheight}px;
+                                }
+                                {if $Einstellungen.template.header.menu_single_row !== 'Y'}
+                                    nav.navbar {
+                                        height: calc({$Einstellungen.template.header.menu_logoheight}px + 1.2rem);
+                                    }
+                                {/if}
+                            }
+                        {/if}
+                    {/block}
+                </style>
+            {/block}
             {* css *}
             {if $Einstellungen.template.general.use_minify === 'N'}
                 {foreach $cCSS_arr as $cCSS}
@@ -312,7 +333,7 @@
         {/if}
 
         {block name='layout-header-header'}
-            {if (($Einstellungen.template.header.jtl_header_menu_scroll !== 'menu' && $Einstellungen.template.header.menu_single_row === 'Y')
+            {if (($Einstellungen.template.header.menu_scroll !== 'menu' && $Einstellungen.template.header.menu_single_row === 'Y')
                     || $Einstellungen.template.header.menu_single_row === 'N'
                 )
                 && $Einstellungen.template.header.menu_show_topbar === 'Y'

@@ -26303,9 +26303,7 @@ header #burger-menu {
 }
 .full-width-mega .nav-logo-wrapper {
   padding-right: 0;
-}
-.full-width-mega .main-search-wrapper {
-  padding: 0;
+  margin-right: auto;
 }
 .full-width-mega.theme-blackline .main-search-wrapper.nav-right .btn-secondary {
   border-left: 0;
@@ -26327,6 +26325,22 @@ header #burger-menu {
   }
   .full-width-mega .nav-multiple-row .nav-scrollbar-arrow {
     display: none;
+  }
+  .full-width-mega .menu-search-position-center .main-search-wrapper {
+    margin-right: auto;
+  }
+  .full-width-mega .menu-search-position-left .main-search-wrapper {
+    margin-right: auto;
+  }
+  .full-width-mega .menu-search-position-left .nav-logo-wrapper {
+    margin-right: initial;
+  }
+  .full-width-mega .menu-center-center.menu-multiple-rows-multiple .nav-scrollbar-inner {
+    justify-content: center;
+  }
+  .full-width-mega .menu-center-center.menu-multiple-rows-left .nav-scrollbar-inner::before, .full-width-mega .menu-center-center.menu-multiple-rows-left .nav-scrollbar-inner::after {
+    content: "";
+    margin: auto;
   }
 }
 

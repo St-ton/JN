@@ -264,8 +264,9 @@ if ($step === 'uebersicht') {
     )->cnt;
     $queueCount        = (int)$db->getSingleObject(
         "SELECT COUNT(*) AS cnt
-            FROM tjobqueue
-            WHERE jobType = 'newsletter'"
+             FROM tcron c
+             LEFT JOIN tjobqueue q ON c.cronID = q.cronID
+             WHERE c.jobType = 'newsletter'"
     )->cnt;
     $templateCount     = (int)$db->getSingleObject(
         'SELECT COUNT(*) AS cnt

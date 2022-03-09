@@ -1209,6 +1209,11 @@ class ShippingMethod
             ]
         );
         foreach ($methods as $method) {
+            $method->kVersandart        = (int)$method->kVersandart;
+            $method->kVersandberechnung = (int)$method->kVersandberechnung;
+            $method->nSort              = (int)$method->nSort;
+            $method->nMinLiefertage     = (int)$method->nMinLiefertage;
+            $method->nMaxLiefertage     = (int)$method->nMaxLiefertage;
             if (!$allowCash) {
                 $cash = $db->select(
                     'tversandartzahlungsart',

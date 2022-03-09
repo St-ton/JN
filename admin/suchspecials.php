@@ -41,7 +41,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $bestSellerSeo,
         SEARCHSPECIALS_BESTSELLER
     )) {
-        $bestSellerSeo = Seo::checkSeo(Seo::getSeo($bestSellerSeo));
+        $bestSellerSeo = Seo::checkSeo(Seo::getSeo($bestSellerSeo, true));
 
         if ($bestSellerSeo !== $postData['bestseller']) {
             $alertService->addAlert(
@@ -68,7 +68,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $specialOffersSeo,
         SEARCHSPECIALS_SPECIALOFFERS
     )) {
-        $specialOffersSeo = Seo::checkSeo(Seo::getSeo($specialOffersSeo));
+        $specialOffersSeo = Seo::checkSeo(Seo::getSeo($specialOffersSeo, true));
 
         if ($specialOffersSeo !== $postData['sonderangebote']) {
             $alertService->addAlert(
@@ -96,7 +96,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $newProductsSeo,
         SEARCHSPECIALS_NEWPRODUCTS
     )) {
-        $newProductsSeo = Seo::checkSeo(Seo::getSeo($newProductsSeo));
+        $newProductsSeo = Seo::checkSeo(Seo::getSeo($newProductsSeo, true));
 
         if ($newProductsSeo !== $postData['neu_im_sortiment']) {
             $alertService->addAlert(
@@ -124,7 +124,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $topOffersSeo,
         SEARCHSPECIALS_TOPOFFERS
     )) {
-        $topOffersSeo = Seo::checkSeo(Seo::getSeo($topOffersSeo));
+        $topOffersSeo = Seo::checkSeo(Seo::getSeo($topOffersSeo, true));
 
         if ($topOffersSeo !== $postData['top_angebote']) {
             $alertService->addAlert(
@@ -152,7 +152,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $releaseSeo,
         SEARCHSPECIALS_UPCOMINGPRODUCTS
     )) {
-        $releaseSeo = Seo::checkSeo(Seo::getSeo($releaseSeo));
+        $releaseSeo = Seo::checkSeo(Seo::getSeo($releaseSeo, true));
         if ($releaseSeo !== $postData['in_kuerze_verfuegbar']) {
             $alertService->addAlert(
                 Alert::TYPE_NOTE,
@@ -179,7 +179,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $topRatedSeo,
         SEARCHSPECIALS_TOPREVIEWS
     )) {
-        $topRatedSeo = Seo::checkSeo(Seo::getSeo($topRatedSeo));
+        $topRatedSeo = Seo::checkSeo(Seo::getSeo($topRatedSeo, true));
 
         if ($topRatedSeo !== $postData['top_bewertet']) {
             $alertService->addAlert(

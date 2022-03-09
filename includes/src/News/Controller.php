@@ -25,27 +25,27 @@ class Controller
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLSmarty
      */
-    private $smarty;
+    private JTLSmarty $smarty;
 
     /**
      * @var array
      */
-    private $config;
+    private array $config;
 
     /**
      * @var string
      */
-    private $errorMsg = '';
+    private string $errorMsg = '';
 
     /**
      * @var string
      */
-    private $noticeMsg = '';
+    private string $noticeMsg = '';
 
     /**
      * Controller constructor.
@@ -101,7 +101,7 @@ class Controller
         } elseif ($params['kNewsMonatsUebersicht'] > 0) {
             $currentNewsType = ViewType::NEWS_MONTH_OVERVIEW;
             if (($data = $this->getMonthOverview($params['kNewsMonatsUebersicht'])) !== null) {
-                $_SESSION['NewsNaviFilter']->cDatum   = (int)$data->nMonat . '-' . (int)$data->nJahr;
+                $_SESSION['NewsNaviFilter']->cDatum   = $data->nMonat . '-' . $data->nJahr;
                 $_SESSION['NewsNaviFilter']->nNewsKat = -1;
             }
         }
@@ -123,7 +123,7 @@ class Controller
      */
     private function getMonthOverview(int $id): ?stdClass
     {
-        return $this->db->getSingleObject(
+        $item = $this->db->getSingleObject(
             "SELECT tnewsmonatsuebersicht.*, tseo.cSeo
                 FROM tnewsmonatsuebersicht
                 LEFT JOIN tseo 
@@ -136,6 +136,14 @@ class Controller
                 'lid' => Shop::getLanguageID()
             ]
         );
+        if ($item !== null) {
+            $item->kNewsMonatsUebersicht = (int)$item->kNewsMonatsUebersicht;
+            $item->kSprache              = (int)$item->kSprache;
+            $item->nMonat                = (int)$item->nMonat;
+            $item->nJahr                 = (int)$item->nJahr;
+        }
+
+        return $item;
     }
 
     /**
@@ -145,9 +153,10 @@ class Controller
     public function displayItem(Item $newsItem, Pagination $pagination): void
     {
         $newsCategories = $this->getNewsCategories($newsItem->getID());
+        $prefix         = Shop::getURL() . '/';
         foreach ($newsCategories as $category) {
             $category->cURL     = URL::buildURL($category, \URLART_NEWSKATEGORIE);
-            $category->cURLFull = URL::buildURL($category, \URLART_NEWSKATEGORIE, true);
+            $category->cURLFull = URL::buildURL($category, \URLART_NEWSKATEGORIE, true, $prefix);
         }
         $comments            = $newsItem->getComments()->getThreadedItems()->filter(static function ($item) {
             return $item->isActive();
@@ -156,8 +165,8 @@ class Controller
             ? [$perPage, $perPage * 2, $perPage * 5]
             : [10, 20, 50];
         $pagination->setItemsPerPageOptions($itemsPerPageOptions)
-                   ->setItemCount($comments->count())
-                   ->assemble();
+            ->setItemCount($comments->count())
+            ->assemble();
         if ($pagination->getItemsPerPage() > 0) {
             $comments = $comments->forPage(
                 $pagination->getPage() + 1,
@@ -209,8 +218,8 @@ class Controller
             ? $conf
             : 10;
         $pagination->setItemsPerPageOptions([$newsCountShow, $newsCountShow * 2, $newsCountShow * 5])
-                   ->setItemCount($category->getItems()->count())
-                   ->assemble();
+            ->setItemCount($category->getItems()->count())
+            ->assemble();
         if ($pagination->getItemsPerPage() > -1) {
             $items = $items->forPage(
                 $pagination->getPage() + 1,
@@ -328,15 +337,16 @@ class Controller
             $checks['cKommentar'] = 2;
         }
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && $newsID > 0) {
-            $commentCount = Shop::Container()->getDB()->getSingleObject(
-                'SELECT COUNT(*) AS nAnzahl
+            $commentCount = Shop::Container()->getDB()->getSingleInt(
+                'SELECT COUNT(*) AS cnt
                     FROM tnewskommentar
                     WHERE kNews = :nid
                         AND kKunde = :cid',
+                'cnt',
                 ['nid' => $newsID, 'cid' => Frontend::getCustomer()->getID()]
             );
 
-            if ((int)($commentCount->nAnzahl ?? 0) > (int)$config['news']['news_kommentare_anzahlprobesucher']
+            if ($commentCount > (int)$config['news']['news_kommentare_anzahlprobesucher']
                 && (int)$config['news']['news_kommentare_anzahlprobesucher'] !== 0
             ) {
                 $checks['nAnzahl'] = 1;
@@ -483,7 +493,7 @@ class Controller
     /**
      * @param string|int $month
      * @param string|int $year
-     * @param string $langCode
+     * @param string     $langCode
      * @return string
      */
     public static function mapDateName($month, $year, string $langCode): string
@@ -528,7 +538,7 @@ class Controller
 
     /**
      * @param int $newsItemID
-     * @return array
+     * @return stdClass[]
      */
     public function getNewsCategories(int $newsItemID): array
     {

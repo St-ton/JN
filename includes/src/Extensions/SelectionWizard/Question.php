@@ -74,9 +74,9 @@ class Question
     public ?object $oMerkmal = null;
 
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    private DbInterface $db;
+    private ?DbInterface $db;
 
     /**
      * Location constructor.

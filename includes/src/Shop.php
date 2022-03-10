@@ -1903,16 +1903,6 @@ final class Shop
     }
 
     /**
-     * Get the default container of the jtl shop
-     *
-     * @return DefaultServicesInterface
-     */
-    public function _Container(): DefaultServicesInterface
-    {
-        return self::Container();
-    }
-
-    /**
      * Create the default container of the jtl shop
      */
     private static function createContainer(): void
@@ -2116,6 +2106,9 @@ final class Shop
         return $homeURL;
     }
 
+    /**
+     * @return string
+     */
     public static function getRequestURL(): string
     {
         return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')

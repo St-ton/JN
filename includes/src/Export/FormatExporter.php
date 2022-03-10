@@ -190,7 +190,7 @@ class FormatExporter extends AbstractExporter
             } else {
                 ++$cacheMisses;
             }
-            $product = $product->augmentProduct($this->config);
+            $product = $product->augmentProduct($this->config, $this->model);
             $product->addCategoryData($fallback);
             $product->Kategoriepfad = $product->Kategorie->cKategoriePfad ?? $helper->getPath($product->Kategorie);
             $product->cDeeplink     = $shopURL . '/' . $product->cURL;

@@ -111,7 +111,6 @@ class Manufacturer
                 }
                 $manufacturer->cBildURLKlein  = $imageBaseURL . $manufacturer->cBildpfadKlein;
                 $manufacturer->cBildURLNormal = $imageBaseURL . $manufacturer->cBildpfadKlein;
-                $manufacturer->cURLFull       = $shopURL . $manufacturer->cSeo;
                 $instance                     = new Hersteller();
                 $manufacturer                 = $instance->loadFromObject($manufacturer);
             }

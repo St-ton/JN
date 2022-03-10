@@ -54,7 +54,8 @@ if (Download::hasDownloads($cart)) {
     $conf['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
 }
 // oneClick? Darf nur einmal ausgeführt werden und nur dann, wenn man vom Warenkorb kommt.
-if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
+if (!isset($_SESSION['Lieferadresse'])
+    && $conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
     && Request::verifyGPCDataInt('wk') === 1
 ) {
     $customerID = Frontend::getCustomer()->getID();

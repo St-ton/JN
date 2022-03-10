@@ -5,6 +5,7 @@ namespace JTL\License;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
+use JsonException;
 use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
@@ -102,13 +103,18 @@ class Manager
         if ($this->token === '') {
             throw new AuthException(\__('Invalid token.'));
         }
+        try {
+            $body = \json_encode((object)['domain' => $this->domain], \JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            return '';
+        }
         $res = $this->client->request(
             'POST',
             $url,
             [
                 'headers' => $this->getHeaders(),
                 'verify'  => true,
-                'body'    => \json_encode((object)['domain' => $this->domain])
+                'body'    => $body
             ]
         );
 
@@ -127,13 +133,18 @@ class Manager
         if ($this->token === '') {
             throw new AuthException(\__('Invalid token.'));
         }
+        try {
+            $body = \json_encode((object)['domain' => $this->domain], \JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            return '';
+        }
         $res = $this->client->request(
             'POST',
             $url,
             [
                 'headers' => $this->getHeaders(),
                 'verify'  => true,
-                'body'    => \json_encode((object)['domain' => $this->domain])
+                'body'    => $body
             ]
         );
 
@@ -152,13 +163,18 @@ class Manager
         if ($this->token === '') {
             throw new AuthException(\__('Invalid token.'));
         }
+        try {
+            $body = \json_encode((object)['domain' => $this->domain], \JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            return '';
+        }
         $res = $this->client->request(
             'GET',
             $url,
             [
                 'headers' => $this->getHeaders(),
                 'verify'  => true,
-                'body'    => \json_encode((object)['domain' => $this->domain])
+                'body'    => $body
             ]
         );
 
@@ -179,23 +195,28 @@ class Manager
         if ($this->token === '') {
             throw new AuthException(\__('Invalid token.'));
         }
+        try {
+            $body = \json_encode((object)[
+                'exsid'         => $exsID,
+                'reference'     => (object)[
+                    'license' => $key,
+                    'domain'  => $this->domain
+                ],
+                'redirect_urls' => (object)[
+                    'return_url' => Shop::getAdminURL() . '/licenses.php?extend=success',
+                    'cancel_url' => Shop::getAdminURL() . '/licenses.php?extend=fail'
+                ],
+            ], \JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            return '';
+        }
         $res = $this->client->request(
             'POST',
             $url,
             [
                 'headers' => $this->getHeaders(),
                 'verify'  => true,
-                'body'    => \json_encode((object)[
-                    'exsid'         => $exsID,
-                    'reference'     => (object)[
-                        'license' => $key,
-                        'domain'  => $this->domain
-                    ],
-                    'redirect_urls' => (object)[
-                        'return_url' => Shop::getAdminURL() . '/licenses.php?extend=success',
-                        'cancel_url' => Shop::getAdminURL() . '/licenses.php?extend=fail'
-                    ],
-                ])
+                'body'    => $body
             ]
         );
 
@@ -217,29 +238,36 @@ class Manager
         if ($this->token === '') {
             throw new AuthException(\__('Invalid token.'));
         }
+        try {
+            $body = \json_encode((object)['shop' => [
+                'domain'  => $this->domain,
+                'version' => \APPLICATION_VERSION,
+            ], 'extensions'                      => $installedExtensions], \JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            return 0;
+        }
         $res = $this->client->request(
             'POST',
             \EXS_LIVE === true ? self::API_LIVE_URL : self::API_DEV_URL,
             [
                 'headers' => $this->getHeaders(),
                 'verify'  => true,
-                'body'    => \json_encode((object)['shop' => [
-                    'domain'    => $this->domain,
-                    'version'   => \APPLICATION_VERSION,
-                ], 'extensions' => $installedExtensions])
+                'body'    => $body
             ]
         );
         $this->housekeeping();
         $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
 
-        $owner       = $this->getTokenOwner();
-        $data        = \json_decode((string)$res->getBody());
-        $data->owner = isset($owner->given_name, $owner->family_name) ? $owner : null;
+        $owner = $this->getTokenOwner();
+        try {
+            $data        = \json_decode((string)$res->getBody(), false, 512, \JSON_THROW_ON_ERROR);
+            $data->owner = isset($owner->given_name, $owner->family_name) ? $owner : null;
+            $data        = \json_encode($data, \JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            $data = '';
+        }
 
-        return $this->db->insert(
-            'licenses',
-            (object)['data' => \json_encode($data), 'returnCode' => $res->getStatusCode()]
-        );
+        return $this->db->insert('licenses', (object)['data' => $data, 'returnCode' => $res->getStatusCode()]);
     }
 
     /**
@@ -260,7 +288,11 @@ class Manager
             ]
         );
 
-        return \json_decode($res->getBody()->getContents());
+        try {
+            return \json_decode($res->getBody()->getContents(), false, 512, \JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            return new stdClass();
+        }
     }
 
     /**
@@ -277,9 +309,13 @@ class Manager
         if ($data === null) {
             return null;
         }
-        $obj             = \json_decode($data->data, false);
-        $obj->timestamp  = $data->timestamp;
-        $obj->returnCode = $data->returnCode;
+        try {
+            $obj             = \json_decode($data->data ?? '', false, 512, \JSON_THROW_ON_ERROR);
+            $obj->timestamp  = $data->timestamp;
+            $obj->returnCode = $data->returnCode;
+        } catch (JsonException $e) {
+            $obj = null;
+        }
 
         return $obj === null || !isset($obj->extensions) ? null : $obj;
     }

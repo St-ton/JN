@@ -26,7 +26,7 @@ if (isset($_POST['mail']) && Form::validateToken()) {
                     'successPasswordChange',
                     ['saveInSession' => true]
                 );
-                header('Location: index.php?pw_updated=true');
+                header('Location: ' . Shop::getAdminURL() . '/index.php?pw_updated=true');
             } else {
                 $alertService->addError(__('errorPasswordChange'), 'errorPasswordChange');
             }

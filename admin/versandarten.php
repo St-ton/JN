@@ -31,7 +31,7 @@ $shippingMethod  = null;
 $taxRateKeys     = array_keys($_SESSION['Steuersatz']);
 $alertHelper     = Shop::Container()->getAlertService();
 $countryHelper   = Shop::Container()->getCountryService();
-$languages       = LanguageHelper::getAllLanguages(0, true);
+$languages       = LanguageHelper::getInstance()->gibInstallierteSprachen();
 $getText         = Shop::Container()->getGetText();
 $cache           = Shop::Container()->getCache();
 $postData        = Text::filterXSS($_POST);
@@ -210,9 +210,9 @@ if (Form::validateToken()) {
             }
         }
         // Versandklassen
-        $shippingMethod->cVersandklassen = ((!empty($postData['kVersandklasse']) && $postData['kVersandklasse'] !== '-1')
-            ? ' ' . $postData['kVersandklasse'] . ' '
-            : '-1');
+        $shippingMethod->cVersandklassen = !empty($postData['kVersandklasse']) && $postData['kVersandklasse'] !== '-1'
+            ? (' ' . $postData['kVersandklasse'] . ' ')
+            : '-1';
 
         if (count($postCountries) >= 1
             && count($postData['kZahlungsart'] ?? []) >= 1
@@ -264,7 +264,7 @@ if (Form::validateToken()) {
 
                     $versandSprache->cISOSprache = $code;
                     $versandSprache->cName       = $shippingMethod->cName;
-                    if ($postData['cName_' . $code]) {
+                    if (!empty($postData['cName_' . $code])) {
                         $versandSprache->cName = htmlspecialchars(
                             $postData['cName_' . $code],
                             ENT_COMPAT | ENT_HTML401,
@@ -273,6 +273,9 @@ if (Form::validateToken()) {
                     }
                     $versandSprache->cLieferdauer = '';
                     if ($postData['cLieferdauer_' . $code]) {
+                        echo 'yes.';
+                    }
+                    if (!empty($postData['cLieferdauer_' . $code])) {
                         $versandSprache->cLieferdauer = htmlspecialchars(
                             $postData['cLieferdauer_' . $code],
                             ENT_COMPAT | ENT_HTML401,
@@ -280,11 +283,11 @@ if (Form::validateToken()) {
                         );
                     }
                     $versandSprache->cHinweistext = '';
-                    if ($postData['cHinweistext_' . $code]) {
+                    if (!empty($postData['cHinweistext_' . $code])) {
                         $versandSprache->cHinweistext = $postData['cHinweistext_' . $code];
                     }
                     $versandSprache->cHinweistextShop = '';
-                    if ($postData['cHinweistextShop_' . $code]) {
+                    if (!empty($postData['cHinweistextShop_' . $code])) {
                         $versandSprache->cHinweistextShop = $postData['cHinweistextShop_' . $code];
                     }
                     $db->delete('tversandartsprache', ['kVersandart', 'cISOSprache'], [$methodID, $code]);

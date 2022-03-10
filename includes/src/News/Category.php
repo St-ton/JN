@@ -23,7 +23,7 @@ class Category implements CategoryInterface
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'dLetzteAktualisierung_de' => 'DateLastModified',
         'nSort'                    => 'Sort',
         'nAktiv'                   => 'IsActive',
@@ -36,97 +36,97 @@ class Category implements CategoryInterface
     /**
      * @var int
      */
-    protected $id = -1;
+    protected int $id = -1;
 
     /**
      * @var int
      */
-    protected $parentID = 0;
+    protected int $parentID = 0;
 
     /**
      * @var int
      */
-    protected $lft = 0;
+    protected int $lft = 0;
 
     /**
      * @var int
      */
-    protected $rght = 0;
+    protected int $rght = 0;
 
     /**
      * @var int
      */
-    protected $level = 1;
+    protected int $level = 1;
 
     /**
      * @var int[]
      */
-    protected $languageIDs = [];
+    protected array $languageIDs = [];
 
     /**
      * @var string[]
      */
-    protected $languageCodes = [];
+    protected array $languageCodes = [];
 
     /**
      * @var string[]
      */
-    protected $names = [];
+    protected array $names = [];
 
     /**
      * @var array
      */
-    protected $seo = [];
+    protected array $seo = [];
 
     /**
      * @var string[]
      */
-    protected $descriptions = [];
+    protected array $descriptions = [];
 
     /**
      * @var string[]
      */
-    protected $metaTitles = [];
+    protected array $metaTitles = [];
 
     /**
      * @var string[]
      */
-    protected $metaKeywords = [];
+    protected array $metaKeywords = [];
 
     /**
      * @var string[]
      */
-    protected $metaDescriptions = [];
+    protected array $metaDescriptions = [];
 
     /**
      * @var string[]
      */
-    protected $previewImages = [];
+    protected array $previewImages = [];
 
     /**
      * @var string[]
      */
-    protected $urls = [];
+    protected array $urls = [];
 
     /**
      * @var int
      */
-    protected $sort = 0;
+    protected int $sort = 0;
 
     /**
      * @var bool
      */
-    protected $isActive = true;
+    protected bool $isActive = true;
 
     /**
      * @var DateTime
      */
-    protected $dateLastModified;
+    protected DateTime $dateLastModified;
 
     /**
      * @var Collection
      */
-    protected $children;
+    protected Collection $children;
 
     /**
      * @var Collection|ItemListInterface
@@ -136,7 +136,7 @@ class Category implements CategoryInterface
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * Category constructor.

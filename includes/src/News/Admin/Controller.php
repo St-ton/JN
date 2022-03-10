@@ -41,42 +41,42 @@ final class Controller
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLSmarty
      */
-    private $smarty;
+    private JTLSmarty $smarty;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var string
      */
-    private $step = 'news_uebersicht';
+    private string $step = 'news_uebersicht';
 
     /**
      * @var int
      */
-    private $continueWith = 0;
+    private int $continueWith = 0;
 
     /**
      * @var string
      */
-    private $msg = '';
+    private string $msg = '';
 
     /**
      * @var string
      */
-    private $errorMsg = '';
+    private string $errorMsg = '';
 
     /**
      * @var bool
      */
-    private $allEmpty = false;
+    private bool $allEmpty = false;
 
     /**
      * Controller constructor.
@@ -116,7 +116,7 @@ final class Controller
         $previewImage    = $_FILES['previewImage']['name'] ?? '';
         $authorID        = (int)($post['kAuthor'] ?? 0);
         $validation      = $this->pruefeNewsPost($customerGroups, $newsCategoryIDs, $post, $languages);
-        if (\is_array($validation) && \count($validation) === 0) {
+        if (\count($validation) === 0) {
             $newsItem                = new stdClass();
             $newsItem->cKundengruppe = ';' . \implode(';', $customerGroups) . ';';
             $newsItem->nAktiv        = $active;
@@ -166,7 +166,7 @@ final class Controller
                 $seoData->cKey     = 'kNews';
                 $seoData->kKey     = $newsItemID;
                 $seoData->kSprache = $langID;
-                $seoData->cSeo     = Seo::checkSeo(Seo::getSeo($this->getSeo($post, $languages, $iso)));
+                $seoData->cSeo     = Seo::checkSeo($this->getSeo($post, $languages, $iso));
                 $this->db->insert('tnewssprache', $loc);
                 $this->db->insert('tseo', $seoData);
 
@@ -237,7 +237,7 @@ final class Controller
             }
 
             $oldImages = $this->getNewsImages($newsItemID, self::UPLOAD_DIR, false);
-            $this->addImages($oldImages, $newsItemID);
+            $this->addImages($newsItemID);
             if ($previewImage !== '') {
                 $upd                = new stdClass();
                 $upd->cPreviewImage = $this->addPreviewImage($oldImages, $newsItemID);
@@ -261,7 +261,7 @@ final class Controller
                 $this->newsRedirect(empty($tab) ? 'aktiv' : $tab, $this->getMsg());
             }
         } else {
-            $newsItem   = new Item($this->db);
+            $newsItem   = new Item($this->db, $this->cache);
             $this->step = 'news_editieren';
             $this->smarty->assign('cPostVar_arr', $post)
                 ->assign('cPlausiValue_arr', $validation)
@@ -287,15 +287,13 @@ final class Controller
      */
     public function saveComment(int $id, array $post): bool
     {
-        if ($id > 0) {
-            $upd             = new stdClass();
-            $upd->cName      = $post['cName'];
-            $upd->cKommentar = $post['cKommentar'];
-            $this->flushCache();
-            return $this->db->update('tnewskommentar', 'kNewsKommentar', $id, $upd) >= 0;
+        if ($id < 1) {
+            return $this->insertComment($post);
         }
+        $upd = (object)['cName' => $post['cName'], 'cKommentar' => $post['cKommentar']];
+        $this->flushCache();
 
-        return $this->insertComment($post);
+        return $this->db->update('tnewskommentar', 'kNewsKommentar', $id, $upd) >= 0;
     }
 
     /**
@@ -304,7 +302,6 @@ final class Controller
      */
     public function insertComment(array $post): bool
     {
-        $adminID                 = (int)$_SESSION['AdminAccount']->kAdminlogin;
         $insert                  = new stdClass();
         $insert->kNews           = $post['kNews'];
         $insert->cKommentar      = $post['cKommentar'];
@@ -312,13 +309,26 @@ final class Controller
         $insert->nAktiv          = $post['nAktiv'] ?? 1;
         $insert->cName           = $post['cName'] ?? 'Admin';
         $insert->cEmail          = $post['cEmail'] ?? '';
-        $insert->isAdmin         = $post['isAdmin'] ?? $adminID ?? 0;
+        $insert->isAdmin         = $post['isAdmin'] ?? (int)($_SESSION['AdminAccount']->kAdminlogin ?? 0);
         $insert->parentCommentID = $post['parentCommentID'] ?? 0;
         $insert->dErstellt       = 'NOW()';
         $this->flushCache();
 
         return $this->db->insert('tnewskommentar', $insert) >= 0;
     }
+
+    /**
+     * @param int[] $commentIDs
+     */
+    public function activateComments(array $commentIDs): void
+    {
+        foreach ($commentIDs as $id) {
+            $this->db->update('tnewskommentar', 'kNewsKommentar', $id, (object)['nAktiv' => 1]);
+        }
+        $this->setMsg(\__('successNewsCommentUnlock'));
+        $this->flushCache();
+    }
+
 
     /**
      * @param array         $newsItems
@@ -435,23 +445,23 @@ final class Controller
         if ($iso !== null) {
             $idx = 'cSeo_' . $iso;
             if (!empty($post[$idx])) {
-                return $post[$idx];
+                return Seo::getSeo($post[$idx], true);
             }
             $idx = 'cName_' . $iso;
             if (!empty($post[$idx])) {
-                return $post[$idx];
+                return Seo::getSeo($post[$idx]);
             }
         }
         foreach ($languages as $language) {
             $idx = 'cSeo_' . $language->getCode();
             if (!empty($post[$idx])) {
-                return $post[$idx];
+                return Seo::getSeo($post[$idx]);
             }
         }
         foreach ($languages as $language) {
             $idx = 'cName_' . $language->getCode();
             if (!empty($post[$idx])) {
-                return $post[$idx];
+                return Seo::getSeo($post[$idx]);
             }
         }
 
@@ -508,7 +518,7 @@ final class Controller
             $seoData->cKey     = 'kNewsKategorie';
             $seoData->kKey     = $categoryID;
             $seoData->kSprache = $loc->languageID;
-            $seoData->cSeo     = Seo::checkSeo(Seo::getSeo($seo));
+            $seoData->cSeo     = Seo::checkSeo($seo);
             if (empty($seoData->cSeo)) {
                 continue;
             }
@@ -604,11 +614,10 @@ final class Controller
     }
 
     /**
-     * @param array $oldImages
-     * @param int   $newsItemID
+     * @param int $newsItemID
      * @return int
      */
-    private function addImages(array $oldImages, int $newsItemID): int
+    private function addImages(int $newsItemID): int
     {
         if (empty($_FILES['Bilder']['name']) || \count($_FILES['Bilder']['name']) === 0) {
             return 0;
@@ -638,9 +647,9 @@ final class Controller
     }
 
     /**
-     * @param array|null $customerGroups
-     * @param array|null $categories
-     * @param array|null $post
+     * @param array|null           $customerGroups
+     * @param array|null           $categories
+     * @param array|null           $post
      * @param LanguageModel[]|null $languages
      * @return array
      */
@@ -902,9 +911,8 @@ final class Controller
             }
         }
 
-        \header('Location: news.php' . (\is_array($urlParams)
-                ? '?' . \http_build_query($urlParams, '', '&')
-                : ''));
+        \header('Location: ' . Shop::getAdminURL() . '/news.php'
+            . (\is_array($urlParams) ? '?' . \http_build_query($urlParams) : ''));
         exit;
     }
 

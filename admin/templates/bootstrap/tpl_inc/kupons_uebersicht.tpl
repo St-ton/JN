@@ -19,7 +19,6 @@
                             <thead>
                                 <tr>
                                     <th title="{__('active')}"></th>
-                                    <th></th>
                                     <th>{__('name')} {call sortControls pagination=$pagination nSortBy=0}</th>
                                     {if $cKuponTyp === $couponTypes.standard || $cKuponTyp === $couponTypes.newCustomer}<th>{__('value')}</th>{/if}
                                     {if $cKuponTyp === $couponTypes.standard || $cKuponTyp === $couponTypes.shipping}
@@ -29,13 +28,13 @@
                                     <th class="text-center">{__('curmaxusage')} {call sortControls pagination=$pagination nSortBy=2}</th>
                                     <th>{__('restrictions')}</th>
                                     <th>{__('validityPeriod')}</th>
+                                    <th>{__('valid')}</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {foreach $oKupon_arr as $oKupon}
                                     <tr{if $oKupon->cAktiv === 'N'} class="text-danger"{/if}>
-                                        <td>{if $oKupon->cAktiv === 'N'}<i class="fal fa-times"></i>{/if}</td>
                                         <td>
                                             <div class="custom-control custom-checkbox">
                                                 <input class="custom-control-input" type="checkbox" name="kKupon_arr[]" id="kupon-{$oKupon->kKupon}" value="{$oKupon->kKupon}">
@@ -92,6 +91,11 @@
                                             {__('from')}: {$oKupon->cGueltigAbShort}<br>
                                             {__('to')}: {$oKupon->cGueltigBisShort}
                                         </td>
+                                        <td>{if $oKupon->cAktiv === 'N'}
+                                                <i class="fal fa-times"></i>
+                                            {else}
+                                                <i class="fal fa-check"></i>
+                                            {/if}</td>
                                         <td>
                                             <div class="btn-group">
                                                 <a href="{$adminURL}/kupons.php?kKupon={$oKupon->kKupon}&token={$smarty.session.jtl_token}"

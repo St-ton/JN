@@ -2161,3 +2161,6 @@ msgstr "Cannot open archive"
 
 msgid "pluginInstallInvalidArchive"
 msgstr "Invalid archive"
+
+msgid "No input file provided."
+msgstr "No input file provided."

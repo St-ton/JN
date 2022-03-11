@@ -393,7 +393,7 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
             }
             break;
         case KAMPAGNE_DEF_VERKAUF:    // VERKAUF
-            $data = Shop::Container()->getDB()->getObjects(
+            $data     = Shop::Container()->getDB()->getObjects(
                 'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                     $select . ",
                     DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
@@ -423,8 +423,8 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                     ORDER BY tkampagnevorgang.dErstellt DESC',
                 ['cid' => $campaignID, 'cdid' => $defID]
             );
-
-            $dCount = count($data);
+            $currency = Frontend::getCurrency();
+            $dCount   = count($data);
             if ($dCount > 0) {
                 for ($i = 0; $i < $dCount; $i++) {
                     if ($data[$i]->cNachname !== 'n.v.') {
@@ -439,7 +439,7 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                             : __('no');
                     }
                     if ($data[$i]->fGesamtsumme !== 'n.v.') {
-                        $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme);
+                        $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme, $currency);
                     }
                     if ($data[$i]->cStatus !== 'n.v.') {
                         $data[$i]->cStatus = lang_bestellstatus($data[$i]->cStatus);
@@ -508,7 +508,7 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
             }
             break;
         case KAMPAGNE_DEF_VERKAUFSSUMME:    // VERKAUFSSUMME
-            $data   = Shop::Container()->getDB()->getObjects(
+            $data     = Shop::Container()->getDB()->getObjects(
                 'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                     $select . ",
                     DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
@@ -535,7 +535,8 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                     ORDER BY tkampagnevorgang.dErstellt DESC',
                 ['cid' => $campaignID, 'cdid' => $defID]
             );
-            $dCount = count($data);
+            $dCount   = count($data);
+            $currency = Frontend::getCurrency();
             if ($dCount > 0) {
                 for ($i = 0; $i < $dCount; $i++) {
                     if ($data[$i]->cNachname !== 'n.v.') {
@@ -550,7 +551,7 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                             : __('no');
                     }
                     if ($data[$i]->fGesamtsumme !== 'n.v.') {
-                        $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme);
+                        $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme, $currency);
                     }
                     if ($data[$i]->cStatus !== 'n.v.') {
                         $data[$i]->cStatus = lang_bestellstatus($data[$i]->cStatus);
@@ -776,8 +777,8 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
             break;
         case KAMPAGNE_DEF_WARENKORB:    // WARENKORB
             $customerGroupID = CustomerGroup::getDefaultGroupID();
-
-            $data = Shop::Container()->getDB()->getObjects(
+            $currency        = Frontend::getCurrency();
+            $data            = Shop::Container()->getDB()->getObjects(
                 'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                 $select . ",
                     DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
@@ -800,13 +801,12 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                     ORDER BY tkampagnevorgang.dErstellt DESC',
                 ['cid' => $campaignID, 'cdid' => $defID, 'cgid' => $customerGroupID]
             );
-
-            $count = count($data);
+            $count           = count($data);
             if ($count > 0) {
                 Frontend::getCustomerGroup()->setMayViewPrices(1);
                 for ($i = 0; $i < $count; $i++) {
                     if (isset($data[$i]->fVKNetto) && $data[$i]->fVKNetto > 0) {
-                        $data[$i]->fVKNetto = Preise::getLocalizedPriceString($data[$i]->fVKNetto);
+                        $data[$i]->fVKNetto = Preise::getLocalizedPriceString($data[$i]->fVKNetto, $currency);
                     }
                     if (isset($data[$i]->fMwSt) && $data[$i]->fMwSt > 0) {
                         $data[$i]->fMwSt = number_format($data[$i]->fMwSt, 2) . '%';

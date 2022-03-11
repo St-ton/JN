@@ -53,7 +53,7 @@ class KategorieListe
             $this->getAllCategoriesOnLevel(0, $customerGroupID, $languageID);
         }
         foreach ($this->getChildCategories($categoryID, $customerGroupID, $languageID) as $category) {
-            $category->bAktiv          = (Shop::$kKategorie > 0 && (int)$category->kKategorie === (int)Shop::$kKategorie);
+            $category->bAktiv          = (Shop::$kKategorie > 0 && $category->kKategorie === Shop::$kKategorie);
             $category->Unterkategorien = [];
             if ($showLevel2 === 'Y') {
                 $category->Unterkategorien = $this->getChildCategories(
@@ -171,7 +171,9 @@ class KategorieListe
         // ist nicht im cache, muss holen
         $db                                                            = Shop::Container()->getDB();
         $defaultLanguageActive                                         = LanguageHelper::isDefaultLanguageActive();
-        $orderByName                                                   = $defaultLanguageActive ? '' : 'tkategoriesprache.cName, ';
+        $orderByName                                                   = $defaultLanguageActive
+            ? ''
+            : 'tkategoriesprache.cName, ';
         $categories                                                    = $db->getObjects(
             'SELECT tkategorie.kKategorie
                 FROM tkategorie

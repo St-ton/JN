@@ -1582,7 +1582,7 @@ final class Shop
         } elseif (self::$vergleichsliste > 0) {
             self::$fileName = 'vergleichsliste.php';
             self::setPageType(\PAGE_VERGLEICHSLISTE);
-        } elseif (self::$kNews > 0 || self::$kNewsMonatsUebersicht > 0 || self::$kNewsKategorie >= 0) {
+        } elseif (self::$kNews > 0 || self::$kNewsMonatsUebersicht > 0 || self::$kNewsKategorie > 0) {
             self::$fileName = 'news.php';
             self::setPageType(\PAGE_NEWS);
         } elseif (!empty(self::$cSuche)) {

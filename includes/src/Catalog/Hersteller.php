@@ -247,12 +247,15 @@ class Hersteller
 
     /**
      * @param bool $productLookup
+     * @param int  $languageID
+     * @param int  $customerGroupID
      * @return self[]
      */
-    public static function getAll(bool $productLookup = true): array
+    public static function getAll(bool $productLookup = true, int $languageID = 0, int $customerGroupID = 0): array
     {
-        $languageID = Shop::getLanguageID();
-        $sql        = new SqlObject();
+        $customerGroupID = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
+        $languageID      = $languageID ?: Shop::getLanguageID();
+        $sql             = new SqlObject();
         $sql->setWhere('thersteller.nAktiv = 1');
         $sql->addParam(':lid', $languageID);
         if ($productLookup) {
@@ -265,7 +268,7 @@ class Hersteller
                                 SELECT 1 FROM tartikelsichtbarkeit
                                 WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                                     AND tartikelsichtbarkeit.kKundengruppe = :cgid))');
-            $sql->addParam(':cgid', Frontend::getCustomerGroup()->getID());
+            $sql->addParam(':cgid', $customerGroupID);
         }
 
         return Shop::Container()->getDB()->getCollection(

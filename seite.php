@@ -24,6 +24,8 @@ $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
 $cache       = Shop::Container()->getCache();
 $link        = null;
+$languageID  = Shop::getLanguageID();
+$cgroupID    = Frontend::getCustomerGroup()->getID();
 if (Shop::$isInitialized === true) {
     $kLink = Shop::$kLink;
     $link  = $linkHelper->getLinkByID($kLink);
@@ -46,17 +48,11 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y'
             ? CMS::getHomeNews($conf)
             : []);
-    Wizard::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguageID(), $smarty);
+    Wizard::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, $languageID, $smarty);
 } elseif ($link->getLinkType() === LINKTYP_AGB) {
-    $smarty->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
-        Shop::getLanguageID(),
-        Frontend::getCustomerGroup()->getID()
-    ));
+    $smarty->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB($languageID, $cgroupID));
 } elseif (in_array($link->getLinkType(), [LINKTYP_WRB, LINKTYP_WRB_FORMULAR, LINKTYP_DATENSCHUTZ], true)) {
-    $smarty->assign('WRB', Shop::Container()->getLinkService()->getAGBWRB(
-        Shop::getLanguageID(),
-        Frontend::getCustomerGroup()->getID()
-    ));
+    $smarty->assign('WRB', Shop::Container()->getLinkService()->getAGBWRB($languageID, $cgroupID));
 } elseif ($link->getLinkType() === LINKTYP_VERSAND) {
     $error = '';
     if (isset($_POST['land'], $_POST['plz'])
@@ -71,7 +67,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     if ($error !== '') {
         $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'shippingCostError');
     }
-    $smarty->assign('laender', ShippingMethod::getPossibleShippingCountries(Frontend::getCustomerGroup()->getID()));
+    $smarty->assign('laender', ShippingMethod::getPossibleShippingCountries($cgroupID));
 } elseif ($link->getLinkType() === LINKTYP_LIVESUCHE) {
     $liveSearchTop  = CMS::getLiveSearchTop($conf);
     $liveSearchLast = CMS::getLiveSearchLast($conf);
@@ -81,7 +77,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     $smarty->assign('LivesucheTop', $liveSearchTop)
         ->assign('LivesucheLast', $liveSearchLast);
 } elseif ($link->getLinkType() === LINKTYP_HERSTELLER) {
-    $smarty->assign('oHersteller_arr', Hersteller::getAll());
+    $smarty->assign('oHersteller_arr', Hersteller::getAll(true, $languageID, $cgroupID));
 } elseif ($link->getLinkType() === LINKTYP_NEWSLETTERARCHIV) {
     $smarty->assign('oNewsletterHistory_arr', CMS::getNewsletterHistory());
 } elseif ($link->getLinkType() === LINKTYP_SITEMAP) {
@@ -110,7 +106,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     Wizard::startIfRequired(
         AUSWAHLASSISTENT_ORT_LINK,
         $link->getID(),
-        Shop::getLanguageID(),
+        $languageID,
         $smarty
     );
 }

@@ -1129,12 +1129,13 @@ class Wishlist
             return $wishList;
         }
         $currency = Frontend::getCurrency();
+        $merchant = Frontend::getCustomerGroup()->isMerchant();
         foreach ($wishList->getItems() as $item) {
             $product = $item->getProduct();
             if ($product === null) {
                 continue;
             }
-            if (Frontend::getCustomerGroup()->isMerchant()) {
+            if ($merchant) {
                 $price = isset($product->Preise->fVKNetto)
                     ? (int)$item->getQty() * $product->Preise->fVKNetto
                     : 0;

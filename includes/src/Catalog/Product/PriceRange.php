@@ -74,13 +74,10 @@ class PriceRange
      */
     public function __construct(int $productID, int $customerGroupID = 0, int $customerID = 0, ?DbInterface $db = null)
     {
-        $db = $db ?? Shop::Container()->getDB();
-        if ($customerGroupID === 0) {
-            $customerGroupID = Frontend::getCustomerGroup()->getID();
-        }
-        if ($customerID === 0) {
-            $customerID = Frontend::getCustomer()->getID();
-        }
+        $db              = $db ?? Shop::Container()->getDB();
+        $customerGroupID = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
+        $customerID      = $customerID ?: Frontend::getCustomer()->getID();
+
         $this->productData     = (object)[
             'kArtikel'      => 0,
             'kSteuerklasse' => 0,

@@ -219,8 +219,11 @@ abstract class AbstractSync
             'subscriptions' => &$subscriptions,
         ]);
         $subCount = \count($subscriptions);
-        $noStock  = ($product->fLagerbestand <= 0 || ($product->fLagerbestand / $subCount) < $stockRatio);
-        if ($sendMails === false || $subCount === 0 || ($stockRelevance && $noStock)) {
+        if ($subCount === 0) {
+            return;
+        }
+        $noStock = ($product->fLagerbestand <= 0 || ($product->fLagerbestand / $subCount) < $stockRatio);
+        if ($sendMails === false || ($stockRelevance && $noStock)) {
             return;
         }
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';

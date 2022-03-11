@@ -254,7 +254,7 @@ class Sitemap
     public function getManufacturers(): array
     {
         return $this->conf['sitemap']['sitemap_hersteller_anzeigen'] === 'Y'
-            ? Hersteller::getAll()
+            ? Hersteller::getAll(true, $this->langID, $this->customerGroupID)
             : [];
     }
 }

@@ -20,7 +20,6 @@ if (isset($_FILES['csv']['tmp_name'])
     $importer = new Import(Shop::Container()->getDB());
     $importer->setCustomerGroupID(Request::postInt('kKundengruppe'));
     $importer->setLanguageID(Request::postInt('kSprache'));
-    $importer->setGeneratePasswords(Request::postInt('PasswortGenerieren') === 1);
     $result = $importer->processFile($_FILES['csv']['tmp_name']);
     $notice = '';
     foreach ($result as $item) {

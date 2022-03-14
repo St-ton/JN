@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Shop;
 use JTL\Reset\Reset;
 use JTL\Reset\ResetContentType;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
@@ -23,9 +22,9 @@ if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
         }
         Shop::Container()->getCache()->flushAll();
         $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successShopReturn'), 'successShopReturn');
+        $alertHelper->addSuccess(__('successShopReturn'), 'successShopReturn');
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorChooseOption'), 'errorChooseOption');
+        $alertHelper->addError(__('errorChooseOption'), 'errorChooseOption');
     }
 
     executeHook(HOOK_BACKEND_SHOP_RESET_AFTER);

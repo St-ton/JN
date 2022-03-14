@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Checkout\Bestellung;
 use JTL\Customer\Customer;
 use JTL\Helpers\Form;
@@ -30,8 +29,7 @@ if (!empty($uid)) {
         ]
     );
     if (empty($status->kBestellung)) {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_DANGER,
+        Shop::Container()->getAlertService()->addDanger(
             Shop::Lang()->get('statusOrderNotFound', 'errorMessages'),
             'statusOrderNotFound',
             ['saveInSession' => true]
@@ -47,8 +45,7 @@ if (!empty($uid)) {
             $plzValid = true;
         } elseif (!empty($_POST['plz'])) {
             $db->update('tbestellstatus', 'cUID', $uid, (object)['failedAttempts' => (int)$status->failedAttempts + 1]);
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_DANGER,
+            Shop::Container()->getAlertService()->addDanger(
                 Shop::Lang()->get('incorrectLogin'),
                 'statusOrderincorrectLogin'
             );
@@ -69,8 +66,7 @@ if (!empty($uid)) {
             ->assign('incommingPayments', $order->getIncommingPayments());
     }
 } else {
-    Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_DANGER,
+    Shop::Container()->getAlertService()->addDanger(
         Shop::Lang()->get('uidNotFound', 'errorMessages'),
         'wrongUID',
         ['saveInSession' => true]

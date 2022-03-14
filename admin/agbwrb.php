@@ -1,6 +1,5 @@
 <?php
 
-use JTL\Alert\Alert;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -33,7 +32,7 @@ if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
             $smarty->assign('kKundengruppe', Request::verifyGPCDataInt('kKundengruppe'))
                 ->assign('oAGBWRB', $oAGBWRB);
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorInvalidCustomerGroup'), 'errorInvalidCustomerGroup');
+            $alertHelper->addError(__('errorInvalidCustomerGroup'), 'errorInvalidCustomerGroup');
         }
     } elseif (Request::verifyGPCDataInt('agbwrb_editieren_speichern') === 1) {
         if (speicherAGBWRB(
@@ -42,9 +41,9 @@ if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
             $_POST,
             Request::verifyGPCDataInt('kText')
         )) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSave'), 'agbWrbSuccessSave');
+            $alertHelper->addSuccess(__('successSave'), 'agbWrbSuccessSave');
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSave'), 'agbWrbErrorSave');
+            $alertHelper->addError(__('errorSave'), 'agbWrbErrorSave');
         }
     }
 }

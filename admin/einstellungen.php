@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\Search;
 use JTL\Backend\Settings\SectionFactory;
@@ -97,7 +96,7 @@ if (Request::postVar('resetSetting') !== null) {
         $sectionInstance->update($_POST);
     }
     $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
+    $alertHelper->addSuccess(__('successConfigSave'), 'successConfigSave');
     $tagsToFlush = [CACHING_GROUP_OPTION];
     if ($sectionID === 1 || $sectionID === 4 || $sectionID === 5) {
         $tagsToFlush[] = CACHING_GROUP_CORE;

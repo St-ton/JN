@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Checkout\Kupon;
 use JTL\CSV\Export;
 use JTL\CSV\Import;
@@ -105,10 +104,10 @@ if (Form::validateToken()) {
         $errorCount = $import->getErrorCount();
         if ($errorCount > 0) {
             foreach ($import->getErrors() as $key => $error) {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'errorImportCSV_' . $key);
+                $alertHelper->addError($error, 'errorImportCSV_' . $key);
             }
         } else {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImportCSV'), 'successImportCSV');
+            $alertHelper->addSuccess(__('successImportCSV'), 'successImportCSV');
         }
     }
     if (isset($_POST['action'])) {
@@ -142,7 +141,7 @@ if ($action === 'bearbeiten') {
 
         $errorMessage .= '</ul>';
         $action        = 'bearbeiten';
-        $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMessage, 'errorCheckInput');
+        $alertHelper->addError($errorMessage, 'errorCheckInput');
         $coupon->augment();
     } elseif (saveCoupon($coupon, $languages) > 0) {// Validierung erfolgreich => Kupon speichern
         // erfolgreich gespeichert => evtl. Emails versenden
@@ -153,21 +152,21 @@ if ($action === 'bearbeiten') {
         ) {
             informCouponCustomers($coupon);
         }
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCouponSave'), 'successCouponSave');
+        $alertHelper->addSuccess(__('successCouponSave'), 'successCouponSave');
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCouponSave'), 'errorCouponSave');
+        $alertHelper->addError(__('errorCouponSave'), 'errorCouponSave');
     }
 } elseif ($action === 'loeschen') {
     // Kupons loeschen
     if (GeneralObject::hasCount('kKupon_arr', $_POST)) {
         $couponIDs = array_map('\intval', $_POST['kKupon_arr']);
         if (loescheKupons($couponIDs)) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCouponDelete'), 'successCouponDelete');
+            $alertHelper->addSuccess(__('successCouponDelete'), 'successCouponDelete');
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCouponDelete'), 'errorCouponDelete');
+            $alertHelper->addError(__('errorCouponDelete'), 'errorCouponDelete');
         }
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneCoupon'), 'errorAtLeastOneCoupon');
+        $alertHelper->addError(__('errorAtLeastOneCoupon'), 'errorAtLeastOneCoupon');
     }
 }
 if ($action === 'bearbeiten') {

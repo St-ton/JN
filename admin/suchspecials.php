@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
@@ -44,8 +43,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $bestSellerSeo = Seo::checkSeo(Seo::getSeo($bestSellerSeo, true));
 
         if ($bestSellerSeo !== $postData['bestseller']) {
-            $alertService->addAlert(
-                Alert::TYPE_NOTE,
+            $alertService->addNotice(
                 sprintf(
                     __('errorBestsellerExistRename'),
                     $postData['bestseller'],
@@ -71,8 +69,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $specialOffersSeo = Seo::checkSeo(Seo::getSeo($specialOffersSeo, true));
 
         if ($specialOffersSeo !== $postData['sonderangebote']) {
-            $alertService->addAlert(
-                Alert::TYPE_NOTE,
+            $alertService->addNotice(
                 sprintf(
                     __('errorSpecialExistRename'),
                     $postData['sonderangebote'],
@@ -99,8 +96,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $newProductsSeo = Seo::checkSeo(Seo::getSeo($newProductsSeo, true));
 
         if ($newProductsSeo !== $postData['neu_im_sortiment']) {
-            $alertService->addAlert(
-                Alert::TYPE_NOTE,
+            $alertService->addNotice(
                 sprintf(
                     __('errorNewExistRename'),
                     $postData['neu_im_sortiment'],
@@ -127,8 +123,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $topOffersSeo = Seo::checkSeo(Seo::getSeo($topOffersSeo, true));
 
         if ($topOffersSeo !== $postData['top_angebote']) {
-            $alertService->addAlert(
-                Alert::TYPE_NOTE,
+            $alertService->addNotice(
                 sprintf(
                     __('errorTopProductsExistRename'),
                     $postData['top_angebote'],
@@ -154,8 +149,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
     )) {
         $releaseSeo = Seo::checkSeo(Seo::getSeo($releaseSeo, true));
         if ($releaseSeo !== $postData['in_kuerze_verfuegbar']) {
-            $alertService->addAlert(
-                Alert::TYPE_NOTE,
+            $alertService->addNotice(
                 sprintf(
                     __('errorSoonExistRename'),
                     $postData['in_kuerze_verfuegbar'],
@@ -182,8 +176,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         $topRatedSeo = Seo::checkSeo(Seo::getSeo($topRatedSeo, true));
 
         if ($topRatedSeo !== $postData['top_bewertet']) {
-            $alertService->addAlert(
-                Alert::TYPE_NOTE,
+            $alertService->addNotice(
                 sprintf(
                     __('errorTopRatingExistRename'),
                     $postData['top_bewertet'],
@@ -231,7 +224,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
                     AND kKey IN (' . implode(',', $ssToDelete) . ')'
         );
     }
-    $alertService->addAlert(Alert::TYPE_SUCCESS, __('successSeoSave'), 'successSeoSave');
+    $alertService->addSuccess(__('successSeoSave'), 'successSeoSave');
 }
 
 $ssSeoData      = $db->selectAll(

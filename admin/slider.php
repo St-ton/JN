@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
@@ -87,11 +86,7 @@ switch ($action) {
                 $cValue    = $filtered[$cKeyValue];
             }
             if (!empty($cKeyValue) && empty($cValue)) {
-                $alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
-                    sprintf(__('errorKeyMissing'), $cKey),
-                    'errorKeyMissing'
-                );
+                $alertHelper->addError(sprintf(__('errorKeyMissing'), $cKey), 'errorKeyMissing');
             } else {
                 if (empty($slider->getEffects())) {
                     $slider->setEffects('random');
@@ -112,8 +107,7 @@ switch ($action) {
                     $extension->kInitial      = $slider->getID();
                     Shop::Container()->getDB()->insert('textensionpoint', $extension);
 
-                    $alertHelper->addAlert(
-                        Alert::TYPE_SUCCESS,
+                    $alertHelper->addSuccess(
                         __('successSliderSave'),
                         'successSliderSave',
                         ['saveInSession' => true]
@@ -122,7 +116,7 @@ switch ($action) {
                     header('Location: ' . $redirectUrl);
                     exit;
                 }
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderSave'), 'errorSliderSave');
+                $alertHelper->addError(__('errorSliderSave'), 'errorSliderSave');
             }
         }
         break;
@@ -133,7 +127,7 @@ switch ($action) {
         $slider->load($kSlider, false);
         $smarty->assign('oSlider', $slider);
         if (!is_object($slider)) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderNotFound'), 'errorSliderNotFound');
+            $alertHelper->addError(__('errorSliderNotFound'), 'errorSliderNotFound');
             $action = 'view';
         }
         break;
@@ -161,7 +155,7 @@ switch ($action) {
         $smarty->assign('oSlider', $slider);
 
         if (!is_object($slider)) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderNotFound'), 'errorSliderNotFound');
+            $alertHelper->addError(__('errorSliderNotFound'), 'errorSliderNotFound');
             $action = 'view';
             break;
         }
@@ -181,7 +175,7 @@ switch ($action) {
             header('Location: ' . $redirectUrl);
             exit;
         }
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderRemove'), 'errorSliderRemove');
+        $alertHelper->addError(__('errorSliderRemove'), 'errorSliderRemove');
         break;
 
     default:

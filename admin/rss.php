@@ -14,9 +14,9 @@ $oAccount->permission('EXPORT_RSSFEED_VIEW', true, true);
 $alertService = Shop::Container()->getAlertService();
 if (Request::getInt('f') === 1 && Form::validateToken()) {
     if (generiereRSSXML()) {
-        $alertService->addAlert(Alert::TYPE_SUCCESS, __('successRSSCreate'), 'successRSSCreate');
+        $alertService->addSuccess(__('successRSSCreate'), 'successRSSCreate');
     } else {
-        $alertService->addAlert(Alert::TYPE_ERROR, __('errorRSSCreate'), 'errorRSSCreate');
+        $alertService->addError(__('errorRSSCreate'), 'errorRSSCreate');
     }
 }
 if (Request::postInt('einstellungen') > 0) {
@@ -26,8 +26,7 @@ if (!file_exists(PFAD_ROOT . FILE_RSS_FEED)) {
     @touch(PFAD_ROOT . FILE_RSS_FEED);
 }
 if (!is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
-    $alertService->addAlert(
-        Alert::TYPE_ERROR,
+    $alertService->addError(
         sprintf(__('errorRSSCreatePermissions'), PFAD_ROOT . FILE_RSS_FEED),
         'errorRSSCreatePermissions'
     );

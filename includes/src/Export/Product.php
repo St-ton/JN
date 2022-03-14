@@ -8,6 +8,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
+use JTL\Model\DataModelInterface;
 
 /**
  * Class Product
@@ -91,10 +92,11 @@ class Product extends Artikel
     public $Artikelbild;
 
     /**
-     * @param array $config
+     * @param array      $config
+     * @param Model|null $model
      * @return $this
      */
-    public function augmentProduct(array $config): self
+    public function augmentProduct(array $config, ?DataModelInterface $model = null): self
     {
         $findTwo    = ["\r\n", "\r", "\n", "\x0B", "\x0"];
         $replaceTwo = [' ', ' ', ' ', ' ', ''];
@@ -180,9 +182,9 @@ class Product extends Artikel
             }
         }
         // Kampagne URL
-        if (!empty($this->campaignParameter)) {
-            $cSep        = (\mb_strpos($this->cURL, '.php') !== false) ? '&' : '?';
-            $this->cURL .= $cSep . $this->campaignParameter . '=' . $this->campaignValue;
+        if ($model !== null && !empty($model->getCampaignParameter())) {
+            $sep         = (\mb_strpos($this->cURL, '.php') !== false) ? '&' : '?';
+            $this->cURL .= $sep . $model->getCampaignParameter() . '=' . $model->getCampaignValue();
         }
         $this->Lieferbar    = $this->fLagerbestand <= 0 ? 'N' : 'Y';
         $this->Lieferbar_01 = $this->fLagerbestand <= 0 ? 0 : 1;

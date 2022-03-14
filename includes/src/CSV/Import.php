@@ -7,6 +7,7 @@ use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
+use JTL\Redirect;
 use stdClass;
 use TypeError;
 
@@ -199,16 +200,26 @@ class Import
                 if ($importType === self::TYPE_OVERWRITE_EXISTING) {
                     $this->db->delete($target, $fields, $row);
                 }
-                foreach (\get_object_vars($obj) as $key => $value) {
-                    if (!\in_array($key, $columns, true)) {
-                        unset($obj->$key);
+                if (isset($obj->cFromUrl, $obj->cToUrl)) {
+                    // is redirect import
+                    $redirect = new Redirect();
+                    if (!$redirect->saveExt($obj->cFromUrl, $obj->cToUrl)) {
+                        ++$this->errorCount;
+                        $this->errors[] = \sprintf(\__('csvImportSaveError'), $rowIndex);
                     }
-                }
-                if ($this->db->insert($table, $obj) === 0) {
-                    ++$this->errorCount;
-                    $this->errors[] = \sprintf(\__('csvImportSaveError'), $rowIndex);
                 } else {
-                    ++$this->importCount;
+                    // is other import
+                    foreach (\get_object_vars($obj) as $key => $value) {
+                        if (!\in_array($key, $columns, true)) {
+                            unset($obj->$key);
+                        }
+                    }
+                    if ($this->db->insert($table, $obj) === 0) {
+                        ++$this->errorCount;
+                        $this->errors[] = \sprintf(\__('csvImportSaveError'), $rowIndex);
+                    } else {
+                        ++$this->importCount;
+                    }
                 }
             }
             ++$rowIndex;

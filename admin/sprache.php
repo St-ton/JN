@@ -1,9 +1,11 @@
 <?php declare(strict_types=1);
+
 /**
  * @global \JTL\Smarty\JTLSmarty $smarty
  */
 
 use JTL\Alert\Alert;
+use JTL\CSV\Export;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
@@ -17,8 +19,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('LANGUAGE_VIEW', true, true);
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
 $db          = Shop::Container()->getDB();
 $cache       = Shop::Container()->getCache();
@@ -232,16 +232,18 @@ if ($step === 'newvar') {
             WHERE sw.kSprachISO = :liso ' . ($filterSQL !== '' ? 'AND ' . $filterSQL : ''),
         ['liso' => $langIsoID]
     );
-
-    handleCsvExportAction(
-        'langvars',
-        $langCode . '_' . date('YmdHis') . '.slf',
-        $values,
-        ['cSektionName', 'cName', 'cWert', 'bSystem'],
-        [],
-        ';',
-        false
-    );
+    if (Form::validateToken() && Request::verifyGPDataString('exportcsv') === 'langvars') {
+        $export = new Export();
+        $export->export(
+            'langvars',
+            $langCode . '_' . date('YmdHis') . '.slf',
+            $values,
+            ['cSektionName', 'cName', 'cWert', 'bSystem'],
+            [],
+            ';',
+            false
+        );
+    }
 
     $pagination = (new Pagination('langvars'))
         ->setRange(4)

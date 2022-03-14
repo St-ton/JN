@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Catalog\Currency;
@@ -10,6 +10,7 @@ use JTL\Customer\CustomerGroup;
 use JTL\Export\ExporterFactory;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 
@@ -50,10 +51,17 @@ function holeExportformatCron(): array
         $export->frequency          = (int)$export->frequency;
         $export->cAlleXStdToDays    = rechneUmAlleXStunden($export->frequency);
         $export->frequencyLocalized = $export->cAlleXStdToDays;
-        $export->Sprache            = Shop::Lang()->getLanguageByID($export->kSprache);
 
         $exporter = $factory->getExporter($export->kExportformat);
         $exporter->init($export->kExportformat);
+        try {
+            $export->Sprache = Shop::Lang()->getLanguageByID($export->kSprache);
+        } catch (Exception $e) {
+            $export->Sprache = LanguageHelper::getDefaultLanguage();
+            $export->Sprache->setLocalizedName('???');
+            $export->Sprache->setId(0);
+            $export->nFehlerhaft = 1;
+        }
         $export->Waehrung     = $db->select(
             'twaehrung',
             'kWaehrung',
@@ -289,19 +297,19 @@ function holeExportformatQueueBearbeitet(int $hours = 24)
     }
     $languages = Shop::Lang()->getAllLanguages(1);
     $queues    = Shop::Container()->getDB()->getObjects(
-        "SELECT texportformat.cName, texportformat.cDateiname, texportformatqueuebearbeitet.*, 
-            DATE_FORMAT(texportformatqueuebearbeitet.dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_DE, 
-            tsprache.cNameDeutsch AS cNameSprache, tkundengruppe.cName AS cNameKundengruppe, 
+        "SELECT texportformat.cName, texportformat.cDateiname, texportformatqueuebearbeitet.*,
+            DATE_FORMAT(texportformatqueuebearbeitet.dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_DE,
+            tsprache.cNameDeutsch AS cNameSprache, tkundengruppe.cName AS cNameKundengruppe,
             twaehrung.cName AS cNameWaehrung
             FROM texportformatqueuebearbeitet
-            JOIN texportformat 
+            JOIN texportformat
                 ON texportformat.kExportformat = texportformatqueuebearbeitet.kExportformat
                 AND texportformat.kSprache = :lid
-            JOIN tsprache 
+            JOIN tsprache
                 ON tsprache.kSprache = texportformat.kSprache
-            JOIN tkundengruppe 
+            JOIN tkundengruppe
                 ON tkundengruppe.kKundengruppe = texportformat.kKundengruppe
-            JOIN twaehrung 
+            JOIN twaehrung
                 ON twaehrung.kWaehrung = texportformat.kWaehrung
             WHERE DATE_SUB(NOW(), INTERVAL :hrs HOUR) < texportformatqueuebearbeitet.dZuletztGelaufen
             ORDER BY texportformatqueuebearbeitet.dZuletztGelaufen DESC",

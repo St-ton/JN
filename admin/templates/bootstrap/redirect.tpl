@@ -99,7 +99,7 @@
             <div class="col-sm-6 col-xl-auto">
                 {include file='tpl_inc/csv_export_btn.tpl' exporterId='redirects'}
             </div>
-            <div class="{if !$oRedirect_arr|count > 0}ml-auto{/if} col-sm-6 col-xl-auto">
+            <div class="col-sm-6 col-xl-auto">
                 {include file='tpl_inc/csv_import_btn.tpl' importerId='redirects'}
             </div>
         </div>

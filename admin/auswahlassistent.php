@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Extensions\SelectionWizard\Group;
 use JTL\Extensions\SelectionWizard\Question;

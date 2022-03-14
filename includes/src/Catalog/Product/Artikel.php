@@ -4,6 +4,7 @@ namespace JTL\Catalog\Product;
 
 use DateTime;
 use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Currency;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Separator;
 use JTL\Catalog\UnitsOfMeasure;
@@ -1042,6 +1043,16 @@ class Artikel
     public $fAnzahl_stueckliste;
 
     /**
+     * @var Currency
+     */
+    protected Currency $currency;
+
+    /**
+     * @var CustomerGroup
+     */
+    protected CustomerGroup $customerGroup;
+
+    /**
      *
      */
     public function __wakeup()
@@ -1070,12 +1081,14 @@ class Artikel
      * Artikel constructor.
      * @param DbInterface|null $db
      */
-    public function __construct(DbInterface $db = null)
+    public function __construct(DbInterface $db = null, CustomerGroup $customerGroup = null, Currency $currency = null)
     {
         $this->setImageType(Image::TYPE_PRODUCT);
-        $this->db      = $db ?? Shop::Container()->getDB();
-        $this->options = new stdClass();
-        $this->conf    = $this->getConfig();
+        $this->db            = $db ?? Shop::Container()->getDB();
+        $this->customerGroup = $customerGroup ?? Frontend::getCustomerGroup();
+        $this->currency      = $currency ?? Frontend::getCurrency();
+        $this->options       = new stdClass();
+        $this->conf          = $this->getConfig();
     }
 
     /**
@@ -1176,7 +1189,7 @@ class Artikel
             (int)$tmpProduct->kSteuerklasse,
             $this->db
         );
-        if ($this->getOption('nHidePrices', 0) === 1 || !Frontend::getCustomerGroup()->mayViewPrices()) {
+        if ($this->getOption('nHidePrices', 0) === 1 || !$this->customerGroup->mayViewPrices()) {
             $this->Preise->setPricesToZero();
         }
         $this->Preise->localizePreise();
@@ -1201,7 +1214,7 @@ class Artikel
             $this->kSteuerklasse,
             $this->db
         );
-        if ($this->getOption('nHidePrices', 0) === 1 || !Frontend::getCustomerGroup()->mayViewPrices()) {
+        if ($this->getOption('nHidePrices', 0) === 1 || !$this->customerGroup->mayViewPrices()) {
             $this->Preise->setPricesToZero();
         }
         $this->Preise->localizePreise();
@@ -1255,22 +1268,16 @@ class Artikel
         string $unique = '',
         bool $assign = true
     ) {
-        if (!Frontend::getCustomerGroup()->mayViewPrices()) {
+        if (!$this->customerGroup->mayViewPrices()) {
             return null;
         }
         if ($this->kArtikel === null) {
             return 0;
         }
         if (!$customerGroupID) {
-            $customerGroupID = $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
+            $customerGroupID = $this->kKundengruppe ?? $this->customerGroup->getID();
         }
         $customerID = Frontend::getCustomer()->getID();
-//        if ($this->Preise === null
-//            || $this->Preise->kKundengruppe !== $customerGroupID
-//            || ($this->Preise->kKunde !== $customerID && $this->Preise->hasCustomPrice($customerID))
-//        ) {
-//            $this->Preise = new Preise($customerGroupID, $this->kArtikel, $customerID, $this->kSteuerklasse);
-//        }
         // Varkombi Kind?
         $productID = ($this->kEigenschaftKombi > 0 && $this->kVaterArtikel > 0)
             ? $this->kVaterArtikel
@@ -1302,7 +1309,7 @@ class Artikel
                 $price = $fPreis;
             }
         }
-        $net = Frontend::getCustomerGroup()->isMerchant();
+        $net = $this->customerGroup->isMerchant();
         // Ticket #1247
         $price = $net
             ? \round($price, 4)
@@ -1697,7 +1704,7 @@ class Artikel
         $options                             = self::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = $getInvisibleParts ? 1 : 0;
         foreach ($parts as $i => $partList) {
-            $product = new self($this->getDB());
+            $product = new self($this->getDB(), $this->customerGroup, $this->currency);
             $product->fuelleArtikel((int)$partList->kArtikel, $options, $customerGroupID, $this->kSprache);
             $product->holeBewertungDurchschnitt();
             $this->oStueckliste_arr[$i]                      = $product;
@@ -1738,7 +1745,6 @@ class Artikel
             $opt->nStueckliste               = 1;
             $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $opt, $this->kKundengruppe, $this->kSprache);
 
-            $currency                        = Frontend::getCurrency();
             $bundles                         = $this->getDB()->selectAll(
                 'tstueckliste',
                 'kStueckliste',
@@ -1747,7 +1753,7 @@ class Artikel
             );
             $opt->nKeineSichtbarkeitBeachten = 0;
             foreach ($bundles as $bundle) {
-                $product = new self($this->getDB());
+                $product = new self($this->getDB(), $this->customerGroup, $this->currency);
                 $product->fuelleArtikel((int)$bundle->kArtikel, $opt, $this->kKundengruppe, $this->kSprache);
                 if ($product->kArtikel > 0) {
                     $this->oProduktBundle_arr[]           = $product;
@@ -1764,12 +1770,12 @@ class Artikel
                     $this->oProduktBundlePrice->fVKNetto,
                     $_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse] ?? null
                 ),
-                $currency
+                $this->currency
             );
 
             $this->oProduktBundlePrice->cPriceLocalized[1]     = Preise::getLocalizedPriceString(
                 $this->oProduktBundlePrice->fVKNetto,
-                $currency
+                $this->currency
             );
             $this->oProduktBundlePrice->cPriceDiffLocalized    = [];
             $this->oProduktBundlePrice->cPriceDiffLocalized[0] = Preise::getLocalizedPriceString(
@@ -1777,11 +1783,11 @@ class Artikel
                     $this->oProduktBundlePrice->fPriceDiff,
                     $_SESSION['Steuersatz'][$this->oProduktBundleMain->kSteuerklasse] ?? null
                 ),
-                $currency
+                $this->currency
             );
             $this->oProduktBundlePrice->cPriceDiffLocalized[1] = Preise::getLocalizedPriceString(
                 $this->oProduktBundlePrice->fPriceDiff,
-                $currency
+                $this->currency
             );
         }
 
@@ -2213,7 +2219,7 @@ class Artikel
                         GROUP BY pref.kEigenschaftWert',
                     [
                         'kek'  => $this->kEigenschaftKombi,
-                        'cid'  => $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID(),
+                        'cid'  => $this->kKundengruppe ?? $this->customerGroup->getID(),
                         'ppid' => (int)$this->kVaterArtikel
                     ]
                 );
@@ -2354,16 +2360,15 @@ class Artikel
             return $this;
         }
         if (!$customerGroupID) {
-            $customerGroupID = $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
+            $customerGroupID = $this->kKundengruppe ?? $this->customerGroup->getID();
         }
         $this->nVariationsAufpreisVorhanden = 0;
         $this->Variationen                  = [];
         $this->VariationenOhneFreifeld      = [];
         $this->oVariationenNurKind_arr      = [];
 
-        $currency      = Frontend::getCurrency();
         $imageBaseURL  = Shop::getImageBaseURL();
-        $mayViewPrices = Frontend::getCustomerGroup()->mayViewPrices();
+        $mayViewPrices = $this->customerGroup->mayViewPrices();
         $variations    = $this->execVariationSQL($customerGroupID, $exportWorkaround);
         if (!\is_array($variations) || \count($variations) === 0) {
             return $this;
@@ -2435,7 +2440,7 @@ class Artikel
             if (!$mayViewPrices) {
                 unset($value->fAufpreisNetto, $value->cAufpreisLocalized, $value->cPreisInklAufpreis);
             }
-            $value->addPrices($this, $taxRate, $currency, $mayViewPrices, $precision, $per);
+            $value->addPrices($this, $taxRate, $this->currency, $mayViewPrices, $precision, $per);
             $this->Variationen[$counter]->Werte[$i] = $value;
         }
         foreach ($this->Variationen as $i => $oVariation) {
@@ -2812,14 +2817,13 @@ class Artikel
             $tmp                                = [];
             $per                                = ' ' . Shop::Lang()->get('vpePer') . ' ';
             $taxRate                            = $_SESSION['Steuersatz'][$this->kSteuerklasse];
-            $currency                           = Frontend::getCurrency();
             $options                            = self::getDefaultOptions();
             $options->nKeinLagerbestandBeachten = 1;
             foreach ($varCombChildren as $i => $productID) {
                 if (isset($tmp[$productID])) {
                     $varCombChildren[$i] = $tmp[$productID];
                 } else {
-                    $product = new self($this->getDB());
+                    $product = new self($this->getDB(), $this->customerGroup, $this->currency);
                     $product->fuelleArtikel($productID, $options, $customerGroupID, $this->kSprache);
                     $tmp[$productID]     = $product;
                     $varCombChildren[$i] = $product;
@@ -2836,13 +2840,13 @@ class Artikel
                             $varCombChildren[$i]->Preise->fVKNetto / $varCombChildren[$i]->fVPEWert,
                             $taxRate
                         ),
-                        $currency,
+                        $this->currency,
                         true,
                         $precision
                     ) . $per . $varCombChildren[$i]->cVPEEinheit;
                     $varCombChildren[$i]->Preise->cPreisVPEWertInklAufpreis[1] = Preise::getLocalizedPriceString(
                         $varCombChildren[$i]->Preise->fVKNetto / $varCombChildren[$i]->fVPEWert,
-                        $currency,
+                        $this->currency,
                         true,
                         $precision
                     ) . $per . $varCombChildren[$i]->cVPEEinheit;
@@ -2914,7 +2918,6 @@ class Artikel
     {
         $this->oVariationDetailPreisKind_arr = [];
 
-        $currency  = Frontend::getCurrency();
         $per       = ' ' . Shop::Lang()->get('vpePer') . ' ' . $this->cVPEEinheit;
         $taxRate   = $_SESSION['Steuersatz'][$this->kSteuerklasse];
         $precision = $this->getPrecision();
@@ -2928,14 +2931,14 @@ class Artikel
             $this->oVariationDetailPreisKind_arr[$vk->kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[0] =
                 Preise::getLocalizedPriceString(
                     Tax::getGross($this->Preise->fVKNetto / $this->fVPEWert, $taxRate),
-                    $currency,
+                    $this->currency,
                     true,
                     $precision
                 ) . $per;
             $this->oVariationDetailPreisKind_arr[$vk->kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[1] =
                 Preise::getLocalizedPriceString(
                     $this->Preise->fVKNetto / $this->fVPEWert,
-                    $currency,
+                    $this->currency,
                     true,
                     $precision
                 ) . $per;
@@ -2974,7 +2977,6 @@ class Artikel
         if ($this->nIstVater === 1) {
             $this->cVaterVKLocalized = $this->Preise->cVKLocalized;
         }
-        $currency    = Frontend::getCurrency();
         $lastProduct = 0;
         $per         = ' ' . Shop::Lang()->get('vpePer') . ' ';
         $taxRate     = $_SESSION['Steuersatz'][$this->kSteuerklasse];
@@ -2988,7 +2990,7 @@ class Artikel
             $tmpProduct = null;
             if ($varDetailPrice->kArtikel !== $lastProduct) {
                 $lastProduct = $varDetailPrice->kArtikel;
-                $tmpProduct  = new self($this->getDB());
+                $tmpProduct  = new self($this->getDB(), $this->customerGroup, $this->currency);
                 $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID, $customerID);
             }
 
@@ -3004,18 +3006,18 @@ class Artikel
                 $prefix = '- ';
             }
             $discount = $this->Preise->isDiscountable() ? $this->getDiscount($customerGroupID, $this->kArtikel) : 0;
-            $variationPrice->Preise->rabbatierePreise($discount)->localizePreise($currency);
+            $variationPrice->Preise->rabbatierePreise($discount)->localizePreise($this->currency);
 
             if ($varVKNetto !== $prodVkNetto) {
                 $variationPrice->Preise->cAufpreisLocalized[0] = $prefix
                     . Preise::getLocalizedPriceString(
                         \abs(Tax::getGross($varVKNetto, $taxRate) - Tax::getGross($prodVkNetto, $taxRate)),
-                        $currency
+                        $this->currency
                     );
                 $variationPrice->Preise->cAufpreisLocalized[1] = $prefix
                     . Preise::getLocalizedPriceString(
                         \abs($varVKNetto - $prodVkNetto),
-                        $currency
+                        $this->currency
                     );
             }
 
@@ -3024,14 +3026,14 @@ class Artikel
                 $variationPrice->Preise->PreisecPreisVPEWertInklAufpreis[0] =
                     Preise::getLocalizedPriceString(
                         Tax::getGross($varVKNetto / $tmpProduct->fVPEWert, $taxRate),
-                        $currency,
+                        $this->currency,
                         true,
                         $precision
                     ) . $per . $tmpProduct->cVPEEinheit;
                 $variationPrice->Preise->PreisecPreisVPEWertInklAufpreis[1] =
                     Preise::getLocalizedPriceString(
                         $varVKNetto / $tmpProduct->fVPEWert,
-                        $currency,
+                        $this->currency,
                         true,
                         $precision
                     ) . $per . $tmpProduct->cVPEEinheit;
@@ -3238,12 +3240,10 @@ class Artikel
         }
         $options = $options ?? self::getDefaultOptions();
         if ($customerGroupID) {
-            CustomerGroup::reset($customerGroupID);
-        } else {
-            if (!isset($_SESSION['Kundengruppe']) || Frontend::getCustomerGroup()->getID() === 0) {
-                CustomerGroup::reset(0);
-            }
-            $customerGroupID = Frontend::getCustomerGroup()->getID();
+            $this->customerGroup = CustomerGroup::reset($customerGroupID);
+        } elseif ($this->customerGroup === null) {
+            $this->customerGroup = Frontend::getCustomerGroup();
+            $customerGroupID     = $this->customerGroup->getID();
         }
         $langID = $langID ?: Shop::getLanguageID();
         if (!$langID) {
@@ -3360,7 +3360,7 @@ class Artikel
             $this->getVariationDetailPrice($customerGroupID);
         }
         $this->addVariationChildren($customerGroupID);
-        $this->cMwstVersandText = $this->gibMwStVersandString(Frontend::getCustomerGroup()->isMerchant());
+        $this->cMwstVersandText = $this->gibMwStVersandString($this->customerGroup->isMerchant());
         if ($this->getOption('nDownload', 0) === 1) {
             $this->oDownload_arr = Download::getDownloads(['kArtikel' => $this->kArtikel], $langID);
         }
@@ -4251,7 +4251,7 @@ class Artikel
     private function setToParentStockText(string $stockTextConstant, string $stockTextLangVar): void
     {
         if ($this->kVaterArtikel > 0 && empty($this->AttributeAssoc[$stockTextConstant])) {
-            $parentProduct = new self($this->getDB());
+            $parentProduct = new self($this->getDB(), $this->customerGroup, $this->currency);
             $parentProduct->fuelleArtikel(
                 $this->kVaterArtikel,
                 self::getDefaultOptions(),
@@ -4304,7 +4304,6 @@ class Artikel
             : $this->cVPEEinheit;
         $precision     = $this->getPrecision();
         $price         = ($scalePrice > 0) ? $scalePrice : $this->Preise->fVKNetto;
-        $currency      = Frontend::getCurrency();
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ' . $basepriceUnit;
         $ust           = Tax::getSalesTax($this->kSteuerklasse);
 
@@ -4321,7 +4320,7 @@ class Artikel
                         $ust,
                         $precision
                     ),
-                    $currency,
+                    $this->currency,
                     true,
                     $precision
                 ) . ' - '
@@ -4331,19 +4330,19 @@ class Artikel
                             $ust,
                             $precision
                         ),
-                        $currency,
+                        $this->currency,
                         true,
                         $precision
                     ) . $per;
                 $this->cLocalizedVPE[1] = Preise::getLocalizedPriceString(
                     $this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert,
-                    $currency,
+                    $this->currency,
                     true,
                     $precision
                 ) . ' - '
                     . Preise::getLocalizedPriceString(
                         $this->Preise->oPriceRange->maxNettoPrice / $this->fVPEWert,
-                        $currency,
+                        $this->currency,
                         true,
                         $precision
                     ) . $per;
@@ -4355,14 +4354,14 @@ class Artikel
                             $ust,
                             $precision
                         ),
-                        $currency,
+                        $this->currency,
                         true,
                         $precision
                     ) . $per;
                 $this->cLocalizedVPE[1] = Shop::Lang()->get('priceStarting') . ' ' .
                     Preise::getLocalizedPriceString(
                         $this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert,
-                        $currency,
+                        $this->currency,
                         true,
                         $precision
                     ) . $per;
@@ -4370,13 +4369,13 @@ class Artikel
         } else {
             $this->cLocalizedVPE[0] = Preise::getLocalizedPriceString(
                 Tax::getGross($price / $this->fVPEWert, $ust, $precision),
-                $currency,
+                $this->currency,
                 true,
                 $precision
             ) . $per;
             $this->cLocalizedVPE[1] = Preise::getLocalizedPriceString(
                 $price / $this->fVPEWert,
-                $currency,
+                $this->currency,
                 true,
                 $precision
             ) . $per;
@@ -4390,7 +4389,6 @@ class Artikel
      */
     private function getScaleBasePrice(): self
     {
-        $currency      = Frontend::getCurrency();
         $precision     = $this->getPrecision();
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ';
         $basePriceUnit = ProductHelper::getBasePriceUnit($this, $this->Preise->fPreis1, $this->Preise->nAnzahl1);
@@ -4401,13 +4399,13 @@ class Artikel
                 Tax::getSalesTax($this->kSteuerklasse),
                 $precision
             ),
-            $currency,
+            $this->currency,
             true,
             $precision
         ) . $per . $basePriceUnit->cVPEEinheit;
         $this->cStaffelpreisLocalizedVPE1[1] = Preise::getLocalizedPriceString(
             $basePriceUnit->fBasePreis,
-            $currency,
+            $this->currency,
             true,
             $precision
         ) . $per . $basePriceUnit->cVPEEinheit;
@@ -4426,13 +4424,13 @@ class Artikel
                 Tax::getSalesTax($this->kSteuerklasse),
                 $precision
             ),
-            $currency,
+            $this->currency,
             true,
             $precision
         ) . $per . $basePriceUnit->cVPEEinheit;
         $this->cStaffelpreisLocalizedVPE2[1] = Preise::getLocalizedPriceString(
             $basePriceUnit->fBasePreis,
-            $currency,
+            $this->currency,
             true,
             $precision
         ) . $per . $basePriceUnit->cVPEEinheit;
@@ -4451,13 +4449,13 @@ class Artikel
                 Tax::getSalesTax($this->kSteuerklasse),
                 $precision
             ),
-            $currency,
+            $this->currency,
             true,
             $precision
         ) . $per . $basePriceUnit->cVPEEinheit;
         $this->cStaffelpreisLocalizedVPE3[1] = Preise::getLocalizedPriceString(
             $basePriceUnit->fBasePreis,
-            $currency,
+            $this->currency,
             true,
             $precision
         ) . $per . $basePriceUnit->cVPEEinheit;
@@ -4476,13 +4474,13 @@ class Artikel
                 Tax::getSalesTax($this->kSteuerklasse),
                 $precision
             ),
-            $currency,
+            $this->currency,
             true,
             $precision
         ) . $per . $basePriceUnit->cVPEEinheit;
         $this->cStaffelpreisLocalizedVPE4[1] = Preise::getLocalizedPriceString(
             $basePriceUnit->fBasePreis,
-            $currency,
+            $this->currency,
             true,
             $precision
         ) . $per . $basePriceUnit->cVPEEinheit;
@@ -4501,13 +4499,13 @@ class Artikel
                 Tax::getSalesTax($this->kSteuerklasse),
                 $precision
             ),
-            $currency,
+            $this->currency,
             true,
             $precision
         ) . $per . $basePriceUnit->cVPEEinheit;
         $this->cStaffelpreisLocalizedVPE5[1] = Preise::getLocalizedPriceString(
             $basePriceUnit->fBasePreis,
-            $currency,
+            $this->currency,
             true,
             $precision
         ) . $per . $basePriceUnit->cVPEEinheit;
@@ -4528,13 +4526,13 @@ class Artikel
                         Tax::getSalesTax($this->kSteuerklasse),
                         $precision
                     ),
-                    $currency,
+                    $this->currency,
                     true,
                     $precision
                 ) . $per . $basePriceUnit->cVPEEinheit,
                 Preise::getLocalizedPriceString(
                     $basePriceUnit->fBasePreis,
-                    $currency,
+                    $this->currency,
                     true,
                     $precision
                 ) . $per . $basePriceUnit->cVPEEinheit
@@ -4672,10 +4670,10 @@ class Artikel
             return $this;
         }
         $this->SieSparenX = new stdClass();
-        if (!Frontend::getCustomerGroup()->mayViewPrices()) {
+        if (!$this->customerGroup->mayViewPrices()) {
             return $this;
         }
-        if (Frontend::getCustomerGroup()->isMerchant()) {
+        if ($this->customerGroup->isMerchant()) {
             $this->fUVP                            /= (1 + Tax::getSalesTax($this->kSteuerklasse) / 100);
             $this->SieSparenX->anzeigen             = $show;
             $this->SieSparenX->nProzent             = \round(
@@ -4768,7 +4766,7 @@ class Artikel
                 ORDER BY minPrice, nSort ASC LIMIT 1',
             [
                 'ccode'  => '%' . $countryCode . '%',
-                'cgid'   => $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID(),
+                'cgid'   => $this->kKundengruppe ?? $this->customerGroup->getID(),
                 'sclass' => '^([0-9 -]* )?' . $this->kVersandklasse . ' ',
                 'wght'   => $this->fGewicht,
                 'net'    => $this->Preise->fVKNetto
@@ -4847,7 +4845,7 @@ class Artikel
             $resetArray             = true;
             $partList               = $this->oStueckliste_arr;
             $this->oStueckliste_arr = [];
-            $this->holeStueckliste($this->kKundengruppe ?? Frontend::getCustomerGroup()->getID(), true);
+            $this->holeStueckliste($this->kKundengruppe ?? $this->customerGroup->getID(), true);
         }
         $isPartsList = !empty($this->oStueckliste_arr) && !empty($this->kStueckliste);
         if ($isPartsList) {
@@ -5090,7 +5088,7 @@ class Artikel
         if (\is_array($products) && \count($products) > 0) {
             $defaultOptions = self::getDefaultOptions();
             foreach ($products as $productData) {
-                $product = new self($this->getDB());
+                $product = new self($this->getDB(), $this->customerGroup, $this->currency);
                 $product->fuelleArtikel(
                     ($productData->kVaterArtikel > 0)
                         ? (int)$productData->kVaterArtikel
@@ -5159,7 +5157,7 @@ class Artikel
         if ($productID === 0) {
             return $return;
         }
-        $customerGroupID = $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
+        $customerGroupID = $this->kKundengruppe ?? $this->customerGroup->getID();
         if ((int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
             $limitSQL = ' LIMIT ' . (int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
         }
@@ -5268,7 +5266,7 @@ class Artikel
             $productID = (int)$this->kArtikel;
         }
         if (!$customerGroupID) {
-            $customerGroupID = $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
+            $customerGroupID = $this->kKundengruppe ?? $this->customerGroup->getID();
         }
         $discounts   = [];
         $maxDiscount = 0;
@@ -5312,9 +5310,8 @@ class Artikel
             }
         }
         // Existiert für diese Kundengruppe ein Rabatt?
-        $currentGroup  = Frontend::getCustomerGroup();
-        $customerGroup = $currentGroup->getID() === $customerGroupID
-            ? $currentGroup
+        $customerGroup = $this->customerGroup->getID() === $customerGroupID
+            ? $this->customerGroup
             : new CustomerGroup($customerGroupID);
         if ($customerGroup->getDiscount() != 0) {
             $discounts[] = $customerGroup->getDiscount();
@@ -5361,9 +5358,9 @@ class Artikel
     {
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
-            $net                      = Frontend::getCustomerGroup()->isMerchant();
+            $net                      = $this->customerGroup->isMerchant();
         }
-        $customerGroupID = $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
+        $customerGroupID = $this->kKundengruppe ?? $this->customerGroup->getID();
         if (!isset($_SESSION['Link_Versandseite'])) {
             Frontend::setSpecialLinks();
         }
@@ -5458,7 +5455,7 @@ class Artikel
         }
         $customerGroupID       = $customerGroupID ?? $this->kKundengruppe ?? (Frontend::getCustomer()->getGroupID() > 0
             ? Frontend::getCustomer()->getGroupID()
-            : Frontend::getCustomerGroup()->getID());
+            : $this->customerGroup->getID());
         $helper                = ShippingMethod::getInstance();
         $shippingFreeCountries = \is_array($this->Preise->fVK)
             ? $helper->getFreeShippingCountries($this->Preise->fVK, $customerGroupID, $this->kVersandklasse)
@@ -5588,11 +5585,8 @@ class Artikel
                 $globalMetaTitle = ' - ' . $globalMetaData[$this->kSprache]->Title;
             }
         }
-        $idx = Frontend::getCustomerGroup()->getIsMerchant();
-        if (isset(
-            $this->Preise->fVK[$idx],
-            $this->Preise->cVKLocalized[$idx]
-        )
+        $idx = $this->customerGroup->getIsMerchant();
+        if (isset($this->Preise->fVK[$idx], $this->Preise->cVKLocalized[$idx])
             && $this->Preise->fVK[$idx] > 0
             && $this->conf['metaangaben']['global_meta_title_preis'] === 'Y'
         ) {
@@ -5746,7 +5740,7 @@ class Artikel
             : '';
 
         return [
-            'net'                   => Frontend::getCustomerGroup()->isMerchant(),
+            'net'                   => $this->customerGroup->isMerchant(),
             'text'                  => $taxText,
             'tax'                   => $this->formatTax(Tax::getSalesTax($this->kSteuerklasse)),
             'shippingFreeCountries' => $countriesString,
@@ -5840,7 +5834,7 @@ class Artikel
             $queries    = [];
             $propertyID = (int)$propertyID;
             $prepvalues = [
-                'customerGroupID' => $this->kKundengruppe ?? Frontend::getCustomerGroup()->getID(),
+                'customerGroupID' => $this->kKundengruppe ?? $this->customerGroup->getID(),
                 'where'           => $propertyID
             ];
             foreach ($setData as $setPropertyID => $propertyValue) {

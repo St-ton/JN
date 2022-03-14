@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Customer;
 
 use JTL\MagicCompatibilityTrait;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 
@@ -17,62 +18,62 @@ class CustomerGroup
     /**
      * @var int
      */
-    protected $id = 0;
+    protected int $id = 0;
 
     /**
      * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * @var float
      */
-    protected $discount = 0.0;
+    protected float $discount = 0.0;
 
     /**
      * @var string
      */
-    protected $default;
+    protected string $default;
 
     /**
      * @var string
      */
-    protected $cShopLogin;
+    protected string $cShopLogin;
 
     /**
      * @var int
      */
-    protected $isMerchant = 0;
+    protected int $isMerchant = 0;
 
     /**
      * @var int
      */
-    protected $mayViewPrices = 1;
+    protected int $mayViewPrices = 1;
 
     /**
      * @var int
      */
-    protected $mayViewCategories = 1;
+    protected int $mayViewCategories = 1;
 
     /**
      * @var int
      */
-    protected $languageID = 0;
+    protected int $languageID = 0;
+
+    /**
+     * @var array|null
+     */
+    protected ?array $Attribute = null;
+
+    /**
+     * @var string
+     */
+    private string $nameLocalized;
 
     /**
      * @var array
      */
-    protected $Attribute;
-
-    /**
-     * @var string
-     */
-    private $nameLocalized;
-
-    /**
-     * @var array
-     */
-    protected static $mapping = [
+    protected static array $mapping = [
         'kKundengruppe'              => 'ID',
         'kSprache'                   => 'LanguageID',
         'nNettoPreise'               => 'IsMerchant',
@@ -533,6 +534,20 @@ class CustomerGroup
     }
 
     /**
+     * @param int $id
+     * @return CustomerGroup
+     */
+    public static function getByID(int $id): self
+    {
+        $current = Frontend::getCustomerGroup();
+        if ($current->getID() === $id) {
+            return $current;
+        }
+
+        return new self($id);
+    }
+
+    /**
      * @return $this
      */
     public function initAttributes(): self
@@ -564,7 +579,7 @@ class CustomerGroup
      * @param string $attributeName
      * @return mixed|null
      */
-    public function getAttribute($attributeName)
+    public function getAttribute(string $attributeName)
     {
         return $this->Attribute[$attributeName] ?? null;
     }

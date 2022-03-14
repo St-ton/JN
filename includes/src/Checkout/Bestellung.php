@@ -511,8 +511,6 @@ class Bestellung
                 $nNettoPreis = 1;
             }
         }
-        $this->cBestellwertLocalized = Preise::getLocalizedPriceString($sum->wert ?? 0, $htmlCurrency);
-        $this->Status                = \lang_bestellstatus((int)$this->cStatus);
         if ($this->kWaehrung > 0) {
             $this->Waehrung = new Currency((int)$this->kWaehrung);
             if ($this->fWaehrungsFaktor !== null && $this->fWaehrungsFaktor != 1 && isset($this->Waehrung->fFaktor)) {
@@ -531,6 +529,8 @@ class Bestellung
                 $this->loadPaymentMethod();
             }
         }
+        $this->cBestellwertLocalized = Preise::getLocalizedPriceString($sum->wert ?? 0, $this->Waehrung, $htmlCurrency);
+        $this->Status                = \lang_bestellstatus((int)$this->cStatus);
         if ($this->kBestellung > 0) {
             $this->Zahlungsinfo = new ZahlungsInfo(0, $this->kBestellung);
         }
@@ -578,7 +578,8 @@ class Bestellung
 
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 if ($initProduct) {
-                    $item->Artikel = (new Artikel($db))->fuelleArtikel($item->kArtikel, $defaultOptions, 0, $languageID);
+                    $item->Artikel = (new Artikel($db))
+                        ->fuelleArtikel($item->kArtikel, $defaultOptions, 0, $languageID);
                 }
                 if ($this->kBestellung > 0) {
                     $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $languageID);

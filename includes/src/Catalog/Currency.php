@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Catalog;
 
@@ -19,62 +19,62 @@ class Currency
     /**
      * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @var string
      */
-    private $code;
+    private string $code;
 
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var string
      */
-    private $htmlEntity;
+    private string $htmlEntity;
 
     /**
      * @var float
      */
-    private $conversionFactor;
+    private float $conversionFactor;
 
     /**
      * @var bool
      */
-    private $isDefault = false;
+    private bool $isDefault = false;
 
     /**
      * @var bool
      */
-    private $forcePlacementBeforeNumber = false;
+    private bool $forcePlacementBeforeNumber = false;
 
     /**
      * @var string
      */
-    private $decimalSeparator;
+    private string $decimalSeparator;
 
     /**
      * @var string
      */
-    private $thousandsSeparator;
+    private string $thousandsSeparator;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $cURL;
+    private ?string $cURL = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $cURLFull;
+    private ?string $cURLFull = null;
 
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'kWaehrung'            => 'ID',
         'cISO'                 => 'Code',
         'cName'                => 'Name',

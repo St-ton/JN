@@ -4,6 +4,7 @@ namespace JTL\Catalog\Product;
 
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Category\MenuItem;
+use JTL\Customer\CustomerGroup;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
 use JTL\Session\Frontend;
@@ -73,8 +74,10 @@ class ArtikelListe
         }
         if (\is_array($items)) {
             $defaultOptions = Artikel::getDefaultOptions();
+            $currency       = Frontend::getCurrency();
+            $customerGroup  = CustomerGroup::getByID($customerGroupID);
             foreach ($items as $item) {
-                $product = new Artikel($db);
+                $product = new Artikel($db, $customerGroup, $currency);
                 $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
                 $this->elemente[] = $product;
             }
@@ -144,8 +147,10 @@ class ArtikelListe
                 ]
             );
             $defaultOptions = Artikel::getDefaultOptions();
+            $currency       = Frontend::getCurrency();
+            $customerGroup  = CustomerGroup::getByID($customerGroupID);
             foreach ($items as $item) {
-                $product = new Artikel($db);
+                $product = new Artikel($db, $customerGroup, $currency);
                 $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
                 if ($product->kArtikel > 0) {
                     $this->elemente[] = $product;
@@ -177,10 +182,12 @@ class ArtikelListe
         $total           = 0;
         $defaultOptions  = Artikel::getDefaultOptions();
         $languageID      = Shop::getLanguageID();
+        $customerGroup   = Frontend::getCustomerGroup();
         $customerGroupID = Frontend::getCustomerGroup()->getID();
         $db              = Shop::Container()->getDB();
+        $currency        = Frontend::getCurrency();
         for ($i = $start; $i < $cnt; $i++) {
-            $product = new Artikel($db);
+            $product = new Artikel($db, $customerGroup, $currency);
             $product->fuelleArtikel($productIDs[$i], $defaultOptions, $customerGroupID, $languageID);
             if ($product->kArtikel > 0) {
                 ++$total;
@@ -257,8 +264,10 @@ class ArtikelListe
         }
         $defaultOptions = Artikel::getDefaultOptions();
         $languageID     = Shop::getLanguageID();
+        $currency       = Frontend::getCurrency();
+        $customerGroup  = CustomerGroup::getByID($customerGroupID);
         foreach ($items as $obj) {
-            $product = new Artikel($db);
+            $product = new Artikel($db, $customerGroup, $currency);
             $product->fuelleArtikel((int)$obj->kArtikel, $defaultOptions, $customerGroupID, $languageID);
             if ($product->kArtikel > 0) {
                 $this->elemente[] = $product;
@@ -345,8 +354,10 @@ class ArtikelListe
         if (\is_array($items)) {
             $defaultOptions = Artikel::getDefaultOptions();
             $languageID     = Shop::getLanguageID();
+            $currency       = Frontend::getCurrency();
+            $customerGroup  = CustomerGroup::getByID($customerGroupID);
             foreach ($items as $item) {
-                $product = new Artikel($db);
+                $product = new Artikel($db, $customerGroup, $currency);
                 $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
                 if ($product->kArtikel > 0) {
                     $this->elemente[] = $product;

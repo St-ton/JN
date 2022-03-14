@@ -5,7 +5,9 @@ namespace JTL\Export;
 use DateTime;
 use Exception;
 use InvalidArgumentException;
+use JTL\Catalog\Currency;
 use JTL\Cron\QueueEntry;
+use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Category;
 use JTL\Helpers\Request;
 use JTL\Plugin\Helper as PluginHelper;
@@ -147,10 +149,14 @@ class FormatExporter extends AbstractExporter
 
             return false;
         }
+        $customerGroup   = CustomerGroup::getByID($this->model->getCustomerGroupID());
+        $customerGroupID = $customerGroup->getID();
+        $languageID      = $this->model->getLanguageID();
+        $currency        = $this->model->getCurrency();
 
         $this->logger->notice('Starting exportformat "' . $this->model->getName()
-            . '" for language ' . $this->model->getLanguageID()
-            . ' and customer group ' . $this->model->getCustomerGroupID()
+            . '" for language ' . $languageID
+            . ' and customer group ' . $customerGroupID
             . ' with caching ' . (($this->getCache()->isActive() && $this->model->getUseCache())
                 ? 'enabled'
                 : 'disabled')
@@ -160,24 +166,24 @@ class FormatExporter extends AbstractExporter
         }
         $fallback     = (\mb_strpos($this->model->getContent(), '->oKategorie_arr') !== false);
         $options      = Product::getExportOptions();
-        $helper       = Category::getInstance($this->model->getLanguageID(), $this->model->getCustomerGroupID());
+        $helper       = Category::getInstance($languageID, $customerGroupID);
         $shopURL      = Shop::getURL();
         $imageBaseURL = Shop::getImageBaseURL();
         $res          = $this->db->getPDOStatement($this->getExportSQL());
         while (($productData = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            $product = new Product($this->db);
+            $product = new Product($this->db, $customerGroup, $currency);
             $product->fuelleArtikel(
                 (int)$productData->kArtikel,
                 $options,
-                $this->model->getCustomerGroupID(),
-                $this->model->getLanguageID(),
+                $customerGroupID,
+                $languageID,
                 !$this->model->getUseCache()
             );
             if ($product->kArtikel <= 0) {
                 continue;
             }
-            $product->kSprache                 = $this->model->getLanguageID();
-            $product->kKundengruppe            = $this->model->getCustomerGroupID();
+            $product->kSprache                 = $languageID;
+            $product->kKundengruppe            = $customerGroupID;
             $product->kWaehrung                = $this->model->getCurrencyID();
             $product->campaignValue            = $this->model->getCampaignValue();
             $product->currencyConversionFactor = $pseudoSession->getCurrency()->getConversionFactor();
@@ -221,6 +227,7 @@ class FormatExporter extends AbstractExporter
         if ($isCron !== false) {
             $this->finishCronRun($started, (int)$queueEntry->foreignKeyID, $cacheHits, $cacheMisses);
         } else {
+            require \PFAD_ROOT . \PFAD_INCLUDES . 'profiler_inc.php';
             $cb = new AsyncCallback();
             $cb->setExportID($this->model->getId())
                 ->setTasksExecuted($this->queue->tasksExecuted)

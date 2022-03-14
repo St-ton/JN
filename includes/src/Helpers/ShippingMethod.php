@@ -390,7 +390,9 @@ class ShippingMethod
         }
         $iso      = $_SESSION['cLieferlandISO'] ?? 'DE';
         $cart     = Frontend::getCart();
-        $cgroupID = Frontend::getCustomerGroup()->getID();
+        $cgroup   = Frontend::getCustomerGroup();
+        $currency = Frontend::getCurrency();
+        $cgroupID = $cgroup->getID();
         $db       = Shop::Container()->getDB();
         // Baue ZusatzArtikel
         $additionalProduct                  = new stdClass();
@@ -415,7 +417,7 @@ class ShippingMethod
             if ($nArtikelAssoc !== 1) {
                 continue;
             }
-            $tmpProduct = (new Artikel($db))->fuelleArtikel($productID, $defaultOptions, $cgroupID);
+            $tmpProduct = (new Artikel($db, $cgroup, $currency))->fuelleArtikel($productID, $defaultOptions, $cgroupID);
             // Normaler Variationsartikel
             if ($tmpProduct !== null
                 && $tmpProduct->nIstVater === 0
@@ -443,7 +445,8 @@ class ShippingMethod
             $products = \array_merge($products);
         }
         foreach ($products as $product) {
-            $tmpProduct = (new Artikel($db))->fuelleArtikel($product['kArtikel'], $defaultOptions, $cgroupID);
+            $tmpProduct = (new Artikel($db, $cgroup, $currency))
+                ->fuelleArtikel($product['kArtikel'], $defaultOptions, $cgroupID);
             if ($tmpProduct === null || $tmpProduct->kArtikel <= 0) {
                 continue;
             }

@@ -21,7 +21,7 @@ class Session
     /**
      * @var stdClass|null
      */
-    private ?stdClass $oldSession;
+    private ?stdClass $oldSession = null;
 
     /**
      * @var Currency

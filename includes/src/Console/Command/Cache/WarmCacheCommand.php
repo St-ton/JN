@@ -122,7 +122,7 @@ class WarmCacheCommand extends Command
                     $_SESSION['cISOSprache'] = $language->getCode();
                     Shop::setLanguage($languageID, $language->getCode());
                     if ($this->details === true) {
-                        $product = (new Artikel($this->db))->fuelleArtikel(
+                        $product = (new Artikel($this->db, $customerGroup))->fuelleArtikel(
                             $pid,
                             $detailOpt,
                             $customerGroup->getID(),
@@ -137,7 +137,7 @@ class WarmCacheCommand extends Command
                                 : ' could not be loaded'));
                     }
                     if ($this->list === true) {
-                        $product = (new Artikel($this->db))->fuelleArtikel(
+                        $product = (new Artikel($this->db), $customerGroup)->fuelleArtikel(
                             $pid,
                             $listOpt,
                             $customerGroup->getID(),

@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\CSV\Export;
 use JTL\CSV\Import;
 use JTL\Helpers\Form;
@@ -50,13 +49,12 @@ if (Form::validateToken()) {
             $importer->import('redirects', 'tredirect', [], null, Request::verifyGPCDataInt('importType'));
             $errorCount = $importer->getErrorCount();
             if ($errorCount > 0) {
-                $alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
+                $alertHelper->addError(
                     __('errorImport') . '<br><br>' . implode('<br>', $importer->getErrors()),
                     'errorImport'
                 );
             } else {
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImport'), 'successImport');
+                $alertHelper->addSuccess(__('successImport'), 'successImport');
             }
             break;
         case 'csvExport':
@@ -94,8 +92,7 @@ if (Form::validateToken()) {
                         $redirect->cAvailable = 'y';
                         $db->update('tredirect', 'kRedirect', $redirect->kRedirect, $redirect);
                     } else {
-                        $alertHelper->addAlert(
-                            Alert::TYPE_ERROR,
+                        $alertHelper->addError(
                             sprintf(__('errorURLNotReachable'), $item['cToUrl']),
                             'errorURLNotReachable'
                         );
@@ -119,9 +116,9 @@ if (Form::validateToken()) {
                 Request::verifyGPDataString('cFromUrl'),
                 Request::verifyGPDataString('cToUrl')
             )) {
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRedirectSave'), 'successRedirectSave');
+                $alertHelper->addSuccess(__('successRedirectSave'), 'successRedirectSave');
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');
+                $alertHelper->addError(__('errorCheckInput'), 'errorCheckInput');
                 $smarty->assign('cTab', 'new_redirect')
                     ->assign('cFromUrl', Text::filterXSS(Request::verifyGPDataString('cFromUrl')))
                     ->assign('cToUrl', Text::filterXSS(Request::verifyGPDataString('cToUrl')));

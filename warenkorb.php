@@ -66,8 +66,7 @@ if ($valid
             } elseif (!empty($coupon->kKupon) && $coupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                 $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
                 $_SESSION['oVersandfreiKupon'] = $coupon;
-                $alertHelper->addAlert(
-                    Alert::TYPE_SUCCESS,
+                $alertHelper->addSuccess(
                     Shop::Lang()->get('couponSucc1') . ' '
                     . trim(str_replace(';', ', ', $coupon->cLieferlaender), ', '),
                     'shippingFreeSuccess'
@@ -137,19 +136,19 @@ $maxSize         = Upload::uploadMax();
 
 //alerts
 if (($quickBuyNote = CartHelper::checkQuickBuy()) !== '') {
-    $alertHelper->addAlert(Alert::TYPE_INFO, $quickBuyNote, 'quickBuyNote');
+    $alertHelper->addInfo($quickBuyNote, 'quickBuyNote');
 }
 if (!empty($_SESSION['Warenkorbhinweise'])) {
     foreach ($_SESSION['Warenkorbhinweise'] as $key => $cartNotice) {
-        $alertHelper->addAlert(Alert::TYPE_WARNING, $cartNotice, 'cartNotice' . $key);
+        $alertHelper->addWarning($cartNotice, 'cartNotice' . $key);
     }
     unset($_SESSION['Warenkorbhinweise']);
 }
 if ($warning !== '') {
-    $alertHelper->addAlert(Alert::TYPE_DANGER, $warning, 'cartWarning', ['id' => 'msgWarning']);
+    $alertHelper->addDanger($warning, 'cartWarning', ['id' => 'msgWarning']);
 }
 if (($orderAmountStock = CartHelper::checkOrderAmountAndStock($conf)) !== '') {
-    $alertHelper->addAlert(Alert::TYPE_WARNING, $orderAmountStock, 'orderAmountStock');
+    $alertHelper->addWarning($orderAmountStock, 'orderAmountStock');
 }
 
 CartHelper::addVariationPictures($cart);

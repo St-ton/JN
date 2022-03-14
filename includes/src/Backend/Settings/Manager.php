@@ -3,7 +3,6 @@
 namespace JTL\Backend\Settings;
 
 use Illuminate\Support\Collection;
-use JTL\Alert\Alert;
 use JTL\Backend\AdminAccount;
 use JTL\Backend\Settings\Sections\SectionInterface;
 use JTL\DB\DbInterface;
@@ -172,8 +171,7 @@ class Manager
             ['settingName' => $settingName]
         );
         if ($defaultValue === null) {
-            $this->alertService->addAlert(
-                Alert::TYPE_DANGER,
+            $this->alertService->addDanger(
                 \sprintf(\__('resetSettingDefaultValueNotFound'), $settingName),
                 'resetSettingDefaultValueNotFound'
             );

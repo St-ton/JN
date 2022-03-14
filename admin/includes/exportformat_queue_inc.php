@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Catalog\Currency;
 use JTL\Cron\Checker;
 use JTL\Cron\JobFactory;
@@ -541,8 +540,8 @@ function exportformatQueueFinalize(string $step, JTLSmarty $smarty, array &$mess
             break;
     }
 
-    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $messages['error'], 'expoFormatError');
-    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $messages['notice'], 'expoFormatNote');
+    Shop::Container()->getAlertService()->addError($messages['error'], 'expoFormatError');
+    Shop::Container()->getAlertService()->addNotice($messages['notice'], 'expoFormatNote');
 
     $smarty->assign('step', $step)
         ->display('exportformat_queue.tpl');

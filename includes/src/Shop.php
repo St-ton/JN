@@ -11,7 +11,6 @@ use JTL\Boxes\Renderer\DefaultRenderer;
 use JTL\Cache\JTLCache;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Consent\Manager;
 use JTL\Consent\ManagerInterface;
 use JTL\Cron\Admin\Controller as CronController;
@@ -57,6 +56,7 @@ use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
 use JTL\ProcessingHandler\NiceDBHandler;
+use JTL\Router\Router;
 use JTL\Services\Container;
 use JTL\Services\DefaultServicesInterface;
 use JTL\Services\JTL\AlertService;
@@ -296,17 +296,17 @@ final class Shop
     /**
      * @var bool
      */
-    public static $bSEOMerkmalNotFound;
+    public static bool $bSEOMerkmalNotFound = false;
 
     /**
      * @var bool
      */
-    public static $bKatFilterNotFound;
+    public static bool $bKatFilterNotFound = false;
 
     /**
      * @var bool
      */
-    public static $bHerstellerFilterNotFound;
+    public static bool $bHerstellerFilterNotFound = false;
 
     /**
      * @var null|Shop
@@ -391,7 +391,7 @@ final class Shop
     /**
      * @var array
      */
-    private $registry = [];
+    private array $registry = [];
 
     /**
      * @var null|bool
@@ -421,7 +421,7 @@ final class Shop
     /**
      * @var FilterInterface[]
      */
-    public static $customFilters = [];
+    public static array $customFilters = [];
 
     /**
      * @var DefaultServicesInterface
@@ -441,12 +441,12 @@ final class Shop
     /**
      * @var bool
      */
-    private static $isFrontend = true;
+    private static bool $isFrontend = true;
 
     /**
      * @var array
      */
-    private static $mapping = [
+    private static array $mapping = [
         'DB'     => '_DB',
         'Cache'  => '_Cache',
         'Lang'   => '_Language',
@@ -638,7 +638,7 @@ final class Shop
      */
     public static function getLanguage(bool $iso = false)
     {
-        return $iso === false ? (int)self::$kSprache : self::$cISO;
+        return $iso === false ? self::$kSprache : self::$cISO;
     }
 
     /**
@@ -649,7 +649,7 @@ final class Shop
      */
     public static function getLanguageID(): int
     {
-        return (int)self::$kSprache;
+        return self::$kSprache;
     }
 
     /**
@@ -791,65 +791,8 @@ final class Shop
             $manager = new Manager(self::Container()->getDB());
             die(\json_encode((object)['status' => 'OK', 'data' => $manager->save(Request::postVar('data'))]));
         }
-        self::$kKonfigPos             = Request::verifyGPCDataInt('ek');
-        self::$kKategorie             = Request::verifyGPCDataInt('k');
-        self::$kArtikel               = Request::verifyGPCDataInt('a');
-        self::$kVariKindArtikel       = Request::verifyGPCDataInt('a2');
-        self::$kSeite                 = Request::verifyGPCDataInt('s');
-        self::$kLink                  = Request::verifyGPCDataInt('s');
-        self::$kHersteller            = Request::verifyGPCDataInt('h');
-        self::$kSuchanfrage           = Request::verifyGPCDataInt('l');
-        self::$kMerkmalWert           = Request::verifyGPCDataInt('m');
-        self::$kSuchspecial           = Request::verifyGPCDataInt('q');
-        self::$kNews                  = Request::verifyGPCDataInt('n');
-        self::$kNewsMonatsUebersicht  = Request::verifyGPCDataInt('nm');
-        self::$kNewsKategorie         = Request::verifyGPCDataInt('nk');
-        self::$nBewertungSterneFilter = Request::verifyGPCDataInt('bf');
-        self::$cPreisspannenFilter    = Request::verifyGPDataString('pf');
-        self::$manufacturerFilterIDs  = Request::verifyGPDataIntegerArray('hf');
-        self::$kHerstellerFilter      = \count(self::$manufacturerFilterIDs) > 0
-            ? self::$manufacturerFilterIDs[0]
-            : 0;
-        self::$categoryFilterIDs      = Request::verifyGPDataIntegerArray('kf');
-        self::$kKategorieFilter       = \count(self::$categoryFilterIDs) > 0
-            ? self::$categoryFilterIDs[0]
-            : 0;
-        self::$searchSpecialFilterIDs = Request::verifyGPDataIntegerArray('qf');
-        self::$kSuchFilter            = Request::verifyGPCDataInt('sf');
-        self::$kSuchspecialFilter     = \count(self::$searchSpecialFilterIDs) > 0
-            ? self::$searchSpecialFilterIDs[0]
-            : 0;
-
-        self::$nDarstellung = Request::verifyGPCDataInt('ed');
-        self::$nSortierung  = Request::verifyGPCDataInt('sortierreihenfolge');
-        self::$nSort        = Request::verifyGPCDataInt('Sortierung');
-
-        self::$show            = Request::verifyGPCDataInt('show');
-        self::$vergleichsliste = Request::verifyGPCDataInt('vla');
-        self::$bFileNotFound   = false;
-        self::$cCanonicalURL   = '';
-        self::$is404           = false;
-        self::$nLinkart        = 0;
-
-        self::$nSterne = Request::verifyGPCDataInt('nSterne');
-
-        self::$kWunschliste = Wishlist::checkeParameters();
-
-        self::$nNewsKat = Request::verifyGPCDataInt('nNewsKat');
-        self::$cDatum   = Request::verifyGPDataString('cDatum');
-        self::$nAnzahl  = Request::verifyGPCDataInt('nAnzahl');
-
-        self::$optinCode = Request::verifyGPDataString('oc');
-
-        if (Request::verifyGPDataString('qs') !== '') {
-            self::$cSuche = Text::xssClean(Request::verifyGPDataString('qs'));
-        } elseif (Request::verifyGPDataString('suchausdruck') !== '') {
-            self::$cSuche = Text::xssClean(Request::verifyGPDataString('suchausdruck'));
-        } else {
-            self::$cSuche = Text::xssClean(Request::verifyGPDataString('suche'));
-        }
-
-        self::$nArtikelProSeite = Request::verifyGPCDataInt('af');
+        $router = new Router(self::Container()->getDB());
+        self::setParams($router->initCompat());
         if (self::$nArtikelProSeite !== 0) {
             $_SESSION['ArtikelProSeite'] = self::$nArtikelProSeite;
         }
@@ -869,7 +812,7 @@ final class Shop
                     self::$kArtikel = 0;
                 }
             } elseif (((int)$redirect === \R_LOGIN_BEWERTUNG || (int)$redirect === \R_LOGIN_TAG)
-                && empty($_SESSION['Kunde']->kKunde)
+                && Frontend::getCustomer()->getID() > 0
             ) {
                 // avoid redirect to product page for ratings that require logged in customers
                 self::$kArtikel = 0;
@@ -895,16 +838,19 @@ final class Shop
         $conf->setConfig(self::$settings->getAll());
         $conf->setBaseURL(self::getURL() . '/');
         self::$productFilter = new ProductFilter($conf, self::Container()->getDB(), self::Container()->getCache());
-        self::seoCheck();
+        self::getLanguageFromServerName();
+        $res = $router->dispatch();
+        self::$uri = $router->getUri();
+        if ($res === false) {
+            self::$is404 = true;
+        }
+        self::seoCheckFinish();
 
-        if ((self::$kArtikel > 0 || self::$kKategorie > 0)
-            && !Frontend::getCustomerGroup()->mayViewCategories()
-        ) {
+        if ((self::$kArtikel > 0 || self::$kKategorie > 0) && !Frontend::getCustomerGroup()->mayViewCategories()) {
             // falls Artikel/Kategorien nicht gesehen werden duerfen -> login
             \header('Location: ' . LinkService::getInstance()->getStaticRoute('jtl.php') . '?li=1', true, 303);
             exit;
         }
-
         self::setImageBaseURL(\defined('IMAGE_BASE_URL') ? \IMAGE_BASE_URL : self::getURL());
         Dispatcher::getInstance()->fire(Event::RUN);
 
@@ -913,6 +859,19 @@ final class Shop
         $starterFactory->getStarter()->start();
 
         return self::$productFilter;
+    }
+
+    /**
+     * @param array $params
+     * @return void
+     */
+    public static function setParams(array $params): void
+    {
+        foreach ($params as $key => $val) {
+            if (\property_exists(__CLASS__, $key)) {
+                self::${$key} = $val;
+            }
+        }
     }
 
     /**
@@ -984,7 +943,7 @@ final class Shop
         if (\EXPERIMENTAL_MULTILANG_SHOP !== true) {
             return;
         }
-        foreach ($_SESSION['Sprachen'] ?? [] as $language) {
+        foreach (Frontend::getLanguages() as $language) {
             $code    = \mb_convert_case($language->getCode(), \MB_CASE_UPPER);
             $shopURL = \defined('URL_SHOP_' . $code) ? \constant('URL_SHOP_' . $code) : \URL_SHOP;
             if ($_SERVER['HTTP_HOST'] === \parse_url($shopURL)['host']) {
@@ -996,303 +955,17 @@ final class Shop
 
     /**
      * check for seo url
+     * @deprecated since 5.2.0
      */
     public static function seoCheck(): void
     {
-        self::getLanguageFromServerName();
-        $uri                             = self::getRequestUri();
-        self::$uri                       = $uri;
-        self::$bSEOMerkmalNotFound       = false;
-        self::$bKatFilterNotFound        = false;
-        self::$bHerstellerFilterNotFound = false;
-        \executeHook(\HOOK_SEOCHECK_ANFANG, ['uri' => &$uri]);
-        $seite       = 0;
-        $manufSeo    = [];
-        $categorySeo = '';
-        $customSeo   = [];
-        if (\mb_strpos($uri, '/') === 0) {
-            $uri = \mb_substr($uri, 1);
-        }
-        $slug = Request::extractExternalParams($uri);
-        if (!$slug) {
-            self::seoCheckFinish();
-            return;
-        }
-        foreach (self::$productFilter->getCustomFilters() as $customFilter) {
-            $seoParam = $customFilter->getUrlParamSEO();
-            if (empty($seoParam)) {
-                continue;
-            }
-            $customFilterArr = \explode($seoParam, $slug);
-            if (\count($customFilterArr) > 1) {
-                [$slug, $customFilterSeo] = $customFilterArr;
-                if (\mb_strpos($customFilterSeo, \SEP_HST) !== false) {
-                    $arr             = \explode(\SEP_HST, $customFilterSeo);
-                    $customFilterSeo = $arr[0];
-                    $slug           .= \SEP_HST . $arr[1];
-                }
-                if (($idx = \mb_strpos($customFilterSeo, \SEP_KAT)) !== false
-                    && $idx !== \mb_strpos($customFilterSeo, \SEP_HST)
-                ) {
-                    $manufacturers   = \explode(\SEP_KAT, $customFilterSeo);
-                    $customFilterSeo = $manufacturers[0];
-                    $slug           .= \SEP_KAT . $manufacturers[1];
-                }
-                if (\mb_strpos($customFilterSeo, \SEP_MERKMAL) !== false) {
-                    $arr             = \explode(\SEP_MERKMAL, $customFilterSeo);
-                    $customFilterSeo = $arr[0];
-                    $slug           .= \SEP_MERKMAL . $arr[1];
-                }
-                if (\mb_strpos($customFilterSeo, \SEP_MM_MMW) !== false) {
-                    $arr             = \explode(\SEP_MM_MMW, $customFilterSeo);
-                    $customFilterSeo = $arr[0];
-                    $slug           .= \SEP_MM_MMW . $arr[1];
-                }
-                if (\mb_strpos($customFilterSeo, \SEP_SEITE) !== false) {
-                    $arr             = \explode(\SEP_SEITE, $customFilterSeo);
-                    $customFilterSeo = $arr[0];
-                    $slug           .= \SEP_SEITE . $arr[1];
-                }
-
-                $customSeo[$customFilter->getClassName()] = [
-                    'cSeo'  => $customFilterSeo,
-                    'table' => $customFilter->getTableName()
-                ];
-            }
-        }
-        // change Opera Fix
-        if (\mb_substr($slug, \mb_strlen($slug) - 1, 1) === '?') {
-            $slug = \mb_substr($slug, 0, -1);
-        }
-        $match = \preg_match('/[^_](' . \SEP_SEITE . '([0-9]+))/', $slug, $matches, \PREG_OFFSET_CAPTURE);
-        if ($match === 1) {
-            $seite = (int)$matches[2][0];
-            $slug  = \mb_substr($slug, 0, $matches[1][1]);
-        }
-        // duplicate content work around
-        if ($seite === 1 && \mb_strlen($slug) > 0) {
-            \http_response_code(301);
-            \header('Location: ' . self::getURL() . '/' . $slug);
-            exit();
-        }
-        $seoAttributes = \explode(\SEP_MERKMAL, $slug);
-        $slug          = $seoAttributes[0];
-        foreach ($seoAttributes as $i => &$merkmal) {
-            if ($i === 0) {
-                continue;
-            }
-            if (($idx = \mb_strpos($merkmal, \SEP_KAT)) !== false && $idx !== \mb_strpos($merkmal, \SEP_HST)) {
-                $arr     = \explode(\SEP_KAT, $merkmal);
-                $merkmal = $arr[0];
-                $slug   .= \SEP_KAT . $arr[1];
-            }
-            if (\mb_strpos($merkmal, \SEP_HST) !== false) {
-                $arr     = \explode(\SEP_HST, $merkmal);
-                $merkmal = $arr[0];
-                $slug   .= \SEP_HST . $arr[1];
-            }
-            if (\mb_strpos($merkmal, \SEP_MM_MMW) !== false) {
-                $arr     = \explode(\SEP_MM_MMW, $merkmal);
-                $merkmal = $arr[0];
-                $slug   .= \SEP_MM_MMW . $arr[1];
-            }
-            if (\mb_strpos($merkmal, \SEP_SEITE) !== false) {
-                $arr     = \explode(\SEP_SEITE, $merkmal);
-                $merkmal = $arr[0];
-                $slug   .= \SEP_SEITE . $arr[1];
-            }
-        }
-        unset($merkmal);
-        $manufacturers = \explode(\SEP_HST, $slug);
-        if (\is_array($manufacturers) && \count($manufacturers) > 1) {
-            foreach ($manufacturers as $i => $manufacturer) {
-                if ($i === 0) {
-                    $slug = $manufacturer;
-                } else {
-                    $manufSeo[] = $manufacturer;
-                }
-            }
-            foreach ($manufSeo as $i => $hstseo) {
-                if (($idx = \mb_strpos($hstseo, \SEP_KAT)) !== false && $idx !== \mb_strpos($hstseo, \SEP_HST)) {
-                    $manufacturers[] = \explode(\SEP_KAT, $hstseo);
-                    $manufSeo[$i]    = $manufacturers[0];
-                    $slug           .= \SEP_KAT . $manufacturers[1];
-                }
-                if (\mb_strpos($hstseo, \SEP_MERKMAL) !== false) {
-                    $arr          = \explode(\SEP_MERKMAL, $hstseo);
-                    $manufSeo[$i] = $arr[0];
-                    $slug        .= \SEP_MERKMAL . $arr[1];
-                }
-                if (\mb_strpos($hstseo, \SEP_MM_MMW) !== false) {
-                    $arr          = \explode(\SEP_MM_MMW, $hstseo);
-                    $manufSeo[$i] = $arr[0];
-                    $slug        .= \SEP_MM_MMW . $arr[1];
-                }
-                if (\mb_strpos($hstseo, \SEP_SEITE) !== false) {
-                    $arr          = \explode(\SEP_SEITE, $hstseo);
-                    $manufSeo[$i] = $arr[0];
-                    $slug        .= \SEP_SEITE . $arr[1];
-                }
-            }
-        } else {
-            $slug = $manufacturers[0];
-        }
-        $categories = \explode(\SEP_KAT, $slug);
-        if (\is_array($categories) && \count($categories) > 1) {
-            [$slug, $categorySeo] = $categories;
-            if (\mb_strpos($categorySeo, \SEP_HST) !== false) {
-                $arr         = \explode(\SEP_HST, $categorySeo);
-                $categorySeo = $arr[0];
-                $slug       .= \SEP_HST . $arr[1];
-            }
-            if (\mb_strpos($categorySeo, \SEP_MERKMAL) !== false) {
-                $arr         = \explode(\SEP_MERKMAL, $categorySeo);
-                $categorySeo = $arr[0];
-                $slug       .= \SEP_MERKMAL . $arr[1];
-            }
-            if (\mb_strpos($categorySeo, \SEP_MM_MMW) !== false) {
-                $arr         = \explode(\SEP_MM_MMW, $categorySeo);
-                $categorySeo = $arr[0];
-                $slug       .= \SEP_MM_MMW . $arr[1];
-            }
-            if (\mb_strpos($categorySeo, \SEP_SEITE) !== false) {
-                $arr         = \explode(\SEP_SEITE, $categorySeo);
-                $categorySeo = $arr[0];
-                $slug       .= \SEP_SEITE . $arr[1];
-            }
-        } else {
-            $slug = $categories[0];
-        }
-        if ($seite > 0) {
-            $_GET['seite'] = $seite;
-            self::$kSeite  = $seite;
-        }
-        // split attribute/attribute value
-        $attributes = \explode(\SEP_MM_MMW, $slug);
-        if (\is_array($attributes) && \count($attributes) > 1) {
-            $slug = $attributes[1];
-            //$mmseo = $oMerkmal_arr[0];
-        }
-        // custom filter
-        foreach ($customSeo as $className => $data) {
-            $seoData = self::Container()->getDB()->select($data['table'], 'cSeo', $data['cSeo']);
-            if (isset($seoData->filterval)) {
-                self::$customFilters[$className] = (int)$seoData->filterval;
-            } else {
-                self::$bKatFilterNotFound = true;
-            }
-            if (isset($seoData->kSprache) && $seoData->kSprache > 0) {
-                self::updateLanguage((int)$seoData->kSprache);
-            }
-        }
-        // category filter
-        if (\mb_strlen($categorySeo) > 0) {
-            $seoData = self::Container()->getDB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $categorySeo);
-            if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $categorySeo) === 0) {
-                self::$kKategorieFilter = (int)$seoData->kKey;
-            } else {
-                self::$bKatFilterNotFound = true;
-            }
-        }
-        // manufacturer filter
-        if (($seoCount = \count($manufSeo)) > 0) {
-            if ($seoCount === 1) {
-                $oSeo = self::Container()->getDB()->selectAll(
-                    'tseo',
-                    ['cKey', 'cSeo'],
-                    ['kHersteller', $manufSeo[0]],
-                    'kKey'
-                );
-            } else {
-                $bindValues = [];
-                // PDO::bindValue() is 1-based
-                foreach ($manufSeo as $i => $t) {
-                    $bindValues[$i + 1] = $t;
-                }
-                $oSeo = self::Container()->getDB()->getObjects(
-                    "SELECT kKey
-                        FROM tseo
-                        WHERE cKey = 'kHersteller'
-                        AND cSeo IN (" . \implode(',', \array_fill(0, $seoCount, '?')) . ')',
-                    $bindValues
-                );
-            }
-            $results = \count($oSeo);
-            if ($results === 1) {
-                self::$kHerstellerFilter = (int)$oSeo[0]->kKey;
-            } elseif ($results === 0) {
-                self::$bHerstellerFilterNotFound = true;
-            } else {
-                self::$kHerstellerFilter = \array_map(static function ($e) {
-                    return (int)$e->kKey;
-                }, $oSeo);
-            }
-        }
-        // attribute filter
-        if (\count($seoAttributes) > 1) {
-            if (!isset($_GET['mf'])) {
-                $_GET['mf'] = [];
-            } elseif (!\is_array($_GET['mf'])) {
-                $_GET['mf'] = [(int)$_GET['mf']];
-            }
-            self::$bSEOMerkmalNotFound = false;
-            foreach ($seoAttributes as $i => $seoString) {
-                if ($i > 0 && \mb_strlen($seoString) > 0) {
-                    $seoData = self::Container()->getDB()->select(
-                        'tseo',
-                        'cKey',
-                        'kMerkmalWert',
-                        'cSeo',
-                        $seoString
-                    );
-                    if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $seoString) === 0) {
-                        // haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
-                        $_GET['mf'][] = (int)$seoData->kKey;
-                    } else {
-                        self::$bSEOMerkmalNotFound = true;
-                    }
-                }
-            }
-        }
-        if (\count($categories) > 1) {
-            if (!isset($_GET['kf'])) {
-                $_GET['kf'] = [];
-            } elseif (!\is_array($_GET['kf'])) {
-                $_GET['kf'] = [(int)$_GET['kf']];
-            }
-            self::$bSEOMerkmalNotFound = false;
-            foreach ($categories as $i => $seoString) {
-                if ($i > 0 && \mb_strlen($seoString) > 0) {
-                    $seoData = self::Container()->getDB()->select(
-                        'tseo',
-                        'cKey',
-                        'kKategorie',
-                        'cSeo',
-                        $seoString
-                    );
-                    if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $seoString) === 0) {
-                        $_GET['kf'][] = (int)$seoData->kKey;
-                    } else {
-                        self::$bSEOMerkmalNotFound = true;
-                    }
-                }
-            }
-        }
-        $oSeo = self::Container()->getDB()->select('tseo', 'cSeo', $slug);
-        if ($oSeo !== null) {
-            $oSeo->kSprache = (int)$oSeo->kSprache;
-            $oSeo->kKey     = (int)$oSeo->kKey;
-            self::updateLanguage($oSeo->kSprache ?? self::$kSprache);
-        }
-        // Link active?
-        if ($oSeo !== null && $oSeo->cKey === 'kLink') {
-            $link = LinkService::getInstance()->getLinkByID($oSeo->kKey);
-            if ($link !== null && $link->getIsEnabled() === false) {
-                $oSeo = null;
-            }
-        }
-        self::initMainword($oSeo, $slug);
-        self::seoCheckFinish();
+//        self::getLanguageFromServerName();
+//        $uri = self::$uri;
+//        \executeHook(\HOOK_SEOCHECK_ANFANG, ['uri' => &$uri]);
+//        if (\mb_strpos($uri, '/') === 0) {
+//            $uri = \mb_substr($uri, 1);
+//        }
+//        self::seoCheckFinish();
     }
 
     private static function seoCheckFinish(): void
@@ -1307,68 +980,16 @@ final class Shop
     /**
      * @param stdClass|null $seoData
      * @param string        $slug
+     * @deprecated since 5.2.0
      */
     private static function initMainword(?stdClass $seoData, string $slug): void
     {
-        if ($seoData === null) {
-            return;
-        }
-        if (\strcasecmp($seoData->cSeo, $slug) !== 0) {
-            return;
-        }
-        if ($slug !== $seoData->cSeo) {
-            \http_response_code(301);
-            \header('Location: ' . self::getURL() . '/' . $seoData->cSeo);
-            exit;
-        }
-        self::$cCanonicalURL = self::getURL() . '/' . $seoData->cSeo;
-        switch ($seoData->cKey) {
-            case 'kKategorie':
-                self::$kKategorie = $seoData->kKey;
-                break;
-
-            case 'kHersteller':
-                self::$kHersteller = $seoData->kKey;
-                break;
-
-            case 'kArtikel':
-                self::$kArtikel = $seoData->kKey;
-                break;
-
-            case 'kLink':
-                self::$kLink = $seoData->kKey;
-                break;
-
-            case 'kSuchanfrage':
-                self::$kSuchanfrage = $seoData->kKey;
-                break;
-
-            case 'kMerkmalWert':
-                self::$kMerkmalWert = $seoData->kKey;
-                break;
-
-            case 'suchspecial':
-                self::$kSuchspecial = $seoData->kKey;
-                break;
-
-            case 'kNews':
-                self::$kNews = $seoData->kKey;
-                break;
-
-            case 'kNewsMonatsUebersicht':
-                self::$kNewsMonatsUebersicht = $seoData->kKey;
-                break;
-
-            case 'kNewsKategorie':
-                self::$kNewsKategorie = $seoData->kKey;
-                break;
-        }
     }
 
     /**
      * @param int $languageID
      */
-    private static function updateLanguage(int $languageID): void
+    public static function updateLanguage(int $languageID): void
     {
         $iso = self::Lang()->getIsoFromLangID($languageID)->cISO ?? '';
         if ($iso !== $_SESSION['cISOSprache']) {

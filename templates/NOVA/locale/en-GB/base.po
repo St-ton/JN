@@ -26,7 +26,7 @@ msgid "Animation für Schaltflächen beim Hovern"
 msgstr "Animated buttons when hovering"
 
 msgid "Anzeige der Suche auf mobilen Geräten"
-msgstr "Display of search <i class=\"fas fa-mobile-alt\"></i> "
+msgstr "Display of search <i class=\"fas fa-mobile-alt\"></i> <i class=\"fas fa-circle\"></i> "
 
 msgid "Schaltfläche „Nach oben scrollen“ anzeigen"
 msgstr "Show button \"Scroll to top\""
@@ -176,7 +176,7 @@ msgid "Keine"
 msgstr "No"
 
 msgid "Header über gesamte Bildschirmbreite darstellen"
-msgstr "Display header over full width <i class=\"fas fa-desktop\"></i> "
+msgstr "Display header over full width <i class=\"fas fa-desktop\"></i> <i class=\"fas fa-circle\"></i> "
 
 msgid "Linke Seitenleiste anzeigen"
 msgstr "Show left sidebar"
@@ -248,7 +248,7 @@ msgid "Stellt ein wie breit das Suchfeld im Header ist. Tragen Sie 0 ein damit d
 msgstr "Stellt ein wie breit das Suchfeld im Header ist. Tragen Sie 0 ein damit das Suchfeld die volle Breite nutzt."
 
 msgid "Logo Höhe (in px)"
-msgstr "Logo Höhe (in px) <i class=\"fas fa-desktop\"></i> "
+msgstr "Logo Höhe (in px) <i class=\"fas fa-desktop\"></i> <i class=\"fas fa-circle\"></i> "
 
 msgid "Logo zentriert"
 msgstr "Logo centered <i class=\"fas fa-desktop\"></i> "
@@ -266,5 +266,5 @@ msgid "Stellt ein wie das Suchfeld zwischen Logo und Icons platziert sein soll."
 msgstr "Stellt ein wie das Suchfeld zwischen Logo und Icons platziert sein soll."
 
 msgid "Topbar anzeigen"
-msgstr "Show topbar <i class=\"fas fa-desktop\"></i> "
+msgstr "Show topbar <i class=\"fas fa-desktop\"></i> <i class=\"fas fa-circle\"></i> "
 

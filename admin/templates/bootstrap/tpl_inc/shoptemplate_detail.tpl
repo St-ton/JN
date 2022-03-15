@@ -136,6 +136,14 @@
                             <div id="preset-items" class="row mt-3 mb-4">
 
                             </div>
+                            <div class="legend mb-5">
+                                <h2>Legende</h2>
+                                <ul>
+                                    <li><i class="fas fa-desktop"></i> - Nur auf Desktop</li>
+                                    <li><i class="fas fa-mobile-alt"></i> - Nur auf mobilen Geräten</li>
+                                    <li><i class="fas fa-circle"></i> - Auch mit Einstellung "Menü in eigener Zeile anzeigen - Nein" nutzbar</li>
+                                </ul>
+                            </div>
                         </div>
                     {/if}
                     <div class="row">

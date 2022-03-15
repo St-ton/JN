@@ -26253,15 +26253,7 @@ header #burger-menu {
 }
 
 .full-width-mega .main-search-wrapper .twitter-typeahead {
-  flex: 1;
-}
-.full-width-mega #search {
-  display: none;
-}
-@media (min-width: 992px) {
-  .full-width-mega #search {
-    display: block;
-  }
+  flex: 1 1 auto;
 }
 @media (max-width: 991.98px) {
   .full-width-mega.sticky-top .main-search-wrapper {
@@ -26290,13 +26282,6 @@ header #burger-menu {
 .full-width-mega .nav-logo-wrapper {
   padding-right: 0;
   margin-right: auto;
-}
-.full-width-mega.theme-blackline .main-search-wrapper.nav-right .btn-secondary {
-  border-left: 0;
-}
-.full-width-mega.theme-blackline .main-search-wrapper.nav-right .btn-secondary .fa-search {
-  color: initial;
-  font-size: initial;
 }
 @media (min-width: 992px) {
   .full-width-mega .navbar-expand-lg .nav-multiple-row .navbar-nav {

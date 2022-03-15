@@ -263,13 +263,7 @@ header {
 .full-width-mega {
 	.main-search-wrapper {
 		.twitter-typeahead {
-			flex: 1;
-		}
-	}
-	#search {
-		display: none;
-		@include media-breakpoint-up(lg) {
-			display: block;
+			flex: 1 1 auto;
 		}
 	}
 	@include media-breakpoint-down(md) {
@@ -303,19 +297,6 @@ header {
 		margin-right: auto;
 	}
 
-	&.theme-blackline {
-		.main-search-wrapper {
-			&.nav-right {
-				.btn-secondary {
-					border-left: 0;
-					.fa-search {
-						color: initial;
-						font-size: initial;
-					}
-				}
-			}
-		}
-	}
 	@include media-breakpoint-up(lg) {
 		.navbar-expand-lg {
 			.nav-multiple-row {

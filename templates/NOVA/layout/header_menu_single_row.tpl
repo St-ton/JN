@@ -40,9 +40,11 @@
                                 {/block}
                             {else}
                                 {block name='layout-header-menu-single-row-include-header-nav-search'}
-                                    {col class="main-search-wrapper nav-right {if $Einstellungen.template.header.menu_logo_centered === 'Y'}order-lg-1{else}order-lg-2{/if}"}
-                                        {include file='layout/header_nav_search.tpl'}
-                                    {/col}
+                                    {if !$isMobile || $Einstellungen.template.header.mobile_search_type === 'dropdown'}
+                                        {col class="main-search-wrapper nav-right {if $Einstellungen.template.header.menu_logo_centered === 'Y'}order-lg-1{else}order-lg-2{/if}"}
+                                            {include file='layout/header_nav_search.tpl'}
+                                        {/col}
+                                    {/if}
                                 {/block}
                                 {block name='layout-header-menu-single-row-icons'}
                                     {col class="col-auto nav-icons-wrapper order-lg-3"}

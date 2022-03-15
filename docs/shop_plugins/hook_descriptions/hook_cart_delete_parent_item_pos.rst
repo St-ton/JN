@@ -1,4 +1,4 @@
-HOOK_CART_DELETE_PARENT_ITEM_POS (337)
+HOOK_CART_DELETE_PARENT_CART_ITEM (337)
 ======================================
 
 Triggerpunkt

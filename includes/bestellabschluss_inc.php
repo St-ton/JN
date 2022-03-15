@@ -1180,16 +1180,6 @@ function pruefeVerfuegbarkeit(): array
  */
 function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
 {
-    if (Frontend::getCart()->removeParentItems() > 0) {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_WARNING,
-            Shop::Lang()->get('warningCartContainedParentItems', 'checkout'),
-            'warningCartContainedParentItems',
-            ['saveInSession' => true]
-        );
-        header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php'), true, 303);
-        exit;
-    }
     $obj                      = new stdClass();
     $obj->cVerfuegbarkeit_arr = pruefeVerfuegbarkeit();
 

@@ -2053,4 +2053,4 @@ define('HOOK_SYNC_SEND_AVAILABILITYMAILS', 336);
  * @param CartItem positionItem
  * @param bool     &delete
  */
-define('HOOK_CART_DELETE_PARENT_ITEM_POS', 337);
+define('HOOK_CART_DELETE_PARENT_CART_ITEM', 337);

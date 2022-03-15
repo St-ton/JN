@@ -2051,11 +2051,11 @@ class Cart
         $deletedItemCount = 0;
         foreach ($this->PositionenArr as $i => $item) {
             $delete = false;
-            if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
                 && $item->Artikel->nIstVater === 1
             ) {
                 $delete = true;
-                \executeHook(\HOOK_CART_DELETE_PARENT_ITEM_POS, [
+                \executeHook(\HOOK_CART_DELETE_PARENT_CART_ITEM, [
                     'positionItem' => $item,
                     'delete'    => &$delete
                 ]);
@@ -2066,7 +2066,7 @@ class Cart
                 unset($this->PositionenArr[$i]);
             }
         }
-        $this->PositionenArr = \array_merge($this->PositionenArr);
+        $this->PositionenArr = \array_values($this->PositionenArr);
 
         return $deletedItemCount;
     }

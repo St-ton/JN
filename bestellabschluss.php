@@ -55,6 +55,16 @@ if (isset($_GET['i'])) {
             '?fillOut=' . gibFehlendeEingabe(), true, 303);
         exit;
     }
+    if ($cart->removeParentItems() > 0) {
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_WARNING,
+            Shop::Lang()->get('warningCartContainedParentItems', 'checkout'),
+            'warningCartContainedParentItems',
+            ['saveInSession' => true]
+        );
+        header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
+        exit;
+    }
     $cart->pruefeLagerbestaende();
     if ($cart->checkIfCouponIsStillValid() === false) {
         $_SESSION['checkCouponResult']['ungueltig'] = 3;

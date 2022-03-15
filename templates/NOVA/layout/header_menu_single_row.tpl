@@ -77,41 +77,61 @@
         {if $menuScroll}
             {inline_script}
                 <script>
-                    let lastScroll = 0,
-                        timeoutSc,
-                        $navbar = $('.hide-navbar'),
-                        $topbar = $('#header-top-bar'),
-                        $home   = $('.nav-home-button'),
-                        scrollTopActive = false;
-                    $(document).on('scroll wheel', function (e) {
-                        if (window.innerWidth < globals.breakpoints.lg || $('.secure-checkout-topbar').length) {
-                            return;
-                        }
-                        window.clearTimeout(timeoutSc);
-                        timeoutSc = window.setTimeout(function () {
-                            let newScroll = $(this).scrollTop();
-                            if (newScroll < lastScroll || $(window).scrollTop() === 0) {
-                                if ($(window).scrollTop() === 0 && (lastScroll > 100 || e.type === 'wheel' || scrollTopActive)) {
+                    (function() {
+                        let timeoutSc,
+                            lastScroll      = 0,
+                            $navbar         = $('.hide-navbar'),
+                            $topbar         = $('#header-top-bar'),
+                            $home           = $('.nav-home-button'),
+                            scrollTopActive = false,
+                            isClosed        = false;
+
+                        $(document).on('scroll wheel', function (e) {
+                            if (window.innerWidth < globals.breakpoints.lg || $('.secure-checkout-topbar').length) {
+                                return;
+                            }
+                            window.clearTimeout(timeoutSc);
+                            timeoutSc = window.setTimeout(function () {
+                                let newScroll = $(this).scrollTop();
+                                if (newScroll < lastScroll || $(window).scrollTop() === 0) {
+                                    if ($(window).scrollTop() === 0 && (lastScroll > 100 || e.type === 'wheel' || scrollTopActive)) {
+                                        setState('open')
+                                    } else {
+                                        setState('closed')
+                                    }
+                                } else {
+                                    setState('closed')
+                                }
+                                lastScroll = newScroll;
+                            }, 20);
+                        });
+
+                        function setState(state) {
+                            if (state === 'closed') {
+                                if (!isClosed) {
+                                    $topbar.removeClass('d-lg-flex');
+                                    $navbar.addClass('d-none');
+                                    $home.addClass('d-lg-block');
+                                    $.evo.resetForParallax();
+                                }
+                                isClosed = true;
+                            } else if (state === 'open') {
+                                if (isClosed) {
                                     $topbar.addClass('d-lg-flex');
                                     $navbar.removeClass('d-none');
                                     $home.removeClass('d-lg-block');
                                     scrollTopActive = false;
-                                } else {
-                                    $topbar.removeClass('d-lg-flex');
-                                    $navbar.addClass('d-none');
-                                    $home.addClass('d-lg-block');
+                                    $.evo.resetForParallax();
                                 }
-                            } else {
-                                $topbar.removeClass('d-lg-flex');
-                                $navbar.addClass('d-none');
-                                $home.addClass('d-lg-block');
+                                isClosed = false;
                             }
-                            lastScroll = newScroll;
-                        }, 20);
-                    });
-                    $('.smoothscroll-top').on('click', function () {
-                        scrollTopActive = true;
-                    });
+                        }
+
+
+                        $('.smoothscroll-top').on('click', function () {
+                            scrollTopActive = true;
+                        });
+                    })();
                 </script>
             {/inline_script}
         {/if}

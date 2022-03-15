@@ -346,7 +346,9 @@
                     </div>
                 {/block}
             {/if}
-            <header class="d-print-none {if $Einstellungen.template.header.menu_single_row === 'Y'}full-width-mega{/if} {if !$isMobile || $Einstellungen.template.header.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar theme-{$Einstellungen.template.theme.theme_default}"
+            <header class="d-print-none {if $Einstellungen.template.header.menu_single_row === 'Y'}full-width-mega{/if}
+                        {if (!$isMobile || $Einstellungen.template.header.mobile_search_type !== 'fixed') && $Einstellungen.template.header.menu_scroll !== 'none'}sticky-top{/if}
+                        fixed-navbar theme-{$Einstellungen.template.theme.theme_default}"
                     id="jtl-nav-wrapper">
                 {if $Einstellungen.template.header.menu_single_row === 'Y'}
                     {block name='layout-header-include-header-menu-single-row'}

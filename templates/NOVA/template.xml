@@ -67,6 +67,7 @@
             <Setting Description="Anzeige beim Scrollen" Key="menu_scroll" Type="select" Value="menu">
                 <Option Value="menu">Menü</Option>
                 <Option Value="all">Menü, Logo, Suche</Option>
+                <Option Value="none">Nichts</Option>
             </Setting>
             <Setting Description="Logo Höhe (in px)" Key="menu_logoheight" Type="number" Value="49"/>
             <Setting Description="Logo zentriert" Key="menu_logo_centered" Type="select" Value="N">

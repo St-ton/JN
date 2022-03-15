@@ -4,7 +4,6 @@ namespace JTL\Backend;
 
 use DateTime;
 use Exception;
-use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -520,11 +519,7 @@ class AdminAccountManager
                 $errors['cMail'] = 1;
             } elseif (Text::filterEmailAddress($tmpAcc->cMail) === false) {
                 $errors['cMail'] = 2;
-                $this->alertService->addAlert(
-                    Alert::TYPE_DANGER,
-                    \__('validationErrorIncorrectEmail'),
-                    'validationErrorIncorrectEmail'
-                );
+                $this->alertService->addDanger(\__('validationErrorIncorrectEmail'), 'validationErrorIncorrectEmail');
             }
             if (\mb_strlen($tmpAcc->cPass) === 0 && $tmpAcc->kAdminlogin === 0) {
                 $errors['cPass'] = 1;
@@ -921,11 +916,7 @@ class AdminAccountManager
         switch ($step) {
             case 'account_edit':
                 if (Request::postInt('id') > 0) {
-                    $this->alertService->addAlert(
-                        Alert::TYPE_WARNING,
-                        \__('warningPasswordResetAuth'),
-                        'warningPasswordResetAuth'
-                    );
+                    $this->alertService->addWarning(\__('warningPasswordResetAuth'), 'warningPasswordResetAuth');
                 }
                 $this->smarty->assign('oAdminGroup_arr', $this->getAdminGroups())
                     ->assign(
@@ -948,8 +939,8 @@ class AdminAccountManager
                 break;
         }
 
-        $this->alertService->addAlert(Alert::TYPE_NOTE, $this->getNotice(), 'userManagementNote');
-        $this->alertService->addAlert(Alert::TYPE_ERROR, $this->getError(), 'userManagementError');
+        $this->alertService->addNotice($this->getNotice(), 'userManagementNote');
+        $this->alertService->addError($this->getError(), 'userManagementError');
 
         $this->smarty->assign('action', $step)
             ->assign('cTab', Text::filterXSS(Request::verifyGPDataString('tab')))

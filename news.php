@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\URL;
 use JTL\News\Category;
@@ -103,10 +102,10 @@ $cMetaTitle = JTL\Filter\Metadata::prepareMeta(
 );
 
 if ($controller->getErrorMsg() !== '') {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'newsError');
+    $alertHelper->addError($controller->getErrorMsg(), 'newsError');
 }
 if ($controller->getNoticeMsg() !== '') {
-    $alertHelper->addAlert(Alert::TYPE_NOTE, $controller->getNoticeMsg(), 'newsNote');
+    $alertHelper->addNotice($controller->getNoticeMsg(), 'newsNote');
 }
 
 $smarty->assign('oPagination', $pagination)

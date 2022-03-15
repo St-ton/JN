@@ -2,7 +2,6 @@
 
 namespace JTL\Backend\Settings\Sections;
 
-use JTL\Alert\Alert;
 use JTL\Backend\Settings\Item;
 use JTL\Backend\Settings\Manager;
 use JTL\DB\DbInterface;
@@ -275,8 +274,7 @@ class Base implements SectionInterface
         if ($min <= $confValue && $confValue <= $max) {
             return true;
         }
-        $this->manager->getAlertService()->addAlert(
-            Alert::TYPE_DANGER,
+        $this->manager->getAlertService()->addDanger(
             \sprintf(\__('errrorNumberRange'), \__($item->getName()), $min, $max),
             'errrorNumberRange'
         );

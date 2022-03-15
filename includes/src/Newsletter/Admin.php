@@ -3,7 +3,6 @@
 namespace JTL\Newsletter;
 
 use DateTime;
-use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\Campaign;
 use JTL\DB\DbInterface;
@@ -561,15 +560,13 @@ final class Admin
                 $upd->cInhaltText   = $tpl->cInhaltText;
                 $upd->dStartZeit    = $tpl->dStartZeit;
                 $this->db->update('tnewslettervorlage', 'kNewsletterVorlage', $templateID, $upd);
-                $alertHelper->addAlert(
-                    Alert::TYPE_SUCCESS,
+                $alertHelper->addSuccess(
                     \sprintf(\__('successNewsletterTemplateEdit'), $tpl->cName),
                     'successNewsletterTemplateEdit'
                 );
             } else {
                 $templateID = $this->db->insert('tnewslettervorlage', $tpl);
-                $alertHelper->addAlert(
-                    Alert::TYPE_SUCCESS,
+                $alertHelper->addSuccess(
                     \sprintf(\__('successNewsletterTemplateSave'), $tpl->cName),
                     'successNewsletterTemplateSave'
                 );
@@ -877,22 +874,14 @@ final class Admin
         $newsletter->kKunde       = 0;
 
         if (empty($newsletter->cEmail)) {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorFillEmail'), 'errorFillEmail');
+            $this->alertService->addError(\__('errorFillEmail'), 'errorFillEmail');
         } else {
             $exists = $this->db->select('tnewsletterempfaenger', 'cEmail', $newsletter->cEmail);
             if ($exists) {
-                $this->alertService->addAlert(
-                    Alert::TYPE_ERROR,
-                    \__('errorEmailExists'),
-                    'errorEmailExists'
-                );
+                $this->alertService->addError(\__('errorEmailExists'), 'errorEmailExists');
             } else {
                 $this->db->insert('tnewsletterempfaenger', $newsletter);
-                $this->alertService->addAlert(
-                    Alert::TYPE_SUCCESS,
-                    \__('successNewsletterAboAdd'),
-                    'successNewsletterAboAdd'
-                );
+                $this->alertService->addSuccess(\__('successNewsletterAboAdd'), 'successNewsletterAboAdd');
             }
         }
 
@@ -930,8 +919,7 @@ final class Admin
             }
             $msg .= $entry->cBetreff . '", ';
         }
-        $this->alertService->addAlert(
-            Alert::TYPE_SUCCESS,
+        $this->alertService->addSuccess(
             \sprintf(\__('successNewsletterQueueDelete'), \mb_substr($msg, 0, -2)),
             'successDeleteQueue'
         );
@@ -947,8 +935,7 @@ final class Admin
             $this->db->delete('tnewsletterhistory', 'kNewsletterHistory', (int)$historyID);
             $noticeTMP .= $historyID . ', ';
         }
-        $this->alertService->addAlert(
-            Alert::TYPE_SUCCESS,
+        $this->alertService->addSuccess(
             \sprintf(\__('successNewsletterHistoryDelete'), \mb_substr($noticeTMP, 0, -2)),
             'successDeleteHistory'
         );
@@ -986,8 +973,7 @@ final class Admin
             $step = 'uebersicht';
             $smarty->assign('cTab', 'newslettervorlagen');
             if ($templateID > 0) {
-                $this->alertService->addAlert(
-                    Alert::TYPE_SUCCESS,
+                $this->alertService->addSuccess(
                     \sprintf(
                         \__('successNewsletterTemplateEdit'),
                         $filteredPost['cName']
@@ -995,8 +981,7 @@ final class Admin
                     'successNewsletterTemplateEdit'
                 );
             } else {
-                $this->alertService->addAlert(
-                    Alert::TYPE_SUCCESS,
+                $this->alertService->addSuccess(
                     \sprintf(
                         \__('successNewsletterTemplateSave'),
                         $filteredPost['cName']
@@ -1055,7 +1040,7 @@ final class Admin
             return false;
         }
         if ($checks === false) {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('newsletterCronjobNotFound'), 'errorNewsletter');
+            $this->alertService->addError(\__('newsletterCronjobNotFound'), 'errorNewsletter');
 
             return false;
         }
@@ -1163,8 +1148,7 @@ final class Admin
         $hist->dStart           = $checks->dStartZeit;
         $this->db->insert('tnewsletterhistory', $hist); // --TODO-- why already history here ?!?!
 
-        $this->alertService->addAlert(
-            Alert::TYPE_SUCCESS,
+        $this->alertService->addSuccess(
             \sprintf(\__('successNewsletterPrepared'), $newsletter->cName),
             'successNewsletterPrepared'
         );
@@ -1223,10 +1207,9 @@ final class Admin
             );
         }
         if ($result !== true) {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, $result, 'errorNewsletter');
+            $this->alertService->addError($result, 'errorNewsletter');
         } else {
-            $this->alertService->addAlert(
-                Alert::TYPE_SUCCESS,
+            $this->alertService->addSuccess(
                 \sprintf(\__('successTestEmailTo'), $checks->cName, $mailRecipient->cEmail),
                 'successNewsletterPrepared'
             );
@@ -1242,11 +1225,7 @@ final class Admin
     public function deleteTemplates(array $templateIDs): bool
     {
         if (\count($templateIDs) === 0) {
-            $this->alertService->addAlert(
-                Alert::TYPE_ERROR,
-                \__('errorAtLeastOneNewsletter'),
-                'errorAtLeastOneNewsletter'
-            );
+            $this->alertService->addError(\__('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
 
             return false;
         }
@@ -1278,11 +1257,7 @@ final class Admin
                 );
             }
         }
-        $this->alertService->addAlert(
-            Alert::TYPE_SUCCESS,
-            \__('successNewsletterTemplateDelete'),
-            'successNewsletterTemplateDelete'
-        );
+        $this->alertService->addSuccess(\__('successNewsletterTemplateDelete'), 'successNewsletterTemplateDelete');
 
         return true;
     }

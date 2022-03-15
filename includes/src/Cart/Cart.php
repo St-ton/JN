@@ -3,7 +3,6 @@
 namespace JTL\Cart;
 
 use Exception;
-use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
@@ -971,8 +970,7 @@ class Cart
         $updated->cGesamtpreisLocalizedOld = $oldItem->cGesamtpreisLocalized;
         $updated->istKonfigVater           = $item->istKonfigVater();
         self::addUpdatedPosition($updated);
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_WARNING,
+        Shop::Container()->getAlertService()->addWarning(
             \sprintf(
                 Shop::Lang()->get('priceHasChanged', 'checkout'),
                 \is_array($item->cName) ? $item->cName[Shop::getLanguageCode()] : $item->cName

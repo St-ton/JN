@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\DB\SqlObject;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -37,12 +36,11 @@ if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
         $liveSearchSQL->addParam('srch', '%' . $cSuche . '%');
         $smarty->assign('cSuche', $cSuche);
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSearchTermMissing'), 'errorSearchTermMissing');
+        $alertHelper->addError(__('errorSearchTermMissing'), 'errorSearchTermMissing');
     }
 }
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
-    $alertHelper->addAlert(
-        Alert::TYPE_SUCCESS,
+    $alertHelper->addSuccess(
         saveAdminSettings($settingsIDs, $_POST, [CACHING_GROUP_OPTION], true),
         'saveSettings'
     );
@@ -211,9 +209,9 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                 $errorMapMessage .= sprintf(__('errorSearchMapSelf'), Text::filterXSS($_POST[$index]));
             }
         }
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, $succesMapMessage ?? '', 'successSearchMap');
-        $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMapMessage ?? '', 'errorSearchMap');
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchRefresh'), 'successSearchRefresh');
+        $alertHelper->addSuccess($succesMapMessage ?? '', 'successSearchMap');
+        $alertHelper->addError($errorMapMessage ?? '', 'errorSearchMap');
+        $alertHelper->addSuccess(__('successSearchRefresh'), 'successSearchRefresh');
     } elseif (isset($_POST['submitMapping'])) { // Auswahl mappen
         $mapping = Request::verifyGPDataString('cMapping');
 
@@ -276,46 +274,36 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                                         ]
                                     );
 
-                                    $alertHelper->addAlert(
-                                        Alert::TYPE_SUCCESS,
+                                    $alertHelper->addSuccess(
                                         sprintf(__('successSearchMapMultiple'), $queryMapping->cSucheNeu),
                                         'successSearchMapMultiple'
                                     );
                                 }
                             } else {
                                 if ((int)($mappedSearch->isEqual ?? 0) === 1) {
-                                    $alertHelper->addAlert(
-                                        Alert::TYPE_ERROR,
+                                    $alertHelper->addError(
                                         sprintf(__('errorSearchMapLoop'), $query->cSuche, $mapping),
                                         'errorSearchMapToNotExist'
                                     );
                                 } else {
-                                    $alertHelper->addAlert(
-                                        Alert::TYPE_ERROR,
-                                        __('errorSearchMapToNotExist'),
-                                        'errorSearchMapToNotExist'
-                                    );
+                                    $alertHelper->addError(__('errorSearchMapToNotExist'), 'errorSearchMapToNotExist');
                                 }
                                 break;
                             }
                         } else {
-                            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSearchMapSelf'), 'errorSearchMapSelf');
+                            $alertHelper->addError(__('errorSearchMapSelf'), 'errorSearchMapSelf');
                             break;
                         }
                     } else {
-                        $alertHelper->addAlert(
-                            Alert::TYPE_ERROR,
-                            __('errorSearchMapNotExist'),
-                            'errorSearchMapNotExist'
-                        );
+                        $alertHelper->addError(__('errorSearchMapNotExist'), 'errorSearchMapNotExist');
                         break;
                     }
                 }
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
+                $alertHelper->addError(__('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
             }
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorMapNameMissing'), 'errorMapNameMissing');
+            $alertHelper->addError(__('errorMapNameMissing'), 'errorMapNameMissing');
         }
     } elseif (isset($_POST['delete'])) { // Auswahl loeschen
         $deleteQueryIDs = Request::verifyGPDataIntegerArray('kSuchanfrage');
@@ -334,19 +322,11 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                 $db->insert('tsuchanfrageblacklist', $obj);
                 // Aus tseo loeschen
                 $db->delete('tseo', ['cKey', 'kKey'], ['kSuchanfrage', $searchQueryID]);
-                $alertHelper->addAlert(
-                    Alert::TYPE_SUCCESS,
-                    sprintf(__('successSearchDelete'), $data->cSuche),
-                    'successSearchDelete'
-                );
-                $alertHelper->addAlert(
-                    Alert::TYPE_SUCCESS,
-                    sprintf(__('successSearchBlacklist'), $data->cSuche),
-                    'successSearchBlacklist'
-                );
+                $alertHelper->addSuccess(sprintf(__('successSearchDelete'), $data->cSuche), 'sucSearchDelete');
+                $alertHelper->addSuccess(sprintf(__('successSearchBlacklist'), $data->cSuche), 'sucSearchBlacklist');
             }
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
+            $alertHelper->addError(__('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
         }
     }
 } elseif (Request::postInt('livesuche') === 2) { // Erfolglos mapping
@@ -422,8 +402,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                                 (int)$oldQuery->kSuchanfrageErfolglos
                             );
 
-                            $alertHelper->addAlert(
-                                Alert::TYPE_SUCCESS,
+                            $alertHelper->addSuccess(
                                 sprintf(
                                     __('successSearchMap'),
                                     $mapping->cSuche,
@@ -433,8 +412,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                             );
                         }
                     } else {
-                        $alertHelper->addAlert(
-                            Alert::TYPE_ERROR,
+                        $alertHelper->addError(
                             sprintf(
                                 __('errorSearchMapLoop'),
                                 $mapping->cSuche,
@@ -444,11 +422,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                         );
                     }
                 } else {
-                    $alertHelper->addAlert(
-                        Alert::TYPE_ERROR,
-                        sprintf(__('errorSearchMapSelf'), $failedQuery->cSuche),
-                        'errorSearchMapSelf'
-                    );
+                    $alertHelper->addError(sprintf(__('errorSearchMapSelf'), $failedQuery->cSuche), 'errSearchMapSelf');
                 }
             } elseif (Request::postInt('nErfolglosEditieren') === 1) {
                 $idx = 'cSuche_' . $failedQuery->kSuchanfrageErfolglos;
@@ -474,17 +448,9 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                     (int)$queryID
                 );
             }
-            $alertHelper->addAlert(
-                Alert::TYPE_SUCCESS,
-                __('successSearchDeleteMultiple'),
-                'successSearchDeleteMultiple'
-            );
+            $alertHelper->addSuccess(__('successSearchDeleteMultiple'), 'successSearchDeleteMultiple');
         } else {
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
-                __('errorAtLeastOneSearch'),
-                'errorAtLeastOneSearch'
-            );
+            $alertHelper->addError(__('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
         }
     }
     $smarty->assign('tab', 'erfolglos');
@@ -503,7 +469,7 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
         }
     }
     $smarty->assign('tab', 'blacklist');
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBlacklistRefresh'), 'successBlacklistRefresh');
+    $alertHelper->addSuccess(__('successBlacklistRefresh'), 'successBlacklistRefresh');
 } elseif (Request::postInt('livesuche') === 4) { // Mappinglist
     if (isset($_POST['delete'])) {
         if (is_array($_POST['kSuchanfrageMapping'])) {
@@ -519,21 +485,16 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
                         'kSuchanfrageMapping',
                         (int)$mappingID
                     );
-                    $alertHelper->addAlert(
-                        Alert::TYPE_SUCCESS,
+                    $alertHelper->addSuccess(
                         sprintf(__('successSearchMapDelete'), $queryMapping->cSuche),
                         'successSearchMapDelete'
                     );
                 } else {
-                    $alertHelper->addAlert(
-                        Alert::TYPE_ERROR,
-                        sprintf(__('errorSearchMapNotFound'), $mappingID),
-                        'errorSearchMapNotFound'
-                    );
+                    $alertHelper->addError(sprintf(__('errorSearchMapNotFound'), $mappingID), 'errSearchMapNotFound');
                 }
             }
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearchMap'), 'errorAtLeastOneSearchMap');
+            $alertHelper->addError(__('errorAtLeastOneSearchMap'), 'errorAtLeastOneSearchMap');
         }
     }
     $smarty->assign('tab', 'mapping');

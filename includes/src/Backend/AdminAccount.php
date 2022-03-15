@@ -4,7 +4,6 @@ namespace JTL\Backend;
 
 use DateTime;
 use Exception;
-use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Request;
 use JTL\L10n\GetText;
@@ -196,11 +195,11 @@ class AdminAccount
             $mail   = new Mail();
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ADMINLOGIN_PASSWORT_VERGESSEN, $obj));
 
-            $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successEmailSend'), 'successEmailSend');
+            $this->alertService->addSuccess(\__('successEmailSend'), 'successEmailSend');
 
             return true;
         }
-        $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorEmailNotFound'), 'errorEmailNotFound');
+        $this->alertService->addError(\__('errorEmailNotFound'), 'errorEmailNotFound');
 
         return false;
     }

@@ -80,7 +80,7 @@ final class LinkService implements LinkServiceInterface
      */
     public function getVisibleLinkGroups(): LinkGroupCollection
     {
-        return $this->linkGroupList->getVisibleLinkgroups();
+        return $this->linkGroupList->getVisibleLinkGroups();
     }
 
     /**

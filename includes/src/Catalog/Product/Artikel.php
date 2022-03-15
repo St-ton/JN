@@ -2979,11 +2979,8 @@ class Artikel
             $varDetailPrice->kEigenschaft     = (int)$varDetailPrice->kEigenschaft;
             $varDetailPrice->kEigenschaftWert = (int)$varDetailPrice->kEigenschaftWert;
 
-            $idx = $varDetailPrice->kEigenschaftWert;
-
-            $tmpProduct                            = null;
-            $tmpOptions                            = new stdClass();
-            $tmpOptions->nKeinLagerbestandBeachten = 1;
+            $idx        = $varDetailPrice->kEigenschaftWert;
+            $tmpProduct = null;
             if ($varDetailPrice->kArtikel !== $lastProduct) {
                 $lastProduct = $varDetailPrice->kArtikel;
                 $tmpProduct  = new self($this->getDB());

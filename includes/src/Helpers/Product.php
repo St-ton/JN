@@ -271,9 +271,9 @@ class Product
         $langID          = Shop::getLanguageID();
         $attr            = new SqlObject();
         $attrVal         = new SqlObject();
-        foreach ($propertyValues as $i => $_u) {
+        foreach ($propertyValues as $i => $value) {
             $attributes[]      = $i;
-            $attributeValues[] = $propertyValues[$i];
+            $attributeValues[] = $value;
         }
         if ($langID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             $attr->setSelect('teigenschaftsprache.cName AS cName_teigenschaftsprache, ');

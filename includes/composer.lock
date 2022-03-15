@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e8a45b5ae6e6b85b33244271edc2cc2",
+    "content-hash": "f4d2d9d692e07c5a703aa25171a5de89",
     "packages": [
         {
             "name": "chamilo/pclzip",
@@ -836,7 +836,7 @@
         },
         {
             "name": "illuminate/collections",
-            "version": "v8.83.4",
+            "version": "v8.83.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/collections.git",
@@ -890,7 +890,7 @@
         },
         {
             "name": "illuminate/container",
-            "version": "v8.83.4",
+            "version": "v8.83.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/container.git",
@@ -941,7 +941,7 @@
         },
         {
             "name": "illuminate/contracts",
-            "version": "v8.83.4",
+            "version": "v8.83.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
@@ -989,7 +989,7 @@
         },
         {
             "name": "illuminate/macroable",
-            "version": "v8.83.4",
+            "version": "v8.83.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/macroable.git",
@@ -1291,21 +1291,22 @@
         },
         {
             "name": "jtlshop/phpquery",
-            "version": "1.0.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jtl-software/jtl-shop/tools/phpquery.git",
-                "reference": "5e0e984063fcb438c61e52971db0f70874237ef8"
+                "reference": "3b9d77bf1fdd527d14da9b2c15e4c358b83486ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fphpquery/repository/archive.zip?sha=5e0e984063fcb438c61e52971db0f70874237ef8",
-                "reference": "5e0e984063fcb438c61e52971db0f70874237ef8",
+                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fphpquery/repository/archive.zip?sha=3b9d77bf1fdd527d14da9b2c15e4c358b83486ec",
+                "reference": "3b9d77bf1fdd527d14da9b2c15e4c358b83486ec",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2"
+                "php": ">=7.4"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "files": [
@@ -1325,15 +1326,15 @@
                     "homepage": "https://www.jtl-software.de/"
                 }
             ],
-            "description": "PHP 7.4 ready phpQuery",
+            "description": "PHP 8 ready phpQuery",
             "homepage": "https://www.jtl-software.de/",
             "keywords": [
                 "jtl-shop"
             ],
             "support": {
-                "source": "https://gitlab.com/jtl-software/jtl-shop/tools/phpquery/-/tree/1.0.1"
+                "source": "https://gitlab.com/jtl-software/jtl-shop/tools/phpquery/-/tree/master"
             },
-            "time": "2021-06-15T12:32:11+02:00"
+            "time": "2022-02-21T15:07:25+00:00"
         },
         {
             "name": "jtlshop/qrcodegenerator",
@@ -1526,21 +1527,21 @@
         },
         {
             "name": "jtlshop/shop5-systemcheck",
-            "version": "2.0.2",
+            "version": "dev-smarty4",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jtl-software/jtl-shop/tools/shop5-systemcheck.git",
-                "reference": "5062b697029c253c9073303f603a58c13f43f047"
+                "reference": "9c75d2c02c66d51b9895fd40afc99a37e5348ff8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fshop5-systemcheck/repository/archive.zip?sha=5062b697029c253c9073303f603a58c13f43f047",
-                "reference": "5062b697029c253c9073303f603a58c13f43f047",
+                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fshop5-systemcheck/repository/archive.zip?sha=9c75d2c02c66d51b9895fd40afc99a37e5348ff8",
+                "reference": "9c75d2c02c66d51b9895fd40afc99a37e5348ff8",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.3",
-                "smarty/smarty": "~3.1"
+                "smarty/smarty": "^4.0"
             },
             "type": "library",
             "autoload": {
@@ -1565,9 +1566,9 @@
                 "jtl-shop"
             ],
             "support": {
-                "source": "https://gitlab.com/jtl-software/jtl-shop/tools/shop5-systemcheck/-/tree/2.0.2"
+                "source": "https://gitlab.com/jtl-software/jtl-shop/tools/shop5-systemcheck/-/tree/smarty4"
             },
-            "time": "2021-06-18T11:07:15+00:00"
+            "time": "2022-01-25T09:37:00+00:00"
         },
         {
             "name": "jtlshop/xtea",
@@ -2336,16 +2337,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "2.3.5",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "fd4380d6fc37626e2f799f29d91195040137eba9"
+                "reference": "d7fd7450628561ba697b7097d86db72662f54aef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/fd4380d6fc37626e2f799f29d91195040137eba9",
-                "reference": "fd4380d6fc37626e2f799f29d91195040137eba9",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/d7fd7450628561ba697b7097d86db72662f54aef",
+                "reference": "d7fd7450628561ba697b7097d86db72662f54aef",
                 "shasum": ""
             },
             "require": {
@@ -2367,7 +2368,7 @@
                 "phpstan/phpstan": "^0.12.91",
                 "phpunit/phpunit": "^8.5",
                 "predis/predis": "^1.1",
-                "rollbar/rollbar": "^1.3",
+                "rollbar/rollbar": "^1.3 || ^2 || ^3",
                 "ruflin/elastica": ">=0.90@dev",
                 "swiftmailer/swiftmailer": "^5.3|^6.0"
             },
@@ -2419,7 +2420,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Seldaek/monolog/issues",
-                "source": "https://github.com/Seldaek/monolog/tree/2.3.5"
+                "source": "https://github.com/Seldaek/monolog/tree/2.4.0"
             },
             "funding": [
                 {
@@ -2431,7 +2432,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-10-01T21:08:31+00:00"
+            "time": "2022-03-14T12:44:37+00:00"
         },
         {
             "name": "mrclay/jsmin-php",
@@ -3658,29 +3659,29 @@
         },
         {
             "name": "smarty/smarty",
-            "version": "v3.1.44",
+            "version": "v4.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "99085d8dc65eeb5e55ae3cba74d3dc6b3bb0205e"
+                "reference": "9e0536de18b53ba193364291ef0303b0ab9903e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/99085d8dc65eeb5e55ae3cba74d3dc6b3bb0205e",
-                "reference": "99085d8dc65eeb5e55ae3cba74d3dc6b3bb0205e",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/9e0536de18b53ba193364291ef0303b0ab9903e1",
+                "reference": "9e0536de18b53ba193364291ef0303b0ab9903e1",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.2"
+                "php": "^7.1 || ^8.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^7.5 || ^6.5 || ^5.7 || ^4.8",
+                "phpunit/phpunit": "^8.5 || ^7.5",
                 "smarty/smarty-lexer": "^3.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.1.x-dev"
+                    "dev-master": "4.0.x-dev"
                 }
             },
             "autoload": {
@@ -3704,33 +3705,36 @@
                 {
                     "name": "Rodney Rehm",
                     "email": "rodney.rehm@medialize.de"
+                },
+                {
+                    "name": "Simon Wisselink",
+                    "homepage": "https://www.iwink.nl/"
                 }
             ],
             "description": "Smarty - the compiling PHP template engine",
-            "homepage": "http://www.smarty.net",
+            "homepage": "https://smarty-php.github.io/smarty/",
             "keywords": [
                 "templating"
             ],
             "support": {
-                "forum": "http://www.smarty.net/forums/",
-                "irc": "irc://irc.freenode.org/smarty",
+                "forum": "https://github.com/smarty-php/smarty/discussions",
                 "issues": "https://github.com/smarty-php/smarty/issues",
-                "source": "https://github.com/smarty-php/smarty/tree/v3.1.44"
+                "source": "https://github.com/smarty-php/smarty/tree/v4.1.0"
             },
-            "time": "2022-01-17T23:12:04+00:00"
+            "time": "2022-02-06T20:34:27+00:00"
         },
         {
             "name": "studio-42/elfinder",
-            "version": "2.1.60",
+            "version": "2.1.61",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Studio-42/elFinder.git",
-                "reference": "e5ca28f04d37b98d82df92dbdd4ad7cb8ef76911"
+                "reference": "33bee2654615db62e9b722efb4fdd2a21844fbb2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Studio-42/elFinder/zipball/e5ca28f04d37b98d82df92dbdd4ad7cb8ef76911",
-                "reference": "e5ca28f04d37b98d82df92dbdd4ad7cb8ef76911",
+                "url": "https://api.github.com/repos/Studio-42/elFinder/zipball/33bee2654615db62e9b722efb4fdd2a21844fbb2",
+                "reference": "33bee2654615db62e9b722efb4fdd2a21844fbb2",
                 "shasum": ""
             },
             "require": {
@@ -3777,7 +3781,7 @@
             "homepage": "http://elfinder.org",
             "support": {
                 "issues": "https://github.com/Studio-42/elFinder/issues",
-                "source": "https://github.com/Studio-42/elFinder/tree/2.1.60"
+                "source": "https://github.com/Studio-42/elFinder/tree/2.1.61"
             },
             "funding": [
                 {
@@ -3785,7 +3789,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-11-12T06:00:21+00:00"
+            "time": "2022-03-14T15:07:52+00:00"
         },
         {
             "name": "symfony/console",
@@ -6423,16 +6427,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.5.18",
+            "version": "9.5.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "1b5856028273bfd855e60a887278857d872ec67a"
+                "reference": "35ea4b7f3acabb26f4bb640f8c30866c401da807"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/1b5856028273bfd855e60a887278857d872ec67a",
-                "reference": "1b5856028273bfd855e60a887278857d872ec67a",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/35ea4b7f3acabb26f4bb640f8c30866c401da807",
+                "reference": "35ea4b7f3acabb26f4bb640f8c30866c401da807",
                 "shasum": ""
             },
             "require": {
@@ -6462,7 +6466,7 @@
                 "sebastian/global-state": "^5.0.1",
                 "sebastian/object-enumerator": "^4.0.3",
                 "sebastian/resource-operations": "^3.0.3",
-                "sebastian/type": "^2.3.4",
+                "sebastian/type": "^3.0",
                 "sebastian/version": "^3.0.2"
             },
             "require-dev": {
@@ -6510,7 +6514,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.18"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.19"
             },
             "funding": [
                 {
@@ -6522,7 +6526,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-03-08T06:52:28+00:00"
+            "time": "2022-03-15T09:57:31+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -7381,28 +7385,28 @@
         },
         {
             "name": "sebastian/type",
-            "version": "2.3.4",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/type.git",
-                "reference": "b8cd8a1c753c90bc1a0f5372170e3e489136f914"
+                "reference": "b233b84bc4465aff7b57cf1c4bc75c86d00d6dad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/type/zipball/b8cd8a1c753c90bc1a0f5372170e3e489136f914",
-                "reference": "b8cd8a1c753c90bc1a0f5372170e3e489136f914",
+                "url": "https://api.github.com/repos/sebastianbergmann/type/zipball/b233b84bc4465aff7b57cf1c4bc75c86d00d6dad",
+                "reference": "b233b84bc4465aff7b57cf1c4bc75c86d00d6dad",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.3"
             },
             "require-dev": {
-                "phpunit/phpunit": "^9.3"
+                "phpunit/phpunit": "^9.5"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "3.0-dev"
                 }
             },
             "autoload": {
@@ -7425,7 +7429,7 @@
             "homepage": "https://github.com/sebastianbergmann/type",
             "support": {
                 "issues": "https://github.com/sebastianbergmann/type/issues",
-                "source": "https://github.com/sebastianbergmann/type/tree/2.3.4"
+                "source": "https://github.com/sebastianbergmann/type/tree/3.0.0"
             },
             "funding": [
                 {
@@ -7433,7 +7437,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-06-15T12:49:02+00:00"
+            "time": "2022-03-15T09:54:48+00:00"
         },
         {
             "name": "sebastian/version",
@@ -7967,6 +7971,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "jtlshop/shop5-systemcheck": 20,
+        "jtlshop/phpquery": 20,
         "phpgangsta/googleauthenticator": 20,
         "jtlshop/qrcodegenerator": 20,
         "erusev/parsedown": 10,

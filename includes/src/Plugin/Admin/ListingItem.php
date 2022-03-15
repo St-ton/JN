@@ -825,7 +825,7 @@ class ListingItem implements JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $res = [];
         foreach (\get_object_vars($this) as $var => $val) {

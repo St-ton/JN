@@ -9,6 +9,7 @@ use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\Artikel;
 use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
+use JTL\Helpers\Text;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
@@ -116,12 +117,11 @@ class Newsletter
         if ($newsletterID <= 0) {
             return new stdClass();
         }
-        $data      = $this->db->select('tnewsletter', 'kNewsletter', $newsletterID);
-        $tmpGroups = \explode(';', $data->cKundengruppe);
-        $cSQL      = '';
-        if (\count($tmpGroups) > 0) {
-            $groupIDs = \array_map('\intval', $tmpGroups);
-            $noGroup  = \in_array(0, $groupIDs, true);
+        $data     = $this->db->select('tnewsletter', 'kNewsletter', $newsletterID);
+        $groupIDs = Text::parseSSKint($data->cKundengruppe);
+        $cSQL     = '';
+        if (\count($groupIDs) > 0) {
+            $noGroup = \in_array(0, $groupIDs, true);
             if ($noGroup === false || \count($groupIDs) > 1) {
                 $cSQL = 'AND ((tkunde.kKundengruppe IN (' . \implode(',', $groupIDs) . ')';
                 if ($noGroup === true) {
@@ -147,7 +147,7 @@ class Newsletter
         if ($this->db->getErrorCode() !== 0) {
             $recipients = new stdClass();
         }
-        $recipients->cKundengruppe_arr = $tmpGroups;
+        $recipients->cKundengruppe_arr = $groupIDs;
 
         return $recipients;
     }

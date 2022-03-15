@@ -83,7 +83,6 @@
                 <Option Value="right">Rechts</Option>
                 <Option Value="center">Zentriert</Option>
             </Setting>
-            <Setting Description="Suchfeld Abstand rechts (in px)" Key="jtl_header_menu_search_margin_right" Type="number" Value="0"/>
             <Setting Description="Header über gesamte Bildschirmbreite darstellen" Key="header_full_width" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>

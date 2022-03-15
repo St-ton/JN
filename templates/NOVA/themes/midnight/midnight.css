@@ -26253,13 +26253,7 @@ header #burger-menu {
 }
 
 .full-width-mega .main-search-wrapper .twitter-typeahead {
-  width: 95%;
-}
-.full-width-mega .main-search-wrapper .twitter-typeahead + .input-group-append {
-  width: 5%;
-}
-.full-width-mega .main-search-wrapper .form-clear {
-  right: 7%;
+  flex: 1;
 }
 .full-width-mega#header-top-bar {
   float: initial;

@@ -263,13 +263,7 @@ header {
 .full-width-mega {
 	.main-search-wrapper {
 		.twitter-typeahead {
-			width: 95%;
-			+ .input-group-append {
-				width: 5%;
-			}
-		}
-		.form-clear {
-			right: 7%;
+			flex: 1;
 		}
 	}
 	&#header-top-bar {

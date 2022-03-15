@@ -26,7 +26,7 @@ msgid "Animation für Schaltflächen beim Hovern"
 msgstr "Animation für Schaltflächen beim Hovern"
 
 msgid "Anzeige der Suche auf mobilen Geräten"
-msgstr "Mobile Geräte: Anzeige der Suche"
+msgstr "Anzeige der Suche <i class=\"fas fa-mobile-alt\"></i> "
 
 msgid "Schaltfläche „Nach oben scrollen“ anzeigen"
 msgstr "Schaltfläche „Nach oben scrollen“ anzeigen"
@@ -47,7 +47,7 @@ msgid "Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)"
 msgstr "Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)"
 
 msgid "Kategoriebilder für erste Unterkategorie"
-msgstr "Kategoriebilder für erste Unterkategorie"
+msgstr "Kategoriebilder für erste Unterkategorie <i class=\"fas fa-mobile-alt\"></i> "
 
 msgid "Unterkategorien"
 msgstr "Unterkategorien"
@@ -59,7 +59,7 @@ msgid "Hersteller-Dropdown"
 msgstr "Hersteller-Dropdown"
 
 msgid "Herstellerbilder"
-msgstr "Herstellerbilder"
+msgstr "Herstellerbilder <i class=\"fas fa-desktop\"></i> "
 
 msgid "Listen- und Gallerieansicht"
 msgstr "Listen- und Gallerieansicht"
@@ -176,7 +176,7 @@ msgid "Keine"
 msgstr "Nein"
 
 msgid "Header über gesamte Bildschirmbreite darstellen"
-msgstr "Header über gesamte Bildschirmbreite darstellen"
+msgstr "Header über gesamte Bildschirmbreite darstellen <i class=\"fas fa-desktop\"></i> "
 
 msgid "Linke Seitenleiste anzeigen"
 msgstr "Linke Seitenleiste anzeigen"
@@ -191,4 +191,79 @@ msgid "Suchfeld in Filtern anzeigen ab x Einträgen"
 msgstr "Suchfeld in Filtern anzeigen ab x Einträgen"
 
 msgid "Mobile Geräte: Menü in aktueller Kategorie öffnen"
-msgstr "Mobile Geräte: Menü in aktueller Kategorie öffnen"
+msgstr "Menü in aktueller Kategorie öffnen <i class=\"fas fa-mobile-alt\"></i> "
+
+msgid "Menü in eigener Zeile anzeigen"
+msgstr "Menü in eigener Zeile anzeigen <i class=\"fas fa-desktop\"></i> "
+
+msgid "Damit wird das Megamenü in einer eigenen Zeile unter Logo und Suche angezeigt."
+msgstr "Zeigt das Megamenü in einer eigenen Zeile unter Logo und Suche an. <i class=\"fas fa-desktop\"></i> "
+
+msgid "Anzeige bei vielen Menüeinträgen"
+msgstr "Anzeige bei vielen Menüeinträgen <i class=\"fas fa-desktop\"></i> "
+
+msgid "Stellt ein was mit Menüeinträgen passieren soll, die nicht in eine Zeile passen. Nur in Verbindung mit \"Menü in eigener Zeile: Ja\" nutzbar."
+msgstr "Legt fest, wie Menüeinträge angezeigt werden, wenn diese nicht alle in einer Zeile dargestellt werden können. Nur in Verbindung mit \"Menü in eigener Zeile anzeigen: Ja\" nutzbar. <i class=\"fas fa-desktop\"></i> "
+
+msgid "Mehrzeilig"
+msgstr "Mehrzeilig"
+
+msgid "Einzeilig und scrollbar nach links/rechts"
+msgstr "Einzeilig und scrollbar nach links/rechts"
+
+msgid "Menüausrichtung"
+msgstr "Menüausrichtung <i class=\"fas fa-desktop\"></i> "
+
+msgid "Nur in Verbindung mit \"Menü in eigener Zeile: Ja\" nutzbar."
+msgstr "Nur in Verbindung mit \"Menü in eigener Zeile anzeigen: Ja\" nutzbar."
+
+msgid "Zentriert"
+msgstr "Zentriert"
+
+msgid "Linksbündig"
+msgstr "Linksbündig"
+
+msgid "Rechtsbündig"
+msgstr "Rechtsbündig"
+
+msgid "Anzeige beim Scrollen"
+msgstr "Anzeige beim Scrollen <i class=\"fas fa-desktop\"></i> "
+
+msgid "Stellt ein welche Teile des Headers angezeigt werden, wenn man nach unten scrollt. Nur in Verbindung mit \"Menü in eigener Zeile Ja\" nutzbar."
+msgstr "Legt fest, welche Teile des Headers beim Scrollen nach unten angezeigt werden. Nur in Verbindung mit \"Menü in eigener Zeile anzeigen: Ja\" nutzbar."
+
+msgid "Menü"
+msgstr "Menü"
+
+msgid "Menü, Logo, Suche"
+msgstr "Menü, Logo und Suche"
+
+msgid "Nichts"
+msgstr "Nichts"
+
+msgid "Suchfeld Breite (in px)"
+msgstr "Suchfeld Breite (in px) <i class=\"fas fa-desktop\"></i> "
+
+msgid "Stellt ein wie breit das Suchfeld im Header ist. Tragen Sie 0 ein damit das Suchfeld die volle Breite nutzt."
+msgstr "Stellt ein wie breit das Suchfeld im Header ist. Tragen Sie 0 ein damit das Suchfeld die volle Breite nutzt."
+
+msgid "Logo Höhe (in px)"
+msgstr "Logo Höhe (in px) <i class=\"fas fa-desktop\"></i> "
+
+msgid "Logo zentriert"
+msgstr "Logo zentriert <i class=\"fas fa-desktop\"></i> "
+
+msgid "Stellt ein wie hoch das Logo ist. Der Standard ist 49."
+msgstr "Stellt ein wie hoch das Logo ist. Der Standard ist 49."
+
+msgid "Suchfeld"
+msgstr "Suchfeld"
+
+msgid "Suchfeld Positionierung"
+msgstr "Suchfeld Positionierung <i class=\"fas fa-desktop\"></i> "
+
+msgid "Stellt ein wie das Suchfeld zwischen Logo und Icons platziert sein soll."
+msgstr "Stellt ein wie das Suchfeld zwischen Logo und Icons platziert sein soll."
+
+msgid "Topbar anzeigen"
+msgstr "Topbar anzeigen <i class=\"fas fa-desktop\"></i> "

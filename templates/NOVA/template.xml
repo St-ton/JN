@@ -58,11 +58,11 @@
             </Setting>
             <Setting Description="Anzeige bei vielen Menüeinträgen" Key="menu_multiple_rows" Type="select" Value="scroll">
                 <Option Value="multiple">Mehrzeilig</Option>
-                <Option Value="scroll">Pfeile zum scrollen in einer Zeile</Option>
+                <Option Value="scroll">Einzeilig und scrollbar nach links/rechts</Option>
             </Setting>
             <Setting Description="Menüausrichtung" Key="menu_center" Type="select" Value="center">
-                <Option Value="center">zentriert</Option>
-                <Option Value="left">linksbündig</Option>
+                <Option Value="center">Zentriert</Option>
+                <Option Value="left">Linksbündig</Option>
             </Setting>
             <Setting Description="Anzeige beim Scrollen" Key="menu_scroll" Type="select" Value="menu">
                 <Option Value="menu">Menü</Option>
@@ -80,8 +80,8 @@
             </Setting>
             <Setting Description="Suchfeld Breite (in px)" Key="menu_search_width" Type="number" Value="0"/>
             <Setting Description="Suchfeld Positionierung" Key="menu_search_position" Type="select" Value="center">
-                <Option Value="left">Links</Option>
-                <Option Value="right">Rechts</Option>
+                <Option Value="left">Linksbündig</Option>
+                <Option Value="right">Rechtsbündig</Option>
                 <Option Value="center">Zentriert</Option>
             </Setting>
             <Setting Description="Header über gesamte Bildschirmbreite darstellen" Key="header_full_width" Type="select" Value="N">

@@ -59,7 +59,7 @@
                                             menu_multiple_rows: 'multiple',
                                             menu_center: 'center',
                                             menu_scroll: 'menu',
-                                            menu_logoheight: '120',
+                                            menu_logoheight: '49',
                                             menu_logo_centered: 'Y',
                                             menu_search_width: '200',
                                             menu_search_position: 'right',

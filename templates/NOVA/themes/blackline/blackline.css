@@ -26019,12 +26019,6 @@ header #burger-menu {
 .full-width-mega .main-search-wrapper .twitter-typeahead {
   flex: 1;
 }
-.full-width-mega#header-top-bar {
-  float: initial;
-  position: relative;
-  z-index: 1021;
-  margin-right: initial;
-}
 .full-width-mega #search {
   display: none;
 }

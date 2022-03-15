@@ -266,12 +266,6 @@ header {
 			flex: 1;
 		}
 	}
-	&#header-top-bar {
-		float: initial;
-		position: relative;
-		z-index: 1021;
-		margin-right: initial;
-	}
 	#search {
 		display: none;
 		@include media-breakpoint-up(lg) {

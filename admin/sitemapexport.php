@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
@@ -18,14 +17,12 @@ if (!file_exists(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml') && is_writable(P
 }
 
 if (!is_writable(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml')) {
-    $alertService->addAlert(
-        Alert::TYPE_ERROR,
+    $alertService->addError(
         sprintf(__('errorSitemapCreatePermission'), '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i>'),
         'errorSitemapCreatePermission'
     );
 } elseif (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
-    $alertService->addAlert(
-        Alert::TYPE_SUCCESS,
+    $alertService->addSuccess(
         sprintf(__('successSave'), '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i>'),
         'successSubjectDelete'
     );
@@ -42,7 +39,7 @@ if (Request::postInt('einstellungen') > 0) {
                 WHERE kSitemapTracker IN (' . implode(',', $trackers) . ')'
         );
     }
-    $alertService->addAlert(Alert::TYPE_SUCCESS, __('successSitemapDLDelete'), 'successSitemapDLDelete');
+    $alertService->addSuccess(__('successSitemapDLDelete'), 'successSitemapDLDelete');
 } elseif (Request::verifyGPCDataInt('report_edit') === 1) {
     $reports = array_map('\intval', Request::postVar('kSitemapReport', []));
     if (count($reports) > 0) {
@@ -52,7 +49,7 @@ if (Request::postInt('einstellungen') > 0) {
                 WHERE kSitemapReport IN (' . implode(',', $reports) . ')'
         );
     }
-    $alertService->addAlert(Alert::TYPE_SUCCESS, __('successSitemapReportDelete'), 'successSitemapReportDelete');
+    $alertService->addSuccess(__('successSitemapReportDelete'), 'successSitemapReportDelete');
 }
 
 $yearDownloads = Request::verifyGPCDataInt('nYear_downloads');
@@ -64,8 +61,7 @@ if (Request::postVar('action') === 'year_downloads_delete' && Form::validateToke
             WHERE YEAR(tsitemaptracker.dErstellt) = :yr',
         ['yr' => $yearDownloads]
     );
-    $alertService->addAlert(
-        Alert::TYPE_SUCCESS,
+    $alertService->addSuccess(
         sprintf(__('successSitemapDLDeleteByYear'), $yearDownloads),
         'successSitemapDLDeleteByYear'
     );
@@ -78,8 +74,7 @@ if (Request::postVar('action') === 'year_reports_delete' && Form::validateToken(
             WHERE YEAR(tsitemapreport.dErstellt) = :yr',
         ['yr' => $yearReports]
     );
-    $alertService->addAlert(
-        Alert::TYPE_SUCCESS,
+    $alertService->addSuccess(
         sprintf(__('successSitemapReportDeleteByYear'), $yearDownloads),
         'successSitemapReportDeleteByYear'
     );

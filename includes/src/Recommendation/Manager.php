@@ -6,7 +6,6 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Collection;
-use JTL\Alert\Alert;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Services\JTL\AlertServiceInterface;
@@ -95,7 +94,7 @@ class Manager
         });
 
         if ($recommendation === null && $showAlert) {
-            $this->alertService->addAlert(Alert::TYPE_WARNING, \__('noRecommendationFound'), 'noRecommendationFound');
+            $this->alertService->addWarning(\__('noRecommendationFound'), 'noRecommendationFound');
         }
 
         return $recommendation;

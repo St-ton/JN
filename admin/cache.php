@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Backend\DirManager;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
@@ -41,7 +40,7 @@ try {
     $cache = Shop::Container()->getCache();
     $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
 } catch (Exception $exc) {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, __('exception') . ': ' . $exc->getMessage(), 'errorException');
+    $alertHelper->addError(__('exception') . ': ' . $exc->getMessage(), 'errorException');
 }
 // get disabled cache types
 $deactivated       = $db->select(
@@ -67,8 +66,7 @@ switch ($action) {
                         $hookInfo = ['type' => $cacheType, 'key' => null, 'isTag' => true];
                         $flush    = $cache->flushTags([$cacheType], $hookInfo);
                         if ($flush === false) {
-                            $alertHelper->addAlert(
-                                Alert::TYPE_ERROR,
+                            $alertHelper->addError(
                                 sprintf(__('errorCacheTypeDelete'), $cacheType),
                                 'errorCacheTypeDelete'
                             );
@@ -77,14 +75,10 @@ switch ($action) {
                         }
                     }
                     if ($okCount > 0) {
-                        $alertHelper->addAlert(
-                            Alert::TYPE_SUCCESS,
-                            $okCount . __('successCacheEmptied'),
-                            'successCacheEmptied'
-                        );
+                        $alertHelper->addSuccess($okCount . __('successCacheEmptied'), 'successCacheEmptied');
                     }
                 } else {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNoCacheType'), 'errorNoCacheType');
+                    $alertHelper->addError(__('errorNoCacheType'), 'errorNoCacheType');
                 }
                 break;
             case 'activate':
@@ -104,14 +98,10 @@ switch ($action) {
                         $upd
                     );
                     if ($res > 0) {
-                        $alertHelper->addAlert(
-                            Alert::TYPE_SUCCESS,
-                            __('successCacheTypeActivate'),
-                            'successCacheTypeActivate'
-                        );
+                        $alertHelper->addSuccess(__('successCacheTypeActivate'), 'successCacheTypeActivate');
                     }
                 } else {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNoCacheType'), 'errorNoCacheType');
+                    $alertHelper->addError(__('errorNoCacheType'), 'errorNoCacheType');
                 }
                 break;
             case 'deactivate':
@@ -130,14 +120,10 @@ switch ($action) {
                         $upd
                     );
                     if ($res > 0) {
-                        $alertHelper->addAlert(
-                            Alert::TYPE_SUCCESS,
-                            __('successCacheTypeDeactivate'),
-                            'successCacheTypeDeactivate'
-                        );
+                        $alertHelper->addSuccess(__('successCacheTypeDeactivate'), 'successCacheTypeDeactivate');
                     }
                 } else {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNoCacheType'), 'errorNoCacheType');
+                    $alertHelper->addError(__('errorNoCacheType'), 'errorNoCacheType');
                 }
                 break;
             default:
@@ -147,9 +133,9 @@ switch ($action) {
     case 'flush_object_cache':
         $tab = 'massaction';
         if ($cache !== null && $cache->flushAll() !== false) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCacheDelete'), 'successCacheDelete');
+            $alertHelper->addSuccess(__('successCacheDelete'), 'successCacheDelete');
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCacheDelete'), 'errorCacheDelete');
+            $alertHelper->addError(__('errorCacheDelete'), 'errorCacheDelete');
         }
         break;
     case 'settings':
@@ -198,23 +184,18 @@ switch ($action) {
                     $value
                 );
                 if ($value->cWert !== 'null') {
-                    $alertHelper->addAlert(
-                        Alert::TYPE_SUCCESS,
+                    $alertHelper->addSuccess(
                         '<strong>' . $value->cWert . '</strong>' . __('successCacheMethodSave'),
                         'successCacheDelete'
                     );
                 } else {
-                    $alertHelper->addAlert(
-                        Alert::TYPE_ERROR,
-                        __('errorCacheMethodSelect'),
-                        'errorCacheMethodSelect'
-                    );
+                    $alertHelper->addError(__('errorCacheMethodSelect'), 'errorCacheMethodSelect');
                 }
             }
         }
         $cache->flushAll();
         $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
+        $alertHelper->addSuccess(__('successConfigSave'), 'successConfigSave');
         $cache->flushTags([CACHING_GROUP_OPTION]);
         $tab = 'settings';
         break;
@@ -281,10 +262,9 @@ switch ($action) {
         $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, $cbParameters);
         $ms = new MinifyService();
         $ms->flushCache();
-        $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'errorCache');
-        $alertHelper->addAlert(Alert::TYPE_NOTE, $notice, 'noticeCache');
-        $alertHelper->addAlert(
-            Alert::TYPE_SUCCESS,
+        $alertHelper->addError($error, 'errorCache');
+        $alertHelper->addNotice($notice, 'noticeCache');
+        $alertHelper->addSuccess(
             sprintf(
                 __('successTemplateCacheDelete'),
                 number_format($cbParameters['count'])
@@ -379,7 +359,7 @@ foreach ($cachingGroups as &$cachingGroup) {
 }
 unset($cachingGroup);
 if (!empty($cache->getError())) {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, $cache->getError(), 'errorCache');
+    $alertHelper->addError($cache->getError(), 'errorCache');
 }
 $smarty->assign('settings', $settings)
     ->assign('caching_groups', $cachingGroups)

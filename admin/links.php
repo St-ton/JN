@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
 use Illuminate\Support\Collection;
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
@@ -43,17 +42,9 @@ if ($action !== '' && Form::validateToken()) {
         case 'remove-link-from-linkgroup':
             $res = $linkAdmin->removeLinkFromLinkGroup($linkID, $linkGroupID);
             if ($res > 0) {
-                $alertHelper->addAlert(
-                    Alert::TYPE_SUCCESS,
-                    __('successLinkFromLinkGroupDelete'),
-                    'successLinkFromLinkGroupDelete'
-                );
+                $alertHelper->addSuccess(__('successLinkFromLinkGroupDelete'), 'successLinkFromLinkGroupDelete');
             } else {
-                $alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
-                    __('errorLinkFromLinkGroupDelete'),
-                    'errorLinkFromLinkGroupDelete'
-                );
+                $alertHelper->addError(__('errorLinkFromLinkGroupDelete'), 'errorLinkFromLinkGroupDelete');
             }
             unset($_POST['kLinkgruppe']);
             $step       = 'uebersicht';
@@ -61,9 +52,9 @@ if ($action !== '' && Form::validateToken()) {
             break;
         case 'delete-link':
             if ($linkAdmin->deleteLink($linkID) > 0) {
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLinkDelete'), 'successLinkDelete');
+                $alertHelper->addSuccess(__('successLinkDelete'), 'successLinkDelete');
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkDelete'), 'errorLinkDelete');
+                $alertHelper->addError(__('errorLinkDelete'), 'errorLinkDelete');
             }
             $clearCache = true;
             $step       = 'uebersicht';
@@ -81,7 +72,7 @@ if ($action !== '' && Form::validateToken()) {
             $step  = 'linkgruppe_loeschen_confirm';
             $group = new LinkGroup($db);
             $smarty->assign('linkGroup', $group->load($linkGroupID))
-                   ->assign('affectedLinkNames', $linkAdmin->getPreDeletionLinks($linkGroupID));
+                ->assign('affectedLinkNames', $linkAdmin->getPreDeletionLinks($linkGroupID));
             break;
         case 'edit-linkgroup':
         case 'create-linkgroup':
@@ -110,26 +101,17 @@ if ($action !== '' && Form::validateToken()) {
                         $linkGroup = new LinkGroup($db);
                         $linkGroup = $linkGroup->load($linkGroupID);
                     }
-                    $alertHelper->addAlert(
-                        Alert::TYPE_ERROR,
-                        __('errorTemplateNameDuplicate'),
-                        'errorTemplateNameDuplicate'
-                    );
+                    $alertHelper->addError(__('errorTemplateNameDuplicate'), 'errorTemplateNameDuplicate');
                     $smarty->assign('xPlausiVar_arr', $checks->getPlausiVar())
-                           ->assign('xPostVar_arr', $checks->getPostVar())
-                           ->assign('linkGroup', $linkGroup);
+                        ->assign('xPostVar_arr', $checks->getPostVar())
+                        ->assign('linkGroup', $linkGroup);
                 } else {
                     if ($linkGroupID === 0) {
                         $linkAdmin->createOrUpdateLinkGroup(0, $_POST);
-                        $alertHelper->addAlert(
-                            Alert::TYPE_SUCCESS,
-                            __('successLinkGroupCreate'),
-                            'successLinkGroupCreate'
-                        );
+                        $alertHelper->addSuccess(__('successLinkGroupCreate'), 'successLinkGroupCreate');
                     } else {
                         $linkgruppe = $linkAdmin->createOrUpdateLinkGroup($linkGroupID, $_POST);
-                        $alertHelper->addAlert(
-                            Alert::TYPE_SUCCESS,
+                        $alertHelper->addSuccess(
                             sprintf(__('successLinkGroupEdit'), $linkgruppe->cName),
                             'successLinkGroupEdit'
                         );
@@ -140,9 +122,9 @@ if ($action !== '' && Form::validateToken()) {
                 $clearCache = true;
             } else {
                 $step = 'neue Linkgruppe';
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
+                $alertHelper->addError(__('errorFillRequired'), 'errorFillRequired');
                 $smarty->assign('xPlausiVar_arr', $checks->getPlausiVar())
-                       ->assign('xPostVar_arr', $checks->getPostVar());
+                    ->assign('xPostVar_arr', $checks->getPostVar());
             }
             break;
         case 'move-to-linkgroup':
@@ -152,55 +134,43 @@ if ($action !== '' && Form::validateToken()) {
                 $linkGroupID
             );
             if ($res === LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkMoveDuplicate'), 'errorLinkMoveDuplicate');
+                $alertHelper->addError(__('errorLinkMoveDuplicate'), 'errorLinkMoveDuplicate');
             } elseif ($res === LinkAdmin::ERROR_LINK_NOT_FOUND) {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkKeyNotFound'), 'errorLinkKeyNotFound');
+                $alertHelper->addError(__('errorLinkKeyNotFound'), 'errorLinkKeyNotFound');
             } elseif ($res === LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkGroupKeyNotFound'), 'errorLinkGroupKeyNotFound');
+                $alertHelper->addError(__('errorLinkGroupKeyNotFound'), 'errorLinkGroupKeyNotFound');
             } elseif ($res instanceof LinkInterface) {
-                $alertHelper->addAlert(
-                    Alert::TYPE_SUCCESS,
-                    sprintf(__('successLinkMove'), $res->getDisplayName()),
-                    'successLinkMove'
-                );
+                $alertHelper->addSuccess(sprintf(__('successLinkMove'), $res->getDisplayName()), 'successLinkMove');
                 $clearCache = true;
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorUnknownLong'), 'errorUnknownLong');
+                $alertHelper->addError(__('errorUnknownLong'), 'errorUnknownLong');
             }
             $step = 'uebersicht';
             break;
         case 'copy-to-linkgroup':
             $res = $linkAdmin->createReference($linkID, $linkGroupID);
             if ($res === LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkCopyDuplicate'), 'errorLinkCopyDuplicate');
+                $alertHelper->addError(__('errorLinkCopyDuplicate'), 'errorLinkCopyDuplicate');
             } elseif ($res === LinkAdmin::ERROR_LINK_NOT_FOUND) {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkKeyNotFound'), 'errorLinkKeyNotFound');
+                $alertHelper->addError(__('errorLinkKeyNotFound'), 'errorLinkKeyNotFound');
             } elseif ($res === LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkGroupKeyNotFound'), 'errorLinkGroupKeyNotFound');
+                $alertHelper->addError(__('errorLinkGroupKeyNotFound'), 'errorLinkGroupKeyNotFound');
             } elseif ($res instanceof LinkInterface) {
-                $alertHelper->addAlert(
-                    Alert::TYPE_SUCCESS,
-                    sprintf(__('successLinkCopy'), $res->getDisplayName()),
-                    'successLinkCopy'
-                );
+                $alertHelper->addSuccess(sprintf(__('successLinkCopy'), $res->getDisplayName()), 'successLinkCopy');
                 $step       = 'uebersicht';
                 $clearCache = true;
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorUnknownLong'), 'errorUnknownLong');
+                $alertHelper->addError(__('errorUnknownLong'), 'errorUnknownLong');
             }
             break;
         case 'change-parent':
             $parentID = (int)($_POST['kVaterLink'] ?? 0);
             if ($parentID >= 0 && ($link = $linkAdmin->updateParentID($linkID, $parentID)) !== false) {
-                $alertHelper->addAlert(
-                    Alert::TYPE_SUCCESS,
-                    sprintf(__('successLinkMove'), $link->cName),
-                    'successLinkMove'
-                );
+                $alertHelper->addSuccess(sprintf(__('successLinkMove'), $link->cName), 'successLinkMove');
                 $step       = 'uebersicht';
                 $clearCache = true;
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkMove'), 'errorLinkMove');
+                $alertHelper->addError(__('errorLinkMove'), 'errorLinkMove');
             }
             break;
         case 'edit-link':
@@ -219,10 +189,9 @@ if ($action !== '' && Form::validateToken()) {
                 $files = [];
                 $link  = $linkAdmin->createOrUpdateLink($_POST);
                 if (Request::postInt('kLink') === 0) {
-                    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLinkCreate'), 'successLinkCreate');
+                    $alertHelper->addSuccess(__('successLinkCreate'), 'successLinkCreate');
                 } else {
-                    $alertHelper->addAlert(
-                        Alert::TYPE_SUCCESS,
+                    $alertHelper->addSuccess(
                         sprintf(__('successLinkEdit'), $link->getDisplayName()),
                         'successLinkEdit'
                     );
@@ -298,12 +267,12 @@ if ($action !== '' && Form::validateToken()) {
                 $link->setLinkGroups([Request::postInt('kLinkgruppe')]);
                 $checkVars = $checks->getPlausiVar();
                 if (isset($checkVars['nSpezialseite'])) {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('isDuplicateSpecialLink'), 'isDuplicateSpecialLink');
+                    $alertHelper->addError(__('isDuplicateSpecialLink'), 'isDuplicateSpecialLink');
                 } else {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
+                    $alertHelper->addError(__('errorFillRequired'), 'errorFillRequired');
                 }
                 $smarty->assign('xPlausiVar_arr', $checkVars)
-                       ->assign('xPostVar_arr', $checks->getPostVar());
+                    ->assign('xPostVar_arr', $checks->getPostVar());
             }
             break;
         default:
@@ -314,11 +283,11 @@ if ($action !== '' && Form::validateToken()) {
 if ($step === 'loesch_linkgruppe' && $linkGroupID > 0) {
     $step = 'uebersicht';
     if ($linkAdmin->deleteLinkGroup($linkGroupID) > 0) {
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLinkGroupDelete'), 'successLinkGroupDelete');
+        $alertHelper->addSuccess(__('successLinkGroupDelete'), 'successLinkGroupDelete');
         $clearCache = true;
         $step       = 'uebersicht';
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkGroupDelete'), 'errorLinkGroupDelete');
+        $alertHelper->addError(__('errorLinkGroupDelete'), 'errorLinkGroupDelete');
     }
     $_POST = [];
 } elseif ($step === 'edit-link') {
@@ -364,8 +333,7 @@ if ($step === 'uebersicht') {
         return $l->getLinkType();
     }) as $specialLinks) {
         /** @var Collection $specialLinks */
-        $alertHelper->addAlert(
-            Alert::TYPE_ERROR,
+        $alertHelper->addError(
             sprintf(
                 __('hasDuplicateSpecialLink'),
                 ' ' . $specialLinks->map(static function (LinkInterface $l) {
@@ -376,18 +344,18 @@ if ($step === 'uebersicht') {
         );
     }
     $smarty->assign('linkGroupCountByLinkID', $linkAdmin->getLinkGroupCountForLinkIDs())
-           ->assign('missingSystemPages', $linkAdmin->getMissingSystemPages())
-           ->assign('linkgruppen', $linkAdmin->getLinkGroups());
+        ->assign('missingSystemPages', $linkAdmin->getMissingSystemPages())
+        ->assign('linkgruppen', $linkAdmin->getLinkGroups());
 }
 if ($step === 'neuer Link') {
     $cgroups = $db->getObjects('SELECT * FROM tkundengruppe ORDER BY cName');
     $lgl     = new LinkGroupList($db, Shop::Container()->getCache());
     $lgl->loadAll();
     $smarty->assign('specialPages', $linkAdmin->getSpecialPageTypes())
-           ->assign('kundengruppen', $cgroups);
+        ->assign('kundengruppen', $cgroups);
 }
 $smarty->assign('step', $step)
-       ->assign('Link', $link)
-       ->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
-       ->assign('linkAdmin', $linkAdmin)
-       ->display('links.tpl');
+    ->assign('Link', $link)
+    ->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
+    ->assign('linkAdmin', $linkAdmin)
+    ->display('links.tpl');

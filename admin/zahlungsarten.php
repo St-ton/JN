@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
+use JTL\Backend\Settings\Manager as SettingsManager;
 use JTL\Backend\Settings\SectionFactory;
 use JTL\Backend\Settings\Sections\PluginPaymentMethod;
 use JTL\Checkout\Zahlungsart;
@@ -15,7 +15,6 @@ use JTL\Pagination\Filter;
 use JTL\Pagination\Pagination;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Recommendation\Manager;
-use JTL\Backend\Settings\Manager as SettingsManager;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -40,7 +39,7 @@ $getText         = Shop::Container()->getGetText();
 $settingManager  = new SettingsManager($db, $smarty, $oAccount, $getText, $alertService);
 if (Request::verifyGPCDataInt('checkNutzbar') === 1) {
     PaymentMethod::checkPaymentMethodAvailability();
-    $alertService->addAlert(Alert::TYPE_SUCCESS, __('successPaymentMethodCheck'), 'successPaymentMethodCheck');
+    $alertService->addSuccess(__('successPaymentMethodCheck'), 'successPaymentMethodCheck');
 }
 // reset log
 if (($action = Request::verifyGPDataString('a')) !== ''
@@ -52,11 +51,7 @@ if (($action = Request::verifyGPDataString('a')) !== ''
 
     if (isset($method->cModulId) && mb_strlen($method->cModulId) > 0) {
         (new ZahlungsLog($method->cModulId))->loeschen();
-        $alertService->addAlert(
-            Alert::TYPE_SUCCESS,
-            sprintf(__('successLogReset'), $method->cName),
-            'successLogReset'
-        );
+        $alertService->addSuccess(sprintf(__('successLogReset'), $method->cName), 'successLogReset');
     }
 }
 if ($action !== 'logreset' && Request::verifyGPCDataInt('kZahlungsart') > 0 && Form::validateToken()) {
@@ -156,7 +151,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
     }
 
     Shop::Container()->getCache()->flushAll();
-    $alertService->addAlert(Alert::TYPE_SUCCESS, __('successPaymentMethodSave'), 'successSave');
+    $alertService->addSuccess(__('successPaymentMethodSave'), 'successSave');
     $step = 'uebersicht';
 }
 
@@ -164,7 +159,7 @@ if ($step === 'einstellen') {
     $paymentMethod = new Zahlungsart(Request::verifyGPCDataInt('kZahlungsart'));
     if ($paymentMethod->getZahlungsart() === null) {
         $step = 'uebersicht';
-        $alertService->addAlert(Alert::TYPE_ERROR, __('errorPaymentMethodNotFound'), 'errorNotFound');
+        $alertService->addError(__('errorPaymentMethodNotFound'), 'errorNotFound');
     } else {
         $paymentMethod->cName = Text::filterXSS($paymentMethod->cName);
         PaymentMethod::activatePaymentMethod($paymentMethod);
@@ -282,8 +277,7 @@ if ($step === 'einstellen') {
                 'base',
                 PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
             );
-            $alertService->addAlert(
-                Alert::TYPE_WARNING,
+            $alertService->addWarning(
                 sprintf(__('Payment method can not been deleted'), __($method->cName)),
                 'paymentcantdel',
                 ['saveInSession' => true]
@@ -293,8 +287,7 @@ if ($step === 'einstellen') {
             $db->delete('tversandartzahlungsart', 'kZahlungsart', $paymentMethodID);
             $db->delete('tzahlungsartsprache', 'kZahlungsart', $paymentMethodID);
             $db->delete('tzahlungsart', 'kZahlungsart', $paymentMethodID);
-            $alertService->addAlert(
-                Alert::TYPE_SUCCESS,
+            $alertService->addSuccess(
                 sprintf(__('Payment method has been deleted'), $method->cName),
                 'paymentdeleted',
                 ['saveInSession' => true]
@@ -325,8 +318,7 @@ if ($step === 'uebersicht') {
                 );
             } catch (InvalidArgumentException $e) {
                 $method->markedForDelete = true;
-                $alertService->addAlert(
-                    Alert::TYPE_WARNING,
+                $alertService->addWarning(
                     sprintf(__('Plugin for payment method not found'), $method->cName, $method->cAnbieter),
                     'notfound_' . $pluginID
                 );

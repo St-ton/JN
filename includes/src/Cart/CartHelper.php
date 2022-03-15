@@ -2,7 +2,6 @@
 
 namespace JTL\Cart;
 
-use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
@@ -612,8 +611,7 @@ class CartHelper
             }
             Frontend::getCart()->redirectTo();
         } else {
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_ERROR,
+            Shop::Container()->getAlertService()->addError(
                 Shop::Lang()->get('configError', 'productDetails'),
                 'configError',
                 ['dismissable' => false]
@@ -646,8 +644,7 @@ class CartHelper
         // Prüfen ob nicht schon die maximale Anzahl an Artikeln auf der Vergleichsliste ist
         $products = Frontend::get('Vergleichsliste')->oArtikel_arr ?? [];
         if ($maxItems <= \count($products)) {
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_ERROR,
+            Shop::Container()->getAlertService()->addError(
                 Shop::Lang()->get('compareMaxlimit', 'errorMessages'),
                 'compareMaxlimit',
                 ['dismissable' => false]
@@ -678,16 +675,14 @@ class CartHelper
             }
             $compareList = Frontend::getCompareList();
             if ($compareList->productExists($productID)) {
-                $alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
+                $alertHelper->addError(
                     Shop::Lang()->get('comparelistProductexists', 'messages'),
                     'comparelistProductexists',
                     ['dismissable' => false]
                 );
             } else {
                 $compareList->addProduct($productID, $variations);
-                $alertHelper->addAlert(
-                    Alert::TYPE_NOTE,
+                $alertHelper->addNotice(
                     Shop::Lang()->get('comparelistProductadded', 'messages'),
                     'comparelistProductadded'
                 );
@@ -778,8 +773,7 @@ class CartHelper
                 'AktuellerArtikel' => &$obj
             ]);
 
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_NOTE,
+            Shop::Container()->getAlertService()->addNotice(
                 Shop::Lang()->get('wishlistProductadded', 'messages'),
                 'wishlistProductadded'
             );

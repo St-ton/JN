@@ -1696,6 +1696,7 @@ final class Shop
             }
             if ($link === null) {
                 self::$is404 = true;
+                self::$kLink = 0;
             }
         } elseif (self::$fileName === null) {
             self::$fileName = 'seite.php';

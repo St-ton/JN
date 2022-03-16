@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use JTL\Alert\Alert;
 use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
 use JTL\Checkout\Bestellung;

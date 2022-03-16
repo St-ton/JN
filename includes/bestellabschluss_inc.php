@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Campaign;
-use JTL\Alert\Alert;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;

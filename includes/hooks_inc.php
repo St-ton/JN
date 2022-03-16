@@ -2046,3 +2046,11 @@ define('HOOK_BESTELLUNG_SETZEGUTHABEN', 335);
  * @param array  subscriptions
  */
 define('HOOK_SYNC_SEND_AVAILABILITYMAILS', 336);
+
+/**
+ * @since 5.1.3
+ * @file includes/src/Cart/Cart.php
+ * @param CartItem positionItem
+ * @param bool     &delete
+ */
+define('HOOK_CART_DELETE_PARENT_CART_ITEM', 337);

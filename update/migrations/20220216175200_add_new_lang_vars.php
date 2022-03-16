@@ -171,6 +171,10 @@ class Migration_20220216175200 extends Migration implements IMigration
         $this->removeLocalization('searchQueryMinLength', 'messages');
         $this->removeLocalization('minCharLen', 'messages');
         $this->removeLocalization('cartSumLabel', 'checkout');
+        $this->removeLocalization('yourbasketcontainsItemsSingular', 'checkout');
+        $this->removeLocalization('yourbasketcontainsItemsPlural', 'checkout');
+        $this->removeLocalization('yourbasketcontainsPositionsSingular', 'checkout');
+        $this->removeLocalization('yourbasketcontainsPositionsPlural', 'checkout');
         $this->removeLocalization('productMinorderQty', 'messages');
         $this->removeLocalization('orderPositionSingularItemsSingular', 'checkout');
         $this->removeLocalization('orderPositionSingularItemsPlural', 'checkout');

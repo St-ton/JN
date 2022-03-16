@@ -40,16 +40,18 @@
                     {if $section->key === 'header'}
                         <script>
                             $(document).ready(function(){
-                                let settings = {
-                                    menu_single_row: 'menu_single_row',
-                                    menu_multiple_rows: 'menu_multiple_rows',
-                                    menu_center: 'menu_center',
-                                    menu_scroll: 'menu_scroll',
-                                    menu_logoheight: 'menu_logoheight',
-                                    menu_logo_centered: 'menu_logo_centered',
-                                    menu_search_width: 'menu_search_width',
-                                    menu_search_position: 'menu_search_position',
-                                    header_full_width: 'header_full_width',
+                                let $menuSingleRow = $('#header_menu_single_row'),
+                                    settings = {
+                                        menu_single_row: { usable_without_menu_single_row: true },
+                                        menu_multiple_rows: { usable_without_menu_single_row: false },
+                                        menu_center: { usable_without_menu_single_row: false },
+                                        menu_scroll: { usable_without_menu_single_row: false },
+                                        menu_logoheight: { usable_without_menu_single_row: true },
+                                        menu_logo_centered: { usable_without_menu_single_row: false },
+                                        menu_search_width: { usable_without_menu_single_row: false },
+                                        menu_search_position: { usable_without_menu_single_row: false },
+                                        header_full_width: { usable_without_menu_single_row: true },
+                                        menu_show_topbar: { usable_without_menu_single_row: true },
                                 };
                                 let presets = [
                                     {
@@ -76,7 +78,7 @@
                                             menu_scroll: 'menu',
                                             menu_logoheight: '120',
                                             menu_logo_centered: 'Y',
-                                            menu_search_width: '260',
+                                            menu_search_width: '240',
                                             menu_search_position: 'right',
                                             header_full_width: 'N',
                                             menu_show_topbar: 'Y',
@@ -88,11 +90,26 @@
                                             menu_single_row: 'Y',
                                             menu_multiple_rows: 'scroll',
                                             menu_center: 'center',
-                                            menu_scroll: 'all',
+                                            menu_scroll: 'menu',
                                             menu_logoheight: '80',
                                             menu_logo_centered: 'N',
                                             menu_search_width: '0',
-                                            menu_search_position: 'left',
+                                            menu_search_position: 'right',
+                                            header_full_width: 'N',
+                                            menu_show_topbar: 'Y',
+                                        }
+                                    },
+                                    {
+                                        name: 'normal 2 spaltig',
+                                        settings: {
+                                            menu_single_row: 'Y',
+                                            menu_multiple_rows: 'multiple',
+                                            menu_center: 'center',
+                                            menu_scroll: 'menu',
+                                            menu_logoheight: '80',
+                                            menu_logo_centered: 'N',
+                                            menu_search_width: '500',
+                                            menu_search_position: 'right',
                                             header_full_width: 'N',
                                             menu_show_topbar: 'Y',
                                         }
@@ -106,8 +123,8 @@
                                             menu_scroll: 'all',
                                             menu_logoheight: '80',
                                             menu_logo_centered: 'N',
-                                            menu_search_width: '0',
-                                            menu_search_position: 'left',
+                                            menu_search_width: '500',
+                                            menu_search_position: 'right',
                                             header_full_width: 'N',
                                             menu_show_topbar: 'N',
                                         }
@@ -126,6 +143,21 @@
                                         }
                                     });
                                 });
+                                $menuSingleRow.on('change', function() {
+                                    disableSettings($(this).val());
+                                });
+                                function disableSettings(menuSingelRow) {
+                                    if (menuSingelRow === 'Y') {
+                                        $.each(settings, function (key, value) {
+                                            $('#header_' + key).prop('disabled', false);
+                                        });
+                                    } else {
+                                        $.each(settings, function (key, value) {
+                                            $('#header_' + key).prop('disabled', !value.usable_without_menu_single_row);
+                                        });
+                                    }
+                                }
+                                disableSettings($menuSingleRow.val());
                             });
                         </script>
 
@@ -136,14 +168,19 @@
                             <div id="preset-items" class="row mt-3 mb-4">
 
                             </div>
-                            <div class="legend mb-5">
-                                <h2>Legende</h2>
-                                <ul>
-                                    <li><i class="fas fa-desktop"></i> - Nur auf Desktop</li>
-                                    <li><i class="fas fa-mobile-alt"></i> - Nur auf mobilen Geräten</li>
-                                    <li><i class="fas fa-circle"></i> - Auch mit Einstellung "Menü in eigener Zeile anzeigen - Nein" nutzbar</li>
-                                </ul>
-                            </div>
+
+                        </div>
+                    <a class="btn btn-primary mb-5" data-toggle="collapse" href="#header-settings" aria-controls="header-settings">
+                        Weitere Einstellungen
+                    </a>
+                    <div class="collapse" id="header-settings">
+                        <div class="legend mb-5">
+                            <h2>Legende</h2>
+                            <ul>
+                                <li><i class="fas fa-desktop"></i> - Nur auf Desktop</li>
+                                <li><i class="fas fa-mobile-alt"></i> - Nur auf mobilen Geräten</li>
+                                <li><i class="fas fa-circle"></i> - Auch mit Einstellung "Menü in eigener Zeile anzeigen - Nein" nutzbar</li>
+                            </ul>
                         </div>
                     {/if}
                     <div class="row">
@@ -211,6 +248,9 @@
                             </div>
                         {/foreach}
                     </div>{* /row *}
+                    {if $section->key === 'header'}
+                        </div>
+                    {/if}
                 </div>
             </div>
         {/foreach}

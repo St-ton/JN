@@ -40,20 +40,13 @@ class Router
     {
         $this->db         = $db;
         $this->dispatcher = simpleDispatcher(function (RouteCollector $r) {
-            $defaultHandler      = new DefaultHandler($this->db);
-            $productHandler      = new ProductHandler($this->db);
-            $categoryHandler     = new CategoryHandler($this->db);
-            $manufacturerHandler = new ManufacturerHandler($this->db);
-            $rootHandler         = new RootHandler($this->db);
-            $newsHandler         = new NewsHandler($this->db);
-            $pageHandler         = new PageHandler($this->db);
-            $r->addRoute('GET', '/products/{id:\d+}', [$productHandler, 'handle']);
-            $r->addRoute('GET', '/categories/{id:\d+}', [$categoryHandler, 'handle']);
-            $r->addRoute('GET', '/manufacturers/{id:\d+}', [$manufacturerHandler, 'handle']);
-            $r->addRoute('GET', '/news/{id:\d+}', [$newsHandler, 'handle']);
-            $r->addRoute('GET', '/page/{id:\d+}', [$pageHandler, 'handle']);
-            $r->addRoute('GET', '/{slug}', [$defaultHandler, 'handle']);
-            $r->addRoute('GET', '/', [$rootHandler, 'handle']);
+            $r->addRoute('GET', '/products/{id:\d+}', [new ProductHandler($this->db), 'handle']);
+            $r->addRoute('GET', '/categories/{id:\d+}', [new CategoryHandler($this->db), 'handle']);
+            $r->addRoute('GET', '/manufacturers/{id:\d+}', [new ManufacturerHandler($this->db), 'handle']);
+            $r->addRoute('GET', '/news/{id:\d+}', [new NewsHandler($this->db), 'handle']);
+            $r->addRoute('GET', '/page/{id:\d+}', [new PageHandler($this->db), 'handle']);
+            $r->addRoute('GET', '/{slug}', [new DefaultHandler($this->db), 'handle']);
+            $r->addRoute('GET', '/', [new RootHandler($this->db), 'handle']);
         });
     }
 

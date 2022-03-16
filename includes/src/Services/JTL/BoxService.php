@@ -267,13 +267,13 @@ class BoxService implements BoxServiceInterface
     {
         $pageID = 0;
         if ($pageType === \PAGE_ARTIKELLISTE) {
-            $pageID = (int)Shop::$kKategorie;
+            $pageID = Shop::$kKategorie;
         } elseif ($pageType === \PAGE_ARTIKEL) {
-            $pageID = (int)Shop::$kArtikel;
+            $pageID = Shop::$kArtikel;
         } elseif ($pageType === \PAGE_EIGENE) {
-            $pageID = (int)Shop::$kLink;
+            $pageID = Shop::$kLink;
         } elseif ($pageType === \PAGE_HERSTELLER) {
-            $pageID = (int)Shop::$kHersteller;
+            $pageID = Shop::$kHersteller;
         }
 
         return $pageID;

@@ -113,7 +113,7 @@ final class Shop
     /**
      * @var int
      */
-    public static $kSprache;
+    public static int $kSprache = 0;
 
     /**
      * @var string
@@ -123,172 +123,172 @@ final class Shop
     /**
      * @var int
      */
-    public static $kKonfigPos;
+    public static int $kKonfigPos = 0;
 
     /**
      * @var int
      */
-    public static $kKategorie;
+    public static int $kKategorie = 0;
 
     /**
      * @var int
      */
-    public static $kArtikel;
+    public static int $kArtikel = 0;
 
     /**
      * @var int
      */
-    public static $kVariKindArtikel;
+    public static int $kVariKindArtikel = 0;
 
     /**
      * @var int
      */
-    public static $kSeite;
+    public static int $kSeite = 0;
 
     /**
      * @var int
      */
-    public static $kLink;
+    public static int $kLink = 0;
 
     /**
      * @var int
      */
-    public static $nLinkart;
+    public static int $nLinkart = 0;
 
     /**
      * @var int
      */
-    public static $kHersteller;
+    public static int $kHersteller = 0;
 
     /**
      * @var int
      */
-    public static $kSuchanfrage;
+    public static int $kSuchanfrage = 0;
 
     /**
      * @var int
      */
-    public static $kMerkmalWert;
+    public static int $kMerkmalWert = 0;
 
     /**
      * @var int
      */
-    public static $kSuchspecial;
+    public static int $kSuchspecial = 0;
 
     /**
      * @var int
      */
-    public static $kNews;
+    public static int $kNews = 0;
 
     /**
      * @var int
      */
-    public static $kNewsMonatsUebersicht;
+    public static int $kNewsMonatsUebersicht = 0;
 
     /**
      * @var int
      */
-    public static $kNewsKategorie;
+    public static int $kNewsKategorie = 0;
 
     /**
      * @var int
      */
-    public static $nBewertungSterneFilter;
+    public static int $nBewertungSterneFilter = 0;
 
     /**
      * @var string
      */
-    public static $cPreisspannenFilter;
+    public static string $cPreisspannenFilter = '';
 
     /**
      * @var int
      */
-    public static $kHerstellerFilter;
+    public static int $kHerstellerFilter = 0;
 
     /**
-     * @var array
+     * @var int[]
      */
-    public static $manufacturerFilterIDs;
+    public static array $manufacturerFilterIDs = [];
 
     /**
-     * @var array
+     * @var int[]
      */
-    public static $categoryFilterIDs;
-
-    /**
-     * @var int
-     */
-    public static $kKategorieFilter;
+    public static array $categoryFilterIDs = [];
 
     /**
      * @var int
      */
-    public static $kSuchspecialFilter;
-
-    /**
-     * @var array
-     */
-    public static $searchSpecialFilterIDs;
+    public static int $kKategorieFilter = 0;
 
     /**
      * @var int
      */
-    public static $kSuchFilter;
+    public static int $kSuchspecialFilter = 0;
+
+    /**
+     * @var int[]
+     */
+    public static array $searchSpecialFilterIDs = [];
 
     /**
      * @var int
      */
-    public static $nDarstellung;
+    public static int $kSuchFilter = 0;
 
     /**
      * @var int
      */
-    public static $nSortierung;
+    public static int $nDarstellung = 0;
 
     /**
      * @var int
      */
-    public static $nSort;
+    public static int $nSortierung = 0;
 
     /**
      * @var int
      */
-    public static $show;
+    public static int $nSort = 0;
 
     /**
      * @var int
      */
-    public static $vergleichsliste;
+    public static int $show = 0;
+
+    /**
+     * @var int
+     */
+    public static int $vergleichsliste = 0;
 
     /**
      * @var bool
      */
-    public static $bFileNotFound;
+    public static bool $bFileNotFound = false;
 
     /**
      * @var string
      */
-    public static $cCanonicalURL;
+    public static string $cCanonicalURL = '';
 
     /**
      * @var bool
      */
-    public static $is404;
+    public static bool $is404 = false;
 
     /**
      * @var array
      */
-    public static $MerkmalFilter;
+    public static array $MerkmalFilter = [];
 
     /**
      * @var array
      */
-    public static $SuchFilter;
+    public static array $SuchFilter = [];
 
     /**
      * @var int
      */
-    public static $kWunschliste;
+    public static int $kWunschliste = 0;
 
     /**
      * @var bool
@@ -308,82 +308,82 @@ final class Shop
     /**
      * @var null|Shop
      */
-    private static $instance;
+    private static ?Shop $instance = null;
 
     /**
-     * @var ProductFilter
+     * @var ProductFilter|null
      */
-    public static $productFilter;
+    public static ?ProductFilter $productFilter = null;
 
     /**
      * @var string|null
      */
-    public static $fileName;
+    public static ?string $fileName = null;
 
     /**
      * @var string
      */
-    public static $AktuelleSeite;
+    public static string $AktuelleSeite;
 
     /**
      * @var int
      */
-    public static $pageType;
+    public static int $pageType = \PAGE_UNBEKANNT;
 
     /**
      * @var bool
      */
-    public static $directEntry = true;
+    public static bool $directEntry = true;
 
     /**
      * @var bool
      */
-    public static $bSeo = false;
+    public static bool $bSeo = false;
 
     /**
      * @var bool
      */
-    public static $isInitialized = false;
+    public static bool $isInitialized = false;
 
     /**
      * @var int
      */
-    public static $nArtikelProSeite;
+    public static int $nArtikelProSeite = 0;
 
     /**
      * @var string
      */
-    public static $cSuche;
+    public static string $cSuche = '';
 
     /**
      * @var int
      */
-    public static $seite;
+    public static int $seite = 0;
 
     /**
      * @var int
      */
-    public static $nSterne;
+    public static int $nSterne = 0;
 
     /**
      * @var int
      */
-    public static $nNewsKat;
+    public static int $nNewsKat = 0;
 
     /**
      * @var string
      */
-    public static $cDatum;
+    public static string $cDatum = '';
 
     /**
      * @var int
      */
-    public static $nAnzahl;
+    public static int $nAnzahl = 0;
 
     /**
      * @var string
      */
-    public static $uri;
+    public static string $uri = '';
 
     /**
      * @var array
@@ -393,27 +393,22 @@ final class Shop
     /**
      * @var null|bool
      */
-    private static $logged;
+    private static ?bool $logged = null;
 
     /**
      * @var null|string
      */
-    private static $adminToken;
+    private static ?string $adminToken = null;
 
     /**
      * @var null|string
      */
-    private static $adminLangTag;
+    private static ?string $adminLangTag = null;
 
     /**
      * @var array
      */
-    private static $url = [];
-
-    /**
-     * @var Shopsetting
-     */
-    private static $settings;
+    private static array $url = [];
 
     /**
      * @var FilterInterface[]
@@ -421,19 +416,19 @@ final class Shop
     public static array $customFilters = [];
 
     /**
-     * @var DefaultServicesInterface
+     * @var DefaultServicesInterface|null
      */
-    private static $container;
+    private static ?DefaultServicesInterface $container = null;
+
+    /**
+     * @var string|null
+     */
+    private static ?string $imageBaseURL = null;
 
     /**
      * @var string
      */
-    private static $imageBaseURL;
-
-    /**
-     * @var string
-     */
-    private static $optinCode;
+    private static string $optinCode = '';
 
     /**
      * @var bool
@@ -457,7 +452,6 @@ final class Shop
     private function __construct()
     {
         self::$instance = $this;
-        self::$settings = Shopsetting::getInstance();
     }
 
     /**
@@ -475,7 +469,7 @@ final class Shop
      * @param mixed  $arguments
      * @return mixed
      */
-    public function __call($method, $arguments)
+    public function __call(string $method, $arguments)
     {
         return ($mapping = self::map($method)) !== null
             ? \call_user_func_array([$this, $mapping], $arguments)
@@ -489,7 +483,7 @@ final class Shop
      * @param mixed  $arguments
      * @return mixed
      */
-    public static function __callStatic($method, $arguments)
+    public static function __callStatic(string $method, $arguments)
     {
         return ($mapping = self::map($method)) !== null
             ? \call_user_func_array([self::getInstance(), $mapping], $arguments)
@@ -592,10 +586,10 @@ final class Shop
     /**
      * quick&dirty debugging
      *
-     * @param mixed       $var          - the variable to debug
-     * @param bool        $die          - set true to die() afterwards
-     * @param null|string $beforeString - a prefix string
-     * @param int         $backtrace    - backtrace depth
+     * @param mixed           $var - the variable to debug
+     * @param bool            $die - set true to die() afterwards
+     * @param null|int|string $beforeString - a prefix string
+     * @param int             $backtrace - backtrace depth
      */
     public static function dbg($var, bool $die = false, $beforeString = null, int $backtrace = 0): void
     {
@@ -671,7 +665,7 @@ final class Shop
     }
 
     /**
-     * @param array $config
+     * @param array|int $config
      * @return array
      */
     public static function getConfig($config): array
@@ -685,7 +679,7 @@ final class Shop
      */
     public static function getSettingSection(int $sectionID): ?array
     {
-        return (self::$settings ?? Shopsetting::getInstance())->getSection($sectionID);
+        return Shopsetting::getInstance()->getSection($sectionID);
     }
 
     /**
@@ -694,7 +688,7 @@ final class Shop
      */
     public static function getSettings($config): array
     {
-        return (self::$settings ?? Shopsetting::getInstance())->getSettings($config);
+        return Shopsetting::getInstance()->getSettings($config);
     }
 
     /**
@@ -714,7 +708,7 @@ final class Shop
      */
     public static function getConfigValue(int $section, string $option)
     {
-        return (self::$settings ?? Shopsetting::getInstance())->getValue($section, $option);
+        return Shopsetting::getInstance()->getValue($section, $option);
     }
 
     /**
@@ -813,7 +807,7 @@ final class Shop
         }
         if (self::$kWunschliste === 0
             && Request::verifyGPDataString('error') === ''
-            && \mb_strlen(Request::verifyGPDataString('wlid')) > 0
+            && Request::verifyGPDataString('wlid') !== ''
         ) {
             \header(
                 'Location: ' . LinkService::getInstance()->getStaticRoute('wunschliste.php') .
@@ -828,11 +822,11 @@ final class Shop
         $conf->setLanguageID(self::$kSprache);
         $conf->setLanguages(self::Lang()->getLangArray());
         $conf->setCustomerGroupID(Frontend::getCustomerGroup()->getID());
-        $conf->setConfig(self::$settings->getAll());
+        $conf->setConfig(Shopsetting::getInstance()->getAll());
         $conf->setBaseURL(self::getURL() . '/');
         self::$productFilter = new ProductFilter($conf, self::Container()->getDB(), self::Container()->getCache());
         self::getLanguageFromServerName();
-        $res = $router->dispatch();
+        $res       = $router->dispatch();
         self::$uri = $router->getUri();
         if ($res === false) {
             self::$is404 = true;
@@ -1076,7 +1070,7 @@ final class Shop
                 // special case: home page is accessible without seo url
                 self::setPageType(\PAGE_STARTSEITE);
                 self::$fileName = 'seite.php';
-                self::$kLink    = self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_STARTSEITE);
+                self::$kLink    = self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_STARTSEITE) ?: 0;
             } elseif (Media::getInstance()->isValidRequest($path)) {
                 Media::getInstance()->handleRequest($path);
             } else {
@@ -1193,14 +1187,13 @@ final class Shop
         }
         \executeHook(\HOOK_INDEX_SEO_404, ['seo' => self::getRequestUri()]);
         if (!self::$kLink) {
-            $hookInfos     = Redirect::urlNotFoundRedirect([
+            $hookInfos = Redirect::urlNotFoundRedirect([
                 'key'   => 'kLink',
                 'value' => self::$kLink
             ]);
-            $kLink         = $hookInfos['value'];
-            $bFileNotFound = $hookInfos['isFileNotFound'];
+            $kLink     = $hookInfos['value'];
             if (!$kLink) {
-                self::$kLink = self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404);
+                self::$kLink = self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404) ?: 0;
             }
         }
 
@@ -1416,7 +1409,6 @@ final class Shop
         if (\is_bool(self::$logged)) {
             return self::$logged;
         }
-
         if (\session_name() === 'eSIdAdm') {
             // admin session already active
             self::$logged       = self::Container()->getAdminAccount()->logged();

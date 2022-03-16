@@ -24,7 +24,7 @@ $valid       = Form::validateToken();
 $controller  = new Controller($db, Shop::getSettings([CONF_NEWSLETTER]));
 if ($kLink === false) {
     $bFileNotFound       = true;
-    Shop::$kLink         = $linkHelper->getSpecialPageID(LINKTYP_404);
+    Shop::$kLink         = $linkHelper->getSpecialPageID(LINKTYP_404) ?: 0;
     Shop::$bFileNotFound = true;
     Shop::$is404         = true;
 

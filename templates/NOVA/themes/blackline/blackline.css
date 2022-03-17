@@ -26073,15 +26073,17 @@ header #burger-menu {
   .full-width-mega .menu-center-center.menu-multiple-rows-multiple .nav-scrollbar-inner {
     justify-content: center;
   }
-  .full-width-mega .menu-center-center.menu-multiple-rows-left .nav-scrollbar-inner::before, .full-width-mega .menu-center-center.menu-multiple-rows-left .nav-scrollbar-inner::after {
-    content: "";
-    margin: auto;
+  .full-width-mega .menu-center-space-between.menu-multiple-rows-multiple .nav-scrollbar-inner {
+    justify-content: space-between;
   }
 }
 
 @media (min-width: 992px) {
   header.full-width-mega .nav-right .dropdown-menu {
     box-shadow: 0 0 7px #000000;
+  }
+  header .nav-multiple-row .navbar-nav > .nav-item > .nav-link {
+    padding: 1rem 1.5rem;
   }
 }
 /* footer */

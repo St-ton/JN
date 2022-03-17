@@ -63,6 +63,7 @@
             <Setting Description="Menüausrichtung" Key="menu_center" Type="select" Value="center">
                 <Option Value="center">Zentriert</Option>
                 <Option Value="left">Linksbündig</Option>
+                <Option Value="space-between">Blocksatz</Option>
             </Setting>
             <Setting Description="Anzeige beim Scrollen" Key="menu_scroll" Type="select" Value="menu">
                 <Option Value="menu">Menü</Option>
@@ -87,6 +88,7 @@
             <Setting Description="Header über gesamte Bildschirmbreite darstellen" Key="header_full_width" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
+                <Option Value="B">Boxed</Option>
             </Setting>
             <Setting Description="Anzeige der Suche auf mobilen Geräten" Key="mobile_search_type" Type="select" Value="fixed">
                 <Option Value="fixed">Suche beim Hochscrollen einblenden</Option>

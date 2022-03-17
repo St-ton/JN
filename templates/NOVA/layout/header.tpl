@@ -333,6 +333,7 @@
         {/if}
 
         {block name='layout-header-header'}
+            {$headerWidth=$Einstellungen.template.header.header_full_width}
             {if (($Einstellungen.template.header.menu_scroll !== 'menu' && $Einstellungen.template.header.menu_single_row === 'Y')
                     || $Einstellungen.template.header.menu_single_row === 'N'
                 )
@@ -340,7 +341,7 @@
                 && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}
                 {block name='layout-header-branding-top-bar'}
                     <div id="header-top-bar" class="d-none topbar-wrapper {if $Einstellungen.template.header.menu_single_row === 'Y'}full-width-mega{/if} {if $Einstellungen.template.header.header_full_width === 'Y'}is-fullwidth{/if} d-lg-flex">
-                        <div class="container-fluid {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if} d-lg-flex flex-row-reverse">
+                        <div class="{if $headerWidth === 'B'}container{else}container-fluid {if $headerWidth === 'N'}container-fluid-xl{/if}{/if} d-lg-flex flex-row-reverse">
                             {include file='layout/header_top_bar.tpl'}
                         </div>
                     </div>
@@ -356,7 +357,7 @@
                     {/block}
                 {else}
                     {block name='layout-header-container-inner'}
-                        <div class="container-fluid {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if}">
+                        <div class="{if $headerWidth === 'B'}container{else}container-fluid {if $headerWidth === 'N'}container-fluid-xl{/if}{/if}">
                         {block name='layout-header-category-nav'}
                             {block name='layout-header-category-nav-logo'}
                                 {include file='layout/header_logo.tpl'}

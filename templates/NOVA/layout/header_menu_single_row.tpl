@@ -1,10 +1,13 @@
 {block name='layout-header-menu-single-row'}
-    {$menuScroll=$Einstellungen.template.header.menu_scroll === 'menu' && $Einstellungen.template.header.menu_single_row === 'Y'}
+    {block name='layout-header-variables'}
+        {$menuScroll=$Einstellungen.template.header.menu_scroll === 'menu' && $Einstellungen.template.header.menu_single_row === 'Y'}
+        {$headerWidth=$Einstellungen.template.header.header_full_width}
+    {/block}
     {block name='layout-header-menu-single-row-main'}
         {block name='layout-header-menu-single-row-top-bar-outer'}
             {if $menuScroll && $Einstellungen.template.header.menu_show_topbar === 'Y'}
                 <div id="header-top-bar" class="d-none topbar-wrapper full-width-mega {if $Einstellungen.template.header.header_full_width === 'Y'}is-fullwidth{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
-                    <div class="container-fluid {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
+                    <div class="{if $headerWidth === 'B'}container{else}container-fluid {if $headerWidth === 'N'}container-fluid-xl{/if}{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
                         {block name='layout-header-menu-single-row-top-bar-outer-include-header-top-bar'}
                             {include file='layout/header_top_bar.tpl'}
                         {/block}
@@ -14,7 +17,7 @@
         {/block}
         {block name='layout-header-menu-single-row-nav'}
             {block name='layout-header-menu-single-row-nav-main'}
-                <div class="container-fluid hide-navbar {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if}
+                <div class="hide-navbar {if $headerWidth === 'B'}container{else}container-fluid {if $headerWidth === 'N'}container-fluid-xl{/if}{/if}
                             menu-search-position-{$Einstellungen.template.header.menu_search_position}">
                     {navbar toggleable=true fill=true type="expand-lg" class="row justify-content-center align-items-center-util"}
                         {block name='layout-header-menu-single-row-logo'}
@@ -58,7 +61,7 @@
             {/block}
             {block name='layout-header-menu-single-row-nav-categories'}
                 {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}
-                    <div class="container-fluid {if $Einstellungen.template.header.header_full_width === 'N'}container-fluid-xl{/if}
+                    <div class="{if $headerWidth === 'B'}container{else}container-fluid {if $headerWidth === 'N'}container-fluid-xl{/if}{/if}
                         menu-center-{$Einstellungen.template.header.menu_center}
                         menu-multiple-rows-{$Einstellungen.template.header.menu_multiple_rows}">
                         {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center-util{else}align-items-lg-end{/if}"}

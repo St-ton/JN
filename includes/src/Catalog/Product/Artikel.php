@@ -4922,7 +4922,7 @@ class Artikel
                 || (isset($this->FunktionsAttribute['supplytime']) && $this->FunktionsAttribute['supplytime'] > 0)
             ) {
                 // attribute "supplytime" for merchants who do not use JTL-Wawis purchase-system
-                $supplyTime       = ((int)$this->FunktionsAttribute['supplytime'] > 0)
+                $supplyTime       = (isset($this->FunktionsAttribute['supplytime']) && (int)$this->FunktionsAttribute['supplytime'] > 0)
                     ? (int)$this->FunktionsAttribute['supplytime']
                     : $this->nLiefertageWennAusverkauft;
                 $minDeliveryDays += $supplyTime;

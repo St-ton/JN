@@ -39,6 +39,7 @@
                 <div class="card-body">
                     {if $section->key === 'header'}
                         <script>
+                            {literal}
                             $(document).ready(function(){
                                 let $menuSingleRow = $('#header_menu_single_row'),
                                     settings = {
@@ -142,23 +143,35 @@
                                             });
                                         }
                                     });
+                                    disableSettings($menuSingleRow.val())
                                 });
                                 $menuSingleRow.on('change', function() {
                                     disableSettings($(this).val());
                                 });
+                                $('[id^="header_"]')
+                                    .prop('toggle', 'tooltip')
+                                    .prop('title', '{/literal}{__('tooltipWithoutMenuSingleRow')}{literal}');
+
                                 function disableSettings(menuSingelRow) {
                                     if (menuSingelRow === 'Y') {
                                         $.each(settings, function (key, value) {
-                                            $('#header_' + key).prop('disabled', false);
+                                            $('#header_' + key)
+                                                .prop('disabled', false)
+                                                .tooltip('disable');
                                         });
                                     } else {
                                         $.each(settings, function (key, value) {
                                             $('#header_' + key).prop('disabled', !value.usable_without_menu_single_row);
+                                            if (!value.usable_without_menu_single_row) {
+                                                $('#header_' + key)
+                                                    .tooltip('enable');
+                                            }
                                         });
                                     }
                                 }
                                 disableSettings($menuSingleRow.val());
                             });
+                            {/literal}
                         </script>
 
                         <div id="preset-wrapper">
@@ -179,7 +192,6 @@
                             <ul>
                                 <li><i class="fas fa-desktop"></i> - Nur auf Desktop</li>
                                 <li><i class="fas fa-mobile-alt"></i> - Nur auf mobilen Geräten</li>
-                                <li><i class="fas fa-circle"></i> - Auch mit Einstellung "Menü in eigener Zeile anzeigen - Nein" nutzbar</li>
                             </ul>
                         </div>
                     {/if}

@@ -4158,40 +4158,41 @@ class Artikel
     private function getStockDisplay(): self
     {
         $this->Lageranzeige = new stdClass();
+        $lang               = LanguageHelper::getInstance();
         if ($this->cLagerBeachten === 'Y') {
             if ($this->fLagerbestand > 0) {
                 $this->Lageranzeige->cLagerhinweis['genau']          = $this->fLagerbestand . ' ' .
-                    $this->cEinheit . ' ' . Shop::Lang()->get('inStock');
-                $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productAvailable');
+                    $this->cEinheit . ' ' . $lang->get('inStock');
+                $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = $lang->get('productAvailable');
                 if ($this->conf['artikeldetails']['artikel_lagerbestandsanzeige'] === 'verfuegbarkeit') {
-                    $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
+                    $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = $lang->get('ampelGruen');
                 }
             } elseif ($this->cLagerKleinerNull === 'Y'
                 && $this->conf['global']['artikel_ampel_lagernull_gruen'] === 'Y'
             ) {
-                $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen');
-                $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
+                $this->Lageranzeige->cLagerhinweis['genau']          = $lang->get('ampelGruen');
+                $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = $lang->get('ampelGruen');
             } else {
-                $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('productNotAvailable');
-                $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productNotAvailable');
+                $this->Lageranzeige->cLagerhinweis['genau']          = $lang->get('productNotAvailable');
+                $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = $lang->get('productNotAvailable');
             }
         } else {
-            $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen');
-            $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen');
+            $this->Lageranzeige->cLagerhinweis['genau']          = $lang->get('ampelGruen');
+            $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = $lang->get('ampelGruen');
         }
         if ($this->cLagerBeachten === 'Y') {
             // ampel
             $this->Lageranzeige->nStatus   = 1;
             $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GELB])
                 ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GELB]
-                : Shop::Lang()->get('ampelGelb');
+                : $lang->get('ampelGelb');
             $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_GELB, 'ampelGelb');
 
             if ($this->fLagerbestand <= (int)$this->conf['global']['artikel_lagerampel_rot']) {
                 $this->Lageranzeige->nStatus   = 0;
                 $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT])
                     ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT]
-                    : Shop::Lang()->get('ampelRot');
+                    : $lang->get('ampelRot');
                 $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_ROT, 'ampelRot');
             }
             if ($this->fLagerbestand >= (int)$this->conf['global']['artikel_lagerampel_gruen']
@@ -4200,7 +4201,7 @@ class Artikel
                 $this->Lageranzeige->nStatus   = 2;
                 $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GRUEN])
                     ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GRUEN]
-                    : Shop::Lang()->get('ampelGruen');
+                    : $lang->get('ampelGruen');
                 $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_GRUEN, 'ampelGruen');
             }
         } else {
@@ -4210,32 +4211,32 @@ class Artikel
                 case 1:
                     $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GELB])
                         ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GELB]
-                        : Shop::Lang()->get('ampelGelb');
+                        : $lang->get('ampelGelb');
                     $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_GELB, 'ampelGelb');
                     break;
                 case 0:
                     $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT])
                         ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT]
-                        : Shop::Lang()->get('ampelRot');
+                        : $lang->get('ampelRot');
                     $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_ROT, 'ampelRot');
                     break;
                 default:
                     $this->Lageranzeige->nStatus   = 2;
                     $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GRUEN])
                         ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_GRUEN]
-                        : Shop::Lang()->get('ampelGruen');
+                        : $lang->get('ampelGruen');
                     $this->setToParentStockText(\ART_ATTRIBUT_AMPELTEXT_GRUEN, 'ampelGruen');
                     break;
             }
         }
         if ($this->bHasKonfig && Configurator::hasUnavailableGroup($this->oKonfig_arr)) {
-            $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('productNotAvailable');
-            $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productNotAvailable');
+            $this->Lageranzeige->cLagerhinweis['genau']          = $lang->get('productNotAvailable');
+            $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = $lang->get('productNotAvailable');
 
             $this->Lageranzeige->nStatus   = 0;
             $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT])
                 ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT]
-                : Shop::Lang()->get('ampelRot');
+                : $lang->get('ampelRot');
         }
 
         return $this;

@@ -6,7 +6,7 @@
             {/if}
         {/block}
         {block name='layout-header-nav-icons-include-currency-dropdown'}
-            {if $Einstellungen.template.header.menu_show_topbar === 'N'}
+            {if $Einstellungen.template.header.menu_show_topbar === 'N' && !$isMobile}
                 {include file='snippets/currency_dropdown.tpl'}
             {/if}
         {/block}

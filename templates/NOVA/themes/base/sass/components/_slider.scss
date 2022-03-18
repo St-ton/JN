@@ -47,3 +47,25 @@
     }
   }
 }
+
+.css-slider {
+  .form-row {
+    scroll-snap-type: x mandatory;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    pointer-events: none;
+    .col {
+      pointer-events: auto;
+      width: calc(100%/5);
+      min-width: calc(100%/5);
+    }
+    .col:nth-child(5n+1) {
+      scroll-snap-align: start;
+    }
+
+    .col:first-child {
+      scroll-snap-align: start;
+    }
+  }
+}

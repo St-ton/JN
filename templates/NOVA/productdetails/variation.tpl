@@ -13,7 +13,7 @@
             {/row}
         {/block}
         {block name='productdetails-variation-variation'}
-            {row class="variations {if $simple}simple{else}switch{/if}-variations"}
+            {row class="variations {if $simple}simple{else} css-slider switch{/if}-variations"}
                 {col}
                     <dl>
                     {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
@@ -137,7 +137,9 @@
                                 {/block}
                             {elseif $Variation->cTyp === 'IMGSWATCHES'}
                                 {block name='productdetails-variation-swatch-outer'}
-                                    {formrow class="swatches {$Variation->cTyp|lower}"}
+                                    {button class="btn-vari-f" variant="primary"}vor{/button}
+                                    {button class="btn-vari-b" variant="primary"}zurück{/button}
+                                    {formrow class="swatches tester {$Variation->cTyp|lower}"}
                                         {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                                             {assign var=bSelected value=false}
                                             {assign var=hasImage value=!empty($Variationswert->getImage(\JTL\Media\Image::SIZE_XS))
@@ -282,4 +284,16 @@
             {/row}
         {/block}
     {/if}
+    {inline_script}<script>
+        $(window).on('load', function () {
+            $('.btn-vari-f').on('click', function () {
+                let $parent = $('.tester');
+                $parent.animate({ scrollLeft: $parent.scrollLeft() + $parent.width() }, 300);
+            });
+            $('.btn-vari-b').on('click', function () {
+                let $parent = $('.tester');
+                $parent.animate({ scrollLeft: $parent.scrollLeft() - $parent.width() }, 300);
+            });
+        });
+    </script>{/inline_script}
 {/block}

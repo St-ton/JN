@@ -2230,6 +2230,6 @@ class Product
                     AND kKundengruppe = :cgid',
             'kArtikel',
             ['pid' => $productID, 'cgid' => $customerGroupID]
-        ) > 0;
+        ) < 1;
     }
 }

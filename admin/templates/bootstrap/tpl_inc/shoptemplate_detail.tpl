@@ -161,7 +161,7 @@
                                     .on('change', function () {
                                         if (!$menuTemplate.is(this)) {
                                             $presetButtons.removeClass('selected');
-                                            $menuTemplate.val('custom');
+                                            $menuTemplate.val('headerCustom');
                                         }
                                     });
 
@@ -198,30 +198,35 @@
                                     $('#' + presetId).addClass('selected');
                                 }
                                 disableSettings($menuSingleRow.val());
+
+                                $('.fa-desktop')
+                                    .prop('toggle', 'tooltip')
+                                    .prop('title', '{/literal}{__('tooltipDesktop')}{literal}')
+                                    .tooltip('enable');
+                                $('.fa-mobile-alt')
+                                    .prop('toggle', 'tooltip')
+                                    .prop('title', '{/literal}{__('tooltipMobile')}{literal}')
+                                    .tooltip('enable');
+
+                                $('#form_settings').on('submit', function () {
+                                    $allSettings.prop('disabled', false);
+                                });
                             });
                             {/literal}
                         </script>
 
                         <div id="preset-wrapper">
                             <div id="preset-description">
-                                Wählen Sie ein vorgefertigtes Layout aus:
+                                {__('chooseLayout')}
                             </div>
                             <div id="preset-items" class="row mt-3 mb-4">
 
                             </div>
-
                         </div>
                     <a class="btn btn-primary mb-5" data-toggle="collapse" href="#header-settings" aria-controls="header-settings">
-                        Weitere Einstellungen
+                        {__('buttonCustomLayout')}
                     </a>
                     <div class="collapse" id="header-settings">
-                        <div class="legend mb-5">
-                            <h2>Legende</h2>
-                            <ul>
-                                <li><i class="fas fa-desktop"></i> - Nur auf Desktop</li>
-                                <li><i class="fas fa-mobile-alt"></i> - Nur auf mobilen Geräten</li>
-                            </ul>
-                        </div>
                     {/if}
                     <div class="row">
                         {foreach $section->settings as $setting}

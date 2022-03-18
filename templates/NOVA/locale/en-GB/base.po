@@ -196,14 +196,8 @@ msgstr "Open menu in current category <i class=\"fas fa-mobile-alt\"></i> "
 msgid "Menü in eigener Zeile anzeigen"
 msgstr "Display menu in separate line <i class=\"fas fa-desktop\"></i> "
 
-msgid "Damit wird das Megamenü in einer eigenen Zeile unter Logo und Suche angezeigt."
-msgstr "Displays the mega menu in a separate line under the logo and the search field."
-
 msgid "Anzeige bei vielen Menüeinträgen"
 msgstr "Display of many menu entries <i class=\"fas fa-desktop\"></i> "
-
-msgid "Stellt ein was mit Menüeinträgen passieren soll, die nicht in eine Zeile passen. Nur in Verbindung mit \"Menü in eigener Zeile: Ja\" nutzbar."
-msgstr "Specifies how to display menu entries when they cannot be shown all in the same line. Requires \"Display menu in separate line\" to be set to \"Yes\"."
 
 msgid "Mehrzeilig"
 msgstr "Multiple lines"
@@ -229,9 +223,6 @@ msgstr "Right-justified"
 msgid "Anzeige beim Scrollen"
 msgstr "Display when scrolling <i class=\"fas fa-desktop\"></i> "
 
-msgid "Stellt ein welche Teile des Headers angezeigt werden, wenn man nach unten scrollt. Nur in Verbindung mit \"Menü in eigener Zeile Ja\" nutzbar."
-msgstr "Specifies which parts of the header are shown when scrolling down. Requires \"Display menu in separate line\" to be set to \"Yes\"."
-
 msgid "Menü"
 msgstr "Menu"
 
@@ -244,17 +235,11 @@ msgstr "None"
 msgid "Suchfeld Breite (in px)"
 msgstr "Suchfeld Breite (in px) <i class=\"fas fa-desktop\"></i> "
 
-msgid "Stellt ein wie breit das Suchfeld im Header ist. Tragen Sie 0 ein damit das Suchfeld die volle Breite nutzt."
-msgstr "Stellt ein wie breit das Suchfeld im Header ist. Tragen Sie 0 ein damit das Suchfeld die volle Breite nutzt."
-
 msgid "Logo Höhe (in px)"
 msgstr "Logo Höhe (in px) <i class=\"fas fa-desktop\"></i> "
 
 msgid "Logo zentriert"
 msgstr "Logo centered <i class=\"fas fa-desktop\"></i> "
-
-msgid "Stellt ein wie hoch das Logo ist. Der Standard ist 49."
-msgstr "Stellt ein wie hoch das Logo ist. Der Standard ist 49."
 
 msgid "Suchfeld"
 msgstr "Search input"
@@ -262,11 +247,20 @@ msgstr "Search input"
 msgid "Suchfeld Positionierung"
 msgstr "Search input positioning <i class=\"fas fa-desktop\"></i> "
 
-msgid "Stellt ein wie das Suchfeld zwischen Logo und Icons platziert sein soll."
-msgstr "Stellt ein wie das Suchfeld zwischen Logo und Icons platziert sein soll."
-
 msgid "Topbar anzeigen"
 msgstr "Show topbar <i class=\"fas fa-desktop\"></i> "
 
 msgid "tooltipWithoutMenuSingleRow"
 msgstr "Can only be used with setting „Display menu in separate line - Yes“."
+
+msgid "tooltipDesktop"
+msgstr "Einstellung wirkt sich nur auf die Desktop-Ansicht aus."
+
+msgid "tooltipMobile"
+msgstr "Einstellung wirkt sich nur auf Ansicht von Mobilgeräten aus."
+
+msgid "buttonCustomLayout"
+msgstr "Custom layout"
+
+msgid "chooseLayout"
+msgstr "Please choose a preset layout:"

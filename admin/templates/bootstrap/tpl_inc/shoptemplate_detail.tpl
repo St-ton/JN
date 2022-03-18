@@ -38,10 +38,14 @@
                 </div>
                 <div class="card-body">
                     {if $section->key === 'header'}
+                        <style>.preset-button.selected { border: 3px solid; }</style>
                         <script>
                             {literal}
                             $(document).ready(function(){
-                                let $menuSingleRow = $('#header_menu_single_row'),
+                                let $menuSingleRow      = $('#header_menu_single_row'),
+                                    $menuTemplate       = $('#header_menu_template'),
+                                    $allSettings        = $('[id^="header_"]'),
+                                    menuTemplateCurrent = $menuTemplate.val(),
                                     settings = {
                                         menu_single_row: { usable_without_menu_single_row: true },
                                         menu_multiple_rows: { usable_without_menu_single_row: false },
@@ -56,7 +60,7 @@
                                 };
                                 let presets = [
                                     {
-                                        name: 'standard',
+                                        name: 'headerStandard',
                                         settings: {
                                             menu_single_row: 'N',
                                             menu_multiple_rows: 'multiple',
@@ -71,7 +75,7 @@
                                         }
                                     },
                                     {
-                                        name: 'centered',
+                                        name: 'headerLogo',
                                         settings: {
                                             menu_single_row: 'Y',
                                             menu_multiple_rows: 'scroll',
@@ -86,7 +90,7 @@
                                         }
                                     },
                                     {
-                                        name: 'normal',
+                                        name: 'headerSingle',
                                         settings: {
                                             menu_single_row: 'Y',
                                             menu_multiple_rows: 'scroll',
@@ -101,7 +105,7 @@
                                         }
                                     },
                                     {
-                                        name: 'normal 2 spaltig',
+                                        name: 'headerBoxed',
                                         settings: {
                                             menu_single_row: 'Y',
                                             menu_multiple_rows: 'multiple',
@@ -116,7 +120,7 @@
                                         }
                                     },
                                     {
-                                        name: 'notopbar',
+                                        name: 'headerTopbar',
                                         settings: {
                                             menu_single_row: 'Y',
                                             menu_multiple_rows: 'scroll',
@@ -132,25 +136,34 @@
                                     },
                                 ];
                                 $.each(presets, function (key, value) {
-                                    $('#preset-items').append('<div class="col col-auto"><button type="button" id="' + value.name + '" class="btn btn-outline-primary preset-button">' + value.name + '</button></div>')
+                                    let isSelected = value.name === menuTemplateCurrent ? 'selected' : '';
+                                    $('#preset-items').append(
+                                        '<div class="col col-auto">' +
+                                        '<button type="button" id="' + value.name + '" ' +
+                                            'class="btn btn-outline-primary preset-button ' + isSelected + '">'
+                                            + value.name + '</button>' +
+                                        '</div>')
                                 });
-                                $('.preset-button').on('click', function () {
-                                    let presetId = $(this).prop('id');
-                                    $.each(presets, function (key, value) {
-                                        if (presetId === value.name) {
-                                            $.each(value.settings, function (presetKey, presetValue) {
-                                                $('#header_' + presetKey).val(presetValue);
-                                            });
-                                        }
-                                    });
-                                    disableSettings($menuSingleRow.val())
+                                let $presetButtons = $('.preset-button');
+                                $presetButtons.on('click', function () {
+                                    setSettings($(this).prop('id'));
                                 });
+                                $menuTemplate.on('change', function () {
+                                    setSettings($(this).val());
+                                });
+
                                 $menuSingleRow.on('change', function() {
                                     disableSettings($(this).val());
                                 });
-                                $('[id^="header_"]')
+                                $allSettings
                                     .prop('toggle', 'tooltip')
-                                    .prop('title', '{/literal}{__('tooltipWithoutMenuSingleRow')}{literal}');
+                                    .prop('title', '{/literal}{__('tooltipWithoutMenuSingleRow')}{literal}')
+                                    .on('change', function () {
+                                        if (!$menuTemplate.is(this)) {
+                                            $presetButtons.removeClass('selected');
+                                            $menuTemplate.val('custom');
+                                        }
+                                    });
 
                                 function disableSettings(menuSingelRow) {
                                     if (menuSingelRow === 'Y') {
@@ -168,6 +181,21 @@
                                             }
                                         });
                                     }
+                                }
+                                function setSettings(presetId) {
+                                    $.each(presets, function (key, value) {
+                                        if (presetId === value.name) {
+                                            $.each(value.settings, function (presetKey, presetValue) {
+                                                $('#header_' + presetKey).val(presetValue);
+                                            });
+                                        }
+                                    });
+
+                                    $menuTemplate.val(presetId);
+                                    disableSettings($menuSingleRow.val());
+
+                                    $presetButtons.removeClass('selected');
+                                    $('#' + presetId).addClass('selected');
                                 }
                                 disableSettings($menuSingleRow.val());
                             });

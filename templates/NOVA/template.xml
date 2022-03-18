@@ -52,6 +52,14 @@
             <Setting Description="Favicon" Key="favicon" Type="upload" Value="favicon.ico" maxFileSize="123456" showPreview="false" allowedFileExtensions="['ico','png']" accept="image/*" target="themes/base/images/" targetFileName="favicon.ico"/>
         </Section>
         <Section Name="Header" Key="header">
+            <Setting Description="Gewählte Vorlage" Key="menu_template" Type="select" Value="standard">
+                <Option Value="headerStandard">Standard</Option>
+                <Option Value="headerLogo">Logo zentriert</Option>
+                <Option Value="headerSingle">Menü in eigener Zeile</Option>
+                <Option Value="headerBoxed">Header Boxed - Menü mehrspaltig</Option>
+                <Option Value="headerTopbar">Ohne Topbar - Header volle breite</Option>
+                <Option Value="headerCustom">Custom</Option>
+            </Setting>
             <Setting Description="Menü in eigener Zeile anzeigen" Key="menu_single_row" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>

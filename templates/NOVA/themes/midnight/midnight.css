@@ -27377,16 +27377,16 @@ header #burger-menu {
   border-color: #1973D3;
 }
 
-#footer .table-striped, header .table-striped {
+#footer .table, header .table {
   color: #ffffff;
 }
-#footer .table-striped tbody tr:nth-of-type(odd), header .table-striped tbody tr:nth-of-type(odd) {
+#footer .table tbody tr:nth-of-type(odd), header .table tbody tr:nth-of-type(odd) {
   background-color: #1C1D2C;
 }
-#footer .table-striped tbody tr:nth-of-type(even), header .table-striped tbody tr:nth-of-type(even) {
+#footer .table tbody tr:nth-of-type(even), header .table tbody tr:nth-of-type(even) {
   background-color: #30324b;
 }
-#footer .table-striped td, header .table-striped td {
+#footer .table td, header .table td {
   border: none;
 }
 #footer .btn-outline-primary, header .btn-outline-primary {

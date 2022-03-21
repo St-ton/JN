@@ -22426,6 +22426,9 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   justify-content: space-between;
   align-items: center;
 }
+.js-slider-wrapper.js-slider-disabled .js-slider-items {
+  flex-wrap: wrap;
+}
 
 .stepper {
   align-items: center;

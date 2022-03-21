@@ -1,10 +1,13 @@
 {block name='productdetails-variation'}
     {if isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0 && !$showMatrix}
-        {assign var=VariationsSource value='Variationen'}
-        {if isset($ohneFreifeld) && $ohneFreifeld}
-            {assign var=VariationsSource value='VariationenOhneFreifeld'}
-        {/if}
-        {assign var=oVariationKombi_arr value=$Artikel->getChildVariations()}
+        {block name='productdetails-variation-assigns'}
+            {assign var=VariationsSource value='Variationen'}
+            {if isset($ohneFreifeld) && $ohneFreifeld}
+                {assign var=VariationsSource value='VariationenOhneFreifeld'}
+            {/if}
+            {assign var=oVariationKombi_arr value=$Artikel->getChildVariations()}
+            {$minSwatchCount=12}
+        {/block}
         {block name='productdetails-variation-spinner'}
             {row}
                 {col class="updatingStockInfo text-center-util d-none"}
@@ -17,7 +20,8 @@
                 {col}
                     <dl>
                     {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
-                        <div class="{if $Variation->cTyp === 'IMGSWATCHES'}js-slider-wrapper{/if}">
+                        {$showSwatchSlider=count($Variation->Werte) > $minSwatchCount}
+                        <div class="{if $Variation->cTyp === 'IMGSWATCHES'}js-slider-wrapper {if !$showSwatchSlider}js-slider-disabled{/if}{/if}">
                     {strip}
                         {block name='productdetails-variation-name-outer'}
                         <dt class="js-btn-slider-wrapper">
@@ -39,10 +43,12 @@
                                     {/foreach}
                                     </span>
                                 </div>
-                                <div class="js-btn-slider-btns">
-                                    {button class="js-btn-slider-sb" variant="link" disabled=true}<span class="fa fa-chevron-left"></span>{/button}
-                                    {button class="js-btn-slider-sf" variant="link"}<span class="fa fa-chevron-right"></span>{/button}
-                                </div>
+                                {if $showSwatchSlider}
+                                    <div class="js-btn-slider-btns">
+                                        {button class="js-btn-slider-sb" variant="link" disabled=true}<span class="fa fa-chevron-left"></span>{/button}
+                                        {button class="js-btn-slider-sf" variant="link"}<span class="fa fa-chevron-right"></span>{/button}
+                                    </div>
+                                {/if}
                             {/if}
                             {/block}
                         </dt>

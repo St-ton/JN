@@ -75,4 +75,9 @@
     justify-content: space-between;
     align-items: center;
   }
+  &.js-slider-disabled {
+    .js-slider-items {
+      flex-wrap: wrap;
+    }
+  }
 }

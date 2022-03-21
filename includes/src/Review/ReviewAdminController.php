@@ -56,7 +56,7 @@ final class ReviewAdminController extends BaseController
         }
         if (Request::verifyGPCDataInt('bewertung_editieren') === 1) {
             $step = 'bewertung_editieren';
-            if ($this->edit($_POST)) {
+            if ($this->edit(Text::filterXSS($_POST))) {
                 $step = 'bewertung_uebersicht';
                 $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successRatingEdit'), 'successRatingEdit');
                 if (Request::verifyGPCDataInt('nFZ') === 1) {
@@ -187,6 +187,8 @@ final class ReviewAdminController extends BaseController
             $e->nNichtHilfreich = (int)$e->nNichtHilfreich;
             $e->nSterne         = (int)$e->nSterne;
             $e->nAktiv          = (int)$e->nAktiv;
+            $e->cText           = Text::filterXSS($e->cText);
+            $e->cTitel          = Text::filterXSS($e->cTitel);
         };
         $inactiveReviews    = $this->db->getCollection(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName

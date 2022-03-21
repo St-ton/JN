@@ -2,6 +2,7 @@
 
 namespace JTL\Backend;
 
+use Carbon\Carbon;
 use JTL\DB\DbInterface;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
@@ -86,10 +87,10 @@ class AuthToken
                 LIMIT 1'
         );
         if ($token) {
-            $this->authCode = $token->auth_code;
-            $this->token    = $token->access_token;
-            $this->hash     = \sha1($token->hash);
-            $this->verified = $token->verified;
+            $this->authCode = $token->auth_code ?? null;
+            $this->token    = $token->access_token ?? null;
+            $this->hash     = \sha1($token->hash ?? '');
+            $this->verified = $token->verified ?? null;
         }
     }
 
@@ -141,13 +142,32 @@ class AuthToken
     }
 
     /**
+     * @param string $token
+     * @return bool
+     */
+    public function isExpired(string $token): bool
+    {
+        if ($token === '') {
+            return true;
+        }
+        $parts = \explode('.', $token);
+        if (!isset($parts[1])) {
+            return true;
+        }
+        $payload    = \base64_decode($parts[1]);
+        $expiration = Carbon::createFromTimestamp(\json_decode($payload)->exp);
+
+        return Carbon::now()->diffInSeconds($expiration, false) < 0;
+    }
+
+    /**
      * @return bool
      */
     public function isValid(): bool
     {
         $token = \rtrim($this->getCrypto()->decrypt($this->token ?? ''));
 
-        return ($token !== '') && (\sha1($token) === $this->verified);
+        return ($token !== '') && (\sha1($token) === $this->verified) && !$this->isExpired($token);
     }
 
     /**

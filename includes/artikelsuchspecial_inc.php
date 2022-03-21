@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Helpers\SearchSpecial;
+use JTL\Shop;
 
 /**
  * @return string

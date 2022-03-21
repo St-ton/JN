@@ -336,6 +336,9 @@ function validateSetting(stdClass $setting): bool
         case 'bilder_jpg_quali':
             $valid = validateNumberRange(0, 100, $setting);
             break;
+        case 'cron_freq':
+            $valid = validateNumberRange(10, 999999, $setting);
+            break;
         default:
             break;
     }

@@ -3,6 +3,7 @@
 namespace JTL\dbeS\Sync;
 
 use JTL\Catalog\Currency;
+use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Adresse;
 use JTL\Customer\Customer as CustomerClass;
 use JTL\Customer\CustomerAttribute;
@@ -19,7 +20,6 @@ use JTL\Services\JTL\CryptoServiceInterface;
 use JTL\Shop;
 use JTL\SimpleMail;
 use JTL\XML;
-use Preise;
 use stdClass;
 
 /**
@@ -363,6 +363,7 @@ final class Customer extends AbstractSync
         $customer->cAbgeholt         = 'Y';
         $customer->cAktiv            = 'Y';
         $customer->cSperre           = 'N';
+        $this->extractStreet($customer);
         // mail an Kunden mit Accounterstellung durch Shopbetreiber
         $obj         = new stdClass();
         $obj->tkunde = $customer;

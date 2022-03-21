@@ -135,6 +135,13 @@ class NiceDB implements DbInterface
         if (\DB_DEFAULT_SQL_MODE !== true) {
             $this->pdo->exec("SET SQL_MODE=''");
         }
+        if (\DB_STARTUP_SQL !== '') {
+            foreach (\explode(';', \DB_STARTUP_SQL) as $sql) {
+                if (!empty($sql)) {
+                    $this->pdo->exec($sql);
+                }
+            }
+        }
         $this->initDebugging($forceDebug);
         $this->isConnected = true;
         self::$instance    = $this;
@@ -476,6 +483,65 @@ class NiceDB implements DbInterface
         }
 
         return $id > 0 ? (int)$id : 1;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function insertBatch(string $tableName, array $objects, bool $upsert = false): int
+    {
+        $this->validateEntityName($tableName);
+        $keys    = []; //column names
+        $values  = []; //column values - either sql statement like "now()" or prepared like ":my-var-name"
+        $assigns = []; //assignments from prepared var name to values, will be inserted in ->prepare()
+        $i       = 0;
+        $j       = 0;
+        $v       = [];
+        foreach ($objects as $object) {
+            $this->validateDbObject($object);
+            foreach (\get_object_vars($object) as $col => $val) {
+                if ($i === 0) {
+                    $keys[] = '`' . $col . '`';
+                }
+                if ($val === '_DBNULL_') {
+                    $val = null;
+                } elseif ($val === null) {
+                    $val = '';
+                }
+                $lc = \mb_convert_case((string)$val, \MB_CASE_LOWER);
+                if ($lc === 'now()' || $lc === 'current_timestamp') {
+                    $values[] = $val;
+                } else {
+                    $values[]           = ':a' . $j;
+                    $assigns[':a' . $j] = $val;
+                }
+                ++$j;
+            }
+            $v[] = '(' . \implode(', ', $values) . ')';
+            ++$i;
+            $values = [];
+        }
+        if ($upsert) {
+            $stmt = 'REPLACE INTO ';
+        } else {
+            $stmt = 'INSERT IGNORE INTO ';
+        }
+        $stmt .= $tableName . ' (' . \implode(', ', $keys) . ') VALUES ' . \implode(',', $v);
+        try {
+            $s   = $this->pdo->prepare($stmt);
+            $res = $s->execute($assigns);
+        } catch (PDOException $e) {
+            $this->handleException($e, $stmt, $assigns);
+
+            return 0;
+        }
+        if (!$res) {
+            $this->logError($stmt);
+
+            return 0;
+        }
+
+        return $s->rowCount();
     }
 
     /**
@@ -962,7 +1028,7 @@ class NiceDB implements DbInterface
             case ReturnType::SINGLE_ASSOC_ARRAY:
                 return [];
             case ReturnType::SINGLE_OBJECT:
-                return new stdClass();
+                return null;
             case ReturnType::QUERYSINGLE:
                 return new PDOStatement();
             case ReturnType::DEFAULT:

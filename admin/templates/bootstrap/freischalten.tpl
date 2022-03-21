@@ -244,7 +244,7 @@
                 {/if}
             </div>
             <div id="newscomments" class="tab-pane fade {if $cTab === 'newscomments'} active show{/if}">
-                {if $comments|@count > 0 && $comments}
+                {if $comments|count > 0 && $comments}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewskommentare cAnchor='newscomments'}
                     <div>
                         <form method="post" action="freischalten.php">
@@ -279,6 +279,7 @@
                                                         {else}
                                                             {$comment->cName}
                                                         {/if}
+                                                        ({$comment->cEmail})
                                                     </label>
                                                 </td>
                                                 <td>{$comment->cBetreff|truncate:50:'...'}</td>

@@ -298,7 +298,8 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 [CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_LICENSES, CACHING_GROUP_PLUGIN]
             );
         } else {
-            $errorMsg = __('errorPluginUpdate') . $res;
+            $mapper   = new ValidationMapper();
+            $errorMsg = sprintf(__('Could not perform update. Error code %d - %s'), $res, $mapper->map($res));
         }
     } elseif (Request::verifyGPCDataInt('sprachvariablen') === 1) { // Sprachvariablen editieren
         $step = 'pluginverwaltung_sprachvariablen';
@@ -315,7 +316,12 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                     $reload = true;
                     $minify->flushCache();
                 } elseif ($res > InstallCode::OK && $res !== InstallCode::OK_LEGACY) {
-                    $errorMsg = __('errorPluginInstall') . $res;
+                    $mapper   = new ValidationMapper();
+                    $errorMsg = sprintf(
+                        __('Error during the installation. Error code %d - %s'),
+                        $res,
+                        $mapper->map($res)
+                    );
                 }
             }
         }

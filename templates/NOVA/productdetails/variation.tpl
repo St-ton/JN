@@ -17,24 +17,32 @@
                 {col}
                     <dl>
                     {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
-
+                        <div class="{if $Variation->cTyp === 'IMGSWATCHES'}js-slider-wrapper{/if}">
                     {strip}
                         {block name='productdetails-variation-name-outer'}
-                        <dt>
+                        <dt class="js-btn-slider-wrapper">
                             {block name='productdetails-variation-name'}
+                                {if $Variation->cTyp === 'IMGSWATCHES'}
+                                    <div>
+                                {/if}
                                 {$Variation->cName}&nbsp;
                             {/block}
                             {block name='productdetails-variation-value-name'}
                             {if $Variation->cTyp === 'IMGSWATCHES'}
-                                <span class="swatches-selected text-success" data-id="{$Variation->kEigenschaft}">
-                                {foreach $Variation->Werte as $variationValue}
-                                    {if isset($oVariationKombi_arr[$variationValue->kEigenschaft])
-                                        && in_array($variationValue->kEigenschaftWert, $oVariationKombi_arr[$variationValue->kEigenschaft])}
-                                        {$variationValue->cName}
-                                        {break}
-                                    {/if}
-                                {/foreach}
-                                </span>
+                                    <span class="swatches-selected text-success" data-id="{$Variation->kEigenschaft}">
+                                    {foreach $Variation->Werte as $variationValue}
+                                        {if isset($oVariationKombi_arr[$variationValue->kEigenschaft])
+                                            && in_array($variationValue->kEigenschaftWert, $oVariationKombi_arr[$variationValue->kEigenschaft])}
+                                            {$variationValue->cName}
+                                            {break}
+                                        {/if}
+                                    {/foreach}
+                                    </span>
+                                </div>
+                                <div class="js-btn-slider-btns">
+                                    {button class="js-btn-slider-sb" variant="link" disabled=true}<span class="fa fa-chevron-left"></span>{/button}
+                                    {button class="js-btn-slider-sf" variant="link"}<span class="fa fa-chevron-right"></span>{/button}
+                                </div>
                             {/if}
                             {/block}
                         </dt>
@@ -137,9 +145,7 @@
                                 {/block}
                             {elseif $Variation->cTyp === 'IMGSWATCHES'}
                                 {block name='productdetails-variation-swatch-outer'}
-                                    {button class="btn-vari-f" variant="primary"}vor{/button}
-                                    {button class="btn-vari-b" variant="primary"}zurück{/button}
-                                    {formrow class="swatches tester {$Variation->cTyp|lower}"}
+                                    {formrow class="swatches js-slider-items no-scrollbar {$Variation->cTyp|lower}"}
                                         {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                                             {assign var=bSelected value=false}
                                             {assign var=hasImage value=!empty($Variationswert->getImage(\JTL\Media\Image::SIZE_XS))
@@ -156,7 +162,7 @@
                                                 {* /do nothing *}
                                             {else}
                                                 {block name='productdetails-variation-swatch-inner'}
-                                                {col class='col-auto'}
+                                                {col class='col-auto js-slider-item'}
                                                     <label class="variation swatches {if $hasImage}swatches-image{else}swatches-text{/if} {if $bSelected}active{/if} {if $Variationswert->notExists}swatches-not-in-stock not-available{elseif !$Variationswert->inStock}swatches-sold-out not-available{/if}"
                                                             data-type="swatch"
                                                             data-original="{$Variationswert->cName}"
@@ -278,6 +284,7 @@
                             {/if}
                         </dd>
                     {/strip}
+                        </div>
                     {/foreach}
                     </dl>
                 {/col}
@@ -286,14 +293,52 @@
     {/if}
     {inline_script}<script>
         $(window).on('load', function () {
-            $('.btn-vari-f').on('click', function () {
-                let $parent = $('.tester');
-                $parent.animate({ scrollLeft: $parent.scrollLeft() + $parent.width() }, 300);
+            let wrapper  = '.js-slider-wrapper',
+                buttonF  = '.js-btn-slider-sf',
+                buttonB  = '.js-btn-slider-sb',
+                items    = '.js-slider-items';
+
+            $(wrapper).each(function (e) {
+                let $buttonF = $(this).find(buttonF),
+                    $buttonB = $(this).find(buttonB),
+                    $items   = $(this).find(items);
+
+                $buttonF.on('click', function () {
+                    let scrollBefore = $items.scrollLeft();
+                    $items.animate(
+                        { scrollLeft: $items.scrollLeft() + $items.width() },
+                        300,
+                        'swing',
+                        function () {
+                            checkButtonDisable($buttonB, $buttonF, $items, scrollBefore);
+                        });
+                });
+                $buttonB.on('click', function () {
+                    $items.animate(
+                        { scrollLeft: $items.scrollLeft() - $items.width() },
+                        300,
+                        'swing',
+                        function () {
+                            checkButtonDisable($buttonB, $buttonF, $items, null);
+                        });
+                });
             });
-            $('.btn-vari-b').on('click', function () {
-                let $parent = $('.tester');
-                $parent.animate({ scrollLeft: $parent.scrollLeft() - $parent.width() }, 300);
-            });
+
+            function checkButtonDisable($buttonB, $buttonF, $items, scrollBefore) {
+                let currentScroll = $items.scrollLeft(),
+                    epsilon       = 10;
+                if (currentScroll === 0) {
+                    $buttonB.prop('disabled', true);
+                } else {
+                    $buttonB.prop('disabled', false);
+                }
+                if (scrollBefore !== null && (currentScroll - scrollBefore < $items.width() - epsilon)) {
+                    $buttonF.prop('disabled', true);
+                }
+                if (scrollBefore === null) {
+                    $buttonF.prop('disabled', false);
+                }
+            }
         });
     </script>{/inline_script}
 {/block}

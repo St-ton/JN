@@ -48,24 +48,31 @@
   }
 }
 
-.css-slider {
-  .form-row {
-    scroll-snap-type: x mandatory;
+.js-slider-wrapper {
+  .js-slider-items {
+    display: flex;
     flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    pointer-events: none;
-    .col {
-      pointer-events: auto;
-      width: calc(100%/5);
-      min-width: calc(100%/5);
-    }
-    .col:nth-child(5n+1) {
-      scroll-snap-align: start;
-    }
+    overflow: auto hidden;
+    scroll-snap-type: x mandatory;
+    touch-action: manipulation;
 
-    .col:first-child {
+    .js-slider-item {
+      pointer-events: auto;
+      width: calc(100%/4);
+      min-width: calc(100%/4);
       scroll-snap-align: start;
     }
+    @include media-breakpoint-up(lg) {
+      .js-slider-item {
+        pointer-events: auto;
+        width: calc(100%/6);
+        min-width: calc(100%/6);
+      }
+    }
+  }
+  .js-btn-slider-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }

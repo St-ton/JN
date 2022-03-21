@@ -1051,6 +1051,55 @@
             }
         },
 
+        initSliders: function() {
+            let wrapper  = '.js-slider-wrapper',
+                buttonF  = '.js-btn-slider-sf',
+                buttonB  = '.js-btn-slider-sb',
+                items    = '.js-slider-items';
+
+            $(wrapper).each(function (e) {
+                let $buttonF = $(this).find(buttonF),
+                    $buttonB = $(this).find(buttonB),
+                    $items   = $(this).find(items);
+
+                $buttonF.on('click', function () {
+                    let scrollBefore = $items.scrollLeft();
+                    $items.animate(
+                        { scrollLeft: $items.scrollLeft() + $items.width() },
+                        300,
+                        'swing',
+                        function () {
+                            checkButtonDisable($buttonB, $buttonF, $items, scrollBefore);
+                        });
+                });
+                $buttonB.on('click', function () {
+                    $items.animate(
+                        { scrollLeft: $items.scrollLeft() - $items.width() },
+                        300,
+                        'swing',
+                        function () {
+                            checkButtonDisable($buttonB, $buttonF, $items, null);
+                        });
+                });
+            });
+
+            function checkButtonDisable($buttonB, $buttonF, $items, scrollBefore) {
+                let currentScroll = $items.scrollLeft(),
+                    epsilon       = 10;
+                if (currentScroll === 0) {
+                    $buttonB.prop('disabled', true);
+                } else {
+                    $buttonB.prop('disabled', false);
+                }
+                if (scrollBefore !== null && (currentScroll - scrollBefore < $items.width() - epsilon)) {
+                    $buttonF.prop('disabled', true);
+                }
+                if (scrollBefore === null) {
+                    $buttonF.prop('disabled', false);
+                }
+            }
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -1082,6 +1131,7 @@
             this.initPaginationEvents();
             this.initFilterEvents();
             this.initItemSearch('filter');
+            this.initSliders();
         }
     };
 

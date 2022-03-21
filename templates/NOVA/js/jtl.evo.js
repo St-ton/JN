@@ -1058,9 +1058,10 @@
                 items    = '.js-slider-items';
 
             $(wrapper).each(function (e) {
-                let $buttonF = $(this).find(buttonF),
-                    $buttonB = $(this).find(buttonB),
-                    $items   = $(this).find(items);
+                let $buttonF   = $(this).find(buttonF),
+                    $buttonB   = $(this).find(buttonB),
+                    $items     = $(this).find(items),
+                    touchstart = 0;
 
                 $buttonF.on('click', function () {
                     let scrollBefore = $items.scrollLeft();
@@ -1081,20 +1082,34 @@
                             checkButtonDisable($buttonB, $buttonF, $items, null);
                         });
                 });
+                $items.on('touchstart', function (e) {
+                    touchstart = $items.scrollLeft();
+                });
+                $items.on('touchend', function (e) {
+                    checkButtonDisable($buttonB, $buttonF, $items, touchstart);
+                });
             });
 
             function checkButtonDisable($buttonB, $buttonF, $items, scrollBefore) {
                 let currentScroll = $items.scrollLeft(),
-                    epsilon       = 10;
+                    epsilon       = 10,
+                    scrollDiff    = currentScroll - scrollBefore,
+                    itemsWidth    = $items.width();
                 if (currentScroll === 0) {
                     $buttonB.prop('disabled', true);
                 } else {
                     $buttonB.prop('disabled', false);
                 }
-                if (scrollBefore !== null && (currentScroll - scrollBefore < $items.width() - epsilon)) {
+                if (scrollBefore !== null && (itemsWidth <= currentScroll) && (
+                        scrollDiff < itemsWidth - epsilon
+                        || scrollDiff === 0
+                    )
+                ) {
                     $buttonF.prop('disabled', true);
                 }
-                if (scrollBefore === null) {
+                if (scrollBefore === null
+                    || (scrollBefore !== null && scrollDiff !== 0)
+                ){
                     $buttonF.prop('disabled', false);
                 }
             }

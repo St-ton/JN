@@ -45,6 +45,11 @@
 				transform: scale(1.2);
 			}
 		}
+		@include media-breakpoint-down(md) {
+			img {
+				padding: map_get($spacers, 1);
+			}
+		}
 		&.active {
 			border: 1px solid $primary;
 		}

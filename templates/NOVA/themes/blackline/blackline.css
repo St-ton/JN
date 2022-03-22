@@ -21065,6 +21065,11 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 .swatches-image img:hover {
   transform: scale(1.2);
 }
+@media (max-width: 991.98px) {
+  .swatches-image img {
+    padding: 0.25rem;
+  }
+}
 .swatches-image.active {
   border: 1px solid #EFC03D;
 }
@@ -22410,8 +22415,8 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
 }
 .js-slider-wrapper .js-slider-items .js-slider-item {
   pointer-events: auto;
-  width: 25%;
-  min-width: 25%;
+  width: 20%;
+  min-width: 20%;
   scroll-snap-align: start;
 }
 @media (min-width: 992px) {
@@ -22428,6 +22433,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
 }
 .js-slider-wrapper.js-slider-disabled .js-slider-items {
   flex-wrap: wrap;
+  overflow: initial;
 }
 
 .stepper {

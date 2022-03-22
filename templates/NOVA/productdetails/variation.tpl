@@ -6,7 +6,7 @@
                 {assign var=VariationsSource value='VariationenOhneFreifeld'}
             {/if}
             {assign var=oVariationKombi_arr value=$Artikel->getChildVariations()}
-            {$minSwatchCount=12}
+            {$minSwatchCountForSlider=12}
         {/block}
         {block name='productdetails-variation-spinner'}
             {row}
@@ -16,11 +16,11 @@
             {/row}
         {/block}
         {block name='productdetails-variation-variation'}
-            {row class="variations {if $simple}simple{else} css-slider switch{/if}-variations"}
+            {row class="variations {if $simple}simple{else}switch{/if}-variations"}
                 {col}
                     <dl>
                     {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
-                        {$showSwatchSlider=count($Variation->Werte) > $minSwatchCount}
+                        {$showSwatchSlider=count($Variation->Werte) > $minSwatchCountForSlider}
                         <div class="{if $Variation->cTyp === 'IMGSWATCHES'}js-slider-wrapper {if !$showSwatchSlider}js-slider-disabled{/if}{/if}">
                     {strip}
                         {block name='productdetails-variation-name-outer'}
@@ -181,13 +181,13 @@
                                                             {if $Variationswert->notExists}
                                                                 title="{lang key='notAvailableInSelection'}"
                                                                 data-title="{$Variationswert->cName} - {lang key='notAvailableInSelection'}"
-                                                                data-toggle="tooltip"
+                                                                {if !$showSwatchSlider}data-toggle="tooltip"{/if}
                                                             {elseif $Variationswert->inStock}
                                                                 data-title="{$Variationswert->cName}"
                                                             {else}
                                                                 title="{lang key='ampelRot'}"
                                                                 data-title="{$Variationswert->cName} - {lang key='ampelRot'}"
-                                                                data-toggle="tooltip"
+                                                                {if !$showSwatchSlider}data-toggle="tooltip"{/if}
                                                                 data-stock="out-of-stock"
                                                             {/if}
                                                             {if isset($Variationswert->oVariationsKombi)}

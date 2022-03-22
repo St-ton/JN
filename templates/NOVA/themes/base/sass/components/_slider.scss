@@ -58,8 +58,8 @@
 
     .js-slider-item {
       pointer-events: auto;
-      width: calc(100%/4);
-      min-width: calc(100%/4);
+      width: calc(100%/5);
+      min-width: calc(100%/5);
       scroll-snap-align: start;
     }
     @include media-breakpoint-up(lg) {
@@ -78,6 +78,7 @@
   &.js-slider-disabled {
     .js-slider-items {
       flex-wrap: wrap;
+      overflow: initial;
     }
   }
 }

@@ -15,7 +15,7 @@
 
 	> div {
 		padding: 0 .25rem;
-		width: 50%;
+		width: 100%;
 		> .#{$prefix}-btn {
 			margin: .25rem;
 			flex-grow: 1;
@@ -25,7 +25,6 @@
 
 	.#{$prefix}-accept {
 		width: 100%;
-		margin-bottom: .5rem;
 	}
 
 	@include media-breakpoint-down(md) {

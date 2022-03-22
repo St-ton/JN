@@ -20,7 +20,7 @@ class Migration_20220304093500 extends Migration implements IMigration
             ALTER TABLE tkampagne
 	            ADD nInternal INT DEFAULT 0 NOT NULL;");
         $this->execute("
-            UPDATE tkampagne SET nInternal=1 WHERE kKampagne < 1000");
+            UPDATE tkampagne SET nInternal=1 WHERE kKampagne < 1000 AND cParameter='jtl'");
     }
 
     /**

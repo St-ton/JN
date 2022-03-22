@@ -53,6 +53,11 @@ class Campaign
     public $dErstellt_DE;
 
     /**
+     * @var int
+     */
+    public $nInternal;
+
+    /**
      * Kampagne constructor.
      * @param int $id
      */

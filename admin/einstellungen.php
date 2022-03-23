@@ -116,6 +116,11 @@ if (Request::postVar('resetSetting') !== null) {
             $value->cWert                 = $postData[$confData[$i]->cWertName];
             $value->cName                 = $confData[$i]->cWertName;
             $value->kEinstellungenSektion = $confData[$i]->kEinstellungenSektion;
+
+            if ($confData[$i]->cInputTyp == 'pass' && $_POST[$confData[$i]->cWertName] === ''){
+                continue;
+            }
+
             switch ($confData[$i]->cInputTyp) {
                 case 'kommazahl':
                     $value->cWert = (float)str_replace(',', '.', $value->cWert);

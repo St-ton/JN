@@ -65,7 +65,10 @@
                                     {/foreach}
                                 </select>
                             {elseif $cnf->cInputTyp === 'pass'}
+                                {*
                                 <input class="form-control" autocomplete="off" type="password" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
+                                *}
+                                <input class="form-control" autocomplete="off" type="password" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="" tabindex="1" />
                             {elseif $cnf->cInputTyp === 'number'}
                                 <div class="input-group form-counter">
                                     <div class="input-group-prepend">

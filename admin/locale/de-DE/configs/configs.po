@@ -372,7 +372,7 @@ msgid "email_smtp_pass_name"
 msgstr "SMTP-Passwort"
 
 msgid "email_smtp_pass_desc"
-msgstr "Falls Sie SMTP-Auth nutzen, können Sie hier das Passwort für den SMTP-Server eingeben."
+msgstr "Falls Sie SMTP-Auth nutzen, können Sie hier das Passwort für den SMTP-Server eingeben. Das Passwort wird nur gespeichert, wenn Sie ein neues Passwort eingeben."
 
 msgid "email_smtp_verschluesselung_name"
 msgstr "SMTP-Security"

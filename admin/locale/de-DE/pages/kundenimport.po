@@ -20,15 +20,6 @@ msgstr "Kunden diese Kundengruppe zuweisen"
 msgid "language"
 msgstr "Kunden diese Sprache zuweisen"
 
-msgid "generateNewPass"
-msgstr "Neues Passwort erstellen und Kunden per E-Mail informieren"
-
-msgid "passYes"
-msgstr "Ja, für jeden Kunden ein neues Passwort erstellen und per E-Mail informieren"
-
-msgid "passNo"
-msgstr "Nein, Passwort aus CSV-Datei übernehmen und Kunden nicht per E-Mail benachrichtigen"
-
 msgid "errorInvalidEmail"
 msgstr "Keine gültige E-Mail-Adresse: (%s)! Datensatz wurde übersprungen."
 

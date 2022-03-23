@@ -16,22 +16,22 @@ class Queue
     /**
      * @var QueueEntry[]
      */
-    private $queueEntries = [];
+    private array $queueEntries = [];
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JobFactory
      */
-    private $factory;
+    private JobFactory $factory;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * Queue constructor.
@@ -75,7 +75,8 @@ class Queue
                 WHERE isRunning = 1
                     AND startTime <= NOW()
                     AND lastStart IS NOT NULL
-                    AND DATE_SUB(CURTIME(), INTERVAL ' . \QUEUE_MAX_STUCK_HOURS . ' Hour) > lastStart'
+                    AND DATE_SUB(CURTIME(), INTERVAL :ntrvl Hour) > lastStart',
+            ['ntrvl' => \QUEUE_MAX_STUCK_HOURS]
         );
     }
 

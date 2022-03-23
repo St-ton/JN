@@ -999,7 +999,7 @@ final class Products extends AbstractSync
                         WHERE tkategorieartikel.kKategorie = :cid ' . $stockFilter . ') AS hasMore',
                     ['pid' => $id, 'cid' => (int)$category->kKategorie]
                 )->hasMore;
-                if ($categoryHasMoreProducts !== false) {
+                if ($categoryHasMoreProducts === false) {
                     // the category only had this product in it - flush cache
                     $this->flushCategoryTreeCache();
                     break;

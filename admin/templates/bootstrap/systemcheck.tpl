@@ -106,9 +106,9 @@
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th class="col-xs-7">&nbsp;</th>
-                            <th class="col-xs-3 text-center">{__('suggestedValue')}</th>
-                            <th class="col-xs-2 text-center">{__('yourSystem')}</th>
+                            <th class="col-7">&nbsp;</th>
+                            <th class="col-3 text-center">{__('suggestedValue')}</th>
+                            <th class="col-2 text-center">{__('yourSystem')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -140,9 +140,9 @@
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th class="col-xs-7">{__('software')}</th>
-                            <th class="col-xs-3 text-center">{__('requirements')}</th>
-                            <th class="col-xs-2 text-center">{__('available')}</th>
+                            <th class="col-7">{__('software')}</th>
+                            <th class="col-3 text-center">{__('requirements')}</th>
+                            <th class="col-2 text-center">{__('available')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -176,9 +176,9 @@
                 <table class="table table-striped table-hover">
                     <thead>
                     <tr>
-                        <th class="col-xs-7">{__('designation')}</th>
-                        <th class="col-xs-3 text-center">{__('requirements')}</th>
-                        <th class="col-xs-2 text-center">{__('available')}</th>
+                        <th class="col-7">{__('designation')}</th>
+                        <th class="col-3 text-center">{__('requirements')}</th>
+                        <th class="col-2 text-center">{__('available')}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -212,8 +212,8 @@
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th class="col-xs-10">{__('designation')}</th>
-                            <th class="col-xs-2 text-center">{__('status')}</th>
+                            <th class="col-10">{__('designation')}</th>
+                            <th class="col-2 text-center">{__('status')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -246,9 +246,9 @@
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th class="col-xs-7">{__('setting')}</th>
-                            <th class="col-xs-3 text-center">{__('neededValue')}</th>
-                            <th class="col-xs-2 text-center">{__('yourSystem')}</th>
+                            <th class="col-7">{__('setting')}</th>
+                            <th class="col-3 text-center">{__('neededValue')}</th>
+                            <th class="col-2 text-center">{__('yourSystem')}</th>
                         </tr>
                     </thead>
                     <tbody>

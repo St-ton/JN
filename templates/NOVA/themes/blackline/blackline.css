@@ -16445,7 +16445,7 @@ select.selectpicker {
 }
 @media (min-width: 768px) {
   .consent-btn {
-    padding: 0.85rem 1.5rem;
+    padding: 0.65rem 1.25rem;
     font-size: 0.875rem;
   }
 }

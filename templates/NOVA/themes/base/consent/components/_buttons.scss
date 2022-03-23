@@ -1,6 +1,9 @@
 
 .#{$prefix}-btn { display: inline-block; border-radius: $border-radius; border: 0; padding: .45rem .85rem; font-size: .75rem; outline: 0; transition: all .2s; cursor: pointer; border: .0625rem solid transparent;
-	@include media-breakpoint-up(md) { padding: .85rem 1.5rem; font-size: .875rem; }
+	@include media-breakpoint-up(md) {
+		padding: .65rem 1.25rem;
+		font-size: .875rem;
+	}
 }
 
 @each $color, $value in $theme-colors-consent {

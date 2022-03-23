@@ -30,14 +30,14 @@
 						<div class="consent-banner-actions">
 							<div class="consent-btn-helper">
 								<div class="consent-accept">
-									<button type="button" class="consent-btn consent-btn-outline-primary btn-sm btn-block" id="consent-banner-btn-all">{lang key='consentAll' section='consent'}</button>
+									<button type="button" class="consent-btn consent-btn-outline-primary btn-block" id="consent-banner-btn-all">{lang key='consentAll' section='consent'}</button>
 								</div>
 								<div>
-									<button type="button" class="consent-btn consent-btn-outline-primary btn-sm btn-block" id="consent-banner-btn-settings">{lang key='configure' section='consent'}</button>
+									<button type="button" class="consent-btn consent-btn-outline-primary btn-block" id="consent-banner-btn-settings">{lang key='configure' section='consent'}</button>
 								</div>
 								<div>
 									<button type="button"
-											class="consent-btn consent-btn-outline-primary btn-sm btn-block"
+											class="consent-btn consent-btn-outline-primary btn-block"
 											id="consent-banner-btn-close"
 											title="{lang key='close' section='consent'}">
 										{lang key='close' section='consent'}

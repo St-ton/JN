@@ -119,6 +119,7 @@ class Queue
             $this->logger->debug(\sprintf('Unstuck %d job(s).', $affected));
         }
         $this->loadQueueFromDB();
+        \shuffle($this->queueEntries);
         foreach ($this->queueEntries as $i => $queueEntry) {
             if ($i >= \JOBQUEUE_LIMIT_JOBS) {
                 $this->logger->debug(\sprintf('Job limit reached after %d jobs.', \JOBQUEUE_LIMIT_JOBS));

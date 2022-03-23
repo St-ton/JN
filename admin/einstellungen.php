@@ -117,7 +117,7 @@ if (Request::postVar('resetSetting') !== null) {
             $value->cName                 = $confData[$i]->cWertName;
             $value->kEinstellungenSektion = $confData[$i]->kEinstellungenSektion;
 
-            if ($confData[$i]->cInputTyp == 'pass' && $_POST[$confData[$i]->cWertName] === ''){
+            if ($confData[$i]->cInputTyp == 'pass' && $_POST[$confData[$i]->cWertName] === '') {
                 continue;
             }
 

@@ -14,6 +14,7 @@ use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Template\Admin\Validation\TemplateValidator;
 use JTL\Template\BootChecker;
+use JTL\Template\Compiler;
 use JTL\Template\Config;
 use JTL\Template\XMLReader;
 use JTLShop\SemVer\Version;
@@ -161,6 +162,7 @@ class Controller
         if ($tplXML !== null && !empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
         }
+        $service    = Shop::Container()->getTemplateService();
         $tplConfXML = $this->config->getConfigXML($reader, $parentFolder);
         foreach ($tplConfXML as $config) {
             foreach ($config->settings as $setting) {
@@ -184,10 +186,10 @@ class Controller
                     }
                 }
                 $this->config->updateConfigInDB($setting->section, $setting->key, $value);
-                $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
             }
         }
-        $check = Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir);
+        $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
+        $check = $service->setActiveTemplate($this->currentTemplateDir);
         if ($check) {
             $this->alertService->addSuccess(\__('successTemplateSave'), 'successTemplateSave');
         } else {
@@ -198,6 +200,26 @@ class Controller
             $overlayHelper->loadOverlaysFromTemplateFolder($this->currentTemplateDir);
         }
         $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
+        $config = $this->config->loadConfigFromDB();
+        if (!isset($config['colors']) && !isset($config['CustomSass'])) {
+            return;
+        }
+        $vars          = \trim($config['customsass']['customVariables'] ?? '');
+        $customContent = \trim($config['customsass']['customContent'] ?? '');
+        $current       = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
+        foreach ($config['colors'] ?? [] as $name => $color) {
+            if (!empty($color)) {
+                $vars .= "\n" . '$' . $name . ': ' . $color . ';';
+            }
+        }
+        $paths    = $current->getPaths();
+        $compiler = new Compiler();
+        $compiler->setCustomVariables($vars);
+        $compiler->setCustomContent($customContent);
+        $compiler->compileSass($paths->getThemeDirName(), $paths->getBaseRelDir() . 'themes/');
+        foreach ($compiler->getErrors() as $idx => $error) {
+            $this->alertService->addError($error, 'compileError' . $idx);
+        }
     }
 
     /**

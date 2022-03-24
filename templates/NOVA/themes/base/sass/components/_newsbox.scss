@@ -40,6 +40,9 @@
 	}
 	.blog-details-content {
 		margin-bottom: map-get($spacers, 4);
+		.img-fluid{
+			height: auto !important;
+		}
 	}
 	.blog-details-save {
 		margin-left: auto;

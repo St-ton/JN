@@ -239,8 +239,8 @@ class Campaign
                     }
                     $event->dErstellt = 'NOW()';
                     $db->insert('tkampagnevorgang', $event);
-                    $_SESSION['Kampagnenbesucher'][$campaign->kKampagne] = $campaign;
-                    //$_SESSION['Kampagnenbesucher']->cWert = $event->cParamWert;
+                    $_SESSION['Kampagnenbesucher'][$campaign->kKampagne]        = $campaign;
+                    $_SESSION['Kampagnenbesucher'][$campaign->kKampagne]->cWert = $event->cParamWert;
                 }
             }
 
@@ -265,8 +265,8 @@ class Campaign
                         $event->cParamWert = $given;
                     }
                     $db->insert('tkampagnevorgang', $event);
-                    $_SESSION['Kampagnenbesucher'][$campaign->kKampagne] = $campaign;
-                    //$_SESSION['Kampagnenbesucher']->cWert = $event->cParamWert;
+                    $_SESSION['Kampagnenbesucher'][$campaign->kKampagne]        = $campaign;
+                    $_SESSION['Kampagnenbesucher'][$campaign->kKampagne]->cWert = $event->cParamWert;
                 }
             }
         }
@@ -290,7 +290,7 @@ class Campaign
                 $event->kKampagneDef = $id;
                 $event->kKey         = $kKey;
                 $event->fWert        = $fWert;
-                $event->cParamWert   = $campaign->cParamWert;
+                $event->cParamWert   = $campaign->cWert;
                 $event->dErstellt    = 'NOW()';
 
                 if ($customData !== null) {

@@ -3,7 +3,6 @@
 namespace JTL;
 
 use Exception;
-use JTL\Alert\Alert;
 use JTL\Backend\AdminAccount;
 use JTL\Backend\AdminLoginConfig;
 use JTL\Boxes\Factory as BoxFactory;
@@ -1531,6 +1530,10 @@ final class Shop
                         break;
                 }
             }
+            if ($link === null) {
+                self::$is404 = true;
+                self::$kLink = 0;
+            }
         } elseif (self::$fileName === null) {
             self::$fileName = 'seite.php';
             self::setPageType(\PAGE_EIGENE);
@@ -1542,21 +1545,18 @@ final class Shop
                 $successMsg = (new Optin())
                     ->setCode(self::$optinCode)
                     ->handleOptin();
-                self::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_INFO,
+                self::Container()->getAlertService()->addInfo(
                     self::Lang()->get($successMsg, 'messages'),
                     'optinSucceeded'
                 );
             } catch (Exceptions\EmptyResultSetException $e) {
                 self::Container()->getLogService()->notice($e->getMessage());
-                self::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_ERROR,
+                self::Container()->getAlertService()->addError(
                     self::Lang()->get('optinCodeUnknown', 'errorMessages'),
                     'optinCodeUnknown'
                 );
             } catch (Exceptions\InvalidInputException $e) {
-                self::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_ERROR,
+                self::Container()->getAlertService()->addError(
                     self::Lang()->get('optinActionUnknown', 'errorMessages'),
                     'optinUnknownAction'
                 );

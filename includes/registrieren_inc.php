@@ -201,7 +201,11 @@ function gibFormularDaten(int $nCheckout = 0)
         )
         ->assign(
             'warning_passwortlaenge',
-            lang_passwortlaenge(Shop::getSettingValue(CONF_KUNDEN, 'kundenregistrierung_passwortlaenge'))
+            Shop::Lang()->get(
+                'minCharLen',
+                'messages',
+                Shop::getSettingValue(CONF_KUNDEN, 'kundenregistrierung_passwortlaenge')
+            )
         )
         ->assign('oKundenfeld_arr', new CustomerFields(Shop::getLanguageID()));
 

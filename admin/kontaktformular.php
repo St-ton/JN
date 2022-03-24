@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -23,7 +22,7 @@ if (Request::getInt('del') > 0 && Form::validateToken()) {
     $db->delete('tkontaktbetreff', 'kKontaktBetreff', Request::getInt('del'));
     $db->delete('tkontaktbetreffsprache', 'kKontaktBetreff', Request::getInt('del'));
 
-    $alertService->addAlert(Alert::TYPE_SUCCESS, __('successSubjectDelete'), 'successSubjectDelete');
+    $alertService->addSuccess(__('successSubjectDelete'), 'successSubjectDelete');
 }
 
 if (Request::postInt('content') === 1 && Form::validateToken()) {
@@ -55,7 +54,7 @@ if (Request::postInt('content') === 1 && Form::validateToken()) {
         $db->insert('tspezialcontentsprache', $spezialContent3);
         unset($spezialContent1, $spezialContent2, $spezialContent3);
     }
-    $alertService->addAlert(Alert::TYPE_SUCCESS, __('successContentSave'), 'successContentSave');
+    $alertService->addSuccess(__('successContentSave'), 'successContentSave');
     $tab = 'content';
 }
 
@@ -75,15 +74,11 @@ if (Request::postInt('betreff') === 1 && Form::validateToken()) {
         $subjectID         = 0;
         if (Request::postInt('kKontaktBetreff') === 0) {
             $subjectID = $db->insert('tkontaktbetreff', $newSubject);
-            $alertService->addAlert(Alert::TYPE_SUCCESS, __('successSubjectCreate'), 'successSubjectCreate');
+            $alertService->addSuccess(__('successSubjectCreate'), 'successSubjectCreate');
         } else {
             $subjectID = Request::postInt('kKontaktBetreff');
             $db->update('tkontaktbetreff', 'kKontaktBetreff', $subjectID, $newSubject);
-            $alertService->addAlert(
-                Alert::TYPE_SUCCESS,
-                sprintf(__('successSubjectSave'), $newSubject->cName),
-                'successSubjectSave'
-            );
+            $alertService->addSuccess(sprintf(__('successSubjectSave'), $newSubject->cName), 'successSubjectSave');
         }
         $localized                  = new stdClass();
         $localized->kKontaktBetreff = $subjectID;
@@ -106,7 +101,7 @@ if (Request::postInt('betreff') === 1 && Form::validateToken()) {
             $db->insert('tkontaktbetreffsprache', $localized);
         }
     } else {
-        $alertService->addAlert(Alert::TYPE_ERROR, __('errorSubjectSave'), 'errorSubjectSave');
+        $alertService->addError(__('errorSubjectSave'), 'errorSubjectSave');
         $step = 'betreff';
     }
     $tab = 'subjects';

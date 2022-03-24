@@ -36,42 +36,34 @@ if (Request::postInt('adminlogin') === 1) {
             case AdminLoginStatus::ERROR_LOCKED:
             case AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
                 $lockTime = $oAccount->getLockedMinutes();
-                $alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
-                    sprintf(__('lockForMinutes'), $lockTime),
-                    'errorFillRequired'
-                );
+                $alertHelper->addError(sprintf(__('lockForMinutes'), $lockTime), 'errorFillRequired');
                 break;
 
             case AdminLoginStatus::ERROR_USER_NOT_FOUND:
             case AdminLoginStatus::ERROR_INVALID_PASSWORD:
                 if (empty(Request::verifyGPDataString('TwoFA_code'))) {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorWrongPasswordUser'), 'errorWrongPasswordUser');
+                    $alertHelper->addError(__('errorWrongPasswordUser'), 'errorWrongPasswordUser');
                 }
                 break;
 
             case AdminLoginStatus::ERROR_USER_DISABLED:
-                $alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
-                    __('errorLoginTemporaryNotPossible'),
-                    'errorLoginTemporaryNotPossible'
-                );
+                $alertHelper->addError(__('errorLoginTemporaryNotPossible'), 'errorLoginTemporaryNotPossible');
                 break;
 
             case AdminLoginStatus::ERROR_LOGIN_EXPIRED:
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLoginDataExpired'), 'errorLoginDataExpired');
+                $alertHelper->addError(__('errorLoginDataExpired'), 'errorLoginDataExpired');
                 break;
 
             case AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED:
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired)
                     && $_SESSION['AdminAccount']->TwoFA_expired === true
                 ) {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTwoFactorExpired'), 'errorTwoFactorExpired');
+                    $alertHelper->addError(__('errorTwoFactorExpired'), 'errorTwoFactorExpired');
                 }
                 break;
 
             case AdminLoginStatus::ERROR_NOT_AUTHORIZED:
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNoPermission'), 'errorNoPermission');
+                $alertHelper->addError(__('errorNoPermission'), 'errorNoPermission');
                 break;
 
             case AdminLoginStatus::LOGIN_OK:
@@ -83,9 +75,9 @@ if (Request::postInt('adminlogin') === 1) {
                 break;
         }
     } elseif (isset($_COOKIE['eSIdAdm'])) {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCSRF'), 'errorCSRF');
+        $alertHelper->addError(__('errorCSRF'), 'errorCSRF');
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCookieSettings'), 'errorCookieSettings');
+        $alertHelper->addError(__('errorCookieSettings'), 'errorCookieSettings');
     }
 }
 $type          = '';
@@ -206,11 +198,7 @@ if ($oAccount->getIsAuthenticated()) {
                 $_SESSION['loginIsValid']                = true;
                 redirectLogin($oAccount, $oUpdater);
             } else {
-                $alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
-                    __('errorTwoFactorFaultyExpired'),
-                    'errorTwoFactorFaultyExpired'
-                );
+                $alertHelper->addError(__('errorTwoFactorFaultyExpired'), 'errorTwoFactorFaultyExpired');
                 $smarty->assign('alertError', true);
             }
         } else {
@@ -228,7 +216,7 @@ if ($oAccount->getIsAuthenticated()) {
 } else {
     $oAccount->redirectOnUrl();
     if (Request::getInt('errCode', null) === AdminLoginStatus::ERROR_SESSION_INVALID) {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSessionExpired'), 'errorSessionExpired');
+        $alertHelper->addError(__('errorSessionExpired'), 'errorSessionExpired');
     }
     Shop::Container()->getGetText()->loadAdminLocale('pages/login');
     $smarty->assign('uri', isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0

@@ -1,6 +1,5 @@
 <?php
 
-use JTL\Alert\Alert;
 use JTL\Emailhistory;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -20,13 +19,13 @@ $alertHelper = Shop::Container()->getAlertService();
 if ($action === 'delete') {
     if (isset($_POST['remove_all'])) {
         if ($history->deleteAll() === 0) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorHistoryDelete'), 'errorHistoryDelete');
+            $alertHelper->addError(__('errorHistoryDelete'), 'errorHistoryDelete');
         }
     } elseif (GeneralObject::hasCount('kEmailhistory', $_POST)) {
         $history->deletePack($_POST['kEmailhistory']);
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successHistoryDelete'), 'successHistoryDelete');
+        $alertHelper->addSuccess(__('successHistoryDelete'), 'successHistoryDelete');
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSelectEntry'), 'errorSelectEntry');
+        $alertHelper->addError(__('errorSelectEntry'), 'errorSelectEntry');
     }
 }
 

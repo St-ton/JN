@@ -1910,6 +1910,14 @@ const HOOK_BESTELLUNG_SETZEGUTHABEN = 335;
 const HOOK_SYNC_SEND_AVAILABILITYMAILS = 336;
 
 /**
+ * @since 5.1.3
+ * @file includes/src/Cart/Cart.php
+ * @param JTL\Cart\CartItem positionItem
+ * @param bool              &delete
+ */
+const HOOK_CART_DELETE_PARENT_CART_ITEM = 337;
+
+/**
  * @since 5.2.0
  * @param JTL\Export\Product        product
  * @param JTL\Export\FormatExporter exporter

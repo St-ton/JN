@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
@@ -20,8 +19,7 @@ $settingsIDs = [
 ];
 
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
-    Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_SUCCESS,
+    Shop::Container()->getAlertService()->addSuccess(
         saveAdminSettings($settingsIDs, $_POST, [CACHING_GROUP_OPTION], true),
         'saveSettings'
     );

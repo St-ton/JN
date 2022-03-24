@@ -3,7 +3,6 @@
 namespace JTL\Helpers;
 
 use Illuminate\Support\Collection;
-use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\Product\Artikel;
@@ -1262,8 +1261,7 @@ class Product
         $history->dErstellt  = 'NOW()';
 
         $inquiryID = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_SUCCESS,
+        Shop::Container()->getAlertService()->addSuccess(
             Shop::Lang()->get('thankYouForQuestion', 'messages'),
             'thankYouForQuestion'
         );
@@ -2232,6 +2230,6 @@ class Product
                     AND kKundengruppe = :cgid',
             'kArtikel',
             ['pid' => $productID, 'cgid' => $customerGroupID]
-        ) > 0;
+        ) < 1;
     }
 }

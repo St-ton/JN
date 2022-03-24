@@ -159,11 +159,20 @@ function handleCsvImportAction(
                 Shop::Container()->getDB()->delete($target, $fields, $row);
             }
 
-            $res = Shop::Container()->getDB()->insert($table, $obj);
-
-            if ($res === 0) {
-                ++$nErrors;
-                $errors[] = sprintf(__('csvImportSaveError'), $rowIndex);
+            if (isset($obj->cFromUrl, $obj->cToUrl)) {
+                // is redirect import
+                $redirect = new Redirect();
+                if (!$redirect->saveExt($obj->cFromUrl, $obj->cToUrl)) {
+                    ++$nErrors;
+                    $errors[] = sprintf(__('csvImportSaveError'), $rowIndex);
+                }
+            } else {
+                // is other import
+                $res = Shop::Container()->getDB()->insert($table, $obj);
+                if ($res === 0) {
+                    ++$nErrors;
+                    $errors[] = sprintf(__('csvImportSaveError'), $rowIndex);
+                }
             }
         }
 

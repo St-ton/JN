@@ -147,11 +147,9 @@ class XMLReader
             if ($setting->cType === 'textarea') {
                 // inject the tag-attributes of the TextAreaValue in our oSetting
                 $setting->textareaAttributes = [];
-                // get the SimpleXMLElement-array
-                $attr = $XMLSetting->TextAreaValue->attributes();
                 // we insert our default "no resizable"
                 $setting->textareaAttributes['Resizable'] = 'none';
-                foreach ($attr as $_key => $_val) {
+                foreach ($attributes as $_key => $_val) {
                     $_val                               = (string)$_val; // cast the value(!)
                     $setting->textareaAttributes[$_key] = $_val;
                     // multiple values of 'disable resizing' are allowed,

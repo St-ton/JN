@@ -331,7 +331,7 @@ if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0) {
         $event->dErstellt    = 'NOW()';
 
         Shop::Container()->getDB()->insert('tkampagnevorgang', $event);
-        $_SESSION['Kampagnenbesucher'] = $campaign;
+        $_SESSION['Kampagnenbesucher'][$campaign->kKampagne] = $campaign;
     }
 }
 

@@ -372,7 +372,7 @@ function validateNumberRange(int $min, int $max, stdClass $setting): bool
  * Wenn $getInternal false ist, werden keine Interne Shop Kampagnen geholt
  * Wenn $activeOnly true ist, werden nur Aktive Kampagnen geholt
  *
- * @param bool $internalOnly
+ * @param bool $getInternal
  * @param bool $activeOnly
  * @return array
  */

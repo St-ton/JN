@@ -3,6 +3,7 @@
 namespace JTL\Template;
 
 use Exception;
+use JTL\Shop;
 use Less_Parser;
 use RuntimeException;
 use ScssPhp\ScssPhp\OutputStyle;
@@ -19,6 +20,16 @@ class Compiler
      * @var array
      */
     private array $compiled = [];
+
+    /**
+     * @var string
+     */
+    private string $customVariables = '';
+
+    /**
+     * @var string
+     */
+    private string $customContent = '';
 
     private const CACHE_DIR = \PFAD_ROOT . \PFAD_COMPILEDIR . 'tpleditortmp';
 
@@ -90,7 +101,18 @@ class Compiler
             ]);
         }
         $compiler->addImportPath($baseDir);
-        $result = $compiler->compileString(\file_get_contents($file));
+        $content = \file_get_contents($file);
+        if (\mb_strpos($content, '//#customVariables#') !== false) {
+            $content = \str_replace('//#customVariables#', $this->customVariables, $content);
+        } else {
+            $content = $this->customVariables . "\n" . $content;
+        }
+        if (\mb_strpos($content, '//#customContent#') !== false) {
+            $content = \str_replace('//#customContent#', $this->customContent, $content);
+        } else {
+            $content .= "\n" . $this->customContent;
+        }
+        $result = $compiler->compileString($content);
         \file_put_contents($target, $result->getCss());
         if (!$critical) {
             \file_put_contents($target . '.map', $result->getSourceMap());
@@ -174,5 +196,37 @@ class Compiler
     public function setCompiled(array $compiled): void
     {
         $this->compiled = $compiled;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCustomVariables(): string
+    {
+        return $this->customVariables;
+    }
+
+    /**
+     * @param string $customVariables
+     */
+    public function setCustomVariables(string $customVariables): void
+    {
+        $this->customVariables = $customVariables;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCustomContent(): string
+    {
+        return $this->customContent;
+    }
+
+    /**
+     * @param string $customContent
+     */
+    public function setCustomContent(string $customContent): void
+    {
+        $this->customContent = $customContent;
     }
 }

@@ -82,6 +82,7 @@
                                                 {include file='snippets/colorpicker.tpl'
                                                 cpID="{$setting->elementID}"
                                                 cpName="{$setting->elementID}"
+                                                useAlpha=true
                                                 cpValue=$setting->value}
                                             {elseif $setting->cType === 'number'}
                                                 {include file='tpl_inc/option_number.tpl' setting=$setting section=$section}

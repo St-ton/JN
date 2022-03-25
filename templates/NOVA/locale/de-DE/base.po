@@ -192,3 +192,21 @@ msgstr "Suchfeld in Filtern anzeigen ab x Einträgen"
 
 msgid "Mobile Geräte: Menü in aktueller Kategorie öffnen"
 msgstr "Mobile Geräte: Menü in aktueller Kategorie öffnen"
+
+msgid "Custom Styles"
+msgstr "Styles"
+
+msgid "Custom Sass"
+msgstr "Custom Sass"
+
+msgid "Custom Sass Description"
+msgstr "Hier können Sie eigene Css-Anpassungen an Ihrem Template vornehmen. Informationen zu Variablen finden Sie <a href=\"https://guide.jtl-software.de/jtl-shop/optik/templates-anpassen/\">hier</a>. Ansonsten können Sie unter <a href=\"https://guide.jtl-software.de/jtl-shop/optik/templates-anpassen/\">„Custom Sass“</a> auch eigenes CSS bzw. Sass oder Scss definieren. <br><br>Beachten Sie auch folgende Punkte: <ul><li>Nutzen Sie für CSS-Anpassungen entweder diese Einstellungen oder das JTL-Theme Editor Plugin, aber nicht beides zusammen.</li><li><span class=\"text-warning\"> Achten Sie vor allem auch darauf den Browser-Cache zu leeren um die hier vorgenommenen Änderungen im Frontend sehen zu können.</li></ul>"
+
+msgid "colorPrimary"
+msgstr "Primärfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "customVariables"
+msgstr "Custom Variablen"
+
+msgid "customContent"
+msgstr "Custom Sass"

@@ -37,6 +37,9 @@
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body">
+                    {if $section->key === 'customsass'}
+                        <div class="underline-links mb-5">{__('Custom Sass Description')}</div>
+                    {/if}
                     <div class="row">
                         {foreach $section->settings as $setting}
                             {if $setting->key === 'theme_default' && isset($themePreviews) && $themePreviews !== null}

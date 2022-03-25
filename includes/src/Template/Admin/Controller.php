@@ -167,7 +167,7 @@ class Controller
         $updated      = $current->getFileVersion() !== $current->getVersion();
         $tplConfXML   = $this->config->getConfigXML($reader, $parentFolder);
         $oldConfig    = $this->config->loadConfigFromDB();
-        $oldColorConf = $oldConfig['colors'] ?? null;
+        $oldColorConf = $oldConfig['customstyles'] ?? null;
         $oldSassConf  = $oldConfig['customsass'] ?? null;
         foreach ($tplConfXML as $config) {
             foreach ($config->settings as $setting) {
@@ -206,17 +206,17 @@ class Controller
         }
         $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
         $config = $this->config->loadConfigFromDB();
-        if (!isset($config['colors']) && !isset($config['customsass'])) {
+        if (!isset($config['customstyles']) && !isset($config['customsass'])) {
             return;
         }
-        $newColorConf = $config['colors'] ?? null;
+        $newColorConf = $config['customstyles'] ?? null;
         $newSassConf  = $config['customsass'] ?? null;
         if ($updated === false && $newColorConf === $oldColorConf && $newSassConf === $oldSassConf) {
             return;
         }
         $vars          = \trim($config['customsass']['customVariables'] ?? '');
         $customContent = \trim($config['customsass']['customContent'] ?? '');
-        foreach ($config['colors'] ?? [] as $name => $color) {
+        foreach ($config['customstyles'] ?? [] as $name => $color) {
             if (!empty($color)) {
                 $vars .= "\n" . '$' . $name . ': ' . $color . ';';
             }
@@ -226,10 +226,10 @@ class Controller
         $compiler->setCustomVariables($vars);
         $compiler->setCustomContent($customContent);
         if ($compiler->compileSass($paths->getThemeDirName(), $paths->getBaseRelDir() . 'themes/')) {
-            $this->alertService->addSuccess(\__('Successfully compiled theme.'), 'compilesuccess');
+            $this->alertService->addSuccess(\__('successCompile'), 'successCompile');
         }
         foreach ($compiler->getErrors() as $idx => $error) {
-            $this->alertService->addError($error, 'compileError' . $idx);
+            $this->alertService->addError(\sprintf(\__('errorCompile'), $error), 'errorCompile' . $idx);
         }
     }
 

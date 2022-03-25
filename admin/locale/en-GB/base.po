@@ -2164,3 +2164,9 @@ msgstr "Invalid archive"
 
 msgid "No input file provided."
 msgstr "No input file provided."
+
+msgid "successCompile"
+msgstr "Successfully compiled CSS."
+
+msgid "errorCompile"
+msgstr "An error occured while compiling the CSS: %s"

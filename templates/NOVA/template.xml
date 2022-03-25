@@ -55,14 +55,6 @@
             </Setting>
             <Setting Description="Favicon" Key="favicon" Type="upload" Value="favicon.ico" maxFileSize="123456" showPreview="false" allowedFileExtensions="['ico','png']" accept="image/*" target="themes/base/images/" targetFileName="favicon.ico"/>
         </Section>
-        <Section Name="Colors" Key="colors">
-            <Setting Description="colorPrimary" Key="primary" Type="colorpicker" Value=""/>
-            <Setting Description="colorWhite" Key="white" Type="colorpicker" Value=""/>
-        </Section>
-        <Section Name="CustomSass" Key="customsass">
-            <Setting Description="customVariables" Key="customVariables" Type="textarea" Class="codemirror sass" Value=""/>
-            <Setting Description="customContent" Key="customContent" Type="textarea" Class="codemirror sass" Value=""/>
-        </Section>
         <Section Name="Megamenu" Key="megamenu">
             <Setting Description="Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)" Key="show_categories" Type="select" Value="Y">
                 <Option Value="Y">Auf Desktop und mobilen Geräten</Option>
@@ -143,6 +135,13 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
+        </Section>
+        <Section Name="Custom Styles" Key="customstyles">
+            <Setting Description="colorPrimary" Key="primary" Type="colorpicker" Value=""/>
+        </Section>
+        <Section Name="Custom Sass" Key="customsass">
+            <Setting Description="customVariables" Key="customVariables" Type="textarea" Class="codemirror sass" Value=""/>
+            <Setting Description="customContent" Key="customContent" Type="textarea" Class="codemirror sass" Value=""/>
         </Section>
         <Section Name="Footer-Einstellungen" Key="footer">
             <Setting Description="Newsletter-Anmeldung im Footer" Key="newsletter_footer" Type="select" Value="N">

@@ -13,6 +13,6 @@
         format: 'rgba',
         fallbackColor: 'rgb(255, 255, 255)',
         autoInputFallback: true,
-        useAlpha: {$useAlpha|default:false}
+        useAlpha: {if $useAlpha|default:false}true{else}false{/if}
     {rdelim});
 </script>

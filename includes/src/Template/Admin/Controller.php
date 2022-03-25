@@ -162,8 +162,13 @@ class Controller
         if ($tplXML !== null && !empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
         }
-        $service    = Shop::Container()->getTemplateService();
-        $tplConfXML = $this->config->getConfigXML($reader, $parentFolder);
+        $service      = Shop::Container()->getTemplateService();
+        $current      = $service->getActiveTemplate();
+        $updated      = $current->getFileVersion() !== $current->getVersion();
+        $tplConfXML   = $this->config->getConfigXML($reader, $parentFolder);
+        $oldConfig    = $this->config->loadConfigFromDB();
+        $oldColorConf = $oldConfig['colors'] ?? null;
+        $oldSassConf  = $oldConfig['customsass'] ?? null;
         foreach ($tplConfXML as $config) {
             foreach ($config->settings as $setting) {
                 if ($setting->cType === 'checkbox') {
@@ -201,12 +206,16 @@ class Controller
         }
         $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
         $config = $this->config->loadConfigFromDB();
-        if (!isset($config['colors']) && !isset($config['CustomSass'])) {
+        if (!isset($config['colors']) && !isset($config['customsass'])) {
+            return;
+        }
+        $newColorConf = $config['colors'] ?? null;
+        $newSassConf  = $config['customsass'] ?? null;
+        if ($updated === false && $newColorConf === $oldColorConf && $newSassConf === $oldSassConf) {
             return;
         }
         $vars          = \trim($config['customsass']['customVariables'] ?? '');
         $customContent = \trim($config['customsass']['customContent'] ?? '');
-        $current       = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
         foreach ($config['colors'] ?? [] as $name => $color) {
             if (!empty($color)) {
                 $vars .= "\n" . '$' . $name . ': ' . $color . ';';
@@ -216,7 +225,9 @@ class Controller
         $compiler = new Compiler();
         $compiler->setCustomVariables($vars);
         $compiler->setCustomContent($customContent);
-        $compiler->compileSass($paths->getThemeDirName(), $paths->getBaseRelDir() . 'themes/');
+        if ($compiler->compileSass($paths->getThemeDirName(), $paths->getBaseRelDir() . 'themes/')) {
+            $this->alertService->addSuccess(\__('Successfully compiled theme.'), 'compilesuccess');
+        }
         foreach ($compiler->getErrors() as $idx => $error) {
             $this->alertService->addError($error, 'compileError' . $idx);
         }

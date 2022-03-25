@@ -81,6 +81,11 @@ class Category implements CategoryInterface
     protected $seo = [];
 
     /**
+     * @var array
+     */
+    protected $seoUrl = [];
+
+    /**
      * @var string[]
      */
     protected $descriptions = [];
@@ -206,6 +211,7 @@ class Category implements CategoryInterface
             $this->lft                       = (int)$groupLanguage->lft;
             $this->rght                      = (int)$groupLanguage->rght;
             $this->seo[$langID]              = $groupLanguage->cSeo;
+            $this->seoUrl[$langID]           = Shop::getURL() . '/' . $groupLanguage->cSeo;
         }
         if (($preview = $this->getPreviewImage()) !== '') {
             $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $preview));
@@ -290,7 +296,7 @@ class Category implements CategoryInterface
                 JOIN tnewskategorie 
                     ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
             WHERE tnewskategorie.nAktiv = 1 AND tnews.dGueltigVon <= NOW() '
-                . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL
+            . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL
         )), static function ($e) {
             return (int)$e;
         }));
@@ -553,6 +559,15 @@ class Category implements CategoryInterface
     public function getSEOs(): array
     {
         return $this->seo;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSEOURL(int $idx = null): string
+    {
+        $idx = $idx ?? Shop::getLanguageID();
+        return $this->seoUrl[$idx];
     }
 
     /**

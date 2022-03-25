@@ -215,7 +215,6 @@ class TemplateService implements TemplateServiceInterface
         $template->setDir($dir);
         $template->setAuthor(\trim((string)$xml->Author));
         $template->setUrl(\trim((string)$xml->URL));
-        $template->setVersion(\trim((string)$xml->Version));
         $template->setFileVersion(\trim((string)$xml->Version));
         $template->setShopVersion(\trim((string)$xml->ShopVersion));
         $template->setPreview(\trim((string)$xml->Preview));

@@ -54,12 +54,12 @@ class Compiler
             if (\file_exists(self::CACHE_DIR)) {
                 \array_map('\unlink', \glob(self::CACHE_DIR . '/lessphp*'));
             } elseif (!\mkdir(self::CACHE_DIR, 0777) && !\is_dir(self::CACHE_DIR)) {
-                throw new RuntimeException(\sprintf('Directory "%s" was not created.', self::CACHE_DIR));
+                throw new RuntimeException(\sprintf(\__('Directory "%s" was not created.'), self::CACHE_DIR));
             }
         }
         $input = $themeDir . 'sass/' . $theme . '.scss';
         if (!\file_exists($input)) {
-            $this->errors[] = \__(\sprintf('Theme scss file "%s" does not exist.', $input));
+            $this->errors[] = \sprintf(\__('Theme scss file "%s" does not exist.'), $input);
 
             return false;
         }
@@ -70,7 +70,7 @@ class Compiler
                 $this->compileSassFile($critical, $themeDir . $theme . '_crit.css', $themeDir);
                 $this->compiled[] = \__($theme . '_crit.css was compiled successfully.');
             }
-            $this->compiled[] = \__(\sprintf('%s.css was compiled successfully.', $theme));
+            $this->compiled[] = \sprintf(\__('%s.css was compiled successfully.'), $theme);
 
             return true;
         } catch (Exception $e) {
@@ -84,9 +84,13 @@ class Compiler
      * @param string $file
      * @param string $target
      * @param string $directory
+     * @throws Exception
      */
     private function compileSassFile(string $file, string $target, string $directory): void
     {
+        if (!\is_writable($target)) {
+            throw new Exception(\sprintf(\__('Cannot write to file %s.'), $target));
+        }
         $baseDir  = $directory . 'sass/';
         $critical = \strpos($file, '_crit') !== false;
         $compiler = new BaseCompiler();
@@ -138,7 +142,7 @@ class Compiler
             $parser->parseFile($themeDir . '/less/theme.less', '/');
             $css = $parser->getCss();
             \file_put_contents($themeDir . '/bootstrap.css', $css);
-            $this->compiled[] = \__(\sprintf('%s.css was compiled successfully.', $theme));
+            $this->compiled[] = \sprintf(\__('%s.css was compiled successfully.'), $theme);
             unset($parser);
 
             return true;
@@ -160,7 +164,7 @@ class Compiler
         $directory  = \realpath(\PFAD_ROOT . $templateDir . $theme);
         $compareDir = \str_replace(['/', '\\'], \DIRECTORY_SEPARATOR, \realpath(\PFAD_ROOT . \PFAD_TEMPLATES));
         if ($directory === false || \strpos($directory . '/', $compareDir) !== 0) {
-            throw new Exception(\__(\sprintf('Theme %s does not exist.', $theme)));
+            throw new Exception(\sprintf(\__('Theme %s does not exist.'), $theme));
         }
 
         return $directory . '/';

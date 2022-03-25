@@ -2175,5 +2175,11 @@ msgstr "Keine Eingabedatei angegeben."
 msgid "Successfully compiled CSS."
 msgstr "Das CSS wurde erfolgreich kompiliert."
 
-msgid "errorCompile"
-msgstr "Problem beim kompilieren des CSS: %s"
+msgid "%s.css was compiled successfully."
+msgstr "%s.css wurde erfolgreich kompiliert."
+
+msgid "An error occured while compiling the CSS: %s"
+msgstr "Problem beim Kompilieren des CSS: %s"
+
+msgid "Cannot write to file %s."
+msgstr "Kann Datei %s nicht schreiben."

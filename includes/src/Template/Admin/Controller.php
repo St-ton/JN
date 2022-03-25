@@ -229,7 +229,10 @@ class Controller
             $this->alertService->addSuccess(\__('Successfully compiled CSS.'), 'successCompile');
         }
         foreach ($compiler->getErrors() as $idx => $error) {
-            $this->alertService->addError(\sprintf(\__('errorCompile'), $error), 'errorCompile' . $idx);
+            $this->alertService->addError(
+                \sprintf(\__('An error occured while compiling the CSS: %s'), $error),
+                'errorCompile' . $idx
+            );
         }
     }
 

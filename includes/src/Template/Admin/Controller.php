@@ -226,7 +226,7 @@ class Controller
         $compiler->setCustomVariables($vars);
         $compiler->setCustomContent($customContent);
         if ($compiler->compileSass($paths->getThemeDirName(), $paths->getBaseRelDir() . 'themes/')) {
-            $this->alertService->addSuccess(\__('successCompile'), 'successCompile');
+            $this->alertService->addSuccess(\__('Successfully compiled CSS.'), 'successCompile');
         }
         foreach ($compiler->getErrors() as $idx => $error) {
             $this->alertService->addError(\sprintf(\__('errorCompile'), $error), 'errorCompile' . $idx);

@@ -20,7 +20,7 @@
                     {block name='productlist-item-list-image'}
                         <div class="productbox-image">
                             {if isset($Artikel->Bilder[0]->cAltAttribut)}
-                                {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}
+                                {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut}
                             {else}
                                 {assign var=alt value=$Artikel->cName}
                             {/if}
@@ -43,7 +43,7 @@
                                                     {$image = $Artikel->Bilder[0]}
                                                     <div class="productbox-image square square-image first-wrapper">
                                                         <div class="inner">
-                                                            {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
+                                                            {image alt=$alt|truncate:60 fluid=true webp=true lazy=true
                                                                 src="{$image->cURLKlein}"
                                                                 srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                                                     {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
@@ -55,9 +55,14 @@
                                                     </div>
                                                     {if !$isMobile && !empty($Artikel->Bilder[1])}
                                                         {$image = $Artikel->Bilder[1]}
+                                                        {if isset($image->cAltAttribut)}
+                                                            {assign var=alt value=$image->cAltAttribut}
+                                                        {else}
+                                                            {assign var=alt value=$Artikel->cName}
+                                                        {/if}
                                                         <div class="productbox-image square square-image second-wrapper">
                                                             <div class="inner">
-                                                                {image alt=$image->cAltAttribut|escape:'html' fluid=true webp=true lazy=true
+                                                                {image alt=$alt|truncate:60 fluid=true webp=true lazy=true
                                                                     src="{$image->cURLKlein}"
                                                                     srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                                                         {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
@@ -137,7 +142,7 @@
                                         <div class="form-row productbox-onhover productbox-actions item-list-basket-details">
                                             {if ($Artikel->inWarenkorbLegbar === 1
                                                     || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))
-                                                && (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0)
+                                                && (($Artikel->nIstVater === 0 && $Artikel->Variationen|count === 0)
                                                     || $hasOnlyListableVariations === 1)
                                                 && !$Artikel->bHasKonfig
                                                 && $Einstellungen.template.productlist.buy_productlist === 'Y'}
@@ -173,7 +178,7 @@
                                                                         "decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall},
                                                                         "product-id"=>"{if isset($Artikel->kVariKindArtikel)}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}"
                                                                     ]
-                                                                    value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"}
+                                                                    value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"}
                                                                 {inputgroupappend}
                                                                     {button variant=""
                                                                         data=["count-up"=>""]

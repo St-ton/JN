@@ -35,13 +35,12 @@ class LanguageVariables extends AbstractItem
             if (\mb_strlen($hits1[0]) !== \mb_strlen($t)) {
                 continue;
             }
-            $pluginLangVar          = new stdClass();
-            $pluginLangVar->kPlugin = $this->plugin->kPlugin;
-            $pluginLangVar->cName   = $langVar['Name'];
-            $pluginLangVar->type    = $langVar['Type'] ?? InputType::TEXT;
-            if (GeneralObject::isCountable('Description', $langVar)) {
-                $pluginLangVar->cBeschreibung = '';
-            } else {
+            $pluginLangVar                = new stdClass();
+            $pluginLangVar->kPlugin       = $this->plugin->kPlugin;
+            $pluginLangVar->cName         = $langVar['Name'];
+            $pluginLangVar->type          = $langVar['Type'] ?? InputType::TEXT;
+            $pluginLangVar->cBeschreibung = '';
+            if (isset($langVar['Description']) && !GeneralObject::isCountable('Description', $langVar)) {
                 $pluginLangVar->cBeschreibung = \preg_replace('/\s+/', ' ', $langVar['Description']);
             }
             $id = $this->db->insert('tpluginsprachvariable', $pluginLangVar);

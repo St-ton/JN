@@ -99,7 +99,7 @@
             <div class="subheading1">{__('crawlerOverviewTitle')}</div>
             <hr class="mb-3">
             {include file='tpl_inc/pagination.tpl' pagination=$crawlerPagination cParam_arr=['s'=>$nTyp,'tab'=>'settings']}
-            <form id="crawlerList" name="crawlerList" method="post" action="statistik.php?s=3&tab=settings">
+            <form id="crawlerList" name="crawlerList" method="post" action="{$adminURL}/statistik.php?s=3&tab=settings">
                 {$jtl_token}
                 <div class="table-responsive">
                     <table id="category-list" class="list table table-striped">
@@ -107,7 +107,7 @@
                         <tr>
                             <th class="check">&nbsp;</th>
                             <th class="text-center">{__('crawlerListUserAgent')}</th>
-                            <th class=" text-center">{__('crawlerListDescription')}</th>
+                            <th class="text-center">{__('crawlerListDescription')}</th>
                             <th class="th-5 text-center">&nbsp;</th>
                         </tr>
                         </thead>
@@ -121,11 +121,11 @@
                                             <label class="custom-control-label" for="crawler-cb-{$crawler->kBesucherBot}"></label>
                                         </div>
                                     </td>
-                                    <td class="text-center">{$crawler->cUserAgent}</td>
-                                    <td class="text-center">{$crawler->cBeschreibung}</td>
+                                    <td class="text-center">{JTL\Helpers\Text::filterXSS($crawler->cUserAgent)}</td>
+                                    <td class="text-center">{JTL\Helpers\Text::filterXSS($crawler->cBeschreibung)}</td>
                                     <td class="text-center">
                                         <div class="btn-group">
-                                            <a href="statistik.php?s=3&edit=1&id={$crawler->kBesucherBot}"
+                                            <a href="{$adminURL}/statistik.php?s=3&edit=1&id={$crawler->kBesucherBot}"
                                                class="btn btn-link px-2"
                                                title="{__('modify')}"
                                                data-toggle="tooltip">
@@ -161,7 +161,7 @@
                             <button disabled name="delete" type="button" data-toggle="modal"  data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
-                            <a href="statistik.php?s=3&new=1" value="{__('newCrawler')}" class="btn btn-primary btn-block"><i class="fa fa-share"></i> {__('newCrawler')}</a>
+                            <a href="{$adminURL}/statistik.php?s=3&new=1" value="{__('newCrawler')}" class="btn btn-primary btn-block"><i class="fa fa-share"></i> {__('newCrawler')}</a>
                         </div>
                     </div>
                 </div>

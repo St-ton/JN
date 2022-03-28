@@ -1,15 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Catalog\Currency;
 use JTL\Cron\Checker;
 use JTL\Cron\JobFactory;
 use JTL\Cron\LegacyCron;
 use JTL\Cron\Queue;
 use JTL\Customer\CustomerGroup;
-use JTL\Export\FormatExporter;
+use JTL\Export\ExporterFactory;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 
@@ -23,7 +23,8 @@ function holeExportformatCron(): array
         "SELECT texportformat.*, tcron.cronID, tcron.frequency, tcron.startDate, 
             DATE_FORMAT(tcron.startDate, '%d.%m.%Y %H:%i') AS dStart_de, tcron.lastStart, 
             DATE_FORMAT(tcron.lastStart, '%d.%m.%Y %H:%i') AS dLetzterStart_de,
-            DATE_FORMAT(DATE_ADD(tcron.lastStart, INTERVAL tcron.frequency HOUR), '%d.%m.%Y %H:%i') 
+            DATE_FORMAT(DATE_ADD(ADDTIME(DATE(tcron.lastStart), tcron.startTime),
+                INTERVAL tcron.frequency HOUR), '%d.%m.%Y %H:%i')
             AS dNaechsterStart_de
             FROM texportformat
             JOIN tcron 
@@ -32,7 +33,7 @@ function holeExportformatCron(): array
             ORDER BY tcron.startDate DESC"
     );
 
-    $exporter = new FormatExporter($db, Shop::Container()->getLogService());
+    $factory = new ExporterFactory($db, Shop::Container()->getLogService(), Shop::Container()->getCache());
     foreach ($exports as $export) {
         $export->kExportformat      = (int)$export->kExportformat;
         $export->kKundengruppe      = (int)$export->kKundengruppe;
@@ -49,8 +50,17 @@ function holeExportformatCron(): array
         $export->frequency          = (int)$export->frequency;
         $export->cAlleXStdToDays    = rechneUmAlleXStunden($export->frequency);
         $export->frequencyLocalized = $export->cAlleXStdToDays;
-        $export->Sprache            = Shop::Lang()->getLanguageByID($export->kSprache);
+
+        $exporter = $factory->getExporter($export->kExportformat);
         $exporter->init($export->kExportformat);
+        try {
+            $export->Sprache = Shop::Lang()->getLanguageByID($export->kSprache);
+        } catch (Exception $e) {
+            $export->Sprache = LanguageHelper::getDefaultLanguage();
+            $export->Sprache->setLocalizedName('???');
+            $export->Sprache->setId(0);
+            $export->nFehlerhaft = 1;
+        }
         $export->Waehrung     = $db->select(
             'twaehrung',
             'kWaehrung',
@@ -286,19 +296,19 @@ function holeExportformatQueueBearbeitet(int $hours = 24)
     }
     $languages = Shop::Lang()->getAllLanguages(1);
     $queues    = Shop::Container()->getDB()->getObjects(
-        "SELECT texportformat.cName, texportformat.cDateiname, texportformatqueuebearbeitet.*, 
-            DATE_FORMAT(texportformatqueuebearbeitet.dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_DE, 
-            tsprache.cNameDeutsch AS cNameSprache, tkundengruppe.cName AS cNameKundengruppe, 
+        "SELECT texportformat.cName, texportformat.cDateiname, texportformatqueuebearbeitet.*,
+            DATE_FORMAT(texportformatqueuebearbeitet.dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_DE,
+            tsprache.cNameDeutsch AS cNameSprache, tkundengruppe.cName AS cNameKundengruppe,
             twaehrung.cName AS cNameWaehrung
             FROM texportformatqueuebearbeitet
-            JOIN texportformat 
+            JOIN texportformat
                 ON texportformat.kExportformat = texportformatqueuebearbeitet.kExportformat
                 AND texportformat.kSprache = :lid
-            JOIN tsprache 
+            JOIN tsprache
                 ON tsprache.kSprache = texportformat.kSprache
-            JOIN tkundengruppe 
+            JOIN tkundengruppe
                 ON tkundengruppe.kKundengruppe = texportformat.kKundengruppe
-            JOIN twaehrung 
+            JOIN twaehrung
                 ON twaehrung.kWaehrung = texportformat.kWaehrung
             WHERE DATE_SUB(NOW(), INTERVAL :hrs HOUR) < texportformatqueuebearbeitet.dZuletztGelaufen
             ORDER BY texportformatqueuebearbeitet.dZuletztGelaufen DESC",
@@ -530,8 +540,8 @@ function exportformatQueueFinalize(string $step, JTLSmarty $smarty, array &$mess
             break;
     }
 
-    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $messages['error'], 'expoFormatError');
-    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $messages['notice'], 'expoFormatNote');
+    Shop::Container()->getAlertService()->addError($messages['error'], 'expoFormatError');
+    Shop::Container()->getAlertService()->addNotice($messages['notice'], 'expoFormatNote');
 
     $smarty->assign('step', $step)
         ->display('exportformat_queue.tpl');

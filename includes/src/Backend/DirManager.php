@@ -4,7 +4,7 @@ namespace JTL\Backend;
 
 /**
  * Class DirManager
- * @package Backend
+ * @package JTL\Backend
  */
 class DirManager
 {

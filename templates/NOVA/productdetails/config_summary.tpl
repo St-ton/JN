@@ -6,7 +6,7 @@
             <td class="cfg-price">{$Artikel->Preise->cVKLocalized[$NettoPreise]}</td>
         </tr>
     {/block}
-    {if $oKonfig->oKonfig_arr|@count > 0}
+    {if $oKonfig->oKonfig_arr|count > 0}
         {$isIgnoreMultiplier = false}
         {block name='productdetails-config-summary-conf-groups'}
             {foreach $oKonfig->oKonfig_arr as $oKonfiggruppe}

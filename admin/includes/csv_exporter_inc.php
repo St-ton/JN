@@ -18,6 +18,7 @@ use JTL\Helpers\Request;
  * @param string $delim
  * @param bool   $head
  * @return void|bool - false = failure or exporter-id-mismatch
+ * @deprecated since 5.2.0
  */
 function handleCsvExportAction(
     $exporterId,
@@ -28,6 +29,7 @@ function handleCsvExportAction(
     $delim = ',',
     $head = true
 ) {
+    trigger_error(__FUNCTION__ . ' is deprecated - use CSV exporter class instead', E_USER_DEPRECATED);
     if (Form::validateToken() && Request::verifyGPDataString('exportcsv') === $exporterId) {
         if (is_callable($source)) {
             $arr = $source();

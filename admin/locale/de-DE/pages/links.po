@@ -262,3 +262,6 @@ msgstr "im selben Fenster/Tab"
 
 msgid "targetBlank"
 msgstr "in neuem Fenster/Tab"
+
+msgid "cSeoDescription"
+msgstr "Geben Sie für externe Links bitte immer die vollständige URL inklusive Protokoll an (z.B. https://example.com)"

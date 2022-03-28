@@ -164,13 +164,19 @@ class Versandart
         foreach ($members as $member) {
             $this->$member = $obj->$member;
         }
-        $this->kVersandart = (int)$this->kVersandart;
-        $localized         = $db->selectAll(
+        $this->kVersandart        = (int)$this->kVersandart;
+        $this->nSort              = (int)$this->nSort;
+        $this->kVersandberechnung = (int)$this->kVersandberechnung;
+        $this->nMinLiefertage     = (int)$this->nMinLiefertage;
+        $this->nMaxLiefertage     = (int)$this->nMaxLiefertage;
+        $localized                = $db->selectAll(
             'tversandartsprache',
             'kVersandart',
             $this->kVersandart
         );
         foreach ($localized as $translation) {
+            $translation->kVersandart = (int)$translation->kVersandart;
+
             $this->oVersandartSprache_arr[$translation->cISOSprache] = $translation;
         }
         // Versandstaffel
@@ -179,6 +185,10 @@ class Versandart
             'kVersandart',
             (int)$this->kVersandart
         );
+        foreach ($this->oVersandartStaffel_arr as $item) {
+            $item->kVersandartStaffel = (int)$item->kVersandartStaffel;
+            $item->kVersandart        = (int)$item->kVersandart;
+        }
 
         $this->loadShippingSurcharges();
 

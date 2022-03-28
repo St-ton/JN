@@ -262,3 +262,6 @@ msgstr "in same window/tab"
 
 msgid "targetBlank"
 msgstr "in new window/tab"
+
+msgid "cSeoDescription"
+msgstr "Please enter full URLs including the scheme for external links (e.g. https://example.com)"

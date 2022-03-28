@@ -3,8 +3,8 @@
     <Name>NOVA</Name>
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
-    <MinShopVersion>5.1.0</MinShopVersion>
-    <Version>1.1.0</Version>
+    <MinShopVersion>5.1.2</MinShopVersion>
+    <Version>1.1.1</Version>
     <Preview>preview.png</Preview>
     <Description>JTL-Shop Responsive-Template</Description>
     <Framework>Bootstrap4</Framework>
@@ -61,6 +61,10 @@
                 <Option Value="mobile">Nur mobil</Option>
                 <Option Value="desktop">Nur Desktop</Option>
                 <Option Value="N">Inaktiv</Option>
+            </Setting>
+            <Setting Description="Mobile Geräte: Menü in aktueller Kategorie öffnen" Key="mobile_start_category" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
             </Setting>
             <Setting Description="Kategoriebilder für erste Unterkategorie" Key="show_category_images" Type="select" Value="N">
                 <Option Value="Y">Aktiv</Option>

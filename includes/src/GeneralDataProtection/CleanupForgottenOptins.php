@@ -46,13 +46,13 @@ class CleanupForgottenOptins extends Method implements MethodInterface
                     AND e.nAktiv = 0
                     OR e.cOptCode IS NULL
             WHERE
-                o.dCreated <= :pDateLimit
+                o.dCreated <= :dateLimit
                 AND o.dActivated IS NULL
             ORDER BY o.kOptin
-            LIMIT :pLimit',
+            LIMIT :workLimit',
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
             ]
         );
 

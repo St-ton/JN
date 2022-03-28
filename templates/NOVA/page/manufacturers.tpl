@@ -5,7 +5,7 @@
             {row}
                 {foreach $oHersteller_arr as $mft}
                     {col xl=3 md=4 sm=6}
-                        {link href=$mft->cURL title=$mft->cMetaTitle}
+                        {link href=$mft->getURL() title=$mft->getMetaTitle()|escape:'html'}
                                 <div class="square square-image manufacturer-image-wrapper">
                                     <div class="inner">
                                         {if !empty($mft->getImage(\JTL\Media\Image::SIZE_MD))}

@@ -91,3 +91,6 @@ msgstr "Möchten Sie fortfahren?"
 
 msgid "deleteShopSettings"
 msgstr "Shopeigene Einstellungen auf Werkseinstellungen zurücksetzen."
+
+msgid "generalresetwarning"
+msgstr "Das Zurücksetzen von Kunden- und/oder Bestelldaten kann zu Asynchronität mit JTL-Wawi führen. Achten Sie darauf, dass Sie den Wartungsmodus aktiv haben und bevor Sie diesen beenden (aber nach dem Zurücksetzen) ein Abgleich mit JTL-Wawi durchgeführt wurde. Hierdurch wird vermieden, dass neue Kunden/Bestellungen zu falschen Datensätzen in JTL-Wawi zugeordnet werden."

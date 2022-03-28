@@ -109,7 +109,7 @@ class GroupLocalization implements JsonSerializable
      */
     public function setName($name): self
     {
-        $this->cName = Shop::Container()->getDB()->escape($name);
+        $this->cName = $name;
 
         return $this;
     }
@@ -120,7 +120,7 @@ class GroupLocalization implements JsonSerializable
      */
     public function setBeschreibung($cBeschreibung): self
     {
-        $this->cBeschreibung = Shop::Container()->getDB()->escape($cBeschreibung);
+        $this->cBeschreibung = $cBeschreibung;
 
         return $this;
     }

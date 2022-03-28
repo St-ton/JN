@@ -92,7 +92,7 @@ class PageService
 
         foreach ($this->getPageIOFunctionNames() as $functionName) {
             $publicFunctionName = 'opc' . \ucfirst($functionName);
-            $io->register($publicFunctionName, [$this, $functionName], null, 'CONTENT_PAGE_VIEW');
+            $io->register($publicFunctionName, [$this, $functionName], null, 'OPC_VIEW');
         }
     }
 
@@ -285,7 +285,7 @@ class PageService
                 $pageIdObj->manufacturerFilter = $params['kHerstellerFilter'];
             }
         }
-        return \json_encode($pageIdObj);
+        return \json_encode($pageIdObj, \JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
     /**

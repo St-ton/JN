@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use JTL\Alert\Alert;
 use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
 use JTL\Checkout\Bestellung;
@@ -54,6 +55,16 @@ if (isset($_GET['i'])) {
             '?fillOut=' . gibFehlendeEingabe(), true, 303);
         exit;
     }
+    if ($cart->removeParentItems() > 0) {
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_WARNING,
+            Shop::Lang()->get('warningCartContainedParentItems', 'checkout'),
+            'warningCartContainedParentItems',
+            ['saveInSession' => true]
+        );
+        header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
+        exit;
+    }
     $cart->pruefeLagerbestaende();
     if ($cart->checkIfCouponIsStillValid() === false) {
         $_SESSION['checkCouponResult']['ungueltig'] = 3;
@@ -97,8 +108,8 @@ $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
     ->assign('Link', $link)
     ->assign('Kunde', $_SESSION['Kunde'] ?? null)
     ->assign('bOrderConf', true)
-    ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
-    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
+    ->assignDeprecated('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL, '5.0.0')
+    ->assignDeprecated('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK, '5.0.0');
 
 $kPlugin = isset($bestellung->Zahlungsart->cModulId)
     ? Helper::getIDByModuleID($bestellung->Zahlungsart->cModulId)
@@ -108,7 +119,7 @@ if ($kPlugin > 0) {
     try {
         $plugin = $loader->init($kPlugin);
         $smarty->assign('oPlugin', $plugin)
-               ->assign('plugin', $plugin);
+            ->assign('plugin', $plugin);
     } catch (InvalidArgumentException $e) {
         Shop::Container()->getLogService()->error(
             'Associated plugin for payment method ' . $bestellung->Zahlungsart->cModulId . ' not found'

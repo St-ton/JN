@@ -23,22 +23,22 @@ abstract class AbstractPush
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
      * @var JTLCacheInterface
      */
-    protected $cache;
+    protected JTLCacheInterface $cache;
 
     /**
      * @var Mapper
      */
-    protected $mapper;
+    protected Mapper $mapper;
 
     /**
      * Products constructor.

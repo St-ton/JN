@@ -24,12 +24,12 @@ class Extractor
     /**
      * @var InstallationResponse
      */
-    private $response;
+    private InstallationResponse $response;
 
     /**
      * @var MountManager
      */
-    private $manager;
+    private MountManager $manager;
 
     /**
      * Extractor constructor.
@@ -59,7 +59,7 @@ class Extractor
      * @param string $errstr
      * @return bool
      */
-    public function handlExtractionErrors($errno, $errstr): bool
+    public function handlExtractionErrors(int $errno, string $errstr): bool
     {
         $this->response->setStatus(InstallationResponse::STATUS_FAILED);
         $this->response->setError($errstr);
@@ -85,7 +85,7 @@ class Extractor
         try {
             $this->manager->createDirectory('tpl://' . $base . $dirName);
         } catch (Throwable $e) {
-            $this->handlExtractionErrors(0, \__('errorDirCreate') . $base . $dirName);
+            $this->handlExtractionErrors(0, \__('errorDirCreate') . $base . $dirName . ' - ' . $e->getMessage());
 
             return false;
         }

@@ -82,7 +82,7 @@
                                             || $Einstellungen.artikeldetails.gtin_display === 'always')}
                                                 <li class="product-ean">
                                                     <strong>{lang key='ean'}:</strong>
-                                                    <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span>
+                                                    <span itemprop="{if $Artikel->cBarcode|strlen === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span>
                                                 </li>
                                             {/if}
                                         {/block}
@@ -97,7 +97,7 @@
                                             {/if}
                                         {/block}
                                         {block name='productdetails-details-info-category-wrapper'}
-                                            {assign var=cidx value=($Brotnavi|@count)-2}
+                                            {assign var=cidx value=($Brotnavi|count)-2}
                                             {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y' && isset($Brotnavi[$cidx])}
                                                 {block name='productdetails-details-info-category'}
                                                     <li class="product-category word-break">
@@ -127,7 +127,7 @@
                                                                 {image lazy=true
                                                                     webp=true
                                                                     src=$Artikel->cHerstellerBildURLKlein
-                                                                    alt=$Artikel->cHersteller
+                                                                    alt=$Artikel->cHersteller|escape:'html'
                                                                 }
                                                                 <meta itemprop="image" content="{$Artikel->cHerstellerBildURLKlein}">
                                                             {/if}
@@ -194,8 +194,8 @@
                                     {input type="hidden" name="AktuellerkArtikel" class="current_article" name="a" value=$Artikel->kArtikel}
                                     {input type="hidden" name="wke" value="1"}
                                     {input type="hidden" name="show" value="1"}
-                                    {input type="hidden" name="kKundengruppe" value=$smarty.session.Kundengruppe->getID()}
-                                    {input type="hidden" name="kSprache" value=$smarty.session.kSprache}
+                                    {input type="hidden" name="kKundengruppe" value=JTL\Session\Frontend::getCustomerGroup()->getID()}
+                                    {input type="hidden" name="kSprache" value=JTL\Shop::getLanguageID()}
                                 {/block}
                                 {block name='productdetails-details-include-variation'}
                                     <!-- VARIATIONEN -->
@@ -247,7 +247,7 @@
                                 {if $Artikel->bHasKonfig}
                                     {block name='productdetails-details-config-button'}
                                         {row}
-                                            {if isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0}
+                                            {if isset($Artikel->Variationen) && $Artikel->Variationen|count > 0}
                                                 {block name='productdetails-details-config-button-info'}
                                                     {col cols=12 class="js-choose-variations-wrapper"}
                                                         {alert variation="info" class="choose-variations"}
@@ -263,7 +263,7 @@
                                                         value="{lang key='configure'}"
                                                         block=true
                                                         data=["toggle"=>"modal", "target"=>"#cfg-container"]
-                                                        disabled=(isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0)
+                                                        disabled=(isset($Artikel->Variationen) && $Artikel->Variationen|count > 0)
                                                     }
                                                         <span>{lang key='configure'}</span> <i class="fas fa-cogs"></i>
                                                     {/button}
@@ -300,13 +300,13 @@
         {/block}
 
         {*SLIDERS*}
-        {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0
-        || isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen === 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|@count > 0
+        {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|count > 0
+        || isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen === 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|count > 0
         || isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0
         || isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0
         || isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
             {container fluid=true class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
-                {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0}
+                {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|count > 0}
                     {block name='productdetails-details-include-product-slider-partslist'}
                         <div class="partslist">
                             {lang key='listOfItems' section='global' assign='slidertitle'}
@@ -315,7 +315,7 @@
                     {/block}
                 {/if}
 
-                {if isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen === 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|@count > 0}
+                {if isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen === 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|count > 0}
                     {block name='productdetails-details-include-bundle'}
                         <div class="bundle">
                             {include file='productdetails/bundle.tpl' ProductKey=$Artikel->kArtikel Products=$Artikel->oProduktBundle_arr ProduktBundle=$Artikel->oProduktBundlePrice ProductMain=$Artikel->oProduktBundleMain}

@@ -13,7 +13,7 @@ class ContainerBase extends IlluminateContainer implements ContainerInterface
     /**
      * @inheritdoc
      */
-    public function setSingleton($id, $factory): void
+    public function setSingleton(string $id, callable $factory): void
     {
         $this->singleton($id, $factory);
     }
@@ -21,7 +21,7 @@ class ContainerBase extends IlluminateContainer implements ContainerInterface
     /**
      * @inheritdoc
      */
-    public function setFactory($id, $factory): void
+    public function setFactory(string $id, callable $factory): void
     {
         $this->bind($id, $factory);
     }
@@ -30,7 +30,7 @@ class ContainerBase extends IlluminateContainer implements ContainerInterface
      * @param string $id
      * @return mixed
      */
-    public function getFactoryMethod($id)
+    public function getFactoryMethod(string $id)
     {
         return $this->get($id);
     }

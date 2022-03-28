@@ -2,6 +2,8 @@
 
 namespace JTL\GeneralDataProtection;
 
+use JTL\Customer\Customer;
+
 /**
  * Class CleanupCustomerRelicts
  * @package JTL\GeneralDataProtection
@@ -45,9 +47,20 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             'DELETE FROM tbesucherarchiv
             WHERE
                 kKunde > 0
-                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tbesucherarchiv.kKunde)
-                LIMIT :pLimit',
-            ['pLimit' => $this->workLimit]
+                AND NOT EXISTS (
+                    SELECT kKunde
+                    FROM tkunde
+                    WHERE
+                        tkunde.kKunde = tbesucherarchiv.kKunde
+                        AND tkunde.cVorname != :anonString
+                        AND tkunde.cNachname != :anonString
+                        AND tkunde.cKundenNr != :anonString
+                )
+                LIMIT :workLimit',
+            [
+                'workLimit'  => $this->workLimit,
+                'anonString' => Customer::CUSTOMER_ANONYM
+            ]
         );
     }
 
@@ -60,9 +73,20 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
         $this->db->queryPrepared(
             'DELETE FROM tkundenattribut
             WHERE
-                NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tkundenattribut.kKunde)
-            LIMIT :pLimit',
-            ['pLimit' => $this->workLimit]
+                NOT EXISTS (
+                    SELECT kKunde
+                    FROM tkunde
+                    WHERE
+                        tkunde.kKunde = tkundenattribut.kKunde
+                        AND tkunde.cVorname != :anonString
+                        AND tkunde.cNachname != :anonString
+                        AND tkunde.cKundenNr != :anonString
+                )
+            LIMIT :workLimit',
+            [
+                'workLimit'  => $this->workLimit,
+                'anonString' => Customer::CUSTOMER_ANONYM
+            ]
         );
     }
 
@@ -76,9 +100,20 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             'DELETE FROM tzahlungsinfo
             WHERE
                 kKunde > 0
-                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tzahlungsinfo.kKunde)
-            LIMIT :pLimit',
-            ['pLimit' => $this->workLimit]
+                AND NOT EXISTS (
+                    SELECT kKunde
+                    FROM tkunde
+                    WHERE
+                        tkunde.kKunde = tzahlungsinfo.kKunde
+                        AND tkunde.cVorname != :anonString
+                        AND tkunde.cNachname != :anonString
+                        AND tkunde.cKundenNr != :anonString
+                )
+            LIMIT :workLimit',
+            [
+                'workLimit'  => $this->workLimit,
+                'anonString' => Customer::CUSTOMER_ANONYM
+            ]
         );
     }
 
@@ -92,9 +127,20 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             'DELETE FROM tkundenkontodaten
             WHERE
                 kKunde > 0
-                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tkundenkontodaten.kKunde)
-            LIMIT :pLimit',
-            ['pLimit' => $this->workLimit]
+                AND NOT EXISTS (
+                    SELECT kKunde
+                     FROM tkunde
+                     WHERE
+                        tkunde.kKunde = tkundenkontodaten.kKunde
+                        AND tkunde.cVorname != :anonString
+                        AND tkunde.cNachname != :anonString
+                        AND tkunde.cKundenNr != :anonString
+                )
+            LIMIT :workLimit',
+            [
+                'workLimit'  => $this->workLimit,
+                'anonString' => Customer::CUSTOMER_ANONYM
+            ]
         );
     }
 
@@ -106,14 +152,27 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function cleanupDeliveryAddresses(): void
     {
-        $this->db->query(
+        $this->db->queryPrepared(
             "DELETE k
             FROM tlieferadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
             WHERE
                 b.cAbgeholt = 'Y'
-                AND b.cStatus IN (" . \BESTELLUNG_STATUS_VERSANDT . ', ' . \BESTELLUNG_STATUS_STORNO . ')
-                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = k.kKunde)'
+                AND b.cStatus IN (:stateShipped, :stateCanceled)
+                AND NOT EXISTS (
+                    SELECT kKunde
+                    FROM tkunde
+                    WHERE
+                        tkunde.kKunde = k.kKunde
+                        AND tkunde.cVorname != :anonString
+                        AND tkunde.cNachname != :anonString
+                        AND tkunde.cKundenNr != :anonString
+                )",
+            [
+                'stateShipped'  => \BESTELLUNG_STATUS_VERSANDT,
+                'stateCanceled' => \BESTELLUNG_STATUS_STORNO,
+                'anonString'    => Customer::CUSTOMER_ANONYM
+            ]
         );
     }
 
@@ -124,13 +183,27 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function cleanupBillingAddresses(): void
     {
-        $this->db->query(
+        $this->db->queryPrepared(
             "DELETE k
             FROM trechnungsadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
-            WHERE b.cAbgeholt = 'Y'
-                AND b.cStatus IN (" . \BESTELLUNG_STATUS_VERSANDT . ', ' . \BESTELLUNG_STATUS_STORNO . ')
-                AND NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = k.kKunde)'
+            WHERE
+                b.cAbgeholt = 'Y'
+                AND b.cStatus IN (:stateShipped, :stateCanceled)
+                AND NOT EXISTS (
+                    SELECT kKunde
+                    FROM tkunde
+                    WHERE
+                        tkunde.kKunde = k.kKunde
+                        AND tkunde.cVorname != :anonString
+                        AND tkunde.cNachname != :anonString
+                        AND tkunde.cKundenNr != :anonString
+                )",
+            [
+                'stateShipped'  => \BESTELLUNG_STATUS_VERSANDT,
+                'stateCanceled' => \BESTELLUNG_STATUS_STORNO,
+                'anonString'    => Customer::CUSTOMER_ANONYM
+            ]
         );
     }
 }

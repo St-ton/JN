@@ -33,22 +33,22 @@ abstract class AbstractSync
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     /**
      * @var JTLCacheInterface
      */
-    protected $cache;
+    protected JTLCacheInterface $cache;
 
     /**
      * @var Mapper
      */
-    protected $mapper;
+    protected Mapper $mapper;
 
     /**
      * Products constructor.
@@ -133,13 +133,6 @@ abstract class AbstractSync
     protected function insertOnExistUpdate(string $tableName, array $objects, array $pks): array
     {
         $result = \array_fill_keys($pks, []);
-        if (!\is_array($objects)) {
-            return $result;
-        }
-        if (!\is_array($pks)) {
-            $pks = [(string)$pks];
-        }
-
         foreach ($objects as $object) {
             foreach ($pks as $pk) {
                 if (!isset($object->$pk)) {
@@ -205,24 +198,34 @@ abstract class AbstractSync
         if ($data->kArtikel <= 0) {
             return;
         }
-        $stockRatio    = $conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100;
-        $stockCheck    = ($data->cLagerKleinerNull ?? '') !== 'Y' && ($data->cLagerBeachten ?? 'Y') === 'Y';
-        $subscriptions = $this->db->selectAll(
+        $sendMails      = true;
+        $stockRatio     = $conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100;
+        $stockRelevance = ($data->cLagerKleinerNull ?? '') !== 'Y' && ($data->cLagerBeachten ?? 'Y') === 'Y';
+        $subscriptions  = $this->db->selectAll(
             'tverfuegbarkeitsbenachrichtigung',
             ['nStatus', 'kArtikel'],
             [0, $data->kArtikel]
         );
-        $subs          = \count($subscriptions);
-        $stock         = $data->fLagerbestand;
-        if ($subs === 0 || ( $stockCheck && ($stock <= 0 || ($stock / $subs) < $stockRatio))) {
+        \executeHook(\HOOK_SYNC_SEND_AVAILABILITYMAILS, [
+            'sendMails'     => &$sendMails,
+            'product'       => $data,
+            'subscriptions' => &$subscriptions,
+        ]);
+        $subCount = \count($subscriptions);
+        if ($subCount === 0) {
+            return;
+        }
+        $noStock = ($data->fLagerbestand <= 0 || ($data->fLagerbestand / $subCount) < $stockRatio);
+        if ($sendMails === false || ($stockRelevance && $noStock)) {
             return;
         }
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
 
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
-        $product                             = (new Artikel())->fuelleArtikel($data->kArtikel, $options);
-        if ($product === null) {
+        $product                             = new Artikel($this->db);
+        $product->fuelleArtikel($data->kArtikel, $options);
+        if ($product->kArtikel === null) {
             return;
         }
         $campaign = new Campaign(\KAMPAGNE_INTERN_VERFUEGBARKEIT);
@@ -251,7 +254,7 @@ abstract class AbstractSync
 
             $mailer = Shop::Container()->get(Mailer::class);
             $mail   = new Mail();
-            
+
             // if original language was deleted between ActivationOptIn and now, try to send it in english,
             // if there is no english, use the shop-default.
             $mail->setLanguage(
@@ -259,7 +262,7 @@ abstract class AbstractSync
                 LanguageHelper::getAllLanguages(2)['eng'] ??
                 LanguageHelper::getDefaultLanguage()
             );
-            
+
             $mail->setToMail($tplMail->toEmail);
             $mail->setToName($tplMail->toName);
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $tplData));
@@ -284,9 +287,6 @@ abstract class AbstractSync
      */
     protected function handlePriceHistory(int $productID, array $xml): void
     {
-        if (!\is_array($xml)) {
-            return;
-        }
         // Delete price history from not existing customer groups
         $this->db->queryPrepared(
             'DELETE tpreisverlauf
@@ -422,15 +422,13 @@ abstract class AbstractSync
      * @param int $productID
      * @param int $customerGroupID
      * @param int $customerID
-     * @return mixed
      */
-    protected function handlePriceFormat(int $productID, int $customerGroupID, int $customerID = 0)
+    protected function handlePriceFormat(int $productID, int $customerGroupID, int $customerID = 0): void
     {
         if ($customerID > 0) {
             $this->flushCustomerPriceCache($customerID);
         }
-
-        return $this->db->queryPrepared(
+        $this->db->queryPrepared(
             'INSERT INTO tpreis (kArtikel, kKundengruppe, kKunde)
                 VALUES (:productID, :customerGroup, :customerID)
                 ON DUPLICATE KEY UPDATE
@@ -483,10 +481,6 @@ abstract class AbstractSync
      */
     protected function handleNewPriceFormat(int $productID, array $xml): void
     {
-        if (!\is_array($xml)) {
-            return;
-        }
-
         $prices = isset($xml['tpreis']) ? $this->mapper->mapArray($xml, 'tpreis', 'mPreis') : [];
         // Delete prices and price details from not existing customer groups
         $this->db->queryPrepared(
@@ -664,12 +658,11 @@ abstract class AbstractSync
      */
     protected function checkDbeSXmlRedirect(string $oldSeo, string $newSeo): bool
     {
-        // Insert into tredirect weil sich das SEO von der Kategorie geändert hat
+        // Insert into tredirect weil sich SEO von Kategorie oder Artikel geändert hat
         if ($oldSeo === $newSeo || $oldSeo === '' || $newSeo === '') {
             return false;
         }
-        $redirect = new Redirect();
 
-        return $redirect->saveExt('/' . $oldSeo, $newSeo, true);
+        return (new Redirect())->saveExt('/' . $oldSeo, $newSeo, true);
     }
 }

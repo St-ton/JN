@@ -47,12 +47,12 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             'DELETE FROM temailhistory
-                WHERE dSent <= :pDateLimit
+                WHERE dSent <= :dateLimit
                 ORDER BY dSent ASC
-                LIMIT :pLimit',
+                LIMIT :workLimit',
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
             ]
         );
     }
@@ -65,12 +65,12 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             'DELETE FROM tkontakthistory
-                WHERE dErstellt <= :pDateLimit
+                WHERE dErstellt <= :dateLimit
                 ORDER BY dErstellt ASC
-                LIMIT :pLimit',
+                LIMIT :workLimit',
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
             ]
         );
     }
@@ -83,12 +83,12 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             'DELETE FROM tfloodprotect
-                WHERE dErstellt <= :pDateLimit
+                WHERE dErstellt <= :dateLimit
                 ORDER BY dErstellt ASC
-                LIMIT :pLimit',
+                LIMIT :workLimit',
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
             ]
         );
     }
@@ -101,12 +101,12 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             'DELETE FROM tzahlungslog
-            WHERE dDatum <= :pDateLimit
-            ORDER BY dDatum ASC
-            LIMIT :pLimit',
+                WHERE dDatum <= :dateLimit
+                ORDER BY dDatum ASC
+                LIMIT :workLimit',
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
             ]
         );
     }
@@ -119,12 +119,12 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             'DELETE FROM tproduktanfragehistory
-            WHERE dErstellt <= :pDateLimit
-            ORDER BY dErstellt ASC
-            LIMIT :pLimit',
+                WHERE dErstellt <= :dateLimit
+                ORDER BY dErstellt ASC
+                LIMIT :workLimit',
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
             ]
         );
     }
@@ -137,12 +137,12 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             'DELETE FROM tverfuegbarkeitsbenachrichtigung
-            WHERE dErstellt <= :pDateLimit
-            ORDER BY dErstellt ASC
-            LIMIT :pLimit',
+                WHERE dErstellt <= :dateLimit
+                ORDER BY dErstellt ASC
+                LIMIT :workLimit',
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
             ]
         );
     }
@@ -155,13 +155,14 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             "DELETE FROM tjtllog
-                WHERE (cLog LIKE '%@%' OR cLog LIKE '%kKunde%')
-                    AND dErstellt <= :pDateLimit
+                WHERE
+                    (cLog LIKE '%@%' OR cLog LIKE '%kKunde%')
+                    AND dErstellt <= :dateLimit
                 ORDER BY dErstellt ASC
-                LIMIT :pLimit",
+                LIMIT :workLimit",
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
             ]
         );
     }
@@ -174,13 +175,14 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             "DELETE FROM tzahlungseingang
-                WHERE cAbgeholt != 'Y'
-                    AND dZeit <= :pDateLimit
+                WHERE
+                    cAbgeholt != 'Y'
+                    AND dZeit <= :dateLimit
                 ORDER BY dZeit ASC
-                LIMIT :pLimit",
+                LIMIT :workLimit",
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
             ]
         );
     }
@@ -195,12 +197,12 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             'DELETE FROM tkundendatenhistory
-                WHERE dErstellt < MAKEDATE(YEAR(:pNow) - 1, 1)
+                WHERE dErstellt < MAKEDATE(YEAR(:nowTime) - 1, 1)
                 ORDER BY dErstellt ASC
-                LIMIT :pLimit',
+                LIMIT :workLimit',
             [
-                'pNow'   => $this->now->format('Y-m-d H:i:s'),
-                'pLimit' => $this->workLimit
+                'nowTime'   => $this->now->format('Y-m-d H:i:s'),
+                'workLimit' => $this->workLimit
             ]
         );
     }

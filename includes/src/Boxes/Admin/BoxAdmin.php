@@ -94,14 +94,13 @@ final class BoxAdmin
         if ($id < 1) {
             return false;
         }
-        $affectedBoxes = map($this->db->getObjects(
+        $affectedBoxes = $this->db->getInts(
             'SELECT kBox 
                 FROM tboxen 
                 WHERE kBox = :bid OR kContainer = :bid',
+            'kBox',
             ['bid' => $id]
-        ), static function ($e) {
-            return (int)$e->kBox;
-        });
+        );
 
         return \count($affectedBoxes) > 0
             && $this->db->getAffectedRows(

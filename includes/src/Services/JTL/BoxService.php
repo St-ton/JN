@@ -2,6 +2,7 @@
 
 namespace JTL\Services\JTL;
 
+use InvalidArgumentException;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Boxes\FactoryInterface;
 use JTL\Boxes\Items\BoxInterface;
@@ -13,7 +14,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Visibility;
-use JTL\Plugin\LegacyPlugin;
+use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
 use JTL\Session\Frontend;
@@ -449,7 +450,12 @@ class BoxService implements BoxServiceInterface
             $box->map($boxes);
             $class = \get_class($box);
             if ($class === Plugin::class) {
-                $plugin = new LegacyPlugin($box->getCustomID());
+                $loader = new LegacyPluginLoader($this->db, $this->cache);
+                try {
+                    $plugin = $loader->init($box->getCustomID());
+                } catch (InvalidArgumentException $e) {
+                    continue;
+                }
                 $box->setTemplateFile(
                     $plugin->getPaths()->getFrontendPath()
                     . \PFAD_PLUGIN_BOXEN
@@ -458,7 +464,11 @@ class BoxService implements BoxServiceInterface
                 $box->setPlugin($plugin);
             } elseif ($class === Extension::class) {
                 $loader = new PluginLoader($this->db, $this->cache);
-                $plugin = $loader->init($box->getCustomID());
+                try {
+                    $plugin = $loader->init($box->getCustomID());
+                } catch (InvalidArgumentException $e) {
+                    continue;
+                }
                 $box->setTemplateFile($plugin->getPaths()->getFrontendPath() . $box->getTemplateFile());
                 $box->setExtension($plugin);
                 $box->setPlugin($plugin);

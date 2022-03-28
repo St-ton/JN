@@ -6,8 +6,6 @@ use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
-use function Functional\flatten;
-use function Functional\map;
 
 /**
  * Class LinkGroup
@@ -123,17 +121,16 @@ final class LinkGroup implements LinkGroupInterface
             $this->template              = $groupLanguage->template;
             $this->groupName             = $groupLanguage->groupName;
         }
-        $this->links = (new LinkList($this->db))->createLinks(map(flatten($this->db->getArrays(
+        $this->links = (new LinkList($this->db))->createLinks($this->db->getInts(
             'SELECT kLink
                 FROM tlink
                 JOIN tlinkgroupassociations a 
                     ON tlink.kLink = a.linkID
                 WHERE a.linkGroupID = :lgid
                 ORDER BY tlink.nSort, tlink.cName',
+            'kLink',
             ['lgid' => $this->id]
-        )), static function ($e) {
-            return (int)$e;
-        }));
+        ));
         \executeHook(\HOOK_LINKGROUP_MAPPED, ['group' => $this]);
 
         return $this;

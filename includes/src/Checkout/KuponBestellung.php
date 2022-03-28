@@ -181,7 +181,7 @@ class KuponBestellung
      */
     public function setBestellNr($cBestellNr): self
     {
-        $this->cBestellNr = Shop::Container()->getDB()->escape($cBestellNr);
+        $this->cBestellNr = $cBestellNr;
 
         return $this;
     }
@@ -214,7 +214,7 @@ class KuponBestellung
      */
     public function setKuponTyp($cKuponTyp): self
     {
-        $this->cKuponTyp = Shop::Container()->getDB()->escape($cKuponTyp);
+        $this->cKuponTyp = $cKuponTyp;
 
         return $this;
     }
@@ -225,7 +225,7 @@ class KuponBestellung
      */
     public function setErstellt($dErstellt): self
     {
-        $this->dErstellt = Shop::Container()->getDB()->escape($dErstellt);
+        $this->dErstellt = $dErstellt;
 
         return $this;
     }
@@ -302,10 +302,10 @@ class KuponBestellung
      * @param int    $couponID
      * @return array
      */
-    public static function getOrdersWithUsedCoupons($start, $end, int $couponID = 0): array
+    public static function getOrdersWithUsedCoupons(string $start, string $end, int $couponID = 0): array
     {
         return Shop::Container()->getDB()->getArrays(
-            "SELECT kbs.*, wkp.cName, kp.kKupon
+            'SELECT kbs.*, wkp.cName, kp.kKupon
                 FROM tkuponbestellung AS kbs
                 LEFT JOIN tbestellung AS bs 
                    ON kbs.kBestellung = bs.kBestellung
@@ -313,12 +313,12 @@ class KuponBestellung
                     ON bs.kWarenkorb = wkp.kWarenkorb
                 LEFT JOIN tkupon AS kp 
                     ON kbs.kKupon = kp.kKupon
-                WHERE kbs.dErstellt BETWEEN '" . $start . "'
-                    AND '" . $end . "'
-                    AND bs.cStatus != " . \BESTELLUNG_STATUS_STORNO . '
+                WHERE kbs.dErstellt BETWEEN :strt AND :nd
+                    AND bs.cStatus != :stt
                     AND (wkp.nPosTyp = 3 OR wkp.nPosTyp = 7) ' .
             ($couponID > 0 ? ' AND kp.kKupon = ' . $couponID : '') . '
-                ORDER BY kbs.dErstellt DESC'
+                ORDER BY kbs.dErstellt DESC',
+            ['strt' => $start, 'nd' => $end, 'stt' => \BESTELLUNG_STATUS_STORNO]
         );
     }
 }

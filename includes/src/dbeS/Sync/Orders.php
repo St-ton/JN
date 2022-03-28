@@ -2,6 +2,7 @@
 
 namespace JTL\dbeS\Sync;
 
+use DateTime;
 use JTL\Checkout\Adresse;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Lieferadresse;
@@ -16,7 +17,6 @@ use JTL\Mail\Mailer;
 use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Shop;
 use stdClass;
-use DateTime;
 
 /**
  * Class Orders
@@ -77,7 +77,7 @@ final class Orders extends AbstractSync
 
     /**
      * @param int $orderID
-     * @return bool|\PaymentMethod
+     * @return bool|LegacyMethod
      */
     private function getPaymentMethod(int $orderID)
     {
@@ -428,10 +428,17 @@ final class Orders extends AbstractSync
      */
     private function updateOrderData(stdClass $oldOrder, stdClass $order, ?stdClass $paymentMethod): void
     {
+        $params    = [
+            'fg'    => $order->fGuthaben,
+            'total' => $order->fGesamtsumme,
+            'cmt'   => $order->cKommentar,
+            'oid'   => $oldOrder->kBestellung
+        ];
         $updateSql = '';
         if ($paymentMethod !== null && $paymentMethod->kZahlungsart > 0) {
-            $updateSql = ' , kZahlungsart = ' . (int)$paymentMethod->kZahlungsart .
-                ", cZahlungsartName = '" . $paymentMethod->cName . "' ";
+            $params['pmid'] = (int)$paymentMethod->kZahlungsart;
+            $params['pmnm'] = $paymentMethod->cName;
+            $updateSql      = ' , kZahlungsart = :pmid, cZahlungsartName = :pmnm ';
         }
         $this->db->queryPrepared(
             'UPDATE tbestellung SET
@@ -439,12 +446,7 @@ final class Orders extends AbstractSync
             fGesamtsumme = :total,
             cKommentar = :cmt ' . $updateSql . '
             WHERE kBestellung = :oid',
-            [
-                'fg'    => $order->fGuthaben,
-                'total' => $order->fGesamtsumme,
-                'cmt'   => $order->cKommentar,
-                'oid'   => $oldOrder->kBestellung
-            ]
+            $params
         );
     }
 
@@ -637,7 +639,7 @@ final class Orders extends AbstractSync
         $methodName  = $this->db->escape($order->cZahlungsartName);
         $clearedDate = $this->db->escape($order->dBezahltDatum);
         $shippedDate = $this->db->escape($order->dVersandt);
-        if ($shippedDate === null || $shippedDate === '') {
+        if ($shippedDate === '') {
             $shippedDate = '_DBNULL_';
         }
 
@@ -718,7 +720,6 @@ final class Orders extends AbstractSync
      */
     private function sendPaymentMail(stdClass $shopOrder, stdClass $order, Customer $customer): void
     {
-
         if (!$shopOrder->dBezahltDatum && $order->dBezahltDatum && $customer->kKunde > 0) {
             $earlier = new DateTime(\date('Y-m-d', \strtotime($order->dBezahltDatum)));
             $now     = new DateTime(\date('Y-m-d'));
@@ -862,24 +863,16 @@ final class Orders extends AbstractSync
                 $this->db->update(
                     'tbestellattribut',
                     'kBestellattribut',
-                    $orderAttributeOld->kBestellattribut,
+                    (int)$orderAttributeOld->kBestellattribut,
                     (object)['cValue' => $orderAttribute->value]
                 );
-                if (isset($orderAttributeOld->kBestellattribut)) {
-                    $this->db->update(
-                        'tbestellattribut',
-                        'kBestellattribut',
-                        (int)$orderAttributeOld->kBestellattribut,
-                        (object)['cValue' => $orderAttribute->value]
-                    );
-                    $updated[] = (int)$orderAttributeOld->kBestellattribut;
-                } else {
-                    $updated[] = $this->db->insert('tbestellattribut', (object)[
-                        'kBestellung' => $orderID,
-                        'cName'       => $orderAttribute->key,
-                        'cValue'      => $orderAttribute->value,
-                    ]);
-                }
+                $updated[] = (int)$orderAttributeOld->kBestellattribut;
+            } else {
+                $updated[] = $this->db->insert('tbestellattribut', (object)[
+                    'kBestellung' => $orderID,
+                    'cName'       => $orderAttribute->key,
+                    'cValue'      => $orderAttribute->value,
+                ]);
             }
         }
 

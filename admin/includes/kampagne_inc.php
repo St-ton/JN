@@ -5,6 +5,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Linechart;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -308,7 +309,8 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
 {
     $cryptoService = Shop::Container()->getCryptoService();
     $data          = [];
-    if ($campaignID <= 0 || (int)$definition->kKampagneDef <= 0 || mb_strlen($cStamp) === 0) {
+    $defID         = (int)$definition->kKampagneDef;
+    if ($campaignID <= 0 || $defID <= 0 || mb_strlen($cStamp) === 0) {
         return $data;
     }
     $select = '';
@@ -319,8 +321,9 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
         'SELECT kKampagne, kKampagneDef, kKey ' . $select . '
             FROM tkampagnevorgang
             ' . $where . '
-                AND kKampagne = ' . $campaignID . '
-                AND kKampagneDef = ' . (int)$definition->kKampagneDef . $sql
+                AND kKampagne = :cid
+                AND kKampagneDef = :cdid' . $sql,
+        ['cid' => $campaignID, 'cdid' => $defID]
     );
     if (count($stats) > 0) {
         switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
@@ -343,7 +346,7 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
         }
     }
     // Kampagnendefinitionen
-    switch ((int)$definition->kKampagneDef) {
+    switch ($defID) {
         case KAMPAGNE_DEF_HIT:    // HIT
             $data = Shop::Container()->getDB()->getObjects(
                 'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
@@ -366,19 +369,16 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                     LEFT JOIN tbesucherarchiv ON tbesucherarchiv.kBesucher = tkampagnevorgang.kKey
                     LEFT JOIN tbesucherbot ON tbesucherbot.kBesucherBot = tbesucher.kBesucherBot
                     " . $where . '
-                        AND kKampagne = ' . $campaignID . '
-                        AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC' . $sql
+                        AND kKampagne = :cid
+                        AND kKampagneDef = :cdid
+                    ORDER BY tkampagnevorgang.dErstellt DESC' . $sql,
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
-
-            if (is_array($data) && count($data) > 0) {
+            if (count($data) > 0) {
                 foreach ($data as $i => $oDaten) {
-                    $customDataParts = explode(';', $oDaten->cCustomData);
-                    $cEinstiegsseite = $customDataParts [0] ?? '';
-                    $referer         = $customDataParts [1] ?? '';
-
-                    $data[$i]->cEinstiegsseite = $cEinstiegsseite;
-                    $data[$i]->cReferer        = $referer;
+                    $customDataParts           = explode(';', $oDaten->cCustomData);
+                    $data[$i]->cEinstiegsseite = Text::filterXSS($customDataParts [0] ?? '');
+                    $data[$i]->cReferer        = Text::filterXSS($customDataParts [1] ?? '');
                 }
 
                 $members = [
@@ -418,13 +418,14 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                     LEFT JOIN tbestellung ON tbestellung.kBestellung = tkampagnevorgang.kKey
                     LEFT JOIN tkunde ON tkunde.kKunde = tbestellung.kKunde
                     " . $where . '
-                        AND kKampagne = ' . $campaignID . '
-                        AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC'
+                        AND kKampagne = :cid
+                        AND kKampagneDef = :cdid
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
 
-            if (is_array($data) && count($data) > 0) {
-                $dCount = count($data);
+            $dCount = count($data);
+            if ($dCount > 0) {
                 for ($i = 0; $i < $dCount; $i++) {
                     if ($data[$i]->cNachname !== 'n.v.') {
                         $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
@@ -473,13 +474,14 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                     FROM tkampagnevorgang
                     LEFT JOIN tkunde ON tkunde.kKunde = tkampagnevorgang.kKey
                     " . $where . '
-                        AND kKampagne = ' . $campaignID . '
-                        AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC'
+                        AND kKampagne = :cid
+                        AND kKampagneDef = :cdid
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
 
-            if (is_array($data) && count($data) > 0) {
-                $count = count($data);
+            $count = count($data);
+            if ($count > 0) {
                 for ($i = 0; $i < $count; $i++) {
                     if ($data[$i]->cNachname !== 'n.v.') {
                         $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
@@ -528,12 +530,13 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                     LEFT JOIN tbestellung ON tbestellung.kBestellung = tkampagnevorgang.kKey
                     LEFT JOIN tkunde ON tkunde.kKunde = tbestellung.kKunde
                     " . $where . '
-                        AND kKampagne = ' . $campaignID . '
-                        AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC'
+                        AND kKampagne = :cid
+                        AND kKampagneDef = :cdid
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
             $dCount = count($data);
-            if (is_array($data) && $dCount > 0) {
+            if ($dCount > 0) {
                 for ($i = 0; $i < $dCount; $i++) {
                     if ($data[$i]->cNachname !== 'n.v.') {
                         $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
@@ -596,12 +599,13 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                         ON tproduktanfragehistory.kProduktanfrageHistory = tkampagnevorgang.kKey
                     LEFT JOIN tartikel ON tartikel.kArtikel = tproduktanfragehistory.kArtikel
                     " . $where . '
-                        AND kKampagne = ' . $campaignID . '
-                        AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC'
+                        AND kKampagne = :cid
+                        AND kKampagneDef = :cdid
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
 
-            if (is_array($data) && count($data) > 0) {
+            if (count($data) > 0) {
                 $members = [
                     'cArtikelname'        => __('product'),
                     'cArtNr'              => __('productId'),
@@ -648,12 +652,13 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                     LEFT JOIN tartikel 
                             ON tartikel.kArtikel = tverfuegbarkeitsbenachrichtigung.kArtikel
                     " . $where . '
-                        AND kKampagne = ' . $campaignID . '
-                        AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC'
+                        AND kKampagne = :cid
+                        AND kKampagneDef = :cdid
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
 
-            if (is_array($data) && count($data) > 0) {
+            if (count($data) > 0) {
                 $members = [
                     'cArtikelname'        => __('product'),
                     'cArtNr'              => __('productId'),
@@ -682,12 +687,13 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                     LEFT JOIN tkunde 
                             ON tkunde.kKunde = tkampagnevorgang.kKey
                     " . $where . '
-                        AND kKampagne = ' . $campaignID . '
-                        AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC'
+                        AND kKampagne = :cid
+                        AND kKampagneDef = :cdid
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
             $dCount = count($data);
-            if (is_array($data) && $dCount > 0) {
+            if ($dCount > 0) {
                 for ($i = 0; $i < $dCount; $i++) {
                     if ($data[$i]->cNachname !== 'n.v.') {
                         $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
@@ -733,12 +739,13 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                     LEFT JOIN tkunde ON tkunde.kKunde = twunschliste.kKunde
                     LEFT JOIN tartikel ON tartikel.kArtikel = twunschlistepos.kArtikel
                     " . $where . '
-                        AND kKampagne = ' . $campaignID . '
-                        AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC'
+                        AND kKampagne = :cid
+                        AND kKampagneDef = :cdid
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
             $dCount = count($data);
-            if (is_array($data) && $dCount > 0) {
+            if ($dCount > 0) {
                 for ($i = 0; $i < $dCount; $i++) {
                     if ($data[$i]->cNachname !== 'n.v.') {
                         $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
@@ -784,17 +791,19 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                     FROM tkampagnevorgang
                     LEFT JOIN tartikel ON tartikel.kArtikel = tkampagnevorgang.kKey
                     LEFT JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
-                        AND tpreis.kKundengruppe = " . $customerGroupID . '
+                        AND tpreis.kKundengruppe = :cgid
                     LEFT JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
                         AND tpreisdetail.nAnzahlAb = 0
-                    ' . $where . '
-                        AND tkampagnevorgang.kKampagne = ' . $campaignID . '
-                        AND tkampagnevorgang.kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC'
+                    " . $where . '
+                        AND tkampagnevorgang.kKampagne = :cid
+                        AND tkampagnevorgang.kKampagneDef = :cdid
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ['cid' => $campaignID, 'cdid' => $defID, 'cgid' => $customerGroupID]
             );
-            if (is_array($data) && count($data) > 0) {
+
+            $count = count($data);
+            if ($count > 0) {
                 Frontend::getCustomerGroup()->setMayViewPrices(1);
-                $count = count($data);
                 for ($i = 0; $i < $count; $i++) {
                     if (isset($data[$i]->fVKNetto) && $data[$i]->fVKNetto > 0) {
                         $data[$i]->fVKNetto = Preise::getLocalizedPriceString($data[$i]->fVKNetto);
@@ -835,12 +844,13 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                     LEFT JOIN tnewsletterempfaenger
                         ON tnewsletterempfaenger.kNewsletterEmpfaenger = tnewslettertrack.kNewsletterEmpfaenger
                     " . $where . '
-                        AND tkampagnevorgang.kKampagne = ' . $campaignID . '
-                        AND tkampagnevorgang.kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                    ORDER BY tkampagnevorgang.dErstellt DESC'
+                        AND tkampagnevorgang.kKampagne = :cid
+                        AND tkampagnevorgang.kKampagneDef = :cdid
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ['cid' => $campaignID, 'cdid' => $defID]
             );
 
-            if (is_array($data) && count($data) > 0) {
+            if (count($data) > 0) {
                 $members = [
                     'cName'               => __('newsletter'),
                     'cBetreff'            => __('subject'),
@@ -1114,11 +1124,11 @@ function gibStamp($oldStamp, int $direction, int $view): string
 function speicherKampagne($campaign): int
 {
     // Standardkampagnen (Interne) Werte herstellen
-    if (isset($campaign->kKampagne) && ($campaign->kKampagne < 1000 && $campaign->kKampagne > 0)) {
+    if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
         $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT *
                 FROM tkampagne
-                WHERE kKampagne = :cid',
+                WHERE kKampagne = :cid AND nInternal = 1',
             ['cid' => (int)$campaign->kKampagne]
         );
         if ($data !== null) {

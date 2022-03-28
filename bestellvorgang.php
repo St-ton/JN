@@ -54,7 +54,8 @@ if (Download::hasDownloads($cart)) {
     $conf['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
 }
 // oneClick? Darf nur einmal ausgeführt werden und nur dann, wenn man vom Warenkorb kommt.
-if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
+if (!isset($_SESSION['Lieferadresse'])
+    && $conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
     && Request::verifyGPCDataInt('wk') === 1
 ) {
     $customerID = Frontend::getCustomer()->getID();
@@ -62,7 +63,7 @@ if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
     if (!(Request::postInt('login') === 1
         && $conf['kaufabwicklung']['warenkorbpers_nutzen'] === 'Y'
         && $conf['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P'
-        && count($persCart->oWarenkorbPersPos_arr) > 0)
+        && count($persCart->getItems()) > 0)
     ) {
         pruefeAjaxEinKlick();
     }
@@ -125,11 +126,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         );
 
         if (empty($shippingMethods)) {
-            $alertService->addAlert(
-                Alert::TYPE_DANGER,
-                Shop::Lang()->get('noShippingAvailable', 'checkout'),
-                'noShippingAvailable'
-            );
+            $alertService->addDanger(Shop::Lang()->get('noShippingAvailable', 'checkout'), 'noShippingAvailable');
         } else {
             $activeVersandart = gibAktiveVersandart($shippingMethods);
             pruefeVersandartWahl(
@@ -145,11 +142,7 @@ if (empty($_SESSION['Kunde']->cPasswort) && Download::hasDownloads($cart)) {
     // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
     $step = 'accountwahl';
 
-    $alertService->addAlert(
-        Alert::TYPE_NOTE,
-        Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout'),
-        'digitalProductsRegisterInfo'
-    );
+    $alertService->addNotice(Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout'), 'digiProdRegisterInfo');
 
     unset($_SESSION['Kunde']);
     // unset not needed values to ensure the correct $step
@@ -220,8 +213,6 @@ if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
     Cart::refreshChecksum($cart);
     $_SESSION['AktiveZahlungsart'] = $savedPayment;
 }
-$kLink = $linkService->getSpecialPageID(LINKTYP_BESTELLVORGANG);
-$link  = $linkService->getPageLink($kLink);
 CartHelper::addVariationPictures($cart);
 Shop::Smarty()->assign(
     'AGB',
@@ -232,7 +223,7 @@ Shop::Smarty()->assign(
 )
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
     ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
-    ->assign('Link', $link)
+    ->assign('Link', $linkService->getSpecialPage(LINKTYP_BESTELLVORGANG))
     ->assign('alertNote', $alertService->alertTypeExists(Alert::TYPE_NOTE))
     ->assign('step', $step)
     ->assign(
@@ -243,9 +234,9 @@ Shop::Smarty()->assign(
     ->assign('Warensumme', $cart->gibGesamtsummeWaren())
     ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
     ->assign('bestellschritt', gibBestellschritt($step))
-    ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
-    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
-    ->assign('unregForm', Request::verifyGPCDataInt('unreg_form'));
+    ->assign('unregForm', Request::verifyGPCDataInt('unreg_form'))
+    ->assignDeprecated('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL, '5.0.0')
+    ->assignDeprecated('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK, '5.0.0');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_BESTELLVORGANG_PAGE);

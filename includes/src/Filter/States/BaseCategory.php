@@ -79,6 +79,15 @@ class BaseCategory extends AbstractFilter
     public function setSeo(array $languages): FilterInterface
     {
         if ($this->getValue() > 0) {
+            $items = [];
+            $prep  = [];
+            $i     = 0;
+            foreach ((array)$this->getValue() as $item) {
+                $idx        = 'i' . $i++;
+                $items[]    = ':' . $idx;
+                $prep[$idx] = $item;
+            }
+
             $seoData = $this->productFilter->getDB()->getObjects(
                 "SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
                     FROM tseo
@@ -88,9 +97,9 @@ class BaseCategory extends AbstractFilter
                             ON tkategoriesprache.kKategorie = tkategorie.kKategorie
                             AND tkategoriesprache.kSprache = tseo.kSprache
                     WHERE cKey = 'kKategorie' 
-                        AND kKey IN( :val )
-                    ORDER BY tseo.kSprache",
-                ['val' => \is_array($this->getValue()) ? \implode(', ', $this->getValue()) : $this->getValue()]
+                        AND kKey IN(" . \implode(',', $items) . ')
+                    ORDER BY tseo.kSprache',
+                $prep
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';

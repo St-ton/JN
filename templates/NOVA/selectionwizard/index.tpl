@@ -15,7 +15,7 @@
                         [
                             '{$AWA->getLocationKeyName()}',
                             {$AWA->getLocationKeyId()},
-                            {$smarty.session.kSprache},
+                            {JTL\Shop::getLanguageID()},
                             nSelection_arr
                         ],
                         { },
@@ -37,7 +37,7 @@
                         [
                             '{$AWA->getLocationKeyName()}',
                             {$AWA->getLocationKeyId()},
-                            {$smarty.session.kSprache},
+                            {JTL\Shop::getLanguageID()},
                             nSelection_arr
                         ],
                         { },

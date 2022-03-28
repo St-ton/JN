@@ -30,6 +30,7 @@ class Consent extends AbstractItem
     public function install(): int
     {
         $pluginID = $this->plugin->kPlugin;
+        $added    = false;
         foreach ($this->getNode() as $i => $vendor) {
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
@@ -41,6 +42,7 @@ class Consent extends AbstractItem
             if ($consentID <= 0) {
                 return InstallCode::SQL_CANNOT_SAVE_VENDOR;
             }
+            $added                   = true;
             $allLanguages            = \collect(LanguageHelper::getAllLanguages(1, true));
             $defaultLanguage         = LanguageHelper::getDefaultLanguage();
             $localization            = new stdClass();
@@ -75,6 +77,9 @@ class Consent extends AbstractItem
                 return !\in_array($e->getId(), $addedLanguages, true);
             });
             $this->addMissingTranslations($missingLanguages->toArray(), $defaultLocalization);
+        }
+        if ($added === true) {
+            $this->db->query('UPDATE tglobals SET consentVersion = consentVersion + 1, dLetzteAenderung = NOW()');
         }
 
         return InstallCode::OK;

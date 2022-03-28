@@ -151,8 +151,16 @@ trait MultiSizeImage
     public function generateAllImageSizes(bool $full = true, int $number = 1, string $source = null): array
     {
         $prefix = $full ? Shop::getImageBaseURL() : '';
-        foreach (Image::getAllSizes() as $size) {
-            $this->images[$number][$size] = $prefix . $this->generateImagePath($size, $number, $source);
+        foreach (Image::getAllSizes() as $i => $size) {
+            $path = $this->generateImagePath($size, $number, $source);
+            if ($i === 0 && $path === \BILD_KEIN_ARTIKELBILD_VORHANDEN) {
+                // skip the expensive image path generation if the first size has no regular image anyways
+                foreach (Image::getAllSizes() as $innerSize) {
+                    $this->images[$number][$innerSize] = $prefix . $path;
+                }
+                break;
+            }
+            $this->images[$number][$size] = $prefix . $path;
         }
 
         return $this->images;

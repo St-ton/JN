@@ -22,7 +22,7 @@ class CacheFile implements ICachingMethod
     /**
      * @param array $options
      */
-    public function __construct($options)
+    public function __construct(array $options)
     {
         $this->journalID     = 'file_journal';
         $this->options       = $options;
@@ -31,7 +31,7 @@ class CacheFile implements ICachingMethod
     }
 
     /**
-     * @param string $cacheID
+     * @param string|mixed $cacheID
      * @return bool|string
      */
     private function getFileName($cacheID)
@@ -44,7 +44,7 @@ class CacheFile implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null): bool
+    public function store($cacheID, $content, int $expiration = null): bool
     {
         $dir = $this->options['cache_dir'];
         if (!\is_dir($dir) && \mkdir($dir) === false && !\is_dir($dir)) {
@@ -68,7 +68,7 @@ class CacheFile implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($idContent, $expiration = null): bool
+    public function storeMulti(array $idContent, int $expiration = null): bool
     {
         foreach ($idContent as $_key => $_value) {
             $this->store($_key, $_value, $expiration);

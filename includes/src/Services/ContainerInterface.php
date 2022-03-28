@@ -14,18 +14,18 @@ interface ContainerInterface extends \Psr\Container\ContainerInterface
      * @throws \InvalidArgumentException
      * @throws \Exception
      */
-    public function setSingleton($id, $factory): void;
+    public function setSingleton(string $id, callable $factory): void;
 
     /**
      * @param string   $id
      * @param callable $factory
      * @throws \InvalidArgumentException
      */
-    public function setFactory($id, $factory): void;
+    public function setFactory(string $id, callable $factory): void;
 
     /**
      * @param string $id
      * @return mixed
      */
-    public function getFactoryMethod($id);
+    public function getFactoryMethod(string $id);
 }

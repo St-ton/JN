@@ -204,9 +204,11 @@ class DataHistory extends MainModel
     /**
      * @return int
      * @throws Exception
+     * @deprecated since 5.1.0
      */
     public function update(): int
     {
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         $members = \array_keys(\get_object_vars($this));
         if (!\is_array($members) || \count($members) === 0) {
             throw new Exception('ERROR: Object has no members!');

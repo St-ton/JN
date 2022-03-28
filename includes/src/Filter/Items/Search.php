@@ -355,6 +355,10 @@ class Search extends AbstractFilter
             $searchCache = [$value];
             $count       = 1;
         }
+        if (\count($searchCache) === 0 && $this->getValue() !== null) {
+            $searchCache = [$this->getValue()];
+            $count       = 1;
+        }
 
         return (new Join())
             ->setType('JOIN')

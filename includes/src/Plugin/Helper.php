@@ -323,9 +323,11 @@ class Helper
     public static function getLanguageVariablesByID(int $id, string $iso = ''): array
     {
         $return = [];
+        $prep   = ['pid' => $id];
         $sql    = '';
         if (\mb_strlen($iso) > 0) {
-            $sql = " AND tpluginsprachvariablesprache.cISO = '" . \mb_convert_case($iso, \MB_CASE_UPPER) . "'";
+            $prep['iso'] = \mb_convert_case($iso, \MB_CASE_UPPER);
+            $sql         = ' AND tpluginsprachvariablesprache.cISO = :iso';
         }
         $langVars = Shop::Container()->getDB()->getArrays(
             'SELECT t.kPluginSprachvariable,
@@ -341,18 +343,20 @@ class Helper
                     ON c.kPlugin = t.kPlugin
                     AND c.kPluginSprachvariable = t.kPluginSprachvariable
                     AND tpluginsprachvariablesprache.cISO = c.cISO
-                WHERE t.kPlugin = ' . $id . $sql
+                WHERE t.kPlugin = :pid' . $sql,
+            $prep
         );
         if (!\is_array($langVars) || \count($langVars) < 1) {
-            $langVars = Shop::Container()->getDB()->getArrays(
+            $prep['iso'] = \mb_convert_case($iso, \MB_CASE_UPPER);
+            $langVars    = Shop::Container()->getDB()->getArrays(
                 "SELECT tpluginsprachvariable.kPluginSprachvariable,
                 tpluginsprachvariable.kPlugin,
                 tpluginsprachvariable.cName,
                 tpluginsprachvariable.cBeschreibung,
-                CONCAT('#', tpluginsprachvariable.cName, '#') AS customValue, '" .
-                \mb_convert_case($iso, \MB_CASE_UPPER) . "' AS cISO
+                CONCAT('#', tpluginsprachvariable.cName, '#') AS customValue, :iso AS cISO
                     FROM tpluginsprachvariable
-                    WHERE tpluginsprachvariable.kPlugin = " . $id
+                    WHERE tpluginsprachvariable.kPlugin = :pid",
+                $prep
             );
         }
         foreach ($langVars as $_sv) {

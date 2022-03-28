@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Checkout\Bestellung;
 use JTL\Customer\Customer;
 use JTL\Helpers\Form;
@@ -16,7 +15,6 @@ $smarty     = Shop::Smarty();
 $linkHelper = Shop::Container()->getLinkService();
 $uid        = Request::verifyGPDataString('uid');
 if (!empty($uid)) {
-    $conf   = Shop::getSettings([CONF_KUNDEN]);
     $db     = Shop::Container()->getDB();
     $status = $db->getSingleObject(
         'SELECT kBestellung, failedAttempts
@@ -26,13 +24,12 @@ if (!empty($uid)) {
                 AND (failedAttempts <= :maxAttempts OR 1 = :loggedIn)',
         [
             'uid'         => $uid,
-            'maxAttempts' => (int)$conf['kunden']['kundenlogin_max_loginversuche'],
+            'maxAttempts' => (int)Shop::getSettingValue(CONF_KUNDEN, 'kundenlogin_max_loginversuche'),
             'loggedIn'    => Frontend::getCustomer()->isLoggedIn() ? 1 : 0,
         ]
     );
     if (empty($status->kBestellung)) {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_DANGER,
+        Shop::Container()->getAlertService()->addDanger(
             Shop::Lang()->get('statusOrderNotFound', 'errorMessages'),
             'statusOrderNotFound',
             ['saveInSession' => true]
@@ -48,8 +45,7 @@ if (!empty($uid)) {
             $plzValid = true;
         } elseif (!empty($_POST['plz'])) {
             $db->update('tbestellstatus', 'cUID', $uid, (object)['failedAttempts' => (int)$status->failedAttempts + 1]);
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_DANGER,
+            Shop::Container()->getAlertService()->addDanger(
                 Shop::Lang()->get('incorrectLogin'),
                 'statusOrderincorrectLogin'
             );
@@ -57,8 +53,8 @@ if (!empty($uid)) {
     }
 
     $smarty->assign('Bestellung', $order)
-           ->assign('uid', Text::filterXSS($uid))
-           ->assign('showLoginPanel', Frontend::getCustomer()->isLoggedIn());
+        ->assign('uid', Text::filterXSS($uid))
+        ->assign('showLoginPanel', Frontend::getCustomer()->isLoggedIn());
 
     if ($plzValid || Frontend::getCustomer()->isLoggedIn()) {
         $db->update('tbestellstatus', 'cUID', $uid, (object)[
@@ -70,8 +66,7 @@ if (!empty($uid)) {
             ->assign('incommingPayments', $order->getIncommingPayments());
     }
 } else {
-    Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_DANGER,
+    Shop::Container()->getAlertService()->addDanger(
         Shop::Lang()->get('uidNotFound', 'errorMessages'),
         'wrongUID',
         ['saveInSession' => true]
@@ -82,10 +77,10 @@ if (!empty($uid)) {
 
 $step = 'bestellung';
 $smarty->assign('step', $step)
-    ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
-    ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
-    ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)
-    ->assign('Link', $linkHelper->getPageLink($linkHelper->getSpecialPageID(LINKTYP_LOGIN)));
+    ->assign('Link', $linkHelper->getPageLink($linkHelper->getSpecialPageID(LINKTYP_LOGIN)))
+    ->assignDeprecated('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT, '5.0.0')
+    ->assignDeprecated('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT, '5.0.0')
+    ->assignDeprecated('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN, '5.0.0');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

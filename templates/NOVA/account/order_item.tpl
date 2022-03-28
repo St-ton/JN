@@ -8,12 +8,12 @@
                     {col cols=12 md="{if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}6{else}8{/if}"}
                         {row}
                             {col cols=3 md=4 class='order-item-image-wrapper'}
-                                {if !empty($oPosition->Artikel->cVorschaubild)}
+                                {if !empty($oPosition->Artikel->cVorschaubildURL)}
                                     {block name='account-order-item-image'}
-                                        {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
+                                        {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
                                             {image webp=true fluid=true lazy=true
-                                                src=$oPosition->Artikel->cVorschaubild
-                                                alt=$oPosition->cName|trans
+                                                src=$oPosition->Artikel->cVorschaubildURL
+                                                alt=$oPosition->cName|trans|escape:'html'
                                             }
                                         {/link}
                                     {/block}
@@ -23,7 +23,7 @@
                             {if $oPosition->nPosTyp == $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL}
                                 {block name='account-order-item-details'}
                                     {block name='account-order-item-link'}
-                                        {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}
+                                        {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}{$oPosition->cName|trans}{/link}
                                     {/block}
                                     <ul class="list-unstyled text-muted-util small item-detail-list">
                                         {block name='account-order-item-sku'}

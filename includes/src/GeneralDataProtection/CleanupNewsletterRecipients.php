@@ -36,15 +36,16 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
                     JOIN tnewsletterempfaengerhistory h
                         ON h.cOptCode = e.cOptCode
                         AND h.cEmail = e.cEmail
-                WHERE e.nAktiv = 0
+                WHERE
+                    e.nAktiv = 0
                     AND h.cAktion = 'Eingetragen'
                     AND (h.dOptCode = '0000-00-00 00:00:00' OR h.dOptCode IS NULL)
-                    AND h.dEingetragen <= :pDateLimit
+                    AND h.dEingetragen <= :dateLimit
                 ORDER BY h.dEingetragen ASC
-                LIMIT :pLimit",
+                LIMIT :workLimit",
             [
-                'pDateLimit' => $this->dateLimit,
-                'pLimit'     => $this->workLimit
+                'dateLimit' => $this->dateLimit,
+                'workLimit' => $this->workLimit
             ]
         );
         foreach ($data as $res) {
@@ -52,10 +53,10 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
                 'DELETE e, h
                     FROM tnewsletterempfaenger e
                        INNER JOIN tnewsletterempfaengerhistory h
-                           ON h.cOptCode = e.cOptCode 
+                           ON h.cOptCode = e.cOptCode
                            AND h.cEmail = e.cEmail
-                    WHERE e.cOptCode = :pOpCode',
-                ['pOpCode' => $res->cOptCode]
+                    WHERE e.cOptCode = :optCode',
+                ['optCode' => $res->cOptCode]
             );
         }
     }

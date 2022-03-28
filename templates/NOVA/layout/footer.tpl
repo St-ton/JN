@@ -275,7 +275,7 @@
                     {/if}
 
                     window.CM = new ConsentManager({
-                        version: 1
+                        version: {$smarty.session.consentVersion|default:1}
                     });
                     var trigger = document.querySelectorAll('.trigger')
                     var triggerCall = function(e) {

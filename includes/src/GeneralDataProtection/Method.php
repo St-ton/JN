@@ -30,13 +30,13 @@ class Method
     protected $interval = 0;
 
     /**
-     * select the maximum of 10,000 rows for one step!
+     * select the maximum of 1,000 rows for one step!
      * (if the scripts are running each day, we need some days
-     * to anonymize more than 10,000 data sets)
+     * to anonymize more than 1,000 data sets)
      *
      * @var int
      */
-    protected $workLimit = 10000;
+    protected $workLimit = 1000;
 
     /**
      * the last date we keep

@@ -102,7 +102,7 @@ class CustomerGroup
     {
         $item = Shop::Container()->getDB()->select('tkundengruppe', 'cStandard', 'Y');
         if ($item !== null) {
-            $conf = Shop::getSettings([\CONF_GLOBAL]);
+            $conf = Shop::getSettingValue(\CONF_GLOBAL, 'global_sichtbarkeit');
             $this->setID((int)$item->kKundengruppe)
                  ->setName($item->cName)
                  ->setDiscount($item->fRabatt)
@@ -110,9 +110,9 @@ class CustomerGroup
                  ->setShopLogin($item->cShopLogin)
                  ->setIsMerchant((int)$item->nNettoPreise);
             if ($this->isDefault()) {
-                if ((int)$conf['global']['global_sichtbarkeit'] === 2) {
+                if ((int)$conf === 2) {
                     $this->mayViewPrices = 0;
-                } elseif ((int)$conf['global']['global_sichtbarkeit'] === 3) {
+                } elseif ((int)$conf === 3) {
                     $this->mayViewPrices     = 0;
                     $this->mayViewCategories = 0;
                 }
@@ -518,11 +518,11 @@ class CustomerGroup
             $item = new self($id);
             if ($item->getID() > 0 && !isset($_SESSION['Kundengruppe'])) {
                 $item->setMayViewPrices(1)->setMayViewCategories(1);
-                $conf = Shop::getSettings([\CONF_GLOBAL]);
-                if ((int)$conf['global']['global_sichtbarkeit'] === 2) {
+                $conf = Shop::getSettingValue(\CONF_GLOBAL, 'global_sichtbarkeit');
+                if ((int)$conf === 2) {
                     $item->setMayViewPrices(0);
                 }
-                if ((int)$conf['global']['global_sichtbarkeit'] === 3) {
+                if ((int)$conf === 3) {
                     $item->setMayViewPrices(0)->setMayViewCategories(0);
                 }
                 $_SESSION['Kundengruppe'] = $item->initAttributes();

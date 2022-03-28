@@ -314,6 +314,9 @@ msgstr "Fehlerhafte Cookie-Einstellungen: Anmeldung nicht möglich. Bitte wenden
 msgid "errorSessionExpired"
 msgstr "Ihre Sitzung wurde zurückgesetzt. Bitte melden Sie sich neu an."
 
+msgid "errorLoginTemporaryNotPossible"
+msgstr "Anmeldung zurzeit nicht möglich."
+
 msgid "row"
 msgstr "Zeile"
 
@@ -355,6 +358,9 @@ msgstr "Aktion"
 
 msgid "available"
 msgstr "Vorhanden"
+
+msgid "Version %s available"
+msgstr "Version %s verfügbar"
 
 msgid "html"
 msgstr "HTML"
@@ -1976,9 +1982,6 @@ msgstr "Überweisung"
 msgid "za_nachnahme_jtl"
 msgstr "Nachnahme"
 
-msgid "za_kreditkarte_jtl"
-msgstr "Kreditkarte"
-
 msgid "za_rechnung_jtl"
 msgstr "Rechnung"
 
@@ -2165,3 +2168,6 @@ msgstr "Kann Archiv nicht öffnen."
 
 msgid "pluginInstallInvalidArchive"
 msgstr "Ungültiges Archiv."
+
+msgid "No input file provided."
+msgstr "Keine Eingabedatei angegeben."

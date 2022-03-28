@@ -232,11 +232,9 @@ final class JTLCache implements JTLCacheInterface
     /**
      * @inheritdoc
      */
-    public function setError(string $error)
+    public function setError(string $error): void
     {
         $this->error = $error;
-
-        return $this;
     }
 
     /**
@@ -334,7 +332,7 @@ final class JTLCache implements JTLCacheInterface
      * @param ICachingMethod|JTLCacheTrait $method
      * @return $this
      */
-    private function setMethod($method): JTLCacheInterface
+    private function setMethod(ICachingMethod $method): JTLCacheInterface
     {
         $this->method = $method;
 
@@ -413,39 +411,7 @@ final class JTLCache implements JTLCacheInterface
     /**
      * @inheritdoc
      */
-    public function setRedisCredentials($host, $port, $pass = null, $database = null): JTLCacheInterface
-    {
-        $this->options['redis_host'] = $host;
-        $this->options['redis_port'] = $port;
-        $this->options['redis_pass'] = $pass;
-        $this->options['redis_db']   = $database;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setMemcacheCredentials($host, $port): JTLCacheInterface
-    {
-        $this->options['memcache_host'] = $host;
-        $this->options['memcache_port'] = $port;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setMemcachedCredentials($host, $port): JTLCacheInterface
-    {
-        return $this->setMemcacheCredentials($host, $port);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function get($cacheID, $callback = null, $customData = null)
+    public function get($cacheID, ?callable $callback = null, $customData = null)
     {
         $res              = $this->options['activated'] === true
             ? $this->method->load($cacheID)
@@ -483,7 +449,7 @@ final class JTLCache implements JTLCacheInterface
     /**
      * @inheritdoc
      */
-    public function set($cacheID, $content, $tags = null, $expiration = null): bool
+    public function set($cacheID, $content, $tags = null, ?int $expiration = null): bool
     {
         $res = false;
         if ($this->options['activated'] === true && $this->isCacheGroupActive($tags) === true) {
@@ -507,7 +473,7 @@ final class JTLCache implements JTLCacheInterface
     /**
      * @inheritdoc
      */
-    public function setMulti($keyValue, $tags = null, $expiration = null): bool
+    public function setMulti(array $keyValue, ?array $tags = null, ?int $expiration = null): bool
     {
         if ($this->options['activated'] === true && $this->isCacheGroupActive($tags) === true) {
             $res = $this->method->storeMulti($keyValue, $expiration);
@@ -745,18 +711,20 @@ final class JTLCache implements JTLCacheInterface
      * @inheritdoc
      */
     public function getBaseID(
-        $hash = false,
+        bool $hash = false,
         $customerID = false,
         $customerGroup = true,
         $languageID = true,
         $currencyID = true,
-        $sslStatus = true
+        bool $sslStatus = true
     ): string {
         $baseID = 'b';
         // add customer ID
         if ($customerID === true) {
             $baseID .= '_cid';
             $baseID .= $_SESSION['Kunde']->kKunde ?? '-1';
+        } elseif (\is_numeric($customerID)) {
+            $baseID .= '_cid' . (int)$customerID;
         }
         // add customer group
         if ($customerGroup === true) {
@@ -802,18 +770,18 @@ final class JTLCache implements JTLCacheInterface
     public function benchmark(
         $methods = 'all',
         $testData = 'simple string',
-        $runCount = 1000,
-        $repeat = 1,
-        $echo = true,
-        $format = false
+        int $runCount = 1000,
+        int $repeat = 1,
+        bool $echo = true,
+        bool $format = false
     ): array {
         $this->options['activated'] = true;
         $this->options['lifetime']  = self::DEFAULT_LIFETIME;
         // sanitize input
-        if (!\is_int($runCount) || $runCount < 1) {
+        if ($runCount < 1) {
             $runCount = 1;
         }
-        if (!\is_int($repeat) || $repeat < 1) {
+        if ($repeat < 1) {
             $repeat = 1;
         }
         $results = [];

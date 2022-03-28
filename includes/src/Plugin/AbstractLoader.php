@@ -81,7 +81,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadLinks(int $id): Links
     {
-        $data  = $this->db->getObjects(
+        $data = $this->db->getObjects(
             'SELECT tlink.kLink
                 FROM tlink
                 JOIN tlinksprache
@@ -92,9 +92,8 @@ abstract class AbstractLoader implements LoaderInterface
                 GROUP BY tlink.kLink',
             ['plgn' => $id]
         );
-        $links = new Links();
 
-        return $links->load($data, $this->db);
+        return (new Links())->load($data, $this->db);
     }
 
     /**
@@ -104,7 +103,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadLocalization(int $id, string $currentLanguageCode): Localization
     {
-        $data         = $this->db->getObjects(
+        $data = $this->db->getObjects(
             'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung, o.cISO,
                 COALESCE(c.cName, o.cName) AS customValue, l.type
             FROM tpluginsprachvariable AS l
@@ -117,9 +116,8 @@ abstract class AbstractLoader implements LoaderInterface
             ORDER BY l.kPluginSprachvariable',
             ['pid' => $id]
         );
-        $localization = new Localization($currentLanguageCode);
 
-        return $localization->load($data);
+        return (new Localization($currentLanguageCode))->load($data);
     }
 
     /**
@@ -128,9 +126,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadMetaData(stdClass $obj): Meta
     {
-        $metaData = new Meta();
-
-        return $metaData->loadDBMapping($obj);
+        return (new Meta())->loadDBMapping($obj);
     }
 
     /**
@@ -140,7 +136,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadConfig(string $path, int $id): Config
     {
-        $data   = $this->db->getObjects(
+        $data = $this->db->getObjects(
             'SELECT c.kPluginEinstellungenConf AS id, c.cName AS name,
             c.cBeschreibung AS description, c.kPluginAdminMenu AS menuID, c.cConf AS confType,
             c.nSort, c.cInputTyp AS inputType, c.cSourceFile AS sourceFile,
@@ -156,9 +152,8 @@ abstract class AbstractLoader implements LoaderInterface
             ORDER BY c.nSort',
             ['pid' => $id]
         );
-        $config = new Config($path);
 
-        return $config->load($data);
+        return (new Config($path))->load($data);
     }
 
     /**
@@ -456,10 +451,8 @@ abstract class AbstractLoader implements LoaderInterface
         foreach ($data as $item) {
             $item->namespace = '\\' . $plugin->getPluginID() . '\\';
         }
-        $adminPath = $plugin->getPaths()->getAdminPath();
-        $widgets   = new Widget();
 
-        return $widgets->load($data, $adminPath);
+        return (new Widget())->load($data, $plugin->getPaths()->getAdminPath());
     }
 
     /**
@@ -470,17 +463,13 @@ abstract class AbstractLoader implements LoaderInterface
     {
         $data = $this->db->getObjects(
             'SELECT * FROM temailvorlage
-            JOIN temailvorlagesprache AS loc
-                ON loc.kEmailvorlage = temailvorlage.kEmailvorlage
-            WHERE temailvorlage.kPlugin = :id',
+                JOIN temailvorlagesprache AS loc
+                    ON loc.kEmailvorlage = temailvorlage.kEmailvorlage
+                WHERE temailvorlage.kPlugin = :id',
             ['id' => $plugin->getID()]
         );
-        if ($data === 0) { // race condition with migrations
-            $data = [];
-        }
-        $mailTemplates = new MailTemplates();
 
-        return $mailTemplates->load($data);
+        return (new MailTemplates())->load($data);
     }
 
     /**
@@ -490,11 +479,12 @@ abstract class AbstractLoader implements LoaderInterface
     protected function loadPaymentMethods(PluginInterface $plugin): PaymentMethods
     {
         $methods = $this->db->getObjects(
-            "SELECT *
+            'SELECT *
                 FROM tzahlungsart
                 JOIN tpluginzahlungsartklasse
                     ON tpluginzahlungsartklasse.cModulID = tzahlungsart.cModulId
-                WHERE tzahlungsart.cModulId LIKE 'kPlugin\_" . $plugin->getID() . "\_%'"
+                WHERE tzahlungsart.cModulId LIKE :pid',
+            ['pid' => 'kPlugin\_' . $plugin->getID() . '\_%']
         );
         foreach ($methods as $method) {
             $moduleID                                = Helper::getModuleIDByPluginID(
@@ -515,8 +505,7 @@ abstract class AbstractLoader implements LoaderInterface
                 (int)$method->kZahlungsart
             );
         }
-        $pmm = new PaymentMethods();
 
-        return $pmm->load($methods, $plugin);
+        return (new PaymentMethods())->load($methods, $plugin);
     }
 }

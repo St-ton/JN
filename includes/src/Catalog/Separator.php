@@ -167,7 +167,7 @@ class Separator
      *
      * @param int $unitID
      * @param int $languageID
-     * @return mixed|bool
+     * @return int|bool
      */
     public static function insertMissingRow(int $unitID, int $languageID)
     {
@@ -404,7 +404,7 @@ class Separator
      */
     public static function migrateUpdate()
     {
-        $conf      = Shop::getSettings([\CONF_ARTIKELDETAILS, \CONF_ARTIKELUEBERSICHT]);
+        $conf      = Shop::getSettingSection(\CONF_ARTIKELDETAILS);
         $languages = LanguageHelper::getAllLanguages();
         if (\is_array($languages) && \count($languages) > 0) {
             Shop::Container()->getDB()->query('TRUNCATE ttrennzeichen');
@@ -413,21 +413,21 @@ class Separator
                 foreach ($units as $unit) {
                     $sep = new self();
                     if ($unit === \JTL_SEPARATOR_WEIGHT) {
-                        $dec = isset($conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl'])
-                        && \mb_strlen($conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl']) > 0
-                            ? $conf['artikeldetails']['artikeldetails_gewicht_stellenanzahl']
+                        $dec = isset($conf['artikeldetails_gewicht_stellenanzahl'])
+                        && \mb_strlen($conf['artikeldetails_gewicht_stellenanzahl']) > 0
+                            ? $conf['artikeldetails_gewicht_stellenanzahl']
                             : 2;
                         $sep->setDezimalstellen($dec);
                     } else {
                         $sep->setDezimalstellen(2);
                     }
-                    $sep10   = isset($conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner'])
-                    && \mb_strlen($conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']) > 0
-                        ? $conf['artikeldetails']['artikeldetails_zeichen_nachkommatrenner']
+                    $sep10   = isset($conf['artikeldetails_zeichen_nachkommatrenner'])
+                    && \mb_strlen($conf['artikeldetails_zeichen_nachkommatrenner']) > 0
+                        ? $conf['artikeldetails_zeichen_nachkommatrenner']
                         : ',';
-                    $sep1000 = isset($conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner'])
-                    && \mb_strlen($conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner']) > 0
-                        ? $conf['artikeldetails']['artikeldetails_zeichen_tausendertrenner']
+                    $sep1000 = isset($conf['artikeldetails_zeichen_tausendertrenner'])
+                    && \mb_strlen($conf['artikeldetails_zeichen_tausendertrenner']) > 0
+                        ? $conf['artikeldetails_zeichen_tausendertrenner']
                         : '.';
                     $sep->setDezimalZeichen($sep10)
                         ->setTausenderZeichen($sep1000)

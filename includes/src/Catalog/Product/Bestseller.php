@@ -150,30 +150,28 @@ class Bestseller
                 \implode(',', $this->getProducts()->toArray()) . ') '
             : '';
         $storagesql = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-        $data       = Shop::Container()->getDB()->getObjects(
+
+        return Shop::Container()->getDB()->getInts(
             'SELECT tartikel.kArtikel
                 FROM tartikel
                 JOIN tbestseller
                     ON tbestseller.kArtikel = tartikel.kArtikel
                 LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $this->customergrp . '
+                    AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND ROUND(tbestseller.fAnzahl) >= ' . $this->minsales . ' ' . $storagesql .  $productsql . '
+                    AND ROUND(tbestseller.fAnzahl) >= :ms ' . $storagesql .  $productsql . '
                 GROUP BY tartikel.kArtikel
                 ORDER BY tbestseller.fAnzahl DESC
-                LIMIT ' . $this->limit
+                LIMIT :lmt',
+            'kArtikel',
+            ['cgid' => $this->customergrp, 'ms' => $this->minsales, 'lmt' => $this->limit]
         );
-        foreach ($data as $item) {
-            $products[] = (int)$item->kArtikel;
-        }
-
-        return $products;
     }
 
     /**
      * @param Countable $products
-     * @param int       $customergrp
+     * @param int       $customerGroupID
      * @param bool      $viewallowed
      * @param bool      $onlykeys
      * @param int       $limit
@@ -182,40 +180,41 @@ class Bestseller
      */
     public static function buildBestsellers(
         $products,
-        int $customergrp,
+        int $customerGroupID,
         bool $viewallowed = true,
         bool $onlykeys = true,
         int $limit = 3,
         int $minsells = 10
     ): array {
-        if ($viewallowed && \count($products) > 0) {
-            if (!\is_a($products, Collection::class)) {
-                $products = \collect($products);
+        if (!$viewallowed || \count($products) === 0) {
+            return [];
+        }
+        if (!\is_a($products, Collection::class)) {
+            $products = \collect($products);
+        }
+        $options    = [
+            'Products'      => $products,
+            'Customergroup' => $customerGroupID,
+            'Limit'         => $limit,
+            'MinSales'      => $minsells
+        ];
+        $bestseller = new self($options);
+        if ($onlykeys) {
+            return $bestseller->fetch();
+        }
+        $db             = Shop::Container()->getDB();
+        $bestsellers    = [];
+        $defaultOptions = Artikel::getDefaultOptions();
+        $languageID     = Shop::getLanguageID();
+        foreach ($bestseller->fetch() as $productID) {
+            $product = new Artikel($db);
+            $product->fuelleArtikel($productID, $defaultOptions, $customerGroupID, $languageID);
+            if ($product->kArtikel > 0) {
+                $bestsellers[] = $product;
             }
-            $options    = [
-                'Products'      => $products,
-                'Customergroup' => $customergrp,
-                'Limit'         => $limit,
-                'MinSales'      => $minsells
-            ];
-            $bestseller = new self($options);
-            if ($onlykeys) {
-                return $bestseller->fetch();
-            }
-            $bestsellerkeys = $bestseller->fetch();
-            $bestsellers    = [];
-            $defaultOptions = Artikel::getDefaultOptions();
-            foreach ($bestsellerkeys as $bestsellerkey) {
-                $product = (new Artikel())->fuelleArtikel($bestsellerkey, $defaultOptions);
-                if ($product !== null && (int)$product->kArtikel > 0) {
-                    $bestsellers[] = $product;
-                }
-            }
-
-            return $bestsellers;
         }
 
-        return [];
+        return $bestsellers;
     }
 
     /**

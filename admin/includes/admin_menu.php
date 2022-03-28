@@ -268,19 +268,12 @@ $adminMenu = [
             __('JTL-Extension Store') => (object)[
                 'link'        => 'https://jtl-url.de/exs',
                 'target'      => '_blank',
+                'permissions' => 'LICENSE_MANAGER'
             ],
             __('My purchases')       => (object)[
                 'link'        => 'licenses.php',
                 'permissions' => 'LICENSE_MANAGER',
             ],
-            //        __('Plug-in marketplace') => (object)[
-            //            'link' => 'marktplatz.php',
-            //            'permissions' => 'PLUGIN_ADMIN_VIEW',
-            //        ],
-            //        __('My Purchases') => (object)[
-            //            'link' => 'dummy.php',
-            //            'permissions' => 'PLUGIN_ADMIN_VIEW',
-            //        ],
             __('Installed plug-ins') => 'DYNAMIC_PLUGINS',
         ],
     ],

@@ -207,7 +207,7 @@ msgid "onlyForOwnShippingPrices"
 msgstr "Item-specific shipping method"
 
 msgid "ownShippingPricesDesc"
-msgstr "Specify whether this shipping method is to be available only for purchase orders solely containing items for which item-specific shipping costs per destination country were set via function attributes."
+msgstr "Item-specific shipping costs are added to the normal shipping costs. The 'item-specific shipping method' applies to line items in the basket for which the function attributes 'versandkosten' or 'versandkosten gestaffelt' (shipping costs and scaled shipping costs) are set in the item master data of JTL-Wawi. If you select 'Yes', the shipping method is only available for orders that solely contain items with the respective function attributes."
 
 msgid "customerclass"
 msgstr "Customer group"

@@ -207,7 +207,7 @@ msgid "onlyForOwnShippingPrices"
 msgstr "Artikelabhängige Versandart"
 
 msgid "ownShippingPricesDesc"
-msgstr "Hier legen Sie fest, ob diese Versandart nur bei Bestellungen gelten soll, die ausschließlich Artikel enthalten, bei denen per Funktionsattribut artikelabhängige Versandkosten pro Lieferland gesetzt wurden."
+msgstr "Artikelabhängige Versandkosten werden zu den normalen Versandkosten addiert. Die Versandart „Artikelabhängiger Versand“ gilt für Artikelpositionen im Warenkorb, bei denen die Funktionsattribute „versandkosten“ oder „versandkosten gestaffelt“ in den Artikelstammdaten von JTL-Wawi gesetzt sind. Wenn Sie „Ja“ wählen, gilt die Versandart nur für Bestellungen, die ausschließlich Artikel mit den entsprechenden Funktionsattributen enthalten."
 
 msgid "customerclass"
 msgstr "Kundengruppe"

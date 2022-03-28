@@ -6,7 +6,6 @@ use Generator;
 use JTL\Language\LanguageModel;
 use JTL\Sitemap\Items\LiveSearch as Item;
 use PDO;
-use Shop;
 use function Functional\map;
 
 /**

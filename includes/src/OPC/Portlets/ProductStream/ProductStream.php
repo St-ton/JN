@@ -6,8 +6,8 @@ use Illuminate\Support\Collection;
 use JTL\Catalog\Product\Artikel;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
-use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
+use JTL\Filter\Items\Manufacturer;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Type;
 use JTL\Helpers\Product;
@@ -79,21 +79,32 @@ class ProductStream extends Portlet
      */
     public function getFilteredProductIds(PortletInstance $instance): Collection
     {
+        $params         = [
+            'MerkmalFilter_arr'   => [],
+            'SuchFilter_arr'      => [],
+            'SuchFilter'          => [],
+            'manufacturerFilters' => []
+        ];
         $enabledFilters = $instance->getProperty('filters');
-        $productFilter  = new ProductFilter(
+        $pf             = new ProductFilter(
             Config::getDefault(),
             Shop::Container()->getDB(),
             Shop::Container()->getCache()
         );
-
+        $service        = Shop::Container()->getOPC();
+        $pf->getBaseState()->init(0);
         foreach ($enabledFilters as $enabledFilter) {
-            /** @var AbstractFilter $newFilter * */
-            $newFilter = new $enabledFilter['class']($productFilter);
-            $newFilter->setType(Type::AND);
-            $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
+            $service->getFilterClassParamMapping($enabledFilter['class'], $params, $enabledFilter['value'], $pf);
+        }
+        $service->overrideConfig($pf);
+        $pf->initStates($params);
+        foreach ($pf->getActiveFilters() as $filter) {
+            if ($filter->getClassName() !== Manufacturer::class) {
+                $filter->setType(Type::AND);
+            }
         }
 
-        return $productFilter->getProductKeys()->slice(0, $instance->getProperty('maxProducts'));
+        return $pf->getProductKeys()->slice(0, $instance->getProperty('maxProducts'));
     }
 
     /**
@@ -106,8 +117,9 @@ class ProductStream extends Portlet
     {
         $products       = [];
         $defaultOptions = Artikel::getDefaultOptions();
+        $db             = Shop::Container()->getDB();
         foreach ($this->getFilteredProductIds($instance) as $productID) {
-            $products[] = (new Artikel())->fuelleArtikel($productID, $defaultOptions);
+            $products[] = (new Artikel($db))->fuelleArtikel($productID, $defaultOptions);
         }
 
         return Product::separateByAvailability($products);

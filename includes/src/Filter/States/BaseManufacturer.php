@@ -68,8 +68,9 @@ class BaseManufacturer extends AbstractFilter
                     FROM tseo
                     JOIN thersteller
                         ON thersteller.kHersteller = tseo.kKey
+                        AND thersteller.nAktiv = 1
                     WHERE cKey = 'kHersteller' 
-                        AND kKey IN (" . \implode(', ', $val) . ')'
+                        AND kKey IN (" . \implode(', ', \array_map('\intval', $val)) . ')'
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
@@ -185,9 +186,10 @@ class BaseManufacturer extends AbstractFilter
                     LEFT JOIN tseo 
                         ON tseo.kKey = ssMerkmal.kHersteller
                         AND tseo.cKey = 'kHersteller'
-                        AND tseo.kSprache = " . $this->getLanguageID() . '
+                        AND tseo.kSprache = :lid
                     GROUP BY ssMerkmal.kHersteller
-                    ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName'
+                    ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName",
+            ['lid' => $this->getLanguageID()]
         );
         $additionalFilter = new Manufacturer($this->productFilter);
         foreach ($manufacturers as $manufacturer) {

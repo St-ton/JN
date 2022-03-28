@@ -197,9 +197,10 @@ class Bewertung
             $ratingCounts = $db->getObjects(
                 'SELECT COUNT(*) AS nAnzahl, nSterne
                     FROM tbewertung
-                    WHERE kArtikel = ' . $productID . $activateSQL . '
+                    WHERE kArtikel = :pid' . $activateSQL . '
                     GROUP BY nSterne
-                    ORDER BY nSterne DESC'
+                    ORDER BY nSterne DESC',
+                ['pid' => $productID]
             );
         }
         if ($page > 0) {
@@ -218,9 +219,9 @@ class Bewertung
                     LEFT JOIN tbewertunghilfreich
                       ON tbewertung.kBewertung = tbewertunghilfreich.kBewertung
                       AND tbewertunghilfreich.kKunde = :customerID
-                    WHERE kArtikel = " . $productID . $langSQL . $condSQL . $activateSQL . '
+                    WHERE kArtikel = :pid" . $langSQL . $condSQL . $activateSQL . '
                     ORDER BY' . $orderSQL . $limitSQL,
-                ['customerID' => Frontend::getCustomer()->getID()]
+                ['customerID' => Frontend::getCustomer()->getID(), 'pid' => $productID]
             );
             each($this->oBewertung_arr, [$this, 'sanitizeRatingData']);
         }

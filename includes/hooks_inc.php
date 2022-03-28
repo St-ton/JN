@@ -1063,6 +1063,7 @@ const HOOK_FILTER_INC_GIBNAVIMETATITLE = 150;
 /**
  * in bearbeiteInsert() after inserting an article into the database
  *
+ * @file Artikel_xml.php
  * @param stdClass oArtikel
  */
 const HOOK_ARTIKEL_XML_BEARBEITEINSERT = 151;
@@ -1070,6 +1071,7 @@ const HOOK_ARTIKEL_XML_BEARBEITEINSERT = 151;
 /**
  * in bearbeiteDeletes() after deleting an article from the database
  *
+ * @file Artikel_xml.php
  * @param int kArtikel - product ID
  */
 const HOOK_ARTIKEL_XML_BEARBEITEDELETES = 152;
@@ -1544,6 +1546,7 @@ const HOOK_BOXEN_HOME = 224;
 /**
  * in bearbeiteInsert() after inserting an article into the database
  *
+ * @file QuickSync_xml.php
  * @param stdClass oArtikel
  */
 const HOOK_QUICKSYNC_XML_BEARBEITEINSERT = 225;
@@ -1747,10 +1750,29 @@ const HOOK_SITEMAP_EXPORT_INIT = 286;
 /**
  * @since 5.0.0
  * @file includes/src/Mail/Mailer.php
- * @param \JTL\Mail\Mailer             mailer
+ * @param \JTL\Mail\Mailer mailer
  * @param \JTL\Mail\Mail\MailInterface mail
  */
 const HOOK_MAIL_PRERENDER = 290;
+
+/**
+ * @param \JTL\Mail\Mailer mailer
+ * @param \JTL\Mail\Mail\MailInterface mail
+ * @param \PHPMailer\PHPMailer\PHPMailer phpmailer
+ * @since 5.1.2
+ * @file includes/src/Mail/Mailer.php
+ */
+const HOOK_MAILER_PRE_SEND = 291;
+
+/**
+ * @param \JTL\Mail\Mailer mailer
+ * @param \JTL\Mail\Mail\MailInterface mail
+ * @param \PHPMailer\PHPMailer\PHPMailer phpmailer
+ * @param bool status
+ * @since 5.1.2
+ * @file includes/src/Mail/Mailer.php
+ */
+const HOOK_MAILER_POST_SEND = 292;
 
 /**
  * @since 5.0.0
@@ -1853,12 +1875,12 @@ const HOOK_RECALCULATED_NET_PRICE = 321;
 /**
  * @since 5.1.0
  * @file Preise.php
- * @param float|string $price
- * @param mixed        $currency
- * @param bool         $html
- * @param int          $decimals
- * @param string       $currencyName
- * @param string       $localized
+ * @param float|string price
+ * @param mixed        currency
+ * @param bool         html
+ * @param int          decimals
+ * @param string       currencyName
+ * @param string       localized
  */
 const HOOK_LOCALIZED_PRICE_STRING = 330;
 
@@ -1872,8 +1894,64 @@ const HOOK_CART_GET_LOCALIZED_SUM = 331;
 /**
  * @since 5.1.0
  * @file includes/src/Helpers/Order.php
- * @param float &$creditToUse
- * @param float $cartTotal
- * @param float $customerCredit
+ * @param float &creditToUse
+ * @param float cartTotal
+ * @param float customerCredit
  */
 const HOOK_BESTELLUNG_SETZEGUTHABEN = 335;
+
+/**
+ * @since 5.1.3
+ * @file includes/src/dbeS/Sync/AbstractSync.php
+ * @param bool   &sendMails
+ * @param object product
+ * @param array  subscriptions
+ */
+const HOOK_SYNC_SEND_AVAILABILITYMAILS = 336;
+
+/**
+ * @since 5.1.3
+ * @file includes/src/Cart/Cart.php
+ * @param JTL\Cart\CartItem positionItem
+ * @param bool              &delete
+ */
+const HOOK_CART_DELETE_PARENT_CART_ITEM = 337;
+
+/**
+ * @since 5.2.0
+ * @param JTL\Export\Product        product
+ * @param JTL\Export\FormatExporter exporter
+ * @param int                       exportID
+ */
+const HOOK_EXPORT_PRE_RENDER = 340;
+
+/**
+ * @since 5.2.0
+ * @param JTL\Export\FormatExporter exporter
+ * @param int                       exportID
+ * @param int                       max
+ * @param bool                      isAsync
+ * @param bool                      isCron
+ */
+const HOOK_EXPORT_START = 341;
+
+/**
+ * @since 5.2.0
+ * @param JTL\Export\FormatExporter exporter
+ * @param int                       exportID
+ * @param JTL\Export\Model          model
+ */
+const HOOK_EXPORT_FACTORY_GET_EXPORTER = 342;
+
+/**
+ * @since 5.2.0
+ * @param JTL\Catalog\Product\Artikel product
+ * @param int|string|float            &qty
+ */
+const HOOK_CARTHELPER_ADD_PRODUCT_ID_TO_CART = 345;
+
+/**
+ * @since 5.2.0
+ * @param JTL\News\Item item
+ */
+const HOOK_NEWS_ITEM_MAPPED = 350;

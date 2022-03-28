@@ -99,21 +99,22 @@ class Jtllog
      */
     public static function getLogCount(string $filter = '', int $level = 0): int
     {
-        $where = $level > 0
-            ? ' WHERE nLevel = ' . $level
-            : '';
-        if (\mb_strlen($filter) > 0) {
-            if (\mb_strlen($where) === 0) {
-                $where .= " WHERE cLog LIKE '%" . $filter . "%'";
-            } else {
-                $where .= " AND cLog LIKE '%" . $filter . "%'";
-            }
+        $conditions = [];
+        $prep       = [];
+        if ($level > 0) {
+            $prep['lvl']  = $level;
+            $conditions[] = 'nLevel = :lvl';
         }
+        if (\mb_strlen($filter) > 0) {
+            $prep['fltr'] = '%' . $filter . '%';
+            $conditions[] = 'cLog LIKE :fltr';
+        }
+        $where = \count($conditions) > 0 ? ' WHERE ' . \implode(' AND ', $conditions) : '';
 
         return (int)Shop::Container()->getDB()->getSingleObject(
             'SELECT COUNT(*) AS cnt 
-                FROM tjtllog' .
-            $where
+                FROM tjtllog' . $where,
+            $prep
         )->cnt;
     }
 
@@ -204,7 +205,7 @@ class Jtllog
      */
     public function setcKey($cKey): self
     {
-        $this->cKey = Shop::Container()->getDB()->escape($cKey);
+        $this->cKey = $cKey;
 
         return $this;
     }
@@ -226,7 +227,7 @@ class Jtllog
      */
     public function setErstellt($dErstellt): self
     {
-        $this->dErstellt = Shop::Container()->getDB()->escape($dErstellt);
+        $this->dErstellt = $dErstellt;
 
         return $this;
     }
@@ -286,9 +287,9 @@ class Jtllog
      */
     public static function getSytemlogFlag(bool $cache = true): int
     {
-        $conf = Shop::getSettings([\CONF_GLOBAL]);
-        if ($cache === true && isset($conf['global']['systemlog_flag'])) {
-            return (int)$conf['global']['systemlog_flag'];
+        $conf = Shop::getSettingValue(\CONF_GLOBAL, 'systemlog_flag');
+        if ($cache === true && $conf !== null) {
+            return (int)$conf;
         }
         $conf = Shop::Container()->getDB()->getSingleObject(
             "SELECT cWert 

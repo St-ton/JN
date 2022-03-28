@@ -27,7 +27,8 @@ final class Customers extends AbstractPush
             date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag_formatted, nRegistriert, cZusatz
                 FROM tkunde
                     WHERE cAbgeholt = 'N'
-                    ORDER BY kKunde LIMIT " . self::LIMIT_CUSTOMERS
+                    ORDER BY kKunde LIMIT :lmt",
+            ['lmt' => self::LIMIT_CUSTOMERS]
         );
         $customerCount = \count($customers);
         if ($customerCount === 0) {
@@ -50,7 +51,8 @@ final class Customers extends AbstractPush
             $customer['tkundenattribut'] = $this->db->getArrays(
                 'SELECT * 
                     FROM tkundenattribut 
-                    WHERE kKunde = ' . (int)$attribute['kKunde']
+                    WHERE kKunde = :cid',
+                ['cid' => (int)$attribute['kKunde']]
             );
             foreach ($customer['tkundenattribut'] as $o => $attr) {
                 $customer['tkundenattribut'][$o . ' attr'] = $this->buildAttributes($attr);

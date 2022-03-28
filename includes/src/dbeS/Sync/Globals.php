@@ -243,7 +243,7 @@ final class Globals extends AbstractSync
             } else {
                 $key = $this->db->insert($tablename, $object);
             }
-            if (!$key) {
+            if ($key < 0 || ($tablename !== 'tsprache' && $key === 0)) {
                 $this->logger->error(__METHOD__ . ' failed: ' . $tablename . ', data: ' . \print_r($object, true));
             }
         }

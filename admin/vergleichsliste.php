@@ -1,10 +1,8 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Backend\Settings\Manager;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 
@@ -16,14 +14,12 @@ Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
 $db             = Shop::Container()->getDB();
-$settingIDs     = '(469, 470)';
-$alertHelper    = Shop::Container()->getAlertService();
 $settingManager = new Manager(
     $db,
     Shop::Smarty(),
-    Shop::Container()->getAdminAccount(),
+    $oAccount,
     Shop::Container()->getGetText(),
-    $alertHelper
+    Shop::Container()->getAlertService()
 );
 if (!isset($_SESSION['Vergleichsliste'])) {
     $_SESSION['Vergleichsliste'] = new stdClass();
@@ -35,85 +31,8 @@ if (Request::postInt('zeitfilter') === 1) {
     $_SESSION['Vergleichsliste']->nAnzahl     = Request::postInt('nAnzahl');
 }
 
-if (Request::postVar('resetSetting') !== null) {
-    $settingManager->resetSetting(Request::postVar('resetSetting'));
-} elseif (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
-    $configData  = $db->getObjects(
-        'SELECT ec.*, e.cWert AS currentValue
-            FROM teinstellungenconf AS ec
-            LEFT JOIN teinstellungen AS e ON e.cName = ec.cWertName
-            WHERE (
-                ec.kEinstellungenConf IN ' . $settingIDs . ' 
-                OR ec.kEinstellungenSektion = ' . CONF_VERGLEICHSLISTE . "
-                )
-                AND ec.cConf = 'Y'
-            ORDER BY ec.nSort"
-    );
-    $configCount = count($configData);
-    for ($i = 0; $i < $configCount; $i++) {
-        $currentValue                        = new stdClass();
-        $currentValue->cWert                 = Text::filterXSS($_POST[$configData[$i]->cWertName]);
-        $currentValue->cName                 = $configData[$i]->cWertName;
-        $currentValue->kEinstellungenSektion = $configData[$i]->kEinstellungenSektion;
-        switch ($configData[$i]->cInputTyp) {
-            case 'kommazahl':
-                $currentValue->cWert = (float)$currentValue->cWert;
-                break;
-            case 'zahl':
-            case 'number':
-                $currentValue->cWert = (int)$currentValue->cWert;
-                break;
-            case 'text':
-                $currentValue->cWert = mb_substr($currentValue->cWert, 0, 255);
-                break;
-            default:
-                break;
-        }
-        $db->delete(
-            'teinstellungen',
-            ['kEinstellungenSektion', 'cName'],
-            [(int)$configData[$i]->kEinstellungenSektion, $configData[$i]->cWertName]
-        );
-        $db->insert('teinstellungen', $currentValue);
-
-        $settingManager->addLog($currentValue->cName, $configData[$i]->currentValue, $currentValue->cWert);
-    }
-
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
-    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
-}
-
-$configData  = $db->getObjects(
-    'SELECT ec.*, e.cWert as defaultValue
-        FROM teinstellungenconf as ec
-        LEFT JOIN teinstellungen_default as e ON e.cName=ec.cWertName
-        WHERE (
-                ec.kEinstellungenConf IN ' . $settingIDs . ' 
-                OR ec.kEinstellungenSektion = ' . CONF_VERGLEICHSLISTE . '
-               )
-        ORDER BY ec.nSort'
-);
-$configCount = count($configData);
-for ($i = 0; $i < $configCount; $i++) {
-    if ($configData[$i]->cInputTyp === 'selectbox') {
-        $configData[$i]->ConfWerte = $db->selectAll(
-            'teinstellungenconfwerte',
-            'kEinstellungenConf',
-            (int)$configData[$i]->kEinstellungenConf,
-            '*',
-            'nSort'
-        );
-        Shop::Container()->getGetText()->localizeConfigValues($configData[$i], $configData[$i]->ConfWerte);
-    }
-    $setValue                      = $db->select(
-        'teinstellungen',
-        'kEinstellungenSektion',
-        (int)$configData[$i]->kEinstellungenSektion,
-        'cName',
-        $configData[$i]->cWertName
-    );
-    $configData[$i]->gesetzterWert = $setValue->cWert ?? null;
-    Shop::Container()->getGetText()->localizeConfig($configData[$i]);
+if ((Request::postInt('einstellungen') === 1 || Request::postVar('resetSetting') !== null) && Form::validateToken()) {
+    saveAdminSectionSettings(CONF_VERGLEICHSLISTE, $_POST);
 }
 
 $listCount  = (int)$db->getSingleObject(
@@ -130,7 +49,7 @@ $last20     = $db->getObjects(
         LIMIT " . $pagination->getLimitSQL()
 );
 
-if (is_array($last20) && count($last20) > 0) {
+if (count($last20) > 0) {
     $positions = [];
     foreach ($last20 as $list) {
         $positions                              = $db->selectAll(
@@ -148,20 +67,19 @@ $topComparisons = $db->getObjects(
         FROM tvergleichsliste
         JOIN tvergleichslistepos 
             ON tvergleichsliste.kVergleichsliste = tvergleichslistepos.kVergleichsliste
-        WHERE DATE_SUB(NOW(), INTERVAL ' . (int)$_SESSION['Vergleichsliste']->nZeitFilter . ' DAY) 
-            < tvergleichsliste.dDate
+        WHERE DATE_SUB(NOW(), INTERVAL :ds DAY)  < tvergleichsliste.dDate
         GROUP BY tvergleichslistepos.kArtikel
         ORDER BY nAnzahl DESC
-        LIMIT ' . (int)$_SESSION['Vergleichsliste']->nAnzahl
+        LIMIT :lmt',
+    ['ds' => (int)$_SESSION['Vergleichsliste']->nZeitFilter, 'lmt' => (int)$_SESSION['Vergleichsliste']->nAnzahl]
 );
-if (is_array($topComparisons) && count($topComparisons) > 0) {
+if (count($topComparisons) > 0) {
     erstelleDiagrammTopVergleiche($topComparisons);
 }
-
+getAdminSectionSettings(CONF_VERGLEICHSLISTE);
 $smarty->assign('Letzten20Vergleiche', $last20)
     ->assign('TopVergleiche', $topComparisons)
     ->assign('pagination', $pagination)
-    ->assign('oConfig_arr', $configData)
     ->display('vergleichsliste.tpl');
 
 /**

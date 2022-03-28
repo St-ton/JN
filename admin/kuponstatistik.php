@@ -95,7 +95,8 @@ foreach ($usedCouponsOrder as $key => $usedCouponOrder) {
             FROM twarenkorbpos AS wk
             LEFT JOIN tbestellung AS bs 
                 ON wk.kWarenkorb = bs.kWarenkorb
-            WHERE bs.kBestellung = " . (int)$usedCouponOrder['kBestellung']
+            WHERE bs.kBestellung = :oid",
+        ['oid' => (int)$usedCouponOrder['kBestellung']]
     );
     foreach ($usedCouponsOrder[$key]['cOrderPos_arr'] as $posKey => $value) {
         $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nAnzahl']      =

@@ -11,7 +11,7 @@ use JTL\Plugin\Data\Config;
 use JTL\Plugin\Helper;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\Plugin;
-use \JTL\Plugin\State;
+use JTL\Plugin\State;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -168,7 +168,9 @@ if ($pluginID > 0) {
             } elseif ($menu->configurable === true) {
                 $hidden = true;
                 foreach ($plugin->getConfig()->getOptions() as $confItem) {
-                    if ($confItem->inputType !== InputType::NONE && $confItem->confType === 'Y') {
+                    if ($confItem->inputType !== InputType::NONE
+                        && $confItem->confType !== Config::TYPE_NOT_CONFIGURABLE
+                    ) {
                         $hidden = false;
                         break;
                     }
@@ -185,13 +187,13 @@ if ($pluginID > 0) {
 }
 
 if (SAFE_MODE) {
-    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_WARNING, __('Safe mode enabled.'), 'warnSafeMode');
+    Shop::Container()->getAlertService()->addWarning(__('Safe mode enabled.'), 'warnSafeMode');
 }
 
-$alertHelper->addAlert(Alert::TYPE_NOTE, $notice, 'pluginNotice');
-$alertHelper->addAlert(Alert::TYPE_ERROR, $errorMsg, 'pluginError');
+$alertHelper->addNotice($notice, 'pluginNotice');
+$alertHelper->addError($errorMsg, 'pluginError');
 if ($plugin !== null && $plugin->getState() === State::DISABLED) {
-    $alertHelper->addAlert(Alert::TYPE_WARNING, __('pluginIsDeactivated'), 'pluginIsDeactivated');
+    $alertHelper->addWarning(__('pluginIsDeactivated'), 'pluginIsDeactivated');
 }
 
 $smarty->assign('oPlugin', $plugin)

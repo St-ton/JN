@@ -48,7 +48,7 @@
                     {alert variant="danger"}{$Suchergebnisse->getError()}{/alert}
                 {/block}
             {/if}
-            {if isset($oBestseller_arr) && $oBestseller_arr|@count > 0}
+            {if isset($oBestseller_arr) && $oBestseller_arr|count > 0}
                 {block name='productlist-index-include-product-slider'}
                     {opcMountPoint id='opc_before_bestseller'}
                     {lang key='bestseller' section='global' assign='slidertitle'}
@@ -57,7 +57,7 @@
             {/if}
 
             {block name='productlist-index-products'}
-                {if $Suchergebnisse->getProducts()|@count > 0}
+                {if $Suchergebnisse->getProducts()|count > 0}
                 {opcMountPoint id='opc_before_products'}
                 {row class="product-list layout-{$style}" id="product-list" itemprop="mainEntity" itemscope=true itemtype="https://schema.org/ItemList"}
                     {foreach $Suchergebnisse->getProducts() as $Artikel}

@@ -3,6 +3,7 @@
 namespace JTL\dbeS\Sync;
 
 use JTL\Catalog\Currency;
+use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Adresse;
 use JTL\Customer\Customer as CustomerClass;
 use JTL\Customer\CustomerAttribute;
@@ -19,7 +20,6 @@ use JTL\Services\JTL\CryptoServiceInterface;
 use JTL\Shop;
 use JTL\SimpleMail;
 use JTL\XML;
-use Preise;
 use stdClass;
 
 /**
@@ -287,7 +287,8 @@ final class Customer extends AbstractSync
                     cHerkunft, dErstellt, dVeraendert, cAktiv, cAbgeholt,
                     date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag_formatted, nRegistriert
                 FROM tkunde
-                WHERE kKunde = " . (int)$oldCustomer->kKunde
+                WHERE kKunde = :cid",
+            ['cid' => (int)$oldCustomer->kKunde]
         );
         $crypto = Shop::Container()->getCryptoService();
 
@@ -306,7 +307,8 @@ final class Customer extends AbstractSync
         $cstmr[0]['tkundenattribut'] = $this->db->getArrays(
             'SELECT *
                 FROM tkundenattribut
-                 WHERE kKunde = ' . (int)$cstmr['0 attr']['kKunde']
+                 WHERE kKunde = :cid',
+            ['cid' => (int)$cstmr['0 attr']['kKunde']]
         );
         foreach ($cstmr[0]['tkundenattribut'] as $o => $attr) {
             $cstmr[0]['tkundenattribut'][$o . ' attr'] = $this->buildAttributes($attr);
@@ -361,6 +363,7 @@ final class Customer extends AbstractSync
         $customer->cAbgeholt         = 'Y';
         $customer->cAktiv            = 'Y';
         $customer->cSperre           = 'N';
+        $this->extractStreet($customer);
         // mail an Kunden mit Accounterstellung durch Shopbetreiber
         $obj         = new stdClass();
         $obj->tkunde = $customer;

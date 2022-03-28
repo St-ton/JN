@@ -122,20 +122,23 @@ class Group implements JsonSerializable
     private function loadFromDB(int $id = 0, int $languageID = 0): self
     {
         $data = Shop::Container()->getDB()->select('tkonfiggruppe', 'kKonfiggruppe', $id);
-        if (isset($data->kKonfiggruppe) && $data->kKonfiggruppe > 0) {
-            foreach (\array_keys(\get_object_vars($data)) as $member) {
-                $this->$member = $data->$member;
-            }
-            if (!$languageID) {
-                $languageID = Shop::getLanguageID();
-            }
-            $this->kKonfiggruppe = (int)$this->kKonfiggruppe;
-            $this->nMin          = (int)$this->nMin;
-            $this->nMax          = (int)$this->nMax;
-            $this->nTyp          = (int)$this->nTyp;
-            $this->oSprache      = new GroupLocalization($this->kKonfiggruppe, $languageID);
-            $this->oItem_arr     = Item::fetchAll($this->kKonfiggruppe, $languageID);
+        if (!isset($data->kKonfiggruppe) || $data->kKonfiggruppe <= 0) {
+            Shop::Container()->getLogService()->error('Cannot load config group with id ' . $id);
+
+            return $this;
         }
+        foreach (\array_keys(\get_object_vars($data)) as $member) {
+            $this->$member = $data->$member;
+        }
+        if (!$languageID) {
+            $languageID = Shop::getLanguageID();
+        }
+        $this->kKonfiggruppe = (int)$this->kKonfiggruppe;
+        $this->nMin          = (int)$this->nMin;
+        $this->nMax          = (int)$this->nMax;
+        $this->nTyp          = (int)$this->nTyp;
+        $this->oSprache      = new GroupLocalization($this->kKonfiggruppe, $languageID);
+        $this->oItem_arr     = Item::fetchAll($this->kKonfiggruppe, $languageID);
         $this->generateAllImageSizes(true, 1, $this->cBildPfad);
 
         return $this;
@@ -158,7 +161,7 @@ class Group implements JsonSerializable
      */
     public function setBildPfad($cBildPfad): self
     {
-        $this->cBildPfad = Shop::Container()->getDB()->escape($cBildPfad);
+        $this->cBildPfad = $cBildPfad;
 
         return $this;
     }

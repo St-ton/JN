@@ -38,7 +38,7 @@
                                                         name="Versandart"
                                                         value=$versandart->kVersandart
                                                         id="del{$versandart->kVersandart}"
-                                                        checked=($Versandarten|@count == 1 || $AktiveVersandart == $versandart->kVersandart)
+                                                        checked=($Versandarten|count == 1 || $AktiveVersandart == $versandart->kVersandart)
                                                         required=($versandart@first)
                                                         class="checkout-shipping-form-options-radio"
                                                     }

@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Product\ArtikelListe;
@@ -53,8 +52,7 @@ $NaviFilter->setUserSort($AktuelleKategorie);
 $oSuchergebnisse = $NaviFilter->generateSearchResults($AktuelleKategorie);
 $pages           = $oSuchergebnisse->getPages();
 if ($oSuchergebnisse->getProductCount() === 0) {
-    Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_NOTE,
+    Shop::Container()->getAlertService()->addNotice(
         Shop::Lang()->get('noFilterResults'),
         'noFilterResults',
         ['showInAlertListTemplate' => false]
@@ -150,7 +148,7 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
     }
 }
 $oNavigationsinfo = $NaviFilter->getMetaData()->getNavigationInfo($AktuelleKategorie, $expandedCategories);
-if (mb_strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
+if (!str_contains(basename($NaviFilter->getFilterURL()->getURL()), '.php')) {
     $cCanonicalURL = $NaviFilter->getFilterURL()->getURL(null, true) . ($pages->getCurrentPage() > 1
         ? SEP_SEITE . $pages->getCurrentPage()
         : '');

@@ -30,6 +30,7 @@
                 <p id="{$searchPickerName}-list-title"></p>
                 <div class="list-group" id="{$searchPickerName}-result-list" style="max-height:500px;overflow:auto;">
                 </div>
+                <div id="{$searchPickerName}-list-footer"></div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-sm btn-link" id="{$searchPickerName}-select-all-btn">
                         <i class="fal fa-check-square"></i>

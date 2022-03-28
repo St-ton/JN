@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Cart\Cart;
 use JTL\Catalog\Category\Kategorie;
@@ -28,21 +27,17 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Visitor;
 
-$smarty     = Shop::Smarty();
-$db         = Shop::Container()->getDB();
-$tplService = Shop::Container()->getTemplateService();
-$template   = $tplService->getActiveTemplate();
-$tplDir     = PFAD_TEMPLATES . $template->getDir() . '/';
-$shopURL    = Shop::getURL();
-$cart       = $_SESSION['Warenkorb'] ?? new Cart();
-$conf       = Shopsetting::getInstance()->getAll();
-$linkHelper = Shop::Container()->getLinkService();
-$link       = $linkHelper->getLinkByID(Shop::$kLink ?? 0);
-$languageID = Shop::getLanguageID();
-$themeDir   = empty($conf['template']['theme']['theme_default'])
-    ? 'evo'
-    : $conf['template']['theme']['theme_default'];
-
+$smarty             = Shop::Smarty();
+$db                 = Shop::Container()->getDB();
+$tplService         = Shop::Container()->getTemplateService();
+$template           = $tplService->getActiveTemplate();
+$paths              = $template->getPaths();
+$shopURL            = Shop::getURL();
+$cart               = Frontend::getCart();
+$conf               = Shopsetting::getInstance()->getAll();
+$linkHelper         = Shop::Container()->getLinkService();
+$link               = $linkHelper->getLinkByID(Shop::$kLink ?? 0);
+$languageID         = Shop::getLanguageID();
 $device             = new Mobile_Detect();
 $expandedCategories = $expandedCategories ?? new KategorieListe();
 $debugbar           = Shop::Container()->getDebugBar();
@@ -52,15 +47,6 @@ $customerGroupID    = ($id = Frontend::getCustomer()->kKundengruppe) > 0
     : Frontend::getCustomerGroup()->getID();
 $globalMetaData     = $globalMetaData[$languageID] ?? null;
 $pageType           = Shop::getPageType();
-$specialPageTypes   = [
-    PAGE_REGISTRIERUNG,
-    PAGE_WARENKORB,
-    PAGE_PASSWORTVERGESSEN,
-    PAGE_NEWSLETTER,
-    PAGE_KONTAKT,
-    PAGE_MEINKONTO,
-    PAGE_LOGIN
-];
 if ($link !== null) {
     $cMetaTitle       = $link->getMetaTitle();
     $cMetaDescription = $link->getMetaDescription();
@@ -101,27 +87,25 @@ foreach ($filters as $key => $filter) {
     }
 }
 $NaviFilter->setAvailableFilters($filters);
-
 $linkHelper->activate($pageType);
-$origin  = (isset($_SESSION['Kunde']->cLand) && mb_strlen($_SESSION['Kunde']->cLand) > 0)
-    ? $_SESSION['Kunde']->cLand
-    : '';
-$service = new MinifyService();
-$service->buildURIs($smarty, $template, $themeDir);
-
+$origin = Frontend::getCustomer()->cLand ?? '';
+(new MinifyService())->buildURIs($smarty, $template, $paths->getThemeDirName());
 $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($customerGroupID, $origin);
 $cartValue       = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
-
 $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('NaviFilter', $NaviFilter)
     ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
-    ->assign('oUnterKategorien_arr', Category::getSubcategoryList($AktuelleKategorie->kKategorie ?? -1))
+    ->assign('oUnterKategorien_arr', Category::getSubcategoryList(
+        $AktuelleKategorie->kKategorie ?? -1,
+        $AktuelleKategorie->lft ?? -1,
+        $AktuelleKategorie->rght ?? -1,
+    ))
     ->assign('nTemplateVersion', $template->getVersion())
-    ->assign('currentTemplateDir', $tplDir)
-    ->assign('currentTemplateDirFull', $shopURL . '/' . $tplDir)
-    ->assign('currentTemplateDirFullPath', PFAD_ROOT . $tplDir)
-    ->assign('currentThemeDir', $tplDir . 'themes/' . $themeDir . '/')
-    ->assign('currentThemeDirFull', $shopURL . '/' . $tplDir . 'themes/' . $themeDir . '/')
+    ->assign('currentTemplateDir', $paths->getBaseRelDir())
+    ->assign('currentTemplateDirFull', $paths->getBaseURL())
+    ->assign('currentTemplateDirFullPath', $paths->getBaseDir())
+    ->assign('currentThemeDir', $paths->getRealRelThemeDir())
+    ->assign('currentThemeDirFull', $paths->getRealThemeURL())
     ->assign('opcDir', PFAD_ROOT . PFAD_ADMIN . 'opc/')
     ->assign('session_name', session_name())
     ->assign('session_id', session_id())
@@ -222,8 +206,7 @@ if (isset($breadCrumbName, $breadCrumbURL)) {
 Visitor::generateData();
 Campaign::checkCampaignParameters();
 Shop::Lang()->generateLanguageAndCurrencyLinks();
-$ep = new ExtensionPoint($pageType, Shop::getParameters(), $languageID, $customerGroupID);
-$ep->load();
+(new ExtensionPoint($pageType, Shop::getParameters(), $languageID, $customerGroupID))->load($db);
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Shop::Container()->getBoxService();
 $boxesToShow = $boxes->render($boxes->buildList($pageType), $pageType);
@@ -232,25 +215,9 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
 $visitorCount = $conf['global']['global_zaehler_anzeigen'] === 'Y'
-    ? (int)$db->getSingleObject('SELECT nZaehler FROM tbesucherzaehler')->nZaehler
+    ? $db->getSingleInt('SELECT nZaehler FROM tbesucherzaehler', 'nZaehler')
     : 0;
 $debugbar->getTimer()->stopMeasure('init');
-
-// backwards compatibility, create error and note messages for previously used globals $cFehler, $cHinweis, $hinweis
-// since 5.0.0: the new AlertService should be used instead
-$alertHelper = Shop::Container()->getAlertService();
-if (isset($cFehler)) {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, $cFehler, 'miscFehler');
-    trigger_error('global $cFehler is deprecated.', E_USER_DEPRECATED);
-}
-if (isset($cHinweis)) {
-    $alertHelper->addAlert(Alert::TYPE_NOTE, $cHinweis, 'miscCHinweis');
-    trigger_error('global $cHinweis is deprecated.', E_USER_DEPRECATED);
-}
-if (isset($hinweis)) {
-    $alertHelper->addAlert(Alert::TYPE_NOTE, $hinweis, 'miscHinweis');
-    trigger_error('global $hinweis is deprecated.', E_USER_DEPRECATED);
-}
 $tplService->save();
 $smarty->assign('bCookieErlaubt', isset($_COOKIE[Frontend::getSessionName()]))
     ->assign('Brotnavi', $nav->createNavigation())

@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\URL;
 use JTL\News\Category;
@@ -26,8 +25,7 @@ $cMetaDescription = '';
 $cMetaKeywords    = '';
 $conf             = Shopsetting::getInstance()->getAll();
 $customerGroupID  = Frontend::getCustomerGroup()->getID();
-$linkService      = Shop::Container()->getLinkService();
-$link             = $linkService->getPageLink($linkService->getSpecialPageID(LINKTYP_NEWS));
+$link             = Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_NEWS);
 $smarty           = Shop::Smarty();
 $controller       = new Controller($db, $conf, $smarty);
 $alertHelper      = Shop::Container()->getAlertService();
@@ -39,7 +37,7 @@ switch ($controller->getPageType($params)) {
         $newsItemID = $params['kNews'];
         $newsItem   = new Item($db);
         $newsItem->load($newsItemID);
-        $newsItem->checkVisibility(Frontend::getCustomer()->getGroupID());
+        $newsItem->checkVisibility($customerGroupID);
 
         $cMetaTitle       = $newsItem->getMetaTitle();
         $cMetaDescription = $newsItem->getMetaDescription();
@@ -104,10 +102,10 @@ $cMetaTitle = JTL\Filter\Metadata::prepareMeta(
 );
 
 if ($controller->getErrorMsg() !== '') {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'newsError');
+    $alertHelper->addError($controller->getErrorMsg(), 'newsError');
 }
 if ($controller->getNoticeMsg() !== '') {
-    $alertHelper->addAlert(Alert::TYPE_NOTE, $controller->getNoticeMsg(), 'newsNote');
+    $alertHelper->addNotice($controller->getNoticeMsg(), 'newsNote');
 }
 
 $smarty->assign('oPagination', $pagination)

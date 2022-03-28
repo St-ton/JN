@@ -10,8 +10,9 @@ require_once __DIR__ . '/includes/globalinclude.php';
 Shop::run();
 Shop::setPageType(PAGE_BEWERTUNG);
 $smarty     = Shop::Smarty();
+$db         = Shop::Container()->getDB();
 $controller = new ReviewController(
-    Shop::Container()->getDB(),
+    $db,
     Shop::Container()->getCache(),
     Shop::Container()->getAlertService(),
     $smarty
@@ -22,7 +23,7 @@ if ($controller->handleRequest() === true) {
 } else {
     $productID = Request::getInt('a', 0);
     try {
-        $product = (new Artikel())->fuelleArtikel($productID);
+        $product = (new Artikel($db))->fuelleArtikel($productID);
         header('Location: ' . ($product !== null ? $product->cURLFull : Shop::getURL()));
     } catch (Exception $e) {
         header('Location: ' . Shop::getURL());

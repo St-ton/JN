@@ -4,7 +4,7 @@ namespace JTL\Backend;
 
 /**
  * Class NotificationEntry
- * @package Backend
+ * @package JTL\Backend
  */
 class NotificationEntry
 {

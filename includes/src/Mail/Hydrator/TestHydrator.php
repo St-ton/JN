@@ -11,7 +11,6 @@ use JTL\Checkout\Versand;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Date;
 use JTL\Helpers\ShippingMethod;
-use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use JTL\Shop;
 use stdClass;
@@ -117,9 +116,9 @@ class TestHydrator extends DefaultsHydrator
      */
     private function getCheckbox(): CheckBox
     {
-        $id = $this->db->getSingleObject('SELECT kCheckbox FROM tcheckbox LIMIT 1');
+        $id = $this->db->getSingleInt('SELECT kCheckbox FROM tcheckbox LIMIT 1', 'kCheckbox');
 
-        return new CheckBox((int)($id->kCheckbox ?? 0));
+        return new CheckBox($id, $this->db);
     }
 
     /**
@@ -337,8 +336,8 @@ class TestHydrator extends DefaultsHydrator
         $order                   = new stdClass();
         $order->kWaehrung        = $languageID;
         $order->kSprache         = 1;
-        $order->fGuthaben        = 5;
-        $order->fGesamtsumme     = 433;
+        $order->fGuthaben        = '5.0000';
+        $order->fGesamtsumme     = '433.00';
         $order->cBestellNr       = 'Prefix-3432-Suffix';
         $order->cVersandInfo     = 'Optionale Information zum Versand';
         $order->cTracking        = 'Track232837';

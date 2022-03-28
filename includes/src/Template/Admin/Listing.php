@@ -23,17 +23,17 @@ final class Listing
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var ValidatorInterface
      */
-    private $validator;
+    private ValidatorInterface $validator;
 
     /**
      * @var Collection
      */
-    private $items;
+    private Collection $items;
 
     /**
      * Listing constructor.

@@ -67,14 +67,15 @@ class SmartyRenderer implements RendererInterface
             'model'         => $model,
             'Emailvorlage'  => $model
         ]);
-        $html = $type === 'text/html' || $type === 'html' ? $this->renderHTML($tplID) : '';
-        $text = $this->renderText($tplID);
-        $html = $this->renderLegalDataHTML($template, $languageID, $html);
-        $text = $this->renderLegalDataText($template, $languageID, $text);
+        $html    = $type === 'text/html' || $type === 'html' ? $this->renderHTML($tplID) : '';
+        $text    = $this->renderText($tplID);
+        $html    = $this->renderLegalDataHTML($template, $languageID, $html);
+        $text    = $this->renderLegalDataText($template, $languageID, $text);
+        $subject = $this->parseSubject($model->getSubject($languageID));
 
         $template->setHTML($html);
         $template->setText($text);
-        $template->setSubject($this->parseSubject($model->getSubject($languageID)));
+        $template->setSubject($this->getSmarty()->fetch('string:' . $subject));
     }
 
     /**

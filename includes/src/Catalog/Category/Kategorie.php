@@ -4,6 +4,7 @@ namespace JTL\Catalog\Category;
 
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
+use JTL\DB\SqlObject;
 use JTL\Helpers\Category;
 use JTL\Helpers\Request;
 use JTL\Helpers\URL;
@@ -138,6 +139,26 @@ class Kategorie
     public $cKurzbezeichnung = '';
 
     /**
+     * @var int
+     */
+    public $lft = 0;
+
+    /**
+     * @var int
+     */
+    public $rght = 0;
+
+    /**
+     * @var array|null
+     */
+    public $Unterkategorien;
+
+    /**
+     * @var bool|null
+     */
+    public $bAktiv = true;
+
+    /**
      * @param int  $id
      * @param int  $languageID
      * @param int  $customerGroupID
@@ -196,27 +217,25 @@ class Kategorie
 
             return $this;
         }
-        $db              = Shop::Container()->getDB();
-        $catSQL          = new stdClass();
-        $catSQL->cSELECT = '';
-        $catSQL->cJOIN   = '';
-        $catSQL->cWHERE  = '';
+        $db     = Shop::Container()->getDB();
+        $catSQL = new SqlObject();
         if (!$recall && $languageID > 0 && !$defaultLangActive) {
-            $catSQL->cSELECT = 'tkategoriesprache.cName AS cName_spr, 
+            $catSQL->setSelect('tkategoriesprache.cName AS cName_spr, 
                 tkategoriesprache.cBeschreibung AS cBeschreibung_spr, 
                 tkategoriesprache.cMetaDescription AS cMetaDescription_spr,
                 tkategoriesprache.cMetaKeywords AS cMetaKeywords_spr, 
-                tkategoriesprache.cTitleTag AS cTitleTag_spr, ';
-            $catSQL->cJOIN   = ' JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie';
-            $catSQL->cWHERE  = ' AND tkategoriesprache.kSprache = ' . $languageID;
+                tkategoriesprache.cTitleTag AS cTitleTag_spr, ');
+            $catSQL->setJoin(' JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie');
+            $catSQL->setWhere(' AND tkategoriesprache.kSprache = :lid');
+            $catSQL->addParam(':lid', $languageID);
         }
         $item = $db->getSingleObject(
-            'SELECT tkategorie.kKategorie, ' . $catSQL->cSELECT . ' tkategorie.kOberKategorie, 
+            'SELECT tkategorie.kKategorie, ' . $catSQL->getSelect() . ' tkategorie.kOberKategorie, 
                 tkategorie.nSort, tkategorie.dLetzteAktualisierung,
                 tkategorie.cName, tkategorie.cBeschreibung, tseo.cSeo, tkategoriepict.cPfad, tkategoriepict.cType,
-                atr.cWert AS customImgName
+                atr.cWert AS customImgName, tkategorie.lft, tkategorie.rght
                 FROM tkategorie
-                ' . $catSQL->cJOIN . '
+                ' . $catSQL->getJoin() . '
                 LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie
                     AND tkategoriesichtbarkeit.kKundengruppe = :cgid
                 LEFT JOIN tseo ON tseo.cKey = \'kKategorie\'
@@ -227,9 +246,9 @@ class Kategorie
                 LEFT JOIN tkategorieattribut atr
                     ON atr.kKategorie = tkategorie.kKategorie
                     AND atr.cName = \'bildname\' 
-                WHERE tkategorie.kKategorie = :kid ' . $catSQL->cWHERE . '
+                WHERE tkategorie.kKategorie = :kid ' . $catSQL->getWhere() . '
                     AND tkategoriesichtbarkeit.kKategorie IS NULL',
-            ['lid' => $languageID, 'kid' => $id, 'cgid' => $customerGroupID]
+            \array_merge(['lid' => $languageID, 'kid' => $id, 'cgid' => $customerGroupID], $catSQL->getParams())
         );
         if ($item === null) {
             if (!$recall && !$defaultLangActive) {
@@ -318,6 +337,7 @@ class Kategorie
             $this->cBildpfad      = $item->cPfad;
             $this->cBildURL       = \PFAD_KATEGORIEBILDER . $item->cPfad;
             $this->cBild          = $imageBaseURL . \PFAD_KATEGORIEBILDER . $item->cPfad;
+            $this->imageURL       = $imageBaseURL . \PFAD_KATEGORIEBILDER . $item->cPfad;
             $this->nBildVorhanden = 1;
             $this->generateAllImageSizes(true, 1, $this->cBildpfad);
         }
@@ -403,6 +423,8 @@ class Kategorie
             $this->kOberKategorie = (int)$this->kOberKategorie;
             $this->nSort          = (int)$this->nSort;
             $this->kSprache       = (int)$this->kSprache;
+            $this->lft            = (int)$this->lft;
+            $this->rght           = (int)$this->rght;
         }
 
         return $this;

@@ -29,7 +29,7 @@
             {/if}
 
             <div>
-                <form method="post" action="systemlog.php">
+                <form method="post" action="{$adminURL}/systemlog.php">
                     {$jtl_token}
                     {if $nTotalLogCount === 0}
                         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
@@ -133,7 +133,7 @@
             {include file='tpl_inc/pagination.tpl' pagination=$settingLogsPagination cParam_arr=['tab' => 'configlog'] isBottom=true}
         </div>
         <div role="tabpanel" class="tab-pane fade{if $cTab === 'config'} active show{/if}" id="config">
-            <form class="sttings" action="systemlog.php" method="post">
+            <form class="sttings" action="{$adminURL}/systemlog.php" method="post">
                 {$jtl_token}
                 <div class="subheading1">{__('systemlogLevel')}</div>
                 <hr class="mb-3">

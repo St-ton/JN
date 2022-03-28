@@ -249,32 +249,34 @@ final class Uninstaller
         $this->db->delete('tplugin_resources', 'kPlugin', $pluginID);
         $links = [];
         if ($newPluginID !== null && $newPluginID > 0) {
-            $links = $this->db->getObjects(
+            $links = $this->db->getInts(
                 'SELECT kLink
                     FROM tlink
-                    WHERE kPlugin IN (' . $pluginID . ', ' . $newPluginID . ')
-                        ORDER BY kLink'
+                    WHERE kPlugin IN (:pid, :npid)
+                        ORDER BY kLink',
+                'kLink',
+                ['pid' => $pluginID, 'npid' => $newPluginID]
             );
         }
         if (\count($links) === 2) {
             $languages = LanguageHelper::getAllLanguages(2, true);
-            foreach ($this->db->selectAll('tlinksprache', 'kLink', $links[0]->kLink) as $item) {
+            foreach ($this->db->selectAll('tlinksprache', 'kLink', $links[0]) as $item) {
                 $this->db->update(
                     'tlinksprache',
                     ['kLink', 'cISOSprache'],
-                    [$links[1]->kLink, $item->cISOSprache],
+                    [$links[1], $item->cISOSprache],
                     (object)['cSeo' => $item->cSeo]
                 );
                 $languageID = $languages[$item->cISOSprache]->kSprache;
                 $this->db->delete(
                     'tseo',
                     ['cKey', 'kKey', 'kSprache'],
-                    ['kLink', $links[0]->kLink, $languageID]
+                    ['kLink', $links[0], $languageID]
                 );
                 $this->db->update(
                     'tseo',
                     ['cKey', 'kKey', 'kSprache'],
-                    ['kLink', $links[1]->kLink, $languageID],
+                    ['kLink', $links[1], $languageID],
                     (object)['cSeo' => $item->cSeo]
                 );
             }

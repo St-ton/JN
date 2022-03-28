@@ -6,7 +6,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('FILESYSTEM_VIEW', true, true);
 
-use JTL\Alert\Alert;
 use JTL\Filesystem\AdapterFactory;
 use JTL\Filesystem\Filesystem;
 use JTL\Helpers\Form;
@@ -15,19 +14,18 @@ use JTL\Shop;
 use JTL\Shopsetting;
 
 $shopSettings = Shopsetting::getInstance();
-$alertHelper  = Shop::Container()->getAlertService();
+$alertService = Shop::Container()->getAlertService();
 
 Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 if (!empty($_POST) && Form::validateToken()) {
     $postData = Text::filterXSS($_POST);
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSectionSettings(CONF_FS, $_POST), 'saveSettings');
+    saveAdminSectionSettings(CONF_FS, $_POST);
     $shopSettings->reset();
 
     if (isset($postData['test'])) {
         try {
-            $config  = Shop::getSettings([CONF_FS])['fs'];
-            $factory = new AdapterFactory($config);
+            $factory = new AdapterFactory(Shop::getSettingSection(CONF_FS));
             $factory->setFtpConfig([
                 'ftp_host'     => $postData['ftp_hostname'],
                 'ftp_port'     => (int)($postData['ftp_port'] ?? 21),
@@ -48,16 +46,14 @@ if (!empty($_POST) && Form::validateToken()) {
             $fs         = new Filesystem($factory->getAdapter());
             $isShopRoot = $fs->fileExists('includes/config.JTL-Shop.ini.php');
             if ($isShopRoot) {
-                $alertHelper->addAlert(Alert::TYPE_INFO, __('fsValidConnection'), 'fsValidConnection');
+                $alertService->addInfo(__('fsValidConnection'), 'fsValidConnection');
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('fsInvalidShopRoot'), 'fsInvalidShopRoot');
+                $alertService->addError(__('fsInvalidShopRoot'), 'fsInvalidShopRoot');
             }
         } catch (Exception $e) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, $e->getMessage(), 'errorFS');
+            $alertService->addError($e->getMessage(), 'errorFS');
         }
     }
 }
-$config = getAdminSectionSettings(CONF_FS);
-Shop::Container()->getGetText()->localizeConfigs($config);
-$smarty->assign('oConfig_arr', $config)
-    ->display('filesystem.tpl');
+getAdminSectionSettings(CONF_FS);
+$smarty->display('filesystem.tpl');

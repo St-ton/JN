@@ -7,7 +7,6 @@ use JTL\Cart\Cart;
 use JTL\Checkout\Bestellung;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Session\Frontend;
-use PaymentMethod;
 
 /**
  * Class LegacyMethod
@@ -456,7 +455,7 @@ class LegacyMethod
     /**
      * @param string $moduleID
      * @param int    $nAgainCheckout
-     * @return PaymentMethod|MethodInterface|null
+     * @return MethodInterface|null
      */
     public static function create($moduleID, $nAgainCheckout = 0)
     {

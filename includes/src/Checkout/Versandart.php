@@ -164,13 +164,19 @@ class Versandart
         foreach ($members as $member) {
             $this->$member = $obj->$member;
         }
-        $this->kVersandart = (int)$this->kVersandart;
-        $localized         = $db->selectAll(
+        $this->kVersandart        = (int)$this->kVersandart;
+        $this->nSort              = (int)$this->nSort;
+        $this->kVersandberechnung = (int)$this->kVersandberechnung;
+        $this->nMinLiefertage     = (int)$this->nMinLiefertage;
+        $this->nMaxLiefertage     = (int)$this->nMaxLiefertage;
+        $localized                = $db->selectAll(
             'tversandartsprache',
             'kVersandart',
             $this->kVersandart
         );
         foreach ($localized as $translation) {
+            $translation->kVersandart = (int)$translation->kVersandart;
+
             $this->oVersandartSprache_arr[$translation->cISOSprache] = $translation;
         }
         // Versandstaffel
@@ -179,6 +185,10 @@ class Versandart
             'kVersandart',
             (int)$this->kVersandart
         );
+        foreach ($this->oVersandartStaffel_arr as $item) {
+            $item->kVersandartStaffel = (int)$item->kVersandartStaffel;
+            $item->kVersandart        = (int)$item->kVersandart;
+        }
 
         $this->loadShippingSurcharges();
 
@@ -232,14 +242,15 @@ class Versandart
         $db->delete('tversandartsprache', 'kVersandart', $id);
         $db->delete('tversandartzahlungsart', 'kVersandart', $id);
         $db->delete('tversandartstaffel', 'kVersandart', $id);
-        $db->query(
+        $db->queryPrepared(
             'DELETE tversandzuschlag, tversandzuschlagplz, tversandzuschlagsprache
                 FROM tversandzuschlag
                 LEFT JOIN tversandzuschlagplz 
                     ON tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
                 LEFT JOIN tversandzuschlagsprache 
                     ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                WHERE tversandzuschlag.kVersandart = ' . $id
+                WHERE tversandzuschlag.kVersandart = :fid',
+            ['fid' => $id]
         );
 
         return true;

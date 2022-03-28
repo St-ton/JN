@@ -90,7 +90,7 @@ build_create()
     echo "Create templates md5 csv files";
     create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/Evo";
     create_tpl_md5_hashfile "${REPOSITORY_DIR}/templates/NOVA";
-	
+
     echo "Executing migrations";
     build_migrate;
 
@@ -170,7 +170,7 @@ build_add_old_files()
 }
 
 build_create_shop_installer() {
-    composer install --no-dev -o -q -d ${REPOSITORY_DIR}/build/components/vue-installer;
+    npm --prefix ${REPOSITORY_DIR}/build/components/vue-installer install && npm --prefix ${REPOSITORY_DIR}/build/components/vue-installer run build;
 }
 
 build_create_md5_hashfile()
@@ -181,8 +181,26 @@ build_create_md5_hashfile()
     local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${VERSION}.csv";
 
     cd ${REPOSITORY_DIR};
-    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name ".travis.yml" -or -name "${VERSION}.csv" -or -name "composer.lock" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -v -f "${REPOSITORY_DIR}/build/scripts/md5_excludes.lst" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
-    cd ${CUR_PWD};
+    find -type f -not \( -name ".asset_cs" \
+      -or -name ".git*" -or -name ".idea*" \
+      -or -name ".php_cs" -or -name ".travis.yml" \
+      -or -name ".htaccess" \
+      -or -name "${VERSION}.csv" -or -name "composer.lock" \
+      -or -name "config.JTL-Shop.ini.initial.php" \
+      -or -name "phpunit.xml" -or -name "robots.txt" \
+      -or -name "rss.xml" -or -name "shopinfo.xml" \
+      -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" \
+    | grep -v -f "${REPOSITORY_DIR}/build/scripts/md5_excludes.lst" \
+    | xargs md5sum | awk '{ print $1";"$2; }' \
+    | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
+
+    find -type f -name '.htaccess' \
+	  -and \( \
+		-not -regex './.htaccess' \
+		-not -regex './build/.*' \
+		-not -regex './install/.*' \)  -printf "'%P'\n" \
+    | xargs md5sum | awk '{ print $1";"$2; }' \
+    | sort --field-separator=';' -k2 -k1 >> ${MD5_HASH_FILENAME};
 
     echo "  File checksums admin/includes/shopmd5files/${VERSION}.csv";
 }

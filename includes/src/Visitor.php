@@ -126,7 +126,7 @@ class Visitor
         $vis->cReferer          = self::getReferer();
         $vis->cUserAgent        = Text::filterXSS($_SERVER['HTTP_USER_AGENT'] ?? '');
         $vis->cBrowser          = self::getBrowser();
-        $vis->cAusstiegsseite   = $_SERVER['REQUEST_URI'] ?? '';
+        $vis->cAusstiegsseite   = Text::filterXSS($_SERVER['REQUEST_URI'] ?? '');
         $vis->dLetzteAktivitaet = (new DateTime())->format('Y-m-d H:i:s');
         $vis->kBesucherBot      = $botID;
 
@@ -148,7 +148,7 @@ class Visitor
         $vis->cID               = \md5($userAgent . Request::getRealIP());
         $vis->kKunde            = Frontend::getCustomer()->getID();
         $vis->kBestellung       = $vis->kKunde > 0 ? self::refreshCustomerOrderId((int)$vis->kKunde) : 0;
-        $vis->cEinstiegsseite   = $_SERVER['REQUEST_URI'] ?? '';
+        $vis->cEinstiegsseite   = Text::filterXSS($_SERVER['REQUEST_URI'] ?? '');
         $vis->cReferer          = self::getReferer();
         $vis->cUserAgent        = Text::filterXSS($_SERVER['HTTP_USER_AGENT'] ?? '');
         $vis->cBrowser          = self::getBrowser();

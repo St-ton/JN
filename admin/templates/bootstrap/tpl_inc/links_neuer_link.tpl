@@ -147,6 +147,9 @@
                                 <option value="_blank" {if (!isset($xPostVar_arr.linkTarget) && $Link->getTarget() === '_blank') || (isset($xPostVar_arr.linkTarget) && $xPostVar_arr.linkTarget === '_blank')}selected{/if}>{__('targetBlank')}</option>
                             </select>
                         </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                            {getHelpDesc cDesc=__('targetDesc')}
+                        </div>
                     </div>
                     {if !isset($Link->getLinkType()) || $Link->getLinkType() != LINKTYP_LOGIN}
                     <div class="form-group form-row align-items-center">

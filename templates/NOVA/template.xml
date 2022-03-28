@@ -136,7 +136,7 @@
                 <Option Value="N">Nein</Option>
             </Setting>
         </Section>
-        <Section Name="Custom Styles" Key="customstyles">
+        <Section Name="Colors" Key="colors">
             <Setting Description="colorPrimary" Key="primary" Type="colorpicker" Value=""/>
         </Section>
         <Section Name="Custom Sass" Key="customsass">

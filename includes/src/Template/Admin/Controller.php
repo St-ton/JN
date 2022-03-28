@@ -167,7 +167,7 @@ class Controller
         $updated      = $current->getFileVersion() !== $current->getVersion();
         $tplConfXML   = $this->config->getConfigXML($reader, $parentFolder);
         $oldConfig    = $this->config->loadConfigFromDB();
-        $oldColorConf = $oldConfig['customstyles'] ?? null;
+        $oldColorConf = $oldConfig['colors'] ?? null;
         $oldSassConf  = $oldConfig['customsass'] ?? null;
         foreach ($tplConfXML as $config) {
             foreach ($config->settings as $setting) {
@@ -206,17 +206,17 @@ class Controller
         }
         $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
         $config = $this->config->loadConfigFromDB();
-        if (!isset($config['customstyles']) && !isset($config['customsass'])) {
+        if (!isset($config['colors']) && !isset($config['customsass'])) {
             return;
         }
-        $newColorConf = $config['customstyles'] ?? null;
+        $newColorConf = $config['colors'] ?? null;
         $newSassConf  = $config['customsass'] ?? null;
         if ($updated === false && $newColorConf === $oldColorConf && $newSassConf === $oldSassConf) {
             return;
         }
         $vars          = \trim($config['customsass']['customVariables'] ?? '');
         $customContent = \trim($config['customsass']['customContent'] ?? '');
-        foreach ($config['customstyles'] ?? [] as $name => $color) {
+        foreach ($config['colors'] ?? [] as $name => $color) {
             if (!empty($color)) {
                 $vars .= "\n" . '$' . $name . ': ' . $color . ';';
             }

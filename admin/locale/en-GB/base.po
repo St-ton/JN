@@ -2166,7 +2166,7 @@ msgid "No input file provided."
 msgstr "No input file provided."
 
 msgid "Successfully compiled CSS."
-msgstr "Successfully compiled CSS."
+msgstr "CSS compiled successfully."
 
 msgid "%s.css was compiled successfully."
 msgstr "%s.css was compiled successfully."

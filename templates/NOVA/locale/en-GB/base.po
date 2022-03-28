@@ -193,20 +193,20 @@ msgstr "Show search in filters if filter has more than x items"
 msgid "Mobile Geräte: Menü in aktueller Kategorie öffnen"
 msgstr "Mobile devices: Open menu in current category"
 
-msgid "Custom Styles"
-msgstr "Styles"
+msgid "Colors"
+msgstr "Colors"
 
 msgid "Custom Sass"
-msgstr "Custom Sass"
+msgstr "Custom styles"
 
 msgid "Custom Sass Description"
-msgstr "Hier können Sie eigene Css-Anpassungen an Ihrem Template vornehmen. Informationen zu Variablen finden Sie <a href=\"https://guide.jtl-software.de/jtl-shop/optik/templates-anpassen/\">hier</a>. Ansonsten können Sie unter <a href=\"https://guide.jtl-software.de/jtl-shop/optik/templates-anpassen/\">„Custom Sass“</a> auch eigenes CSS bzw. Sass oder Scss definieren. <br><br>Beachten Sie auch folgende Punkte: <ul><li>Nutzen Sie für CSS-Anpassungen entweder diese Einstellungen oder das JTL-Theme Editor Plugin, aber nicht beides zusammen.</li><li><span class=\"text-warning\"> Achten Sie vor allem auch darauf den Browser-Cache zu leeren um die hier vorgenommenen Änderungen im Frontend sehen zu können.</li></ul>"
+msgstr "Here you can make your own CSS adjustments to your template. For information about valid variables, please see <a href=\"https://guide.jtl-software.de/jtl-shop/optik/templates-anpassen/\">Adjusting templates</a>. You can also define your own custom CSS, Sass or Scss. Learn how to do this <a href=\"https://guide.jtl-software.de/jtl-shop/optik/templates-anpassen/\">here</a>. <br><br>Please note: <ul><li>Use either the settings on this page or the plug-in JTL-Theme Editor for CSS adjustments. If you use both at the same time, there might be unwanted overlaps.</li><li><span class=\"text-warning\"> Empty the browser cache to see the changes made in the back end in the online shop.</li></ul>"
 
 msgid "colorPrimary"
-msgstr "Primary color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Clear this field to use the standard theme color.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Primary color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "customVariables"
-msgstr "Custom Variables"
+msgstr "Custom variables"
 
 msgid "customContent"
 msgstr "Custom Sass"

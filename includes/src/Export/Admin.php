@@ -208,7 +208,7 @@ class Admin
                     FROM twaehrung 
                     ORDER BY cStandard DESC'
             ))
-            ->assign('oKampagne_arr', \holeAlleKampagnen());
+            ->assign('oKampagne_arr', \holeAlleKampagnen(true));
 
         if (Request::postInt('kExportformat') > 0) {
             try {

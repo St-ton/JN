@@ -1694,6 +1694,10 @@ final class Shop
                         break;
                 }
             }
+            if ($link === null) {
+                self::$is404 = true;
+                self::$kLink = 0;
+            }
         } elseif (self::$fileName === null) {
             self::$fileName = 'seite.php';
             self::setPageType(\PAGE_EIGENE);

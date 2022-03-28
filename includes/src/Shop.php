@@ -736,19 +736,18 @@ final class Shop
         }
         $db      = self::Container()->getDB();
         $cache   = self::Container()->getCache();
-        $cacheID = 'plgnbtsrp';
+        $cacheID = 'plgnbtstrp';
         if (($plugins = $cache->get($cacheID)) === false) {
             $plugins = map($db->getObjects(
-                'SELECT kPlugin, bBootstrap, bExtension
+                'SELECT kPlugin AS id, bExtension AS modern
                     FROM tplugin
                     WHERE nStatus = :state
                       AND bBootstrap = 1
                     ORDER BY nPrio ASC',
                 ['state' => State::ACTIVATED]
             ) ?: [], static function ($e) {
-                $e->kPlugin    = (int)$e->kPlugin;
-                $e->bBootstrap = (int)$e->bBootstrap;
-                $e->bExtension = (int)$e->bExtension;
+                $e->id     = (int)$e->id;
+                $e->modern = (int)$e->modern;
 
                 return $e;
             });
@@ -758,8 +757,8 @@ final class Shop
         $extensionLoader = new PluginLoader($db, $cache);
         $pluginLoader    = new LegacyPluginLoader($db, $cache);
         foreach ($plugins as $plugin) {
-            $loader = $plugin->bExtension === 1 ? $extensionLoader : $pluginLoader;
-            if (($p = PluginHelper::bootstrap($plugin->kPlugin, $loader)) !== null) {
+            $loader = $plugin->modern === 1 ? $extensionLoader : $pluginLoader;
+            if (($p = PluginHelper::bootstrap($plugin->id, $loader)) !== null) {
                 $p->boot($dispatcher);
                 $p->loaded();
             }

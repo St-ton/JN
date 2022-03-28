@@ -181,7 +181,7 @@
                 config=$settings
                 name='einstellen'
                 a='saveSettings'
-                action='consent.php'
+                action=$adminURL|cat:'/consent.php'
                 buttonCaption=__('saveWithIcon')
                 tab='einstellungen'
                 title=__('settings')}

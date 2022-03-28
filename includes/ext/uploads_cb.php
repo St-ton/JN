@@ -2,6 +2,7 @@
 
 use JTL\Catalog\Product\Artikel;
 use JTL\Extensions\Upload\File;
+use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
@@ -29,11 +30,6 @@ if (!Form::validateToken() || !Nice::getInstance()->checkErweiterung(SHOP_ERWEIT
 if (Form::reachedUploadLimitPerHour(Shop::getSettingValue(CONF_ARTIKELDETAILS, 'upload_modul_limit'))) {
     retCode(false, 403, 'reached_limit_per_hour');
 }
-$uploadProtect            = new stdClass();
-$uploadProtect->cIP       = Request::getRealIP();
-$uploadProtect->dErstellt = 'NOW()';
-$uploadProtect->cTyp      = 'upload';
-Shop::Container()->getDB()->insert('tfloodprotect', $uploadProtect);
 
 if (!empty($_FILES)) {
     $blacklist = [

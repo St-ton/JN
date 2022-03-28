@@ -235,3 +235,6 @@ msgstr "Suche nach Vornamen, E-Mail-Adresse, Wohnort oder Postleitzahl"
 
 msgid "lastUsed"
 msgstr "Zuletzt verwendet"
+
+msgid "valid"
+msgstr "gültig"

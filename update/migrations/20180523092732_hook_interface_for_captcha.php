@@ -10,8 +10,6 @@ use JTL\Shop;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
-
 /**
  * Class Migration_20180523092732
  */

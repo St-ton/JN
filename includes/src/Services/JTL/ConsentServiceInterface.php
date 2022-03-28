@@ -10,5 +10,8 @@ interface ConsentServiceInterface
 {
     public function register();
 
+    /**
+     * @return bool
+     */
     public function hasConsent(): bool;
 }

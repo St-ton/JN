@@ -132,23 +132,23 @@ class LegacyCron
     }
 
     /**
-     * @param string $cJobArt
-     * @param string $dStart
-     * @param int    $nLimitM
+     * @param string $jobType
+     * @param string $startTime
+     * @param int    $lastLimit - "nLimitM"
      * @return int|bool
      */
-    public function speicherInJobQueue($cJobArt, $dStart, $nLimitM)
+    public function speicherInJobQueue(string $jobType, string $startTime, $lastLimit)
     {
-        if ($dStart && $nLimitM > 0 && \mb_strlen($cJobArt) > 0) {
+        if ($startTime && $lastLimit > 0 && \mb_strlen($jobType) > 0) {
             $ins                = new stdClass();
             $ins->cronID        = $this->kCron;
             $ins->foreignKeyID  = $this->kKey;
             $ins->foreignKey    = $this->cKey;
             $ins->tableName     = $this->cTabelle;
-            $ins->jobType       = $cJobArt;
-            $ins->startTime     = $dStart;
+            $ins->jobType       = $jobType;
+            $ins->startTime     = $startTime;
             $ins->tasksExecuted = 0;
-            $ins->taskLimit     = $nLimitM;
+            $ins->taskLimit     = $lastLimit;
             $ins->isRunning     = 0;
 
             return Shop::Container()->getDB()->insert('tjobqueue', $ins);

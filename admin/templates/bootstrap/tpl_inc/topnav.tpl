@@ -6,7 +6,7 @@
                 {foreach $oLinkOberGruppe->oLinkGruppe_arr as $oLinkGruppe}
                     <li {if $oLinkGruppe@first}class="subfirst"{/if}>
                         <a href="#"><span>{$oLinkGruppe->cName}</span></a>
-                        {if $oLinkGruppe->oLink_arr|@count > 0}
+                        {if $oLinkGruppe->oLink_arr|count > 0}
                             <ul>
                                 {foreach $oLinkGruppe->oLink_arr as $oLink}
                                     <li class="{if $oLink@first}subfirst {if !$oLink->cRecht|permission}noperm{/if}{/if}">

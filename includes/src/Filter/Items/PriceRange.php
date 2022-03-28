@@ -349,9 +349,7 @@ class PriceRange extends AbstractFilter
                 }
                 $sql  .= '0';
                 $count = \count($rates);
-                for ($x = 0; $x < $count; $x++) {
-                    $sql .= ')';
-                }
+                $sql  .= \str_repeat(')', $count);
             } elseif ($isMerchant) {
                 $sql .= 'ROUND(LEAST((tpreisdetail.fVKNetto * ' . $factor .
                     ') * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
@@ -646,7 +644,7 @@ class PriceRange extends AbstractFilter
     }
 
     /**
-     * has to be public for compatibility with filter_inc.php
+     * has to be public for compatibility
      *
      * @param float $fMax
      * @param float $fMin

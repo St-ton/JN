@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\DB;
 
@@ -74,39 +74,6 @@ class NiceDB implements DbInterface
     private $transactionCount = 0;
 
     /**
-     * @deprecated Use ReturnType::SINGLE_OBJECT instead
-     */
-    public const RET_SINGLE_OBJECT = ReturnType::SINGLE_OBJECT;
-    /**
-     * @deprecated Use ReturnType::ARRAY_OF_OBJECTS instead
-     */
-    public const RET_ARRAY_OF_OBJECTS = ReturnType::ARRAY_OF_OBJECTS;
-    /**
-     * @deprecated Use ReturnType::AFFECTED_ROWS instead
-     */
-    public const RET_AFFECTED_ROWS = ReturnType::AFFECTED_ROWS;
-    /**
-     * @deprecated Use ReturnType::LAST_INSERTED_ID instead
-     */
-    public const RET_LAST_INSERTED_ID = ReturnType::LAST_INSERTED_ID;
-    /**
-     * @deprecated Use ReturnType::SINGLE_ASSOC_ARRAY instead
-     */
-    public const RET_SINGLE_ASSOC_ARRAY = ReturnType::SINGLE_ASSOC_ARRAY;
-    /**
-     * @deprecated Use ReturnType::SINGLE_ASSOC_ARRAY instead
-     */
-    public const RET_ARRAY_OF_ASSOC_ARRAYS = ReturnType::ARRAY_OF_ASSOC_ARRAYS;
-    /**
-     * @deprecated Use ReturnType::QUERYSINGLE instead
-     */
-    public const RET_QUERYSINGLE = ReturnType::QUERYSINGLE;
-    /**
-     * @deprecated Use ReturnType::ARRAY_OF_BOTH_ARRAYS instead
-     */
-    public const RET_ARRAY_OF_BOTH_ARRAYS = ReturnType::ARRAY_OF_BOTH_ARRAYS;
-
-    /**
      * create DB Connection with default parameters
      *
      * @param string $host
@@ -135,6 +102,13 @@ class NiceDB implements DbInterface
         if (\DB_DEFAULT_SQL_MODE !== true) {
             $this->pdo->exec("SET SQL_MODE=''");
         }
+        if (\DB_STARTUP_SQL !== '') {
+            foreach (\explode(';', \DB_STARTUP_SQL) as $sql) {
+                if (!empty($sql)) {
+                    $this->pdo->exec($sql);
+                }
+            }
+        }
         $this->initDebugging($forceDebug);
         $this->isConnected = true;
         self::$instance    = $this;
@@ -161,6 +135,10 @@ class NiceDB implements DbInterface
                     ? " COLLATE '" . \DB_COLLATE . "'"
                     : '');
         }
+        // this was added for compatibility with 5.1.2 and php8.1
+        if (\PHP_VERSION_ID >= 80100) {
+            $options[PDO::ATTR_STRINGIFY_FETCHES] = true;
+        }
 
         return $options;
     }
@@ -182,25 +160,6 @@ class NiceDB implements DbInterface
         if (\ES_DB_LOGGING === true || \NICEDB_EXCEPTION_BACKTRACE === true) {
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
-    }
-
-    /**
-     * @param null|string $host
-     * @param null|string $user
-     * @param null|string $pass
-     * @param null|string $db
-     * @return NiceDB
-     * @throws Exception
-     * @deprecated since 5.0.0 use Shop::Container()->getDB() instead
-     */
-    public static function getInstance(
-        string $host = null,
-        string $user = null,
-        string $pass = null,
-        string $db = null
-    ): DbInterface {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return self::$instance ?? new self($host, $user, $pass, $db);
     }
 
     /**
@@ -422,18 +381,16 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      * @throws InvalidEntityNameException
-     * @throws InvalidArgumentException
      */
-    public function insertRow(string $tableName, $object, bool $echo = false): int
+    public function insertRow(string $tableName, object $object, bool $echo = false): int
     {
-        $start = \microtime(true);
+        $start   = \microtime(true);
+        $keys    = []; // column names
+        $values  = []; // column values - either sql statement like "now()" or prepared like ":my-var-name"
+        $assigns = []; // assignments from prepared var name to values, will be inserted in ->prepare()
         $this->validateEntityName($tableName);
         $this->validateDbObject($object);
-        $arr     = \get_object_vars($object);
-        $keys    = []; //column names
-        $values  = []; //column values - either sql statement like "now()" or prepared like ":my-var-name"
-        $assigns = []; //assignments from prepared var name to values, will be inserted in ->prepare()
-        foreach ($arr as $col => $val) {
+        foreach (\get_object_vars($object) as $col => $val) {
             $keys[] = '`' . $col . '`';
             if ($val === '_DBNULL_') {
                 $val = null;
@@ -448,14 +405,13 @@ class NiceDB implements DbInterface
                 $assigns[':' . $col] = $val;
             }
         }
-        $stmt = 'INSERT INTO ' . $tableName .
-            ' (' . \implode(', ', $keys) . ') VALUES (' . \implode(', ', $values) . ')';
+        $stmt = 'INSERT INTO ' . $tableName
+            . ' (' . \implode(', ', $keys) . ') VALUES (' . \implode(', ', $values) . ')';
         if ($echo) {
             echo $stmt;
         }
         try {
-            $s   = $this->pdo->prepare($stmt);
-            $res = $s->execute($assigns);
+            $res = $this->pdo->prepare($stmt)->execute($assigns);
         } catch (PDOException $e) {
             $this->handleException($e, $stmt, $assigns);
 
@@ -477,6 +433,65 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
+    public function insertBatch(string $tableName, array $objects, bool $upsert = false): int
+    {
+        $this->validateEntityName($tableName);
+        $keys    = []; //column names
+        $values  = []; //column values - either sql statement like "now()" or prepared like ":my-var-name"
+        $assigns = []; //assignments from prepared var name to values, will be inserted in ->prepare()
+        $i       = 0;
+        $j       = 0;
+        $v       = [];
+        foreach ($objects as $object) {
+            $this->validateDbObject($object);
+            foreach (\get_object_vars($object) as $col => $val) {
+                if ($i === 0) {
+                    $keys[] = '`' . $col . '`';
+                }
+                if ($val === '_DBNULL_') {
+                    $val = null;
+                } elseif ($val === null) {
+                    $val = '';
+                }
+                $lc = \mb_convert_case((string)$val, \MB_CASE_LOWER);
+                if ($lc === 'now()' || $lc === 'current_timestamp') {
+                    $values[] = $val;
+                } else {
+                    $values[]           = ':a' . $j;
+                    $assigns[':a' . $j] = $val;
+                }
+                ++$j;
+            }
+            $v[] = '(' . \implode(', ', $values) . ')';
+            ++$i;
+            $values = [];
+        }
+        if ($upsert) {
+            $stmt = 'REPLACE INTO ';
+        } else {
+            $stmt = 'INSERT IGNORE INTO ';
+        }
+        $stmt .= $tableName . ' (' . \implode(', ', $keys) . ') VALUES ' . \implode(',', $v);
+        try {
+            $s   = $this->pdo->prepare($stmt);
+            $res = $s->execute($assigns);
+        } catch (PDOException $e) {
+            $this->handleException($e, $stmt, $assigns);
+
+            return 0;
+        }
+        if (!$res) {
+            $this->logError($stmt);
+
+            return 0;
+        }
+
+        return $s->rowCount();
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function insert(string $tableName, $object, bool $echo = false): int
     {
         return $this->insertRow($tableName, $object, $echo);
@@ -485,7 +500,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function updateRow(string $tableName, $keyname, $keyvalue, $object, bool $echo = false): int
+    public function updateRow(string $tableName, $keyname, $keyvalue, object $object, bool $echo = false): int
     {
         $start = \microtime(true);
         $this->validateEntityName($tableName);
@@ -494,8 +509,8 @@ class NiceDB implements DbInterface
         }
         $this->validateDbObject($object);
         $arr     = \get_object_vars($object);
-        $updates = []; //list of "<column name>=?" or "<column name>=now()" strings
-        $assigns = []; //list of values to insert as param for ->prepare()
+        $updates = []; // list of "<column name>=?" or "<column name>=now()" strings
+        $assigns = []; // list of values to insert as param for ->prepare()
         if (!\is_array($arr) || !$keyname || !$keyvalue) {
             return -1;
         }
@@ -530,18 +545,18 @@ class NiceDB implements DbInterface
             echo $stmt;
         }
         try {
-            $s   = $this->pdo->prepare($stmt);
-            $res = $s->execute($assigns);
+            $statement = $this->pdo->prepare($stmt);
+            $res       = $statement->execute($assigns);
         } catch (PDOException $e) {
             $this->handleException($e, $stmt, $assigns);
 
             return -1;
         }
-        if (!$res) {
+        if ($res) {
+            $ret = $statement->rowCount();
+        } else {
             $this->logError($stmt);
             $ret = -1;
-        } else {
-            $ret = $s->rowCount();
         }
         $this->analyzeQuery($stmt, $assigns, null, \microtime(true) - $start);
 
@@ -551,7 +566,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function update(string $tableName, $keyname, $keyvalue, $object, bool $echo = false): int
+    public function update(string $tableName, $keyname, $keyvalue, object $object, bool $echo = false): int
     {
         return $this->updateRow($tableName, $keyname, $keyvalue, $object, $echo);
     }
@@ -560,7 +575,7 @@ class NiceDB implements DbInterface
      * @inheritdoc
      * @throws InvalidEntityNameException
      */
-    public function upsert(string $tableName, $object, array $excludeUpdate = [], bool $echo = false): int
+    public function upsert(string $tableName, object $object, array $excludeUpdate = [], bool $echo = false): int
     {
         $start = \microtime(true);
         $this->validateEntityName($tableName);
@@ -596,9 +611,9 @@ class NiceDB implements DbInterface
         if ($echo) {
             echo $sql;
         }
-        $stmt = $this->pdo->prepare($sql);
+        $statement = $this->pdo->prepare($sql);
         try {
-            $res = $stmt->execute($assigns);
+            $res = $statement->execute($assigns);
         } catch (PDOException $e) {
             $this->handleException($e, $sql, $assigns);
 
@@ -631,7 +646,7 @@ class NiceDB implements DbInterface
         $keyvalue2 = null,
         bool $echo = false,
         string $select = '*'
-    ) {
+    ): ?stdClass {
         $start = \microtime(true);
         $this->validateEntityName($tableName);
         foreach ((array)$keyname as $x) {
@@ -667,8 +682,8 @@ class NiceDB implements DbInterface
             echo $stmt;
         }
         try {
-            $s   = $this->pdo->prepare($stmt);
-            $res = $s->execute($assigns);
+            $statement = $this->pdo->prepare($stmt);
+            $res       = $statement->execute($assigns);
         } catch (PDOException $e) {
             $this->handleException($e, $stmt, $assigns);
 
@@ -679,7 +694,7 @@ class NiceDB implements DbInterface
 
             return null;
         }
-        $ret = $s->fetchObject();
+        $ret = $statement->fetchObject();
         $this->analyzeQuery($stmt, $assigns, null, \microtime(true) - $start);
 
         return $ret !== false ? $ret : null;
@@ -722,7 +737,7 @@ class NiceDB implements DbInterface
         string $select = '*',
         string $orderBy = '',
         $limit = ''
-    ) {
+    ): array {
         $this->validateEntityName($tableName);
         foreach ((array)$keys as $key) {
             $this->validateEntityName($key);
@@ -732,8 +747,11 @@ class NiceDB implements DbInterface
         $values = \is_array($values) ? $values : [$values];
         $kv     = [];
         if (\count($keys) !== \count($values)) {
-            throw new InvalidArgumentException('Number of keys must be equal to number of given keys. Got ' .
-                \count($keys) . ' key(s) and ' . \count($values) . ' value(s).');
+            throw new InvalidArgumentException(\sprintf(
+                'Number of keys must be equal to number of given keys. Got %d key(s) and %d value(s).',
+                \count($keys),
+                \count($values)
+            ));
         }
         foreach ($keys as $_key) {
             $kv[] = '`' . $_key . '`=:' . $_key;
@@ -767,15 +785,19 @@ class NiceDB implements DbInterface
         string $select = '*',
         string $orderBy = '',
         $limit = ''
-    ) {
+    ): array {
         return $this->selectArray($tableName, $keys, $values, $select, $orderBy, $limit);
     }
 
     /**
      * @inheritdoc
      */
-    public function executeQuery(string $stmt, int $return = ReturnType::DEFAULT, bool $echo = false, $fnInfo = null)
-    {
+    public function executeQuery(
+        string $stmt,
+        int $return = ReturnType::DEFAULT,
+        bool $echo = false,
+        ?callable $fnInfo = null
+    ) {
         return $this->_execute(0, $stmt, [], $return, $echo, $fnInfo);
     }
 
@@ -787,7 +809,7 @@ class NiceDB implements DbInterface
         array $params,
         int $return = ReturnType::DEFAULT,
         bool $echo = false,
-        $fnInfo = null
+        ?callable $fnInfo = null
     ) {
         return $this->_execute(1, $stmt, $params, $return, $echo, $fnInfo);
     }
@@ -800,7 +822,7 @@ class NiceDB implements DbInterface
         array $params,
         int $return = ReturnType::DEFAULT,
         bool $echo = false,
-        $fnInfo = null
+        ?callable $fnInfo = null
     ) {
         return $this->_execute(1, $stmt, $params, $return, $echo, $fnInfo);
     }
@@ -811,6 +833,16 @@ class NiceDB implements DbInterface
     public function getArrays(string $stmt, array $params = []): array
     {
         return $this->_execute(1, $stmt, $params, ReturnType::ARRAY_OF_ASSOC_ARRAYS);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInts(string $stmt, string $rowName, array $params = []): array
+    {
+        return \array_map(static function (array $ele) use ($rowName) {
+            return (int)$ele[$rowName];
+        }, $this->_execute(1, $stmt, $params, ReturnType::ARRAY_OF_ASSOC_ARRAYS));
     }
 
     /**
@@ -842,6 +874,16 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
+    public function getSingleInt(string $stmt, string $rowName, array $params = []): int
+    {
+        $res = $this->getSingleObject($stmt, $params);
+
+        return $res === null ? -1 : ((int)$res->$rowName);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getSingleArray(string $stmt, array $params = []): ?array
     {
         return $this->_execute(1, $stmt, $params, ReturnType::SINGLE_ASSOC_ARRAY);
@@ -868,7 +910,7 @@ class NiceDB implements DbInterface
      *
      * @param int           $type - Type [0 => query, 1 => prepared]
      * @param string        $stmt - Statement to be executed
-     * @param array|null    $params - An array of values with as many elements as there are bound parameters
+     * @param array         $params - An array of values with as many elements as there are bound parameters
      * @param int           $return - what should be returned.
      * @param bool          $echo print current stmt
      * @param null|callable $fnInfo
@@ -883,9 +925,14 @@ class NiceDB implements DbInterface
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws InvalidArgumentException
      */
-    protected function _execute(int $type, string $stmt, $params, int $return, bool $echo = false, $fnInfo = null)
-    {
-        $params = \is_array($params) ? $params : [];
+    protected function _execute(
+        int $type,
+        string $stmt,
+        array $params,
+        int $return,
+        bool $echo = false,
+        ?callable $fnInfo = null
+    ) {
         if (!\in_array($type, [0, 1], true)) {
             throw new InvalidArgumentException('$type parameter must be 0 or 1, "' . $type . '" given');
         }
@@ -958,7 +1005,7 @@ class NiceDB implements DbInterface
             case ReturnType::SINGLE_ASSOC_ARRAY:
                 return [];
             case ReturnType::SINGLE_OBJECT:
-                return new stdClass();
+                return null;
             case ReturnType::QUERYSINGLE:
                 return new PDOStatement();
             case ReturnType::DEFAULT:
@@ -1087,8 +1134,8 @@ class NiceDB implements DbInterface
             echo $stmt;
         }
         try {
-            $s   = $this->pdo->prepare($stmt);
-            $res = $s->execute($assigns);
+            $statement = $this->pdo->prepare($stmt);
+            $res       = $statement->execute($assigns);
         } catch (PDOException $e) {
             $this->handleException($e, $stmt);
 
@@ -1099,7 +1146,7 @@ class NiceDB implements DbInterface
 
             return -1;
         }
-        $ret = $s->rowCount();
+        $ret = $statement->rowCount();
         $this->analyzeQuery($stmt, $assigns, null, \microtime(true) - $start);
 
         return $ret;
@@ -1146,7 +1193,7 @@ class NiceDB implements DbInterface
      * @return PDOStatement|int
      * @deprecated since 5.1.0
      */
-    public function exQuery($stmt)
+    public function exQuery(string $stmt)
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use executeExQuery() instead.', \E_USER_DEPRECATED);
         return $this->executeExQuery($stmt);
@@ -1176,8 +1223,7 @@ class NiceDB implements DbInterface
     /**
      * Quotes a string for use in a query.
      *
-     * @param string $string
-     * @return string
+     * @inheritdoc
      */
     public function escape($string): string
     {
@@ -1190,7 +1236,7 @@ class NiceDB implements DbInterface
      * @return string
      * @deprecated since 5.1.0
      */
-    public function pdoEscape($string): string
+    public function pdoEscape(string $string): string
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use escape() instead.', \E_USER_DEPRECATED);
         return $this->escape($string);
@@ -1201,7 +1247,7 @@ class NiceDB implements DbInterface
      * @return string
      * @deprecated since 5.1.0
      */
-    public function realEscape($string): string
+    public function realEscape(string $string): string
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use escape() instead.', \E_USER_DEPRECATED);
         return $this->escape($string);
@@ -1324,13 +1370,13 @@ class NiceDB implements DbInterface
 
     /**
      * @param PDOStatement $stmt
-     * @param string       $parameter
+     * @param string|int   $parameter
      * @param mixed        $value
      * @param int|null     $type
      */
-    protected function _bind(PDOStatement $stmt, $parameter, $value, $type = null): void
+    protected function _bind(PDOStatement $stmt, $parameter, $value, ?int $type = null): void
     {
-        $parameter = $this->_bindName($parameter);
+        $parameter = \is_string($parameter) ? $this->_bindName($parameter) : $parameter;
 
         if ($type === null) {
             switch (true) {
@@ -1356,17 +1402,15 @@ class NiceDB implements DbInterface
      * @param string $name
      * @return string
      */
-    protected function _bindName($name)
+    protected function _bindName(string $name): string
     {
-        return \is_string($name)
-            ? (':' . \ltrim($name, ':'))
-            : $name;
+        return ':' . \ltrim($name, ':');
     }
 
     /**
      * @inheritdoc
      */
-    public function readableQuery($query, $params)
+    public function readableQuery(string $query, array $params): string
     {
         $keys   = [];
         $values = [];
@@ -1415,14 +1459,9 @@ class NiceDB implements DbInterface
      *
      * @param object $obj
      * @throws InvalidEntityNameException
-     * @throws InvalidArgumentException
      */
-    protected function validateDbObject($obj): void
+    protected function validateDbObject(object $obj): void
     {
-        if (!\is_object($obj)) {
-            $type = \gettype($obj);
-            throw new InvalidArgumentException('Got var of type ' . $type . ' where object was expected');
-        }
         foreach ($obj as $key => $value) {
             if (!$this->isValidEntityName($key)) {
                 throw new InvalidEntityNameException($key);
@@ -1467,7 +1506,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function serialize()
+    public function serialize(): ?string
     {
         return null;
     }
@@ -1475,7 +1514,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function unserialize($serialized)
+    public function unserialize($data): void
     {
     }
 }

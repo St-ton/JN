@@ -1,7 +1,6 @@
 <?php
 
 use JTL\Alert\Alert;
-use JTL\Session\Backend;
 use JTL\Backend\AuthToken;
 use JTL\Backend\Wizard\ExtensionInstaller;
 use JTL\Helpers\Request;
@@ -9,6 +8,8 @@ use JTL\License\Admin;
 use JTL\License\Checker;
 use JTL\License\Manager as LicenseManager;
 use JTL\Recommendation\Manager;
+use JTL\Session\Backend;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
@@ -38,8 +39,7 @@ if ($action === 'install') {
         $successMsg = $scope === Manager::SCOPE_BACKEND_PAYMENT_PROVIDER
             ? __('successInstallPaymentPlugin')
             : __('successInstallLegalPlugin');
-        $alertHelper->addAlert(
-            Alert::TYPE_SUCCESS,
+        $alertHelper->addSuccess(
             $successMsg,
             'successInstall',
             ['fadeOut' => Alert::FADE_NEVER, 'saveInSession' => true]
@@ -47,7 +47,7 @@ if ($action === 'install') {
         header('Refresh:0');
         exit;
     }
-    $alertHelper->addAlert(Alert::TYPE_WARNING, $errorMsg, 'errorInstall');
+    $alertHelper->addWarning($errorMsg, 'errorInstall');
 } elseif ($action === 'auth') {
     $token->requestToken(
         Backend::get('jtl_token'),

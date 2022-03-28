@@ -75,8 +75,8 @@
                     </noscript>
                 {/if}
 
-                {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
-                    {foreach $smarty.session.Sprachen as $language}
+                {if JTL\Session\Frontend::getLanguages()|count > 1}
+                    {foreach JTL\Session\Frontend::getLanguages() as $language}
                         <link rel="alternate" hreflang="{$language->getIso639()}" href="{$language->getUrl()}">
                     {/foreach}
                 {/if}

@@ -18,97 +18,97 @@ class ListingItem
     /**
      * @var string
      */
-    private $path = '';
+    private string $path = '';
 
     /**
      * @var string
      */
-    private $dir = '';
+    private string $dir = '';
 
     /**
      * @var string
      */
-    private $name = '';
+    private string $name = '';
 
     /**
-     * @var Version
+     * @var Version|null
      */
-    private $version;
+    private ?Version $version = null;
 
     /**
-     * @var Version
+     * @var Version|null
      */
-    private $maxShopVersion;
+    private ?Version $maxShopVersion = null;
 
     /**
-     * @var Version
+     * @var Version|null
      */
-    private $minShopVersion;
-
-    /**
-     * @var string
-     */
-    private $description = '';
+    private ?Version $minShopVersion = null;
 
     /**
      * @var string
      */
-    private $author = '';
+    private string $description = '';
+
+    /**
+     * @var string
+     */
+    private string $author = '';
 
     /**
      * @var string|null
      */
-    private $preview = '';
+    private ?string $preview = '';
 
     /**
      * @var string|null
      */
-    private $url = '';
+    private ?string $url = '';
 
     /**
      * @var int
      */
-    private $id = 0;
-
-    /**
-     * @var string
-     */
-    private $framework = '';
+    private int $id = 0;
 
     /**
      * @var string|null
      */
-    private $exsid;
+    private ?string $framework = '';
+
+    /**
+     * @var string|null
+     */
+    private ?string $exsid;
 
     /**
      * @var int
      */
-    private $errorCode = 0;
+    private int $errorCode = 0;
 
     /**
      * @var string
      */
-    private $errorMessage = '';
+    private string $errorMessage = '';
 
     /**
      * @var bool
      */
-    private $hasError = false;
+    private bool $hasError = false;
 
     /**
      * @var bool
      */
-    private $available = true;
+    private bool $available = true;
 
     /**
      * @var bool
      */
-    private $active = false;
+    private bool $active = false;
 
     /**
      * @var int
      */
-    private $state = State::NONE;
+    private int $state = State::NONE;
 
     /**
      * @var bool|Version
@@ -118,57 +118,57 @@ class ListingItem
     /**
      * @var bool
      */
-    private $hasLicenseCheck = false;
+    private bool $hasLicenseCheck = false;
 
     /**
      * @var bool
      */
-    private $isChild = false;
+    private bool $isChild = false;
 
     /**
      * @var string
      */
-    private $license = '';
+    private string $license = '';
 
     /**
      * @var string|null
      */
-    private $updateFromDir;
+    private ?string $updateFromDir;
 
     /**
      * @var DateTime|null
      */
-    private $dateInstalled;
+    private ?DateTime $dateInstalled;
 
     /**
      * @var int
      */
-    private $langVarCount = 0;
+    private int $langVarCount = 0;
 
     /**
      * @var int
      */
-    private $linkCount = 0;
+    private int $linkCount = 0;
 
     /**
      * @var int
      */
-    private $optionsCount = 0;
+    private int $optionsCount = 0;
 
     /**
      * @var string|null
      */
-    private $readmeMD;
+    private ?string $readmeMD;
 
     /**
      * @var string|null
      */
-    private $licenseMD;
+    private ?string $licenseMD;
 
     /**
      * @var string|null
      */
-    private $parent;
+    private ?string $parent;
 
     /**
      * @var array|bool|null

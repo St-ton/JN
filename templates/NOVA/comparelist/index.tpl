@@ -19,7 +19,7 @@
             {include file='snippets/extension.tpl'}
         {/block}
 
-        {if $oVergleichsliste->oArtikel_arr|@count > 0}
+        {if $oVergleichsliste->oArtikel_arr|count > 0}
             {block name='comparelist-index-filter'}
                 {opcMountPoint id='opc_before_filter' inContainer=false}
                 {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
@@ -184,7 +184,7 @@
                                                     {/block}
                                                 </td>
                                             {elseif $oArtikel->$row['key'] !== ''}
-                                                <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
+                                                <td style="min-width: {$Einstellungen.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
                                                     {if $row['key'] === 'fArtikelgewicht' || $row['key'] === 'fGewicht'}
                                                         {block name='comparelist-index-products-row-weight'}
                                                             {$oArtikel->$row['key']} {lang key='weightUnit' section='comparelist'}
@@ -231,7 +231,7 @@
                                                     {$oMerkmale->cName|truncate:20}
                                                 </td>
                                                 {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
-                                                    <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
+                                                    <td style="min-width: {$Einstellungen.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
                                                         {if count($oArtikel->oMerkmale_arr) > 0}
                                                             {foreach $oArtikel->oMerkmale_arr as $oMerkmaleArtikel}
                                                                 {if $oMerkmale->cName == $oMerkmaleArtikel->cName}
@@ -259,7 +259,7 @@
                                                 {/block}
                                                 {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
                                                     <td data-product-id-cl="{$oArtikel->kArtikel}">
-                                                        {if isset($oArtikel->oVariationenNurKind_arr) && $oArtikel->oVariationenNurKind_arr|@count > 0}
+                                                        {if isset($oArtikel->oVariationenNurKind_arr) && $oArtikel->oVariationenNurKind_arr|count > 0}
                                                             {foreach $oArtikel->oVariationenNurKind_arr as $oVariationenArtikel}
                                                                 {if $oVariationen->cName == $oVariationenArtikel->cName}
                                                                     {foreach $oVariationenArtikel->Werte as $oVariationsWerte}
@@ -271,14 +271,14 @@
                                                                     {/foreach}
                                                                 {/if}
                                                             {/foreach}
-                                                        {elseif $oArtikel->Variationen|@count > 0}
+                                                        {elseif $oArtikel->Variationen|count > 0}
                                                             {foreach $oArtikel->Variationen as $oVariationenArtikel}
                                                                 {if $oVariationen->cName == $oVariationenArtikel->cName}
                                                                     {foreach $oVariationenArtikel->Werte as $oVariationsWerte}
                                                                         {$oVariationsWerte->cName}
-                                                                        {if $Einstellungen_Vergleichsliste.artikeldetails.artikel_variationspreisanzeige == 1 && $oVariationsWerte->fAufpreisNetto != 0}
+                                                                        {if $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 1 && $oVariationsWerte->fAufpreisNetto != 0}
                                                                             ({$oVariationsWerte->cAufpreisLocalized[$NettoPreise]}{if !empty($oVariationsWerte->cPreisVPEWertAufpreis[$NettoPreise])}, {$oVariationsWerte->cPreisVPEWertAufpreis[$NettoPreise]}{/if})
-                                                                        {elseif $Einstellungen_Vergleichsliste.artikeldetails.artikel_variationspreisanzeige == 2 && $oVariationsWerte->fAufpreisNetto != 0}
+                                                                        {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 2 && $oVariationsWerte->fAufpreisNetto != 0}
                                                                             ({$oVariationsWerte->cPreisInklAufpreis[$NettoPreise]}{if !empty($oVariationsWerte->cPreisVPEWertInklAufpreis[$NettoPreise])}, {$oVariationsWerte->cPreisVPEWertInklAufpreis[$NettoPreise]}{/if})
                                                                         {/if}
                                                                         {if !$oVariationsWerte@last},{/if}

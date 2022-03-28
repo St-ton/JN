@@ -335,31 +335,6 @@ class ProductFilter
     }
 
     /**
-     * for compatibility reasons only - called when oSprache_arr is directly read from ProductFilter instance
-     *
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function getLanguages(): array
-    {
-        return $this->filterConfig->getLanguages();
-    }
-
-    /**
-     * for compatibility reasons only - called when oSprache_arr is directly set on ProductFilter instance
-     *
-     * @param array $languages
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function setLanguages(array $languages): array
-    {
-        $this->filterConfig->setLanguages($languages);
-
-        return $languages;
-    }
-
-    /**
      * @return ProductFilterSQLInterface
      */
     public function getFilterSQL(): ProductFilterSQLInterface
@@ -978,7 +953,7 @@ class ProductFilter
     /**
      * get filters that can be displayed at content level
      *
-     * @return array|FilterInterface[]
+     * @return FilterInterface[]
      */
     public function getAvailableContentFilters(): array
     {
@@ -989,8 +964,7 @@ class ProductFilter
 
         return \array_filter(
             $this->filters,
-            static function ($f) use ($templateSettings) {
-                /** @var FilterInterface $f */
+            static function (FilterInterface $f) use ($templateSettings) {
                 return $f->getVisibility() === Visibility::SHOW_ALWAYS
                     || $f->getVisibility() === Visibility::SHOW_CONTENT
                     || ($f->getClassName() === PriceRange::class
@@ -1457,6 +1431,7 @@ class ProductFilter
             && !$this->hasSearchQuery()
             && !$this->hasCharacteristicValue()
             && !$this->hasSearchSpecial()
+            && !(\get_class($this->getBaseState()) === DummyState::class && $this->getBaseState()->isInitialized())
         ) {
             // we have a manufacturer filter that doesn't filter anything
             if ($this->manufacturerFilter->getSeo($languageID) !== null) {
@@ -1720,7 +1695,7 @@ class ProductFilter
                 $productsPerPage = null;
             }
             foreach ($productKeys->forPage($this->nSeite, $productsPerPage) as $id) {
-                $productList->push((new Artikel())->fuelleArtikel($id, $opt));
+                $productList->push((new Artikel($this->db))->fuelleArtikel($id, $opt));
             }
             $productList = $productList->filter();
             $this->searchResults->setVisibleProductCount($productList->count());

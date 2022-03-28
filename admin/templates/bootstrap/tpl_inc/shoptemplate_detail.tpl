@@ -1,4 +1,4 @@
-<form action="shoptemplate.php" method="post" enctype="multipart/form-data" id="form_settings">
+<form action="{$adminURL}/shoptemplate.php" method="post" enctype="multipart/form-data" id="form_settings">
     {$jtl_token}
     <div id="settings" class="settings">
         {if $template->getType() === 'admin' || ($template->getType() !== 'mobil' && $template->isResponsive())}
@@ -108,7 +108,7 @@
         <div class="save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <a class="btn btn-outline-primary btn-block" href="shoptemplate.php">
+                    <a class="btn btn-outline-primary btn-block" href="{$adminURL}/shoptemplate.php">
                         {__('cancelWithIcon')}
                     </a>
                 </div>

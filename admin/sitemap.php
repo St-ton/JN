@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Customer\CustomerGroup;
 use JTL\Language\LanguageHelper;
@@ -9,7 +9,6 @@ use JTL\Sitemap\ItemRenderers\DefaultRenderer;
 use JTL\Sitemap\SchemaRenderers\DefaultSchemaRenderer;
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'sitemapexport.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
 
 @ini_set('max_execution_time', '0');
@@ -33,7 +32,7 @@ $exporter->generate(
 );
 
 if (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
-    header('Location: sitemapexport.php?update=1');
+    header('Location: ' . Shop::getAdminURL() . '/sitemapexport.php?update=1');
 } else {
     header('Cache-Control: no-cache, must-revalidate');
     header('Content-type: application/xml');

@@ -317,6 +317,9 @@ msgstr "Faulty cookie settings: login not possible. Please contact the Support t
 msgid "errorSessionExpired"
 msgstr "Your session has been reset. Please log in again."
 
+msgid "errorLoginTemporaryNotPossible"
+msgstr "Login temporarily unavailable."
+
 msgid "row"
 msgstr "Row"
 
@@ -358,6 +361,9 @@ msgstr "Action"
 
 msgid "available"
 msgstr "Available"
+
+msgid "Version %s available"
+msgstr "Version %s available"
 
 msgid "html"
 msgstr "HTML"
@@ -1979,9 +1985,6 @@ msgstr "Bank transfer"
 msgid "za_nachnahme_jtl"
 msgstr "Cash on Delivery"
 
-msgid "za_kreditkarte_jtl"
-msgstr "Creditcard"
-
 msgid "za_rechnung_jtl"
 msgstr "Invoice Payment"
 
@@ -2158,3 +2161,6 @@ msgstr "Cannot open archive"
 
 msgid "pluginInstallInvalidArchive"
 msgstr "Invalid archive"
+
+msgid "No input file provided."
+msgstr "No input file provided."

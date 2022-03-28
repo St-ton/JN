@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('contactformSubject') cBeschreibung=__('contanctformSubjectDesc')}
 <div id="content">
-    <form name="einstellen" method="post" action="kontaktformular.php">
+    <form name="einstellen" method="post" action="{$adminURL}/kontaktformular.php">
         {$jtl_token}
         <input type="hidden" name="kKontaktBetreff" value="{if isset($Betreff->kKontaktBetreff)}{$Betreff->kKontaktBetreff}{/if}" />
         <input type="hidden" name="betreff" value="1" />

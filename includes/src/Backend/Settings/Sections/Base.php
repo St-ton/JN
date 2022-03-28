@@ -2,59 +2,378 @@
 
 namespace JTL\Backend\Settings\Sections;
 
+use JTL\Backend\Settings\Item;
+use JTL\Backend\Settings\Manager;
 use JTL\DB\DbInterface;
+use JTL\DB\SqlObject;
+use JTL\Helpers\Text;
+use JTL\L10n\GetText;
+use JTL\MagicCompatibilityTrait;
 use JTL\Smarty\JTLSmarty;
+use stdClass;
+use function Functional\filter;
+use function Functional\flatten;
 
 /**
  * Class Base
- * @package Backend\Settings
+ * @package JTL\Backend\Settings\Sections
  */
-class Base implements Section
+class Base implements SectionInterface
 {
-    /**
-     * @var bool
-     */
-    public $hasSectionMarkup = false;
+    use MagicCompatibilityTrait;
 
     /**
      * @var bool
      */
-    public $hasValueMarkup = false;
+    protected bool $hasSectionMarkup = false;
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var JTLSmarty
      */
-    protected $smarty;
+    protected JTLSmarty $smarty;
 
     /**
-     * SettingSection constructor.
-     * @param DbInterface $db
-     * @param JTLSmarty   $smarty
+     * @var int
      */
-    public function __construct(DbInterface $db, JTLSmarty $smarty)
+    protected int $id;
+
+    /**
+     * @var string
+     */
+    protected string $name = '';
+
+    /**
+     * @var string
+     */
+    protected string $sectionMarkup = '';
+
+    /**
+     * @var int
+     */
+    protected int $menuID = 0;
+
+    /**
+     * @var int
+     */
+    protected int $sortID = 0;
+
+    /**
+     * @var int
+     */
+    protected int $configCount = 0;
+
+    /**
+     * @var string
+     */
+    protected string $permission;
+
+    /**
+     * @var array
+     */
+    protected array $configData;
+
+    /**
+     * @var Manager
+     */
+    protected Manager $manager;
+
+    /**
+     * @var GetText
+     */
+    protected GetText $getText;
+
+    /**
+     * @var Item[]
+     */
+    protected array $items = [];
+
+    /**
+     * @var Subsection[]
+     */
+    protected array $subsections = [];
+
+    /**
+     * @var string|null
+     */
+    protected ?string $url;
+
+    /**
+     * @var int
+     */
+    protected int $updateErrors = 0;
+
+    /**
+     * @var bool
+     */
+    protected bool $loaded = false;
+
+    /**
+     * @var string[]
+     */
+    protected array $mapping = [
+        'cName'                 => 'Name',
+        'kEinstellungenSektion' => 'SectionID',
+        'nSort'                 => 'Sort',
+        'anz'                   => 'ConfigCount',
+        'kAdminmenueGruppe'     => 'MenuID'
+    ];
+
+    /**
+     * @inheritdoc
+     */
+    public function __construct(Manager $manager, int $sectionID)
     {
-        $this->db     = $db;
-        $this->smarty = $smarty;
+        $this->manager = $manager;
+        $this->db      = $manager->getDB();
+        $this->smarty  = $manager->getSmarty();
+        $this->getText = $manager->getGetText();
+        $this->id      = $sectionID;
+        $this->initBaseData();
     }
 
     /**
      * @inheritdoc
      */
-    public function validate($conf, &$confValue): bool
+    public function load(?SqlObject $sql = null): void
     {
-        return true;
+        if ($sql === null) {
+            $sql = new SqlObject();
+            $sql->setWhere('ec.kEinstellungenSektion = :sid');
+            $sql->addParam('sid', $this->id);
+        }
+        if ($sql->getOrder() === '') {
+            $sql->setOrder('ec.nSort');
+        }
+        $data        = $this->db->getObjects(
+            'SELECT ec.*, e.cWert AS currentValue, ted.cWert AS defaultValue
+                FROM teinstellungenconf AS ec
+                LEFT JOIN teinstellungen AS e
+                    ON e.cName = ec.cWertName
+                LEFT JOIN teinstellungen_default AS ted
+                    ON ted.cName = ec.cWertName
+                WHERE ' . $sql->getWhere() . '
+                GROUP BY ec.kEinstellungenConf
+                ORDER BY ' . $sql->getOrder(),
+            $sql->getParams()
+        );
+        $configItems = [];
+        foreach ($data as $item) {
+            if ($item->cConf === 'N' && ($item->cInputTyp === '' || $item->cInputTyp === null)) {
+                $config = new Subsection();
+            } else {
+                $config = new Item();
+            }
+            $config->parseFromDB($item);
+            $this->getText->localizeConfig($config);
+            if ($config->getInputType() === 'listbox' && $config->getID() === 492) {
+                $config->setValues($this->db->getObjects(
+                    'SELECT kKundengruppe AS cWert, cName
+                        FROM tkundengruppe
+                        ORDER BY cStandard DESC'
+                ));
+            } elseif (\in_array($config->getInputType(), ['selectbox', 'listbox'], true)) {
+                $setValues = $this->db->selectAll(
+                    'teinstellungenconfwerte',
+                    'kEinstellungenConf',
+                    $config->getID(),
+                    '*',
+                    'nSort'
+                );
+                $this->getText->localizeConfigValues($config, $setValues);
+                $config->setValues($setValues);
+            } elseif ($config->getInputType() === 'selectkdngrp') {
+                $config->setValues($this->db->getObjects(
+                    'SELECT kKundengruppe, cName
+                        FROM tkundengruppe
+                        ORDER BY cStandard DESC'
+                ));
+            }
+            if ($config->getInputType() === 'listbox') {
+                $setValue = $this->db->selectAll(
+                    'teinstellungen',
+                    ['kEinstellungenSektion', 'cName'],
+                    [$config->getConfigSectionID(), $config->getValueName()]
+                );
+                $config->setSetValue($setValue);
+            } elseif ($config->getInputType() === 'selectkdngrp') {
+                $setValue = $this->db->selectAll(
+                    'teinstellungen',
+                    ['kEinstellungenSektion', 'cName'],
+                    [$config->getConfigSectionID(), $config->getValueName()]
+                );
+                $config->setSetValue($setValue);
+            } else {
+                $setValue = $this->db->select(
+                    'teinstellungen',
+                    'kEinstellungenSektion',
+                    $config->getConfigSectionID(),
+                    'cName',
+                    $config->getValueName()
+                );
+                $config->setSetValue(isset($setValue->cWert)
+                    ? Text::htmlentities($setValue->cWert)
+                    : null);
+            }
+            $configItems[] = $config;
+            $this->items[] = $config;
+        }
+        $this->subsections = [];
+        $currentSubsection = null;
+        foreach ($configItems as $item) {
+            if (\get_class($item) === Subsection::class) {
+                if ($currentSubsection !== null) {
+                    $this->subsections[] = $currentSubsection;
+                }
+                $currentSubsection = $item;
+            } else {
+                if ($currentSubsection === null) {
+                    $currentSubsection = new Subsection();
+                }
+                $currentSubsection->addItem($item);
+            }
+        }
+        $this->subsections[] = $currentSubsection;
+        $this->subsections   = \array_filter($this->subsections);
+        $this->loaded        = true;
+    }
+
+    protected function initBaseData(): void
+    {
+        $data = $this->db->select('teinstellungensektion', 'kEinstellungenSektion', $this->id);
+        if ($data !== null) {
+            $this->configCount = (int)$this->db->getSingleObject(
+                "SELECT COUNT(*) AS cnt
+                    FROM teinstellungenconf
+                    WHERE kEinstellungenSektion = :sid
+                        AND cConf = 'Y'
+                        AND nStandardAnzeigen = 1
+                        AND nModul = 0",
+                ['sid' => $this->id]
+            )->cnt;
+            $this->name        = \__('configsection_' . $this->id);
+            $this->menuID      = (int)$data->kAdminmenueGruppe;
+            $this->sortID      = (int)$data->nSort;
+            $this->permission  = $data->cRecht;
+        }
+    }
+
+    /**
+     * @param int   $min
+     * @param int   $max
+     * @param Item  $item
+     * @param mixed $confValue
+     * @return bool
+     */
+    protected function validateNumberRange(int $min, int $max, Item $item, $confValue): bool
+    {
+        if ($min <= $confValue && $confValue <= $max) {
+            return true;
+        }
+        $this->manager->getAlertService()->addDanger(
+            \sprintf(\__('errrorNumberRange'), \__($item->getName()), $min, $max),
+            'errrorNumberRange'
+        );
+
+        return false;
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function validate(Item $conf, $confValue): bool
+    {
+        switch ($conf->getValueName()) {
+            case 'bilder_jpg_quali':
+                return $this->validateNumberRange(0, 100, $conf, $confValue);
+            case 'cron_freq':
+                return $this->validateNumberRange(10, 999999, $conf, $confValue);
+            default:
+                return true;
+        }
     }
 
     /**
      * @inheritdoc
      */
-    public function setValue(&$conf, $value): void
+    public function update(array $data, bool $filter = true, array $tags = [\CACHING_GROUP_OPTION]): array
     {
+        $unfiltered = $data;
+        if ($filter === true) {
+            $data = Text::filterXSS($data);
+        }
+        $value   = new stdClass();
+        $updated = [];
+        if ($this->loaded === false) {
+            $this->load();
+        }
+        foreach ($this->getItems() as $item) {
+            $id = $item->getValueName();
+            if (!isset($data[$id])) {
+                continue;
+            }
+            $value->cWert                 = $data[$id];
+            $value->cName                 = $id;
+            $value->kEinstellungenSektion = $item->getConfigSectionID();
+            $this->setConfigValue($value, $item->getInputType(), $data, $unfiltered);
+            if (!$this->validate($item, $data[$id])) {
+                $this->updateErrors++;
+                continue;
+            }
+            if (\is_array($data[$id])) {
+                $this->manager->addLogListbox($id, $data[$id]);
+            }
+            $this->db->delete(
+                'teinstellungen',
+                ['kEinstellungenSektion', 'cName'],
+                [$item->getConfigSectionID(), $id]
+            );
+            if (\is_array($data[$id])) {
+                foreach ($data[$id] as $cWert) {
+                    $value->cWert = $cWert;
+                    $this->db->insert('teinstellungen', $value);
+                }
+            } else {
+                $this->db->insert('teinstellungen', $value);
+                $this->manager->addLog(
+                    $id,
+                    $item->getCurrentValue(),
+                    $data[$id]
+                );
+            }
+            $updated[] = ['id' => $id, 'value' => $data[$id]];
+        }
+
+        return $updated;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setConfigValue(stdClass $object, string $type, array $data, array $unfiltered): void
+    {
+        switch ($type) {
+            case 'kommazahl':
+                $object->cWert = (float)\str_replace(',', '.', $object->cWert);
+                break;
+            case 'zahl':
+            case 'number':
+                $object->cWert = (int)$object->cWert;
+                break;
+            case 'text':
+                $object->cWert = \mb_substr($object->cWert, 0, 255);
+                break;
+            case 'pass':
+                $object->cWert = $unfiltered[$object->cName];
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -62,14 +381,257 @@ class Base implements Section
      */
     public function getSectionMarkup(): string
     {
-        return '';
+        return $this->sectionMarkup;
     }
 
     /**
      * @inheritdoc
      */
-    public function getValueMarkup($conf): string
+    public function setSectionMarkup(string $markup): void
     {
-        return '';
+        $this->sectionMarkup = $markup;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function filter(string $filter): void
+    {
+        $keys = [
+            'configgroup_5_product_question'  => [
+                'configgroup_5_product_question',
+                'artikeldetails_fragezumprodukt_anzeigen',
+                'artikeldetails_fragezumprodukt_email',
+                'produktfrage_abfragen_anrede',
+                'produktfrage_abfragen_vorname',
+                'produktfrage_abfragen_nachname',
+                'produktfrage_abfragen_firma',
+                'produktfrage_abfragen_tel',
+                'produktfrage_abfragen_fax',
+                'produktfrage_abfragen_mobil',
+                'produktfrage_kopiekunde',
+                'produktfrage_sperre_minuten',
+                'produktfrage_abfragen_captcha'
+            ],
+            'configgroup_5_product_available' => [
+                'configgroup_5_product_available',
+                'benachrichtigung_nutzen',
+                'benachrichtigung_abfragen_vorname',
+                'benachrichtigung_abfragen_nachname',
+                'benachrichtigung_sperre_minuten',
+                'benachrichtigung_abfragen_captcha',
+                'benachrichtigung_min_lagernd'
+            ]
+        ];
+        if (!\extension_loaded('soap')) {
+            $keys['configgroup_6_vat_id'] = [
+                'shop_ustid_bzstpruefung',
+                'shop_ustid_force_remote_check'
+            ];
+        }
+
+        if ($filter !== '' && isset($keys[$filter])) {
+            $keysToFilter = $keys[$filter];
+        } else {
+            $keysToFilter = flatten($keys);
+        }
+
+        $this->items = filter($this->getItems(), static function (Item $e) use ($keysToFilter) {
+            return !\in_array($e->getValueName(), $keysToFilter, true);
+        });
+        foreach ($this->getSubsections() as $subsection) {
+            foreach ($subsection->getItems() as $i => $item) {
+                if (\in_array($item->getValueName(), $keysToFilter, true)) {
+                    $subsection->removeItemAtIndex($i);
+                }
+            }
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getID(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setID(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMenuID(): int
+    {
+        return $this->menuID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setMenuID(int $menuID): void
+    {
+        $this->menuID = $menuID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSortID(): int
+    {
+        return $this->sortID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSortID(int $sortID): void
+    {
+        $this->sortID = $sortID;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPermission(): string
+    {
+        return $this->permission;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setPermission(string $permission): void
+    {
+        $this->permission = $permission;
+    }
+
+    /**
+     * @return Item[]
+     */
+    public function getItems(): array
+    {
+        return $this->items;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setItems(array $items): void
+    {
+        $this->items = $items;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getConfigCount(): int
+    {
+        return $this->configCount;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setConfigCount(int $configCount): void
+    {
+        $this->configCount = $configCount;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSubsections(): array
+    {
+        return $this->subsections;
+    }
+
+    /**
+     * @param Subsection[] $subsections
+     */
+    public function setSubsections(array $subsections): void
+    {
+        $this->subsections = $subsections;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function hasSectionMarkup(): bool
+    {
+        return $this->hasSectionMarkup;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setHasSectionMarkup(bool $hasSectionMarkup): void
+    {
+        $this->hasSectionMarkup = $hasSectionMarkup;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getURL(): ?string
+    {
+        return $this->url;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setURL(?string $url): void
+    {
+        $this->url = $url;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getUpdateErrors(): int
+    {
+        return $this->updateErrors;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setUpdateErrors(int $updateErrors): void
+    {
+        $this->updateErrors = $updateErrors;
+    }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo(): array
+    {
+        $data = \get_object_vars($this);
+        unset($data['smarty'], $data['db'], $data['getText'], $data['manager']);
+
+        return $data;
     }
 }

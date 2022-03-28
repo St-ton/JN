@@ -48,8 +48,7 @@ class KategorieListe
         }
         $customerGroupID = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
         $languageID      = $languageID ?: Shop::getLanguageID();
-        $conf            = Shop::getSettings([\CONF_NAVIGATIONSFILTER])['navigationsfilter'];
-        $showLevel2      = $conf['unterkategorien_lvl2_anzeigen'] ?? 'N';
+        $showLevel2      = Shop::getSettingValue(\CONF_NAVIGATIONSFILTER, 'unterkategorien_lvl2_anzeigen');
         if ($categoryID > 0 && \count(self::$allCats) === 0) {
             $this->getAllCategoriesOnLevel(0, $customerGroupID, $languageID);
         }
@@ -214,12 +213,12 @@ class KategorieListe
      */
     public function nichtLeer(int $categoryID, int $customerGroupID): bool
     {
-        $conf = Shop::getSettings([\CONF_GLOBAL])['global'];
-        if ((int)$conf['kategorien_anzeigefilter'] === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_ALLE) {
+        $conf = (int)(Shop::getSettingValue(\CONF_GLOBAL, 'kategorien_anzeigefilter') ?? 0);
+        if ($conf === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_ALLE) {
             return true;
         }
         $languageID = LanguageHelper::getDefaultLanguage()->getId();
-        if ((int)$conf['kategorien_anzeigefilter'] === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE) {
+        if ($conf === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE) {
             $categoryList = self::getCategoryList($customerGroupID, $languageID);
             if (isset($categoryList['ks'][$categoryID])) {
                 if ($categoryList['ks'][$categoryID] === 1) {

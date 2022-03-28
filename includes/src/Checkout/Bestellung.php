@@ -578,7 +578,7 @@ class Bestellung
 
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 if ($initProduct) {
-                    $item->Artikel = (new Artikel())->fuelleArtikel($item->kArtikel, $defaultOptions);
+                    $item->Artikel = (new Artikel($db))->fuelleArtikel($item->kArtikel, $defaultOptions, 0, $languageID);
                 }
                 if ($this->kBestellung > 0) {
                     $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $languageID);

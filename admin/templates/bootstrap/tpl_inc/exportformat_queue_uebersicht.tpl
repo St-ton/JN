@@ -17,7 +17,7 @@
         </nav>
         <div class="tab-content">
             <div id="aktiv" class="tab-pane fade{if $cTab === '' || $cTab === 'aktiv'} active show{/if}">
-                <form method="post" action="exportformat_queue.php">
+                <form method="post" action="{$adminURL}/exportformat_queue.php">
                     {$jtl_token}
                     <div>
                         <div class="subheading1">{__('exportformatQueue')}</div>
@@ -58,7 +58,7 @@
                                             <td class="text-center">{if $oExportformatCron->dNaechsterStart_de === null}{__('immediately')}{else}{$oExportformatCron->dNaechsterStart_de}{/if}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="exportformat_queue.php?action=editieren&kCron={$oExportformatCron->cronID}&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}/exportformat_queue.php?action=editieren&kCron={$oExportformatCron->cronID}&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('modify')}"
                                                        data-toggle="tooltip">
@@ -126,7 +126,7 @@
             </div>
             <div id="fertig" class="tab-pane fade{if $cTab === 'fertig'} active show{/if}">
                 <div class="toolbar">
-                    <form method="post" action="exportformat_queue.php">
+                    <form method="post" action="{$adminURL}/exportformat_queue.php">
                         {$jtl_token}
                         <div class="form-row">
                             <label class="col-sm-auto col-form-label" for="nStunden">{__('exportformatLastXHourPre')} {__('hours')}:</label>

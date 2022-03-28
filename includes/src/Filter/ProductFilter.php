@@ -1431,6 +1431,7 @@ class ProductFilter
             && !$this->hasSearchQuery()
             && !$this->hasCharacteristicValue()
             && !$this->hasSearchSpecial()
+            && !(\get_class($this->getBaseState()) === DummyState::class && $this->getBaseState()->isInitialized())
         ) {
             // we have a manufacturer filter that doesn't filter anything
             if ($this->manufacturerFilter->getSeo($languageID) !== null) {
@@ -1694,7 +1695,7 @@ class ProductFilter
                 $productsPerPage = null;
             }
             foreach ($productKeys->forPage($this->nSeite, $productsPerPage) as $id) {
-                $productList->push((new Artikel())->fuelleArtikel($id, $opt));
+                $productList->push((new Artikel($this->db))->fuelleArtikel($id, $opt));
             }
             $productList = $productList->filter();
             $this->searchResults->setVisibleProductCount($productList->count());

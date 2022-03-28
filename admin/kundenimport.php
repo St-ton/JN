@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Customer\Import;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -20,13 +19,12 @@ if (isset($_FILES['csv']['tmp_name'])
     $importer = new Import(Shop::Container()->getDB());
     $importer->setCustomerGroupID(Request::postInt('kKundengruppe'));
     $importer->setLanguageID(Request::postInt('kSprache'));
-    $importer->setGeneratePasswords(Request::postInt('PasswortGenerieren') === 1);
     $result = $importer->processFile($_FILES['csv']['tmp_name']);
     $notice = '';
     foreach ($result as $item) {
         $notice .= $item . '<br>';
     }
-    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'importNotice');
+    Shop::Container()->getAlertService()->addNotice($notice, 'importNotice');
 }
 $smarty->assign('kundengruppen', Shop::Container()->getDB()->getObjects(
     'SELECT * FROM tkundengruppe ORDER BY cName'

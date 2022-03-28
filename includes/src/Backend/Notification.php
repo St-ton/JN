@@ -24,12 +24,12 @@ class Notification implements IteratorAggregate, Countable
     /**
      * @var NotificationEntry[]
      */
-    private $array = [];
+    private array $array = [];
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var Notification

@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
@@ -27,11 +26,11 @@ if (Form::validateToken()) {
     if ($action === 'restore') {
         $pageId = Request::verifyGPDataString('pageId');
         $opcPage->deletePage($pageId);
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('opcNoticePageReset'), 'opcNoticePageReset');
+        $alertHelper->addNotice(__('opcNoticePageReset'), 'opcNoticePageReset');
     } elseif ($action === 'discard') {
         $pageKey = Request::verifyGPCDataInt('pageKey');
         $opcPage->deleteDraft($pageKey);
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('opcNoticeDraftDelete'), 'opcNoticeDraftDelete');
+        $alertHelper->addNotice(__('opcNoticeDraftDelete'), 'opcNoticeDraftDelete');
     }
 }
 

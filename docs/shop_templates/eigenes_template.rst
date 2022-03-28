@@ -98,11 +98,8 @@ Ein neues Child-Template erstellen
 
 **Am einfachsten ist es, wenn Sie mit einem Beispiel-Child-Template beginnen.**
 
-Bis einschließlich Version 4.05 wird ein **Beispiel Child** für das EVO-Template im Installationspaket von JTL-Shop
-mitgeliefert.
-
-Falls Sie eine aktuelle Version des Shops nutzen, können Sie das Child-Template manuell von
-der Projektseite `Child-Templates <https://gitlab.com/jtl-software/jtl-shop/child-templates/>`_ herunterladen.
+Sie könnten Beispiel-Child-Templates manuell von der Projektseite
+`Child-Templates <https://gitlab.com/jtl-software/jtl-shop/child-templates/>`_ herunterladen.
 
 Das Anlegen eines Child-Templates ist in Shop 4.x und 5.x fast identisch, lediglich der Aufbau der einzelnen Templates
 unterscheidet sich. |br|
@@ -113,17 +110,23 @@ So existiert für jedes der von JTL ausgelieferten Templates ein entsprechendes 
     Verwenden Sie kein **Beispiel Child** produktiv! |br|
     Wir empfehlen, mit einer **Kopie** in einem neuen Verzeichnis zu starten.
 
-Vorgehen am Beispiel der "EVO-Child-Vorlage"
-""""""""""""""""""""""""""""""""""""""""""""
+Vorgehen am Beispiel von NOVAChild
+""""""""""""""""""""""""""""""""""
 
-Sie finden die Evo-Child-Vorlage auf der
-Projektseite `evo-child-vorlage <https://gitlab.com/jtl-software/jtl-shop/child-templates/evo-child-vorlage>`_.
+Sie finden die Vorlage auf der
+Projektseite `novachild <https://gitlab.com/jtl-software/jtl-shop/child-templates/novachild>`_.
 
-Für ein neues Child-Template benennen Sie zunächst den Ordner ``evo-child-vorlage/`` in den gewünschten
-Template-Namen um, z. B. ``Mein-Shop-Template/``. |br|
-Im Unterordner ``<Shop-Root>/templates/Mein-Shop-Template/`` finden Sie die Datei ``template.xml``.
+Für ein neues Child-Template benennen Sie zunächst den Ordner ``novachild/`` in den gewünschten
+Template-Namen um, z. B. ``MeinShopTemplate/``, und laden dann den Ordner in das Unterverzeichis ``templates/``
+Ihres Shops. |br|
 
-Wenn Sie also beispielsweise das EVO-Template von JTL-Shop erweitern möchten, sollte die ``template.xml`` wie
+.. caution::
+
+    Verwenden Sie für den Templatenamen bitte keine Sonderzeichen. |br|
+
+Im Unterordner ``<Shop-Root>/templates/MeinShopTemplate/`` finden Sie die Datei ``template.xml``.
+
+Wenn Sie also beispielsweise das NOVA-Template von JTL-Shop erweitern möchten, sollte die ``template.xml`` wie
 folgt aussehen:
 
 .. code-block:: xml
@@ -131,12 +134,12 @@ folgt aussehen:
 
     <?xml version="1.0" encoding="utf-8" standalone="yes"?>
     <Template isFullResponsive="true">
-        <Name>Mein-Shop-Template</Name>
+        <Name>MeinShopTemplate</Name>
         <Author>Max Mustermann</Author>
         <URL>https://www.mein-shop.de</URL>
         <Version>1.00</Version>
-        <ShopVersion>403</ShopVersion>
-        <Parent>Evo</Parent>
+        <MinShopVersion>5.0.0</MinShopVersion>
+        <Parent>NOVA</Parent>
         <Preview>preview.png</Preview>
         <Description>Das ist mein eigenes Template!</Description>
     </Template>
@@ -155,8 +158,19 @@ wird, welches angepasst werden soll.
     "*Standard-Template für mobile Endgeräte?*" nicht mehr ausgewählt werden kann und eine Warnung ausgegeben wird,
     falls dies (noch) so sein sollte.
 
-Bereits jetzt können Sie Ihr Template im Shop-Backend aktivieren. |br|
-Da noch keine Änderungen vorgenommen wurden, erkennen Sie in Ihrem Shop noch keinen Unterschied.
+Ab JTL-Shop Version 5.0.0 ist es bei allen Templates Konvention, dass der in der ``template.xml`` definierte Namen auch
+dem Ordnernamen entsprechen muss. |br|
+Darüberhinaus werden alle PHP-Dateien im Hauptverzeichnis des Templates über einen Autoloader geladen.
+Auch der  Namespace in allen dort genutzen PHP-Dateien muss dabei immer dem Schema ``Template\<template-name>``
+entsprechen.
+
+Wenn Sie Ihr Childtemplate also wie oben in ``MeinShopTemplate`` umbenannt haben, müssen folgende Änderungen vorgenommen
+werden:
+
+* ``<Name>``-Attribut in der template.xml: ``MeinShopTemplate``
+* Ordner des Templates: ``<Shop-Root>/templates/MeinShopTemplate``
+* *namespace* in der Datei Bootstrap.php: ``Template\MeinShopTemplate``
+
 
 Ihr Template aktivieren
 -----------------------

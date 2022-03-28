@@ -23,7 +23,6 @@
             {$srcSize = \JTL\Media\Image::SIZE_LG}
         {/if}
 
-
         {$imageType = $item->getImageType()}
 
         {if $imageType === \JTL\Media\Image::TYPE_CHARACTERISTIC_VALUE}

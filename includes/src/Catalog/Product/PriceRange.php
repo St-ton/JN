@@ -204,10 +204,12 @@ class PriceRange
         );
 
         if ($priceRange) {
+            $roundedMin              = \round($priceRange->specialPriceMin ?? 0, 2);
+            $roundedMax              = \round($priceRange->specialPriceMax ?? 0, 2);
             $this->minNettoPrice     = (float)$priceRange->fVKNettoMin;
             $this->maxNettoPrice     = (float)$priceRange->fVKNettoMax;
-            $this->isMinSpecialPrice = (\round($priceRange->specialPriceMin, 2) === \round($this->minNettoPrice, 2));
-            $this->isMaxSpecialPrice = (\round($priceRange->specialPriceMax, 2) === \round($this->maxNettoPrice, 2));
+            $this->isMinSpecialPrice = $roundedMin === \round($this->minNettoPrice, 2);
+            $this->isMaxSpecialPrice = $roundedMax === \round($this->maxNettoPrice, 2);
         } else {
             $this->minNettoPrice     = $this->productData->fNettoPreis;
             $this->maxNettoPrice     = $this->productData->fNettoPreis;

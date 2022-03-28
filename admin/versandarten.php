@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
 use Illuminate\Support\Collection;
-use JTL\Alert\Alert;
 use JTL\Checkout\Versandart;
 use JTL\Country\Country;
 use JTL\Country\Manager;
@@ -32,7 +31,7 @@ $shippingMethod  = null;
 $taxRateKeys     = array_keys($_SESSION['Steuersatz']);
 $alertHelper     = Shop::Container()->getAlertService();
 $countryHelper   = Shop::Container()->getCountryService();
-$languages       = LanguageHelper::getAllLanguages(0, true);
+$languages       = LanguageHelper::getInstance()->gibInstallierteSprachen();
 $getText         = Shop::Container()->getGetText();
 $cache           = Shop::Container()->getCache();
 $postData        = Text::filterXSS($_POST);
@@ -50,8 +49,11 @@ if (Form::validateToken()) {
         $shippingType = getShippingTypes(Request::verifyGPCDataInt('kVersandberechnung'));
     }
 
-    if (Request::postInt('del') > 0 && Versandart::deleteInDB((int)$postData['del'])) {
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successShippingMethodDelete'), 'successShippingMethodDelete');
+    if (Request::postInt('del') > 0) {
+        $oldShippingMethod = $db->select('tversandart', 'kVersandart', (int)$postData['del']);
+        Versandart::deleteInDB((int)$postData['del']);
+        $manager->updateRegistrationCountries(explode(' ', trim($oldShippingMethod->cLaender ?? '')));
+        $alertHelper->addSuccess(__('successShippingMethodDelete'), 'successShippingMethodDelete');
         $cache->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
     }
     if (Request::postInt('edit') > 0) {
@@ -83,18 +85,10 @@ if (Form::validateToken()) {
     if (Request::postInt('clone') > 0) {
         $step = 'uebersicht';
         if (Versandart::cloneShipping((int)$postData['clone'])) {
-            $alertHelper->addAlert(
-                Alert::TYPE_SUCCESS,
-                __('successShippingMethodDuplicated'),
-                'successShippingMethodDuplicated'
-            );
+            $alertHelper->addSuccess(__('successShippingMethodDuplicated'), 'successShippingMethodDuplicated');
             $cache->flushTags([CACHING_GROUP_OPTION]);
         } else {
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
-                __('errorShippingMethodDuplicated'),
-                'errorShippingMethodDuplicated'
-            );
+            $alertHelper->addError(__('errorShippingMethodDuplicated'), 'errorShippingMethodDuplicated');
         }
     }
 
@@ -216,9 +210,9 @@ if (Form::validateToken()) {
             }
         }
         // Versandklassen
-        $shippingMethod->cVersandklassen = ((!empty($postData['kVersandklasse']) && $postData['kVersandklasse'] !== '-1')
-            ? ' ' . $postData['kVersandklasse'] . ' '
-            : '-1');
+        $shippingMethod->cVersandklassen = !empty($postData['kVersandklasse']) && $postData['kVersandklasse'] !== '-1'
+            ? (' ' . $postData['kVersandklasse'] . ' ')
+            : '-1';
 
         if (count($postCountries) >= 1
             && count($postData['kZahlungsart'] ?? []) >= 1
@@ -228,8 +222,7 @@ if (Form::validateToken()) {
             $methodID = 0;
             if (Request::postInt('kVersandart') === 0) {
                 $methodID = $db->insert('tversandart', $shippingMethod);
-                $alertHelper->addAlert(
-                    Alert::TYPE_SUCCESS,
+                $alertHelper->addSuccess(
                     sprintf(__('successShippingMethodCreate'), $shippingMethod->cName),
                     'successShippingMethodCreate'
                 );
@@ -240,8 +233,7 @@ if (Form::validateToken()) {
                 $db->update('tversandart', 'kVersandart', $methodID, $shippingMethod);
                 $db->delete('tversandartzahlungsart', 'kVersandart', $methodID);
                 $db->delete('tversandartstaffel', 'kVersandart', $methodID);
-                $alertHelper->addAlert(
-                    Alert::TYPE_SUCCESS,
+                $alertHelper->addSuccess(
                     sprintf(__('successShippingMethodChange'), $shippingMethod->cName),
                     'successShippingMethodChange'
                 );
@@ -272,7 +264,7 @@ if (Form::validateToken()) {
 
                     $versandSprache->cISOSprache = $code;
                     $versandSprache->cName       = $shippingMethod->cName;
-                    if ($postData['cName_' . $code]) {
+                    if (!empty($postData['cName_' . $code])) {
                         $versandSprache->cName = htmlspecialchars(
                             $postData['cName_' . $code],
                             ENT_COMPAT | ENT_HTML401,
@@ -281,6 +273,9 @@ if (Form::validateToken()) {
                     }
                     $versandSprache->cLieferdauer = '';
                     if ($postData['cLieferdauer_' . $code]) {
+                        echo 'yes.';
+                    }
+                    if (!empty($postData['cLieferdauer_' . $code])) {
                         $versandSprache->cLieferdauer = htmlspecialchars(
                             $postData['cLieferdauer_' . $code],
                             ENT_COMPAT | ENT_HTML401,
@@ -288,11 +283,11 @@ if (Form::validateToken()) {
                         );
                     }
                     $versandSprache->cHinweistext = '';
-                    if ($postData['cHinweistext_' . $code]) {
+                    if (!empty($postData['cHinweistext_' . $code])) {
                         $versandSprache->cHinweistext = $postData['cHinweistext_' . $code];
                     }
                     $versandSprache->cHinweistextShop = '';
-                    if ($postData['cHinweistextShop_' . $code]) {
+                    if (!empty($postData['cHinweistextShop_' . $code])) {
                         $versandSprache->cHinweistextShop = $postData['cHinweistextShop_' . $code];
                     }
                     $db->delete('tversandartsprache', ['kVersandart', 'cISOSprache'], [$methodID, $code]);
@@ -304,32 +299,16 @@ if (Form::validateToken()) {
         } else {
             $step = 'neue Versandart';
             if (!$shippingMethod->cName) {
-                $alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
-                    __('errorShippingMethodNameMissing'),
-                    'errorShippingMethodNameMissing'
-                );
+                $alertHelper->addError(__('errorShippingMethodNameMissing'), 'errorShippingMethodNameMissing');
             }
             if (count($postCountries) < 1) {
-                $alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
-                    __('errorShippingMethodCountryMissing'),
-                    'errorShippingMethodCountryMissing'
-                );
+                $alertHelper->addError(__('errorShippingMethodCountryMissing'), 'errorShippingMethodCountryMissing');
             }
             if (count($postData['kZahlungsart'] ?? []) < 1) {
-                $alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
-                    __('errorShippingMethodPaymentMissing'),
-                    'errorShippingMethodPaymentMissing'
-                );
+                $alertHelper->addError(__('errorShippingMethodPaymentMissing'), 'errorShippingMethodPaymentMissing');
             }
             if (!$staffelDa) {
-                $alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
-                    __('errorShippingMethodPriceMissing'),
-                    'errorShippingMethodPriceMissing'
-                );
+                $alertHelper->addError(__('errorShippingMethodPriceMissing'), 'errorShippingMethodPriceMissing');
             }
             if (Request::postInt('kVersandart') > 0) {
                 $shippingMethod = $db->select('tversandart', 'kVersandart', Request::postInt('kVersandart'));
@@ -371,8 +350,7 @@ if ($step === 'neue Versandart') {
                 );
             } catch (InvalidArgumentException $e) {
                 $getText->loadAdminLocale('pages/zahlungsarten');
-                $alertHelper->addAlert(
-                    Alert::TYPE_WARNING,
+                $alertHelper->addWarning(
                     sprintf(
                         __('Plugin for payment method not found'),
                         $zahlungsart->cName,
@@ -441,8 +419,7 @@ if ($step === 'uebersicht') {
                     );
                 } catch (InvalidArgumentException $e) {
                     $getText->loadAdminLocale('pages/zahlungsarten');
-                    $alertHelper->addAlert(
-                        Alert::TYPE_WARNING,
+                    $alertHelper->addWarning(
                         sprintf(
                             __('Plugin for payment method not found'),
                             $smp->zahlungsart->cName,
@@ -535,7 +512,7 @@ if ($step === 'uebersicht') {
     if (!empty($missingShippingClassCombis)) {
         $errorMissingShippingClassCombis = $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis)
             ->fetch('tpl_inc/versandarten_fehlende_kombis.tpl');
-        $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMissingShippingClassCombis, 'errorMissingShippingClassCombis');
+        $alertHelper->addError($errorMissingShippingClassCombis, 'errorMissingShippingClassCombis');
     }
 
     $smarty->assign('versandberechnungen', getShippingTypes())

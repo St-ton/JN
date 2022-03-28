@@ -44,7 +44,7 @@
                                         <td class="text-center">
                                             <div class="btn-group">
                                                 <a class="btn btn-link px-2 delete-confirm"
-                                                   href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}"
+                                                   href="{$adminURL}/slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}"
                                                    title="{__('delete')}"
                                                    data-toggle="tooltip"
                                                    data-modal-body="{$oSlider->cName}">
@@ -54,7 +54,7 @@
                                                     </span>
                                                 </a>
                                                 <a class="btn btn-link px-2 add"
-                                                   href="slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}"
+                                                   href="{$adminURL}/slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}"
                                                    title="{__('slides')}"
                                                    data-toggle="tooltip">
                                                     <span class="icon-hover">
@@ -63,7 +63,7 @@
                                                     </span>
                                                 </a>
                                                 <a class="btn btn-link px-2"
-                                                   href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}"
+                                                   href="{$adminURL}/slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}"
                                                    title="{__('modify')}"
                                                    data-toggle="tooltip">
                                                     <span class="icon-hover">
@@ -84,7 +84,7 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a class="btn btn-primary btn-block" href="slider.php?action=new&token={$smarty.session.jtl_token}">
+                            <a class="btn btn-primary btn-block" href="{$adminURL}/slider.php?action=new&token={$smarty.session.jtl_token}">
                                 <i class="fa fa-share"></i> {__('sliderCreate')}
                             </a>
                         </div>

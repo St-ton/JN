@@ -1,6 +1,6 @@
 {block name='basket-cart-dropdown'}
     <div class="cart-dropdown dropdown-menu dropdown-menu-right lg-min-w-lg">
-        {$cartPositions = $smarty.session.Warenkorb->PositionenArr}
+        {$cartPositions = JTL\Session\Frontend::getCart()->PositionenArr}
         {block name='basket-cart-dropdown-max-cart-positions'}
             {$maxCartPositions = 15}
         {/block}
@@ -17,7 +17,8 @@
                                         {break}
                                     {/if}
                                     {if !$oPosition->istKonfigKind()}
-                                        {if $oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL || $oPosition->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK}
+                                        {if $oPosition->nPosTyp == $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL
+                                        || $oPosition->nPosTyp == $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK}
                                             <tr>
                                                 <td>
                                                     {formrow}
@@ -110,7 +111,7 @@
                                     </li>
                                 {/block}
                             {/if}
-                            {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && isset($Steuerpositionen) && $Steuerpositionen|@count > 0}
+                            {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && isset($Steuerpositionen) && $Steuerpositionen|count > 0}
                                 {block name='basket-cart-dropdown-cart-item-tax'}
                                     {foreach $Steuerpositionen as $Steuerposition}
                                         <li class="cart-dropdown-total-item">

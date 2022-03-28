@@ -7,7 +7,7 @@ use JTL\Helpers\Request;
 use JTL\Nice;
 use JTLShop\SemVer\Version;
 use stdClass;
-use function Functional\first;
+use function Functional\last;
 
 /**
  * Class JTLApi
@@ -81,14 +81,14 @@ final class JTLApi
     {
         $shopVersion       = \APPLICATION_VERSION;
         $parsedShopVersion = Version::parse($shopVersion);
-        $oVersions         = $this->getAvailableVersions();
+        $availableVersions = $this->getAvailableVersions();
 
-        $oNewerVersions = \array_filter((array)$oVersions, static function ($v) use ($parsedShopVersion) {
-                return Version::parse($v->reference)->greaterThan($parsedShopVersion);
+        $newerVersions = \array_filter((array)$availableVersions, static function ($v) use ($parsedShopVersion) {
+            return Version::parse($v->reference)->greaterThan($parsedShopVersion);
         });
-        $oVersion       = \count($oNewerVersions) > 0 ? first($oNewerVersions) : \end($oVersions);
+        $version       = \count($newerVersions) > 0 ? last($newerVersions) : \end($availableVersions);
 
-        return Version::parse($oVersion->reference);
+        return Version::parse($version->reference);
     }
 
     /**

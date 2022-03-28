@@ -126,7 +126,7 @@ class Nummern
     {
         $this->dAktualisiert = \mb_convert_case($dAktualisiert, \MB_CASE_UPPER) === 'NOW()'
             ? \date('Y-m-d H:i:s')
-            : Shop::Container()->getDB()->escape($dAktualisiert);
+            : $dAktualisiert;
 
         return $this;
     }

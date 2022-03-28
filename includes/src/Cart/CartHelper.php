@@ -2,7 +2,6 @@
 
 namespace JTL\Cart;
 
-use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
@@ -338,6 +337,7 @@ class CartHelper
     /**
      * @param CartItem       $item
      * @param VariationValue $variation
+     * @deprecated since 5.2.0
      */
     public static function setVariationPicture(CartItem $item, VariationValue $variation): void
     {
@@ -468,11 +468,9 @@ class CartHelper
             $attributes = Product::getSelectedPropertiesForArticle($productID);
         }
         $isConfigProduct = false;
-        if (Configurator::checkLicense()) {
-            if (Configurator::validateKonfig($productID)) {
-                $groups          = Configurator::getKonfig($productID);
-                $isConfigProduct = GeneralObject::hasCount($groups);
-            }
+        if (Configurator::checkLicense() && Configurator::validateKonfig($productID)) {
+            $groups          = Configurator::getKonfig($productID);
+            $isConfigProduct = GeneralObject::hasCount($groups);
         }
 
         // Beim Bearbeiten die alten Positionen löschen
@@ -496,7 +494,8 @@ class CartHelper
             ? $_POST['item_quantity']
             : false;
         $ignoreLimits      = isset($_POST['konfig_ignore_limits']);
-
+        $languageID        = Shop::getLanguageID();
+        $customerGroupID   = Frontend::getCustomerGroup()->getID();
         foreach ($configGroups as $itemList) {
             foreach ($itemList as $configItemID) {
                 $configItemID = (int)$configItemID;
@@ -504,7 +503,7 @@ class CartHelper
                 if ($configItemID <= 0) {
                     continue;
                 }
-                $configItem          = new Item($configItemID);
+                $configItem          = new Item($configItemID, $languageID, $customerGroupID);
                 $configItem->fAnzahl = (float)($configItemCounts[$configItemID]
                     ?? $configGroupCounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial());
                 if ($configItemCounts && isset($configItemCounts[$configItem->getKonfigitem()])) {
@@ -612,8 +611,7 @@ class CartHelper
             }
             Frontend::getCart()->redirectTo();
         } else {
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_ERROR,
+            Shop::Container()->getAlertService()->addError(
                 Shop::Lang()->get('configError', 'productDetails'),
                 'configError',
                 ['dismissable' => false]
@@ -646,8 +644,7 @@ class CartHelper
         // Prüfen ob nicht schon die maximale Anzahl an Artikeln auf der Vergleichsliste ist
         $products = Frontend::get('Vergleichsliste')->oArtikel_arr ?? [];
         if ($maxItems <= \count($products)) {
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_ERROR,
+            Shop::Container()->getAlertService()->addError(
                 Shop::Lang()->get('compareMaxlimit', 'errorMessages'),
                 'compareMaxlimit',
                 ['dismissable' => false]
@@ -678,16 +675,14 @@ class CartHelper
             }
             $compareList = Frontend::getCompareList();
             if ($compareList->productExists($productID)) {
-                $alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
+                $alertHelper->addError(
                     Shop::Lang()->get('comparelistProductexists', 'messages'),
                     'comparelistProductexists',
                     ['dismissable' => false]
                 );
             } else {
                 $compareList->addProduct($productID, $variations);
-                $alertHelper->addAlert(
-                    Alert::TYPE_NOTE,
+                $alertHelper->addNotice(
                     Shop::Lang()->get('comparelistProductadded', 'messages'),
                     'comparelistProductadded'
                 );
@@ -778,8 +773,7 @@ class CartHelper
                 'AktuellerArtikel' => &$obj
             ]);
 
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_NOTE,
+            Shop::Container()->getAlertService()->addNotice(
                 Shop::Lang()->get('wishlistProductadded', 'messages'),
                 'wishlistProductadded'
             );
@@ -808,7 +802,7 @@ class CartHelper
         $cart          = Frontend::getCart();
         $productID     = (int)$product->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
         $redirectParam = [];
-        $conf          = Shop::getSettings([\CONF_GLOBAL]);
+        $conf          = Shop::getSettingSection(\CONF_GLOBAL);
         if ($product->fAbnahmeintervall > 0 && !self::isMultiple($qty, (float)$product->fAbnahmeintervall)) {
             $redirectParam[] = \R_ARTIKELABNAHMEINTERVALL;
         }
@@ -842,7 +836,7 @@ class CartHelper
             $redirectParam[] = \R_LOGIN;
         }
         // kein vorbestellbares Produkt, aber mit Erscheinungsdatum in Zukunft
-        if ($product->nErscheinendesProdukt && $conf['global']['global_erscheinende_kaeuflich'] === 'N') {
+        if ($product->nErscheinendesProdukt && $conf['global_erscheinende_kaeuflich'] === 'N') {
             $redirectParam[] = \R_VORBESTELLUNG;
         }
         // Die maximale Bestellmenge des Artikels wurde überschritten
@@ -876,7 +870,7 @@ class CartHelper
         /** @noinspection MissingIssetImplementationInspection */
         if (($product->bHasKonfig === false && empty($product->isKonfigItem))
             && (!isset($product->Preise->fVKNetto) || (float)$product->Preise->fVKNetto === 0.0)
-            && $conf['global']['global_preis0'] === 'N'
+            && $conf['global_preis0'] === 'N'
         ) {
             $redirectParam[] = \R_AUFANFRAGE;
         }
@@ -987,11 +981,7 @@ class CartHelper
      */
     public static function roundOptional($total)
     {
-        $conf = Shop::getSettings([\CONF_KAUFABWICKLUNG]);
-
-        if (isset($conf['kaufabwicklung']['bestellabschluss_runden5'])
-            && (int)$conf['kaufabwicklung']['bestellabschluss_runden5'] === 1
-        ) {
+        if ((int)Shop::getSettingValue(\CONF_KAUFABWICKLUNG, 'bestellabschluss_runden5') === 1) {
             return \round($total * 20) / 20;
         }
 
@@ -1357,9 +1347,12 @@ class CartHelper
         $qty            = 0;
         $errors         = [];
         $defaultOptions = Artikel::getDefaultOptions();
+        $db             = Shop::Container()->getDB();
         foreach ($attributes as $key => $attribute) {
+            $product = new Artikel($db);
+            $product->fuelleArtikel($attribute->kArtikel, $defaultOptions);
             $redirects = self::addToCartCheck(
-                (new Artikel())->fuelleArtikel($attribute->kArtikel, $defaultOptions),
+                $product,
                 (float)$variBoxCounts[$key],
                 $attribute->oEigenschaft_arr
             );
@@ -1379,7 +1372,7 @@ class CartHelper
         }
 
         if (\count($errors) > 0) {
-            $product = new Artikel();
+            $product = new Artikel($db);
             $product->fuelleArtikel($isParent ? $parentID : $productID, $defaultOptions);
             $redirectURL = $product->cURLFull . '?a=';
             if ($isParent) {
@@ -1461,6 +1454,10 @@ class CartHelper
         if ((int)$qty !== $qty && $product->cTeilbar !== 'Y') {
             $qty = \max((int)$qty, 1);
         }
+        \executeHook(\HOOK_CARTHELPER_ADD_PRODUCT_ID_TO_CART, [
+            'product' => $product,
+            'qty'     => &$qty
+        ]);
         $redirectParam = self::addToCartCheck($product, $qty, $attrValues);
         // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen
         // wenn 'Preis auf Anfrage' eingestellt ist
@@ -1658,6 +1655,7 @@ class CartHelper
         $updated     = false;
         $freeGiftID  = 0;
         $cartNotices = $_SESSION['Warenkorbhinweise'] ?? [];
+        $options     = Artikel::getDefaultOptions();
         foreach ($cart->PositionenArr as $i => $item) {
             $item->kArtikel = (int)$item->kArtikel;
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
@@ -1668,7 +1666,7 @@ class CartHelper
                 if (isset($_POST['anzahl'][$i])) {
                     $product = new Artikel();
                     $valid   = true;
-                    $product->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
+                    $product->fuelleArtikel($item->kArtikel, $options);
                     $quantity = (float)\str_replace(',', '.', $_POST['anzahl'][$i]);
                     if ($product->cTeilbar !== 'Y' && (int)$quantity !== $quantity) {
                         $quantity = \max((int)$quantity, 1);
@@ -1857,23 +1855,23 @@ class CartHelper
         if (empty($_POST['ean']) || Request::postInt('schnellkauf') <= 0) {
             return $msg;
         }
-        $msg = Shop::Lang()->get('eanNotExist') . ' ' .
+        $msg         = Shop::Lang()->get('eanNotExist') . ' ' .
             Text::htmlentities(Text::filterXSS($_POST['ean']));
-        //gibts artikel mit dieser artnr?
-        $productData = Shop::Container()->getDB()->select(
+        $db          = Shop::Container()->getDB();
+        $productData = $db->select(
             'tartikel',
             'cArtNr',
             Text::htmlentities(Text::filterXSS($_POST['ean']))
         );
         if (empty($productData->kArtikel)) {
-            $productData = Shop::Container()->getDB()->select(
+            $productData = $db->select(
                 'tartikel',
                 'cBarcode',
                 Text::htmlentities(Text::filterXSS($_POST['ean']))
             );
         }
         if (isset($productData->kArtikel) && $productData->kArtikel > 0) {
-            $product = (new Artikel())->fuelleArtikel($productData->kArtikel, Artikel::getDefaultOptions());
+            $product = (new Artikel($db))->fuelleArtikel($productData->kArtikel, Artikel::getDefaultOptions());
             if ($product !== null
                 && (int)$product->kArtikel > 0
                 && self::addProductIDToCart(
@@ -1951,27 +1949,29 @@ class CartHelper
                 return (int)$p->Artikel->kArtikel;
             }
         );
-        if (\count($productIDs) > 0) {
-            $productIDs = \implode(', ', $productIDs);
-            $xsellData  = Shop::Container()->getDB()->getObjects(
-                'SELECT DISTINCT kXSellArtikel
-                    FROM txsellkauf
-                    WHERE kArtikel IN (' . $productIDs . ')
-                        AND kXSellArtikel NOT IN (' . $productIDs .')
-                    ORDER BY nAnzahl DESC
-                    LIMIT ' . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl']
-            );
-            if (\count($xsellData) > 0) {
-                $xSelling->Kauf          = new stdClass();
-                $xSelling->Kauf->Artikel = [];
-                $defaultOptions          = Artikel::getDefaultOptions();
-                foreach ($xsellData as $item) {
-                    $product = (new Artikel())->fuelleArtikel((int)$item->kXSellArtikel, $defaultOptions);
-                    if ($product !== null
-                        && (int)$product->kArtikel > 0
-                        && $product->aufLagerSichtbarkeit()) {
-                        $xSelling->Kauf->Artikel[] = $product;
-                    }
+        if (\count($productIDs) === 0) {
+            return $xSelling;
+        }
+        $db         = Shop::Container()->getDB();
+        $productIDs = \implode(', ', $productIDs);
+        $xsellData  = $db->getInts(
+            'SELECT DISTINCT kXSellArtikel
+                FROM txsellkauf
+                WHERE kArtikel IN (' . $productIDs . ')
+                    AND kXSellArtikel NOT IN (' . $productIDs .')
+                ORDER BY nAnzahl DESC
+                LIMIT ' . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'],
+            'kXSellArtikel'
+        );
+        if (\count($xsellData) > 0) {
+            $xSelling->Kauf          = new stdClass();
+            $xSelling->Kauf->Artikel = [];
+            $defaultOptions          = Artikel::getDefaultOptions();
+            foreach ($xsellData as $productID) {
+                $product = new Artikel($db);
+                $product->fuelleArtikel($productID, $defaultOptions);
+                if ($product->kArtikel > 0 && $product->aufLagerSichtbarkeit()) {
+                    $xSelling->Kauf->Artikel[] = $product;
                 }
             }
         }
@@ -1990,43 +1990,45 @@ class CartHelper
     public static function getFreeGifts(array $conf): array
     {
         $gifts = [];
-        if ($conf['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
-            $sqlSort = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
-            if ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'N') {
-                $sqlSort = ' ORDER BY tartikel.cName';
-            } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
-                $sqlSort = ' ORDER BY tartikel.fLagerbestand DESC';
-            }
-            $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0
-                ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
-                : '';
-            $giftsTmp = Shop::Container()->getDB()->getObjects(
-                "SELECT tartikel.kArtikel, tartikelattribut.cWert
-                    FROM tartikel
-                    JOIN tartikelattribut
-                        ON tartikelattribut.kArtikel = tartikel.kArtikel
-                    WHERE (tartikel.fLagerbestand > 0 ||
-                          (tartikel.fLagerbestand <= 0 &&
-                          (tartikel.cLagerBeachten = 'N' || tartikel.cLagerKleinerNull = 'Y')))
-                        AND tartikelattribut.cName = :atr
-                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= :csum " . $sqlSort . $limit,
-                [
-                    'atr'  => \FKT_ATTRIBUT_GRATISGESCHENK,
-                    'csum' => Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
-                ]
-            );
+        if ($conf['sonstiges']['sonstiges_gratisgeschenk_nutzen'] !== 'Y') {
+            return $gifts;
+        }
+        $sqlSort = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
+        if ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'N') {
+            $sqlSort = ' ORDER BY tartikel.cName';
+        } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
+            $sqlSort = ' ORDER BY tartikel.fLagerbestand DESC';
+        }
+        $db       = Shop::Container()->getDB();
+        $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0
+            ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
+            : '';
+        $giftsTmp = $db->getObjects(
+            "SELECT tartikel.kArtikel, tartikelattribut.cWert
+                FROM tartikel
+                JOIN tartikelattribut
+                    ON tartikelattribut.kArtikel = tartikel.kArtikel
+                WHERE (tartikel.fLagerbestand > 0 ||
+                      (tartikel.fLagerbestand <= 0 &&
+                      (tartikel.cLagerBeachten = 'N' || tartikel.cLagerKleinerNull = 'Y')))
+                    AND tartikelattribut.cName = :atr
+                    AND CAST(tartikelattribut.cWert AS DECIMAL) <= :csum " . $sqlSort . $limit,
+            [
+                'atr'  => \FKT_ATTRIBUT_GRATISGESCHENK,
+                'csum' => Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
+            ]
+        );
 
-            foreach ($giftsTmp as $gift) {
-                $product = (new Artikel())->fuelleArtikel((int)$gift->kArtikel, Artikel::getDefaultOptions());
-                if ($product !== null
-                    && (int)$product->kArtikel > 0
-                    && ($product->kEigenschaftKombi > 0
-                        || !\is_array($product->Variationen)
-                        || \count($product->Variationen) === 0)
-                ) {
-                    $product->cBestellwert = Preise::getLocalizedPriceString((float)$gift->cWert);
-                    $gifts[]               = $product;
-                }
+        foreach ($giftsTmp as $gift) {
+            $product = new Artikel($db);
+            $product->fuelleArtikel((int)$gift->kArtikel, Artikel::getDefaultOptions());
+            if ($product->kArtikel > 0
+                && ($product->kEigenschaftKombi > 0
+                    || !\is_array($product->Variationen)
+                    || \count($product->Variationen) === 0)
+            ) {
+                $product->cBestellwert = Preise::getLocalizedPriceString((float)$gift->cWert);
+                $gifts[]               = $product;
             }
         }
 

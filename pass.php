@@ -12,7 +12,6 @@ require_once __DIR__ . '/includes/globalinclude.php';
 
 Shop::setPageType(PAGE_PASSWORTVERGESSEN);
 $linkHelper  = Shop::Container()->getLinkService();
-$kLink       = $linkHelper->getSpecialPageID(LINKTYP_PASSWORD_VERGESSEN);
 $step        = 'formular';
 $db          = Shop::Container()->getDB();
 $alertHelper = Shop::Container()->getAlertService();
@@ -38,7 +37,7 @@ if ($valid && isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POS
             $missing['captcha'] = true;
         }
         if ($validRecaptcha === false) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('fillOut'), 'accountLocked');
+            $alertHelper->addError(Shop::Lang()->get('fillOut'), 'accountLocked');
         } elseif (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre !== 'Y') {
             $step     = 'passwort versenden';
             $customer = new Customer((int)$kunde->kKunde);
@@ -46,13 +45,13 @@ if ($valid && isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POS
 
             $smarty->assign('Kunde', $customer);
         } elseif (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre === 'Y') {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('accountLocked'), 'accountLocked');
+            $alertHelper->addError(Shop::Lang()->get('accountLocked'), 'accountLocked');
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('incorrectEmail'), 'incorrectEmail');
+            $alertHelper->addError(Shop::Lang()->get('incorrectEmail'), 'incorrectEmail');
         }
     } else {
         $missing['limit'] = true;
-        $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('formToFast', 'account data'), 'accountLocked');
+        $alertHelper->addError(Shop::Lang()->get('formToFast', 'account data'), 'accountLocked');
     }
 } elseif ($valid && isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpwh'])) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
@@ -65,24 +64,12 @@ if ($valid && isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POS
                 header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?updated_pw=true');
                 exit();
             }
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
-                Shop::Lang()->get('invalidCustomer', 'account data'),
-                'invalidCustomer'
-            );
+            $alertHelper->addError(Shop::Lang()->get('invalidCustomer', 'account data'), 'invalidCustomer');
         } else {
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
-                Shop::Lang()->get('invalidHash', 'account data'),
-                'invalidHash'
-            );
+            $alertHelper->addError(Shop::Lang()->get('invalidHash', 'account data'), 'invalidHash');
         }
     } else {
-        $alertHelper->addAlert(
-            Alert::TYPE_ERROR,
-            Shop::Lang()->get('passwordsMustBeEqual', 'account data'),
-            'passwordsMustBeEqual'
-        );
+        $alertHelper->addError(Shop::Lang()->get('passwordsMustBeEqual', 'account data'), 'passwordsMustBeEqual');
     }
     $step = 'confirm';
     $smarty->assign('fpwh', Text::filterXSS($_POST['fpwh']));
@@ -93,26 +80,17 @@ if ($valid && isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POS
         if ($dateExpires >= new DateTime()) {
             $smarty->assign('fpwh', Text::filterXSS($_GET['fpwh']));
         } else {
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
-                Shop::Lang()->get('invalidHash', 'account data'),
-                'invalidHash'
-            );
+            $alertHelper->addError(Shop::Lang()->get('invalidHash', 'account data'), 'invalidHash');
         }
     } else {
-        $alertHelper->addAlert(
-            Alert::TYPE_ERROR,
-            Shop::Lang()->get('invalidHash', 'account data'),
-            'invalidHash'
-        );
+        $alertHelper->addError(Shop::Lang()->get('invalidHash', 'account data'), 'invalidHash');
     }
     $step = 'confirm';
 }
 $cCanonicalURL = $linkHelper->getStaticRoute('pass.php');
-$link          = $linkHelper->getPageLink($kLink);
+$link          = $linkHelper->getSpecialPage(LINKTYP_PASSWORD_VERGESSEN);
 if (!$alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
-    $alertHelper->addAlert(
-        Alert::TYPE_INFO,
+    $alertHelper->addInfo(
         Shop::Lang()->get('forgotPasswordDesc', 'forgot password'),
         'forgotPasswordDesc',
         ['showInAlertListTemplate' => false]

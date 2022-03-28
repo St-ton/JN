@@ -3,7 +3,6 @@
 namespace JTL\Newsletter;
 
 use DateTime;
-use JTL\Alert\Alert;
 use JTL\CheckBox;
 use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
@@ -117,11 +116,7 @@ final class Controller
                 if ((isset($recipient->cEmail) && \mb_strlen($recipient->cEmail) > 0)
                     || (isset($nlCustomer->kKunde) && $nlCustomer->kKunde > 0)
                 ) {
-                    $alertHelper->addAlert(
-                        Alert::TYPE_ERROR,
-                        Shop::Lang()->get('newsletterExists', 'errorMessages'),
-                        'newsletterExists'
-                    );
+                    $alertHelper->addError(Shop::Lang()->get('newsletterExists', 'errorMessages'), 'newsletterExists');
                 } else {
                     $checkBox->triggerSpecialFunction(
                         \CHECKBOX_ORT_NEWSLETTERANMELDUNG,
@@ -201,15 +196,10 @@ final class Controller
                             $historyID,
                             (object)['cEmailBodyHtml' => $mail->getBodyHTML()]
                         );
-                        $alertHelper->addAlert(
-                            Alert::TYPE_NOTE,
-                            Shop::Lang()->get('newsletterAdd', 'messages'),
-                            'newsletterAdd'
-                        );
+                        $alertHelper->addNotice(Shop::Lang()->get('newsletterAdd', 'messages'), 'newsletterAdd');
                         $plausi = new stdClass();
                     } else {
-                        $alertHelper->addAlert(
-                            Alert::TYPE_NOTE,
+                        $alertHelper->addNotice(
                             Shop::Lang()->get('newsletterNomailAdd', 'messages'),
                             'newsletterNomailAdd'
                         );
@@ -217,11 +207,7 @@ final class Controller
                 }
             }
         } else {
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
-                Shop::Lang()->get('newsletterWrongemail', 'errorMessages'),
-                'newsletterWrongemail'
-            );
+            $alertHelper->addError(Shop::Lang()->get('newsletterWrongemail', 'errorMessages'), 'newsletterWrongemail');
         }
 
         return $plausi;

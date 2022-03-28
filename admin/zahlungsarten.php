@@ -1,8 +1,11 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
+use JTL\Backend\Settings\Manager as SettingsManager;
+use JTL\Backend\Settings\SectionFactory;
+use JTL\Backend\Settings\Sections\PluginPaymentMethod;
 use JTL\Checkout\Zahlungsart;
 use JTL\Checkout\ZahlungsLog;
+use JTL\DB\SqlObject;
 use JTL\Helpers\Form;
 use JTL\Helpers\PaymentMethod;
 use JTL\Helpers\Request;
@@ -28,12 +31,15 @@ Shop::Container()->getGetText()->loadConfigLocales(true, true);
 $db              = Shop::Container()->getDB();
 $defaultCurrency = $db->select('twaehrung', 'cStandard', 'Y');
 $step            = 'uebersicht';
-$alertHelper     = Shop::Container()->getAlertService();
-$recommendations = new Manager($alertHelper, Manager::SCOPE_BACKEND_PAYMENT_PROVIDER);
+$alertService    = Shop::Container()->getAlertService();
+$recommendations = new Manager($alertService, Manager::SCOPE_BACKEND_PAYMENT_PROVIDER);
 $filteredPost    = Text::filterXSS($_POST);
+$sectionFactory  = new SectionFactory();
+$getText         = Shop::Container()->getGetText();
+$settingManager  = new SettingsManager($db, $smarty, $oAccount, $getText, $alertService);
 if (Request::verifyGPCDataInt('checkNutzbar') === 1) {
     PaymentMethod::checkPaymentMethodAvailability();
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPaymentMethodCheck'), 'successPaymentMethodCheck');
+    $alertService->addSuccess(__('successPaymentMethodCheck'), 'successPaymentMethodCheck');
 }
 // reset log
 if (($action = Request::verifyGPDataString('a')) !== ''
@@ -45,11 +51,7 @@ if (($action = Request::verifyGPDataString('a')) !== ''
 
     if (isset($method->cModulId) && mb_strlen($method->cModulId) > 0) {
         (new ZahlungsLog($method->cModulId))->loeschen();
-        $alertHelper->addAlert(
-            Alert::TYPE_SUCCESS,
-            sprintf(__('successLogReset'), $method->cName),
-            'successLogReset'
-        );
+        $alertService->addSuccess(sprintf(__('successLogReset'), $method->cName), 'successLogReset');
     }
 }
 if ($action !== 'logreset' && Request::verifyGPCDataInt('kZahlungsart') > 0 && Form::validateToken()) {
@@ -81,7 +83,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
     $nMailSendenStorno = Request::postInt('nMailSendenStorno');
     $nMailBits         = 0;
     if (is_array($filteredPost['kKundengruppe'])) {
-        $filteredPost['kKundengruppe'] = \array_map('\intval', $filteredPost['kKundengruppe']);
+        $filteredPost['kKundengruppe'] = array_map('\intval', $filteredPost['kKundengruppe']);
         $cKundengruppen                = Text::createSSK($filteredPost['kKundengruppe']);
         if (in_array(0, $filteredPost['kKundengruppe'], true)) {
             unset($cKundengruppen);
@@ -108,83 +110,24 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
     $db->update('tzahlungsart', 'kZahlungsart', $paymentMethod->kZahlungsart, $upd);
     // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
     if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
-        $kPlugin     = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
-        $conf        = $db->getObjects(
-            "SELECT *
-                FROM tplugineinstellungenconf
-                WHERE cWertName LIKE :mid 
-                AND cConf = 'Y' ORDER BY nSort",
-            ['mid' => $paymentMethod->cModulId . '\_%']
-        );
-        $configCount = count($conf);
-        for ($i = 0; $i < $configCount; $i++) {
-            $aktWert          = new stdClass();
-            $aktWert->kPlugin = $kPlugin;
-            $aktWert->cName   = $conf[$i]->cWertName;
-            $aktWert->cWert   = $filteredPost[$conf[$i]->cWertName];
-
-            switch ($conf[$i]->cInputTyp) {
-                case 'kommazahl':
-                    $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
-                    break;
-                case 'zahl':
-                case 'number':
-                    $aktWert->cWert = (int)$aktWert->cWert;
-                    break;
-                case 'text':
-                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
-                    break;
-                case 'pass':
-                    $aktWert->cWert = $_POST[$conf[$i]->cWertName];
-                    break;
-                default:
-                    break;
-            }
-            $db->delete(
-                'tplugineinstellungen',
-                ['kPlugin', 'cName'],
-                [$kPlugin, $conf[$i]->cWertName]
-            );
-            $db->insert('tplugineinstellungen', $aktWert);
-        }
+        $kPlugin = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
+        $sql     = new SqlObject();
+        $sql->setWhere(" cWertName LIKE :mid 
+                AND cConf = 'Y'");
+        $sql->addParam('mid', $paymentMethod->cModulId . '\_%');
+        $section         = new PluginPaymentMethod($settingManager, CONF_ZAHLUNGSARTEN);
+        $post            = $_POST;
+        $post['kPlugin'] = $kPlugin;
+        $section->update($post);
     } else {
-        $conf        = $db->selectAll(
-            'teinstellungenconf',
-            ['cModulId', 'cConf'],
-            [$paymentMethod->cModulId, 'Y'],
-            '*',
-            'nSort'
-        );
-        $configCount = count($conf);
-        for ($i = 0; $i < $configCount; ++$i) {
-            $aktWert                        = new stdClass();
-            $aktWert->cWert                 = $filteredPost[$conf[$i]->cWertName];
-            $aktWert->cName                 = $conf[$i]->cWertName;
-            $aktWert->kEinstellungenSektion = CONF_ZAHLUNGSARTEN;
-            $aktWert->cModulId              = $paymentMethod->cModulId;
-
-            switch ($conf[$i]->cInputTyp) {
-                case 'kommazahl':
-                    $aktWert->cWert = (float)str_replace(',', '.', $aktWert->cWert);
-                    break;
-                case 'zahl':
-                case 'number':
-                    $aktWert->cWert = (int)$aktWert->cWert;
-                    break;
-                case 'text':
-                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
-                    break;
-                default:
-                    break;
-            }
-            $db->delete(
-                'teinstellungen',
-                ['kEinstellungenSektion', 'cName'],
-                [CONF_ZAHLUNGSARTEN, $conf[$i]->cWertName]
-            );
-            $db->insert('teinstellungen', $aktWert);
-            Shop::Container()->getGetText()->localizeConfig($conf[$i]);
-        }
+        $section = $sectionFactory->getSection(CONF_ZAHLUNGSARTEN, $settingManager);
+        $sql     = new SqlObject();
+        $sql->setWhere(' ec.cModulId = :mid');
+        $sql->addParam('mid', $paymentMethod->cModulId);
+        $section->load($sql);
+        $post             = $_POST;
+        $post['cModulId'] = $paymentMethod->cModulId;
+        $section->update($post);
     }
     $localized               = new stdClass();
     $localized->kZahlungsart = Request::postInt('kZahlungsart');
@@ -208,7 +151,7 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
     }
 
     Shop::Container()->getCache()->flushAll();
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPaymentMethodSave'), 'successSave');
+    $alertService->addSuccess(__('successPaymentMethodSave'), 'successSave');
     $step = 'uebersicht';
 }
 
@@ -216,74 +159,26 @@ if ($step === 'einstellen') {
     $paymentMethod = new Zahlungsart(Request::verifyGPCDataInt('kZahlungsart'));
     if ($paymentMethod->getZahlungsart() === null) {
         $step = 'uebersicht';
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPaymentMethodNotFound'), 'errorNotFound');
+        $alertService->addError(__('errorPaymentMethodNotFound'), 'errorNotFound');
     } else {
         $paymentMethod->cName = Text::filterXSS($paymentMethod->cName);
         PaymentMethod::activatePaymentMethod($paymentMethod);
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
         if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
-            $conf        = $db->getObjects(
-                'SELECT *
-                    FROM tplugineinstellungenconf
-                    WHERE cWertName LIKE :vl
-                    ORDER BY nSort',
-                ['vl' => $paymentMethod->cModulId . '\_%']
-            );
-            $configCount = count($conf);
-            for ($i = 0; $i < $configCount; ++$i) {
-                if ($conf[$i]->cInputTyp === 'selectbox') {
-                    $conf[$i]->ConfWerte = $db->selectAll(
-                        'tplugineinstellungenconfwerte',
-                        'kPluginEinstellungenConf',
-                        (int)$conf[$i]->kPluginEinstellungenConf,
-                        '*',
-                        'nSort'
-                    );
-                    foreach (array_keys($conf[$i]->ConfWerte) as $confKey) {
-                        $conf[$i]->ConfWerte[$confKey]->cName = __($conf[$i]->ConfWerte[$confKey]->cName);
-                    }
-                }
-                $setValue                = $db->select(
-                    'tplugineinstellungen',
-                    'kPlugin',
-                    (int)$conf[$i]->kPlugin,
-                    'cName',
-                    $conf[$i]->cWertName
-                );
-                $conf[$i]->gesetzterWert = $setValue->cWert;
-                $conf[$i]->cName         = __($conf[$i]->cName);
-                $conf[$i]->cBeschreibung = __($conf[$i]->cBeschreibung);
-            }
+            $sql = new SqlObject();
+            $sql->setWhere(" cWertName LIKE :mid 
+                AND cConf = 'Y'");
+            $sql->addParam('mid', $paymentMethod->cModulId . '\_%');
+            $section = new PluginPaymentMethod($settingManager, CONF_ZAHLUNGSARTEN);
+            $section->load($sql);
+            $conf = $section->getItems();
         } else {
-            $conf        = $db->selectAll(
-                'teinstellungenconf',
-                'cModulId',
-                $paymentMethod->cModulId,
-                '*',
-                'nSort'
-            );
-            $configCount = count($conf);
-            for ($i = 0; $i < $configCount; ++$i) {
-                if ($conf[$i]->cInputTyp === 'selectbox') {
-                    $conf[$i]->ConfWerte = $db->selectAll(
-                        'teinstellungenconfwerte',
-                        'kEinstellungenConf',
-                        (int)$conf[$i]->kEinstellungenConf,
-                        '*',
-                        'nSort'
-                    );
-                    Shop::Container()->getGetText()->localizeConfigValues($conf[$i], $conf[$i]->ConfWerte);
-                }
-                $setValue                = $db->select(
-                    'teinstellungen',
-                    'kEinstellungenSektion',
-                    CONF_ZAHLUNGSARTEN,
-                    'cName',
-                    $conf[$i]->cWertName
-                );
-                $conf[$i]->gesetzterWert = $setValue->cWert ?? null;
-                Shop::Container()->getGetText()->localizeConfig($conf[$i]);
-            }
+            $section = $sectionFactory->getSection(CONF_ZAHLUNGSARTEN, $settingManager);
+            $sql     = new SqlObject();
+            $sql->setWhere(' ec.cModulId = :mid');
+            $sql->addParam('mid', $paymentMethod->cModulId);
+            $section->load($sql);
+            $conf = $section->getItems();
         }
 
         $customerGroups = $db->getObjects(
@@ -291,7 +186,7 @@ if ($step === 'einstellen') {
                 FROM tkundengruppe
                 ORDER BY cName'
         );
-        $smarty->assign('Conf', $conf)
+        $smarty->assign('configItems', $conf)
             ->assign('zahlungsart', $paymentMethod)
             ->assign('kundengruppen', $customerGroups)
             ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($paymentMethod))
@@ -382,8 +277,7 @@ if ($step === 'einstellen') {
                 'base',
                 PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
             );
-            $alertHelper->addAlert(
-                Alert::TYPE_WARNING,
+            $alertService->addWarning(
                 sprintf(__('Payment method can not been deleted'), __($method->cName)),
                 'paymentcantdel',
                 ['saveInSession' => true]
@@ -393,8 +287,7 @@ if ($step === 'einstellen') {
             $db->delete('tversandartzahlungsart', 'kZahlungsart', $paymentMethodID);
             $db->delete('tzahlungsartsprache', 'kZahlungsart', $paymentMethodID);
             $db->delete('tzahlungsart', 'kZahlungsart', $paymentMethodID);
-            $alertHelper->addAlert(
-                Alert::TYPE_SUCCESS,
+            $alertService->addSuccess(
                 sprintf(__('Payment method has been deleted'), $method->cName),
                 'paymentdeleted',
                 ['saveInSession' => true]
@@ -425,8 +318,7 @@ if ($step === 'uebersicht') {
                 );
             } catch (InvalidArgumentException $e) {
                 $method->markedForDelete = true;
-                $alertHelper->addAlert(
-                    Alert::TYPE_WARNING,
+                $alertService->addWarning(
                     sprintf(__('Plugin for payment method not found'), $method->cName, $method->cAnbieter),
                     'notfound_' . $pluginID
                 );

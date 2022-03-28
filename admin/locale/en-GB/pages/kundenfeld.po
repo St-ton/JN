@@ -71,9 +71,6 @@ msgstr "Could not save form field."
 msgid "errorCustomerFieldNameExists"
 msgstr "A field with this name already exists."
 
-msgid "errorLoginTemporaryNotPossible"
-msgstr "Login temporarily unavailable."
-
 msgid "errorFieldNeedsAtLeastOneValue"
 msgstr "Please enter at least one value into the field."
 

@@ -5,7 +5,6 @@ namespace JTL\Catalog\Wishlist;
 use DateTime;
 use Exception;
 use Illuminate\Support\Collection;
-use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
@@ -18,9 +17,7 @@ use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
-use Kunde;
 use stdClass;
-use WunschlistePos;
 use function Functional\select;
 
 /**
@@ -105,7 +102,7 @@ class Wishlist
         if ($this->kKunde === null) {
             return;
         }
-        $this->oKunde = new Kunde($this->kKunde);
+        $this->oKunde = new Customer($this->kKunde);
     }
 
     /**
@@ -229,17 +226,18 @@ class Wishlist
             if ($exists) {
                 break;
             }
-
-            if ($item->getProductID() === $productID) {
-                $index  = $i;
-                $exists = true;
-                if (\count($item->getProperties()) > 0) {
-                    foreach ($attributes as $attr) {
-                        if (!$item->istEigenschaftEnthalten($attr->kEigenschaft, $attr->kEigenschaftWert)) {
-                            $exists = false;
-                            break;
-                        }
-                    }
+            if ($item->getProductID() !== $productID) {
+                continue;
+            }
+            $index  = $i;
+            $exists = true;
+            if (\count($item->getProperties()) === 0) {
+                continue;
+            }
+            foreach ($attributes as $attr) {
+                if (!$item->istEigenschaftEnthalten($attr->kEigenschaft, $attr->kEigenschaftWert)) {
+                    $exists = false;
+                    break;
                 }
             }
         }
@@ -400,6 +398,7 @@ class Wishlist
             return [];
         }
         $db            = Shop::Container()->getDB();
+        $currency      = Frontend::getCurrency();
         $searchResults = [];
         $data          = $db->getObjects(
             "SELECT twunschlistepos.*, date_format(twunschlistepos.dHinzugefuegt, '%d.%m.%Y %H:%i') AS dHinzugefuegt_de
@@ -459,7 +458,7 @@ class Wishlist
                 $item->addProperty($wlAttribute);
             }
 
-            $product = new Artikel();
+            $product = new Artikel($db);
             try {
                 $product->fuelleArtikel($result->kArtikel, Artikel::getDefaultOptions());
             } catch (Exception $e) {
@@ -475,7 +474,7 @@ class Wishlist
                     * ($product->Preise->fVKNetto * (100 + $_SESSION['Steuersatz'][$product->kSteuerklasse]) / 100);
             }
 
-            $item->setPrice(Preise::getLocalizedPriceString($price, Frontend::getCurrency()));
+            $item->setPrice(Preise::getLocalizedPriceString($price, $currency));
             $searchResults[$i] = $item;
         }
 
@@ -668,7 +667,7 @@ class Wishlist
         }
 
         $notice .= \implode(', ', $names);
-        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'wlNote');
+        Shop::Container()->getAlertService()->addNotice($notice, 'wlNote');
 
         return $notice;
     }
@@ -721,8 +720,9 @@ class Wishlist
     {
         if (\count(Frontend::getWishList()->getItems()) > 0) {
             $defaultOptions = Artikel::getDefaultOptions();
+            $db             = Shop::Container()->getDB();
             foreach (Frontend::getWishList()->getItems() as $item) {
-                $product = new Artikel();
+                $product = new Artikel($db);
                 try {
                     $product->fuelleArtikel($item->getProductID(), $defaultOptions);
                 } catch (Exception $e) {
@@ -1068,15 +1068,16 @@ class Wishlist
         if ($itemID <= 0) {
             return false;
         }
-        $item = Shop::Container()->getDB()->select('twunschlistepos', 'kWunschlistePos', $itemID);
+        $db   = Shop::Container()->getDB();
+        $item = $db->select('twunschlistepos', 'kWunschlistePos', $itemID);
         if ($item === null) {
             return false;
         }
         $item->kWunschlistePos = (int)$item->kWunschlistePos;
         $item->kWunschliste    = (int)$item->kWunschliste;
         $item->kArtikel        = (int)$item->kArtikel;
-        $product               = new Artikel();
         try {
+            $product = new Artikel($db);
             $product->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
         } catch (Exception $e) {
             return false;
@@ -1126,6 +1127,7 @@ class Wishlist
         if (!\is_array($wishList->CWunschlistePos_arr)) {
             return $wishList;
         }
+        $currency = Frontend::getCurrency();
         foreach ($wishList->getItems() as $item) {
             $product = $item->getProduct();
             if ($product === null) {
@@ -1141,7 +1143,7 @@ class Wishlist
                     * ($product->Preise->fVKNetto * (100 + $_SESSION['Steuersatz'][$product->kSteuerklasse]) / 100)
                     : 0;
             }
-            $item->setPrice(Preise::getLocalizedPriceString($price, Frontend::getCurrency()));
+            $item->setPrice(Preise::getLocalizedPriceString($price, $currency));
         }
 
         return $wishList;
@@ -1205,7 +1207,7 @@ class Wishlist
             $item->kArtikel        = (int)$item->kArtikel;
 
             try {
-                $product = (new Artikel())->fuelleArtikel($item->kArtikel, $defaultOptions);
+                $product = (new Artikel($db))->fuelleArtikel($item->kArtikel, $defaultOptions, 0, $langID);
             } catch (Exception $e) {
                 continue;
             }
@@ -1569,7 +1571,7 @@ class Wishlist
     }
 
     /**
-     * @return WunschlistePos[]
+     * @return WishlistItem[]
      */
     public function getItems(): array
     {
@@ -1577,7 +1579,7 @@ class Wishlist
     }
 
     /**
-     * @param WunschlistePos[] $items
+     * @param WishlistItem[] $items
      */
     public function setItems(array $items): void
     {
@@ -1586,9 +1588,9 @@ class Wishlist
     }
 
     /**
-     * @param WunschlistePos $item
+     * @param WishlistItem $item
      */
-    public function addItem(WunschlistePos $item): void
+    public function addItem(WishlistItem $item): void
     {
         $this->CWunschlistePos_arr[] = $item;
         $this->setProductCount(\count($this->CWunschlistePos_arr));

@@ -28,7 +28,7 @@ final class BestsellingProducts extends AbstractBox
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
-            $cacheID        = 'bx_bstsl_' . $customerGroupID . '_' . \md5($parentSQL . $stockFilterSQL);
+            $cacheID        = 'bx_bsp_' . $customerGroupID . '_' . \md5($parentSQL . $stockFilterSQL);
             if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached     = false;
                 $minCount   = (int)$this->config['global']['global_bestseller_minanzahl'] > 0

@@ -7,7 +7,6 @@ use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Cart\PersistentCart;
-use JTL\Cart\PersistentCartItem;
 use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
@@ -104,11 +103,7 @@ class AccountController
             Frontend::getInstance()->setCustomer($customer);
         }
         if (Request::verifyGPCDataInt('wlidmsg') > 0) {
-            $this->alertService->addAlert(
-                Alert::TYPE_NOTE,
-                Wishlist::mapMessage(Request::verifyGPCDataInt('wlidmsg')),
-                'wlidmsg'
-            );
+            $this->alertService->addNotice(Wishlist::mapMessage(Request::verifyGPCDataInt('wlidmsg')), 'wlidmsg');
         }
         if (isset($_SESSION['JTL_REDIRECT']) || Request::verifyGPCDataInt('r') > 0) {
             $this->smarty->assign(
@@ -119,8 +114,7 @@ class AccountController
         }
         unset($_SESSION['JTL_REDIRECT']);
         if (Request::getVar('updated_pw') === 'true') {
-            $this->alertService->addAlert(
-                Alert::TYPE_NOTE,
+            $this->alertService->addNotice(
                 Shop::Lang()->get('changepasswordSuccess', 'login'),
                 'changepasswordSuccess'
             );
@@ -130,15 +124,14 @@ class AccountController
             $customerID = $customer->getID();
         }
         if (isset($_GET['loggedout'])) {
-            $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('loggedOut'), 'loggedOut');
+            $this->alertService->addNotice(Shop::Lang()->get('loggedOut'), 'loggedOut');
         }
         if ($customerID > 0) {
             $step = $this->handleCustomerRequest($customer);
         }
         $alertNote = $this->alertService->alertTypeExists(Alert::TYPE_NOTE);
         if (!$alertNote && $step === 'mein Konto' && $customerID > 0) {
-            $this->alertService->addAlert(
-                Alert::TYPE_INFO,
+            $this->alertService->addInfo(
                 Shop::Lang()->get('myAccountDesc', 'login'),
                 'myAccountDesc',
                 ['showInAlertListTemplate' => false]
@@ -189,8 +182,7 @@ class AccountController
                         $openOrders->ordersInCancellationTime
                     );
                 }
-                $this->alertService->addAlert(
-                    Alert::TYPE_DANGER,
+                $this->alertService->addDanger(
                     \sprintf(
                         Shop::Lang()->get('customerOpenOrders', 'account data'),
                         $openOrders->openOrders,
@@ -208,24 +200,16 @@ class AccountController
         }
         if ($valid && Request::verifyGPCDataInt('wllo') > 0) {
             $step = 'mein Konto';
-            $this->alertService->addAlert(
-                Alert::TYPE_NOTE,
-                Wishlist::delete(Request::verifyGPCDataInt('wllo')),
-                'wllo'
-            );
+            $this->alertService->addNotice(Wishlist::delete(Request::verifyGPCDataInt('wllo')), 'wllo');
         }
         if ($valid && Request::postInt('wls') > 0) {
             $step = 'mein Konto';
-            $this->alertService->addAlert(
-                Alert::TYPE_NOTE,
-                Wishlist::setDefault(Request::verifyGPCDataInt('wls')),
-                'wls'
-            );
+            $this->alertService->addNotice(Wishlist::setDefault(Request::verifyGPCDataInt('wls')), 'wls');
         }
         if ($valid && Request::postInt('wlh') > 0) {
             $step = 'mein Konto';
             $name = Text::htmlentities(Text::filterXSS($_POST['cWunschlisteName']));
-            $this->alertService->addAlert(Alert::TYPE_NOTE, Wishlist::save($name), 'saveWL');
+            $this->alertService->addNotice(Wishlist::save($name), 'saveWL');
         }
         $wishlistID = Request::verifyGPCDataInt('wl');
         if ($wishlistID > 0) {
@@ -286,8 +270,10 @@ class AccountController
         if ($step === 'rechnungsdaten') {
             $this->getCustomerFields();
         }
+        $currency = Frontend::getCurrency();
         if ($step === 'bewertungen') {
-            $ratings = $this->db->getCollection(
+            $currency = Frontend::getCurrency();
+            $ratings  = $this->db->getCollection(
                 'SELECT tbewertung.kBewertung, fGuthabenBonus, nAktiv, kArtikel, cTitel, cText, 
                   tbewertung.dDatum, nSterne, cAntwort, dAntwortDatum
                   FROM tbewertung 
@@ -295,11 +281,11 @@ class AccountController
                       ON tbewertung.kBewertung = tbewertungguthabenbonus.kBewertung
                   WHERE tbewertung.kKunde = :customer',
                 ['customer' => $customerID]
-            )->each(static function ($item) {
-                $item->fGuthabenBonusLocalized = Preise::getLocalizedPriceString($item->fGuthabenBonus);
+            )->each(static function ($item) use ($currency) {
+                $item->fGuthabenBonusLocalized = Preise::getLocalizedPriceString($item->fGuthabenBonus, $currency);
             });
         }
-        $customer->cGuthabenLocalized = Preise::getLocalizedPriceString($customer->fGuthaben);
+        $customer->cGuthabenLocalized = Preise::getLocalizedPriceString($customer->fGuthaben, $currency);
         $this->smarty->assign('Kunde', $customer)
             ->assign('customerAttributes', $customer->getCustomerAttributes())
             ->assign('bewertungen', $ratings)
@@ -320,11 +306,7 @@ class AccountController
     {
         $customer = new Customer();
         if (Form::validateToken() === false) {
-            $this->alertService->addAlert(
-                Alert::TYPE_NOTE,
-                Shop::Lang()->get('csrfValidationFailed'),
-                'csrfValidationFailed'
-            );
+            $this->alertService->addNotice(Shop::Lang()->get('csrfValidationFailed'), 'csrfValidationFailed');
             Shop::Container()->getLogService()->warning('CSRF-Warnung für Login: ' . $_POST['login']);
 
             return $customer;
@@ -340,14 +322,14 @@ class AccountController
         if ($returnCode === Customer::OK && $customer->getID() > 0) {
             $this->initCustomer($customer);
         } elseif ($returnCode === Customer::ERROR_LOCKED) {
-            $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountLocked'), 'accountLocked');
+            $this->alertService->addNotice(Shop::Lang()->get('accountLocked'), 'accountLocked');
         } elseif ($returnCode === Customer::ERROR_INACTIVE) {
-            $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountInactive'), 'accountInactive');
+            $this->alertService->addNotice(Shop::Lang()->get('accountInactive'), 'accountInactive');
         } elseif ($returnCode === Customer::ERROR_NOT_ACTIVATED_YET) {
-            $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('loginNotActivated'), 'loginNotActivated');
+            $this->alertService->addNotice(Shop::Lang()->get('loginNotActivated'), 'loginNotActivated');
         } else {
             $this->checkLoginCaptcha($tries);
-            $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('incorrectLogin'), 'incorrectLogin');
+            $this->alertService->addNotice(Shop::Lang()->get('incorrectLogin'), 'incorrectLogin');
         }
 
         return $customer;
@@ -384,11 +366,7 @@ class AccountController
         }
         if ($customer->cAktiv !== 'Y') {
             $customer->kKunde = 0;
-            $this->alertService->addAlert(
-                Alert::TYPE_NOTE,
-                Shop::Lang()->get('loginNotActivated'),
-                'loginNotActivated'
-            );
+            $this->alertService->addNotice(Shop::Lang()->get('loginNotActivated'), 'loginNotActivated');
             return;
         }
         $this->updateSession($customer->getID());
@@ -469,7 +447,7 @@ class AccountController
     }
 
     /**
-     * @return array
+     * @return Kupon[]
      */
     private function getCoupons(): array
     {
@@ -479,7 +457,7 @@ class AccountController
         $coupons[] = !empty($_SESSION['NeukundenKupon']) ? $_SESSION['NeukundenKupon'] : null;
         $coupons[] = !empty($_SESSION['Kupon']) ? $_SESSION['Kupon'] : null;
 
-        return $coupons;
+        return \array_filter($coupons);
     }
 
     /**
@@ -491,7 +469,7 @@ class AccountController
             if (empty($coupon)) {
                 continue;
             }
-            $error      = Kupon::checkCoupon($coupon);
+            $error      = $coupon->check();
             $returnCode = \angabenKorrekt($error);
             \executeHook(\HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
                 'error'        => &$error,
@@ -499,7 +477,7 @@ class AccountController
             ]);
             if ($returnCode) {
                 if (isset($coupon->kKupon) && $coupon->kKupon > 0 && $coupon->cKuponTyp === Kupon::TYPE_STANDARD) {
-                    Kupon::acceptCoupon($coupon);
+                    $coupon->accept();
                     \executeHook(\HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
                 } elseif (!empty($coupon->kKupon) && $coupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                     // Versandfrei Kupon
@@ -531,6 +509,8 @@ class AccountController
         if (\count($persCart->getItems()) === 0) {
             return false;
         }
+        $languageID      = Shop::getLanguageID();
+        $customerGroupID = $customer->getGroupID();
         foreach ($persCart->getItems() as $item) {
             if (!empty($item->Artikel->bHasKonfig)) {
                 continue;
@@ -564,7 +544,7 @@ class AccountController
                 }
                 // Konfigitems ohne Artikelbezug
             } elseif ($item->kArtikel === 0 && !empty($item->kKonfigitem)) {
-                $configItem = new Item($item->kKonfigitem);
+                $configItem = new Item($item->kKonfigitem, $languageID, $customerGroupID);
                 $cart->erstelleSpezialPos(
                     $configItem->getName(),
                     $item->fAnzahl,
@@ -678,7 +658,8 @@ class AccountController
             }
         }
         $cart->PositionenArr = [];
-
+        $customerGroupID     = Frontend::getCustomer()->getGroupID();
+        $languageID          = Shop::getLanguageID();
         foreach (PersistentCart::getInstance($customerID, false, $this->db)->getItems() as $item) {
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $productID = (int)$item->kArtikel;
@@ -709,10 +690,15 @@ class AccountController
                         ->fuegeEin($productID, 1, [], \C_WARENKORBPOS_TYP_GRATISGESCHENK);
                 }
             } else {
-                $tmpProduct = new Artikel();
-                $tmpProduct->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
-                    ? Artikel::getDefaultOptions()
-                    : Artikel::getDefaultConfigOptions());
+                $tmpProduct = new Artikel($this->db);
+                $tmpProduct->fuelleArtikel(
+                    $item->kArtikel,
+                    (int)$item->kKonfigitem === 0
+                        ? Artikel::getDefaultOptions()
+                        : Artikel::getDefaultConfigOptions(),
+                    $customerGroupID,
+                    $languageID
+                );
                 if ((int)$tmpProduct->kArtikel > 0 && \count(CartHelper::addToCartCheck(
                     $tmpProduct,
                     $item->fAnzahl,
@@ -730,8 +716,7 @@ class AccountController
                         $item->cResponsibility
                     );
                 } else {
-                    Shop::Container()->getAlertService()->addAlert(
-                        Alert::TYPE_WARNING,
+                    Shop::Container()->getAlertService()->addWarning(
                         \sprintf(Shop::Lang()->get('cartPersRemoved', 'errorMessages'), $item->cArtikelName),
                         'cartPersRemoved' . $item->kArtikel,
                         ['saveInSession' => true]
@@ -869,8 +854,7 @@ class AccountController
             || !$_POST['altesPasswort']
             || !$_POST['neuesPasswort1']
         ) {
-            $this->alertService->addAlert(
-                Alert::TYPE_NOTE,
+            $this->alertService->addNotice(
                 Shop::Lang()->get('changepasswordFilloutForm', 'login'),
                 'changepasswordFilloutForm'
             );
@@ -879,18 +863,16 @@ class AccountController
             || (isset($_POST['neuesPasswort2']) && !isset($_POST['neuesPasswort1']))
             || $_POST['neuesPasswort1'] !== $_POST['neuesPasswort2']
         ) {
-            $this->alertService->addAlert(
-                Alert::TYPE_ERROR,
+            $this->alertService->addError(
                 Shop::Lang()->get('changepasswordPassesNotEqual', 'login'),
                 'changepasswordPassesNotEqual'
             );
         }
         $minLength = $this->config['kunden']['kundenregistrierung_passwortlaenge'];
         if (isset($_POST['neuesPasswort1']) && \mb_strlen($_POST['neuesPasswort1']) < $minLength) {
-            $this->alertService->addAlert(
-                Alert::TYPE_ERROR,
-                Shop::Lang()->get('changepasswordPassTooShort', 'login') . ' ' .
-                \lang_passwortlaenge($minLength),
+            $this->alertService->addError(
+                Shop::Lang()->get('changepasswordPassTooShort', 'login') . ' '
+                . Shop::Lang()->get('minCharLen', 'messages', $minLength),
                 'changepasswordPassTooShort'
             );
         }
@@ -915,14 +897,12 @@ class AccountController
                 if ($ok !== false) {
                     $customer->updatePassword($_POST['neuesPasswort1']);
                     $step = 'mein Konto';
-                    $this->alertService->addAlert(
-                        Alert::TYPE_NOTE,
+                    $this->alertService->addNotice(
                         Shop::Lang()->get('changepasswordSuccess', 'login'),
                         'changepasswordSuccess'
                     );
                 } else {
-                    $this->alertService->addAlert(
-                        Alert::TYPE_ERROR,
+                    $this->alertService->addError(
                         Shop::Lang()->get('changepasswordWrongPass', 'login'),
                         'changepasswordWrongPass'
                     );
@@ -950,11 +930,7 @@ class AccountController
                 $order->kBestellung
             );
             if ($returnCode !== 1) {
-                $this->alertService->addAlert(
-                    Alert::TYPE_ERROR,
-                    Download::mapGetFileErrorCode($returnCode),
-                    'downloadError'
-                );
+                $this->alertService->addError(Download::mapGetFileErrorCode($returnCode), 'downloadError');
             }
         }
         $step                               = 'bestellung';
@@ -995,11 +971,7 @@ class AccountController
                 Request::verifyGPCDataInt('kBestellung')
             );
             if ($returnCode !== 1) {
-                $this->alertService->addAlert(
-                    Alert::TYPE_ERROR,
-                    Download::mapGetFileErrorCode($returnCode),
-                    'downloadError'
-                );
+                $this->alertService->addError(Download::mapGetFileErrorCode($returnCode), 'downloadError');
             }
         }
         $orders     = $this->db->selectAll(
@@ -1070,11 +1042,7 @@ class AccountController
             );
             exit;
         }
-        $this->alertService->addAlert(
-            Alert::TYPE_NOTE,
-            Shop::Lang()->get('csrfValidationFailed'),
-            'csrfValidationFailed'
-        );
+        $this->alertService->addNotice(Shop::Lang()->get('csrfValidationFailed'), 'csrfValidationFailed');
         Shop::Container()->getLogService()->error('CSRF-Warnung fuer Account-Loeschung und kKunde ' . $customerID);
     }
 
@@ -1117,15 +1085,13 @@ class AccountController
             $action = Request::verifyGPDataString('wlAction');
             if ($action === 'setPrivate') {
                 $wishlist->setVisibility(false);
-                $this->alertService->addAlert(
-                    Alert::TYPE_NOTE,
+                $this->alertService->addNotice(
                     Shop::Lang()->get('wishlistSetPrivate', 'messages'),
                     'wishlistSetPrivate'
                 );
             } elseif ($action === 'setPublic') {
                 $wishlist->setVisibility(true);
-                $this->alertService->addAlert(
-                    Alert::TYPE_NOTE,
+                $this->alertService->addNotice(
                     Shop::Lang()->get('wishlistSetPublic', 'messages'),
                     'wishlistSetPublic'
                 );
@@ -1170,11 +1136,7 @@ class AccountController
             $customerAttributes->save();
             $customerData->getCustomerAttributes()->load($customerData->getID());
             $_SESSION['Kunde'] = $customerData;
-            $this->alertService->addAlert(
-                Alert::TYPE_NOTE,
-                Shop::Lang()->get('dataEditSuccessful', 'login'),
-                'dataEditSuccessful'
-            );
+            $this->alertService->addNotice(Shop::Lang()->get('dataEditSuccessful', 'login'), 'dataEditSuccessful');
             Tax::setTaxRates();
             if (isset($_SESSION['Warenkorb']->kWarenkorb)
                 && Frontend::getCart()->gibAnzahlArtikelExt([\C_WARENKORBPOS_TYP_ARTIKEL]) > 0

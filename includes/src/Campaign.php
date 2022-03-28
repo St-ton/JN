@@ -53,6 +53,11 @@ class Campaign
     public $dErstellt_DE;
 
     /**
+     * @var int
+     */
+    public $nInternal;
+
+    /**
      * Kampagne constructor.
      * @param int $id
      */
@@ -239,9 +244,8 @@ class Campaign
                     }
                     $event->dErstellt = 'NOW()';
                     $db->insert('tkampagnevorgang', $event);
-                    $_SESSION['Kampagnenbesucher']        = $campaign;
-                    $_SESSION['Kampagnenbesucher']->cWert = $event->cParamWert;
-                    break;
+                    $_SESSION['Kampagnenbesucher'][$campaign->kKampagne]        = $campaign;
+                    $_SESSION['Kampagnenbesucher'][$campaign->kKampagne]->cWert = $event->cParamWert;
                 }
             }
 
@@ -266,8 +270,8 @@ class Campaign
                         $event->cParamWert = $given;
                     }
                     $db->insert('tkampagnevorgang', $event);
-                    $_SESSION['Kampagnenbesucher']        = $campaign;
-                    $_SESSION['Kampagnenbesucher']->cWert = $event->cParamWert;
+                    $_SESSION['Kampagnenbesucher'][$campaign->kKampagne]        = $campaign;
+                    $_SESSION['Kampagnenbesucher'][$campaign->kKampagne]->cWert = $event->cParamWert;
                 }
             }
         }
@@ -284,19 +288,23 @@ class Campaign
     public static function setCampaignAction(int $id, int $kKey, $fWert, $customData = null): int
     {
         if ($id > 0 && $kKey > 0 && $fWert > 0 && isset($_SESSION['Kampagnenbesucher'])) {
-            $event               = new stdClass();
-            $event->kKampagne    = $_SESSION['Kampagnenbesucher']->kKampagne;
-            $event->kKampagneDef = $id;
-            $event->kKey         = $kKey;
-            $event->fWert        = $fWert;
-            $event->cParamWert   = $_SESSION['Kampagnenbesucher']->cWert;
-            $event->dErstellt    = 'NOW()';
+            $events = [];
+            foreach ($_SESSION['Kampagnenbesucher'] as $campaign) {
+                $event               = new stdClass();
+                $event->kKampagne    = $campaign->kKampagne;
+                $event->kKampagneDef = $id;
+                $event->kKey         = $kKey;
+                $event->fWert        = $fWert;
+                $event->cParamWert   = $campaign->cWert;
+                $event->dErstellt    = 'NOW()';
 
-            if ($customData !== null) {
-                $event->cCustomData = \mb_substr($customData, 0, 255);
+                if ($customData !== null) {
+                    $event->cCustomData = \mb_substr($customData, 0, 255);
+                }
+                $events[] = $event;
             }
 
-            return Shop::Container()->getDB()->insert('tkampagnevorgang', $event);
+            return Shop::Container()->getDB()->insertBatch('tkampagnevorgang', $events);
         }
 
         return 0;

@@ -1,6 +1,5 @@
 <?php
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -14,11 +13,7 @@ $oAccount->permission('SETTINGS_EMAIL_BLACKLIST_VIEW', true, true);
 $step = 'emailblacklist';
 $db   = Shop::Container()->getDB();
 if (Request::postInt('einstellungen') > 0) {
-    Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_SUCCESS,
-        saveAdminSectionSettings(CONF_EMAILBLACKLIST, $_POST),
-        'saveSettings'
-    );
+    saveAdminSectionSettings(CONF_EMAILBLACKLIST, $_POST);
 }
 if (Request::postInt('emailblacklist') === 1 && Form::validateToken()) {
     $addresses = explode(';', Text::filterXSS($_POST['cEmail']));
@@ -39,9 +34,8 @@ $blocked   = $db->getObjects(
         ORDER BY dLetzterBlock DESC
         LIMIT 100"
 );
-
+getAdminSectionSettings(CONF_EMAILBLACKLIST);
 $smarty->assign('blacklist', $blacklist)
     ->assign('blocked', $blocked)
-    ->assign('config', getAdminSectionSettings(CONF_EMAILBLACKLIST))
     ->assign('step', $step)
     ->display('emailblacklist.tpl');

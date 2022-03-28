@@ -980,17 +980,17 @@ class LanguageHelper
      * 0 = Normales Array
      * 1 = Gib ein Assoc mit Key = kSprache
      * 2 = Gib ein Assoc mit Key = cISO
-     * @param bool $forceLoad
+     * @param bool $force
      * @param bool $onlyActive
      * @return LanguageModel[]
      * @throws \Exception
      * @former gibAlleSprachen()
      * @since  5.0.0
      */
-    private function mappedGetAllLanguages(int $returnType = 0, bool $forceLoad = false, bool $onlyActive = false)
+    private function mappedGetAllLanguages(int $returnType = 0, bool $force = false, bool $onlyActive = false): array
     {
         $languages = Frontend::getLanguages();
-        if ($forceLoad || \count($languages) === 0) {
+        if ($force || \count($languages) === 0) {
             $languages = $onlyActive === true
                 ? LanguageModel::loadAll($this->db, ['active'], [1])->toArray()
                 : LanguageModel::loadAll($this->db, [], [])->toArray();

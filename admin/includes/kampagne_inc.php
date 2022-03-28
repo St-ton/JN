@@ -424,8 +424,8 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                 ['cid' => $campaignID, 'cdid' => $defID]
             );
 
-            if (is_array($data) && count($data) > 0) {
-                $dCount = count($data);
+            $dCount = count($data);
+            if ($dCount > 0) {
                 for ($i = 0; $i < $dCount; $i++) {
                     if ($data[$i]->cNachname !== 'n.v.') {
                         $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
@@ -480,8 +480,8 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                 ['cid' => $campaignID, 'cdid' => $defID]
             );
 
-            if (is_array($data) && count($data) > 0) {
-                $count = count($data);
+            $count = count($data);
+            if ($count > 0) {
                 for ($i = 0; $i < $count; $i++) {
                     if ($data[$i]->cNachname !== 'n.v.') {
                         $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
@@ -536,7 +536,7 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                 ['cid' => $campaignID, 'cdid' => $defID]
             );
             $dCount = count($data);
-            if (is_array($data) && $dCount > 0) {
+            if ($dCount > 0) {
                 for ($i = 0; $i < $dCount; $i++) {
                     if ($data[$i]->cNachname !== 'n.v.') {
                         $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
@@ -605,7 +605,7 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                 ['cid' => $campaignID, 'cdid' => $defID]
             );
 
-            if (is_array($data) && count($data) > 0) {
+            if (count($data) > 0) {
                 $members = [
                     'cArtikelname'        => __('product'),
                     'cArtNr'              => __('productId'),
@@ -658,7 +658,7 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                 ['cid' => $campaignID, 'cdid' => $defID]
             );
 
-            if (is_array($data) && count($data) > 0) {
+            if (count($data) > 0) {
                 $members = [
                     'cArtikelname'        => __('product'),
                     'cArtNr'              => __('productId'),
@@ -693,7 +693,7 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                 ['cid' => $campaignID, 'cdid' => $defID]
             );
             $dCount = count($data);
-            if (is_array($data) && $dCount > 0) {
+            if ($dCount > 0) {
                 for ($i = 0; $i < $dCount; $i++) {
                     if ($data[$i]->cNachname !== 'n.v.') {
                         $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
@@ -745,7 +745,7 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                 ['cid' => $campaignID, 'cdid' => $defID]
             );
             $dCount = count($data);
-            if (is_array($data) && $dCount > 0) {
+            if ($dCount > 0) {
                 for ($i = 0; $i < $dCount; $i++) {
                     if ($data[$i]->cNachname !== 'n.v.') {
                         $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
@@ -800,9 +800,10 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                     ORDER BY tkampagnevorgang.dErstellt DESC',
                 ['cid' => $campaignID, 'cdid' => $defID, 'cgid' => $customerGroupID]
             );
-            if (is_array($data) && count($data) > 0) {
+
+            $count = count($data);
+            if ($count > 0) {
                 Frontend::getCustomerGroup()->setMayViewPrices(1);
-                $count = count($data);
                 for ($i = 0; $i < $count; $i++) {
                     if (isset($data[$i]->fVKNetto) && $data[$i]->fVKNetto > 0) {
                         $data[$i]->fVKNetto = Preise::getLocalizedPriceString($data[$i]->fVKNetto);
@@ -849,7 +850,7 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
                 ['cid' => $campaignID, 'cdid' => $defID]
             );
 
-            if (is_array($data) && count($data) > 0) {
+            if (count($data) > 0) {
                 $members = [
                     'cName'               => __('newsletter'),
                     'cBetreff'            => __('subject'),
@@ -1123,11 +1124,11 @@ function gibStamp($oldStamp, int $direction, int $view): string
 function speicherKampagne($campaign): int
 {
     // Standardkampagnen (Interne) Werte herstellen
-    if (isset($campaign->kKampagne) && ($campaign->kKampagne < 1000 && $campaign->kKampagne > 0)) {
+    if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
         $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT *
                 FROM tkampagne
-                WHERE kKampagne = :cid',
+                WHERE kKampagne = :cid AND nInternal = 1',
             ['cid' => (int)$campaign->kKampagne]
         );
         if ($data !== null) {

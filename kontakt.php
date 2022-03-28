@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\CheckBox;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -79,10 +78,9 @@ if (Form::checkSubject()) {
         $subject->AngezeigterName = $localization->cName ?? $subject->cName;
     }
     if ($step === 'nachricht versendet') {
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, Shop::Lang()->get('messageSent', 'contact'), 'messageSent');
+        $alertHelper->addSuccess(Shop::Lang()->get('messageSent', 'contact'), 'messageSent');
     } elseif ($step === 'floodschutz') {
-        $alertHelper->addAlert(
-            Alert::TYPE_DANGER,
+        $alertHelper->addDanger(
             Shop::Lang()->get('youSentUsAMessageShortTimeBefore', 'contact'),
             'youSentUsAMessageShortTimeBefore'
         );
@@ -99,7 +97,7 @@ if (Form::checkSubject()) {
     Shop::Container()->getLogService()->error('Kein Kontaktbetreff vorhanden! Bitte im Backend unter ' .
         'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.');
 
-    $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('noSubjectAvailable', 'contact'), 'noSubjectAvailable');
+    $alertHelper->addNotice(Shop::Lang()->get('noSubjectAvailable', 'contact'), 'noSubjectAvailable');
 }
 
 $smarty->assign('Link', $link)

@@ -1,6 +1,5 @@
 <?php
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -33,7 +32,7 @@ if (isset($_FILES['csv']['tmp_name'])
                 $importMsg .= __('checkHead');
                 $fmt        = checkformat($data, $format);
                 if ($fmt === -1) {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFormatUnknown'), 'errorFormatUnknown');
+                    $alertHelper->addError(__('errorFormatUnknown'), 'errorFormatUnknown');
                     break;
                 }
                 $importMsg .= '<br /><br />' . __('importPending') . '<br />';
@@ -42,7 +41,7 @@ if (isset($_FILES['csv']['tmp_name'])
             }
             $row++;
         }
-        $alertHelper->addAlert(Alert::TYPE_NOTE, $importMsg, 'importMessage');
+        $alertHelper->addNotice($importMsg, 'importMessage');
         fclose($file);
     }
 }

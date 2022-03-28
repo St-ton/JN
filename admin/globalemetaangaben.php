@@ -44,7 +44,7 @@ if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
     $globalMetaData->cWertName             = $metaDescr;
     $db->insert('tglobalemetaangaben', $globalMetaData);
     Shop::Container()->getCache()->flushAll();
-    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
+    Shop::Container()->getAlertService()->addSuccess(__('successConfigSave'), 'successConfigSave');
 }
 
 $meta     = $db->selectAll(

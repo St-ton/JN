@@ -73,3 +73,9 @@ msgstr "Antwort wurde erfolgreich gelöscht."
 
 msgid "linkItemShop"
 msgstr "Artikel im Onlineshop ansehen"
+
+msgid "%d item(s) successfully imported."
+msgstr "%d Element(e) erfolgreich importiert."
+
+msgid "Required attribute %s not found in row."
+msgstr "Pflichtfeld %s nicht gefunden."

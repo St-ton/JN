@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Session\Frontend;
@@ -58,11 +57,7 @@ if (isset($conf['kunden']['kundenregistrierung_pruefen_zeit'])
 }
 
 if (Request::verifyGPCDataInt('accountDeleted') === 1) {
-    Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_SUCCESS,
-        Shop::Lang()->get('accountDeleted', 'messages'),
-        'accountDeleted'
-    );
+    Shop::Container()->getAlertService()->addSuccess(Shop::Lang()->get('accountDeleted', 'messages'), 'accountDeleted');
 }
 
 executeHook(HOOK_REGISTRIEREN_PAGE);

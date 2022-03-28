@@ -271,7 +271,12 @@ class IOMethods
 
         $response->nType           = 2;
         $response->cWarenkorbText  = \lang_warenkorb_warenkorbEnthaeltXArtikel($cart);
-        $response->cWarenkorbLabel = \lang_warenkorb_warenkorbLabel($cart);
+        $response->cWarenkorbLabel = Shop::Lang()->get('cartSumLabel', 'checkout', Preise::getLocalizedPriceString(
+            $cart->gibGesamtsummeWarenExt(
+                [\C_WARENKORBPOS_TYP_ARTIKEL],
+                !Frontend::getCustomerGroup()->isMerchant()
+            )
+        ));
         $response->cPopup          = $smarty->fetch('productdetails/pushed.tpl');
         $response->cWarenkorbMini  = $smarty->fetch('basket/cart_dropdown.tpl');
         $response->oArtikel        = $product;

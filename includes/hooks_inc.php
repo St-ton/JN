@@ -1910,6 +1910,14 @@ const HOOK_BESTELLUNG_SETZEGUTHABEN = 335;
 const HOOK_SYNC_SEND_AVAILABILITYMAILS = 336;
 
 /**
+ * @since 5.1.3
+ * @file includes/src/Cart/Cart.php
+ * @param JTL\Cart\CartItem positionItem
+ * @param bool              &delete
+ */
+const HOOK_CART_DELETE_PARENT_CART_ITEM = 337;
+
+/**
  * @since 5.2.0
  * @param JTL\Export\Product        product
  * @param JTL\Export\FormatExporter exporter
@@ -1934,6 +1942,13 @@ const HOOK_EXPORT_START = 341;
  * @param JTL\Export\Model          model
  */
 const HOOK_EXPORT_FACTORY_GET_EXPORTER = 342;
+
+/**
+ * @since 5.2.0
+ * @param JTL\Catalog\Product\Artikel product
+ * @param int|string|float            &qty
+ */
+const HOOK_CARTHELPER_ADD_PRODUCT_ID_TO_CART = 345;
 
 /**
  * @since 5.2.0

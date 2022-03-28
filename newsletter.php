@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Customer\Customer;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -35,13 +34,21 @@ $link          = $linkHelper->getPageLink($kLink);
 $cCanonicalURL = '';
 $option        = 'eintragen';
 if ($valid && Request::verifyGPCDataInt('abonnieren') > 0) {
-    $post = Text::filterXSS($_POST);
+    $post     = Text::filterXSS($_POST);
+    $customer = Frontend::getCustomer();
+    if ($customer->getID() > 0) {
+        $post['cAnrede']   = $post['cAnrede'] ?? $customer->cAnrede;
+        $post['cVorname']  = $post['cVorname'] ?? $customer->cVorname;
+        $post['cNachname'] = $post['cNachname'] ?? $customer->cNachname;
+        $post['kKunde']    = $customer->getID();
+    }
     if (Text::filterEmailAddress($post['cEmail']) !== false) {
         $refData = (new OptinRefData())
             ->setSalutation($post['cAnrede'] ?? '')
             ->setFirstName($post['cVorname'] ?? '')
             ->setLastName($post['cNachname'] ?? '')
             ->setEmail($post['cEmail'] ?? '')
+            ->setCustomerID((int)($post['kKunde'] ?? 0))
             ->setLanguageID(Shop::getLanguageID())
             ->setRealIP(Request::getRealIP());
         try {
@@ -53,11 +60,7 @@ if ($valid && Request::verifyGPCDataInt('abonnieren') > 0) {
             Shop::Container()->getLogService()->error($e->getMessage());
         }
     } else {
-        $alertHelper->addAlert(
-            Alert::TYPE_ERROR,
-            Shop::Lang()->get('newsletterWrongemail', 'errorMessages'),
-            'newsletterWrongemail'
-        );
+        $alertHelper->addError(Shop::Lang()->get('newsletterWrongemail', 'errorMessages'), 'newsletterWrongemail');
     }
     $smarty->assign('cPost_arr', $post);
 } elseif ($valid && Request::verifyGPCDataInt('abmelden') === 1) {
@@ -68,18 +71,10 @@ if ($valid && Request::verifyGPCDataInt('abonnieren') > 0) {
                 ->setAction(Optin::DELETE_CODE)
                 ->handleOptin();
         } catch (Exception $e) {
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
-                Shop::Lang()->get('newsletterNoexists', 'errorMessages'),
-                'newsletterNoexists'
-            );
+            $alertHelper->addError(Shop::Lang()->get('newsletterNoexists', 'errorMessages'), 'newsletterNoexists');
         }
     } else {
-        $alertHelper->addAlert(
-            Alert::TYPE_ERROR,
-            Shop::Lang()->get('newsletterWrongemail', 'errorMessages'),
-            'newsletterWrongemail'
-        );
+        $alertHelper->addError(Shop::Lang()->get('newsletterWrongemail', 'errorMessages'), 'newsletterWrongemail');
         $smarty->assign('oFehlendeAngaben', (object)['cUnsubscribeEmail' => 1]);
     }
 } elseif (Request::getInt('show') > 0) {

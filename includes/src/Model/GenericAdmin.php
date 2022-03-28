@@ -3,7 +3,6 @@
 namespace JTL\Model;
 
 use Exception;
-use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -156,19 +155,11 @@ class GenericAdmin
     protected function setMessages(): void
     {
         if (isset($_SESSION['modelSuccessMsg'])) {
-            $this->alertService->addAlert(
-                Alert::TYPE_SUCCESS,
-                $_SESSION['modelSuccessMsg'],
-                'successModel'
-            );
+            $this->alertService->addSuccess($_SESSION['modelSuccessMsg'], 'successModel');
             unset($_SESSION['modelSuccessMsg']);
         }
         if (isset($_SESSION['modelErrorMsg'])) {
-            $this->alertService->addAlert(
-                Alert::TYPE_ERROR,
-                $_SESSION['modelErrorMsg'],
-                'errorModel'
-            );
+            $this->alertService->addError($_SESSION['modelErrorMsg'], 'errorModel');
             unset($_SESSION['modelErrorMsg']);
         }
     }

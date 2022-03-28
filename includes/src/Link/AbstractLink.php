@@ -51,7 +51,6 @@ abstract class AbstractLink implements LinkInterface
         'cDruckButton'       => 'PrintButtonCompat',
         'nLinkart'           => 'LinkType',
         'level'              => 'Level',
-        'target'             => 'Target',
     ];
 
     /**

@@ -3,7 +3,6 @@
 namespace JTL\Template\Admin;
 
 use InvalidArgumentException;
-use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
@@ -209,9 +208,9 @@ class Controller
         $type  = $_POST['eTyp'] ?? 'standard';
         $check = Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir, $type);
         if ($check) {
-            $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successTemplateSave'), 'successTemplateSave');
+            $this->alertService->addSuccess(\__('successTemplateSave'), 'successTemplateSave');
         } else {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorTemplateSave'), 'errorTemplateSave');
+            $this->alertService->addError(\__('errorTemplateSave'), 'errorTemplateSave');
         }
         if (Request::verifyGPCDataInt('activate') === 1) {
             $overlayHelper = new Overlay($this->db);
@@ -249,15 +248,13 @@ class Controller
                 }
                 $targetFile = $base . $value;
                 if (!\is_writable($base)) {
-                    $this->alertService->addAlert(
-                        Alert::TYPE_ERROR,
+                    $this->alertService->addError(
                         \sprintf(\__('errorFileUpload'), $templatePath),
                         'errorFileUpload',
                         ['saveInSession' => true]
                     );
                 } elseif (!\move_uploaded_file($file['tmp_name'], $targetFile)) {
-                    $this->alertService->addAlert(
-                        Alert::TYPE_ERROR,
+                    $this->alertService->addError(
                         \__('errorFileUploadGeneral'),
                         'errorFileUploadGeneral',
                         ['saveInSession' => true]
@@ -299,9 +296,9 @@ class Controller
             if (($bootstrapper = BootChecker::bootstrap($this->currentTemplateDir)) !== null) {
                 $bootstrapper->enabled();
             }
-            $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successTemplateSave'), 'successTemplateSave');
+            $this->alertService->addSuccess(\__('successTemplateSave'), 'successTemplateSave');
         } else {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorTemplateSave'), 'errorTemplateSave');
+            $this->alertService->addError(\__('errorTemplateSave'), 'errorTemplateSave');
         }
         $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
         $this->cache->flushTags([\CACHING_GROUP_LICENSES]);

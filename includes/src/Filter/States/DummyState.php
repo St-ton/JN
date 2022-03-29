@@ -61,6 +61,8 @@ class DummyState extends AbstractFilter
      */
     public function init($value): FilterInterface
     {
+        $this->isInitialized = true;
+
         return $this;
     }
 

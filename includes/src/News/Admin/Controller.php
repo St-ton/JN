@@ -6,7 +6,6 @@ use DateTime;
 use DirectoryIterator;
 use Exception;
 use Illuminate\Support\Collection;
-use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\Cache\JTLCacheInterface;
 use JTL\ContentAuthor;
@@ -167,7 +166,7 @@ final class Controller
                 $seoData->cKey     = 'kNews';
                 $seoData->kKey     = $newsItemID;
                 $seoData->kSprache = $langID;
-                $seoData->cSeo     = Seo::checkSeo(Seo::getSeo($this->getSeo($post, $languages, $iso)));
+                $seoData->cSeo     = Seo::checkSeo($this->getSeo($post, $languages, $iso));
                 $this->db->insert('tnewssprache', $loc);
                 $this->db->insert('tseo', $seoData);
 
@@ -446,23 +445,23 @@ final class Controller
         if ($iso !== null) {
             $idx = 'cSeo_' . $iso;
             if (!empty($post[$idx])) {
-                return $post[$idx];
+                return Seo::getSeo($post[$idx], true);
             }
             $idx = 'cName_' . $iso;
             if (!empty($post[$idx])) {
-                return $post[$idx];
+                return Seo::getSeo($post[$idx]);
             }
         }
         foreach ($languages as $language) {
             $idx = 'cSeo_' . $language->getCode();
             if (!empty($post[$idx])) {
-                return $post[$idx];
+                return Seo::getSeo($post[$idx]);
             }
         }
         foreach ($languages as $language) {
             $idx = 'cName_' . $language->getCode();
             if (!empty($post[$idx])) {
-                return $post[$idx];
+                return Seo::getSeo($post[$idx]);
             }
         }
 
@@ -519,7 +518,7 @@ final class Controller
             $seoData->cKey     = 'kNewsKategorie';
             $seoData->kKey     = $categoryID;
             $seoData->kSprache = $loc->languageID;
-            $seoData->cSeo     = Seo::checkSeo(Seo::getSeo($seo));
+            $seoData->cSeo     = Seo::checkSeo($seo);
             if (empty($seoData->cSeo)) {
                 continue;
             }
@@ -893,15 +892,10 @@ final class Controller
         if (empty($msg)) {
             $alertService->removeAlertByKey('newsMessage');
         } else {
-            $alertService->addAlert(Alert::TYPE_NOTE, $msg, 'newsMessage', ['saveInSession' => true]);
+            $alertService->addNotice($msg, 'newsMessage', ['saveInSession' => true]);
         }
         if ($this->isAllEmpty()) {
-            $alertService->addAlert(
-                Alert::TYPE_WARNING,
-                \__('All content is empty'),
-                'newsAllEmpty',
-                ['saveInSession' => true]
-            );
+            $alertService->addWarning(\__('All content is empty'), 'newsAllEmpty', ['saveInSession' => true]);
         }
 
         if (!empty($tab)) {

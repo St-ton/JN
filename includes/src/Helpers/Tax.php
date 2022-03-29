@@ -2,7 +2,6 @@
 
 namespace JTL\Helpers;
 
-use JTL\Alert\Alert;
 use JTL\Cart\Cart;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Preise;
@@ -126,8 +125,7 @@ class Tax
                 $link->setLinkType(\LINKTYP_STARTSEITE);
                 $link->setTitle(Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
 
-                Shop::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_ERROR,
+                Shop::Container()->getAlertService()->addError(
                     Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country),
                     'missingTaxZoneForDeliveryCountry'
                 );
@@ -138,8 +136,7 @@ class Tax
             }
 
             if (\in_array($currentURL, [$redirURL, $logoutURL])) {
-                Shop::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_ERROR,
+                Shop::Container()->getAlertService()->addError(
                     Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages') . '<br/>'
                     . Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country),
                     'missingParamShippingDetermination'

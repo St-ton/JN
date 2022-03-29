@@ -103,3 +103,6 @@ msgstr "Please note: This template requires a newer version of JTL-Shop. This mi
 
 msgid "dangerMaxShopVersion"
 msgstr "Please note: This template was developed for an older version of JTL-Shop. This might lead to performance issues."
+
+msgid "Preview activated"
+msgstr "Preview activated"

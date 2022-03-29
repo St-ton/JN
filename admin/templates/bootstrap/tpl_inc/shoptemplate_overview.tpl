@@ -13,7 +13,6 @@
                     <th class="text-center">{__('status')}</th>
                     <th class="text-center">{__('version')}</th>
                     <th class="text-center">{__('shopversion')}</th>
-                    <th class="text-center">{__('Preview')}</th>
                     <th></th>
                 </tr>
                 </thead>

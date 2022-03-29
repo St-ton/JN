@@ -1,5 +1,5 @@
 <tr>
-    <td class="text-vcenter text-center" width="140">
+    <td class="text-center" width="140">
         <div class="thumb-box thumb-sm">
             <div class="thumb" style="background-image:url({if $listingItem->getPreview()|strlen > 0}{$shopURL}/{$smarty.const.PFAD_TEMPLATES}{$listingItem->getDir()}/{$listingItem->getPreview()}{else}{$shopURL}/gfx/keinBild.gif{/if})"></div>
         </div>
@@ -29,15 +29,13 @@
             </li>
         </ul>
     </td>
-    <td class="text-vcenter text-center">
+    <td class="text-center">
         {if $listingItem->hasError() === true}
-            <h4 class="label-wrap">
-                <span class="badge badge-danger">{__('faulty')}</span>
-            </h4>
+            <span class="badge badge-danger font-size-sm">{__('faulty')}</span>
         {elseif $listingItem->isActive()}
-            <h4 class="label-wrap">
-                <span class="badge badge-success">{__('activated')}</span>
-            </h4>
+            <span class="badge badge-success font-size-sm">{__('activated')}</span>
+        {elseif $listingItem->isPreview()}
+            <span class="badge badge-warning font-size-sm">{__('Preview activated')}</span>
         {/if}
         {$check = $listingItem->getChecksums()}
         {if $check !== null}
@@ -87,20 +85,13 @@
             {/if}
         {/if}
     </td>
-    <td class="text-vcenter text-center">
+    <td class="text-center">
         {$listingItem->getVersion()}
     </td>
-    <td class="text-vcenter text-center">
+    <td class="text-center">
         {$listingItem->displayVersionRange()}
     </td>
-    <td class="text-vcenter text-center">
-        {if $listingItem->isPreview()}
-            <i class="fal fa-check-circle"></i>
-        {else}
-            <i class="fal fa-circle"></i>
-        {/if}
-    </td>
-    <td class="text-vcenter text-center">
+    <td class="text-center action-buttons">
         {if $listingItem->hasError()}
             <span class="error"><strong>{__('error')}:</strong><br />
                 {$listingItem->getErrorMessage()}
@@ -127,7 +118,7 @@
                     <a class="btn btn-secondary" href="{$adminURL}/shoptemplate.php?action=setPreview&dir={$listingItem->getDir()}{if $listingItem->getOptionsCount() > 0}&config=1{/if}&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('Enable preview')}</a>
                 {else}
                     <a class="btn btn-danger" href="{$adminURL}/shoptemplate.php?action=unsetPreview&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('Disable preview')}</a>
-                    <a class="btn btn-outline-primary" href="{$adminURL}/shoptemplate.php?action=config&dir={$listingItem->getDir()}&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('settings')}</a>
+                    <a class="btn btn-outline-primary" href="{$adminURL}/shoptemplate.php?action=config&dir={$listingItem->getDir()}&token={$smarty.session.jtl_token}"><i class="fal fa-edit"></i> {__('settings')}</a>
                 {/if}
             {else}
                 {if $listingItem->getOptionsCount() > 0}

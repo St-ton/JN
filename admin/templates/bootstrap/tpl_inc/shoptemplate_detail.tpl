@@ -74,7 +74,7 @@
                                     {if $setting->isEditable}
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->elementID}">
                                             {if $setting->key === 'use_minify' && $action === 'setPreview'}
-                                                <span class="badge badge-info">{__('Might not work correctly in preview mode')}</span>
+                                                <span class="badge badge-warning">{__('Might not work correctly in preview mode')}</span>
                                             {/if}
                                             {__($setting->name)}:
                                         </label>

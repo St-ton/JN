@@ -9,7 +9,7 @@ msgid "shoptemplateURL"
 msgstr "https://jtl-url.de/dq1g2"
 
 msgid "shoptemplatesDesc"
-msgstr "Auf dieser Seite finden Sie alle Templates, die sich im Ordner „/templates/“ des Wurzelverzeichnisses von JTL-Shop befinden. Falls Sie ein neues Template haben und es nutzen möchten, übertragen Sie es zuerst per <abbr title=\"FTP (File Transfer Protokoll) ist ein Dateiübertragungsprotokoll\">FTP</abbr> in dieses Verzeichnis. Sie können immer nur ein normales und ein Mobile Template zur gleichen Zeit für JTL-Shop aktivieren. Über die Schaltfläche „Einstellungen“ konfigurieren Sie das aktivierte Template."
+msgstr "Auf dieser Seite finden Sie alle Templates, die sich im Ordner „/templates/“ des Wurzelverzeichnisses von JTL-Shop befinden. Falls Sie ein neues Template haben und es nutzen möchten, übertragen Sie es zuerst per Upload-Funktion weiter unten auf dieser Seite oder per <abbr title=\"FTP (File Transfer Protokoll) ist ein Dateiübertragungsprotokoll\">FTP</abbr> in dieses Verzeichnis. <br> Über die Schaltfläche „Vorschau aktivieren“, können Sie für eingeloggte Backend-Nutzer, die Vorschau eines Templates aktivieren. Kunden sehen währenddessen im Frontend weiterhin das normal aktivierte Template. Über die Schaltfläche „Einstellungen“ konfigurieren Sie das entsprechende aktivierte Template. "
 
 msgid "templateName"
 msgstr "Template-Name"
@@ -103,3 +103,6 @@ msgstr "Bitte beachten Sie, dass dieses Template eine aktuellere Version von JTL
 
 msgid "dangerMaxShopVersion"
 msgstr "Bitte beachten Sie, dass dieses Template für eine ältere Version von JTL-Shop entwickelt wurde. Es können daher Probleme beim Betrieb entstehen."
+
+msgid "Preview activated"
+msgstr "Vorschau aktiviert"

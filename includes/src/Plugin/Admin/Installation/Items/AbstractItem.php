@@ -14,14 +14,14 @@ use stdClass;
 abstract class AbstractItem implements ItemInterface
 {
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    protected $db;
+    protected ?DbInterface $db;
 
     /**
-     * @var stdClass
+     * @var stdClass|null
      */
-    protected $plugin;
+    protected ?stdClass $plugin;
 
     /**
      * @var stdClass|LegacyPlugin|null
@@ -29,9 +29,9 @@ abstract class AbstractItem implements ItemInterface
     protected $oldPlugin;
 
     /**
-     * @var array
+     * @var array|null
      */
-    protected $baseNode;
+    protected ?array $baseNode;
 
     /**
      * @inheritdoc

@@ -30,17 +30,17 @@ class Extractor
     /**
      * @var InstallationResponse
      */
-    private $response;
+    private InstallationResponse $response;
 
     /**
      * @var XMLParser
      */
-    private $parser;
+    private XMLParser $parser;
 
     /**
      * @var MountManager
      */
-    private $manager;
+    private MountManager $manager;
 
     /**
      * Extractor constructor.
@@ -101,7 +101,7 @@ class Extractor
      * @param string $errstr
      * @return bool
      */
-    public function handlExtractionErrors($errno, $errstr): bool
+    public function handlExtractionErrors(int $errno, string $errstr): bool
     {
         $this->response->setStatus(InstallationResponse::STATUS_FAILED);
         $this->response->setError($errstr);

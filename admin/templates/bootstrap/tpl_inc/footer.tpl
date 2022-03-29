@@ -83,6 +83,15 @@
         $.each(CKEDITOR.dtd.$removeEmpty, function (i, value) {
             CKEDITOR.dtd.$removeEmpty[i] = false;
         });
+        CKEDITOR.on( 'instanceReady', function( evt ) {
+            evt.editor.dataProcessor.htmlFilter.addRules( {
+                elements: {
+                    img: function(el) {
+                        el.addClass('img-fluid');
+                    }
+                }
+            });
+        });
     }
     $('.select2').select2();
     $(function() {

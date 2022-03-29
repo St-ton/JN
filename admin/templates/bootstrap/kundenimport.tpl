@@ -31,15 +31,6 @@
                     </span>
                 </div>
                 <div class="form-group form-row align-items-center">
-                    <label class="col col-sm-4 col-form-label text-sm-right" for="PasswortGenerieren">{__('generateNewPass')}:</label>
-                    <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <select name="PasswortGenerieren" id="PasswortGenerieren" class="custom-select comboFullSize">
-                            <option value="0">{__('passNo')}</option>
-                            <option value="1">{__('passYes')}</option>
-                        </select>
-                    </span>
-                </div>
-                <div class="form-group form-row align-items-center">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="csv">{__('csvFile')}:</label>
                     <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         {include file='tpl_inc/fileupload.tpl'

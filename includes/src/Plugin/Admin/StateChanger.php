@@ -6,8 +6,6 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Plugin\Admin\Installation\Installer;
 use JTL\Plugin\Admin\Installation\Uninstaller;
-use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
-use JTL\Plugin\Admin\Validation\PluginValidator;
 use JTL\Plugin\Admin\Validation\ValidatorInterface;
 use JTL\Plugin\Helper;
 use JTL\Plugin\InstallCode;
@@ -25,22 +23,22 @@ class StateChanger
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
-     * @var ValidatorInterface|LegacyPluginValidator
+     * @var ValidatorInterface|null
      */
-    private $legacyValidator;
+    private ?ValidatorInterface $legacyValidator;
 
     /**
-     * @var ValidatorInterface|PluginValidator
+     * @var ValidatorInterface|null
      */
-    protected $pluginValidator;
+    protected ?ValidatorInterface $pluginValidator;
 
     /**
      * StateChanger constructor.

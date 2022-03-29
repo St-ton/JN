@@ -871,8 +871,8 @@ class AccountController
         $minLength = $this->config['kunden']['kundenregistrierung_passwortlaenge'];
         if (isset($_POST['neuesPasswort1']) && \mb_strlen($_POST['neuesPasswort1']) < $minLength) {
             $this->alertService->addError(
-                Shop::Lang()->get('changepasswordPassTooShort', 'login') . ' ' .
-                \lang_passwortlaenge($minLength),
+                Shop::Lang()->get('changepasswordPassTooShort', 'login') . ' '
+                . Shop::Lang()->get('minCharLen', 'messages', $minLength),
                 'changepasswordPassTooShort'
             );
         }

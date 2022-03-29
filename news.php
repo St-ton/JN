@@ -66,7 +66,7 @@ switch ($controller->getPageType($params)) {
         $breadCrumbName = $overview->getName();
         $newsCategory   = new Category($db);
         $newsCategory->load($newsCategoryID);
-        $cCanonicalURL    = $newsCategory->getURL(null,true);
+        $cCanonicalURL    = $newsCategory->getURL(null, true);
         $breadCrumbURL    = $cCanonicalURL;
         $cMetaTitle       = $newsCategory->getMetaTitle();
         $cMetaDescription = $newsCategory->getMetaDescription();

@@ -534,7 +534,7 @@ class Category implements CategoryInterface
 //        return $this->urls[$idx] ?? '/?nm=' . $this->getID();
         if ($seo) {
             return $this->seoUrl[$idx];
-        }else{
+        } else {
             return $this->urls[$idx] ?? '/?nk=' . $this->getID();
         }
     }

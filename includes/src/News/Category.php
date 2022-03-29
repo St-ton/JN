@@ -81,11 +81,6 @@ class Category implements CategoryInterface
     protected $seo = [];
 
     /**
-     * @var array
-     */
-    protected $seoUrl = [];
-
-    /**
      * @var string[]
      */
     protected $descriptions = [];
@@ -211,11 +206,12 @@ class Category implements CategoryInterface
             $this->lft                       = (int)$groupLanguage->lft;
             $this->rght                      = (int)$groupLanguage->rght;
             $this->seo[$langID]              = $groupLanguage->cSeo;
-            $this->seoUrl[$langID]           = Shop::getURL() . '/' . $groupLanguage->cSeo;
+            $this->urls[$langID]             = Shop::getURL() . '/' . $groupLanguage->cSeo;
         }
         if (($preview = $this->getPreviewImage()) !== '') {
             $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $preview));
         }
+
         $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->getArrays(
             'SELECT tnewskategorienews.kNews
                 FROM tnewskategorienews
@@ -526,17 +522,14 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function getURL(int $idx = null, bool $seo = false): string
+    public function getURL(int $idx = null): string
     {
         $idx = $idx ?? Shop::getLanguageID();
 
         // @todo: category or month overview?
-//        return $this->urls[$idx] ?? '/?nm=' . $this->getID();
-        if ($seo) {
-            return $this->seoUrl[$idx];
-        } else {
-            return $this->urls[$idx] ?? '/?nk=' . $this->getID();
-        }
+        // return $this->urls[$idx] ?? '/?nm=' . $this->getID();
+        return $this->urls[$idx] ?? '/?nk=' . $this->getID();
+
     }
 
     /**

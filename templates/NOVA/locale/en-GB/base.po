@@ -209,4 +209,4 @@ msgid "customVariables"
 msgstr "Custom variables"
 
 msgid "customContent"
-msgstr "Custom Sass"
+msgstr "Custom CSS, Sass or Scss"

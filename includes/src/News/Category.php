@@ -526,13 +526,17 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function getURL(int $idx = null): string
+    public function getURL(int $idx = null, bool $seo = false): string
     {
         $idx = $idx ?? Shop::getLanguageID();
 
         // @todo: category or month overview?
 //        return $this->urls[$idx] ?? '/?nm=' . $this->getID();
-        return $this->urls[$idx] ?? '/?nk=' . $this->getID();
+        if ($seo) {
+            return $this->seoUrl[$idx];
+        }else{
+            return $this->urls[$idx] ?? '/?nk=' . $this->getID();
+        }
     }
 
     /**
@@ -559,15 +563,6 @@ class Category implements CategoryInterface
     public function getSEOs(): array
     {
         return $this->seo;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getSEOURL(int $idx = null): string
-    {
-        $idx = $idx ?? Shop::getLanguageID();
-        return $this->seoUrl[$idx];
     }
 
     /**

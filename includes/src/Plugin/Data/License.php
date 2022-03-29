@@ -11,24 +11,24 @@ use JTL\License\Struct\ExsLicense;
 class License
 {
     /**
-     * @var string
+     * @var string|null
      */
-    private $key;
+    private ?string $key = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $className;
+    private ?string $className = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $class;
+    private ?string $class = null;
 
     /**
      * @var ExsLicense|null
      */
-    private $exsLicense;
+    private ?ExsLicense $exsLicense = null;
 
     /**
      * @return bool

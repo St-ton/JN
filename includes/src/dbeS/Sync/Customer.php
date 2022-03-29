@@ -363,6 +363,7 @@ final class Customer extends AbstractSync
         $customer->cAbgeholt         = 'Y';
         $customer->cAktiv            = 'Y';
         $customer->cSperre           = 'N';
+        $this->extractStreet($customer);
         // mail an Kunden mit Accounterstellung durch Shopbetreiber
         $obj         = new stdClass();
         $obj->tkunde = $customer;

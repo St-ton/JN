@@ -21,9 +21,9 @@ use stdClass;
 class LegacyPluginLoader extends AbstractLoader
 {
     /**
-     * @var LegacyPlugin
+     * @var LegacyPlugin|null
      */
-    protected $plugin;
+    protected ?PluginInterface $plugin = null;
 
     /**
      * PluginLoader constructor.
@@ -127,7 +127,7 @@ class LegacyPluginLoader extends AbstractLoader
         $this->plugin->setState((int)$obj->nStatus);
         $this->plugin->setPriority((int)$obj->nPrio);
         $this->plugin->setBootstrap((int)$obj->bBootstrap === 1);
-        $this->plugin->setIsExtension(isset($obj->bExtension) && (int)$obj->bExtension === 1);
+        $this->plugin->setIsExtension((int)($obj->bExtension ?? 0) === 1);
         $this->plugin->setMeta($this->loadMetaData($obj));
         $this->plugin->setLicense($this->loadLicense($obj));
         $this->plugin->setLinks(new Links());

@@ -328,17 +328,17 @@ class Plugins
 
                 if ($fVPEWert > 0) {
                     $surcharge->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
-                            $netSurcharge / $fVPEWert,
-                            $currency,
-                            true,
-                            $precision
-                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
+                        $netSurcharge / $fVPEWert,
+                        $currency,
+                        true,
+                        $precision
+                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                     $surcharge->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
-                            ($netSurcharge + $fVKNetto) / $fVPEWert,
-                            $currency,
-                            true,
-                            $precision
-                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
+                        ($netSurcharge + $fVKNetto) / $fVPEWert,
+                        $currency,
+                        true,
+                        $precision
+                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
                     $surcharge->cAufpreisLocalized .= ', ' . $surcharge->cPreisVPEWertAufpreis;
                     $surcharge->cPreisInklAufpreis .= ', ' . $surcharge->cPreisVPEWertInklAufpreis;
@@ -358,20 +358,20 @@ class Plugins
 
                 if ($fVPEWert > 0) {
                     $surcharge->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
-                            Tax::getGross($netSurcharge / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
-                            $currency,
-                            true,
-                            $precision
-                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
+                        Tax::getGross($netSurcharge / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
+                        $currency,
+                        true,
+                        $precision
+                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                     $surcharge->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
-                            Tax::getGross(
-                                ($netSurcharge + $fVKNetto) / $fVPEWert,
-                                $_SESSION['Steuersatz'][$kSteuerklasse]
-                            ),
-                            $currency,
-                            true,
-                            $precision
-                        ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
+                        Tax::getGross(
+                            ($netSurcharge + $fVKNetto) / $fVPEWert,
+                            $_SESSION['Steuersatz'][$kSteuerklasse]
+                        ),
+                        $currency,
+                        true,
+                        $precision
+                    ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
                     $surcharge->cAufpreisLocalized .= ', ' . $surcharge->cPreisVPEWertAufpreis;
                     $surcharge->cPreisInklAufpreis .= ', ' . $surcharge->cPreisVPEWertInklAufpreis;

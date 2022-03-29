@@ -20,6 +20,9 @@ msgstr "Empfohlene Anpassungen"
 msgid "suggestedValue"
 msgstr "Empfohlener Wert"
 
+msgid "neededApacheModules"
+msgstr "Benötigte Apache-Module"
+
 msgid "neededPHPExtensions"
 msgstr "Benötigte PHP-Erweiterungen und -Funktionen"
 

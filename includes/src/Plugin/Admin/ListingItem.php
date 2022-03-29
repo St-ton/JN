@@ -21,107 +21,107 @@ class ListingItem implements JsonSerializable
     /**
      * @var bool
      */
-    private $isShop4Compatible = false;
+    private bool $isShop4Compatible = false;
 
     /**
      * @var bool
      */
-    private $isShop5Compatible = false;
+    private bool $isShop5Compatible = false;
 
     /**
      * @var string
      */
-    private $path = '';
+    private string $path = '';
 
     /**
      * @var string
      */
-    private $dir = '';
+    private string $dir = '';
 
     /**
      * @var string
      */
-    private $name = '';
+    private string $name = '';
 
     /**
-     * @var Version
+     * @var ?Version|null
      */
-    private $version;
+    private ?Version $version = null;
 
     /**
-     * @var Version
+     * @var Version|null
      */
-    private $minShopVersion;
+    private ?Version $minShopVersion = null;
 
     /**
-     * @var Version
+     * @var Version|null
      */
-    private $maxShopVersion;
-
-    /**
-     * @var string
-     */
-    private $description = '';
+    private ?Version $maxShopVersion = null;
 
     /**
      * @var string
      */
-    private $author = '';
+    private string $description = '';
 
     /**
      * @var string
      */
-    private $icon = '';
-
-    /**
-     * @var int
-     */
-    private $id = 0;
-
-    /**
-     * @var string
-     */
-    private $pluginID = '';
+    private string $author = '';
 
     /**
      * @var string|null
      */
-    private $exsID;
+    private ?string $icon = '';
 
     /**
      * @var int
      */
-    private $errorCode = 0;
+    private int $id = 0;
 
     /**
      * @var string
      */
-    private $errorMessage = '';
+    private string $pluginID = '';
 
     /**
-     * @var bool
+     * @var string|null
      */
-    private $hasError = false;
-
-    /**
-     * @var bool
-     */
-    private $available = false;
-
-    /**
-     * @var bool
-     */
-    private $installed = false;
+    private ?string $exsID = null;
 
     /**
      * @var int
      */
-    private $state = State::NONE;
+    private int $errorCode = 0;
+
+    /**
+     * @var string
+     */
+    private string $errorMessage = '';
 
     /**
      * @var bool
      */
-    private $isLegacy = true;
+    private bool $hasError = false;
+
+    /**
+     * @var bool
+     */
+    private bool $available = false;
+
+    /**
+     * @var bool
+     */
+    private bool $installed = false;
+
+    /**
+     * @var int
+     */
+    private int $state = State::NONE;
+
+    /**
+     * @var bool
+     */
+    private bool $isLegacy = true;
 
     /**
      * @var bool|Version
@@ -131,47 +131,47 @@ class ListingItem implements JsonSerializable
     /**
      * @var bool
      */
-    private $hasLicenseCheck = false;
+    private bool $hasLicenseCheck = false;
 
     /**
      * @var string
      */
-    private $license = '';
+    private string $license = '';
 
     /**
      * @var string|null
      */
-    private $updateFromDir;
+    private ?string $updateFromDir = null;
 
     /**
      * @var DateTime|null
      */
-    private $dateInstalled;
+    private ?DateTime $dateInstalled = null;
 
     /**
      * @var int
      */
-    private $langVarCount = 0;
+    private int $langVarCount = 0;
 
     /**
      * @var int
      */
-    private $linkCount = 0;
+    private int $linkCount = 0;
 
     /**
      * @var int
      */
-    private $optionsCount = 0;
+    private int $optionsCount = 0;
 
     /**
      * @var string|null
      */
-    private $readmeMD;
+    private ?string $readmeMD = null;
 
     /**
      * @var string|null
      */
-    private $licenseMD;
+    private ?string $licenseMD = null;
 
     /**
      * @param array $xml

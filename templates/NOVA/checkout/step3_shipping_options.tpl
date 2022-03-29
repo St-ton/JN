@@ -51,7 +51,11 @@
                                                                         {/if}
                                                                     {/block}
                                                                     {block name='checkout-step3-shipping-options-shipping-option-title-title'}
-                                                                        {$versandart->angezeigterName|trans}
+                                                                        {if $versandart->angezeigterName|trans === '' && $versandart->cBild === ''}
+                                                                            {$versandart->cName}
+                                                                        {else}
+                                                                            {$versandart->angezeigterName|trans}
+                                                                        {/if}
                                                                         {if !empty($versandart->angezeigterHinweistext|trans)}
                                                                             <div>
                                                                                 <small>{$versandart->angezeigterHinweistext|trans}</small>

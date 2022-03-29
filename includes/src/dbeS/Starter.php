@@ -297,7 +297,7 @@ class Starter
                 }
                 break;
             case 'bild':
-                $conf = Shop::getConfigValue(\CONF_BILDER, 'bilder_externe_bildschnittstelle');
+                $conf = Shop::getSettingValue(\CONF_BILDER, 'bilder_externe_bildschnittstelle');
                 if ($conf === 'N') {
                     exit(); // api disabled
                 }

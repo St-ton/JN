@@ -115,7 +115,7 @@ class Status
     public function getSystemLogInfo(): stdClass
     {
         /** @var int $conf */
-        $conf = Shop::getConfigValue(\CONF_GLOBAL, 'systemlog_flag');
+        $conf = Shop::getSettingValue(\CONF_GLOBAL, 'systemlog_flag');
 
         return (object)[
             'error'  => $conf >= \JTLLOG_LEVEL_ERROR,
@@ -562,7 +562,7 @@ class Status
      */
     public function hasInsecureMailConfig(?string &$hash = null): bool
     {
-        $conf = Shop::getConfig([\CONF_EMAILS])['emails'];
+        $conf = Shop::getSettingSection(\CONF_EMAILS);
         $hash = \md5(($hash ?? 'hasInsecureMailConfig') . '_' . $conf['email_methode']);
 
         return $conf['email_methode'] === 'smtp' && empty(\trim($conf['email_smtp_verschluesselung']));

@@ -69,7 +69,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
     {
         $res = [];
         if ($location === \CHECKBOX_ORT_NEWSLETTERANMELDUNG
-            && Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N'
+            && Shop::getSettingValue(\CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N'
             && !Form::validateCaptcha($_POST)) {
             $res['captcha'] = 2;
         }

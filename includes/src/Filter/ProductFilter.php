@@ -29,6 +29,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
 use JTL\Mapper\SortingType;
+use Shop;
 use stdClass;
 use function Functional\first;
 use function Functional\flatten;
@@ -691,7 +692,7 @@ class ProductFilter
                 $this->search->setSearchCacheID($this->searchQuery->editSearchCache());
                 $this->searchQuery->init($oSuchanfrage->kSuchanfrage);
                 $this->searchQuery->setSearchCacheID($this->search->getSearchCacheID())
-                                  ->setName($this->search->getName());
+                    ->setName($this->search->getName());
                 if (!$this->baseState->isInitialized()) {
                     $this->baseState = $this->searchQuery;
                 }
@@ -717,8 +718,8 @@ class ProductFilter
                 : $params['kSuchanfrage'];
             $this->search->setSearchCacheID($kSuchCache);
             $this->searchQuery->setSearchCacheID($kSuchCache)
-                              ->init($kSuchAnfrage)
-                              ->setName($params['cSuche']);
+                ->init($kSuchAnfrage)
+                ->setName($params['cSuche']);
             $this->EchteSuche         = new stdClass();
             $this->EchteSuche->cSuche = $params['cSuche'];
             if (!$this->baseState->isInitialized()) {
@@ -1634,22 +1635,22 @@ class ProductFilter
                         $this->getFilterConfig()->getLanguageID()
                     );
                     $this->searchQuery->setValue($this->search->getValue())
-                                      ->setSeo($this->getFilterConfig()->getLanguages());
+                        ->setSeo($this->getFilterConfig()->getLanguages());
                 } else {
                     $error = $this->searchQuery->getError();
                 }
             }
             $end = \min($nLimitN + $productsPerPage, $productCount);
             $this->searchResults->setOffsetStart($nLimitN + 1)
-                                ->setOffsetEnd($end > 0 ? $end : $productCount);
+                ->setOffsetEnd($end > 0 ? $end : $productCount);
             $total   = $productsPerPage > 0 ? (int)\ceil($productCount / $productsPerPage) : \min($productCount, 1);
             $minPage = (int)\max($this->nSeite - \floor($maxPaginationPageCount / 2), 1);
             $maxPage = $minPage + $maxPaginationPageCount - 1;
             if ($maxPage > $total) {
-                $diff     = $total - $maxPage;
-                $maxPage  = $total;
+                $diff    = $total - $maxPage;
+                $maxPage = $total;
                 $minPage += $diff;
-                $minPage  = (int)\max($minPage, 1);
+                $minPage = (int)\max($minPage, 1);
             }
             $pages = new Info();
             $pages->setMinPage($minPage);
@@ -1658,9 +1659,9 @@ class ProductFilter
             $pages->setCurrentPage($this->nSeite);
 
             $this->searchResults->setPages($pages)
-                                ->setFilterOptions($this, $category)
-                                ->setSearchTerm($this->search->getName())
-                                ->setSearchTermWrite($this->metaData->getHeader());
+                ->setFilterOptions($this, $category)
+                ->setSearchTerm($this->search->getName())
+                ->setSearchTermWrite($this->metaData->getHeader());
         } else {
             $productList = $this->searchResults->getProducts();
             $productKeys = $this->searchResults->getProductKeys();

@@ -7,6 +7,7 @@ use Countable;
 use Exception;
 use IteratorAggregate;
 use JTL\DB\DbInterface;
+use JTL\Events\Dispatcher;
 use JTL\Export\SyntaxChecker;
 use JTL\IO\IOResponse;
 use JTL\Language\LanguageHelper;
@@ -460,7 +461,7 @@ class Notification implements IteratorAggregate, Countable
      */
     protected function updateNotifications(IOResponse $response, bool $flushCache = false): void
     {
-        Shop::fire('backend.notification', $this->buildDefault($flushCache));
+        Dispatcher::getInstance()->fire('backend.notification', $this->buildDefault($flushCache));
         $res    = $this->db->getCollection(
             'SELECT notification_hash
                 FROM tnotificationsignore

@@ -22,11 +22,18 @@ class DefaultParser
     private array $params = [];
 
     /**
-     * @param DbInterface $db
+     * @var State
      */
-    public function __construct(DbInterface $db)
+    private State $state;
+
+    /**
+     * @param DbInterface $db
+     * @param State       $state
+     */
+    public function __construct(DbInterface $db, State $state)
     {
-        $this->db = $db;
+        $this->db    = $db;
+        $this->state = $state;
     }
 
     /**
@@ -70,6 +77,7 @@ class DefaultParser
         if ($page > 0) {
             $_GET['seite']          = $page;
             $this->params['kSeite'] = $page;
+            $this->state->pageID    = $page;
         }
         $slug = $this->checkCharacteristics($slug);
         $slug = $this->checkManufacturers($slug);
@@ -136,8 +144,10 @@ class DefaultParser
             $seoData = $this->db->select($data['table'], 'cSeo', $data['cSeo']);
             if (isset($seoData->filterval)) {
                 $this->params['customFilters'][$className] = (int)$seoData->filterval;
+                $this->state->customFilters[$className]    = (int)$seoData->filterval;
             } else {
-                $this->params['bKatFilterNotFound'] = true;
+                $this->params['bKatFilterNotFound']  = true;
+                $this->state->categoryFilterNotFound = true;
             }
             if (isset($seoData->kSprache) && $seoData->kSprache > 0) {
                 Shop::updateLanguage((int)$seoData->kSprache);
@@ -193,6 +203,7 @@ class DefaultParser
             $_GET['mf'] = [(int)$_GET['mf']];
         }
         $this->params['bSEOMerkmalNotFound'] = false;
+        $this->state->characteristicNotFound = false;
         foreach ($characteristics as $i => $seoString) {
             if ($i <= 0 || \mb_strlen($seoString) === 0) {
                 continue;
@@ -207,8 +218,10 @@ class DefaultParser
             if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $seoString) === 0) {
                 // haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
                 $_GET['mf'][] = (int)$seoData->kKey;
+                $this->state->characteristicFilterIDs[] = (int)$seoData->kKey;
             } else {
                 $this->params['bSEOMerkmalNotFound'] = true;
+                $this->state->characteristicNotFound = true;
             }
         }
 
@@ -284,10 +297,15 @@ class DefaultParser
         $results = \count($oSeo);
         if ($results === 1) {
             $this->params['kHerstellerFilter'] = (int)$oSeo[0]->kKey;
+            $this->state->manufacturerFilterID = (int)$oSeo[0]->kKey;
         } elseif ($results === 0) {
             $this->params['bHerstellerFilterNotFound'] = true;
+            $this->state->manufacturerFilterNotFound   = true;
         } else {
-            $this->params['kHerstellerFilter'] = \array_map(static function ($e) {
+            $this->params['manufacturerFilterIDs'] = \array_map(static function ($e) {
+                return (int)$e->kKey;
+            }, $oSeo);
+            $this->state->manufacturerFilterIDs    = \array_map(static function ($e) {
                 return (int)$e->kKey;
             }, $oSeo);
         }
@@ -333,8 +351,10 @@ class DefaultParser
             $seoData = $this->db->select('tseo', 'cKey', 'kKategorie', 'cSeo', $categorySeo);
             if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $categorySeo) === 0) {
                 $this->params['kKategorieFilter'] = (int)$seoData->kKey;
+                $this->state->categoryFilterID    = (int)$seoData->kKey;
             } else {
-                $this->params['bKatFilterNotFound'] = true;
+                $this->params['bKatFilterNotFound']  = true;
+                $this->state->categoryFilterNotFound = true;
             }
         }
         if (\count($categories) <= 1) {
@@ -346,6 +366,7 @@ class DefaultParser
             $_GET['kf'] = [(int)$_GET['kf']];
         }
         $this->params['bSEOMerkmalNotFound'] = false;
+        $this->state->characteristicNotFound = false;
         foreach ($categories as $i => $seoString) {
             if ($i === 0 || \mb_strlen($seoString) === 0) {
                 continue;
@@ -361,6 +382,7 @@ class DefaultParser
                 $_GET['kf'][] = (int)$seoData->kKey;
             } else {
                 $this->params['bSEOMerkmalNotFound'] = true;
+                $this->state->characteristicNotFound = true;
             }
         }
 

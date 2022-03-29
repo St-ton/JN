@@ -2,6 +2,7 @@
 
 namespace JTL\OPC;
 
+use JTL\Events\Dispatcher;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 
@@ -64,7 +65,7 @@ class Area implements \JsonSerializable
             $result .= $portletInstance->getPreviewHtml();
         }
 
-        Shop::fire('shop.OPC.Area.getPreviewHtml', [
+        Dispatcher::getInstance()->fire('shop.OPC.Area.getPreviewHtml', [
             'area'   => $this,
             'result' => &$result
         ]);
@@ -84,7 +85,7 @@ class Area implements \JsonSerializable
             $result .= $portletInstance->getFinalHtml($inContainer);
         }
 
-        Shop::fire('shop.OPC.Area.getFinalHtml', [
+        Dispatcher::getInstance()->fire('shop.OPC.Area.getFinalHtml', [
             'area'   => $this,
             'result' => &$result
         ]);

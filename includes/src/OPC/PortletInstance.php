@@ -2,6 +2,7 @@
 
 namespace JTL\OPC;
 
+use JTL\Events\Dispatcher;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
 use JTL\Media\Image;
@@ -112,7 +113,7 @@ class PortletInstance implements \JsonSerializable
             ';
         }
 
-        Shop::fire('shop.OPC.PortletInstance.getPreviewHtml', [
+        Dispatcher::getInstance()->fire('shop.OPC.PortletInstance.getPreviewHtml', [
             'portletInstance' => $this,
             'result'          => &$result
         ]);
@@ -129,7 +130,7 @@ class PortletInstance implements \JsonSerializable
     {
         $result = $this->portlet->getFinalHtml($this, $inContainer);
 
-        Shop::fire('shop.OPC.PortletInstance.getFinalHtml', [
+        Dispatcher::getInstance()->fire('shop.OPC.PortletInstance.getFinalHtml', [
             'portletInstance' => $this,
             'result'          => &$result
         ]);

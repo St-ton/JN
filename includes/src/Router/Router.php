@@ -4,25 +4,33 @@ namespace JTL\Router;
 
 use DbInterface;
 use FastRoute\Dispatcher;
-use FastRoute\RouteCollector;
-use JTL\Catalog\Wishlist\Wishlist;
-use JTL\Helpers\Request;
-use JTL\Helpers\Text;
+use JTL\Cron\Starter\StarterFactory;
+use JTL\Events\Event;
+use JTL\Events\Dispatcher as CoreDispatcher;
+use JTL\Router\Handler\CategoryHandler;
+use JTL\Router\Handler\DefaultHandler;
+use JTL\Router\Handler\ManufacturerHandler;
+use JTL\Router\Handler\NewsHandler;
+use JTL\Router\Handler\PageHandler;
+use JTL\Router\Handler\ProductHandler;
+use JTL\Router\Handler\RootHandler;
+use JTL\Router\Handler\TestHandler;
+use JTL\Router\Middleware\CartcheckMiddleware;
+use JTL\Router\Middleware\VisibilityMiddleware;
+use JTL\Router\Middleware\WishlistCheckMiddleware;
+use JTL\Router\Strategy\SmartyStrategy;
 use JTL\Shop;
-use stdClass;
-use function FastRoute\simpleDispatcher;
+use Laminas\Diactoros\ResponseFactory;
+use Laminas\Diactoros\ServerRequestFactory;
+use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
+use League\Route\Router as BaseRouter;
 
 /**
- * Class DefaultHandler
+ * Class Router
  * @package JTL\Router
  */
 class Router
 {
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
     /**
      * @var Dispatcher
      */
@@ -34,20 +42,69 @@ class Router
     private string $uri = '';
 
     /**
-     * @param DbInterface $db
+     * @var State
      */
-    public function __construct(DbInterface $db)
+    private State $state;
+
+    private BaseRouter $router;
+
+    /**
+     * @param DbInterface $db
+     * @param State       $state
+     */
+    public function __construct(DbInterface $db, State $state)
     {
-        $this->db         = $db;
-        $this->dispatcher = simpleDispatcher(function (RouteCollector $r) {
-            $r->addRoute('GET', '/products/{id:\d+}', [new ProductHandler($this->db), 'handle']);
-            $r->addRoute('GET', '/categories/{id:\d+}', [new CategoryHandler($this->db), 'handle']);
-            $r->addRoute('GET', '/manufacturers/{id:\d+}', [new ManufacturerHandler($this->db), 'handle']);
-            $r->addRoute('GET', '/news/{id:\d+}', [new NewsHandler($this->db), 'handle']);
-            $r->addRoute('GET', '/page/{id:\d+}', [new PageHandler($this->db), 'handle']);
-            $r->addRoute('GET', '/{slug}', [new DefaultHandler($this->db), 'handle']);
-            $r->addRoute('GET', '/', [new RootHandler($this->db), 'handle']);
-        });
+        $this->state = $state;
+
+        $productHandler      = new ProductHandler($db, $this->state);
+        $categoryHandler     = new CategoryHandler($db, $this->state);
+        $manufacturerHandler = new ManufacturerHandler($db, $this->state);
+        $newsHandler         = new NewsHandler($db, $this->state);
+        $pageHandler         = new PageHandler($db, $this->state);
+        $defaultHandler      = new DefaultHandler($db, $this->state);
+        $rootHandler         = new RootHandler($db, $this->state);
+        $testHandler         = new TestHandler($db, $this->state);
+
+        $router          = new BaseRouter();
+        $router->addPatternMatcher('isManufacturerFilter', '[a-zA-Z0-9\-]+');
+        $router->addPatternMatcher('isCharacteristicFilter', '[a-zA-Z0-9\-]+');
+        $router->addPatternMatcher('wordStartsWithB', '(?:b|B)[a-zA-Z0-9-_]+');
+
+        $responseFactory = new ResponseFactory();
+        $strategy        = new SmartyStrategy($responseFactory, Shop::Smarty(), $state);
+        $router->setStrategy($strategy);
+        $router->middleware(new WishlistCheckMiddleware());
+        $router->middleware(new CartcheckMiddleware());
+
+        $router->get('/products/{id:\d+}', [$productHandler, 'handle'])->middleware(new VisibilityMiddleware());
+        $router->post('/products/{id:\d+}', [$productHandler, 'handle']);
+
+        $router->get('/categories/{id:\d+}', [$categoryHandler, 'handle']);
+        $router->post('/categories/{id:\d+}', [$categoryHandler, 'handle']);
+
+//        $router->get('/{cat}__{charac:isCharacteristicFilter}', [$testHandler, 'handle']);
+//        $router->get('/{cat}::{manufacturer:isManufacturerFilter}[__{charac:isCharacteristicFilter}]', [$testHandler, 'handle']);
+//        $router->get('/{cat}::{manufacturer}', [$testHandler, 'handle']);
+
+
+        $router->get('/manufacturers/{id:\d+}', [$manufacturerHandler, 'handle']);
+        $router->post('/manufacturers/{id:\d+}', [$manufacturerHandler, 'handle']);
+
+        $router->get('/news/{id:\d+}', [$newsHandler, 'handle']);
+        $router->post('/news/{id:\d+}', [$newsHandler, 'handle']);
+
+        $router->get('/page/{id:\d+}', [$pageHandler, 'handle']);
+        $router->post('/page/{id:\d+}', [$pageHandler, 'handle']);
+
+        $router->get('/{slug}', [$defaultHandler, 'handle']);
+        $router->post('/{slug}', [$defaultHandler, 'handle']);
+
+        $router->get('/', [$rootHandler, 'handle']);
+        $router->post('/', [$rootHandler, 'handle']);
+
+        $router->get('/{any:.*}', [$defaultHandler, 'handle']);
+        $router->post('/{any:.*}', [$defaultHandler, 'handle']);
+        $this->router = $router;
     }
 
     /**
@@ -80,140 +137,36 @@ class Router
             . '://' . ($_SERVER['HTTP_HOST'] ?? '') . ($_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'] ?? '');
     }
 
-    /**
-     * @return bool|stdClass
-     */
-    public function dispatch()
+    public function dispatch(): void
     {
-        $httpMethod = $_SERVER['REQUEST_METHOD'];
-//        $uri        = $_SERVER['REQUEST_URI'];
-//
-//        // Strip query string (?foo=bar) and decode URI
-//        if (false !== $pos = strpos($uri, '?')) {
-//            $uri = substr($uri, 0, $pos);
-//        }
-//        $uri = rawurldecode($uri);
-
-        $uri = $this->getRequestUri();
-        $uri = $this->extractExternalParams($uri);
-
-        $routeInfo = $this->dispatcher->dispatch($httpMethod, $uri);
-        $this->uri = $uri;
-
-        return $this->handle($routeInfo);
+        $request  = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
+        $response = $this->router->dispatch($request);
+        CoreDispatcher::getInstance()->fire(Event::RUN);
+        $starterFactory = new StarterFactory(Shop::getSettingSection(\CONF_CRON));
+        $starterFactory->getStarter()->start();
+        (new SapiEmitter())->emit($response);
+        exit();
     }
 
     /**
-     * Affiliate trennen
-     *
-     * @param string|bool $seo
-     * @return string|bool
-     * @former extFremdeParameter()
-     * @since 5.0.0
+     * @return State
      */
-    private function extractExternalParams($seo)
+    public function init(): State
     {
-        $seoData = \preg_split('/[' . \EXT_PARAMS_SEPERATORS_REGEX . ']+/', $seo);
-        if (\is_array($seoData) && \count($seoData) > 1) {
-            $seo = $seoData[0];
-            $cnt = \count($seoData);
-            for ($i = 1; $i < $cnt; $i++) {
-                $keyValue = \explode('=', $seoData[$i]);
-                if (\count($keyValue) > 1) {
-                    [$name, $value]                    = $keyValue;
-                    $_SESSION['FremdParameter'][$name] = $value;
-                }
-            }
-        }
+        $this->state->initFromRequest();
 
-        return $seo;
-    }
-
-    /**
-     * @param array $routeInfo
-     * @return stdClass|bool
-     */
-    public function handle(array $routeInfo)
-    {
-        switch ($routeInfo[0]) {
-            case Dispatcher::NOT_FOUND:
-                // ... 404 Not Found
-                return false;
-            case Dispatcher::METHOD_NOT_ALLOWED:
-                $allowedMethods = $routeInfo[1];
-                // ... 405 Method Not Allowed
-                return false;
-            case Dispatcher::FOUND:
-                [, $handler, $vars] = $routeInfo;
-
-                return $handler($vars);
-        }
+        return $this->state;
     }
 
     /**
      * @return array
      */
-    public function initCompat(): array
+    public function getParams(): array
     {
-        $params                           = [];
-        $params['kKonfigPos']             = Request::verifyGPCDataInt('ek');
-        $params['kKategorie']             = Request::verifyGPCDataInt('k');
-        $params['kArtikel']               = Request::verifyGPCDataInt('a');
-        $params['kVariKindArtikel']       = Request::verifyGPCDataInt('a2');
-        $params['kSeite']                 = Request::verifyGPCDataInt('s');
-        $params['kLink']                  = Request::verifyGPCDataInt('s');
-        $params['kHersteller']            = Request::verifyGPCDataInt('h');
-        $params['kSuchanfrage']           = Request::verifyGPCDataInt('l');
-        $params['kMerkmalWert']           = Request::verifyGPCDataInt('m');
-        $params['kSuchspecial']           = Request::verifyGPCDataInt('q');
-        $params['kNews']                  = Request::verifyGPCDataInt('n');
-        $params['kNewsMonatsUebersicht']  = Request::verifyGPCDataInt('nm');
-        $params['kNewsKategorie']         = Request::verifyGPCDataInt('nk');
-        $params['nBewertungSterneFilter'] = Request::verifyGPCDataInt('bf');
-        $params['cPreisspannenFilter']    = Request::verifyGPDataString('pf');
-        $params['manufacturerFilterIDs']  = Request::verifyGPDataIntegerArray('hf');
-        $params['kHerstellerFilter']      = \count($params['manufacturerFilterIDs']) > 0
-            ? $params['manufacturerFilterIDs'][0]
-            : 0;
-        $params['categoryFilterIDs']      = Request::verifyGPDataIntegerArray('kf');
-        $params['kKategorieFilter']       = \count($params['categoryFilterIDs']) > 0
-            ? $params['categoryFilterIDs'][0]
-            : 0;
-        $params['searchSpecialFilterIDs'] = Request::verifyGPDataIntegerArray('qf');
-        $params['kSuchFilter']            = Request::verifyGPCDataInt('sf');
-        $params['kSuchspecialFilter']     = \count($params['searchSpecialFilterIDs']) > 0
-            ? $params['searchSpecialFilterIDs'][0]
-            : 0;
-
-        $params['nDarstellung'] = Request::verifyGPCDataInt('ed');
-        $params['nSortierung']  = Request::verifyGPCDataInt('sortierreihenfolge');
-        $params['nSort']        = Request::verifyGPCDataInt('Sortierung');
-
-        $params['show']            = Request::verifyGPCDataInt('show');
-        $params['vergleichsliste'] = Request::verifyGPCDataInt('vla');
-        $params['bFileNotFound']   = false;
-        $params['cCanonicalURL']   = '';
-        $params['is404']           = false;
-        $params['nLinkart']        = 0;
-
-        $params['nSterne'] = Request::verifyGPCDataInt('nSterne');
-
-        $params['kWunschliste'] = Wishlist::checkeParameters();
-
-        $params['nNewsKat'] = Request::verifyGPCDataInt('nNewsKat');
-        $params['cDatum']   = Request::verifyGPDataString('cDatum');
-        $params['nAnzahl']  = Request::verifyGPCDataInt('nAnzahl');
-
-        $params['optinCode'] = Request::verifyGPDataString('oc');
-
-        if (Request::verifyGPDataString('qs') !== '') {
-            $params['cSuche'] = Text::xssClean(Request::verifyGPDataString('qs'));
-        } elseif (Request::verifyGPDataString('suchausdruck') !== '') {
-            $params['cSuche'] = Text::xssClean(Request::verifyGPDataString('suchausdruck'));
-        } else {
-            $params['cSuche'] = Text::xssClean(Request::verifyGPDataString('suche'));
+        $params = [];
+        foreach ($this->state->getMapping() as $old => $new) {
+            $params[$old] = $this->state->{$new};
         }
-        $params['nArtikelProSeite'] = Request::verifyGPCDataInt('af');
 
         return $params;
     }

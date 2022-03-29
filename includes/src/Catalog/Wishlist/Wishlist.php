@@ -335,7 +335,7 @@ class Wishlist
     public static function pruefeArtikelnachBestellungLoeschen(int $wishlistID, array $items)
     {
         if ($wishlistID < 1
-            || Shop::getConfigValue(\CONF_GLOBAL, 'global_wunschliste_artikel_loeschen_nach_kauf') !== 'Y'
+            || Shop::getSettingValue(\CONF_GLOBAL, 'global_wunschliste_artikel_loeschen_nach_kauf') !== 'Y'
         ) {
             return false;
         }

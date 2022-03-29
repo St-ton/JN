@@ -195,7 +195,7 @@ class Method implements MethodInterface
      */
     public function getShopTitle(): string
     {
-        return Shop::getConfigValue(\CONF_GLOBAL, 'global_shopname');
+        return Shop::getSettingValue(\CONF_GLOBAL, 'global_shopname');
     }
 
     /**

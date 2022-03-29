@@ -1072,7 +1072,7 @@ class LanguageHelper
      */
     public function generateLanguageAndCurrencyLinks(): void
     {
-        global $oZusatzFilter, $AktuellerArtikel;
+        global $AktuellerArtikel;
         $linkID        = Shop::$kLink;
         $pageID        = Shop::$kSeite;
         $shopURL       = Shop::getURL() . '/';
@@ -1137,7 +1137,7 @@ class LanguageHelper
                     $originalBase     = $config->getBaseURL();
                     $config->setLanguageID($langID);
                     $config->setBaseURL(Shop::getURL(false, $langID) . '/');
-                    $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
+                    $url = $productFilter->getFilterURL()->getURL();
                     // reset
                     $config->setLanguageID($originalLanguage);
                     $config->setBaseURL($originalBase);
@@ -1178,7 +1178,7 @@ class LanguageHelper
                 } elseif ($page !== null) {
                     $url = $page->getURL();
                 } else {
-                    $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
+                    $url = $productFilter->getFilterURL()->getURL();
                 }
                 if ($currency->getID() !== $currentCurrencyCode) {
                     $url .= (\mb_strpos($url, '?') === false ? '?' : '&') . 'curr=' . $currency->getCode();
@@ -1191,7 +1191,7 @@ class LanguageHelper
         }
         \executeHook(\HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG, [
             'oNaviFilter'       => &$productFilter,
-            'oZusatzFilter'     => &$oZusatzFilter,
+            'oZusatzFilter'     => null,
             'cSprachURL'        => [],
             'oAktuellerArtikel' => &$AktuellerArtikel,
             'kSeite'            => &$pageID,

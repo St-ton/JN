@@ -16,27 +16,27 @@ class Config implements ConfigInterface
     /**
      * @var int
      */
-    private $langID = 0;
+    private int $langID = 0;
 
     /**
      * @var array
      */
-    private $languages = [];
+    private array $languages = [];
 
     /**
      * @var array
      */
-    private $config = [];
+    private array $config = [];
 
     /**
      * @var int
      */
-    private $customerGroupID = 0;
+    private int $customerGroupID = 0;
 
     /**
      * @var string
      */
-    private $baseURL = '';
+    private string $baseURL = '';
 
     /**
      * @inheritdoc

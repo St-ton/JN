@@ -3,6 +3,7 @@
 namespace JTL\Router;
 
 use JTL\DB\DbInterface;
+use JTL\Router\Handler\HandlerInterface;
 use JTL\Shop;
 use stdClass;
 
@@ -10,7 +11,7 @@ use stdClass;
  * Class AbstractHandler
  * @package JTL\Router
  */
-abstract class AbstractHandler
+abstract class AbstractHandler implements HandlerInterface
 {
     /**
      * @var DbInterface
@@ -18,34 +19,64 @@ abstract class AbstractHandler
     protected DbInterface $db;
 
     /**
-     * @param DbInterface $db
+     * @var State
      */
-    public function __construct(DbInterface $db)
+    protected State $state;
+
+    /**
+     * @inheritdoc
+     */
+    public function __construct(DbInterface $db, State $state)
     {
-        $this->db = $db;
+        $this->db    = $db;
+        $this->state = $state;
     }
 
     /**
-     * @param stdClass $seo
-     * @param string   $slug
-     * @param array    $parsedParams
+     * @inheritdoc
+     */
+    public function updateState(stdClass $seo, string $slug): State
+    {
+        $this->state->languageID = (int)$seo->kSprache;
+        $this->state->itemID     = (int)$seo->kKey;
+        $this->state->slug       = $seo->cSeo;
+        $this->state->type       = $seo->cKey;
+        $mapping                 = $this->state->getMapping();
+        if (isset($mapping[$seo->cKey])) {
+            $this->state->{$mapping[$seo->cKey]} = $this->state->itemID;
+        }
+        $this->updateShopParams($slug);
+        Shop::getProductFilter()->initStates($this->state->getAsParams());
+
+        return $this->state;
+    }
+
+    /**
+     * @param string $slug
      * @return void
      */
-    protected function updateShopParams(stdClass $seo, string $slug, array $parsedParams = []): void
+    protected function updateShopParams(string $slug): void
     {
-        if (\strcasecmp($seo->cSeo, $slug) !== 0) {
+        if (\strcasecmp($this->state->slug, $slug) !== 0) {
             return;
         }
-        if ($slug !== $seo->cSeo) {
+        if ($slug !== $this->state->slug) {
             \http_response_code(301);
-            \header('Location: ' . Shop::getURL() . '/' . $seo->cSeo);
+            \header('Location: ' . Shop::getURL() . '/' . $this->state->slug);
             exit;
         }
-        Shop::updateLanguage($seo->kSprache);
-        Shop::$cCanonicalURL = Shop::getURL() . '/' . $seo->cSeo;
-        Shop::${$seo->cKey}  = $seo->kKey;
-        foreach ($parsedParams as $key => $value) {
-            Shop::${$key} = $value;
-        }
+        Shop::updateLanguage($this->state->languageID);
+        Shop::$cCanonicalURL             = Shop::getURL() . '/' . $this->state->slug;
+        Shop::${$this->state->type}      = $this->state->itemID;
+        Shop::$is404                     = $this->state->is404;
+        Shop::$kSprache                  = $this->state->languageID;
+        Shop::$kSeite                    = $this->state->pageID;
+        Shop::$kKategorieFilter          = $this->state->categoryFilterID;
+        Shop::$customFilters             = $this->state->customFilters;
+        Shop::$manufacturerFilterIDs     = $this->state->manufacturerFilterIDs;
+        Shop::$kHerstellerFilter         = $this->state->manufacturerFilterID;
+        Shop::$bHerstellerFilterNotFound = $this->state->manufacturerFilterNotFound;
+        Shop::$bKatFilterNotFound        = $this->state->categoryFilterNotFound;
+        Shop::$bSEOMerkmalNotFound       = $this->state->characteristicNotFound;
     }
 }

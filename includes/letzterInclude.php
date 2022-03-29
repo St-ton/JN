@@ -27,6 +27,7 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Visitor;
 
+global $oSuchergebnisse, $expandedCategories, $AktuellerArtikel;
 $smarty             = Shop::Smarty();
 $db                 = Shop::Container()->getDB();
 $tplService         = Shop::Container()->getTemplateService();
@@ -36,7 +37,7 @@ $shopURL            = Shop::getURL();
 $cart               = Frontend::getCart();
 $conf               = Shopsetting::getInstance()->getAll();
 $linkHelper         = Shop::Container()->getLinkService();
-$link               = $linkHelper->getLinkByID(Shop::$kLink ?? 0);
+$link               = $linkHelper->getLinkByID(Shop::getState()->linkID ?? 0);
 $languageID         = Shop::getLanguageID();
 $device             = new Mobile_Detect();
 $expandedCategories = $expandedCategories ?? new KategorieListe();
@@ -74,9 +75,7 @@ if (!isset($AktuelleKategorie)) {
     $AktuelleKategorie = new Kategorie(Request::verifyGPCDataInt('kategorie'), $languageID, $customerGroupID);
 }
 $expandedCategories->getOpenCategories($AktuelleKategorie);
-if (!isset($NaviFilter)) {
-    $NaviFilter = Shop::run();
-}
+$NaviFilter = Shop::getProductFilter();
 // put availability on top
 $filters = $NaviFilter->getAvailableContentFilters();
 foreach ($filters as $key => $filter) {

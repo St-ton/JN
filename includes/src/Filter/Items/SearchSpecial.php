@@ -125,6 +125,8 @@ class SearchSpecial extends AbstractFilter
                     // invalid search special ID
                     Shop::$is404        = true;
                     Shop::$kSuchspecial = 0;
+                    Shop::getState()->is404 = true;
+                    Shop::getState()->searchSpecialID = 0;
                     break;
             }
         }

@@ -79,7 +79,7 @@ class NewsletterCronDAO
         $this->startTime    = (new DateTime())->format('H:i:s');
         $this->lastStart    = '_DBNULL_';
         $this->lastFinish   = '_DBNULL_';
-        $this->frequency    = Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_send_delay');
+        $this->frequency    = Shop::getSettingValue(\CONF_NEWSLETTER, 'newsletter_send_delay');
     }
 
     /**

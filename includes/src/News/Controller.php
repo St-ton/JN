@@ -174,7 +174,7 @@ class Controller
             );
         }
         if ($newsItem->isVisible()) {
-            $conf = Shop::getConfig([\CONF_NEWS]);
+            $conf = Shop::getSettings([\CONF_NEWS]);
             $this->smarty->assign('oNewsKommentar_arr', $comments)
                 ->assign('comments', $comments)
                 ->assign('cNewsErr', false)

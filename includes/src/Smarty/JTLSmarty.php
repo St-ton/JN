@@ -343,7 +343,7 @@ class JTLSmarty extends BC
     /**
      * @inheritDoc
      */
-    public function display($template = null, $cacheID = null, $compileID = null, $parent = null)
+    public function display($template = null, $cacheID = null, $compileID = null, $parent = null): void
     {
         if ($this->context === ContextType::FRONTEND) {
             $this->registerFilter('output', [$this, 'outputFilter']);
@@ -352,6 +352,29 @@ class JTLSmarty extends BC
         if ($this->context === ContextType::BACKEND) {
             require \PFAD_ROOT . \PFAD_INCLUDES . 'profiler_inc.php';
         }
+    }
+
+    /**
+     * @param string $template
+     * @return string
+     */
+    public function getResponse(string $template): string
+    {
+        if ($this->context === ContextType::FRONTEND) {
+            $this->registerFilter('output', [$this, 'outputFilter']);
+        }
+        /** @var JTLSmartyTemplateClass $template */
+        $template = $this->createTemplate($this->getResourceName($template), null, null, $this, false);
+        $template->noOutputFilter = false;
+
+        $res = parent::fetch($template);
+        require \PFAD_ROOT . \PFAD_INCLUDES . 'profiler_inc.php';
+
+        return $res;
+
+//        \ob_start();
+//        $this->display($template);
+//        return \ob_get_clean();
     }
 
     /**

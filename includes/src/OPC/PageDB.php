@@ -5,6 +5,7 @@ namespace JTL\OPC;
 use Exception;
 use JTL\Backend\Revision;
 use JTL\DB\DbInterface;
+use JTL\Events\Dispatcher;
 use JTL\Shop;
 use JTL\Update\Updater;
 use stdClass;
@@ -188,7 +189,7 @@ class PageDB
         $publicRow = $this->getPublicPageRow($id);
         $page      = $publicRow === null ? null : $this->getPageFromRow($publicRow);
 
-        Shop::fire('shop.OPC.PageDB.getPublicPage', [
+        Dispatcher::getInstance()->fire('shop.OPC.PageDB.getPublicPage', [
             'id'   => $id,
             'page' => &$page
         ]);
@@ -301,7 +302,7 @@ class PageDB
             throw new Exception('The OPC page data to be saved is incomplete or invalid.');
         }
 
-        Shop::fire('shop.OPC.PageDB.saveDraft:afterValidate', [
+        Dispatcher::getInstance()->fire('shop.OPC.PageDB.saveDraft:afterValidate', [
             'page' => &$page
         ]);
 
@@ -449,7 +450,7 @@ class PageDB
             $page->getAreaList()->deserialize($areaData);
         }
 
-        Shop::fire('shop.OPC.PageDB.getPageRow', [
+        Dispatcher::getInstance()->fire('shop.OPC.PageDB.getPageRow', [
             'row'  => &$row,
             'page' => &$page
         ]);

@@ -24,8 +24,9 @@ $cart       = Frontend::getCart();
 $smarty     = Shop::Smarty();
 $db         = Shop::Container()->getDB();
 $bestellung = null;
-if (Shop::$kLink === 0 && $kLink !== null) {
+if (Shop::getState()->linkID === 0 && $kLink !== null) {
     Shop::$kLink = $kLink;
+    Shop::getState()->linkID = $kLink;
 }
 if (isset($_GET['i'])) {
     $bestellid = $db->select('tbestellid', 'cId', $_GET['i']);

@@ -3,7 +3,7 @@
 use JTL\Plugin\Helper;
 use JTL\Shop;
 
-$kLink = Shop::$kLink;
+$kLink = Shop::getState()->linkID;
 if ($kLink !== null && $kLink > 0) {
     $linkFile   = Shop::Container()->getDB()->select('tpluginlinkdatei', 'kLink', $kLink);
     $linkHelper = Shop::Container()->getLinkService();

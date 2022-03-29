@@ -21,7 +21,7 @@ $alertHelper    = Shop::Container()->getAlertService();
 $db             = Shop::Container()->getDB();
 $getText        = Shop::Container()->getGetText();
 $adminAccount   = Shop::Container()->getAdminAccount();
-$minLogLevel    = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
+$minLogLevel    = Shop::getSettingValue(CONF_GLOBAL, 'systemlog_flag');
 $settingManager = new Manager($db, $smarty, $adminAccount, $getText, $alertHelper);
 
 if (Form::validateToken()) {

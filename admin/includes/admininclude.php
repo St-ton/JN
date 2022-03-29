@@ -2,6 +2,7 @@
 
 use JTL\Backend\AdminLoginStatus;
 use JTL\Backend\Revision;
+use JTL\Events\Dispatcher;
 use JTL\Events\Event;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -130,7 +131,7 @@ if ($loggedIn) {
 
     if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id']) && Form::validateToken()) {
         $revision = new Revision($db);
-        Shop::fire(Event::REVISION_RESTORE_DELETE, ['revision' => $revision]);
+        Dispatcher::getInstance()->fire(Event::REVISION_RESTORE_DELETE, ['revision' => $revision]);
         if ($_POST['revision-action'] === 'restore') {
             $revision->restoreRevision(
                 $_POST['revision-type'],

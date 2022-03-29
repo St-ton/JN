@@ -191,8 +191,12 @@ function bestellungInDB($cleared = 0, $orderNo = '')
                     foreach ($item->WarenkorbPosEigenschaftArr as $o => $WKPosEigenschaft) {
                         if ($WKPosEigenschaft->cTyp === 'FREIFELD' || $WKPosEigenschaft->cTyp === 'PFLICHT-FREIFELD') {
                             $WKPosEigenschaft->kWarenkorbPos        = $item->kWarenkorbPos;
-                            $WKPosEigenschaft->cEigenschaftName     = $WKPosEigenschaft->cEigenschaftName[$idx];
-                            $WKPosEigenschaft->cEigenschaftWertName = $WKPosEigenschaft->cEigenschaftWertName[$idx];
+                            $WKPosEigenschaft->cEigenschaftName     = \is_array($WKPosEigenschaft->cEigenschaftName)
+                                                                        ? $WKPosEigenschaft->cEigenschaftName[$idx]
+                                                                        : $WKPosEigenschaft->cEigenschaftName;
+                            $WKPosEigenschaft->cEigenschaftWertName = \is_array($WKPosEigenschaft->cEigenschaftWertName)
+                                                                        ? $WKPosEigenschaft->cEigenschaftWertName[$idx]
+                                                                        : $WKPosEigenschaft->cEigenschaftWertName;
                             $WKPosEigenschaft->cFreifeldWert        = $WKPosEigenschaft->cEigenschaftWertName;
                             $WKPosEigenschaft->insertInDB();
                         }
@@ -200,8 +204,12 @@ function bestellungInDB($cleared = 0, $orderNo = '')
                 } else {
                     foreach ($item->WarenkorbPosEigenschaftArr as $o => $WKPosEigenschaft) {
                         $WKPosEigenschaft->kWarenkorbPos        = $item->kWarenkorbPos;
-                        $WKPosEigenschaft->cEigenschaftName     = $WKPosEigenschaft->cEigenschaftName[$idx];
-                        $WKPosEigenschaft->cEigenschaftWertName = $WKPosEigenschaft->cEigenschaftWertName[$idx];
+                        $WKPosEigenschaft->cEigenschaftName     = \is_array($WKPosEigenschaft->cEigenschaftName)
+                                                                    ? $WKPosEigenschaft->cEigenschaftName[$idx]
+                                                                    : $WKPosEigenschaft->cEigenschaftName;
+                        $WKPosEigenschaft->cEigenschaftWertName = \is_array($WKPosEigenschaft->cEigenschaftWertName)
+                                                                    ? $WKPosEigenschaft->cEigenschaftWertName[$idx]
+                                                                    : $WKPosEigenschaft->cEigenschaftWertName;
                         if ($WKPosEigenschaft->cTyp === 'FREIFELD' || $WKPosEigenschaft->cTyp === 'PFLICHT-FREIFELD') {
                             $WKPosEigenschaft->cFreifeldWert = $WKPosEigenschaft->cEigenschaftWertName;
                         }
@@ -954,7 +962,7 @@ function setzeSmartyWeiterleitung(Bestellung $order): void
             Shop::Smarty()->assign('oPlugin', $plugin)
                 ->assign('plugin', $plugin);
         }
-    } elseif ($moduleID === 'za_kreditkarte_jtl' || $moduleID === 'za_lastschrift_jtl') {
+    } elseif ($moduleID === 'za_lastschrift_jtl') {
         Shop::Smarty()->assign('abschlussseite', 1);
     }
 

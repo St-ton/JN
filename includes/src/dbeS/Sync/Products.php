@@ -23,22 +23,22 @@ final class Products extends AbstractSync
     /**
      * @var array
      */
-    protected $config;
+    protected array $config;
 
     /**
      * @var int
      */
-    protected $categoryVisibilityFilter;
+    protected int $categoryVisibilityFilter;
 
     /**
      * @var int
      */
-    protected $productVisibilityFilter;
+    protected int $productVisibilityFilter;
 
     /**
      * @var bool
      */
-    private $affectsSearchSpecials = false;
+    private bool $affectsSearchSpecials = false;
 
     /**
      * @param Starter $starter

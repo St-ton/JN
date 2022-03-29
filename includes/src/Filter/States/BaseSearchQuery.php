@@ -457,8 +457,7 @@ class BaseSearchQuery extends AbstractFilter
             ? $min
             : 3;
         if (\mb_strlen($query) < $minChars) {
-            require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
-            $this->error = \lang_suche_mindestanzahl($query, $minChars);
+            $this->error = Shop::Lang()->get('searchQueryMinLength', 'messages', $minChars, $query);
 
             return 0;
         }

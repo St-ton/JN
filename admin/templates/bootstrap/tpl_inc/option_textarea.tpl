@@ -1,9 +1,10 @@
 <div class="form-group">
-    <textarea style="resize:{if isset($setting->textareaAttributes.Resizable)}{$setting->textareaAttributes.Resizable}{/if};max-width:800%;width:100%;border:none"
+    <textarea style="{if isset($setting->textareaAttributes.Resizable)}resize:{$setting->textareaAttributes.Resizable}{/if};max-width:800%;width:100%"
           name="{$setting->elementID}"
-          cols="{if isset($setting->textareaAttributes.Cols)}{$setting->textareaAttributes.Cols}{/if}"
-          rows="{if isset($setting->textareaAttributes.Rows)}{$setting->textareaAttributes.Rows}{/if}"
+          {if isset($setting->textareaAttributes.Cols)}cols="{$setting->textareaAttributes.Cols}"{/if}
+          {if isset($setting->textareaAttributes.Rows)}rows="{$setting->textareaAttributes.Rows}"{/if}
           id="{$setting->elementID}"
+          class="form-control{if isset($setting->textareaAttributes.Class)} {$setting->textareaAttributes.Class}{/if}"
           placeholder="{__($setting->cPlaceholder)}"
-    >{$setting->cTextAreaValue|escape:'html'}</textarea>
+    >{$setting->value|escape:'html'}</textarea>
 </div>

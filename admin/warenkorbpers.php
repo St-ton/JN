@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Cart\PersistentCart;
 use JTL\Customer\Customer;
 use JTL\DB\SqlObject;
@@ -36,7 +35,7 @@ if (Request::getInt('l') > 0 && Form::validateToken()) {
     $customerID = Request::getInt('l');
     $persCart   = new PersistentCart($customerID);
     if ($persCart->entferneSelf()) {
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCartPersPosDelete'), 'successCartPersPosDelete');
+        $alertHelper->addSuccess(__('successCartPersPosDelete'), 'successCartPersPosDelete');
     }
 
     unset($persCart);

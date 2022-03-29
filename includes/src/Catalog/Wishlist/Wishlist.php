@@ -5,7 +5,6 @@ namespace JTL\Catalog\Wishlist;
 use DateTime;
 use Exception;
 use Illuminate\Support\Collection;
-use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
@@ -668,7 +667,7 @@ class Wishlist
         }
 
         $notice .= \implode(', ', $names);
-        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'wlNote');
+        Shop::Container()->getAlertService()->addNotice($notice, 'wlNote');
 
         return $notice;
     }

@@ -11,8 +11,8 @@
 <script>
     $('#{$cpID}-group').colorpicker({ldelim}
         format: 'rgba',
-        fallbackColor: '#FFF',
-        autoInputFallback: false,
-        useAlpha: {$useAlpha|default:false}
+        fallbackColor: 'rgb(255, 255, 255)',
+        autoInputFallback: true,
+        useAlpha: {if $useAlpha|default:false}true{else}false{/if}
     {rdelim});
 </script>

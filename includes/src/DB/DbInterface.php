@@ -385,7 +385,7 @@ interface DbInterface extends \Serializable
     /**
      * Quotes a string with outer quotes for use in a query.
      *
-     * @param string|bool $string
+     * @param mixed $string
      * @return string
      */
     public function quote($string): string;
@@ -393,7 +393,7 @@ interface DbInterface extends \Serializable
     /**
      * Quotes a string for use in a query.
      *
-     * @param string $string
+     * @param mixed $string
      * @return string
      */
     public function escape($string): string;

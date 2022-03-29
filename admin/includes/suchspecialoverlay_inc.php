@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Media\Image;
 use JTL\Media\Image\Overlay;
 use JTL\Shop;
@@ -53,7 +52,7 @@ function speicherEinstellung(
     );
 
     if ($overlay->getType() <= 0) {
-        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('invalidOverlay'), 'invalidOverlay');
+        Shop::Container()->getAlertService()->addError(__('invalidOverlay'), 'invalidOverlay');
         return false;
     }
     $overlay->setActive((int)$post['nAktiv'])
@@ -66,8 +65,7 @@ function speicherEinstellung(
         $template    = $template ?: Shop::Container()->getTemplateService()->getActiveTemplate()->getName();
         $overlayPath = PFAD_ROOT . PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE;
         if (!is_writable($overlayPath)) {
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_ERROR,
+            Shop::Container()->getAlertService()->addError(
                 sprintf(__('errorOverlayWritePermissions'), PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE),
                 'errorOverlayWritePermissions',
                 ['saveInSession' => true]
@@ -86,8 +84,7 @@ function speicherEinstellung(
     if (!isset($imageCreated) || $imageCreated) {
         $overlay->save();
     } else {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_ERROR,
+        Shop::Container()->getAlertService()->addError(
             __('errorFileUploadGeneral'),
             'errorFileUploadGeneral',
             ['saveInSession' => true]

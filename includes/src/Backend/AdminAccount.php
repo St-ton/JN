@@ -4,7 +4,6 @@ namespace JTL\Backend;
 
 use DateTime;
 use Exception;
-use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Request;
 use JTL\L10n\GetText;
@@ -196,11 +195,11 @@ class AdminAccount
             $mail   = new Mail();
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ADMINLOGIN_PASSWORT_VERGESSEN, $obj));
 
-            $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successEmailSend'), 'successEmailSend');
+            $this->alertService->addSuccess(\__('successEmailSend'), 'successEmailSend');
 
             return true;
         }
-        $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorEmailNotFound'), 'errorEmailNotFound');
+        $this->alertService->addError(\__('errorEmailNotFound'), 'errorEmailNotFound');
 
         return false;
     }
@@ -313,6 +312,7 @@ class AdminAccount
             }
             $admin->cISO       = Shop::Lang()->getIsoFromLangID((int)$admin->kSprache)->cISO;
             $admin->attributes = $this->getAttributes((int)$admin->kAdminlogin);
+            \session_regenerate_id();
             $this->toSession($admin);
             $this->checkAndUpdateHash($cPass);
             if (!$this->getIsTwoFaAuthenticated()) {
@@ -373,6 +373,8 @@ class AdminAccount
     {
         $this->loggedIn = false;
         \session_destroy();
+        new Backend();
+        \session_regenerate_id(true);
 
         return $this;
     }
@@ -496,10 +498,11 @@ class AdminAccount
                 'cPass',
                 $_SESSION['AdminAccount']->cPass
             );
-            $this->twoFaAuthenticated = (isset($account->b2FAauth) && (int)$account->b2FAauth === 1)
-                ? (isset($_SESSION['AdminAccount']->TwoFA_valid) && $_SESSION['AdminAccount']->TwoFA_valid === true)
-                : true;
+            $this->twoFaAuthenticated = true;
             $this->loggedIn           = isset($account->cLogin);
+            if ((int)($account->b2FAauth ?? 0) === 1) {
+                $this->twoFaAuthenticated = ($_SESSION['AdminAccount']->TwoFA_valid ?? false) === true;
+            }
         }
 
         return $this;

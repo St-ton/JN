@@ -1,6 +1,5 @@
 <?php
 
-use JTL\Alert\Alert;
 use JTL\Cart\Cart;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Product\Preise;
@@ -64,11 +63,7 @@ function pruefeVersandartWahl($shippingMethod, $formValues = 0, $bMsg = true): b
         return true;
     }
     if ($bMsg) {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_NOTE,
-            Shop::Lang()->get('fillShipping', 'checkout'),
-            'fillShipping'
-        );
+        Shop::Container()->getAlertService()->addNotice(Shop::Lang()->get('fillShipping', 'checkout'), 'fillShipping');
     }
     $step = 'Versand';
 
@@ -522,8 +517,7 @@ function pruefeZahlungsartStep($get): void
     }
 
     if (isset($get['nHinweis']) && (int)$get['nHinweis'] > 0) {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_NOTE,
+        Shop::Container()->getAlertService()->addNotice(
             mappeBestellvorgangZahlungshinweis((int)$get['nHinweis']),
             'paymentNote'
         );
@@ -553,8 +547,7 @@ function pruefeZahlungsartwahlStep($post)
 
     switch ($zahlungsangaben) {
         case 0:
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_NOTE,
+            Shop::Container()->getAlertService()->addNotice(
                 Shop::Lang()->get('fillPayment', 'checkout'),
                 'fillPayment'
             );
@@ -614,13 +607,11 @@ function gibStepAccountwahl(): void
         && Shop::getSettingValue(CONF_GLOBAL, 'global_kundenkonto_aktiv') === 'A'
         && empty(Shop::Smarty()->getTemplateVars('fehlendeAngaben'))
     ) {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_NOTE,
+        Shop::Container()->getAlertService()->addNotice(
             Shop::Lang()->get('accountCreated') . '. ' . Shop::Lang()->get('activateAccountDesc'),
             'accountCreatedLoginNotActivated'
         );
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_NOTE,
+        Shop::Container()->getAlertService()->addNotice(
             Shop::Lang()->get('continueAfterActivation', 'messages'),
             'continueAfterActivation'
         );
@@ -857,7 +848,7 @@ function gibStepBestaetigung($get)
     }
     // Bei Standardzahlungsarten mit Zahlungsinformationen prüfen ob Daten vorhanden sind
     if (isset($_SESSION['Zahlungsart'])
-        && in_array($_SESSION['Zahlungsart']->cModulId, ['za_lastschrift_jtl', 'za_kreditkarte_jtl'], true)
+        && $_SESSION['Zahlungsart']->cModulId === 'za_lastschrift_jtl'
         && (empty($_SESSION['Zahlungsart']->ZahlungsInfo) || !is_object($_SESSION['Zahlungsart']->ZahlungsInfo))
     ) {
         header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1', true, 303);
@@ -1050,24 +1041,6 @@ function checkAdditionalPayment($paymentMethod): array
     $post   = Text::filterXSS($_POST);
     $errors = [];
     switch ($paymentMethod->cModulId) {
-        case 'za_kreditkarte_jtl':
-            if (empty($post['kreditkartennr'])) {
-                $errors['kreditkartennr'] = 1;
-            }
-            if (empty($post['gueltigkeit'])) {
-                $errors['gueltigkeit'] = 1;
-            }
-            if (empty($post['cvv'])) {
-                $errors['cvv'] = 1;
-            }
-            if (empty($post['kartentyp'])) {
-                $errors['kartentyp'] = 1;
-            }
-            if (empty($post['inhaber'])) {
-                $errors['inhaber'] = 1;
-            }
-            break;
-
         case 'za_lastschrift_jtl':
             $conf = Shop::getSettingSection(CONF_ZAHLUNGSARTEN);
             if (empty($post['bankname']) && $conf['zahlungsart_lastschrift_kreditinstitut_abfrage'] === 'Y') {
@@ -1088,6 +1061,8 @@ function checkAdditionalPayment($paymentMethod): array
             } elseif (!plausiIban($post['iban'])) {
                 $errors['iban'] = 2;
             }
+            break;
+        default:
             break;
     }
 
@@ -1143,17 +1118,10 @@ function gibPostZahlungsInfo(): stdClass
 {
     $info = new stdClass();
 
-    $info->cKartenNr    = isset($_POST['kreditkartennr'])
-        ? Text::htmlentities(stripslashes($_POST['kreditkartennr']), ENT_QUOTES)
-        : null;
-    $info->cGueltigkeit = isset($_POST['gueltigkeit'])
-        ? Text::htmlentities(stripslashes($_POST['gueltigkeit']), ENT_QUOTES)
-        : null;
-    $info->cCVV         = isset($_POST['cvv'])
-        ? Text::htmlentities(stripslashes($_POST['cvv']), ENT_QUOTES) : null;
-    $info->cKartenTyp   = isset($_POST['kartentyp'])
-        ? Text::htmlentities(stripslashes($_POST['kartentyp']), ENT_QUOTES)
-        : null;
+    $info->cKartenNr    = null;
+    $info->cGueltigkeit = null;
+    $info->cCVV         = null;
+    $info->cKartenTyp   = null;
     $info->cBankName    = isset($_POST['bankname'])
         ? Text::htmlentities(stripslashes(trim($_POST['bankname'])), ENT_QUOTES)
         : null;
@@ -1273,36 +1241,6 @@ function zahlungsartKorrekt(int $paymentMethodID): int
             switch ($paymentMethod->cModulId) {
                 case 'za_null_jtl':
                     // the null-paymentMethod did not has any additional-steps
-                    break;
-                case 'za_kreditkarte_jtl':
-                    $fehlendeAngaben = checkAdditionalPayment($paymentMethod);
-
-                    if (count($fehlendeAngaben) === 0) {
-                        $info->cKartenNr      = Text::htmlentities(
-                            stripslashes($_POST['kreditkartennr']),
-                            ENT_QUOTES
-                        );
-                        $info->cGueltigkeit   = Text::htmlentities(
-                            stripslashes($_POST['gueltigkeit']),
-                            ENT_QUOTES
-                        );
-                        $info->cCVV           = Text::htmlentities(
-                            stripslashes($_POST['cvv']),
-                            ENT_QUOTES
-                        );
-                        $info->cKartenTyp     = Text::htmlentities(
-                            stripslashes($_POST['kartentyp']),
-                            ENT_QUOTES
-                        );
-                        $info->cInhaber       = Text::htmlentities(
-                            stripslashes($_POST['inhaber']),
-                            ENT_QUOTES
-                        );
-                        $additionalInfoExists = true;
-                    } elseif ($zaInfo !== null && isset($zaInfo->cKartenNr)) {
-                        $info                 = $zaInfo;
-                        $additionalInfoExists = true;
-                    }
                     break;
                 case 'za_lastschrift_jtl':
                     $fehlendeAngaben = checkAdditionalPayment($paymentMethod);

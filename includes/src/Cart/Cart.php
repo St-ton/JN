@@ -3,7 +3,6 @@
 namespace JTL\Cart;
 
 use Exception;
-use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
@@ -972,8 +971,7 @@ class Cart
         $updated->cGesamtpreisLocalizedOld = $oldItem->cGesamtpreisLocalized;
         $updated->istKonfigVater           = $item->istKonfigVater();
         self::addUpdatedPosition($updated);
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_WARNING,
+        Shop::Container()->getAlertService()->addWarning(
             \sprintf(
                 Shop::Lang()->get('priceHasChanged', 'checkout'),
                 \is_array($item->cName) ? $item->cName[Shop::getLanguageCode()] : $item->cName
@@ -1885,7 +1883,12 @@ class Cart
                     OR ( va.kVersandberechnung = 4 AND vas.fBis > 0 AND :itemCount <= vas.fBis)
                     OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND :totalWeight <= vas.fBis )
                     OR ( va.kVersandberechnung = 3 
-                        AND vas.fBis = (SELECT MIN(fBis) FROM tversandartstaffel WHERE fBis > :maxPrices)
+                        AND vas.fBis = (
+                          SELECT MIN(fBis)
+                            FROM tversandartstaffel
+                            WHERE fBis > :maxPrices
+                              AND tversandartstaffel.kVersandart = va.kVersandart
+                          )
                         )
                     )
                 AND va.kVersandart IN (' . \implode(', ', $shippingMethods) . ')
@@ -1991,6 +1994,34 @@ class Cart
             ?? Frontend::get('Lieferadresse')->cLand
             ?? Frontend::getCustomer()->cLand
             ?? Frontend::get('cLieferlandISO');
+    }
+
+    /**
+     * @return int
+     */
+    public function removeParentItems(): int
+    {
+        $deletedItemCount = 0;
+        foreach ($this->PositionenArr as $i => $item) {
+            $delete = false;
+            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
+                && $item->Artikel->nIstVater === 1
+            ) {
+                $delete = true;
+                \executeHook(\HOOK_CART_DELETE_PARENT_CART_ITEM, [
+                    'positionItem' => $item,
+                    'delete'    => &$delete
+                ]);
+            }
+            if ($delete) {
+                $deletedItemCount++;
+                self::addDeletedPosition($item);
+                unset($this->PositionenArr[$i]);
+            }
+        }
+        $this->PositionenArr = \array_values($this->PositionenArr);
+
+        return $deletedItemCount;
     }
 
     /**

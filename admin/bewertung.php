@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Helpers\Request;
 use JTL\Review\ReviewAdminController;
@@ -16,7 +16,7 @@ $db          = Shop::Container()->getDB();
 $controller  = new ReviewAdminController($db, $cache, $alertHelper, $smarty);
 $tab         = mb_strlen(Request::verifyGPDataString('tab')) > 0 ? Request::verifyGPDataString('tab') : 'freischalten';
 $step        = $controller->handleRequest();
-if (Request::getVar('a') === 'editieren' || $step === 'bewertung_editieren') {
+if ($step === 'bewertung_editieren' || Request::getVar('a') === 'editieren') {
     $step = 'bewertung_editieren';
     $smarty->assign('review', $controller->getReview(Request::verifyGPCDataInt('kBewertung')));
     if (Request::verifyGPCDataInt('nFZ') === 1) {

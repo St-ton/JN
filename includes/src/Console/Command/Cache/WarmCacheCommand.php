@@ -222,7 +222,7 @@ class WarmCacheCommand extends Command
                 $manufacturer = new Hersteller($mid, $language->getId());
                 ++$generated;
                 $this->debug('Manufacturer ' . $mid
-                    . ($manufacturer->kHersteller > 0 ? ' successfully' : ' could not be')
+                    . ($manufacturer->getID() > 0 ? ' successfully' : ' could not be')
                     . ' loaded in language ' . $language->getId());
             }
             $bar->advance();

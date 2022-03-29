@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Backend\Notification;
 use JTL\Backend\NotificationEntry;
 use JTL\Backend\Settings\Manager;
@@ -38,17 +37,13 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken())
         if (version_compare($mysqlVersion, '5.6', '<')) {
             //Volltextindizes werden von MySQL mit InnoDB erst ab Version 5.6 unterstützt
             $_POST['suche_fulltext'] = 'N';
-            $alertService->addAlert(Alert::TYPE_ERROR, __('errorFulltextSearchMYSQL'), 'errorFulltextSearchMYSQL');
+            $alertService->addError(__('errorFulltextSearchMYSQL'), 'errorFulltextSearchMYSQL');
         } else {
             // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
             $currentVal = $db->getSingleObject('SELECT @@ft_min_word_len AS ft_min_word_len');
             if (($currentVal->ft_min_word_len ?? $_POST['suche_min_zeichen']) !== $_POST['suche_min_zeichen']) {
                 $_POST['suche_min_zeichen'] = $currentVal->ft_min_word_len;
-                $alertService->addAlert(
-                    Alert::TYPE_WARNING,
-                    __('errorFulltextSearchMinLen'),
-                    'errorFulltextSearchMinLen'
-                );
+                $alertService->addWarning(__('errorFulltextSearchMinLen'), 'errorFulltextSearchMinLen');
             }
         }
     }
@@ -84,9 +79,9 @@ if (Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken())
     }
 
     if ($sucheFulltext && $fulltextChanged) {
-        $alertService->addAlert(Alert::TYPE_SUCCESS, __('successSearchActivate'), 'successSearchActivate');
+        $alertService->addSuccess(__('successSearchActivate'), 'successSearchActivate');
     } elseif ($fulltextChanged) {
-        $alertService->addAlert(Alert::TYPE_SUCCESS, __('successSearchDeactivate'), 'successSearchDeactivate');
+        $alertService->addSuccess(__('successSearchDeactivate'), 'successSearchDeactivate');
     }
 
     $conf = Shop::getSettings([$sectionID]);
@@ -97,8 +92,7 @@ $section->load();
 if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
     && (!$db->getSingleObject("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'")
         || !$db->getSingleObject("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'"))) {
-    $alertService->addAlert(
-        Alert::TYPE_ERROR,
+    $alertService->addError(
         __('errorCreateTime') .
         '<a href="sucheinstellungen.php" title="Aktualisieren"><i class="alert-danger fa fa-refresh"></i></a>',
         'errorCreateTime'

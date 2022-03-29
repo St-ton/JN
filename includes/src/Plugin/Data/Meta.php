@@ -13,54 +13,54 @@ use stdClass;
 class Meta
 {
     /**
-     * @var string
+     * @var string|null
      */
-    private $name;
+    private ?string $name;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $description;
+    private ?string $description = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $author;
+    private ?string $author = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $url;
+    private ?string $url = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $icon;
+    private ?string $icon = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $readmeMD;
+    private ?string $readmeMD = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $licenseMD;
+    private ?string $licenseMD = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $changelogMD;
+    private ?string $changelogMD = null;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private $dateLastUpdate;
+    private ?DateTime $dateLastUpdate = null;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private $dateInstalled;
+    private ?DateTime $dateInstalled = null;
 
     /**
      * @var int|string
@@ -68,9 +68,9 @@ class Meta
     private $version;
 
     /**
-     * @var Version
+     * @var Version|null
      */
-    private $semVer;
+    private ?Version $semVer = null;
 
     /**
      * @var bool|Version
@@ -80,12 +80,12 @@ class Meta
     /**
      * @var string|null
      */
-    private $error;
+    private ?string $error = null;
 
     /**
      * @var string|null
      */
-    private $exsID;
+    private ?string $exsID = null;
 
     /**
      * @param stdClass $data

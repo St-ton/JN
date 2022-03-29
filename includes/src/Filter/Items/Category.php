@@ -80,7 +80,11 @@ class Category extends BaseCategory
         $values = ' IN (' . \implode(', ', $value)  . ')';
 
         if ($this->getIncludeSubCategories() === true) {
-            return ' tkategorieartikel.kKategorie IN (
+            $row = $this->getConfig('navigationsfilter')['kategoriefilter_anzeigen_als'] === 'HF'
+                ? 'tkategorieartikelgesamt'
+                : 'tkategorieartikel';
+
+            return $row . '.kKategorie IN (
                         SELECT tchild.kKategorie FROM tkategorie AS tparent
                             JOIN tkategorie AS tchild
                                 ON tchild.lft BETWEEN tparent.lft AND tparent.rght

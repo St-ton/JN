@@ -54,7 +54,8 @@ if (Download::hasDownloads($cart)) {
     $conf['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
 }
 // oneClick? Darf nur einmal ausgeführt werden und nur dann, wenn man vom Warenkorb kommt.
-if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
+if (!isset($_SESSION['Lieferadresse'])
+    && $conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
     && Request::verifyGPCDataInt('wk') === 1
 ) {
     $customerID = Frontend::getCustomer()->getID();
@@ -125,11 +126,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         );
 
         if (empty($shippingMethods)) {
-            $alertService->addAlert(
-                Alert::TYPE_DANGER,
-                Shop::Lang()->get('noShippingAvailable', 'checkout'),
-                'noShippingAvailable'
-            );
+            $alertService->addDanger(Shop::Lang()->get('noShippingAvailable', 'checkout'), 'noShippingAvailable');
         } else {
             $activeVersandart = gibAktiveVersandart($shippingMethods);
             pruefeVersandartWahl(
@@ -145,11 +142,7 @@ if (empty($_SESSION['Kunde']->cPasswort) && Download::hasDownloads($cart)) {
     // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
     $step = 'accountwahl';
 
-    $alertService->addAlert(
-        Alert::TYPE_NOTE,
-        Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout'),
-        'digitalProductsRegisterInfo'
-    );
+    $alertService->addNotice(Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout'), 'digiProdRegisterInfo');
 
     unset($_SESSION['Kunde']);
     // unset not needed values to ensure the correct $step

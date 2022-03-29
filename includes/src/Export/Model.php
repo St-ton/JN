@@ -149,7 +149,13 @@ final class Model extends DataModel
             $this->enabled = $res !== null;
         }
         if ($this->languageID > 0) {
-            $this->language = Shop::Lang()->getLanguageByID($this->languageID);
+            try {
+                $this->language = Shop::Lang()->getLanguageByID($this->languageID);
+            } catch (Exception $e) {
+                $this->setHasError(1);
+                $this->language   = Shop::Lang()->getDefaultLanguage();
+                $this->languageID = 0;
+            }
         }
         if ($this->currencyID > 0) {
             $this->currency = new Currency($this->currencyID);

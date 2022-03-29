@@ -38,7 +38,7 @@
                                                         name="Versandart"
                                                         value=$versandart->kVersandart
                                                         id="del{$versandart->kVersandart}"
-                                                        checked=($Versandarten|@count == 1 || $AktiveVersandart == $versandart->kVersandart)
+                                                        checked=($Versandarten|count == 1 || $AktiveVersandart == $versandart->kVersandart)
                                                         required=($versandart@first)
                                                         class="checkout-shipping-form-options-radio"
                                                     }
@@ -51,7 +51,11 @@
                                                                         {/if}
                                                                     {/block}
                                                                     {block name='checkout-step3-shipping-options-shipping-option-title-title'}
-                                                                        {$versandart->angezeigterName|trans}
+                                                                        {if $versandart->angezeigterName|trans === '' && $versandart->cBild === ''}
+                                                                            {$versandart->cName}
+                                                                        {else}
+                                                                            {$versandart->angezeigterName|trans}
+                                                                        {/if}
                                                                         {if !empty($versandart->angezeigterHinweistext|trans)}
                                                                             <div>
                                                                                 <small>{$versandart->angezeigterHinweistext|trans}</small>

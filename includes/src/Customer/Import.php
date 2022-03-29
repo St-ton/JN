@@ -40,7 +40,7 @@ class Import
     /**
      * @var bool
      */
-    private $generatePasswords = false;
+    private $usePasswordsFromCsv = false;
 
     /**
      * @var Mailer
@@ -147,12 +147,11 @@ class Import
                 $fmt[$i] = '';
             }
         }
-        if ($this->generatePasswords === false) {
-            if (!\in_array('cPasswort', $fmt, true) || !\in_array('cMail', $fmt, true)) {
-                return -1;
-            }
-        } elseif (!\in_array('cMail', $fmt, true)) {
+        if (!\in_array('cMail', $fmt, true)) {
             return -1;
+        }
+        if (\in_array('cPasswort', $fmt, true)) {
+            $this->usePasswordsFromCsv = true;
         }
 
         return $fmt;
@@ -175,7 +174,7 @@ class Import
         if (Text::filterEmailAddress($customer->cMail) === false) {
             return \sprintf(\__('errorInvalidEmail'), $customer->cMail);
         }
-        if ($this->getGeneratePasswords() === false
+        if ($this->usePasswordsFromCsv === true
             && (!$customer->cPasswort || $customer->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e')
         ) {
             return \__('errorNoPassword');
@@ -203,17 +202,18 @@ class Import
         if (empty($customer->cLand) && $this->defaultCountryCode !== null) {
             $customer->cLand = $this->defaultCountryCode;
         }
-        $password = '';
-        if ($this->getGeneratePasswords() === true) {
+
+        if ($this->usePasswordsFromCsv === false) {
             $password            = $this->passwordService->generate(\PASSWORD_DEFAULT_LENGTH);
             $customer->cPasswort = $this->passwordService->hash($password);
         }
+
         $tmp              = new stdClass();
         $tmp->cNachname   = $customer->cNachname;
         $tmp->cFirma      = $customer->cFirma;
         $tmp->cStrasse    = $customer->cStrasse;
         $tmp->cHausnummer = $customer->cHausnummer;
-        $tmp->password    = $password;
+        $tmp->password    = 'Plaintext passwords are deprecated. Please update your email template!';
         if ($customer->insertInDB()) {
             $this->notifyCustomer($customer, $tmp);
 
@@ -259,9 +259,6 @@ class Import
      */
     private function notifyCustomer(Customer $customer, stdClass $tmp): bool
     {
-        if ($this->getGeneratePasswords() !== true) {
-            return true;
-        }
         $customer->cPasswortKlartext = $tmp->password;
         $customer->cNachname         = $tmp->cNachname;
         $customer->cFirma            = $tmp->cFirma;

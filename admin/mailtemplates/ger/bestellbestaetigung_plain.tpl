@@ -88,7 +88,6 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}
     Gesamtsumme:{$Bestellung->WarensummeLocalized[0]}
 
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_nachnahme_jtl'}
-{elseif $Bestellung->Zahlungsart->cModulId === 'za_kreditkarte_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}

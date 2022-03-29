@@ -217,7 +217,7 @@ class DefaultParser
             );
             if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $seoString) === 0) {
                 // haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
-                $_GET['mf'][] = (int)$seoData->kKey;
+                $_GET['mf'][]                           = (int)$seoData->kKey;
                 $this->state->characteristicFilterIDs[] = (int)$seoData->kKey;
             } else {
                 $this->params['bSEOMerkmalNotFound'] = true;

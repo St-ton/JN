@@ -65,7 +65,7 @@ class Router
         $rootHandler         = new RootHandler($db, $this->state);
         $testHandler         = new TestHandler($db, $this->state);
 
-        $router          = new BaseRouter();
+        $router = new BaseRouter();
         $router->addPatternMatcher('isManufacturerFilter', '[a-zA-Z0-9\-]+');
         $router->addPatternMatcher('isCharacteristicFilter', '[a-zA-Z0-9\-]+');
         $router->addPatternMatcher('wordStartsWithB', '(?:b|B)[a-zA-Z0-9-_]+');

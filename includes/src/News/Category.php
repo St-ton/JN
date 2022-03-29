@@ -529,7 +529,6 @@ class Category implements CategoryInterface
         // @todo: category or month overview?
         // return $this->urls[$idx] ?? '/?nm=' . $this->getID();
         return $this->urls[$idx] ?? '/?nk=' . $this->getID();
-
     }
 
     /**

@@ -336,6 +336,9 @@ function validateSetting(stdClass $setting): bool
         case 'bilder_jpg_quali':
             $valid = validateNumberRange(0, 100, $setting);
             break;
+        case 'cron_freq':
+            $valid = validateNumberRange(10, 999999, $setting);
+            break;
         default:
             break;
     }
@@ -366,21 +369,21 @@ function validateNumberRange(int $min, int $max, stdClass $setting): bool
 
 /**
  * Holt alle vorhandenen Kampagnen
- * Wenn $bInterneKampagne false ist, werden keine Interne Shop Kampagnen geholt
- * Wenn $bAktivAbfragen true ist, werden nur Aktive Kampagnen geholt
+ * Wenn $getInternal false ist, werden keine Interne Shop Kampagnen geholt
+ * Wenn $activeOnly true ist, werden nur Aktive Kampagnen geholt
  *
- * @param bool $internalOnly
+ * @param bool $getInternal
  * @param bool $activeOnly
  * @return array
  */
-function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true): array
+function holeAlleKampagnen(bool $getInternal = false, bool $activeOnly = true): array
 {
     $activeSQL  = $activeOnly ? ' WHERE nAktiv = 1' : '';
     $interalSQL = '';
-    if (!$internalOnly && $activeOnly) {
-        $interalSQL = ' AND kKampagne >= 1000';
-    } elseif (!$internalOnly) {
-        $interalSQL = ' WHERE kKampagne >= 1000';
+    if (!$getInternal && $activeOnly) {
+        $interalSQL = ' AND nInternal = 0';
+    } elseif (!$getInternal) {
+        $interalSQL = ' WHERE nInternal = 0';
     }
     $campaigns = [];
     $items     = Shop::Container()->getDB()->getObjects(

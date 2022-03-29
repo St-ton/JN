@@ -85,7 +85,8 @@
                             {include file='snippets/colorpicker.tpl'
                                 cpID="config-{$cnf->cWertName}"
                                 cpName=$cnf->cWertName
-                                cpValue=$cnf->gesetzterWert}
+                                cpValue=$cnf->gesetzterWert
+                                useAlpha=true}
                         {else}
                             <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
                         {/if}

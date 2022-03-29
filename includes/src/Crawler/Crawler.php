@@ -30,7 +30,7 @@ class Crawler
     private $id = 0;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $name;
 
@@ -45,7 +45,7 @@ class Crawler
     private $description = '';
 
     /**
-     * @var string
+     * @var string|null
      */
     private $link;
 
@@ -103,7 +103,7 @@ class Crawler
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -137,7 +137,7 @@ class Crawler
     /**
      * @return string
      */
-    public function getLink(): string
+    public function getLink(): ?string
     {
         return $this->link;
     }

@@ -472,3 +472,9 @@ msgstr "Alignment"
 
 msgid "targetBlank"
 msgstr "Open link in new tab"
+
+msgid "missingPortlet"
+msgstr "Missing Portlet"
+
+msgid "missingPortletHTML"
+msgstr "Portlet template did not render any markup"

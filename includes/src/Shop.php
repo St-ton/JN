@@ -91,7 +91,6 @@ use JTLShop\SemVer\Version;
 use League\Flysystem\Config as FlysystemConfig;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\Visibility;
-use LinkHelper;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -1426,7 +1425,7 @@ final class Shop
         }
         // Link active?
         if ($oSeo !== null && $oSeo->cKey === 'kLink') {
-            $link = LinkHelper::getInstance()->getLinkByID($oSeo->kKey);
+            $link = LinkService::getInstance()->getLinkByID($oSeo->kKey);
             if ($link !== null && $link->getIsEnabled() === false) {
                 $oSeo = null;
             }
@@ -1694,6 +1693,10 @@ final class Shop
                     default:
                         break;
                 }
+            }
+            if ($link === null) {
+                self::$is404 = true;
+                self::$kLink = 0;
             }
         } elseif (self::$fileName === null) {
             self::$fileName = 'seite.php';

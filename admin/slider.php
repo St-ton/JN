@@ -4,6 +4,8 @@ use JTL\Alert\Alert;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 use JTL\Slide;
@@ -25,11 +27,12 @@ $action      = isset($_REQUEST['action']) && Form::validateToken()
 $kSlider     = (int)($_REQUEST['id'] ?? 0);
 switch ($action) {
     case 'slide_set':
+        $filtered  = Text::filterXSS($_REQUEST);
         $aSlideKey = array_keys((array)$_REQUEST['aSlide']);
         $count     = count($aSlideKey);
         for ($i = 0; $i < $count; $i++) {
             $slide  = new Slide();
-            $aSlide = $_REQUEST['aSlide'][$aSlideKey[$i]];
+            $aSlide = $filtered['aSlide'][$aSlideKey[$i]];
             if (mb_strpos((string)$aSlideKey[$i], 'neu') === false) {
                 $slide->setID((int)$aSlideKey[$i]);
             }
@@ -51,22 +54,23 @@ switch ($action) {
         break;
     default:
         $smarty->assign('disabled', '');
-        if (!empty($_POST) && Form::validateToken()) {
+        if ($action !== 'view' && !empty($_POST) && Form::validateToken()) {
+            $filtered = Text::filterXSS($_POST);
             $slider   = new Slider($db);
-            $_kSlider = (int)$_POST['kSlider'];
+            $_kSlider = Request::postInt('kSlider');
             $slider->load($kSlider, false);
-            $slider->set((object)$_REQUEST);
+            $slider->set((object)$filtered);
             // extensionpoint
-            $languageID      = (int)$_POST['kSprache'];
-            $customerGroupID = $_POST['kKundengruppe'];
-            $pageType        = (int)$_POST['nSeitenTyp'];
-            $cKey            = $_POST['cKey'];
+            $languageID      = Request::postInt('kSprache');
+            $customerGroupID = Request::postInt('kKundengruppe');
+            $pageType        = Request::postInt('nSeitenTyp');
+            $cKey            = Request::postVar('cKey');
             $cKeyValue       = '';
             $cValue          = '';
             if ($pageType === PAGE_ARTIKEL) {
                 $cKey      = 'kArtikel';
                 $cKeyValue = 'article_key';
-                $cValue    = $_POST[$cKeyValue];
+                $cValue    = $filtered[$cKeyValue];
             } elseif ($pageType === PAGE_ARTIKELLISTE) {
                 $filter = [
                     'kMerkmalWert' => 'attribute_key',
@@ -76,11 +80,11 @@ switch ($action) {
                 ];
 
                 $cKeyValue = $filter[$cKey];
-                $cValue    = $_POST[$cKeyValue];
+                $cValue    = $filtered[$cKeyValue];
             } elseif ($pageType === PAGE_EIGENE) {
                 $cKey      = 'kLink';
                 $cKeyValue = 'link_key';
-                $cValue    = $_POST[$cKeyValue];
+                $cValue    = $filtered[$cKeyValue];
             }
             if (!empty($cKeyValue) && empty($cValue)) {
                 $alertHelper->addAlert(

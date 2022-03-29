@@ -1124,7 +1124,7 @@ define('HOOK_FILTER_INC_GIBNAVIMETATITLE', 150);
  * in bearbeiteInsert() after inserting an article into the database
  *
  * @file Artikel_xml.php
- * @param oArtikel
+ * @param stdClass oArtikel
  */
 define('HOOK_ARTIKEL_XML_BEARBEITEINSERT', 151);
 
@@ -1132,7 +1132,7 @@ define('HOOK_ARTIKEL_XML_BEARBEITEINSERT', 151);
  * in bearbeiteDeletes() after deleting an article from the database
  *
  * @file Artikel_xml.php
- * @param kArtikel - article ID
+ * @param int kArtikel - product ID
  */
 define('HOOK_ARTIKEL_XML_BEARBEITEDELETES', 152);
 
@@ -1683,7 +1683,7 @@ define('HOOK_BOXEN_HOME', 224);
  * in bearbeiteInsert() after inserting an article into the database
  *
  * @file QuickSync_xml.php
- * @param oArtikel
+ * @param stdClass oArtikel
  */
 define('HOOK_QUICKSYNC_XML_BEARBEITEINSERT', 225);
 
@@ -2037,3 +2037,20 @@ define('HOOK_CART_GET_LOCALIZED_SUM', 331);
  * @param float $customerCredit
  */
 define('HOOK_BESTELLUNG_SETZEGUTHABEN', 335);
+
+/**
+ * @since 5.1.3
+ * @file includes/src/dbeS/Sync/AbstractSync.php
+ * @param bool   &sendMails
+ * @param object product
+ * @param array  subscriptions
+ */
+define('HOOK_SYNC_SEND_AVAILABILITYMAILS', 336);
+
+/**
+ * @since 5.1.3
+ * @file includes/src/Cart/Cart.php
+ * @param CartItem positionItem
+ * @param bool     &delete
+ */
+define('HOOK_CART_DELETE_PARENT_CART_ITEM', 337);

@@ -3955,15 +3955,7 @@ class Artikel
         // Top bewertet
         // No need to check with custom function.. this value is set in fuelleArtikel()?
         $specials[\SEARCHSPECIALS_TOPREVIEWS] = (int)$this->bIsTopBewertet === 1;
-        // Variationen Lagerbestand 0
-        if ($this->cLagerBeachten === 'Y'
-            && $this->cLagerKleinerNull === 'N'
-            && $this->cLagerVariation === 'Y'
-            && \is_array($this->Variationen)
-            && \count($this->Variationen) > 0
-        ) {
-            $specials[\SEARCHSPECIALS_OUTOFSTOCK] = $this->nVariationenVerfuegbar === 0;
-        }
+
         // VariationskombiKinder Lagerbestand 0
         if ($this->kVaterArtikel > 0) {
             $variChildren = Shop::Container()->getDB()->selectAll(
@@ -3985,7 +3977,12 @@ class Artikel
             $specials[\SEARCHSPECIALS_OUTOFSTOCK] = ($this->fLagerbestand <= 0
                 && $this->cLagerBeachten === 'Y'
                 && $this->cLagerKleinerNull !== 'Y')
-                || ($this->inWarenkorbLegbar !== null && $this->inWarenkorbLegbar <= 0);
+                || ($this->inWarenkorbLegbar !== null
+                    && (
+                        $this->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGER
+                        || $this->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGERVAR
+                    )
+                );
         }
         // Auf Lager
         $specials[\SEARCHSPECIALS_ONSTOCK] = ($this->fLagerbestand > 0 && $this->cLagerBeachten === 'Y');
@@ -4017,26 +4014,7 @@ class Artikel
     private function checkVariationExtraCharge(int $customerGroupID, DbInterface $db): void
     {
         if ($this->kVaterArtikel === 0 && $this->nIstVater === 1 && \is_object($this->Preise)) {
-            $net          = $this->Preise->fVKNetto ?? 0.0;
-            $specialPrice = $db->getSingleObject(
-                'SELECT COUNT(a.kArtikel) AS specialPrices
-                    FROM tartikel AS a
-                    JOIN tpreis AS p
-                        ON p.kArtikel = a.kArtikel
-                        AND p.kKundengruppe = :cgid
-                    JOIN tpreisdetail AS d
-                        ON d.kPreis = p.kPreis
-                    LEFT JOIN tartikelsonderpreis AS asp
-                        ON asp.kArtikel = a.kArtikel
-                    LEFT JOIN tsonderpreise AS sp
-                        ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
-                        AND sp.kKundengruppe = :cgid
-                    WHERE a.kVaterArtikel = :pid
-                        AND COALESCE(sp.fNettoPreis, d.fVKNetto) - ' . $net . ' > 0.0001',
-                ['cgid' => $customerGroupID, 'pid' => (int)$this->kArtikel]
-            );
-
-            $this->nVariationsAufpreisVorhanden = (int)($specialPrice->specialPrices ?? 0) > 0 ? 1 : 0;
+            $this->nVariationsAufpreisVorhanden = $this->Preise->oPriceRange->isRange();
         }
     }
 
@@ -4748,10 +4726,16 @@ class Artikel
                         FROM tversandartzahlungsart vaza
                         WHERE kZahlungsart = 6)
                 AND (
-                    va.kVersandberechnung = 1 OR va.kVersandberechnung = 4
+                    va.kVersandberechnung = 1
+                    OR va.kVersandberechnung = 4
                     OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND :wght <= vas.fBis )
                     OR ( va.kVersandberechnung = 3
-                        AND vas.fBis = (SELECT MIN(fBis) FROM tversandartstaffel WHERE fBis > :net)
+                        AND vas.fBis = (
+                          SELECT MIN(fBis)
+                            FROM tversandartstaffel
+                            WHERE fBis > :net
+                              AND tversandartstaffel.kVersandart = va.kVersandart
+                          )
                         )
                     ) ' . $dep . '
                 ORDER BY minPrice, nSort ASC LIMIT 1',
@@ -4844,7 +4828,7 @@ class Artikel
 
             if ($piecesNotInShop !== null && (int)$piecesNotInShop->nAnzahl > 0) {
                 // this list has potentially invisible parts and can't calculated correctly
-                // handle this parts list as an normal product
+                // handle this parts list as a normal product
                 $isPartsList = false;
             } else {
                 // all parts of this list are accessible
@@ -4872,6 +4856,8 @@ class Artikel
             }
         }
         if ($this->bHasKonfig && !empty($this->oKonfig_arr)) {
+            $parentMinDeliveryDays = $minDeliveryDays;
+            $parentMaxDeliveryDays = $maxDeliveryDays;
             foreach ($this->oKonfig_arr as $gruppe) {
                 /** @var Item $piece */
                 foreach ($gruppe->oItem_arr as $piece) {
@@ -4894,6 +4880,8 @@ class Artikel
                     }
                 }
             }
+            $minDeliveryDays = \max($minDeliveryDays, $parentMinDeliveryDays);
+            $maxDeliveryDays = \max($maxDeliveryDays, $parentMaxDeliveryDays);
         }
         if ((!$isPartsList && $this->nBearbeitungszeit > 0)
             || (isset($this->FunktionsAttribute['processingtime']) && $this->FunktionsAttribute['processingtime'] > 0)
@@ -5700,7 +5688,7 @@ class Artikel
      */
     public function getShippingAndTaxData(): array
     {
-        if (!isset($_SESSION['Kundengruppe'])) {
+        if (!isset($_SESSION['Kundengruppe']) || !\is_a($_SESSION['Kundengruppe'], CustomerGroup::class)) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
         }
         if (!isset($_SESSION['Link_Versandseite'])) {

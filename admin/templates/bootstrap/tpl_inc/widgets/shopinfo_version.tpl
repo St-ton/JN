@@ -15,12 +15,11 @@
             {/if}
             {if $oVersion}
                 <tr>
-                    <td width="50%"></td>
-                    <td width="50%" id="version">
+                    <td colspan="2" id="version" class="h1">
                         {if $bUpdateAvailable}
-                            <span class="label label-info">{__('version')} {$strLatestVersion} {if $oVersion->getBuild() > 0}({__('build')}: {$oVersion->getBuild()}){/if} {__('available')}.</span>
+                            <span class="badge badge-info">{__('Version %s available')|sprintf:$strLatestVersion}</span>
                         {else}
-                            <span class="label label-success">{__('shopVersionUpToDate')}</span>
+                            <span class="badge badge-success">{__('shopVersionUpToDate')}</span>
                         {/if}
                     </td>
                 </tr>

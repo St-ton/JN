@@ -112,7 +112,7 @@ if (Form::validateToken()) {
                 "%' OR tnewsletterempfaenger.cEmail LIKE '%" . $query . "%')";
         }
 
-        $smarty->assign('cSucheInaktiv', $query);
+        $smarty->assign('cSucheInaktiv', Text::filterXSS($query));
     } elseif (mb_strlen(Request::verifyGPDataString('cSucheAktiv')) > 0) { // Aktive Abonnentensuche
         $query = $db->escape(Text::filterXSS(Request::verifyGPDataString('cSucheAktiv')));
         if (mb_strlen($query) > 0) {
@@ -121,7 +121,7 @@ if (Form::validateToken()) {
                 "%' OR tnewsletterempfaenger.cEmail LIKE '%" . $query . "%')";
         }
 
-        $smarty->assign('cSucheAktiv', $query);
+        $smarty->assign('cSucheAktiv', Text::filterXSS($query));
     } elseif (Request::verifyGPCDataInt('vorschau') > 0) { // Vorschau
         $nlTemplateID = Request::verifyGPCDataInt('vorschau');
         // Infos der Vorlage aus DB holen
@@ -268,8 +268,9 @@ if ($step === 'uebersicht') {
     )->cnt;
     $queueCount        = (int)$db->getSingleObject(
         "SELECT COUNT(*) AS cnt
-            FROM tjobqueue
-            WHERE jobType = 'newsletter'"
+             FROM tcron c
+             LEFT JOIN tjobqueue q ON c.cronID = q.cronID
+             WHERE c.jobType = 'newsletter'"
     )->cnt;
     $templateCount     = (int)$db->getSingleObject(
         'SELECT COUNT(*) AS cnt

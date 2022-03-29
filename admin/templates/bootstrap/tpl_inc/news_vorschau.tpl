@@ -8,7 +8,7 @@
         <div class="card-body">
             {$oNews->getContent()}
 
-        {if $comments|@count > 0}
+        {if $comments|count > 0}
             <form method="post" action="news.php">
                 {$jtl_token}
                 <input type="hidden" name="news" value="1" />
@@ -31,7 +31,7 @@
                             <div class="form-check">
                                 <div class="custom-control custom-checkbox">
                                     <input class="custom-control-input form-check-input" name="kNewsKommentar[]" type="checkbox" value="{$comment->getID()}" id="nk-{$comment->getID()}" />
-                                    <label class="custom-control-label form-check-label" for="nk-{$comment->getID()}">{$comment->getName()}, {$comment->getDateCreated()->format('d.m.Y H:i')}</label>
+                                    <label class="custom-control-label form-check-label" for="nk-{$comment->getID()}">{$comment->getName()} ({$comment->getMail()}), {$comment->getDateCreated()->format('d.m.Y H:i')}</label>
                                     <div class="btn-group">
                                         <a href="news.php?news=1&kNews={$oNews->getID()}&kNewsKommentar={$comment->getID()}{if isset($cBackPage)}&{$cBackPage}{elseif isset($cTab)}&tab={$cTab}{/if}&nkedit=1&token={$smarty.session.jtl_token}"
                                            class="btn btn-link px-2"

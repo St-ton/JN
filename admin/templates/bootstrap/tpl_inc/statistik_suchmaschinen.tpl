@@ -121,8 +121,8 @@
                                             <label class="custom-control-label" for="crawler-cb-{$crawler->kBesucherBot}"></label>
                                         </div>
                                     </td>
-                                    <td class="text-center">{$crawler->cUserAgent}</td>
-                                    <td class="text-center">{$crawler->cBeschreibung}</td>
+                                    <td class="text-center">{JTL\Helpers\Text::filterXSS($crawler->cUserAgent)}</td>
+                                    <td class="text-center">{JTL\Helpers\Text::filterXSS($crawler->cBeschreibung)}</td>
                                     <td class="text-center">
                                         <div class="btn-group">
                                             <a href="statistik.php?s=3&edit=1&id={$crawler->kBesucherBot}"

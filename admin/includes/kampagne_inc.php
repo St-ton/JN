@@ -1143,11 +1143,11 @@ function gibStamp($oldStamp, int $direction, int $view): string
 function speicherKampagne($campaign)
 {
     // Standardkampagnen (Interne) Werte herstellen
-    if (isset($campaign->kKampagne) && ($campaign->kKampagne < 1000 && $campaign->kKampagne > 0)) {
+    if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
         $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT *
                 FROM tkampagne
-                WHERE kKampagne = :cid',
+                WHERE kKampagne = :cid AND nInternal = 1',
             ['cid' => (int)$campaign->kKampagne]
         );
         if ($data !== null) {

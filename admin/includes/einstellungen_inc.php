@@ -250,8 +250,9 @@ function getSectionMenuPath(int $sectionID, $groupName): string
 }
 
 /**
- * @param int $sectionID
- * @return boolean
+ * @param int    $sectionID
+ * @param string $groupName
+ * @return bool
  * @deprecated since 5.0.2
  */
 function getSpecialSetting(int $sectionID, $groupName): bool

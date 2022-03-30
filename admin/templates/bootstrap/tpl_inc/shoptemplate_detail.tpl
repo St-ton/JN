@@ -33,7 +33,7 @@
         {foreach $templateConfig as $section}
             <div class="card">
                 <div class="card-header">
-                    <div class="subheading1">{__($section->name)}</div>
+                    <div id="{__($section->key)}" class="subheading1">{__($section->name)}</div>
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body">
@@ -124,6 +124,7 @@
                     <input type="hidden" name="type" value="settings" />
                     <input type="hidden" name="dir" value="{$template->getDir()}" />
                     <input type="hidden" name="admin" value="0" />
+                    <input type="hidden" name="section" value="" />
                     <button type="submit" class="btn btn-primary btn-block" name="action" value="{if isset($smarty.get.activate)}activate{else}save-config{/if}">
                         {if isset($smarty.get.activate)}<i class="fa fa-share"></i> {__('activateTemplate')}{else}{__('saveWithIcon')}{/if}
                     </button>

@@ -80,6 +80,7 @@ class Controller
     {
         $action                   = Request::verifyGPDataString('action');
         $valid                    = Form::validateToken();
+        $this->jumpToSection      = Request::verifyGPDataString('section');
         $this->currentTemplateDir = \basename(Request::verifyGPDataString('dir'));
         if (!\is_dir(\PFAD_ROOT . \PFAD_TEMPLATES . $this->currentTemplateDir)) {
             $this->currentTemplateDir = null;
@@ -296,9 +297,10 @@ class Controller
         if ($tplXML === null) {
             throw new InvalidArgumentException('Cannot display template settings');
         }
-        $service      = Shop::Container()->getTemplateService();
-        $current      = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
-        $parentFolder = null;
+        $service       = Shop::Container()->getTemplateService();
+        $current       = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
+        $jumpToSection = $this->jumpToSection;
+        $parentFolder  = null;
         Shop::Container()->getGetText()->loadTemplateLocale('base', $current);
         if (!empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
@@ -307,6 +309,7 @@ class Controller
         $preview        = $this->getPreview($templateConfig);
 
         $this->smarty->assign('template', $current)
+            ->assign('jumpToSection', $jumpToSection)
             ->assign('themePreviews', (\count($preview) > 0) ? $preview : null)
             ->assign('themePreviewsJSON', \json_encode($preview))
             ->assign('templateConfig', $templateConfig)

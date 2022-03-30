@@ -136,6 +136,13 @@
                 <Option Value="N">Nein</Option>
             </Setting>
         </Section>
+        <Section Name="Colors" Key="colors">
+            <Setting Description="colorPrimary" Key="primary" Type="colorpicker" Value=""/>
+        </Section>
+        <Section Name="Custom Sass" Key="customsass">
+            <Setting Description="customVariables" Key="customVariables" Type="textarea" Class="codemirror sass" Value=""/>
+            <Setting Description="customContent" Key="customContent" Type="textarea" Class="codemirror sass" Value=""/>
+        </Section>
         <Section Name="Footer-Einstellungen" Key="footer">
             <Setting Description="Newsletter-Anmeldung im Footer" Key="newsletter_footer" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>

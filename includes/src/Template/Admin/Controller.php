@@ -211,9 +211,8 @@ class Controller
                 $this->config->updateConfigInDB($setting->section, $setting->key, $value);
             }
         }
+        $check = $service->setActiveTemplate($this->currentTemplateDir, Request::postVar('eTyp', 'standard'));
         $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
-        $type  = $_POST['eTyp'] ?? 'standard';
-        $check = $service->setActiveTemplate($this->currentTemplateDir, $type);
         if ($check) {
             $this->alertService->addSuccess(\__('successTemplateSave'), 'successTemplateSave');
         } else {

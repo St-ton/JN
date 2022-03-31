@@ -1219,7 +1219,7 @@ function getPaymentSurchageDiscount($paymentMethod)
     if ($paymentMethod->cAufpreisTyp === 'prozent') {
         $fGuthaben = $_SESSION['Bestellung']->fGuthabenGenutzt ?? 0;
         $surcharge = (($cart->gibGesamtsummeWarenExt(
-                        [
+            [
                             C_WARENKORBPOS_TYP_ARTIKEL,
                             C_WARENKORBPOS_TYP_VERSANDPOS,
                             C_WARENKORBPOS_TYP_KUPON,
@@ -1229,8 +1229,8 @@ function getPaymentSurchageDiscount($paymentMethod)
                             C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG,
                             C_WARENKORBPOS_TYP_VERPACKUNG
                         ],
-                        true
-                    ) - $fGuthaben) * $paymentMethod->fAufpreis) / 100.0;
+            true
+        ) - $fGuthaben) * $paymentMethod->fAufpreis) / 100.0;
 
         $paymentMethod->cPreisLocalized = Preise::getLocalizedPriceString($surcharge);
     }
@@ -1468,7 +1468,7 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
         }
         $method->cPreisLocalized = Preise::getLocalizedPriceString($method->fAufpreis, $currency);
         if ($method->cAufpreisTyp === 'prozent') {
-            $method->cPreisLocalized = ($method->fAufpreis < 0) ? ' ' : '+ ';
+            $method->cPreisLocalized  = ($method->fAufpreis < 0) ? ' ' : '+ ';
             $method->cPreisLocalized .= $method->fAufpreis . '%';
         }
         if ($method->fAufpreis == 0) {
@@ -1496,17 +1496,17 @@ function gibAktiveVersandart($shippingMethods)
         $active = (int)$_SESSION['AktiveVersandart'];
         if (array_reduce($shippingMethods, static function ($carry, $item) use ($active) {
                 return (int)$item->kVersandart === $active ? (int)$item->kVersandart : $carry;
-            }, 0) !== (int)$_SESSION['AktiveVersandart']) {
+        }, 0) !== (int)$_SESSION['AktiveVersandart']) {
             $_SESSION['AktiveVersandart'] = ShippingMethod::getFirstShippingMethod(
-                    $shippingMethods,
-                    (int)($_SESSION['Zahlungsart']->kZahlungsart ?? 0)
-                )->kVersandart ?? 0;
+                $shippingMethods,
+                (int)($_SESSION['Zahlungsart']->kZahlungsart ?? 0)
+            )->kVersandart ?? 0;
         }
     } else {
         $_SESSION['AktiveVersandart'] = ShippingMethod::getFirstShippingMethod(
-                $shippingMethods,
-                $_SESSION['Zahlungsart']->kZahlungsart ?? 0
-            )->kVersandart ?? 0;
+            $shippingMethods,
+            $_SESSION['Zahlungsart']->kZahlungsart ?? 0
+        )->kVersandart ?? 0;
     }
 
     return (int)$_SESSION['AktiveVersandart'];
@@ -1526,7 +1526,7 @@ function gibAktiveZahlungsart($shippingMethods)
         $active = (int)$_SESSION['AktiveZahlungsart'];
         if (array_reduce($shippingMethods, static function ($carry, $item) use ($active) {
                 return (int)$item->kZahlungsart === $active ? (int)$item->kZahlungsart : $carry;
-            }, 0) !== (int)$_SESSION['AktiveZahlungsart']) {
+        }, 0) !== (int)$_SESSION['AktiveZahlungsart']) {
             $_SESSION['AktiveZahlungsart'] = $shippingMethods[0]->kZahlungsart;
         }
     } else {
@@ -1554,7 +1554,7 @@ function gibAktiveVerpackung(array $packagings): array
             if (array_reduce($packagings, static function ($carry, $item) use ($active) {
                     $kVerpackung = (int)$item->kVerpackung;
                     return $kVerpackung === $active ? $kVerpackung : $carry;
-                }, 0) === 0) {
+            }, 0) === 0) {
                 unset($_SESSION['AktiveVerpackung'][$active]);
             }
         }
@@ -2024,9 +2024,9 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     if (isset($data['geburtstag'])) {
         $enDate = DateTime::createFromFormat('Y-m-d', $data['geburtstag']);
         if (($errCode = Text::checkDate(
-                $enDate === false ? $data['geburtstag'] : $enDate->format('d.m.Y'),
-                $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'
-            )) > 0) {
+            $enDate === false ? $data['geburtstag'] : $enDate->format('d.m.Y'),
+            $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'
+        )) > 0) {
             $ret['geburtstag'] = $errCode;
         }
     }

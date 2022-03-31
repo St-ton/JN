@@ -1647,10 +1647,10 @@ class ProductFilter
             $minPage = (int)\max($this->nSeite - \floor($maxPaginationPageCount / 2), 1);
             $maxPage = $minPage + $maxPaginationPageCount - 1;
             if ($maxPage > $total) {
-                $diff    = $total - $maxPage;
-                $maxPage = $total;
+                $diff     = $total - $maxPage;
+                $maxPage  = $total;
                 $minPage += $diff;
-                $minPage = (int)\max($minPage, 1);
+                $minPage  = (int)\max($minPage, 1);
             }
             $pages = new Info();
             $pages->setMinPage($minPage);

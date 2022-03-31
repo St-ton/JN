@@ -432,7 +432,7 @@ final class Shop extends ShopBC
         }
         $router      = new Router(self::Container()->getDB(), new RoutingState());
         self::$state = $router->init();
-        $params = self::$state->getAsParams();
+        $params      = self::$state->getAsParams();
         self::setParams($params);
         if (self::$state->productsPerPage !== 0) {
             $_SESSION['ArtikelProSeite'] = self::$state->productsPerPage;
@@ -466,15 +466,15 @@ final class Shop extends ShopBC
             && !Kategorie::isVisible(self::$state->categoryID, Frontend::getCustomerGroup()->getID())
         ) {
             self::$state->categoryID = 0;
-            self::$state->is404 = true;
-            self::$kKategorie = 0;
-            self::$is404 = true;
+            self::$state->is404      = true;
+            self::$kKategorie        = 0;
+            self::$is404             = true;
         }
         if (Product::isVariChild(self::$state->productID)) {
             self::$state->childProductID = self::$state->productID;
             self::$state->productID      = Product::getParent(self::$state->productID);
-            self::$kVariKindArtikel = self::$state->childProductID;
-            self::$kArtikel = self::$state->productID;
+            self::$kVariKindArtikel      = self::$state->childProductID;
+            self::$kArtikel              = self::$state->productID;
         }
         if (self::$state->productID > 0) {
             $redirect = Request::verifyGPCDataInt('r');
@@ -488,14 +488,14 @@ final class Shop extends ShopBC
                     // login redirect on wishlist add when not logged in uses get param "n" as amount
                     // and "a" for the product ID - but we want to go to the login page, not to the product page
                     self::$state->productID = 0;
-                    self::$kArtikel = 0;
+                    self::$kArtikel         = 0;
                 }
             } elseif (($redirect === \R_LOGIN_BEWERTUNG || $redirect === \R_LOGIN_TAG)
                 && Frontend::getCustomer()->getID() > 0
             ) {
                 // avoid redirect to product page for ratings that require logged in customers
                 self::$state->productID = 0;
-                self::$kArtikel = 0;
+                self::$kArtikel         = 0;
             }
         }
     }
@@ -617,7 +617,7 @@ final class Shop extends ShopBC
             $linkID    = $hookInfos['value'];
             if (!$linkID) {
                 self::$state->linkID = self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404) ?: 0;
-                self::$kLink = self::$state->linkID;
+                self::$kLink         = self::$state->linkID;
             }
         }
 

@@ -86,9 +86,9 @@ class BaseManufacturer extends AbstractFilter
             } else {
                 // invalid manufacturer ID
                 Shop::getState()->manufacturerID = 0;
-                Shop::getState()->is404 = true;
-                Shop::$kHersteller = 0;
-                Shop::$is404       = true;
+                Shop::getState()->is404          = true;
+                Shop::$kHersteller               = 0;
+                Shop::$is404                     = true;
             }
         }
 

@@ -366,7 +366,7 @@ class JTLSmarty extends BC
             $this->registerFilter('output', [$this, 'outputFilter']);
         }
         /** @var JTLSmartyTemplateClass $template */
-        $template = $this->createTemplate($this->getResourceName($template), null, null, $this, false);
+        $template                 = $this->createTemplate($this->getResourceName($template), null, null, $this, false);
         $template->noOutputFilter = false;
 
         $res = parent::fetch($template);

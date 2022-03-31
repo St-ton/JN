@@ -1,15 +1,35 @@
 var editorsSmarty = [],
+    editorsSass = [],
     editorsHtml = [],
     editorsSQL = [];
 $(document).ready(function () {
     var idListSmarty = $('.codemirror.smarty'),
         idListHTML = $('.codemirror.html'),
+        idListSASS = $('.codemirror.sass'),
         idListSQL = $('.codemirror.sql');
     idListHTML.each(function (idx, elem) {
         if (elem.id && elem.id.length > 0) {
             editorsHtml[idx] = CodeMirror.fromTextArea(document.getElementById(elem.id), {
                 lineNumbers:    true,
                 mode:           'htmlmixed',
+                scrollbarStyle: 'simple',
+                lineWrapping:   true,
+                extraKeys:      {
+                    'Ctrl-Space': function (cm) {
+                        cm.setOption('fullScreen', !cm.getOption('fullScreen'));
+                    },
+                    'Esc':        function (cm) {
+                        if (cm.getOption('fullScreen')) cm.setOption('fullScreen', false);
+                    }
+                }
+            });
+        }
+    });
+    idListSASS.each(function (idx, elem) {
+        if (elem.id && elem.id.length > 0) {
+            editorsSass[idx] = CodeMirror.fromTextArea(document.getElementById(elem.id), {
+                lineNumbers:    true,
+                mode:           'sass',
                 scrollbarStyle: 'simple',
                 lineWrapping:   true,
                 extraKeys:      {

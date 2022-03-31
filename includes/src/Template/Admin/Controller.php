@@ -14,6 +14,7 @@ use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Template\Admin\Validation\TemplateValidator;
 use JTL\Template\BootChecker;
+use JTL\Template\Compiler;
 use JTL\Template\Config;
 use JTL\Template\XMLReader;
 use JTLShop\SemVer\Version;
@@ -179,7 +180,13 @@ class Controller
         if ($tplXML !== null && !empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
         }
-        $tplConfXML = $this->config->getConfigXML($reader, $parentFolder);
+        $service      = Shop::Container()->getTemplateService();
+        $current      = $service->getActiveTemplate();
+        $updated      = $current->getFileVersion() !== $current->getVersion();
+        $tplConfXML   = $this->config->getConfigXML($reader, $parentFolder);
+        $oldConfig    = $this->config->loadConfigFromDB();
+        $oldColorConf = $oldConfig['colors'] ?? null;
+        $oldSassConf  = $oldConfig['customsass'] ?? null;
         foreach ($tplConfXML as $config) {
             foreach ($config->settings as $setting) {
                 if ($setting->cType === 'checkbox') {
@@ -202,11 +209,10 @@ class Controller
                     }
                 }
                 $this->config->updateConfigInDB($setting->section, $setting->key, $value);
-                $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
             }
         }
-        $type  = $_POST['eTyp'] ?? 'standard';
-        $check = Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir, $type);
+        $check = $service->setActiveTemplate($this->currentTemplateDir, Request::postVar('eTyp', 'standard'));
+        $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
         if ($check) {
             $this->alertService->addSuccess(\__('successTemplateSave'), 'successTemplateSave');
         } else {
@@ -217,6 +223,35 @@ class Controller
             $overlayHelper->loadOverlaysFromTemplateFolder($this->currentTemplateDir);
         }
         $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
+        $config = $this->config->loadConfigFromDB();
+        if (!isset($config['colors']) && !isset($config['customsass'])) {
+            return;
+        }
+        $newColorConf = $config['colors'] ?? null;
+        $newSassConf  = $config['customsass'] ?? null;
+        if ($updated === false && $newColorConf === $oldColorConf && $newSassConf === $oldSassConf) {
+            return;
+        }
+        $vars          = \trim($config['customsass']['customVariables'] ?? '');
+        $customContent = \trim($config['customsass']['customContent'] ?? '');
+        foreach ($config['colors'] ?? [] as $name => $color) {
+            if (!empty($color)) {
+                $vars .= "\n" . '$' . $name . ': ' . $color . ';';
+            }
+        }
+        $paths    = $current->getPaths();
+        $compiler = new Compiler();
+        $compiler->setCustomVariables($vars);
+        $compiler->setCustomContent($customContent);
+        if ($compiler->compileSass($paths->getThemeDirName(), $paths->getBaseRelDir() . 'themes/')) {
+            $this->alertService->addSuccess(\__('Successfully compiled CSS.'), 'successCompile');
+        }
+        foreach ($compiler->getErrors() as $idx => $error) {
+            $this->alertService->addError(
+                \sprintf(\__('An error occured while compiling the CSS: %s'), $error),
+                'errorCompile' . $idx
+            );
+        }
     }
 
     /**

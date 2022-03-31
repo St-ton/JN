@@ -2,6 +2,8 @@
 
 namespace JTL\Router\Controller;
 
+use JTL\Catalog\Navigation;
+use JTL\Catalog\NavigationEntry;
 use JTL\Filter\Metadata;
 use JTL\Helpers\Form;
 use JTL\Helpers\URL;
@@ -20,6 +22,9 @@ use Psr\Http\Message\ResponseInterface;
  */
 class NewsController extends AbstractController
 {
+    private ?string $breadCrumbName;
+    private ?string $breadCrumbURL;
+
     public function init(): bool
     {
         parent::init();
@@ -28,14 +33,14 @@ class NewsController extends AbstractController
 
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
-        $pagination       = new Pagination();
-        $breadCrumbName   = null;
-        $breadCrumbURL    = null;
-        $cMetaTitle       = '';
-        $cMetaDescription = '';
-        $cMetaKeywords    = '';
-        $link             = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_NEWS);
-        $controller       = new Controller($this->db, $this->config, $smarty);
+        $pagination            = new Pagination();
+        $this->breadCrumbName  = null;
+        $this->breadCrumbURL   = null;
+        $this->metaTitle       = '';
+        $this->metaDescription = '';
+        $this->metaKeywords    = '';
+        $link                  = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_NEWS);
+        $controller            = new Controller($this->db, $this->config, $smarty);
 
         switch ($controller->getPageType($this->state->getAsParams())) {
             case ViewType::NEWS_DETAIL:
@@ -46,17 +51,17 @@ class NewsController extends AbstractController
                 $newsItem->load($newsItemID);
                 $newsItem->checkVisibility($this->customerGroupID);
 
-                $cMetaTitle       = $newsItem->getMetaTitle();
-                $cMetaDescription = $newsItem->getMetaDescription();
-                $cMetaKeywords    = $newsItem->getMetaKeyword();
+                $this->metaTitle       = $newsItem->getMetaTitle();
+                $this->metaDescription = $newsItem->getMetaDescription();
+                $this->metaKeywords    = $newsItem->getMetaKeyword();
                 if ((int)($_POST['kommentar_einfuegen'] ?? 0) > 0 && Form::validateToken()) {
                     $result = $controller->addComment($newsItemID, $_POST);
                 }
 
                 $controller->displayItem($newsItem, $pagination);
 
-                $breadCrumbName = $newsItem->getTitle() ?? Shop::Lang()->get('news', 'breadcrumb');
-                $breadCrumbURL  = URL::buildURL($newsItem, \URLART_NEWS);
+                $this->breadCrumbName = $newsItem->getTitle() ?? Shop::Lang()->get('news', 'breadcrumb');
+                $this->breadCrumbURL  = URL::buildURL($newsItem, \URLART_NEWS);
 
                 \executeHook(\HOOK_NEWS_PAGE_DETAILANSICHT, [
                     'newsItem'   => $newsItem,
@@ -65,17 +70,22 @@ class NewsController extends AbstractController
                 break;
             case ViewType::NEWS_CATEGORY:
                 Shop::setPageType(\PAGE_NEWSKATEGORIE);
-                $newsCategoryID     = $this->state->newsCategoryID;
-                $overview           = $controller->displayOverview($pagination, $newsCategoryID, 0, $this->customerGroupID);
-                $this->canonicalURL = $overview->getURL();
-                $breadCrumbURL      = $this->canonicalURL;
-                $breadCrumbName     = $overview->getName();
-                $newsCategory       = new Category($this->db);
+                $newsCategoryID       = $this->state->newsCategoryID;
+                $overview             = $controller->displayOverview(
+                    $pagination,
+                    $newsCategoryID,
+                    0,
+                    $this->customerGroupID
+                );
+                $this->canonicalURL   = $overview->getURL();
+                $this->breadCrumbURL  = $this->canonicalURL;
+                $this->breadCrumbName = $overview->getName();
+                $newsCategory         = new Category($this->db);
                 $newsCategory->load($newsCategoryID);
 
-                $cMetaTitle       = $newsCategory->getMetaTitle();
-                $cMetaDescription = $newsCategory->getMetaDescription();
-                $cMetaKeywords    = $newsCategory->getMetaKeyword();
+                $this->metaTitle       = $newsCategory->getMetaTitle();
+                $this->metaDescription = $newsCategory->getMetaDescription();
+                $this->metaKeywords    = $newsCategory->getMetaKeyword();
                 $smarty->assign('robotsContent', 'noindex, follow');
                 break;
             case ViewType::NEWS_OVERVIEW:
@@ -85,26 +95,21 @@ class NewsController extends AbstractController
                 break;
             case ViewType::NEWS_MONTH_OVERVIEW:
                 Shop::setPageType(\PAGE_NEWSMONAT);
-                $id                 = $this->state->newsOverviewID;
-                $overview           = $controller->displayOverview($pagination, 0, $id, $this->customerGroupID);
-                $this->canonicalURL = $overview->getURL();
-                $breadCrumbURL      = $this->canonicalURL;
-                $cMetaTitle         = $overview->getMetaTitle();
-                $breadCrumbName     = !empty($overview->getName()) ? $overview->getName() : $cMetaTitle;
+                $id                   = $this->state->newsOverviewID;
+                $overview             = $controller->displayOverview($pagination, 0, $id, $this->customerGroupID);
+                $this->canonicalURL   = $overview->getURL();
+                $this->breadCrumbURL  = $this->canonicalURL;
+                $this->metaTitle      = $overview->getMetaTitle();
+                $this->breadCrumbName = !empty($overview->getName()) ? $overview->getName() : $this->metaTitle;
                 $smarty->assign('robotsContent', 'noindex, follow');
                 break;
             case ViewType::NEWS_DISABLED:
             default:
-                // @todo
-                Shop::$is404 = true;
-                Shop::$kLink = 0;
-                Shop::$kNews = 0;
-
-                return;
+                die('argh.');
         }
 
-        $cMetaTitle = Metadata::prepareMeta(
-            $cMetaTitle,
+        $this->metaTitle = Metadata::prepareMeta(
+            $this->metaTitle,
             null,
             (int)$this->config['metaangaben']['global_meta_maxlaenge_title']
         );
@@ -123,5 +128,22 @@ class NewsController extends AbstractController
         $this->preRender($smarty);
 
         return $smarty->getResponse('blog/index.tpl');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getNavigation(): Navigation
+    {
+        $nav = parent::getNavigation();
+        if ($this->breadCrumbName !== null && $this->breadCrumbURL !== null) {
+            $breadCrumbEntry = new NavigationEntry();
+            $breadCrumbEntry->setURL($this->breadCrumbURL);
+            $breadCrumbEntry->setName($this->breadCrumbName);
+            $breadCrumbEntry->setURLFull($this->breadCrumbURL);
+            $nav->setCustomNavigationEntry($breadCrumbEntry);
+        }
+
+        return $nav;
     }
 }

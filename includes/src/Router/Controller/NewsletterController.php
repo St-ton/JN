@@ -9,6 +9,7 @@ use JTL\Helpers\Text;
 use JTL\Newsletter\Controller;
 use JTL\Newsletter\Helper;
 use JTL\Optin\Optin;
+use JTL\Optin\OptinBase;
 use JTL\Optin\OptinNewsletter;
 use JTL\Optin\OptinRefData;
 use JTL\Session\Frontend;
@@ -20,7 +21,7 @@ use Psr\Http\Message\ResponseInterface;
  * Class NewsletterController
  * @package JTL\Router\Controller
  */
-class NewsletterController extends AbstractController
+class NewsletterController extends PageController
 {
     public function init(): bool
     {
@@ -32,24 +33,11 @@ class NewsletterController extends AbstractController
 
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
-        Shop::setPageType(\PAGE_NEWSLETTER);
-        $linkHelper = Shop::Container()->getLinkService();
-        $kLink      = $linkHelper->getSpecialPageID(\LINKTYP_NEWSLETTER, false);
-        $valid      = Form::validateToken();
-        $controller = new Controller($this->db, $this->config);
-        if ($kLink === false) {
-            // @todo
-            $bFileNotFound       = true;
-            Shop::$kLink         = $linkHelper->getSpecialPageID(\LINKTYP_404) ?: 0;
-            Shop::$bFileNotFound = true;
-            Shop::$is404         = true;
-
-            return;
-        }
-        $link               = $linkHelper->getPageLink($kLink);
-        $this->canonicalURL = '';
+        $valid              = Form::validateToken();
+        $controller         = new Controller($this->db, $this->config);
         $option             = 'eintragen';
         $customer           = Frontend::getCustomer();
+        $this->canonicalURL = $this->currentLink->getURL();
         if ($valid && Request::verifyGPCDataInt('abonnieren') > 0) {
             $post = Text::filterXSS($_POST);
             if ($customer->getID() > 0) {
@@ -87,7 +75,7 @@ class NewsletterController extends AbstractController
                 try {
                     (new Optin(OptinNewsletter::class))
                         ->setEmail(Text::htmlentities($_POST['cEmail']))
-                        ->setAction(Optin::DELETE_CODE)
+                        ->setAction(OptinBase::DELETE_CODE)
                         ->handleOptin();
                 } catch (Exception $e) {
                     $this->alertService->addError(
@@ -112,10 +100,8 @@ class NewsletterController extends AbstractController
             $smarty->assign('bBereitsAbonnent', Helper::customerIsSubscriber($customer->getID()))
                 ->assign('oKunde', $customer);
         }
-        $this->canonicalURL = $linkHelper->getStaticRoute('newsletter.php');
-
         $smarty->assign('cOption', $option)
-            ->assign('Link', $link)
+            ->assign('Link', $this->currentLink)
             ->assign('nAnzeigeOrt', \CHECKBOX_ORT_NEWSLETTERANMELDUNG)
             ->assign('code_newsletter', false);
 

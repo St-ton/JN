@@ -108,6 +108,21 @@ abstract class AbstractController implements ControllerInterface
     protected SearchResults $searchResults;
 
     /**
+     * @var string|null
+     */
+    protected ?string $metaDescription = null;
+
+    /**
+     * @var string|null
+     */
+    protected ?string $metaTitle = null;
+
+    /**
+     * @var string|null
+     */
+    protected ?string $metaKeywords = null;
+
+    /**
      * @param DbInterface           $db
      * @param State                 $state
      * @param int                   $customerGroupID
@@ -257,24 +272,6 @@ abstract class AbstractController implements ControllerInterface
         $this->assignTemplateData($smarty);
         $this->assignMetaData($smarty, $link);
 
-        $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
-        $nav->setPageType(Shop::getPageType());
-        $nav->setProductFilter($this->productFilter);
-        $nav->setCategoryList($this->expandedCategories);
-        if ($this->currentProduct !== null) {
-            $nav->setProduct($this->currentProduct);
-        }
-        if ($link) {
-            $nav->setLink($link);
-        }
-        if (isset($breadCrumbName, $breadCrumbURL)) { // @todo
-            $breadCrumbEntry = new NavigationEntry();
-            $breadCrumbEntry->setURL($breadCrumbURL);
-            $breadCrumbEntry->setName($breadCrumbName);
-            $breadCrumbEntry->setURLFull($breadCrumbURL);
-            $nav->setCustomNavigationEntry($breadCrumbEntry);
-        }
-
         Visitor::generateData();
         Campaign::checkCampaignParameters();
         Shop::Lang()->generateLanguageAndCurrencyLinks();
@@ -292,7 +289,7 @@ abstract class AbstractController implements ControllerInterface
         $debugbar->getTimer()->stopMeasure('init');
 
         $smarty->assign('bCookieErlaubt', isset($_COOKIE[Frontend::getSessionName()]))
-            ->assign('Brotnavi', $nav->createNavigation())
+            ->assign('Brotnavi', $this->getNavigation()->createNavigation())
             ->assign('nIsSSL', Request::checkSSL())
             ->assign('boxes', $boxesToShow)
             ->assign('boxesLeftActive', !empty($boxesToShow['left']))
@@ -302,6 +299,25 @@ abstract class AbstractController implements ControllerInterface
             ->assign('alertList', $this->alertService)
             ->assign('dbgBarHead', $debugbarRenderer->renderHead())
             ->assign('dbgBarBody', $debugbarRenderer->render());
+    }
+
+    /**
+     * @return Navigation
+     */
+    protected function getNavigation(): Navigation
+    {
+        $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
+        $nav->setPageType(Shop::getPageType());
+        $nav->setProductFilter($this->productFilter);
+        $nav->setCategoryList($this->expandedCategories);
+        if ($this->currentProduct !== null) {
+            $nav->setProduct($this->currentProduct);
+        }
+        if ($this->currentLink) {
+            $nav->setLink($this->currentLink);
+        }
+
+        return $nav;
     }
 
     /**
@@ -347,9 +363,9 @@ abstract class AbstractController implements ControllerInterface
      */
     protected function assignMetaData(JTLSmarty $smarty, LinkInterface $link): void
     {
-        $metaTitle       = $link->getMetaTitle();
-        $metaDescription = $link->getMetaDescription();
-        $metaKeywords    = $link->getMetaKeyword();
+        $metaTitle       = $this->metaTitle ?? $link->getMetaTitle();
+        $metaDescription = $this->metaDescription ?? $link->getMetaDescription();
+        $metaKeywords    = $this->metaKeywords ?? $link->getMetaKeyword();
         if ($this->currentProduct !== null) {
             $metaTitle       = $this->currentProduct->getMetaTitle();
             $metaDescription = $this->currentProduct->getMetaDescription($this->expandedCategories);

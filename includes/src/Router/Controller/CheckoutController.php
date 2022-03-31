@@ -308,7 +308,8 @@ class CheckoutController extends PageController
         }
         // Prüfe ob Kunde schon bestellt hat, falls ja --> Lieferdaten laden
         $lastOrder = $this->db->getSingleObject(
-            "SELECT tbestellung.kBestellung, tbestellung.kLieferadresse, tbestellung.kZahlungsart, tbestellung.kVersandart
+            "SELECT tbestellung.kBestellung, tbestellung.kLieferadresse,
+            tbestellung.kZahlungsart, tbestellung.kVersandart
             FROM tbestellung
             JOIN tzahlungsart
                 ON tzahlungsart.kZahlungsart = tbestellung.kZahlungsart
@@ -1120,7 +1121,9 @@ class CheckoutController extends PageController
                 Frontend::set('customerAttributes', $customerAttributes);
                 $this->smarty->assign('Kunde', $this->customer)
                     ->assign('cPost_var', Text::filterXSS($_SESSION['checkout.cPost_arr']));
-                if (isset($_SESSION['Lieferadresse']) && (int)$_SESSION['checkout.cPost_arr']['shipping_address'] !== 0) {
+                if (isset($_SESSION['Lieferadresse'])
+                    && (int)$_SESSION['checkout.cPost_arr']['shipping_address'] !== 0
+                ) {
                     $this->smarty->assign('Lieferadresse', $_SESSION['Lieferadresse']);
                 }
 
@@ -1341,7 +1344,8 @@ class CheckoutController extends PageController
             }
             $this->smarty->assign('Lieferadressen', $addresses);
         }
-        $this->smarty->assign('laender', ShippingMethod::getPossibleShippingCountries($this->customerGroupID, false, true))
+        $countries = ShippingMethod::getPossibleShippingCountries($this->customerGroupID, false, true);
+        $this->smarty->assign('laender', $countries)
             ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($this->customerGroupID))
             ->assign('Kunde', $_SESSION['Kunde'] ?? null)
             ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null);
@@ -1503,7 +1507,7 @@ class CheckoutController extends PageController
             /**
              * This is for compatibility in 3-step checkout and will prevent form in form tags trough payment plugins
              * @see /templates/Evo/checkout/step4_payment_options.tpl
-             * ToDo: Replace with more convenient solution in later versions (after 4.06)
+             * @todo: Replace with more convenient solution in later versions (after 4.06)
              */
             $step4PaymentContent = $this->smarty->fetch('checkout/step4_payment_options.tpl');
             if (\preg_match('/<form([^>]*)>/', $step4PaymentContent, $hits)) {
@@ -2095,7 +2099,11 @@ class CheckoutController extends PageController
         $shippingMethod->nMinLiefertage     = (int)$shippingMethod->nMinLiefertage;
         $shippingMethod->nMaxLiefertage     = (int)$shippingMethod->nMaxLiefertage;
         $shippingMethod->Zuschlag           = ShippingMethod::getAdditionalFees($shippingMethod, $countryCode, $poCode);
-        $shippingMethod->fEndpreis          = ShippingMethod::calculateShippingFees($shippingMethod, $countryCode, null);
+        $shippingMethod->fEndpreis          = ShippingMethod::calculateShippingFees(
+            $shippingMethod,
+            $countryCode,
+            null
+        );
         if ($shippingMethod->fEndpreis == -1) {
             return false;
         }

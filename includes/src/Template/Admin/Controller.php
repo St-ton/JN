@@ -228,7 +228,6 @@ class Controller
         if (!isset($config['colors']) && !isset($config['customsass'])) {
             return;
         }
-        Shop::dbg($config['colors']);
         $newColorConf = $config['colors'] ?? null;
         $newSassConf  = $config['customsass'] ?? null;
         if ($updated === false && $newColorConf === $oldColorConf && $newSassConf === $oldSassConf) {

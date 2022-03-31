@@ -469,7 +469,8 @@ class Bestellung
             'kBestellung',
             (int)$this->kBestellung
         );
-        $this->BestellstatusURL = Shop::getURL() . '/status.php?uid=' . ($orderState->cUID ?? '');
+        $this->BestellstatusURL = Shop::Container()->getLinkService()->getStaticRoute('status.php')
+            . '?uid=' . ($orderState->cUID ?? '');
         $sum                    = $db->getSingleObject(
             'SELECT SUM(((fPreis * fMwSt)/100 + fPreis) * nAnzahl) AS wert
                 FROM twarenkorbpos

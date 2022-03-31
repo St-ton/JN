@@ -13,5 +13,4 @@ use JTL\Shopsetting;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 
-
-require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';
+Shop::run();

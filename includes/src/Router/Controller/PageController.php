@@ -12,6 +12,7 @@ use JTL\Plugin\Helper as PluginHelper;
 use JTL\Shop;
 use JTL\Sitemap\Sitemap;
 use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class PageController
@@ -37,7 +38,7 @@ class PageController extends AbstractController
         echo $this->getResponse($smarty);
     }
 
-    public function getResponse(JTLSmarty $smarty): string
+    public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
         $linkHelper = Shop::Container()->getLinkService();
         $cache      = Shop::Container()->getCache();
@@ -147,6 +148,9 @@ class PageController extends AbstractController
             ->assign('meta_language', Text::convertISO2ISO639(Shop::getLanguageCode()));
 
         \executeHook(\HOOK_SEITE_PAGE);
+        if ($this->state->is404) {
+            return $smarty->getResponse('layout/index.tpl')->withStatus(404);
+        }
 
         return $smarty->getResponse('layout/index.tpl');
     }

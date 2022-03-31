@@ -14,6 +14,7 @@ use JTL\Optin\OptinRefData;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class NewsletterController
@@ -29,12 +30,7 @@ class NewsletterController extends AbstractController
         return true;
     }
 
-    public function handleState(JTLSmarty $smarty): void
-    {
-        echo $this->getResponse($smarty);
-    }
-
-    public function getResponse(JTLSmarty $smarty): string
+    public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
         Shop::setPageType(\PAGE_NEWSLETTER);
         $linkHelper = Shop::Container()->getLinkService();

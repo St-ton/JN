@@ -18,6 +18,7 @@ use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class ProductController
@@ -56,7 +57,7 @@ class ProductController extends AbstractController
         echo $this->getResponse($smarty);
     }
 
-    public function getResponse(JTLSmarty $smarty): string
+    public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
         global $AktuellerArtikel;
         $priceHistory = null;
@@ -285,6 +286,10 @@ class ProductController extends AbstractController
         return $smarty->getResponse('productdetails/index.tpl');
     }
 
+    /**
+     * @param JTLSmarty $smarty
+     * @return void
+     */
     protected function assignPagination(JTLSmarty $smarty): void
     {
         $ratings = $this->currentProduct->Bewertungen->oBewertung_arr;
@@ -308,10 +313,10 @@ class ProductController extends AbstractController
             ])
             ->setDefaultSortByDir((int)$this->config['bewertung']['bewertung_sortierung'])
             ->setSortFunction(function ($a, $b) use ($pagination) {
-                $cSortBy  = $pagination->getSortByCol();
-                $nSortFac = $pagination->getSortDirSQL() === 0 ? +1 : -1;
-                $valueA   = \is_string($a->$cSortBy) ? \mb_convert_case($a->$cSortBy, \MB_CASE_LOWER) : $a->$cSortBy;
-                $valueB   = \is_string($b->$cSortBy) ? \mb_convert_case($b->$cSortBy, \MB_CASE_LOWER) : $b->$cSortBy;
+                $sortBy  = $pagination->getSortByCol();
+                $sortDir = $pagination->getSortDirSQL() === 0 ? +1 : -1;
+                $valueA  = \is_string($a->$sortBy) ? \mb_convert_case($a->$sortBy, \MB_CASE_LOWER) : $a->$sortBy;
+                $valueB  = \is_string($b->$sortBy) ? \mb_convert_case($b->$sortBy, \MB_CASE_LOWER) : $b->$sortBy;
 
                 if ($b->kSprache === $this->languageID && $a->kSprache !== $this->languageID) {
                     return +1;
@@ -323,9 +328,9 @@ class ProductController extends AbstractController
                     return 0;
                 }
                 if ($valueA < $valueB) {
-                    return -$nSortFac;
+                    return -$sortDir;
                 }
-                return +$nSortFac;
+                return +$sortDir;
             })
             ->assemble();
 

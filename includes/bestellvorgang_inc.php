@@ -28,6 +28,7 @@ use JTL\Plugin\Payment\LegacyMethod;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\State;
 use JTL\Session\Frontend;
+use JTL\Smarty\JTLSmarty;
 use JTL\Shop;
 use JTL\SimpleMail;
 use JTL\Staat;
@@ -301,11 +302,16 @@ function plausiGuthaben($post): void
 }
 
 /**
- *
+ * @param string|null $currentStep
+ * @return string
  */
-function pruefeVersandkostenStep(): void
+function pruefeVersandkostenStep(?string $currentStep = null): string
 {
-    global $step;
+    if ($currentStep === null) {
+        global $step;
+    } else {
+        $step = $currentStep;
+    }
     if (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'])) {
         $cart = Frontend::getCart();
         $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG);
@@ -325,25 +331,39 @@ function pruefeVersandkostenStep(): void
         }
         $step = 'Versand';
     }
+
+    return $step;
 }
 
 /**
- *
+ * @param string|null $currentStep
+ * @return string
  */
-function pruefeZahlungStep(): void
+function pruefeZahlungStep(?string $currentStep): string
 {
-    global $step;
+    if ($currentStep === null) {
+        global $step;
+    } else {
+        $step = $currentStep;
+    }
     if (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'], $_SESSION['Versandart'])) {
         $step = 'Zahlung';
     }
+
+    return $step;
 }
 
 /**
- *
+ * @param string|null $currentStep
+ * @return string
  */
-function pruefeBestaetigungStep(): void
+function pruefeBestaetigungStep(?string $currentStep): string
 {
-    global $step;
+    if ($currentStep === null) {
+        global $step;
+    } else {
+        $step = $currentStep;
+    }
     if (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart'])) {
         $step = 'Bestaetigung';
     }
@@ -355,14 +375,23 @@ function pruefeBestaetigungStep(): void
             $step = 'Zahlung';
         }
     }
+
+    return $step;
 }
 
 /**
- * @param array $get
+ * @param array       $get
+ * @param string|null $currentStep
+ * @return string
  */
-function pruefeRechnungsadresseStep($get): void
+function pruefeRechnungsadresseStep(array $get, ?string $currentStep = null): string
 {
-    global $step, $Kunde;
+    if ($currentStep === null) {
+        global $step;
+    } else {
+        $step = $currentStep;
+    }
+    global $Kunde;
     //sondersteps Rechnungsadresse ändern
     if (!empty(Frontend::getCustomer()->cOrt)
         && (Request::getInt('editRechnungsadresse') === 1 || Request::getInt('editLieferadresse') === 1)
@@ -420,14 +449,23 @@ function pruefeRechnungsadresseStep($get): void
     if (pruefeFehlendeAngaben()) {
         $step = isset($_SESSION['Kunde']) ? 'edit_customer_address' : 'accountwahl';
     }
+
+    return $step;
 }
 
 /**
- * @param array $get
+ * @param array       $get
+ * @param string|null $currentStep
+ * @return string
  */
-function pruefeLieferadresseStep($get): void
+function pruefeLieferadresseStep(array $get, ?string $currentStep = null): string
 {
-    global $step, $Lieferadresse;
+    if ($currentStep === null) {
+        global $step;
+    } else {
+        $step = $currentStep;
+    }
+    global $Lieferadresse;
     //sondersteps Lieferadresse ändern
     if (!empty($_SESSION['Lieferadresse'])) {
         $Lieferadresse = $_SESSION['Lieferadresse'];
@@ -443,6 +481,8 @@ function pruefeLieferadresseStep($get): void
     if (pruefeFehlendeAngaben('shippingAddress')) {
         $step = isset($_SESSION['Kunde']) ? 'Lieferadresse' : 'accountwahl';
     }
+
+    return $step;
 }
 
 /**
@@ -476,11 +516,17 @@ function pruefeVersandkostenfreiKuponVorgemerkt(): array
 }
 
 /**
- * @param array $get
+ * @param array       $get
+ * @param string|null $currentStep
+ * @return string
  */
-function pruefeVersandartStep($get): void
+function pruefeVersandartStep(array $get, ?string $currentStep = null): string
 {
-    global $step;
+    if ($currentStep === null) {
+        global $step;
+    } else {
+        $step = $currentStep;
+    }
     // sondersteps Versandart ändern
     if (isset($get['editVersandart'], $_SESSION['Versandart']) && (int)$get['editVersandart'] === 1) {
         Kupon::resetNewCustomerCoupon();
@@ -496,14 +542,22 @@ function pruefeVersandartStep($get): void
         $step = 'Versand';
         pruefeZahlungsartStep(['editZahlungsart' => 1]);
     }
+
+    return $step;
 }
 
 /**
- * @param array $get
+ * @param array       $get
+ * @param string|null $currentStep
+ * @return string
  */
-function pruefeZahlungsartStep($get): void
+function pruefeZahlungsartStep(array $get, ?string $currentStep = null): string
 {
-    global $step;
+    if ($currentStep === null) {
+        global $step;
+    } else {
+        $step = $currentStep;
+    }
     // sondersteps Zahlungsart ändern
     if (isset($_SESSION['Zahlungsart'], $get['editZahlungsart']) && (int)$get['editZahlungsart'] === 1) {
         Kupon::resetNewCustomerCoupon();
@@ -513,7 +567,7 @@ function pruefeZahlungsartStep($get): void
                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
         unset($_SESSION['Zahlungsart']);
         $step = 'Zahlung';
-        pruefeVersandartStep(['editVersandart' => 1]);
+        $step = pruefeVersandartStep(['editVersandart' => 1], $step);
     }
 
     if (isset($get['nHinweis']) && (int)$get['nHinweis'] > 0) {
@@ -522,15 +576,23 @@ function pruefeZahlungsartStep($get): void
             'paymentNote'
         );
     }
+
+    return $step;
 }
 
 /**
- * @param array $post
- * @return int|null
+ * @param array       $post
+ * @param string|null $currentStep
+ * @return string
  */
-function pruefeZahlungsartwahlStep($post)
+function pruefeZahlungsartwahlStep(array $post, ?string $currentStep = null): string
 {
-    global $zahlungsangaben, $step;
+    if ($currentStep === null) {
+        global $step;
+    } else {
+        $step = $currentStep;
+    }
+    global $zahlungsangaben;
     if (!isset($post['zahlungsartwahl']) || (int)$post['zahlungsartwahl'] !== 1) {
         if (isset($_SESSION['Zahlungsart'])
             && Request::getInt('editRechnungsadresse') !== 1
@@ -538,7 +600,7 @@ function pruefeZahlungsartwahlStep($post)
         ) {
             $zahlungsangaben = zahlungsartKorrekt((int)$_SESSION['Zahlungsart']->kZahlungsart);
         } else {
-            return null;
+            return $step;
         }
     } else {
         $zahlungsangaben = zahlungsartKorrekt((int)$post['Zahlungsart']);
@@ -552,19 +614,18 @@ function pruefeZahlungsartwahlStep($post)
                 'fillPayment'
             );
             $step = 'Zahlung';
-
-            return 0;
+            break;
         case 1:
             $step = 'ZahlungZusatzschritt';
-
-            return 1;
+            break;
         case 2:
             $step = 'Bestaetigung';
-
-            return 2;
+            break;
         default:
-            return null;
+            break;
     }
+
+    return $step;
 }
 
 /**
@@ -598,7 +659,7 @@ function pruefeFehlendeAngaben($context = null): bool
 /**
  *
  */
-function gibStepAccountwahl(): void
+function gibStepAccountwahl(?JTLSmarty $smarty = null): void
 {
     // Einstellung global_kundenkonto_aktiv ist auf 'A'
     // und Kunde wurde nach der Registrierung zurück zur Accountwahl geleitet
@@ -616,8 +677,8 @@ function gibStepAccountwahl(): void
             'continueAfterActivation'
         );
     }
-    Shop::Smarty()
-        ->assign('untertitel', lang_warenkorb_bestellungEnthaeltXArtikel(Frontend::getCart()))
+    $smarty = $smarty ?? Shop::Smarty();
+    $smarty->assign('untertitel', lang_warenkorb_bestellungEnthaeltXArtikel(Frontend::getCart()))
         ->assign('one_step_wk', Request::verifyGPCDataInt('wk'));
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPACCOUNTWAHL);
@@ -626,7 +687,7 @@ function gibStepAccountwahl(): void
 /**
  *
  */
-function gibStepUnregistriertBestellen(): void
+function gibStepUnregistriertBestellen(?JTLSmarty $smarty = null): void
 {
     /** @var Customer $Kunde */
     global $Kunde;
@@ -645,7 +706,8 @@ function gibStepUnregistriertBestellen(): void
     } else {
         $customerAttributes = getKundenattribute($_POST);
     }
-    Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
+    $smarty = $smarty ?? Shop::Smarty();
+    $smarty->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $origins)
         ->assign('Kunde', $Kunde ?? null)
         ->assign('laender', ShippingMethod::getPossibleShippingCountries($customerGroupID, false, true))
@@ -663,15 +725,16 @@ function gibStepUnregistriertBestellen(): void
  */
 function validateCouponInCheckout()
 {
-    if (isset($_SESSION['Kupon'])) {
-        $checkCouponResult = Kupon::checkCoupon($_SESSION['Kupon']);
-        if (count($checkCouponResult) !== 0) {
-            Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
-            $_SESSION['checkCouponResult'] = $checkCouponResult;
-            unset($_SESSION['Kupon']);
-            header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php', true));
-            exit(0);
-        }
+    if (!isset($_SESSION['Kupon'])) {
+        return;
+    }
+    $checkCouponResult = Kupon::checkCoupon($_SESSION['Kupon']);
+    if (count($checkCouponResult) !== 0) {
+        Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
+        $_SESSION['checkCouponResult'] = $checkCouponResult;
+        unset($_SESSION['Kupon']);
+        header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php', true));
+        exit(0);
     }
 }
 /**
@@ -812,7 +875,7 @@ function gibStepZahlung()
 /**
  * @param array $post
  */
-function gibStepZahlungZusatzschritt($post): void
+function gibStepZahlungZusatzschritt(array $post): void
 {
     $paymentID     = $post['Zahlungsart'] ?? $_SESSION['Zahlungsart']->kZahlungsart;
     $paymentMethod = gibZahlungsart((int)$paymentID);

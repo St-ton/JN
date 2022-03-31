@@ -448,6 +448,7 @@ final class Shop extends ShopBC
         self::setImageBaseURL(\defined('IMAGE_BASE_URL') ? \IMAGE_BASE_URL : self::getURL());
         self::$productFilter = new ProductFilter($conf, self::Container()->getDB(), self::Container()->getCache());
         self::getLanguageFromServerName();
+        \executeHook(\HOOK_INDEX_NAVI_HEAD_POSTGET);
         $router->dispatch();
     }
 

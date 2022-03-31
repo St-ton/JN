@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller;
 
 use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Interface ControllerInterface
@@ -17,19 +18,13 @@ interface ControllerInterface
 
     /**
      * @param JTLSmarty $smarty
-     * @return void
+     * @return ResponseInterface
      */
-    public function handleState(JTLSmarty $smarty): void;
+    public function getResponse(JTLSmarty $smarty): ResponseInterface;
 
     /**
      * @param JTLSmarty $smarty
-     * @return string
+     * @return ResponseInterface
      */
-    public function getResponse(JTLSmarty $smarty): string;
-
-    /**
-     * @param JTLSmarty $smarty
-     * @return string
-     */
-    public function notFoundResponse(JTLSmarty $smarty): string;
+    public function notFoundResponse(JTLSmarty $smarty): ResponseInterface;
 }

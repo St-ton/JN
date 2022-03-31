@@ -10,6 +10,7 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\ServerRequest;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class CategoryHandler
@@ -20,7 +21,7 @@ class CategoryHandler extends AbstractHandler
     /**
      * @inheritdoc
      */
-    public function getStateFromRequest(ServerRequest $request, array $args): State
+    public function getStateFromSlug(array $args): State
     {
         $categoryID = (int)($args['id'] ?? 0);
         if ($categoryID < 1) {
@@ -48,9 +49,9 @@ class CategoryHandler extends AbstractHandler
     /**
      * @inheritdoc
      */
-    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): string
+    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->getStateFromRequest($request, $args);
+        $this->getStateFromSlug($args);
         $controller = new ProductListController(
             $this->db,
             $this->state,

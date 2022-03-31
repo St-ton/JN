@@ -1,0 +1,109 @@
+<?php declare(strict_types=1);
+
+namespace JTL\Router\Controller;
+
+use JTL\Checkout\Bestellung;
+use JTL\Customer\Customer;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ResponseInterface;
+
+/**
+ * Class OrderStatusController
+ * @package JTL\Router\Controller
+ */
+class OrderStatusController extends PageController
+{
+    public function init(): bool
+    {
+        parent::init();
+        Shop::setPageType(\PAGE_BESTELLSTATUS);
+
+        return true;
+    }
+
+    public function getResponse(JTLSmarty $smarty): ResponseInterface
+    {
+        $linkHelper = Shop::Container()->getLinkService();
+        $uid        = Request::verifyGPDataString('uid');
+        if (!empty($uid)) {
+            $status = $this->db->getSingleObject(
+                'SELECT kBestellung, failedAttempts
+                    FROM tbestellstatus 
+                    WHERE dDatum >= DATE_SUB(NOW(), INTERVAL 30 DAY) 
+                        AND cUID = :uid
+                        AND (failedAttempts <= :maxAttempts OR 1 = :loggedIn)',
+                [
+                    'uid'         => $uid,
+                    'maxAttempts' => (int)$this->config['kunden']['kundenlogin_max_loginversuche'],
+                    'loggedIn'    => Frontend::getCustomer()->isLoggedIn() ? 1 : 0,
+                ]
+            );
+            if ($status === null) {
+                Shop::Container()->getAlertService()->addDanger(
+                    Shop::Lang()->get('statusOrderNotFound', 'errorMessages'),
+                    'statusOrderNotFound',
+                    ['saveInSession' => true]
+                );
+                \header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
+                exit;
+            }
+            $order    = new Bestellung((int)$status->kBestellung, true);
+            $plzValid = false;
+
+            if (Form::validateToken()) {
+                if (isset($_POST['plz']) && $order->oRechnungsadresse->cPLZ === Text::filterXSS($_POST['plz'])) {
+                    $plzValid = true;
+                } elseif (!empty($_POST['plz'])) {
+                    $this->db->update(
+                        'tbestellstatus',
+                        'cUID',
+                        $uid,
+                        (object)['failedAttempts' => (int)$status->failedAttempts + 1]
+                    );
+                    $this->alertService->addDanger(
+                        Shop::Lang()->get('incorrectLogin'),
+                        'statusOrderincorrectLogin'
+                    );
+                }
+            }
+
+            $smarty->assign('Bestellung', $order)
+                ->assign('uid', Text::filterXSS($uid))
+                ->assign('showLoginPanel', Frontend::getCustomer()->isLoggedIn());
+
+            if ($plzValid || Frontend::getCustomer()->isLoggedIn()) {
+                $this->db->update('tbestellstatus', 'cUID', $uid, (object)[
+                    'failedAttempts' => 0,
+                ]);
+                $smarty->assign('Kunde', new Customer($order->kKunde))
+                    ->assign('Lieferadresse', $order->Lieferadresse)
+                    ->assign('billingAddress', $order->oRechnungsadresse)
+                    ->assign('incommingPayments', $order->getIncommingPayments());
+            }
+        } else {
+            $this->alertService->addDanger(
+                Shop::Lang()->get('uidNotFound', 'errorMessages'),
+                'wrongUID',
+                ['saveInSession' => true]
+            );
+            \header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
+            exit;
+        }
+
+        $step = 'bestellung';
+        $smarty->assign('step', $step)
+            ->assign('Link', $linkHelper->getPageLink($linkHelper->getSpecialPageID(\LINKTYP_LOGIN)))
+            ->assignDeprecated('BESTELLUNG_STATUS_BEZAHLT', \BESTELLUNG_STATUS_BEZAHLT, '5.0.0')
+            ->assignDeprecated('BESTELLUNG_STATUS_VERSANDT', \BESTELLUNG_STATUS_VERSANDT, '5.0.0')
+            ->assignDeprecated('BESTELLUNG_STATUS_OFFEN', \BESTELLUNG_STATUS_OFFEN, '5.0.0');
+
+        $this->preRender($smarty);
+
+        return $smarty->getResponse('account/index.tpl');
+    }
+}

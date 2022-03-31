@@ -10,6 +10,7 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\ServerRequest;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class PageHandler
@@ -20,7 +21,7 @@ class PageHandler extends AbstractHandler
     /**
      * @inheritdoc
      */
-    public function getStateFromRequest(ServerRequest $request, array $args): State
+    public function getStateFromSlug(array $args): State
     {
         $linkID = (int)($args['id'] ?? 0);
         if ($linkID < 1) {
@@ -47,9 +48,9 @@ class PageHandler extends AbstractHandler
     /**
      * @inheritdoc
      */
-    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): string
+    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->getStateFromRequest($request, $args);
+        $this->getStateFromSlug($args);
         $controller = new PageController(
             $this->db,
             $this->state,

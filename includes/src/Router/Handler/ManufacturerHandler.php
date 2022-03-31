@@ -10,6 +10,7 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\ServerRequest;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class ManufacturerHandler
@@ -20,7 +21,7 @@ class ManufacturerHandler extends AbstractHandler
     /**
      * @inheritdoc
      */
-    public function getStateFromRequest(ServerRequest $request, array $args): State
+    public function getStateFromSlug(array $args): State
     {
         $manufacturerID = (int)($args['id'] ?? 0);
         if ($manufacturerID < 1) {
@@ -47,9 +48,9 @@ class ManufacturerHandler extends AbstractHandler
     /**
      * @inheritdoc
      */
-    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): string
+    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->getStateFromRequest($request, $args);
+        $this->getStateFromSlug($args);
         $controller = new ProductListController(
             $this->db,
             $this->state,

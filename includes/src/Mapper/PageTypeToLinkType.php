@@ -69,6 +69,12 @@ class PageTypeToLinkType
                 return \LINKTYP_WUNSCHLISTE;
             case \PAGE_VERGLEICHSLISTE:
                 return \LINKTYP_VERGLEICHSLISTE;
+            case \PAGE_WARTUNG:
+                return \LINKTYP_WARTUNG;
+            case \PAGE_BESTELLSTATUS:
+                return \LINKTYP_BESTELLSTATUS;
+            case \PAGE_BEWERTUNG:
+                return \LINKTYP_BEWERTUNG;
             default:
                 return 0;
         }

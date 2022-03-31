@@ -5,8 +5,8 @@ namespace JTL\Router;
 use DbInterface;
 use FastRoute\Dispatcher;
 use JTL\Cron\Starter\StarterFactory;
-use JTL\Events\Event;
 use JTL\Events\Dispatcher as CoreDispatcher;
+use JTL\Events\Event;
 use JTL\Router\Handler\CategoryHandler;
 use JTL\Router\Handler\DefaultHandler;
 use JTL\Router\Handler\ManufacturerHandler;
@@ -14,8 +14,9 @@ use JTL\Router\Handler\NewsHandler;
 use JTL\Router\Handler\PageHandler;
 use JTL\Router\Handler\ProductHandler;
 use JTL\Router\Handler\RootHandler;
-use JTL\Router\Handler\TestHandler;
 use JTL\Router\Middleware\CartcheckMiddleware;
+use JTL\Router\Middleware\MaintenanceModeMiddleware;
+use JTL\Router\Middleware\PhpFileCheckMiddleware;
 use JTL\Router\Middleware\VisibilityMiddleware;
 use JTL\Router\Middleware\WishlistCheckMiddleware;
 use JTL\Router\Strategy\SmartyStrategy;
@@ -63,29 +64,22 @@ class Router
         $pageHandler         = new PageHandler($db, $this->state);
         $defaultHandler      = new DefaultHandler($db, $this->state);
         $rootHandler         = new RootHandler($db, $this->state);
-        $testHandler         = new TestHandler($db, $this->state);
 
         $router = new BaseRouter();
-        $router->addPatternMatcher('isManufacturerFilter', '[a-zA-Z0-9\-]+');
-        $router->addPatternMatcher('isCharacteristicFilter', '[a-zA-Z0-9\-]+');
-        $router->addPatternMatcher('wordStartsWithB', '(?:b|B)[a-zA-Z0-9-_]+');
 
         $responseFactory = new ResponseFactory();
         $strategy        = new SmartyStrategy($responseFactory, Shop::Smarty(), $state);
         $router->setStrategy($strategy);
+        $router->middleware(new MaintenanceModeMiddleware());
         $router->middleware(new WishlistCheckMiddleware());
         $router->middleware(new CartcheckMiddleware());
+        $phpFileCheckMiddleware = new PhpFileCheckMiddleware();
 
         $router->get('/products/{id:\d+}', [$productHandler, 'handle'])->middleware(new VisibilityMiddleware());
         $router->post('/products/{id:\d+}', [$productHandler, 'handle']);
 
         $router->get('/categories/{id:\d+}', [$categoryHandler, 'handle']);
         $router->post('/categories/{id:\d+}', [$categoryHandler, 'handle']);
-
-//        $router->get('/{cat}__{charac:isCharacteristicFilter}', [$testHandler, 'handle']);
-//        $router->get('/{cat}::{manufacturer:isManufacturerFilter}[__{charac:isCharacteristicFilter}]', [$testHandler, 'handle']);
-//        $router->get('/{cat}::{manufacturer}', [$testHandler, 'handle']);
-
 
         $router->get('/manufacturers/{id:\d+}', [$manufacturerHandler, 'handle']);
         $router->post('/manufacturers/{id:\d+}', [$manufacturerHandler, 'handle']);
@@ -96,8 +90,8 @@ class Router
         $router->get('/page/{id:\d+}', [$pageHandler, 'handle']);
         $router->post('/page/{id:\d+}', [$pageHandler, 'handle']);
 
-        $router->get('/{slug}', [$defaultHandler, 'handle']);
-        $router->post('/{slug}', [$defaultHandler, 'handle']);
+        $router->get('/{slug}', [$defaultHandler, 'handle'])->middleware($phpFileCheckMiddleware);
+        $router->post('/{slug}', [$defaultHandler, 'handle'])->middleware($phpFileCheckMiddleware);
 
         $router->get('/', [$rootHandler, 'handle']);
         $router->post('/', [$rootHandler, 'handle']);

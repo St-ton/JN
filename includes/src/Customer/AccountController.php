@@ -770,8 +770,8 @@ class AccountController
                 $tmp->Wert               = 1;
                 $redir->oParameter_arr[] = $tmp;
                 $redir->nRedirect        = \R_LOGIN_BEWERTUNG;
-                $redir->cURL             = 'bewertung.php?a=' . Request::verifyGPCDataInt('a') . '&bfa=1&token=' .
-                    $_SESSION['jtl_token'];
+                $redir->cURL             = $this->linkService->getStaticRoute('bewertung.php')
+                    . '?a=' . Request::verifyGPCDataInt('a') . '&bfa=1&token=' . $_SESSION['jtl_token'];
                 $redir->cName            = Shop::Lang()->get('review', 'redirect');
                 break;
             case \R_LOGIN_TAG:

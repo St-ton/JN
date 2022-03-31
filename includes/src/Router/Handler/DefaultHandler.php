@@ -9,6 +9,7 @@ use JTL\Router\State;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\ServerRequest;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class DefaultHandler
@@ -19,7 +20,7 @@ class DefaultHandler extends AbstractHandler
     /**
      * @inheritdoc
      */
-    public function getStateFromRequest(ServerRequest $request, array $args): State
+    public function getStateFromSlug(array $args): State
     {
         $slug = $args['slug'] ?? $args['any'] ?? null;
         if ($slug === null) {
@@ -34,6 +35,19 @@ class DefaultHandler extends AbstractHandler
             ['slg' => $slug]
         );
         if ($seo === null) {
+            if (\str_ends_with($slug, '.php')) {
+                $data = $this->db->getSingleObject(
+                    'SELECT * 
+                        FROM tspezialseite
+                        WHERE cDateiname = :slg',
+                    ['slg' => $slug]
+                );
+                if ($data !== null) {
+                    $this->state->fileName = $slug;
+
+                    return $this->state;
+                }
+            }
             $this->state->is404 = true;
 
             return $this->state;
@@ -47,20 +61,20 @@ class DefaultHandler extends AbstractHandler
     /**
      * @inheritdoc
      */
-    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): string
+    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-//        Shop::dbg($args, true, 'Default!');
-        $this->getStateFromRequest($request, $args);
+        $this->getStateFromSlug($args);
         Shop::seoCheckFinish();
         $cf         = new ControllerFactory($this->state, $this->db);
         $controller = $cf->getEntryPoint();
         $check      = $controller->init();
+//        Shop::dbg($check, false, 'check:');
 //        Shop::dbg($this->state, true);
 //        Shop::dbg($controller, true);
         if ($check === false) {
             return $controller->notFoundResponse($smarty);
         }
 
-        return $controller->getResponse(Shop::Smarty());
+        return $controller->getResponse($smarty);
     }
 }

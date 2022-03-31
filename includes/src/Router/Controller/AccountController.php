@@ -5,6 +5,7 @@ namespace JTL\Router\Controller;
 use JTL\Customer\AccountController as CustomerAccountController;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class AccountController
@@ -20,12 +21,7 @@ class AccountController extends AbstractController
         return true;
     }
 
-    public function handleState(JTLSmarty $smarty): void
-    {
-        echo $this->getResponse($smarty);
-    }
-
-    public function getResponse(JTLSmarty $smarty): string
+    public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
         require_once PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
 

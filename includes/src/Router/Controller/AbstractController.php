@@ -34,6 +34,7 @@ use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Visitor;
 use Mobile_Detect;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class AbstractController
@@ -143,7 +144,7 @@ abstract class AbstractController implements ControllerInterface
     /**
      * @inheritdoc
      */
-    public function notFoundResponse(JTLSmarty $smarty): string
+    public function notFoundResponse(JTLSmarty $smarty): ResponseInterface
     {
         if ($this->state->languageID === 0) {
             $this->state->languageID = Shop::getLanguageID();
@@ -159,7 +160,7 @@ abstract class AbstractController implements ControllerInterface
         );
         $pc->init();
 
-        return $pc->getResponse($smarty);
+        return $pc->getResponse($smarty)->withStatus(404);
     }
 
     /**
@@ -168,7 +169,7 @@ abstract class AbstractController implements ControllerInterface
      */
     public function preRender(JTLSmarty $smarty): void
     {
-        global $bAdminWartungsmodus, $nStartzeit;
+        global $nStartzeit;
 
         $cart                     = Frontend::getCart();
         $linkHelper               = Shop::Container()->getLinkService();
@@ -228,7 +229,7 @@ abstract class AbstractController implements ControllerInterface
             ->assign('jtl_token', Form::getTokenInput())
             ->assign('nSeitenTyp', $pageType)
             ->assign('bExclusive', isset($_GET['exclusive_content']))
-            ->assign('bAdminWartungsmodus', $bAdminWartungsmodus !== null && $bAdminWartungsmodus === true)
+            ->assign('bAdminWartungsmodus', $this->config['global']['wartungsmodus_aktiviert'] === 'Y')
             ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
             ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
             ->assign('FavourableShipping', $cart->getFavourableShipping(
@@ -356,10 +357,10 @@ abstract class AbstractController implements ControllerInterface
         }
         $globalMetaData = Metadata::getGlobalMetaData()[$this->languageID] ?? null;
         if (empty($metaTitle)) {
-            $metaTitle = $globalMetaData->Title;
+            $metaTitle = $globalMetaData->Title ?? null;
         }
         if (empty($metaDescription)) {
-            $metaDescription = $globalMetaData->Meta_Description;
+            $metaDescription = $globalMetaData->Meta_Description ?? null;
         }
         $metaTitle       = Metadata::prepareMeta(
             $metaTitle ?? '',

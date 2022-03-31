@@ -16,6 +16,7 @@ use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ResponseInterface;
 use stdClass;
 
 /**
@@ -59,7 +60,7 @@ class ProductListController extends AbstractController
         echo $this->getResponse($smarty);
     }
 
-    public function getResponse(JTLSmarty $smarty): string
+    public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
         Shop::setPageType(\PAGE_ARTIKELLISTE);
 

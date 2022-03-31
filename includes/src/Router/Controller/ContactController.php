@@ -6,9 +6,9 @@ use JTL\CheckBox;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ResponseInterface;
 use stdClass;
 
 /**
@@ -25,12 +25,7 @@ class ContactController extends AbstractController
         return true;
     }
 
-    public function handleState(JTLSmarty $smarty): void
-    {
-        echo $this->getResponse($smarty);
-    }
-
-    public function getResponse(JTLSmarty $smarty): string
+    public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
         Shop::setPageType(\PAGE_KONTAKT);
         $linkHelper         = Shop::Container()->getLinkService();

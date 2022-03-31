@@ -7,6 +7,7 @@ use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class RegistrationController
@@ -27,7 +28,7 @@ class RegistrationController extends AbstractController
         echo $this->getResponse($smarty);
     }
 
-    public function getResponse(JTLSmarty $smarty): string
+    public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
         $linkHelper = Shop::Container()->getLinkService();
         if (Request::verifyGPCDataInt('editRechnungsadresse') === 0 && Frontend::getCustomer()->getID() > 0) {

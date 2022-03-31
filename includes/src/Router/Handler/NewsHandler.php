@@ -10,6 +10,7 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\ServerRequest;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class NewsHandler
@@ -20,7 +21,7 @@ class NewsHandler extends AbstractHandler
     /**
      * @inheritdoc
      */
-    public function getStateFromRequest(ServerRequest $request, array $args): State
+    public function getStateFromSlug(array $args): State
     {
         $newsID = (int)($args['id'] ?? 0);
         if ($newsID < 1) {
@@ -47,9 +48,9 @@ class NewsHandler extends AbstractHandler
     /**
      * @inheritdoc
      */
-    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): string
+    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->getStateFromRequest($request, $args);
+        $this->getStateFromSlug($args);
         $controller = new NewsController(
             $this->db,
             $this->state,

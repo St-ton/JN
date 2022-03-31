@@ -12,6 +12,7 @@ use JTL\News\ViewType;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class NewsController
@@ -25,12 +26,7 @@ class NewsController extends AbstractController
         return true;
     }
 
-    public function handleState(JTLSmarty $smarty): void
-    {
-        echo $this->getResponse($smarty);
-    }
-
-    public function getResponse(JTLSmarty $smarty): string
+    public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
         $pagination       = new Pagination();
         $breadCrumbName   = null;

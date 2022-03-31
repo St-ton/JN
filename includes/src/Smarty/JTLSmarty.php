@@ -11,6 +11,8 @@ use JTL\phpQuery\phpQuery;
 use JTL\Plugin\Helper;
 use JTL\Shop;
 use JTL\Template\BootChecker;
+use Laminas\Diactoros\Response;
+use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 
 /**
@@ -356,9 +358,9 @@ class JTLSmarty extends BC
 
     /**
      * @param string $template
-     * @return string
+     * @return ResponseInterface
      */
-    public function getResponse(string $template): string
+    public function getResponse(string $template): ResponseInterface
     {
         if ($this->context === ContextType::FRONTEND) {
             $this->registerFilter('output', [$this, 'outputFilter']);
@@ -369,8 +371,10 @@ class JTLSmarty extends BC
 
         $res = parent::fetch($template);
         require \PFAD_ROOT . \PFAD_INCLUDES . 'profiler_inc.php';
+        $response = new Response();
+        $response->getBody()->write($res);
 
-        return $res;
+        return $response;
 
 //        \ob_start();
 //        $this->display($template);

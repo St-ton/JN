@@ -464,7 +464,6 @@ class Navigation
                 $ele->setURL($url);
                 $ele->setURLFull($urlFull);
                 $breadCrumb[] = $ele;
-
                 break;
 
             case \PAGE_VERGLEICHSLISTE:
@@ -502,8 +501,14 @@ class Navigation
                     $breadCrumb[] = $ele;
                     $ele          = new NavigationEntry();
                     $ele->setName($this->language->get('bewertung', 'breadcrumb'));
-                    $ele->setURL('bewertung.php?a=' . $this->product->kArtikel . '&bfa=1');
-                    $ele->setURLFull($this->baseURL . 'bewertung.php?a=' . $this->product->kArtikel . '&bfa=1');
+                    $ele->setURL(
+                        $this->linkService->getStaticRoute('bewertung.php')
+                        . '?a=' . $this->product->kArtikel . '&bfa=1'
+                    );
+                    $ele->setURLFull(
+                        $this->linkService->getStaticRoute('bewertung.php')
+                        . '?a=' . $this->product->kArtikel . '&bfa=1'
+                    );
                     $breadCrumb[] = $ele;
                 } else {
                     $ele = new NavigationEntry();

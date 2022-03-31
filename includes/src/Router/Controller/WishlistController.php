@@ -13,6 +13,7 @@ use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ResponseInterface;
 use stdClass;
 
 /**
@@ -34,7 +35,7 @@ class WishlistController extends AbstractController
         echo $this->getResponse($smarty);
     }
 
-    public function getResponse(JTLSmarty $smarty): string
+    public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
         $urlID            = Text::filterXSS(Request::verifyGPDataString('wlid'));
         $wishlistID       = (Request::verifyGPCDataInt('wl') > 0 && Request::verifyGPCDataInt('wlvm') === 0)

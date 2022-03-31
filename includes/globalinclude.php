@@ -110,21 +110,9 @@ if (!JTL_INCLUDE_ONLY_DB && !defined('CLI_BATCHRUN')) {
     $globalMetaData = Metadata::getGlobalMetaData();
     Shop::bootstrap();
     executeHook(HOOK_GLOBALINCLUDE_INC);
-    $session             = (defined('JTLCRON') && JTLCRON === true)
+    $session = (defined('JTLCRON') && JTLCRON === true)
         ? Frontend::getInstance(true, true, 'JTLCRON')
         : Frontend::getInstance();
-    $bAdminWartungsmodus = false;
-    if ((SAFE_MODE === true || $config['wartungsmodus_aktiviert'] === 'Y')
-        && basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php'
-    ) {
-        require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
-        if (!Shop::isAdmin(true)) {
-            http_response_code(503);
-            require_once PFAD_ROOT . 'wartung.php';
-            exit;
-        }
-        $bAdminWartungsmodus = true;
-    }
     $session->deferredUpdate();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
     $debugbar->addCollector(new Smarty(Shop::Smarty()));

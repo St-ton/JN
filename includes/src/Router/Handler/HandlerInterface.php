@@ -6,6 +6,7 @@ use JTL\DB\DbInterface;
 use JTL\Router\State;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\ServerRequest;
+use Psr\Http\Message\ResponseInterface;
 use stdClass;
 
 /**
@@ -21,19 +22,18 @@ interface HandlerInterface
     public function __construct(DbInterface $db, State $state);
 
     /**
-     * @param ServerRequest $request
-     * @param array         $args
+     * @param array $args
      * @return State
      */
-    public function getStateFromRequest(ServerRequest $request, array $args): State;
+    public function getStateFromSlug(array $args): State;
 
     /**
      * @param ServerRequest $request
      * @param array         $args
      * @param JTLSmarty     $smarty
-     * @return string
+     * @return ResponseInterface
      */
-    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): string;
+    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): ResponseInterface;
 
     /**
      * @param stdClass $seo

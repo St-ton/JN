@@ -64,10 +64,16 @@ class LinkTypeToPageType
                 return \PAGE_BESTELLVORGANG;
             case \LINKTYP_BESTELLABSCHLUSS:
                 return \PAGE_BESTELLABSCHLUSS;
+            case \LINKTYP_BESTELLSTATUS:
+                return \PAGE_BESTELLSTATUS;
             case \LINKTYP_WUNSCHLISTE:
                 return \PAGE_WUNSCHLISTE;
             case \LINKTYP_VERGLEICHSLISTE:
                 return \PAGE_VERGLEICHSLISTE;
+            case \LINKTYP_WARTUNG:
+                return \PAGE_WARTUNG;
+            case \LINKTYP_BEWERTUNG:
+                return \PAGE_BEWERTUNG;
             case \LINKTYP_EXTERNE_URL:
             default:
                 return \PAGE_UNBEKANNT;

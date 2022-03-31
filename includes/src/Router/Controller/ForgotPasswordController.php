@@ -12,6 +12,7 @@ use JTL\RateLimit\ForgotPassword as Limiter;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use LinkHelper;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class ForgotPasswordController
@@ -29,12 +30,7 @@ class ForgotPasswordController extends AbstractController
         return true;
     }
 
-    public function handleState(JTLSmarty $smarty): void
-    {
-        echo $this->getResponse($smarty);
-    }
-
-    public function getResponse(JTLSmarty $smarty): string
+    public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
         Shop::setPageType(\PAGE_PASSWORTVERGESSEN);
         $linkHelper = Shop::Container()->getLinkService();
@@ -83,7 +79,7 @@ class ForgotPasswordController extends AbstractController
     {
         if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
             $resetItem = $this->db->select('tpasswordreset', 'cKey', $_POST['fpwh']);
-            if ($resetItem !== null && ($dateExpires = new DateTime($resetItem->dExpires)) >= new DateTime()) {
+            if ($resetItem !== null && new DateTime($resetItem->dExpires) >= new DateTime()) {
                 $customer = new Customer((int)$resetItem->kKunde);
                 if ($customer->kKunde > 0 && $customer->cSperre !== 'Y') {
                     $customer->updatePassword($_POST['pw_new']);
@@ -96,7 +92,10 @@ class ForgotPasswordController extends AbstractController
                 $this->alertService->addError(Shop::Lang()->get('invalidHash', 'account data'), 'invalidHash');
             }
         } else {
-            $this->alertService->addError(Shop::Lang()->get('passwordsMustBeEqual', 'account data'), 'passwordsMustBeEqual');
+            $this->alertService->addError(
+                Shop::Lang()->get('passwordsMustBeEqual', 'account data'),
+                'passwordsMustBeEqual'
+            );
         }
         $this->step = 'confirm';
         $smarty->assign('fpwh', Text::filterXSS($_POST['fpwh']));

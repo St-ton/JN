@@ -14,12 +14,13 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class CartController
  * @package JTL\Router\Controller
  */
-class CartController extends AbstractController
+class CartController extends PageController
 {
     public function init(): bool
     {
@@ -29,12 +30,7 @@ class CartController extends AbstractController
         return true;
     }
 
-    public function handleState(JTLSmarty $smarty): void
-    {
-        echo $this->getResponse($smarty);
-    }
-
-    public function getResponse(JTLSmarty $smarty): string
+    public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
 
@@ -112,7 +108,7 @@ class CartController extends AbstractController
             ->assignDeprecated('C_WARENKORBPOS_TYP_ARTIKEL', \C_WARENKORBPOS_TYP_ARTIKEL, '5.0.0')
             ->assignDeprecated('C_WARENKORBPOS_TYP_GRATISGESCHENK', \C_WARENKORBPOS_TYP_GRATISGESCHENK, '5.0.0');
 
-        require PFAD_ROOT . \PFAD_INCLUDES . 'letzterInclude.php';
+        $this->preRender($smarty);
 
         \executeHook(\HOOK_WARENKORB_PAGE);
 

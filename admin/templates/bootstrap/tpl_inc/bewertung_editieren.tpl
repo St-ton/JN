@@ -5,7 +5,7 @@
             <div class="subheading1">{__('bearbeiteBewertung')}</div>
             <hr class="mb-n3">
         </div>
-        <form name="umfrage" method="post" action="{$adminURL}/bewertung.php">
+        <form name="umfrage" method="post" action="{get_static_route id='bewertung.php'}">
             <div class="card-body">
                 {$jtl_token}
                 <input type="hidden" name="bewertung_editieren" value="1" />

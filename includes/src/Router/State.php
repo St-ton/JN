@@ -252,6 +252,11 @@ class State
     public string $searchQuery = '';
 
     /**
+     * @var string
+     */
+    public string $fileName = '';
+
+    /**
      * @var string[]
      */
     private static array $mapping = [

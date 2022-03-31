@@ -2,11 +2,11 @@
 
 namespace JTL\Router;
 
+use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\Exceptions\EmptyResultSetException;
 use JTL\Exceptions\InvalidInputException;
 use JTL\Helpers\Product as ProductHelper;
-use JTL\Link\LinkInterface;
 use JTL\Mapper\LinkTypeToPageType;
 use JTL\Media\Media;
 use JTL\Optin\Optin;
@@ -16,16 +16,20 @@ use JTL\Router\Controller\ComparelistController;
 use JTL\Router\Controller\ContactController;
 use JTL\Router\Controller\ControllerInterface;
 use JTL\Router\Controller\ForgotPasswordController;
+use JTL\Router\Controller\MaintenanceController;
 use JTL\Router\Controller\NewsController;
 use JTL\Router\Controller\NewsletterController;
+use JTL\Router\Controller\CheckoutController;
+use JTL\Router\Controller\OrderCompleteController;
+use JTL\Router\Controller\OrderStatusController;
 use JTL\Router\Controller\PageController;
 use JTL\Router\Controller\ProductController;
 use JTL\Router\Controller\ProductListController;
 use JTL\Router\Controller\RegistrationController;
+use JTL\Router\Controller\ReviewController;
 use JTL\Router\Controller\WishlistController;
 use JTL\Session\Frontend;
 use JTL\Shopsetting;
-use League\Route\Http\Exception\NotFoundException;
 use Shop;
 
 /**
@@ -60,10 +64,9 @@ class ControllerFactory
     public function getEntryPoint(): ControllerInterface
     {
         $state           = $this->state;
-        $fileName        = null;
+        $fileName        = $this->state->fileName;
         $state->pageType = \PAGE_UNBEKANNT;
         $controller      = null;
-
         if (\mb_strlen($state->optinCode) > 8) {
             try {
                 $successMsg = (new Optin())
@@ -86,7 +89,13 @@ class ControllerFactory
                 );
             }
         }
-        if ($state->productID > 0 && (!$state->categoryID || ($state->categoryID > 0 && $state->show === 1))) {
+        if ($fileName === 'wartung.php') {
+            $this->setLinkTypeByFileName($fileName);
+            $controller = $this->getPageControllerByLinkType($this->state->linkType);
+        } elseif ($state->productID > 0
+            && !$state->linkID
+            && (!$state->categoryID || ($state->categoryID > 0 && $state->show === 1))
+        ) {
             $parentID = ProductHelper::getParent($state->productID);
             if ($parentID === $state->productID) {
                 $state->is404    = true;
@@ -167,6 +176,9 @@ class ControllerFactory
                 $state->linkID   = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_STARTSEITE) ?: 0;
             } elseif (Media::getInstance()->isValidRequest($path)) {
                 Media::getInstance()->handleRequest($path);
+            } elseif ($fileName !== '') {
+                $this->setLinkTypeByFileName($fileName);
+                $controller = $this->getPageControllerByLinkType($this->state->linkType);
             } else {
                 return $this->fail(null);
             }
@@ -221,7 +233,7 @@ class ControllerFactory
 
         $linkType = $link->getLinkType();
         if ($linkType <= 0) {
-            $this->setLinkType($link);
+            $this->setLinkTypeByFileName($link->getFileName());
         } else {
             $this->state->linkType = $linkType;
             if ($linkType === \LINKTYP_EXTERNE_URL) {
@@ -231,49 +243,75 @@ class ControllerFactory
             $mapper                = new LinkTypeToPageType();
             $this->state->pageType = $mapper->map($linkType);
         }
-        if ($link->getLinkType() === \LINKTYP_VERGLEICHSLISTE) {
-            return $this->createService(ComparelistController::class);
-        }
-        if ($link->getLinkType() === \LINKTYP_WUNSCHLISTE) {
-            return $this->createService(WishlistController::class);
-        }
-        if ($link->getLinkType() === \LINKTYP_NEWS) {
-            return $this->createService(NewsController::class);
-        }
-        if ($link->getLinkType() === \LINKTYP_NEWSLETTER) {
-            return $this->createService(NewsletterController::class);
-        }
-        if ($link->getLinkType() === \LINKTYP_LOGIN) {
-            return $this->createService(AccountController::class);
-        }
-        if ($link->getLinkType() === \LINKTYP_REGISTRIEREN) {
-            return $this->createService(RegistrationController::class);
-        }
-        if ($link->getLinkType() === \LINKTYP_PASSWORD_VERGESSEN) {
-            return $this->createService(ForgotPasswordController::class);
-        }
-        if ($link->getLinkType() === \LINKTYP_KONTAKT) {
-            return $this->createService(ContactController::class);
-        }
-        if ($link->getLinkType() === \LINKTYP_WARENKORB) {
-            return $this->createService(CartController::class);
-        }
-        if ($link->getLinkType() !== 0) {
-            return $this->createService(PageController::class);
-        }
-        Shop::dbg($link);
-        Shop::dbg($link->getLinkType(), false, 'GLT:');
 
-        die('WTF?');
-        return false;
+        return $this->getPageControllerByLinkType($linkType);
     }
 
-    private function setLinkType(LinkInterface $link): void
+    /**
+     * @param int $linkType
+     * @return ControllerInterface
+     * @throws InvalidArgumentException
+     */
+    private function getPageControllerByLinkType(int $linkType): ControllerInterface
     {
-        if (empty($link->getFileName())) {
-            return;
+        if ($linkType === \LINKTYP_VERGLEICHSLISTE) {
+            return $this->createService(ComparelistController::class);
         }
-        switch ($link->getFileName()) {
+        if ($linkType === \LINKTYP_WUNSCHLISTE) {
+            return $this->createService(WishlistController::class);
+        }
+        if ($linkType === \LINKTYP_NEWS) {
+            return $this->createService(NewsController::class);
+        }
+        if ($linkType === \LINKTYP_NEWSLETTER) {
+            return $this->createService(NewsletterController::class);
+        }
+        if ($linkType === \LINKTYP_LOGIN) {
+            return $this->createService(AccountController::class);
+        }
+        if ($linkType === \LINKTYP_REGISTRIEREN) {
+            return $this->createService(RegistrationController::class);
+        }
+        if ($linkType === \LINKTYP_PASSWORD_VERGESSEN) {
+            return $this->createService(ForgotPasswordController::class);
+        }
+        if ($linkType === \LINKTYP_KONTAKT) {
+            return $this->createService(ContactController::class);
+        }
+        if ($linkType === \LINKTYP_WARENKORB) {
+            return $this->createService(CartController::class);
+        }
+        if ($linkType === \LINKTYP_WARTUNG) {
+            return $this->createService(MaintenanceController::class);
+        }
+        if ($linkType === \LINKTYP_BESTELLVORGANG) {
+            return $this->createService(CheckoutController::class);
+        }
+        if ($linkType === \LINKTYP_BESTELLABSCHLUSS) {
+            return $this->createService(OrderCompleteController::class);
+        }
+        if ($linkType === \LINKTYP_BESTELLABSCHLUSS) {
+            return $this->createService(OrderCompleteController::class);
+        }
+        if ($linkType === \LINKTYP_BESTELLSTATUS) {
+            return $this->createService(OrderStatusController::class);
+        }
+        if ($linkType === \LINKTYP_BEWERTUNG) {
+            return $this->createService(ReviewController::class);
+        }
+        if ($linkType !== 0) {
+            return $this->createService(PageController::class);
+        }
+        throw new InvalidArgumentException('No controller found for link type ' . $linkType);
+    }
+
+    /**
+     * @param string $fileName
+     * @return void
+     */
+    private function setLinkTypeByFileName(string $fileName): void
+    {
+        switch ($fileName) {
             case 'news.php':
                 $this->state->linkType = \LINKTYP_NEWS;
                 break;
@@ -297,6 +335,15 @@ class ControllerFactory
                 break;
             case 'wunschliste.php':
                 $this->state->linkType = \LINKTYP_WUNSCHLISTE;
+                break;
+            case 'wartung.php':
+                $this->state->linkType = \LINKTYP_WARTUNG;
+                break;
+            case 'status.php':
+                $this->state->linkType = \LINKTYP_BESTELLSTATUS;
+                break;
+            case 'bewertung.php':
+                $this->state->linkType = \LINKTYP_BEWERTUNG;
                 break;
             default:
                 break;

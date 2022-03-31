@@ -102,7 +102,7 @@ class ControllerFactory
                 $fileName        = null;
                 $state->pageType = \PAGE_404;
 
-                return $this->fail($fileName);
+                return $this->fail();
             }
             if ($parentID > 0) {
                 $productID = $parentID;
@@ -180,24 +180,23 @@ class ControllerFactory
                 $this->setLinkTypeByFileName($fileName);
                 $controller = $this->getPageControllerByLinkType($this->state->linkType);
             } else {
-                return $this->fail(null);
+                return $this->fail();
             }
         } elseif (!empty($state->linkID) || $fileName === null) {
             $fileName   = 'seite.php';
             $controller = $this->getPageController();
         }
         if ($controller !== null && !$controller->init()) {
-            return $this->fail($fileName);
+            return $this->fail();
         }
 
-        return $controller ?? $this->fail($fileName);
+        return $controller ?? $this->fail();
     }
 
     /**
-     * @param string|null $filename
      * @return ControllerInterface
      */
-    private function fail(?string $filename): ControllerInterface
+    private function fail(): ControllerInterface
     {
         $this->state->is404 = true;
         if ($this->state->languageID === 0) {

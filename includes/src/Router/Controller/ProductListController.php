@@ -55,11 +55,6 @@ class ProductListController extends AbstractController
         return true;
     }
 
-    public function handleState(JTLSmarty $smarty): void
-    {
-        echo $this->getResponse($smarty);
-    }
-
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
         Shop::setPageType(\PAGE_ARTIKELLISTE);

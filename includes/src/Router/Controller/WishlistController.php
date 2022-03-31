@@ -30,11 +30,6 @@ class WishlistController extends AbstractController
         return true;
     }
 
-    public function handleState(JTLSmarty $smarty): void
-    {
-        echo $this->getResponse($smarty);
-    }
-
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
         $urlID            = Text::filterXSS(Request::verifyGPDataString('wlid'));

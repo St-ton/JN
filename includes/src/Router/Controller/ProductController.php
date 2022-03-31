@@ -52,11 +52,6 @@ class ProductController extends AbstractController
         return $this->currentProduct->kArtikel > 0 && $this->currentProduct->kArtikel === $this->state->productID;
     }
 
-    public function handleState(JTLSmarty $smarty): void
-    {
-        echo $this->getResponse($smarty);
-    }
-
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
         global $AktuellerArtikel;

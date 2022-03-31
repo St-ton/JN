@@ -33,11 +33,6 @@ class PageController extends AbstractController
         return true;
     }
 
-    public function handleState(JTLSmarty $smarty): void
-    {
-        echo $this->getResponse($smarty);
-    }
-
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
         $linkHelper = Shop::Container()->getLinkService();

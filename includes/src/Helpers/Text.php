@@ -799,4 +799,46 @@ class Text
             $text
         );
     }
+
+    /**
+     * @param string $bic
+     * @return bool
+     */
+    public static function checkBIC(string $bic): bool
+    {
+        return \preg_match('/^[A-Z]{6}[A-Z\d]{2}([A-Z\d]{3})?$/i', $bic) === 1;
+    }
+
+    /**
+     * @param string $iban
+     * @return array|bool|string|string[]
+     */
+    public static function checkIBAN(string $iban)
+    {
+        if ($iban === '' || \mb_strlen($iban) < 6) {
+            return false;
+        }
+        $iban  = \str_replace(' ', '', $iban);
+        $iban1 = \mb_substr($iban, 4)
+            . (string)(\mb_ord($iban[0]) - 55)
+            . (string)(\mb_ord($iban[1]) - 55)
+            . \mb_substr($iban, 2, 2);
+        $len   = \mb_strlen($iban1);
+        for ($i = 0; $i < $len; $i++) {
+            if (\mb_ord($iban1[$i]) > 64 && \mb_ord($iban1[$i]) < 91) {
+                $iban1 = \mb_substr($iban1, 0, $i) . (string)(\mb_ord($iban1[$i]) - 55) . \mb_substr($iban1, $i + 1);
+            }
+        }
+
+        $rest = 0;
+        $len  = \mb_strlen($iban1);
+        for ($pos = 0; $pos < $len; $pos += 7) {
+            $part = (string)$rest . \mb_substr($iban1, $pos, 7);
+            $rest = (int)$part % 97;
+        }
+
+        return \mb_substr($iban, 2, 2) === '00'
+            ? \substr_replace($iban, \sprintf('%02d', 98 - $rest), 2, 2)
+            : $rest === 1;
+    }
 }

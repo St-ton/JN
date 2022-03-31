@@ -20,7 +20,7 @@ use Psr\Http\Message\ResponseInterface;
  * Class OrderCompleteController
  * @package JTL\Router\Controller
  */
-class OrderCompleteController extends PageController
+class OrderCompleteController extends CheckoutController
 {
     public function init(): bool
     {
@@ -168,34 +168,30 @@ class OrderCompleteController extends PageController
             ->assign('plugin', null);
         if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
             $hasAdditionalInformation = false;
-            switch ($moduleID) {
-                case 'za_lastschrift_jtl':
-                    if (($_POST['bankname']
-                            && $_POST['blz']
-                            && $_POST['kontonr']
-                            && $_POST['inhaber'])
-                        || ($_POST['bankname']
-                            && $_POST['iban']
-                            && $_POST['bic']
-                            && $_POST['inhaber'])
-                    ) {
-                        $_SESSION['Zahlungsart']->ZahlungsInfo->cBankName =
-                            Text::htmlentities(\stripslashes($_POST['bankname']), \ENT_QUOTES);
-                        $_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr  =
-                            Text::htmlentities(\stripslashes($_POST['kontonr']), \ENT_QUOTES);
-                        $_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ      =
-                            Text::htmlentities(\stripslashes($_POST['blz']), \ENT_QUOTES);
-                        $_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN     =
-                            Text::htmlentities(\stripslashes($_POST['iban']), \ENT_QUOTES);
-                        $_SESSION['Zahlungsart']->ZahlungsInfo->cBIC      =
-                            Text::htmlentities(\stripslashes($_POST['bic']), \ENT_QUOTES);
-                        $_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber  =
-                            Text::htmlentities(\stripslashes($_POST['inhaber']), \ENT_QUOTES);
-                        $hasAdditionalInformation                         = true;
-                    }
-                    break;
-                default:
-                    break;
+            if ($moduleID === 'za_lastschrift_jtl') {
+                if (($_POST['bankname']
+                        && $_POST['blz']
+                        && $_POST['kontonr']
+                        && $_POST['inhaber'])
+                    || ($_POST['bankname']
+                        && $_POST['iban']
+                        && $_POST['bic']
+                        && $_POST['inhaber'])
+                ) {
+                    $_SESSION['Zahlungsart']->ZahlungsInfo->cBankName =
+                        Text::htmlentities(\stripslashes($_POST['bankname']), \ENT_QUOTES);
+                    $_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr  =
+                        Text::htmlentities(\stripslashes($_POST['kontonr']), \ENT_QUOTES);
+                    $_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ      =
+                        Text::htmlentities(\stripslashes($_POST['blz']), \ENT_QUOTES);
+                    $_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN     =
+                        Text::htmlentities(\stripslashes($_POST['iban']), \ENT_QUOTES);
+                    $_SESSION['Zahlungsart']->ZahlungsInfo->cBIC      =
+                        Text::htmlentities(\stripslashes($_POST['bic']), \ENT_QUOTES);
+                    $_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber  =
+                        Text::htmlentities(\stripslashes($_POST['inhaber']), \ENT_QUOTES);
+                    $hasAdditionalInformation                         = true;
+                }
             }
 
             if ($hasAdditionalInformation) {
@@ -216,7 +212,7 @@ class OrderCompleteController extends PageController
                     exit();
                 }
             } else {
-                $smarty->assign('ZahlungsInfo', \gibPostZahlungsInfo());
+                $smarty->assign('ZahlungsInfo', $this->gibPostZahlungsInfo());
             }
         }
         // Zahlungsart als Plugin
@@ -230,7 +226,7 @@ class OrderCompleteController extends PageController
                     if ($paymentMethod->validateAdditional()) {
                         $paymentMethod->preparePaymentProcess($order);
                     } elseif (!$paymentMethod->handleAdditional($_POST)) {
-                        $order->Zahlungsart = \gibZahlungsart($order->kZahlungsart);
+                        $order->Zahlungsart = $this->gibZahlungsart($order->kZahlungsart);
                     }
                 }
 
@@ -239,7 +235,7 @@ class OrderCompleteController extends PageController
             } catch (InvalidArgumentException $e) {
             }
         } elseif ($moduleID === 'za_lastschrift_jtl') {
-            $customerAccountData = \gibKundenKontodaten(Frontend::getCustomer()->getID());
+            $customerAccountData = $this->gibKundenKontodaten(Frontend::getCustomer()->getID());
             if (isset($customerAccountData->kKunde) && $customerAccountData->kKunde > 0) {
                 $smarty->assign('oKundenKontodaten', $customerAccountData);
             }

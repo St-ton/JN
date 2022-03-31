@@ -964,11 +964,11 @@ class Kupon
             if ($this->fWert > $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)) {
                 $couponPrice = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true);
             }
-            if ($this->nGanzenWKRabattieren === 0 && $this->fWert > \gibGesamtsummeKuponartikelImWarenkorb(
+            if ($this->nGanzenWKRabattieren === 0 && $this->fWert > CartHelper::getCouponProductsTotal(
                 $this,
                 $cart->PositionenArr
             )) {
-                $couponPrice = \gibGesamtsummeKuponartikelImWarenkorb($this, $cart->PositionenArr);
+                $couponPrice = CartHelper::getCouponProductsTotal($this, $cart->PositionenArr);
             }
         } elseif ($this->cWertTyp === 'prozent') {
             // Alle Positionen prüfen ob der Kupon greift und falls ja, dann Position rabattieren
@@ -1260,7 +1260,7 @@ class Kupon
         )
             || ($this->cWertTyp === 'festpreis'
                 && (int)$this->nGanzenWKRabattieren === 0
-                && $this->fMindestbestellwert > \gibGesamtsummeKuponartikelImWarenkorb(
+                && $this->fMindestbestellwert > CartHelper::getCouponProductsTotal(
                     $this,
                     Frontend::getCart()->PositionenArr
                 )
@@ -1276,10 +1276,10 @@ class Kupon
         } elseif ($this->nVerwendungen > 0 && $this->nVerwendungen <= $this->nVerwendungenBisher) {
             //maximum usage reached
             $ret['ungueltig'] = 6;
-        } elseif (!\warenkorbKuponFaehigArtikel($this, Frontend::getCart()->PositionenArr)) {
+        } elseif (!CartHelper::cartHasCouponValidProducts($this, Frontend::getCart()->PositionenArr)) {
             //cart needs at least one product for which this coupon is valid
             $ret['ungueltig'] = 7;
-        } elseif (!\warenkorbKuponFaehigKategorien($this, Frontend::getCart()->PositionenArr)) {
+        } elseif (!CartHelper::cartHasCouponValidCategories($this, Frontend::getCart()->PositionenArr)) {
             //cart needs at least one category for which this coupon is valid
             $ret['ungueltig'] = 8;
         } elseif ($this->cKuponTyp !== self::TYPE_NEWCUSTOMER
@@ -1297,7 +1297,7 @@ class Kupon
         ) {
             //invalid for shipping country
             $ret['ungueltig'] = 10;
-        } elseif (!\warenkorbKuponFaehigHersteller($this, Frontend::getCart()->PositionenArr)) {
+        } elseif (!CartHelper::cartHasCouponValidManufacturers($this, Frontend::getCart()->PositionenArr)) {
             //invalid for manufacturer
             $ret['ungueltig'] = 12;
         } elseif (!empty($_SESSION['Kunde']->cMail)) {

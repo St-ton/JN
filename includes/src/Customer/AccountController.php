@@ -2,6 +2,7 @@
 
 namespace JTL\Customer;
 
+use JTL\Customer\Registration\Form as CustomerForm;
 use Exception;
 use JTL\Alert\Alert;
 use JTL\Campaign;
@@ -470,7 +471,7 @@ class AccountController
                 continue;
             }
             $error      = $coupon->check();
-            $returnCode = \angabenKorrekt($error);
+            $returnCode = Form::hasNoMissingData($error);
             \executeHook(\HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
                 'error'        => &$error,
                 'nReturnValue' => &$returnCode
@@ -1053,8 +1054,9 @@ class AccountController
     {
         $customer = $_SESSION['Kunde'];
         if (Request::postInt('edit') === 1) {
-            $customer           = \getKundendaten($_POST, 0, 0);
-            $customerAttributes = \getKundenattribute($_POST);
+            $form               = new CustomerForm();
+            $customer           = $form->getCustomerData($_POST, false, false);
+            $customerAttributes = $form->getCustomerAttributes($_POST);
         } else {
             $customerAttributes = $customer->getCustomerAttributes();
         }
@@ -1108,17 +1110,17 @@ class AccountController
     {
         $postData = Text::filterXSS($_POST);
         $this->smarty->assign('cPost_arr', $postData);
-
-        $missingData        = \checkKundenFormularArray($postData, 1, 0);
+        $form               = new CustomerForm();
+        $missingData        = $form->checkKundenFormularArray($postData, true, false);
         $customerGroupID    = Frontend::getCustomerGroup()->getID();
         $checkBox           = new CheckBox();
         $missingData        = \array_merge(
             $missingData,
             $checkBox->validateCheckBox(\CHECKBOX_ORT_KUNDENDATENEDITIEREN, $customerGroupID, $postData, true)
         );
-        $customerData       = \getKundendaten($postData, 0, 0);
-        $customerAttributes = \getKundenattribute($postData);
-        $returnCode         = \angabenKorrekt($missingData);
+        $customerData       = $form->getCustomerData($postData, 0, 0);
+        $customerAttributes = $form->getCustomerAttributes($postData);
+        $returnCode         = Form::hasNoMissingData($missingData);
 
         \executeHook(\HOOK_JTL_PAGE_KUNDENDATEN_PLAUSI);
 

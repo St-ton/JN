@@ -23,11 +23,6 @@ class ReviewController extends PageController
         return true;
     }
 
-    public function handleState(JTLSmarty $smarty): void
-    {
-        echo $this->getResponse($smarty);
-    }
-
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
         $controller = new BaseController(

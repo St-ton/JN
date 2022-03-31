@@ -12,6 +12,7 @@ use JTL\Checkout\Versandart;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Config\ItemLocalization;
 use JTL\Extensions\Download\Download;
+use JTL\Helpers\Form;
 use JTL\Helpers\Order;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
@@ -1616,7 +1617,7 @@ class Cart
             if (isset($_SESSION['Warenkorb']) && $this->gibAnzahlArtikelExt([\C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
                 $Kupon = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
                 if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === Kupon::TYPE_STANDARD) {
-                    $isValid = (\angabenKorrekt(Kupon::checkCoupon($Kupon)) === 1);
+                    $isValid = (Form::hasNoMissingData(Kupon::checkCoupon($Kupon)) === 1);
                     $this->updateCouponValue();
                 } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                     $isValid = true;
@@ -1638,7 +1639,7 @@ class Cart
                 $Kupon   = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
                 $isValid = false;
                 if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === Kupon::TYPE_STANDARD) {
-                    $isValid = (\angabenKorrekt(Kupon::checkCoupon($Kupon)) === 1);
+                    $isValid = (Form::hasNoMissingData(Kupon::checkCoupon($Kupon)) === 1);
                 }
             }
             if ($isValid === false) {
@@ -1673,9 +1674,9 @@ class Cart
             $maxPreisKupon = $this->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true);
         }
         if ((int)$coupon->nGanzenWKRabattieren === 0
-            && $coupon->fWert > \gibGesamtsummeKuponartikelImWarenkorb($coupon, $this->PositionenArr)
+            && $coupon->fWert > CartHelper::getCouponProductsTotal($coupon, $this->PositionenArr)
         ) {
-            $maxPreisKupon = \gibGesamtsummeKuponartikelImWarenkorb($coupon, $this->PositionenArr);
+            $maxPreisKupon = CartHelper::getCouponProductsTotal($coupon, $this->PositionenArr);
         }
         $specialPosition        = new stdClass();
         $specialPosition->cName = [];

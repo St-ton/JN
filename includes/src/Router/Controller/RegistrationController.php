@@ -2,30 +2,42 @@
 
 namespace JTL\Router\Controller;
 
+use JTL\Campaign;
+use JTL\CheckBox;
+use JTL\Checkout\Lieferadresse;
+use JTL\Customer\Customer;
+use JTL\Customer\CustomerAttributes;
+use JTL\Customer\CustomerFields;
+use JTL\Customer\DataHistory;
+use JTL\Customer\Registration\Form as CustomerForm;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\ShippingMethod;
+use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
+use stdClass;
 
 /**
  * Class RegistrationController
  * @package JTL\Router\Controller
  */
-class RegistrationController extends AbstractController
+class RegistrationController extends PageController
 {
+    private string $step = 'formular';
+
     public function init(): bool
     {
         parent::init();
-        Shop::setPageType($this->state->pageType);
+        Shop::setPageType(\PAGE_REGISTRIERUNG);
 
         return true;
-    }
-
-    public function handleState(JTLSmarty $smarty): void
-    {
-        echo $this->getResponse($smarty);
     }
 
     public function getResponse(JTLSmarty $smarty): ResponseInterface
@@ -38,27 +50,24 @@ class RegistrationController extends AbstractController
         require_once PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
         require_once PFAD_ROOT . \PFAD_INCLUDES . 'registrieren_inc.php';
 
-        Shop::setPageType(\PAGE_REGISTRIERUNG);
-        $link  = $linkHelper->getSpecialPage(\LINKTYP_REGISTRIEREN);
-        $step  = 'formular';
-        $titel = Shop::Lang()->get('newAccount', 'login');
-        $edit  = Request::getInt('editRechnungsadresse');
+        $this->step = 'formular';
+        $edit       = Request::getInt('editRechnungsadresse');
         if (isset($_POST['editRechnungsadresse'])) {
             $edit = (int)$_POST['editRechnungsadresse'];
         }
         if (Form::validateToken() && Request::postInt('form') === 1) {
-            \kundeSpeichern($_POST);
+            $this->saveCustomer($smarty, $_POST);
         }
-        if (Request::getInt('editRechnungsadresse') === 1) {
-            \gibKunde();
-        }
-        if ($step === 'formular') {
-            \gibFormularDaten(Request::verifyGPCDataInt('checkout'));
+        $title = Request::getInt('editRechnungsadresse') === 1
+            ? Shop::Lang()->get('editData', 'login')
+            : Shop::Lang()->get('newAccount', 'login');
+        if ($this->step === 'formular') {
+            $this->getFormData($smarty, Request::verifyGPCDataInt('checkout'));
         }
         $smarty->assign('editRechnungsadresse', $edit)
-            ->assign('Ueberschrift', $titel)
-            ->assign('Link', $link)
-            ->assign('step', $step)
+            ->assign('Ueberschrift', $title)
+            ->assign('Link', $this->currentLink)
+            ->assign('step', $this->step)
             ->assign('nAnzeigeOrt', \CHECKBOX_ORT_REGISTRIERUNG)
             ->assign('code_registrieren', false)
             ->assign('unregForm', 0);
@@ -80,5 +89,201 @@ class RegistrationController extends AbstractController
         \executeHook(\HOOK_REGISTRIEREN_PAGE);
 
         return $smarty->getResponse('register/index.tpl');
+    }
+
+    /**
+     * @param JTLSmarty $smarty
+     * @param array     $post
+     * @return array|int
+     * @former kundeSpeichern()
+     * @since 5.2.0
+     */
+    public function saveCustomer(JTLSmarty $smarty, array $post)
+    {
+        unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
+        $conf = $this->config['global']['global_kundenkonto_aktiv'];
+        $cart = Frontend::getCart();
+        $cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDPOS)
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZAHLUNGSART);
+
+        $edit       = (int)$post['editRechnungsadresse'];
+        $this->step = 'formular';
+        $form       = new CustomerForm();
+        $smarty->assign('cPost_arr', Text::filterXSS($post));
+        $missingData        = (!$edit)
+            ? $form->checkKundenFormular(true)
+            : $form->checkKundenFormular(true, false);
+        $customerData       = $form->getCustomerData($post, true, false);
+        $customerAttributes = $form->getCustomerAttributes($post);
+        $checkbox           = new CheckBox();
+        $missingData        = \array_merge(
+            $missingData,
+            $checkbox->validateCheckBox(\CHECKBOX_ORT_REGISTRIERUNG, $this->customerGroupID, $post, true)
+        );
+
+        if (isset($post['shipping_address'])) {
+            if ((int)$post['shipping_address'] === 0) {
+                $post['kLieferadresse'] = 0;
+                $post['lieferdaten']    = 1;
+                $form->pruefeLieferdaten($post);
+            } elseif (isset($post['kLieferadresse']) && (int)$post['kLieferadresse'] > 0) {
+                $form->pruefeLieferdaten($post);
+            } elseif (isset($post['register']['shipping_address'])) {
+                $form->pruefeLieferdaten($post['register']['shipping_address'], $missingData);
+            }
+        } elseif (isset($post['lieferdaten']) && (int)$post['lieferdaten'] === 1) {
+            // compatibility with older template
+            $form->pruefeLieferdaten($post, $missingData);
+        }
+        $nReturnValue = Form::hasNoMissingData($missingData);
+
+        \executeHook(\HOOK_REGISTRIEREN_PAGE_REGISTRIEREN_PLAUSI, [
+            'nReturnValue'    => &$nReturnValue,
+            'fehlendeAngaben' => &$missingData
+        ]);
+
+        if ($nReturnValue) {
+            // CheckBox Spezialfunktion ausführen
+            $checkbox->triggerSpecialFunction(
+                \CHECKBOX_ORT_REGISTRIERUNG,
+                $this->customerGroupID,
+                true,
+                $post,
+                ['oKunde' => $customerData]
+            )->checkLogging(\CHECKBOX_ORT_REGISTRIERUNG, $this->customerGroupID, $post, true);
+
+            if ($edit && $_SESSION['Kunde']->kKunde > 0) {
+                $customerData->cAbgeholt = 'N';
+                $customerData->updateInDB();
+                $customerData->cPasswort = null;
+                // Kundendatenhistory
+                DataHistory::saveHistory($_SESSION['Kunde'], $customerData, DataHistory::QUELLE_BESTELLUNG);
+
+                $_SESSION['Kunde'] = $customerData;
+                // Update Kundenattribute
+                $customerAttributes->save();
+
+                $_SESSION['Kunde'] = new Customer($_SESSION['Kunde']->kKunde);
+                $_SESSION['Kunde']->getCustomerAttributes()->load($_SESSION['Kunde']->kKunde);
+            } else {
+                $customerData->kKundengruppe     = $this->customerGroupID;
+                $customerData->kSprache          = $this->languageID;
+                $customerData->cAbgeholt         = 'N';
+                $customerData->cSperre           = 'N';
+                $customerData->cAktiv            = $conf === 'A' ? 'N' : 'Y';
+                $cPasswortKlartext               = $customerData->cPasswort;
+                $customerData->cPasswort         = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
+                $customerData->dErstellt         = 'NOW()';
+                $customerData->nRegistriert      = 1;
+                $customerData->angezeigtesLand   = LanguageHelper::getCountryCodeByCountryName($customerData->cLand);
+                $cLand                           = $customerData->cLand;
+                $customerData->cPasswortKlartext = $cPasswortKlartext;
+                $obj                             = new stdClass();
+                $obj->tkunde                     = $customerData;
+
+                $mailer = Shop::Container()->get(Mailer::class);
+                $mail   = new Mail();
+                $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_NEUKUNDENREGISTRIERUNG, $obj));
+
+                $customerData->cLand = $cLand;
+                unset($customerData->cPasswortKlartext, $customerData->Anrede);
+
+                $customerData->kKunde = $customerData->insertInDB();
+                // Kampagne
+                if (isset($_SESSION['Kampagnenbesucher'])) {
+                    Campaign::setCampaignAction(\KAMPAGNE_DEF_ANMELDUNG, $customerData->kKunde, 1.0); // Anmeldung
+                }
+                // Insert Kundenattribute
+                $customerAttributes->setCustomerID((int)$customerData->kKunde);
+                $customerAttributes->save();
+                if ($conf !== 'A') {
+                    $_SESSION['Kunde'] = new Customer($customerData->kKunde);
+                    $_SESSION['Kunde']->getCustomerAttributes()->load($customerData->kKunde);
+                } else {
+                    $this->step = 'formular eingegangen';
+                }
+            }
+            if (isset($cart->kWarenkorb) && $cart->gibAnzahlArtikelExt([\C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
+                Tax::setTaxRates();
+                $cart->gibGesamtsummeWarenLocalized();
+            }
+            if ((int)$post['checkout'] === 1) {
+                //weiterleitung zum chekout
+                \header('Location: ' . Shop::Container()->getLinkService()
+                        ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
+                exit;
+            }
+            if (isset($post['ajaxcheckout_return']) && (int)$post['ajaxcheckout_return'] === 1) {
+                return 1;
+            }
+            if ($conf !== 'A') {
+                //weiterleitung zu mein Konto
+                \header('Location: ' . Shop::Container()->getLinkService()
+                        ->getStaticRoute('jtl.php', true) . '?reg=1', true, 303);
+                exit;
+            }
+        } else {
+            $customerData->getCustomerAttributes()->assign($customerAttributes);
+            if ((int)$post['checkout'] === 1) {
+                //weiterleitung zum checkout
+                $_SESSION['checkout.register']        = 1;
+                $_SESSION['checkout.fehlendeAngaben'] = $missingData;
+                $_SESSION['checkout.cPost_arr']       = $post;
+
+                //keep shipping address on error
+                if (isset($post['register']['shipping_address'])) {
+                    $_SESSION['Lieferadresse'] = Lieferadresse::createFromPost($post['register']['shipping_address']);
+                }
+
+                \header('Location: ' . Shop::Container()->getLinkService()
+                        ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
+                exit;
+            }
+            $smarty->assign('fehlendeAngaben', $missingData);
+
+            return $missingData;
+        }
+
+        return [];
+    }
+
+    /**
+     * @param JTLSmarty $smarty
+     * @param int       $checkout
+     * @former gibFormularDaten()
+     * @since 5.2.0
+     */
+    public function getFormData(JTLSmarty $smarty, int $checkout = 0): void
+    {
+        $customer = Frontend::getCustomer();
+        $origins  = $this->db->getObjects(
+            'SELECT * 
+                FROM tkundenherkunft 
+                ORDER BY nSort'
+        );
+
+        $smarty->assign('herkunfte', $origins)
+            ->assign('Kunde', $customer)
+            ->assign('customerAttributes', \is_a($customer, Customer::class)
+                ? $customer->getCustomerAttributes()
+                : new CustomerAttributes())
+            ->assign(
+                'laender',
+                ShippingMethod::getPossibleShippingCountries($this->customerGroupID, false, true)
+            )
+            ->assign(
+                'warning_passwortlaenge',
+                Shop::Lang()->get(
+                    'minCharLen',
+                    'messages',
+                    $this->config['global']['kundenregistrierung_passwortlaenge']
+                )
+            )
+            ->assign('oKundenfeld_arr', new CustomerFields($this->languageID));
+
+        if ($checkout === 1) {
+            $smarty->assign('checkout', 1)
+                ->assign('bestellschritt', [1 => 1, 2 => 3, 3 => 3, 4 => 3, 5 => 3]); // Rechnungsadresse ändern
+        }
     }
 }

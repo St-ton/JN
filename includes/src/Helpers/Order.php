@@ -24,7 +24,7 @@ class Order extends CartHelper
     /**
      * @var Bestellung
      */
-    protected $order;
+    protected Bestellung $order;
 
     /**
      * Order constructor.
@@ -193,5 +193,37 @@ class Order extends CartHelper
         }
 
         return $credit;
+    }
+    /**
+     * @param array $post
+     * @former plausiGuthaben()
+     * @since 5.2.0
+     */
+    public static function checkBalance(array $post): void
+    {
+        if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)
+            || (isset($post['guthabenVerrechnen']) && (int)$post['guthabenVerrechnen'] === 1)
+        ) {
+            if (!isset($_SESSION['Bestellung'])) {
+                $_SESSION['Bestellung'] = new stdClass();
+            }
+            $_SESSION['Bestellung']->GuthabenNutzen   = 1;
+            $_SESSION['Bestellung']->fGuthabenGenutzt = self::getOrderCredit($_SESSION['Bestellung']);
+
+            \executeHook(\HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABENVERRECHNEN);
+        }
+    }
+
+    /**
+     * @former pruefeGuthabenNutzen()
+     * @since since 5.2.0
+     */
+    public static function setUsedBalance(): void
+    {
+        if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen) {
+            $_SESSION['Bestellung']->fGuthabenGenutzt = self::getOrderCredit($_SESSION['Bestellung']);
+        }
+
+        \executeHook(\HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABEN_PLAUSI);
     }
 }

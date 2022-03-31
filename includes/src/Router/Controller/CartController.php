@@ -9,6 +9,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Kupon;
 use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Form;
+use JTL\Helpers\Order;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Session\Frontend;
@@ -46,7 +47,7 @@ class CartController extends PageController
             CartHelper::applyCartChanges();
         }
         CartHelper::validateCartConfig();
-        \pruefeGuthabenNutzen();
+        Order::setUsedBalance();
         if ($valid && isset($_POST['land'], $_POST['plz'])
             && !ShippingMethod::getShippingCosts($_POST['land'], $_POST['plz'], $warning)
         ) {
@@ -187,7 +188,7 @@ class CartController extends PageController
         $invalidCouponCode = 11;
         if ($coupon !== false && $coupon->kKupon > 0) {
             $couponError       = $coupon->check();
-            $check             = \angabenKorrekt($couponError);
+            $check             = Form::hasNoMissingData($couponError);
             $invalidCouponCode = 0;
             \executeHook(\HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
                 'error'        => &$couponError,

@@ -21,7 +21,7 @@ use stdClass;
 
 /**
  * Class Bestellung
- * @package JTL
+ * @package JTL\Checkout
  */
 class Bestellung
 {

@@ -43,10 +43,8 @@ use stdClass;
  * Class CheckoutController
  * @package JTL\Router\Controller
  */
-class CheckoutController extends PageController
+class CheckoutController extends RegistrationController
 {
-    public string $step = 'accountwahl';
-
     private JTLSmarty $smarty;
 
     private Cart $cart;
@@ -68,6 +66,7 @@ class CheckoutController extends PageController
         $this->smarty = $smarty;
         require_once PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
         require_once PFAD_ROOT . \PFAD_INCLUDES . 'registrieren_inc.php';
+        $this->step = 'accountwahl';
 
         global $step, $Kunde;
         $step  = $this->step;
@@ -140,7 +139,7 @@ class CheckoutController extends PageController
         if (Request::postInt('unreg_form', -1) === 0) {
             $_POST['checkout'] = 1;
             $_POST['form']     = 1;
-//            include PFAD_ROOT . 'registrieren.php';
+            $this->saveCustomer($smarty, $_POST);
         }
 
         if (($paymentMethodID = Request::getInt('kZahlungsart')) > 0) {

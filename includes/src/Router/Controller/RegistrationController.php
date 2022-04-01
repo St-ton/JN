@@ -30,7 +30,7 @@ use stdClass;
  */
 class RegistrationController extends PageController
 {
-    private string $step = 'formular';
+    protected string $step = 'formular';
 
     public function init(): bool
     {

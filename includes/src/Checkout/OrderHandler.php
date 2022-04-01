@@ -67,18 +67,18 @@ class OrderHandler
     }
 
     /**
-     * @param int    $cleared
-     * @param string $orderNo
+     * @param bool        $cleared
+     * @param string|null $orderNo
      * @former bestellungInDB()
      * @since 5.2.0
      */
-    public function bestellungInDB($cleared = 0, $orderNo = '')
+    public function bestellungInDB(bool $cleared = false, ?string $orderNo = null): void
     {
         $this->unhtmlSession();
         $order             = new Bestellung();
         $customer          = $this->customer;
         $deliveryAddress   = Frontend::getDeliveryAddress();
-        $order->cBestellNr = empty($orderNo) ? $this->createOrderNo() : $orderNo;
+        $order->cBestellNr = $orderNo ?? $this->createOrderNo();
         $cartItems         = [];
         if ($this->customer->getID() <= 0) {
             $customerAttributes      = $customer->getCustomerAttributes();
@@ -376,7 +376,7 @@ class OrderHandler
         $obj                      = new stdClass();
         $obj->cVerfuegbarkeit_arr = $this->pruefeVerfuegbarkeit();
 
-        \bestellungInDB(0, $orderNo);
+        $this->bestellungInDB(false, $orderNo);
 
         $order = new Bestellung($_SESSION['kBestellung']);
         $order->fuelleBestellung(false);

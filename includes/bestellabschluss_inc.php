@@ -140,7 +140,6 @@ function aktualisiereXselling(int $productID, int $targetID): void
  */
 function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, int $productFilter = 1)
 {
-
 }
 
 /**

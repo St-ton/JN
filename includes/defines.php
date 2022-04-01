@@ -1,6 +1,8 @@
 <?php
 
 // Charset
+use JTL\Plugin\HookManager;
+
 ifndef('JTL_CHARSET', 'utf-8');
 ifndef('DB_CHARSET', 'utf8');
 ifndef('DB_COLLATE', 'utf8_unicode_ci');
@@ -285,6 +287,15 @@ ifndef('TRACK_VISITORS', true);
 function ifndef(string $constant, $value)
 {
     defined($constant) || define($constant, $value);
+}
+
+/**
+ * @param int   $hookID
+ * @param array $args_arr
+ */
+function executeHook(int $hookID, array $args_arr = [])
+{
+    HookManager::getInstance()->executeHook($hookID, $args_arr);
 }
 
 // Static defines (do not edit)

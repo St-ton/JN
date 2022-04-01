@@ -4,7 +4,6 @@ use JTL\Debug\DataCollector\Smarty;
 use JTL\Filter\Metadata;
 use JTL\Helpers\PHPSettings;
 use JTL\Language\LanguageHelper;
-use JTL\Plugin\HookManager;
 use JTL\Profiler;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -14,15 +13,6 @@ $nStartzeit = microtime(true);
 
 if (file_exists(__DIR__ . '/config.JTL-Shop.ini.php')) {
     require_once __DIR__ . '/config.JTL-Shop.ini.php';
-}
-
-/**
- * @param int   $hookID
- * @param array $args_arr
- */
-function executeHook(int $hookID, array $args_arr = [])
-{
-    HookManager::getInstance()->executeHook($hookID, $args_arr);
 }
 
 /**

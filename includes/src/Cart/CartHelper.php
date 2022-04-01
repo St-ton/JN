@@ -1815,7 +1815,7 @@ class CartHelper
                     );
                 }
             }
-            CouponValidator::validateNewCustomerCoupon();
+            CouponValidator::validateNewCustomerCoupon(Frontend::getCustomer());
         }
         $cart->setzePositionsPreise();
         // Gesamtsumme Warenkorb < Gratisgeschenk && Gratisgeschenk in den Pos?

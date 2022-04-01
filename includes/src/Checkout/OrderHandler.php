@@ -367,11 +367,11 @@ class OrderHandler
     }
 
     /**
-     * @param string $orderNo
-     * @param bool   $sendMail
+     * @param string|null $orderNo
+     * @param bool        $sendMail
      * @return Bestellung
      */
-    public function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
+    public function finalisiereBestellung(?string $orderNo = null, bool $sendMail = true): Bestellung
     {
         $obj                      = new stdClass();
         $obj->cVerfuegbarkeit_arr = $this->pruefeVerfuegbarkeit();

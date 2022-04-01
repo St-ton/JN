@@ -10,6 +10,7 @@ use JTL\Helpers\Text;
 use JTL\L10n\GetText;
 use JTL\MagicCompatibilityTrait;
 use JTL\Smarty\JTLSmarty;
+use Shop;
 use stdClass;
 use function Functional\filter;
 use function Functional\flatten;
@@ -348,6 +349,7 @@ class Base implements SectionInterface
             }
             $updated[] = ['id' => $id, 'value' => $data[$id]];
         }
+        Shop::Container()->getCache()->flushTags($tags);
 
         return $updated;
     }

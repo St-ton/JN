@@ -3,6 +3,7 @@
 namespace JTL\Backend\Settings\Sections;
 
 use JTL\Helpers\Text;
+use Shop;
 use stdClass;
 
 /**
@@ -46,6 +47,7 @@ class PaymentMethod extends Base
             $this->db->insert('teinstellungen', $ins);
             $updated[] = ['id' => $id, 'value' => $data[$id]];
         }
+        Shop::Container()->getCache()->flushTags($tags);
 
         return $updated;
     }

@@ -263,7 +263,7 @@ if (Form::validateToken()) {
                     $code = $language->getCode();
 
                     $versandSprache->cISOSprache = $code;
-                    $versandSprache->cName       = $shippingMethod->cName;
+                    $versandSprache->cName       = '';
                     if (!empty($postData['cName_' . $code])) {
                         $versandSprache->cName = htmlspecialchars(
                             $postData['cName_' . $code],
@@ -272,9 +272,6 @@ if (Form::validateToken()) {
                         );
                     }
                     $versandSprache->cLieferdauer = '';
-                    if ($postData['cLieferdauer_' . $code]) {
-                        echo 'yes.';
-                    }
                     if (!empty($postData['cLieferdauer_' . $code])) {
                         $versandSprache->cLieferdauer = htmlspecialchars(
                             $postData['cLieferdauer_' . $code],

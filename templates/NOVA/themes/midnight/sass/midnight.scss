@@ -1,5 +1,7 @@
 @import '../../base/sass/functions';
 
+//#customVariables#
+
 @import 'variables';
 
 @import 'allstyles';
@@ -84,3 +86,5 @@ header {
     color: $footer-color;
   }
 }
+
+//#customContent#

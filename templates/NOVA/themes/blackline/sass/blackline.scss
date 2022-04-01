@@ -1,5 +1,7 @@
 @import '../../base/sass/functions';
 
+//#customVariables#
+
 @import 'variables';
 
 @import 'allstyles';
@@ -581,3 +583,5 @@ aside {
   font-family: $font-accent;
   font-weight: $font-weight-light;
 }
+
+//#customContent#

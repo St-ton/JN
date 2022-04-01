@@ -42,7 +42,7 @@
                                 </thead>
                                 <tbody>
                                 {foreach $oKampagne_arr as $oKampagne}
-                                    {if isset($oKampagne->kKampagne) && $oKampagne->kKampagne < 1000}
+                                    {if !empty($oKampagne->nInternal)}
                                         <tr>
                                             <td>
                                                 <strong><a href="{$adminURL}/kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">{$oKampagne->getName()}</a></strong>
@@ -112,7 +112,7 @@
                                     </thead>
                                     <tbody>
                                     {foreach $oKampagne_arr as $oKampagne}
-                                        {if $oKampagne->kKampagne >= 1000}
+                                        {if empty($oKampagne->nInternal)}
                                             <tr>
                                                 <td class="check">
                                                     <div class="custom-control custom-checkbox">

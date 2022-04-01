@@ -264,3 +264,21 @@ msgstr "Custom layout"
 
 msgid "chooseLayout"
 msgstr "Please choose a preset layout:"
+
+msgid "Colors"
+msgstr "Colors"
+
+msgid "Custom Sass"
+msgstr "Custom styles"
+
+msgid "Custom Sass Description"
+msgstr "Here you can make your own CSS adjustments to your template. For information about valid variables, please see <a href=\"https://guide.jtl-software.de/jtl-shop/optik/templates-anpassen/\">Adjusting templates</a>. You can also define your own custom CSS, Sass or Scss. Learn how to do this <a href=\"https://guide.jtl-software.de/jtl-shop/optik/templates-anpassen/\">here</a>. <br><br>Please note: <ul><li>Use either the settings on this page or the plug-in JTL-Theme Editor for CSS adjustments. If you use both at the same time, there might be unwanted overlaps.</li><li><span class=\"text-warning\"> Empty the browser cache to see the changes made in the back end in the online shop.</li></ul>"
+
+msgid "colorPrimary"
+msgstr "Primary color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "customVariables"
+msgstr "Custom variables"
+
+msgid "customContent"
+msgstr "Custom CSS, Sass or Scss"

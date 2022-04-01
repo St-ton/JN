@@ -5,6 +5,7 @@ namespace JTL\Backend\Settings\Sections;
 use JTL\Backend\Settings\Item;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
+use Shop;
 use stdClass;
 
 /**
@@ -122,6 +123,7 @@ class PluginPaymentMethod extends Base
             $this->db->insert('tplugineinstellungen', $ins);
             $updated[] = ['id' => $id, 'value' => $data[$id]];
         }
+        Shop::Container()->getCache()->flushTags($tags);
 
         return $updated;
     }

@@ -264,3 +264,21 @@ msgstr "Eigenes Layout"
 
 msgid "chooseLayout"
 msgstr "Wählen Sie ein vorgefertigtes Layout aus:"
+
+msgid "Colors"
+msgstr "Farben"
+
+msgid "Custom Sass"
+msgstr "Benutzerdefinierte Styles"
+
+msgid "Custom Sass Description"
+msgstr "Hier können Sie eigene CSS-Anpassungen an Ihrem Template vornehmen. Informationen zu Variablen finden Sie <a href=\"https://guide.jtl-software.de/jtl-shop/optik/templates-anpassen/\">hier</a>. Ansonsten können Sie unter <a href=\"https://guide.jtl-software.de/jtl-shop/optik/templates-anpassen/\">„Custom Sass“</a> auch eigenes CSS bzw. Sass oder Scss definieren. <br><br>Bitte beachten Sie die folgenden Punkte: <ul><li>Nutzen Sie für CSS-Anpassungen entweder die Einstellungen auf dieser Seite oder das Plugin JTL-Theme Editor. Wenn Sie beides zusammen verwenden, kann es zu ungewollten Überschneidungen kommen.</li><li><span class=\"text-warning\"> Leeren Sie den Browser-Cache, um die im Backend vorgenommenen Änderungen im Onlineshop sehen zu können.</li></ul>"
+
+msgid "colorPrimary"
+msgstr "Primärfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "customVariables"
+msgstr "Benutzerdefinierte Variablen"
+
+msgid "customContent"
+msgstr "Benutzerdefiniertes CSS, Sass oder Scss"

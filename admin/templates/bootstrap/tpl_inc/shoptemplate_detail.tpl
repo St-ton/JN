@@ -227,6 +227,8 @@
                         {__('buttonCustomLayout')}
                     </a>
                     <div class="collapse" id="header-settings">
+                    {elseif $section->key === 'customsass'}
+                        <div class="underline-links mb-5">{__('Custom Sass Description')}</div>
                     {/if}
                     <div class="row">
                         {foreach $section->settings as $setting}
@@ -273,6 +275,7 @@
                                                 {include file='snippets/colorpicker.tpl'
                                                 cpID="{$setting->elementID}"
                                                 cpName="{$setting->elementID}"
+                                                useAlpha=true
                                                 cpValue=$setting->value}
                                             {elseif $setting->cType === 'number'}
                                                 {include file='tpl_inc/option_number.tpl' setting=$setting section=$section}

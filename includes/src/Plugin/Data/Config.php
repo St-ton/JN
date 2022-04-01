@@ -23,12 +23,12 @@ class Config
     /**
      * @var string
      */
-    private $adminPath;
+    private string $adminPath;
 
     /**
      * @var Collection
      */
-    private $options;
+    private Collection $options;
 
     /**
      * Config constructor.

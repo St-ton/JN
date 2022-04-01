@@ -23,20 +23,40 @@ use stdClass;
 
 /**
  * Class OrderHandler
- * @package JTL\Helpers
+ * @package JTL\Checkout
  */
 class OrderHandler
 {
+    /**
+     * @var DbInterface
+     */
     private DbInterface $db;
 
+    /**
+     * @var Customer
+     */
     private Customer $customer;
 
+    /**
+     * @var Cart
+     */
     private Cart $cart;
 
+    /**
+     * @var int
+     */
     private int $languageID;
 
+    /**
+     * @var StockUpdater
+     */
     private StockUpdater $stockUpdater;
 
+    /**
+     * @param DbInterface $db
+     * @param Customer    $customer
+     * @param Cart        $cart
+     */
     public function __construct(DbInterface $db, Customer $customer, Cart $cart)
     {
         $this->db           = $db;

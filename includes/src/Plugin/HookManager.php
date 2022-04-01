@@ -107,7 +107,8 @@ class HookManager
                         $oPlugin             = $plugin;
                         $file                = $pluginData->cDateiname;
                         if ($hookID === \HOOK_SEITE_PAGE_IF_LINKART && $file === \PLUGIN_SEITENHANDLER) {
-                            include \PFAD_ROOT . \PFAD_INCLUDES . \PLUGIN_SEITENHANDLER;
+                            // removed in 5.2.0 - moved to router
+                            // include \PFAD_ROOT . \PFAD_INCLUDES . \PLUGIN_SEITENHANDLER;
                         } elseif ($hookID === \HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION) {
                             if ($plugin->getID() === (int)$args['oCheckBox']->oCheckBoxFunktion->kPlugin) {
                                 include $plugin->getPaths()->getFrontendPath() . $file;

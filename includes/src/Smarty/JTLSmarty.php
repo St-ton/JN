@@ -367,7 +367,8 @@ class JTLSmarty extends BC
             $this->registerFilter('output', [$this, 'outputFilter']);
         }
         /** @var JTLSmartyTemplateClass $template */
-        $template                 = $this->createTemplate($this->getResourceName($template), null, null, $this, false);
+        $template = $this->createTemplate($this->getResourceName($template), null, null, $this, false);
+
         $template->noOutputFilter = false;
 
         $res = parent::fetch($template);
@@ -376,10 +377,6 @@ class JTLSmarty extends BC
         $response->getBody()->write($res);
 
         return $response;
-
-//        \ob_start();
-//        $this->display($template);
-//        return \ob_get_clean();
     }
 
     /**

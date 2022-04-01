@@ -133,7 +133,7 @@ class PageController extends AbstractController
             $loader = PluginHelper::getLoaderByPluginID($pluginID, $this->db, $cache);
             $boot   = PluginHelper::bootstrap($pluginID, $loader);
             if ($boot === null || !$boot->prepareFrontend($this->currentLink, $smarty)) {
-                \executeHook(\HOOK_SEITE_PAGE_IF_LINKART);
+                $this->getPluginPage($smarty);
             }
         }
         $this->preRender($smarty);
@@ -148,5 +148,38 @@ class PageController extends AbstractController
         }
 
         return $smarty->getResponse('layout/index.tpl');
+    }
+
+    /**
+     * @param JTLSmarty $smarty
+     * @return void
+     */
+    protected function getPluginPage(JTLSmarty $smarty): void
+    {
+        $linkID = $this->currentLink->getID();
+        if ($linkID <= 0) {
+            return;
+        }
+        $linkFile = $this->db->select('tpluginlinkdatei', 'kLink', $linkID);
+        if ($linkFile === null || empty($linkFile->cDatei)) {
+            return;
+        }
+        global $oPlugin, $plugin;
+        $pluginID = (int)$linkFile->kPlugin;
+        $plugin   = PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID);
+        $oPlugin  = $plugin;
+        $smarty->assign('oPlugin', $plugin)
+            ->assign('plugin', $plugin)
+            ->assign('Link', $this->currentLink);
+        if ($linkFile->cTemplate !== null && \mb_strlen($linkFile->cTemplate) > 0) {
+            $smarty->assign('cPluginTemplate', $plugin->getPaths()->getFrontendPath() .
+                \PFAD_PLUGIN_TEMPLATE . $linkFile->cTemplate)
+                ->assign('nFullscreenTemplate', 0);
+        } else {
+            $smarty->assign('cPluginTemplate', $plugin->getPaths()->getFrontendPath() .
+                \PFAD_PLUGIN_TEMPLATE . $linkFile->cFullscreenTemplate)
+                ->assign('nFullscreenTemplate', 1);
+        }
+        include $plugin->getPaths()->getFrontendPath() . $linkFile->cDatei;
     }
 }

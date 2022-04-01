@@ -68,9 +68,6 @@ class DefaultHandler extends AbstractHandler
         $cf         = new ControllerFactory($this->state, $this->db);
         $controller = $cf->getEntryPoint();
         $check      = $controller->init();
-//        Shop::dbg($check, false, 'check:');
-//        Shop::dbg($this->state, true);
-//        Shop::dbg($controller, true);
         if ($check === false) {
             return $controller->notFoundResponse($smarty);
         }

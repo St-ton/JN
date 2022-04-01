@@ -277,5 +277,5 @@ function pruefeVerfuegbarkeit(): array
 function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
 {
     trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
-    return getOrderHandler()->finalisiereBestellung($orderNo, $sendMail);
+    return getOrderHandler()->finalisiereBestellung($orderNo === '' ? null : $orderNo, $sendMail);
 }

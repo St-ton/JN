@@ -10,7 +10,6 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Zahlungsart;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerAttributes;
-use JTL\Customer\CustomerField;
 use JTL\Customer\CustomerFields;
 use JTL\Customer\Registration\Form as RegistrationForm;
 use JTL\Customer\Registration\Validator\AbstractValidator;
@@ -582,7 +581,6 @@ function gibStepAccountwahl(?JTLSmarty $smarty = null): void
 function gibStepUnregistriertBestellen(?JTLSmarty $smarty = null): void
 {
     trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
-    /** @var Customer $Kunde */
     global $Kunde;
     $origins         = Shop::Container()->getDB()->getObjects(
         'SELECT *
@@ -1001,6 +999,7 @@ function checkBIC($bic): bool
 /**
  * @param string $iban
  * @return bool|mixed
+ * @deprecated since 5.2.0
  */
 function plausiIban($iban)
 {
@@ -1615,6 +1614,7 @@ function zahlungsartGueltig($paymentMethod): bool
 /**
  * @param int $minOrders
  * @return bool
+ * @deprecated since 5.2.0
  */
 function pruefeZahlungsartMinBestellungen(int $minOrders): bool
 {
@@ -1628,6 +1628,7 @@ function pruefeZahlungsartMinBestellungen(int $minOrders): bool
 /**
  * @param float|string $minOrderValue
  * @return bool
+ * @deprecated since 5.2.0
  */
 function pruefeZahlungsartMinBestellwert($minOrderValue): bool
 {
@@ -1641,6 +1642,7 @@ function pruefeZahlungsartMinBestellwert($minOrderValue): bool
 /**
  * @param float|string $maxOrderValue
  * @return bool
+ * @deprecated since 5.2.0
  */
 function pruefeZahlungsartMaxBestellwert($maxOrderValue): bool
 {
@@ -1867,236 +1869,7 @@ function angabenKorrekt(array $missingData): int
 function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
 {
     trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
-    $ret  = [];
-    $conf = Shop::getSettings([CONF_KUNDEN, CONF_KUNDENFELD, CONF_GLOBAL]);
-
-    foreach (['nachname', 'strasse', 'hausnummer', 'plz', 'ort', 'land', 'email'] as $dataKey) {
-        $data[$dataKey] = isset($data[$dataKey]) ? trim($data[$dataKey]) : null;
-
-        if (!$data[$dataKey]) {
-            $ret[$dataKey] = 1;
-        }
-    }
-
-    foreach ([
-                 'kundenregistrierung_abfragen_anrede'       => 'anrede',
-                 'kundenregistrierung_pflicht_vorname'       => 'vorname',
-                 'kundenregistrierung_abfragen_firma'        => 'firma',
-                 'kundenregistrierung_abfragen_firmazusatz'  => 'firmazusatz',
-                 'kundenregistrierung_abfragen_titel'        => 'titel',
-                 'kundenregistrierung_abfragen_adresszusatz' => 'adresszusatz',
-                 'kundenregistrierung_abfragen_www'          => 'www',
-                 'kundenregistrierung_abfragen_bundesland'   => 'bundesland',
-                 'kundenregistrierung_abfragen_geburtstag'   => 'geburtstag',
-                 'kundenregistrierung_abfragen_fax'          => 'fax',
-                 'kundenregistrierung_abfragen_tel'          => 'tel',
-                 'kundenregistrierung_abfragen_mobil'        => 'mobil'
-             ] as $confKey => $dataKey) {
-        if ($conf['kunden'][$confKey] === 'Y') {
-            $data[$dataKey] = isset($data[$dataKey]) ? trim($data[$dataKey]) : null;
-
-            if (!$data[$dataKey]) {
-                $ret[$dataKey] = 1;
-            }
-        }
-    }
-
-    if (!empty($data['www']) && !Text::filterURL($data['www'], true, true)) {
-        $ret['www'] = 2;
-    }
-
-    if (isset($ret['email']) && $ret['email'] === 1) {
-        // email is empty
-    } elseif (Text::filterEmailAddress($data['email']) === false) {
-        $ret['email'] = 2;
-    } elseif (SimpleMail::checkBlacklist($data['email'])) {
-        $ret['email'] = 3;
-    } elseif (isset($conf['kunden']['kundenregistrierung_pruefen_email'])
-        && $conf['kunden']['kundenregistrierung_pruefen_email'] === 'Y'
-        && !checkdnsrr(mb_substr($data['email'], mb_strpos($data['email'], '@') + 1))
-    ) {
-        $ret['email'] = 4;
-    }
-
-    if (empty($_SESSION['check_plzort'])
-        && empty($_SESSION['check_liefer_plzort'])
-        && $conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'
-    ) {
-        if (!AbstractValidator::isValidAddress($data['plz'], $data['ort'], $data['land'])) {
-            $ret['plz']               = 2;
-            $ret['ort']               = 2;
-            $_SESSION['check_plzort'] = 1;
-        }
-    } else {
-        unset($_SESSION['check_plzort']);
-    }
-
-    foreach ([
-                 'kundenregistrierung_abfragen_tel'   => 'tel',
-                 'kundenregistrierung_abfragen_mobil' => 'mobil',
-                 'kundenregistrierung_abfragen_fax'   => 'fax'
-             ] as $confKey => $dataKey) {
-        if (isset($data[$dataKey])
-            && ($errCode = Text::checkPhoneNumber($data[$dataKey], $conf['kunden'][$confKey] === 'Y')) > 0
-        ) {
-            $ret[$dataKey] = $errCode;
-        }
-    }
-
-    $deliveryCountry = ($conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N')
-        ? Shop::Container()->getCountryService()->getCountry($data['land'])
-        : null;
-
-    if (isset($deliveryCountry)
-        && !$deliveryCountry->isEU()
-        && $conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N'
-    ) {
-        //skip
-    } elseif (empty($data['ustid']) && $conf['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y') {
-        $ret['ustid'] = 1;
-    } elseif (isset($data['ustid'])
-        && $data['ustid'] !== ''
-        && $conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N'
-    ) {
-        if (!isset(Frontend::getCustomer()->cUSTID)
-            || (isset(Frontend::getCustomer()->cUSTID)
-                && Frontend::getCustomer()->cUSTID !== $data['ustid'])
-        ) {
-            $analizeCheck   = false;
-            $resultVatCheck = null;
-            if ($conf['kunden']['shop_ustid_bzstpruefung'] === 'Y') {
-                $vatCheck       = new VATCheck(trim($data['ustid']));
-                $resultVatCheck = $vatCheck->doCheckID();
-                $analizeCheck   = true;
-            }
-            if ($analizeCheck === true && $resultVatCheck['success'] === true) {
-                $ret['ustid'] = 0;
-            } elseif (isset($resultVatCheck)) {
-                switch ($resultVatCheck['errortype']) {
-                    case 'vies':
-                        // vies-error: the ID is invalid according to the VIES-system
-                        $ret['ustid'] = $resultVatCheck['errorcode']; // (old value 5)
-                        break;
-                    case 'parse':
-                        // parse-error: the ID-string is misspelled in any way
-                        if ($resultVatCheck['errorcode'] === 1) {
-                            $ret['ustid'] = 1; // parse-error: no id was given
-                        } elseif ($resultVatCheck['errorcode'] > 1) {
-                            $ret['ustid'] = 2; // parse-error: with the position of error in given ID-string
-                            switch ($resultVatCheck['errorcode']) {
-                                case 120:
-                                    // build a string with error-code and error-information
-                                    $ret['ustid_err'] = $resultVatCheck['errorcode'] . ',' .
-                                        mb_substr($data['ustid'], 0, $resultVatCheck['errorinfo']) .
-                                        '<span style="color:red;">' .
-                                        mb_substr($data['ustid'], $resultVatCheck['errorinfo']) .
-                                        '</span>';
-                                    break;
-                                case 130:
-                                    $ret['ustid_err'] = $resultVatCheck['errorcode'] . ',' .
-                                        $resultVatCheck['errorinfo'];
-                                    break;
-                                default:
-                                    $ret['ustid_err'] = $resultVatCheck['errorcode'];
-                                    break;
-                            }
-                        }
-                        break;
-                    case 'time':
-                        // according to the backend-setting:
-                        // "Einstellungen -> (Formular)einstellungen -> UstID-Nummer"-check active
-                        if ($conf['kunden']['shop_ustid_force_remote_check'] === 'Y') {
-                            // parsing ok, but the remote-service is in a down slot and unreachable
-                            $ret['ustid']     = 4;
-                            $ret['ustid_err'] = $resultVatCheck['errorcode'] . ',' . $resultVatCheck['errorinfo'];
-                        }
-                        break;
-                    case 'core':
-                        // if we have problems like "no module php_soap" we create a log entry
-                        // (use case: the module and the vat-check was formerly activated yet
-                        // but the php-module is disabled now)
-                        Shop::Container()->getLogService()->warning($resultVatCheck['errorinfo']);
-                        break;
-                }
-            }
-        }
-    }
-    if (isset($data['geburtstag'])) {
-        $enDate = DateTime::createFromFormat('Y-m-d', $data['geburtstag']);
-        if (($errCode = Text::checkDate(
-            $enDate === false ? $data['geburtstag'] : $enDate->format('d.m.Y'),
-            $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'
-        )) > 0) {
-            $ret['geburtstag'] = $errCode;
-        }
-    }
-    if ($kundenaccount === 1) {
-        if ($checkpass) {
-            if ($data['pass'] !== $data['pass2']) {
-                $ret['pass_ungleich'] = 1;
-            }
-            if (mb_strlen($data['pass']) < $conf['kunden']['kundenregistrierung_passwortlaenge']) {
-                $ret['pass_zu_kurz'] = 1;
-            }
-            if (mb_strlen($data['pass']) > 255) {
-                $ret['pass_zu_lang'] = 1;
-            }
-        }
-        //existiert diese email bereits?
-        if (!isset($ret['email'])
-            && !AbstractValidator::isEmailAvailable($data['email'], Frontend::getCustomer()->kKunde ?? 0)
-        ) {
-            if (!(isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)) {
-                $ret['email_vorhanden'] = 1;
-            }
-            $ret['email'] = 5;
-        }
-    }
-    // Selbstdef. Kundenfelder
-    if (isset($conf['kundenfeld']['kundenfeld_anzeigen']) && $conf['kundenfeld']['kundenfeld_anzeigen'] === 'Y') {
-        $customerFields = new CustomerFields(Shop::getLanguageID());
-        /** @var CustomerField $customerField */
-        foreach ($customerFields as $customerField) {
-            // Kundendaten ändern?
-            $customerFieldIdx = 'custom_' . $customerField->getID();
-            if (isset($data[$customerFieldIdx])
-                && ($check = $customerField->validate($data[$customerFieldIdx])) !== CustomerField::VALIDATE_OK
-            ) {
-                $ret['custom'][$customerField->getID()] = $check;
-            }
-        }
-    }
-    if (isset($conf['kunden']['kundenregistrierung_pruefen_ort'])
-        && $conf['kunden']['kundenregistrierung_pruefen_ort'] === 'Y'
-        && preg_match('#[0-9]+#', $data['ort'])
-    ) {
-        $ret['ort'] = 3;
-    }
-    if (isset($conf['kunden']['kundenregistrierung_pruefen_name'])
-        && $conf['kunden']['kundenregistrierung_pruefen_name'] === 'Y'
-        && preg_match('#[0-9]+#', $data['nachname'])
-    ) {
-        $ret['nachname'] = 2;
-    }
-
-    if (isset($conf['kunden']['kundenregistrierung_pruefen_zeit'], $data['editRechnungsadresse'])
-        && (int)$data['editRechnungsadresse'] !== 1
-        && $conf['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
-    ) {
-        $regTime = $_SESSION['dRegZeit'] ?? 0;
-        if (!($regTime + 5 < time())) {
-            $ret['formular_zeit'] = 1;
-        }
-    }
-
-    if (isset($conf['kunden']['registrieren_captcha'])
-        && $conf['kunden']['registrieren_captcha'] !== 'N'
-        && !Form::validateCaptcha($data)
-    ) {
-        $ret['captcha'] = 2;
-    }
-
-    return $ret;
+    return (new RegistrationForm())->checkKundenFormularArray($data, (bool)$kundenaccount, (bool)$checkpass);
 }
 
 /**

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Campaign;
 use JTL\Cart\CartItem;
@@ -14,6 +14,7 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Nummern;
 use JTL\Checkout\OrderHandler;
 use JTL\Checkout\Rechnungsadresse;
+use JTL\Checkout\StockUpdater;
 use JTL\Checkout\ZahlungsInfo;
 use JTL\Customer\Customer;
 use JTL\Extensions\Upload\Upload;
@@ -29,6 +30,16 @@ use JTL\Plugin\Helper;
 use JTL\Plugin\Payment\MethodInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
+
+function getOrderHandler(): OrderHandler
+{
+    return new OrderHandler(Shop::Container()->getDB(), Frontend::getCustomer(), Frontend::getCart());
+}
+
+function getStockUpdater(): StockUpdater
+{
+    return new StockUpdater(Shop::Container()->getDB(), Frontend::getCustomer(), Frontend::getCart());
+}
 
 /**
  * @return int
@@ -93,8 +104,8 @@ function gibFehlendeEingabe(): int
  */
 function bestellungInDB($cleared = 0, $orderNo = '')
 {
-    $handler = new OrderHandler(Shop::Container()->getDB(), Frontend::getCustomer(), Frontend::getCart());
-    return $handler->bestellungInDB($cleared, $orderNo);
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return getOrderHandler()->bestellungInDB($cleared, $orderNo);
 }
 
 /**
@@ -103,6 +114,8 @@ function bestellungInDB($cleared = 0, $orderNo = '')
  */
 function speicherKundenKontodaten($paymentInfo): void
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    getOrderHandler()->saveCustomerAccountData($paymentInfo);
 }
 
 /**
@@ -110,6 +123,8 @@ function speicherKundenKontodaten($paymentInfo): void
  */
 function unhtmlSession(): void
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    getOrderHandler()->unhtmlSession();
 }
 
 /**
@@ -119,6 +134,8 @@ function unhtmlSession(): void
  */
 function aktualisiereBestseller(int $productID, $amount): void
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    getStockUpdater()->updateBestsellers($productID, $amount);
 }
 
 /**
@@ -128,6 +145,8 @@ function aktualisiereBestseller(int $productID, $amount): void
  */
 function aktualisiereXselling(int $productID, int $targetID): void
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    getStockUpdater()->updateXSelling($productID, $targetID);
 }
 
 /**
@@ -140,6 +159,8 @@ function aktualisiereXselling(int $productID, int $targetID): void
  */
 function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, int $productFilter = 1)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return getStockUpdater()->updateStock($product, $amount, $attributeValues, $productFilter);
 }
 
 /**
@@ -149,6 +170,8 @@ function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, i
  */
 function updateStock(int $productID, $amount, $packeinheit)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    getStockUpdater()->updateProductStockLevel($productID, $amount, $packeinheit);
 }
 
 /**
@@ -158,6 +181,8 @@ function updateStock(int $productID, $amount, $packeinheit)
  */
 function aktualisiereStuecklistenLagerbestand(Artikel $bomProduct, $amount)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return getStockUpdater()->updateBOMStockLevel($bomProduct, $amount);
 }
 
 /**
@@ -168,6 +193,8 @@ function aktualisiereStuecklistenLagerbestand(Artikel $bomProduct, $amount)
  */
 function aktualisiereKomponenteLagerbestand(int $productID, float $stockLevel, bool $allowNegativeStock): void
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    getStockUpdater()->updateBOMStock($productID, $stockLevel, $allowNegativeStock);
 }
 
 /**
@@ -176,7 +203,8 @@ function aktualisiereKomponenteLagerbestand(int $productID, float $stockLevel, b
  */
 function KuponVerwendungen($order): void
 {
-    //@todo
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    getStockUpdater()->updateCouponUsages($order);
 }
 
 /**
@@ -185,7 +213,8 @@ function KuponVerwendungen($order): void
  */
 function baueBestellnummer(): string
 {
-    // @todo
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return getOrderHandler()->createOrderNo();
 }
 
 /**
@@ -194,7 +223,8 @@ function baueBestellnummer(): string
  */
 function speicherUploads($order): void
 {
-    //@todo
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    getOrderHandler()->saveUploads($order);
 }
 
 /**
@@ -203,7 +233,7 @@ function speicherUploads($order): void
  */
 function setzeSmartyWeiterleitung(Bestellung $order): void
 {
-    //@todo
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
 }
 
 /**
@@ -212,8 +242,8 @@ function setzeSmartyWeiterleitung(Bestellung $order): void
  */
 function fakeBestellung()
 {
-    //@todo
-    (new OrderHandler(Shop::Container()->getDB(), Frontend::getCustomer(), Frontend::getCart()))->fakeBestellung();
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return getOrderHandler()->fakeBestellung();
 }
 
 /**
@@ -222,7 +252,8 @@ function fakeBestellung()
  */
 function gibLieferadresseAusSession()
 {
-    //@todo
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return getOrderHandler()->getShippingAddress();
 }
 
 /**
@@ -233,16 +264,18 @@ function gibLieferadresseAusSession()
  */
 function pruefeVerfuegbarkeit(): array
 {
-    // @todo
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return getOrderHandler()->pruefeVerfuegbarkeit();
 }
 
 /**
  * @param string $orderNo
  * @param bool   $sendMail
  * @return Bestellung
+ * @deprecated since 5.2.0
  */
 function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
 {
-    return (new OrderHandler(Shop::Container()->getDB(), Frontend::getCustomer(), Frontend::getCart()))
-        ->finalisiereBestellung($orderNo, $sendMail);
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return getOrderHandler()->finalisiereBestellung($orderNo, $sendMail);
 }

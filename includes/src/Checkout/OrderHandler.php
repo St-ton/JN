@@ -421,6 +421,8 @@ class OrderHandler
      * Schaut nach ob eine Bestellmenge > Lagersbestand ist und falls dies erlaubt ist, gibt es einen Hinweis.
      *
      * @return array
+     * @former pruefeVerfuegbarkeit()
+     * @since 5.2.0
      */
     public function pruefeVerfuegbarkeit(): array
     {
@@ -759,7 +761,7 @@ class OrderHandler
     /**
      * @param object $paymentInfo
      * @former speicherKundenKontodaten()
-     * @deprecated since 5.2.0
+     * @since 5.2.0
      */
     public function saveCustomerAccountData(object $paymentInfo): void
     {

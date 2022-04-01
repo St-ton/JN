@@ -2,7 +2,6 @@
 
 namespace JTL\Router\Controller;
 
-use DateTime;
 use InvalidArgumentException;
 use JTL\Alert\Alert;
 use JTL\Cart\Cart;
@@ -17,10 +16,8 @@ use JTL\Checkout\Zahlungsart;
 use JTL\Customer\AccountController;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerAttributes;
-use JTL\Customer\CustomerField;
 use JTL\Customer\CustomerFields;
 use JTL\Customer\Registration\Form as RegistrationForm;
-use JTL\Customer\Registration\Validator\AbstractValidator;
 use JTL\Extensions\Download\Download;
 use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Form;
@@ -37,9 +34,7 @@ use JTL\Plugin\PluginInterface;
 use JTL\Plugin\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
-use JTL\VerificationVAT\VATCheck;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use stdClass;
@@ -74,8 +69,9 @@ class CheckoutController extends PageController
         require_once PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
         require_once PFAD_ROOT . \PFAD_INCLUDES . 'registrieren_inc.php';
 
-        global $step; // @todo
-        $step = $this->step;
+        global $step, $Kunde;
+        $step  = $this->step;
+        $Kunde = $this->customer;
 
         $_SESSION['deliveryCountryPrefLocked'] = true;
 
@@ -144,8 +140,9 @@ class CheckoutController extends PageController
         if (Request::postInt('unreg_form', -1) === 0) {
             $_POST['checkout'] = 1;
             $_POST['form']     = 1;
-            include PFAD_ROOT . 'registrieren.php';
+//            include PFAD_ROOT . 'registrieren.php';
         }
+
         if (($paymentMethodID = Request::getInt('kZahlungsart')) > 0) {
             $this->zahlungsartKorrekt($paymentMethodID);
         }
@@ -156,6 +153,7 @@ class CheckoutController extends PageController
         if (Request::getInt('unreg') === 1 && $this->config['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y') {
             $this->step = 'edit_customer_address';
         }
+
         //autom. step ermitteln
         if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
             if (!isset($_SESSION['Lieferadresse'])) {
@@ -193,6 +191,7 @@ class CheckoutController extends PageController
                 }
             }
         }
+
         if (empty($_SESSION['Kunde']->cPasswort) && Download::hasDownloads($this->cart)) {
             // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
             $this->step = 'accountwahl';
@@ -1244,10 +1243,7 @@ class CheckoutController extends PageController
 
         switch ($zahlungsangaben) {
             case 0:
-                $this->alertService->addNotice(
-                    Shop::Lang()->get('fillPayment', 'checkout'),
-                    'fillPayment'
-                );
+                $this->alertService->addNotice(Shop::Lang()->get('fillPayment', 'checkout'), 'fillPayment');
                 $this->step = 'Zahlung';
                 return 0;
             case 1:
@@ -1695,247 +1691,6 @@ class CheckoutController extends PageController
         }
 
         \executeHook(\HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG);
-    }
-
-    /**
-     * @param bool $customerAccount
-     * @param bool $checkpass
-     * @return array
-     * @former checkKundenFormular()
-     */
-    public function checkKundenFormular(bool $customerAccount, bool $checkpass = true): array
-    {
-        return $this->checkKundenFormularArray(Text::filterXSS($_POST), $customerAccount, $checkpass);
-    }
-
-    /**
-     * @param array $data
-     * @param bool  $kundenaccount
-     * @param bool  $checkpass
-     * @return array
-     * @former checkKundenFormularArray()
-     */
-    public function checkKundenFormularArray(array $data, bool $kundenaccount, bool $checkpass = true): array
-    {
-        $ret = [];
-        foreach (['nachname', 'strasse', 'hausnummer', 'plz', 'ort', 'land', 'email'] as $dataKey) {
-            $data[$dataKey] = isset($data[$dataKey]) ? \trim($data[$dataKey]) : null;
-
-            if (!$data[$dataKey]) {
-                $ret[$dataKey] = 1;
-            }
-        }
-
-        foreach ([
-                     'kundenregistrierung_abfragen_anrede'       => 'anrede',
-                     'kundenregistrierung_pflicht_vorname'       => 'vorname',
-                     'kundenregistrierung_abfragen_firma'        => 'firma',
-                     'kundenregistrierung_abfragen_firmazusatz'  => 'firmazusatz',
-                     'kundenregistrierung_abfragen_titel'        => 'titel',
-                     'kundenregistrierung_abfragen_adresszusatz' => 'adresszusatz',
-                     'kundenregistrierung_abfragen_www'          => 'www',
-                     'kundenregistrierung_abfragen_bundesland'   => 'bundesland',
-                     'kundenregistrierung_abfragen_geburtstag'   => 'geburtstag',
-                     'kundenregistrierung_abfragen_fax'          => 'fax',
-                     'kundenregistrierung_abfragen_tel'          => 'tel',
-                     'kundenregistrierung_abfragen_mobil'        => 'mobil'
-                 ] as $confKey => $dataKey) {
-            if ($this->config['kunden'][$confKey] === 'Y') {
-                $data[$dataKey] = isset($data[$dataKey]) ? \trim($data[$dataKey]) : null;
-
-                if (!$data[$dataKey]) {
-                    $ret[$dataKey] = 1;
-                }
-            }
-        }
-
-        if (!empty($data['www']) && !Text::filterURL($data['www'], true, true)) {
-            $ret['www'] = 2;
-        }
-
-        if (isset($ret['email']) && $ret['email'] === 1) {
-            // email is empty
-        } elseif (Text::filterEmailAddress($data['email']) === false) {
-            $ret['email'] = 2;
-        } elseif (SimpleMail::checkBlacklist($data['email'])) {
-            $ret['email'] = 3;
-        } elseif ($this->config['kunden']['kundenregistrierung_pruefen_email'] === 'Y'
-            && !\checkdnsrr(mb_substr($data['email'], \mb_strpos($data['email'], '@') + 1))
-        ) {
-            $ret['email'] = 4;
-        }
-
-        if (empty($_SESSION['check_plzort'])
-            && empty($_SESSION['check_liefer_plzort'])
-            && $this->config['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'
-        ) {
-            if (!AbstractValidator::isValidAddress($data['plz'], $data['ort'], $data['land'])) {
-                $ret['plz']               = 2;
-                $ret['ort']               = 2;
-                $_SESSION['check_plzort'] = 1;
-            }
-        } else {
-            unset($_SESSION['check_plzort']);
-        }
-
-        foreach ([
-                     'kundenregistrierung_abfragen_tel'   => 'tel',
-                     'kundenregistrierung_abfragen_mobil' => 'mobil',
-                     'kundenregistrierung_abfragen_fax'   => 'fax'
-                 ] as $confKey => $dataKey) {
-            if (isset($data[$dataKey])
-                && ($errCode = Text::checkPhoneNumber($data[$dataKey], $this->config['kunden'][$confKey] === 'Y')) > 0
-            ) {
-                $ret[$dataKey] = $errCode;
-            }
-        }
-
-        $deliveryCountry = ($this->config['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N')
-            ? Shop::Container()->getCountryService()->getCountry($data['land'])
-            : null;
-
-        if (isset($deliveryCountry)
-            && !$deliveryCountry->isEU()
-            && $this->config['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N'
-        ) {
-            //skip
-        } elseif (empty($data['ustid']) && $this->config['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y') {
-            $ret['ustid'] = 1;
-        } elseif (isset($data['ustid'])
-            && $data['ustid'] !== ''
-            && $this->config['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N'
-        ) {
-            if (!isset($this->customer->cUSTID) || $this->customer->cUSTID !== $data['ustid']) {
-                $analizeCheck   = false;
-                $resultVatCheck = null;
-                if ($this->config['kunden']['shop_ustid_bzstpruefung'] === 'Y') {
-                    $vatCheck       = new VATCheck(\trim($data['ustid']));
-                    $resultVatCheck = $vatCheck->doCheckID();
-                    $analizeCheck   = true;
-                }
-                if ($analizeCheck === true && $resultVatCheck['success'] === true) {
-                    $ret['ustid'] = 0;
-                } elseif (isset($resultVatCheck)) {
-                    switch ($resultVatCheck['errortype']) {
-                        case 'vies':
-                            // vies-error: the ID is invalid according to the VIES-system
-                            $ret['ustid'] = $resultVatCheck['errorcode']; // (old value 5)
-                            break;
-                        case 'parse':
-                            // parse-error: the ID-string is misspelled in any way
-                            if ($resultVatCheck['errorcode'] === 1) {
-                                $ret['ustid'] = 1; // parse-error: no id was given
-                            } elseif ($resultVatCheck['errorcode'] > 1) {
-                                $ret['ustid'] = 2; // parse-error: with the position of error in given ID-string
-                                switch ($resultVatCheck['errorcode']) {
-                                    case 120:
-                                        // build a string with error-code and error-information
-                                        $ret['ustid_err'] = $resultVatCheck['errorcode'] . ',' .
-                                            \mb_substr($data['ustid'], 0, $resultVatCheck['errorinfo']) .
-                                            '<span style="color:red;">' .
-                                            \mb_substr($data['ustid'], $resultVatCheck['errorinfo']) .
-                                            '</span>';
-                                        break;
-                                    case 130:
-                                        $ret['ustid_err'] = $resultVatCheck['errorcode'] . ',' .
-                                            $resultVatCheck['errorinfo'];
-                                        break;
-                                    default:
-                                        $ret['ustid_err'] = $resultVatCheck['errorcode'];
-                                        break;
-                                }
-                            }
-                            break;
-                        case 'time':
-                            // according to the backend-setting:
-                            // "Einstellungen -> (Formular)einstellungen -> UstID-Nummer"-check active
-                            if ($this->config['kunden']['shop_ustid_force_remote_check'] === 'Y') {
-                                // parsing ok, but the remote-service is in a down slot and unreachable
-                                $ret['ustid']     = 4;
-                                $ret['ustid_err'] = $resultVatCheck['errorcode'] . ',' . $resultVatCheck['errorinfo'];
-                            }
-                            break;
-                        case 'core':
-                            // if we have problems like "no module php_soap" we create a log entry
-                            // (use case: the module and the vat-check was formerly activated yet
-                            // but the php-module is disabled now)
-                            Shop::Container()->getLogService()->warning($resultVatCheck['errorinfo']);
-                            break;
-                    }
-                }
-            }
-        }
-        if (isset($data['geburtstag'])) {
-            $enDate = DateTime::createFromFormat('Y-m-d', $data['geburtstag']);
-            if (($errCode = Text::checkDate(
-                $enDate === false ? $data['geburtstag'] : $enDate->format('d.m.Y'),
-                $this->config['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'
-            )) > 0) {
-                $ret['geburtstag'] = $errCode;
-            }
-        }
-        if ($kundenaccount === true) {
-            if ($checkpass) {
-                if ($data['pass'] !== $data['pass2']) {
-                    $ret['pass_ungleich'] = 1;
-                }
-                if (mb_strlen($data['pass']) < $this->config['kunden']['kundenregistrierung_passwortlaenge']) {
-                    $ret['pass_zu_kurz'] = 1;
-                }
-                if (mb_strlen($data['pass']) > 255) {
-                    $ret['pass_zu_lang'] = 1;
-                }
-            }
-            //existiert diese email bereits?
-            if (!isset($ret['email'])
-                && !AbstractValidator::isEmailAvailable($data['email'], $this->customer->getID())
-            ) {
-                if (!(isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)) {
-                    $ret['email_vorhanden'] = 1;
-                }
-                $ret['email'] = 5;
-            }
-        }
-        // Selbstdef. Kundenfelder
-        if ($this->config['kundenfeld']['kundenfeld_anzeigen'] === 'Y') {
-            $customerFields = new CustomerFields($this->languageID);
-            /** @var CustomerField $customerField */
-            foreach ($customerFields as $customerField) {
-                // Kundendaten ändern?
-                $customerFieldIdx = 'custom_' . $customerField->getID();
-                if (isset($data[$customerFieldIdx])
-                    && ($check = $customerField->validate($data[$customerFieldIdx])) !== CustomerField::VALIDATE_OK
-                ) {
-                    $ret['custom'][$customerField->getID()] = $check;
-                }
-            }
-        }
-        if ($this->config['kunden']['kundenregistrierung_pruefen_ort'] === 'Y'
-            && \preg_match('#[0-9]+#', $data['ort'])
-        ) {
-            $ret['ort'] = 3;
-        }
-        if ($this->config['kunden']['kundenregistrierung_pruefen_name'] === 'Y'
-            && \preg_match('#[0-9]+#', $data['nachname'])
-        ) {
-            $ret['nachname'] = 2;
-        }
-
-        if (isset($this->config['kunden']['kundenregistrierung_pruefen_zeit'], $data['editRechnungsadresse'])
-            && (int)$data['editRechnungsadresse'] !== 1
-            && $this->config['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
-        ) {
-            $regTime = $_SESSION['dRegZeit'] ?? 0;
-            if (!($regTime + 5 < \time())) {
-                $ret['formular_zeit'] = 1;
-            }
-        }
-
-        if ($this->config['kunden']['registrieren_captcha'] !== 'N' && !Form::validateCaptcha($data)) {
-            $ret['captcha'] = 2;
-        }
-
-        return $ret;
     }
 
     /**

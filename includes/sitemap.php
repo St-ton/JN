@@ -1,16 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Crawler\Controller;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
 
-define('JTL_INCLUDE_ONLY_DB', 1);
+const JTL_INCLUDE_ONLY_DB = 1;
 require_once __DIR__ . '/globalinclude.php';
 
-$cDatei = getRequestFile(Request::getVar('datei', ''));
-
-if ($cDatei === null) {
+$fileName = getRequestFile(Request::getVar('datei', ''));
+if ($fileName === null) {
     http_response_code(503);
     header('Retry-After: 86400');
     exit;
@@ -27,7 +26,7 @@ $floodProtection = Shop::Container()->getDB()->getAffectedRows(
 if ($floodProtection === 0) {
     // Track request
     $sitemapTracker               = new stdClass();
-    $sitemapTracker->cSitemap     = basename($cDatei);
+    $sitemapTracker->cSitemap     = basename($fileName);
     $sitemapTracker->kBesucherBot = getRequestBot();
     $sitemapTracker->cIP          = $ip;
     $sitemapTracker->cUserAgent   = Text::filterXSS($_SERVER['HTTP_USER_AGENT'] ?? '');
@@ -36,7 +35,7 @@ if ($floodProtection === 0) {
     Shop::Container()->getDB()->insert('tsitemaptracker', $sitemapTracker);
 }
 
-sendRequestFile($cDatei);
+sendRequestFile($fileName);
 
 /**
  * @return int
@@ -53,7 +52,7 @@ function getRequestBot(): int
  * @param string $file
  * @return null|string
  */
-function getRequestFile($file)
+function getRequestFile(string $file): ?string
 {
     $pathInfo = pathinfo($file);
 
@@ -73,7 +72,7 @@ function getRequestFile($file)
 /**
  * @param string $file
  */
-function sendRequestFile($file)
+function sendRequestFile(string $file): void
 {
     $file         = basename($file);
     $absoluteFile = PFAD_ROOT . PFAD_EXPORT . basename($file);

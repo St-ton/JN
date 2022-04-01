@@ -5,11 +5,14 @@ namespace JTL\Router\Controller;
 use InvalidArgumentException;
 use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
+use JTL\CheckBox;
 use JTL\Checkout\Bestellung;
+use JTL\Checkout\OrderHandler;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Plugin\Helper;
 use JTL\Plugin\Payment\LegacyMethod;
+use JTL\Plugin\Payment\MethodInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
@@ -37,8 +40,9 @@ class OrderCompleteController extends CheckoutController
         if (Request::getInt('payAgain') === 1 && Request::getInt('kBestellung') > 0) {
             return $this->handlePayAgain($smarty, Request::getInt('kBestellung'));
         }
-        $linkHelper = Shop::Container()->getLinkService();
         $cart       = Frontend::getCart();
+        $handler    = new OrderHandler($this->db, Frontend::getCustomer(), $cart);
+        $linkHelper = Shop::Container()->getLinkService();
         $order      = null;
         if (isset($_GET['i'])) {
             $bestellid = $this->db->select('tbestellid', 'cId', $_GET['i']);
@@ -46,7 +50,7 @@ class OrderCompleteController extends CheckoutController
                 $bestellid->kBestellung = (int)$bestellid->kBestellung;
                 $order                  = new Bestellung($bestellid->kBestellung);
                 $order->fuelleBestellung(false);
-                \speicherUploads($order);
+                $handler->saveUploads($order);
                 $this->db->delete('tbestellid', 'kBestellung', $bestellid->kBestellung);
             }
             $this->db->query('DELETE FROM tbestellid WHERE dDatum < DATE_SUB(NOW(), INTERVAL 30 DAY)');
@@ -62,9 +66,9 @@ class OrderCompleteController extends CheckoutController
                     . '?mailBlocked=1', true, 303);
                 exit;
             }
-            if (!\bestellungKomplett()) {
+            if (!$this->isOrderComplete()) {
                 \header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php')
-                    . '?fillOut=' . \gibFehlendeEingabe(), true, 303);
+                    . '?fillOut=' . $this->getErorCode(), true, 303);
                 exit;
             }
             if ($cart->removeParentItems() > 0) {
@@ -95,15 +99,16 @@ class OrderCompleteController extends CheckoutController
                     \header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
                     exit;
                 }
-                $order = \finalisiereBestellung();
+                $order = $handler->finalisiereBestellung();
                 if ($order->Lieferadresse === null && !empty($_SESSION['Lieferadresse']->cVorname)) {
-                    $order->Lieferadresse = \gibLieferadresseAusSession();
+                    $order->Lieferadresse = $handler->getShippingAddress();
                 }
                 $smarty->assign('Bestellung', $order);
             } else {
-                $order = \fakeBestellung();
+                $order = $handler->fakeBestellung();
             }
-            \setzeSmartyWeiterleitung($order);
+            $handler->saveUploads($order);
+            $this->setzeSmartyWeiterleitung($smarty, $order);
         }
         $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
             ->assign('oPlugin', null)
@@ -257,5 +262,104 @@ class OrderCompleteController extends CheckoutController
         $this->preRender($smarty);
 
         return $smarty->getResponse('checkout/order_completed.tpl');
+    }
+
+    /**
+     * @return bool
+     * @former bestellungKomplett()
+     * @since 5.2.0
+     */
+    public function isOrderComplete(): bool
+    {
+        $_SESSION['cPlausi_arr'] = (new CheckBox())->validateCheckBox(
+            \CHECKBOX_ORT_BESTELLABSCHLUSS,
+            $this->customerGroupID,
+            $_POST,
+            true
+        );
+        $_SESSION['cPost_arr']   = $_POST;
+
+        return (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart'])
+            && $_SESSION['Kunde']
+            && $_SESSION['Lieferadresse']
+            && (int)$_SESSION['Versandart']->kVersandart > 0
+            && (int)$_SESSION['Zahlungsart']->kZahlungsart > 0
+            && Request::verifyGPCDataInt('abschluss') === 1
+            && \count($_SESSION['cPlausi_arr']) === 0
+        );
+    }
+    /**
+     * @return int
+     * @former gibFehlendeEingabe()
+     * @since 5.2.0
+     */
+    public function getErorCode(): int
+    {
+        if (!isset($_SESSION['Kunde']) || !$_SESSION['Kunde']) {
+            return 1;
+        }
+        if (!isset($_SESSION['Lieferadresse']) || !$_SESSION['Lieferadresse']) {
+            return 2;
+        }
+        if (!isset($_SESSION['Versandart'])
+            || !$_SESSION['Versandart']
+            || (int)$_SESSION['Versandart']->kVersandart === 0
+        ) {
+            return 3;
+        }
+        if (!isset($_SESSION['Zahlungsart'])
+            || !$_SESSION['Zahlungsart']
+            || (int)$_SESSION['Zahlungsart']->kZahlungsart === 0
+        ) {
+            return 4;
+        }
+        if (count($_SESSION['cPlausi_arr']) > 0) {
+            return 6;
+        }
+
+        return -1;
+    }
+
+    /**
+     * @param JTLSmarty  $smarty
+     * @param Bestellung $order
+     * @return void
+     */
+    public function setzeSmartyWeiterleitung(JTLSmarty $smarty, Bestellung $order): void
+    {
+        $moduleID = $_SESSION['Zahlungsart']->cModulId;
+
+        $logger = Shop::Container()->getLogService();
+        if ($logger->isHandling(\JTLLOG_LEVEL_DEBUG)) {
+            $logger->withName('cModulId')->debug(
+                'setzeSmartyWeiterleitung wurde mit folgender Zahlungsart ausgefuehrt: ' .
+                \print_r($_SESSION['Zahlungsart'], true),
+                [$moduleID]
+            );
+        }
+        $pluginID = Helper::getIDByModuleID($moduleID);
+        if ($pluginID > 0) {
+            $loader = Helper::getLoaderByPluginID($pluginID);
+            $plugin = $loader->init($pluginID);
+            global $oPlugin;
+            $oPlugin = $plugin;
+            if ($plugin !== null) {
+                $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
+                if ($pluginPaymentMethod === null) {
+                    return;
+                }
+                $className = $pluginPaymentMethod->getClassName();
+                /** @var MethodInterface $paymentMethod */
+                $paymentMethod           = new $className($moduleID);
+                $paymentMethod->cModulId = $moduleID;
+                $paymentMethod->preparePaymentProcess($order);
+                $smarty->assign('oPlugin', $plugin)
+                    ->assign('plugin', $plugin);
+            }
+        } elseif ($moduleID === 'za_lastschrift_jtl') {
+            $smarty->assign('abschlussseite', 1);
+        }
+
+        \executeHook(\HOOK_BESTELLABSCHLUSS_INC_SMARTYWEITERLEITUNG);
     }
 }

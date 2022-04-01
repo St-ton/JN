@@ -9,6 +9,7 @@ use JTL\Helpers\GeneralObject;
 use JTL\Language\LanguageHelper;
 use JTL\phpQuery\phpQuery;
 use JTL\Plugin\Helper;
+use JTL\Profiler;
 use JTL\Shop;
 use JTL\Template\BootChecker;
 use Laminas\Diactoros\Response;
@@ -352,7 +353,7 @@ class JTLSmarty extends BC
         }
         parent::display($this->getResourceName($template), $cacheID, $compileID, $parent);
         if ($this->context === ContextType::BACKEND) {
-            require \PFAD_ROOT . \PFAD_INCLUDES . 'profiler_inc.php';
+            Profiler::finalize();
         }
     }
 
@@ -370,7 +371,7 @@ class JTLSmarty extends BC
         $template->noOutputFilter = false;
 
         $res = parent::fetch($template);
-        require \PFAD_ROOT . \PFAD_INCLUDES . 'profiler_inc.php';
+        Profiler::finalize();
         $response = new Response();
         $response->getBody()->write($res);
 

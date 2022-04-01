@@ -23,7 +23,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_PAYMENT_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'zahlungsarten_inc.php';
 
 Shop::Container()->getGetText()->loadConfigLocales(true, true);

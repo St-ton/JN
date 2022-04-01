@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Debug\DataCollector\Smarty;
 use JTL\Filter\Metadata;
 use JTL\Helpers\PHPSettings;
 use JTL\Language\LanguageHelper;
-use JTL\Plugin\Helper;
+use JTL\Plugin\HookManager;
 use JTL\Profiler;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -14,6 +14,15 @@ $nStartzeit = microtime(true);
 
 if (file_exists(__DIR__ . '/config.JTL-Shop.ini.php')) {
     require_once __DIR__ . '/config.JTL-Shop.ini.php';
+}
+
+/**
+ * @param int   $hookID
+ * @param array $args_arr
+ */
+function executeHook(int $hookID, array $args_arr = [])
+{
+    HookManager::getInstance()->executeHook($hookID, $args_arr);
 }
 
 /**
@@ -76,7 +85,6 @@ try {
 } catch (Exception $exc) {
     handleFatal($exc->getMessage());
 }
-require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 if (!defined('CLI_BATCHRUN')) {
     $cache = Shop::Container()->getCache();
     $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));

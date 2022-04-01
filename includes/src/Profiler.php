@@ -592,4 +592,16 @@ class Profiler
         }
         echo '</div>';
     }
+
+    public static function finalize(): void
+    {
+        self::savePluginProfile();
+        self::saveSQLProfile();
+        self::output();
+        if (self::getIsStarted() === true) {
+            self::finish();
+            $data = self::getData();
+            echo $data['html'];
+        }
+    }
 }

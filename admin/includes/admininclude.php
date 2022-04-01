@@ -31,7 +31,6 @@ if (!isset($bExtern) || !$bExtern) {
 
 require PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-require PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 

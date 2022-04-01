@@ -14,10 +14,9 @@
                     <div class="card-header{if $failed} accordion-toggle" data-toggle="collapse" data-target="#check-{$result@index}" style="cursor:pointer"{else}"{/if}>
                     <div class="card-title">
                         {if $failed}
-                            <i class="fa fas fa-plus"></i> {__($result->getClassName())} &ndash; {__('%d errors')|sprintf:$result->getErrorCount()}
-                        {else}
-                            {__($result->getClassName())}
+                            <i class="fa fas fa-plus"></i>
                         {/if}
+                        {__($result->getClassName())} &ndash; {__('%d errors')|sprintf:$result->getErrorCount()}
                     </div>
                 </div>
                 {if $failed}
@@ -26,22 +25,24 @@
                         {$missing = $result->getMissingLocalizations()}
                         {if $excess->count() > 0}
                             <h2>{__('Excess translations')}</h2>
-                            <table class="table table-sm table-borderless table-striped">
-                                <thead>
-                                <tr>
-                                    <th scope="col" class="text-left">{__('ID')}</th>
-                                    <th scope="col" class="text-left">{__('Language ID')}</th>
-                                    <th scope="col" class="text-left">{__('Name')}</th>
-                                </tr>
-                                </thead>
-                                {foreach $excess as $item}
+                            <div class="table-responsive">
+                                <table class="table table-sm table-borderless table-striped">
+                                    <thead>
                                     <tr>
-                                        <td>{$item->getID()}</td>
-                                        <td>{$item->getLanguageID()}{if $item->getAdditional() !== null} {$item->getAdditional()}{/if}</td>
-                                        <td>{$item->getName()}</td>
+                                        <th scope="col" class="text-left">{__('ID')}</th>
+                                        <th scope="col" class="text-left">{__('Language ID')}</th>
+                                        <th scope="col" class="text-left">{__('Name')}</th>
                                     </tr>
-                                {/foreach}
-                            </table>
+                                    </thead>
+                                    {foreach $excess as $item}
+                                        <tr>
+                                            <td>{$item->getID()}</td>
+                                            <td>{$item->getLanguageID()}{if $item->getAdditional() !== null} {$item->getAdditional()}{/if}</td>
+                                            <td>{$item->getName()}</td>
+                                        </tr>
+                                    {/foreach}
+                                </table>
+                            </div>
                             <form method="post" action="{$adminURL}/localizationcheck.php">
                                 {$jtl_token}
                                 <input type="hidden" name="action" value="deleteExcess">
@@ -52,26 +53,26 @@
                         {/if}
                         {if $missing->count() > 0}
                             <h2>{__('Missing translations')}</h2>
-                            <table class="table table-sm table-borderless table-striped">
-                                <thead>
-                                <tr>
-                                    <th scope="col">{__('ID')}</th>
-                                    <th scope="col" >{__('Language ID')}</th>
-                                    <th scope="col">{__('Name')}</th>
-                                </tr>
-                                </thead>
-                                {foreach $missing as $item}
+                            <div class="table-responsive">
+                                <table class="table table-sm table-borderless table-striped">
+                                    <thead>
                                     <tr>
-                                        <td>{$item->getID()}</td>
-                                        <td>{$item->getLanguageID()}</td>
-                                        <td>{$item->getName()}</td>
+                                        <th scope="col">{__('ID')}</th>
+                                        <th scope="col" >{__('Language ID')}</th>
+                                        <th scope="col">{__('Name')}</th>
                                     </tr>
-                                {/foreach}
-                            </table>
+                                    </thead>
+                                    {foreach $missing as $item}
+                                        <tr>
+                                            <td>{$item->getID()}</td>
+                                            <td>{$item->getLanguageID()}</td>
+                                            <td>{$item->getName()}</td>
+                                        </tr>
+                                    {/foreach}
+                                </table>
+                            </div>
                         {/if}
                     </div>
-                {else}
-                    <div class="card-text alert">{__('No problems detected.')}</div>
                 {/if}
             </div>
             {/foreach}

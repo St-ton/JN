@@ -133,7 +133,6 @@ class Base implements SectionInterface
         $this->db      = $manager->getDB();
         $this->smarty  = $manager->getSmarty();
         $this->getText = $manager->getGetText();
-        $manager->getc
         $this->id      = $sectionID;
         $this->initBaseData();
     }

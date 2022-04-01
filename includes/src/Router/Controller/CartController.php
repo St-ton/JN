@@ -26,7 +26,6 @@ class CartController extends PageController
     public function init(): bool
     {
         parent::init();
-        Shop::setPageType($this->state->pageType);
 
         return true;
     }

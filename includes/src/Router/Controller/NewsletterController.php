@@ -26,13 +26,13 @@ class NewsletterController extends PageController
     public function init(): bool
     {
         parent::init();
-        Shop::setPageType($this->state->pageType);
 
         return true;
     }
 
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
+        Shop::setPageType($this->state->pageType);
         $valid              = Form::validateToken();
         $controller         = new Controller($this->db, $this->config);
         $option             = 'eintragen';

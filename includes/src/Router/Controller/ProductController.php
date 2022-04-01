@@ -29,7 +29,6 @@ class ProductController extends AbstractController
     public function init(): bool
     {
         parent::init();
-        Shop::setPageType(\PAGE_ARTIKEL);
         $this->currentProduct = new Artikel();
         $this->currentProduct->fuelleArtikel(
             $this->state->productID,
@@ -54,6 +53,7 @@ class ProductController extends AbstractController
 
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
+        Shop::setPageType(\PAGE_ARTIKEL);
         global $AktuellerArtikel;
         $priceHistory = null;
         $rated        = false;

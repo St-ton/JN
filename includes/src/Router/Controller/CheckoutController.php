@@ -54,27 +54,38 @@ class CheckoutController extends RegistrationController
     public function init(): bool
     {
         parent::init();
-        Shop::setPageType(\PAGE_BESTELLVORGANG);
+        error_log('####################################################setting BESTELL1!');
         $this->cart     = Frontend::getCart();
         $this->customer = Frontend::getCustomer();
 
         return true;
     }
 
+    /**
+     * @param string $new
+     * @return void
+     */
+    public function updateStep(string $new): void
+    {
+        global $step;
+        $step       = $new;
+        $this->step = $new;
+    }
+
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
+        Shop::setPageType(\PAGE_BESTELLVORGANG);
         $this->smarty = $smarty;
         require_once PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
         require_once PFAD_ROOT . \PFAD_INCLUDES . 'registrieren_inc.php';
-        $this->step = 'accountwahl';
+        $this->updateStep('accountwahl');
 
-        global $step, $Kunde;
-        $step  = $this->step;
+        global $Kunde;
         $Kunde = $this->customer;
 
         $_SESSION['deliveryCountryPrefLocked'] = true;
 
-        $this->step  = 'accountwahl';
+        $this->updateStep('accountwahl');
         $linkService = Shop::Container()->getLinkService();
         $controller  = new AccountController($this->db, $this->alertService, $linkService, $smarty);
         $valid       = Form::validateToken();
@@ -150,7 +161,7 @@ class CheckoutController extends RegistrationController
             $this->pruefeVersandartWahl(Request::verifyGPCDataInt('kVersandart'));
         }
         if (Request::getInt('unreg') === 1 && $this->config['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y') {
-            $this->step = 'edit_customer_address';
+            $this->updateStep('edit_customer_address');
         }
 
         //autom. step ermitteln
@@ -193,7 +204,7 @@ class CheckoutController extends RegistrationController
 
         if (empty($_SESSION['Kunde']->cPasswort) && Download::hasDownloads($this->cart)) {
             // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-            $this->step = 'accountwahl';
+            $this->updateStep('accountwahl');
 
             $this->alertService->addNotice(
                 Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout'),
@@ -210,6 +221,8 @@ class CheckoutController extends RegistrationController
         $this->pruefeVersandkostenStep();
         $this->pruefeZahlungStep();
         $this->pruefeBestaetigungStep();
+        error_log('this_>step: ' . $this->step);
+        error_log('global step: ' . $GLOBALS['step']);
         // sondersteps Rechnungsadresse aendern
         $this->pruefeRechnungsadresseStep();
         // sondersteps Lieferadresse aendern
@@ -627,7 +640,7 @@ class CheckoutController extends RegistrationController
         \executeHook(\HOOK_BESTELLVORGANG_PAGE_STEPVERSAND_PLAUSI);
 
         if ($return) {
-            $this->step = 'Zahlung';
+            $this->updateStep('Zahlung');
             $this->alertService->removeAlertByKey('fillShipping');
 
             return true;
@@ -635,7 +648,7 @@ class CheckoutController extends RegistrationController
         if ($msg) {
             $this->alertService->addNotice(Shop::Lang()->get('fillShipping', 'checkout'), 'fillShipping');
         }
-        $this->step = 'Versand';
+        $this->updateStep('Versand');
 
         return false;
     }
@@ -1031,7 +1044,7 @@ class CheckoutController extends RegistrationController
                 false
             );
         }
-        $this->step = 'Versand';
+        $this->updateStep('Versand');
 
         return $this->step;
     }
@@ -1043,7 +1056,7 @@ class CheckoutController extends RegistrationController
     public function pruefeZahlungStep(): string
     {
         if (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'], $_SESSION['Versandart'])) {
-            $this->step = 'Zahlung';
+            $this->updateStep('Zahlung');
         }
 
         return $this->step;
@@ -1056,14 +1069,14 @@ class CheckoutController extends RegistrationController
     public function pruefeBestaetigungStep(): string
     {
         if (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart'])) {
-            $this->step = 'Bestaetigung';
+            $this->updateStep('Bestaetigung');
         }
         if (isset($_SESSION['Zahlungsart'], $_SESSION['Zahlungsart']->cZusatzschrittTemplate)
             && \mb_strlen($_SESSION['Zahlungsart']->cZusatzschrittTemplate) > 0
         ) {
             $paymentMethod = LegacyMethod::create($_SESSION['Zahlungsart']->cModulId);
             if ($paymentMethod !== null && \is_object($paymentMethod) && !$paymentMethod->validateAdditional()) {
-                $this->step = 'Zahlung';
+                $this->updateStep('Zahlung');
             }
         }
 
@@ -1081,7 +1094,7 @@ class CheckoutController extends RegistrationController
             && (Request::getInt('editRechnungsadresse') === 1 || Request::getInt('editLieferadresse') === 1)
         ) {
             Kupon::resetNewCustomerCoupon();
-            $this->step = 'edit_customer_address';
+            $this->updateStep('edit_customer_address');
         }
 
         if (!empty($this->customer->cOrt)
@@ -1102,7 +1115,7 @@ class CheckoutController extends RegistrationController
                     [$_SESSION['Lieferadresse']->cLand]
                 )) === 0
             ) {
-                $this->step = 'edit_customer_address';
+                $this->updateStep('edit_customer_address');
             }
         }
 
@@ -1131,7 +1144,7 @@ class CheckoutController extends RegistrationController
             unset($_SESSION['checkout.register']);
         }
         if ($this->pruefeFehlendeAngaben()) {
-            $this->step = isset($_SESSION['Kunde']) ? 'edit_customer_address' : 'accountwahl';
+            $this->updateStep(isset($_SESSION['Kunde']) ? 'edit_customer_address' : 'accountwahl');
         }
 
         return $this->step;
@@ -1154,11 +1167,11 @@ class CheckoutController extends RegistrationController
             ) {
                 Kupon::resetNewCustomerCoupon();
                 unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
-                $this->step = 'Lieferadresse';
+                $this->updateStep('Lieferadresse');
             }
         }
         if ($this->pruefeFehlendeAngaben('shippingAddress')) {
-            $this->step = isset($_SESSION['Kunde']) ? 'Lieferadresse' : 'accountwahl';
+            $this->updateStep(isset($_SESSION['Kunde']) ? 'Lieferadresse' : 'accountwahl');
         }
 
         return $this->step;
@@ -1183,7 +1196,7 @@ class CheckoutController extends RegistrationController
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR);
             unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
 
-            $this->step = 'Versand';
+            $this->updateStep('Versand');
             $this->pruefeZahlungsartStep(['editZahlungsart' => 1]);
         }
 
@@ -1205,7 +1218,7 @@ class CheckoutController extends RegistrationController
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
             unset($_SESSION['Zahlungsart']);
-            $this->step = $this->pruefeVersandartStep(['editVersandart' => 1]);
+            $this->updateStep($this->pruefeVersandartStep(['editVersandart' => 1]));
         }
 
         if (isset($get['nHinweis']) && (int)$get['nHinweis'] > 0) {
@@ -1243,14 +1256,14 @@ class CheckoutController extends RegistrationController
         switch ($zahlungsangaben) {
             case 0:
                 $this->alertService->addNotice(Shop::Lang()->get('fillPayment', 'checkout'), 'fillPayment');
-                $this->step = 'Zahlung';
+                $this->updateStep('Zahlung');
                 return 0;
             case 1:
-                $this->step = 'ZahlungZusatzschritt';
+                $this->updateStep('ZahlungZusatzschritt');
 
                 return 1;
             case 2:
-                $this->step = 'Bestaetigung';
+                $this->updateStep('Bestaetigung');
 
                 return 2;
             default:

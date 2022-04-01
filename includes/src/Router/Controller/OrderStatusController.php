@@ -21,13 +21,13 @@ class OrderStatusController extends PageController
     public function init(): bool
     {
         parent::init();
-        Shop::setPageType(\PAGE_BESTELLSTATUS);
 
         return true;
     }
 
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
+        Shop::setPageType(\PAGE_BESTELLSTATUS);
         $linkHelper = Shop::Container()->getLinkService();
         $uid        = Request::verifyGPDataString('uid');
         if (!empty($uid)) {

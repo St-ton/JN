@@ -25,13 +25,13 @@ class WishlistController extends AbstractController
     public function init(): bool
     {
         parent::init();
-        Shop::setPageType($this->state->pageType);
 
         return true;
     }
 
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
+        Shop::setPageType(\PAGE_WUNSCHLISTE);
         $urlID            = Text::filterXSS(Request::verifyGPDataString('wlid'));
         $wishlistID       = (Request::verifyGPCDataInt('wl') > 0 && Request::verifyGPCDataInt('wlvm') === 0)
             ? Request::verifyGPCDataInt('wl') // one of multiple customer wishlists
@@ -51,8 +51,6 @@ class WishlistController extends AbstractController
             $_SESSION['Wunschliste']->schreibeDB();
             $wishlistID = $_SESSION['Wunschliste']->getID();
         }
-
-        Shop::setPageType(\PAGE_WUNSCHLISTE);
         if (!empty($_POST['addToCart'])) {
             $action         = 'addToCart';
             $wishlistItemID = (int)$_POST['addToCart'];

@@ -16,13 +16,13 @@ class AccountController extends AbstractController
     public function init(): bool
     {
         parent::init();
-        Shop::setPageType($this->state->pageType);
 
         return true;
     }
 
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
+        Shop::setPageType($this->state->pageType);
         require_once PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
 
         $linkService        = Shop::Container()->getLinkService();

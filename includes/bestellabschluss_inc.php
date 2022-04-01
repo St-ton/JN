@@ -1,33 +1,11 @@
 <?php declare(strict_types=1);
 
-use JTL\Campaign;
-use JTL\Cart\CartItem;
-use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
-use JTL\Catalog\Product\EigenschaftWert;
-use JTL\Catalog\Wishlist\Wishlist;
 use JTL\CheckBox;
 use JTL\Checkout\Bestellung;
-use JTL\Checkout\Kupon;
-use JTL\Checkout\KuponBestellung;
-use JTL\Checkout\Lieferadresse;
-use JTL\Checkout\Nummern;
 use JTL\Checkout\OrderHandler;
-use JTL\Checkout\Rechnungsadresse;
 use JTL\Checkout\StockUpdater;
-use JTL\Checkout\ZahlungsInfo;
-use JTL\Customer\Customer;
-use JTL\Extensions\Upload\Upload;
-use JTL\Helpers\Date;
-use JTL\Helpers\Product;
 use JTL\Helpers\Request;
-use JTL\Helpers\Tax;
-use JTL\Helpers\Text;
-use JTL\Language\LanguageHelper;
-use JTL\Mail\Mail\Mail;
-use JTL\Mail\Mailer;
-use JTL\Plugin\Helper;
-use JTL\Plugin\Payment\MethodInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 

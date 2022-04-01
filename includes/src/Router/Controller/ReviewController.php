@@ -18,13 +18,13 @@ class ReviewController extends PageController
     public function init(): bool
     {
         parent::init();
-        Shop::setPageType(\PAGE_BEWERTUNG);
 
         return true;
     }
 
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
+        Shop::setPageType(\PAGE_BEWERTUNG);
         $controller = new BaseController(
             $this->db,
             Shop::Container()->getCache(),

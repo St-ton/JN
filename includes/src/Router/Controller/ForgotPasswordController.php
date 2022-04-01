@@ -25,7 +25,6 @@ class ForgotPasswordController extends AbstractController
     public function init(): bool
     {
         parent::init();
-        Shop::setPageType($this->state->pageType);
 
         return true;
     }

@@ -35,13 +35,13 @@ class RegistrationController extends PageController
     public function init(): bool
     {
         parent::init();
-        Shop::setPageType(\PAGE_REGISTRIERUNG);
 
         return true;
     }
 
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
+        Shop::setPageType(\PAGE_REGISTRIERUNG);
         $linkHelper = Shop::Container()->getLinkService();
         if (Request::verifyGPCDataInt('editRechnungsadresse') === 0 && Frontend::getCustomer()->getID() > 0) {
             \header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 301);

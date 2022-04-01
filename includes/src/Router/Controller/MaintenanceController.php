@@ -15,14 +15,13 @@ class MaintenanceController extends AbstractController
     public function init(): bool
     {
         parent::init();
-        $this->state->pageType = \PAGE_WARTUNG;
-        Shop::setPageType($this->state->pageType);
 
         return true;
     }
 
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
+        Shop::setPageType(\PAGE_WARTUNG);
         $this->preRender($smarty);
 
         return $smarty->getResponse('snippets/maintenance.tpl')->withStatus(503);

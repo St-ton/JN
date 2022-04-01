@@ -28,13 +28,13 @@ class OrderCompleteController extends CheckoutController
     public function init(): bool
     {
         parent::init();
-        Shop::setPageType(\PAGE_BESTELLABSCHLUSS);
 
         return true;
     }
 
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
+        Shop::setPageType(\PAGE_BESTELLABSCHLUSS);
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellabschluss_inc.php';
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
         if (Request::getInt('payAgain') === 1 && Request::getInt('kBestellung') > 0) {

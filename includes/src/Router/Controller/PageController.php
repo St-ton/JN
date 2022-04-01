@@ -28,13 +28,13 @@ class PageController extends AbstractController
             return false;
         }
         $this->currentLink = $link;
-        Shop::setPageType($this->state->pageType);
 
         return true;
     }
 
     public function getResponse(JTLSmarty $smarty): ResponseInterface
     {
+        Shop::setPageType($this->state->pageType);
         $linkHelper = Shop::Container()->getLinkService();
         $cache      = Shop::Container()->getCache();
         if (!$this->currentLink->isVisible()) {

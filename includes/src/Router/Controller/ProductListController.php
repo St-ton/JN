@@ -35,7 +35,6 @@ class ProductListController extends AbstractController
         if ($this->state->is404) {
             return false;
         }
-        Shop::setPageType($this->state->pageType);
         $this->currentCategory = new Kategorie();
         $this->productFilter   = Shop::getProductFilter();
         if (!$this->productFilter->hasCategory()) {

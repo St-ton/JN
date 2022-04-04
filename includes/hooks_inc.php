@@ -2041,16 +2041,36 @@ define('HOOK_BESTELLUNG_SETZEGUTHABEN', 335);
 /**
  * @since 5.1.3
  * @file includes/src/dbeS/Sync/AbstractSync.php
- * @param bool   &sendMails
- * @param object product
- * @param array  subscriptions
+ * @param bool   &$sendMails
+ * @param object $product
+ * @param array  $subscriptions
  */
 define('HOOK_SYNC_SEND_AVAILABILITYMAILS', 336);
 
 /**
  * @since 5.1.3
  * @file includes/src/Cart/Cart.php
- * @param CartItem positionItem
- * @param bool     &delete
+ * @param CartItem $positionItem
+ * @param bool     &$delete
  */
 define('HOOK_CART_DELETE_PARENT_CART_ITEM', 337);
+
+/**
+ * @file includes/src/dbeS/Sync/DeliveryNotes.php
+ * @param object $deliveryNote
+ */
+define('HOOK_DELIVERYNOTES_XML_INSERT', 340);
+
+/**
+ * @since 5.1.3
+ * @file includes/src/dbeS/Sync/DeliveryNotes.php
+ * @param object $shipping
+ */
+define('HOOK_DELIVERYNOTES_XML_SHIPPING', 341);
+
+/**
+ * @since 5.1.3
+ * @file includes/src/dbeS/Sync/DeliveryNotes.php
+ * @param int $deliveryNoteID
+ */
+define('HOOK_DELIVERYNOTES_XML_DELETE', 342);

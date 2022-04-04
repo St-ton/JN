@@ -133,7 +133,15 @@ class Router
 
     public function dispatch(): void
     {
-        $request  = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
+        $request     = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
+        $shopURLdata = \parse_url(Shop::getURL());
+        if (isset($shopURLdata['path'])) {
+            $baseURLdata = \parse_url($this->getRequestURL());
+            $path        = '/' . \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path'] ?? '') + 1);
+            $uri         = $request->getUri();
+            $request     = $request->withUri($uri->withPath($path));
+        }
+
         $response = $this->router->dispatch($request);
         CoreDispatcher::getInstance()->fire(Event::RUN);
         $starterFactory = new StarterFactory(Shop::getSettingSection(\CONF_CRON));

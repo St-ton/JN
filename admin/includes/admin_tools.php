@@ -277,7 +277,13 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
             ORDER BY ec.nSort",
         ['configSectionID' => $configSectionID]
     );
+
     foreach ($confData as $config) {
+
+        if ($config->cInputTyp === 'pass' && $post[$config->cWertName] === '') {
+            continue;
+        }
+
         $val                        = new stdClass();
         $val->cWert                 = $post[$config->cWertName] ?? null;
         $val->cName                 = $config->cWertName;

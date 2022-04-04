@@ -168,7 +168,6 @@ switch ($action) {
 
         while ($i < $settingsCount) {
             if (isset($postData[$settings[$i]->cWertName])) {
-
                 if ($settings[$i]->cInputTyp === 'pass' && $postData[$settings[$i]->cWertName] === '') {
                     $i++;
                     continue;

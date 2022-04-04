@@ -279,7 +279,6 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
     );
 
     foreach ($confData as $config) {
-
         if ($config->cInputTyp === 'pass' && $post[$config->cWertName] === '') {
             continue;
         }

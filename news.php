@@ -33,7 +33,6 @@ $link             = $linkService->getPageLink($linkService->getSpecialPageID(LIN
 $smarty           = Shop::Smarty();
 $controller       = new Controller($db, $conf, $smarty);
 $alertHelper      = Shop::Container()->getAlertService();
-$shopURL          = Shop::getURL();
 
 switch ($controller->getPageType($params)) {
     case ViewType::NEWS_DETAIL:

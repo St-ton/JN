@@ -135,7 +135,7 @@ class Router
     {
         $request     = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
         $shopURLdata = \parse_url(Shop::getURL());
-        if (isset($shopURLdata['path'])) {
+        if (isset($shopURLdata['path'])) { // @todo find a better solution
             $baseURLdata = \parse_url($this->getRequestURL());
             $path        = '/' . \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path'] ?? '') + 1);
             $uri         = $request->getUri();

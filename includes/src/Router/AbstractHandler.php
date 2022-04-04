@@ -37,15 +37,17 @@ abstract class AbstractHandler implements HandlerInterface
      */
     public function updateState(stdClass $seo, string $slug): State
     {
-        $this->state->languageID = (int)$seo->kSprache;
-        $this->state->itemID     = (int)$seo->kKey;
-        $this->state->slug       = $seo->cSeo;
-        $this->state->type       = $seo->cKey;
-        $mapping                 = $this->state->getMapping();
-        if (isset($mapping[$seo->cKey])) {
-            $this->state->{$mapping[$seo->cKey]} = $this->state->itemID;
+        if (isset($seo->kSprache, $seo->kKey)) {
+            $this->state->languageID = (int)$seo->kSprache;
+            $this->state->itemID     = (int)$seo->kKey;
+            $this->state->slug       = $seo->cSeo;
+            $this->state->type       = $seo->cKey;
+            $mapping                 = $this->state->getMapping();
+            if (isset($mapping[$seo->cKey])) {
+                $this->state->{$mapping[$seo->cKey]} = $this->state->itemID;
+            }
+            $this->updateShopParams($slug);
         }
-        $this->updateShopParams($slug);
         Shop::getProductFilter()->initStates($this->state->getAsParams());
 
         return $this->state;

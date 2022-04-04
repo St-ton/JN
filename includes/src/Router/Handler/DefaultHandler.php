@@ -35,6 +35,7 @@ class DefaultHandler extends AbstractHandler
             ['slg' => $slug]
         );
         if ($seo === null) {
+            $seo = (object)[];
             if (\str_ends_with($slug, '.php') && !\str_ends_with($slug, 'index.php')) {
                 $data = $this->db->getSingleObject(
                     'SELECT * 
@@ -45,12 +46,12 @@ class DefaultHandler extends AbstractHandler
                 if ($data !== null) {
                     $this->state->fileName = $slug;
 
-                    return $this->state;
+                    return $this->updateState($seo, $slug);
                 }
                 $this->state->is404 = true;
             }
 
-            return $this->state;
+            return $this->updateState($seo, $slug);
         }
         $seo->kSprache = (int)$seo->kSprache;
         $seo->kKey     = (int)$seo->kKey;

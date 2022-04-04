@@ -445,7 +445,7 @@ final class Shop extends ShopBC
             $_SESSION['ArtikelProSeite'] = self::$state->productsPerPage;
         }
         self::$isInitialized = true;
-        $conf = new Config();
+        $conf                = new Config();
         $conf->setLanguageID(self::getLanguageID());
         $conf->setLanguages(LanguageHelper::getInstance()->getLangArray());
         $conf->setCustomerGroupID(Frontend::getCustomerGroup()->getID());

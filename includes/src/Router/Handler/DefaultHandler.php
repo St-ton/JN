@@ -35,7 +35,7 @@ class DefaultHandler extends AbstractHandler
             ['slg' => $slug]
         );
         if ($seo === null) {
-            if (\str_ends_with($slug, '.php')) {
+            if (\str_ends_with($slug, '.php') && !\str_ends_with($slug, 'index.php')) {
                 $data = $this->db->getSingleObject(
                     'SELECT * 
                         FROM tspezialseite
@@ -47,8 +47,8 @@ class DefaultHandler extends AbstractHandler
 
                     return $this->state;
                 }
+                $this->state->is404 = true;
             }
-            $this->state->is404 = true;
 
             return $this->state;
         }

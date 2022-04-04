@@ -57,12 +57,13 @@ class CategoryHandler extends AbstractHandler
             $this->state,
             Frontend::getCustomer()->getGroupID(),
             Shopsetting::getInstance()->getAll(),
-            Shop::Container()->getAlertService()
+            Shop::Container()->getAlertService(),
+            $smarty
         );
         if (!$controller->init()) {
-            return $controller->notFoundResponse($smarty);
+            return $controller->notFoundResponse();
         }
 
-        return $controller->getResponse($smarty);
+        return $controller->getResponse();
     }
 }

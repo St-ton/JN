@@ -7,7 +7,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use stdClass;
 
@@ -17,6 +16,9 @@ use stdClass;
  */
 class ContactController extends AbstractController
 {
+    /**
+     * @inheritdoc
+     */
     public function init(): bool
     {
         parent::init();
@@ -24,7 +26,10 @@ class ContactController extends AbstractController
         return true;
     }
 
-    public function getResponse(JTLSmarty $smarty): ResponseInterface
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(): ResponseInterface
     {
         Shop::setPageType(\PAGE_KONTAKT);
         $linkHelper         = Shop::Container()->getLinkService();
@@ -32,22 +37,22 @@ class ContactController extends AbstractController
         $this->canonicalURL = $linkHelper->getStaticRoute('kontakt.php');
 
         if (Form::checkSubject()) {
-            $this->assignForms($smarty);
+            $this->assignForms();
         } else {
             Shop::Container()->getLogService()->error('Kein Kontaktbetreff vorhanden! Bitte im Backend unter '
                 . 'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.');
             $this->alertService->addNotice(Shop::Lang()->get('noSubjectAvailable', 'contact'), 'noSubjectAvailable');
-            $smarty->assign('Spezialcontent', new stdClass());
+            $this->smarty->assign('Spezialcontent', new stdClass());
         }
-        $smarty->assign('Link', $link);
+        $this->smarty->assign('Link', $link);
 
-        $this->preRender($smarty);
+        $this->preRender();
         \executeHook(\HOOK_KONTAKT_PAGE);
 
-        return $smarty->getResponse('contact/index.tpl');
+        return $this->smarty->getResponse('contact/index.tpl');
     }
 
-    protected function assignForms(JTLSmarty $smarty): void
+    protected function assignForms(): void
     {
         $specialContent = new stdClass();
         $lang           = Shop::getLanguageCode();
@@ -61,7 +66,7 @@ class ContactController extends AbstractController
                 $checkBox->validateCheckBox(\CHECKBOX_ORT_KONTAKT, $this->customerGroupID, $_POST, true)
             );
             $ok          = Form::eingabenKorrekt($missingData);
-            $smarty->assign('cPost_arr', Text::filterXSS($_POST));
+            $this->smarty->assign('cPost_arr', Text::filterXSS($_POST));
             \executeHook(\HOOK_KONTAKT_PAGE_PLAUSI);
 
             if ($ok) {
@@ -116,7 +121,7 @@ class ContactController extends AbstractController
             );
         }
 
-        $smarty->assign('step', $step)
+        $this->smarty->assign('step', $step)
             ->assign('code', false)
             ->assign('Spezialcontent', $specialContent)
             ->assign('betreffs', $subjects)

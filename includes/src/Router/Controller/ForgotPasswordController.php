@@ -10,7 +10,6 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\RateLimit\ForgotPassword as Limiter;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use LinkHelper;
 use Psr\Http\Message\ResponseInterface;
 
@@ -20,8 +19,14 @@ use Psr\Http\Message\ResponseInterface;
  */
 class ForgotPasswordController extends AbstractController
 {
+    /**
+     * @var string
+     */
     private string $step;
 
+    /**
+     * @return bool
+     */
     public function init(): bool
     {
         parent::init();
@@ -29,7 +34,10 @@ class ForgotPasswordController extends AbstractController
         return true;
     }
 
-    public function getResponse(JTLSmarty $smarty): ResponseInterface
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(): ResponseInterface
     {
         Shop::setPageType(\PAGE_PASSWORTVERGESSEN);
         $linkHelper = Shop::Container()->getLinkService();
@@ -37,15 +45,15 @@ class ForgotPasswordController extends AbstractController
         $valid      = Form::validateToken();
         $missing    = ['captcha' => false];
         if ($valid && isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
-            $missing = $this->initPasswordReset($smarty, $missing);
+            $missing = $this->initPasswordReset($missing);
         } elseif ($valid && isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpwh'])) {
-            $this->reset($smarty, $linkHelper);
+            $this->reset($linkHelper);
         } elseif (isset($_GET['fpwh'])) {
             $resetItem = $this->db->select('tpasswordreset', 'cKey', $_GET['fpwh']);
             if ($resetItem) {
                 $dateExpires = new DateTime($resetItem->dExpires);
                 if ($dateExpires >= new DateTime()) {
-                    $smarty->assign('fpwh', Text::filterXSS($_GET['fpwh']));
+                    $this->smarty->assign('fpwh', Text::filterXSS($_GET['fpwh']));
                 } else {
                     $this->alertService->addError(Shop::Lang()->get('invalidHash', 'account data'), 'invalidHash');
                 }
@@ -64,17 +72,22 @@ class ForgotPasswordController extends AbstractController
             );
         }
 
-        $smarty->assign('step', $this->step)
+        $this->smarty->assign('step', $this->step)
             ->assign('fehlendeAngaben', $missing)
             ->assign('presetEmail', Text::filterXSS(Request::verifyGPDataString('email')))
             ->assign('Link', $link);
 
-        $this->preRender($smarty);
+        $this->preRender();
 
-        return $smarty->getResponse('account/password.tpl');
+        return $this->smarty->getResponse('account/password.tpl');
     }
 
-    protected function reset(JTLSmarty $smarty, LinkHelper $linkHelper): void
+    /**
+     * @param LinkHelper $linkHelper
+     * @return void
+     * @throws \Exception
+     */
+    protected function reset(LinkHelper $linkHelper): void
     {
         if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
             $resetItem = $this->db->select('tpasswordreset', 'cKey', $_POST['fpwh']);
@@ -97,10 +110,15 @@ class ForgotPasswordController extends AbstractController
             );
         }
         $this->step = 'confirm';
-        $smarty->assign('fpwh', Text::filterXSS($_POST['fpwh']));
+        $this->smarty->assign('fpwh', Text::filterXSS($_POST['fpwh']));
     }
 
-    protected function initPasswordReset(JTLSmarty $smarty, array $missing): array
+    /**
+     * @param array     $missing
+     * @return array
+     * @throws \Exception
+     */
+    protected function initPasswordReset(array $missing): array
     {
         $customerData = $this->db->getSingleObject(
             'SELECT kKunde, cSperre
@@ -132,7 +150,7 @@ class ForgotPasswordController extends AbstractController
                 $customer   = new Customer($customerID);
                 $customer->prepareResetPassword();
 
-                $smarty->assign('Kunde', $customer);
+                $this->smarty->assign('Kunde', $customer);
             } elseif ($customerID > 0 && $customerData->cSperre === 'Y') {
                 $this->alertService->addError(Shop::Lang()->get('accountLocked'), 'accountLocked');
             }

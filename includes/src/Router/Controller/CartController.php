@@ -14,7 +14,6 @@ use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -23,6 +22,9 @@ use Psr\Http\Message\ResponseInterface;
  */
 class CartController extends PageController
 {
+    /**
+     * @inheritdoc
+     */
     public function init(): bool
     {
         parent::init();
@@ -30,7 +32,10 @@ class CartController extends PageController
         return true;
     }
 
-    public function getResponse(JTLSmarty $smarty): ResponseInterface
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(): ResponseInterface
     {
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
 
@@ -53,7 +58,7 @@ class CartController extends PageController
             $warning = Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages');
         }
         if ($valid) {
-            $this->checkCoupons($smarty, $cart);
+            $this->checkCoupons($cart);
             $warning = $this->checkGifts($cart);
         }
         // Kupon nicht mehr verfügbar. Redirect im Bestellabschluss. Fehlerausgabe
@@ -61,7 +66,7 @@ class CartController extends PageController
             $couponCodeValid = false;
             $couponError     = $_SESSION['checkCouponResult'];
             unset($_SESSION['checkCouponResult']);
-            $smarty->assign('cKuponfehler', $couponError['ungueltig']);
+            $this->smarty->assign('cKuponfehler', $couponError['ungueltig']);
         }
         if (($msg = $this->checkErrors($cart)) !== null) {
             $warning = $msg;
@@ -87,7 +92,7 @@ class CartController extends PageController
         }
 
         CartHelper::addVariationPictures($cart);
-        $smarty->assign('MsgWarning', $warning)
+        $this->smarty->assign('MsgWarning', $warning)
             ->assign('nMaxUploadSize', $maxSize)
             ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
             ->assign('oUploadSchema_arr', $uploads)
@@ -108,20 +113,24 @@ class CartController extends PageController
             ->assignDeprecated('C_WARENKORBPOS_TYP_ARTIKEL', \C_WARENKORBPOS_TYP_ARTIKEL, '5.0.0')
             ->assignDeprecated('C_WARENKORBPOS_TYP_GRATISGESCHENK', \C_WARENKORBPOS_TYP_GRATISGESCHENK, '5.0.0');
 
-        $this->preRender($smarty);
+        $this->preRender();
 
         \executeHook(\HOOK_WARENKORB_PAGE);
 
-        return $smarty->getResponse('basket/index.tpl');
+        return $this->smarty->getResponse('basket/index.tpl');
     }
 
+    /**
+     * @param Cart $cart
+     * @return string|null
+     */
     protected function checkErrors(Cart $cart): ?string
     {
-        $warning = null;
         if (($res = Request::getInt('fillOut', -1)) < 0) {
-            return $warning;
+            return null;
         }
-        $mbw = Frontend::getCustomerGroup()->getAttribute(\KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
+        $warning = null;
+        $mbw     = Frontend::getCustomerGroup()->getAttribute(\KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
         if ($res === 9 && $mbw > 0 && $cart->gibGesamtsummeWarenOhne([\C_WARENKORBPOS_TYP_GUTSCHEIN], true) < $mbw) {
             $warning = Shop::Lang()->get('minordernotreached', 'checkout')
                 . ' ' . Preise::getLocalizedPriceString($mbw);
@@ -138,6 +147,10 @@ class CartController extends PageController
         return $warning;
     }
 
+    /**
+     * @param Cart $cart
+     * @return string
+     */
     protected function checkGifts(Cart $cart): string
     {
         if (!isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) || (int)$_POST['gratis_geschenk'] !== 1) {
@@ -176,7 +189,11 @@ class CartController extends PageController
         return $warning;
     }
 
-    protected function checkCoupons(JTLSmarty $smarty, Cart $cart): void
+    /**
+     * @param Cart $cart
+     * @return void
+     */
+    protected function checkCoupons(Cart $cart): void
     {
         if (Request::postVar('Kuponcode', '') === '' || $cart->gibAnzahlArtikelExt([\C_WARENKORBPOS_TYP_ARTIKEL]) < 1) {
             // Kupon darf nicht im leeren Warenkorb eingelöst werden
@@ -209,7 +226,7 @@ class CartController extends PageController
             }
         }
 
-        $smarty->assign(
+        $this->smarty->assign(
             'invalidCouponCode',
             Kupon::mapCouponErrorMessage($couponError['ungueltig'] ?? $invalidCouponCode)
         );

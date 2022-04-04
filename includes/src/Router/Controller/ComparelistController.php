@@ -6,7 +6,6 @@ use JTL\Cart\CartHelper;
 use JTL\Catalog\ComparisonList;
 use JTL\Helpers\Request;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -15,6 +14,9 @@ use Psr\Http\Message\ResponseInterface;
  */
 class ComparelistController extends AbstractController
 {
+    /**
+     * @inheritdoc
+     */
     public function init(): bool
     {
         parent::init();
@@ -22,7 +24,10 @@ class ComparelistController extends AbstractController
         return true;
     }
 
-    public function getResponse(JTLSmarty $smarty): ResponseInterface
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(): ResponseInterface
     {
         Shop::setPageType(\PAGE_VERGLEICHSLISTE);
         $compareList = new ComparisonList();
@@ -43,7 +48,7 @@ class ComparelistController extends AbstractController
         $colWidth = ($this->config['vergleichsliste']['vergleichsliste_spaltengroesse'] > 0)
             ? (int)$this->config['vergleichsliste']['vergleichsliste_spaltengroesse']
             : 200;
-        $smarty->assign('nBreiteTabelle', $colWidth * (count($compareList->oArtikel_arr) + 1))
+        $this->smarty->assign('nBreiteTabelle', $colWidth * (count($compareList->oArtikel_arr) + 1))
             ->assign('cPrioSpalten_arr', $compareList->getPrioRows(true, false))
             ->assign('prioRows', $compareList->getPrioRows())
             ->assign('Link', Shop::Container()->getLinkService()->getPageLink(\LINKTYP_VERGLEICHSLISTE))
@@ -53,10 +58,10 @@ class ComparelistController extends AbstractController
             ->assign('oVergleichsliste', $compareList)
             ->assignDeprecated('Einstellungen_Vergleichsliste', $this->config, '5.2.0');
 
-        $this->preRender($smarty);
+        $this->preRender();
 
         \executeHook(\HOOK_VERGLEICHSLISTE_PAGE);
 
-        return $smarty->getResponse('comparelist/index.tpl');
+        return $this->smarty->getResponse('comparelist/index.tpl');
     }
 }

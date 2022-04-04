@@ -7,7 +7,6 @@ use JTL\Cart\Cart;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Navigation;
-use JTL\Catalog\NavigationEntry;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Wishlist\Wishlist;
@@ -46,6 +45,11 @@ abstract class AbstractController implements ControllerInterface
      * @var DbInterface
      */
     protected DbInterface $db;
+
+    /**
+     * @var JTLSmarty
+     */
+    protected JTLSmarty $smarty;
 
     /**
      * @var AlertServiceInterface
@@ -128,19 +132,22 @@ abstract class AbstractController implements ControllerInterface
      * @param int                   $customerGroupID
      * @param array                 $config
      * @param AlertServiceInterface $alertService
+     * @param JTLSmarty             $smarty
      */
     public function __construct(
         DbInterface $db,
         State $state,
         int $customerGroupID,
         array $config,
-        AlertServiceInterface $alertService
+        AlertServiceInterface $alertService,
+        JTLSmarty $smarty
     ) {
         $this->db                 = $db;
         $this->state              = $state;
         $this->customerGroupID    = $customerGroupID;
         $this->config             = $config;
         $this->alertService       = $alertService;
+        $this->smarty             = $smarty;
         $this->searchResults      = new SearchResults();
         $this->expandedCategories = new KategorieListe();
         $this->productFilter      = Shop::getProductFilter();
@@ -159,7 +166,7 @@ abstract class AbstractController implements ControllerInterface
     /**
      * @inheritdoc
      */
-    public function notFoundResponse(JTLSmarty $smarty): ResponseInterface
+    public function notFoundResponse(): ResponseInterface
     {
         if ($this->state->languageID === 0) {
             $this->state->languageID = Shop::getLanguageID();
@@ -171,18 +178,18 @@ abstract class AbstractController implements ControllerInterface
             $this->state,
             $this->customerGroupID,
             $this->config,
-            $this->alertService
+            $this->alertService,
+            $this->smarty
         );
         $pc->init();
 
-        return $pc->getResponse($smarty)->withStatus(404);
+        return $pc->getResponse()->withStatus(404);
     }
 
     /**
-     * @param JTLSmarty $smarty
      * @return void
      */
-    public function preRender(JTLSmarty $smarty): void
+    public function preRender(): void
     {
         global $nStartzeit;
 
@@ -211,7 +218,7 @@ abstract class AbstractController implements ControllerInterface
 
         $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($this->customerGroupID, $origin);
         $cartValue       = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
-        $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
+        $this->smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
             ->assign('NaviFilter', $this->productFilter)
             ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
             ->assign('oUnterKategorien_arr', Category::getSubcategoryList(
@@ -267,10 +274,10 @@ abstract class AbstractController implements ControllerInterface
             ->assign('wishlists', Wishlist::getWishlists())
             ->assign('shippingCountry', $cart->getShippingCountry())
             ->assign('countries', Shop::Container()->getCountryService()->getCountrylist())
-            ->assign('Link', $smarty->getTemplateVars('Link') ?? $link);
+            ->assign('Link', $this->smarty->getTemplateVars('Link') ?? $link);
 
-        $this->assignTemplateData($smarty);
-        $this->assignMetaData($smarty, $link);
+        $this->assignTemplateData();
+        $this->assignMetaData($link);
 
         Visitor::generateData();
         Campaign::checkCampaignParameters();
@@ -288,7 +295,7 @@ abstract class AbstractController implements ControllerInterface
             : 0;
         $debugbar->getTimer()->stopMeasure('init');
 
-        $smarty->assign('bCookieErlaubt', isset($_COOKIE[Frontend::getSessionName()]))
+        $this->smarty->assign('bCookieErlaubt', isset($_COOKIE[Frontend::getSessionName()]))
             ->assign('Brotnavi', $this->getNavigation()->createNavigation())
             ->assign('nIsSSL', Request::checkSSL())
             ->assign('boxes', $boxesToShow)
@@ -321,18 +328,17 @@ abstract class AbstractController implements ControllerInterface
     }
 
     /**
-     * @param JTLSmarty $smarty
      * @return void
      */
-    protected function assignTemplateData(JTLSmarty $smarty): void
+    protected function assignTemplateData(): void
     {
         $tplService = Shop::Container()->getTemplateService();
         $template   = $tplService->getActiveTemplate();
         $paths      = $template->getPaths();
-        (new MinifyService())->buildURIs($smarty, $template, $paths->getThemeDirName());
+        (new MinifyService())->buildURIs($this->smarty, $template, $paths->getThemeDirName());
         $shopURL = Shop::getURL();
         $device  = new Mobile_Detect();
-        $smarty->assign('device', $device)
+        $this->smarty->assign('device', $device)
             ->assign('isMobile', $device->isMobile())
             ->assign('isTablet', $device->isTablet())
             ->assign('ShopURL', $shopURL)
@@ -357,11 +363,10 @@ abstract class AbstractController implements ControllerInterface
     }
 
     /**
-     * @param JTLSmarty     $smarty
      * @param LinkInterface $link
      * @return void
      */
-    protected function assignMetaData(JTLSmarty $smarty, LinkInterface $link): void
+    protected function assignMetaData(LinkInterface $link): void
     {
         $metaTitle       = $this->metaTitle ?? $link->getMetaTitle();
         $metaDescription = $this->metaDescription ?? $link->getMetaDescription();
@@ -388,7 +393,7 @@ abstract class AbstractController implements ControllerInterface
             null,
             (int)$this->config['metaangaben']['global_meta_maxlaenge_description']
         );
-        $smarty->assign('meta_title', $metaTitle ?? '')
+        $this->smarty->assign('meta_title', $metaTitle ?? '')
             ->assign('meta_description', $metaDescription ?? '')
             ->assign('meta_keywords', $metaKeywords ?? '')
             ->assign('meta_publisher', $this->config['metaangaben']['global_meta_publisher'])
@@ -396,7 +401,7 @@ abstract class AbstractController implements ControllerInterface
             ->assign('meta_language', Text::convertISO2ISO639($_SESSION['cISOSprache']))
             ->assign('bNoIndex', $this->productFilter->getMetaData()->checkNoIndex())
             ->assign('cCanonicalURL', $this->canonicalURL)
-            ->assign('robotsContent', $smarty->getTemplateVars('robotsContent'))
+            ->assign('robotsContent', $this->smarty->getTemplateVars('robotsContent'))
             ->assign('cShopName', $this->config['global']['global_shopname']);
     }
 }

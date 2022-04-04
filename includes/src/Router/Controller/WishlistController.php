@@ -12,7 +12,6 @@ use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use stdClass;
 
@@ -22,6 +21,9 @@ use stdClass;
  */
 class WishlistController extends AbstractController
 {
+    /**
+     * @inheritdoc
+     */
     public function init(): bool
     {
         parent::init();
@@ -29,7 +31,10 @@ class WishlistController extends AbstractController
         return true;
     }
 
-    public function getResponse(JTLSmarty $smarty): ResponseInterface
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(): ResponseInterface
     {
         Shop::setPageType(\PAGE_WUNSCHLISTE);
         $urlID            = Text::filterXSS(Request::verifyGPDataString('wlid'));
@@ -277,7 +282,7 @@ class WishlistController extends AbstractController
             ->setItemCount(count($wishListItems))
             ->assemble();
 
-        $smarty->assign('CWunschliste', $wishlist)
+        $this->smarty->assign('CWunschliste', $wishlist)
             ->assign('pagination', $pagination)
             ->assign('wishlistItems', $pagination->getPageItems())
             ->assign('oWunschliste_arr', $wishlists)
@@ -289,7 +294,7 @@ class WishlistController extends AbstractController
             ->assign('cURLID', $urlID)
             ->assign('step', $step);
 
-        $this->preRender($smarty);
+        $this->preRender();
 
         if ($wishlist->getID() > 0) {
             $campaign = new Campaign(\KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
@@ -310,6 +315,6 @@ class WishlistController extends AbstractController
             }
         }
 
-        return $smarty->getResponse('snippets/wishlist.tpl');
+        return $this->smarty->getResponse('snippets/wishlist.tpl');
     }
 }

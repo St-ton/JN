@@ -34,7 +34,6 @@ use JTL\Plugin\PluginInterface;
 use JTL\Plugin\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use stdClass;
@@ -45,16 +44,22 @@ use stdClass;
  */
 class CheckoutController extends RegistrationController
 {
-    private JTLSmarty $smarty;
-
+    /**
+     * @var Cart
+     */
     private Cart $cart;
 
+    /**
+     * @var Customer
+     */
     private Customer $customer;
 
+    /**
+     * @inheritdoc
+     */
     public function init(): bool
     {
         parent::init();
-        error_log('####################################################setting BESTELL1!');
         $this->cart     = Frontend::getCart();
         $this->customer = Frontend::getCustomer();
 
@@ -72,10 +77,12 @@ class CheckoutController extends RegistrationController
         $this->step = $new;
     }
 
-    public function getResponse(JTLSmarty $smarty): ResponseInterface
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(): ResponseInterface
     {
         Shop::setPageType(\PAGE_BESTELLVORGANG);
-        $this->smarty = $smarty;
         require_once PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
         require_once PFAD_ROOT . \PFAD_INCLUDES . 'registrieren_inc.php';
         $this->updateStep('accountwahl');
@@ -87,7 +94,7 @@ class CheckoutController extends RegistrationController
 
         $this->updateStep('accountwahl');
         $linkService = Shop::Container()->getLinkService();
-        $controller  = new AccountController($this->db, $this->alertService, $linkService, $smarty);
+        $controller  = new AccountController($this->db, $this->alertService, $linkService, $this->smarty);
         $valid       = Form::validateToken();
 
         unset($_SESSION['ajaxcheckout']);
@@ -150,7 +157,7 @@ class CheckoutController extends RegistrationController
         if (Request::postInt('unreg_form', -1) === 0) {
             $_POST['checkout'] = 1;
             $_POST['form']     = 1;
-            $this->saveCustomer($smarty, $_POST);
+            $this->saveCustomer($_POST);
         }
 
         if (($paymentMethodID = Request::getInt('kZahlungsart')) > 0) {
@@ -221,8 +228,6 @@ class CheckoutController extends RegistrationController
         $this->pruefeVersandkostenStep();
         $this->pruefeZahlungStep();
         $this->pruefeBestaetigungStep();
-        error_log('this_>step: ' . $this->step);
-        error_log('global step: ' . $GLOBALS['step']);
         // sondersteps Rechnungsadresse aendern
         $this->pruefeRechnungsadresseStep();
         // sondersteps Lieferadresse aendern
@@ -280,7 +285,7 @@ class CheckoutController extends RegistrationController
             $_SESSION['AktiveZahlungsart'] = $savedPayment;
         }
         CartHelper::addVariationPictures($this->cart);
-        $smarty->assign(
+        $this->smarty->assign(
             'AGB',
             Shop::Container()->getLinkService()->getAGBWRB($this->languageID, $this->customerGroupID)
         )
@@ -301,10 +306,10 @@ class CheckoutController extends RegistrationController
             ->assignDeprecated('C_WARENKORBPOS_TYP_ARTIKEL', \C_WARENKORBPOS_TYP_ARTIKEL, '5.0.0')
             ->assignDeprecated('C_WARENKORBPOS_TYP_GRATISGESCHENK', \C_WARENKORBPOS_TYP_GRATISGESCHENK, '5.0.0');
 
-        $this->preRender($smarty);
+        $this->preRender();
         \executeHook(\HOOK_BESTELLVORGANG_PAGE);
 
-        return $smarty->getResponse('checkout/index.tpl');
+        return $this->smarty->getResponse('checkout/index.tpl');
     }
 
     /**

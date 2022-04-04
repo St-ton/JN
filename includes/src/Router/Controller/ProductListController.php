@@ -15,7 +15,6 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use stdClass;
 
@@ -25,7 +24,6 @@ use stdClass;
  */
 class ProductListController extends AbstractController
 {
-
     /**
      * @inheritdoc
      */
@@ -54,7 +52,10 @@ class ProductListController extends AbstractController
         return true;
     }
 
-    public function getResponse(JTLSmarty $smarty): ResponseInterface
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(): ResponseInterface
     {
         Shop::setPageType(\PAGE_ARTIKELLISTE);
 
@@ -72,8 +73,8 @@ class ProductListController extends AbstractController
             );
         }
         $this->checkProductRedirect();
-        $this->assignPagination($smarty);
-        $this->assignBestsellers($smarty);
+        $this->assignPagination();
+        $this->assignBestsellers();
         if (!isset($_SESSION['ArtikelProSeite'])
             && $this->config['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N'
         ) {
@@ -90,7 +91,7 @@ class ProductListController extends AbstractController
 
             return $product;
         });
-        $this->assignCategoryContent($smarty);
+        $this->assignCategoryContent();
         $navInfo = $this->productFilter->getMetaData()->getNavigationInfo(
             $this->currentCategory,
             $this->expandedCategories
@@ -100,7 +101,7 @@ class ProductListController extends AbstractController
             \AUSWAHLASSISTENT_ORT_KATEGORIE,
             $this->state->categoryID,
             $this->languageID,
-            $smarty,
+            $this->smarty,
             [],
             $this->productFilter
         );
@@ -110,7 +111,7 @@ class ProductListController extends AbstractController
         if (\count($priceRanges) > 0) {
             $priceRangeMax = \end($priceRanges)->getData('nBis');
         }
-        $smarty->assign('NaviFilter', $this->productFilter)
+        $this->smarty->assign('NaviFilter', $this->productFilter)
             ->assign('priceRangeMax', $priceRangeMax ?? 0)
             ->assign(
                 'oErweiterteDarstellung',
@@ -123,11 +124,11 @@ class ProductListController extends AbstractController
                 (int)$this->config['artikeluebersicht']['suche_max_treffer']));
 
         \executeHook(\HOOK_FILTER_PAGE);
-        $this->preRender($smarty);
+        $this->preRender();
 
         // @todo:?
         $globalMetaData = Metadata::getGlobalMetaData();
-        $smarty->assign(
+        $this->smarty->assign(
             'meta_title',
             $navInfo->generateMetaTitle(
                 $this->searchResults,
@@ -152,15 +153,18 @@ class ProductListController extends AbstractController
         \executeHook(\HOOK_FILTER_ENDE);
 
         if (Request::verifyGPCDataInt('useMobileFilters')) {
-            return $smarty->assign('NaviFilter', $this->productFilter)
+            return $this->smarty->assign('NaviFilter', $this->productFilter)
                 ->assign('show_filters', true)
                 ->assign('itemCount', $this->searchResults->getProductCount())
                 ->getResponse('snippets/filter/mobile.tpl');
         }
 
-        return $smarty->getResponse('productlist/index.tpl');
+        return $this->smarty->getResponse('productlist/index.tpl');
     }
 
+    /**
+     * @return void
+     */
     protected function checkProductRedirect(): void
     {
         if ($this->config['navigationsfilter']['allgemein_weiterleitung'] !== 'Y'
@@ -181,7 +185,10 @@ class ProductListController extends AbstractController
         }
     }
 
-    protected function assignBestsellers(JTLSmarty $smarty): void
+    /**
+     * @return void
+     */
+    protected function assignBestsellers(): void
     {
         $bestsellers = [];
         if ($this->config['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
@@ -199,10 +206,13 @@ class ProductListController extends AbstractController
             $products    = $this->searchResults->getProducts()->all();
             Bestseller::ignoreProducts($products, $bestsellers);
         }
-        $smarty->assign('oBestseller_arr', $bestsellers);
+        $this->smarty->assign('oBestseller_arr', $bestsellers);
     }
 
-    protected function assignPagination(JTLSmarty $smarty): void
+    /**
+     * @return void
+     */
+    protected function assignPagination(): void
     {
         $pages = $this->searchResults->getPages();
         if ($pages->getCurrentPage() > 0
@@ -217,7 +227,7 @@ class ProductListController extends AbstractController
         }
         $pagination = new Pagination($this->productFilter, new ItemFactory());
         $pagination->create($pages);
-        $smarty->assign('oNaviSeite_arr', $pagination->getItemsCompat())
+        $this->smarty->assign('oNaviSeite_arr', $pagination->getItemsCompat())
             ->assign('filterPagination', $pagination);
         if (!\str_contains(\basename($this->productFilter->getFilterURL()->getURL()), '.php')) {
             $this->canonicalURL = $this->productFilter->getFilterURL()->getURL(null, true)
@@ -225,10 +235,10 @@ class ProductListController extends AbstractController
         }
     }
 
-    protected function assignCategoryContent(JTLSmarty $smarty): void
+    protected function assignCategoryContent(): void
     {
         $categoryContent = null;
-        $smarty->assign('KategorieInhalt', $categoryContent);
+        $this->smarty->assign('KategorieInhalt', $categoryContent);
         if ($this->searchResults->getProducts()->count() > 0) {
             return;
         }
@@ -256,6 +266,6 @@ class ProductListController extends AbstractController
                 $categoryContent->TopArtikel ?? null
             );
         }
-        $smarty->assign('KategorieInhalt', $categoryContent);
+        $this->smarty->assign('KategorieInhalt', $categoryContent);
     }
 }

@@ -13,7 +13,6 @@ use JTL\News\Item;
 use JTL\News\ViewType;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -22,16 +21,29 @@ use Psr\Http\Message\ResponseInterface;
  */
 class NewsController extends AbstractController
 {
+    /**
+     * @var string|null
+     */
     private ?string $breadCrumbName;
+
+    /**
+     * @var string|null
+     */
     private ?string $breadCrumbURL;
 
+    /**
+     * @inheritdoc
+     */
     public function init(): bool
     {
         parent::init();
         return true;
     }
 
-    public function getResponse(JTLSmarty $smarty): ResponseInterface
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(): ResponseInterface
     {
         $pagination            = new Pagination();
         $this->breadCrumbName  = null;
@@ -40,7 +52,7 @@ class NewsController extends AbstractController
         $this->metaDescription = '';
         $this->metaKeywords    = '';
         $link                  = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_NEWS);
-        $controller            = new Controller($this->db, $this->config, $smarty);
+        $controller            = new Controller($this->db, $this->config, $this->smarty);
 
         switch ($controller->getPageType($this->state->getAsParams())) {
             case ViewType::NEWS_DETAIL:
@@ -55,9 +67,8 @@ class NewsController extends AbstractController
                 $this->metaDescription = $newsItem->getMetaDescription();
                 $this->metaKeywords    = $newsItem->getMetaKeyword();
                 if ((int)($_POST['kommentar_einfuegen'] ?? 0) > 0 && Form::validateToken()) {
-                    $result = $controller->addComment($newsItemID, $_POST);
+                    $controller->addComment($newsItemID, $_POST);
                 }
-
                 $controller->displayItem($newsItem, $pagination);
 
                 $this->breadCrumbName = $newsItem->getTitle() ?? Shop::Lang()->get('news', 'breadcrumb');
@@ -86,12 +97,12 @@ class NewsController extends AbstractController
                 $this->metaTitle       = $newsCategory->getMetaTitle();
                 $this->metaDescription = $newsCategory->getMetaDescription();
                 $this->metaKeywords    = $newsCategory->getMetaKeyword();
-                $smarty->assign('robotsContent', 'noindex, follow');
+                $this->smarty->assign('robotsContent', 'noindex, follow');
                 break;
             case ViewType::NEWS_OVERVIEW:
                 Shop::setPageType(\PAGE_NEWS);
                 $newsCategoryID = 0;
-                $overview       = $controller->displayOverview($pagination, $newsCategoryID, 0, $this->customerGroupID);
+                $controller->displayOverview($pagination, $newsCategoryID, 0, $this->customerGroupID);
                 break;
             case ViewType::NEWS_MONTH_OVERVIEW:
                 Shop::setPageType(\PAGE_NEWSMONAT);
@@ -101,7 +112,7 @@ class NewsController extends AbstractController
                 $this->breadCrumbURL  = $this->canonicalURL;
                 $this->metaTitle      = $overview->getMetaTitle();
                 $this->breadCrumbName = !empty($overview->getName()) ? $overview->getName() : $this->metaTitle;
-                $smarty->assign('robotsContent', 'noindex, follow');
+                $this->smarty->assign('robotsContent', 'noindex, follow');
                 break;
             case ViewType::NEWS_DISABLED:
             default:
@@ -121,13 +132,13 @@ class NewsController extends AbstractController
             $this->alertService->addNotice($controller->getNoticeMsg(), 'newsNote');
         }
 
-        $smarty->assign('oPagination', $pagination)
+        $this->smarty->assign('oPagination', $pagination)
             ->assign('Link', $link)
             ->assign('code_news', false);
 
-        $this->preRender($smarty);
+        $this->preRender();
 
-        return $smarty->getResponse('blog/index.tpl');
+        return $this->smarty->getResponse('blog/index.tpl');
     }
 
     /**

@@ -6,7 +6,6 @@ use Exception;
 use JTL\Catalog\Product\Artikel;
 use JTL\Review\ReviewController as BaseController;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -15,6 +14,9 @@ use Psr\Http\Message\ResponseInterface;
  */
 class ReviewController extends PageController
 {
+    /**
+     * @inheritdoc
+     */
     public function init(): bool
     {
         parent::init();
@@ -22,19 +24,22 @@ class ReviewController extends PageController
         return true;
     }
 
-    public function getResponse(JTLSmarty $smarty): ResponseInterface
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(): ResponseInterface
     {
         Shop::setPageType(\PAGE_BEWERTUNG);
         $controller = new BaseController(
             $this->db,
             Shop::Container()->getCache(),
             $this->alertService,
-            $smarty
+            $this->smarty
         );
         if ($controller->handleRequest() === true) {
-            $this->preRender($smarty);
+            $this->preRender();
 
-            return $smarty->getResponse('productdetails/review_form.tpl');
+            return $this->smarty->getResponse('productdetails/review_form.tpl');
         }
 
         try {

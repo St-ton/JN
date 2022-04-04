@@ -16,7 +16,6 @@ use JTL\Plugin\Payment\MethodInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -25,6 +24,9 @@ use Psr\Http\Message\ResponseInterface;
  */
 class OrderCompleteController extends CheckoutController
 {
+    /**
+     * @inheritdoc
+     */
     public function init(): bool
     {
         parent::init();
@@ -32,13 +34,16 @@ class OrderCompleteController extends CheckoutController
         return true;
     }
 
-    public function getResponse(JTLSmarty $smarty): ResponseInterface
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(): ResponseInterface
     {
         Shop::setPageType(\PAGE_BESTELLABSCHLUSS);
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellabschluss_inc.php';
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
         if (Request::getInt('payAgain') === 1 && Request::getInt('kBestellung') > 0) {
-            return $this->handlePayAgain($smarty, Request::getInt('kBestellung'));
+            return $this->handlePayAgain(Request::getInt('kBestellung'));
         }
         $cart       = Frontend::getCart();
         $handler    = new OrderHandler($this->db, Frontend::getCustomer(), $cart);
@@ -54,7 +59,7 @@ class OrderCompleteController extends CheckoutController
                 $this->db->delete('tbestellid', 'kBestellung', $bestellid->kBestellung);
             }
             $this->db->query('DELETE FROM tbestellid WHERE dDatum < DATE_SUB(NOW(), INTERVAL 30 DAY)');
-            $smarty->assign('abschlussseite', 1);
+            $this->smarty->assign('abschlussseite', 1);
         } else {
             if (isset($_POST['kommentar'])) {
                 $_SESSION['kommentar'] = mb_substr(\strip_tags($this->db->escape($_POST['kommentar'])), 0, 1000);
@@ -103,14 +108,14 @@ class OrderCompleteController extends CheckoutController
                 if ($order->Lieferadresse === null && !empty($_SESSION['Lieferadresse']->cVorname)) {
                     $order->Lieferadresse = $handler->getShippingAddress();
                 }
-                $smarty->assign('Bestellung', $order);
+                $this->smarty->assign('Bestellung', $order);
             } else {
                 $order = $handler->fakeBestellung();
             }
             $handler->saveUploads($order);
-            $this->setzeSmartyWeiterleitung($smarty, $order);
+            $this->setzeSmartyWeiterleitung($order);
         }
-        $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
+        $this->smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
             ->assign('oPlugin', null)
             ->assign('plugin', null)
             ->assign('Bestellung', $order)
@@ -127,7 +132,7 @@ class OrderCompleteController extends CheckoutController
             $loader = Helper::getLoaderByPluginID($kPlugin, $this->db);
             try {
                 $plugin = $loader->init($kPlugin);
-                $smarty->assign('oPlugin', $plugin)
+                $this->smarty->assign('oPlugin', $plugin)
                     ->assign('plugin', $plugin);
             } catch (InvalidArgumentException $e) {
                 Shop::Container()->getLogService()->error(
@@ -137,22 +142,23 @@ class OrderCompleteController extends CheckoutController
         }
         if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {
             Frontend::getInstance()->cleanUp();
-            $this->preRender($smarty);
+            $this->preRender();
             \executeHook(\HOOK_BESTELLABSCHLUSS_PAGE, ['oBestellung' => $order]);
-            return $smarty->getResponse('checkout/order_completed.tpl');
+
+            return $this->smarty->getResponse('checkout/order_completed.tpl');
         }
 
-        $this->preRender($smarty);
+        $this->preRender();
         \executeHook(\HOOK_BESTELLABSCHLUSS_PAGE_ZAHLUNGSVORGANG, ['oBestellung' => $order]);
-        return $smarty->getResponse('checkout/step6_init_payment.tpl');
+
+        return $this->smarty->getResponse('checkout/step6_init_payment.tpl');
     }
 
     /**
-     * @param JTLSmarty $smarty
-     * @param int       $orderID
+     * @param int $orderID
      * @return ResponseInterface
      */
-    protected function handlePayAgain(JTLSmarty $smarty, int $orderID): ResponseInterface
+    protected function handlePayAgain(int $orderID): ResponseInterface
     {
         $linkHelper = Shop::Container()->getLinkService();
         $order      = new Bestellung($orderID, true);
@@ -168,7 +174,7 @@ class OrderCompleteController extends CheckoutController
 
         $bestellid = $this->db->select('tbestellid', 'kBestellung', $order->kBestellung);
         $moduleID  = $order->Zahlungsart->cModulId;
-        $smarty->assign('Bestellung', $order)
+        $this->smarty->assign('Bestellung', $order)
             ->assign('oPlugin', null)
             ->assign('plugin', null);
         if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
@@ -200,7 +206,8 @@ class OrderCompleteController extends CheckoutController
             }
 
             if ($hasAdditionalInformation) {
-                if (\saveZahlungsInfo($order->kKunde, $order->kBestellung)) {
+                $handler = new OrderHandler($this->db, Frontend::getCustomer(), Frontend::getCart());
+                if ($handler->savePaymentInfo($order->kKunde, $order->kBestellung)) {
                     $this->db->update(
                         'tbestellung',
                         'kBestellung',
@@ -217,7 +224,7 @@ class OrderCompleteController extends CheckoutController
                     exit();
                 }
             } else {
-                $smarty->assign('ZahlungsInfo', $this->gibPostZahlungsInfo());
+                $this->smarty->assign('ZahlungsInfo', $this->gibPostZahlungsInfo());
             }
         }
         // Zahlungsart als Plugin
@@ -235,18 +242,18 @@ class OrderCompleteController extends CheckoutController
                     }
                 }
 
-                $smarty->assign('oPlugin', $plugin)
+                $this->smarty->assign('oPlugin', $plugin)
                     ->assign('plugin', $plugin);
             } catch (InvalidArgumentException $e) {
             }
         } elseif ($moduleID === 'za_lastschrift_jtl') {
             $customerAccountData = $this->gibKundenKontodaten(Frontend::getCustomer()->getID());
             if (isset($customerAccountData->kKunde) && $customerAccountData->kKunde > 0) {
-                $smarty->assign('oKundenKontodaten', $customerAccountData);
+                $this->smarty->assign('oKundenKontodaten', $customerAccountData);
             }
         }
 
-        $smarty->assign('WarensummeLocalized', Frontend::getCart()->gibGesamtsummeWarenLocalized())
+        $this->smarty->assign('WarensummeLocalized', Frontend::getCart()->gibGesamtsummeWarenLocalized())
             ->assign('Bestellung', $order)
             ->assign('Link', $this->currentLink);
 
@@ -259,9 +266,9 @@ class OrderCompleteController extends CheckoutController
             $_SESSION['Kupon']
         );
 
-        $this->preRender($smarty);
+        $this->preRender();
 
-        return $smarty->getResponse('checkout/order_completed.tpl');
+        return $this->smarty->getResponse('checkout/order_completed.tpl');
     }
 
     /**
@@ -321,11 +328,10 @@ class OrderCompleteController extends CheckoutController
     }
 
     /**
-     * @param JTLSmarty  $smarty
      * @param Bestellung $order
      * @return void
      */
-    public function setzeSmartyWeiterleitung(JTLSmarty $smarty, Bestellung $order): void
+    public function setzeSmartyWeiterleitung(Bestellung $order): void
     {
         $moduleID = $_SESSION['Zahlungsart']->cModulId;
 
@@ -353,11 +359,11 @@ class OrderCompleteController extends CheckoutController
                 $paymentMethod           = new $className($moduleID);
                 $paymentMethod->cModulId = $moduleID;
                 $paymentMethod->preparePaymentProcess($order);
-                $smarty->assign('oPlugin', $plugin)
+                $this->smarty->assign('oPlugin', $plugin)
                     ->assign('plugin', $plugin);
             }
         } elseif ($moduleID === 'za_lastschrift_jtl') {
-            $smarty->assign('abschlussseite', 1);
+            $this->smarty->assign('abschlussseite', 1);
         }
 
         \executeHook(\HOOK_BESTELLABSCHLUSS_INC_SMARTYWEITERLEITUNG);

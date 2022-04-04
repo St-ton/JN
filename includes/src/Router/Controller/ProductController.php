@@ -17,7 +17,6 @@ use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -26,6 +25,9 @@ use Psr\Http\Message\ResponseInterface;
  */
 class ProductController extends AbstractController
 {
+    /**
+     * @inheritdoc
+     */
     public function init(): bool
     {
         parent::init();
@@ -51,7 +53,10 @@ class ProductController extends AbstractController
         return $this->currentProduct->kArtikel > 0 && $this->currentProduct->kArtikel === $this->state->productID;
     }
 
-    public function getResponse(JTLSmarty $smarty): ResponseInterface
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(): ResponseInterface
     {
         Shop::setPageType(\PAGE_ARTIKEL);
         global $AktuellerArtikel;
@@ -133,10 +138,10 @@ class ProductController extends AbstractController
 
         $messages = ProductHelper::getProductMessages();
         if ($this->config['artikeldetails']['artikeldetails_fragezumprodukt_anzeigen'] !== 'N') {
-            $smarty->assign('Anfrage', ProductHelper::getProductQuestionFormDefaults());
+            $this->smarty->assign('Anfrage', ProductHelper::getProductQuestionFormDefaults());
         }
         if ($this->config['artikeldetails']['benachrichtigung_nutzen'] !== 'N') {
-            $smarty->assign('Benachrichtigung', ProductHelper::getAvailabilityFormDefaults());
+            $this->smarty->assign('Benachrichtigung', ProductHelper::getAvailabilityFormDefaults());
         }
         if ($valid && Request::postInt('fragezumprodukt') === 1) {
             $messages = ProductHelper::checkProductQuestion(
@@ -197,8 +202,8 @@ class ProductController extends AbstractController
             $this->config['bewertung']['bewertung_anzahlseite']
         );
         if (Request::hasGPCData('ek')) {
-            ProductHelper::getEditConfigMode(Request::verifyGPCDataInt('ek'), $smarty);
-            $smarty->assign(
+            ProductHelper::getEditConfigMode(Request::verifyGPCDataInt('ek'), $this->smarty);
+            $this->smarty->assign(
                 'voucherPrice',
                 Tax::getGross(
                     Frontend::getCart()->PositionenArr[Request::verifyGPCDataInt('ek')]->fPreis,
@@ -222,12 +227,12 @@ class ProductController extends AbstractController
             : null;
         if ($child === 0 && $this->currentProduct->nIstVater === 0 && Upload::checkLicense()) {
             $maxSize = Upload::uploadMax();
-            $smarty->assign('nMaxUploadSize', $maxSize)
+            $this->smarty->assign('nMaxUploadSize', $maxSize)
                 ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
-                ->assign('oUploadSchema_arr', Upload::gibArtikelUploads($child > 0 ? $child : $parent));
+                ->assign('oUploadSchema_arr', Upload::gibArtikelUploads($parent));
         }
 
-        $smarty->assign('showMatrix', $this->currentProduct->showMatrix())
+        $this->smarty->assign('showMatrix', $this->currentProduct->showMatrix())
             ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
             ->assign('oAehnlicheArtikel_arr', $similarProducts)
             ->assign('UVPlocalized', $this->currentProduct->cUVPLocalized)
@@ -268,24 +273,23 @@ class ProductController extends AbstractController
             ->assignDeprecated('KONFIG_ANZEIGE_TYP_DROPDOWN', \KONFIG_ANZEIGE_TYP_DROPDOWN, '5.0.0')
             ->assignDeprecated('KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI', \KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI, '5.0.0');
 
-        $this->assignPagination($smarty);
+        $this->assignPagination();
         $AktuellerArtikel = $this->currentProduct; // @todo
-        $this->preRender($smarty);
+        $this->preRender();
 
         \executeHook(\HOOK_ARTIKEL_PAGE, ['oArtikel' => $this->currentProduct]);
 
         if (Request::isAjaxRequest()) {
-            $smarty->assign('listStyle', isset($_GET['isListStyle']) ? Text::filterXSS($_GET['isListStyle']) : '');
+            $this->smarty->assign('listStyle', isset($_GET['isListStyle']) ? Text::filterXSS($_GET['isListStyle']) : '');
         }
 
-        return $smarty->getResponse('productdetails/index.tpl');
+        return $this->smarty->getResponse('productdetails/index.tpl');
     }
 
     /**
-     * @param JTLSmarty $smarty
      * @return void
      */
-    protected function assignPagination(JTLSmarty $smarty): void
+    protected function assignPagination(): void
     {
         $ratings = $this->currentProduct->Bewertungen->oBewertung_arr;
         if ((int)($this->currentProduct->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich ?? 0) > 0) {
@@ -329,6 +333,6 @@ class ProductController extends AbstractController
             })
             ->assemble();
 
-        $smarty->assign('ratingPagination', $pagination);
+        $this->smarty->assign('ratingPagination', $pagination);
     }
 }

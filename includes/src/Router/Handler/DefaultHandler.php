@@ -65,13 +65,13 @@ class DefaultHandler extends AbstractHandler
     {
         $this->getStateFromSlug($args);
         Shop::seoCheckFinish();
-        $cf         = new ControllerFactory($this->state, $this->db);
+        $cf         = new ControllerFactory($this->state, $this->db, $smarty);
         $controller = $cf->getEntryPoint();
         $check      = $controller->init();
         if ($check === false) {
-            return $controller->notFoundResponse($smarty);
+            return $controller->notFoundResponse();
         }
 
-        return $controller->getResponse($smarty);
+        return $controller->getResponse();
     }
 }

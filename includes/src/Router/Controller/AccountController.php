@@ -4,7 +4,6 @@ namespace JTL\Router\Controller;
 
 use JTL\Customer\AccountController as CustomerAccountController;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -13,6 +12,9 @@ use Psr\Http\Message\ResponseInterface;
  */
 class AccountController extends AbstractController
 {
+    /**
+     * @inheritdoc
+     */
     public function init(): bool
     {
         parent::init();
@@ -20,7 +22,10 @@ class AccountController extends AbstractController
         return true;
     }
 
-    public function getResponse(JTLSmarty $smarty): ResponseInterface
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(): ResponseInterface
     {
         Shop::setPageType($this->state->pageType);
         require_once PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
@@ -30,13 +35,13 @@ class AccountController extends AbstractController
             $this->db,
             $this->alertService,
             $linkService,
-            $smarty
+            $this->smarty
         );
         $this->canonicalURL = $linkService->getStaticRoute('jtl.php');
         $controller->handleRequest();
-        $this->preRender($smarty);
+        $this->preRender();
         \executeHook(\HOOK_JTL_PAGE);
 
-        return $smarty->getResponse('account/index.tpl');
+        return $this->smarty->getResponse('account/index.tpl');
     }
 }

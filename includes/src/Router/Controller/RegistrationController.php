@@ -20,7 +20,6 @@ use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use stdClass;
 
@@ -30,8 +29,14 @@ use stdClass;
  */
 class RegistrationController extends PageController
 {
+    /**
+     * @var string
+     */
     protected string $step = 'formular';
 
+    /**
+     * @inheritdoc
+     */
     public function init(): bool
     {
         parent::init();
@@ -39,7 +44,10 @@ class RegistrationController extends PageController
         return true;
     }
 
-    public function getResponse(JTLSmarty $smarty): ResponseInterface
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(): ResponseInterface
     {
         Shop::setPageType(\PAGE_REGISTRIERUNG);
         $linkHelper = Shop::Container()->getLinkService();
@@ -56,15 +64,15 @@ class RegistrationController extends PageController
             $edit = (int)$_POST['editRechnungsadresse'];
         }
         if (Form::validateToken() && Request::postInt('form') === 1) {
-            $this->saveCustomer($smarty, $_POST);
+            $this->saveCustomer($_POST);
         }
         $title = Request::getInt('editRechnungsadresse') === 1
             ? Shop::Lang()->get('editData', 'login')
             : Shop::Lang()->get('newAccount', 'login');
         if ($this->step === 'formular') {
-            $this->getFormData($smarty, Request::verifyGPCDataInt('checkout'));
+            $this->getFormData(Request::verifyGPCDataInt('checkout'));
         }
-        $smarty->assign('editRechnungsadresse', $edit)
+        $this->smarty->assign('editRechnungsadresse', $edit)
             ->assign('Ueberschrift', $title)
             ->assign('Link', $this->currentLink)
             ->assign('step', $this->step)
@@ -74,7 +82,7 @@ class RegistrationController extends PageController
 
         $this->canonicalURL = $linkHelper->getStaticRoute('registrieren.php');
 
-        $this->preRender($smarty);
+        $this->preRender();
         if (($this->config['kunden']['kundenregistrierung_pruefen_zeit'] ?? 'N') === 'Y') {
             $_SESSION['dRegZeit'] = \time();
         }
@@ -88,17 +96,16 @@ class RegistrationController extends PageController
 
         \executeHook(\HOOK_REGISTRIEREN_PAGE);
 
-        return $smarty->getResponse('register/index.tpl');
+        return $this->smarty->getResponse('register/index.tpl');
     }
 
     /**
-     * @param JTLSmarty $smarty
-     * @param array     $post
+     * @param array $post
      * @return array|int
      * @former kundeSpeichern()
      * @since 5.2.0
      */
-    public function saveCustomer(JTLSmarty $smarty, array $post)
+    public function saveCustomer(array $post)
     {
         unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
         $conf = $this->config['global']['global_kundenkonto_aktiv'];
@@ -109,7 +116,7 @@ class RegistrationController extends PageController
         $edit       = (int)$post['editRechnungsadresse'];
         $this->step = 'formular';
         $form       = new CustomerForm();
-        $smarty->assign('cPost_arr', Text::filterXSS($post));
+        $this->smarty->assign('cPost_arr', Text::filterXSS($post));
         $missingData        = (!$edit)
             ? $form->checkKundenFormular(true)
             : $form->checkKundenFormular(true, false);
@@ -239,7 +246,7 @@ class RegistrationController extends PageController
                         ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
                 exit;
             }
-            $smarty->assign('fehlendeAngaben', $missingData);
+            $this->smarty->assign('fehlendeAngaben', $missingData);
 
             return $missingData;
         }
@@ -248,12 +255,11 @@ class RegistrationController extends PageController
     }
 
     /**
-     * @param JTLSmarty $smarty
-     * @param int       $checkout
+     * @param int $checkout
      * @former gibFormularDaten()
      * @since 5.2.0
      */
-    public function getFormData(JTLSmarty $smarty, int $checkout = 0): void
+    public function getFormData(int $checkout = 0): void
     {
         $customer = Frontend::getCustomer();
         $origins  = $this->db->getObjects(
@@ -262,7 +268,7 @@ class RegistrationController extends PageController
                 ORDER BY nSort'
         );
 
-        $smarty->assign('herkunfte', $origins)
+        $this->smarty->assign('herkunfte', $origins)
             ->assign('Kunde', $customer)
             ->assign('customerAttributes', \is_a($customer, Customer::class)
                 ? $customer->getCustomerAttributes()
@@ -282,7 +288,7 @@ class RegistrationController extends PageController
             ->assign('oKundenfeld_arr', new CustomerFields($this->languageID));
 
         if ($checkout === 1) {
-            $smarty->assign('checkout', 1)
+            $this->smarty->assign('checkout', 1)
                 ->assign('bestellschritt', [1 => 1, 2 => 3, 3 => 3, 4 => 3, 5 => 3]); // Rechnungsadresse ändern
         }
     }

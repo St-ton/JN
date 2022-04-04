@@ -3,7 +3,6 @@
 namespace JTL\Router\Controller;
 
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -12,6 +11,9 @@ use Psr\Http\Message\ResponseInterface;
  */
 class MaintenanceController extends AbstractController
 {
+    /**
+     * @inheritdoc
+     */
     public function init(): bool
     {
         parent::init();
@@ -19,11 +21,14 @@ class MaintenanceController extends AbstractController
         return true;
     }
 
-    public function getResponse(JTLSmarty $smarty): ResponseInterface
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(): ResponseInterface
     {
         Shop::setPageType(\PAGE_WARTUNG);
-        $this->preRender($smarty);
+        $this->preRender();
 
-        return $smarty->getResponse('snippets/maintenance.tpl')->withStatus(503);
+        return $this->smarty->getResponse('snippets/maintenance.tpl')->withStatus(503);
     }
 }

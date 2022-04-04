@@ -14,7 +14,6 @@ use JTL\Optin\OptinNewsletter;
 use JTL\Optin\OptinRefData;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -23,6 +22,9 @@ use Psr\Http\Message\ResponseInterface;
  */
 class NewsletterController extends PageController
 {
+    /**
+     * @inheritdoc
+     */
     public function init(): bool
     {
         parent::init();
@@ -30,7 +32,10 @@ class NewsletterController extends PageController
         return true;
     }
 
-    public function getResponse(JTLSmarty $smarty): ResponseInterface
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(): ResponseInterface
     {
         Shop::setPageType($this->state->pageType);
         $valid              = Form::validateToken();
@@ -69,7 +74,7 @@ class NewsletterController extends PageController
                     'newsletterWrongemail'
                 );
             }
-            $smarty->assign('cPost_arr', $post);
+            $this->smarty->assign('cPost_arr', $post);
         } elseif ($valid && Request::verifyGPCDataInt('abmelden') === 1) {
             if (Text::filterEmailAddress($_POST['cEmail']) !== false) {
                 try {
@@ -88,27 +93,27 @@ class NewsletterController extends PageController
                     Shop::Lang()->get('newsletterWrongemail', 'errorMessages'),
                     'newsletterWrongemail'
                 );
-                $smarty->assign('oFehlendeAngaben', (object)['cUnsubscribeEmail' => 1]);
+                $this->smarty->assign('oFehlendeAngaben', (object)['cUnsubscribeEmail' => 1]);
             }
         } elseif (Request::getInt('show') > 0) {
             $option = 'anzeigen';
             if ($history = $controller->getHistory($this->customerGroupID, Request::getInt('show'))) {
-                $smarty->assign('oNewsletterHistory', $history);
+                $this->smarty->assign('oNewsletterHistory', $history);
             }
         }
         if ($customer->getID() > 0) {
-            $smarty->assign('bBereitsAbonnent', Helper::customerIsSubscriber($customer->getID()))
+            $this->smarty->assign('bBereitsAbonnent', Helper::customerIsSubscriber($customer->getID()))
                 ->assign('oKunde', $customer);
         }
-        $smarty->assign('cOption', $option)
+        $this->smarty->assign('cOption', $option)
             ->assign('Link', $this->currentLink)
             ->assign('nAnzeigeOrt', \CHECKBOX_ORT_NEWSLETTERANMELDUNG)
             ->assign('code_newsletter', false);
 
-        $this->preRender($smarty);
+        $this->preRender();
 
         \executeHook(\HOOK_NEWSLETTER_PAGE);
 
-        return $smarty->getResponse('newsletter/index.tpl');
+        return $this->smarty->getResponse('newsletter/index.tpl');
     }
 }

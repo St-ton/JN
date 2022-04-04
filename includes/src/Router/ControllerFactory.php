@@ -12,6 +12,7 @@ use JTL\Media\Media;
 use JTL\Optin\Optin;
 use JTL\Router\Controller\AccountController;
 use JTL\Router\Controller\CartController;
+use JTL\Router\Controller\CheckoutController;
 use JTL\Router\Controller\ComparelistController;
 use JTL\Router\Controller\ContactController;
 use JTL\Router\Controller\ControllerInterface;
@@ -19,7 +20,6 @@ use JTL\Router\Controller\ForgotPasswordController;
 use JTL\Router\Controller\MaintenanceController;
 use JTL\Router\Controller\NewsController;
 use JTL\Router\Controller\NewsletterController;
-use JTL\Router\Controller\CheckoutController;
 use JTL\Router\Controller\OrderCompleteController;
 use JTL\Router\Controller\OrderStatusController;
 use JTL\Router\Controller\PageController;
@@ -30,6 +30,7 @@ use JTL\Router\Controller\ReviewController;
 use JTL\Router\Controller\WishlistController;
 use JTL\Session\Frontend;
 use JTL\Shopsetting;
+use JTL\Smarty\JTLSmarty;
 use Shop;
 
 /**
@@ -49,13 +50,20 @@ class ControllerFactory
     private DbInterface $db;
 
     /**
+     * @var JTLSmarty
+     */
+    private JTLSmarty $smarty;
+
+    /**
      * @param State       $state
      * @param DbInterface $db
+     * @param JTLSmarty   $smarty
      */
-    public function __construct(State $state, DbInterface $db)
+    public function __construct(State $state, DbInterface $db, JTLSmarty $smarty)
     {
-        $this->state = $state;
-        $this->db    = $db;
+        $this->state  = $state;
+        $this->db     = $db;
+        $this->smarty = $smarty;
     }
 
     /**
@@ -99,7 +107,6 @@ class ControllerFactory
             $parentID = ProductHelper::getParent($state->productID);
             if ($parentID === $state->productID) {
                 $state->is404    = true;
-                $fileName        = null;
                 $state->pageType = \PAGE_404;
 
                 return $this->fail();
@@ -121,7 +128,6 @@ class ControllerFactory
             }
             $controller      = $this->createService(ProductController::class);
             $state->pageType = \PAGE_ARTIKEL;
-            $fileName        = 'artikel.php';
         } elseif ($state->characteristicNotFound === false
             && $state->categoryFilterNotFound === false
             && $state->manufacturerFilterNotFound === false
@@ -137,26 +143,21 @@ class ControllerFactory
                 || $state->priceRangeFilter !== '')
 //            && (Shop::getProductFilter()->getFilterCount() === 0)
         ) {
-            $fileName        = 'filter.php';
             $state->pageType = \PAGE_ARTIKELLISTE;
             $controller      = $this->createService(ProductListController::class);
         } elseif ($state->wishlistID > 0) {
-            $fileName        = 'wunschliste.php';
             $state->pageType = \PAGE_WUNSCHLISTE;
             $state->linkType = \LINKTYP_WUNSCHLISTE;
             $controller      = $this->createService(WishlistController::class);
         } elseif ($state->compareListID > 0) {
-            $fileName        = 'vergleichsliste.php';
             $state->pageType = \PAGE_VERGLEICHSLISTE;
             $state->linkType = \LINKTYP_VERGLEICHSLISTE;
             $controller      = $this->createService(ComparelistController::class);
         } elseif ($state->newsItemID > 0 || $state->newsOverviewID > 0 || $state->newsCategoryID > 0) {
-            $fileName        = 'news.php';
             $state->pageType = \PAGE_NEWS;
             $state->linkType = \LINKTYP_NEWS;
             $controller      = $this->createService(NewsController::class);
         } elseif (!empty($state->searchQuery)) {
-            $fileName        = 'filter.php';
             $state->pageType = \PAGE_ARTIKELLISTE;
             $controller      = $this->createService(ProductListController::class);
         } elseif (!$state->linkID) {
@@ -172,7 +173,6 @@ class ControllerFactory
                 // special case: home page is accessible without seo url
                 $state->pageType = \PAGE_STARTSEITE;
                 $state->linkType = \LINKTYP_STARTSEITE;
-                $fileName        = 'seite.php';
                 $state->linkID   = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_STARTSEITE) ?: 0;
             } elseif (Media::getInstance()->isValidRequest($path)) {
                 Media::getInstance()->handleRequest($path);
@@ -183,7 +183,6 @@ class ControllerFactory
                 return $this->fail();
             }
         } elseif (!empty($state->linkID) || $fileName === null) {
-            $fileName   = 'seite.php';
             $controller = $this->getPageController();
         }
         if ($controller !== null && !$controller->init()) {
@@ -217,7 +216,7 @@ class ControllerFactory
         $config          = Shopsetting::getInstance()->getAll();
         $service         = Shop::Container()->getAlertService();
 
-        return new $class($this->db, $this->state, $customerGroupID, $config, $service);
+        return new $class($this->db, $this->state, $customerGroupID, $config, $service, $this->smarty);
     }
 
     /**
@@ -285,9 +284,6 @@ class ControllerFactory
         }
         if ($linkType === \LINKTYP_BESTELLVORGANG) {
             return $this->createService(CheckoutController::class);
-        }
-        if ($linkType === \LINKTYP_BESTELLABSCHLUSS) {
-            return $this->createService(OrderCompleteController::class);
         }
         if ($linkType === \LINKTYP_BESTELLABSCHLUSS) {
             return $this->createService(OrderCompleteController::class);

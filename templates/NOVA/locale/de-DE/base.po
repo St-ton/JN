@@ -205,6 +205,21 @@ msgstr "Hier können Sie eigene CSS-Anpassungen an Ihrem Template vornehmen. Inf
 msgid "colorPrimary"
 msgstr "Primärfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
+msgid "colorSecondary"
+msgstr "Sekundärfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorHeaderBgColor"
+msgstr "Header Hintergrund Primärfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorHeaderColor"
+msgstr "Header Primärschriftfarbe  <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorHeaderBgColorSecondary"
+msgstr "Header Hintergrund Sekundärfarbe  <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorHeaderColorSecondary"
+msgstr "Header Sekundärschriftfarbe  <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
 msgid "customVariables"
 msgstr "Benutzerdefinierte Variablen"
 

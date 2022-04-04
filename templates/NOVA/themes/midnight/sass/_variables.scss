@@ -136,6 +136,10 @@ $transition-fade:                   opacity .35s linear !default;
 
 // styles
 
+$text-muted:                        $gray !default;
+$text-muted-header:                 $gray-lighter !default;
+$input-color-placeholder:           $gray !default;
+
 $highlight-border-size:             .375rem !default;
 
 $body-bg:                           $gray-100 !default;
@@ -147,13 +151,11 @@ $footer-bg-color:                  $bg-main !default;
 $footer-color:                     $white !default;
 $header-bg-color:                  $bg-main !default;
 $header-color:                     $white !default;
+$header-bg-color-secondary:        $gray-lighter !default;
+$header-color-secondary:           $text-muted-header !default;
 
 $headings-color:                    $gray-700 !default;
 $navbar-light-hover-color:          $primary !default;
-
-$text-muted:                        $gray !default;
-$text-muted-header:                 $gray-lighter !default;
-$input-color-placeholder:           $gray !default;
 
 /* links */
 

@@ -180,6 +180,10 @@ header {
 	#burger-menu {
 		margin-right: map-get($spacers, 3);
 	}
+
+	.table, .dropdown-item, .btn-outline-primary {
+		color: $header-color;
+	}
 }
 
 .nav-item-lg-m {
@@ -227,7 +231,7 @@ header {
 		margin-bottom: map-get($spacers, 5);
 	}
 	.dropdown-footer {
-		background-color: $gray-lighter;
+		background-color: $header-bg-color-secondary;
 		a {
 			text-decoration: underline;
 		}
@@ -237,7 +241,7 @@ header {
 	}
 }
 .cart-dropdown-shipping-notice {
-	color: $text-muted-header;
+	color: $header-color-secondary;
 }
 .is-checkout {
 	header, .navbar {

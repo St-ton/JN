@@ -138,6 +138,11 @@
         </Section>
         <Section Name="Colors" Key="colors">
             <Setting Description="colorPrimary" Key="primary" Type="colorpicker" Value=""/>
+            <Setting Description="colorSecondary" Key="secondary" Type="colorpicker" Value=""/>
+            <Setting Description="colorHeaderBgColor" Key="header-bg-color" Type="colorpicker" Value=""/>
+            <Setting Description="colorHeaderColor" Key="header-color" Type="colorpicker" Value=""/>
+            <Setting Description="colorHeaderBgColorSecondary" Key="header-bg-color-secondary" Type="colorpicker" Value=""/>
+            <Setting Description="colorHeaderColorSecondary" Key="header-color-secondary" Type="colorpicker" Value=""/>
         </Section>
         <Section Name="Custom Sass" Key="customsass">
             <Setting Description="customVariables" Key="customVariables" Type="textarea" Class="codemirror sass" Value=""/>

@@ -66,7 +66,7 @@
                                 {/foreach}
                                 </select>
                             {elseif $configItem->cInputTyp === 'pass'}
-                                <input placeholder="********" class="form-control" type="password" name="{$configItem->cWertName}" id="{$configItem->cWertName}"  value="" />
+                                <input {if $configItem->gesetzterWert != ''}placeholder="********"{/if} class="form-control" type="password" name="{$configItem->cWertName}" id="{$configItem->cWertName}"  value="" />
                             {else}
                                 <input class="form-control"
                                        type="text"

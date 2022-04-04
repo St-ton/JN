@@ -19,7 +19,7 @@
                                     {/foreach}
                                 </select>
                             {elseif $cnf->cInputTyp === 'pass'}
-                                <input placeholder="********" class="form-control" type="password" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="" tabindex="1" />
+                                <input {if $cnf->gesetzterWert != ''}placeholder="********"{/if} class="form-control" type="password" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="" tabindex="1" />
                             {elseif $cnf->cInputTyp === 'number'}
                                 <div class="input-group form-counter">
                                     <div class="input-group-prepend">

@@ -42,16 +42,14 @@ switch ($controller->getPageType($params)) {
         $newsItem   = new Item($db);
         $newsItem->load($newsItemID);
         $newsItem->checkVisibility($customerGroupID);
-
+        $cCanonicalURL    = $newsItem->getURL();
         $cMetaTitle       = $newsItem->getMetaTitle();
         $cMetaDescription = $newsItem->getMetaDescription();
         $cMetaKeywords    = $newsItem->getMetaKeyword();
         if ((int)($_POST['kommentar_einfuegen'] ?? 0) > 0 && Form::validateToken()) {
             $result = $controller->addComment($newsItemID, $_POST);
         }
-
         $controller->displayItem($newsItem, $pagination);
-
         $breadCrumbName = $newsItem->getTitle() ?? Shop::Lang()->get('news', 'breadcrumb');
         $breadCrumbURL  = URL::buildURL($newsItem, URLART_NEWS);
 
@@ -64,12 +62,11 @@ switch ($controller->getPageType($params)) {
         Shop::setPageType(PAGE_NEWSKATEGORIE);
         $newsCategoryID = (int)$params['kNewsKategorie'];
         $overview       = $controller->displayOverview($pagination, $newsCategoryID, 0, $customerGroupID);
-        $cCanonicalURL  = $overview->getURL();
-        $breadCrumbURL  = $cCanonicalURL;
         $breadCrumbName = $overview->getName();
         $newsCategory   = new Category($db);
         $newsCategory->load($newsCategoryID);
-
+        $cCanonicalURL    = $newsCategory->getURL(null);
+        $breadCrumbURL    = $cCanonicalURL;
         $cMetaTitle       = $newsCategory->getMetaTitle();
         $cMetaDescription = $newsCategory->getMetaDescription();
         $cMetaKeywords    = $newsCategory->getMetaKeyword();
@@ -78,7 +75,11 @@ switch ($controller->getPageType($params)) {
     case ViewType::NEWS_OVERVIEW:
         Shop::setPageType(PAGE_NEWS);
         $newsCategoryID = 0;
-        $overview       = $controller->displayOverview($pagination, $newsCategoryID, 0, $customerGroupID);
+        $newsCategory   = new Category($db);
+        $newsCategory->load($newsCategoryID);
+        $overview      = $controller->displayOverview($pagination, $newsCategoryID, 0, $customerGroupID);
+        $cCanonicalURL = $linkService->getStaticRoute('news.php');
+        $breadCrumbURL = $cCanonicalURL;
         break;
     case ViewType::NEWS_MONTH_OVERVIEW:
         Shop::setPageType(PAGE_NEWSMONAT);

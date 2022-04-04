@@ -4,9 +4,9 @@ namespace JTL\Router;
 
 use DbInterface;
 use FastRoute\Dispatcher;
-use JTL\Cron\Starter\StarterFactory;
 use JTL\Events\Dispatcher as CoreDispatcher;
 use JTL\Events\Event;
+use JTL\Router\Controller\ConsentController;
 use JTL\Router\Handler\CategoryHandler;
 use JTL\Router\Handler\DefaultHandler;
 use JTL\Router\Handler\ManufacturerHandler;
@@ -25,6 +25,7 @@ use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use League\Route\Router as BaseRouter;
+use League\Route\Strategy\JsonStrategy;
 
 /**
  * Class Router
@@ -47,6 +48,9 @@ class Router
      */
     private State $state;
 
+    /**
+     * @var BaseRouter
+     */
     private BaseRouter $router;
 
     /**
@@ -64,6 +68,7 @@ class Router
         $pageHandler         = new PageHandler($db, $this->state);
         $defaultHandler      = new DefaultHandler($db, $this->state);
         $rootHandler         = new RootHandler($db, $this->state);
+        $consentController   = new ConsentController();
 
         $router = new BaseRouter();
 
@@ -77,6 +82,9 @@ class Router
 
         $router->get('/products/{id:\d+}', [$productHandler, 'handle'])->middleware(new VisibilityMiddleware());
         $router->post('/products/{id:\d+}', [$productHandler, 'handle']);
+
+        $router->post('/_updateconsent', [$consentController, 'handle'])
+            ->setStrategy(new JsonStrategy($responseFactory));
 
         $router->get('/categories/{id:\d+}', [$categoryHandler, 'handle']);
         $router->post('/categories/{id:\d+}', [$categoryHandler, 'handle']);
@@ -143,9 +151,7 @@ class Router
         }
 
         $response = $this->router->dispatch($request);
-        CoreDispatcher::getInstance()->fire(Event::RUN);
-        $starterFactory = new StarterFactory(Shop::getSettingSection(\CONF_CRON));
-        $starterFactory->getStarter()->start();
+        CoreDispatcher::getInstance()->fire(Event::EMIT);
         (new SapiEmitter())->emit($response);
         exit();
     }

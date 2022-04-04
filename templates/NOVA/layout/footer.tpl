@@ -261,7 +261,7 @@
                         $('#consent-manager, #consent-settings-btn').removeClass('d-none');
                     }, 100)
                     document.addEventListener('consent.updated', function(e) {
-                        $.post('{$ShopURLSSL}/', {
+                        $.post('{$ShopURLSSL}/_updateconsent', {
                                 'action': 'updateconsent',
                                 'jtl_token': '{$smarty.session.jtl_token}',
                                 'data': e.detail

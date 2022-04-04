@@ -10,6 +10,8 @@ use MyCLabs\Enum\Enum;
  */
 class Event extends Enum
 {
+    public const EMIT = 'router.emit';
+
     public const RUN = 'shop.run';
 
     public const MAP_CRONJOB_TYPE = 'map.cronjob.type';

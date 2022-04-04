@@ -1846,7 +1846,7 @@ class ProductFilter
     public static function initCharacteristicFilter(array $filters = []): array
     {
         $filter = [];
-        if (\is_array($filters) && \count($filters) > 1) {
+        if (\count($filters) > 1) {
             foreach ($filters as $nFilter) {
                 if ((int)$nFilter > 0) {
                     $filter[] = (int)$nFilter;
@@ -1894,7 +1894,7 @@ class ProductFilter
     public static function initSearchFilter(array $filters = []): array
     {
         $filter = [];
-        if (\is_array($filters) && \count($filters) > 1) {
+        if (\count($filters) > 1) {
             foreach ($filters as $nFilter) {
                 if ((int)$nFilter > 0) {
                     $filter[] = (int)$nFilter;
@@ -1936,7 +1936,7 @@ class ProductFilter
     public static function initCategoryFilter(array $filters = []): array
     {
         $filter = [];
-        if (\is_array($filters) && \count($filters) > 1) {
+        if (\count($filters) > 1) {
             foreach ($filters as $value) {
                 if ((int)$value > 0) {
                     $filter[] = (int)$value;

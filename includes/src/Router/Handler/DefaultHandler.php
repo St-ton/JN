@@ -6,7 +6,6 @@ use JTL\Router\AbstractHandler;
 use JTL\Router\ControllerFactory;
 use JTL\Router\DefaultParser;
 use JTL\Router\State;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
@@ -65,7 +64,6 @@ class DefaultHandler extends AbstractHandler
     public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->getStateFromSlug($args);
-        Shop::seoCheckFinish();
         $cf         = new ControllerFactory($this->state, $this->db, $smarty);
         $controller = $cf->getEntryPoint();
         $check      = $controller->init();

@@ -37,18 +37,19 @@ abstract class AbstractHandler implements HandlerInterface
      */
     public function updateState(stdClass $seo, string $slug): State
     {
+        $this->state->slug = $seo->cSeo ?? $slug;
         if (isset($seo->kSprache, $seo->kKey)) {
             $this->state->languageID = (int)$seo->kSprache;
             $this->state->itemID     = (int)$seo->kKey;
-            $this->state->slug       = $seo->cSeo;
             $this->state->type       = $seo->cKey;
             $mapping                 = $this->state->getMapping();
             if (isset($mapping[$seo->cKey])) {
                 $this->state->{$mapping[$seo->cKey]} = $this->state->itemID;
             }
-            $this->updateShopParams($slug);
         }
+        $this->updateShopParams($slug);
         Shop::getProductFilter()->initStates($this->state->getAsParams());
+        \executeHook(\HOOK_INDEX_NAVI_HEAD_POSTGET);
 
         return $this->state;
     }
@@ -69,7 +70,6 @@ abstract class AbstractHandler implements HandlerInterface
         }
         Shop::updateLanguage($this->state->languageID);
         Shop::$cCanonicalURL             = Shop::getURL() . '/' . $this->state->slug;
-        Shop::${$this->state->type}      = $this->state->itemID;
         Shop::$is404                     = $this->state->is404;
         Shop::$kSprache                  = $this->state->languageID;
         Shop::$kSeite                    = $this->state->pageID;
@@ -80,5 +80,12 @@ abstract class AbstractHandler implements HandlerInterface
         Shop::$bHerstellerFilterNotFound = $this->state->manufacturerFilterNotFound;
         Shop::$bKatFilterNotFound        = $this->state->categoryFilterNotFound;
         Shop::$bSEOMerkmalNotFound       = $this->state->characteristicNotFound;
+        Shop::$MerkmalFilter             = $this->state->characteristicFilterIDs;
+        Shop::$SuchFilter                = $this->state->searchFilterIDs;
+        Shop::$categoryFilterIDs         = $this->state->categoryFilterIDs;
+        if ($this->state->type !== '') {
+            Shop::${$this->state->type} = $this->state->itemID;
+        }
+        \executeHook(\HOOK_SEOCHECK_ENDE);
     }
 }

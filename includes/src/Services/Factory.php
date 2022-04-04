@@ -188,7 +188,7 @@ class Factory
             return new Mailer($hydrator, $smarty, $settings, $validator);
         });
         $container->singleton(ManagerInterface::class, static function (Container $container) {
-            return new Manager($container->getDB());
+            return new Manager($container->getDB(), $container->getCache());
         });
         $container->singleton(TemplateServiceInterface::class, static function (Container $container) {
             return new TemplateService($container->getDB(), $container->getCache());

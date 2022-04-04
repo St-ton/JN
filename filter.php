@@ -7,4 +7,4 @@ if (!defined('PFAD_ROOT')) {
     exit();
 }
 
-Shop::run();
+Shop::dispatch();

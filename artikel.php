@@ -6,4 +6,4 @@ if (!defined('PFAD_ROOT')) {
     http_response_code(400);
     exit();
 }
-Shop::run();
+Shop::dispatch();

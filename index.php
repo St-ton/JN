@@ -4,4 +4,4 @@ use JTL\Shop;
 
 require __DIR__ . '/includes/globalinclude.php';
 
-Shop::run();
+Shop::dispatch();

@@ -4,12 +4,12 @@ namespace JTL;
 
 use Exception;
 use JTL\Catalog\Category\Kategorie;
-use JTL\Consent\Manager;
 use JTL\Consent\ManagerInterface;
+use JTL\Cron\Starter\StarterFactory;
 use JTL\Events\Dispatcher;
+use JTL\Events\Event;
 use JTL\Filter\Config;
 use JTL\Filter\ProductFilter;
-use JTL\Helpers\Form;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
@@ -20,7 +20,6 @@ use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
-use JTL\Router\ControllerFactory;
 use JTL\Router\Router;
 use JTL\Router\State as RoutingState;
 use JTL\Services\DefaultServicesInterface;
@@ -114,6 +113,11 @@ final class Shop extends ShopBC
      * @var RoutingState
      */
     private static RoutingState $state;
+
+    /**
+     * @var Router
+     */
+    private static Router $router;
 
     /**
      * @var array
@@ -423,22 +427,24 @@ final class Shop extends ShopBC
     /**
      * @return void
      */
-    public static function run(): void
+    public static function dispatch(): void
     {
-        if (Request::postVar('action') === 'updateconsent' && Form::validateToken()) {
-            $manager = new Manager(self::Container()->getDB());
-            $res     = (object)['status' => 'OK', 'data' => $manager->save(Request::postVar('data'))];
-            die(\json_encode($res, \JSON_THROW_ON_ERROR));
-        }
-        $router      = new Router(self::Container()->getDB(), new RoutingState());
-        self::$state = $router->init();
-        $params      = self::$state->getAsParams();
-        self::setParams($params);
+        self::run();
+        self::$router->dispatch();
+    }
+
+    /**
+     * @return ProductFilter
+     */
+    public static function run(): ProductFilter
+    {
+        self::$router = new Router(self::Container()->getDB(), new RoutingState());
+        self::$state  = self::$router->init();
+        self::setParams(self::$state->getAsParams());
         if (self::$state->productsPerPage !== 0) {
             $_SESSION['ArtikelProSeite'] = self::$state->productsPerPage;
         }
         self::$isInitialized = true;
-        self::Container()->get(ManagerInterface::class)->initActiveItems(self::getLanguageID());
         $conf = new Config();
         $conf->setLanguageID(self::getLanguageID());
         $conf->setLanguages(LanguageHelper::getInstance()->getLangArray());
@@ -446,10 +452,14 @@ final class Shop extends ShopBC
         $conf->setConfig(Shopsetting::getInstance()->getAll());
         $conf->setBaseURL(self::getURL() . '/');
         self::setImageBaseURL(\defined('IMAGE_BASE_URL') ? \IMAGE_BASE_URL : self::getURL());
+        self::Container()->get(ManagerInterface::class)->initActiveItems(self::getLanguageID());
         self::$productFilter = new ProductFilter($conf, self::Container()->getDB(), self::Container()->getCache());
         self::getLanguageFromServerName();
-        \executeHook(\HOOK_INDEX_NAVI_HEAD_POSTGET);
-        $router->dispatch();
+        Dispatcher::getInstance()->fire(Event::RUN);
+        $starterFactory = new StarterFactory(self::getSettingSection(\CONF_CRON));
+        $starterFactory->getStarter()->start();
+
+        return self::$productFilter;
     }
 
     /**
@@ -466,8 +476,8 @@ final class Shop extends ShopBC
             && !Kategorie::isVisible(self::$state->categoryID, Frontend::getCustomerGroup()->getID())
         ) {
             self::$state->categoryID = 0;
-            self::$state->is404      = true;
             self::$kKategorie        = 0;
+            self::$state->is404      = true;
             self::$is404             = true;
         }
         if (Product::isVariChild(self::$state->productID)) {
@@ -553,7 +563,6 @@ final class Shop extends ShopBC
 
     public static function seoCheckFinish(): void
     {
-//        self::dbg($_GET, false, __METHOD__);
         self::$MerkmalFilter                  = ProductFilter::initCharacteristicFilter();
         self::$SuchFilter                     = ProductFilter::initSearchFilter();
         self::$categoryFilterIDs              = ProductFilter::initCategoryFilter();
@@ -592,12 +601,7 @@ final class Shop extends ShopBC
      */
     public static function getEntryPoint(): ?string
     {
-        $cf             = new ControllerFactory(self::$state, self::Container()->getDB());
-        self::$fileName = $cf->getEntryPoint();
-        self::setPageType(self::$state->pageType);
-        die('pdd');
-
-        return self::$fileName;
+        return self::$state->fileName;
     }
 
     /**

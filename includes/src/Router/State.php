@@ -3,6 +3,7 @@
 namespace JTL\Router;
 
 use JTL\Catalog\Wishlist\Wishlist;
+use JTL\Filter\ProductFilter;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 
@@ -394,6 +395,9 @@ class State
             $this->type   = 'suchspecial';
             $this->itemID = $this->searchSpecialID;
         }
+        $this->characteristicFilterIDs = ProductFilter::initCharacteristicFilter();
+        $this->searchFilterIDs         = ProductFilter::initSearchFilter();
+        $this->categoryFilterIDs       = ProductFilter::initCategoryFilter();
     }
 
     /**

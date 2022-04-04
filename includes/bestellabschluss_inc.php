@@ -87,6 +87,21 @@ function bestellungInDB($cleared = 0, $orderNo = '')
 }
 
 /**
+ * @param int  $customerID
+ * @param int  $orderID
+ * @param bool $payAgain
+ * @return bool
+ * @deprecated since 5.2.0
+ */
+function saveZahlungsInfo(int $customerID, int $orderID, bool $payAgain = false): bool
+{
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    $handler = new OrderHandler(Shop::Container()->getDB(), Frontend::getCustomer(), Frontend::getCart());
+
+    return $handler->savePaymentInfo($customerID, $orderID, $payAgain);
+}
+
+/**
  * @param object $paymentInfo
  * @deprecated since 5.2.0
  */

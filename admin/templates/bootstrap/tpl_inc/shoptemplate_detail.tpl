@@ -72,7 +72,7 @@
                                     </script>
                                 </div>
                             {/if}
-                            <div class="col-xs-12 col-md-12">
+                            <div class="col-xs-12 col-md-12 {if !empty($setting->rawAttributes.MarginBottom)}mb-5{/if}">
                                 <div class="item form-group form-row align-items-center">
                                     {if $setting->isEditable}
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->elementID}">{__($setting->name)}:</label>

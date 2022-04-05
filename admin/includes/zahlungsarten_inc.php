@@ -6,6 +6,7 @@ use JTL\Shop;
 /**
  * @param int $paymentMethodID
  * @return array
+ * @deprecated since 5.2.0
  */
 function getNames(int $paymentMethodID): array
 {
@@ -24,6 +25,7 @@ function getNames(int $paymentMethodID): array
 /**
  * @param int $paymentMethodID
  * @return array
+ * @deprecated since 5.2.0
  */
 function getshippingTimeNames(int $paymentMethodID): array
 {
@@ -42,6 +44,7 @@ function getshippingTimeNames(int $paymentMethodID): array
 /**
  * @param int $paymentMethodID
  * @return array
+ * @deprecated since 5.2.0
  */
 function getHinweisTexte(int $paymentMethodID): array
 {
@@ -64,6 +67,7 @@ function getHinweisTexte(int $paymentMethodID): array
 /**
  * @param int $paymentMethodID
  * @return array
+ * @deprecated since 5.2.0
  */
 function getHinweisTexteShop(int $paymentMethodID): array
 {
@@ -86,6 +90,7 @@ function getHinweisTexteShop(int $paymentMethodID): array
 /**
  * @param stdClass|Zahlungsart $paymentMethod
  * @return array
+ * @deprecated since 5.2.0
  */
 function getGesetzteKundengruppen($paymentMethod): array
 {
@@ -105,6 +110,7 @@ function getGesetzteKundengruppen($paymentMethod): array
 /**
  * @param string $query
  * @return array
+ * @todo!
  */
 function getPaymentMethodsByName(string $query): array
 {

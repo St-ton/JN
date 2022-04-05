@@ -7,6 +7,7 @@ use JTL\Shop;
  * @param string $limitSQL
  * @param string $query
  * @return array
+ * @deprecated since 5.2.0
  */
 function gibBestellungsUebersicht(string $limitSQL, string $query): array
 {
@@ -39,6 +40,7 @@ function gibBestellungsUebersicht(string $limitSQL, string $query): array
 /**
  * @param string $query
  * @return int
+ * @deprecated since 5.2.0
  */
 function gibAnzahlBestellungen(string $query): int
 {
@@ -59,6 +61,7 @@ function gibAnzahlBestellungen(string $query): int
 /**
  * @param array $orderIDs
  * @return int
+ * @deprecated since 5.2.0
  */
 function setzeAbgeholtZurueck(array $orderIDs): int
 {

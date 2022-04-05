@@ -161,7 +161,7 @@
 
         <div id="config" class="settings tab-pane fade{if $tab === 'settings'} active show{/if}">
             {include file='tpl_inc/config_section.tpl' name='einstellen' a='saveSettings'
-            action=$adminURL|cat:'/cron.php' buttonCaption=__('saveWithIcon') tab='einstellungen' title=__('settings')}
+            action=$shopURL|cat:$route buttonCaption=__('saveWithIcon') tab='einstellungen' title=__('settings')}
         </div>
     </div>
 </div>

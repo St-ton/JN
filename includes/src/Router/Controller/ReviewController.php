@@ -6,7 +6,10 @@ use Exception;
 use JTL\Catalog\Product\Artikel;
 use JTL\Review\ReviewController as BaseController;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
+use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class ReviewController
@@ -27,8 +30,13 @@ class ReviewController extends PageController
     /**
      * @inheritdoc
      */
-    public function getResponse(): ResponseInterface
-    {
+    public function getResponse(
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty,
+        Route $route
+    ): ResponseInterface {
+        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_BEWERTUNG);
         $controller = new BaseController(
             $this->db,

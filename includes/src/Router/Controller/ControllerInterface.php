@@ -2,7 +2,10 @@
 
 namespace JTL\Router\Controller;
 
+use JTL\Smarty\JTLSmarty;
+use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Interface ControllerInterface
@@ -16,12 +19,30 @@ interface ControllerInterface
     public function init(): bool;
 
     /**
+     * @param ServerRequestInterface $request
+     * @param array                  $args
+     * @param JTLSmarty              $smarty
+     * @param Route                  $route
      * @return ResponseInterface
      */
-    public function getResponse(): ResponseInterface;
+    public function getResponse(
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty,
+        Route $route
+    ): ResponseInterface;
 
     /**
+     * @param ServerRequestInterface $request
+     * @param array                  $args
+     * @param JTLSmarty              $smarty
+     * @param Route                  $route
      * @return ResponseInterface
      */
-    public function notFoundResponse(): ResponseInterface;
+    public function notFoundResponse(
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty,
+        Route $route
+    ): ResponseInterface;
 }

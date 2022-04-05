@@ -101,8 +101,7 @@ class Manager
 
         $this->smarty->assign('step', $step)
             ->assign('countries', $this->countryService->getCountrylist())
-            ->assign('continents', $this->countryService->getContinents())
-            ->display('countrymanager.tpl');
+            ->assign('continents', $this->countryService->getContinents());
     }
 
     /**

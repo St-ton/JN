@@ -14,7 +14,10 @@ use JTL\Optin\OptinNewsletter;
 use JTL\Optin\OptinRefData;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
+use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class NewsletterController
@@ -35,8 +38,13 @@ class NewsletterController extends PageController
     /**
      * @inheritdoc
      */
-    public function getResponse(): ResponseInterface
-    {
+    public function getResponse(
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty,
+        Route $route
+    ): ResponseInterface {
+        $this->smarty = $smarty;
         Shop::setPageType($this->state->pageType);
         $valid              = Form::validateToken();
         $controller         = new Controller($this->db, $this->config);

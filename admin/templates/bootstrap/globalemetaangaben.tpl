@@ -4,10 +4,10 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:'/globalemetaangaben.php"'}
+            {include file='tpl_inc/language_switcher.tpl' action=$shopURL|cat:$route}
         </div>
     </div>
-    <form method="post" action="{$adminURL}/globalemetaangaben.php">
+    <form method="post" action="{$shopURL}{$route}">
         {$jtl_token}
         <input type="hidden" name="einstellungen" value="1" />
         <div class="settings">

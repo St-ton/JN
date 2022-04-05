@@ -75,7 +75,7 @@ final class ReviewAdminController extends BaseController
                 $step = 'bewertung_uebersicht';
                 $this->alertService->addSuccess(\__('successRatingEdit'), 'successRatingEdit');
                 if (Request::verifyGPCDataInt('nFZ') === 1) {
-                    \header('Location: freischalten.php');
+                    \header('Location: ' . Shop::getAdminURL() . '/activate');
                     exit();
                 }
             } else {

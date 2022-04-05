@@ -69,7 +69,7 @@
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         <button type="button" class="btn btn-outline-primary btn-block mb-2"
-                                onclick="window.location.href = '{$adminURL}/slider.php';">
+                                onclick="window.location.href = '{$shopURL}{$route}';">
                             <i class="fa fa-angle-double-left"></i> {__('goBack')}
                         </button>
                     </div>

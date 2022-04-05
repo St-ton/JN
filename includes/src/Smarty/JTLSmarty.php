@@ -365,11 +365,11 @@ class JTLSmarty extends BC
     {
         if ($this->context === ContextType::FRONTEND) {
             $this->registerFilter('output', [$this, 'outputFilter']);
-        }
-        /** @var JTLSmartyTemplateClass $template */
-        $template = $this->createTemplate($this->getResourceName($template), null, null, $this, false);
+            /** @var JTLSmartyTemplateClass $template */
+            $template = $this->createTemplate($this->getResourceName($template), null, null, $this, false);
 
-        $template->noOutputFilter = false;
+            $template->noOutputFilter = false;
+        }
 
         $res = parent::fetch($template);
         Profiler::finalize();

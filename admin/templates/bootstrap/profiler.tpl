@@ -11,7 +11,7 @@ var pies = [];
 <div id="content">
     <div class="card">
         <div class="card-body">
-            <form class="delete-run" action="{$adminURL}/profiler.php" method="post">
+            <form class="delete-run" action="{$shopURL}{$route}" method="post">
                 {$jtl_token}
                 <input type="hidden" value="y" name="delete-all" />
                 <button type="submit" class="btn btn-danger" name="delete-run-submit"><i class="fas fa-trash-alt"></i> {__('deleteAll')}</button>
@@ -61,7 +61,7 @@ var pies = [];
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    <form class="delete-run" action="{$adminURL}/profiler.php" method="post">
+                                    <form class="delete-run" action="{$shopURL}{$route}" method="post">
                                         {$jtl_token}
                                         <input type="hidden" value="{$profile->runID}" name="run-id" />
                                         <div class="row">
@@ -123,7 +123,7 @@ var pies = [];
                                         </ul>
                                     </div>
                                     <div class="card-footer save-wrapper">
-                                        <form class="delete-run" action="{$adminURL}/profiler.php" method="post">
+                                        <form class="delete-run" action="{$shopURL}{$route}" method="post">
                                             {$jtl_token}
                                             <input type="hidden" value="{$run->runID}" name="run-id" />
                                             <div class="row">

@@ -8,6 +8,7 @@ use JTL\Router\DefaultParser;
 use JTL\Router\State;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\ServerRequest;
+use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -61,16 +62,16 @@ class DefaultHandler extends AbstractHandler
     /**
      * @inheritdoc
      */
-    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty, Route $route): ResponseInterface
     {
         $this->getStateFromSlug($args);
         $cf         = new ControllerFactory($this->state, $this->db, $smarty);
         $controller = $cf->getEntryPoint();
         $check      = $controller->init();
         if ($check === false) {
-            return $controller->notFoundResponse();
+            return $controller->notFoundResponse($request, $args, $smarty, $route);
         }
 
-        return $controller->getResponse();
+        return $controller->getResponse($request, $args, $smarty, $route);
     }
 }

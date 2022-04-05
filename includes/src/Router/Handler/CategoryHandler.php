@@ -10,6 +10,7 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\ServerRequest;
+use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -49,7 +50,7 @@ class CategoryHandler extends AbstractHandler
     /**
      * @inheritdoc
      */
-    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty, Route $route): ResponseInterface
     {
         $this->getStateFromSlug($args);
         $controller = new ProductListController(
@@ -57,13 +58,12 @@ class CategoryHandler extends AbstractHandler
             $this->state,
             Frontend::getCustomer()->getGroupID(),
             Shopsetting::getInstance()->getAll(),
-            Shop::Container()->getAlertService(),
-            $smarty
+            Shop::Container()->getAlertService()
         );
         if (!$controller->init()) {
-            return $controller->notFoundResponse();
+            return $controller->notFoundResponse($request, $args, $smarty, $route);
         }
 
-        return $controller->getResponse();
+        return $controller->getResponse($request, $args, $smarty, $route);
     }
 }

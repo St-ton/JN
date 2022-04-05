@@ -2,10 +2,12 @@
 
 namespace JTL\Router;
 
-use DbInterface;
 use FastRoute\Dispatcher;
+use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher as CoreDispatcher;
 use JTL\Events\Event;
+use JTL\Router\Controller\Backend\BlubbController;
+use JTL\Router\Controller\Backend\FooController;
 use JTL\Router\Controller\ConsentController;
 use JTL\Router\Handler\CategoryHandler;
 use JTL\Router\Handler\DefaultHandler;
@@ -72,9 +74,13 @@ class Router
 
         $router = new BaseRouter();
 
+
         $responseFactory = new ResponseFactory();
-        $strategy        = new SmartyStrategy($responseFactory, Shop::Smarty(), $state);
+
+        $strategy = new SmartyStrategy($responseFactory, Shop::Smarty(), $state);
+
         $router->setStrategy($strategy);
+
         $router->middleware(new MaintenanceModeMiddleware());
         $router->middleware(new WishlistCheckMiddleware());
         $router->middleware(new CartcheckMiddleware());
@@ -106,6 +112,7 @@ class Router
 
         $router->get('/{any:.*}', [$defaultHandler, 'handle']);
         $router->post('/{any:.*}', [$defaultHandler, 'handle']);
+
         $this->router = $router;
     }
 

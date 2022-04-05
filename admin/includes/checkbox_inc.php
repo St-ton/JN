@@ -9,6 +9,7 @@ use JTL\Shop;
  * @param array           $post
  * @param LanguageModel[] $languages
  * @return array
+ * @deprecated since 5.2.0
  */
 function plausiCheckBox(array $post, array $languages): array
 {
@@ -70,6 +71,7 @@ function plausiCheckBox(array $post, array $languages): array
  * @param array $post - pre-filtered post data
  * @param LanguageModel[] $languages
  * @return CheckBox
+ * @deprecated since 5.2.0
  */
 function speicherCheckBox(array $post, array $languages): CheckBox
 {

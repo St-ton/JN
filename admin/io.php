@@ -14,6 +14,8 @@ use JTL\Link\Admin\LinkAdmin;
 use JTL\Mail\Validator\SyntaxChecker;
 use JTL\Media\Manager;
 use JTL\Plugin\Helper;
+use JTL\Router\Controller\Backend\BannerController;
+use JTL\Router\Controller\Backend\ShippingMethodsController;
 use JTL\Shop;
 use JTL\Update\UpdateIO;
 
@@ -97,15 +99,15 @@ try {
        ->register('redirectCheckAvailability', [JTL\Redirect::class, 'checkAvailability'])
        ->register('updateRedirectState', null, $redirectInc, 'REDIRECT_VIEW')
        ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
-       ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW')
+       ->register('saveBannerAreas', [BannerController::class, 'saveBannerAreasIO'], null, 'DISPLAY_BANNER_VIEW')
        ->register('createSearchIndex', 'createSearchIndex', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
        ->register('clearSearchCache', 'clearSearchCache', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
        ->register('adminSearch', 'adminSearch', $sucheInc, 'SETTINGS_SEARCH_VIEW')
-       ->register('saveShippingSurcharge', 'saveShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
-       ->register('deleteShippingSurcharge', 'deleteShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
-       ->register('deleteShippingSurchargeZIP', 'deleteShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
-       ->register('createShippingSurchargeZIP', 'createShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
-       ->register('getShippingSurcharge', 'getShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
+       ->register('saveShippingSurcharge', [ShippingMethodsController::class, 'saveShippingSurcharge'], null, 'ORDER_SHIPMENT_VIEW')
+       ->register('deleteShippingSurcharge', [ShippingMethodsController::class, 'deleteShippingSurcharge'], null, 'ORDER_SHIPMENT_VIEW')
+       ->register('deleteShippingSurchargeZIP', [ShippingMethodsController::class, 'deleteShippingSurchargeZIP'], null, 'ORDER_SHIPMENT_VIEW')
+       ->register('createShippingSurchargeZIP', [ShippingMethodsController::class, 'createShippingSurchargeZIP'], null, 'ORDER_SHIPMENT_VIEW')
+       ->register('getShippingSurcharge', [ShippingMethodsController::class, 'getShippingSurcharge'], null, 'ORDER_SHIPMENT_VIEW')
        ->register('exportformatSyntaxCheck', [ExportSyntaxChecker::class, 'ioCheckSyntax'], null, 'EXPORT_FORMATS_VIEW')
        ->register('testExport', [ExportSyntaxChecker::class, 'testExport'], null, 'EXPORT_FORMATS_VIEW')
        ->register('mailvorlageSyntaxCheck', [SyntaxChecker::class, 'ioCheckSyntax'], null, 'CONTENT_EMAIL_TEMPLATE_VIEW')

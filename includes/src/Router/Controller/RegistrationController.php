@@ -20,7 +20,10 @@ use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
+use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
 
 /**
@@ -47,8 +50,13 @@ class RegistrationController extends PageController
     /**
      * @inheritdoc
      */
-    public function getResponse(): ResponseInterface
-    {
+    public function getResponse(
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty,
+        Route $route
+    ): ResponseInterface {
+        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_REGISTRIERUNG);
         $linkHelper = Shop::Container()->getLinkService();
         if (Request::verifyGPCDataInt('editRechnungsadresse') === 0 && Frontend::getCustomer()->getID() > 0) {

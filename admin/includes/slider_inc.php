@@ -5,6 +5,7 @@ use JTL\Shop;
 /**
  * @param int $sliderID
  * @return stdClass|null
+ * @deprecated since 5.2.0
  */
 function holeExtension(int $sliderID): ?stdClass
 {

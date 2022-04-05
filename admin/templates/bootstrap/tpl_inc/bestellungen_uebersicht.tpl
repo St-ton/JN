@@ -8,7 +8,7 @@
             </div>
             <div class="card-body">
                 <div class="search-toolbar mb-3">
-                    <form name="bestellungen" method="post" action="{$adminURL}/bestellungen.php">
+                    <form name="bestellungen" method="post" action="{$shopURL}{$route}">
                         {$jtl_token}
                         <input type="hidden" name="Suche" value="1" />
                         <div class="form-row">
@@ -23,7 +23,7 @@
                     </form>
                 </div>
                 {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['cSuche'=>$cSuche]}
-                <form name="bestellungen" method="post" action="{$adminURL}/bestellungen.php">
+                <form name="bestellungen" method="post" action="{$shopURL}{$route}">
                     {$jtl_token}
                     <input type="hidden" name="zuruecksetzen" value="1" />
                     {if isset($cSuche) && $cSuche|strlen > 0}

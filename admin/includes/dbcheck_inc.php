@@ -13,6 +13,7 @@ use JTLShop\SemVer\Parser;
  * @param bool $extended
  * @param bool $clearCache
  * @return array
+ * @todo!
  */
 function getDBStruct(bool $extended = false, bool $clearCache = false)
 {
@@ -151,6 +152,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
 
 /**
  * @return array
+ * @todo!
  */
 function getDBFileStruct(): array
 {
@@ -177,6 +179,7 @@ function getDBFileStruct(): array
  * @param string $msg
  * @param bool   $engineError
  * @return stdClass
+ * @todo!
  */
 function createDBStructError(string $msg, bool $engineError = false): stdClass
 {
@@ -190,6 +193,7 @@ function createDBStructError(string $msg, bool $engineError = false): stdClass
  * @param array $dbFileStruct
  * @param array $dbStruct
  * @return object[]
+ * @todo!
  */
 function compareDBStruct(array $dbFileStruct, array $dbStruct): array
 {
@@ -248,6 +252,7 @@ function compareDBStruct(array $dbFileStruct, array $dbStruct): array
  * @param string $action
  * @param array  $tables
  * @return array|bool
+ * @deprecated since 5.2.0
  */
 function doDBMaintenance(string $action, array $tables)
 {
@@ -276,6 +281,7 @@ function doDBMaintenance(string $action, array $tables)
 /**
  * @param array $dbStruct
  * @return stdClass
+ * @deprecated since 5.2.0
  */
 function determineEngineUpdate(array $dbStruct): stdClass
 {
@@ -301,6 +307,7 @@ function determineEngineUpdate(array $dbStruct): stdClass
  * @param string   $fileName
  * @param string[] $shopTables
  * @return string
+ * @deprecated since 5.2.0
  */
 function doEngineUpdateScript(string $fileName, array $shopTables): string
 {
@@ -416,6 +423,7 @@ function doEngineUpdateScript(string $fileName, array $shopTables): string
  * @return stdClass
  * @throws CircularReferenceException
  * @throws ServiceNotFoundException
+ * @todo!
  */
 function doMigrateToInnoDB_utf8(
     string $status = 'start',

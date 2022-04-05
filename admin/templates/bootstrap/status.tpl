@@ -56,14 +56,14 @@
                 <div class="card-body">
                     <table class="table table-striped text-x1 last-child">
                         <tbody>
-                        {render_item title=__('databaseStructure') val=$status->validDatabaseStruct() more=$adminURL|cat:'/dbcheck.php'}
-                        {render_item title=__('fileStructure') val=($status->validModifiedFileStruct()&&$status->validOrphanedFilesStruct()) more=$adminURL|cat:'/filecheck.php'}
-                        {render_item title=__('directoryPermissions') val=$status->validFolderPermissions() more=$adminURL|cat:'/permissioncheck.php'}
-                        {render_item title=__('openUpdates') val=!$status->hasPendingUpdates() more=$adminURL|cat:'/dbupdater.php'}
+                        {render_item title=__('databaseStructure') val=$status->validDatabaseStruct() more=$adminURL|cat:'/dbcheck'}
+                        {render_item title=__('fileStructure') val=($status->validModifiedFileStruct()&&$status->validOrphanedFilesStruct()) more=$adminURL|cat:'/filecheck'}
+                        {render_item title=__('directoryPermissions') val=$status->validFolderPermissions() more=$adminURL|cat:'/permissioncheck'}
+                        {render_item title=__('openUpdates') val=!$status->hasPendingUpdates() more=$adminURL|cat:'/dbupdater'}
                         {render_item title=__('installDirectory') val=!$status->hasInstallDir()}
-                        {render_item title=__('profilerActive') val=!$status->hasActiveProfiler() more=$adminURL|cat:'/profiler.php'}
-                        {render_item title=__('server') val=$status->hasValidEnvironment() more=$adminURL|cat:'/systemcheck.php'}
-                        {render_item title=__('orphanedCategories') val=$status->getOrphanedCategories() more=$adminURL|cat:'/categorycheck.php'}
+                        {render_item title=__('profilerActive') val=!$status->hasActiveProfiler() more=$adminURL|cat:'/profiler'}
+                        {render_item title=__('server') val=$status->hasValidEnvironment() more=$adminURL|cat:'/systemcheck'}
+                        {render_item title=__('orphanedCategories') val=$status->getOrphanedCategories() more=$adminURL|cat:'/categorycheck'}
                         {render_item title=__('newPluginVersions') val=!$status->hasNewPluginVersions() more=$adminURL|cat:'/pluginverwaltung.php'}
                         </tbody>
                     </table>

@@ -10,6 +10,7 @@ use JTL\Statistik;
  * @param int $to
  * @param int $intervall
  * @return array
+ * @todo!
  */
 function gibBackendStatistik(int $type, int $from, int $to, &$intervall): array
 {
@@ -42,6 +43,7 @@ function gibBackendStatistik(int $type, int $from, int $to, &$intervall): array
 /**
  * @param int $type
  * @return array
+ * @deprecated since 5.2.0
  */
 function gibMappingDaten(int $type): array
 {
@@ -80,6 +82,7 @@ function gibMappingDaten(int $type): array
 /**
  * @param int $type
  * @return string
+ * @deprecated since 5.2.0
  */
 function GetTypeNameStats($type): string
 {
@@ -97,6 +100,7 @@ function GetTypeNameStats($type): string
 /**
  * @param int $type
  * @return stdClass
+ * @todo!
  */
 function getAxisNames($type): stdClass
 {
@@ -125,6 +129,7 @@ function getAxisNames($type): stdClass
  * @param array $members
  * @param array $mapping
  * @return array
+ * @deprecated since 5.2.0
  */
 function mappeDatenMember(array $members, array $mapping): array
 {
@@ -145,6 +150,7 @@ function mappeDatenMember(array $members, array $mapping): array
  * @param object $axis
  * @param int    $mod
  * @return Linechart
+ * @deprecated since 5.2.0
  */
 function prepareLineChartStats($stats, $name, $axis, $mod = 1): Linechart
 {
@@ -181,6 +187,7 @@ function prepareLineChartStats($stats, $name, $axis, $mod = 1): Linechart
  * @param object $axis
  * @param int    $maxEntries
  * @return Piechart
+ * @deprecated since 5.2.0
  */
 function preparePieChartStats($stats, $name, $axis, $maxEntries = 6): Piechart
 {
@@ -227,6 +234,7 @@ function preparePieChartStats($stats, $name, $axis, $maxEntries = 6): Piechart
  * @param object $axis
  * @param int    $mod
  * @return Linechart
+ * @todo!
  */
 function prepareLineChartStatsMulti($series, $axis, $mod = 1): Linechart
 {
@@ -267,6 +275,7 @@ function prepareLineChartStatsMulti($series, $axis, $mod = 1): Linechart
 /**
  * @param int $number
  * @return mixed
+ * @todo!
  */
 function GetLineChartColors($number)
 {

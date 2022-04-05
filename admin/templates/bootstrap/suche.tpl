@@ -69,11 +69,11 @@
 {/if}
 {if isset($paymentMethods)}
     <div class="dropdown-divider dropdown-divider-light"></div>
-    <div class="dropdown-header"><a href="{$adminURL}/zahlungsarten.php" class="value">{__('paymentTypesOverview')}</a></div>
+    <div class="dropdown-header"><a href="{$adminURL}/paymentmethods" class="value">{__('paymentTypesOverview')}</a></div>
     <ul>
         {foreach $paymentMethods as $paymentMethod}
             <li>
-                <a href="{$adminURL}/zahlungsarten.php?kZahlungsart={$paymentMethod->kZahlungsart}&token={$smarty.session.jtl_token}" class="dropdown-item value">
+                <a href="{$adminURL}/paymentmethods?kZahlungsart={$paymentMethod->kZahlungsart}&token={$smarty.session.jtl_token}" class="dropdown-item value">
                     {$paymentMethod->cName}
                 </a>
             </li>

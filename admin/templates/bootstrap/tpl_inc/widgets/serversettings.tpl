@@ -1,5 +1,5 @@
 {capture name='testfailed'}
-    <a class="label label-warning" href="{$adminURL}/systemcheck.php" title="Mehr Informationen im Systemcheck">
+    <a class="label label-warning" href="{$adminURL}/systemcheck" title="Mehr Informationen im Systemcheck">
         <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><span class="sr-only">{__('warning')}</span>
     </a>
 {/capture}

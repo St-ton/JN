@@ -14,7 +14,10 @@ use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
+use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class CartController
@@ -35,8 +38,13 @@ class CartController extends PageController
     /**
      * @inheritdoc
      */
-    public function getResponse(): ResponseInterface
-    {
+    public function getResponse(
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty,
+        Route $route
+    ): ResponseInterface {
+        $this->smarty = $smarty;
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
 
         Shop::setPageType(\PAGE_WARENKORB);

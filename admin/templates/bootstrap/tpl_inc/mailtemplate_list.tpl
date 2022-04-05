@@ -23,7 +23,7 @@
                             {include file='snippets/mailtemplate_state.tpl' template=$template}
                         </td>
                         <td class="text-center">
-                            <form method="post" action="{$adminURL}/emailvorlagen.php">
+                            <form method="post" action="{$shopURL}{$route}">
                                 {if $template->getPluginID() > 0}
                                     <input type="hidden" name="kPlugin" value="{$template->getPluginID()}" />
                                 {/if}

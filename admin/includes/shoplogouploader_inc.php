@@ -11,6 +11,7 @@ use JTL\Shop;
  * 2 = Dateiname leer
  * 3 = Dateityp entspricht nicht der Konvention (Nur jpg/gif/png/bmp/ Bilder) oder fehlt
  * 4 = Konnte nicht bewegen
+ * @deprecated since 5.2.0
  */
 function saveShopLogo(array $files): int
 {
@@ -59,6 +60,7 @@ function saveShopLogo(array $files): int
 /**
  * @return bool
  * @var string $logo
+ * @deprecated since 5.2.0
  */
 function deleteShopLogo(string $logo): bool
 {
@@ -68,6 +70,7 @@ function deleteShopLogo(string $logo): bool
 /**
  * @param string $type
  * @return string
+ * @deprecated since 5.2.0
  */
 function mappeFileTyp(string $type): string
 {

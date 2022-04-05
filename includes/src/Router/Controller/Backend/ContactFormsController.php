@@ -1,0 +1,223 @@
+<?php declare(strict_types=1);
+
+namespace JTL\Router\Controller\Backend;
+
+use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
+use JTL\Smarty\JTLSmarty;
+use League\Route\Route;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use stdClass;
+use function Functional\map;
+use function Functional\reindex;
+
+/**
+ * Class ContactFormsController
+ * @package JTL\Router\Controller\Backend
+ */
+class ContactFormsController extends AbstractBackendController
+{
+    public function getResponse(
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty,
+        Route $route
+    ): ResponseInterface {
+        $this->smarty = $smarty;
+        $this->getText->loadAdminLocale('pages/kontaktformular');
+        $this->checkPermissions('SETTINGS_CONTACTFORM_VIEW');
+
+        $step      = 'uebersicht';
+        $languages = LanguageHelper::getAllLanguages(0, true);
+        if (Request::getInt('del') > 0 && Form::validateToken()) {
+            $this->db->delete('tkontaktbetreff', 'kKontaktBetreff', Request::getInt('del'));
+            $this->db->delete('tkontaktbetreffsprache', 'kKontaktBetreff', Request::getInt('del'));
+
+            $this->alertService->addSuccess(\__('successSubjectDelete'), 'successSubjectDelete');
+        }
+
+        if (Request::postInt('content') === 1 && Form::validateToken()) {
+            $this->db->delete('tspezialcontentsprache', 'nSpezialContent', \SC_KONTAKTFORMULAR);
+            foreach ($languages as $language) {
+                $code                             = $language->getIso();
+                $spezialContent1                  = new stdClass();
+                $spezialContent2                  = new stdClass();
+                $spezialContent3                  = new stdClass();
+                $spezialContent1->nSpezialContent = \SC_KONTAKTFORMULAR;
+                $spezialContent2->nSpezialContent = \SC_KONTAKTFORMULAR;
+                $spezialContent3->nSpezialContent = \SC_KONTAKTFORMULAR;
+                $spezialContent1->cISOSprache     = $code;
+                $spezialContent2->cISOSprache     = $code;
+                $spezialContent3->cISOSprache     = $code;
+                $spezialContent1->cTyp            = 'oben';
+                $spezialContent2->cTyp            = 'unten';
+                $spezialContent3->cTyp            = 'titel';
+                $spezialContent1->cContent        = $_POST['cContentTop_' . $code];
+                $spezialContent2->cContent        = $_POST['cContentBottom_' . $code];
+                $spezialContent3->cContent        = \htmlspecialchars(
+                    $_POST['cTitle_' . $code],
+                    \ENT_COMPAT | \ENT_HTML401,
+                    \JTL_CHARSET
+                );
+
+                $this->db->insert('tspezialcontentsprache', $spezialContent1);
+                $this->db->insert('tspezialcontentsprache', $spezialContent2);
+                $this->db->insert('tspezialcontentsprache', $spezialContent3);
+                unset($spezialContent1, $spezialContent2, $spezialContent3);
+            }
+            $this->alertService->addSuccess(\__('successContentSave'), 'successContentSave');
+            $tab = 'content';
+        }
+
+        if (Request::postInt('betreff') === 1 && Form::validateToken()) {
+            $postData = Text::filterXSS($_POST);
+            if ($postData['cName'] && $postData['cMail']) {
+                $newSubject        = new stdClass();
+                $newSubject->cName = \htmlspecialchars($postData['cName'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
+                $newSubject->cMail = $postData['cMail'];
+                if (\is_array($postData['cKundengruppen'])) {
+                    $newSubject->cKundengruppen = \implode(';', $postData['cKundengruppen']) . ';';
+                }
+                if (GeneralObject::hasCount('cKundengruppen', $postData) && \in_array(0, $postData['cKundengruppen'])) {
+                    $newSubject->cKundengruppen = 0;
+                }
+                $newSubject->nSort = Request::postInt('nSort');
+                if (Request::postInt('kKontaktBetreff') === 0) {
+                    $subjectID = $this->db->insert('tkontaktbetreff', $newSubject);
+                    $this->alertService->addSuccess(\__('successSubjectCreate'), 'successSubjectCreate');
+                } else {
+                    $subjectID = Request::postInt('kKontaktBetreff');
+                    $this->db->update('tkontaktbetreff', 'kKontaktBetreff', $subjectID, $newSubject);
+                    $this->alertService->addSuccess(\sprintf(\__('successSubjectSave'), $newSubject->cName), 'successSubjectSave');
+                }
+                $localized                  = new stdClass();
+                $localized->kKontaktBetreff = $subjectID;
+                foreach ($languages as $language) {
+                    $code                   = $language->getIso();
+                    $localized->cISOSprache = $code;
+                    $localized->cName       = $newSubject->cName;
+                    if ($postData['cName_' . $code]) {
+                        $localized->cName = \htmlspecialchars(
+                            $postData['cName_' . $code],
+                            \ENT_COMPAT | \ENT_HTML401,
+                            \JTL_CHARSET
+                        );
+                    }
+                    $this->db->delete(
+                        'tkontaktbetreffsprache',
+                        ['kKontaktBetreff', 'cISOSprache'],
+                        [$subjectID, $code]
+                    );
+                    $this->db->insert('tkontaktbetreffsprache', $localized);
+                }
+            } else {
+                $this->alertService->addError(\__('errorSubjectSave'), 'errorSubjectSave');
+                $step = 'betreff';
+            }
+            $tab = 'subjects';
+        }
+
+        if (Request::postInt('einstellungen') === 1) {
+            \saveAdminSectionSettings(\CONF_KONTAKTFORMULAR, $_POST);
+            $tab = 'config';
+        }
+
+        if ((Request::getInt('kKontaktBetreff') > 0 || Request::getInt('neu') === 1) && Form::validateToken()) {
+            $step = 'betreff';
+        }
+
+        if ($step === 'uebersicht') {
+            $subjects = $this->db->getObjects('SELECT * FROM tkontaktbetreff ORDER BY nSort');
+            foreach ($subjects as $subject) {
+                $groups = '';
+                if (!$subject->cKundengruppen) {
+                    $groups = \__('allCustomerGroups');
+                } else {
+                    foreach (\explode(';', $subject->cKundengruppen) as $customerGroupID) {
+                        if (!\is_numeric($customerGroupID)) {
+                            continue;
+                        }
+                        $kndgrp  = $this->db->select('tkundengruppe', 'kKundengruppe', (int)$customerGroupID);
+                        $groups .= ' ' . $kndgrp->cName;
+                    }
+                }
+                $subject->Kundengruppen = $groups;
+            }
+            $specialContent = $this->db->selectAll(
+                'tspezialcontentsprache',
+                'nSpezialContent',
+                \SC_KONTAKTFORMULAR,
+                '*',
+                'cTyp'
+            );
+            $content        = [];
+            foreach ($specialContent as $item) {
+                $content[$item->cISOSprache . '_' . $item->cTyp] = $item->cContent;
+            }
+            \getAdminSectionSettings(\CONF_KONTAKTFORMULAR);
+            $smarty->assign('Betreffs', $subjects)
+                ->assign('Content', $content);
+        }
+
+        if ($step === 'betreff') {
+            $newSubject = null;
+            if (Request::getInt('kKontaktBetreff') > 0) {
+                $newSubject = $this->db->select(
+                    'tkontaktbetreff',
+                    'kKontaktBetreff',
+                    Request::getInt('kKontaktBetreff')
+                );
+            }
+
+            $smarty->assign('Betreff', $newSubject)
+                ->assign('kundengruppen', $this->db->getObjects('SELECT * FROM tkundengruppe ORDER BY cName'))
+                ->assign('gesetzteKundengruppen', $this->getGesetzteKundengruppen($newSubject))
+                ->assign('Betreffname', ($newSubject !== null) ? $this->getNames((int)$newSubject->kKontaktBetreff) : null);
+        }
+        if (isset($tab)) {
+            $smarty->assign('cTab', $tab);
+        }
+
+        return $smarty->assign('step', $step)
+            ->assign('route', $route->getPath())
+            ->getResponse('kontaktformular.tpl');
+    }
+
+    /**
+     * @param object $link
+     * @return array
+     */
+    private function getGesetzteKundengruppen($link): array
+    {
+        $ret = [];
+        if (!isset($link->cKundengruppen) || !$link->cKundengruppen) {
+            $ret[0] = true;
+
+            return $ret;
+        }
+        foreach (\array_filter(\explode(';', $link->cKundengruppen)) as $customerGroupID) {
+            $ret[$customerGroupID] = true;
+        }
+
+        return $ret;
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    private function getNames(int $id): array
+    {
+        $data = $this->db->selectAll('tkontaktbetreffsprache', 'kKontaktBetreff', $id);
+
+        return map(reindex($data, static function ($e) {
+            return $e->cISOSprache;
+        }), static function ($e) {
+            return $e->cName;
+        });
+    }
+}

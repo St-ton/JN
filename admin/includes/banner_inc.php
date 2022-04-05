@@ -6,6 +6,7 @@ use JTL\Shop;
 
 /**
  * @return stdClass[]
+ * @deprecated since 5.2.0
  */
 function holeAlleBanner(): array
 {
@@ -16,6 +17,7 @@ function holeAlleBanner(): array
  * @param int  $imageMapID
  * @param bool $fill
  * @return bool|stdClass
+ * @deprecated since 5.2.0
  */
 function holeBanner(int $imageMapID, bool $fill = true)
 {
@@ -25,6 +27,7 @@ function holeBanner(int $imageMapID, bool $fill = true)
 /**
  * @param int $imageMapID
  * @return mixed
+ * @deprecated since 5.2.0
  */
 function holeExtension(int $imageMapID)
 {
@@ -34,6 +37,7 @@ function holeExtension(int $imageMapID)
 /**
  * @param int $imageMapID
  * @return bool
+ * @deprecated since 5.2.0
  */
 function entferneBanner(int $imageMapID): bool
 {
@@ -46,6 +50,7 @@ function entferneBanner(int $imageMapID): bool
 
 /**
  * @return string[]
+ * @deprecated since 5.2.0
  */
 function holeBannerDateien(): array
 {
@@ -65,6 +70,7 @@ function holeBannerDateien(): array
 /**
  * @param mixed $data
  * @return IOResponse
+ * @deprecated since 5.2.0
  */
 function saveBannerAreasIO($data): IOResponse
 {

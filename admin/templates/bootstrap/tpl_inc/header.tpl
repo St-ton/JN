@@ -39,8 +39,7 @@
         function switchAdminLang(tag)
         {
             event.target.href = `{strip}
-                benutzerverwaltung.php
-                ?token={$smarty.session.jtl_token}
+                {$adminURL}/users?token={$smarty.session.jtl_token}
                 &action=quick_change_language
                 &language=` + tag + `
                 &referer=` +  encodeURIComponent(window.location.href){/strip};

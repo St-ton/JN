@@ -32,8 +32,10 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Visitor;
+use League\Route\Route;
 use Mobile_Detect;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class AbstractController
@@ -132,22 +134,19 @@ abstract class AbstractController implements ControllerInterface
      * @param int                   $customerGroupID
      * @param array                 $config
      * @param AlertServiceInterface $alertService
-     * @param JTLSmarty             $smarty
      */
     public function __construct(
         DbInterface $db,
         State $state,
         int $customerGroupID,
         array $config,
-        AlertServiceInterface $alertService,
-        JTLSmarty $smarty
+        AlertServiceInterface $alertService
     ) {
         $this->db                 = $db;
         $this->state              = $state;
         $this->customerGroupID    = $customerGroupID;
         $this->config             = $config;
         $this->alertService       = $alertService;
-        $this->smarty             = $smarty;
         $this->searchResults      = new SearchResults();
         $this->expandedCategories = new KategorieListe();
         $this->productFilter      = Shop::getProductFilter();
@@ -166,8 +165,12 @@ abstract class AbstractController implements ControllerInterface
     /**
      * @inheritdoc
      */
-    public function notFoundResponse(): ResponseInterface
-    {
+    public function notFoundResponse(
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty,
+        Route $route
+    ): ResponseInterface {
         if ($this->state->languageID === 0) {
             $this->state->languageID = Shop::getLanguageID();
         }
@@ -178,12 +181,11 @@ abstract class AbstractController implements ControllerInterface
             $this->state,
             $this->customerGroupID,
             $this->config,
-            $this->alertService,
-            $this->smarty
+            $this->alertService
         );
         $pc->init();
 
-        return $pc->getResponse()->withStatus(404);
+        return $pc->getResponse($request, $args, $smarty, $route)->withStatus(404);
     }
 
     /**

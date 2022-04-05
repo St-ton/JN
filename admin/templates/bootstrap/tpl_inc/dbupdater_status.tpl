@@ -61,7 +61,7 @@
     </div>
 {/function}
 
-{assign var=migrationURL value=$migrationURL|default:'dbupdater.php'}
+{assign var=migrationURL value=$migrationURL|default:'dbupdater'}
 {assign var=pluginID value=$pluginID|default:null}
 {if $pluginID === null}
     <form name="updateForm" method="post" id="form-update">
@@ -74,7 +74,7 @@
             </div>
             <div id="btn-update-group" class="row">
                 <div class="col-sm-6 col-xl-auto mb-3">
-                    <a href="{$adminURL}/dbupdater.php?action=update" class="btn btn-success btn-block" data-callback="update"><i class="fa fa-flash"></i> {__('buttonUpdateNow')}</a>
+                    <a href="{$shopURL}{$route}?action=update" class="btn btn-success btn-block" data-callback="update"><i class="fa fa-flash"></i> {__('buttonUpdateNow')}</a>
                 </div>
                 <div class="col-sm-6 col-xl-auto">
                     <button id="backup-button" type="button" class="btn btn-outline-primary btn-block dropdown-toggle ladda-button" data-size="l" data-style="zoom-out" data-spinner-color="#000" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

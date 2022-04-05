@@ -6,11 +6,3 @@ use JTL\Shop;
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$oAccount->permission('DIAGNOSTIC_VIEW', true, true);
-
-$status             = Status::getInstance(Shop::Container()->getDB(), Shop::Container()->getCache());
-$orphanedCategories = $status->getOrphanedCategories(false);
-
-$smarty->assign('passed', count($orphanedCategories) === 0)
-    ->assign('cateogries', $orphanedCategories)
-    ->display('categorycheck.tpl');

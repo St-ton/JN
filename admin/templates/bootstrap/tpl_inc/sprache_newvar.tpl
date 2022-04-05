@@ -5,7 +5,7 @@
             <div class="subheading1">{__('newLangVar')}</div>
             <hr class="mb-n3">
         </div>
-        <form action="{$adminURL}/sprache.php" method="post">
+        <form action="{$shopURL}{$route}" method="post">
             {$jtl_token}
             <input type="hidden" name="tab" value="{$tab}">
             <div class="card-body">
@@ -69,7 +69,7 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a href="{$adminURL}/sprache.php?tab={$tab}" class="btn btn-outline-primary btn-block">{__('cancelWithIcon')}</a>
+                        <a href="{$shopURL}{$route}?tab={$tab}" class="btn btn-outline-primary btn-block">{__('cancelWithIcon')}</a>
                     </div>
                     <div class="col-sm-6 col-xl-auto">
                         <button type="submit" class="btn btn-primary btn-block" name="action" value="savevar">

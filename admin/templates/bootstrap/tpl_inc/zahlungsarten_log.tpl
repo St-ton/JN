@@ -42,14 +42,14 @@
                 <div class="save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-lg-auto">
-                            <a href="{$adminURL}/zahlungsarten.php" class="btn btn-outline-primary btn-block">
+                            <a href="{$shopURL}{$route}" class="btn btn-outline-primary btn-block">
                                 <i class="fa fa-angle-double-left"></i> {__('goBack')}
                             </a>
                         </div>
                         <div class="col-sm-6 col-lg-auto">
                             <button class="btn btn-danger reset btn-block" data-toggle="modal"
                                     data-target="#reset-payment-modal"
-                                    data-href="{$adminURL}/zahlungsarten.php?a=logreset&kZahlungsart={$paymentData->kZahlungsart}&token={$smarty.session.jtl_token}">
+                                    data-href="{$shopURL}{$route}?a=logreset&kZahlungsart={$paymentData->kZahlungsart}&token={$smarty.session.jtl_token}">
                                 <i class="fas fa-trash-alt"></i> {__('logReset')}
                             </button>
                         </div>
@@ -59,7 +59,7 @@
                 <div class="alert alert-info">
                     <p>{__('noLogs')}</p>
                 </div>
-                <a href="{$adminURL}/zahlungsarten.php" class="btn btn-outline-primary"><i class="fa fa-angle-double-left"></i> {__('goBack')}</a>
+                <a href="{$shopURL}{$route}" class="btn btn-outline-primary"><i class="fa fa-angle-double-left"></i> {__('goBack')}</a>
             {/if}
         </div>
     </div>

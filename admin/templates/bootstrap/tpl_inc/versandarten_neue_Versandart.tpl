@@ -79,7 +79,7 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cBeschreibung}
 <div id="content">
-    <form name="versandart_neu" method="post" action="{$adminURL}/versandarten.php">
+    <form name="versandart_neu" method="post" action="{$shopURL}/{$route}">
         {$jtl_token}
         <input type="hidden" name="neueVersandart" value="1" />
         <input type="hidden" name="kVersandberechnung" value="{$versandberechnung->kVersandberechnung}" />
@@ -576,7 +576,7 @@
         <div class="save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-lg-auto">
-                    <a href="{$adminURL}/versandarten.php" title="{__('cancel')}" class="btn btn-outline-primary btn-block">
+                    <a href="{$shopURL}/{$route}" title="{__('cancel')}" class="btn btn-outline-primary btn-block">
                         {__('cancelWithIcon')}
                     </a>
                 </div>

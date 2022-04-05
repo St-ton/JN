@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cBeschreibung=__('configurePaymentmethod') cTitel=$zahlungsart->cName}
 <div id="content">
-    <form name="einstellen" method="post" action="{$adminURL}/zahlungsarten.php" class="settings">
+    <form name="einstellen" method="post" action="{$shopURL}{$route}" class="settings">
         {$jtl_token}
         <input type="hidden" name="einstellungen_bearbeiten" value="1" />
         <input type="hidden" name="kZahlungsart" value="{if isset($zahlungsart->kZahlungsart)}{$zahlungsart->kZahlungsart}{/if}" />
@@ -198,7 +198,7 @@
         <div class="save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <a href="{$adminURL}/zahlungsarten.php" title="{__('cancel')}" class="btn btn-outline-primary btn-block">
+                    <a href="{$shopURL}{$route}" title="{__('cancel')}" class="btn btn-outline-primary btn-block">
                         {__('cancelWithIcon')}
                     </a>
                 </div>

@@ -51,7 +51,7 @@ class SmartyStrategy extends ApplicationStrategy
     public function invokeRouteCallable(Route $route, ServerRequestInterface $request): ResponseInterface
     {
         $controller = $route->getCallable($this->getContainer());
-        $response   = $controller($request, $route->getVars(), $this->smarty);
+        $response   = $controller($request, $route->getVars(), $this->smarty, $route);
 
         return $this->decorateResponse($response);
     }

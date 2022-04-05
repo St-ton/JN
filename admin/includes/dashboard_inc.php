@@ -14,6 +14,7 @@ use JTL\Widgets\AbstractWidget;
  * @param bool $bActive
  * @param bool $getAll
  * @return array
+ * @todo!
  */
 function getWidgets(bool $bActive = true, bool $getAll = false): array
 {

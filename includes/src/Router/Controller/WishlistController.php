@@ -12,7 +12,10 @@ use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
+use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
 
 /**
@@ -34,8 +37,13 @@ class WishlistController extends AbstractController
     /**
      * @inheritdoc
      */
-    public function getResponse(): ResponseInterface
-    {
+    public function getResponse(
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty,
+        Route $route
+    ): ResponseInterface {
+        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_WUNSCHLISTE);
         $urlID            = Text::filterXSS(Request::verifyGPDataString('wlid'));
         $wishlistID       = (Request::verifyGPCDataInt('wl') > 0 && Request::verifyGPCDataInt('wlvm') === 0)

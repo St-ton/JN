@@ -4,7 +4,7 @@
     {if !$alertError}
         <div class="card">
             <div class="card-body">
-                <a href="{$adminURL}/rss.php?f=1&token={$smarty.session.jtl_token}"><span class="btn btn-primary" style="margin-bottom: 15px;">{__('xmlCreate')}</span></a>
+                <a href="{$shopURL}{$route}?f=1&token={$smarty.session.jtl_token}"><span class="btn btn-primary" style="margin-bottom: 15px;">{__('xmlCreate')}</span></a>
             </div>
         </div>
     {/if}
@@ -12,7 +12,7 @@
         <div class="card-body">
             {include file='tpl_inc/config_section.tpl'
                 name='einstellen'
-                action=$adminURL|cat:'/rss.php'
+                action=$shopURL|cat:$route
                 buttonCaption=__('saveWithIcon')
                 title=__('settings')
                 tab='einstellungen'

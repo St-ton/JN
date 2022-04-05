@@ -78,6 +78,7 @@ class Overlay
                 );
                 // use default settings for new overlays
                 if ($defaultOverlay !== null && $defaultOverlay->cTemplate !== $template) {
+                    // @todo!
                     speicherEinstellung(
                         $type,
                         (array)$defaultOverlay,

@@ -34,8 +34,11 @@ use JTL\Plugin\PluginInterface;
 use JTL\Plugin\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
+use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
 
 /**
@@ -80,8 +83,13 @@ class CheckoutController extends RegistrationController
     /**
      * @inheritdoc
      */
-    public function getResponse(): ResponseInterface
-    {
+    public function getResponse(
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty,
+        Route $route
+    ): ResponseInterface {
+        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_BESTELLVORGANG);
         require_once PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
         require_once PFAD_ROOT . \PFAD_INCLUDES . 'registrieren_inc.php';

@@ -9,7 +9,10 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
+use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class OrderStatusController
@@ -30,8 +33,13 @@ class OrderStatusController extends PageController
     /**
      * @inheritdoc
      */
-    public function getResponse(): ResponseInterface
-    {
+    public function getResponse(
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty,
+        Route $route
+    ): ResponseInterface {
+        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_BESTELLSTATUS);
         $linkHelper = Shop::Container()->getLinkService();
         $uid        = Request::verifyGPDataString('uid');

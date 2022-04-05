@@ -6,6 +6,7 @@ use JTL\Shop;
 
 /**
  * @return Overlay[]
+ * @deprecated since 5.2.0
  */
 function gibAlleSuchspecialOverlays(): array
 {
@@ -23,6 +24,7 @@ function gibAlleSuchspecialOverlays(): array
 /**
  * @param int $overlayID
  * @return Overlay
+ * @deprecated since 5.2.0
  */
 function gibSuchspecialOverlay(int $overlayID): Overlay
 {
@@ -157,6 +159,7 @@ function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, 
  * @param int    $width
  * @param int    $height
  * @return resource|null
+ * @deprecated since 5.2.0
  */
 function imageload_alpha($img, int $width, int $height)
 {
@@ -195,6 +198,7 @@ function imageload_alpha($img, int $width, int $height)
  * @param int    $height
  * @param int    $transparency
  * @return resource
+ * @deprecated since 5.2.0
  */
 function ladeOverlay($image, int $width, int $height, int $transparency)
 {
@@ -222,6 +226,7 @@ function ladeOverlay($image, int $width, int $height, int $transparency)
  * @param string   $path
  * @param int      $quality
  * @return bool
+ * @deprecated since 5.2.0
  */
 function speicherOverlay($im, string $extension, string $path, int $quality = 80): bool
 {
@@ -249,6 +254,7 @@ function speicherOverlay($im, string $extension, string $path, int $quality = 80
  * @param string $extension
  * @param string $path
  * @return bool
+ * @deprecated since 5.2.0
  */
 function erstelleFixedOverlay(string $image, int $size, int $transparency, string $extension, string $path): bool
 {
@@ -263,6 +269,7 @@ function erstelleFixedOverlay(string $image, int $size, int $transparency, strin
  * @param array   $file
  * @param Overlay $overlay
  * @return bool
+ * @deprecated since 5.2.0
  */
 function speicherBild(array $file, Overlay $overlay): bool
 {
@@ -299,6 +306,7 @@ function speicherBild(array $file, Overlay $overlay): bool
 
 /**
  * @param Overlay $overlay
+ * @deprecated since 5.2.0
  */
 function loescheBild(Overlay $overlay): void
 {
@@ -313,6 +321,7 @@ function loescheBild(Overlay $overlay): void
 /**
  * @param string $type
  * @return string
+ * @deprecated since 5.2.0
  */
 function mappeFileTyp(string $type): string
 {

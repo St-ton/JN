@@ -16,6 +16,7 @@ use JTL\Smarty\JTLSmarty;
  * @param float|string $price
  * @param float|string $taxRate
  * @return float
+ * @deprecated since 5.2.0
  */
 function berechneVersandpreisBrutto($price, $taxRate): float
 {
@@ -28,6 +29,7 @@ function berechneVersandpreisBrutto($price, $taxRate): float
  * @param float|string $price
  * @param float|string $taxRate
  * @return float
+ * @deprecated since 5.2.0
  */
 function berechneVersandpreisNetto($price, $taxRate): float
 {
@@ -40,6 +42,7 @@ function berechneVersandpreisNetto($price, $taxRate): float
  * @param array  $objects
  * @param string $key
  * @return array
+ * @deprecated since 5.2.0
  */
 function reorganizeObjectArray(array $objects, string $key): array
 {
@@ -65,6 +68,7 @@ function reorganizeObjectArray(array $objects, string $key): array
 /**
  * @param array $arr
  * @return array
+ * @deprecated since 5.2.0
  */
 function P($arr): array
 {
@@ -82,6 +86,7 @@ function P($arr): array
  * @param array  $arr
  * @param object $key
  * @return array
+ * @deprecated since 5.2.0
  */
 function bauePot($arr, $key): array
 {
@@ -99,6 +104,7 @@ function bauePot($arr, $key): array
 /**
  * @param string $shippingClasses
  * @return array
+ * @deprecated since 5.2.0
  */
 function gibGesetzteVersandklassen(string $shippingClasses): array
 {
@@ -131,6 +137,7 @@ function gibGesetzteVersandklassen(string $shippingClasses): array
 /**
  * @param string $shippingClasses
  * @return array
+ * @deprecated since 5.2.0
  */
 function gibGesetzteVersandklassenUebersicht($shippingClasses): array
 {
@@ -165,6 +172,7 @@ function gibGesetzteVersandklassenUebersicht($shippingClasses): array
 /**
  * @param string $customerGroupsString
  * @return array
+ * @deprecated since 5.2.0
  */
 function gibGesetzteKundengruppen(string $customerGroupsString): array
 {
@@ -188,6 +196,7 @@ function gibGesetzteKundengruppen(string $customerGroupsString): array
  * @param int             $shippingMethodID
  * @param LanguageModel[] $languages
  * @return array
+ * @deprecated since 5.2.0
  */
 function getShippingLanguage(int $shippingMethodID, array $languages): array
 {
@@ -212,6 +221,7 @@ function getShippingLanguage(int $shippingMethodID, array $languages): array
 /**
  * @param int $feeID
  * @return array
+ * @deprecated since 5.2.0
  */
 function getZuschlagNames(int $feeID): array
 {
@@ -234,6 +244,7 @@ function getZuschlagNames(int $feeID): array
 /**
  * @param string $query
  * @return array
+ * @todo!
  */
 function getShippingByName(string $query): array
 {
@@ -266,6 +277,7 @@ function getShippingByName(string $query): array
  * @param array $shipClasses
  * @param int   $length
  * @return array
+ * @deprecated since 5.2.0
  */
 function getCombinations(array $shipClasses, int $length): array
 {
@@ -312,6 +324,7 @@ function getCombinations(array $shipClasses, int $length): array
 
 /**
  * @return array|int -1 if too many shipping classes exist
+ * @deprecated since 5.2.0
  */
 function getMissingShippingClassCombi()
 {
@@ -359,6 +372,7 @@ function getMissingShippingClassCombi()
  * @param array $data
  * @return stdClass
  * @throws SmartyException
+ * @deprecated since 5.2.0
  */
 function saveShippingSurcharge(array $data): stdClass
 {
@@ -417,6 +431,7 @@ function saveShippingSurcharge(array $data): stdClass
 /**
  * @param int $surchargeID
  * @return stdClass
+ * @deprecated since 5.2.0
  */
 function deleteShippingSurcharge(int $surchargeID): stdClass
 {
@@ -437,6 +452,7 @@ function deleteShippingSurcharge(int $surchargeID): stdClass
  * @param int    $surchargeID
  * @param string $ZIP
  * @return stdClass
+ * @deprecated since 5.2.0
  */
 function deleteShippingSurchargeZIP(int $surchargeID, string $ZIP): stdClass
 {
@@ -552,6 +568,7 @@ function createShippingSurchargeZIP(array $data): stdClass
 /**
  * @param int|null $shippingTypeID
  * @return array|mixed
+ * @deprecated since 5.2.0
  */
 function getShippingTypes(int $shippingTypeID = null)
 {
@@ -576,23 +593,4 @@ function getShippingTypes(int $shippingTypeID = null)
     });
 
     return $shippingTypeID === null ? $shippingTypes->toArray() : $shippingTypes->first();
-}
-
-/**
- * @param int $id
- * @return stdClass
- * @throws SmartyException
- */
-function getShippingSurcharge(int $id): stdClass
-{
-    Shop::Container()->getGetText()->loadAdminLocale('pages/versandarten');
-
-    $smarty       = JTLSmarty::getInstance(false, ContextType::BACKEND);
-    $result       = new stdClass();
-    $result->body = $smarty->assign('sprachen', LanguageHelper::getAllLanguages(0, true))
-        ->assign('surchargeNew', new ShippingSurcharge($id))
-        ->assign('surchargeID', $id)
-        ->fetch('snippets/zuschlagliste_form.tpl');
-
-    return $result;
 }

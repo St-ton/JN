@@ -11,6 +11,7 @@ use JTL\Shop;
  * @param SqlObject $searchSQL
  * @param bool $checkLanguage
  * @return stdClass[]
+ * @todo!
  */
 function gibBewertungFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
 {
@@ -35,6 +36,7 @@ function gibBewertungFreischalten(string $sql, SqlObject $searchSQL, bool $check
  * @param SqlObject $searchSQL
  * @param bool      $checkLanguage
  * @return stdClass[]
+ * @todo!
  */
 function gibSuchanfrageFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
 {
@@ -56,6 +58,7 @@ function gibSuchanfrageFreischalten(string $sql, SqlObject $searchSQL, bool $che
  * @param SqlObject $searchSQL
  * @param bool      $checkLanguage
  * @return stdClass[]
+ * @todo!
  */
 function gibNewskommentarFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
 {
@@ -90,6 +93,7 @@ function gibNewskommentarFreischalten(string $sql, SqlObject $searchSQL, bool $c
  * @param SqlObject $searchSQL
  * @param bool      $checkLanguage
  * @return stdClass[]
+ * @todo!
  */
 function gibNewsletterEmpfaengerFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
 {
@@ -111,6 +115,7 @@ function gibNewsletterEmpfaengerFreischalten(string $sql, SqlObject $searchSQL, 
 /**
  * @param array $reviewIDs
  * @return bool
+ * @deprecated since 5.2.0
  */
 function schalteBewertungFrei(array $reviewIDs): bool
 {
@@ -126,6 +131,7 @@ function schalteBewertungFrei(array $reviewIDs): bool
 /**
  * @param array $searchQueries
  * @return bool
+ * @deprecated since 5.2.0
  */
 function schalteSuchanfragenFrei(array $searchQueries): bool
 {
@@ -167,6 +173,7 @@ function schalteSuchanfragenFrei(array $searchQueries): bool
 /**
  * @param array $newsComments
  * @return bool
+ * @deprecated since 5.2.0
  */
 function schalteNewskommentareFrei(array $newsComments): bool
 {
@@ -186,6 +193,7 @@ function schalteNewskommentareFrei(array $newsComments): bool
 /**
  * @param array $recipients
  * @return bool
+ * @deprecated since 5.2.0
  */
 function schalteNewsletterempfaengerFrei(array $recipients): bool
 {
@@ -204,6 +212,7 @@ function schalteNewsletterempfaengerFrei(array $recipients): bool
 /**
  * @param array $ratings
  * @return bool
+ * @deprecated since 5.2.0
  */
 function loescheBewertung(array $ratings): bool
 {
@@ -221,6 +230,7 @@ function loescheBewertung(array $ratings): bool
 /**
  * @param array $queries
  * @return bool
+ * @deprecated since 5.2.0
  */
 function loescheSuchanfragen(array $queries): bool
 {
@@ -245,6 +255,7 @@ function loescheSuchanfragen(array $queries): bool
 /**
  * @param array $comments
  * @return bool
+ * @deprecated since 5.2.0
  */
 function loescheNewskommentare(array $comments): bool
 {
@@ -263,6 +274,7 @@ function loescheNewskommentare(array $comments): bool
 /**
  * @param array $recipients
  * @return bool
+ * @deprecated since 5.2.0
  */
 function loescheNewsletterempfaenger(array $recipients): bool
 {
@@ -281,6 +293,7 @@ function loescheNewsletterempfaenger(array $recipients): bool
  * @param array|mixed $queryIDs
  * @param string      $mapTo
  * @return int
+ * @deprecated since 5.2.0
  */
 function mappeLiveSuche($queryIDs, string $mapTo): int
 {
@@ -337,6 +350,7 @@ function mappeLiveSuche($queryIDs, string $mapTo): int
 
 /**
  * @return int
+ * @deprecated since 5.2.0
  */
 function gibMaxBewertungen(): int
 {
@@ -351,6 +365,7 @@ function gibMaxBewertungen(): int
 
 /**
  * @return int
+ * @deprecated since 5.2.0
  */
 function gibMaxSuchanfragen(): int
 {
@@ -365,6 +380,7 @@ function gibMaxSuchanfragen(): int
 
 /**
  * @return int
+ * @deprecated since 5.2.0
  */
 function gibMaxNewskommentare(): int
 {
@@ -383,6 +399,7 @@ function gibMaxNewskommentare(): int
 
 /**
  * @return int
+ * @deprecated since 5.2.0
  */
 function gibMaxNewsletterEmpfaenger(): int
 {

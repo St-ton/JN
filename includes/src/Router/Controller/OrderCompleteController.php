@@ -16,7 +16,10 @@ use JTL\Plugin\Payment\MethodInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
+use JTL\Smarty\JTLSmarty;
+use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class OrderCompleteController
@@ -37,8 +40,13 @@ class OrderCompleteController extends CheckoutController
     /**
      * @inheritdoc
      */
-    public function getResponse(): ResponseInterface
-    {
+    public function getResponse(
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty,
+        Route $route
+    ): ResponseInterface {
+        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_BESTELLABSCHLUSS);
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellabschluss_inc.php';
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';

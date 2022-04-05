@@ -1,7 +1,8 @@
 <div class="collapse" id="sidebar">
+{*    currentMenuPath: <pre>{$currentMenuPath|var_dump}</pre>*}
     <div class="row no-gutters align-items-center flex-nowrap topbar px-3">
         <div class="col">
-            <a href="{$adminURL}/index.php" title="{__('dashboard')}">
+            <a href="{$adminURL}/" title="{__('dashboard')}">
                 <img class="brand-logo" width="101" height="32" src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
             </a>
         </div>

@@ -313,7 +313,7 @@ function holeAlleKampagnen(bool $getInternal = false, bool $activeOnly = true): 
 }
 
 /**
- *
+ * @deprecated since 5.2.0
  */
 function setzeSprache(): void
 {

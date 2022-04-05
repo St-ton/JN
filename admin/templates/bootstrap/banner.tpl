@@ -47,7 +47,7 @@
         }
     </script>
     <div id="settings">
-        <form name="banner" action="{$adminURL}/banner.php" method="post" enctype="multipart/form-data">
+        <form name="banner" action="{$shopURL}{$route}" method="post" enctype="multipart/form-data">
             {$jtl_token}
             <input type="hidden" name="action" value="{$action}" />
             {if $action === 'edit'}
@@ -326,7 +326,7 @@
             <div class="save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}/banner.php">
+                        <a class="btn btn-outline-primary btn-block" href="{$shopURL}{$route}">
                             {__('cancelWithIcon')}
                         </a>
                     </div>
@@ -417,7 +417,7 @@
     <div class="save-wrapper">
         <div class="row">
             <div class="ml-auto col-sm-6 col-xl-auto">
-                <a class="btn btn-outline-primary btn-block" href="{$adminURL}/banner.php" id="cancel">
+                <a class="btn btn-outline-primary btn-block" href="{$shopURL}{$route}" id="cancel">
                     {__('cancelWithIcon')}
                 </a>
             </div>
@@ -469,7 +469,7 @@
                                     {/if}
                                 </td>
                                 <td class="text-center">
-                                    <form action="{$adminURL}/banner.php" method="post">
+                                    <form action="{$shopURL}{$route}" method="post">
                                         {$jtl_token}
                                         <input type="hidden" name="id" value="{$banner->kImageMap}" />
                                         <div class="btn-group">
@@ -514,7 +514,7 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-primary btn-block" href="{$adminURL}/banner.php?action=new&token={$smarty.session.jtl_token}">
+                        <a class="btn btn-primary btn-block" href="{$shopURL}{$route}?action=new&token={$smarty.session.jtl_token}">
                             <i class="fa fa-share"></i> {__('addBanner')}
                         </a>
                     </div>

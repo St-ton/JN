@@ -13,7 +13,10 @@ use JTL\News\Item;
 use JTL\News\ViewType;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
+use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class NewsController
@@ -43,8 +46,13 @@ class NewsController extends AbstractController
     /**
      * @inheritdoc
      */
-    public function getResponse(): ResponseInterface
-    {
+    public function getResponse(
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty,
+        Route $route
+    ): ResponseInterface {
+        $this->smarty          = $smarty;
         $pagination            = new Pagination();
         $this->breadCrumbName  = null;
         $this->breadCrumbURL   = null;

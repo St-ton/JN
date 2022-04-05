@@ -16,6 +16,7 @@ use JTL\Shop;
 /**
  * @param int[] $ids
  * @return bool
+ * @deprecated since 5.2.0
  */
 function loescheKupons(array $ids): bool
 {
@@ -41,6 +42,7 @@ function loescheKupons(array $ids): bool
 /**
  * @param int $id
  * @return array - key = lang-iso ; value = localized coupon name
+ * @deprecated since 5.2.0
  */
 function getCouponNames(int $id): array
 {
@@ -58,6 +60,7 @@ function getCouponNames(int $id): array
 /**
  * @param string|null $selectedManufacturers
  * @return stdClass[]
+ * @deprecated since 5.2.0
  */
 function getManufacturers(?string $selectedManufacturers = ''): array
 {
@@ -80,6 +83,7 @@ function getManufacturers(?string $selectedManufacturers = ''): array
  * @param int         $categoryID
  * @param int         $depth
  * @return stdClass[]
+ * @deprecated since 5.2.0
  */
 function getCategories(?string $selectedCategories = '', int $categoryID = 0, int $depth = 0): array
 {
@@ -109,6 +113,7 @@ function getCategories(?string $selectedCategories = '', int $categoryID = 0, in
  *
  * @param string|null $string
  * @return string|null
+ * @deprecated since 5.2.0
  */
 function normalizeDate(?string $string): ?string
 {
@@ -129,6 +134,7 @@ function normalizeDate(?string $string): ?string
  * @param string $order
  * @param string $limit
  * @return stdClass[]
+ * @deprecated since 5.2.0
  */
 function getRawCoupons(
     string $type = Kupon::TYPE_STANDARD,
@@ -157,6 +163,7 @@ function getRawCoupons(
  * @param string $orderSQL - an SQL ORDER BY clause (cName DESC)
  * @param string $limitSQL - an SQL LIMIT clause  (10,20)
  * @return Kupon[]
+ * @deprecated since 5.2.0
  */
 function getCoupons(
     string $type = Kupon::TYPE_STANDARD,
@@ -177,6 +184,7 @@ function getCoupons(
  * @param string $type
  * @param string $whereSQL
  * @return stdClass[]
+ * @deprecated since 5.2.0
  */
 function getExportableCoupons(string $type = Kupon::TYPE_STANDARD, string $whereSQL = ''): array
 {
@@ -195,6 +203,7 @@ function getExportableCoupons(string $type = Kupon::TYPE_STANDARD, string $where
  *
  * @param int $id
  * @return Kupon $oKupon
+ * @deprecated since 5.2.0
  */
 function getCoupon(int $id): Kupon
 {
@@ -221,6 +230,7 @@ function augmentCoupon(Kupon $coupon): void
  *
  * @param string $type - Kupon::TYPE_STANDRAD, Kupon::TYPE_SHIPPING, Kupon::TYPE_NEWCUSTOMER
  * @return Kupon
+ * @deprecated since 5.2.0
  */
 function createNewCoupon(string $type): Kupon
 {
@@ -257,6 +267,7 @@ function createNewCoupon(string $type): Kupon
  *
  * @return Kupon
  * @throws Exception
+ * @deprecated since 5.2.0
  */
 function createCouponFromInput(): Kupon
 {
@@ -338,6 +349,7 @@ function createCouponFromInput(): Kupon
  * @param string $type
  * @param string $whereSQL
  * @return int
+ * @deprecated since 5.2.0
  */
 function getCouponCount(string $type = Kupon::TYPE_STANDARD, string $whereSQL = ''): int
 {
@@ -370,6 +382,7 @@ function validateCoupon(Kupon $coupon): array
  * @param Kupon $coupon
  * @param LanguageModel[] $languages
  * @return int - 0 on failure ; kKupon on success
+ * @deprecated since 5.2.0
  */
 function saveCoupon(Kupon $coupon, array $languages)
 {
@@ -549,6 +562,7 @@ function informCouponCustomers(Kupon $coupon)
 
 /**
  * Set all Coupons with an outdated dGueltigBis to cAktiv = 'N'
+ * @deprecated since 5.2.0
  */
 function deactivateOutdatedCoupons(): void
 {
@@ -562,6 +576,7 @@ function deactivateOutdatedCoupons(): void
 
 /**
  * Set all Coupons that reached nVerwendungenBisher to nVerwendungen to cAktiv = 'N'
+ * @deprecated since 5.2.0
  */
 function deactivateExhaustedCoupons(): void
 {

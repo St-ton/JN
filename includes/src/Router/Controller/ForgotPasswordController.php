@@ -10,8 +10,11 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\RateLimit\ForgotPassword as Limiter;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
+use League\Route\Route;
 use LinkHelper;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class ForgotPasswordController
@@ -37,8 +40,13 @@ class ForgotPasswordController extends AbstractController
     /**
      * @inheritdoc
      */
-    public function getResponse(): ResponseInterface
-    {
+    public function getResponse(
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty,
+        Route $route
+    ): ResponseInterface {
+        $this->smarty = $smarty;
         Shop::setPageType(\PAGE_PASSWORTVERGESSEN);
         $linkHelper = Shop::Container()->getLinkService();
         $this->step = 'formular';

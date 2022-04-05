@@ -181,8 +181,20 @@ header {
 		margin-right: map-get($spacers, 3);
 	}
 
+	/* Colors to be changed more easily by template settings */
 	.table, .dropdown-item, .btn-outline-primary {
 		color: $header-color;
+	}
+	.dropdown-item {
+		background-color: transparent;
+		&:hover {
+			background-color: $header-bg-color-secondary;
+		}
+	}
+	.btn-outline-primary {
+		&:hover {
+          color: color-yiq($primary);
+		}
 	}
 }
 

@@ -23155,9 +23155,6 @@ aside .box-monthlynews a .value:hover {
   align-items: center;
   display: flex;
 }
-.box-link-wrapper i.snippets-filter-item-icon-right {
-  color: #707070;
-}
 .box-link-wrapper .badge {
   margin-left: auto;
 }
@@ -25964,6 +25961,7 @@ header {
   z-index: 1020;
   /* mobile only */
   /* desktop only */
+  /* Colors to be changed more easily by template settings */
 }
 header .dropdown-menu {
   background-color: #ffffff;
@@ -26177,6 +26175,15 @@ header #burger-menu {
 header .table, header .dropdown-item, header .btn-outline-primary {
   color: #525252;
 }
+header .dropdown-item {
+  background-color: transparent;
+}
+header .dropdown-item:hover {
+  background-color: #f5f7fa;
+}
+header .btn-outline-primary:hover {
+  color: #525252;
+}
 
 @media (min-width: 992px) {
   .nav-item-lg-m {
@@ -26262,6 +26269,7 @@ header .table, header .dropdown-item, header .btn-outline-primary {
 #footer {
   margin-top: auto;
   padding: 4rem 0 0;
+  /* Colors to be changed more easily by template settings */
 }
 #footer li {
   margin-bottom: 0.5rem;
@@ -26327,6 +26335,27 @@ header .table, header .dropdown-item, header .btn-outline-primary {
   flex-direction: row;
   flex-wrap: wrap;
   margin-bottom: 0;
+}
+#footer a:not(.btn),
+#footer .productlist-filter-headline,
+#footer .newsletter-footer-heading,
+#footer .btn-outline-primary {
+  color: #525252;
+}
+#footer .btn-outline-primary:hover {
+  color: #525252;
+}
+#footer a:not(.btn):hover {
+  color: #F8BF00;
+}
+#footer .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
+  color: #525252;
+}
+#footer .box-categories .dropdown .collapse, #footer .box-linkgroup .dropdown .collapse {
+  background: #f5f7fa;
+}
+#footer .table-striped tr {
+  background-color: #f5f7fa;
 }
 
 @media (max-width: 991.98px) {

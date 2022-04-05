@@ -23155,9 +23155,6 @@ aside .box-monthlynews a .value:hover {
   align-items: center;
   display: flex;
 }
-.box-link-wrapper i.snippets-filter-item-icon-right {
-  color: #707070;
-}
 .box-link-wrapper .badge {
   margin-left: auto;
 }
@@ -25964,6 +25961,7 @@ header {
   z-index: 1020;
   /* mobile only */
   /* desktop only */
+  /* Colors to be changed more easily by template settings */
 }
 header .dropdown-menu {
   background-color: #1C1D2C;
@@ -26177,6 +26175,15 @@ header #burger-menu {
 header .table, header .dropdown-item, header .btn-outline-primary {
   color: #ffffff;
 }
+header .dropdown-item {
+  background-color: transparent;
+}
+header .dropdown-item:hover {
+  background-color: #30324b;
+}
+header .btn-outline-primary:hover {
+  color: #fafafa;
+}
 
 @media (min-width: 992px) {
   .nav-item-lg-m {
@@ -26262,6 +26269,7 @@ header .table, header .dropdown-item, header .btn-outline-primary {
 #footer {
   margin-top: auto;
   padding: 4rem 0 0;
+  /* Colors to be changed more easily by template settings */
 }
 #footer li {
   margin-bottom: 0.5rem;
@@ -26327,6 +26335,27 @@ header .table, header .dropdown-item, header .btn-outline-primary {
   flex-direction: row;
   flex-wrap: wrap;
   margin-bottom: 0;
+}
+#footer a:not(.btn),
+#footer .productlist-filter-headline,
+#footer .newsletter-footer-heading,
+#footer .btn-outline-primary {
+  color: #ffffff;
+}
+#footer .btn-outline-primary:hover {
+  color: #fafafa;
+}
+#footer a:not(.btn):hover {
+  color: #1973D3;
+}
+#footer .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
+  color: #525252;
+}
+#footer .box-categories .dropdown .collapse, #footer .box-linkgroup .dropdown .collapse {
+  background: #1C1D2C;
+}
+#footer .table-striped tr {
+  background-color: #1C1D2C;
 }
 
 @media (max-width: 991.98px) {
@@ -27313,32 +27342,6 @@ header .table, header .dropdown-item, header .btn-outline-primary {
   border-color: #1973D3;
 }
 
-#footer .table-striped, header .table-striped {
-  color: #ffffff;
-}
-#footer .table-striped tbody tr:nth-of-type(odd), header .table-striped tbody tr:nth-of-type(odd) {
-  background-color: #1C1D2C;
-}
-#footer .table-striped tbody tr:nth-of-type(even), header .table-striped tbody tr:nth-of-type(even) {
-  background-color: #30324b;
-}
-#footer .table-striped td, header .table-striped td {
-  border: none;
-}
-#footer .btn-outline-primary, header .btn-outline-primary {
-  color: #ffffff;
-}
-#footer .hr-no-top, header .hr-no-top {
-  border: none;
-}
-#footer .box-categories .dropdown .collapse, #footer .box-linkgroup .dropdown .collapse, header .box-categories .dropdown .collapse, header .box-linkgroup .dropdown .collapse {
-  background: #1C1D2C;
-}
-
-.btn-animated .btn-outline-primary:hover {
-  color: #ffffff;
-}
-
 .dropdown-item .btn-link {
   color: #ffffff;
 }
@@ -27347,30 +27350,6 @@ header .table, header .dropdown-item, header .btn-outline-primary {
   header {
     border-bottom: 4px solid #1973D3;
   }
-}
-
-#footer .form-control {
-  background-color: #1C1D2C;
-  color: #ffffff;
-}
-#footer .form-control::placeholder {
-  color: #ffffff;
-}
-#footer .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {
-  background: #1C1D2C;
-  color: #ffffff;
-}
-#footer a {
-  color: #ffffff;
-}
-#footer a:hover:not(.btn) {
-  color: #1973D3;
-}
-#footer .productlist-filter-headline {
-  color: #ffffff;
-}
-#footer .newsletter-footer-heading {
-  color: #ffffff;
 }
 
 /*# sourceMappingURL=midnight.css.map */

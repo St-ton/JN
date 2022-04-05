@@ -234,3 +234,6 @@ msgstr "Benutzerdefinierte Variablen"
 
 msgid "customContent"
 msgstr "Benutzerdefiniertes CSS, Sass oder Scss"
+
+msgid "The color settings might not work as expected in this theme."
+msgstr "Die Farbauswahl funktioniert in diesem Theme eventuell nicht wie erwartet."

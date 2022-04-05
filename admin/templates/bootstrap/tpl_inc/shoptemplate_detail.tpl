@@ -37,6 +37,9 @@
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body">
+                    {if $section->key === 'colors'}
+                        <div id="color-info" class="mb-5 text-warning">{__('The color settings might not work as expected in this theme.')}</div>
+                    {/if}
                     {if $section->key === 'customsass'}
                         <div class="underline-links mb-5">{__('Custom Sass Description')}</div>
                     {/if}
@@ -71,6 +74,19 @@
                                         {/literal}
                                     </script>
                                 </div>
+                            {/if}
+                            {if $setting->key === 'theme_default'}
+                                <script>
+                                    $(document).ready(function () {
+                                        $('#theme_theme_default').on('change', function () {
+                                            if ($(this).val() === 'blackline') {
+                                                $('#color-info').show();
+                                            } else {
+                                                $('#color-info').hide();
+                                            }
+                                        }).change();
+                                    });
+                                </script>
                             {/if}
                             <div class="col-xs-12 col-md-12 {if !empty($setting->rawAttributes.MarginBottom)}mb-5{/if}">
                                 <div class="item form-group form-row align-items-center">

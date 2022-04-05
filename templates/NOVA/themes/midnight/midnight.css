@@ -26222,7 +26222,7 @@ header .table, header .dropdown-item, header .btn-outline-primary {
   margin-bottom: 2rem;
 }
 .account-icon-dropdown .dropdown-footer {
-  background-color: #fafafa;
+  background-color: #30324b;
 }
 .account-icon-dropdown .dropdown-footer a {
   text-decoration: underline;
@@ -27340,11 +27340,6 @@ header .table, header .dropdown-item, header .btn-outline-primary {
 }
 
 .dropdown-item .btn-link {
-  color: #ffffff;
-}
-
-.account-icon-dropdown .dropdown-footer {
-  background-color: #30324b;
   color: #ffffff;
 }
 

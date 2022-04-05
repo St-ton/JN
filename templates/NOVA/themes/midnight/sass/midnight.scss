@@ -47,12 +47,6 @@
     color: $dropdown-link-color;
   }
 }
-.account-icon-dropdown {
-  .dropdown-footer {
-    background-color: $bg-main-ligther;
-    color: $header-color;
-  }
-}
 header {
   @include media-breakpoint-up(lg) {
     border-bottom: 4px solid $primary;

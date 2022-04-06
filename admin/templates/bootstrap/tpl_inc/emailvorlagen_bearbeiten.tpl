@@ -261,7 +261,7 @@
 <script>
     {literal}
     function validateTemplateSyntax(tplID) {
-        simpleAjaxCall('io.php', {
+        simpleAjaxCall(BACKEND_URL + 'io', {
             jtl_token: JTL_TOKEN,
             io : JSON.stringify({
                 name: 'mailvorlageSyntaxCheck',

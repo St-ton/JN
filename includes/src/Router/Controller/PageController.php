@@ -12,7 +12,6 @@ use JTL\Plugin\Helper as PluginHelper;
 use JTL\Shop;
 use JTL\Sitemap\Sitemap;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -99,7 +98,7 @@ class PageController extends AbstractController
         } elseif ($this->currentLink->getLinkType() === \LINKTYP_LIVESUCHE) {
             $liveSearchTop  = CMS::getLiveSearchTop($this->config);
             $liveSearchLast = CMS::getLiveSearchLast($this->config);
-            if (\count($liveSearchTop) === 0 && count($liveSearchLast) === 0) {
+            if (\count($liveSearchTop) === 0 && \count($liveSearchLast) === 0) {
                 $this->alertService->addWarning(Shop::Lang()->get('noDataAvailable'), 'noDataAvailable');
             }
             $this->smarty->assign('LivesucheTop', $liveSearchTop)
@@ -120,7 +119,7 @@ class PageController extends AbstractController
         } elseif ($this->currentLink->getLinkType() === \LINKTYP_GRATISGESCHENK) {
             if ($this->config['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
                 $freeGifts = CMS::getFreeGifts($this->config);
-                if (count($freeGifts) > 0) {
+                if (\count($freeGifts) > 0) {
                     $this->smarty->assign('oArtikelGeschenk_arr', $freeGifts);
                 } else {
                     $this->alertService->addError(

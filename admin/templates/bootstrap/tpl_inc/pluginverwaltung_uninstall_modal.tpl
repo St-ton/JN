@@ -62,7 +62,7 @@
             } else {
                 data += '0'
             }
-            simpleAjaxCall('pluginverwaltung.php', data, function () {
+            simpleAjaxCall('{$adminURL}{$route}', data, function () {
                 location.reload();
             });
             return false;

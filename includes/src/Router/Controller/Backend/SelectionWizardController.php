@@ -10,7 +10,6 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Nice;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -127,7 +126,7 @@ class SelectionWizardController extends AbstractBackendController
                     }
                 } elseif ($postData['a'] === 'saveSettings') {
                     $step = 'uebersicht';
-                    \saveAdminSectionSettings(\CONF_AUSWAHLASSISTENT, $postData);
+                    $this->saveAdminSectionSettings(\CONF_AUSWAHLASSISTENT, $postData);
                 }
             } elseif ($csrfOK && Request::getVar('a') === 'editGrp' && Request::getInt('g') > 0) {
                 $step = 'edit-group';
@@ -164,7 +163,7 @@ class SelectionWizardController extends AbstractBackendController
         } else {
             $this->smarty->assign('noModule', true);
         }
-        \getAdminSectionSettings(\CONF_AUSWAHLASSISTENT);
+        $this->getAdminSectionSettings(\CONF_AUSWAHLASSISTENT);
 
         return $this->smarty->assign('step', $step)
             ->assign('cTab', $tab)

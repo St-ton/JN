@@ -7,7 +7,6 @@ use JTL\Smarty\JTLSmarty;
 use JTL\Update\MigrationManager;
 use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

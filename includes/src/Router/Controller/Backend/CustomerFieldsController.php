@@ -8,7 +8,6 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\PlausiKundenfeld;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -33,12 +32,12 @@ class CustomerFieldsController extends AbstractBackendController
         $smarty->assign('cTab', $step);
 
         if (Request::postInt('einstellungen') > 0) {
-            \saveAdminSectionSettings(\CONF_KUNDENFELD, $_POST);
+            $this->saveAdminSectionSettings(\CONF_KUNDENFELD, $_POST);
         } elseif (Request::postInt('kundenfelder') === 1 && Form::validateToken()) {
             $success = true;
             if (isset($_POST['loeschen'])) {
                 $fieldIDs = $_POST['kKundenfeld'];
-                if (\is_array($fieldIDs) && count($fieldIDs) > 0) {
+                if (\is_array($fieldIDs) && \count($fieldIDs) > 0) {
                     foreach ($fieldIDs as $fieldID) {
                         $success = $success && $cf->delete((int)$fieldID);
                     }
@@ -80,7 +79,7 @@ class CustomerFieldsController extends AbstractBackendController
                 $check->setPostVar($_POST);
                 $check->doPlausi($customerField->cTyp, $customerField->kKundenfeld > 0);
 
-                if (count($check->getPlausiVar()) === 0) {
+                if (\count($check->getPlausiVar()) === 0) {
                     if ($cf->save($customerField, $cfValues)) {
                         $this->alertService->addSuccess(\__('successCustomerFieldSave'), 'successCustomerFieldSave');
                     } else {
@@ -126,7 +125,7 @@ class CustomerFieldsController extends AbstractBackendController
             $highestSortDiff = $lastElement->nSort - $preLastElement->nSort;
         }
         \reset($fields); // we leave the array in a safe state
-        \getAdminSectionSettings(\CONF_KUNDENFELD);
+        $this->getAdminSectionSettings(\CONF_KUNDENFELD);
 
         return $smarty->assign('oKundenfeld_arr', $fields)
             ->assign('nHighestSortValue', $highestSortValue)

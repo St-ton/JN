@@ -6,9 +6,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Reset\Reset;
 use JTL\Reset\ResetContentType;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -28,7 +26,7 @@ class ResetController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/shopzuruecksetzen');
         if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
             $options = $_POST['cOption_arr'];
-            if (\is_array($options) && count($options) > 0) {
+            if (\is_array($options) && \count($options) > 0) {
                 $reset = new Reset($this->db);
                 foreach ($options as $option) {
                     $reset->doReset(ResetContentType::from($option));

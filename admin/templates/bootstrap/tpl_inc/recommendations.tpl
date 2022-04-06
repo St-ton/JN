@@ -18,7 +18,7 @@
                                 </td>
                                 <td>
                                     <p class="mb-1">{$recommendation->getTeaser()}</p>
-                                    <a href="{$adminURL}/premiumplugin.php?scope={$recommendations->getScope()}&id={$recommendation->getId()}"
+                                    <a href="{$adminURL}/premiumplugin?scope={$recommendations->getScope()}&id={$recommendation->getId()}"
                                        class="btn btn-outline-primary">
                                         {__('getToKnowMore')}
                                         <span class="fal fa-long-arrow-right ml-1"></span>

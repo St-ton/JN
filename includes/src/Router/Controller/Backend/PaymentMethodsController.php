@@ -20,7 +20,7 @@ use JTL\Plugin\Helper as PluginHelper;
 use JTL\Recommendation\Manager;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -60,7 +60,7 @@ class PaymentMethodsController extends AbstractBackendController
         ) {
             $method = $this->db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
 
-            if (isset($method->cModulId) && mb_strlen($method->cModulId) > 0) {
+            if (isset($method->cModulId) && \mb_strlen($method->cModulId) > 0) {
                 (new ZahlungsLog($method->cModulId))->loeschen();
                 $this->alertService->addSuccess(\sprintf(\__('successLogReset'), $method->cName), 'successLogReset');
             }
@@ -120,7 +120,7 @@ class PaymentMethodsController extends AbstractBackendController
             $upd->nWaehrendBestellung = $duringCheckout;
             $this->db->update('tzahlungsart', 'kZahlungsart', $paymentMethod->kZahlungsart, $upd);
             // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
-            if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
+            if (\mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
                 $kPlugin = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
                 $sql     = new SqlObject();
                 $sql->setWhere(" cWertName LIKE :mid 
@@ -175,7 +175,7 @@ class PaymentMethodsController extends AbstractBackendController
                 $paymentMethod->cName = Text::filterXSS($paymentMethod->cName);
                 PaymentMethod::activatePaymentMethod($paymentMethod);
                 // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
-                if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
+                if (\mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
                     $sql = new SqlObject();
                     $sql->setWhere(" cWertName LIKE :mid AND cConf = 'Y'");
                     $sql->addParam('mid', $paymentMethod->cModulId . '\_%');
@@ -215,7 +215,7 @@ class PaymentMethodsController extends AbstractBackendController
             $filterStandard->addDaterangefield('Zeitraum', 'dDatum');
             $filterStandard->assemble();
 
-            if (isset($method->cModulId) && mb_strlen($method->cModulId) > 0) {
+            if (isset($method->cModulId) && \mb_strlen($method->cModulId) > 0) {
                 $paginationPaymentLog = (new Pagination('standard'))
                     ->setItemCount(ZahlungsLog::count($method->cModulId, -1, $filterStandard->getWhereSQL()))
                     ->assemble();
@@ -304,8 +304,7 @@ class PaymentMethodsController extends AbstractBackendController
                     );
                 }
             }
-            \header('Location: ' . Shop::getURL() . $route->getPath());
-            exit;
+            return new RedirectResponse(Shop::getURL() . $this->route);
         }
 
         if ($step === 'uebersicht') {

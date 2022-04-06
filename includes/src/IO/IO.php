@@ -5,6 +5,8 @@ namespace JTL\IO;
 use Exception;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use Laminas\Diactoros\Response;
+use Psr\Http\Message\ResponseInterface;
 use ReflectionFunction;
 use ReflectionMethod;
 
@@ -123,6 +125,31 @@ class IO
         \header('Content-type: application/json');
 
         die(Text::json_safe_encode($data));
+    }
+
+    /**
+     * @param mixed $data
+     * @throws Exception
+     */
+    public function getResponse($data): ResponseInterface
+    {
+        $code = 200;
+        if (\is_object($data)) {
+            if ($data instanceof IOError) {
+                $code = empty($data->code) ? 500 : $data->code;
+            } elseif ($data instanceof IOFile) {
+                $this->pushFile($data->filename, $data->mimetype);
+            }
+        }
+        $response = (new Response())->withStatus($code)
+            ->withAddedHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT')
+            ->withAddedHeader('Last-Modified', \gmdate('D, d M Y H:i:s') . ' GMT')
+            ->withAddedHeader('Cache-Control', 'no-cache, must-revalidate')
+            ->withAddedHeader('Pragma', 'no-cache')
+            ->withAddedHeader('Content-type', 'application/json');
+        $response->getBody()->write(Text::json_safe_encode($data));
+
+        return $response;
     }
 
     /**

@@ -10,7 +10,6 @@ use JTL\Pagination\Filter;
 use JTL\Pagination\Operation;
 use JTL\Pagination\Pagination;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -61,7 +60,7 @@ class LanguageController extends AbstractBackendController
         $langActive         = false;
         $smarty->assign('availableLanguages', $availableLanguages);
 
-        if (count($installedLanguages) !== count($availableLanguages)) {
+        if (\count($installedLanguages) !== \count($availableLanguages)) {
             $this->alertService->addNotice(\__('newLangAvailable'), 'newLangAvailable');
         }
 
@@ -125,7 +124,7 @@ class LanguageController extends AbstractBackendController
                         $errors[] = \__('errorVarFormat');
                     }
 
-                    if (count($variable->bOverwrite_arr) !== count($data)) {
+                    if (\count($variable->bOverwrite_arr) !== \count($data)) {
                         $errors[] = \sprintf(
                             \__('errorVarExistsForLang'),
                             \implode(
@@ -137,7 +136,7 @@ class LanguageController extends AbstractBackendController
                         );
                     }
 
-                    if (count($errors) > 0) {
+                    if (\count($errors) > 0) {
                         $this->alertService->addError(\implode('<br>', $errors), 'newVar');
                         $step = 'newvar';
                     } else {
@@ -181,7 +180,7 @@ class LanguageController extends AbstractBackendController
                     $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
 
                     $this->alertService->addSuccess(
-                        count($modified) > 0
+                        \count($modified) > 0
                             ? \__('successVarChange') . \implode(', ', $modified)
                             : \__('errorVarChangeNone'),
                         'varChangeMessage'

@@ -11,6 +11,7 @@ use JTL\Pagination\Pagination;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ResponseInterface;
 use function Functional\every;
 use function Functional\map;
 
@@ -23,27 +24,27 @@ class GenericAdmin
     /**
      * @var string
      */
-    private $adminBaseFile;
+    private string $adminBaseFile;
 
     /**
      * @var string
      */
-    private $modelClass;
+    private string $modelClass;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var AlertServiceInterface
      */
-    private $alertService;
+    private AlertServiceInterface $alertService;
 
     /**
      * @var string
      */
-    private $step = 'overview';
+    private string $step = 'overview';
 
     /**
      * @var DataModelInterface
@@ -53,7 +54,7 @@ class GenericAdmin
     /**
      * @var string
      */
-    private $tab = 'overview';
+    private string $tab = 'overview';
 
     /**
      * GenericAdmin constructor.
@@ -210,25 +211,28 @@ class GenericAdmin
      * @param JTLSmarty $smarty
      * @param string    $template
      * @throws \SmartyException
+     * @return ResponseInterface
      */
-    public function display(JTLSmarty $smarty, string $template): void
+    public function display(JTLSmarty $smarty, string $template): ResponseInterface
     {
         $models     = $this->modelClass::loadAll($this->db, [], []);
         $pagination = (new Pagination($template))
             ->setItemCount($models->count())
             ->assemble();
-        $smarty->assign('step', $this->step)
+
+        return $smarty->assign('step', $this->step)
             ->assign('item', $this->item)
             ->assign('models', $models->forPage($pagination->getPage() + 1, $pagination->getItemsPerPage()))
             ->assign('action', Shop::getAdminURL() . '/' . $this->adminBaseFile)
             ->assign('pagination', $pagination)
             ->assign('settings', \getAdminSectionSettings(\CONF_CONSENTMANAGER))
             ->assign('tab', $this->tab)
-            ->display($template);
+            ->getResponse($template);
     }
 
     /**
      * @param int $code
+     * @todo!
      */
     public function modelPRG(int $code = 303): void
     {

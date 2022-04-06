@@ -8,15 +8,3 @@ use JTL\Shop;
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 require_once __DIR__ . '/includes/admininclude.php';
-
-Shop::Container()->getGetText()->loadConfigLocales(true, true);
-
-$oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
-Shop::Container()->getCache()->flushTags([Status::CACHE_ID_EXPORT_SYNTAX_CHECK]);
-
-/** @global \JTL\Smarty\JTLSmarty $smarty */
-
-$admin = new Admin(Shop::Container()->getDB(), Shop::Container()->getAlertService(), $smarty);
-
-$admin->getAction();
-$admin->display();

@@ -2,7 +2,7 @@
 
 namespace JTL\Router\Middleware;
 
-use JTL\Cart\CartHelper;
+use JTL\Backend\AdminAccount;
 use JTL\Shop;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -17,12 +17,24 @@ use Psr\Http\Server\RequestHandlerInterface;
 class AuthMiddleware implements MiddlewareInterface
 {
     /**
+     * @var AdminAccount
+     */
+    private AdminAccount $account;
+
+    /**
+     * @param AdminAccount $account
+     */
+    public function __construct(AdminAccount $account)
+    {
+        $this->account = $account;
+    }
+
+    /**
      * @inheritdoc
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $oAccount = Shop::Container()->getAdminAccount();
-        if (!$oAccount->logged()) {
+        if (!$this->account->logged()) {
             return new RedirectResponse(Shop::getAdminURL(), 301);
         }
 

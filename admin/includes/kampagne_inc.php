@@ -13,6 +13,7 @@ use function Functional\reindex;
 
 /**
  * @return stdClass[]
+ * @todo!
  */
 function holeAlleKampagnenDefinitionen(): array
 {
@@ -31,6 +32,7 @@ function holeAlleKampagnenDefinitionen(): array
 /**
  * @param int $definitionID
  * @return stdClass|null
+ * @deprecated since 5.2.0
  */
 function holeKampagneDef(int $definitionID): ?stdClass
 {
@@ -41,6 +43,7 @@ function holeKampagneDef(int $definitionID): ?stdClass
  * @param array $campaigns
  * @param array $definitions
  * @return array
+ * @deprecated since 5.2.0
  */
 function holeKampagneGesamtStats(array $campaigns, array $definitions): array
 {
@@ -136,6 +139,7 @@ function kampagneSortASC($a, $b): int
  * @param int   $campaignID
  * @param array $definitions
  * @return array
+ * @todo!
  */
 function holeKampagneDetailStats(int $campaignID, array $definitions): array
 {
@@ -304,6 +308,7 @@ function holeKampagneDetailStats(int $campaignID, array $definitions): array
  * @param array  $members
  * @param string $sql
  * @return array
+ * @deprecated since 5.2.0
  */
 function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$text, &$members, $sql): array
 {
@@ -871,6 +876,7 @@ function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$tex
  * @param string $select
  * @param string $where
  * @param string $stamp
+ * @deprecated since 5.2.0
  */
 function baueDefDetailSELECTWHERE(&$select, &$where, $stamp)
 {
@@ -899,6 +905,7 @@ function baueDefDetailSELECTWHERE(&$select, &$where, $stamp)
 
 /**
  * @return array
+ * @deprecated since 5.2.0
  */
 function gibDetailDatumZeitraum(): array
 {
@@ -1081,6 +1088,7 @@ function gibDetailDatumZeitraum(): array
  * @param int    $direction - -1 = Vergangenheit, 1 = Zukunft
  * @param int    $view
  * @return string
+ * @deprecated since 5.2.0
  */
 function gibStamp($oldStamp, int $direction, int $view): string
 {
@@ -1111,6 +1119,7 @@ function gibStamp($oldStamp, int $direction, int $view): string
 /**
  * @param Campaign $campaign
  * @return int
+ * @deprecated since 5.2.0
  *
  * Returncodes:
  * 1 = Alles O.K.
@@ -1190,6 +1199,7 @@ function speicherKampagne($campaign): int
 /**
  * @param int $code
  * @return string
+ * @deprecated since 5.2.0
  */
 function mappeFehlerCodeSpeichern(int $code): string
 {
@@ -1223,6 +1233,7 @@ function mappeFehlerCodeSpeichern(int $code): string
 /**
  * @param array $campaignIDs
  * @return int
+ * @deprecated since 5.2.0
  */
 function loescheGewaehlteKampagnen(array $campaignIDs): int
 {
@@ -1243,6 +1254,7 @@ function loescheGewaehlteKampagnen(array $campaignIDs): int
 
 /**
  * @param DateTimeImmutable $date
+ * @deprecated since 5.2.0
  */
 function setzeDetailZeitraum(DateTimeImmutable $date): void
 {
@@ -1301,6 +1313,7 @@ function setzeDetailZeitraum(DateTimeImmutable $date): void
 
 /**
  * @return false|string
+ * @deprecated since 5.2.0
  */
 function checkGesamtStatZeitParam()
 {
@@ -1374,6 +1387,7 @@ function checkGesamtStatZeitParam()
 /**
  * @param string $month
  * @return string
+ * @deprecated since 5.2.0
  */
 function mappeENGMonat($month): string
 {
@@ -1424,6 +1438,7 @@ function mappeENGMonat($month): string
 
 /**
  * @return array
+ * @deprecated since 5.2.0
  */
 function GetTypes(): array
 {
@@ -1444,6 +1459,7 @@ function GetTypes(): array
 /**
  * @param int $type
  * @return string
+ * @deprecated since 5.2.0
  */
 function GetKampTypeName(int $type): string
 {
@@ -1456,6 +1472,7 @@ function GetKampTypeName(int $type): string
  * @param array $stats
  * @param int   $type
  * @return Linechart
+ * @deprecated since 5.2.0
  */
 function PrepareLineChartKamp(array $stats, int $type): Linechart
 {

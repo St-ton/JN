@@ -8,7 +8,6 @@ use JTL\Media\Image;
 use JTL\Media\Image\Overlay;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -57,9 +56,9 @@ class SearchSpecialOverlayController extends AbstractBackendController
             ->assign('oSuchspecialOverlay', $overlay)
             ->assign('nMaxFileSize', \getMaxFileSize(\ini_get('upload_max_filesize')))
             ->assign('oSuchspecialOverlay_arr', $overlays)
-            ->assign('nSuchspecialOverlayAnzahl', count($overlays) + 1)
+            ->assign('nSuchspecialOverlayAnzahl', \count($overlays) + 1)
             ->assign('step', $step)
-            ->assign('path', $route->getPath())
+            ->assign('path', $this->route)
             ->getResponse('suchspecialoverlay.tpl');
     }
 
@@ -120,7 +119,7 @@ class SearchSpecialOverlayController extends AbstractBackendController
             ->setPosition((int)($post['nPosition'] ?? 0))
             ->setPriority((int)$post['nPrio']);
 
-        if (mb_strlen($files['name']) > 0) {
+        if (\mb_strlen($files['name']) > 0) {
             $template    = $template ?: Shop::Container()->getTemplateService()->getActiveTemplate()->getName();
             $overlayPath = PFAD_ROOT . \PFAD_TEMPLATES . $template . \PFAD_OVERLAY_TEMPLATE;
             if (!\is_writable($overlayPath)) {

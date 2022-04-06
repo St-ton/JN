@@ -92,28 +92,6 @@ if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
     $session = new Backend();
     $session::set('frontendUpToDate', true);
 }
-
-if ($loggedIn
-    && $_SERVER['REQUEST_METHOD'] === 'GET'
-    && Request::verifyGPDataString('action') !== 'quick_change_language'
-    && strpos($_SERVER['SCRIPT_FILENAME'], 'logout') === false
-    && strpos($_SERVER['SCRIPT_FILENAME'], 'dbupdater') === false
-    && strpos($_SERVER['SCRIPT_FILENAME'], 'io.php') === false
-    && $hasUpdates
-) {
-    header('Location: ' . Shop::getAdminURL(true) . '/dbupdater.php');
-    exit;
-}
-if ($loggedIn
-    && ($conf['global']['global_wizard_done'] ?? 'Y') === 'N'
-    && strpos($_SERVER['SCRIPT_FILENAME'], 'wizard') === false
-    && !$hasUpdates
-    && !Backend::get('redirectedToWizard')
-) {
-    header('Location: ' . Shop::getAdminURL(true) . '/wizard.php');
-    exit;
-}
-
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 
 Shop::Container()->singleton(CaptchaServiceInterface::class, static function () {

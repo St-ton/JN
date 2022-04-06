@@ -45,7 +45,7 @@
                         callback(true, textStatus);
                     }
                 },
-                complete: function(jqXHR, textStatus) {
+                complete: function (jqXHR, textStatus) {
                     $.evo.trigger('loaded.io.request', {
                         req: req,
                         status: textStatus
@@ -54,9 +54,8 @@
             });
         },
 
-        handleResponse: function (data, context)
-        {
-            if(data.domAssigns) {
+        handleResponse: function (data, context) {
+            if (data.domAssigns) {
                 data.domAssigns.forEach(item => {
                     let $item = $('#' + item.target);
 
@@ -70,33 +69,31 @@
                 context = this;
             }
 
-            if(data.debugLogLines) {
+            if (data.debugLogLines) {
                 data.debugLogLines.forEach(line => {
-                    if(line[1]) {
+                    if (line[1]) {
                         console.groupCollapsed(...line[0]);
-                    }
-                    else if(line[2]) {
+                    } else if (line[2]) {
                         console.groupEnd();
-                    }
-                    else {
+                    } else {
                         console.log(...line[0]);
                     }
                 });
             }
 
-            if(data.evoProductCalls) {
+            if (data.evoProductCalls) {
                 data.evoProductCalls.forEach(([name, args]) => {
                     $.evo.article()[name](...args);
                 });
             }
 
-            if(data.varAssigns) {
+            if (data.varAssigns) {
                 data.varAssigns.forEach(assign => {
                     context[assign.name] = assign.value;
                 });
             }
 
-            if(data.windowLocationHref) {
+            if (data.windowLocationHref) {
                 window.location.href = data.windowLocationHref;
             }
         },
@@ -113,7 +110,7 @@
     // PLUGIN DEFINITION
     // =================
 
-    $.evo.io = function() {
+    $.evo.io = function () {
         return new IOClass({
             'ioUrl': $('#jtl-io-path').data('path') + '/io.php'
         });

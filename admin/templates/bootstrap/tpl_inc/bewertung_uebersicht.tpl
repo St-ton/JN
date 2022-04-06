@@ -80,7 +80,7 @@
                                                 </td>
                                                 <td>
                                                     <label for="inactive-{$review->kBewertung}">{$review->ArtikelName}</label>
-                                                    &nbsp;<a href="{$shopURL}/index.php?a={$review->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
+                                                    &nbsp;<a href="{$shopURL}/?a={$review->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
                                                 </td>
                                                 <td>{$review->cName}.</td>
                                                 <td><b>{$review->cTitel}</b><br />{$review->cText}</td>
@@ -194,7 +194,7 @@
                                                     </a>
                                                 {/if}
                                                 <a class="btn btn-link px-2"
-                                                   href="{$shopURL}/index.php?a={$review->kArtikel}"
+                                                   href="{$shopURL}/?a={$review->kArtikel}"
                                                    target="_blank"
                                                    title="{__('linkItemShop')}"
                                                    data-toggle="tooltip">
@@ -291,7 +291,7 @@
                                             </td>
                                             <td>
                                                 <label for="filtered-{$review->kBewertung}">{$review->ArtikelName}</label>
-                                                &nbsp;<a href="{$shopURL}/index.php?a={$review->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
+                                                &nbsp;<a href="{$shopURL}/?a={$review->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
                                             </td>
                                             <td>{$review->cName}.</td>
                                             <td><b>{$review->cTitel}</b><br />{$review->cText}</td>
@@ -333,7 +333,7 @@
             <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl'
                     name='einstellen'
-                    action=$adminURL|cat:'/bewertung.php'
+                    action=$adminURL|cat:$route
                     buttonCaption=__('saveWithIcon')
                     title=__('settings')
                     tab='einstellungen'

@@ -2,11 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
-use Exception;
-use JTL\Backend\DirManager;
 use JTL\Backend\Status;
-use JTL\Exceptions\CircularReferenceException;
-use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -15,7 +11,6 @@ use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\DBMigrationHelper;
 use JTLShop\SemVer\Parser;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -73,11 +68,11 @@ class DBCheckController extends AbstractBackendController
             $dbErrors = $this->compareDBStruct($dbFileStruct, $dbStruct);
         }
 
-        if (count($dbErrors) > 0) {
+        if (\count($dbErrors) > 0) {
             $engineErrors = \array_filter($dbErrors, static function ($item) {
                 return $item->isEngineError;
             });
-            if (count($engineErrors) > 5) {
+            if (\count($engineErrors) > 5) {
                 $engineUpdate    = $this->determineEngineUpdate($dbStruct);
                 $fulltextIndizes = DBMigrationHelper::getFulltextIndizes();
             }
@@ -190,7 +185,7 @@ class DBCheckController extends AbstractBackendController
                     $dbStructure[$table]->Migration = DBMigrationHelper::MIGRATE_NONE;
 
                     if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                        $dbStructure[$table]->Locked = mb_strpos($data->TABLE_COMMENT, ':Migrating') !== false ? 1 : 0;
+                        $dbStructure[$table]->Locked = \mb_strpos($data->TABLE_COMMENT, ':Migrating') !== false ? 1 : 0;
                     } else {
                         $dbStructure[$table]->Locked = $dbLocked[$table] ?? 0;
                     }
@@ -357,7 +352,7 @@ class DBCheckController extends AbstractBackendController
                 return false;
         }
 
-        return count($tables) > 0
+        return \count($tables) > 0
             ? $this->db->getObjects($cmd . \implode(', ', $tables))
             : false;
     }
@@ -449,7 +444,7 @@ class DBCheckController extends AbstractBackendController
                 $result .= $nl;
             }
 
-            if (count($fulltextSQL) > 0) {
+            if (\count($fulltextSQL) > 0) {
                 $result .= \implode(';' . $nl, $fulltextSQL) . ';' . $nl;
             }
 
@@ -492,179 +487,6 @@ class DBCheckController extends AbstractBackendController
             $result .= '--' . $nl;
             $result .= $recreateFKs;
             $result .= $nl;
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param string $status
-     * @param string $tableName
-     * @param int    $step
-     * @param array  $exclude
-     * @return stdClass
-     * @todo!
-     */
-    private function doMigrateToInnoDB_utf8(
-        string $status = 'start',
-        string $tableName = '',
-        int $step = 1,
-        array $exclude = []
-    ): stdClass {
-        $this->getText->loadAdminLocale('pages/dbcheck');
-        $mysqlVersion = DBMigrationHelper::getMySQLVersion();
-        $tableName    = (string)Text::filterXSS($tableName);
-        $result       = new stdClass();
-        $db           = $this->db;
-        $doSingle     = false;
-
-        switch (mb_convert_case($status, MB_CASE_LOWER)) {
-            case 'stop':
-                $result->nextTable = '';
-                $result->status    = 'all done';
-                break;
-            case 'start':
-                $shopTables = \array_keys($this->getDBFileStruct());
-                $table      = DBMigrationHelper::getNextTableNeedMigration($db, $exclude);
-                if ($table !== null) {
-                    if (!\in_array($table->TABLE_NAME, $shopTables, true)) {
-                        $exclude[] = $table->TABLE_NAME;
-                        $result    = $this->doMigrateToInnoDB_utf8('start', '', 1, $exclude);
-                    } else {
-                        $result->nextTable = $table->TABLE_NAME;
-                        $result->nextStep  = 1;
-                        $result->status    = 'migrate';
-                    }
-                } else {
-                    $result = $this->doMigrateToInnoDB_utf8('stop');
-                }
-                break;
-            /** @noinspection PhpMissingBreakStatementInspection */
-            case 'migrate_single':
-                $doSingle = true;
-            // no break
-            case 'migrate':
-                if (!empty($tableName) && $step === 1) {
-                    // Migration Step 1...
-                    $table     = DBMigrationHelper::getTable($tableName);
-                    $migration = DBMigrationHelper::isTableNeedMigration($table);
-                    if (\is_object($table)
-                        && $migration !== DBMigrationHelper::MIGRATE_NONE
-                        && !\in_array($table->TABLE_NAME, $exclude, true)
-                    ) {
-                        if (!DBMigrationHelper::isTableInUse($db, $tableName)) {
-                            if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                                // If MySQL version is lower than 5.6 use alternative lock method
-                                // and delete all fulltext indexes because these are not supported
-                                $db->query(DBMigrationHelper::sqlAddLockInfo($table));
-                                $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($table->TABLE_NAME);
-
-                                if ($fulltextIndizes) {
-                                    foreach ($fulltextIndizes as $fulltextIndex) {
-                                        $db->query(
-                                            'ALTER TABLE `' . $table->TABLE_NAME . '`
-                                            DROP KEY `' . $fulltextIndex->INDEX_NAME . '`'
-                                        );
-                                    }
-                                }
-                            }
-                            if (($migration & DBMigrationHelper::MIGRATE_TABLE) !== 0) {
-                                $fkSQLs = DBMigrationHelper::sqlRecreateFKs($table->TABLE_NAME);
-                                foreach ($fkSQLs->dropFK as $fkSQL) {
-                                    $db->query($fkSQL);
-                                }
-                                $migrate = $db->query(DBMigrationHelper::sqlMoveToInnoDB($table));
-                                foreach ($fkSQLs->createFK as $fkSQL) {
-                                    $db->query($fkSQL);
-                                }
-                            } else {
-                                $migrate = true;
-                            }
-                            if ($migrate) {
-                                $result->nextTable = $tableName;
-                                $result->nextStep  = 2;
-                                $result->status    = 'migrate';
-                            } else {
-                                $result->status = 'failure';
-                            }
-                            if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                                $db->query(DBMigrationHelper::sqlClearLockInfo($table));
-                            }
-                        } else {
-                            $result->status = 'in_use';
-                        }
-                    } else {
-                        // Get next table for migration...
-                        $exclude[] = $tableName;
-                        $result    = $doSingle
-                            ? $this->doMigrateToInnoDB_utf8('stop')
-                            : $this->doMigrateToInnoDB_utf8('start', '', 1, $exclude);
-                    }
-                } elseif (!empty($tableName) && $step === 2) {
-                    // Migration Step 2...
-                    if (!DBMigrationHelper::isTableInUse($db, $tableName)) {
-                        $table = DBMigrationHelper::getTable($tableName);
-                        $sql   = DBMigrationHelper::sqlConvertUTF8($table);
-
-                        if (!empty($sql)) {
-                            if ($db->query($sql)) {
-                                // Get next table for migration...
-                                $result = $doSingle
-                                    ? $this->doMigrateToInnoDB_utf8('stop')
-                                    : $this->doMigrateToInnoDB_utf8('start', '', 1, $exclude);
-                            } else {
-                                $result->status = 'failure';
-                            }
-                        } else {
-                            // Get next table for migration...
-                            $result = $doSingle
-                                ? $this->doMigrateToInnoDB_utf8('stop')
-                                : $this->doMigrateToInnoDB_utf8('start', '', 1, $exclude);
-                        }
-                    } else {
-                        $result->status = 'in_use';
-                    }
-                }
-
-                break;
-            case 'clear cache':
-                // Objektcache leeren
-                try {
-                    $cache = $this->cache;
-                    if ($cache !== null) {
-                        $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING));
-                        $cache->flushAll();
-                    }
-                } catch (Exception $e) {
-                    Shop::Container()->getLogService()->error(\sprintf(\__('errorEmptyCache'), $e->getMessage()));
-                }
-                $callback    = static function (array $pParameters) {
-                    if (\strpos($pParameters['filename'], '.') === 0) {
-                        return;
-                    }
-                    if (!$pParameters['isdir']) {
-                        @\unlink($pParameters['path'] . $pParameters['filename']);
-                    } else {
-                        @\rmdir($pParameters['path'] . $pParameters['filename']);
-                    }
-                };
-                $templateDir = Shop::Container()->getTemplateService()->getActiveTemplate()->getDir();
-                $dirMan      = new DirManager();
-                $dirMan->getData(PFAD_ROOT . \PFAD_COMPILEDIR . $templateDir, $callback);
-                $dirMan->getData(PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR, $callback);
-                // Clear special category session array
-                unset($_SESSION['oKategorie_arr_new']);
-                // Reset Fulltext search if version is lower than 5.6
-                if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                    $db->query(
-                        "UPDATE `teinstellungen` 
-                        SET `cWert` = 'N' 
-                        WHERE `cName` = 'suche_fulltext'"
-                    );
-                }
-                $result->nextTable = '';
-                $result->status    = 'finished';
-                break;
         }
 
         return $result;

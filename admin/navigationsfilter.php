@@ -9,25 +9,3 @@ use JTL\Shop;
  * @global \JTL\Backend\AdminAccount $oAccount
  */
 require_once __DIR__ . '/includes/admininclude.php';
-$oAccount->permission('SETTINGS_NAVIGATION_FILTER_VIEW', true, true);
-
-$db = Shop::Container()->getDB();
-if (isset($_POST['speichern']) && Form::validateToken()) {
-    saveAdminSectionSettings(CONF_NAVIGATIONSFILTER, $_POST);
-    Shop::Container()->getCache()->flushTags([CACHING_GROUP_CATEGORY]);
-    if (GeneralObject::hasCount('nVon', $_POST) && GeneralObject::hasCount('nBis', $_POST)) {
-        $db->query('TRUNCATE TABLE tpreisspannenfilter');
-        foreach ($_POST['nVon'] as $i => $nVon) {
-            $nVon = (float)$nVon;
-            $nBis = (float)$_POST['nBis'][$i];
-            if ($nVon >= 0 && $nBis >= 0) {
-                $db->insert('tpreisspannenfilter', (object)['nVon' => $nVon, 'nBis' => $nBis]);
-            }
-        }
-    }
-}
-
-$priceRangeFilters = $db->getObjects('SELECT * FROM tpreisspannenfilter');
-getAdminSectionSettings(CONF_NAVIGATIONSFILTER);
-$smarty->assign('oPreisspannenfilter_arr', $priceRangeFilters)
-    ->display('navigationsfilter.tpl');

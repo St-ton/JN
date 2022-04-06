@@ -6,7 +6,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Profiler;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -46,7 +45,7 @@ class ProfilerController extends AbstractBackendController
         }
 
         $pluginProfilerData = Profiler::getPluginProfiles();
-        if (count($pluginProfilerData) > 0) {
+        if (\count($pluginProfilerData) > 0) {
             $axis    = new stdClass();
             $axis->x = 'filename';
             $axis->y = 'runtime';
@@ -98,7 +97,7 @@ class ProfilerController extends AbstractBackendController
                         $hookData->drilldown->runcount[]   = $_file->runcount;
                     }
                     $data[] = $hookData;
-                    if (++$idx >= count($colors)) {
+                    if (++$idx >= \count($colors)) {
                         $idx = 0;
                     }
                 }

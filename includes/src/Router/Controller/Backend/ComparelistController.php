@@ -6,7 +6,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -40,7 +39,7 @@ class ComparelistController extends AbstractBackendController
         if ((Request::postInt('einstellungen') === 1 || Request::postVar('resetSetting') !== null)
             && Form::validateToken()
         ) {
-            \saveAdminSectionSettings(\CONF_VERGLEICHSLISTE, $_POST);
+            $this->saveAdminSectionSettings(\CONF_VERGLEICHSLISTE, $_POST);
         }
 
         $listCount  = (int)$this->db->getSingleObject(
@@ -82,7 +81,7 @@ class ComparelistController extends AbstractBackendController
         if (\count($topComparisons) > 0) {
             $this->createDiagram($topComparisons);
         }
-        \getAdminSectionSettings(\CONF_VERGLEICHSLISTE);
+        $this->getAdminSectionSettings(\CONF_VERGLEICHSLISTE);
 
         return $smarty->assign('Letzten20Vergleiche', $last20)
             ->assign('TopVergleiche', $topComparisons)
@@ -142,9 +141,9 @@ class ComparelistController extends AbstractBackendController
     {
         $name = \stripslashes(\trim(\str_replace([';', '_', '#', '%', '$', ':', '"'], '', $name)));
 
-        if (mb_strlen($name) > 20) {
+        if (\mb_strlen($name) > 20) {
             // Wenn der String laenger als 20 Zeichen ist
-            $name = mb_substr($name, 0, 20) . '...';
+            $name = \mb_substr($name, 0, 20) . '...';
         }
 
         return $name;

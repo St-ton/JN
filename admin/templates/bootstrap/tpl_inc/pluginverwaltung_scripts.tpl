@@ -21,7 +21,7 @@
                 });
                 startSpinner();
                 modal.find('.modal-body').load(
-                    'getMarkdownAsHTML.php',
+                    '{$adminURL}/markdown',
                     { 'jtl_token' : '{$smarty.Session.jtl_token}', 'path': vLicenses[pluginName] },
                     function () {
                         stopSpinner();

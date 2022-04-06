@@ -18,7 +18,6 @@ use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -260,7 +259,7 @@ class ProductController extends AbstractController
                 || $allLanguages > 0))
             ->assign('alertNote', $this->alertService->alertTypeExists(Alert::TYPE_NOTE))
             ->assign('bewertungSterneSelected', $ratingStars)
-            ->assign('bPreisverlauf', \is_array($priceHistory) && count($priceHistory) > 1)
+            ->assign('bPreisverlauf', \is_array($priceHistory) && \count($priceHistory) > 1)
             ->assign('preisverlaufData', $priceHistory)
             ->assign('NavigationBlaettern', $nav)
             ->assign('bereitsBewertet', $rated)

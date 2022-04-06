@@ -4,7 +4,6 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Helpers\Request;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -23,9 +22,9 @@ class PriceHistoryController extends AbstractBackendController
         $this->checkPermissions('MODULE_PRICECHART_VIEW');
         $this->getText->loadAdminLocale('pages/preisverlauf');
         if (Request::postInt('einstellungen') === 1) {
-            \saveAdminSectionSettings(\CONF_PREISVERLAUF, $_POST);
+            $this->saveAdminSectionSettings(\CONF_PREISVERLAUF, $_POST);
         }
-        \getAdminSectionSettings(\CONF_PREISVERLAUF);
+        $this->getAdminSectionSettings(\CONF_PREISVERLAUF);
 
         return $smarty->assign('route', $this->route)
             ->getResponse('preisverlauf.tpl');

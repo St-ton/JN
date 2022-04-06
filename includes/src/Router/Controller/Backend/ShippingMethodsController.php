@@ -23,7 +23,6 @@ use JTL\Services\JTL\CountryService;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use SmartyException;
@@ -185,19 +184,19 @@ class ShippingMethodsController extends AbstractBackendController
                     || $shippingType->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'
                 ) {
                     $staffelDa = false;
-                    if (count($postData['bis']) > 0 && count($postData['preis']) > 0) {
+                    if (\count($postData['bis']) > 0 && \count($postData['preis']) > 0) {
                         $staffelDa = true;
                     }
                     //preisstaffel beachten
                     if (!isset($postData['bis'][0], $postData['preis'][0])
-                        || mb_strlen($postData['bis'][0]) === 0
-                        || mb_strlen($postData['preis'][0]) === 0
+                        || \mb_strlen($postData['bis'][0]) === 0
+                        || \mb_strlen($postData['preis'][0]) === 0
                     ) {
                         $staffelDa = false;
                     }
                     if (\is_array($postData['bis']) && \is_array($postData['preis'])) {
                         foreach ($postData['bis'] as $i => $fBis) {
-                            if (isset($postData['preis'][$i]) && mb_strlen($fBis) > 0) {
+                            if (isset($postData['preis'][$i]) && \mb_strlen($fBis) > 0) {
                                 unset($oVersandstaffel);
                                 $oVersandstaffel         = new stdClass();
                                 $oVersandstaffel->fBis   = (float)\str_replace(',', '.', $fBis);
@@ -238,8 +237,8 @@ class ShippingMethodsController extends AbstractBackendController
                     ? (' ' . $postData['kVersandklasse'] . ' ')
                     : '-1';
 
-                if (count($postCountries) >= 1
-                    && count($postData['kZahlungsart'] ?? []) >= 1
+                if (\count($postCountries) >= 1
+                    && \count($postData['kZahlungsart'] ?? []) >= 1
                     && $shippingMethod->cName
                     && $staffelDa
                 ) {
@@ -321,10 +320,10 @@ class ShippingMethodsController extends AbstractBackendController
                     if (!$shippingMethod->cName) {
                         $this->alertService->addError(\__('errorShippingMethodNameMissing'), 'errorShippingMethodNameMissing');
                     }
-                    if (count($postCountries) < 1) {
+                    if (\count($postCountries) < 1) {
                         $this->alertService->addError(\__('errorShippingMethodCountryMissing'), 'errorShippingMethodCountryMissing');
                     }
-                    if (count($postData['kZahlungsart'] ?? []) < 1) {
+                    if (\count($postData['kZahlungsart'] ?? []) < 1) {
                         $this->alertService->addError(\__('errorShippingMethodPaymentMissing'), 'errorShippingMethodPaymentMissing');
                     }
                     if (!$staffelDa) {
@@ -378,7 +377,7 @@ class ShippingMethodsController extends AbstractBackendController
                             ),
                             'notfound_' . $pluginID,
                             [
-                                'linkHref' => Shop::getURL(true) . $route->getPath(),
+                                'linkHref' => Shop::getURL(true) . $this->route,
                                 'linkText' => \__('paymentTypesOverview')
                             ]
                         );
@@ -447,7 +446,7 @@ class ShippingMethodsController extends AbstractBackendController
                                 ),
                                 'notfound_' . $pluginID,
                                 [
-                                    'linkHref' => Shop::getURL(true) . $route->getPath(),
+                                    'linkHref' => Shop::getURL(true) . $this->route,
                                     'linkText' => \__('paymentTypesOverview')
                                 ]
                             );
@@ -802,7 +801,7 @@ class ShippingMethodsController extends AbstractBackendController
      */
     private function getCombinations(array $shipClasses, int $length): array
     {
-        $baselen = count($shipClasses);
+        $baselen = \count($shipClasses);
         if ($baselen === 0) {
             return [];
         }
@@ -868,7 +867,7 @@ class ShippingMethodsController extends AbstractBackendController
             return [];
         }
 
-        $len = count($shipClasses);
+        $len = \count($shipClasses);
         if ($len > \SHIPPING_CLASS_MAX_VALIDATION_COUNT) {
             return -1;
         }
@@ -1021,7 +1020,7 @@ class ShippingMethodsController extends AbstractBackendController
     public static function deleteShippingSurchargeZIP(int $surchargeID, string $ZIP): stdClass
     {
         $partsZIP = \explode('-', $ZIP);
-        if (count($partsZIP) === 1) {
+        if (\count($partsZIP) === 1) {
             Shop::Container()->getDB()->queryPrepared(
                 'DELETE 
             FROM tversandzuschlagplz
@@ -1032,7 +1031,7 @@ class ShippingMethodsController extends AbstractBackendController
                     'ZIP'         => $partsZIP[0]
                 ]
             );
-        } elseif (count($partsZIP) === 2) {
+        } elseif (\count($partsZIP) === 2) {
             Shop::Container()->getDB()->queryPrepared(
                 'DELETE 
             FROM tversandzuschlagplz

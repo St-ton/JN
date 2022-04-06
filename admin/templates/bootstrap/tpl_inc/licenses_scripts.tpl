@@ -24,7 +24,7 @@
         btn.find('i').addClass('fa-spin');
         $.ajax({
             method: 'POST',
-            url: '{$adminURL}/licenses.php',
+            url: '{$adminURL}{$route}',
             data: $(e.target).serialize()
         }).done(function (r) {
             const result = JSON.parse(r);
@@ -58,7 +58,7 @@
         btn.find('i').addClass('fa-spin');
         $.ajax({
             method: 'POST',
-            url: '{$adminURL}/licenses.php',
+            url: '{$adminURL}{$route}',
             data: $(e.target).serialize()
         }).done(function (r) {
             const result = JSON.parse(r);

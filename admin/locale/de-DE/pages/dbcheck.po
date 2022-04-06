@@ -108,7 +108,7 @@ msgid "notePatienceOne"
 msgstr "Bitte haben Sie Geduld! Bei %s Tabellen und einer Datenmenge von ca. %s kann die Migration"
 
 msgid "notePatienceTwo"
-msgstr " dauern. Während der Migration werden zudem wichtige Tabellen im Onlineshop gesperrt, so dass es zu erheblichen Einschränkungen im Frontend kommen kann. Es wird deshalb empfohlen, den <a title=\"Globale Einstellungen - Wartungsmodus\" href=\"%s/%s/einstellungen.php?kSektion=1#wartungsmodus_aktiviert\">Wartungsmodus</a> zu aktivieren, während Sie die Migration durchführen.<br/> Jede Tabelle wird einzeln in zwei Schritten migriert. Im ersten Schritt erfolgt die Verschiebung in den InnoDB-Tablespace und im zweiten die Konvertierung der Daten in den UTF-8-Zeichensatz."
+msgstr " dauern. Während der Migration werden zudem wichtige Tabellen im Onlineshop gesperrt, so dass es zu erheblichen Einschränkungen im Frontend kommen kann. Es wird deshalb empfohlen, den <a title=\"Globale Einstellungen - Wartungsmodus\" href=\"%s/%s/config?kSektion=1#wartungsmodus_aktiviert\">Wartungsmodus</a> zu aktivieren, während Sie die Migration durchführen.<br/> Jede Tabelle wird einzeln in zwei Schritten migriert. Im ersten Schritt erfolgt die Verschiebung in den InnoDB-Tablespace und im zweiten die Konvertierung der Daten in den UTF-8-Zeichensatz."
 
 msgid "lessThanOneMinute"
 msgstr "weniger als eine Minute"

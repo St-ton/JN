@@ -4,7 +4,6 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Status;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Systemcheck\Platform\Filesystem;

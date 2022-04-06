@@ -16,6 +16,7 @@ use JTL\Helpers\Text;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ResponseInterface;
 use stdClass;
 
 /**
@@ -118,15 +119,19 @@ class Admin
         }
     }
 
-    public function display(): void
+    /**
+     * @return ResponseInterface
+     * @throws Exception
+     */
+    public function display(): ResponseInterface
     {
-        $this->smarty->assign('step', $this->step)
+        return $this->smarty->assign('step', $this->step)
             ->assign('exportformate', Model::loadAll(
                 $this->db,
                 [],
                 []
             )->sortBy('name', \SORT_NATURAL | \SORT_FLAG_CASE))
-            ->display('exportformate.tpl');
+            ->getResponse('exportformate.tpl');
     }
 
     private function createOrUpdate(): void

@@ -7,7 +7,6 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Review\ReviewController as BaseController;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

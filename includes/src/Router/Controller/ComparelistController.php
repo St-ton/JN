@@ -7,7 +7,6 @@ use JTL\Catalog\ComparisonList;
 use JTL\Helpers\Request;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -52,7 +51,7 @@ class ComparelistController extends AbstractController
         $colWidth = ($this->config['vergleichsliste']['vergleichsliste_spaltengroesse'] > 0)
             ? (int)$this->config['vergleichsliste']['vergleichsliste_spaltengroesse']
             : 200;
-        $this->smarty->assign('nBreiteTabelle', $colWidth * (count($compareList->oArtikel_arr) + 1))
+        $this->smarty->assign('nBreiteTabelle', $colWidth * (\count($compareList->oArtikel_arr) + 1))
             ->assign('cPrioSpalten_arr', $compareList->getPrioRows(true, false))
             ->assign('prioRows', $compareList->getPrioRows())
             ->assign('Link', Shop::Container()->getLinkService()->getPageLink(\LINKTYP_VERGLEICHSLISTE))

@@ -17,7 +17,7 @@
     </script>
 {/literal}
 <div id="content" class="container-fluid2">
-    <form name="exportformat_queue" method="post" action="{$adminURL}/exportformat_queue.php">
+    <form name="exportformat_queue" method="post" action="{$adminURL}{$route}">
         {$jtl_token}
         {$cronID = $oCron->cronID|default:0}
         <input type="hidden" name="erstellen_eintragen" value="1" />
@@ -85,7 +85,7 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}/exportformat_queue.php">
+                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}">
                                 {__('cancelWithIcon')}
                             </a>
                         </div>

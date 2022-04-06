@@ -6,7 +6,7 @@
             <div class="form-group">
                 {include file='tpl_inc/fileupload.tpl'
                 fileID='template-install-upload'
-                fileUploadUrl="{$adminURL}/shoptemplate.php"
+                fileUploadUrl="{$adminURL}{$route}"
                 fileBrowseClear=true
                 fileUploadAsync=true
                 fileAllowedExtensions="['zip']"

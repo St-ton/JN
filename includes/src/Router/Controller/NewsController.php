@@ -14,7 +14,6 @@ use JTL\News\ViewType;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

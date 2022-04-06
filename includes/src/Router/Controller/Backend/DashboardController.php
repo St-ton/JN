@@ -9,17 +9,17 @@ use JTL\Backend\AdminLoginStatus;
 use JTL\Backend\Status;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Helpers\Text;
 use JTL\Plugin\Helper;
 use JTL\Plugin\State;
 use JTL\Profiler;
+use JTL\Router\BackendRouter;
 use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\Updater;
 use JTL\Widgets\AbstractWidget;
 use JTLShop\SemVer\Version;
-use League\Route\Route;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -80,7 +80,7 @@ class DashboardController extends AbstractBackendController
                         break;
 
                     case AdminLoginStatus::LOGIN_OK:
-                        Status::getInstance($this->db, $cache, true);
+                        Status::getInstance($this->db, $this->cache, true);
                         Backend::getInstance()->reHash();
                         $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                         $this->redirectLogin($this->account, $oUpdater);
@@ -135,7 +135,7 @@ class DashboardController extends AbstractBackendController
             }
             $this->getText->loadAdminLocale('pages/login');
 
-            return $smarty->assign('uri', isset($_REQUEST['uri']) && mb_strlen(\trim($_REQUEST['uri'])) > 0
+            return $smarty->assign('uri', isset($_REQUEST['uri']) && \mb_strlen(\trim($_REQUEST['uri'])) > 0
                 ? \trim($_REQUEST['uri'])
                 : '')
                 ->assign('alertError', $this->alertService->alertTypeExists(Alert::TYPE_ERROR))
@@ -153,24 +153,23 @@ class DashboardController extends AbstractBackendController
                     $_SESSION['AdminAccount']->TwoFA_expired = false;
                     $_SESSION['AdminAccount']->TwoFA_valid   = true;
                     $_SESSION['loginIsValid']                = true;
-                    $this->redirectLogin($this->account, $oUpdater);
-                } else {
-                    $this->alertService->addError(\__('errorTwoFactorFaultyExpired'), 'errorTwoFactorFaultyExpired');
-                    $smarty->assign('alertError', true);
+                    return $this->redirectLogin($this->account, $oUpdater);
                 }
+                $this->alertService->addError(\__('errorTwoFactorFaultyExpired'), 'errorTwoFactorFaultyExpired');
+                $smarty->assign('alertError', true);
             } else {
                 $_SESSION['AdminAccount']->TwoFA_expired = true;
             }
             $this->getText->loadAdminLocale('pages/login');
             $this->account->redirectOnUrl();
 
-            return $smarty->assign('uri', isset($_REQUEST['uri']) && mb_strlen(\trim($_REQUEST['uri'])) > 0
+            return $smarty->assign('uri', isset($_REQUEST['uri']) && \mb_strlen(\trim($_REQUEST['uri'])) > 0
                 ? \trim($_REQUEST['uri'])
                 : '')
                 ->getResponse('login.tpl');
         }
-        if (isset($_REQUEST['uri']) && mb_strlen(\trim($_REQUEST['uri'])) > 0) {
-            $this->redirectToURI($_REQUEST['uri']);
+        if (isset($_REQUEST['uri']) && \mb_strlen(\trim($_REQUEST['uri'])) > 0) {
+            return $this->redirectToURI($_REQUEST['uri']);
         }
         $_SESSION['loginIsValid'] = true;
 
@@ -298,38 +297,35 @@ class DashboardController extends AbstractBackendController
      * redirects to a given (base64-encoded) URI
      * (prevents code duplication)
      * @param string $uri
+     * @return ResponseInterface
      */
-    public function redirectToURI($uri): void
+    public function redirectToURI(string $uri): ResponseInterface
     {
-        \header('Location: ' . Shop::getAdminURL(true) . '/' . \base64_decode($uri));
-        exit;
+        return new RedirectResponse(Shop::getAdminURL(true) . '/' . \base64_decode($uri));
     }
 
     /**
      * @param AdminAccount $account
      * @param Updater      $updater
-     * @return void
+     * @return ResponseInterface
      * @throws Exception
      */
-    public function redirectLogin(AdminAccount $account, Updater $updater): void
+    public function redirectLogin(AdminAccount $account, Updater $updater): ResponseInterface
     {
         unset($_SESSION['frontendUpToDate']);
         $safeMode = isset($GLOBALS['plgSafeMode'])
             ? '?safemode=' . ($GLOBALS['plgSafeMode'] ? 'on' : 'off')
             : '';
         if (Shop::getSettingValue(\CONF_GLOBAL, 'global_wizard_done') === 'N') {
-            \header('Location: ' . Shop::getAdminURL(true) . '/wizard.php' . $safeMode);
-            exit;
+            return new RedirectResponse(Shop::getAdminURL(true) . BackendRouter::ROUTE_WIZARD . $safeMode);
         }
         if ($account->permission('SHOP_UPDATE_VIEW') && $updater->hasPendingUpdates()) {
-            \header('Location: ' . Shop::getAdminURL(true) . '/dbupdater' . $safeMode);
-            exit;
+            return new RedirectResponse(Shop::getAdminURL(true) . BackendRouter::ROUTE_DBUPDATER . $safeMode);
         }
-        if (isset($_REQUEST['uri']) && mb_strlen(\trim($_REQUEST['uri'])) > 0) {
-            $this->redirectToURI($_REQUEST['uri']);
+        if (isset($_REQUEST['uri']) && \mb_strlen(\trim($_REQUEST['uri'])) > 0) {
+            return $this->redirectToURI($_REQUEST['uri']);
         }
 
-        \header('Location: ' . Shop::getAdminURL(true) . '/' . $safeMode);
-        exit;
+        return new RedirectResponse(Shop::getAdminURL(true) . '/' . $safeMode);
     }
 }

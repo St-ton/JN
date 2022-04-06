@@ -13,7 +13,6 @@ use JTL\Pagination\Pagination;
 use JTL\Review\ReviewAdminController;
 use JTL\Router\BackendRouter;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -46,7 +45,7 @@ class ActivationController extends AbstractBackendController
         if (Request::verifyGPCDataInt('Suche') === 1) {
             $search = Text::filterXSS(Request::verifyGPDataString('cSuche'));
 
-            if (mb_strlen($search) > 0) {
+            if (\mb_strlen($search) > 0) {
                 switch (Request::verifyGPDataString('cSuchTyp')) {
                     case 'Bewertung':
                         $tab = 'bewertungen';
@@ -141,7 +140,7 @@ class ActivationController extends AbstractBackendController
                 // Mappen
                 if (isset($_POST['submitMapping'])) {
                     $mapping = Request::verifyGPDataString('cMapping');
-                    if (mb_strlen($mapping) > 0) {
+                    if (\mb_strlen($mapping) > 0) {
                         if (GeneralObject::hasCount('kSuchanfrage', $_POST)) {
                             $res = $this->mapLiveSearch($_POST['kSuchanfrage'], $mapping);
                             if ($res === 1) { // Alles O.K.
@@ -368,7 +367,7 @@ class ActivationController extends AbstractBackendController
      */
     private function activateReviews(array $reviewIDs): bool
     {
-        if (count($reviewIDs) === 0) {
+        if (\count($reviewIDs) === 0) {
             return false;
         }
         $controller = new ReviewAdminController($this->db, $this->cache);
@@ -384,7 +383,7 @@ class ActivationController extends AbstractBackendController
      */
     private function activateSearchQueries(array $searchQueries): bool
     {
-        if (count($searchQueries) === 0) {
+        if (\count($searchQueries) === 0) {
             return false;
         }
         $db = $this->db;
@@ -546,7 +545,7 @@ class ActivationController extends AbstractBackendController
      */
     private function mapLiveSearch($queryIDs, string $mapTo): int
     {
-        if (!\is_array($queryIDs) || \count($queryIDs) === 0 || mb_strlen($mapTo) === 0) {
+        if (!\is_array($queryIDs) || \count($queryIDs) === 0 || \mb_strlen($mapTo) === 0) {
             return 2; // Leere Übergabe
         }
         $db = $this->db;
@@ -555,7 +554,7 @@ class ActivationController extends AbstractBackendController
             if ($query === null || empty($query->kSuchanfrage)) {
                 return 3; // Mindestens eine Suchanfrage wurde nicht in der Datenbank gefunden.
             }
-            if (mb_convert_case($query->cSuche, MB_CASE_LOWER) === mb_convert_case($mapTo, MB_CASE_LOWER)) {
+            if (\mb_convert_case($query->cSuche, \MB_CASE_LOWER) === \mb_convert_case($mapTo, \MB_CASE_LOWER)) {
                 return 6; // Es kann nicht auf sich selbst gemappt werden
             }
             $oSuchanfrageNeu = $db->select('tsuchanfrage', 'cSuche', $mapTo);

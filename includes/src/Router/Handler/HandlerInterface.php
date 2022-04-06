@@ -6,7 +6,6 @@ use JTL\DB\DbInterface;
 use JTL\Router\State;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\ServerRequest;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use stdClass;
 
@@ -32,10 +31,9 @@ interface HandlerInterface
      * @param ServerRequest $request
      * @param array         $args
      * @param JTLSmarty     $smarty
-     * @param Route         $route
      * @return ResponseInterface
      */
-    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty, Route $route): ResponseInterface;
+    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): ResponseInterface;
 
     /**
      * @param stdClass $seo

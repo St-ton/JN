@@ -84,7 +84,7 @@ class BannerController extends AbstractBackendController
         $imageMap   = new ImageMap($this->db);
         $imageMapID = Request::postInt('kImageMap', null);
         $name       = \htmlspecialchars($postData['cName'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
-        if (mb_strlen($name) === 0) {
+        if (\mb_strlen($name) === 0) {
             $checks['cName'] = 1;
         }
         $bannerPath = Request::postVar('cPath', '') !== '' ? $postData['cPath'] : null;
@@ -119,10 +119,10 @@ class BannerController extends AbstractBackendController
         if ($dateUntil !== null && $dateUntil < $dateFrom) {
             $checks['bDatum'] = 2;
         }
-        if (mb_strlen($bannerPath) === 0) {
+        if (\mb_strlen($bannerPath) === 0) {
             $checks['cBannerPath'] = 1;
         }
-        if (count($checks) === 0) {
+        if (\count($checks) === 0) {
             if ($imageMapID === null || $imageMapID === 0) {
                 $imageMapID = $imageMap->save($name, $bannerPath, $dateFrom, $dateUntil);
             } else {
@@ -258,7 +258,7 @@ class BannerController extends AbstractBackendController
      * @param mixed $imageMap
      * @return void
      */
-    private function actionNew($imageMap)
+    private function actionNew($imageMap): void
     {
         $this->smarty->assign('banner', $imageMap ?? null)
             ->assign('customerGroups', CustomerGroup::getGroups())

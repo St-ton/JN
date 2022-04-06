@@ -5,7 +5,6 @@ namespace JTL\Router\Controller\Backend;
 use JTL\Helpers\Request;
 use JTL\Review\ReviewAdminController;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -26,7 +25,7 @@ class ReviewController extends AbstractBackendController
 
         $this->setzeSprache();
         $controller = new ReviewAdminController($this->db, $this->cache, $this->alertService, $this->smarty);
-        $tab        = mb_strlen(Request::verifyGPDataString('tab')) > 0
+        $tab        = \mb_strlen(Request::verifyGPDataString('tab')) > 0
             ? Request::verifyGPDataString('tab')
             : 'freischalten';
         $step       = $controller->handleRequest();

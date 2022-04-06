@@ -1,5 +1,6 @@
 
-var JTL_TOKEN = null;
+var JTL_TOKEN = null,
+    BACKEND_URL = null;
 
 /**
  * Functions that communicate with the server like 'ioCall()' need the XSRF token to be set first.
@@ -12,6 +13,10 @@ var JTL_TOKEN = null;
 function setJtlToken(jtlToken)
 {
     JTL_TOKEN = jtlToken;
+}
+function setBackendURL(url)
+{
+    BACKEND_URL = url;
 }
 
 /**
@@ -490,7 +495,7 @@ function ioCall(name, args = [], success = ()=>{}, error = ()=>{}, context = {},
     }
 
     return $.ajax({
-        url: 'io.php',
+        url: BACKEND_URL + 'io',
         method: 'post',
         dataType: 'json',
         data: {
@@ -557,7 +562,7 @@ function ioDownload(name, args)
         throw 'Error: IO download not possible. JTL_TOKEN was not set on this page.';
     }
 
-    window.location.href = 'io.php?token=' + JTL_TOKEN + '&io=' + encodeURIComponent(JSON.stringify({
+    window.location.href = BACKEND_URL + 'io?token=' + JTL_TOKEN + '&io=' + encodeURIComponent(JSON.stringify({
         name: name,
         params: args
     }));

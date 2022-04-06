@@ -10,7 +10,6 @@ use JTL\Pagination\Pagination;
 use JTL\Piechart;
 use JTL\Smarty\JTLSmarty;
 use JTL\Statistik;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -93,7 +92,7 @@ class StatsController extends AbstractBackendController
             $members[] = \array_keys(\get_object_vars($stat));
         }
         $pagination = (new Pagination())
-            ->setItemCount(count($stats))
+            ->setItemCount(\count($stats))
             ->assemble();
         return $smarty->assign('headline', $statsTypeName)
             ->assign('nTyp', $statsType)
@@ -253,7 +252,7 @@ class StatsController extends AbstractBackendController
     {
         $chart = new Linechart(['active' => false]);
 
-        if (\is_array($stats) && count($stats) > 0) {
+        if (\is_array($stats) && \count($stats) > 0) {
             $chart->setActive(true);
             $data = [];
             $y    = $axis->y;
@@ -288,7 +287,7 @@ class StatsController extends AbstractBackendController
     private function preparePieChartStats($stats, $name, $axis, $maxEntries = 6): Piechart
     {
         $chart = new Piechart(['active' => false]);
-        if (\is_array($stats) && count($stats) > 0) {
+        if (\is_array($stats) && \count($stats) > 0) {
             $chart->setActive(true);
             $data = [];
 
@@ -296,7 +295,7 @@ class StatsController extends AbstractBackendController
             $x = $axis->x;
 
             // Zeige nur $maxEntries Main Member + 1 Sonstige an, sonst wird es zu unuebersichtlich
-            if (count($stats) > $maxEntries) {
+            if (\count($stats) > $maxEntries) {
                 $statstmp  = [];
                 $other     = new stdClass();
                 $other->$y = 0;

@@ -10,7 +10,6 @@ use JTL\Media\Media;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -45,7 +44,7 @@ class ImagesController extends AbstractBackendController
             'news'          => \__('news'),
             'newskategorie' => \__('newscategory')
         ];
-        \getAdminSectionSettings(\CONF_BILDER);
+        $this->getAdminSectionSettings(\CONF_BILDER);
 
         return $smarty->assign('indices', $indices)
             ->assign('imgConf', Shop::getSettingSection(\CONF_BILDER))
@@ -59,7 +58,7 @@ class ImagesController extends AbstractBackendController
     {
         $shopSettings = Shopsetting::getInstance();
         $oldConfig    = $shopSettings->getSettings([\CONF_BILDER])['bilder'];
-        \saveAdminSectionSettings(
+        $this->saveAdminSectionSettings(
             \CONF_BILDER,
             Text::filterXSS($_POST),
             [\CACHING_GROUP_OPTION, \CACHING_GROUP_ARTICLE, \CACHING_GROUP_CATEGORY]

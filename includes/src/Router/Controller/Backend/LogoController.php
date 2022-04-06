@@ -6,7 +6,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;

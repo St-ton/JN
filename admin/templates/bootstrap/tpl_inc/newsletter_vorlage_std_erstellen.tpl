@@ -29,7 +29,7 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('newsletterdraft') cBeschreibung=__('newsletterdraftdesc')}
 <div id="content">
-    <form name="formnewslettervorlagestd" id="formnewslettervorlagestd" method="post" action="{$adminURL}/newsletter.php" enctype="multipart/form-data">
+    <form name="formnewslettervorlagestd" id="formnewslettervorlagestd" method="post" action="{$adminURL}{$route}" enctype="multipart/form-data">
         {$jtl_token}
         <div class="card settings">
             <div class="card-header">
@@ -361,11 +361,11 @@
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         {if (isset($oNewslettervorlageStd->kNewsletterVorlage) && $oNewslettervorlageStd->kNewsletterVorlage > 0) || (isset($cPostVar_arr.kNewslettervorlage) && $cPostVar_arr.kNewslettervorlage > 0)}
-                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}/newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}">
+                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}?tab=newslettervorlagen&token={$smarty.session.jtl_token}">
                                 {__('cancelWithIcon')}
                             </a>
                         {else}
-                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}/newsletter.php?tab=newslettervorlagenstd&token={$smarty.session.jtl_token}">
+                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}?tab=newslettervorlagenstd&token={$smarty.session.jtl_token}">
                                 {__('cancelWithIcon')}
                             </a>
                         {/if}

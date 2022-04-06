@@ -9,7 +9,6 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\DBManager;
-use League\Route\Route;
 use PDOException;
 use PhpMyAdmin\SqlParser\Components\Limit;
 use PhpMyAdmin\SqlParser\Parser;
@@ -93,7 +92,7 @@ class DBManagerController extends AbstractBackendController
         if ($query !== null) {
             try {
                 $parser = new Parser($query);
-                if (\is_array($parser->errors) && count($parser->errors) > 0) {
+                if (\is_array($parser->errors) && \count($parser->errors) > 0) {
                     throw $parser->errors[0];
                 }
                 $q = Query::getAll($query);
@@ -105,7 +104,7 @@ class DBManagerController extends AbstractBackendController
                     if ($dbname !== null && \strcasecmp($dbname, DB_NAME) !== 0) {
                         throw new Exception(\sprintf('Well, at least you tried :)'));
                     }
-                    if (\in_array(mb_convert_case($table, MB_CASE_LOWER), $restrictedTables, true)) {
+                    if (\in_array(\mb_convert_case($table, \MB_CASE_LOWER), $restrictedTables, true)) {
                         throw new Exception(\sprintf('Permission denied for table `%s`', $table));
                     }
                 }
@@ -167,12 +166,12 @@ class DBManagerController extends AbstractBackendController
         // where
         if (isset($filter['where']['col'])) {
             $whereParts  = [];
-            $columnCount = count($filter['where']['col']);
+            $columnCount = \count($filter['where']['col']);
             for ($i = 0; $i < $columnCount; $i++) {
                 if (!empty($filter['where']['col'][$i]) && !empty($filter['where']['op'][$i])) {
                     $col = $filter['where']['col'][$i];
                     $val = $filter['where']['val'][$i];
-                    $op  = mb_convert_case($filter['where']['op'][$i], MB_CASE_UPPER);
+                    $op  = \mb_convert_case($filter['where']['op'][$i], \MB_CASE_UPPER);
                     if ($op === 'LIKE %%') {
                         $op  = 'LIKE';
                         $val = \sprintf('%%%s%%', \trim($val, '%'));
@@ -243,7 +242,7 @@ class DBManagerController extends AbstractBackendController
      */
     public static function getDBFileStruct(): array
     {
-        $version    = \JTLShop\SemVer\Parser::parse(APPLICATION_VERSION);
+        $version    = \JTLShop\SemVer\Parser::parse(\APPLICATION_VERSION);
         $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
         if ($version->hasPreRelease()) {
             $preRelease  = $version->getPreRelease();
@@ -253,7 +252,7 @@ class DBManagerController extends AbstractBackendController
             }
         }
 
-        $fileList = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'dbstruct_' . $versionStr . '.json';
+        $fileList = PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5 . 'dbstruct_' . $versionStr . '.json';
         if (!\file_exists($fileList)) {
             return [];
         }

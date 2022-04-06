@@ -18,7 +18,7 @@
                 {assign var=rootEntryName value=$oLinkOberGruppe->cName|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}
                 {if $oLinkOberGruppe->oLinkGruppe_arr|count === 0 && $oLinkOberGruppe->oLink_arr|count === 1}
                     <li class="nav-item {if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if}
-                               {if $oLinkOberGruppe->key === $currentMenuPath[0]}active{/if}">
+                               {if $oLinkOberGruppe->active === true}active{/if}">
                         <a href="{$oLinkOberGruppe->oLink_arr[0]->cURL}" class="nav-link">
                             <span class="category-icon">
                                 <i class="fa fa-2x fa-fw backend-root-menu-icon-{$rootEntryName}"></i>
@@ -29,9 +29,9 @@
                 {else}
                     <li id="root-menu-entry-{$rootEntryName}"
                         class="nav-item {if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if}
-                               {if $oLinkOberGruppe->key === $currentMenuPath[0]}active{/if}
+                               {if $oLinkOberGruppe->active === true}active{/if}
                                 {if $oLinkOberGruppe@last} mb-5{/if}">
-                        <a href="#" class="nav-link {if !($oLinkOberGruppe->key === $currentMenuPath[0])} collapsed{/if}">
+                        <a href="#" class="nav-link {if $oLinkOberGruppe->active === false} collapsed{/if}">
                             <span class="category-icon">{include file="img/icons/{$oLinkOberGruppe->icon}.svg"}</span>
                             <span class="category-title">{$oLinkOberGruppe->cName}</span>
                         </a>
@@ -40,7 +40,7 @@
                                 {assign var=entryName value=$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
                                 {if is_object($oLinkGruppe->oLink_arr)}
                                     <li id="dropdown-header-{$entryName}"
-                                        class="nav-item {if $oLinkGruppe->key === $currentMenuPath[1]}active{/if}">
+                                        class="nav-item {if $oLinkGruppe->active === true}active{/if}">
                                         <a class="nav-link" href="{$oLinkGruppe->oLink_arr->cURL}"
                                             {if !empty($oLinkGruppe->oLink_arr->target)}
                                                 target="{$oLinkGruppe->oLink_arr->target}"{/if}>
@@ -49,21 +49,21 @@
                                     </li>
                                 {elseif $oLinkGruppe->oLink_arr|count > 0}
                                     <li id="dropdown-header-{$entryName}"
-                                        class="nav-item {if $oLinkGruppe->key === $currentMenuPath[1]} active{/if}">
-                                        <a class="nav-link {if !($oLinkGruppe->key === $currentMenuPath[1])}collapsed{/if}"
+                                        class="nav-item {if $oLinkGruppe->active === true} active{/if}">
+                                        <a class="nav-link {if $oLinkGruppe->active === false}collapsed{/if}"
                                            href="#"
                                            data-toggle="collapse"
                                            data-target="#collapse-{$entryName}"
                                            aria-controls="collapse-{$entryName}"
-                                           aria-expanded="{if $oLinkGruppe->key === $currentMenuPath[1]}true{else}false{/if}">
+                                           aria-expanded="{if $oLinkGruppe->active === true}true{else}false{/if}">
                                             <span>{$oLinkGruppe->cName}</span>
                                             <i class="far fa-chevron-down rotate-180"></i>
                                         </a>
-                                        <ul class="nav submenu collapse {if $oLinkGruppe->key === $currentMenuPath[1]}show{/if}"
+                                        <ul class="nav submenu collapse {if $oLinkGruppe->active === true}show{/if}"
                                             id="collapse-{$entryName}"
                                             data-parent="#sidebar">
                                             {foreach $oLinkGruppe->oLink_arr as $oLink}
-                                                <li class="nav-item {if $oLink->key === $currentMenuPath[2]}active{/if}">
+                                                <li class="nav-item {if $oLink->active === true}active{/if}">
                                                     <a class="nav-link" href="{$oLink->cURL}">{$oLink->cLinkname}</a>
                                                 </li>
                                             {/foreach}
@@ -72,7 +72,7 @@
                                 {/if}
                             {/foreach}
                             {foreach $oLinkOberGruppe->oLink_arr as $oLink}
-                                <li class="nav-item {if $oLink->key === $currentMenuPath[1]}active{/if}">
+                                <li class="nav-item {if $oLink->active === true || $oLink->key === $currentMenuPath[1]}active{/if}">
                                     <a href="{$oLink->cURL}" class="nav-link">{$oLink->cLinkname}</a>
                                 </li>
                             {/foreach}

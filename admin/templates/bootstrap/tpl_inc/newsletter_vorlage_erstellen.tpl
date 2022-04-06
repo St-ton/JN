@@ -29,7 +29,7 @@ function checkNewsletterSend() {ldelim}
 <div id="page">
    {include file='tpl_inc/seite_header.tpl' cTitel=__('newsletterdraft') cBeschreibung=__('newsletterdraftdesc')}
     <div id="content">
-        <form name="formnewslettervorlage" id="formnewslettervorlage" method="post" action="{$adminURL}/newsletter.php">
+        <form name="formnewslettervorlage" id="formnewslettervorlage" method="post" action="{$adminURL}{$route}">
             {$jtl_token}
             <input name="newslettervorlagen" type="hidden" value="1">
             <input name="tab" type="hidden" value="newslettervorlagen">
@@ -307,7 +307,7 @@ function checkNewsletterSend() {ldelim}
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}/newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}">
+                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}?tab=newslettervorlagen&token={$smarty.session.jtl_token}">
                                 {__('cancelWithIcon')}
                             </a>
                         </div>

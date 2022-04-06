@@ -8,7 +8,6 @@ use JTL\L10n\GetText;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
 use JTL\Router\BackendRouter;
-use League\Route\Router;
 use Shop;
 
 /**
@@ -17,11 +16,6 @@ use Shop;
  */
 class Menu
 {
-    /**
-     * @var Router
-     */
-    private Router $router;
-
     /**
      * @var DbInterface
      */
@@ -38,14 +32,12 @@ class Menu
     private GetText $getText;
 
     /**
-     * @param Router       $router
      * @param DbInterface  $db
      * @param AdminAccount $account
      * @param GetText      $getText
      */
-    public function __construct(Router $router, DbInterface $db, AdminAccount $account, GetText $getText)
+    public function __construct(DbInterface $db, AdminAccount $account, GetText $getText)
     {
-        $this->router  = $router;
         $this->db      = $db;
         $this->account = $account;
         $this->getText = $getText;
@@ -56,40 +48,40 @@ class Menu
      */
     public function build(): array
     {
-        $baseURL                      = Shop::getURL();
-        $adminURL                     = Shop::getAdminURL();
-        $curScriptFileNameWithRequest = \basename($_SERVER['REQUEST_URI'] ?? 'index.php');
+        $adminURL                     = Shop::getAdminURL() . '/';
+        $curScriptFileNameWithRequest = $_SERVER['REQUEST_URI'] ?? 'index.php';
+        $requestedPath                = \parse_url($_SERVER['REQUEST_URI'])['path'] ?? '';
         $mainGroups                   = [];
-        /** @var array $adminMenu */
-        $adminMenu = [
+        $configLink                   = $adminURL . BackendRouter::ROUTE_CONFIG;
+        $adminMenu                    = [
             \__('Marketing')      => (object)[
                 'icon'  => 'marketing',
                 'items' => [
                     \__('Orders')     => (object)[
-                        'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_ORDERS)->getPath(),
+                        'link'        => $adminURL . BackendRouter::ROUTE_ORDERS,
                         'permissions' => 'ORDER_VIEW',
                     ],
                     \__('Promotions') => [
                         \__('Newsletter') => (object)[
-                            'link'           => 'newsletter.php',
+                            'link'           => $adminURL . BackendRouter::ROUTE_NEWSLETTER,
                             'permissions'    => 'MODULE_NEWSLETTER_VIEW',
                             'section'        => \CONF_NEWSLETTER,
                             'specialSetting' => true,
                             'settingsAnchor' => '#einstellungen',
                         ],
                         \__('Blog posts') => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_NEWS)->getPath(),
+                            'link'           => $adminURL . BackendRouter::ROUTE_NEWS,
                             'permissions'    => 'CONTENT_NEWS_SYSTEM_VIEW',
                             'section'        => \CONF_NEWS,
                             'specialSetting' => true,
                             'settingsAnchor' => '#einstellungen',
                         ],
                         \__('Coupons')    => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_COUPONS)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_COUPONS,
                             'permissions' => 'ORDER_COUPON_VIEW',
                         ],
                         \__('Free gifts') => (object)[
-                            'link'           => 'gratisgeschenk.php',
+                            'link'           => $adminURL . BackendRouter::ROUTE_GIFTS,
                             'permissions'    => 'MODULE_GIFT_VIEW',
                             'section'        => \CONF_SONSTIGES,
                             'specialSetting' => true,
@@ -98,44 +90,44 @@ class Menu
                     ],
                     \__('Statistics') => [
                         \__('Sales')             => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_STATS)->getPath() . '?s=4',
+                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '?s=4',
                             'permissions' => 'STATS_EXCHANGE_VIEW',
                         ],
                         \__('Campaigns')         => (object)[
-                            'link'        => 'kampagne.php#globalestats',
+                            'link'        => $adminURL . BackendRouter::ROUTE_CAMPAIGN . '#globalestats',
                             'permissions' => 'STATS_CAMPAIGN_VIEW',
                         ],
                         \__('Baskets')           => (object)[
-                            'link'        => 'warenkorbpers.php',
+                            'link'        => $adminURL . BackendRouter::ROUTE_PERSISTENT_CART,
                             'permissions' => 'MODULE_SAVED_BASKETS_VIEW',
                         ],
                         \__('Coupon statistics') => (object)[
-                            'link'        => 'kuponstatistik.php',
+                            'link'        => $adminURL . BackendRouter::ROUTE_COUPON_STATS,
                             'permissions' => 'STATS_COUPON_VIEW',
                         ],
                         \__('Visitors')          => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_STATS)->getPath() . '?s=1',
+                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '?s=1',
                             'permissions' => 'STATS_VISITOR_VIEW',
                         ],
                         \__('Referrer pages')    => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_STATS)->getPath() . '?s=2',
+                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '?s=2',
                             'permissions' => 'STATS_VISITOR_LOCATION_VIEW',
                         ],
                         \__('Entry pages')       => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_STATS)->getPath() . '?s=5',
+                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '?s=5',
                             'permissions' => 'STATS_LANDINGPAGES_VIEW',
                         ],
                         \__('Search engines')    => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_STATS)->getPath() . '?s=3',
+                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '?s=3',
                             'permissions' => 'STATS_CRAWLER_VIEW',
                         ],
                         \__('Search queries')    => (object)[
-                            'link'        => 'livesuche.php',
+                            'link'        => $adminURL . BackendRouter::ROUTE_LIVESEARCH,
                             'permissions' => 'MODULE_LIVESEARCH_VIEW',
                         ],
                     ],
                     \__('Reports')    => (object)[
-                        'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_STATUSMAIL)->getPath(),
+                        'link'        => $adminURL . BackendRouter::ROUTE_STATUSMAIL,
                         'permissions' => 'EMAIL_REPORTS_VIEW',
                     ],
                 ]
@@ -144,74 +136,74 @@ class Menu
                 'icon'  => 'styling',
                 'items' => [
                     \__('OnPage Composer')  => (object)[
-                        'link'        => 'opc-controlcenter.php',
+                        'link'        => $adminURL . BackendRouter::ROUTE_OPCCC,
                         'permissions' => 'OPC_VIEW',
                     ],
                     \__('Default views')    => [
                         \__('Home page')        => (object)[
-                            'link'        => 'einstellungen.php?kSektion=' . \CONF_STARTSEITE,
+                            'link'        => $configLink . '?kSektion=' . \CONF_STARTSEITE,
                             'permissions' => 'SETTINGS_STARTPAGE_VIEW',
                             'section'     => \CONF_STARTSEITE,
                         ],
                         \__('Item overview')    => (object)[
-                            'link'           => 'navigationsfilter.php',
+                            'link'           => $adminURL . BackendRouter::ROUTE_NAVFILTER,
                             'permissions'    => 'SETTINGS_NAVIGATION_FILTER_VIEW',
                             'section'        => \CONF_NAVIGATIONSFILTER,
                             'specialSetting' => true,
                         ],
                         \__('Item detail page') => (object)[
-                            'link'        => 'einstellungen.php?kSektion=' . \CONF_ARTIKELDETAILS,
+                            'link'        => $configLink . '?kSektion=' . \CONF_ARTIKELDETAILS,
                             'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
                             'section'     => \CONF_ARTIKELDETAILS,
                         ],
                         \__('Checkout')         => (object)[
-                            'link'        => 'einstellungen.php?kSektion=' . \CONF_KAUFABWICKLUNG,
+                            'link'        => $configLink . '?kSektion=' . \CONF_KAUFABWICKLUNG,
                             'permissions' => 'SETTINGS_BASKET_VIEW',
                             'section'     => \CONF_KAUFABWICKLUNG,
                         ],
                         \__('Comparison list')  => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_COMPARELIST)->getPath(),
+                            'link'           => $adminURL . BackendRouter::ROUTE_COMPARELIST,
                             'permissions'    => 'MODULE_COMPARELIST_VIEW',
                             'section'        => \CONF_VERGLEICHSLISTE,
                             'specialSetting' => true,
                             'settingsAnchor' => '#einstellungen',
                         ],
                         \__('Wish list')        => (object)[
-                            'link'        => $baseURL . '/wunschliste.php',
+                            'link'        => $adminURL . BackendRouter::ROUTE_WISHLIST,
                             'permissions' => 'MODULE_WISHLIST_VIEW',
                         ],
                         \__('Contact form')     => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_CONTACT_FORMS)->getPath(),
+                            'link'           => $adminURL . BackendRouter::ROUTE_CONTACT_FORMS,
                             'permissions'    => 'SETTINGS_CONTACTFORM_VIEW',
                             'section'        => \CONF_KONTAKTFORMULAR,
                             'specialSetting' => true,
                             'settingsAnchor' => '#config',
                         ],
                         \__('Registration')     => (object)[
-                            'link'        => 'einstellungen.php?kSektion=' . \CONF_KUNDEN,
+                            'link'        => $configLink . '?kSektion=' . \CONF_KUNDEN,
                             'permissions' => 'SETTINGS_CUSTOMERFORM_VIEW',
                             'section'     => \CONF_KUNDEN,
                         ],
                     ],
                     \__('Default elements') => [
                         \__('Shop logo')                  => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_LOGO)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_LOGO,
                             'permissions' => 'DISPLAY_OWN_LOGO_VIEW',
                         ],
                         \__('Search')                     => (object)[
-                            'link'           => '@todo!',
+                            'link'           => $adminURL . BackendRouter::ROUTE_SEARCHCONFIG,
                             'permissions'    => 'SETTINGS_ARTICLEOVERVIEW_VIEW',
                             'section'        => \CONF_ARTIKELUEBERSICHT,
                             'specialSetting' => true,
                         ],
                         \__('Price history')              => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_PRICEHISTORY)->getPath(),
+                            'link'           => $adminURL . BackendRouter::ROUTE_PRICEHISTORY,
                             'permissions'    => 'MODULE_PRICECHART_VIEW',
                             'section'        => \CONF_PREISVERLAUF,
                             'specialSetting' => true,
                         ],
                         \__('Question on item')           => (object)[
-                            'link'                  => 'einstellungen.php?kSektion=' . \CONF_ARTIKELDETAILS .
+                            'link'                  => $configLink . '?kSektion=' . \CONF_ARTIKELDETAILS .
                                 '&group=configgroup_5_product_question',
                             'permissions'           => 'SETTINGS_ARTICLEDETAILS_VIEW',
                             'excludeFromAccessView' => true,
@@ -219,7 +211,7 @@ class Menu
                             'group'                 => 'configgroup_5_product_question',
                         ],
                         \__('Availability notifications') => (object)[
-                            'link'                  => 'einstellungen.php?kSektion=' . \CONF_ARTIKELDETAILS .
+                            'link'                  => $configLink . '?kSektion=' . \CONF_ARTIKELDETAILS .
                                 '&group=configgroup_5_product_available',
                             'permissions'           => 'SETTINGS_ARTICLEDETAILS_VIEW',
                             'excludeFromAccessView' => true,
@@ -227,33 +219,33 @@ class Menu
                             'group'                 => 'configgroup_5_product_available',
                         ],
                         \__('Item badges')                => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_SEARCHSPECIALOVERLAYS)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_SEARCHSPECIALOVERLAYS,
                             'permissions' => 'DISPLAY_ARTICLEOVERLAYS_VIEW',
                         ],
                         \__('Footer / Boxes')             => (object)[
-                            'link'        => 'boxen.php',
+                            'link'        => $adminURL . BackendRouter::ROUTE_BOXES,
                             'permissions' => 'BOXES_VIEW',
                         ],
                         \__('Selection wizard')           => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_SELECTION_WIZARD)->getPath(),
+                            'link'           => $adminURL . BackendRouter::ROUTE_SELECTION_WIZARD,
                             'permissions'    => 'EXTENSION_SELECTIONWIZARD_VIEW',
                             'section'        => \CONF_AUSWAHLASSISTENT,
                             'specialSetting' => true,
                             'settingsAnchor' => '#config',
                         ],
                         \__('Warehouse display')          => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_WAREHOUSES)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_WAREHOUSES,
                             'permissions' => 'WAREHOUSE_VIEW',
                         ],
                         \__('Reviews')                    => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_REVIEWS)->getPath(),
+                            'link'           => $adminURL . BackendRouter::ROUTE_REVIEWS,
                             'permissions'    => 'MODULE_VOTESYSTEM_VIEW',
                             'section'        => \CONF_BEWERTUNG,
                             'specialSetting' => true,
                             'settingsAnchor' => '#einstellungen',
                         ],
                         \__('Consent manager')            => (object)[
-                            'link'           => 'consent.php',
+                            'link'           => $adminURL . BackendRouter::ROUTE_CONSENT,
                             'permissions'    => 'CONSENT_MANAGER',
                             'section'        => \CONF_CONSENTMANAGER,
                             'specialSetting' => true,
@@ -262,55 +254,55 @@ class Menu
                     ],
                     \__('Custom contents')  => [
                         \__('Pages')                  => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_LINKS)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_LINKS,
                             'permissions' => 'CONTENT_PAGE_VIEW',
                         ],
                         \__('Terms / Withdrawal')     => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_TAC)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_TAC,
                             'permissions' => 'ORDER_AGB_WRB_VIEW',
                         ],
                         \__('Extended customer data') => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_CUSTOMERFIELDS)->getPath(),
+                            'link'           => $adminURL . BackendRouter::ROUTE_CUSTOMERFIELDS,
                             'permissions'    => 'ORDER_CUSTOMERFIELDS_VIEW',
                             'section'        => \CONF_KUNDENFELD,
                             'specialSetting' => true,
                             'settingsAnchor' => '#config',
                         ],
                         \__('Check boxes')            => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_CHECKBOX)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_CHECKBOX,
                             'permissions' => 'CHECKBOXES_VIEW',
                         ],
                         \__('Banners')                => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_BANNER)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_BANNER,
                             'permissions' => 'DISPLAY_BANNER_VIEW',
                         ],
                         \__('Sliders')                => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_SLIDERS)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_SLIDERS,
                             'permissions' => 'SLIDER_VIEW',
                         ],
                     ],
                     \__('Settings')         => [
                         \__('Global')         => (object)[
-                            'link'        => 'einstellungen.php?kSektion=' . \CONF_GLOBAL,
+                            'link'        => $configLink . '?kSektion=' . \CONF_GLOBAL,
                             'permissions' => 'SETTINGS_GLOBAL_VIEW',
                             'section'     => \CONF_GLOBAL,
                         ],
                         \__('Templates')      => (object)[
-                            'link'        => 'shoptemplate.php',
+                            'link'        => $adminURL . BackendRouter::ROUTE_TEMPLATE,
                             'permissions' => 'DISPLAY_TEMPLATE_VIEW',
                         ],
                         \__('Images')         => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_IMAGES)->getPath(),
+                            'link'           => $adminURL . BackendRouter::ROUTE_IMAGES,
                             'permissions'    => 'SETTINGS_IMAGES_VIEW',
                             'section'        => \CONF_BILDER,
                             'specialSetting' => true,
                         ],
                         \__('Watermark')      => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_BRANDING)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_BRANDING,
                             'permissions' => 'DISPLAY_BRANDING_VIEW',
                         ],
                         \__('Number formats') => (object)[
-                            'link'        => 'trennzeichen.php',
+                            'link'        => $adminURL . BackendRouter::ROUTE_SEPARATOR,
                             'permissions' => 'SETTINGS_SEPARATOR_VIEW',
                         ],
                     ]
@@ -320,7 +312,7 @@ class Menu
                 'icon'  => 'plugins',
                 'items' => [
                     \__('Plug-in manager')     => (object)[
-                        'link'        => 'pluginverwaltung.php',
+                        'link'        => $adminURL . BackendRouter::ROUTE_PLUGIN_MANAGER,
                         'permissions' => 'PLUGIN_ADMIN_VIEW',
                     ],
                     \__('JTL-Extension Store') => (object)[
@@ -329,7 +321,7 @@ class Menu
                         'permissions' => 'LICENSE_MANAGER'
                     ],
                     \__('My purchases')        => (object)[
-                        'link'        => 'licenses.php',
+                        'link'        => $adminURL . BackendRouter::ROUTE_LICENSE,
                         'permissions' => 'LICENSE_MANAGER',
                     ],
                     \__('Installed plug-ins')  => 'DYNAMIC_PLUGINS',
@@ -339,109 +331,103 @@ class Menu
                 'icon'  => 'administration',
                 'items' => [
                     \__('Approvals')       => (object)[
-                        'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_ACTIVATE)->getPath(),
+                        'link'        => $adminURL . BackendRouter::ROUTE_ACTIVATE,
                         'permissions' => 'UNLOCK_CENTRAL_VIEW',
                     ],
                     \__('Import')          => [
                         \__('Newsletters')  => (object)[
-                            'link'        => 'newsletterimport.php',
+                            'link'        => $adminURL . BackendRouter::ROUTE_NEWSLETTER_IMPORT,
                             'permissions' => 'IMPORT_NEWSLETTER_RECEIVER_VIEW',
                         ],
                         \__('Customers')    => (object)[
-                            'link'        => 'kundenimport.php',
+                            'link'        => $adminURL . BackendRouter::ROUTE_CUSTOMER_IMPORT,
                             'permissions' => 'IMPORT_CUSTOMER_VIEW',
                         ],
                         \__('Postal codes') => (object)[
-                            'link'        => 'plz_ort_import.php',
+                            'link'        => $adminURL . BackendRouter::ROUTE_ZIP_IMPORT,
                             'permissions' => 'PLZ_ORT_IMPORT_VIEW',
                         ],
                     ],
                     \__('Export')          => [
                         \__('Site map')       => (object)[
-                            'link'           => 'sitemapexport.php',
+                            'link'           => $adminURL . BackendRouter::ROUTE_SITEMAP_EXPORT,
                             'permissions'    => 'EXPORT_SITEMAP_VIEW',
                             'section'        => \CONF_SITEMAP,
                             'specialSetting' => true,
                             'settingsAnchor' => '#einstellungen',
                         ],
                         \__('RSS feed')       => (object)[
-                            'link'           => 'rss.php',
+                            'link'           => $adminURL . BackendRouter::ROUTE_RSS,
                             'permissions'    => 'EXPORT_RSSFEED_VIEW',
                             'section'        => \CONF_RSS,
                             'specialSetting' => true,
                         ],
                         \__('Other formats')  => (object)[
-                            'link'        => 'exportformate.php',
+                            'link'        => $adminURL . BackendRouter::ROUTE_EXPORT,
                             'permissions' => 'EXPORT_FORMATS_VIEW',
                         ],
                         \__('Export manager') => (object)[
-                            'link'        => 'exportformat_queue.php',
+                            'link'        => $adminURL . BackendRouter::ROUTE_EXPORT_QUEUE,
                             'permissions' => 'EXPORT_SCHEDULE_VIEW',
                         ],
                     ],
-//            __('Payments')        => [
                     \__('Payment methods') => (object)[
-                        'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_PAYMENT_METHODS)->getPath(),
+                        'link'        => $adminURL . BackendRouter::ROUTE_PAYMENT_METHODS,
                         'permissions' => 'ORDER_PAYMENT_VIEW',
                     ],
-//                __('More payment methods') => (object)[
-//                    'link'   => 'zahlungsarten.php',
-//                    'permissions' => 'ORDER_PAYMENT_VIEW',
-//                ],
-//            ],
                     \__('Shipments')       => [
                         \__('Shipping methods')     => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_SHIPPING_METHODS)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_SHIPPING_METHODS,
                             'permissions' => 'ORDER_SHIPMENT_VIEW',
                         ],
                         \__('Additional packaging') => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_PACKAGINGS)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_PACKAGINGS,
                             'permissions' => 'ORDER_PACKAGE_VIEW',
                         ],
                         \__('Country manager')      => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_COUNTRIES)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_COUNTRIES,
                             'permissions' => 'COUNTRY_VIEW',
                         ],
                     ],
                     \__('Email')           => [
                         \__('Server')          => (object)[
-                            'link'        => 'einstellungen.php?kSektion=' . \CONF_EMAILS,
+                            'link'        => $configLink . '?kSektion=' . \CONF_EMAILS,
                             'permissions' => 'SETTINGS_EMAILS_VIEW',
                             'section'     => \CONF_EMAILS,
                         ],
                         \__('Email templates') => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_EMAILTEMPLATES)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_EMAILTEMPLATES,
                             'permissions' => 'CONTENT_EMAIL_TEMPLATE_VIEW',
                         ],
                         \__('Blacklist')       => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_EMAILBLOCKLIST)->getPath(),
+                            'link'           => $adminURL . BackendRouter::ROUTE_EMAILBLOCKLIST,
                             'permissions'    => 'SETTINGS_EMAIL_BLACKLIST_VIEW',
                             'section'        => \CONF_EMAILBLACKLIST,
                             'specialSetting' => true,
                         ],
                         \__('Log')             => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_EMAILHISTORY)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_EMAILHISTORY,
                             'permissions' => 'EMAILHISTORY_VIEW',
                         ],
                     ],
                     \__('SEO')             => [
                         \__('Meta data')  => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_META)->getPath(),
+                            'link'           => $adminURL . BackendRouter::ROUTE_META,
                             'permissions'    => 'SETTINGS_GLOBAL_META_VIEW',
                             'section'        => \CONF_METAANGABEN,
                             'specialSetting' => true,
                             'settingsAnchor' => '#einstellungen',
                         ],
                         \__('Forwarding') => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_REDIRECT)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_REDIRECT,
                             'permissions' => 'REDIRECT_VIEW',
                         ],
                         \__('Site map')   => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_SITEMAP)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_SITEMAP,
                             'permissions' => 'SETTINGS_SITEMAP_VIEW',
                         ],
                         \__('SEO path')   => (object)[
-                            'link'           => 'suchspecials.php',
+                            'link'           => $adminURL . BackendRouter::ROUTE_SEARCHSPECIAL,
                             'permissions'    => 'SETTINGS_SPECIALPRODUCTS_VIEW',
                             'section'        => \CONF_SUCHSPECIAL,
                             'specialSetting' => true,
@@ -449,69 +435,69 @@ class Menu
                         ],
                     ],
                     \__('Languages')       => (object)[
-                        'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_LANGUAGE)->getPath(),
+                        'link'        => $adminURL . BackendRouter::ROUTE_LANGUAGE,
                         'permissions' => 'LANGUAGE_VIEW'
                     ],
                     \__('Accounts')        => [
                         \__('Users')                    => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_USERS)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_USERS,
                             'permissions' => 'ACCOUNT_VIEW',
                         ],
                         \__('JTL-Wawi synchronisation') => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_SYNC)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_SYNC,
                             'permissions' => 'WAWI_SYNC_VIEW',
                         ],
                     ],
                     \__('Troubleshooting') => [
                         \__('System diagnostics') => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_STATUS)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_STATUS,
                             'permissions' => 'DIAGNOSTIC_VIEW',
                         ],
                         \__('Log')                => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_SYSTEMLOG)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_SYSTEMLOG,
                             'permissions' => 'SYSTEMLOG_VIEW',
                         ],
                         \__('Item images')        => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_IMAGE_MANAGEMENT)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_IMAGE_MANAGEMENT,
                             'permissions' => 'DISPLAY_IMAGES_VIEW',
                         ],
                         \__('Plug-in profiler')   => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_PROFILER)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_PROFILER,
                             'permissions' => 'PROFILER_VIEW',
                         ],
 
                     ],
                     \__('System')          => [
                         \__('Cache')      => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_CACHE)->getPath(),
+                            'link'           => $adminURL . BackendRouter::ROUTE_CACHE,
                             'permissions'    => 'OBJECTCACHE_VIEW',
                             'section'        => \CONF_CACHING,
                             'specialSetting' => true,
                             'settingsAnchor' => '#settings',
                         ],
                         \__('Cron')       => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_CRON)->getPath(),
+                            'link'           => $adminURL . BackendRouter::ROUTE_CRON,
                             'permissions'    => 'CRON_VIEW',
                             'section'        => \CONF_CRON,
                             'specialSetting' => true,
                             'settingsAnchor' => '#config',
                         ],
                         \__('Filesystem') => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_FILESYSTEM)->getPath(),
+                            'link'           => $adminURL . BackendRouter::ROUTE_FILESYSTEM,
                             'permissions'    => 'FILESYSTEM_VIEW',
                             'section'        => \CONF_FS,
                             'specialSetting' => true,
                         ],
                         \__('Update')     => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_DBUPDATER)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_DBUPDATER,
                             'permissions' => 'SHOP_UPDATE_VIEW',
                         ],
                         \__('Reset')      => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_RESET)->getPath(),
+                            'link'        => $adminURL . BackendRouter::ROUTE_RESET,
                             'permissions' => 'RESET_SHOP_VIEW',
                         ],
                         \__('Set up')     => (object)[
-                            'link'        => 'wizard.php',
+                            'link'        => $adminURL . BackendRouter::ROUTE_WIZARD,
                             'permissions' => 'WIZARD_VIEW',
                         ],
                     ],
@@ -553,19 +539,20 @@ class Menu
                 'oLink_arr'       => [],
                 'oLinkGruppe_arr' => [],
                 'key'             => $rootKey,
+                'active'          => false
             ];
 
             $secondKey = 0;
-
             foreach ($rootEntry->items as $secondName => $secondEntry) {
                 $linkGruppe = (object)[
                     'cName'     => $secondName,
                     'oLink_arr' => [],
                     'key'       => $rootKey . $secondKey,
+                    'active'    => false
                 ];
 
                 if ($secondEntry === 'DYNAMIC_PLUGINS') {
-                    if (!$this->account->permission('PLUGIN_ADMIN_VIEW') || \SAFE_MODE === true) {
+                    if (\SAFE_MODE === true || !$this->account->permission('PLUGIN_ADMIN_VIEW')) {
                         continue;
                     }
                     $pluginLinks = $this->db->getObjects(
@@ -586,23 +573,26 @@ class Menu
 
                         $link = (object)[
                             'cLinkname' => \__($pluginLink->cName),
-                            'cURL'      => $adminURL . '/plugin.php?kPlugin=' . $pluginID,
+                            'cURL'      => $adminURL . '/plugin?kPlugin=' . $pluginID,
                             'cRecht'    => 'PLUGIN_ADMIN_VIEW',
                             'key'       => $rootKey . $secondKey . $pluginID,
+                            'active'    => false
                         ];
 
                         $linkGruppe->oLink_arr[] = $link;
                         if (Request::getInt('kPlugin') === $pluginID) {
-                            $currentToplevel    = $mainGroup->key;
-                            $currentSecondLevel = $linkGruppe->key;
-                            $currentThirdLevel  = $link->key;
+                            $mainGroup->active  = true;
+                            $linkGruppe->active = true;
+                            $link->active       = true;
                         }
                     }
                 } else {
                     $thirdKey = 0;
 
                     if (\is_object($secondEntry)) {
-                        if (isset($secondEntry->permissions) && !$this->account->permission($secondEntry->permissions)) {
+                        if (isset($secondEntry->permissions)
+                            && !$this->account->permission($secondEntry->permissions)
+                        ) {
                             continue;
                         }
                         $linkGruppe->oLink_arr = (object)[
@@ -610,28 +600,21 @@ class Menu
                             'cURL'      => $secondEntry->link,
                             'cRecht'    => $secondEntry->permissions ?? null,
                             'target'    => $secondEntry->target ?? null,
+                            'active'    => false
                         ];
-                        if (Request::urlHasEqualRequestParameter($linkGruppe->oLink_arr->cURL, 'kSektion')
-                            && \strpos($curScriptFileNameWithRequest, $linkGruppe->oLink_arr->cURL) === 0
-                        ) {
-                            $currentToplevel    = $mainGroup->key;
-                            $currentSecondLevel = $linkGruppe->key;
+                        if (str_ends_with($linkGruppe->oLink_arr->cURL, $requestedPath)) {
+                            $mainGroup->active  = true;
+                            $linkGruppe->active = true;
                         }
                     } else {
                         foreach ($secondEntry as $thirdName => $thirdEntry) {
-                            if ($thirdEntry === 'DYNAMIC_JTL_SEARCH' && ($jtlSearch->kPlugin ?? 0) > 0) {
-                                $link = (object)[
-                                    'cLinkname' => 'JTL Search',
-                                    'cURL'      => $adminURL . '/plugin.php?kPlugin=' . $jtlSearch->kPlugin,
-                                    'cRecht'    => 'PLUGIN_ADMIN_VIEW',
-                                    'key'       => $rootKey . $secondKey . $thirdKey,
-                                ];
-                            } elseif (\is_object($thirdEntry)) {
+                            if (\is_object($thirdEntry)) {
                                 $link = (object)[
                                     'cLinkname' => $thirdName,
                                     'cURL'      => $thirdEntry->link,
                                     'cRecht'    => $thirdEntry->permissions,
                                     'key'       => $rootKey . $secondKey . $thirdKey,
+                                    'active'    => false
                                 ];
                             } else {
                                 continue;
@@ -639,36 +622,32 @@ class Menu
                             if (!$this->account->permission($link->cRecht)) {
                                 continue;
                             }
-                            $urlParts             = \parse_url($link->cURL);
-                            $urlParts['basename'] = \basename($urlParts['path']);
-
-                            if (empty($urlParts['query'])) {
-                                $urlParts['query'] = [];
-                            } else {
-                                mb_parse_str($urlParts['query'], $urlParts['query']);
+                            $urlParts = \parse_url($link->cURL);
+                            if ($requestedPath === ($urlParts['path'] ?? '')) {
+                                $hash = \mb_strpos($link->cURL, '#');
+                                $url  = $link->cURL;
+                                if ($hash !== false) {
+                                    $url = \mb_substr($link->cURL, 0, $hash);
+                                }
+                                $linkPath = \str_replace(Shop::getURL(), '', $url);
+                                if (\str_contains($curScriptFileNameWithRequest, $linkPath)) {
+                                    $mainGroup->active  = true;
+                                    $linkGruppe->active = true;
+                                    $link->active       = true;
+                                }
                             }
-
-                            if (Request::urlHasEqualRequestParameter($link->cURL, 'kSektion')
-                                && \strpos($curScriptFileNameWithRequest, \explode('#', $link->cURL)[0]) === 0
-                            ) {
-                                $currentToplevel    = $mainGroup->key;
-                                $currentSecondLevel = $linkGruppe->key;
-                                $currentThirdLevel  = $link->key;
-                            }
-
                             $linkGruppe->oLink_arr[] = $link;
                             $thirdKey++;
                         }
                     }
                 }
-
-                if (\is_object($linkGruppe->oLink_arr) || count($linkGruppe->oLink_arr) > 0) {
+                if (\is_object($linkGruppe->oLink_arr) || \count($linkGruppe->oLink_arr) > 0) {
                     $mainGroup->oLinkGruppe_arr[] = $linkGruppe;
                 }
                 $secondKey++;
             }
 
-            if (count($mainGroup->oLinkGruppe_arr) > 0) {
+            if (\count($mainGroup->oLinkGruppe_arr) > 0) {
                 $mainGroups[] = $mainGroup;
             }
             $rootKey++;

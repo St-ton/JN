@@ -9,6 +9,7 @@ use JTL\Shopsetting;
  * @param string $index
  * @param string $create
  * @return array|IOError
+ * @todo!!
  */
 function createSearchIndex($index, $create)
 {
@@ -100,6 +101,7 @@ function createSearchIndex($index, $create)
 /**
  * @return array
  * @noinspection SqlWithoutWhere
+ * @todo!!!
  */
 function clearSearchCache(): array
 {

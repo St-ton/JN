@@ -16,7 +16,6 @@ use JTL\News\Item;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -46,7 +45,7 @@ class NewsController extends AbstractBackendController
         $adminID      = (int)$_SESSION['AdminAccount']->kAdminlogin;
         $adminName    = $this->db->select('tadminlogin', 'kAdminlogin', $adminID)->cName;
 
-        if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
+        if (\mb_strlen(Request::verifyGPDataString('tab')) > 0) {
             $smarty->assign('files', []);
 
             switch (Request::verifyGPDataString('tab')) {
@@ -72,8 +71,8 @@ class NewsController extends AbstractBackendController
         }
         if ((Request::postInt('einstellungen') === 1 || Request::verifyGPCDataInt('news') === 1) && Form::validateToken()) {
             if (Request::postInt('einstellungen') > 0) {
-                \saveAdminSectionSettings(\CONF_NEWS, $_POST, [\CACHING_GROUP_OPTION, \CACHING_GROUP_NEWS]);
-                if (count($languages) > 0) {
+                $this->saveAdminSectionSettings(\CONF_NEWS, $_POST, [\CACHING_GROUP_OPTION, \CACHING_GROUP_NEWS]);
+                if (\count($languages) > 0) {
                     $this->db->query('TRUNCATE tnewsmonatspraefix');
                     foreach ($languages as $lang) {
                         $monthPrefix           = new stdClass();
@@ -96,7 +95,7 @@ class NewsController extends AbstractBackendController
                 || Request::postInt('news_erstellen') === 1
             ) {
                 $newsCategories = $controller->getAllNewsCategories();
-                if (count($newsCategories) > 0) {
+                if (\count($newsCategories) > 0) {
                     $newsItem = new Item($this->db, $this->cache);
                     $controller->setStep('news_erstellen');
                     $smarty->assign('oNewsKategorie_arr', $newsCategories)
@@ -117,7 +116,7 @@ class NewsController extends AbstractBackendController
                         $controller->setMsg(\__('successNewsCommmentEdit'));
 
                         if (Request::verifyGPCDataInt('nFZ') === 1) {
-                            \header('Location: ' . Shop::getURL() . $route->getPath());
+                            \header('Location: ' . Shop::getURL() . $this->route);
                             exit();
                         }
                         $tab = Request::verifyGPDataString('tab');
@@ -187,7 +186,7 @@ class NewsController extends AbstractBackendController
                     $controller->setErrorMsg(\__('errorAtLeastOneNewsCat'));
                 }
             } elseif (Request::getInt('newskategorie_editieren') === 1) {
-                if (mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
+                if (\mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
                     if ($controller->deleteNewsImage(
                         Request::verifyGPDataString('delpic'),
                         Request::getInt('kNewsKategorie'),
@@ -211,7 +210,7 @@ class NewsController extends AbstractBackendController
                 }
             } elseif (Request::postInt('newskommentar_freischalten') > 0 && !isset($_POST['kommentareloeschenSubmit'])) {
                 $commentIDs = Request::verifyGPDataIntegerArray('kNewsKommentar');
-                if (count($commentIDs) > 0) {
+                if (\count($commentIDs) > 0) {
                     $controller->activateComments($commentIDs);
                     $tab = Request::verifyGPDataString('tab');
                     $controller->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $controller->getMsg());
@@ -231,7 +230,7 @@ class NewsController extends AbstractBackendController
                 $newsItemID     = $controller->getContinueWith() > 0
                     ? $controller->getContinueWith()
                     : Request::getInt('kNews');
-                if (mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
+                if (\mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
                     if ($controller->deleteNewsImage(Request::verifyGPDataString('delpic'), $newsItemID, $uploadDir)) {
                         $controller->setMsg(\__('successNewsImageDelete'));
                     } else {
@@ -239,7 +238,7 @@ class NewsController extends AbstractBackendController
                     }
                 }
 
-                if ($newsItemID > 0 && count($newsCategories) > 0) {
+                if ($newsItemID > 0 && \count($newsCategories) > 0) {
                     $smarty->assign('oNewsKategorie_arr', $controller->getAllNewsCategories())
                         ->assign('oAuthor', $author->getAuthor('NEWS', $newsItemID))
                         ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
@@ -304,7 +303,7 @@ class NewsController extends AbstractBackendController
             $categoryPagination = (new Pagination('kats'))
                 ->setItemArray($newsCategories)
                 ->assemble();
-            \getAdminSectionSettings(\CONF_NEWS);
+            $this->getAdminSectionSettings(\CONF_NEWS);
             $smarty->assign('comments', $commentPagination->getPageItems())
                 ->assign('oNews_arr', $itemPagination->getPageItems())
                 ->assign('oNewsKategorie_arr', $categoryPagination->getPageItems())

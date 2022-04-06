@@ -5,7 +5,6 @@ namespace JTL\Router\Controller\Backend;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -25,7 +24,7 @@ class SitemapController extends AbstractBackendController
         $this->checkPermissions('SETTINGS_SITEMAP_VIEW');
         $this->getText->loadAdminLocale('pages/shopsitemap');
         if (isset($_POST['einstellungen']) && Form::validateToken()) {
-            \saveAdminSectionSettings(\CONF_SITEMAP, $_POST);
+            $this->saveAdminSectionSettings(\CONF_SITEMAP, $_POST);
             if (GeneralObject::hasCount('nVon', $_POST) && GeneralObject::hasCount('nBis', $_POST)) {
                 $this->db->query('TRUNCATE TABLE tpreisspannenfilter');
                 for ($i = 0; $i < 10; $i++) {
@@ -39,7 +38,7 @@ class SitemapController extends AbstractBackendController
                 }
             }
         }
-        \getAdminSectionSettings(\CONF_SITEMAP);
+        $this->getAdminSectionSettings(\CONF_SITEMAP);
 
         return $smarty->assign('route', $this->route)
             ->getResponse('shopsitemap.tpl');

@@ -8,7 +8,6 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

@@ -5,7 +5,6 @@ namespace JTL\Router\Controller\Backend;
 use JTL\Helpers\Form;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -32,6 +31,7 @@ class SyncController extends AbstractBackendController
 
         return $smarty->assign('wawiuser', \htmlentities($user->cName))
             ->assign('wawipass', $user->cPass)
+            ->assign('route', $this->route)
             ->getResponse('wawisync.tpl');
     }
 

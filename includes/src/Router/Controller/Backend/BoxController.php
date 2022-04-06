@@ -43,11 +43,11 @@ class BoxController extends AbstractBackendController
         $boxID          = Request::verifyGPCDataInt('item');
 
         if (Request::postInt('einstellungen') > 0) {
-            \saveAdminSectionSettings(\CONF_BOXEN, $_POST);
+            $this->saveAdminSectionSettings(\CONF_BOXEN, $_POST);
         } elseif (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::validateToken()) {
             switch ($_REQUEST['action']) {
                 case 'delete-invisible':
-                    $items = !empty($_POST['kInvisibleBox']) && count($_POST['kInvisibleBox']) > 0
+                    $items = !empty($_POST['kInvisibleBox']) && \count($_POST['kInvisibleBox']) > 0
                         ? $_POST['kInvisibleBox']
                         : [];
                     $this->actionDeleteInvisible($items);
@@ -110,7 +110,7 @@ class BoxController extends AbstractBackendController
         });
 
         $this->alertService->addWarning(\__('warningNovaSidebar'), 'warningNovaSidebar', ['dismissable' => false]);
-        \getAdminSectionSettings(\CONF_BOXEN);
+        $this->getAdminSectionSettings(\CONF_BOXEN);
 
         return $smarty->assign('filterMapping', $filterMapping)
             ->assign('validPageTypes', $this->boxAdmin->getMappedValidPageTypes())

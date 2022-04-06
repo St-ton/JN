@@ -94,7 +94,7 @@ if (!$hasPendingUpdates) {
 
                     $link = (object)[
                         'cLinkname' => __($pluginLink->cName),
-                        'cURL'      => $adminURL . '/plugin.php?kPlugin=' . $pluginID,
+                        'cURL'      => $adminURL . '/plugin?kPlugin=' . $pluginID,
                         'cRecht'    => 'PLUGIN_ADMIN_VIEW',
                         'key'       => $rootKey . $secondKey . $pluginID,
                     ];
@@ -130,7 +130,7 @@ if (!$hasPendingUpdates) {
                         if ($thirdEntry === 'DYNAMIC_JTL_SEARCH' && ($jtlSearch->kPlugin ?? 0) > 0) {
                             $link = (object)[
                                 'cLinkname' => 'JTL Search',
-                                'cURL'      => $adminURL . '/plugin.php?kPlugin=' . $jtlSearch->kPlugin,
+                                'cURL'      => $adminURL . '/plugin?kPlugin=' . $jtlSearch->kPlugin,
                                 'cRecht'    => 'PLUGIN_ADMIN_VIEW',
                                 'key'       => $rootKey . $secondKey . $thirdKey,
                             ];

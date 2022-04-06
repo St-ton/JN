@@ -35,7 +35,7 @@
     }
     function validateTemplateSyntax(tplID, massCheck) {
         $('#tplState_' + tplID).html('<span class="fa fa-spinner fa-spin"></span>');
-        simpleAjaxCall('io.php', {
+        simpleAjaxCall(BACKEND_URL + 'io', {
             jtl_token: JTL_TOKEN,
             io : JSON.stringify({
                 name: 'mailvorlageSyntaxCheck',

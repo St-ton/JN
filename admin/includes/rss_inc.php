@@ -6,6 +6,7 @@ use JTL\Shop;
 
 /**
  * @return bool
+ * @todo!!!
  */
 function generiereRSSXML(): bool
 {

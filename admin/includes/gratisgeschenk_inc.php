@@ -6,6 +6,7 @@ use JTL\Shop;
 /**
  * @param string $sql
  * @return array
+ * @deprecated since 5.2.0
  */
 function holeAktiveGeschenke(string $sql): array
 {
@@ -39,6 +40,7 @@ function holeAktiveGeschenke(string $sql): array
 /**
  * @param string $sql
  * @return array
+ * @deprecated since 5.2.0
  */
 function holeHaeufigeGeschenke(string $sql): array
 {
@@ -78,6 +80,7 @@ function holeHaeufigeGeschenke(string $sql): array
 /**
  * @param string $sql
  * @return array
+ * @deprecated since 5.2.0
  */
 function holeLetzten100Geschenke(string $sql): array
 {
@@ -113,6 +116,7 @@ function holeLetzten100Geschenke(string $sql): array
 
 /**
  * @return int
+ * @deprecated since 5.2.0
  */
 function gibAnzahlAktiverGeschenke(): int
 {
@@ -126,6 +130,7 @@ function gibAnzahlAktiverGeschenke(): int
 
 /**
  * @return int
+ * @deprecated since 5.2.0
  */
 function gibAnzahlHaeufigGekaufteGeschenke(): int
 {
@@ -139,6 +144,7 @@ function gibAnzahlHaeufigGekaufteGeschenke(): int
 
 /**
  * @return int
+ * @deprecated since 5.2.0
  */
 function gibAnzahlLetzten100Geschenke(): int
 {

@@ -8,7 +8,6 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -45,7 +44,7 @@ class ContactFormsController extends AbstractBackendController
             $tab = 'subjects';
         }
         if (Request::postInt('einstellungen') === 1) {
-            \saveAdminSectionSettings(\CONF_KONTAKTFORMULAR, $_POST);
+            $this->saveAdminSectionSettings(\CONF_KONTAKTFORMULAR, $_POST);
             $tab = 'config';
         }
         if ((Request::getInt('kKontaktBetreff') > 0 || Request::getInt('neu') === 1) && Form::validateToken()) {
@@ -109,7 +108,7 @@ class ContactFormsController extends AbstractBackendController
         $this->alertService->addSuccess(\__('successSubjectDelete'), 'successSubjectDelete');
     }
 
-    private function actionCreateItem()
+    private function actionCreateItem(): void
     {
         $this->db->delete('tspezialcontentsprache', 'nSpezialContent', \SC_KONTAKTFORMULAR);
         foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
@@ -239,7 +238,7 @@ class ContactFormsController extends AbstractBackendController
         foreach ($specialContent as $item) {
             $content[$item->cISOSprache . '_' . $item->cTyp] = $item->cContent;
         }
-        \getAdminSectionSettings(\CONF_KONTAKTFORMULAR);
+        $this->getAdminSectionSettings(\CONF_KONTAKTFORMULAR);
         $this->smarty->assign('Betreffs', $subjects)
             ->assign('Content', $content);
     }

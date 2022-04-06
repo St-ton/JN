@@ -10,7 +10,6 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\ServerRequest;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -48,7 +47,7 @@ class RootHandler extends AbstractHandler
     /**
      * @inheritdoc
      */
-    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty, Route $route): ResponseInterface
+    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->getStateFromSlug($args);
         $controller = new PageController(
@@ -59,9 +58,9 @@ class RootHandler extends AbstractHandler
             Shop::Container()->getAlertService()
         );
         if (!$controller->init()) {
-            return $controller->notFoundResponse($request, $args, $smarty, $route);
+            return $controller->notFoundResponse($request, $args, $smarty);
         }
 
-        return $controller->getResponse($request, $args, $smarty, $route);
+        return $controller->getResponse($request, $args, $smarty);
     }
 }

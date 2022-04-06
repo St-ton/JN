@@ -2,6 +2,8 @@
 
 namespace JTL\Plugin\Data;
 
+use JTL\Shop;
+
 /**
  * Class Paths
  * @package JTL\Plugin\Data
@@ -52,6 +54,11 @@ class Paths
      * @var string
      */
     private string $adminURL;
+
+    /**
+     * @var string
+     */
+    private string $backendURL;
 
     /**
      * @var string|null
@@ -220,6 +227,22 @@ class Paths
     public function setAdminURL(string $adminURL): void
     {
         $this->adminURL = $adminURL;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBackendURL(): string
+    {
+        return $this->backendURL;
+    }
+
+    /**
+     * @param string $backendURL
+     */
+    public function setBackendURL(string $backendURL): void
+    {
+        $this->backendURL = $backendURL;
     }
 
     /**

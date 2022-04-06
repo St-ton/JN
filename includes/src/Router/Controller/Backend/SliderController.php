@@ -12,7 +12,6 @@ use JTL\Shop;
 use JTL\Slide;
 use JTL\Slider;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -33,7 +32,7 @@ class SliderController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/slider');
 
         $_kSlider    = 0;
-        $redirectUrl = Shop::getURL() . $route->getPath();
+        $redirectUrl = Shop::getURL() . $this->route;
         $action      = isset($_REQUEST['action']) && Form::validateToken()
             ? $_REQUEST['action']
             : 'view';
@@ -42,11 +41,11 @@ class SliderController extends AbstractBackendController
             case 'slide_set':
                 $filtered  = Text::filterXSS($_REQUEST);
                 $aSlideKey = \array_keys((array)$filtered['aSlide']);
-                $count     = count($aSlideKey);
+                $count     = \count($aSlideKey);
                 for ($i = 0; $i < $count; $i++) {
                     $slide  = new Slide();
                     $aSlide = $filtered['aSlide'][$aSlideKey[$i]];
-                    if (mb_strpos((string)$aSlideKey[$i], 'neu') === false) {
+                    if (\mb_strpos((string)$aSlideKey[$i], 'neu') === false) {
                         $slide->setID((int)$aSlideKey[$i]);
                     }
 
@@ -158,7 +157,7 @@ class SliderController extends AbstractBackendController
                 if ($slider->getEffects() !== 'random') {
                     $effects = \explode(';', $slider->getEffects());
                     $options = '';
-                    foreach ($effects as $cKey => $cValue) {
+                    foreach ($effects as $cValue) {
                         $options .= '<option value="' . $cValue . '">' . $cValue . '</option>';
                     }
                     $smarty->assign('cEffects', $options);

@@ -48,7 +48,7 @@
                 var name = $(ele).attr('value');
                 data += '&ext[' + name + ']=' + $('#plugin-ext-' + name).val();
             });
-            simpleAjaxCall('pluginverwaltung.php', data, function (res) {
+            simpleAjaxCall('{$adminURL}{$route}', data, function (res) {
                 location.reload();
             });
             return false;

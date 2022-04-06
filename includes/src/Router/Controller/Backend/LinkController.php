@@ -15,7 +15,6 @@ use JTL\Media\Image;
 use JTL\PlausiCMS;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -101,7 +100,7 @@ class LinkController extends AbstractBackendController
                     $checks = new PlausiCMS();
                     $checks->setPostVar($_POST);
                     $checks->doPlausi('grp');
-                    if (count($checks->getPlausiVar()) === 0) {
+                    if (\count($checks->getPlausiVar()) === 0) {
                         $linkGroupTemplateExists = $this->db->select(
                             'tlinkgruppe',
                             'cTemplatename',
@@ -198,7 +197,7 @@ class LinkController extends AbstractBackendController
                     $checks->setPostVar($_POST, $hasHTML, true);
                     $checks->doPlausi('lnk');
 
-                    if (count($checks->getPlausiVar()) === 0) {
+                    if (\count($checks->getPlausiVar()) === 0) {
                         $files = [];
                         $link  = $linkAdmin->createOrUpdateLink($_POST);
                         if (Request::postInt('kLink') === 0) {
@@ -221,13 +220,13 @@ class LinkController extends AbstractBackendController
                         if (!\is_dir($uploadDir . $kLink)) {
                             \mkdir($uploadDir . $kLink);
                         }
-                        if (\is_array($_FILES['Bilder']['name']) && count($_FILES['Bilder']['name']) > 0) {
+                        if (\is_array($_FILES['Bilder']['name']) && \count($_FILES['Bilder']['name']) > 0) {
                             $lastImage = $linkAdmin->getLastImageNumber($kLink);
                             $counter   = 0;
                             if ($lastImage > 0) {
                                 $counter = $lastImage;
                             }
-                            $imageCount = (count($_FILES['Bilder']['name']) + $counter);
+                            $imageCount = (\count($_FILES['Bilder']['name']) + $counter);
                             for ($i = $counter; $i < $imageCount; ++$i) {
                                 $upload = [
                                     'size'     => $_FILES['Bilder']['size'][$i - $counter],
@@ -239,10 +238,10 @@ class LinkController extends AbstractBackendController
                                 if (Image::isImageUpload($upload)) {
                                     $type         = $upload['type'];
                                     $uploadedFile = $uploadDir . $kLink . '/Bild' . ($i + 1) . '.' .
-                                        mb_substr(
+                                        \mb_substr(
                                             $type,
-                                            mb_strpos($type, '/') + 1,
-                                            mb_strlen($type) - mb_strpos($type, '/') + 1
+                                            \mb_strpos($type, '/') + 1,
+                                            \mb_strlen($type) - \mb_strpos($type, '/') + 1
                                         );
                                     \move_uploaded_file($upload['tmp_name'], $uploadedFile);
                                 }
@@ -257,14 +256,14 @@ class LinkController extends AbstractBackendController
                                     continue;
                                 }
                                 $newFile            = new stdClass();
-                                $newFile->cName     = mb_substr($file, 0, mb_strpos($file, '.'));
+                                $newFile->cName     = \mb_substr($file, 0, \mb_strpos($file, '.'));
                                 $newFile->cNameFull = $file;
                                 $newFile->cURL      = '<img class="link_image" src="' .
                                     $shopURL . \PFAD_BILDER . \PFAD_LINKBILDER . $link->getID() . '/' . $file . '" />';
                                 $newFile->nBild     = (int)mb_substr(
                                     \str_replace('Bild', '', $file),
                                     0,
-                                    mb_strpos(\str_replace('Bild', '', $file), '.')
+                                    \mb_strpos(\str_replace('Bild', '', $file), '.')
                                 );
                                 $files[]            = $newFile;
                             }
@@ -321,14 +320,14 @@ class LinkController extends AbstractBackendController
                         continue;
                     }
                     $newFile            = new stdClass();
-                    $newFile->cName     = mb_substr($file, 0, mb_strpos($file, '.'));
+                    $newFile->cName     = \mb_substr($file, 0, \mb_strpos($file, '.'));
                     $newFile->cNameFull = $file;
                     $newFile->cURL      = '<img class="link_image" src="' .
                         $shopURL . \PFAD_BILDER . \PFAD_LINKBILDER . $link->getID() . '/' . $file . '" />';
                     $newFile->nBild     = (int)mb_substr(
                         \str_replace('Bild', '', $file),
                         0,
-                        mb_strpos(\str_replace('Bild', '', $file), '.')
+                        \mb_strpos(\str_replace('Bild', '', $file), '.')
                     );
                     $files[]            = $newFile;
                 }

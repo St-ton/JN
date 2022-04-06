@@ -13,17 +13,17 @@ class IOError implements JsonSerializable
     /**
      * @var string
      */
-    public $message = '';
+    public string $message = '';
 
     /**
      * @var int
      */
-    public $code = 500;
+    public int $code = 500;
 
     /**
      * @var array
      */
-    public $errors = [];
+    public array $errors = [];
 
     /**
      * IOError constructor.

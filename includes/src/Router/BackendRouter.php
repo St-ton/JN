@@ -12,14 +12,19 @@ use JTL\Router\Controller\Backend\BannerController;
 use JTL\Router\Controller\Backend\BoxController;
 use JTL\Router\Controller\Backend\BrandingController;
 use JTL\Router\Controller\Backend\CacheController;
+use JTL\Router\Controller\Backend\CampaignController;
 use JTL\Router\Controller\Backend\CategoryCheckController;
 use JTL\Router\Controller\Backend\CheckboxController;
 use JTL\Router\Controller\Backend\ComparelistController;
+use JTL\Router\Controller\Backend\ConfigController;
+use JTL\Router\Controller\Backend\ConsentController;
 use JTL\Router\Controller\Backend\ContactFormsController;
 use JTL\Router\Controller\Backend\CountryController;
 use JTL\Router\Controller\Backend\CouponsController;
+use JTL\Router\Controller\Backend\CouponStatsController;
 use JTL\Router\Controller\Backend\CronController;
 use JTL\Router\Controller\Backend\CustomerFieldsController;
+use JTL\Router\Controller\Backend\CustomerImportController;
 use JTL\Router\Controller\Backend\DashboardController;
 use JTL\Router\Controller\Backend\DBCheckController;
 use JTL\Router\Controller\Backend\DBManagerController;
@@ -27,31 +32,52 @@ use JTL\Router\Controller\Backend\DBUpdateController;
 use JTL\Router\Controller\Backend\EmailBlocklistController;
 use JTL\Router\Controller\Backend\EmailHistoryController;
 use JTL\Router\Controller\Backend\EmailTemplateController;
+use JTL\Router\Controller\Backend\ExportController;
+use JTL\Router\Controller\Backend\ExportQueueController;
 use JTL\Router\Controller\Backend\FavsController;
+use JTL\Router\Controller\Backend\FileCheckController;
 use JTL\Router\Controller\Backend\FilesystemController;
+use JTL\Router\Controller\Backend\GiftsController;
 use JTL\Router\Controller\Backend\GlobalMetaDataController;
 use JTL\Router\Controller\Backend\ImageManagementController;
 use JTL\Router\Controller\Backend\ImagesController;
+use JTL\Router\Controller\Backend\IOController;
 use JTL\Router\Controller\Backend\LanguageController;
+use JTL\Router\Controller\Backend\LicenseController;
 use JTL\Router\Controller\Backend\LinkController;
+use JTL\Router\Controller\Backend\LivesearchController;
 use JTL\Router\Controller\Backend\LogoController;
+use JTL\Router\Controller\Backend\MarkdownController;
+use JTL\Router\Controller\Backend\NavFilterController;
 use JTL\Router\Controller\Backend\NewsController;
+use JTL\Router\Controller\Backend\NewsletterController;
+use JTL\Router\Controller\Backend\NewsletterImportController;
+use JTL\Router\Controller\Backend\OPCCCController;
+use JTL\Router\Controller\Backend\OPCController;
 use JTL\Router\Controller\Backend\OrderController;
 use JTL\Router\Controller\Backend\PackagingsController;
 use JTL\Router\Controller\Backend\PasswordController;
 use JTL\Router\Controller\Backend\PaymentMethodsController;
 use JTL\Router\Controller\Backend\PermissionCheckController;
+use JTL\Router\Controller\Backend\PersistentCartController;
+use JTL\Router\Controller\Backend\PluginController;
+use JTL\Router\Controller\Backend\PluginManagerController;
+use JTL\Router\Controller\Backend\PremiumPluginController;
 use JTL\Router\Controller\Backend\PriceHistoryController;
 use JTL\Router\Controller\Backend\ProfilerController;
 use JTL\Router\Controller\Backend\RedirectController;
 use JTL\Router\Controller\Backend\ResetController;
 use JTL\Router\Controller\Backend\ReviewController;
 use JTL\Router\Controller\Backend\RSSController;
+use JTL\Router\Controller\Backend\SearchConfigController;
+use JTL\Router\Controller\Backend\SearchController;
+use JTL\Router\Controller\Backend\SearchSpecialController;
 use JTL\Router\Controller\Backend\SearchSpecialOverlayController;
 use JTL\Router\Controller\Backend\SelectionWizardController;
 use JTL\Router\Controller\Backend\SeparatorController;
 use JTL\Router\Controller\Backend\ShippingMethodsController;
 use JTL\Router\Controller\Backend\SitemapController;
+use JTL\Router\Controller\Backend\SitemapExportController;
 use JTL\Router\Controller\Backend\SliderController;
 use JTL\Router\Controller\Backend\StatsController;
 use JTL\Router\Controller\Backend\StatusController;
@@ -60,8 +86,15 @@ use JTL\Router\Controller\Backend\SyncController;
 use JTL\Router\Controller\Backend\SystemCheckController;
 use JTL\Router\Controller\Backend\SystemLogController;
 use JTL\Router\Controller\Backend\TaCController;
+use JTL\Router\Controller\Backend\TemplateController;
 use JTL\Router\Controller\Backend\WarehousesController;
+use JTL\Router\Controller\Backend\WishlistController;
+use JTL\Router\Controller\Backend\WizardController;
+use JTL\Router\Controller\Backend\ZipImportController;
 use JTL\Router\Middleware\AuthMiddleware;
+use JTL\Router\Middleware\MenuBuilderMiddleware;
+use JTL\Router\Middleware\UpdateCheckMiddleware;
+use JTL\Router\Middleware\WizardCheckMiddleware;
 use JTL\Router\Strategy\SmartyStrategy;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
@@ -93,7 +126,8 @@ class BackendRouter
     public const ROUTE_SYSTEMLOG             = 'systemlog';
     public const ROUTE_SYSTEMCHECK           = 'systemcheck';
     public const ROUTE_STATUSMAIL            = 'statusmail';
-    public const ROUTE_SEARCHSPECIALOVERLAYS = 'searchspecials';
+    public const ROUTE_SEARCHSPECIAL         = 'searchspecials';
+    public const ROUTE_SEARCHSPECIALOVERLAYS = 'searchspecialoverlays';
     public const ROUTE_STATUS                = 'status';
     public const ROUTE_STATS                 = 'stats';
     public const ROUTE_LANGUAGE              = 'language';
@@ -133,11 +167,46 @@ class BackendRouter
     public const ROUTE_PASS                  = 'pass';
     public const ROUTE_DASHBOARD             = 'dashboard';
     public const ROUTE_SEPARATOR             = 'separator';
+    public const ROUTE_CONSENT               = 'consent';
+    public const ROUTE_EXPORT                = 'export';
+    public const ROUTE_FILECHECK             = 'filecheck';
+    public const ROUTE_GIFTS                 = 'gifts';
+    public const ROUTE_CAMPAIGN              = 'campaign';
+    public const ROUTE_CUSTOMER_IMPORT       = 'customerimport';
+    public const ROUTE_COUPON_STATS          = 'couponstats';
+    public const ROUTE_LICENSE               = 'licenses';
+    public const ROUTE_LOGOUT                = 'logout';
+    public const ROUTE_NAVFILTER             = 'navfilter';
+    public const ROUTE_NEWSLETTER            = 'newsletter';
+    public const ROUTE_NEWSLETTER_IMPORT     = 'newsletterimport';
+    public const ROUTE_OPC                   = 'opc';
+    public const ROUTE_OPCCC                 = 'opccc';
+    public const ROUTE_ZIP_IMPORT            = 'zipimport';
+    public const ROUTE_TEMPLATE              = 'template';
+    public const ROUTE_SITEMAP_EXPORT        = 'sitemapexport';
+    public const ROUTE_PERSISTENT_CART       = 'persistentcart';
+    public const ROUTE_WIZARD                = 'wizard';
+    public const ROUTE_WISHLIST              = 'wishlist';
+    public const ROUTE_LIVESEARCH            = 'livesearch';
+    public const ROUTE_PLUGIN_MANAGER        = 'pluginmanager';
+    public const ROUTE_CONFIG                = 'config';
+    public const ROUTE_MARKDOWN              = 'markdown';
+    public const ROUTE_EXPORT_QUEUE          = 'exportqueue';
+    public const ROUTE_PLUGIN                = 'plugin';
+    public const ROUTE_PREMIUM_PLUGIN        = 'premiumplugin';
+    public const ROUTE_SEARCHCONFIG          = 'searchconfig';
+    public const ROUTE_IO                    = 'io';
+    public const ROUTE_SEARCHRESULTS         = 'searchresults';
 
     /**
      * @var Router
      */
     private Router $router;
+
+    /**
+     * @var DbInterface
+     */
+    private DbInterface $db;
 
     /**
      * @param DbInterface           $db
@@ -153,10 +222,9 @@ class BackendRouter
         AlertServiceInterface $alertService,
         GetText $getText
     ) {
-        $authMiddleware = new AuthMiddleware();
-        $this->router   = new Router();
-        $strategy       = new SmartyStrategy(new ResponseFactory(), Shop::Smarty(), new State());
-        $container      = new Container();
+        $this->router = new Router();
+        $strategy     = new SmartyStrategy(new ResponseFactory(), Shop::Smarty(), new State());
+        $container    = new Container();
 
         $controllers = [
             self::ROUTE_BANNER                => BannerController::class,
@@ -170,6 +238,7 @@ class BackendRouter
             self::ROUTE_SYSTEMLOG             => SystemLogController::class,
             self::ROUTE_SYSTEMCHECK           => SystemCheckController::class,
             self::ROUTE_STATUSMAIL            => StatusMailController::class,
+            self::ROUTE_SEARCHSPECIAL         => SearchSpecialController::class,
             self::ROUTE_SEARCHSPECIALOVERLAYS => SearchSpecialOverlayController::class,
             self::ROUTE_STATUS                => StatusController::class,
             self::ROUTE_STATS                 => StatsController::class,
@@ -214,9 +283,48 @@ class BackendRouter
             self::ROUTE_TAC                   => TaCController::class,
             self::ROUTE_RESET                 => ResetController::class,
             self::ROUTE_SEPARATOR             => SeparatorController::class,
+            self::ROUTE_CONSENT               => ConsentController::class,
+            self::ROUTE_EXPORT                => ExportController::class,
+            self::ROUTE_FILECHECK             => FileCheckController::class,
+            self::ROUTE_GIFTS                 => GiftsController::class,
+            self::ROUTE_CAMPAIGN              => CampaignController::class,
+            self::ROUTE_CUSTOMER_IMPORT       => CustomerImportController::class,
+            self::ROUTE_COUPON_STATS          => CouponStatsController::class,
+            self::ROUTE_LICENSE               => LicenseController::class,
+            self::ROUTE_LOGOUT                => LicenseController::class,
+            self::ROUTE_NAVFILTER             => NavFilterController::class,
+            self::ROUTE_NEWSLETTER            => NewsletterController::class,
+            self::ROUTE_NEWSLETTER_IMPORT     => NewsletterImportController::class,
+            self::ROUTE_OPC                   => OPCController::class,
+            self::ROUTE_OPCCC                 => OPCCCController::class,
+            self::ROUTE_ZIP_IMPORT            => ZipImportController::class,
+            self::ROUTE_TEMPLATE              => TemplateController::class,
+            self::ROUTE_SITEMAP_EXPORT        => SitemapExportController::class,
+            self::ROUTE_PERSISTENT_CART       => PersistentCartController::class,
+            self::ROUTE_WIZARD                => WizardController::class,
+            self::ROUTE_WISHLIST              => WishlistController::class,
+            self::ROUTE_LIVESEARCH            => LivesearchController::class,
+            self::ROUTE_PLUGIN_MANAGER        => PluginManagerController::class,
+            self::ROUTE_CONFIG                => ConfigController::class,
+            self::ROUTE_MARKDOWN              => MarkdownController::class,
+            self::ROUTE_EXPORT_QUEUE          => ExportQueueController::class,
+            self::ROUTE_PLUGIN                => PluginController::class,
+            self::ROUTE_PREMIUM_PLUGIN        => PremiumPluginController::class,
+            self::ROUTE_SEARCHCONFIG          => SearchConfigController::class,
+            self::ROUTE_IO                    => IOController::class,
+            self::ROUTE_SEARCHRESULTS         => SearchController::class,
+
         ];
         foreach ($controllers as $route => $controller) {
-            $container->add($controller, function () use ($controller, $db, $cache, $alertService, $account, $getText, $route) {
+            $container->add($controller, function () use (
+                $controller,
+                $db,
+                $cache,
+                $alertService,
+                $account,
+                $getText,
+                $route
+            ) {
                 $controller = new $controller($db, $cache, $alertService, $account, $getText);
                 $controller->setRoute('/' . $route);
 
@@ -234,7 +342,9 @@ class BackendRouter
                 $route->get('/' . $slug, $controller . '::getResponse')->setName($slug);
                 $route->post('/' . $slug, $controller . '::getResponse')->setName('post' . $slug);
             }
-        })->middleware($authMiddleware);
+        })->middleware(new AuthMiddleware($account))
+            ->middleware(new UpdateCheckMiddleware($db))
+            ->middleware(new WizardCheckMiddleware());
 
         $this->router->get('/' . \PFAD_ADMIN . self::ROUTE_PASS, PasswordController::class . '::getResponse')
             ->setName(self::ROUTE_PASS);
@@ -254,6 +364,9 @@ class BackendRouter
         exit();
     }
 
+    /**
+     * @return Router
+     */
     public function getRouter(): Router
     {
         return $this->router;

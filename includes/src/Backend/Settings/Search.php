@@ -7,6 +7,7 @@ use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
 use JTL\L10n\GetText;
+use JTL\Router\BackendRouter;
 use JTL\Shop;
 use stdClass;
 
@@ -149,7 +150,7 @@ class Search
         $configIDs  = \array_unique(\array_map('\intval', $data->pluck('kEinstellungenConf')->toArray()));
         $factory    = new SectionFactory();
         $sections   = [];
-        $urlPrefix  = Shop::getAdminURL() . '/einstellungen.php?einstellungen_suchen=1&cSuche=';
+        $urlPrefix  = Shop::getAdminURL() . '/' . BackendRouter::ROUTE_CONFIG . '?einstellungen_suchen=1&cSuche=';
         foreach ($sectionIDs as $sectionID) {
             $section = $factory->getSection($sectionID, $this->manager);
             $section->load();

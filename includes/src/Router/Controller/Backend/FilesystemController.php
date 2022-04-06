@@ -10,7 +10,6 @@ use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -33,7 +32,7 @@ class FilesystemController extends AbstractBackendController
 
         if (!empty($_POST) && Form::validateToken()) {
             $postData = Text::filterXSS($_POST);
-            \saveAdminSectionSettings(\CONF_FS, $_POST);
+            $this->saveAdminSectionSettings(\CONF_FS, $_POST);
             $shopSettings->reset();
 
             if (isset($postData['test'])) {
@@ -68,7 +67,7 @@ class FilesystemController extends AbstractBackendController
                 }
             }
         }
-        \getAdminSectionSettings(\CONF_FS);
+        $this->getAdminSectionSettings(\CONF_FS);
 
         return $smarty->assign('route', $this->route)
             ->getResponse('filesystem.tpl');

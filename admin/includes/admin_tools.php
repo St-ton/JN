@@ -25,6 +25,7 @@ use function Functional\pluck;
  * @param int|array $configSectionID
  * @param bool $byName
  * @return stdClass[]
+ * @todo!!!
  */
 function getAdminSectionSettings($configSectionID, bool $byName = false): array
 {
@@ -87,6 +88,7 @@ function getAdminSectionSettings($configSectionID, bool $byName = false): array
  * @param array $tags
  * @param bool $byName
  * @return string
+ * @deprecated since 5.2.0
  */
 function saveAdminSettings(
     array $settingsIDs,
@@ -164,6 +166,7 @@ function saveAdminSettings(
  * @param mixed  $listBoxes
  * @param string $valueName
  * @param int    $configSectionID
+ * @deprecated since 5.2.0
  */
 function bearbeiteListBox($listBoxes, string $valueName, int $configSectionID): void
 {
@@ -214,6 +217,7 @@ function bearbeiteListBox($listBoxes, string $valueName, int $configSectionID): 
  * @param array $post
  * @param array $tags
  * @return string
+ * @todo!!!
  */
 function saveAdminSectionSettings(int $configSectionID, array $post, array $tags = [CACHING_GROUP_OPTION]): string
 {
@@ -283,6 +287,7 @@ function validateNumberRange(int $min, int $max, stdClass $setting): bool
  * @param bool $getInternal
  * @param bool $activeOnly
  * @return array
+ * @todo!
  */
 function holeAlleKampagnen(bool $getInternal = false, bool $activeOnly = true): array
 {
@@ -347,6 +352,7 @@ function setzeSprache(): void
  * @param int $month
  * @param int $year
  * @return false|int
+ * @todo!
  */
 function firstDayOfMonth(int $month = -1, int $year = -1)
 {
@@ -364,6 +370,7 @@ function firstDayOfMonth(int $month = -1, int $year = -1)
  * @param int $month
  * @param int $year
  * @return false|int
+ * @todo!
  */
 function lastDayOfMonth(int $month = -1, int $year = -1)
 {
@@ -385,6 +392,7 @@ function lastDayOfMonth(int $month = -1, int $year = -1)
  * Array[1] = Ende
  * @param string $dateString
  * @return array
+ * @todo!
  */
 function ermittleDatumWoche(string $dateString): array
 {
@@ -438,6 +446,7 @@ function ermittleDatumWoche(string $dateString): array
  *
  * @param bool $date
  * @return int|string
+ * @todo!
  */
 function getJTLVersionDB(bool $date = false)
 {
@@ -458,6 +467,7 @@ function getJTLVersionDB(bool $date = false)
 /**
  * @param string $size
  * @return mixed
+ * @todo!
  */
 function getMaxFileSize($size)
 {
@@ -477,74 +487,8 @@ function getMaxFileSize($size)
 }
 
 /**
- * @param float  $netPrice
- * @param float  $grossPrice
- * @param string $targetID
- * @return IOResponse
- */
-function getCurrencyConversionIO($netPrice, $grossPrice, $targetID): IOResponse
-{
-    $response = new IOResponse();
-    $response->assignDom($targetID, 'innerHTML', Currency::getCurrencyConversion($netPrice, $grossPrice));
-
-    return $response;
-}
-
-/**
- * @param float  $netPrice
- * @param float  $grossPrice
- * @param string $tooltipID
- * @return IOResponse
- */
-function setCurrencyConversionTooltipIO($netPrice, $grossPrice, $tooltipID): IOResponse
-{
-    $response = new IOResponse();
-    $response->assignVar('originalTilte', Currency::getCurrencyConversion($netPrice, $grossPrice));
-
-    return $response;
-}
-
-/**
- * @param string $title
- * @param string $url
- * @return array|IOError
- */
-function addFav(string $title, string $url)
-{
-    $success     = false;
-    $kAdminlogin = Shop::Container()->getAdminAccount()->getID();
-
-    if (!empty($title) && !empty($url)) {
-        $success = AdminFavorite::add($kAdminlogin, $title, $url);
-    }
-
-    if ($success) {
-        $result = [
-            'title' => $title,
-            'url'   => $url
-        ];
-    } else {
-        $result = new IOError('Unauthorized', 401);
-    }
-
-    return $result;
-}
-
-/**
  * @return array
- */
-function reloadFavs(): array
-{
-    global $oAccount;
-
-    $tpl = Shop::Smarty()->assign('favorites', $oAccount->favorites())
-               ->fetch('tpl_inc/favs_drop.tpl');
-
-    return ['tpl' => $tpl];
-}
-
-/**
- * @return array
+ * @todo!
  */
 function getNotifyDropIO(): array
 {
@@ -560,6 +504,7 @@ function getNotifyDropIO(): array
  * @param string $filename
  * @return string delimiter guess
  * @former guessCsvDelimiter()
+ * @todo!
  */
 function getCsvDelimiter(string $filename): string
 {
@@ -580,6 +525,7 @@ function getCsvDelimiter(string $filename): string
 
 /**
  * @return JTLSmarty
+ * @todo!
  */
 function getFrontendSmarty(): JTLSmarty
 {

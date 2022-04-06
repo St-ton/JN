@@ -5,7 +5,6 @@ namespace JTL\Router\Controller\Backend;
 use JTL\Country\Manager;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

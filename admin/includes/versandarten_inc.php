@@ -244,33 +244,11 @@ function getZuschlagNames(int $feeID): array
 /**
  * @param string $query
  * @return array
- * @todo!
+ * @deprecated since 5.2.0
  */
 function getShippingByName(string $query): array
 {
-    $results = [];
-    $db      = Shop::Container()->getDB();
-    foreach (explode(',', $query) as $search) {
-        $search = trim($search);
-        if (mb_strlen($search) > 2) {
-            $hits = $db->getObjects(
-                'SELECT va.kVersandart, va.cName
-                    FROM tversandart AS va
-                    LEFT JOIN tversandartsprache AS vs 
-                        ON vs.kVersandart = va.kVersandart
-                        AND vs.cName LIKE :search
-                    WHERE va.cName LIKE :search
-                    OR vs.cName LIKE :search',
-                ['search' => '%' . $search . '%']
-            );
-            foreach ($hits as $item) {
-                $item->kVersandart           = (int)$item->kVersandart;
-                $results[$item->kVersandart] = $item;
-            }
-        }
-    }
-
-    return $results;
+    return [];
 }
 
 /**

@@ -6,7 +6,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -40,9 +39,10 @@ class GlobalMetaDataController extends AbstractBackendController
         foreach ($meta as $item) {
             $metaData[$item->cName] = $item->cWertName;
         }
-        \getAdminSectionSettings(\CONF_METAANGABEN);
+        $this->getAdminSectionSettings(\CONF_METAANGABEN);
 
         return $smarty->assign('oMetaangaben_arr', $metaData)
+            ->assign('route', $this->route)
             ->getResponse('globalemetaangaben.tpl');
     }
 
@@ -52,7 +52,7 @@ class GlobalMetaDataController extends AbstractBackendController
      */
     private function actionSaveConfig(array $postData): void
     {
-        \saveAdminSectionSettings(\CONF_METAANGABEN, $_POST);
+        $this->saveAdminSectionSettings(\CONF_METAANGABEN, $_POST);
         $languageID = (int)$_SESSION['editLanguageID'];
         $title      = $postData['Title'];
         $desc       = $postData['Meta_Description'];

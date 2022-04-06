@@ -14,7 +14,6 @@ use JTL\Helpers\Text;
 use JTL\Minify\MinifyService;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -48,7 +47,7 @@ class CacheController extends AbstractBackendController
         $sectionFactory = new SectionFactory();
         $cacheSection   = $sectionFactory->getSection(\CONF_CACHING, $settingManager);
         $this->getText->loadConfigLocales();
-        if (0 < mb_strlen(Request::verifyGPDataString('tab'))) {
+        if (0 < \mb_strlen(Request::verifyGPDataString('tab'))) {
             $smarty->assign('tab', Request::verifyGPDataString('tab'));
         }
         try {

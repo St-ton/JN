@@ -6,7 +6,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -27,15 +26,15 @@ class EmailBlocklistController extends AbstractBackendController
 
         $step = 'emailblacklist';
         if (Request::postInt('einstellungen') > 0) {
-            \saveAdminSectionSettings(\CONF_EMAILBLACKLIST, $_POST);
+            $this->saveAdminSectionSettings(\CONF_EMAILBLACKLIST, $_POST);
         }
         if (Request::postInt('emailblacklist') === 1 && Form::validateToken()) {
             $addresses = \explode(';', Text::filterXSS($_POST['cEmail']));
-            if (count($addresses) > 0) {
+            if (\count($addresses) > 0) {
                 $this->db->query('TRUNCATE temailblacklist');
                 foreach ($addresses as $mail) {
                     $mail = \strip_tags(\trim($mail));
-                    if (mb_strlen($mail) > 0) {
+                    if (\mb_strlen($mail) > 0) {
                         $this->db->insert('temailblacklist', (object)['cEmail' => $mail]);
                     }
                 }
@@ -48,7 +47,7 @@ class EmailBlocklistController extends AbstractBackendController
                 ORDER BY dLetzterBlock DESC
                 LIMIT 100"
         );
-        \getAdminSectionSettings(\CONF_EMAILBLACKLIST);
+        $this->getAdminSectionSettings(\CONF_EMAILBLACKLIST);
 
         return $smarty->assign('blacklist', $blacklist)
             ->assign('blocked', $blocked)

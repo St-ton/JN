@@ -17,7 +17,6 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -66,7 +65,7 @@ class OrderCompleteController extends CheckoutController
             $this->smarty->assign('abschlussseite', 1);
         } else {
             if (isset($_POST['kommentar'])) {
-                $_SESSION['kommentar'] = mb_substr(\strip_tags($this->db->escape($_POST['kommentar'])), 0, 1000);
+                $_SESSION['kommentar'] = \mb_substr(\strip_tags($this->db->escape($_POST['kommentar'])), 0, 1000);
             } elseif (!isset($_SESSION['kommentar'])) {
                 $_SESSION['kommentar'] = '';
             }
@@ -324,7 +323,7 @@ class OrderCompleteController extends CheckoutController
         ) {
             return 4;
         }
-        if (count($_SESSION['cPlausi_arr']) > 0) {
+        if (\count($_SESSION['cPlausi_arr']) > 0) {
             return 6;
         }
 

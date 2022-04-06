@@ -7,9 +7,7 @@ use JTL\Helpers\Request;
 use JTL\Media\Image;
 use JTL\Media\IMedia;
 use JTL\Media\Media;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -98,7 +96,7 @@ class BrandingController extends AbstractBackendController
      */
     private function saveConfig(int $brandingID, array $post, array $files): bool
     {
-        $hasNewImage = mb_strlen($files['cBrandingBild']['name'] ?? '') > 0;
+        $hasNewImage = \mb_strlen($files['cBrandingBild']['name'] ?? '') > 0;
         if ($hasNewImage && !Image::isImageUpload($files['cBrandingBild'])) {
             return false;
         }
@@ -124,7 +122,7 @@ class BrandingController extends AbstractBackendController
                 : '';
         }
 
-        if ($conf->kBranding > 0 && mb_strlen($conf->cPosition) > 0 && mb_strlen($conf->cBrandingBild) > 0) {
+        if ($conf->kBranding > 0 && \mb_strlen($conf->cPosition) > 0 && \mb_strlen($conf->cBrandingBild) > 0) {
             // Alte Einstellung loeschen
             $db->delete('tbrandingeinstellung', 'kBranding', $brandingID);
             if ($hasNewImage) {

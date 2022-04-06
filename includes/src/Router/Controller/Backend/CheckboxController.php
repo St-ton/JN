@@ -11,7 +11,6 @@ use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use JTL\Pagination\Pagination;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -33,7 +32,7 @@ class CheckboxController extends AbstractBackendController
         $step     = 'uebersicht';
         $checkbox = new CheckBox(0, $this->db);
         $tab      = $step;
-        if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
+        if (\mb_strlen(Request::verifyGPDataString('tab')) > 0) {
             $tab = Request::verifyGPDataString('tab');
         }
         if (isset($_POST['erstellenShowButton'])) {
@@ -61,7 +60,7 @@ class CheckboxController extends AbstractBackendController
             $checkboxID = Request::verifyGPCDataInt('kCheckBox');
             $languages  = LanguageHelper::getAllLanguages(0, true);
             $checks     = $this->validate($post, $languages);
-            if (count($checks) === 0) {
+            if (\count($checks) === 0) {
                 $checkbox = $this->save($post, $languages);
                 $step     = 'uebersicht';
                 $this->alertService->addSuccess(\__('successCheckboxCreate'), 'successCheckboxCreate');
@@ -105,18 +104,18 @@ class CheckboxController extends AbstractBackendController
     private function validate(array $post, array $languages): array
     {
         $checks = [];
-        if (count($languages) === 0) {
+        if (\count($languages) === 0) {
             $checks['oSprache_arr'] = 1;
 
             return $checks;
         }
-        if (!isset($post['cName']) || mb_strlen($post['cName']) === 0) {
+        if (!isset($post['cName']) || \mb_strlen($post['cName']) === 0) {
             $checks['cName'] = 1;
         }
         $text = false;
         $link = true;
         foreach ($languages as $language) {
-            if (mb_strlen($post['cText_' . $language->getIso()]) > 0) {
+            if (\mb_strlen($post['cText_' . $language->getIso()]) > 0) {
                 $text = true;
                 break;
             }
@@ -130,7 +129,7 @@ class CheckboxController extends AbstractBackendController
         if (!$link) {
             $checks['kLink'] = 1;
         }
-        if (!\is_array($post['cAnzeigeOrt']) || count($post['cAnzeigeOrt']) === 0) {
+        if (!\is_array($post['cAnzeigeOrt']) || \count($post['cAnzeigeOrt']) === 0) {
             $checks['cAnzeigeOrt'] = 1;
         } else {
             foreach ($post['cAnzeigeOrt'] as $cAnzeigeOrt) {
@@ -139,19 +138,19 @@ class CheckboxController extends AbstractBackendController
                 }
             }
         }
-        if (!isset($post['nPflicht']) || mb_strlen($post['nPflicht']) === 0) {
+        if (!isset($post['nPflicht']) || \mb_strlen($post['nPflicht']) === 0) {
             $checks['nPflicht'] = 1;
         }
-        if (!isset($post['nAktiv']) || mb_strlen($post['nAktiv']) === 0) {
+        if (!isset($post['nAktiv']) || \mb_strlen($post['nAktiv']) === 0) {
             $checks['nAktiv'] = 1;
         }
-        if (!isset($post['nLogging']) || mb_strlen($post['nLogging']) === 0) {
+        if (!isset($post['nLogging']) || \mb_strlen($post['nLogging']) === 0) {
             $checks['nLogging'] = 1;
         }
         if (!isset($post['nSort']) || (int)$post['nSort'] === 0) {
             $checks['nSort'] = 1;
         }
-        if (!\is_array($post['kKundengruppe']) || count($post['kKundengruppe']) === 0) {
+        if (!\is_array($post['kKundengruppe']) || \count($post['kKundengruppe']) === 0) {
             $checks['kKundengruppe'] = 1;
         }
 

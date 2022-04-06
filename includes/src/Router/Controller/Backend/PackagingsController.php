@@ -11,7 +11,6 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -106,10 +105,10 @@ class PackagingsController extends AbstractBackendController
         if ($packaging->kSteuerklasse < 0) {
             $packaging->kSteuerklasse = 0;
         }
-        if (!(isset($postData[$nameIDX]) && mb_strlen($postData[$nameIDX]) > 0)) {
+        if (!(isset($postData[$nameIDX]) && \mb_strlen($postData[$nameIDX]) > 0)) {
             $this->alertService->addError(\__('errorNameMissing'), 'errorNameMissing');
         }
-        if (!(\is_array($customerGroupIDs) && count($customerGroupIDs) > 0)) {
+        if (!(\is_array($customerGroupIDs) && \count($customerGroupIDs) > 0)) {
             $this->alertService->addError(\__('errorCustomerGroupMissing'), 'errorCustomerGroupMissing');
         }
 
@@ -225,7 +224,7 @@ class PackagingsController extends AbstractBackendController
         $tmpIDs        = [];
         $tmpNames      = [];
 
-        if (mb_strlen($groupString) > 0) {
+        if (\mb_strlen($groupString) > 0) {
             $data             = $this->db->getObjects('SELECT kKundengruppe, cName FROM tkundengruppe');
             $customerGroupIDs = \array_map('\intval', \array_filter(\explode(';', $groupString)));
             if (!\in_array(-1, $customerGroupIDs, true)) {
@@ -239,7 +238,7 @@ class PackagingsController extends AbstractBackendController
                         }
                     }
                 }
-            } elseif (count($data) > 0) {
+            } elseif (\count($data) > 0) {
                 foreach ($data as $customerGroup) {
                     $tmpIDs[]   = $customerGroup->kKundengruppe;
                     $tmpNames[] = $customerGroup->cName;
@@ -264,7 +263,7 @@ class PackagingsController extends AbstractBackendController
         $packaging->oSprach_arr = [];
         $postData               = Text::filterXSS($_POST);
         foreach ($postData as $key => $value) {
-            if (mb_strpos($key, 'cName') === false) {
+            if (\mb_strpos($key, 'cName') === false) {
                 continue;
             }
             $iso                                 = \explode('cName_', $key)[1];

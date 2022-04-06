@@ -8,7 +8,6 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\PlausiTrennzeichen;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -37,18 +36,18 @@ class SeparatorController extends AbstractBackendController
             if (\count($checkItems) === 0) {
                 if ($this->save($_POST)) {
                     $this->alertService->addSuccess(\__('successConfigSave'), 'successConfigSave');
-                    $this->cache->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
+                    $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_CORE]);
                 } else {
                     $this->alertService->addError(\__('errorConfigSave'), 'errorConfigSave');
                     $smarty->assign('xPostVar_arr', $checks->getPostVar());
                 }
             } else {
                 $this->alertService->addError(\__('errorFillRequired'), 'errorFillRequired');
-                $idx = 'nDezimal_' . JTL_SEPARATOR_WEIGHT;
+                $idx = 'nDezimal_' . \JTL_SEPARATOR_WEIGHT;
                 if (isset($checkItems[$idx]) && $checkItems[$idx] === 2) {
                     $this->alertService->addError(\__('errorWeightDecimals'), 'errorWeightDecimals');
                 }
-                $idx = 'nDezimal_' . JTL_SEPARATOR_AMOUNT;
+                $idx = 'nDezimal_' . \JTL_SEPARATOR_AMOUNT;
                 if (isset($checkItems[$idx]) && $checkItems[$idx] === 2) {
                     $this->alertService->addError(\__('errorAmountDecimals'), 'errorAmountDecimals');
                 }
@@ -58,6 +57,7 @@ class SeparatorController extends AbstractBackendController
         }
 
         return $smarty->assign('step', $step)
+            ->assign('route', $this->route)
             ->assign('oTrennzeichenAssoc_arr', Separator::getAll($_SESSION['editLanguageID']))
             ->getResponse('trennzeichen.tpl');
     }
@@ -70,7 +70,7 @@ class SeparatorController extends AbstractBackendController
     private function save(array $post): bool
     {
         $post = Text::filterXSS($post);
-        foreach ([JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT, JTL_SEPARATOR_LENGTH] as $unit) {
+        foreach ([\JTL_SEPARATOR_WEIGHT, \JTL_SEPARATOR_AMOUNT, \JTL_SEPARATOR_LENGTH] as $unit) {
             if (!isset($post['nDezimal_' . $unit], $post['cDezZeichen_' . $unit], $post['cTausenderZeichen_' . $unit])) {
                 continue;
             }
@@ -90,7 +90,7 @@ class SeparatorController extends AbstractBackendController
         }
 
         $this->cache->flushTags(
-            [CACHING_GROUP_CORE, CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]
+            [\CACHING_GROUP_CORE, \CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION, \CACHING_GROUP_ARTICLE]
         );
 
         return true;

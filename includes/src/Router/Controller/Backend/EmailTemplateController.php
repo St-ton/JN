@@ -9,7 +9,6 @@ use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Admin\Controller;
 use JTL\Mail\Hydrator\TestHydrator;
-use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Mail\Renderer\SmartyRenderer;
 use JTL\Mail\Template\Model;
@@ -19,7 +18,6 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\MailSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -101,10 +99,10 @@ class EmailTemplateController extends AbstractBackendController
             $revision->addRevision('mail', $emailTemplateID, true);
 
             $this->db->delete($settingsTableName, 'kEmailvorlage', $emailTemplateID);
-            if (mb_strlen(Request::verifyGPDataString('cEmailOut')) > 0) {
+            if (\mb_strlen(Request::verifyGPDataString('cEmailOut')) > 0) {
                 $this->saveEmailSetting($settingsTableName, $emailTemplateID, 'cEmailOut', Request::verifyGPDataString('cEmailOut'));
             }
-            if (mb_strlen(Request::verifyGPDataString('cEmailSenderName')) > 0) {
+            if (\mb_strlen(Request::verifyGPDataString('cEmailSenderName')) > 0) {
                 $this->saveEmailSetting(
                     $settingsTableName,
                     $emailTemplateID,
@@ -112,7 +110,7 @@ class EmailTemplateController extends AbstractBackendController
                     Request::verifyGPDataString('cEmailSenderName')
                 );
             }
-            if (mb_strlen(Request::verifyGPDataString('cEmailCopyTo')) > 0) {
+            if (\mb_strlen(Request::verifyGPDataString('cEmailCopyTo')) > 0) {
                 $this->saveEmailSetting(
                     $settingsTableName,
                     $emailTemplateID,
@@ -191,7 +189,7 @@ class EmailTemplateController extends AbstractBackendController
      */
     private function saveEmailSetting(string $settingsTable, int $emailTemplateID, string $key, string $value): void
     {
-        if ($emailTemplateID > 0 && mb_strlen($settingsTable) > 0 && mb_strlen($key) > 0 && mb_strlen($value) > 0) {
+        if ($emailTemplateID > 0 && \mb_strlen($settingsTable) > 0 && \mb_strlen($key) > 0 && \mb_strlen($value) > 0) {
             $conf                = new stdClass();
             $conf->kEmailvorlage = $emailTemplateID;
             $conf->cKey          = $key;

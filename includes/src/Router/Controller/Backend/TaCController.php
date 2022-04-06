@@ -7,7 +7,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Recommendation\Manager;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -77,7 +76,7 @@ class TaCController extends AbstractBackendController
     private function assignOverview(): void
     {
         $agbWrb = [];
-        $data   = $this->db->selectAll('ttext', 'kSprache', $languageID);
+        $data   = $this->db->selectAll('ttext', 'kSprache', (int)$_SESSION['editLanguageID']);
         foreach ($data as $item) {
             $item->kKundengruppe          = (int)$item->kKundengruppe;
             $item->kText                  = (int)$item->kText;

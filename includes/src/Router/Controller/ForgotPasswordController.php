@@ -11,7 +11,6 @@ use JTL\Helpers\Text;
 use JTL\RateLimit\ForgotPassword as Limiter;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use LinkHelper;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

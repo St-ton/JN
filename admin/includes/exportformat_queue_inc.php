@@ -15,6 +15,7 @@ use JTL\Smarty\JTLSmarty;
 
 /**
  * @return stdClass[]
+ * @todo!
  */
 function holeExportformatCron(): array
 {
@@ -86,6 +87,7 @@ function holeExportformatCron(): array
 /**
  * @param int $cronID
  * @return int|stdClass
+ * @deprecated since 5.2.0
  */
 function holeCron(int $cronID)
 {
@@ -109,6 +111,7 @@ function holeCron(int $cronID)
 /**
  * @param int $hours
  * @return bool|string
+ * @todo!
  */
 function rechneUmAlleXStunden(int $hours)
 {
@@ -177,6 +180,7 @@ function holeAlleExportformate(): array
  * @param int    $freq
  * @param int    $cronID
  * @return int
+ * @deprecated since 5.2.0
  */
 function erstelleExportformatCron(int $exportID, string $start, int $freq, int $cronID = 0): int
 {
@@ -267,6 +271,7 @@ function baueENGDate($dateStart, $asTime = false): string
 /**
  * @param int[] $cronIDs
  * @return bool
+ * @deprecated since 5.2.0
  */
 function loescheExportformatCron(array $cronIDs): bool
 {
@@ -340,6 +345,7 @@ function exportformatQueueActionErstellen(JTLSmarty $smarty): string
  * @param JTLSmarty $smarty
  * @param array     $messages
  * @return string
+ * @deprecated since 5.2.0
  */
 function exportformatQueueActionEditieren(JTLSmarty $smarty, array &$messages): string
 {
@@ -360,6 +366,7 @@ function exportformatQueueActionEditieren(JTLSmarty $smarty, array &$messages): 
 /**
  * @param array $messages
  * @return string
+ * @deprecated since 5.2.0
  */
 function exportformatQueueActionLoeschen(array &$messages): string
 {
@@ -380,6 +387,7 @@ function exportformatQueueActionLoeschen(array &$messages): string
 /**
  * @param array $messages
  * @return string
+ * @deprecated since 5.2.0
  */
 function exportformatQueueActionTriggern(array &$messages): string
 {
@@ -406,6 +414,7 @@ function exportformatQueueActionTriggern(array &$messages): string
 /**
  * @param JTLSmarty $smarty
  * @return string
+ * @deprecated since 5.2.0
  */
 function exportformatQueueActionFertiggestellt(JTLSmarty $smarty): string
 {
@@ -424,6 +433,7 @@ function exportformatQueueActionFertiggestellt(JTLSmarty $smarty): string
  * @param JTLSmarty $smarty
  * @param array     $messages
  * @return string
+ * @deprecated since 5.2.0
  */
 function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$messages): string
 {
@@ -472,6 +482,7 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
 /**
  * @param string     $tab
  * @param array|null $messages
+ * @deprecated since 5.2.0
  */
 function exportformatQueueRedirect(string $tab = '', array $messages = null): void
 {
@@ -491,7 +502,7 @@ function exportformatQueueRedirect(string $tab = '', array $messages = null): vo
         $urlParams['tab'] = Text::filterXSS($tab);
     }
 
-    header('Location: ' . Shop::getAdminURL() . '/exportformat_queue.php'
+    header('Location: ' . Shop::getAdminURL() . '/exportqueue'
         . (is_array($urlParams) ? '?' . http_build_query($urlParams, '', '&') : ''));
     exit;
 }
@@ -500,6 +511,7 @@ function exportformatQueueRedirect(string $tab = '', array $messages = null): vo
  * @param string    $step
  * @param JTLSmarty $smarty
  * @param array     $messages
+ * @deprecated since 5.2.0
  */
 function exportformatQueueFinalize(string $step, JTLSmarty $smarty, array &$messages): void
 {

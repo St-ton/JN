@@ -24,7 +24,7 @@
         var searchInputTimeout  = null;
 
         searchSubmit.on('click', function () {
-            window.location.href = 'searchresults.php?cSuche=' + searchInput.val();
+            window.location.href = '{$adminURL}/searchresults?cSuche=' + searchInput.val();
         });
 
         searchInput
@@ -79,7 +79,7 @@
             .on('keydown', function(e) {
                 if(e.key === 'Enter') {
                     if(selectedSearchItem === null) {
-                        window.location.href = 'searchresults.php?cSuche=' + searchInput.val();
+                        window.location.href = '{$adminURL}/searchresults?cSuche=' + searchInput.val();
                     } else {
                         if (selectedSearchItem.hasClass('is-form-submit')) {
                             selectedSearchItem.find('form').submit();

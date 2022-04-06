@@ -139,7 +139,7 @@
                                                                     </span>
                                                                 </a>
                                                                 <a class="btn btn-link px-2" title="{__('edit')}" target="_blank"
-                                                                   href="{strip}./opc.php?
+                                                                   href="{strip}{$adminURL}opc?
                                                                         token={$smarty.session.jtl_token}&
                                                                         pageKey={$draft->getKey()}&
                                                                         action=edit{/strip}"

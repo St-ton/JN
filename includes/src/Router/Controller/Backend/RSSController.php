@@ -6,7 +6,6 @@ use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -32,7 +31,7 @@ class RSSController extends AbstractBackendController
             }
         }
         if (Request::postInt('einstellungen') > 0) {
-            \saveAdminSectionSettings(\CONF_RSS, $_POST);
+            $this->saveAdminSectionSettings(\CONF_RSS, $_POST);
         }
         if (!\file_exists(PFAD_ROOT . \FILE_RSS_FEED)) {
             @\touch(PFAD_ROOT . \FILE_RSS_FEED);
@@ -43,9 +42,10 @@ class RSSController extends AbstractBackendController
                 'errorRSSCreatePermissions'
             );
         }
-        \getAdminSectionSettings(\CONF_RSS);
+        $this->getAdminSectionSettings(\CONF_RSS);
 
         return $smarty->assign('alertError', $this->alertService->alertTypeExists(Alert::TYPE_ERROR))
+            ->assign('route', $this->route)
             ->getResponse('rss.tpl');
     }
 }

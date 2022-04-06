@@ -7,7 +7,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -41,10 +40,10 @@ class CronController extends AbstractBackendController
                 $tab      = 'add-cron';
             } elseif (Request::postVar('a') === 'saveSettings') {
                 $tab = 'settings';
-                \saveAdminSectionSettings(\CONF_CRON, $_POST);
+                $this->saveAdminSectionSettings(\CONF_CRON, $_POST);
             }
         }
-        \getAdminSectionSettings(\CONF_CRON);
+        $this->getAdminSectionSettings(\CONF_CRON);
 
         return $smarty->assign('jobs', $admin->getJobs())
             ->assign('deleted', $deleted)

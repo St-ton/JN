@@ -26,7 +26,6 @@ use JTL\Pagination\Operation;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -67,8 +66,8 @@ class CouponsController extends AbstractBackendController
                     })->toArray();
 
                     foreach (\get_object_vars($obj) as $key => $val) {
-                        if (mb_strpos($key, 'cName_') === 0) {
-                            $couponNames[mb_substr($key, 6)] = Text::filterXSS($val);
+                        if (\mb_strpos($key, 'cName_') === 0) {
+                            $couponNames[\mb_substr($key, 6)] = Text::filterXSS($val);
                             unset($obj->$key);
                         }
                         if (!\in_array($key, $cols, true)) {
@@ -368,7 +367,7 @@ class CouponsController extends AbstractBackendController
      */
     private function loescheKupons(array $ids): bool
     {
-        if (count($ids) === 0) {
+        if (\count($ids) === 0) {
             return false;
         }
         $ids      = \array_map('\intval', $ids);
@@ -384,7 +383,7 @@ class CouponsController extends AbstractBackendController
             WHERE tkupon.kKupon IN(' . \implode(',', $ids) . ')'
         );
 
-        return $affected >= count($ids);
+        return $affected >= \count($ids);
     }
 
     /**
@@ -609,7 +608,7 @@ class CouponsController extends AbstractBackendController
         $coupon->fMindestbestellwert   = (float)\str_replace(',', '.', $input['fMindestbestellwert']);
         $coupon->cCode                 = !empty($input['cCode']) ? $input['cCode'] : '';
         $coupon->cLieferlaender        = !empty($input['cLieferlaender'])
-            ? mb_convert_case($input['cLieferlaender'], MB_CASE_UPPER)
+            ? \mb_convert_case($input['cLieferlaender'], \MB_CASE_UPPER)
             : '';
         $coupon->nVerwendungen         = Request::postInt('nVerwendungen');
         $coupon->nVerwendungenProKunde = Request::postInt('nVerwendungenProKunde');
@@ -806,7 +805,7 @@ class CouponsController extends AbstractBackendController
         $productIDs      = [];
         $manufacturerIDs = Text::parseSSK($coupon->cHersteller);
         $itemNumbers     = Text::parseSSK($coupon->cArtikel);
-        if (count($itemNumbers) > 0) {
+        if (\count($itemNumbers) > 0) {
             $itemNumbers = \array_map(static function ($e) {
                 return '"' . $e . '"';
             }, $itemNumbers);

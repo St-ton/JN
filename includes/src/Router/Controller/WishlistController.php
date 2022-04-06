@@ -13,7 +13,6 @@ use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -111,7 +110,7 @@ class WishlistController extends AbstractController
                         break;
 
                     case 'addAllToCart':
-                        if (count($wl->getItems()) > 0) {
+                        if (\count($wl->getItems()) > 0) {
                             foreach ($wl->getItems() as $wishlistPosition) {
                                 $attributeValues = Product::isVariChild($wishlistPosition->getProductID())
                                     ? Product::getVarCombiAttributeValues($wishlistPosition->getProductID())
@@ -283,7 +282,7 @@ class WishlistController extends AbstractController
 
         $pagination = (new Pagination())
             ->setItemArray($wishListItems)
-            ->setItemCount(count($wishListItems))
+            ->setItemCount(\count($wishListItems))
             ->assemble();
 
         $this->smarty->assign('CWunschliste', $wishlist)
@@ -293,7 +292,7 @@ class WishlistController extends AbstractController
             ->assign('newWL', Request::verifyGPCDataInt('newWL'))
             ->assign('wlsearch', $searchQuery)
             ->assign('Link', $link)
-            ->assign('hasItems', count($wishListItems) > 0)
+            ->assign('hasItems', \count($wishListItems) > 0)
             ->assign('isCurrenctCustomer', $wishlist->getCustomerID() > 0 && $wishlist->getCustomerID() === $customerID)
             ->assign('cURLID', $urlID)
             ->assign('step', $step);
@@ -303,7 +302,7 @@ class WishlistController extends AbstractController
         if ($wishlist->getID() > 0) {
             $campaign = new Campaign(\KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
             if (isset($campaign->kKampagne, $campaign->cWert)
-                && mb_convert_case($campaign->cWert, MB_CASE_LOWER) ===
+                && \mb_convert_case($campaign->cWert, \MB_CASE_LOWER) ===
                 \strtolower(Request::verifyGPDataString($campaign->cParameter))
             ) {
                 $event               = new stdClass();

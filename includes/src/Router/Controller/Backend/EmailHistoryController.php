@@ -7,7 +7,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Pagination\Pagination;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

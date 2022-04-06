@@ -13,7 +13,6 @@ use JTL\Pagination\Operation;
 use JTL\Pagination\Pagination;
 use JTL\Redirect;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

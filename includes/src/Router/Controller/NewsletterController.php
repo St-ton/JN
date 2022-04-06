@@ -38,12 +38,8 @@ class NewsletterController extends PageController
     /**
      * @inheritdoc
      */
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         Shop::setPageType($this->state->pageType);
         $valid              = Form::validateToken();

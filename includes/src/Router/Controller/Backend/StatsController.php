@@ -21,12 +21,11 @@ use stdClass;
  */
 class StatsController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/statistik');
         $statsType = Request::verifyGPCDataInt('s');
@@ -83,7 +82,7 @@ class StatsController extends AbstractBackendController
                     ->assign('crawlerPagination', $crawlerPagination);
             }
         }
-        $smarty->assign('route', $route->getPath());
+        $smarty->assign('route', $this->route);
 
         if ($statsType === 3 && \is_object($crawler)) {
             return $smarty->assign('crawler', $crawler)
@@ -104,7 +103,7 @@ class StatsController extends AbstractBackendController
             ->assign('nPosBis', $pagination->getFirstPageItem() + $pagination->getPageItemCount())
             ->assign('pagination', $pagination)
             ->assign('oFilter', $filter)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('statistik.tpl');
     }
 

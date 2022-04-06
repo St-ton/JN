@@ -22,27 +22,19 @@ interface ControllerInterface
      * @param ServerRequestInterface $request
      * @param array                  $args
      * @param JTLSmarty              $smarty
-     * @param Route                  $route
      * @return ResponseInterface
      */
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface;
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface;
 
     /**
      * @param ServerRequestInterface $request
      * @param array                  $args
      * @param JTLSmarty              $smarty
-     * @param Route                  $route
      * @return ResponseInterface
      */
     public function notFoundResponse(
         ServerRequestInterface $request,
         array $args,
-        JTLSmarty $smarty,
-        Route $route
+        JTLSmarty $smarty
     ): ResponseInterface;
 }

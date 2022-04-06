@@ -21,7 +21,7 @@
             {else}
                 <div class="alert alert-info"><strong>{__('countTables')}:</strong> {$cDBFileStruct_arr|count}<br /><strong>{__('showModifiedTables')}:</strong> {$cDBError_arr|count}</div>
             {/if}
-            <form action="{$shopURL}{$route}" method="post">
+            <form action="{$adminURL}{$route}" method="post">
                 {$jtl_token}
                 <div id="contentCheck" class="card">
                     <div class="card-header">

@@ -21,12 +21,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class CheckboxController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('CHECKBOXES_VIEW');
         $this->getText->loadAdminLocale('pages/checkbox');
@@ -93,7 +92,7 @@ class CheckboxController extends AbstractBackendController
             ->assign('oCheckBoxFunktion_arr', $checkbox->getCheckBoxFunctions())
             ->assign('step', $step)
             ->assign('cTab', $tab)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('checkbox.tpl');
     }
 

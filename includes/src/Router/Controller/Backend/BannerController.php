@@ -14,7 +14,6 @@ use JTL\IO\IOResponse;
 use JTL\Media\Image;
 use JTL\Pagination\Pagination;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Shop;
@@ -28,12 +27,11 @@ class BannerController extends AbstractBackendController
 {
     private string $action;
 
-    public function getResponse(
-        ServerRequestInterface $request,
-        array                  $args,
-        JTLSmarty              $smarty,
-        Route                  $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->getText->loadAdminLocale('pages/banner');
         $this->smarty = $smarty;
         $this->checkPermissions('DISPLAY_BANNER_VIEW');
@@ -71,7 +69,7 @@ class BannerController extends AbstractBackendController
         return $smarty->assign('action', $this->action)
             ->assign('validPageTypes', (new BoxAdmin($this->db))->getMappedValidPageTypes())
             ->assign('pagination', $pagination)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->assign('banners', $pagination->getPageItems())
             ->getResponse('banner.tpl');
     }

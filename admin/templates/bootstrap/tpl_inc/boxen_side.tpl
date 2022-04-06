@@ -1,7 +1,7 @@
 {function sideContainerSection} {* direction, directionName, oBox_arr *}
     <div class="col-md-12">
         <div class="card">
-            <form action="{$shopURL}{$route}" method="post">
+            <form action="{$adminURL}{$route}" method="post">
                 {$jtl_token}
                 <div class="card-header">
                     <div class="subheading1">{$directionName}</div>
@@ -60,7 +60,7 @@
 
             </form>
             <div class="card-footer">
-                <form name="newBox_{$direction}" action="{$shopURL}{$route}" method="post" class="form-horizontal">
+                <form name="newBox_{$direction}" action="{$adminURL}{$route}" method="post" class="form-horizontal">
                     {$jtl_token}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="newBox_{$direction}">{__('new')}:</label>

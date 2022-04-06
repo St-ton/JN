@@ -57,6 +57,11 @@ abstract class AbstractBackendController implements ControllerInterface
     protected string $step = '';
 
     /**
+     * @var string
+     */
+    protected string $route = '';
+
+    /**
      * @param DbInterface           $db
      * @param JTLCacheInterface     $cache
      * @param AlertServiceInterface $alertService
@@ -109,8 +114,7 @@ abstract class AbstractBackendController implements ControllerInterface
     public function notFoundResponse(
         ServerRequestInterface $request,
         array $args,
-        JTLSmarty $smarty,
-        Route $route
+        JTLSmarty $smarty
     ): ResponseInterface {
         return (new Response())->withStatus(404);
     }
@@ -144,5 +148,21 @@ abstract class AbstractBackendController implements ControllerInterface
                 $_SESSION['editLanguageCode'] = $language->cISO;
             }
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getRoute(): string
+    {
+        return $this->route;
+    }
+
+    /**
+     * @param string $route
+     */
+    public function setRoute(string $route): void
+    {
+        $this->route = $route;
     }
 }

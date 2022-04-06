@@ -22,12 +22,11 @@ class LogoController extends AbstractBackendController
     private const ERR_EMPTY_FILE_NAME   = 2;
     private const OK                    = 1;
 
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('DISPLAY_OWN_LOGO_VIEW');
         $this->getText->loadAdminLocale('pages/shoplogouploader');
@@ -48,7 +47,7 @@ class LogoController extends AbstractBackendController
         return $smarty->assign('ShopLogo', Shop::getLogo(false))
             ->assign('ShopLogoURL', Shop::getLogo(true))
             ->assign('step', 'shoplogouploader_uebersicht')
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('shoplogouploader.tpl');
     }
 

@@ -15,12 +15,11 @@ use Systemcheck\Platform\Filesystem;
  */
 class PermissionCheckController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('PERMISSIONCHECK_VIEW');
         $this->getText->loadAdminLocale('pages/permissioncheck');

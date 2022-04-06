@@ -15,12 +15,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ReviewController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('MODULE_VOTESYSTEM_VIEW');
         $this->getText->loadAdminLocale('pages/bewertung');
@@ -43,7 +42,7 @@ class ReviewController extends AbstractBackendController
 
         return $smarty->assign('step', $step)
             ->assign('cTab', $tab)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('bewertung.tpl');
     }
 }

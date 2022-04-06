@@ -10,7 +10,7 @@
             {if $oKupon_arr|count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['tab'=>$cKuponTyp]}
             {/if}
-            <form method="post" action="{$shopURL}{$route}">
+            <form method="post" action="{$adminURL}{$route}">
                 {$jtl_token}
                 <input type="hidden" name="cKuponTyp" id="cKuponTyp_{$cKuponTyp}" value="{$cKuponTyp}">
                 {if $oKupon_arr|count > 0}
@@ -98,7 +98,7 @@
                                             {/if}</td>
                                         <td>
                                             <div class="btn-group">
-                                                <a href="{$shopURL}{$route}?kKupon={$oKupon->kKupon}&token={$smarty.session.jtl_token}"
+                                                <a href="{$adminURL}{$route}?kKupon={$oKupon->kKupon}&token={$smarty.session.jtl_token}"
                                                    class="btn btn-link px-2"
                                                    title="{__('modify')}"
                                                    data-toggle="tooltip">
@@ -143,7 +143,7 @@
                             {include file='tpl_inc/csv_import_btn.tpl' importerId="kupon_{$cKuponTyp}" importerType="kupon"}
                         </div>
                         <div class="col-sm-6 col-xl-auto">
-                            <a href="{$shopURL}{$route}?kKupon=0&cKuponTyp={$cKuponTyp}&token={$smarty.session.jtl_token}"
+                            <a href="{$adminURL}{$route}?kKupon=0&cKuponTyp={$cKuponTyp}&token={$smarty.session.jtl_token}"
                                class="btn btn-primary btn-block" title="{__('modify')}">
                                 <i class="fa fa-share"></i> {__($cKuponTypName|cat:'Create')}
                             </a>

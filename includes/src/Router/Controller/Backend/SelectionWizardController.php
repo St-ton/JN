@@ -20,12 +20,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class SelectionWizardController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('EXTENSION_SELECTIONWIZARD_VIEW');
         $step     = '';
@@ -170,7 +169,7 @@ class SelectionWizardController extends AbstractBackendController
         return $this->smarty->assign('step', $step)
             ->assign('cTab', $tab)
             ->assign('languageID', $languageID)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('auswahlassistent.tpl');
     }
 }

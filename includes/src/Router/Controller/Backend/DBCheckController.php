@@ -27,12 +27,11 @@ use function Functional\every;
  */
 class DBCheckController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('DBCHECK_VIEW');
         $this->getText->loadAdminLocale('pages/cbcheck');
@@ -95,7 +94,7 @@ class DBCheckController extends AbstractBackendController
             ->assign('DB_Version', DBMigrationHelper::getMySQLVersion())
             ->assign('FulltextIndizes', $fulltextIndizes)
             ->assign('engineUpdate', $engineUpdate)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('dbcheck.tpl');
     }
 

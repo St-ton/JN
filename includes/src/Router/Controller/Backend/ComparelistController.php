@@ -17,12 +17,11 @@ use stdClass;
  */
 class ComparelistController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('MODULE_COMPARELIST_VIEW');
         $this->getText->loadAdminLocale('pages/wawisync');
@@ -88,7 +87,7 @@ class ComparelistController extends AbstractBackendController
         return $smarty->assign('Letzten20Vergleiche', $last20)
             ->assign('TopVergleiche', $topComparisons)
             ->assign('pagination', $pagination)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('vergleichsliste.tpl');
     }
 

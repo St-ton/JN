@@ -16,12 +16,11 @@ use stdClass;
  */
 class SitemapController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('SETTINGS_SITEMAP_VIEW');
         $this->getText->loadAdminLocale('pages/shopsitemap');
@@ -42,7 +41,7 @@ class SitemapController extends AbstractBackendController
         }
         \getAdminSectionSettings(\CONF_SITEMAP);
 
-        return $smarty->assign('route', $route->getPath())
+        return $smarty->assign('route', $this->route)
             ->getResponse('shopsitemap.tpl');
     }
 }

@@ -18,12 +18,11 @@ use stdClass;
  */
 class TaCController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('ORDER_AGB_WRB_VIEW');
         $this->getText->loadAdminLocale('pages/agbwrb');
@@ -48,7 +47,7 @@ class TaCController extends AbstractBackendController
 
         return $this->smarty->assign('step', $this->step)
             ->assign('languageID', (int)$_SESSION['editLanguageID'])
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->assign('recommendations', new Manager($this->alertService, Manager::SCOPE_BACKEND_LEGAL_TEXTS))
             ->getResponse('agbwrb.tpl');
     }

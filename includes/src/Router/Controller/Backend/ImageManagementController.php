@@ -15,12 +15,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ImageManagementController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('DISPLAY_IMAGES_VIEW');
         $this->getText->loadAdminLocale('pages/bilderverwaltung');
@@ -29,7 +28,7 @@ class ImageManagementController extends AbstractBackendController
 
         return $smarty->assign('items', $manager->getItems())
             ->assign('corruptedImagesByType', $manager->getCorruptedImages(Image::TYPE_PRODUCT, \MAX_CORRUPTED_IMAGES))
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('bilderverwaltung.tpl');
     }
 }

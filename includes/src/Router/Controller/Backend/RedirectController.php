@@ -23,12 +23,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class RedirectController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('REDIRECT_VIEW');
         $this->getText->loadAdminLocale('pages/redirect');
@@ -150,7 +149,7 @@ class RedirectController extends AbstractBackendController
 
         return $smarty->assign('oFilter', $filter)
             ->assign('pagination', $pagination)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->assign('oRedirect_arr', $list)
             ->assign('nTotalRedirectCount', Redirect::getRedirectCount())
             ->getResponse('redirect.tpl');

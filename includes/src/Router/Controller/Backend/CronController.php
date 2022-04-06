@@ -17,12 +17,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class CronController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('CRON_VIEW');
         $this->getText->loadAdminLocale('pages/cron');
@@ -53,7 +52,7 @@ class CronController extends AbstractBackendController
             ->assign('inserted', $inserted)
             ->assign('available', $admin->getAvailableCronJobs())
             ->assign('tab', $tab)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('cron.tpl');
     }
 }

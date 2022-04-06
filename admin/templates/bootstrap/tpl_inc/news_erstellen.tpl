@@ -3,7 +3,7 @@
 </style>
 {include file='tpl_inc/seite_header.tpl' cTitel=__('news') cBeschreibung=__('newsDesc')}
 <div id="content">
-    <form name="news" method="post" action="{$shopURL}{$route}" enctype="multipart/form-data" class="hide-fileinput-remove">
+    <form name="news" method="post" action="{$adminURL}{$route}" enctype="multipart/form-data" class="hide-fileinput-remove">
         {$jtl_token}
         <input type="hidden" name="news" value="1" />
         <input type="hidden" name="news_speichern" value="1" />
@@ -140,7 +140,7 @@
                                     fileMaxSize={$nMaxFileSize}
                                     fileInitialPreview="[
                                             {if !empty($oNews->getPreviewImage())}
-                                            '<img src=\"{$shopURL}/{$oNews->getPreviewImage()}\" class=\"preview-image\"/><a class=\"d-block\" href=\"{$shopURL}{$route}?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$oNews->getPreviewImageBaseName()}&token={$smarty.session.jtl_token}\" title=\"{__('delete')}\"><i class=\"fas fa-trash-alt\"></i></a>',
+                                            '<img src=\"{$shopURL}/{$oNews->getPreviewImage()}\" class=\"preview-image\"/><a class=\"d-block\" href=\"{$adminURL}{$route}?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$oNews->getPreviewImageBaseName()}&token={$smarty.session.jtl_token}\" title=\"{__('delete')}\"><i class=\"fas fa-trash-alt\"></i></a>',
                                             {/if}
                                         ]"
                                     fileInitialPreviewConfig="[
@@ -164,7 +164,7 @@
                                     fileIsSingle=false
                                     fileInitialPreview="[
                                             {foreach $files as $file}
-                                            '<img src=\"{$file->cURLFull}\" class=\"file-preview-image img-fluid\"/><a class=\"d-block\" href=\"{$shopURL}{$route}?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$file->cName}&token={$smarty.session.jtl_token}\" title=\"{__('delete')}\"><i class=\"fas fa-trash-alt\"></i></a>',
+                                            '<img src=\"{$file->cURLFull}\" class=\"file-preview-image img-fluid\"/><a class=\"d-block\" href=\"{$adminURL}{$route}?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$file->cName}&token={$smarty.session.jtl_token}\" title=\"{__('delete')}\"><i class=\"fas fa-trash-alt\"></i></a>',
                                             {/foreach}
                                         ]"
                                     fileInitialPreviewConfig="[
@@ -281,7 +281,7 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-outline-primary btn-block" href="{$shopURL}{$route}{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
+                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
                             <i class="fa fa-exclamation"></i> {__('Cancel')}
                         </a>
                     </div>

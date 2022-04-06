@@ -54,7 +54,7 @@
         </nav>
         <div class="tab-content">
             <div id="massaction" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active show{/if}">
-                <form method="post" action="{$shopURL}{$route}">
+                <form method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <div>
                         <div class="subheading1">{__('management')}</div>
@@ -124,7 +124,7 @@
                                     </div>
                                     <input name="a" type="hidden" value="cacheMassAction" />
                                 </div>
-                                <form method="post" action="{$shopURL}{$route}" class="submit-form">
+                                <form method="post" action="{$adminURL}{$route}" class="submit-form">
                                     {$jtl_token}
                                     <div class="ml-auto col-sm-6 col-xl-auto">
                                         <button name="a" type="submit" value="flush_object_cache" class="btn btn-outline-primary btn-block delete"{if !$cache_enabled} disabled="disabled"{/if}>
@@ -331,7 +331,7 @@
                     <div class="settings">
                         <div class="subheading1">{__('settings')}</div>
                         <hr class="mb-3">
-                        <form method="post" action="{$shopURL}{$route}">
+                        <form method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
                             <div>
                                 <div class="form-group form-row align-items-center">
@@ -448,7 +448,7 @@
                 {/if}
             </div>
             <div id="settings" class="tab-pane fade {if isset($tab) && $tab === 'settings'} active show{/if}">
-                <form method="post" action="{$shopURL}{$route}">
+                <form method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <input type="hidden" name="a" value="settings" />
                     <input name="tab" type="hidden" value="settings" />

@@ -7,7 +7,7 @@
         {include file='tpl_inc/config_section.tpl'
                     name='einstellen'
                     a='saveSettings'
-                    action=$shopURL|cat:$route
+                    action=$adminURL|cat:$route
                     title=__('settings')
                     tab='einstellungen'}
     </div>

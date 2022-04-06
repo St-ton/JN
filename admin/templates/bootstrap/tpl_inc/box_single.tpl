@@ -70,7 +70,7 @@
     </td>
     <td class="text-center">
         <div class="btn-group">
-            <a href="{$shopURL}{$route}?action=del&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
+            <a href="{$adminURL}{$route}?action=del&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
                title="{__('remove')}"
                class="btn btn-link px-2 delete-confirm {if $disabled}disabled{/if}"
                data-modal-body="{__('confirmDeleteBox')|sprintf:"{if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}Container #{$oBox->getID()}{else}{$oBox->getTitle()}{/if}"}"
@@ -80,7 +80,7 @@
                     <span class="fas fa-trash-alt"></span>
                 </span>
             </a>
-            <a href="{$shopURL}{$route}?action=edit_mode&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
+            <a href="{$adminURL}{$route}?action=edit_mode&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
                title="{__('edit')}"
                data-toggle="tooltip"
                class="btn btn-link px-2{if $disabled || empty($oBox->getType()) || ($oBox->getType() !== \JTL\Boxes\Type::TEXT && $oBox->getType() !== \JTL\Boxes\Type::LINK && $oBox->getType() !== \JTL\Boxes\Type::CATBOX)} disabled{/if}">

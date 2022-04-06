@@ -4,7 +4,7 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            <form name="branding" method="post" action="{$shopURL}{$route}">
+            <form name="branding" method="post" action="{$adminURL}{$route}">
                 {$jtl_token}
                 <input type="hidden" name="branding" value="1" />
                 <div class="form-row">
@@ -23,7 +23,7 @@
 
     {if $oBranding->kBrandingTMP > 0}
         <div class="no_overflow" id="settings">
-            <form name="einstellen" method="post" action="{$shopURL}{$route}" enctype="multipart/form-data">
+            <form name="einstellen" method="post" action="{$adminURL}{$route}" enctype="multipart/form-data">
                 {$jtl_token}
                 <input type="hidden" name="branding" value="1" />
                 <input type="hidden" name="kBranding" value="{$oBranding->kBrandingTMP}" />
@@ -132,7 +132,7 @@
                                     fileInitialPreviewConfig="[
                                             {if $oBranding->cBrandingBild|strlen > 0}
                                             {
-                                                url: '{$shopURL}{$route}',
+                                                url: '{$adminURL}{$route}',
                                                 extra: {
                                                     action: 'delete',
                                                     logo: '{$oBranding->cBrandingBild}',

@@ -40,12 +40,11 @@ class ForgotPasswordController extends AbstractController
     /**
      * @inheritdoc
      */
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         Shop::setPageType(\PAGE_PASSWORTVERGESSEN);
         $linkHelper = Shop::Container()->getLinkService();

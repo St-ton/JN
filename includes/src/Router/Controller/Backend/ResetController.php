@@ -18,12 +18,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ResetController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('RESET_SHOP_VIEW');
         $this->getText->loadAdminLocale('pages/shopzuruecksetzen');
@@ -44,7 +43,7 @@ class ResetController extends AbstractBackendController
             \executeHook(\HOOK_BACKEND_SHOP_RESET_AFTER);
         }
 
-        return $smarty->assign('route', $route->getPath())
+        return $smarty->assign('route', $this->route)
             ->getResponse('shopzuruecksetzen.tpl');
     }
 }

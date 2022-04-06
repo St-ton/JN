@@ -30,12 +30,11 @@ class CacheController extends AbstractBackendController
      */
     private string $tab = 'uebersicht';
 
-    public function getResponse(
-        ServerRequestInterface $request,
-        array                  $args,
-        JTLSmarty              $smarty,
-        Route                  $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('OBJECTCACHE_VIEW');
         $this->getText->loadAdminLocale('pages/cache');
@@ -135,7 +134,7 @@ class CacheController extends AbstractBackendController
             ->assign('disabled_caches', $currentlyDisabled)
             ->assign('step', 'uebersicht')
             ->assign('tab', $this->tab)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('cache.tpl');
     }
 

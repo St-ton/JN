@@ -112,7 +112,7 @@
             <div id="overview" class="tab-pane fade{if $cTab === '' || $cTab === 'uebersicht'} active show{/if}">
                 {if $invisibleBoxes|count > 0}
                     <div class="alert alert-danger">{__('warningInvisibleBoxes')}</div>
-                    <form action="{$adminURL}/{\JTL\Router\AdminRouter::ROUTE_BOXES}" method="post" class="block">
+                    <form action="{$adminURL}{$route}" method="post" class="block">
                         {$jtl_token}
                         <div class="card editorInner">
                             <div class="card-header">
@@ -181,7 +181,7 @@
                 {else}
                     {if isset($oEditBox) && $oEditBox}
                         <div id="editor" class="editor">
-                            <form action="{$adminURL}/{\JTL\Router\AdminRouter::ROUTE_BOXES}" method="post">
+                            <form action="{$adminURL}{$route}" method="post">
                                 {$jtl_token}
                                 <div class="card editorInner">
                                     <div class="card-header">
@@ -260,7 +260,7 @@
                                     <div class="card-footer save-wrapper">
                                         <div class="row">
                                             <div class="ml-auto col-sm-6 col-xl-auto">
-                                                <button type="button" onclick="window.location.href='{$adminURL}/{\JTL\Router\AdminRouter::ROUTE_BOXES}'" class="btn btn-outline-primary btn-block">
+                                                <button type="button" onclick="window.location.href='{$adminURL}{$route}'" class="btn btn-outline-primary btn-block">
                                                     {__('cancelWithIcon')}
                                                 </button>
                                             </div>
@@ -280,7 +280,7 @@
                         {/if}
                         <div class="card">
                             <div class="card-body">
-                                <form name="boxen" method="post" action="{$adminURL}/{\JTL\Router\AdminRouter::ROUTE_BOXES}">
+                                <form name="boxen" method="post" action="{$adminURL}{$route}">
                                     {$jtl_token}
                                     <div class="input-group left">
                                         <span class="input-group-addon">
@@ -308,7 +308,7 @@
                 {include file='tpl_inc/config_section.tpl'
                     name='einstellen'
                     a='saveSettings'
-                    action=$adminURL|cat:\JTL\Router\AdminRouter::ROUTE_BOXES
+                    action=$adminURL|cat:$route
                     buttonCaption=__('save')
                     title=__('settings')
                     tab='einstellungen'

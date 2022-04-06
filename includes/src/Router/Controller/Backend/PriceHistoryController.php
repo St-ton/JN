@@ -14,12 +14,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class PriceHistoryController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('MODULE_PRICECHART_VIEW');
         $this->getText->loadAdminLocale('pages/preisverlauf');
@@ -28,7 +27,7 @@ class PriceHistoryController extends AbstractBackendController
         }
         \getAdminSectionSettings(\CONF_PREISVERLAUF);
 
-        return $smarty->assign('route', $route->getPath())
+        return $smarty->assign('route', $this->route)
             ->getResponse('preisverlauf.tpl');
     }
 }

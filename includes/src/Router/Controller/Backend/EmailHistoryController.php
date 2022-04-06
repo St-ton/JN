@@ -17,12 +17,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class EmailHistoryController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('EMAILHISTORY_VIEW');
         $this->getText->loadAdminLocale('pages/emailhistory');
@@ -51,7 +50,7 @@ class EmailHistoryController extends AbstractBackendController
         return $smarty->assign('pagination', $pagination)
             ->assign('oEmailhistory_arr', $history->getAll(' LIMIT ' . $pagination->getLimitSQL()))
             ->assign('step', $step)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('emailhistory.tpl');
     }
 }

@@ -44,7 +44,7 @@
                                         {$collapse=1}
                                     {/if}
                                     {strip}
-                                        <a href="{$shopURL}{$route}?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$country->getISO()}&token={$smarty.session.jtl_token}"
+                                        <a href="{$adminURL}{$route}?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$country->getISO()}&token={$smarty.session.jtl_token}"
                                             data-toggle="tooltip"
                                             title="{__('isleListsDesc')}">
                                             <span class="small">
@@ -124,7 +124,7 @@
                             </ul>
                         </td>
                         <td>
-                            <form method="post" action="{$shopURL}{$route}">
+                            <form method="post" action="{$adminURL}{$route}">
                                 {$jtl_token}
                                 <div class="btn-group">
                                     <button name="del"

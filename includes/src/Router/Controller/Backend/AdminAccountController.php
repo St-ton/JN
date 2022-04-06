@@ -952,20 +952,19 @@ class AdminAccountController extends AbstractBackendController
         return $this->messages['error'];
     }
 
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
-        $this->url    = Shop::getURL() . $route->getPath();
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
+        $this->url    = Shop::getURL() . $this->route;
         $this->smarty = $smarty;
         $this->checkPermissions('ACCOUNT_VIEW');
         $this->getText->loadAdminLocale('pages/benutzerverwaltung');
 
         $this->finalize($this->getNextAction());
 
-        return $smarty->assign('route', $route->getPath())
+        return $smarty->assign('route', $this->route)
             ->assign('url', $this->url)
             ->getResponse('benutzer.tpl');
     }

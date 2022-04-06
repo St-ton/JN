@@ -27,12 +27,11 @@ use stdClass;
  */
 class NewsController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('CONTENT_NEWS_SYSTEM_VIEW');
         $this->getText->loadAdminLocale('pages/news');
@@ -322,7 +321,7 @@ class NewsController extends AbstractBackendController
         $this->alertService->addError($controller->getErrorMsg(), 'newsError');
 
         return $smarty->assign('customerGroups', CustomerGroup::getGroups())
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->assign('step', $controller->getStep())
             ->assign('nMaxFileSize', \getMaxFileSize(\ini_get('upload_max_filesize')))
             ->getResponse('news.tpl');

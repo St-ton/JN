@@ -31,12 +31,11 @@ use stdClass;
  */
 class PaymentMethodsController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/zahlungsarten');
         $this->getText->loadConfigLocales(true, true);
@@ -353,7 +352,7 @@ class PaymentMethodsController extends AbstractBackendController
         return $smarty->assign('step', $step)
             ->assign('waehrung', $defaultCurrency->cName)
             ->assign('recommendations', $recommendations)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('zahlungsarten.tpl');
     }
     /**

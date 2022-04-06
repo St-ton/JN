@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('newsCommentAnswerEdit')}
 <div id="content" class="container-fluid2">
-    <form name="umfrage" method="post" action="{$shopURL}{$route}" class="navbar-form">
+    <form name="umfrage" method="post" action="{$adminURL}{$route}" class="navbar-form">
         {$jtl_token}
         <input type="hidden" name="news" value="1" />
         <input type="hidden" name="nkedit" value="1" />
@@ -41,7 +41,7 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-outline-primary btn-block" href="{$shopURL}{$route}{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
+                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
                             {__('cancelWithIcon')}
                         </a>
                     </div>

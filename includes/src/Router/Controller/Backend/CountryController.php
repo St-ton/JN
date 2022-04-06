@@ -15,12 +15,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class CountryController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('COUNTRY_VIEW');
         $this->getText->loadAdminLocale('pages/countrymanager');
@@ -36,7 +35,7 @@ class CountryController extends AbstractBackendController
 
         $manager->finalize($manager->getAction());
 
-        return $smarty->assign('route', $route->getPath())
+        return $smarty->assign('route', $this->route)
             ->getResponse('countrymanager.tpl');
     }
 }

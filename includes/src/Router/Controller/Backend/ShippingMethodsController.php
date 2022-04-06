@@ -35,12 +35,11 @@ use stdClass;
  */
 class ShippingMethodsController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('ORDER_SHIPMENT_VIEW');
         $this->getText->loadAdminLocale('pages/versandarten');
@@ -573,7 +572,7 @@ class ShippingMethodsController extends AbstractBackendController
         return $smarty->assign('fSteuersatz', $_SESSION['Steuersatz'][$taxRateKeys[0]])
             ->assign('oWaehrung', $this->db->select('twaehrung', 'cStandard', 'Y'))
             ->assign('step', $step)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('versandarten.tpl');
     }
 

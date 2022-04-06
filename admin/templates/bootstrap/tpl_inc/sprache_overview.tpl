@@ -1,7 +1,7 @@
 {function sprache_buttons}
     <div class="row">
         <div class="ml-auto col-sm-6 col-xl-auto">
-            <a class="btn btn-outline-primary btn-block" href="{$shopURL}{$route}?token={$smarty.session.jtl_token}&action=newvar">
+            <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}?token={$smarty.session.jtl_token}&action=newvar">
                 <i class="fa fa-share"></i>
                 {__('btnAddVar')}
             </a>
@@ -36,7 +36,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-sm-6 col-xl-auto mb-3">
-                    {include file='tpl_inc/language_switcher.tpl' id='kSprache' action=$shopURL|cat:$route}
+                    {include file='tpl_inc/language_switcher.tpl' id='kSprache' action=$adminURL|cat:$route}
                 </div>
                 {if $oWert_arr|count > 0}
                     <div class="ml-auto col-sm-6 col-xl-auto">
@@ -68,7 +68,7 @@
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination}
                 {/if}
                 <div>
-                    <form action="{$shopURL}{$route}" method="post">
+                    <form action="{$adminURL}{$route}" method="post">
                         {$jtl_token}
                         {if $oWert_arr|count > 0}
                             <div class="table-responsive">
@@ -116,7 +116,7 @@
                                                 <td class="text-center">
                                                     <div class="btn-group">
                                                         {if $oWert->bSystem === '0'}
-                                                            <a href="{$shopURL}{$route}?token={$smarty.session.jtl_token}&action=delvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}"
+                                                            <a href="{$adminURL}{$route}?token={$smarty.session.jtl_token}&action=delvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}"
                                                                class="btn btn-link px-2 delete-confirm"
                                                                title="{__('delete')}"
                                                                data-toggle="tooltip"
@@ -176,7 +176,7 @@
                                         <td>{$oWert->cName}</td>
                                         <td>
                                             <div class="btn-group right">
-                                                <a href="{$shopURL}{$route}?token={$smarty.session.jtl_token}&action=newvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}&tab=notfound"
+                                                <a href="{$adminURL}{$route}?token={$smarty.session.jtl_token}&action=newvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}&tab=notfound"
                                                    class="btn btn-link px-2"
                                                    title="{__('create')}"
                                                    data-toggle="tooltip">
@@ -198,7 +198,7 @@
                 <div class="save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a href="{$shopURL}{$route}?token={$smarty.session.jtl_token}&action=clearlog&tab=notfound" class="btn btn-danger btn-block">
+                            <a href="{$adminURL}{$route}?token={$smarty.session.jtl_token}&action=clearlog&tab=notfound" class="btn btn-danger btn-block">
                                 <i class="fa fa-refresh"></i>
                                 {__('btnResetLog')}
                             </a>

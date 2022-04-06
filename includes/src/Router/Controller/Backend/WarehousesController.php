@@ -19,12 +19,11 @@ use stdClass;
  */
 class WarehousesController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('WAREHOUSE_VIEW');
         $this->getText->loadAdminLocale('pages/warenlager');
@@ -59,7 +58,7 @@ class WarehousesController extends AbstractBackendController
 
         return $smarty->assign('step', $step)
             ->assign('warehouses', Warehouse::getAll(false, true))
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('warenlager.tpl');
     }
 }

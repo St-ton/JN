@@ -21,12 +21,11 @@ use function Functional\reindex;
  */
 class ContactFormsController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array                  $args,
-        JTLSmarty              $smarty,
-        Route                  $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/kontaktformular');
         $this->checkPermissions('SETTINGS_CONTACTFORM_VIEW');
@@ -60,7 +59,7 @@ class ContactFormsController extends AbstractBackendController
 
         return $smarty->assign('step', $this->step)
             ->assign('cTab', $tab)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('kontaktformular.tpl');
     }
 

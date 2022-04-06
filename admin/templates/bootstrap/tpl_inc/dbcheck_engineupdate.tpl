@@ -79,7 +79,7 @@
                     {{__('notePatienceTwo')}|sprintf:{$shopURL}:{$smarty.const.PFAD_ADMIN}}
                 </p>
                 <div class="alert alert-warning">{__('warningDoBackup')}</div>
-                <form method="post" action="{$shopURL}{$route}">
+                <form method="post" action="{$adminURL}{$route}">
                     <div id="settings" class="card">
                         <div class="card-body">
                             <div class="custom-control custom-checkbox">
@@ -122,7 +122,7 @@
                 <div class="alert alert-warning">{__('warningDoBackupScript')}</div>
                 <div class="alert alert-warning">{__('warningUseConsoleScript')}</div>
                 <div class="alert alert-warning">{__('warningUseThisShopScript')}</div>
-                <form action="{$shopURL}{$route}" method="post">
+                <form action="{$adminURL}{$route}" method="post">
                     {$jtl_token}
                     <div class="btn-group">
                         <button class="btn btn-primary" name="update" value="script"><i class="fa fa-cogs"></i> {__('buttonCreateScript')}</button>

@@ -16,12 +16,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class EmailBlocklistController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('SETTINGS_EMAIL_BLACKLIST_VIEW');
         $this->getText->loadAdminLocale('pages/emailblacklist');
@@ -54,7 +53,7 @@ class EmailBlocklistController extends AbstractBackendController
         return $smarty->assign('blacklist', $blacklist)
             ->assign('blocked', $blocked)
             ->assign('step', $step)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('emailblacklist.tpl');
     }
 }

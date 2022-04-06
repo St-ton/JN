@@ -16,12 +16,11 @@ use Systemcheck\Platform\Hosting;
  */
 class SystemCheckController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('DIAGNOSTIC_VIEW');
         $this->getText->loadAdminLocale('pages/systemcheck');

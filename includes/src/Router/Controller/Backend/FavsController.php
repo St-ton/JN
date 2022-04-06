@@ -17,12 +17,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class FavsController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/favs');
 
@@ -42,7 +41,7 @@ class FavsController extends AbstractBackendController
         }
 
         return $smarty->assign('favorites', $this->account->favorites())
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('favs.tpl');
     }
 }

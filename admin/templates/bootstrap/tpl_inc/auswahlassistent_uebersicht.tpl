@@ -5,7 +5,7 @@
     {if !isset($noModule) || !$noModule}
         <div class="card">
             <div class="card-body">
-                {include file='tpl_inc/language_switcher.tpl' action=$shopURL|cat:$route}
+                {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:$route}
             </div>
         </div>
         <div class="tabs">
@@ -25,7 +25,7 @@
             </nav>
             <div class="tab-content">
                 <div id="overview" class="tab-pane fade{if $cTab === '' || $cTab === 'uebersicht'} active show{/if}">
-                    <form name="uebersichtForm" method="post" action="{$shopURL}{$route}">
+                    <form name="uebersichtForm" method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <input type="hidden" name="tab" value="uebersicht" />
                         <div>
@@ -82,7 +82,7 @@
                                                                     </span>
                                                                 </a>
                                                             {/if}
-                                                            <a href="{$shopURL}{$route}?a=editGrp&g={$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}&token={$smarty.session.jtl_token}"
+                                                            <a href="{$adminURL}{$route}?a=editGrp&g={$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}&token={$smarty.session.jtl_token}"
                                                                class="btn btn-link px-2 edit"
                                                                title="{__('modify')}"
                                                                data-toggle="tooltip">
@@ -120,7 +120,7 @@
                                                                             <td class="text-center">{$oAuswahlAssistentFrage->nSort}</td>
                                                                             <td class="text-center">
                                                                                 <div class="btn-group">
-                                                                                    <a href="{$shopURL}{$route}?a=delQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}"
+                                                                                    <a href="{$adminURL}{$route}?a=delQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}"
                                                                                        class="btn btn-link px-2 remove delete-confirm"
                                                                                        data-toggle="tooltip"
                                                                                        data-modal-body="{$oAuswahlAssistentFrage->cFrage}"
@@ -130,7 +130,7 @@
                                                                                             <span class="fas fa-trash-alt"></span>
                                                                                         </span>
                                                                                     </a>
-                                                                                    <a href="{$shopURL}{$route}?a=editQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}"
+                                                                                    <a href="{$adminURL}{$route}?a=editQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}"
                                                                                        class="btn btn-link px-2 edit"
                                                                                        data-toggle="tooltip"
                                                                                        title="{__('edit')}">
@@ -195,7 +195,7 @@
                 <!-- #overview -->
                 <div id="config" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
                     {include file='tpl_inc/config_section.tpl' name='einstellen' a='saveSettings'
-                             action=$shopURL|cat:$route buttonCaption=__('saveWithIcon') tab='einstellungen' title=__('settings')}
+                             action=$adminURL|cat:$route buttonCaption=__('saveWithIcon') tab='einstellungen' title=__('settings')}
                 </div>
                 <!-- #config -->
             </div>

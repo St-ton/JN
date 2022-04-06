@@ -25,7 +25,7 @@
                 {include file='tpl_inc/config_section.tpl'
                 name='einstellen'
                 a='saveSettings'
-                action=$shopURL|cat:$route
+                action=$adminURL|cat:$route
                 buttonCaption=__('save')
                 tab='einstellungen'
                 showNonConf=true}
@@ -50,13 +50,13 @@
                                 {foreach $Betreffs as $Betreff}
                                     <tr>
                                         <td>
-                                            <a href="{$shopURL}{$route}?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}">{$Betreff->cName}</a>
+                                            <a href="{$adminURL}{$route}?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}">{$Betreff->cName}</a>
                                         </td>
                                         <td>{$Betreff->cMail}</td>
                                         <td>{$Betreff->Kundengruppen}</td>
                                         <td class="text-center">
                                             <div class="btn-group">
-                                                <a href="{$shopURL}{$route}?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
+                                                <a href="{$adminURL}{$route}?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
                                                    class="btn btn-link px-2 delete-confirm"
                                                    title="{__('delete')}"
                                                    data-toggle="tooltip"
@@ -66,7 +66,7 @@
                                                         <span class="fas fa-trash-alt"></span>
                                                     </span>
                                                 </a>
-                                                <a href="{$shopURL}{$route}?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
+                                                <a href="{$adminURL}{$route}?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
                                                    class="btn btn-link px-2"
                                                    title="{__('modify')}"
                                                    data-toggle="tooltip">
@@ -86,7 +86,7 @@
                     <div class="card-footer save-wrapper">
                         <div class="row">
                             <div class="ml-auto col-sm-6 col-xl-auto">
-                                <a class="btn btn-primary btn-block" href="{$shopURL}{$route}?neu=1&token={$smarty.session.jtl_token}">
+                                <a class="btn btn-primary btn-block" href="{$adminURL}{$route}?neu=1&token={$smarty.session.jtl_token}">
                                     <i class="fa fa-share"></i> {__('newSubject')}
                                 </a>
                             </div>
@@ -95,7 +95,7 @@
                 </div>
             </div>
             <div id="contents" class="tab-pane fade {if $cTab === 'content'} active show{/if}">
-                <form name="einstellen" method="post" action="{$shopURL}{$route}">
+                <form name="einstellen" method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <input type="hidden" name="content" value="1" />
                     <div>

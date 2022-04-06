@@ -73,10 +73,10 @@ use League\Route\RouteGroup;
 use League\Route\Router;
 
 /**
- * Class AdminRouter
+ * Class BackendRouter
  * @package JTL\Router
  */
-class AdminRouter
+class BackendRouter
 {
     public const ROUTE_TAC                   = 'tac';
     public const ROUTE_FAVS                  = 'favs';
@@ -215,9 +215,12 @@ class AdminRouter
             self::ROUTE_RESET                 => ResetController::class,
             self::ROUTE_SEPARATOR             => SeparatorController::class,
         ];
-        foreach ($controllers as $controller) {
-            $container->add($controller, function () use ($controller, $db, $cache, $alertService, $account, $getText) {
-                return new $controller($db, $cache, $alertService, $account, $getText);
+        foreach ($controllers as $route => $controller) {
+            $container->add($controller, function () use ($controller, $db, $cache, $alertService, $account, $getText, $route) {
+                $controller = new $controller($db, $cache, $alertService, $account, $getText);
+                $controller->setRoute('/' . $route);
+
+                return $controller;
             });
         }
         $strategy->setContainer($container);

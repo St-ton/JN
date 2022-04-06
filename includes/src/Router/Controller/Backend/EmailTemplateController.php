@@ -31,12 +31,11 @@ use function Functional\filter;
  */
 class EmailTemplateController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('CONTENT_EMAIL_TEMPLATE_VIEW');
         $this->getText->loadAdminLocale('pages/emailvorlagen');
@@ -180,7 +179,7 @@ class EmailTemplateController extends AbstractBackendController
             ->assign('cFehlerAnhang_arr', $attachmentErrors)
             ->assign('step', $step)
             ->assign('Einstellungen', $conf)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('emailvorlagen.tpl');
     }
 

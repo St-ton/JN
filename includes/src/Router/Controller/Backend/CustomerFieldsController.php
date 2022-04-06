@@ -18,12 +18,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class CustomerFieldsController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('ORDER_CUSTOMERFIELDS_VIEW');
         $this->getText->loadAdminLocale('pages/kundenfeld');

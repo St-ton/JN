@@ -23,12 +23,11 @@ use stdClass;
  */
 class SliderController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('SLIDER_VIEW');
         $this->getText->loadAdminLocale('pages/slider');
@@ -207,7 +206,7 @@ class SliderController extends AbstractBackendController
             ->assign('kSlider', $kSlider)
             ->assign('validPageTypes', (new BoxAdmin($this->db))->getMappedValidPageTypes())
             ->assign('pagination', $pagination)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->assign('oSlider_arr', $pagination->getPageItems())
             ->getResponse('slider.tpl');
     }

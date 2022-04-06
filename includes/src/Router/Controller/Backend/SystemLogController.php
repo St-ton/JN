@@ -22,12 +22,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class SystemLogController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('SYSTEMLOG_VIEW');
         $this->getText->loadAdminLocale('pages/systemlog');
@@ -122,7 +121,7 @@ class SystemLogController extends AbstractBackendController
             ))
             ->assign('settingLogsPagination', $settingLogsPagination)
             ->assign('settingLogsFilter', $settingLogsFilter)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('systemlog.tpl');
     }
 }

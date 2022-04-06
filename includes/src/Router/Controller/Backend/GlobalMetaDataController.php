@@ -17,12 +17,11 @@ use stdClass;
  */
 class GlobalMetaDataController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('SETTINGS_GLOBAL_META_VIEW');
         $this->getText->loadAdminLocale('pages/globalemetaangaben');

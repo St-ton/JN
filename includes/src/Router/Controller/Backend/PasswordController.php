@@ -18,12 +18,11 @@ use stdClass;
  */
 class PasswordController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('WAWI_SYNC_VIEW');
         $this->getText->loadAdminLocale('pages/pass');
@@ -59,7 +58,7 @@ class PasswordController extends AbstractBackendController
         }
 
         return $smarty->assign('step', $step)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('pass.tpl');
     }
 

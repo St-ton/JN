@@ -19,7 +19,7 @@
                         </a>
                     </p>
                     {include file='snippets/alert_list.tpl'}
-                    <form method="post" action="{$shopURL}{$route}" class="form-horizontal" role="form">
+                    <form method="post" action="{$adminURL}{$route}" class="form-horizontal" role="form">
                         {$jtl_token}
                         {if $step === 'prepare'}
                             <div class="input-group">

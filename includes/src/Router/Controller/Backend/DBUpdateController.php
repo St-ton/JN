@@ -17,12 +17,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class DBUpdateController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('SHOP_UPDATE_VIEW');
         $this->getText->loadAdminLocale('pages/dbupdater');
@@ -57,7 +56,7 @@ class DBUpdateController extends AbstractBackendController
         return $smarty->assign('updatesAvailable', $updater->hasPendingUpdates())
             ->assign('manager', ADMIN_MIGRATION ? new MigrationManager($this->db) : null)
             ->assign('isPluginManager', false)
-            ->assign('migrationURL', Shop::getURL() . $route->getPath())
+            ->assign('migrationURL', Shop::getAdminURL() . $this->route)
             ->assign('currentFileVersion', $fileVersion)
             ->assign('currentDatabaseVersion', $updater->getCurrentDatabaseVersion())
             ->assign('hasDifferentVersions', !Version::parse($fileVersion)->equals(Version::parse($fileVersion)))
@@ -66,7 +65,7 @@ class DBUpdateController extends AbstractBackendController
             ->assign('currentTemplateFileVersion', $template->getFileVersion())
             ->assign('currentTemplateDatabaseVersion', $template->getVersion())
             ->assign('hasMinUpdateVersion', $hasMinUpdateVersion)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('dbupdater.tpl');
     }
 }

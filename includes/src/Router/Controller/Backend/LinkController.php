@@ -26,12 +26,11 @@ use stdClass;
  */
 class LinkController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('CONTENT_PAGE_VIEW');
         $this->getText->loadAdminLocale('pages/links');
@@ -373,7 +372,7 @@ class LinkController extends AbstractBackendController
             ->assign('Link', $link)
             ->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
             ->assign('linkAdmin', $linkAdmin)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('links.tpl');
     }
 }

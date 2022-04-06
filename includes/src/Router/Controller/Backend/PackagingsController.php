@@ -24,12 +24,11 @@ class PackagingsController extends AbstractBackendController
 {
     private string $action = '';
 
-    public function getResponse(
-        ServerRequestInterface $request,
-        array                  $args,
-        JTLSmarty              $smarty,
-        Route                  $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->getText->loadAdminLocale('pages/zusatzverpackung');
         $this->smarty = $smarty;
         $this->checkPermissions('ORDER_PACKAGE_VIEW');
@@ -78,7 +77,7 @@ class PackagingsController extends AbstractBackendController
             ->assign('packagings', $packagings)
             ->assign('step', 'zusatzverpackung')
             ->assign('pagination', $pagination)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->assign('action', $this->action)
             ->getResponse('zusatzverpackung.tpl');
     }

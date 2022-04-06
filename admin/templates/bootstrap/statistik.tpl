@@ -2,7 +2,7 @@
 
 <script type="text/javascript">
     function changeStatType(elem) {ldelim}
-        window.location.href = "{$shopURL}{$route}?s=" + elem.options[elem.selectedIndex].value;
+        window.location.href = "{$adminURL}{$route}?s=" + elem.options[elem.selectedIndex].value;
     {rdelim}
 </script>
 {if $nTyp === $smarty.const.STATS_ADMIN_TYPE_BESUCHER}

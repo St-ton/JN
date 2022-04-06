@@ -168,8 +168,7 @@ abstract class AbstractController implements ControllerInterface
     public function notFoundResponse(
         ServerRequestInterface $request,
         array $args,
-        JTLSmarty $smarty,
-        Route $route
+        JTLSmarty $smarty
     ): ResponseInterface {
         if ($this->state->languageID === 0) {
             $this->state->languageID = Shop::getLanguageID();
@@ -185,7 +184,7 @@ abstract class AbstractController implements ControllerInterface
         );
         $pc->init();
 
-        return $pc->getResponse($request, $args, $smarty, $route)->withStatus(404);
+        return $pc->getResponse($request, $args, $smarty)->withStatus(404);
     }
 
     /**

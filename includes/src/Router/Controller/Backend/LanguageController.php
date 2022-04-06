@@ -21,12 +21,11 @@ use stdClass;
  */
 class LanguageController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('LANGUAGE_VIEW');
         $this->getText->loadAdminLocale('pages/sprache');
@@ -272,7 +271,7 @@ class LanguageController extends AbstractBackendController
 
         return $smarty->assign('tab', $tab)
             ->assign('step', $step)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('sprache.tpl');
     }
 }

@@ -7,7 +7,7 @@ use JTL\Helpers\Request;
 use JTL\L10n\GetText;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
-use JTL\Router\AdminRouter;
+use JTL\Router\BackendRouter;
 use League\Route\Router;
 use Shop;
 
@@ -66,7 +66,7 @@ class Menu
                 'icon'  => 'marketing',
                 'items' => [
                     \__('Orders')     => (object)[
-                        'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_ORDERS)->getPath(),
+                        'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_ORDERS)->getPath(),
                         'permissions' => 'ORDER_VIEW',
                     ],
                     \__('Promotions') => [
@@ -78,14 +78,14 @@ class Menu
                             'settingsAnchor' => '#einstellungen',
                         ],
                         \__('Blog posts') => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_NEWS)->getPath(),
+                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_NEWS)->getPath(),
                             'permissions'    => 'CONTENT_NEWS_SYSTEM_VIEW',
                             'section'        => \CONF_NEWS,
                             'specialSetting' => true,
                             'settingsAnchor' => '#einstellungen',
                         ],
                         \__('Coupons')    => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_COUPONS)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_COUPONS)->getPath(),
                             'permissions' => 'ORDER_COUPON_VIEW',
                         ],
                         \__('Free gifts') => (object)[
@@ -98,7 +98,7 @@ class Menu
                     ],
                     \__('Statistics') => [
                         \__('Sales')             => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_STATS)->getPath() . '?s=4',
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_STATS)->getPath() . '?s=4',
                             'permissions' => 'STATS_EXCHANGE_VIEW',
                         ],
                         \__('Campaigns')         => (object)[
@@ -114,19 +114,19 @@ class Menu
                             'permissions' => 'STATS_COUPON_VIEW',
                         ],
                         \__('Visitors')          => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_STATS)->getPath() . '?s=1',
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_STATS)->getPath() . '?s=1',
                             'permissions' => 'STATS_VISITOR_VIEW',
                         ],
                         \__('Referrer pages')    => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_STATS)->getPath() . '?s=2',
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_STATS)->getPath() . '?s=2',
                             'permissions' => 'STATS_VISITOR_LOCATION_VIEW',
                         ],
                         \__('Entry pages')       => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_STATS)->getPath() . '?s=5',
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_STATS)->getPath() . '?s=5',
                             'permissions' => 'STATS_LANDINGPAGES_VIEW',
                         ],
                         \__('Search engines')    => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_STATS)->getPath() . '?s=3',
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_STATS)->getPath() . '?s=3',
                             'permissions' => 'STATS_CRAWLER_VIEW',
                         ],
                         \__('Search queries')    => (object)[
@@ -135,7 +135,7 @@ class Menu
                         ],
                     ],
                     \__('Reports')    => (object)[
-                        'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_STATUSMAIL)->getPath(),
+                        'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_STATUSMAIL)->getPath(),
                         'permissions' => 'EMAIL_REPORTS_VIEW',
                     ],
                 ]
@@ -170,7 +170,7 @@ class Menu
                             'section'     => \CONF_KAUFABWICKLUNG,
                         ],
                         \__('Comparison list')  => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_COMPARELIST)->getPath(),
+                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_COMPARELIST)->getPath(),
                             'permissions'    => 'MODULE_COMPARELIST_VIEW',
                             'section'        => \CONF_VERGLEICHSLISTE,
                             'specialSetting' => true,
@@ -181,7 +181,7 @@ class Menu
                             'permissions' => 'MODULE_WISHLIST_VIEW',
                         ],
                         \__('Contact form')     => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_CONTACT_FORMS)->getPath(),
+                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_CONTACT_FORMS)->getPath(),
                             'permissions'    => 'SETTINGS_CONTACTFORM_VIEW',
                             'section'        => \CONF_KONTAKTFORMULAR,
                             'specialSetting' => true,
@@ -195,7 +195,7 @@ class Menu
                     ],
                     \__('Default elements') => [
                         \__('Shop logo')                  => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_LOGO)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_LOGO)->getPath(),
                             'permissions' => 'DISPLAY_OWN_LOGO_VIEW',
                         ],
                         \__('Search')                     => (object)[
@@ -205,7 +205,7 @@ class Menu
                             'specialSetting' => true,
                         ],
                         \__('Price history')              => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_PRICEHISTORY)->getPath(),
+                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_PRICEHISTORY)->getPath(),
                             'permissions'    => 'MODULE_PRICECHART_VIEW',
                             'section'        => \CONF_PREISVERLAUF,
                             'specialSetting' => true,
@@ -227,7 +227,7 @@ class Menu
                             'group'                 => 'configgroup_5_product_available',
                         ],
                         \__('Item badges')                => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_SEARCHSPECIALOVERLAYS)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_SEARCHSPECIALOVERLAYS)->getPath(),
                             'permissions' => 'DISPLAY_ARTICLEOVERLAYS_VIEW',
                         ],
                         \__('Footer / Boxes')             => (object)[
@@ -235,18 +235,18 @@ class Menu
                             'permissions' => 'BOXES_VIEW',
                         ],
                         \__('Selection wizard')           => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_SELECTION_WIZARD)->getPath(),
+                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_SELECTION_WIZARD)->getPath(),
                             'permissions'    => 'EXTENSION_SELECTIONWIZARD_VIEW',
                             'section'        => \CONF_AUSWAHLASSISTENT,
                             'specialSetting' => true,
                             'settingsAnchor' => '#config',
                         ],
                         \__('Warehouse display')          => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_WAREHOUSES)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_WAREHOUSES)->getPath(),
                             'permissions' => 'WAREHOUSE_VIEW',
                         ],
                         \__('Reviews')                    => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_REVIEWS)->getPath(),
+                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_REVIEWS)->getPath(),
                             'permissions'    => 'MODULE_VOTESYSTEM_VIEW',
                             'section'        => \CONF_BEWERTUNG,
                             'specialSetting' => true,
@@ -262,30 +262,30 @@ class Menu
                     ],
                     \__('Custom contents')  => [
                         \__('Pages')                  => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_LINKS)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_LINKS)->getPath(),
                             'permissions' => 'CONTENT_PAGE_VIEW',
                         ],
                         \__('Terms / Withdrawal')     => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_TAC)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_TAC)->getPath(),
                             'permissions' => 'ORDER_AGB_WRB_VIEW',
                         ],
                         \__('Extended customer data') => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_CUSTOMERFIELDS)->getPath(),
+                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_CUSTOMERFIELDS)->getPath(),
                             'permissions'    => 'ORDER_CUSTOMERFIELDS_VIEW',
                             'section'        => \CONF_KUNDENFELD,
                             'specialSetting' => true,
                             'settingsAnchor' => '#config',
                         ],
                         \__('Check boxes')            => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_CHECKBOX)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_CHECKBOX)->getPath(),
                             'permissions' => 'CHECKBOXES_VIEW',
                         ],
                         \__('Banners')                => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_BANNER)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_BANNER)->getPath(),
                             'permissions' => 'DISPLAY_BANNER_VIEW',
                         ],
                         \__('Sliders')                => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_SLIDERS)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_SLIDERS)->getPath(),
                             'permissions' => 'SLIDER_VIEW',
                         ],
                     ],
@@ -300,13 +300,13 @@ class Menu
                             'permissions' => 'DISPLAY_TEMPLATE_VIEW',
                         ],
                         \__('Images')         => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_IMAGES)->getPath(),
+                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_IMAGES)->getPath(),
                             'permissions'    => 'SETTINGS_IMAGES_VIEW',
                             'section'        => \CONF_BILDER,
                             'specialSetting' => true,
                         ],
                         \__('Watermark')      => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_BRANDING)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_BRANDING)->getPath(),
                             'permissions' => 'DISPLAY_BRANDING_VIEW',
                         ],
                         \__('Number formats') => (object)[
@@ -339,7 +339,7 @@ class Menu
                 'icon'  => 'administration',
                 'items' => [
                     \__('Approvals')       => (object)[
-                        'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_ACTIVATE)->getPath(),
+                        'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_ACTIVATE)->getPath(),
                         'permissions' => 'UNLOCK_CENTRAL_VIEW',
                     ],
                     \__('Import')          => [
@@ -381,7 +381,7 @@ class Menu
                     ],
 //            __('Payments')        => [
                     \__('Payment methods') => (object)[
-                        'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_PAYMENT_METHODS)->getPath(),
+                        'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_PAYMENT_METHODS)->getPath(),
                         'permissions' => 'ORDER_PAYMENT_VIEW',
                     ],
 //                __('More payment methods') => (object)[
@@ -391,15 +391,15 @@ class Menu
 //            ],
                     \__('Shipments')       => [
                         \__('Shipping methods')     => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_SHIPPING_METHODS)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_SHIPPING_METHODS)->getPath(),
                             'permissions' => 'ORDER_SHIPMENT_VIEW',
                         ],
                         \__('Additional packaging') => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_PACKAGINGS)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_PACKAGINGS)->getPath(),
                             'permissions' => 'ORDER_PACKAGE_VIEW',
                         ],
                         \__('Country manager')      => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_COUNTRIES)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_COUNTRIES)->getPath(),
                             'permissions' => 'COUNTRY_VIEW',
                         ],
                     ],
@@ -410,34 +410,34 @@ class Menu
                             'section'     => \CONF_EMAILS,
                         ],
                         \__('Email templates') => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_EMAILTEMPLATES)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_EMAILTEMPLATES)->getPath(),
                             'permissions' => 'CONTENT_EMAIL_TEMPLATE_VIEW',
                         ],
                         \__('Blacklist')       => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_EMAILBLOCKLIST)->getPath(),
+                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_EMAILBLOCKLIST)->getPath(),
                             'permissions'    => 'SETTINGS_EMAIL_BLACKLIST_VIEW',
                             'section'        => \CONF_EMAILBLACKLIST,
                             'specialSetting' => true,
                         ],
                         \__('Log')             => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_EMAILHISTORY)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_EMAILHISTORY)->getPath(),
                             'permissions' => 'EMAILHISTORY_VIEW',
                         ],
                     ],
                     \__('SEO')             => [
                         \__('Meta data')  => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_META)->getPath(),
+                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_META)->getPath(),
                             'permissions'    => 'SETTINGS_GLOBAL_META_VIEW',
                             'section'        => \CONF_METAANGABEN,
                             'specialSetting' => true,
                             'settingsAnchor' => '#einstellungen',
                         ],
                         \__('Forwarding') => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_REDIRECT)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_REDIRECT)->getPath(),
                             'permissions' => 'REDIRECT_VIEW',
                         ],
                         \__('Site map')   => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_SITEMAP)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_SITEMAP)->getPath(),
                             'permissions' => 'SETTINGS_SITEMAP_VIEW',
                         ],
                         \__('SEO path')   => (object)[
@@ -449,65 +449,65 @@ class Menu
                         ],
                     ],
                     \__('Languages')       => (object)[
-                        'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_LANGUAGE)->getPath(),
+                        'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_LANGUAGE)->getPath(),
                         'permissions' => 'LANGUAGE_VIEW'
                     ],
                     \__('Accounts')        => [
                         \__('Users')                    => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_USERS)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_USERS)->getPath(),
                             'permissions' => 'ACCOUNT_VIEW',
                         ],
                         \__('JTL-Wawi synchronisation') => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_SYNC)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_SYNC)->getPath(),
                             'permissions' => 'WAWI_SYNC_VIEW',
                         ],
                     ],
                     \__('Troubleshooting') => [
                         \__('System diagnostics') => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_STATUS)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_STATUS)->getPath(),
                             'permissions' => 'DIAGNOSTIC_VIEW',
                         ],
                         \__('Log')                => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_SYSTEMLOG)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_SYSTEMLOG)->getPath(),
                             'permissions' => 'SYSTEMLOG_VIEW',
                         ],
                         \__('Item images')        => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_IMAGE_MANAGEMENT)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_IMAGE_MANAGEMENT)->getPath(),
                             'permissions' => 'DISPLAY_IMAGES_VIEW',
                         ],
                         \__('Plug-in profiler')   => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_PROFILER)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_PROFILER)->getPath(),
                             'permissions' => 'PROFILER_VIEW',
                         ],
 
                     ],
                     \__('System')          => [
                         \__('Cache')      => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_CACHE)->getPath(),
+                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_CACHE)->getPath(),
                             'permissions'    => 'OBJECTCACHE_VIEW',
                             'section'        => \CONF_CACHING,
                             'specialSetting' => true,
                             'settingsAnchor' => '#settings',
                         ],
                         \__('Cron')       => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_CRON)->getPath(),
+                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_CRON)->getPath(),
                             'permissions'    => 'CRON_VIEW',
                             'section'        => \CONF_CRON,
                             'specialSetting' => true,
                             'settingsAnchor' => '#config',
                         ],
                         \__('Filesystem') => (object)[
-                            'link'           => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_FILESYSTEM)->getPath(),
+                            'link'           => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_FILESYSTEM)->getPath(),
                             'permissions'    => 'FILESYSTEM_VIEW',
                             'section'        => \CONF_FS,
                             'specialSetting' => true,
                         ],
                         \__('Update')     => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_DBUPDATER)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_DBUPDATER)->getPath(),
                             'permissions' => 'SHOP_UPDATE_VIEW',
                         ],
                         \__('Reset')      => (object)[
-                            'link'        => $baseURL . $this->router->getNamedRoute(AdminRouter::ROUTE_RESET)->getPath(),
+                            'link'        => $baseURL . $this->router->getNamedRoute(BackendRouter::ROUTE_RESET)->getPath(),
                             'permissions' => 'RESET_SHOP_VIEW',
                         ],
                         \__('Set up')     => (object)[

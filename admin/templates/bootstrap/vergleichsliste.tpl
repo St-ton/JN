@@ -58,7 +58,7 @@
             </div>
             <div id="topartikel" class="tab-pane fade {if $cTab === 'topartikel'} active show{/if}">
                 <div>
-                    <form id="postzeitfilter" name="postzeitfilter" method="post" action="{$shopURL}{$route}">
+                    <form id="postzeitfilter" name="postzeitfilter" method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <input type="hidden" name="zeitfilter" value="1" />
                         <input type="hidden" name="tab" value="topartikel" />
@@ -135,7 +135,7 @@
                 {include
                     file='tpl_inc/config_section.tpl'
                     name='einstellen'
-                    action=$shopURL|cat:$route
+                    action=$adminURL|cat:$route
                     buttonCaption=__('saveWithIcon')
                     title=__('settings')
                     tab='einstellungen'

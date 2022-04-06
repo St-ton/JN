@@ -18,12 +18,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class OrderController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->getText->loadAdminLocale('pages/bestellungen');
         $this->smarty = $smarty;
         $this->checkPermissions('ORDER_VIEW');
@@ -52,7 +51,7 @@ class OrderController extends AbstractBackendController
             ->assign('orders', $this->getOrders(' LIMIT ' . $pagination->getLimitSQL(), $searchFilter))
             ->assign('pagination', $pagination)
             ->assign('cSuche', $searchFilter)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('bestellungen.tpl');
     }
 

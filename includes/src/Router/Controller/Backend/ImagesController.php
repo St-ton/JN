@@ -23,8 +23,7 @@ class ImagesController extends AbstractBackendController
     public function getResponse(
         ServerRequestInterface $request,
         array $args,
-        JTLSmarty $smarty,
-        Route $route
+        JTLSmarty $smarty
     ): ResponseInterface {
         $this->getText->loadAdminLocale('pages/bilder');
         $this->smarty = $smarty;
@@ -52,7 +51,7 @@ class ImagesController extends AbstractBackendController
             ->assign('imgConf', Shop::getSettingSection(\CONF_BILDER))
             ->assign('sizes', ['mini', 'klein', 'normal', 'gross'])
             ->assign('dims', ['breite', 'hoehe'])
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('bilder.tpl');
     }
 

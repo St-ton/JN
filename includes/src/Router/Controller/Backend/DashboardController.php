@@ -29,12 +29,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class DashboardController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $oUpdater     = new Updater($this->db);
         if (Request::postInt('adminlogin') === 1) {

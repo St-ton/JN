@@ -35,8 +35,7 @@ class ContactController extends AbstractController
     public function getResponse(
         ServerRequestInterface $request,
         array $args,
-        JTLSmarty $smarty,
-        Route $route
+        JTLSmarty $smarty
     ): ResponseInterface {
         $this->smarty = $smarty;
         Shop::setPageType(\PAGE_KONTAKT);

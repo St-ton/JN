@@ -37,12 +37,11 @@ use stdClass;
  */
 class CouponsController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/kupons');
         $this->checkPermissions('ORDER_COUPON_VIEW');
@@ -359,7 +358,7 @@ class CouponsController extends AbstractBackendController
 
         return $smarty->assign('action', $action)
             ->assign('couponTypes', Kupon::getCouponTypes())
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('kupons.tpl');
     }
 

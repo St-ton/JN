@@ -17,12 +17,11 @@ use stdClass;
  */
 class ProfilerController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('PROFILER_VIEW');
         $this->getText->loadAdminLocale('pages/profiler');
@@ -115,7 +114,7 @@ class ProfilerController extends AbstractBackendController
         return $smarty->assign('pluginProfilerData', $pluginProfilerData)
             ->assign('sqlProfilerData', $sqlProfilerData)
             ->assign('tab', $tab)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('profiler.tpl');
     }
 

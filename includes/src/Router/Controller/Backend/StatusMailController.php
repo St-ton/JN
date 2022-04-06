@@ -16,19 +16,18 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class StatusMailController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('DIAGNOSTIC_VIEW');
         $this->getText->loadAdminLocale('pages/status');
 
         return $smarty->assign('status', Status::getInstance($this->db, $this->cache, true))
             ->assign('sub', Shop::Container()->get(JTLApi::class)->getSubscription())
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('status.tpl');
     }
 }

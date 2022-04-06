@@ -20,12 +20,11 @@ use stdClass;
  */
 class BrandingController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('DISPLAY_BRANDING_VIEW');
         $this->getText->loadAdminLocale('pages/branding');
@@ -59,7 +58,7 @@ class BrandingController extends AbstractBackendController
             ->assign('oBranding_arr', $this->getBrandings())
             ->assign('PFAD_BRANDINGBILDER', \PFAD_BRANDINGBILDER)
             ->assign('step', $step)
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('branding.tpl');
     }
 

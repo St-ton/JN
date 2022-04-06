@@ -11,7 +11,6 @@ use JTL\Helpers\Text;
 use JTL\Link\LinkGroupInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use function Functional\map;
@@ -23,14 +22,16 @@ use function Functional\reindex;
  */
 class BoxController extends AbstractBackendController
 {
+    /**
+     * @var BoxAdmin
+     */
     private BoxAdmin $boxAdmin;
 
-    public function getResponse(
-        ServerRequestInterface $request,
-        array                  $args,
-        JTLSmarty              $smarty,
-        Route                  $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('BOXES_VIEW');
         $this->getText->loadAdminLocale('pages/boxen');
@@ -124,7 +125,7 @@ class BoxController extends AbstractBackendController
             ->assign('oBoxenContainer', $boxContainer)
             ->assign('nPage', $pageID)
             ->assign('invisibleBoxes', $this->boxAdmin->getInvisibleBoxes())
-            ->assign('route', $route->getPath())
+            ->assign('route', $this->route)
             ->getResponse('boxen.tpl');
     }
 

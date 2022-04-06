@@ -11,6 +11,7 @@ use JTL\Helpers\Seo;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Review\ReviewAdminController;
+use JTL\Router\BackendRouter;
 use JTL\Smarty\JTLSmarty;
 use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
@@ -23,12 +24,11 @@ use stdClass;
  */
 class ActivationController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('UNLOCK_CENTRAL_VIEW');
         $this->getText->loadAdminLocale('pages/freischalten');
@@ -258,7 +258,7 @@ class ActivationController extends AbstractBackendController
             ->assign('oPagiNewsletterEmpfaenger', $pagiRecipients)
             ->assign('step', 'freischalten_uebersicht')
             ->assign('cTab', $tab)
-            ->assign('route', $route->getPath())
+            ->assign('route', BackendRouter::ROUTE_ACTIVATE)
             ->getResponse('freischalten.tpl');
     }
 

@@ -24,19 +24,18 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class DBManagerController extends AbstractBackendController
 {
-    public function getResponse(
-        ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
-    ): ResponseInterface {
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
         $this->smarty = $smarty;
         $this->checkPermissions('DBCHECK_VIEW');
         $this->getText->loadAdminLocale('pages/dbmanager');
 
         $tables = DBManager::getStatus(DB_NAME);
         $smarty->assign('tables', $tables)
-            ->assign('route', $route->getPath());
+            ->assign('route', $this->route);
 
         $valid  = Form::validateToken();
         $jsTypo = (object)['tables' => []];

@@ -27,35 +27,44 @@ class SyncController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/wawisync');
 
         if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && Form::validateToken()) {
-            $passwordService = Shop::Container()->getPasswordService();
-            if ($passwordService->hasOnlyValidCharacters($_POST['wawi-pass'])) {
-                $passInfo   = $passwordService->getInfo($_POST['wawi-pass']);
-                $upd        = new stdClass();
-                $upd->cName = $_POST['wawi-user'];
-                $upd->cPass = $passInfo['algo'] > 0
-                    ? $_POST['wawi-pass'] // hashed password was not changed
-                    : $passwordService->hash($_POST['wawi-pass']); // new clear text password was given
-
-                $this->db->queryPrepared(
-                    'INSERT INTO `tsynclogin` (kSynclogin, cName, cPass)
-                        VALUES (1, :cName, :cPass)
-                        ON DUPLICATE KEY UPDATE
-                        cName = :cName,
-                        cPass = :cPass',
-                    ['cName' => $upd->cName, 'cPass' => $upd->cPass]
-                );
-
-                $this->alertService->addSuccess(\__('successConfigSave'), 'successConfigSave');
-            } else {
-                $this->alertService->addError(\__('errorInvalidPassword'), 'errorInvalidPassword');
-            }
+            $this->update($_POST['wawi-user'], $_POST['wawi-pass']);
         }
-
         $user = $this->db->select('tsynclogin', 'kSynclogin', 1);
 
         return $smarty->assign('wawiuser', \htmlentities($user->cName))
             ->assign('wawipass', $user->cPass)
-            ->assign('route', $route->getPath())
             ->getResponse('wawisync.tpl');
+    }
+
+    /**
+     * @param string $user
+     * @param string $pass
+     * @return void
+     * @throws \Exception
+     */
+    private function update(string $user, string $pass): void
+    {
+        $passwordService = Shop::Container()->getPasswordService();
+        if (!$passwordService->hasOnlyValidCharacters($pass)) {
+            $this->alertService->addError(\__('errorInvalidPassword'), 'errorInvalidPassword');
+            return;
+        }
+        $passInfo   = $passwordService->getInfo($pass);
+        $upd        = new stdClass();
+        $upd->cName = $user;
+        $upd->cPass = $passInfo['algo'] > 0
+            ? $pass // hashed password was not changed
+            : $passwordService->hash($pass); // new clear text password was given
+
+        $this->db->queryPrepared(
+            'INSERT INTO `tsynclogin` (kSynclogin, cName, cPass)
+                    VALUES (1, :cName, :cPass)
+                    ON DUPLICATE KEY UPDATE
+                    cName = :cName,
+                    cPass = :cPass',
+            ['cName' => $upd->cName, 'cPass' => $upd->cPass]
+        );
+
+        $this->alertService->addSuccess(\__('successConfigSave'), 'successConfigSave');
     }
 }

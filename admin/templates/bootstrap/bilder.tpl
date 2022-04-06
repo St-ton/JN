@@ -2,7 +2,7 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('imageTitle') cBeschreibung=__('bilderDesc') cDokuURL=__('bilderURL')}
 <div id="content">
-    <form method="post" action="{$shopURL}{$route}">
+    <form method="post" action="{$adminURL}/{$\JTL\Router\AdminRouter::ROUTE_IMAGES}">
         {$jtl_token}
         <input type="hidden" name="speichern" value="1">
         <div id="settings">

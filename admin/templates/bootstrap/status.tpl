@@ -57,7 +57,7 @@
                     <table class="table table-striped text-x1 last-child">
                         <tbody>
                         {render_item title=__('databaseStructure') val=$status->validDatabaseStruct() more=$adminURL|cat:'/dbcheck'}
-                        {render_item title=__('fileStructure') val=($status->validModifiedFileStruct()&&$status->validOrphanedFilesStruct()) more=$adminURL|cat:'/filecheck'}
+                        {render_item title=__('fileStructure') val=($status->validModifiedFileStruct()&&$status->validOrphanedFilesStruct()) more=$adminURL|cat:'/filecheck.php'}
                         {render_item title=__('directoryPermissions') val=$status->validFolderPermissions() more=$adminURL|cat:'/permissioncheck'}
                         {render_item title=__('openUpdates') val=!$status->hasPendingUpdates() more=$adminURL|cat:'/dbupdater'}
                         {render_item title=__('installDirectory') val=!$status->hasInstallDir()}
@@ -83,8 +83,8 @@
                                 {__('details')} <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li class="dropdown-item"><a href="{$adminURL}/cache.php">{__('systemCache')}</a></li>
-                                <li class="dropdown-item"><a href="{$adminURL}/bilderverwaltung.php">{__('imageCache')}</a></li>
+                                <li class="dropdown-item"><a href="{$adminURL}/cache">{__('systemCache')}</a></li>
+                                <li class="dropdown-item"><a href="{$adminURL}/imagemanagement">{__('imageCache')}</a></li>
                             </ul>
                         </div>
                     </div>
@@ -232,7 +232,7 @@
                                     </td>
                                     <td class="text-muted"><strong>{$s->cName}</strong></td>
                                     <td class="text-right">
-                                        <a class="btn btn-default text-uppercase" href="{$adminURL}/zahlungsarten.php?a=log&kZahlungsart={$s->kZahlungsart}">{__('details')}</a>
+                                        <a class="btn btn-default text-uppercase" href="{$adminURL}/paymentmethods?a=log&kZahlungsart={$s->kZahlungsart}">{__('details')}</a>
                                     </td>
                                 </tr>
                             {/foreach}
@@ -289,7 +289,7 @@
                         <div class="subheading1">{__('server')}</div>
                     </div>
                     <div class="heading-right">
-                        <a href="{$adminURL}/systemcheck.php" class="btn btn-primary text-uppercase">{__('details')}</a>
+                        <a href="{$adminURL}/systemcheck" class="btn btn-primary text-uppercase">{__('details')}</a>
                     </div>
                     <hr class="mb-n3">
                 </div>

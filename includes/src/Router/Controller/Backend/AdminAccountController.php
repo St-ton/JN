@@ -895,7 +895,7 @@ class AdminAccountController extends AbstractBackendController
                 $this->smarty->assign('oAdminGroup_arr', $this->getAdminGroups())
                     ->assign(
                         'languages',
-                        Shop::Container()->getGetText()->getAdminLanguages()
+                        $this->getText->getAdminLanguages()
                     );
                 break;
             case 'account_view':

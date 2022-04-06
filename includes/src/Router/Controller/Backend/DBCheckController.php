@@ -512,8 +512,7 @@ class DBCheckController extends AbstractBackendController
         int $step = 1,
         array $exclude = []
     ): stdClass {
-        Shop::Container()->getGetText()->loadAdminLocale('pages/dbcheck');
-
+        $this->getText->loadAdminLocale('pages/dbcheck');
         $mysqlVersion = DBMigrationHelper::getMySQLVersion();
         $tableName    = (string)Text::filterXSS($tableName);
         $result       = new stdClass();

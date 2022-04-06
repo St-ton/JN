@@ -11,13 +11,38 @@ use JTL\Router\AdminRouter;
 use League\Route\Router;
 use Shop;
 
+/**
+ * Class Menu
+ * @package JTL\Backend
+ */
 class Menu
 {
+    /**
+     * @var Router
+     */
     private Router $router;
+
+    /**
+     * @var DbInterface
+     */
     private DbInterface $db;
+
+    /**
+     * @var AdminAccount
+     */
     private AdminAccount $account;
+
+    /**
+     * @var GetText
+     */
     private GetText $getText;
 
+    /**
+     * @param Router       $router
+     * @param DbInterface  $db
+     * @param AdminAccount $account
+     * @param GetText      $getText
+     */
     public function __construct(Router $router, DbInterface $db, AdminAccount $account, GetText $getText)
     {
         $this->router  = $router;
@@ -26,11 +51,15 @@ class Menu
         $this->getText = $getText;
     }
 
-    public function build()
+    /**
+     * @return array
+     */
+    public function build(): array
     {
         $baseURL                      = Shop::getURL();
         $adminURL                     = Shop::getAdminURL();
         $curScriptFileNameWithRequest = \basename($_SERVER['REQUEST_URI'] ?? 'index.php');
+        $mainGroups                   = [];
         /** @var array $adminMenu */
         $adminMenu = [
             \__('Marketing')      => (object)[
@@ -541,10 +570,10 @@ class Menu
                     }
                     $pluginLinks = $this->db->getObjects(
                         'SELECT DISTINCT p.kPlugin, p.cName, p.nPrio
-                        FROM tplugin AS p INNER JOIN tpluginadminmenu AS pam
-                            ON p.kPlugin = pam.kPlugin
-                        WHERE p.nStatus = :state
-                        ORDER BY p.nPrio, p.cName',
+                            FROM tplugin AS p INNER JOIN tpluginadminmenu AS pam
+                                ON p.kPlugin = pam.kPlugin
+                            WHERE p.nStatus = :state
+                            ORDER BY p.nPrio, p.cName',
                         ['state' => State::ACTIVATED]
                     );
 

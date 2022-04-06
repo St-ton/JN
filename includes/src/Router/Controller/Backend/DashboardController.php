@@ -143,7 +143,6 @@ class DashboardController extends AbstractBackendController
                 ->assign('alertList', $this->alertService)
                 ->getResponse('login.tpl');
         }
-
         $this->getText->loadAdminLocale('widgets');
         if (!$this->account->getIsTwoFaAuthenticated()) {
             $_SESSION['AdminAccount']->TwoFA_active = true;
@@ -171,8 +170,6 @@ class DashboardController extends AbstractBackendController
                 : '')
                 ->getResponse('login.tpl');
         }
-
-
         if (isset($_REQUEST['uri']) && mb_strlen(\trim($_REQUEST['uri'])) > 0) {
             $this->redirectToURI($_REQUEST['uri']);
         }
@@ -190,13 +187,12 @@ class DashboardController extends AbstractBackendController
     }
 
     /**
-     * @param bool $bActive
+     * @param bool $active
      * @param bool $getAll
      * @return array
      */
-    public function getWidgets(bool $bActive = true, bool $getAll = false): array
+    public function getWidgets(bool $active = true, bool $getAll = false): array
     {
-
         if (!$getAll && !$this->hasPermissions('DASHBOARD_VIEW')) {
             return [];
         }
@@ -213,7 +209,7 @@ class DashboardController extends AbstractBackendController
             WHERE bActive = :active
                 AND (tplugin.nStatus IS NULL OR tplugin.nStatus = :activated)
             ORDER BY eContainer ASC, nPos ASC',
-            ['active' => (int)$bActive, 'activated' => State::ACTIVATED]
+            ['active' => (int)$active, 'activated' => State::ACTIVATED]
         );
 
         foreach ($widgets as $widget) {
@@ -261,36 +257,37 @@ class DashboardController extends AbstractBackendController
             }
         }
 
-        if ($bActive) {
-            foreach ($widgets as $key => $widget) {
-                $widget->cContent = '';
-                $className        = '\JTL\Widgets\\' . $widget->cClass;
-                $classPath        = null;
+        if (!$active) {
+            return $widgets;
+        }
+        foreach ($widgets as $key => $widget) {
+            $widget->cContent = '';
+            $className        = '\JTL\Widgets\\' . $widget->cClass;
+            $classPath        = null;
 
-                if ($widget->plugin !== null) {
-                    $hit = $widget->plugin->getWidgets()->getWidgetByID($widget->kWidget);
+            if ($widget->plugin !== null) {
+                $hit = $widget->plugin->getWidgets()->getWidgetByID($widget->kWidget);
 
-                    if ($hit !== null) {
-                        $className = $hit->className;
-                        $classPath = $hit->classFile;
+                if ($hit !== null) {
+                    $className = $hit->className;
+                    $classPath = $hit->classFile;
 
-                        if (\file_exists($classPath)) {
-                            require_once $classPath;
-                        }
+                    if (\file_exists($classPath)) {
+                        require_once $classPath;
                     }
                 }
-                if (\class_exists($className)) {
-                    /** @var AbstractWidget $instance */
-                    $instance = new $className($this->smarty, $this->db, $widget->plugin);
-                    if ($getAll
-                        || \in_array($instance->getPermission(), ['DASHBOARD_ALL', ''], true)
-                        || $this->hasPermissions($instance->getPermission())
-                    ) {
-                        $widget->cContent = $instance->getContent();
-                        $widget->hasBody  = $instance->hasBody;
-                    } else {
-                        unset($widgets[$key]);
-                    }
+            }
+            if (\class_exists($className)) {
+                /** @var AbstractWidget $instance */
+                $instance = new $className($this->smarty, $this->db, $widget->plugin);
+                if ($getAll
+                    || \in_array($instance->getPermission(), ['DASHBOARD_ALL', ''], true)
+                    || $this->hasPermissions($instance->getPermission())
+                ) {
+                    $widget->cContent = $instance->getContent();
+                    $widget->hasBody  = $instance->hasBody;
+                } else {
+                    unset($widgets[$key]);
                 }
             }
         }
@@ -315,7 +312,7 @@ class DashboardController extends AbstractBackendController
      * @return void
      * @throws Exception
      */
-    public function redirectLogin(AdminAccount $account, Updater $updater)
+    public function redirectLogin(AdminAccount $account, Updater $updater): void
     {
         unset($_SESSION['frontendUpToDate']);
         $safeMode = isset($GLOBALS['plgSafeMode'])

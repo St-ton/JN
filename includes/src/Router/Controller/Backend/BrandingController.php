@@ -33,7 +33,7 @@ class BrandingController extends AbstractBackendController
         $step = 'branding_uebersicht';
         if (Request::verifyGPDataString('action') === 'delete' && Form::validateToken()) {
             $id = Request::postInt('id');
-            $this->loescheBrandingBild($id);
+            $this->deleteImage($id);
             $response         = new stdClass();
             $response->id     = $id;
             $response->status = 'OK';
@@ -42,21 +42,21 @@ class BrandingController extends AbstractBackendController
         if (Request::verifyGPCDataInt('branding') === 1) {
             $step = 'branding_detail';
             if (Request::postInt('speicher_einstellung') === 1 && Form::validateToken()) {
-                if ($this->speicherEinstellung(Request::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
+                if ($this->saveConfig(Request::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
                     $this->alertService->addSuccess(\__('successConfigSave'), 'successConfigSave');
                 } else {
                     $this->alertService->addError(\__('errorFillRequired'), 'errorFillRequired');
                 }
             }
             if (Request::verifyGPCDataInt('kBranding') > 0) {
-                $smarty->assign('oBranding', $this->gibBranding(Request::verifyGPCDataInt('kBranding')));
+                $smarty->assign('oBranding', $this->getBranding(Request::verifyGPCDataInt('kBranding')));
             }
         } else {
-            $smarty->assign('oBranding', $this->gibBranding(1));
+            $smarty->assign('oBranding', $this->getBranding(1));
         }
 
         return $smarty->assign('cRnd', \time())
-            ->assign('oBranding_arr', $this->gibBrandings())
+            ->assign('oBranding_arr', $this->getBrandings())
             ->assign('PFAD_BRANDINGBILDER', \PFAD_BRANDINGBILDER)
             ->assign('step', $step)
             ->assign('route', $route->getPath())
@@ -64,9 +64,10 @@ class BrandingController extends AbstractBackendController
     }
 
     /**
-     * @return array
+     * @return stdClass[]
+     * @former gibBrandings()
      */
-    private function gibBrandings(): array
+    private function getBrandings(): array
     {
         return $this->db->selectAll('tbranding', [], [], '*', 'cBildKategorie');
     }
@@ -74,8 +75,9 @@ class BrandingController extends AbstractBackendController
     /**
      * @param int $brandingID
      * @return stdClass|null
+     * @former gibBranding()
      */
-    private function gibBranding(int $brandingID): ?stdClass
+    private function getBranding(int $brandingID): ?stdClass
     {
         return $this->db->getSingleObject(
             'SELECT tbranding.*, tbranding.kBranding AS kBrandingTMP, tbrandingeinstellung.*
@@ -93,8 +95,9 @@ class BrandingController extends AbstractBackendController
      * @param array $post
      * @param array $files
      * @return bool
+     * @former speicherEinstellung()
      */
-    private function speicherEinstellung(int $brandingID, array $post, array $files): bool
+    private function saveConfig(int $brandingID, array $post, array $files): bool
     {
         $hasNewImage = mb_strlen($files['cBrandingBild']['name'] ?? '') > 0;
         if ($hasNewImage && !Image::isImageUpload($files['cBrandingBild'])) {
@@ -110,7 +113,7 @@ class BrandingController extends AbstractBackendController
         $conf->dGroesse     = $post['dGroesse'];
 
         if ($hasNewImage) {
-            $conf->cBrandingBild = 'kBranding_' . $brandingID . $this->mappeFileTyp($files['cBrandingBild']['type']);
+            $conf->cBrandingBild = 'kBranding_' . $brandingID . $this->mapFileType($files['cBrandingBild']['type']);
         } else {
             $tmpConf             = $db->select(
                 'tbrandingeinstellung',
@@ -126,15 +129,15 @@ class BrandingController extends AbstractBackendController
             // Alte Einstellung loeschen
             $db->delete('tbrandingeinstellung', 'kBranding', $brandingID);
             if ($hasNewImage) {
-                $this->loescheBrandingBild($conf->kBranding);
-                $this->speicherBrandingBild($files, $conf->kBranding);
+                $this->deleteImage($conf->kBranding);
+                $this->saveImage($files, $conf->kBranding);
             }
             $db->insert('tbrandingeinstellung', $conf);
             $data = $db->select('tbranding', 'kBranding', $conf->kBranding);
             $type = Media::getClass($data->cBildKategorie ?? '');
             /** @var IMedia $type */
             $type::clearCache();
-            Shop::Container()->getCache()->flushTags([\CACHING_GROUP_OPTION]);
+            $this->cache->flushTags([\CACHING_GROUP_OPTION]);
 
             return true;
         }
@@ -146,22 +149,24 @@ class BrandingController extends AbstractBackendController
      * @param array $files
      * @param int   $brandingID
      * @return bool
+     * @former speicherBrandingBild()
      */
-    private function speicherBrandingBild(array $files, int $brandingID): bool
+    private function saveImage(array $files, int $brandingID): bool
     {
         $upload = $files['cBrandingBild'];
         if (!Image::isImageUpload($upload)) {
             return false;
         }
-        $newFile = PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . $this->mappeFileTyp($upload['type']);
+        $newFile = PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . $this->mapFileType($upload['type']);
 
         return \move_uploaded_file($upload['tmp_name'], $newFile);
     }
 
     /**
      * @param int $brandingID
+     * @former loescheBrandingBild()
      */
-    private function loescheBrandingBild(int $brandingID): void
+    private function deleteImage(int $brandingID): void
     {
         if (\file_exists(PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.jpg')) {
             @\unlink(PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.jpg');
@@ -177,8 +182,9 @@ class BrandingController extends AbstractBackendController
     /**
      * @param string $ype
      * @return string
+     * @former mappeFileTyp()
      */
-    private function mappeFileTyp(string $ype): string
+    private function mapFileType(string $ype): string
     {
         switch ($ype) {
             case 'image/gif':

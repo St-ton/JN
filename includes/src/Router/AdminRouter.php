@@ -49,6 +49,7 @@ use JTL\Router\Controller\Backend\ReviewController;
 use JTL\Router\Controller\Backend\RSSController;
 use JTL\Router\Controller\Backend\SearchSpecialOverlayController;
 use JTL\Router\Controller\Backend\SelectionWizardController;
+use JTL\Router\Controller\Backend\SeparatorController;
 use JTL\Router\Controller\Backend\ShippingMethodsController;
 use JTL\Router\Controller\Backend\SitemapController;
 use JTL\Router\Controller\Backend\SliderController;
@@ -131,6 +132,7 @@ class AdminRouter
     public const ROUTE_WAREHOUSES            = 'warehouses';
     public const ROUTE_PASS                  = 'pass';
     public const ROUTE_DASHBOARD             = 'dashboard';
+    public const ROUTE_SEPARATOR             = 'separator';
 
     /**
      * @var Router
@@ -151,11 +153,10 @@ class AdminRouter
         AlertServiceInterface $alertService,
         GetText $getText
     ) {
-        $authMiddleware  = new AuthMiddleware();
-        $this->router    = new Router();
-        $responseFactory = new ResponseFactory();
-        $strategy        = new SmartyStrategy($responseFactory, Shop::Smarty(), new State());
-        $container       = new Container();
+        $authMiddleware = new AuthMiddleware();
+        $this->router   = new Router();
+        $strategy       = new SmartyStrategy(new ResponseFactory(), Shop::Smarty(), new State());
+        $container      = new Container();
 
         $controllers = [
             self::ROUTE_BANNER                => BannerController::class,
@@ -211,7 +212,8 @@ class AdminRouter
             self::ROUTE_DASHBOARD             => DashboardController::class,
             self::ROUTE_SELECTION_WIZARD      => SelectionWizardController::class,
             self::ROUTE_TAC                   => TaCController::class,
-            self::ROUTE_RESET                 => ResetController::class
+            self::ROUTE_RESET                 => ResetController::class,
+            self::ROUTE_SEPARATOR             => SeparatorController::class,
         ];
         foreach ($controllers as $controller) {
             $container->add($controller, function () use ($controller, $db, $cache, $alertService, $account, $getText) {
@@ -231,24 +233,22 @@ class AdminRouter
             }
         })->middleware($authMiddleware);
 
-        $this->router->get('/' . self::ROUTE_PASS, PasswordController::class . '::getResponse')
+        $this->router->get('/' . \PFAD_ADMIN . self::ROUTE_PASS, PasswordController::class . '::getResponse')
             ->setName(self::ROUTE_PASS);
-        $this->router->post('/' . self::ROUTE_PASS, PasswordController::class . '::getResponse')
+        $this->router->post('/' . \PFAD_ADMIN . self::ROUTE_PASS, PasswordController::class . '::getResponse')
             ->setName('post' . self::ROUTE_PASS);
 
-        $this->router->get('/admin/', DashboardController::class . '::getResponse')
+        $this->router->get('/' . \PFAD_ADMIN, DashboardController::class . '::getResponse')
             ->setName(self::ROUTE_DASHBOARD);
-        $this->router->post('/admin/', DashboardController::class . '::getResponse')
+        $this->router->post('/' . \PFAD_ADMIN, DashboardController::class . '::getResponse')
             ->setName('post' . self::ROUTE_DASHBOARD);
-        $this->router->getNamedRoute('favs')->getPath();
     }
 
     public function dispatch(): void
     {
         $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
-
-        $response = $this->router->dispatch($request);
-        (new SapiEmitter())->emit($response);
+        (new SapiEmitter())->emit($this->router->dispatch($request));
+        exit();
     }
 
     public function getRouter(): Router

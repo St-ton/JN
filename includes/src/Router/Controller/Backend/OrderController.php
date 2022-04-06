@@ -28,19 +28,10 @@ class OrderController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions('ORDER_VIEW');
 
-        $step         = 'bestellungen_uebersicht';
         $searchFilter = '';
-        // Bestellung Wawi Abholung zuruecksetzen
         if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {
-            if (isset($_POST['kBestellung'])) {
-                switch ($this->setzeAbgeholtZurueck($_POST['kBestellung'])) {
-                    case -1: // Alles O.K.
-                        $this->alertService->addSuccess(\__('successOrderReset'), 'successOrderReset');
-                        break;
-                    case 1:  // Array mit Keys nicht vorhanden oder leer
-                        $this->alertService->addError(\__('errorAtLeastOneOrder'), 'errorAtLeastOneOrder');
-                        break;
-                }
+            if (isset($_POST['kBestellung']) && $this->resetSyncStatus($_POST['kBestellung'])) {
+                $this->alertService->addSuccess(\__('successOrderReset'), 'successOrderReset');
             } else {
                 $this->alertService->addError(\__('errorAtLeastOneOrder'), 'errorAtLeastOneOrder');
             }
@@ -53,17 +44,14 @@ class OrderController extends AbstractBackendController
             }
         }
 
-        if ($step === 'bestellungen_uebersicht') {
-            $pagination = (new Pagination('bestellungen'))
-                ->setItemCount($this->gibAnzahlBestellungen($searchFilter))
-                ->assemble();
-            $orders     = $this->gibBestellungsUebersicht(' LIMIT ' . $pagination->getLimitSQL(), $searchFilter);
-            $smarty->assign('orders', $orders)
-                ->assign('pagination', $pagination);
-        }
+        $pagination = (new Pagination('bestellungen'))
+            ->setItemCount($this->getOrderCount($searchFilter))
+            ->assemble();
 
-        return $smarty->assign('cSuche', $searchFilter)
-            ->assign('step', $step)
+        return $smarty->assign('step', 'bestellungen_uebersicht')
+            ->assign('orders', $this->getOrders(' LIMIT ' . $pagination->getLimitSQL(), $searchFilter))
+            ->assign('pagination', $pagination)
+            ->assign('cSuche', $searchFilter)
             ->assign('route', $route->getPath())
             ->getResponse('bestellungen.tpl');
     }
@@ -74,7 +62,7 @@ class OrderController extends AbstractBackendController
      * @return array
      * @former gibBestellungsUebersicht()
      */
-    private function gibBestellungsUebersicht(string $limitSQL, string $query): array
+    private function getOrders(string $limitSQL, string $query): array
     {
         $orders       = [];
         $prep         = [];
@@ -85,9 +73,9 @@ class OrderController extends AbstractBackendController
         }
         $items = $this->db->getInts(
             'SELECT kBestellung
-            FROM tbestellung
-            ' . $searchFilter . '
-            ORDER BY dErstellt DESC' . $limitSQL,
+                FROM tbestellung
+                ' . $searchFilter . '
+                ORDER BY dErstellt DESC' . $limitSQL,
             'kBestellung',
             $prep
         );
@@ -107,7 +95,7 @@ class OrderController extends AbstractBackendController
      * @return int
      * @former gibAnzahlBestellungen()
      */
-    private function gibAnzahlBestellungen(string $query): int
+    private function getOrderCount(string $query): int
     {
         $prep         = [];
         $searchFilter = '';
@@ -118,50 +106,50 @@ class OrderController extends AbstractBackendController
 
         return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
-            FROM tbestellung' . $searchFilter,
+                FROM tbestellung' . $searchFilter,
             $prep
         )->cnt;
     }
 
     /**
      * @param array $orderIDs
-     * @return int
+     * @return bool
      * @former setzeAbgeholtZurueck()
      */
-    private function setzeAbgeholtZurueck(array $orderIDs): int
+    private function resetSyncStatus(array $orderIDs): bool
     {
         if (\count($orderIDs) === 0) {
-            return 1;
+            return false;
         }
         $orderList = \implode(',', \array_map('\intval', $orderIDs));
         $customers = $this->db->getCollection(
             'SELECT kKunde
-            FROM tbestellung
-            WHERE kBestellung IN (' . $orderList . ")
-                AND cAbgeholt = 'Y'"
+                FROM tbestellung
+                WHERE kBestellung IN (' . $orderList . ")
+                    AND cAbgeholt = 'Y'"
         )->pluck('kKunde')->map(static function ($item) {
             return (int)$item;
         })->unique()->toArray();
         if (\count($customers) > 0) {
             $this->db->query(
                 "UPDATE tkunde
-                SET cAbgeholt = 'N'
-                WHERE kKunde IN (" . \implode(',', $customers) . ')'
+                    SET cAbgeholt = 'N'
+                    WHERE kKunde IN (" . \implode(',', $customers) . ')'
             );
         }
         $this->db->query(
             "UPDATE tbestellung
-            SET cAbgeholt = 'N'
-            WHERE kBestellung IN (" . $orderList . ")
-                AND cAbgeholt = 'Y'"
+                SET cAbgeholt = 'N'
+                WHERE kBestellung IN (" . $orderList . ")
+                    AND cAbgeholt = 'Y'"
         );
         $this->db->query(
             "UPDATE tzahlungsinfo
-            SET cAbgeholt = 'N'
-            WHERE kBestellung IN (" . $orderList . ")
-                AND cAbgeholt = 'Y'"
+                SET cAbgeholt = 'N'
+                WHERE kBestellung IN (" . $orderList . ")
+                    AND cAbgeholt = 'Y'"
         );
 
-        return -1;
+        return true;
     }
 }

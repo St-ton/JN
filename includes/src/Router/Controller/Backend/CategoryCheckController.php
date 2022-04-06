@@ -24,10 +24,9 @@ class CategoryCheckController extends AbstractBackendController
         $this->checkPermissions('DIAGNOSTIC_VIEW');
         $this->getText->loadAdminLocale('pages/categorycheck');
 
-        $status             = Status::getInstance($this->db, $this->cache);
-        $orphanedCategories = $status->getOrphanedCategories(false);
+        $orphanedCategories = Status::getInstance($this->db, $this->cache)->getOrphanedCategories(false);
 
-        return $smarty->assign('passed', count($orphanedCategories) === 0)
+        return $smarty->assign('passed', \count($orphanedCategories) === 0)
             ->assign('cateogries', $orphanedCategories)
             ->getResponse('categorycheck.tpl');
     }

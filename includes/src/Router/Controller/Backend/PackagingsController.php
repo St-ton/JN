@@ -22,144 +22,36 @@ use stdClass;
  */
 class PackagingsController extends AbstractBackendController
 {
+    private string $action = '';
+
     public function getResponse(
         ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty,
-        Route $route
+        array                  $args,
+        JTLSmarty              $smarty,
+        Route                  $route
     ): ResponseInterface {
         $this->getText->loadAdminLocale('pages/zusatzverpackung');
         $this->smarty = $smarty;
         $this->checkPermissions('ORDER_PACKAGE_VIEW');
 
-        $step      = 'zusatzverpackung';
-        $languages = LanguageHelper::getAllLanguages(0, true);
-        $action    = '';
         if (Form::validateToken()) {
             if (isset($_POST['action'])) {
-                $action = $_POST['action'];
+                $this->action = $_POST['action'];
             } elseif (Request::getInt('kVerpackung', -1) >= 0) {
-                $action = 'edit';
+                $this->action = 'edit';
             }
         }
 
-        if ($action === 'save') {
-            $postData                       = Text::filterXSS($_POST);
-            $nameIDX                        = 'cName_' . $languages[0]->getCode();
-            $packagingID                    = Request::postInt('kVerpackung');
-            $customerGroupIDs               = $postData['kKundengruppe'] ?? null;
-            $packaging                      = new stdClass();
-            $packaging->fBrutto             = (float)\str_replace(',', '.', $postData['fBrutto'] ?? 0);
-            $packaging->fMindestbestellwert = (float)\str_replace(',', '.', $postData['fMindestbestellwert'] ?? 0);
-            $packaging->fKostenfrei         = (float)\str_replace(',', '.', $postData['fKostenfrei'] ?? 0);
-            $packaging->kSteuerklasse       = Request::postInt('kSteuerklasse');
-            $packaging->nAktiv              = Request::postInt('nAktiv');
-            $packaging->cName               = \htmlspecialchars(
-                \strip_tags(\trim($postData[$nameIDX])),
-                \ENT_COMPAT | \ENT_HTML401,
-                \JTL_CHARSET
-            );
-            if ($packaging->kSteuerklasse < 0) {
-                $packaging->kSteuerklasse = 0;
-            }
-            if (!(isset($postData[$nameIDX]) && mb_strlen($postData[$nameIDX]) > 0)) {
-                $this->alertService->addError(\__('errorNameMissing'), 'errorNameMissing');
-            }
-            if (!(\is_array($customerGroupIDs) && count($customerGroupIDs) > 0)) {
-                $this->alertService->addError(\__('errorCustomerGroupMissing'), 'errorCustomerGroupMissing');
-            }
-
-            if ($this->alertService->alertTypeExists(Alert::TYPE_ERROR)) {
-                $this->holdInputOnError($packaging, $customerGroupIDs, $packagingID);
-                $action = 'edit';
-            } else {
-                if ((int)$customerGroupIDs[0] === -1) {
-                    $packaging->cKundengruppe = '-1';
-                } else {
-                    $packaging->cKundengruppe = ';' . \implode(';', $customerGroupIDs) . ';';
-                }
-                // Update?
-                if ($packagingID > 0) {
-                    $this->db->queryPrepared(
-                        'DELETE tverpackung, tverpackungsprache
-                    FROM tverpackung
-                    LEFT JOIN tverpackungsprache 
-                        ON tverpackungsprache.kVerpackung = tverpackung.kVerpackung
-                    WHERE tverpackung.kVerpackung = :pid',
-                        ['pid' => $packagingID]
-                    );
-                    $packaging->kVerpackung = $packagingID;
-                    $this->db->insert('tverpackung', $packaging);
-                } else {
-                    $packagingID = $this->db->insert('tverpackung', $packaging);
-                }
-                foreach ($languages as $lang) {
-                    $langCode                 = $lang->getCode();
-                    $localized                = new stdClass();
-                    $localized->kVerpackung   = $packagingID;
-                    $localized->cISOSprache   = $langCode;
-                    $localized->cName         = !empty($postData['cName_' . $langCode])
-                        ? \htmlspecialchars($postData['cName_' . $langCode], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET)
-                        : \htmlspecialchars($postData[$nameIDX], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
-                    $localized->cBeschreibung = !empty($postData['cBeschreibung_' . $langCode])
-                        ? \htmlspecialchars($postData['cBeschreibung_' . $langCode], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET)
-                        : \htmlspecialchars(
-                            $postData['cBeschreibung_' . $languages[0]->getCode()],
-                            \ENT_COMPAT | \ENT_HTML401,
-                            \JTL_CHARSET
-                        );
-                    $this->db->insert('tverpackungsprache', $localized);
-                }
-                $this->alertService->addSuccess(
-                    \sprintf(\__('successPackagingSave'), $postData[$nameIDX]),
-                    'successPackagingSave'
-                );
-            }
-        } elseif ($action === 'edit' && Request::verifyGPCDataInt('kVerpackung') > 0) { // Editieren
-            $packagingID = Request::verifyGPCDataInt('kVerpackung');
-            $packaging   = $this->db->select('tverpackung', 'kVerpackung', $packagingID);
-
-            if (isset($packaging->kVerpackung) && $packaging->kVerpackung > 0) {
-                $packaging->oSprach_arr = [];
-                $localizations          = $this->db->selectAll(
-                    'tverpackungsprache',
-                    'kVerpackung',
-                    $packagingID,
-                    'cISOSprache, cName, cBeschreibung'
-                );
-                foreach ($localizations as $localization) {
-                    $packaging->oSprach_arr[$localization->cISOSprache] = $localization;
-                }
-                $customerGroup                = $this->gibKundengruppeObj($packaging->cKundengruppe);
-                $packaging->kKundengruppe_arr = $customerGroup->kKundengruppe_arr;
-                $packaging->cKundengruppe_arr = $customerGroup->cKundengruppe_arr;
-            }
-            $smarty->assign('kVerpackung', $packaging->kVerpackung)
-                ->assign('oVerpackungEdit', $packaging);
-        } elseif ($action === 'delete') {
-            if (GeneralObject::hasCount('kVerpackung', $_POST)) {
-                foreach ($_POST['kVerpackung'] as $packagingID) {
-                    $packagingID = (int)$packagingID;
-                    // tverpackung loeschen
-                    $this->db->delete('tverpackung', 'kVerpackung', $packagingID);
-                    $this->db->delete('tverpackungsprache', 'kVerpackung', $packagingID);
-                }
-                $this->alertService->addSuccess(\__('successPackagingDelete'), 'successPackagingDelete');
-            } else {
-                $this->alertService->addError(\__('errorAtLeastOnePackaging'), 'errorAtLeastOnePackaging');
-            }
-        } elseif ($action === 'refresh') {
-            if (isset($_POST['nAktivTMP']) && \is_array($_POST['nAktivTMP']) && count($_POST['nAktivTMP']) > 0) {
-                foreach ($_POST['nAktivTMP'] as $packagingID) {
-                    $upd         = new stdClass();
-                    $upd->nAktiv = isset($_POST['nAktiv']) && \in_array($packagingID, $_POST['nAktiv'], true) ? 1 : 0;
-                    $this->db->update('tverpackung', 'kVerpackung', (int)$packagingID, $upd);
-                }
-                $this->alertService->addSuccess(\__('successPackagingSaveMultiple'), 'successPackagingSaveMultiple');
-            }
+        if ($this->action === 'save') {
+            $this->actionSave(Text::filterXSS($_POST));
         }
-        $taxClasses = $this->db->getObjects('SELECT * FROM tsteuerklasse');
-
+        if ($this->action === 'edit' && Request::verifyGPCDataInt('kVerpackung') > 0) { // Editieren
+            $this->actionEdit(Request::verifyGPCDataInt('kVerpackung'));
+        } elseif ($this->action === 'delete') {
+            $this->actionDelete();
+        } elseif ($this->action === 'refresh') {
+            $this->actionRefresh();
+        }
         $packagingCount = (int)$this->db->getSingleObject(
             'SELECT COUNT(kVerpackung) AS cnt
                 FROM tverpackung'
@@ -176,19 +68,151 @@ class PackagingsController extends AbstractBackendController
         );
 
         foreach ($packagings as $packaging) {
-            $customerGroup                = $this->gibKundengruppeObj($packaging->cKundengruppe);
+            $customerGroup                = $this->getCustomerGroupData($packaging->cKundengruppe);
             $packaging->kKundengruppe_arr = $customerGroup->kKundengruppe_arr;
             $packaging->cKundengruppe_arr = $customerGroup->cKundengruppe_arr;
         }
 
         return $smarty->assign('customerGroups', CustomerGroup::getGroups())
-            ->assign('taxClasses', $taxClasses)
+            ->assign('taxClasses', $this->db->getObjects('SELECT * FROM tsteuerklasse'))
             ->assign('packagings', $packagings)
-            ->assign('step', $step)
+            ->assign('step', 'zusatzverpackung')
             ->assign('pagination', $pagination)
             ->assign('route', $route->getPath())
-            ->assign('action', $action)
+            ->assign('action', $this->action)
             ->getResponse('zusatzverpackung.tpl');
+    }
+
+    /**
+     * @param array $postData
+     * @return void
+     */
+    private function actionSave(array $postData): void
+    {
+        $languages                      = LanguageHelper::getAllLanguages(0, true);
+        $nameIDX                        = 'cName_' . $languages[0]->getCode();
+        $packagingID                    = Request::postInt('kVerpackung');
+        $customerGroupIDs               = $postData['kKundengruppe'] ?? null;
+        $packaging                      = new stdClass();
+        $packaging->fBrutto             = (float)\str_replace(',', '.', $postData['fBrutto'] ?? 0);
+        $packaging->fMindestbestellwert = (float)\str_replace(',', '.', $postData['fMindestbestellwert'] ?? 0);
+        $packaging->fKostenfrei         = (float)\str_replace(',', '.', $postData['fKostenfrei'] ?? 0);
+        $packaging->kSteuerklasse       = Request::postInt('kSteuerklasse');
+        $packaging->nAktiv              = Request::postInt('nAktiv');
+        $packaging->cName               = \htmlspecialchars(
+            \strip_tags(\trim($postData[$nameIDX])),
+            \ENT_COMPAT | \ENT_HTML401,
+            \JTL_CHARSET
+        );
+        if ($packaging->kSteuerklasse < 0) {
+            $packaging->kSteuerklasse = 0;
+        }
+        if (!(isset($postData[$nameIDX]) && mb_strlen($postData[$nameIDX]) > 0)) {
+            $this->alertService->addError(\__('errorNameMissing'), 'errorNameMissing');
+        }
+        if (!(\is_array($customerGroupIDs) && count($customerGroupIDs) > 0)) {
+            $this->alertService->addError(\__('errorCustomerGroupMissing'), 'errorCustomerGroupMissing');
+        }
+
+        if ($this->alertService->alertTypeExists(Alert::TYPE_ERROR)) {
+            $this->holdInputOnError($packaging, $customerGroupIDs, $packagingID);
+            $this->action = 'edit';
+            return;
+        }
+        if ((int)$customerGroupIDs[0] === -1) {
+            $packaging->cKundengruppe = '-1';
+        } else {
+            $packaging->cKundengruppe = ';' . \implode(';', $customerGroupIDs) . ';';
+        }
+        // Update?
+        if ($packagingID > 0) {
+            $this->db->queryPrepared(
+                'DELETE tverpackung, tverpackungsprache
+                FROM tverpackung
+                LEFT JOIN tverpackungsprache 
+                    ON tverpackungsprache.kVerpackung = tverpackung.kVerpackung
+                WHERE tverpackung.kVerpackung = :pid',
+                ['pid' => $packagingID]
+            );
+            $packaging->kVerpackung = $packagingID;
+            $this->db->insert('tverpackung', $packaging);
+        } else {
+            $packagingID = $this->db->insert('tverpackung', $packaging);
+        }
+        foreach ($languages as $lang) {
+            $langCode                 = $lang->getCode();
+            $localized                = new stdClass();
+            $localized->kVerpackung   = $packagingID;
+            $localized->cISOSprache   = $langCode;
+            $localized->cName         = !empty($postData['cName_' . $langCode])
+                ? \htmlspecialchars($postData['cName_' . $langCode], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET)
+                : \htmlspecialchars($postData[$nameIDX], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
+            $localized->cBeschreibung = !empty($postData['cBeschreibung_' . $langCode])
+                ? \htmlspecialchars($postData['cBeschreibung_' . $langCode], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET)
+                : \htmlspecialchars(
+                    $postData['cBeschreibung_' . $languages[0]->getCode()],
+                    \ENT_COMPAT | \ENT_HTML401,
+                    \JTL_CHARSET
+                );
+            $this->db->insert('tverpackungsprache', $localized);
+        }
+        $this->alertService->addSuccess(
+            \sprintf(\__('successPackagingSave'), $postData[$nameIDX]),
+            'successPackagingSave'
+        );
+    }
+
+    /**
+     * @param int $packagingID
+     * @return void
+     */
+    private function actionEdit(int $packagingID): void
+    {
+        $packaging = $this->db->select('tverpackung', 'kVerpackung', $packagingID);
+        if (isset($packaging->kVerpackung) && $packaging->kVerpackung > 0) {
+            $packaging->oSprach_arr = [];
+            $localizations          = $this->db->selectAll(
+                'tverpackungsprache',
+                'kVerpackung',
+                $packagingID,
+                'cISOSprache, cName, cBeschreibung'
+            );
+            foreach ($localizations as $localization) {
+                $packaging->oSprach_arr[$localization->cISOSprache] = $localization;
+            }
+            $customerGroup                = $this->getCustomerGroupData($packaging->cKundengruppe);
+            $packaging->kKundengruppe_arr = $customerGroup->kKundengruppe_arr;
+            $packaging->cKundengruppe_arr = $customerGroup->cKundengruppe_arr;
+        }
+        $this->smarty->assign('kVerpackung', $packaging->kVerpackung)
+            ->assign('oVerpackungEdit', $packaging);
+    }
+
+    private function actionRefresh(): void
+    {
+        if (GeneralObject::hasCount('nAktivTMP', $_POST)) {
+            foreach ($_POST['nAktivTMP'] as $packagingID) {
+                $upd         = new stdClass();
+                $upd->nAktiv = isset($_POST['nAktiv']) && \in_array($packagingID, $_POST['nAktiv'], true) ? 1 : 0;
+                $this->db->update('tverpackung', 'kVerpackung', (int)$packagingID, $upd);
+            }
+            $this->alertService->addSuccess(\__('successPackagingSaveMultiple'), 'successPackagingSaveMultiple');
+        }
+    }
+
+    private function actionDelete(): void
+    {
+        if (GeneralObject::hasCount('kVerpackung', $_POST)) {
+            foreach ($_POST['kVerpackung'] as $packagingID) {
+                $packagingID = (int)$packagingID;
+                // tverpackung loeschen
+                $this->db->delete('tverpackung', 'kVerpackung', $packagingID);
+                $this->db->delete('tverpackungsprache', 'kVerpackung', $packagingID);
+            }
+            $this->alertService->addSuccess(\__('successPackagingDelete'), 'successPackagingDelete');
+        } else {
+            $this->alertService->addError(\__('errorAtLeastOnePackaging'), 'errorAtLeastOnePackaging');
+        }
     }
 
     /**
@@ -196,7 +220,7 @@ class PackagingsController extends AbstractBackendController
      * @return stdClass
      * @former gibKundengruppeObj()
      */
-    private function gibKundengruppeObj(string $groupString): stdClass
+    private function getCustomerGroupData(string $groupString): stdClass
     {
         $customerGroup = new stdClass();
         $tmpIDs        = [];
@@ -255,7 +279,7 @@ class PackagingsController extends AbstractBackendController
 
         if (\is_array($customerGroupIDs) && $customerGroupIDs[0] !== '-1') {
             $packaging->cKundengruppe     = ';' . \implode(';', $customerGroupIDs) . ';';
-            $customerGroup                = $this->gibKundengruppeObj($packaging->cKundengruppe);
+            $customerGroup                = $this->getCustomerGroupData($packaging->cKundengruppe);
             $packaging->kKundengruppe_arr = $customerGroup->kKundengruppe_arr;
             $packaging->cKundengruppe_arr = $customerGroup->cKundengruppe_arr;
         } else {

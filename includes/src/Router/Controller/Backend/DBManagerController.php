@@ -35,11 +35,10 @@ class DBManagerController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/dbmanager');
 
         $tables = DBManager::getStatus(DB_NAME);
-        $smarty->assign('tables', $tables);
+        $smarty->assign('tables', $tables)
+            ->assign('route', $route->getPath());
 
-        $restrictedTables = ['tadminlogin', 'tbrocken', 'tsession', 'tsynclogin'];
-        $valid            = Form::validateToken();
-
+        $valid  = Form::validateToken();
         $jsTypo = (object)['tables' => []];
         foreach ($tables as $table => $info) {
             $columns                = DBManager::getColumns($table);
@@ -55,160 +54,170 @@ class DBManagerController extends AbstractBackendController
 
         switch (true) {
             case isset($_GET['table']) && $valid:
-                $table = $_GET['table'];
-
-                return $smarty->assign('selectedTable', $table)
-                    ->assign('status', DBManager::getStatus(DB_NAME, $table))
-                    ->assign('columns', DBManager::getColumns($table))
-                    ->assign('indexes', DBManager::getIndexes($table))
-                    ->assign('sub', 'table')
-                    ->getResponse('dbmanager.tpl');
+                return $this->actionGetTable($_GET['table']);
 
             case isset($_GET['select']) && $valid:
-                $table = $_GET['select'];
-
-                if (!\preg_match('/^\w+$/i', $table, $m)) {
-                    die('Not allowed.');
-                }
-
-                $status  = DBManager::getStatus(DB_NAME, $table);
-                $columns = DBManager::getColumns($table);
-                $indexes = DBManager::getIndexes($table);
-
-                $defaultFilter = [
-                    'limit'  => 50,
-                    'offset' => 0,
-                    'where'  => []
-                ];
-                $filter        = $_GET['filter'] ?? [];
-                $filter        = \array_merge($defaultFilter, $filter);
-                // validate filter
-                $filter['limit'] = (int)$filter['limit'];
-                $page            = Request::getInt('page', 1);
-                if ($page < 1) {
-                    $page = 1;
-                }
-
-                if ($filter['limit'] < 1) {
-                    $filter['limit'] = 1;
-                }
-
-                $filter['offset'] = ($page - 1) * $filter['limit'];
-
-                $baseQuery = 'SELECT * FROM ' . $table;
-                // query parts
-                $queryParams = [];
-                $queryParts  = ['select' => $baseQuery];
-                // where
-                if (isset($filter['where']['col'])) {
-                    $whereParts  = [];
-                    $columnCount = count($filter['where']['col']);
-                    for ($i = 0; $i < $columnCount; $i++) {
-                        if (!empty($filter['where']['col'][$i]) && !empty($filter['where']['op'][$i])) {
-                            $col = $filter['where']['col'][$i];
-                            $val = $filter['where']['val'][$i];
-                            $op  = mb_convert_case($filter['where']['op'][$i], MB_CASE_UPPER);
-                            if ($op === 'LIKE %%') {
-                                $op  = 'LIKE';
-                                $val = \sprintf('%%%s%%', \trim($val, '%'));
-                            }
-                            $whereParts[]                  = \sprintf('`%s` %s :where_%d_val', $col, $op, $i);
-                            $queryParams["where_{$i}_val"] = $val;
-                        }
-                    }
-                    if (count($whereParts) > 0) {
-                        $queryParts['where'] = 'WHERE ' . \implode(' AND ', $whereParts);
-                    }
-                }
-                // count without limit
-                $query = \implode(' ', $queryParts);
-                $count = $this->db->getAffectedRows($query, $queryParams);
-                $pages = (int)\ceil($count / $filter['limit']);
-                // limit
-                $queryParams['limit_count']  = $filter['limit'];
-                $queryParams['limit_offset'] = $filter['offset'];
-                $queryParts['limit']         = 'LIMIT :limit_offset, :limit_count';
-
-                $query = \implode(' ', $queryParts);
-                $info  = null;
-                $data  = $this->db->queryPrepared(
-                    $query,
-                    $queryParams,
-                    ReturnType::ARRAY_OF_ASSOC_ARRAYS,
-                    false,
-                    static function ($o) use (&$info) {
-                        $info = $o;
-                    }
-                );
-
-                return $smarty->assign('selectedTable', $table)
-                    ->assign('data', $data)
-                    ->assign('page', $page)
-                    ->assign('query', $query)
-                    ->assign('count', $count)
-                    ->assign('pages', $pages)
-                    ->assign('filter', $filter)
-                    ->assign('columns', $columns)
-                    ->assign('info', $info)
-                    ->assign('sub', 'select')
-                    ->getResponse('dbmanager.tpl');
+                return $this->actionSelect($_GET['select']);
 
             case isset($_GET['command']) && $valid:
-                $command = $_GET['command'];
-                $query   = null;
-                if (isset($_POST['query'])) {
-                    $query = $_POST['query'];
-                } elseif (isset($_POST['sql_query_edit'])) {
-                    $query = $_POST['sql_query_edit'];
-                }
-                if ($query !== null) {
-                    try {
-                        $parser = new Parser($query);
-                        if (\is_array($parser->errors) && count($parser->errors) > 0) {
-                            throw $parser->errors[0];
-                        }
-                        $q = Query::getAll($query);
-                        if ($q['is_select'] !== true) {
-                            throw new Exception(\sprintf('Query is restricted to SELECT statements'));
-                        }
-                        foreach ($q['select_tables'] ?? [] as $t) {
-                            [$table, $dbname] = $t;
-                            if ($dbname !== null && \strcasecmp($dbname, DB_NAME) !== 0) {
-                                throw new Exception(\sprintf('Well, at least you tried :)'));
-                            }
-                            if (\in_array(mb_convert_case($table, MB_CASE_LOWER), $restrictedTables, true)) {
-                                throw new Exception(\sprintf('Permission denied for table `%s`', $table));
-                            }
-                        }
-                        $stmt = $q['statement'];
-                        if ($q['limit'] === false) {
-                            $stmt->limit = new Limit(50, 0);
-                        }
-                        $newQuery = $stmt->build();
-                        $query    = Formatter::format($newQuery, ['type' => 'text']);
-                        $result   = $this->exec_query($newQuery);
-                        $smarty->assign('result', $result);
-                    } catch (Exception $e) {
-                        $smarty->assign('error', $e);
-                    }
-
-                    $smarty->assign('query', $query);
-                } elseif (isset($_GET['query'])) {
-                    $smarty->assign('query', Text::filterXSS($_GET['query']));
-                }
-
-                return $smarty->assign('sub', 'command')
-                    ->assign('columns', [])
-                    ->getResponse('dbmanager.tpl');
+                return $this->actionQuery();
 
             default:
-                $definedTables = \array_keys(\getDBFileStruct() ?: []);
+                $definedTables = \array_keys(self::getDBFileStruct() ?: []);
 
                 return $smarty->assign('definedTables', $definedTables)
                     ->assign('sub', 'default')
                     ->assign('columns', [])
                     ->getResponse('dbmanager.tpl');
         }
+    }
+
+    private function actionGetTable(string $table): ResponseInterface
+    {
+        return $this->smarty->assign('selectedTable', $table)
+            ->assign('status', DBManager::getStatus(DB_NAME, $table))
+            ->assign('columns', DBManager::getColumns($table))
+            ->assign('indexes', DBManager::getIndexes($table))
+            ->assign('sub', 'table')
+            ->getResponse('dbmanager.tpl');
+    }
+
+    private function actionQuery(): ResponseInterface
+    {
+        $restrictedTables = ['tadminlogin', 'tbrocken', 'tsession', 'tsynclogin'];
+        $query            = null;
+        if (isset($_POST['query'])) {
+            $query = $_POST['query'];
+        } elseif (isset($_POST['sql_query_edit'])) {
+            $query = $_POST['sql_query_edit'];
+        }
+        if ($query !== null) {
+            try {
+                $parser = new Parser($query);
+                if (\is_array($parser->errors) && count($parser->errors) > 0) {
+                    throw $parser->errors[0];
+                }
+                $q = Query::getAll($query);
+                if ($q['is_select'] !== true) {
+                    throw new Exception(\sprintf('Query is restricted to SELECT statements'));
+                }
+                foreach ($q['select_tables'] ?? [] as $t) {
+                    [$table, $dbname] = $t;
+                    if ($dbname !== null && \strcasecmp($dbname, DB_NAME) !== 0) {
+                        throw new Exception(\sprintf('Well, at least you tried :)'));
+                    }
+                    if (\in_array(mb_convert_case($table, MB_CASE_LOWER), $restrictedTables, true)) {
+                        throw new Exception(\sprintf('Permission denied for table `%s`', $table));
+                    }
+                }
+                $stmt = $q['statement'];
+                if ($q['limit'] === false) {
+                    $stmt->limit = new Limit(50, 0);
+                }
+                $newQuery = $stmt->build();
+                $query    = Formatter::format($newQuery, ['type' => 'text']);
+                $result   = $this->exec_query($newQuery);
+                $this->smarty->assign('result', $result);
+            } catch (Exception $e) {
+                $this->smarty->assign('error', $e);
+            }
+            $this->smarty->assign('query', $query);
+        } elseif (isset($_GET['query'])) {
+            $this->smarty->assign('query', Text::filterXSS($_GET['query']));
+        }
+
+        return $this->smarty->assign('sub', 'command')
+            ->assign('columns', [])
+            ->getResponse('dbmanager.tpl');
+    }
+
+    /**
+     * @param string $table
+     * @return ResponseInterface
+     */
+    private function actionSelect(string $table): ResponseInterface
+    {
+        if (!\preg_match('/^\w+$/i', $table, $m)) {
+            die('Not allowed.');
+        }
+        $columns       = DBManager::getColumns($table);
+        $defaultFilter = [
+            'limit'  => 50,
+            'offset' => 0,
+            'where'  => []
+        ];
+        $filter        = $_GET['filter'] ?? [];
+        $filter        = \array_merge($defaultFilter, $filter);
+        // validate filter
+        $filter['limit'] = (int)$filter['limit'];
+        $page            = Request::getInt('page', 1);
+        if ($page < 1) {
+            $page = 1;
+        }
+
+        if ($filter['limit'] < 1) {
+            $filter['limit'] = 1;
+        }
+
+        $filter['offset'] = ($page - 1) * $filter['limit'];
+
+        $baseQuery = 'SELECT * FROM ' . $table;
+        // query parts
+        $queryParams = [];
+        $queryParts  = ['select' => $baseQuery];
+        // where
+        if (isset($filter['where']['col'])) {
+            $whereParts  = [];
+            $columnCount = count($filter['where']['col']);
+            for ($i = 0; $i < $columnCount; $i++) {
+                if (!empty($filter['where']['col'][$i]) && !empty($filter['where']['op'][$i])) {
+                    $col = $filter['where']['col'][$i];
+                    $val = $filter['where']['val'][$i];
+                    $op  = mb_convert_case($filter['where']['op'][$i], MB_CASE_UPPER);
+                    if ($op === 'LIKE %%') {
+                        $op  = 'LIKE';
+                        $val = \sprintf('%%%s%%', \trim($val, '%'));
+                    }
+                    $whereParts[]                  = \sprintf('`%s` %s :where_%d_val', $col, $op, $i);
+                    $queryParams["where_{$i}_val"] = $val;
+                }
+            }
+            if (\count($whereParts) > 0) {
+                $queryParts['where'] = 'WHERE ' . \implode(' AND ', $whereParts);
+            }
+        }
+        // count without limit
+        $query = \implode(' ', $queryParts);
+        $count = $this->db->getAffectedRows($query, $queryParams);
+        $pages = (int)\ceil($count / $filter['limit']);
+        // limit
+        $queryParams['limit_count']  = $filter['limit'];
+        $queryParams['limit_offset'] = $filter['offset'];
+        $queryParts['limit']         = 'LIMIT :limit_offset, :limit_count';
+
+        $query = \implode(' ', $queryParts);
+        $info  = null;
+        $data  = $this->db->queryPrepared(
+            $query,
+            $queryParams,
+            ReturnType::ARRAY_OF_ASSOC_ARRAYS,
+            false,
+            static function ($o) use (&$info) {
+                $info = $o;
+            }
+        );
+
+        return $this->smarty->assign('selectedTable', $table)
+            ->assign('data', $data)
+            ->assign('page', $page)
+            ->assign('query', $query)
+            ->assign('count', $count)
+            ->assign('pages', $pages)
+            ->assign('filter', $filter)
+            ->assign('columns', $columns)
+            ->assign('info', $info)
+            ->assign('sub', 'select')
+            ->getResponse('dbmanager.tpl');
     }
 
     /**
@@ -228,5 +237,29 @@ class DBManagerController extends AbstractBackendController
             $this->db->rollback();
             throw $e;
         }
+    }
+
+    /**
+     * @return array
+     */
+    public static function getDBFileStruct(): array
+    {
+        $version    = \JTLShop\SemVer\Parser::parse(APPLICATION_VERSION);
+        $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
+        if ($version->hasPreRelease()) {
+            $preRelease  = $version->getPreRelease();
+            $versionStr .= '-' . $preRelease->getGreek();
+            if ($preRelease->getReleaseNumber() > 0) {
+                $versionStr .= '-' . $preRelease->getReleaseNumber();
+            }
+        }
+
+        $fileList = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'dbstruct_' . $versionStr . '.json';
+        if (!\file_exists($fileList)) {
+            return [];
+        }
+        $struct = \json_decode(\file_get_contents($fileList));
+
+        return \is_object($struct) ? \get_object_vars($struct) : [];
     }
 }

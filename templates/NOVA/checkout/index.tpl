@@ -27,13 +27,6 @@
                     {include file='checkout/step5_confirmation.tpl'}{*bestellvorgang_bestaetigung*}
                 {/if}
             {/container}
-            {block name='checkout-index-script-location'}
-                <script>
-                    if (top.location !== self.location) {
-                        top.location = self.location.href;
-                    }
-                </script>
-            {/block}
         </div>
 
         {if (isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1)}
@@ -57,6 +50,13 @@
                 </script>{/inline_script}
             {/block}
         {/if}
+        {block name='checkout-index-script-location'}
+            <script>
+                if (top.location !== self.location) {
+                    top.location = self.location.href;
+                }
+            </script>
+        {/block}
     {/block}
 
     {block name='checkout-index-include-footer'}

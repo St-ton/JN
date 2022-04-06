@@ -454,15 +454,9 @@ hr {
   background-color: $footer-bg-color;
   color: $footer-color;
 }
-
 /* header logo position - start */
 .toggler-logo-wrapper {
-  float: none;
-  @include media-breakpoint-up(lg) {
-    .logo-wrapper {
-      padding-left: map-get($spacers, 4);
-    }
-  }
+  float: left;
   @include media-breakpoint-down(md) {
     position: absolute;
     .logo-wrapper {
@@ -472,26 +466,6 @@ hr {
       float: left;
       padding-top: 1rem;
     }
-  }
-}
-#header-top-bar {
-  float: right;
-  position: fixed;
-  top: 0;
-  right: 0;
-  &:not(.is-fullwidth) {
-    /* max-width of container-fluid-xl + padding of container-fluid */
-    @media (min-width: 103.125rem + 2rem) {
-      margin-right: calc((100vw - 103.125rem - 2rem) / 2);
-    }
-  }
-}
-body > #header-top-bar {
-  max-width: 80%;
-}
-.is-checkout {
-  .logo-wrapper {
-    float: left;
   }
 }
 /* header logo position - end */

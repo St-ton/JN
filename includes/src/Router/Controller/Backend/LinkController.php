@@ -103,7 +103,7 @@ class LinkController extends AbstractBackendController
                     $checks->setPostVar($_POST);
                     $checks->doPlausi('grp');
                     if (count($checks->getPlausiVar()) === 0) {
-                        $linkGroupTemplateExists = Shop::Container()->getDB()->select(
+                        $linkGroupTemplateExists = $this->db->select(
                             'tlinkgruppe',
                             'cTemplatename',
                             $_POST['cTemplatename']
@@ -363,7 +363,7 @@ class LinkController extends AbstractBackendController
         }
         if ($step === 'neuer Link') {
             $cgroups = $this->db->getObjects('SELECT * FROM tkundengruppe ORDER BY cName');
-            $lgl     = new LinkGroupList($this->db, Shop::Container()->getCache());
+            $lgl     = new LinkGroupList($this->db, $this->cache);
             $lgl->loadAll();
             $smarty->assign('specialPages', $linkAdmin->getSpecialPageTypes())
                 ->assign('kundengruppen', $cgroups);

@@ -318,9 +318,8 @@ class NewsController extends AbstractBackendController
                 ->assign('oNewsKategorie', $newsCategory);
         }
 
-        $alertService = Shop::Container()->getAlertService();
-        $alertService->addNotice($controller->getMsg(), 'newsMessage');
-        $alertService->addError($controller->getErrorMsg(), 'newsError');
+        $this->alertService->addNotice($controller->getMsg(), 'newsMessage');
+        $this->alertService->addError($controller->getErrorMsg(), 'newsError');
 
         return $smarty->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('route', $route->getPath())

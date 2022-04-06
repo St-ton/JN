@@ -77,8 +77,8 @@ class EmailTemplateController extends AbstractBackendController
             }
         }
         if (isset($_POST['resetConfirmJaSubmit'])
-            && Request::postInt('resetEmailvorlage') === 1
             && $emailTemplateID > 0
+            && Request::postInt('resetEmailvorlage') === 1
             && Form::validateToken()
             && $controller->getTemplateByID($emailTemplateID) !== null
         ) {

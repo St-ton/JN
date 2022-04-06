@@ -61,9 +61,9 @@ class CheckboxController extends AbstractBackendController
             $step       = 'erstellen';
             $checkboxID = Request::verifyGPCDataInt('kCheckBox');
             $languages  = LanguageHelper::getAllLanguages(0, true);
-            $checks     = $this->plausiCheckBox($post, $languages);
+            $checks     = $this->validate($post, $languages);
             if (count($checks) === 0) {
-                $checkbox = $this->speicherCheckBox($post, $languages);
+                $checkbox = $this->save($post, $languages);
                 $step     = 'uebersicht';
                 $this->alertService->addSuccess(\__('successCheckboxCreate'), 'successCheckboxCreate');
             } else {
@@ -87,8 +87,8 @@ class CheckboxController extends AbstractBackendController
             ->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('oLink_arr', $this->db->getObjects(
                 'SELECT * 
-              FROM tlink 
-              ORDER BY cName'
+                     FROM tlink 
+                     ORDER BY cName'
             ))
             ->assign('oCheckBoxFunktion_arr', $checkbox->getCheckBoxFunctions())
             ->assign('step', $step)
@@ -101,10 +101,9 @@ class CheckboxController extends AbstractBackendController
      * @param array           $post
      * @param LanguageModel[] $languages
      * @return array
-     *
      * @former plausiCheckBox()
      */
-    private function plausiCheckBox(array $post, array $languages): array
+    private function validate(array $post, array $languages): array
     {
         $checks = [];
         if (count($languages) === 0) {
@@ -166,7 +165,7 @@ class CheckboxController extends AbstractBackendController
      * @return CheckBox
      * @former speicherCheckBox()
      */
-    private function speicherCheckBox(array $post, array $languages): CheckBox
+    private function save(array $post, array $languages): CheckBox
     {
         if (isset($post['kCheckBox']) && (int)$post['kCheckBox'] > 0) {
             $checkBox = new CheckBox((int)$post['kCheckBox'], $this->db);

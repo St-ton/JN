@@ -32,7 +32,7 @@ class SystemCheckController extends AbstractBackendController
             \phpinfo();
             $content = \ob_get_contents();
             \ob_end_clean();
-            $phpInfo = pq('body', phpQuery::newDocumentHTML($content, \JTL_CHARSET))->html();
+            $phpInfo = \pq('body', phpQuery::newDocumentHTML($content, \JTL_CHARSET))->html();
         }
 
         $systemcheck = new Environment();

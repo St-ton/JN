@@ -6,6 +6,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Laminas\Diactoros\Response\RedirectResponse;
 use League\Route\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -39,15 +40,9 @@ class PasswordController extends AbstractBackendController
                     $upd->cPass = Shop::Container()->getPasswordService()->hash($_POST['pw_new']);
                     $update     = $this->db->update('tadminlogin', 'cMail', $_POST['fpm'], $upd);
                     if ($update > 0) {
-                        $this->alertService->addSuccess(
-                            \__('successPasswordChange'),
-                            'successPasswordChange',
-                            ['saveInSession' => true]
-                        );
-                        \header('Location: ' . Shop::getAdminURL() . '/?pw_updated=true');
-                    } else {
-                        $this->alertService->addError(\__('errorPasswordChange'), 'errorPasswordChange');
+                        return $this->redirectSuccess();
                     }
+                    $this->alertService->addError(\__('errorPasswordChange'), 'errorPasswordChange');
                 } else {
                     $this->alertService->addError(\__('errorHashInvalid'), 'errorHashInvalid');
                 }
@@ -66,5 +61,18 @@ class PasswordController extends AbstractBackendController
         return $smarty->assign('step', $step)
             ->assign('route', $route->getPath())
             ->getResponse('pass.tpl');
+    }
+
+    /**
+     * @return ResponseInterface
+     */
+    private function redirectSuccess(): ResponseInterface
+    {
+        $this->alertService->addSuccess(
+            \__('successPasswordChange'),
+            'successPasswordChange',
+            ['saveInSession' => true]
+        );
+        return new RedirectResponse(Shop::getAdminURL() . '/?pw_updated=true');
     }
 }

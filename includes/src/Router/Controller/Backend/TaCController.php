@@ -27,74 +27,82 @@ class TaCController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions('ORDER_AGB_WRB_VIEW');
         $this->getText->loadAdminLocale('pages/agbwrb');
-        $this->step      = 'agbwrb_uebersicht';
-        $recommendations = new Manager($this->alertService, Manager::SCOPE_BACKEND_LEGAL_TEXTS);
+        $this->step = 'agbwrb_uebersicht';
         $this->setzeSprache();
-        $languageID = (int)$_SESSION['editLanguageID'];
         if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
             // Editieren
             if (Request::verifyGPCDataInt('agbwrb_edit') === 1) {
-                if (Request::verifyGPCDataInt('kKundengruppe') > 0) {
-                    $this->step = 'agbwrb_editieren';
-                    $data       = $this->db->select(
-                        'ttext',
-                        'kSprache',
-                        $languageID,
-                        'kKundengruppe',
-                        Request::verifyGPCDataInt('kKundengruppe')
-                    );
-                    $this->smarty->assign('kKundengruppe', Request::verifyGPCDataInt('kKundengruppe'))
-                        ->assign('oAGBWRB', $data);
-                } else {
-                    $this->alertService->addError(\__('errorInvalidCustomerGroup'), 'errorInvalidCustomerGroup');
-                }
+                $this->actionEdit(Request::verifyGPCDataInt('kKundengruppe'));
             } elseif (Request::verifyGPCDataInt('agbwrb_editieren_speichern') === 1) {
-                if ($this->speicherAGBWRB(
+                $this->actionSave(
                     Request::verifyGPCDataInt('kKundengruppe'),
-                    $languageID,
                     $_POST,
                     Request::verifyGPCDataInt('kText')
-                )) {
-                    $this->alertService->addSuccess(\__('successSave'), 'agbWrbSuccessSave');
-                } else {
-                    $this->alertService->addError(\__('errorSave'), 'agbWrbErrorSave');
-                }
+                );
             }
         }
 
         if ($this->step === 'agbwrb_uebersicht') {
-            $agbWrb = [];
-            $data   = $this->db->selectAll('ttext', 'kSprache', $languageID);
-            foreach ($data as $item) {
-                $item->kKundengruppe          = (int)$item->kKundengruppe;
-                $item->kText                  = (int)$item->kText;
-                $item->kSprache               = (int)$item->kSprache;
-                $item->nStandard              = (int)$item->nStandard;
-                $agbWrb[$item->kKundengruppe] = $item;
-            }
-            $this->smarty->assign('customerGroups', CustomerGroup::getGroups())
-                ->assign('oAGBWRB_arr', $agbWrb);
+            $this->assignOverview();
         }
 
         return $this->smarty->assign('step', $this->step)
-            ->assign('languageID', $languageID)
+            ->assign('languageID', (int)$_SESSION['editLanguageID'])
             ->assign('route', $route->getPath())
-            ->assign('recommendations', $recommendations)
+            ->assign('recommendations', new Manager($this->alertService, Manager::SCOPE_BACKEND_LEGAL_TEXTS))
             ->getResponse('agbwrb.tpl');
     }
 
     /**
+     * @param int $customerGroupID
+     * @return void
+     */
+    private function actionEdit(int $customerGroupID): void
+    {
+        if ($customerGroupID > 0) {
+            $this->step = 'agbwrb_editieren';
+            $data       = $this->db->select(
+                'ttext',
+                'kSprache',
+                (int)$_SESSION['editLanguageID'],
+                'kKundengruppe',
+                $customerGroupID
+            );
+            $this->smarty->assign('kKundengruppe', $customerGroupID)
+                ->assign('oAGBWRB', $data);
+        } else {
+            $this->alertService->addError(\__('errorInvalidCustomerGroup'), 'errorInvalidCustomerGroup');
+        }
+    }
+
+    private function assignOverview(): void
+    {
+        $agbWrb = [];
+        $data   = $this->db->selectAll('ttext', 'kSprache', $languageID);
+        foreach ($data as $item) {
+            $item->kKundengruppe          = (int)$item->kKundengruppe;
+            $item->kText                  = (int)$item->kText;
+            $item->kSprache               = (int)$item->kSprache;
+            $item->nStandard              = (int)$item->nStandard;
+            $agbWrb[$item->kKundengruppe] = $item;
+        }
+        $this->smarty->assign('customerGroups', CustomerGroup::getGroups())
+            ->assign('oAGBWRB_arr', $agbWrb);
+    }
+
+    /**
      * @param int   $customerGroupID
-     * @param int   $languageID
      * @param array $post
      * @param int   $textID
-     * @return bool
+     * @return void
      * @former speicherAGBWRB()
      */
-    private function speicherAGBWRB(int $customerGroupID, int $languageID, array $post, int $textID = 0): bool
+    private function actionSave(int $customerGroupID, array $post, int $textID = 0): void
     {
+        $languageID = (int)$_SESSION['editLanguageID'];
         if ($customerGroupID <= 0 || $languageID <= 0) {
-            return false;
+            $this->alertService->addError(\__('errorSave'), 'agbWrbErrorSave');
+            return;
         }
         $item = new stdClass();
         if ($textID > 0) {
@@ -115,7 +123,6 @@ class TaCController extends AbstractBackendController
         $item->nStandard = 0;
 
         $this->db->insert('ttext', $item);
-
-        return true;
+        $this->alertService->addSuccess(\__('successSave'), 'agbWrbSuccessSave');
     }
 }

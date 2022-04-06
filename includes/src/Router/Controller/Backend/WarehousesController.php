@@ -29,10 +29,9 @@ class WarehousesController extends AbstractBackendController
         $this->checkPermissions('WAREHOUSE_VIEW');
         $this->getText->loadAdminLocale('pages/warenlager');
 
-        $step        = 'uebersicht';
-        $postData    = Text::filterXSS($_POST);
-        $action      = (isset($postData['a']) && Form::validateToken()) ? $postData['a'] : null;
-        $alertHelper = Shop::Container()->getAlertService();
+        $step     = 'uebersicht';
+        $postData = Text::filterXSS($_POST);
+        $action   = (isset($postData['a']) && Form::validateToken()) ? $postData['a'] : null;
         if ($action === 'update') {
             $this->db->query('UPDATE twarenlager SET nAktiv = 0');
             if (GeneralObject::hasCount('kWarenlager', $postData)) {
@@ -55,7 +54,7 @@ class WarehousesController extends AbstractBackendController
                 }
             }
             $this->cache->flushTags([\CACHING_GROUP_ARTICLE]);
-            $alertHelper->addSuccess(\__('successStoreRefresh'), 'successStoreRefresh');
+            $this->alertService->addSuccess(\__('successStoreRefresh'), 'successStoreRefresh');
         }
 
         return $smarty->assign('step', $step)

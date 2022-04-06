@@ -26,7 +26,6 @@ class ComparelistController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions('MODULE_COMPARELIST_VIEW');
         $this->getText->loadAdminLocale('pages/wawisync');
-
         $this->getText->loadConfigLocales(true, true);
 
         if (!isset($_SESSION['Vergleichsliste'])) {
@@ -59,7 +58,7 @@ class ComparelistController extends AbstractBackendController
                 LIMIT " . $pagination->getLimitSQL()
         );
 
-        if (count($last20) > 0) {
+        if (\count($last20) > 0) {
             foreach ($last20 as $list) {
                 $list->oLetzten20VergleichslistePos_arr = $this->db->selectAll(
                     'tvergleichslistepos',
@@ -81,8 +80,8 @@ class ComparelistController extends AbstractBackendController
                 LIMIT :lmt',
             ['ds' => (int)$_SESSION['Vergleichsliste']->nZeitFilter, 'lmt' => (int)$_SESSION['Vergleichsliste']->nAnzahl]
         );
-        if (count($topComparisons) > 0) {
-            $this->erstelleDiagrammTopVergleiche($topComparisons);
+        if (\count($topComparisons) > 0) {
+            $this->createDiagram($topComparisons);
         }
         \getAdminSectionSettings(\CONF_VERGLEICHSLISTE);
 
@@ -95,12 +94,13 @@ class ComparelistController extends AbstractBackendController
 
     /**
      * @param array $topCompareLists
+     * @former erstelleDiagrammTopVergleiche()
      */
-    private function erstelleDiagrammTopVergleiche(array $topCompareLists): void
+    private function createDiagram(array $topCompareLists): void
     {
         unset($_SESSION['oGraphData_arr'], $_SESSION['nYmax'], $_SESSION['nDiagrammTyp']);
         $graphData = [];
-        if (count($topCompareLists) === 0) {
+        if (\count($topCompareLists) === 0) {
             return;
         }
         $yMax                     = []; // Y-Achsen Werte um spaeter den Max Wert zu erlangen
@@ -119,7 +119,7 @@ class ComparelistController extends AbstractBackendController
             }
         }
         // Naechst hoehere Zahl berechnen fuer die Y-Balkenbeschriftung
-        if (count($yMax) > 0) {
+        if (\count($yMax) > 0) {
             $fMax = (float)\max($yMax);
             if ($fMax > 10) {
                 $temp  = 10 ** \floor(\log10($fMax));
@@ -127,7 +127,6 @@ class ComparelistController extends AbstractBackendController
             } else {
                 $nYmax = 10;
             }
-
             $_SESSION['nYmax'] = $nYmax;
         }
 

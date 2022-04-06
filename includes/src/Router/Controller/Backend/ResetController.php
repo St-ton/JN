@@ -34,7 +34,7 @@ class ResetController extends AbstractBackendController
                 foreach ($options as $option) {
                     $reset->doReset(ResetContentType::from($option));
                 }
-                Shop::Container()->getCache()->flushAll();
+                $this->cache->flushAll();
                 $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
                 $this->alertService->addSuccess(\__('successShopReturn'), 'successShopReturn');
             } else {

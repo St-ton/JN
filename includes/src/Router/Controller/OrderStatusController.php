@@ -57,7 +57,7 @@ class OrderStatusController extends PageController
                 ]
             );
             if ($status === null) {
-                Shop::Container()->getAlertService()->addDanger(
+                $this->alertService->addDanger(
                     Shop::Lang()->get('statusOrderNotFound', 'errorMessages'),
                     'statusOrderNotFound',
                     ['saveInSession' => true]

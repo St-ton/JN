@@ -125,13 +125,13 @@ class ActivationController extends AbstractBackendController
             // Bewertungen
             if (Request::verifyGPCDataInt('bewertungen') === 1) {
                 if (isset($_POST['freischaltensubmit'])) {
-                    if ($this->schalteBewertungFrei(Request::postVar('kBewertung', []))) {
+                    if ($this->activateReviews(Request::postVar('kBewertung', []))) {
                         $this->alertService->addSuccess(\__('successRatingUnlock'), 'successRatingUnlock');
                     } else {
                         $this->alertService->addError(\__('errorAtLeastOneRating'), 'errorAtLeastOneRating');
                     }
                 } elseif (isset($_POST['freischaltenleoschen'])) {
-                    if ($this->loescheBewertung(Request::postVar('kBewertung', []))) {
+                    if ($this->deleteReviews(Request::postVar('kBewertung', []))) {
                         $this->alertService->addSuccess(\__('successRatingDelete'), 'successRatingDelete');
                     } else {
                         $this->alertService->addError(\__('errorAtLeastOneRating'), 'errorAtLeastOneRating');
@@ -143,9 +143,9 @@ class ActivationController extends AbstractBackendController
                     $mapping = Request::verifyGPDataString('cMapping');
                     if (mb_strlen($mapping) > 0) {
                         if (GeneralObject::hasCount('kSuchanfrage', $_POST)) {
-                            $res = $this->mappeLiveSuche($_POST['kSuchanfrage'], $mapping);
+                            $res = $this->mapLiveSearch($_POST['kSuchanfrage'], $mapping);
                             if ($res === 1) { // Alles O.K.
-                                if ($this->schalteSuchanfragenFrei(Request::postVar('kSuchanfrage', []))) {
+                                if ($this->activateSearchQueries(Request::postVar('kSuchanfrage', []))) {
                                     $this->alertService->addSuccess(
                                         \sprintf(\__('successLiveSearchMap'), $mapping),
                                         'successLiveSearchMap'
@@ -188,13 +188,13 @@ class ActivationController extends AbstractBackendController
                 }
 
                 if (isset($_POST['freischaltensubmit'])) {
-                    if ($this->schalteSuchanfragenFrei(Request::postVar('kSuchanfrage', []))) {
+                    if ($this->activateSearchQueries(Request::postVar('kSuchanfrage', []))) {
                         $this->alertService->addSuccess(\__('successSearchUnlock'), 'successSearchUnlock');
                     } else {
                         $this->alertService->addError(\__('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
                     }
                 } elseif (isset($_POST['freischaltenleoschen'])) {
-                    if ($this->loescheSuchanfragen(Request::postVar('kSuchanfrage', []))) {
+                    if ($this->deleteSearchQueries(Request::postVar('kSuchanfrage', []))) {
                         $this->alertService->addSuccess(\__('successSearchDelete'), 'successSearchDelete');
                     } else {
                         $this->alertService->addError(\__('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
@@ -202,13 +202,13 @@ class ActivationController extends AbstractBackendController
                 }
             } elseif (Request::verifyGPCDataInt('newskommentare') === 1 && Form::validateToken()) {
                 if (isset($_POST['freischaltensubmit'])) {
-                    if ($this->schalteNewskommentareFrei(Request::postVar('kNewsKommentar', []))) {
+                    if ($this->activateNewsComments(Request::postVar('kNewsKommentar', []))) {
                         $this->alertService->addSuccess(\__('successNewsCommentUnlock'), 'successNewsCommentUnlock');
                     } else {
                         $this->alertService->addError(\__('errorAtLeastOneNewsComment'), 'errorAtLeastOneNewsComment');
                     }
                 } elseif (isset($_POST['freischaltenleoschen'])) {
-                    if ($this->loescheNewskommentare(Request::postVar('kNewsKommentar', []))) {
+                    if ($this->deleteNewsComments(Request::postVar('kNewsKommentar', []))) {
                         $this->alertService->addSuccess(\__('successNewsCommentDelete'), 'successNewsCommentDelete');
                     } else {
                         $this->alertService->addError(\__('errorAtLeastOneNewsComment'), 'errorAtLeastOneNewsComment');
@@ -216,13 +216,13 @@ class ActivationController extends AbstractBackendController
                 }
             } elseif (Request::verifyGPCDataInt('newsletterempfaenger') === 1 && Form::validateToken()) {
                 if (isset($_POST['freischaltensubmit'])) {
-                    if ($this->schalteNewsletterempfaengerFrei(Request::postVar('kNewsletterEmpfaenger', []))) {
+                    if ($this->activateNewsletterRecipients(Request::postVar('kNewsletterEmpfaenger', []))) {
                         $this->alertService->addSuccess(\__('successNewsletterUnlock'), 'successNewsletterUnlock');
                     } else {
                         $this->alertService->addError(\__('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
                     }
                 } elseif (isset($_POST['freischaltenleoschen'])) {
-                    if ($this->loescheNewsletterempfaenger(Request::postVar('kNewsletterEmpfaenger', []))) {
+                    if ($this->deleteNewsletterRecipients(Request::postVar('kNewsletterEmpfaenger', []))) {
                         $this->alertService->addSuccess(\__('successNewsletterDelete'), 'successNewsletterDelete');
                     } else {
                         $this->alertService->addError(\__('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
@@ -231,22 +231,22 @@ class ActivationController extends AbstractBackendController
             }
         }
         $pagiRatings    = (new Pagination('bewertungen'))
-            ->setItemCount($this->gibMaxBewertungen())
+            ->setItemCount($this->getReviewCount())
             ->assemble();
         $pagiQueries    = (new Pagination('suchanfragen'))
-            ->setItemCount($this->gibMaxSuchanfragen())
+            ->setItemCount($this->getSearchQueryCount())
             ->assemble();
         $pagiComments   = (new Pagination('newskommentare'))
-            ->setItemCount($this->gibMaxNewskommentare())
+            ->setItemCount($this->getNewsCommentCount())
             ->assemble();
         $pagiRecipients = (new Pagination('newsletter'))
-            ->setItemCount($this->gibMaxNewsletterEmpfaenger())
+            ->setItemCount($this->getNewsletterRecipientCount())
             ->assemble();
 
-        $reviews      = $this->gibBewertungFreischalten(' LIMIT ' . $pagiRatings->getLimitSQL(), $ratingsSQL);
-        $queries      = $this->gibSuchanfrageFreischalten(' LIMIT ' . $pagiQueries->getLimitSQL(), $liveSearchSQL);
-        $newsComments = $this->gibNewskommentarFreischalten(' LIMIT ' . $pagiComments->getLimitSQL(), $commentsSQL);
-        $recipients   = $this->gibNewsletterEmpfaengerFreischalten(' LIMIT ' . $pagiRecipients->getLimitSQL(), $recipientsSQL);
+        $reviews      = $this->getReviews(' LIMIT ' . $pagiRatings->getLimitSQL(), $ratingsSQL);
+        $queries      = $this->getSearchQueries(' LIMIT ' . $pagiQueries->getLimitSQL(), $liveSearchSQL);
+        $newsComments = $this->getNewsComments(' LIMIT ' . $pagiComments->getLimitSQL(), $commentsSQL);
+        $recipients   = $this->getNewsletterRecipients(' LIMIT ' . $pagiRecipients->getLimitSQL(), $recipientsSQL);
 
         return $smarty->assign('ratings', $reviews)
             ->assign('searchQueries', $queries)
@@ -265,22 +265,21 @@ class ActivationController extends AbstractBackendController
     /**
      * @param string   $sql
      * @param SqlObject $searchSQL
-     * @param bool $checkLanguage
      * @return stdClass[]
+     * @former gibBewertungFreischalten()
      */
-    private function gibBewertungFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
+    private function getReviews(string $sql, SqlObject $searchSQL): array
     {
-        $cond = $checkLanguage === true
-            ? 'tbewertung.kSprache = ' . (int)$_SESSION['editLanguageID'] . ' AND '
-            : '';
+        $searchSQL->addParam('lid', (int)$_SESSION['editLanguageID']);
 
         return $this->db->getObjects(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
             LEFT JOIN tartikel 
                 ON tbewertung.kArtikel = tartikel.kArtikel
-            WHERE " . $cond . 'tbewertung.nAktiv = 0
-                ' . $searchSQL->getWhere() . '
+            WHERE tbewertung.kSprache = :lid
+                AND tbewertung.nAktiv = 0
+                " . $searchSQL->getWhere() . '
             ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC' . $sql,
             $searchSQL->getParams()
         );
@@ -289,19 +288,18 @@ class ActivationController extends AbstractBackendController
     /**
      * @param string    $sql
      * @param SqlObject $searchSQL
-     * @param bool      $checkLanguage
      * @return stdClass[]
+     * @former gibSuchanfrageFreischalten()
      */
-    private function gibSuchanfrageFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
+    private function getSearchQueries(string $sql, SqlObject $searchSQL): array
     {
-        $cond = $checkLanguage === true
-            ? 'AND kSprache = ' . (int)$_SESSION['editLanguageID'] . ' '
-            : '';
+        $searchSQL->addParam('lid', (int)$_SESSION['editLanguageID']);
 
         return $this->db->getObjects(
             "SELECT *, DATE_FORMAT(dZuletztGesucht, '%d.%m.%Y %H:%i') AS dZuletztGesucht_de
             FROM tsuchanfrage
-            WHERE nAktiv = 0 " . $cond . $searchSQL->getWhere() . '
+            WHERE nAktiv = 0 
+                AND kSprache = :lid " . $searchSQL->getWhere() . '
             ORDER BY ' . $searchSQL->getOrder() . $sql,
             $searchSQL->getParams()
         );
@@ -310,26 +308,26 @@ class ActivationController extends AbstractBackendController
     /**
      * @param string    $sql
      * @param SqlObject $searchSQL
-     * @param bool      $checkLanguage
      * @return stdClass[]
+     * @former gibNewskommentarFreischalten()
      */
-    private function gibNewskommentarFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
+    private function getNewsComments(string $sql, SqlObject $searchSQL): array
     {
-        $cond         = $checkLanguage === true
-            ? ' AND t.languageID = ' . (int)$_SESSION['editLanguageID'] . ' '
-            : '';
+        $searchSQL->addParam('lid', (int)$_SESSION['editLanguageID']);
+
         $newsComments = $this->db->getObjects(
             "SELECT tnewskommentar.*, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y  %H:%i') AS dErstellt_de, 
             tkunde.kKunde, tkunde.cVorname, tkunde.cNachname, t.title AS cBetreff
-            FROM tnewskommentar
-            JOIN tnews 
-                ON tnews.kNews = tnewskommentar.kNews
-            JOIN tnewssprache t 
-                ON tnews.kNews = t.kNews
-            LEFT JOIN tkunde 
-                ON tkunde.kKunde = tnewskommentar.kKunde
-            WHERE tnewskommentar.nAktiv = 0" .
-            $searchSQL->getWhere() . $cond . $sql,
+                FROM tnewskommentar
+                JOIN tnews 
+                    ON tnews.kNews = tnewskommentar.kNews
+                JOIN tnewssprache t 
+                    ON tnews.kNews = t.kNews
+                LEFT JOIN tkunde 
+                    ON tkunde.kKunde = tnewskommentar.kKunde
+                WHERE tnewskommentar.nAktiv = 0
+                    AND t.languageID = :lid" .
+                    $searchSQL->getWhere() . $sql,
             $searchSQL->getParams()
         );
         foreach ($newsComments as $comment) {
@@ -344,22 +342,21 @@ class ActivationController extends AbstractBackendController
     /**
      * @param string    $sql
      * @param SqlObject $searchSQL
-     * @param bool      $checkLanguage
      * @return stdClass[]
+     * @former gibNewsletterEmpfaengerFreischalten()
      */
-    private function gibNewsletterEmpfaengerFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
+    private function getNewsletterRecipients(string $sql, SqlObject $searchSQL): array
     {
-        $cond = $checkLanguage === true
-            ? ' AND kSprache = ' . (int)$_SESSION['editLanguageID']
-            : '';
+        $searchSQL->addParam('lid', (int)$_SESSION['editLanguageID']);
 
         return $this->db->getObjects(
             "SELECT *, DATE_FORMAT(dEingetragen, '%d.%m.%Y  %H:%i') AS dEingetragen_de, 
             DATE_FORMAT(dLetzterNewsletter, '%d.%m.%Y  %H:%i') AS dLetzterNewsletter_de
-            FROM tnewsletterempfaenger
-            WHERE nAktiv = 0
-                " . $searchSQL->getWhere() . $cond .
-            ' ORDER BY ' . $searchSQL->getOrder() . $sql,
+                FROM tnewsletterempfaenger
+                WHERE nAktiv = 0
+                    AND kSprache = :lid
+                    " . $searchSQL->getWhere() .
+                ' ORDER BY ' . $searchSQL->getOrder() . $sql,
             $searchSQL->getParams()
         );
     }
@@ -367,8 +364,9 @@ class ActivationController extends AbstractBackendController
     /**
      * @param array $reviewIDs
      * @return bool
+     * @former schalteBewertungFrei()
      */
-    private function schalteBewertungFrei(array $reviewIDs): bool
+    private function activateReviews(array $reviewIDs): bool
     {
         if (count($reviewIDs) === 0) {
             return false;
@@ -382,8 +380,9 @@ class ActivationController extends AbstractBackendController
     /**
      * @param array $searchQueries
      * @return bool
+     * @former schalteSuchanfragenFrei()
      */
-    private function schalteSuchanfragenFrei(array $searchQueries): bool
+    private function activateSearchQueries(array $searchQueries): bool
     {
         if (count($searchQueries) === 0) {
             return false;
@@ -423,10 +422,11 @@ class ActivationController extends AbstractBackendController
     /**
      * @param array $newsComments
      * @return bool
+     * @former schalteNewskommentareFrei()
      */
-    private function schalteNewskommentareFrei(array $newsComments): bool
+    private function activateNewsComments(array $newsComments): bool
     {
-        if (count($newsComments) === 0) {
+        if (\count($newsComments) === 0) {
             return false;
         }
         $this->db->query(
@@ -442,10 +442,11 @@ class ActivationController extends AbstractBackendController
     /**
      * @param array $recipients
      * @return bool
+     * @former schalteNewsletterempfaengerFrei()
      */
-    private function schalteNewsletterempfaengerFrei(array $recipients): bool
+    private function activateNewsletterRecipients(array $recipients): bool
     {
-        if (count($recipients) === 0) {
+        if (\count($recipients) === 0) {
             return false;
         }
         $this->db->query(
@@ -458,12 +459,13 @@ class ActivationController extends AbstractBackendController
     }
 
     /**
-     * @param array $ratings
+     * @param int[] $ratings
      * @return bool
+     * @former loescheBewertung()
      */
-    private function loescheBewertung(array $ratings): bool
+    private function deleteReviews(array $ratings): bool
     {
-        if (count($ratings) === 0) {
+        if (\count($ratings) === 0) {
             return false;
         }
         $this->db->query(
@@ -475,36 +477,38 @@ class ActivationController extends AbstractBackendController
     }
 
     /**
-     * @param array $queries
+     * @param int[] $queries
      * @return bool
+     * @former loescheSuchanfragen()
      */
-    private function loescheSuchanfragen(array $queries): bool
+    private function deleteSearchQueries(array $queries): bool
     {
-        if (count($queries) === 0) {
+        if (\count($queries) === 0) {
             return false;
         }
         $queries = \array_map('\intval', $queries);
 
         $this->db->query(
             'DELETE FROM tsuchanfrage
-            WHERE kSuchanfrage IN (' . \implode(',', $queries) . ')'
+                WHERE kSuchanfrage IN (' . \implode(',', $queries) . ')'
         );
         $this->db->query(
             "DELETE FROM tseo
-            WHERE cKey = 'kSuchanfrage'
-                AND kKey IN (" . \implode(',', $queries) . ')'
+                WHERE cKey = 'kSuchanfrage'
+                    AND kKey IN (" . \implode(',', $queries) . ')'
         );
 
         return true;
     }
 
     /**
-     * @param array $comments
+     * @param int[] $comments
      * @return bool
+     * @former loescheNewskommentare()
      */
-    private function loescheNewskommentare(array $comments): bool
+    private function deleteNewsComments(array $comments): bool
     {
-        if (count($comments) === 0) {
+        if (\count($comments) === 0) {
             return false;
         }
         $this->db->query(
@@ -517,12 +521,13 @@ class ActivationController extends AbstractBackendController
     }
 
     /**
-     * @param array $recipients
+     * @param int[] $recipients
      * @return bool
+     * @former loescheNewsletterempfaenger()
      */
-    private function loescheNewsletterempfaenger(array $recipients): bool
+    private function deleteNewsletterRecipients(array $recipients): bool
     {
-        if (count($recipients) === 0) {
+        if (\count($recipients) === 0) {
             return false;
         }
         $this->db->query(
@@ -537,10 +542,11 @@ class ActivationController extends AbstractBackendController
      * @param array|mixed $queryIDs
      * @param string      $mapTo
      * @return int
+     * @former mappeLiveSuche()
      */
-    private function mappeLiveSuche($queryIDs, string $mapTo): int
+    private function mapLiveSearch($queryIDs, string $mapTo): int
     {
-        if (!\is_array($queryIDs) || count($queryIDs) === 0 || mb_strlen($mapTo) === 0) {
+        if (!\is_array($queryIDs) || \count($queryIDs) === 0 || mb_strlen($mapTo) === 0) {
             return 2; // Leere Übergabe
         }
         $db = $this->db;
@@ -569,9 +575,9 @@ class ActivationController extends AbstractBackendController
             }
             $db->queryPrepared(
                 'UPDATE tsuchanfrage
-                SET nAnzahlGesuche = nAnzahlGesuche + :cnt
-                WHERE kSprache = :lid
-                    AND kSuchanfrage = :sid',
+                    SET nAnzahlGesuche = nAnzahlGesuche + :cnt
+                    WHERE kSprache = :lid
+                        AND kSuchanfrage = :sid',
                 [
                     'cnt' => $query->nAnzahlGesuche,
                     'lid' => (int)$_SESSION['editLanguageID'],
@@ -593,60 +599,64 @@ class ActivationController extends AbstractBackendController
 
     /**
      * @return int
+     * @former gibMaxBewertungen()
      */
-    private function gibMaxBewertungen(): int
+    private function getReviewCount(): int
     {
         return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
-            FROM tbewertung
-            WHERE nAktiv = 0
-                AND kSprache = :lid',
+                FROM tbewertung
+                WHERE nAktiv = 0
+                    AND kSprache = :lid',
             ['lid' => (int)$_SESSION['editLanguageID']]
         )->cnt;
     }
 
     /**
      * @return int
+     * @former gibMaxSuchanfragen()
      */
-    private function gibMaxSuchanfragen(): int
+    private function getSearchQueryCount(): int
     {
         return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
-            FROM tsuchanfrage
-            WHERE nAktiv = 0
-                AND kSprache = :lid',
+                FROM tsuchanfrage
+                WHERE nAktiv = 0
+                    AND kSprache = :lid',
             ['lid' => (int)$_SESSION['editLanguageID']]
         )->cnt;
     }
 
     /**
      * @return int
+     * @former gibMaxNewskommentare()
      */
-    private function gibMaxNewskommentare(): int
+    private function getNewsCommentCount(): int
     {
         return (int)$this->db->getSingleObject(
             'SELECT COUNT(tnewskommentar.kNewsKommentar) AS cnt
-            FROM tnewskommentar
-            JOIN tnews 
-                ON tnews.kNews = tnewskommentar.kNews
-            JOIN tnewssprache t 
-                ON tnews.kNews = t.kNews
-            WHERE tnewskommentar.nAktiv = 0
-                AND t.languageID = :lid',
+                FROM tnewskommentar
+                JOIN tnews 
+                    ON tnews.kNews = tnewskommentar.kNews
+                JOIN tnewssprache t 
+                    ON tnews.kNews = t.kNews
+                WHERE tnewskommentar.nAktiv = 0
+                    AND t.languageID = :lid',
             ['lid' => (int)$_SESSION['editLanguageID']],
         )->cnt;
     }
 
     /**
      * @return int
+     * @former gibMaxNewsletterEmpfaenger()
      */
-    private function gibMaxNewsletterEmpfaenger(): int
+    private function getNewsletterRecipientCount(): int
     {
         return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
-            FROM tnewsletterempfaenger
-            WHERE nAktiv = 0
-                AND kSprache = :lid',
+                FROM tnewsletterempfaenger
+                WHERE nAktiv = 0
+                    AND kSprache = :lid',
             ['lid' => (int)$_SESSION['editLanguageID']],
         )->cnt;
     }

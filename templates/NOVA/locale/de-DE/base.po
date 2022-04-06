@@ -282,3 +282,21 @@ msgstr "Benutzerdefinierte Variablen"
 
 msgid "customContent"
 msgstr "Benutzerdefiniertes CSS, Sass oder Scss"
+
+msgid "Standard"
+msgstr "Standard"
+
+msgid "Menü in eigener Zeile"
+msgstr "Menü in eigener Zeile"
+
+msgid "Header Boxed - Menü mehrspaltig"
+msgstr "Header Boxed - Menü mehrspaltig"
+
+msgid "Ohne Topbar - Header volle breite"
+msgstr "Ohne Topbar - Header volle breite"
+
+msgid "Custom"
+msgstr "Custom"
+
+msgid "Blocksatz"
+msgstr "Blocksatz"

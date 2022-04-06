@@ -233,10 +233,10 @@ msgid "Nichts"
 msgstr "None"
 
 msgid "Suchfeld Breite (in px)"
-msgstr "Suchfeld Breite (in px) <i class=\"fas fa-desktop\"></i> "
+msgstr "Search input width (in px) <i class=\"fas fa-desktop\"></i> "
 
 msgid "Logo Höhe (in px)"
-msgstr "Logo Höhe (in px) <i class=\"fas fa-desktop\"></i> "
+msgstr "Logo height (in px) <i class=\"fas fa-desktop\"></i> "
 
 msgid "Logo zentriert"
 msgstr "Logo centered <i class=\"fas fa-desktop\"></i> "
@@ -254,10 +254,10 @@ msgid "tooltipWithoutMenuSingleRow"
 msgstr "Can only be used with setting „Display menu in separate line - Yes“."
 
 msgid "tooltipDesktop"
-msgstr "Einstellung wirkt sich nur auf die Desktop-Ansicht aus."
+msgstr "Setting only affects desktop view."
 
 msgid "tooltipMobile"
-msgstr "Einstellung wirkt sich nur auf Ansicht von Mobilgeräten aus."
+msgstr "Setting only affects mobile view."
 
 msgid "buttonCustomLayout"
 msgstr "Custom layout"
@@ -282,3 +282,24 @@ msgstr "Custom variables"
 
 msgid "customContent"
 msgstr "Custom CSS, Sass or Scss"
+
+msgid "Gewählte Vorlage"
+msgstr "Chosen layout"
+
+msgid "Standard"
+msgstr "Standard"
+
+msgid "Menü in eigener Zeile"
+msgstr "Menu in single row"
+
+msgid "Header Boxed - Menü mehrspaltig"
+msgstr "Header Boxed - Menu multiple lines"
+
+msgid "Ohne Topbar - Header volle breite"
+msgstr "Without Topbar - Header full width"
+
+msgid "Custom"
+msgstr "Custom"
+
+msgid "Blocksatz"
+msgstr "Space between"

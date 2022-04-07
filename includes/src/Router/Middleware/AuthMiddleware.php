@@ -35,7 +35,11 @@ class AuthMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if (!$this->account->logged()) {
-            return new RedirectResponse(Shop::getAdminURL(), 301);
+            $url = \strpos(\basename($request->getServerParams()['REQUEST_URI'] ?? ''), 'logout') === false
+                ? '/?uri=' . \base64_encode(\basename($_SERVER['REQUEST_URI']))
+                : '';
+
+            return new RedirectResponse(Shop::getAdminURL() . $url, 301);
         }
 
         return $handler->handle($request);

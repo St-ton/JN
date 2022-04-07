@@ -32,7 +32,6 @@ class CouponStatsController extends AbstractBackendController
         $cWhere    = '';
         $coupons   = $this->db->getArrays('SELECT kKupon, cName FROM tkupon ORDER BY cName DESC');
         $oDateShop = $this->db->getSingleObject('SELECT MIN(DATE(dZeit)) AS startDate FROM tbesucherarchiv');
-        $startDate = DateTime::createFromFormat('Y-m-j', $oDateShop->startDate);
         $endDate   = DateTime::createFromFormat('Y-m-j', \date('Y-m-j'));
 
         if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && Form::validateToken()) {
@@ -53,8 +52,10 @@ class CouponStatsController extends AbstractBackendController
 
             $dateRanges = \explode(' - ', $_POST['daterange']);
             $endDate    = (DateTime::createFromFormat('Y-m-j', $dateRanges[1])
-                && (DateTime::createFromFormat('Y-m-j', $dateRanges[1]) >= DateTime::createFromFormat('Y-m-j', $dateRanges[0]))
-                && (DateTime::createFromFormat('Y-m-j', $dateRanges[1]) < DateTime::createFromFormat('Y-m-j', \date('Y-m-j'))))
+                && (DateTime::createFromFormat('Y-m-j', $dateRanges[1])
+                    >= DateTime::createFromFormat('Y-m-j', $dateRanges[0]))
+                && (DateTime::createFromFormat('Y-m-j', $dateRanges[1])
+                    < DateTime::createFromFormat('Y-m-j', \date('Y-m-j'))))
                 ? DateTime::createFromFormat('Y-m-j', $dateRanges[1])
                 : DateTime::createFromFormat('Y-m-j', \date('Y-m-j'));
 
@@ -107,11 +108,11 @@ class CouponStatsController extends AbstractBackendController
                 Preise::getLocalizedPriceWithoutFactor($usedCouponOrder['fGesamtsummeBrutto']);
             $usedCouponsOrder[$key]['cOrderPos_arr']       = $this->db->getArrays(
                 "SELECT CONCAT_WS(' ',wk.cName,wk.cHinweis) AS cName,
-            wk.fPreis+(wk.fPreis/100*wk.fMwSt) AS nPreis, wk.nAnzahl
-            FROM twarenkorbpos AS wk
-            LEFT JOIN tbestellung AS bs 
-                ON wk.kWarenkorb = bs.kWarenkorb
-            WHERE bs.kBestellung = :oid",
+                wk.fPreis+(wk.fPreis/100*wk.fMwSt) AS nPreis, wk.nAnzahl
+                FROM twarenkorbpos AS wk
+                LEFT JOIN tbestellung AS bs 
+                    ON wk.kWarenkorb = bs.kWarenkorb
+                WHERE bs.kBestellung = :oid",
                 ['oid' => (int)$usedCouponOrder['kBestellung']]
             );
             foreach ($usedCouponsOrder[$key]['cOrderPos_arr'] as $posKey => $value) {

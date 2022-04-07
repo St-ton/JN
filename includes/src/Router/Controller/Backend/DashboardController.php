@@ -7,6 +7,7 @@ use JTL\Alert\Alert;
 use JTL\Backend\AdminAccount;
 use JTL\Backend\AdminLoginStatus;
 use JTL\Backend\Status;
+use JTL\Exceptions\LoginException;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Plugin\Helper;
@@ -35,99 +36,17 @@ class DashboardController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $oUpdater     = new Updater($this->db);
         if (Request::postInt('adminlogin') === 1) {
-            $csrfOK = true;
-            // Check if shop version is new enough for csrf validation
-            if (Shop::getShopDatabaseVersion()->equals(Version::parse('4.0.0'))
-                || Shop::getShopDatabaseVersion()->greaterThan(Version::parse('4.0.0'))
-            ) {
-                $csrfOK = Form::validateToken();
-            }
-            if ($csrfOK === true) {
-                switch ($this->account->login($_POST['benutzer'], $_POST['passwort'])) {
-                    case AdminLoginStatus::ERROR_LOCKED:
-                    case AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
-                        $lockTime = $this->account->getLockedMinutes();
-                        $this->alertService->addError(\sprintf(\__('lockForMinutes'), $lockTime), 'errorFillRequired');
-                        break;
-
-                    case AdminLoginStatus::ERROR_USER_NOT_FOUND:
-                    case AdminLoginStatus::ERROR_INVALID_PASSWORD:
-                        if (empty(Request::verifyGPDataString('TwoFA_code'))) {
-                            $this->alertService->addError(\__('errorWrongPasswordUser'), 'errorWrongPasswordUser');
-                        }
-                        break;
-
-                    case AdminLoginStatus::ERROR_USER_DISABLED:
-                        $this->alertService->addError(\__('errorLoginTemporaryNotPossible'), 'errorLoginTemporaryNotPossible');
-                        break;
-
-                    case AdminLoginStatus::ERROR_LOGIN_EXPIRED:
-                        $this->alertService->addError(\__('errorLoginDataExpired'), 'errorLoginDataExpired');
-                        break;
-
-                    case AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED:
-                        if (isset($_SESSION['AdminAccount']->TwoFA_expired)
-                            && $_SESSION['AdminAccount']->TwoFA_expired === true
-                        ) {
-                            $this->alertService->addError(\__('errorTwoFactorExpired'), 'errorTwoFactorExpired');
-                        }
-                        break;
-
-                    case AdminLoginStatus::ERROR_NOT_AUTHORIZED:
-                        $this->alertService->addError(\__('errorNoPermission'), 'errorNoPermission');
-                        break;
-
-                    case AdminLoginStatus::LOGIN_OK:
-                        Status::getInstance($this->db, $this->cache, true);
-                        Backend::getInstance()->reHash();
-                        $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
-                        $this->redirectLogin($this->account, $oUpdater);
-
-                        break;
-                }
-            } elseif (isset($_COOKIE['eSIdAdm'])) {
-                $this->alertService->addError(\__('errorCSRF'), 'errorCSRF');
-            } else {
-                $this->alertService->addError(\__('errorCookieSettings'), 'errorCookieSettings');
+            try {
+                return $this->actionLogin();
+            } catch (LoginException $e) {
+                $this->alertService->addError($e->getMessage(), 'errLogin', ['dismissable' => false]);
             }
         }
-        $type          = '';
-        $profilerState = Profiler::getIsActive();
-        switch ($profilerState) {
-            case 0:
-            default:
-                break;
-            case 1:
-                $type = 'Datenbank';
-                break;
-            case 2:
-                $type = 'XHProf';
-                break;
-            case 3:
-                $type = 'Plugin';
-                break;
-            case 4:
-                $type = 'Plugin- und XHProf';
-                break;
-            case 5:
-                $type = 'Datenbank- und Plugin';
-                break;
-            case 6:
-                $type = 'Datenbank- und XHProf';
-                break;
-            case 7:
-                $type = 'Datenbank-, XHProf und Plugin';
-                break;
-        }
-        $smarty->assign('bProfilerActive', $profilerState !== 0)
-            ->assign('profilerType', $type)
-            ->assign('pw_updated', Request::getVar('pw_updated') === 'true')
+        $this->smarty->assign('pw_updated', Request::getVar('pw_updated') === 'true')
             ->assign('alertError', $this->alertService->alertTypeExists(Alert::TYPE_ERROR))
             ->assign('alertList', $this->alertService)
             ->assign('plgSafeMode', $GLOBALS['plgSafeMode'] ?? false);
-
         if (!$this->account->getIsAuthenticated()) {
             $this->account->redirectOnUrl();
             if (Request::getInt('errCode', null) === AdminLoginStatus::ERROR_SESSION_INVALID) {
@@ -135,9 +54,7 @@ class DashboardController extends AbstractBackendController
             }
             $this->getText->loadAdminLocale('pages/login');
 
-            return $smarty->assign('uri', isset($_REQUEST['uri']) && \mb_strlen(\trim($_REQUEST['uri'])) > 0
-                ? \trim($_REQUEST['uri'])
-                : '')
+            return $smarty->assign('uri', Request::verifyGPDataString('uri'))
                 ->assign('alertError', $this->alertService->alertTypeExists(Alert::TYPE_ERROR))
                 ->assign('alertList', $this->alertService)
                 ->getResponse('login.tpl');
@@ -153,7 +70,8 @@ class DashboardController extends AbstractBackendController
                     $_SESSION['AdminAccount']->TwoFA_expired = false;
                     $_SESSION['AdminAccount']->TwoFA_valid   = true;
                     $_SESSION['loginIsValid']                = true;
-                    return $this->redirectLogin($this->account, $oUpdater);
+
+                    return $this->redirectLogin($this->account);
                 }
                 $this->alertService->addError(\__('errorTwoFactorFaultyExpired'), 'errorTwoFactorFaultyExpired');
                 $smarty->assign('alertError', true);
@@ -163,13 +81,11 @@ class DashboardController extends AbstractBackendController
             $this->getText->loadAdminLocale('pages/login');
             $this->account->redirectOnUrl();
 
-            return $smarty->assign('uri', isset($_REQUEST['uri']) && \mb_strlen(\trim($_REQUEST['uri'])) > 0
-                ? \trim($_REQUEST['uri'])
-                : '')
+            return $smarty->assign('uri', Request::verifyGPDataString('uri'))
                 ->getResponse('login.tpl');
         }
-        if (isset($_REQUEST['uri']) && \mb_strlen(\trim($_REQUEST['uri'])) > 0) {
-            return $this->redirectToURI($_REQUEST['uri']);
+        if (Request::verifyGPDataString('uri') !== '') {
+            return $this->redirectToURI(Request::verifyGPDataString('uri'));
         }
         $_SESSION['loginIsValid'] = true;
 
@@ -306,26 +222,68 @@ class DashboardController extends AbstractBackendController
 
     /**
      * @param AdminAccount $account
-     * @param Updater      $updater
      * @return ResponseInterface
      * @throws Exception
      */
-    public function redirectLogin(AdminAccount $account, Updater $updater): ResponseInterface
+    public function redirectLogin(AdminAccount $account): ResponseInterface
     {
         unset($_SESSION['frontendUpToDate']);
+        $uri      = Request::verifyGPDataString('uri');
         $safeMode = isset($GLOBALS['plgSafeMode'])
             ? '?safemode=' . ($GLOBALS['plgSafeMode'] ? 'on' : 'off')
             : '';
-        if (Shop::getSettingValue(\CONF_GLOBAL, 'global_wizard_done') === 'N') {
-            return new RedirectResponse(Shop::getAdminURL(true) . BackendRouter::ROUTE_WIZARD . $safeMode);
-        }
-        if ($account->permission('SHOP_UPDATE_VIEW') && $updater->hasPendingUpdates()) {
-            return new RedirectResponse(Shop::getAdminURL(true) . BackendRouter::ROUTE_DBUPDATER . $safeMode);
-        }
-        if (isset($_REQUEST['uri']) && \mb_strlen(\trim($_REQUEST['uri'])) > 0) {
-            return $this->redirectToURI($_REQUEST['uri']);
+        if ($uri !== '') {
+            return $this->redirectToURI($uri);
         }
 
         return new RedirectResponse(Shop::getAdminURL(true) . '/' . $safeMode);
+    }
+
+    /**
+     * @return ResponseInterface
+     * @throws LoginException
+     */
+    private function actionLogin(): ResponseInterface
+    {
+        $csrfOK = Form::validateToken();
+        if ($csrfOK !== true) {
+            throw new LoginException(isset($_COOKIE['eSIdAdm']) ? \__('errorCSRF') : \__('errorCookieSettings'));
+        }
+        $res = $this->account->login($_POST['benutzer'], $_POST['passwort']);
+        switch ($res) {
+            case AdminLoginStatus::ERROR_LOCKED:
+            case AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
+                $lockTime = $this->account->getLockedMinutes();
+                throw new LoginException(\sprintf(\__('lockForMinutes'), $lockTime));
+
+            case AdminLoginStatus::ERROR_USER_NOT_FOUND:
+            case AdminLoginStatus::ERROR_INVALID_PASSWORD:
+                if (empty(Request::verifyGPDataString('TwoFA_code'))) {
+                    throw new LoginException(\__('errorWrongPasswordUser'));
+                }
+                throw new LoginException('');
+
+            case AdminLoginStatus::ERROR_USER_DISABLED:
+                throw new LoginException(\__('errorLoginTemporaryNotPossible'));
+
+            case AdminLoginStatus::ERROR_LOGIN_EXPIRED:
+                throw new LoginException(\__('errorLoginDataExpired'));
+
+            case AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED:
+                if (($_SESSION['AdminAccount']->TwoFA_expired ?? false) === true) {
+                    throw new LoginException(\__('errorTwoFactorExpired'));
+                }
+                throw new LoginException('');
+
+            case AdminLoginStatus::ERROR_NOT_AUTHORIZED:
+                throw new LoginException(\__('errorNoPermission'));
+
+            case AdminLoginStatus::LOGIN_OK:
+                Status::getInstance($this->db, $this->cache, true);
+                Backend::getInstance()->reHash();
+                $_SESSION['loginIsValid'] = true;
+
+                return $this->redirectLogin($this->account);
+        }
     }
 }

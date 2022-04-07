@@ -13,6 +13,7 @@ use JTL\DB\SqlObject;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Router\BackendRouter;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -340,7 +341,10 @@ class Admin
 
         $queueID = $this->db->insert('texportqueue', $queue);
 
-        $redir = Shop::getAdminURL() . '/do_export.php?&back=admin&token=' . $_SESSION['jtl_token'] . '&e=' . $queueID;
+        $redir = Shop::getAdminURL() . '/'
+            . BackendRouter::ROUTE_EXPORT_START
+            . '?&back=admin&token=' . $_SESSION['jtl_token']
+            . '&e=' . $queueID;
         if ($async) {
             $redir .= '&ajax';
         }

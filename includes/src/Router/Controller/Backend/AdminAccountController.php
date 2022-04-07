@@ -956,7 +956,7 @@ class AdminAccountController extends AbstractBackendController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->url    = Shop::getURL() . $this->route;
+        $this->url    = Shop::getAdminURL() . $this->route;
         $this->smarty = $smarty;
         $this->checkPermissions('ACCOUNT_VIEW');
         $this->getText->loadAdminLocale('pages/benutzerverwaltung');

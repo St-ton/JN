@@ -3,6 +3,7 @@
 namespace JTL\Export;
 
 use DateTime;
+use JTL\Router\BackendRouter;
 use JTL\Shop;
 use stdClass;
 
@@ -72,7 +73,7 @@ class AsyncCallback
      */
     public function __construct()
     {
-        $this->url = Shop::getAdminURL() . '/do_export.php';
+        $this->url = Shop::getAdminURL() . '/' . BackendRouter::ROUTE_EXPORT_START;
     }
 
     public function output(): void

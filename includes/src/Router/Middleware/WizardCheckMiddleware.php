@@ -28,7 +28,7 @@ class WizardCheckMiddleware implements MiddlewareInterface
     {
         if ($request->getMethod() === 'GET'
             && !Backend::get('redirectedToWizard')
-            && Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_wizard_done') === 'Y'
+            && Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_wizard_done') === 'N'
             && !\str_contains($request->getUri()->getPath(), BackendRouter::ROUTE_WIZARD)
         ) {
             return new RedirectResponse(Shop::getAdminURL() . '/' . BackendRouter::ROUTE_WIZARD);

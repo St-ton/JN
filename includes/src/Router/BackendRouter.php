@@ -34,6 +34,7 @@ use JTL\Router\Controller\Backend\EmailHistoryController;
 use JTL\Router\Controller\Backend\EmailTemplateController;
 use JTL\Router\Controller\Backend\ExportController;
 use JTL\Router\Controller\Backend\ExportQueueController;
+use JTL\Router\Controller\Backend\ExportStarterController;
 use JTL\Router\Controller\Backend\FavsController;
 use JTL\Router\Controller\Backend\FileCheckController;
 use JTL\Router\Controller\Backend\FilesystemController;
@@ -47,6 +48,7 @@ use JTL\Router\Controller\Backend\LicenseController;
 use JTL\Router\Controller\Backend\LinkController;
 use JTL\Router\Controller\Backend\LivesearchController;
 use JTL\Router\Controller\Backend\LogoController;
+use JTL\Router\Controller\Backend\LogoutController;
 use JTL\Router\Controller\Backend\MarkdownController;
 use JTL\Router\Controller\Backend\NavFilterController;
 use JTL\Router\Controller\Backend\NewsController;
@@ -98,10 +100,12 @@ use JTL\Router\Middleware\WizardCheckMiddleware;
 use JTL\Router\Strategy\SmartyStrategy;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
+use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use League\Container\Container;
+use League\Route\Http\Exception\NotFoundException;
 use League\Route\RouteGroup;
 use League\Route\Router;
 
@@ -169,6 +173,7 @@ class BackendRouter
     public const ROUTE_SEPARATOR             = 'separator';
     public const ROUTE_CONSENT               = 'consent';
     public const ROUTE_EXPORT                = 'export';
+    public const ROUTE_EXPORT_START          = 'startexport';
     public const ROUTE_FILECHECK             = 'filecheck';
     public const ROUTE_GIFTS                 = 'gifts';
     public const ROUTE_CAMPAIGN              = 'campaign';
@@ -285,13 +290,14 @@ class BackendRouter
             self::ROUTE_SEPARATOR             => SeparatorController::class,
             self::ROUTE_CONSENT               => ConsentController::class,
             self::ROUTE_EXPORT                => ExportController::class,
+            self::ROUTE_EXPORT_START          => ExportStarterController::class,
             self::ROUTE_FILECHECK             => FileCheckController::class,
             self::ROUTE_GIFTS                 => GiftsController::class,
             self::ROUTE_CAMPAIGN              => CampaignController::class,
             self::ROUTE_CUSTOMER_IMPORT       => CustomerImportController::class,
             self::ROUTE_COUPON_STATS          => CouponStatsController::class,
             self::ROUTE_LICENSE               => LicenseController::class,
-            self::ROUTE_LOGOUT                => LicenseController::class,
+            self::ROUTE_LOGOUT                => LogoutController::class,
             self::ROUTE_NAVFILTER             => NavFilterController::class,
             self::ROUTE_NEWSLETTER            => NewsletterController::class,
             self::ROUTE_NEWSLETTER_IMPORT     => NewsletterImportController::class,
@@ -360,7 +366,12 @@ class BackendRouter
     public function dispatch(): void
     {
         $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
-        (new SapiEmitter())->emit($this->router->dispatch($request));
+        try {
+            $response = $this->router->dispatch($request);
+        } catch (NotFoundException $exception) {
+            $response = (new Response())->withStatus(404);
+        }
+        (new SapiEmitter())->emit($response);
         exit();
     }
 

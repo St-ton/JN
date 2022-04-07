@@ -139,7 +139,7 @@
                                     {foreach $manufacturers as $mft}
                                         {col lg=4 xl=3 class='nav-item-lg-m nav-item'}
                                             {block name='snippets-categories-mega-manufacturers-link'}
-                                                {link href=$mft->getURL() title=$mft->getName() class='submenu-headline submenu-headline-toplevel nav-link '}
+                                                {link href=$mft->getURL() title=$mft->getName()|escape:'html' class='submenu-headline submenu-headline-toplevel nav-link '}
                                                     {if $Einstellungen.template.megamenu.show_manufacturer_images !== 'N'
                                                         && (!$isMobile || $isTablet)}
                                                         {include file='snippets/image.tpl'
@@ -191,7 +191,7 @@
             {navitem href="{get_static_route id='vergleichsliste.php'}" class="comparelist-nav-scrollbar-item nav-scrollbar-item"}
                 {lang key='compare'}
                 {badge id="comparelist-badge" variant="primary" class="product-count"}
-                    {if JTL\Session\Frontend::getCompareList()->oArtikel_arr|count}{else}0{/if}
+                    {count(JTL\Session\Frontend::getCompareList()->oArtikel_arr)}
                 {/badge}
             {/navitem}
         {/if}

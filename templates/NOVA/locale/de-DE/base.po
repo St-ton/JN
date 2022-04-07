@@ -26,7 +26,7 @@ msgid "Animation für Schaltflächen beim Hovern"
 msgstr "Animation für Schaltflächen beim Hovern"
 
 msgid "Anzeige der Suche auf mobilen Geräten"
-msgstr "Mobile Geräte: Anzeige der Suche"
+msgstr "Anzeige der Suche <i class=\"fas fa-mobile-alt\"></i> "
 
 msgid "Schaltfläche „Nach oben scrollen“ anzeigen"
 msgstr "Schaltfläche „Nach oben scrollen“ anzeigen"
@@ -47,7 +47,7 @@ msgid "Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)"
 msgstr "Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)"
 
 msgid "Kategoriebilder für erste Unterkategorie"
-msgstr "Kategoriebilder für erste Unterkategorie"
+msgstr "Kategoriebilder für erste Unterkategorie <i class=\"fas fa-desktop\"></i> "
 
 msgid "Unterkategorien"
 msgstr "Unterkategorien"
@@ -59,7 +59,7 @@ msgid "Hersteller-Dropdown"
 msgstr "Hersteller-Dropdown"
 
 msgid "Herstellerbilder"
-msgstr "Herstellerbilder"
+msgstr "Herstellerbilder <i class=\"fas fa-desktop\"></i> "
 
 msgid "Listen- und Gallerieansicht"
 msgstr "Listen- und Gallerieansicht"
@@ -176,7 +176,7 @@ msgid "Keine"
 msgstr "Nein"
 
 msgid "Header über gesamte Bildschirmbreite darstellen"
-msgstr "Header über gesamte Bildschirmbreite darstellen"
+msgstr "Header über gesamte Bildschirmbreite darstellen <i class=\"fas fa-desktop\"></i> "
 
 msgid "Linke Seitenleiste anzeigen"
 msgstr "Linke Seitenleiste anzeigen"
@@ -191,7 +191,79 @@ msgid "Suchfeld in Filtern anzeigen ab x Einträgen"
 msgstr "Suchfeld in Filtern anzeigen ab x Einträgen"
 
 msgid "Mobile Geräte: Menü in aktueller Kategorie öffnen"
-msgstr "Mobile Geräte: Menü in aktueller Kategorie öffnen"
+msgstr "Menü in aktueller Kategorie öffnen <i class=\"fas fa-mobile-alt\"></i> "
+
+msgid "Menü in eigener Zeile anzeigen"
+msgstr "Menü in eigener Zeile anzeigen <i class=\"fas fa-desktop\"></i> "
+
+msgid "Anzeige bei vielen Menüeinträgen"
+msgstr "Anzeige bei vielen Menüeinträgen <i class=\"fas fa-desktop\"></i> "
+
+msgid "Mehrzeilig"
+msgstr "Mehrzeilig"
+
+msgid "Einzeilig und scrollbar nach links/rechts"
+msgstr "Einzeilig und scrollbar nach links/rechts"
+
+msgid "Menüausrichtung"
+msgstr "Menüausrichtung <i class=\"fas fa-desktop\"></i> "
+
+msgid "Nur in Verbindung mit \"Menü in eigener Zeile: Ja\" nutzbar."
+msgstr "Nur in Verbindung mit \"Menü in eigener Zeile anzeigen: Ja\" nutzbar."
+
+msgid "Zentriert"
+msgstr "Zentriert"
+
+msgid "Linksbündig"
+msgstr "Linksbündig"
+
+msgid "Rechtsbündig"
+msgstr "Rechtsbündig"
+
+msgid "Anzeige beim Scrollen"
+msgstr "Anzeige beim Scrollen <i class=\"fas fa-desktop\"></i> "
+
+msgid "Menü"
+msgstr "Menü"
+
+msgid "Menü, Logo, Suche"
+msgstr "Menü, Logo und Suche"
+
+msgid "Nichts"
+msgstr "Nichts"
+
+msgid "Suchfeld Breite (in px)"
+msgstr "Suchfeld Breite (in px) <i class=\"fas fa-desktop\"></i> "
+
+msgid "Logo Höhe (in px)"
+msgstr "Logo Höhe (in px) <i class=\"fas fa-desktop\"></i> "
+
+msgid "Logo zentriert"
+msgstr "Logo zentriert <i class=\"fas fa-desktop\"></i> "
+
+msgid "Suchfeld"
+msgstr "Suchfeld"
+
+msgid "Suchfeld Positionierung"
+msgstr "Suchfeld Positionierung <i class=\"fas fa-desktop\"></i> "
+
+msgid "Topbar anzeigen"
+msgstr "Topbar anzeigen <i class=\"fas fa-desktop\"></i> "
+
+msgid "tooltipWithoutMenuSingleRow"
+msgstr "Kann nur mit Einstellung „Menü in eigener Zeile anzeigen - Ja“ genutzt werden."
+
+msgid "tooltipDesktop"
+msgstr "Einstellung wirkt sich nur auf die Desktop-Ansicht aus."
+
+msgid "tooltipMobile"
+msgstr "Einstellung wirkt sich nur auf Ansicht von Mobilgeräten aus."
+
+msgid "buttonCustomLayout"
+msgstr "Eigenes Layout"
+
+msgid "chooseLayout"
+msgstr "Wählen Sie ein vorgefertigtes Layout aus:"
 
 msgid "Colors"
 msgstr "Farben"
@@ -237,3 +309,21 @@ msgstr "Benutzerdefiniertes CSS, Sass oder Scss"
 
 msgid "The color settings might not work as expected in this theme."
 msgstr "Die Farbauswahl funktioniert in diesem Theme eventuell nicht wie erwartet."
+
+msgid "Standard"
+msgstr "Standard"
+
+msgid "Menü in eigener Zeile"
+msgstr "Menü in eigener Zeile"
+
+msgid "Header Boxed - Menü mehrspaltig"
+msgstr "Header Boxed - Menü mehrspaltig"
+
+msgid "Ohne Topbar - Header volle breite"
+msgstr "Ohne Topbar - Header volle breite"
+
+msgid "Custom"
+msgstr "Custom"
+
+msgid "Blocksatz"
+msgstr "Blocksatz"

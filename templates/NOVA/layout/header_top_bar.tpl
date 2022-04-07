@@ -3,21 +3,7 @@
         {nav tag='ul' class='topbar-main nav-dividers'}
             {block name='layout-header-top-bar-user-settings'}
                 {block name='layout-header-top-bar-user-settings-currency'}
-                    {$allCurrencies = JTL\Session\Frontend::getCurrencies()}
-                    {$currentCurrency = JTL\Session\Frontend::getCurrency()}
-                    {if $allCurrencies|count > 1}
-                        {navitemdropdown
-                            class="currency-dropdown"
-                            right=true
-                            text=$currentCurrency->getName()
-                        }
-                            {foreach $allCurrencies as $currency}
-                                {dropdownitem href=$currency->getURLFull() rel="nofollow" active=($currentCurrency->getName() === $currency->getName())}
-                                    {$currency->getName()}
-                                {/dropdownitem}
-                            {/foreach}
-                        {/navitemdropdown}
-                    {/if}
+                    {include file='snippets/currency_dropdown.tpl'}
                 {/block}
                 {block name='layout-header-top-bar-user-settings-include-language-dropdown'}
                     {include file='snippets/language_dropdown.tpl'}

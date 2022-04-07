@@ -5,10 +5,4 @@
  * @global \JTL\Smarty\JTLSmarty $smarty
  */
 
-use JTL\Helpers\Request;
-use JTL\License\Admin;
-use JTL\License\Checker;
-use JTL\License\Manager;
-use JTL\Shop;
-
 require_once __DIR__ . '/includes/admininclude.php';

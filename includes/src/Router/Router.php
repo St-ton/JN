@@ -26,6 +26,7 @@ use JTL\Shop;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
+use Laminas\HttpHandlerRunner\Exception\EmitterException;
 use League\Route\Router as BaseRouter;
 use League\Route\Strategy\JsonStrategy;
 
@@ -159,7 +160,11 @@ class Router
 
         $response = $this->router->dispatch($request);
         CoreDispatcher::getInstance()->fire(Event::EMIT);
-        (new SapiEmitter())->emit($response);
+        try {
+            (new SapiEmitter())->emit($response);
+        } catch (EmitterException $e) {
+            echo $response->getBody();
+        }
         exit();
     }
 

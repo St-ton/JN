@@ -76,7 +76,7 @@
     <div class="card-footer save-wrapper">
         <div class="row">
             <div class="ml-auto col-sm-6 col-lg-auto">
-                <a class="btn btn-outline-primary btn-block" href="{$shopURL}/{$route}">
+                <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}">
                     {__('goBack')}
                 </a>
             </div>

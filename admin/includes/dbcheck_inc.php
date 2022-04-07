@@ -251,31 +251,13 @@ function compareDBStruct(array $dbFileStruct, array $dbStruct): array
 /**
  * @param string $action
  * @param array  $tables
- * @return array|bool
+ * @return bool
  * @deprecated since 5.2.0
  */
-function doDBMaintenance(string $action, array $tables)
+function doDBMaintenance(string $action, array $tables): bool
 {
-    switch ($action) {
-        case 'optimize':
-            $cmd = 'OPTIMIZE TABLE ';
-            break;
-        case 'analyze':
-            $cmd = 'ANALYZE TABLE ';
-            break;
-        case 'repair':
-            $cmd = 'REPAIR TABLE ';
-            break;
-        case 'check':
-            $cmd = 'CHECK TABLE ';
-            break;
-        default:
-            return false;
-    }
-
-    return count($tables) > 0
-        ? Shop::Container()->getDB()->getObjects($cmd . implode(', ', $tables))
-        : false;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return false;
 }
 
 /**
@@ -285,22 +267,8 @@ function doDBMaintenance(string $action, array $tables)
  */
 function determineEngineUpdate(array $dbStruct): stdClass
 {
-    $result             = new stdClass();
-    $result->tableCount = 0;
-    $result->dataSize   = 0;
-    foreach ($dbStruct as $meta) {
-        if (isset($meta->Migration) && $meta->Migration !== DBMigrationHelper::MIGRATE_NONE) {
-            $result->tableCount++;
-            $result->dataSize += $meta->DATA_SIZE;
-        }
-    }
-
-    $result->estimated = [
-        $result->tableCount * 1.60 + $result->dataSize / 1048576 * 1.15,
-        $result->tableCount * 2.40 + $result->dataSize / 1048576 * 2.50,
-    ];
-
-    return $result;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return new stdClass();
 }
 
 /**
@@ -311,108 +279,8 @@ function determineEngineUpdate(array $dbStruct): stdClass
  */
 function doEngineUpdateScript(string $fileName, array $shopTables): string
 {
-    $nl = "\r\n";
-
-    $database    = Shop::Container()->getDB()->getConfig()['database'];
-    $host        = Shop::Container()->getDB()->getConfig()['host'];
-    $mysqlVer    = DBMigrationHelper::getMySQLVersion();
-    $recreateFKs = '';
-
-    $result  = '-- ' . $fileName . $nl;
-    $result .= '-- ' . $nl;
-    $result .= '-- @host: ' . $host . $nl;
-    $result .= '-- @database: ' . $database . $nl;
-    $result .= '-- @created: ' . date(DATE_RFC822) . $nl;
-    $result .= '-- ' . $nl;
-    $result .= '-- @important: !!! PLEASE MAKE A BACKUP OF STRUCTURE AND DATA FOR `' . $database . '` !!!' . $nl;
-    $result .= '-- ' . $nl;
-    $result .= $nl;
-    $result .= '-- ---------------------------------------------------------' .
-        '-------------------------------------------' . $nl;
-    $result .= '-- ' . $nl;
-    $result .= 'use `' . $database . '`;' . $nl;
-
-    foreach (DBMigrationHelper::getTablesNeedMigration() as $table) {
-        $fulltextSQL = [];
-        $migration   = DBMigrationHelper::isTableNeedMigration($table);
-
-        if (!in_array($table->TABLE_NAME, $shopTables, true)) {
-            continue;
-        }
-
-        if (version_compare($mysqlVer->innodb->version, '5.6', '<')) {
-            // Fulltext indizes are not supported for innoDB on MySQL < 5.6
-            $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($table->TABLE_NAME);
-
-            if ($fulltextIndizes) {
-                $result .= $nl . '--' . $nl;
-                $result .= '-- remove fulltext indizes because there is no support for innoDB on MySQL < 5.6 ' . $nl;
-                foreach ($fulltextIndizes as $fulltextIndex) {
-                    $fulltextSQL[] = /** @lang text */
-                        'ALTER TABLE `' . $table->TABLE_NAME . '` DROP KEY `' . $fulltextIndex->INDEX_NAME . '`';
-                }
-            }
-        }
-
-        if (($migration & DBMigrationHelper::MIGRATE_TABLE) !== DBMigrationHelper::MIGRATE_NONE) {
-            $result .= $nl . '--' . $nl;
-            if (($migration & DBMigrationHelper::MIGRATE_TABLE) === DBMigrationHelper::MIGRATE_TABLE) {
-                $result .= '-- migrate engine and collation for ' . $table->TABLE_NAME . $nl;
-            } elseif (($migration & DBMigrationHelper::MIGRATE_INNODB) === DBMigrationHelper::MIGRATE_INNODB) {
-                $result .= '-- migrate engine for ' . $table->TABLE_NAME . $nl;
-            } elseif (($migration & DBMigrationHelper::MIGRATE_UTF8) === DBMigrationHelper::MIGRATE_UTF8) {
-                $result .= '-- migrate collation for ' . $table->TABLE_NAME . $nl;
-            }
-        } else {
-            $result .= $nl;
-        }
-
-        if (count($fulltextSQL) > 0) {
-            $result .= implode(';' . $nl, $fulltextSQL) . ';' . $nl;
-        }
-
-        $sql    = DBMigrationHelper::sqlMoveToInnoDB($table);
-        $fkSQLs = DBMigrationHelper::sqlRecreateFKs($table->TABLE_NAME);
-        if (!empty($sql)) {
-            $result .= '--' . $nl;
-            foreach ($fkSQLs->dropFK as $fkSQL) {
-                $result .= $fkSQL . ';' . $nl;
-            }
-            $result .= $sql . ';' . $nl;
-            foreach ($fkSQLs->createFK as $fkSQL) {
-                $recreateFKs .= $fkSQL . ';' . $nl;
-            }
-        }
-
-        $sql = DBMigrationHelper::sqlConvertUTF8($table, $nl);
-        if (!empty($sql)) {
-            $result .= '--' . $nl;
-            $result .= '-- migrate collation and / or datatype for columns in ' . $table->TABLE_NAME . $nl;
-            $result .= '--' . $nl;
-            $result .= $sql . ';' . $nl;
-        }
-    }
-
-    $result .= $nl;
-
-    if (version_compare($mysqlVer->innodb->version, '5.6', '<')) {
-        // Fulltext search is not available on MySQL < 5.6
-        $result .= '--' . $nl;
-        $result .= '-- Fulltext search is not available on MySQL < 5.6' . $nl;
-        $result .= '--' . $nl;
-        $result .= "UPDATE `teinstellungen` SET `cWert` = 'N' WHERE `cName` = 'suche_fulltext';" . $nl;
-        $result .= $nl;
-    }
-
-    if (!empty($recreateFKs)) {
-        $result .= '--' . $nl;
-        $result .= '-- Recreate foreign keys' . $nl;
-        $result .= '--' . $nl;
-        $result .= $recreateFKs;
-        $result .= $nl;
-    }
-
-    return $result;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return '';
 }
 
 /**

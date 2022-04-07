@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
 use Illuminate\Support\Collection;
-use JTL\Backend\Settings\Sections\SectionInterface;
 
 /**
  * Search for backend settings
@@ -10,20 +9,21 @@ use JTL\Backend\Settings\Sections\SectionInterface;
  * @param bool   $standalonePage - render as standalone page
  * @return string|null
  * @deprecated since 5.2.0
- * @todo!
  */
 function adminSearch(string $query, bool $standalonePage = false): ?string
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     return null;
 }
 
 /**
  * @param string $query
- * @return SectionInterface[]
+ * @return array
  * @deprecated since 5.2.0
  */
 function configSearch(string $query): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     return [];
 }
 
@@ -34,6 +34,7 @@ function configSearch(string $query): array
  */
 function adminMenuSearch(string $query): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     return [];
 }
 
@@ -45,6 +46,7 @@ function adminMenuSearch(string $query): array
  */
 function highlightSearchTerm(string $haystack, string $needle): string
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     return preg_replace(
         '/\p{L}*?' . preg_quote($needle, '/') . '\p{L}*/ui',
         '<mark>$0</mark>',
@@ -59,5 +61,6 @@ function highlightSearchTerm(string $haystack, string $needle): string
  */
 function getPlugins(string $query): Collection
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     return new Collection();
 }

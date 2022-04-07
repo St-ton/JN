@@ -8,7 +8,7 @@ use JTL\L10n\GetText;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
 use JTL\Router\BackendRouter;
-use Shop;
+use JTL\Shop;
 
 /**
  * Class Menu
@@ -41,6 +41,7 @@ class Menu
         $this->db      = $db;
         $this->account = $account;
         $this->getText = $getText;
+        $getText->loadAdminLocale('menu');
     }
 
     /**

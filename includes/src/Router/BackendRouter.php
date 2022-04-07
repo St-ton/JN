@@ -104,6 +104,7 @@ use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
+use Laminas\HttpHandlerRunner\Exception\EmitterException;
 use League\Container\Container;
 use League\Route\Http\Exception\NotFoundException;
 use League\Route\RouteGroup;
@@ -371,7 +372,11 @@ class BackendRouter
         } catch (NotFoundException $exception) {
             $response = (new Response())->withStatus(404);
         }
-        (new SapiEmitter())->emit($response);
+        try {
+            (new SapiEmitter())->emit($response);
+        } catch (EmitterException $e) {
+            echo $response->getBody();
+        }
         exit();
     }
 

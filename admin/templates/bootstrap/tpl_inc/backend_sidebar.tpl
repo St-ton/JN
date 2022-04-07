@@ -1,5 +1,4 @@
 <div class="collapse" id="sidebar">
-{*    currentMenuPath: <pre>{$currentMenuPath|var_dump}</pre>*}
     <div class="row no-gutters align-items-center flex-nowrap topbar px-3">
         <div class="col">
             <a href="{$adminURL}/" title="{__('dashboard')}">
@@ -72,7 +71,7 @@
                                 {/if}
                             {/foreach}
                             {foreach $oLinkOberGruppe->oLink_arr as $oLink}
-                                <li class="nav-item {if $oLink->active === true || $oLink->key === $currentMenuPath[1]}active{/if}">
+                                <li class="nav-item {if $oLink->active === true}active{/if}">
                                     <a href="{$oLink->cURL}" class="nav-link">{$oLink->cLinkname}</a>
                                 </li>
                             {/foreach}

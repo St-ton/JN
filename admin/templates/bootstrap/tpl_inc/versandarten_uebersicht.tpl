@@ -8,7 +8,7 @@
         <div class="dropdown-menu" aria-labelledby="versandart">
             {foreach $versandberechnungen as $versandberechnung}
                 <a class="dropdown-item">
-                    <form name="versandart_neu" method="post" action="{$shopURL}/{$route}">
+                    <form name="versandart_neu" method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <input type="hidden" name="neu" value="1" />
                         <input type="hidden" id="l{$versandberechnung@index}" name="kVersandberechnung" value="{$versandberechnung->kVersandberechnung}" {if $versandberechnung@index == 0}checked="checked"{/if} />

@@ -7,76 +7,17 @@ use JTL\Backend\Settings\Sections\Subsection;
 use JTL\Campaign;
 use JTL\DB\SqlObject;
 use JTL\Filter\SearchResults;
+use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Router\Controller\Backend\AbstractBackendController;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use function Functional\pluck;
-
-/**
- * @param int|array $configSectionID
- * @param bool $byName
- * @return stdClass[]
- * @todo!!!
- */
-function getAdminSectionSettings($configSectionID, bool $byName = false): array
-{
-    $sections       = [];
-    $filterNames    = [];
-    $smarty         = Shop::Smarty();
-    $db             = Shop::Container()->getDB();
-    $getText        = Shop::Container()->getGetText();
-    $adminAccount   = Shop::Container()->getAdminAccount();
-    $alertService   = Shop::Container()->getAlertService();
-    $sectionFactory = new SectionFactory();
-    $settingManager = new Manager($db, $smarty, $adminAccount, $getText, $alertService);
-    if ($byName) {
-        $sql = new SqlObject();
-        $in  = [];
-        foreach ($configSectionID as $i => $item) {
-            $sql->addParam(':itm' . $i, $item);
-            $in[] = ':itm' . $i;
-        }
-        $sectionIDs      = $db->getObjects(
-            'SELECT DISTINCT ec.kEinstellungenSektion AS id
-                FROM teinstellungenconf AS ec
-                LEFT JOIN teinstellungen_default AS e
-                    ON e.cName = ec.cWertName 
-                    WHERE ec.cWertName IN (' . implode(',', $in) . ')
-                    ORDER BY ec.nSort',
-            $sql->getParams()
-        );
-        $filterNames     = $configSectionID;
-        $configSectionID = array_map('\intval', pluck($sectionIDs, 'id'));
-    }
-    foreach ((array)$configSectionID as $id) {
-        $section = $sectionFactory->getSection($id, $settingManager);
-        $section->load();
-        $sections[] = $section;
-    }
-    if (count($filterNames) > 0) {
-        $section    = $sectionFactory->getSection(1, $settingManager);
-        $subsection = new Subsection();
-        foreach ($sections as $_section) {
-            foreach ($_section->getSubsections() as $_subsection) {
-                foreach ($_subsection->getItems() as $item) {
-                    if (in_array($item->getValueName(), $filterNames, true)) {
-                        $subsection->addItem($item);
-                    }
-                }
-            }
-        }
-        $section->setSubsections([$subsection]);
-        $sections = [$section];
-    }
-    $smarty->assign('sections', $sections);
-
-    return $sections;
-}
 
 /**
  * @param array $settingsIDs
@@ -92,6 +33,7 @@ function saveAdminSettings(
     array $tags = [CACHING_GROUP_OPTION],
     bool $byName = false
 ): string {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $db             = Shop::Container()->getDB();
     $settingManager = new Manager(
         $db,
@@ -159,6 +101,230 @@ function saveAdminSettings(
 }
 
 /**
+ * @param stdClass $setting
+ * @return bool
+ * @deprecated since 5.2.0
+ */
+function validateSetting(stdClass $setting): bool
+{
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return false;
+}
+
+/**
+ * @param int      $min
+ * @param int      $max
+ * @param stdClass $setting
+ * @return bool
+ * @deprecated since 5.2.0
+ */
+function validateNumberRange(int $min, int $max, stdClass $setting): bool
+{
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return false;
+}
+
+/**
+ * Holt alle vorhandenen Kampagnen
+ * Wenn $getInternal false ist, werden keine Interne Shop Kampagnen geholt
+ * Wenn $activeOnly true ist, werden nur Aktive Kampagnen geholt
+ *
+ * @param bool $getInternal
+ * @param bool $activeOnly
+ * @return array
+ * @deprecated since 5.2.0
+ */
+function holeAlleKampagnen(bool $getInternal = false, bool $activeOnly = true): array
+{
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Router\Controller\Backend::getCampaigns() instead.',
+        E_USER_DEPRECATED
+    );
+    return AbstractBackendController::getCampaigns($getInternal, $activeOnly, Shop::Container()->getDB());
+}
+
+/**
+ * @deprecated since 5.2.0
+ */
+function setzeSprache(): void
+{
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    if (Form::validateToken() && Request::verifyGPCDataInt('sprachwechsel') === 1) {
+        // Wähle explizit gesetzte Sprache als aktuelle Sprache
+        $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', Request::postInt('kSprache'));
+        if ((int)$language->kSprache > 0) {
+            $_SESSION['editLanguageID']   = (int)$language->kSprache;
+            $_SESSION['editLanguageCode'] = $language->cISO;
+        }
+    }
+
+    if (!isset($_SESSION['editLanguageID'])) {
+        // Wähle Standardsprache als aktuelle Sprache
+        $language = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
+        if ((int)$language->kSprache > 0) {
+            $_SESSION['editLanguageID']   = (int)$language->kSprache;
+            $_SESSION['editLanguageCode'] = $language->cISO;
+        }
+    }
+    if (isset($_SESSION['editLanguageID']) && empty($_SESSION['editLanguageCode'])) {
+        // Fehlendes cISO ergänzen
+        $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_SESSION['editLanguageID']);
+        if ((int)$language->kSprache > 0) {
+            $_SESSION['editLanguageCode'] = $language->cISO;
+        }
+    }
+}
+
+/**
+ * @param int $month
+ * @param int $year
+ * @return false|int
+ * @deprecated since 5.2.0
+ */
+function firstDayOfMonth(int $month = -1, int $year = -1)
+{
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Helpers\Date::getFirstDayOfMonth() instead.',
+        E_USER_DEPRECATED
+    );
+    return Date::getFirstDayOfMonth($month, $year);
+}
+
+/**
+ * @param int $month
+ * @param int $year
+ * @return false|int
+ * @deprecated since 5.2.0
+ */
+function lastDayOfMonth(int $month = -1, int $year = -1)
+{
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Helpers\Date::getLastDayOfMonth() instead.',
+        E_USER_DEPRECATED
+    );
+    return Date::getLastDayOfMonth($month, $year);
+}
+
+/**
+ * @param string $dateString
+ * @return array
+ * @deprecated since 5.2.0
+ */
+function ermittleDatumWoche(string $dateString): array
+{
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use TL\Helpers\Date::getWeekStartAndEnd() instead.',
+        E_USER_DEPRECATED
+    );
+
+    return Date::getWeekStartAndEnd($dateString);
+}
+
+/**
+ * @param int   $configSectionID
+ * @param array $post
+ * @param array $tags
+ * @return string
+ * @todo!!!
+ */
+function saveAdminSectionSettings(int $configSectionID, array $post, array $tags = [CACHING_GROUP_OPTION]): string
+{
+    $alertService = Shop::Container()->getAlertService();
+    if (!Form::validateToken()) {
+        $msg = __('errorCSRF');
+        $alertService->addError($msg, 'saveSettingsErrCsrf');
+
+        return $msg;
+    }
+    $manager = new Manager(
+        Shop::Container()->getDB(),
+        Shop::Smarty(),
+        Shop::Container()->getAdminAccount(),
+        Shop::Container()->getGetText(),
+        $alertService
+    );
+    if (Request::postVar('resetSetting') !== null) {
+        $manager->resetSetting(Request::postVar('resetSetting'));
+        return __('successConfigReset');
+    }
+    $section = (new SectionFactory())->getSection($configSectionID, $manager);
+    $section->update($post, true, $tags);
+    $invalid = $section->getUpdateErrors();
+
+    if ($invalid > 0) {
+        $msg = __('errorConfigSave');
+        $alertService->addError($msg, 'saveSettingsErr');
+
+        return $msg;
+    }
+    $msg = __('successConfigSave');
+    $alertService->addSuccess($msg, 'saveSettings');
+
+    return $msg;
+}
+
+/**
+ * @param int|array $configSectionID
+ * @param bool $byName
+ * @return stdClass[]
+ * @todo!!!
+ */
+function getAdminSectionSettings($configSectionID, bool $byName = false): array
+{
+    $sections       = [];
+    $filterNames    = [];
+    $smarty         = Shop::Smarty();
+    $db             = Shop::Container()->getDB();
+    $getText        = Shop::Container()->getGetText();
+    $adminAccount   = Shop::Container()->getAdminAccount();
+    $alertService   = Shop::Container()->getAlertService();
+    $sectionFactory = new SectionFactory();
+    $settingManager = new Manager($db, $smarty, $adminAccount, $getText, $alertService);
+    if ($byName) {
+        $sql = new SqlObject();
+        $in  = [];
+        foreach ($configSectionID as $i => $item) {
+            $sql->addParam(':itm' . $i, $item);
+            $in[] = ':itm' . $i;
+        }
+        $sectionIDs      = $db->getObjects(
+            'SELECT DISTINCT ec.kEinstellungenSektion AS id
+                FROM teinstellungenconf AS ec
+                LEFT JOIN teinstellungen_default AS e
+                    ON e.cName = ec.cWertName 
+                    WHERE ec.cWertName IN (' . implode(',', $in) . ')
+                    ORDER BY ec.nSort',
+            $sql->getParams()
+        );
+        $filterNames     = $configSectionID;
+        $configSectionID = array_map('\intval', pluck($sectionIDs, 'id'));
+    }
+    foreach ((array)$configSectionID as $id) {
+        $section = $sectionFactory->getSection($id, $settingManager);
+        $section->load();
+        $sections[] = $section;
+    }
+    if (count($filterNames) > 0) {
+        $section    = $sectionFactory->getSection(1, $settingManager);
+        $subsection = new Subsection();
+        foreach ($sections as $_section) {
+            foreach ($_section->getSubsections() as $_subsection) {
+                foreach ($_subsection->getItems() as $item) {
+                    if (in_array($item->getValueName(), $filterNames, true)) {
+                        $subsection->addItem($item);
+                    }
+                }
+            }
+        }
+        $section->setSubsections([$subsection]);
+        $sections = [$section];
+    }
+    $smarty->assign('sections', $sections);
+
+    return $sections;
+}
+
+/**
  * @param mixed  $listBoxes
  * @param string $valueName
  * @param int    $configSectionID
@@ -206,235 +372,6 @@ function bearbeiteListBox($listBoxes, string $valueName, int $configSectionID): 
             $db->insert('teinstellungen', $newConf);
         }
     }
-}
-
-/**
- * @param int   $configSectionID
- * @param array $post
- * @param array $tags
- * @return string
- * @todo!!!
- */
-function saveAdminSectionSettings(int $configSectionID, array $post, array $tags = [CACHING_GROUP_OPTION]): string
-{
-    $alertService = Shop::Container()->getAlertService();
-    if (!Form::validateToken()) {
-        $msg = __('errorCSRF');
-        $alertService->addError($msg, 'saveSettingsErrCsrf');
-
-        return $msg;
-    }
-    $manager = new Manager(
-        Shop::Container()->getDB(),
-        Shop::Smarty(),
-        Shop::Container()->getAdminAccount(),
-        Shop::Container()->getGetText(),
-        $alertService
-    );
-    if (Request::postVar('resetSetting') !== null) {
-        $manager->resetSetting(Request::postVar('resetSetting'));
-        return __('successConfigReset');
-    }
-    $section = (new SectionFactory())->getSection($configSectionID, $manager);
-    $section->update($post, true, $tags);
-    $invalid = $section->getUpdateErrors();
-
-    if ($invalid > 0) {
-        $msg = __('errorConfigSave');
-        $alertService->addError($msg, 'saveSettingsErr');
-
-        return $msg;
-    }
-    $msg = __('successConfigSave');
-    $alertService->addSuccess($msg, 'saveSettings');
-
-    return $msg;
-}
-
-/**
- * @param stdClass $setting
- * @return bool
- * @deprecated since 5.2.0
- */
-function validateSetting(stdClass $setting): bool
-{
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
-    return false;
-}
-
-/**
- * @param int      $min
- * @param int      $max
- * @param stdClass $setting
- * @return bool
- * @deprecated since 5.2.0
- */
-function validateNumberRange(int $min, int $max, stdClass $setting): bool
-{
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
-    return false;
-}
-
-/**
- * Holt alle vorhandenen Kampagnen
- * Wenn $getInternal false ist, werden keine Interne Shop Kampagnen geholt
- * Wenn $activeOnly true ist, werden nur Aktive Kampagnen geholt
- *
- * @param bool $getInternal
- * @param bool $activeOnly
- * @return array
- * @todo!
- */
-function holeAlleKampagnen(bool $getInternal = false, bool $activeOnly = true): array
-{
-    $activeSQL  = $activeOnly ? ' WHERE nAktiv = 1' : '';
-    $interalSQL = '';
-    if (!$getInternal && $activeOnly) {
-        $interalSQL = ' AND nInternal = 0';
-    } elseif (!$getInternal) {
-        $interalSQL = ' WHERE nInternal = 0';
-    }
-    $campaigns = [];
-    $items     = Shop::Container()->getDB()->getInts(
-        'SELECT kKampagne
-            FROM tkampagne
-            ' . $activeSQL . '
-            ' . $interalSQL . '
-            ORDER BY kKampagne',
-        'kKampagne'
-    );
-    foreach ($items as $campaignID) {
-        $campaign = new Campaign($campaignID);
-        if ($campaign->kKampagne > 0) {
-            $campaigns[$campaign->kKampagne] = $campaign;
-        }
-    }
-
-    return $campaigns;
-}
-
-/**
- * @deprecated since 5.2.0
- */
-function setzeSprache(): void
-{
-    if (Form::validateToken() && Request::verifyGPCDataInt('sprachwechsel') === 1) {
-        // Wähle explizit gesetzte Sprache als aktuelle Sprache
-        $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', Request::postInt('kSprache'));
-        if ((int)$language->kSprache > 0) {
-            $_SESSION['editLanguageID']   = (int)$language->kSprache;
-            $_SESSION['editLanguageCode'] = $language->cISO;
-        }
-    }
-
-    if (!isset($_SESSION['editLanguageID'])) {
-        // Wähle Standardsprache als aktuelle Sprache
-        $language = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-        if ((int)$language->kSprache > 0) {
-            $_SESSION['editLanguageID']   = (int)$language->kSprache;
-            $_SESSION['editLanguageCode'] = $language->cISO;
-        }
-    }
-    if (isset($_SESSION['editLanguageID']) && empty($_SESSION['editLanguageCode'])) {
-        // Fehlendes cISO ergänzen
-        $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_SESSION['editLanguageID']);
-        if ((int)$language->kSprache > 0) {
-            $_SESSION['editLanguageCode'] = $language->cISO;
-        }
-    }
-}
-
-/**
- * @param int $month
- * @param int $year
- * @return false|int
- * @todo!
- */
-function firstDayOfMonth(int $month = -1, int $year = -1)
-{
-    return mktime(
-        0,
-        0,
-        0,
-        $month > -1 ? $month : (int)date('m'),
-        1,
-        $year > -1 ? $year : (int)date('Y')
-    );
-}
-
-/**
- * @param int $month
- * @param int $year
- * @return false|int
- * @todo!
- */
-function lastDayOfMonth(int $month = -1, int $year = -1)
-{
-    return mktime(
-        23,
-        59,
-        59,
-        $month > -1 ? $month : (int)date('m'),
-        (int)date('t', firstDayOfMonth($month, $year)),
-        $year > -1 ? $year : (int)date('Y')
-    );
-}
-
-/**
- * Ermittelt den Wochenstart und das Wochenende
- * eines Datums im Format YYYY-MM-DD
- * und gibt ein Array mit Start als Timestamp zurück
- * Array[0] = Start
- * Array[1] = Ende
- * @param string $dateString
- * @return array
- * @todo!
- */
-function ermittleDatumWoche(string $dateString): array
-{
-    if (mb_strlen($dateString) < 0) {
-        return [];
-    }
-    [$year, $month, $day] = explode('-', $dateString);
-    // So = 0, SA = 6
-    $weekDay = (int)date('w', mktime(0, 0, 0, (int)$month, (int)$day, (int)$year));
-    // Woche soll Montag starten - also So = 6, Mo = 0
-    if ($weekDay === 0) {
-        $weekDay = 6;
-    } else {
-        $weekDay--;
-    }
-    // Wochenstart ermitteln
-    $dayOld = (int)$day;
-    $day    = $dayOld - $weekDay;
-    $month  = (int)$month;
-    $year   = (int)$year;
-    if ($day <= 0) {
-        --$month;
-        if ($month === 0) {
-            $month = 12;
-            ++$year;
-        }
-
-        $daysPerMonth = (int)date('t', mktime(0, 0, 0, $month, 1, $year));
-        $day          = $daysPerMonth - $weekDay + $dayOld;
-    }
-    $stampStart   = mktime(0, 0, 0, $month, $day, $year);
-    $days         = 6;
-    $daysPerMonth = (int)date('t', mktime(0, 0, 0, $month, 1, $year));
-    $day         += $days;
-    if ($day > $daysPerMonth) {
-        $day -= $daysPerMonth;
-        ++$month;
-        if ($month > 12) {
-            $month = 1;
-            ++$year;
-        }
-    }
-
-    $stampEnd = mktime(23, 59, 59, $month, $day, $year);
-
-    return [$stampStart, $stampEnd];
 }
 
 /**

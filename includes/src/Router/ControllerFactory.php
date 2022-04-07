@@ -31,7 +31,7 @@ use JTL\Router\Controller\WishlistController;
 use JTL\Session\Frontend;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
-use Shop;
+use JTL\Shop;
 
 /**
  * Class ControllerFactory

@@ -14,6 +14,7 @@ use JTL\News\ViewType;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use League\Route\Http\Exception\NotFoundException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -54,7 +55,8 @@ class NewsController extends AbstractController
         $this->metaTitle       = '';
         $this->metaDescription = '';
         $this->metaKeywords    = '';
-        $link                  = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_NEWS);
+        $linkService           = Shop::Container()->getLinkService();
+        $link                  = $linkService->getSpecialPage(\LINKTYP_NEWS);
         $controller            = new Controller($this->db, $this->config, $this->smarty);
 
         switch ($controller->getPageType($this->state->getAsParams())) {
@@ -65,7 +67,7 @@ class NewsController extends AbstractController
                 $newsItem   = new Item($this->db);
                 $newsItem->load($newsItemID);
                 $newsItem->checkVisibility($this->customerGroupID);
-
+                $this->canonicalURL    = $newsItem->getURL();
                 $this->metaTitle       = $newsItem->getMetaTitle();
                 $this->metaDescription = $newsItem->getMetaDescription();
                 $this->metaKeywords    = $newsItem->getMetaKeyword();
@@ -91,12 +93,11 @@ class NewsController extends AbstractController
                     0,
                     $this->customerGroupID
                 );
-                $this->canonicalURL   = $overview->getURL();
-                $this->breadCrumbURL  = $this->canonicalURL;
                 $this->breadCrumbName = $overview->getName();
                 $newsCategory         = new Category($this->db);
                 $newsCategory->load($newsCategoryID);
-
+                $this->canonicalURL    = $newsCategory->getURL();
+                $this->breadCrumbURL   = $this->canonicalURL;
                 $this->metaTitle       = $newsCategory->getMetaTitle();
                 $this->metaDescription = $newsCategory->getMetaDescription();
                 $this->metaKeywords    = $newsCategory->getMetaKeyword();
@@ -106,6 +107,8 @@ class NewsController extends AbstractController
                 Shop::setPageType(\PAGE_NEWS);
                 $newsCategoryID = 0;
                 $controller->displayOverview($pagination, $newsCategoryID, 0, $this->customerGroupID);
+                $this->canonicalURL  = $linkService->getStaticRoute('news.php');
+                $this->breadCrumbURL = $this->canonicalURL;
                 break;
             case ViewType::NEWS_MONTH_OVERVIEW:
                 Shop::setPageType(\PAGE_NEWSMONAT);
@@ -119,7 +122,7 @@ class NewsController extends AbstractController
                 break;
             case ViewType::NEWS_DISABLED:
             default:
-                die('argh.');
+                throw new NotFoundException();
         }
 
         $this->metaTitle = Metadata::prepareMeta(

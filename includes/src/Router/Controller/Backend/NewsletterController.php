@@ -156,7 +156,7 @@ class NewsletterController extends AbstractBackendController
                         $groupString .= ';' . $customerGroupID . ';';
                     }
                 }
-                $smarty->assign('oKampagne_arr', \holeAlleKampagnen(false, true))
+                $smarty->assign('oKampagne_arr', self::getCampaigns(false, true, $this->db))
                     ->assign('cTime', \time());
                 // Vorlage speichern
                 if (Request::verifyGPCDataInt('vorlage_std_speichern') === 1) {
@@ -176,7 +176,7 @@ class NewsletterController extends AbstractBackendController
                 }
             } elseif (Request::verifyGPCDataInt('newslettervorlagen') === 1) {
                 // Vorlagen
-                $smarty->assign('oKampagne_arr', \holeAlleKampagnen(false, true));
+                $smarty->assign('oKampagne_arr', self::getCampaigns(false, true, $this->db));
                 $customerGroupIDs = $postData['kKundengruppe'] ?? [];
                 $groupString      = '';
                 // Kundengruppen in einen String bauen

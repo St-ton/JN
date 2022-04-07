@@ -20,6 +20,7 @@ use JTL\Language\LanguageModel;
 use JTL\Pagination\Pagination;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Services\JTL\CountryService;
+use JTL\Services\JTL\CountryServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
@@ -35,6 +36,20 @@ use stdClass;
 class ShippingMethodsController extends AbstractBackendController
 {
     /**
+     * @var CountryServiceInterface
+     */
+    private CountryServiceInterface $countryService;
+
+    /**
+     * @var stdClass
+     */
+    private stdClass $defaultCurrency;
+
+    private $shippingType;
+
+    private $shippingMethod;
+
+    /**
      * @inheritdoc
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
@@ -43,19 +58,18 @@ class ShippingMethodsController extends AbstractBackendController
         $this->checkPermissions('ORDER_SHIPMENT_VIEW');
         $this->getText->loadAdminLocale('pages/versandarten');
 
-        $defaultCurrency = $this->db->select('twaehrung', 'cStandard', 'Y');
-        $shippingType    = null;
-        $step            = 'uebersicht';
-        $shippingMethod  = null;
-        $taxRateKeys     = \array_keys($_SESSION['Steuersatz']);
-        $countryHelper   = Shop::Container()->getCountryService();
-        $languages       = LanguageHelper::getInstance()->gibInstallierteSprachen();
-        $postData        = Text::filterXSS($_POST);
-        $postCountries   = $postData['land'] ?? [];
-        $manager         = new Manager(
+        $this->step            = 'uebersicht';
+        $this->defaultCurrency = $this->db->select('twaehrung', 'cStandard', 'Y');
+        $taxRateKeys           = \array_keys($_SESSION['Steuersatz']);
+        $this->shippingType    = null;
+        $this->countryService  = Shop::Container()->getCountryService();
+
+        $postData = Text::filterXSS($_POST);
+
+        $manager = new Manager(
             $this->db,
             $smarty,
-            $countryHelper,
+            $this->countryService,
             $this->cache,
             $this->alertService,
             $this->getText
@@ -63,15 +77,13 @@ class ShippingMethodsController extends AbstractBackendController
 
         $missingShippingClassCombis = $this->getMissingShippingClassCombi();
         $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis);
-
         if (Form::validateToken()) {
             if (Request::postInt('neu') === 1 && Request::postInt('kVersandberechnung') > 0) {
-                $step = 'neue Versandart';
+                $this->step = 'neue Versandart';
             }
             if (Request::postInt('kVersandberechnung') > 0) {
-                $shippingType = $this->getShippingTypes(Request::verifyGPCDataInt('kVersandberechnung'));
+                $this->shippingType = $this->getShippingTypes(Request::verifyGPCDataInt('kVersandberechnung'));
             }
-
             if (Request::postInt('del') > 0) {
                 $oldShippingMethod = $this->db->select('tversandart', 'kVersandart', (int)$postData['del']);
                 Versandart::deleteInDB((int)$postData['del']);
@@ -80,43 +92,26 @@ class ShippingMethodsController extends AbstractBackendController
                 $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_ARTICLE]);
             }
             if (Request::postInt('edit') > 0) {
-                $step                            = 'neue Versandart';
-                $shippingMethod                  = $this->db->select('tversandart', 'kVersandart', Request::postInt('edit'));
-                $VersandartZahlungsarten         = $this->db->selectAll(
-                    'tversandartzahlungsart',
-                    'kVersandart',
-                    Request::postInt('edit'),
-                    '*',
-                    'kZahlungsart'
-                );
-                $VersandartStaffeln              = $this->db->selectAll(
-                    'tversandartstaffel',
-                    'kVersandart',
-                    Request::postInt('edit'),
-                    '*',
-                    'fBis'
-                );
-                $shippingType                    = $this->getShippingTypes((int)$shippingMethod->kVersandberechnung);
-                $shippingMethod->cVersandklassen = \trim($shippingMethod->cVersandklassen);
-
-                $smarty->assign('VersandartZahlungsarten', $this->reorganizeObjectArray($VersandartZahlungsarten, 'kZahlungsart'))
-                    ->assign('VersandartStaffeln', $VersandartStaffeln)
-                    ->assign('Versandart', $shippingMethod)
-                    ->assign('gewaehlteLaender', \explode(' ', $shippingMethod->cLaender));
+                $this->shippingType = $this->actionEdit();
             }
-
             if (Request::postInt('clone') > 0) {
-                $step = 'uebersicht';
+                $this->step = 'uebersicht';
                 if (Versandart::cloneShipping((int)$postData['clone'])) {
-                    $this->alertService->addSuccess(\__('successShippingMethodDuplicated'), 'successShippingMethodDuplicated');
+                    $this->alertService->addSuccess(
+                        \__('successShippingMethodDuplicated'),
+                        'successShippingMethodDuplicated'
+                    );
                     $this->cache->flushTags([\CACHING_GROUP_OPTION]);
                 } else {
-                    $this->alertService->addError(\__('errorShippingMethodDuplicated'), 'errorShippingMethodDuplicated');
+                    $this->alertService->addError(
+                        \__('errorShippingMethodDuplicated'),
+                        'errorShippingMethodDuplicated'
+                    );
                 }
             }
 
             if (isset($_GET['cISO']) && Request::getInt('zuschlag') === 1 && Request::getInt('kVersandart') > 0) {
-                $step = 'Zuschlagsliste';
+                $this->step = 'Zuschlagsliste';
 
                 $pagination = (new Pagination('surchargeList'))
                     ->setRange(4)
@@ -129,448 +124,37 @@ class ShippingMethodsController extends AbstractBackendController
             }
 
             if (Request::postInt('neueVersandart') > 0) {
-                $shippingMethod                           = new stdClass();
-                $shippingMethod->cName                    = \htmlspecialchars(
-                    $postData['cName'],
-                    \ENT_COMPAT | \ENT_HTML401,
-                    \JTL_CHARSET
-                );
-                $shippingMethod->kVersandberechnung       = Request::postInt('kVersandberechnung');
-                $shippingMethod->cAnzeigen                = $postData['cAnzeigen'];
-                $shippingMethod->cBild                    = $postData['cBild'];
-                $shippingMethod->nSort                    = Request::postInt('nSort');
-                $shippingMethod->nMinLiefertage           = Request::postInt('nMinLiefertage');
-                $shippingMethod->nMaxLiefertage           = Request::postInt('nMaxLiefertage');
-                $shippingMethod->cNurAbhaengigeVersandart = $postData['cNurAbhaengigeVersandart'];
-                $shippingMethod->cSendConfirmationMail    = $postData['cSendConfirmationMail'] ?? 'Y';
-                $shippingMethod->cIgnoreShippingProposal  = $postData['cIgnoreShippingProposal'] ?? 'N';
-                $shippingMethod->eSteuer                  = $postData['eSteuer'];
-                $shippingMethod->fPreis                   = (float)\str_replace(',', '.', $postData['fPreis'] ?? 0);
-                // Versandkostenfrei ab X
-                $shippingMethod->fVersandkostenfreiAbX = Request::postInt('versandkostenfreiAktiv') === 1
-                    ? (float)$postData['fVersandkostenfreiAbX']
-                    : 0;
-                // Deckelung
-                $shippingMethod->fDeckelung = Request::postInt('versanddeckelungAktiv') === 1
-                    ? (float)$postData['fDeckelung']
-                    : 0;
-
-                $shippingMethod->cLaender = '';
-                foreach (\array_unique($postCountries) as $postIso) {
-                    $shippingMethod->cLaender .= $postIso . ' ';
-                }
-
-                $VersandartZahlungsarten = [];
-                foreach (Request::verifyGPDataIntegerArray('kZahlungsart') as $kZahlungsart) {
-                    $versandartzahlungsart               = new stdClass();
-                    $versandartzahlungsart->kZahlungsart = $kZahlungsart;
-                    if ($postData['fAufpreis_' . $kZahlungsart] != 0) {
-                        $versandartzahlungsart->fAufpreis    = (float)\str_replace(
-                            ',',
-                            '.',
-                            $postData['fAufpreis_' . $kZahlungsart]
-                        );
-                        $versandartzahlungsart->cAufpreisTyp = $postData['cAufpreisTyp_' . $kZahlungsart];
-                    }
-                    $VersandartZahlungsarten[] = $versandartzahlungsart;
-                }
-
-                $lastScaleTo        = 0.0;
-                $VersandartStaffeln = [];
-                $upperLimits        = []; // Haelt alle fBis der Staffel
-                $staffelDa          = true;
-                if ($shippingType->cModulId === 'vm_versandberechnung_gewicht_jtl'
-                    || $shippingType->cModulId === 'vm_versandberechnung_warenwert_jtl'
-                    || $shippingType->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'
-                ) {
-                    $staffelDa = false;
-                    if (\count($postData['bis']) > 0 && \count($postData['preis']) > 0) {
-                        $staffelDa = true;
-                    }
-                    //preisstaffel beachten
-                    if (!isset($postData['bis'][0], $postData['preis'][0])
-                        || \mb_strlen($postData['bis'][0]) === 0
-                        || \mb_strlen($postData['preis'][0]) === 0
-                    ) {
-                        $staffelDa = false;
-                    }
-                    if (\is_array($postData['bis']) && \is_array($postData['preis'])) {
-                        foreach ($postData['bis'] as $i => $fBis) {
-                            if (isset($postData['preis'][$i]) && \mb_strlen($fBis) > 0) {
-                                unset($oVersandstaffel);
-                                $oVersandstaffel         = new stdClass();
-                                $oVersandstaffel->fBis   = (float)\str_replace(',', '.', $fBis);
-                                $oVersandstaffel->fPreis = (float)\str_replace(',', '.', $postData['preis'][$i]);
-
-                                $VersandartStaffeln[] = $oVersandstaffel;
-                                $upperLimits[]        = $oVersandstaffel->fBis;
-                                $lastScaleTo          = $oVersandstaffel->fBis;
-                            }
-                        }
-                    }
-                    // Dummy Versandstaffel hinzufuegen, falls Versandart nach Warenwert und Versandkostenfrei ausgewaehlt wurde
-                    if ($shippingType->cModulId === 'vm_versandberechnung_warenwert_jtl'
-                        && Request::postInt('versandkostenfreiAktiv') === 1
-                    ) {
-                        $shippingMethod->fVersandkostenfreiAbX = $lastScaleTo + 0.01;
-
-                        $oVersandstaffel         = new stdClass();
-                        $oVersandstaffel->fBis   = 999999999;
-                        $oVersandstaffel->fPreis = 0.0;
-                        $VersandartStaffeln[]    = $oVersandstaffel;
-                    }
-                }
-                // Kundengruppe
-                $shippingMethod->cKundengruppen = '';
-                if (!isset($postData['kKundengruppe'])) {
-                    $postData['kKundengruppe'] = [-1];
-                }
-                if (\is_array($postData['kKundengruppe'])) {
-                    if (\in_array(-1, $postData['kKundengruppe'])) {
-                        $shippingMethod->cKundengruppen = '-1';
-                    } else {
-                        $shippingMethod->cKundengruppen = ';' . \implode(';', $postData['kKundengruppe']) . ';';
-                    }
-                }
-                // Versandklassen
-                $shippingMethod->cVersandklassen = !empty($postData['kVersandklasse']) && $postData['kVersandklasse'] !== '-1'
-                    ? (' ' . $postData['kVersandklasse'] . ' ')
-                    : '-1';
-
-                if (\count($postCountries) >= 1
-                    && \count($postData['kZahlungsart'] ?? []) >= 1
-                    && $shippingMethod->cName
-                    && $staffelDa
-                ) {
-                    if (Request::postInt('kVersandart') === 0) {
-                        $methodID = $this->db->insert('tversandart', $shippingMethod);
-                        $this->alertService->addSuccess(
-                            \sprintf(\__('successShippingMethodCreate'), $shippingMethod->cName),
-                            'successShippingMethodCreate'
-                        );
-                    } else {
-                        //updaten
-                        $methodID          = Request::postInt('kVersandart');
-                        $oldShippingMethod = $this->db->select('tversandart', 'kVersandart', $methodID);
-                        $this->db->update('tversandart', 'kVersandart', $methodID, $shippingMethod);
-                        $this->db->delete('tversandartzahlungsart', 'kVersandart', $methodID);
-                        $this->db->delete('tversandartstaffel', 'kVersandart', $methodID);
-                        $this->alertService->addSuccess(
-                            \sprintf(\__('successShippingMethodChange'), $shippingMethod->cName),
-                            'successShippingMethodChange'
-                        );
-                    }
-                    $manager->updateRegistrationCountries(
-                        \array_diff(
-                            isset($oldShippingMethod->cLaender)
-                                ? \explode(' ', \trim($oldShippingMethod->cLaender))
-                                : [],
-                            $postCountries
-                        )
-                    );
-                    if ($methodID > 0) {
-                        foreach ($VersandartZahlungsarten as $versandartzahlungsart) {
-                            $versandartzahlungsart->kVersandart = $methodID;
-                            $this->db->insert('tversandartzahlungsart', $versandartzahlungsart);
-                        }
-
-                        foreach ($VersandartStaffeln as $versandartstaffel) {
-                            $versandartstaffel->kVersandart = $methodID;
-                            $this->db->insert('tversandartstaffel', $versandartstaffel);
-                        }
-                        $versandSprache = new stdClass();
-
-                        $versandSprache->kVersandart = $methodID;
-                        foreach ($languages as $language) {
-                            $code = $language->getCode();
-
-                            $versandSprache->cISOSprache = $code;
-                            $versandSprache->cName       = '';
-                            if (!empty($postData['cName_' . $code])) {
-                                $versandSprache->cName = \htmlspecialchars(
-                                    $postData['cName_' . $code],
-                                    \ENT_COMPAT | \ENT_HTML401,
-                                    \JTL_CHARSET
-                                );
-                            }
-                            $versandSprache->cLieferdauer = '';
-                            if (!empty($postData['cLieferdauer_' . $code])) {
-                                $versandSprache->cLieferdauer = \htmlspecialchars(
-                                    $postData['cLieferdauer_' . $code],
-                                    \ENT_COMPAT | \ENT_HTML401,
-                                    \JTL_CHARSET
-                                );
-                            }
-                            $versandSprache->cHinweistext = '';
-                            if (!empty($postData['cHinweistext_' . $code])) {
-                                $versandSprache->cHinweistext = $postData['cHinweistext_' . $code];
-                            }
-                            $versandSprache->cHinweistextShop = '';
-                            if (!empty($postData['cHinweistextShop_' . $code])) {
-                                $versandSprache->cHinweistextShop = $postData['cHinweistextShop_' . $code];
-                            }
-                            $this->db->delete('tversandartsprache', ['kVersandart', 'cISOSprache'], [$methodID, $code]);
-                            $this->db->insert('tversandartsprache', $versandSprache);
-                        }
-                        $step = 'uebersicht';
-                    }
-                    $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_ARTICLE]);
-                } else {
-                    $step = 'neue Versandart';
-                    if (!$shippingMethod->cName) {
-                        $this->alertService->addError(\__('errorShippingMethodNameMissing'), 'errorShippingMethodNameMissing');
-                    }
-                    if (\count($postCountries) < 1) {
-                        $this->alertService->addError(\__('errorShippingMethodCountryMissing'), 'errorShippingMethodCountryMissing');
-                    }
-                    if (\count($postData['kZahlungsart'] ?? []) < 1) {
-                        $this->alertService->addError(\__('errorShippingMethodPaymentMissing'), 'errorShippingMethodPaymentMissing');
-                    }
-                    if (!$staffelDa) {
-                        $this->alertService->addError(\__('errorShippingMethodPriceMissing'), 'errorShippingMethodPriceMissing');
-                    }
-                    if (Request::postInt('kVersandart') > 0) {
-                        $shippingMethod = $this->db->select('tversandart', 'kVersandart', Request::postInt('kVersandart'));
-                    }
-                    $smarty->assign('VersandartZahlungsarten', $this->reorganizeObjectArray($VersandartZahlungsarten, 'kZahlungsart'))
-                        ->assign('VersandartStaffeln', $VersandartStaffeln)
-                        ->assign('Versandart', $shippingMethod)
-                        ->assign('gewaehlteLaender', \explode(' ', $shippingMethod->cLaender));
-                }
+                $this->shippingMethod = $this->createOrUpdate($postData, $manager);
             }
             $this->cache->flush(CountryService::CACHE_ID);
         }
-        if ($step === 'neue Versandart') {
-            $versandlaender = $countryHelper->getCountrylist();
-            if ($shippingType->cModulId === 'vm_versandberechnung_gewicht_jtl') {
-                $smarty->assign('einheit', 'kg');
-            }
-            if ($shippingType->cModulId === 'vm_versandberechnung_warenwert_jtl') {
-                $smarty->assign('einheit', $defaultCurrency->cName);
-            }
-            if ($shippingType->cModulId === 'vm_versandberechnung_artikelanzahl_jtl') {
-                $smarty->assign('einheit', 'Stück');
-            }
-            // prevent "unusable" payment methods from displaying them in the config section (mainly the null-payment)
-            $zahlungsarten = $this->db->selectAll(
-                'tzahlungsart',
-                ['nActive', 'nNutzbar'],
-                [1, 1],
-                '*',
-                'cAnbieter, nSort, cName, cModulId'
-            );
-            foreach ($zahlungsarten as $zahlungsart) {
-                $pluginID = PluginHelper::getIDByModuleID($zahlungsart->cModulId);
-                if ($pluginID > 0) {
-                    try {
-                        $this->getText->loadPluginLocale(
-                            'base',
-                            PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
-                        );
-                    } catch (InvalidArgumentException $e) {
-                        $this->getText->loadAdminLocale('pages/zahlungsarten');
-                        $this->alertService->addWarning(
-                            \sprintf(
-                                \__('Plugin for payment method not found'),
-                                $zahlungsart->cName,
-                                $zahlungsart->cAnbieter
-                            ),
-                            'notfound_' . $pluginID,
-                            [
-                                'linkHref' => Shop::getURL(true) . $this->route,
-                                'linkText' => \__('paymentTypesOverview')
-                            ]
-                        );
-                        continue;
-                    }
-                }
-                $zahlungsart->cName     = \__($zahlungsart->cName);
-                $zahlungsart->cAnbieter = \__($zahlungsart->cAnbieter);
-            }
-            $tmpID = (int)($shippingMethod->kVersandart ?? 0);
-            $smarty->assign('versandKlassen', $this->db->selectAll('tversandklasse', [], [], '*', 'kVersandklasse'))
-                ->assign('zahlungsarten', $zahlungsarten)
-                ->assign('versandlaender', $versandlaender)
-                ->assign('continents', $countryHelper->getCountriesGroupedByContinent(
-                    true,
-                    \explode(' ', $shippingMethod->cLaender ?? '')
-                ))
-                ->assign('versandberechnung', $shippingType)
-                ->assign('waehrung', $defaultCurrency->cName)
-                ->assign('customerGroups', CustomerGroup::getGroups())
-                ->assign('oVersandartSpracheAssoc_arr', $this->getShippingLanguage($tmpID, $languages))
-                ->assign('gesetzteVersandklassen', isset($shippingMethod->cVersandklassen)
-                    ? $this->gibGesetzteVersandklassen($shippingMethod->cVersandklassen)
-                    : null)
-                ->assign('gesetzteKundengruppen', isset($shippingMethod->cKundengruppen)
-                    ? $this->gibGesetzteKundengruppen($shippingMethod->cKundengruppen)
-                    : null);
+        if ($this->step === 'neue Versandart' && $this->shippingType !== null) {
+            $this->actionCreateNew();
         }
-        if ($step === 'uebersicht') {
-            $customerGroups  = $this->db->getObjects('SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe');
-            $shippingMethods = $this->db->getObjects('SELECT * FROM tversandart ORDER BY nSort, cName');
-            foreach ($shippingMethods as $method) {
-                $method->versandartzahlungsarten = $this->db->getObjects(
-                    'SELECT tversandartzahlungsart.*
-                FROM tversandartzahlungsart
-                JOIN tzahlungsart
-                    ON tzahlungsart.kZahlungsart = tversandartzahlungsart.kZahlungsart
-                WHERE tversandartzahlungsart.kVersandart = :sid
-                ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName',
-                    ['sid' => (int)$method->kVersandart]
-                );
-
-                foreach ($method->versandartzahlungsarten as $smp) {
-                    $smp->zahlungsart  = $this->db->select(
-                        'tzahlungsart',
-                        'kZahlungsart',
-                        (int)$smp->kZahlungsart,
-                        'nActive',
-                        1
-                    );
-                    $smp->cAufpreisTyp = $smp->cAufpreisTyp === 'prozent' ? '%' : '';
-                    $pluginID          = PluginHelper::getIDByModuleID($smp->zahlungsart->cModulId);
-                    if ($pluginID > 0) {
-                        try {
-                            $this->getText->loadPluginLocale(
-                                'base',
-                                PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
-                            );
-                        } catch (InvalidArgumentException $e) {
-                            $this->getText->loadAdminLocale('pages/zahlungsarten');
-                            $this->alertService->addWarning(
-                                \sprintf(
-                                    \__('Plugin for payment method not found'),
-                                    $smp->zahlungsart->cName,
-                                    $smp->zahlungsart->cAnbieter
-                                ),
-                                'notfound_' . $pluginID,
-                                [
-                                    'linkHref' => Shop::getURL(true) . $this->route,
-                                    'linkText' => \__('paymentTypesOverview')
-                                ]
-                            );
-                            continue;
-                        }
-                    }
-                    $smp->zahlungsart->cName     = \__($smp->zahlungsart->cName);
-                    $smp->zahlungsart->cAnbieter = \__($smp->zahlungsart->cAnbieter);
-                }
-                $method->versandartstaffeln         = $this->db->selectAll(
-                    'tversandartstaffel',
-                    'kVersandart',
-                    (int)$method->kVersandart,
-                    '*',
-                    'fBis'
-                );
-                $method->fPreisBrutto               = $this->berechneVersandpreisBrutto(
-                    $method->fPreis,
-                    $_SESSION['Steuersatz'][$taxRateKeys[0]]
-                );
-                $method->fVersandkostenfreiAbXNetto = $this->berechneVersandpreisNetto(
-                    $method->fVersandkostenfreiAbX,
-                    $_SESSION['Steuersatz'][$taxRateKeys[0]]
-                );
-                $method->fDeckelungBrutto           = $this->berechneVersandpreisBrutto(
-                    $method->fDeckelung,
-                    $_SESSION['Steuersatz'][$taxRateKeys[0]]
-                );
-                foreach ($method->versandartstaffeln as $j => $oVersandartstaffeln) {
-                    $method->versandartstaffeln[$j]->fPreisBrutto = $this->berechneVersandpreisBrutto(
-                        $oVersandartstaffeln->fPreis,
-                        $_SESSION['Steuersatz'][$taxRateKeys[0]]
-                    );
-                }
-
-                $method->versandberechnung = $this->getShippingTypes((int)$method->kVersandberechnung);
-                $method->versandklassen    = $this->gibGesetzteVersandklassenUebersicht($method->cVersandklassen);
-                if ($method->versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl') {
-                    $method->einheit = 'kg';
-                }
-                if ($method->versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl') {
-                    $method->einheit = $defaultCurrency->cName;
-                }
-                if ($method->versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl') {
-                    $method->einheit = 'Stück';
-                }
-                $method->countries                  = new Collection();
-                $method->shippingSurchargeCountries = \array_column($this->db->getArrays(
-                    'SELECT DISTINCT cISO FROM tversandzuschlag WHERE kVersandart = :shippingMethodID',
-                    ['shippingMethodID' => (int)$method->kVersandart]
-                ), 'cISO');
-                foreach (\explode(' ', \trim($method->cLaender)) as $item) {
-                    if (($country = $countryHelper->getCountry($item)) !== null) {
-                        $method->countries->push($country);
-                    }
-                }
-                $method->countries               = $method->countries->sortBy(static function (Country $country) {
-                    return $country->getName();
-                });
-                $method->cKundengruppenName_arr  = [];
-                $method->oVersandartSprachen_arr = $this->db->selectAll(
-                    'tversandartsprache',
-                    'kVersandart',
-                    (int)$method->kVersandart,
-                    'cName',
-                    'cISOSprache'
-                );
-                foreach (Text::parseSSKint($method->cKundengruppen) as $customerGroupID) {
-                    if ($customerGroupID === -1) {
-                        $method->cKundengruppenName_arr[] = \__('allCustomerGroups');
-                    } else {
-                        foreach ($customerGroups as $customerGroup) {
-                            if ((int)$customerGroup->kKundengruppe === $customerGroupID) {
-                                $method->cKundengruppenName_arr[] = $customerGroup->cName;
-                            }
-                        }
-                    }
-                }
-            }
-
-            $missingShippingClassCombis = $this->getMissingShippingClassCombi();
-            if (!empty($missingShippingClassCombis)) {
-                $errorMissingShippingClassCombis = $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis)
-                    ->fetch('tpl_inc/versandarten_fehlende_kombis.tpl');
-                $this->alertService->addError($errorMissingShippingClassCombis, 'errorMissingShippingClassCombis');
-            }
-
-            $smarty->assign('versandberechnungen', $this->getShippingTypes())
-                ->assign('versandarten', $shippingMethods)
-                ->assign('waehrung', $defaultCurrency->cName);
+        if ($this->step === 'uebersicht') {
+            $this->actionOverview();
         }
-        if ($step === 'Zuschlagsliste') {
-            $iso      = $_GET['cISO'] ?? $postData['cISO'] ?? null;
-            $methodID = Request::getInt('kVersandart');
-            if (isset($postData['kVersandart'])) {
-                $methodID = Request::postInt('kVersandart');
-            }
-            $shippingMethod = $this->db->select('tversandart', 'kVersandart', $methodID);
-            $fees           = $this->db->selectAll(
-                'tversandzuschlag',
-                ['kVersandart', 'cISO'],
-                [(int)$shippingMethod->kVersandart, $iso],
-                '*',
-                'fZuschlag'
-            );
-            foreach ($fees as $item) {
-                $item->kVersandzuschlag = (int)$item->kVersandzuschlag;
-                $item->kVersandart      = (int)$item->kVersandart;
-                $item->zuschlagplz      = $this->db->selectAll(
-                    'tversandzuschlagplz',
-                    'kVersandzuschlag',
-                    $item->kVersandzuschlag
-                );
-                $item->angezeigterName  = $this->getZuschlagNames($item->kVersandzuschlag);
-            }
-            $smarty->assign('Versandart', $shippingMethod)
-                ->assign('Zuschlaege', $fees)
-                ->assign('waehrung', $defaultCurrency->cName)
-                ->assign('Land', $countryHelper->getCountry($iso));
+        if ($this->step === 'Zuschlagsliste') {
+            $this->actionSurchargeList();
         }
-
+        $languages = LanguageHelper::getInstance()->gibInstallierteSprachen();
+        $tmpID     = (int)($this->shippingMethod->kVersandart ?? 0);
         return $smarty->assign('fSteuersatz', $_SESSION['Steuersatz'][$taxRateKeys[0]])
+            ->assign('waehrung', $this->defaultCurrency->cName)
             ->assign('oWaehrung', $this->db->select('twaehrung', 'cStandard', 'Y'))
-            ->assign('step', $step)
+            ->assign('continents', $this->countryService->getCountriesGroupedByContinent(
+                true,
+                \explode(' ', $this->shippingMethod->cLaender ?? '')
+            ))
+            ->assign('customerGroups', CustomerGroup::getGroups())
+            ->assign('oVersandartSpracheAssoc_arr', $this->getShippingLanguage($tmpID, $languages))
+            ->assign('gesetzteVersandklassen', isset($this->shippingMethod->cVersandklassen)
+                ? $this->gibGesetzteVersandklassen($this->shippingMethod->cVersandklassen)
+                : null)
+            ->assign('gesetzteKundengruppen', isset($this->shippingMethod->cKundengruppen)
+                ? $this->gibGesetzteKundengruppen($this->shippingMethod->cKundengruppen)
+                : null)
+            ->assign('step', $this->step)
             ->assign('route', $this->route)
             ->getResponse('versandarten.tpl');
     }
@@ -896,16 +480,16 @@ class ShippingMethodsController extends AbstractBackendController
         if ($shippingTypeID !== null) {
             $shippingTypes = $this->db->getCollection(
                 'SELECT *
-                FROM tversandberechnung
-                WHERE kVersandberechnung = :shippingTypeID
-                ORDER BY cName',
+                    FROM tversandberechnung
+                    WHERE kVersandberechnung = :shippingTypeID
+                    ORDER BY cName',
                 ['shippingTypeID' => $shippingTypeID]
             );
         } else {
             $shippingTypes = $this->db->getCollection(
                 'SELECT *
-                FROM tversandberechnung
-                ORDER BY cName'
+                    FROM tversandberechnung
+                    ORDER BY cName'
             );
         }
         $shippingTypes->each(static function ($e) {
@@ -934,6 +518,7 @@ class ShippingMethodsController extends AbstractBackendController
 
         return $result;
     }
+
     /**
      * @param array $data
      * @return stdClass
@@ -981,7 +566,11 @@ class ShippingMethodsController extends AbstractBackendController
         $message = $smarty->assign('alertList', $alertHelper)
             ->fetch('snippets/alert_list.tpl');
 
-        Shop::Container()->getCache()->flushTags([\CACHING_GROUP_OBJECT, \CACHING_GROUP_OPTION, \CACHING_GROUP_ARTICLE]);
+        Shop::Container()->getCache()->flushTags([
+            \CACHING_GROUP_OBJECT,
+            \CACHING_GROUP_OPTION,
+            \CACHING_GROUP_ARTICLE
+        ]);
 
         return (object)[
             'title'          => isset($surchargeTMP) ? $surchargeTMP->getTitle() : '',
@@ -1007,7 +596,11 @@ class ShippingMethodsController extends AbstractBackendController
             WHERE tversandzuschlag.kVersandzuschlag = :surchargeID',
             ['surchargeID' => $surchargeID]
         );
-        Shop::Container()->getCache()->flushTags([\CACHING_GROUP_OBJECT, \CACHING_GROUP_OPTION, \CACHING_GROUP_ARTICLE]);
+        Shop::Container()->getCache()->flushTags([
+            \CACHING_GROUP_OBJECT,
+            \CACHING_GROUP_OPTION,
+            \CACHING_GROUP_ARTICLE
+        ]);
 
         return (object)['surchargeID' => $surchargeID];
     }
@@ -1045,7 +638,11 @@ class ShippingMethodsController extends AbstractBackendController
                 ]
             );
         }
-        Shop::Container()->getCache()->flushTags([\CACHING_GROUP_OBJECT, \CACHING_GROUP_OPTION, \CACHING_GROUP_ARTICLE]);
+        Shop::Container()->getCache()->flushTags([
+            \CACHING_GROUP_OBJECT,
+            \CACHING_GROUP_OPTION,
+            \CACHING_GROUP_ARTICLE
+        ]);
 
         return (object)['surchargeID' => $surchargeID, 'ZIP' => $ZIP];
     }
@@ -1118,7 +715,11 @@ class ShippingMethodsController extends AbstractBackendController
         } elseif ($db->insert('tversandzuschlagplz', $surchargeZip)) {
             $alertHelper->addSuccess(\__('successZIPAdd'), 'successZIPAdd');
         }
-        Shop::Container()->getCache()->flushTags([\CACHING_GROUP_OBJECT, \CACHING_GROUP_OPTION, \CACHING_GROUP_ARTICLE]);
+        Shop::Container()->getCache()->flushTags([
+            \CACHING_GROUP_OBJECT,
+            \CACHING_GROUP_OPTION,
+            \CACHING_GROUP_ARTICLE
+        ]);
 
         $message = $smarty->assign('alertList', $alertHelper)
             ->fetch('snippets/alert_list.tpl');
@@ -1126,5 +727,496 @@ class ShippingMethodsController extends AbstractBackendController
             ->fetch('snippets/zuschlagliste_plz_badges.tpl');
 
         return (object)['message' => $message, 'badges' => $badges, 'surchargeID' => $surcharge->getID()];
+    }
+
+    private function actionSurchargeList(): void
+    {
+        $iso      = $_GET['cISO'] ?? $postData['cISO'] ?? null;
+        $methodID = Request::getInt('kVersandart');
+        if (isset($postData['kVersandart'])) {
+            $methodID = Request::postInt('kVersandart');
+        }
+        $this->shippingMethod = $this->db->select('tversandart', 'kVersandart', $methodID);
+        $fees                 = $this->db->selectAll(
+            'tversandzuschlag',
+            ['kVersandart', 'cISO'],
+            [(int)$this->shippingMethod->kVersandart, $iso],
+            '*',
+            'fZuschlag'
+        );
+        foreach ($fees as $item) {
+            $item->kVersandzuschlag = (int)$item->kVersandzuschlag;
+            $item->kVersandart      = (int)$item->kVersandart;
+            $item->zuschlagplz      = $this->db->selectAll(
+                'tversandzuschlagplz',
+                'kVersandzuschlag',
+                $item->kVersandzuschlag
+            );
+            $item->angezeigterName  = $this->getZuschlagNames($item->kVersandzuschlag);
+        }
+        $this->smarty->assign('Versandart', $this->shippingMethod)
+            ->assign('Land', $this->countryService->getCountry($iso))
+            ->assign('Zuschlaege', $fees);
+    }
+
+    private function actionOverview(): void
+    {
+        $taxRateKeys     = \array_keys($_SESSION['Steuersatz']);
+        $customerGroups  = $this->db->getObjects(
+            'SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe'
+        );
+        $shippingMethods = $this->db->getObjects('SELECT * FROM tversandart ORDER BY nSort, cName');
+        foreach ($shippingMethods as $method) {
+            $method->versandartzahlungsarten = $this->db->getObjects(
+                'SELECT tversandartzahlungsart.*
+                FROM tversandartzahlungsart
+                JOIN tzahlungsart
+                    ON tzahlungsart.kZahlungsart = tversandartzahlungsart.kZahlungsart
+                WHERE tversandartzahlungsart.kVersandart = :sid
+                ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName',
+                ['sid' => (int)$method->kVersandart]
+            );
+
+            foreach ($method->versandartzahlungsarten as $smp) {
+                $smp->zahlungsart  = $this->db->select(
+                    'tzahlungsart',
+                    'kZahlungsart',
+                    (int)$smp->kZahlungsart,
+                    'nActive',
+                    1
+                );
+                $smp->cAufpreisTyp = $smp->cAufpreisTyp === 'prozent' ? '%' : '';
+                $pluginID          = PluginHelper::getIDByModuleID($smp->zahlungsart->cModulId);
+                if ($pluginID > 0) {
+                    try {
+                        $this->getText->loadPluginLocale(
+                            'base',
+                            PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
+                        );
+                    } catch (InvalidArgumentException $e) {
+                        $this->getText->loadAdminLocale('pages/zahlungsarten');
+                        $this->alertService->addWarning(
+                            \sprintf(
+                                \__('Plugin for payment method not found'),
+                                $smp->zahlungsart->cName,
+                                $smp->zahlungsart->cAnbieter
+                            ),
+                            'notfound_' . $pluginID,
+                            [
+                                'linkHref' => Shop::getURL(true) . $this->route,
+                                'linkText' => \__('paymentTypesOverview')
+                            ]
+                        );
+                        continue;
+                    }
+                }
+                $smp->zahlungsart->cName     = \__($smp->zahlungsart->cName);
+                $smp->zahlungsart->cAnbieter = \__($smp->zahlungsart->cAnbieter);
+            }
+            $method->versandartstaffeln         = $this->db->selectAll(
+                'tversandartstaffel',
+                'kVersandart',
+                (int)$method->kVersandart,
+                '*',
+                'fBis'
+            );
+            $method->fPreisBrutto               = $this->berechneVersandpreisBrutto(
+                $method->fPreis,
+                $_SESSION['Steuersatz'][$taxRateKeys[0]]
+            );
+            $method->fVersandkostenfreiAbXNetto = $this->berechneVersandpreisNetto(
+                $method->fVersandkostenfreiAbX,
+                $_SESSION['Steuersatz'][$taxRateKeys[0]]
+            );
+            $method->fDeckelungBrutto           = $this->berechneVersandpreisBrutto(
+                $method->fDeckelung,
+                $_SESSION['Steuersatz'][$taxRateKeys[0]]
+            );
+            foreach ($method->versandartstaffeln as $j => $oVersandartstaffeln) {
+                $method->versandartstaffeln[$j]->fPreisBrutto = $this->berechneVersandpreisBrutto(
+                    $oVersandartstaffeln->fPreis,
+                    $_SESSION['Steuersatz'][$taxRateKeys[0]]
+                );
+            }
+
+            $method->versandberechnung = $this->getShippingTypes((int)$method->kVersandberechnung);
+            $method->versandklassen    = $this->gibGesetzteVersandklassenUebersicht($method->cVersandklassen);
+            if ($method->versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl') {
+                $method->einheit = 'kg';
+            }
+            if ($method->versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl') {
+                $method->einheit = $this->defaultCurrency->cName;
+            }
+            if ($method->versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl') {
+                $method->einheit = 'Stück';
+            }
+            $method->countries                  = new Collection();
+            $method->shippingSurchargeCountries = \array_column($this->db->getArrays(
+                'SELECT DISTINCT cISO FROM tversandzuschlag WHERE kVersandart = :shippingMethodID',
+                ['shippingMethodID' => (int)$method->kVersandart]
+            ), 'cISO');
+            foreach (\explode(' ', \trim($method->cLaender)) as $item) {
+                if (($country = $this->countryService->getCountry($item)) !== null) {
+                    $method->countries->push($country);
+                }
+            }
+            $method->countries               = $method->countries->sortBy(static function (Country $country) {
+                return $country->getName();
+            });
+            $method->cKundengruppenName_arr  = [];
+            $method->oVersandartSprachen_arr = $this->db->selectAll(
+                'tversandartsprache',
+                'kVersandart',
+                (int)$method->kVersandart,
+                'cName',
+                'cISOSprache'
+            );
+            foreach (Text::parseSSKint($method->cKundengruppen) as $customerGroupID) {
+                if ($customerGroupID === -1) {
+                    $method->cKundengruppenName_arr[] = \__('allCustomerGroups');
+                } else {
+                    foreach ($customerGroups as $customerGroup) {
+                        if ((int)$customerGroup->kKundengruppe === $customerGroupID) {
+                            $method->cKundengruppenName_arr[] = $customerGroup->cName;
+                        }
+                    }
+                }
+            }
+        }
+
+        $missingShippingClassCombis = $this->getMissingShippingClassCombi();
+        if (!empty($missingShippingClassCombis)) {
+            $error = $this->smarty->assign('missingShippingClassCombis', $missingShippingClassCombis)
+                ->fetch('tpl_inc/versandarten_fehlende_kombis.tpl');
+            $this->alertService->addError($error, 'errorMissingShippingClassCombis');
+        }
+
+        $this->smarty->assign('versandberechnungen', $this->getShippingTypes())
+            ->assign('versandarten', $shippingMethods);
+    }
+
+    private function actionCreateNew(): void
+    {
+        if ($this->shippingType->cModulId === 'vm_versandberechnung_gewicht_jtl') {
+            $this->smarty->assign('einheit', 'kg');
+        }
+        if ($this->shippingType->cModulId === 'vm_versandberechnung_warenwert_jtl') {
+            $this->smarty->assign('einheit', $this->defaultCurrency->cName);
+        }
+        if ($this->shippingType->cModulId === 'vm_versandberechnung_artikelanzahl_jtl') {
+            $this->smarty->assign('einheit', 'Stück');
+        }
+        // prevent "unusable" payment methods from displaying them in the config section (mainly the null-payment)
+        $paymentMethods = $this->db->selectAll(
+            'tzahlungsart',
+            ['nActive', 'nNutzbar'],
+            [1, 1],
+            '*',
+            'cAnbieter, nSort, cName, cModulId'
+        );
+        foreach ($paymentMethods as $paymentMethod) {
+            $pluginID = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
+            if ($pluginID > 0) {
+                try {
+                    $this->getText->loadPluginLocale(
+                        'base',
+                        PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
+                    );
+                } catch (InvalidArgumentException $e) {
+                    $this->getText->loadAdminLocale('pages/zahlungsarten');
+                    $this->alertService->addWarning(
+                        \sprintf(
+                            \__('Plugin for payment method not found'),
+                            $paymentMethod->cName,
+                            $paymentMethod->cAnbieter
+                        ),
+                        'notfound_' . $pluginID,
+                        [
+                            'linkHref' => Shop::getURL(true) . $this->route,
+                            'linkText' => \__('paymentTypesOverview')
+                        ]
+                    );
+                    continue;
+                }
+            }
+            $paymentMethod->cName     = \__($paymentMethod->cName);
+            $paymentMethod->cAnbieter = \__($paymentMethod->cAnbieter);
+        }
+
+        $this->smarty->assign('versandKlassen', $this->db->selectAll('tversandklasse', [], [], '*', 'kVersandklasse'))
+            ->assign('zahlungsarten', $paymentMethods)
+            ->assign('versandlaender', $this->countryService->getCountrylist())
+            ->assign('versandberechnung', $this->shippingType)
+            ->assign('waehrung', $this->defaultCurrency->cName);
+    }
+
+    /**
+     * @return array|mixed
+     */
+    private function actionEdit()
+    {
+        $this->step              = 'neue Versandart';
+        $this->shippingMethod    = $this->db->select('tversandart', 'kVersandart', Request::postInt('edit'));
+        $VersandartZahlungsarten = $this->db->selectAll(
+            'tversandartzahlungsart',
+            'kVersandart',
+            Request::postInt('edit'),
+            '*',
+            'kZahlungsart'
+        );
+        $VersandartStaffeln      = $this->db->selectAll(
+            'tversandartstaffel',
+            'kVersandart',
+            Request::postInt('edit'),
+            '*',
+            'fBis'
+        );
+        $this->shippingType      = $this->getShippingTypes((int)$this->shippingMethod->kVersandberechnung);
+
+        $this->shippingMethod->cVersandklassen = \trim($this->shippingMethod->cVersandklassen);
+
+        $this->smarty->assign(
+            'VersandartZahlungsarten',
+            $this->reorganizeObjectArray($VersandartZahlungsarten, 'kZahlungsart')
+        )
+            ->assign('VersandartStaffeln', $VersandartStaffeln)
+            ->assign('Versandart', $this->shippingMethod)
+            ->assign('gewaehlteLaender', \explode(' ', $this->shippingMethod->cLaender));
+
+        return $this->shippingType;
+    }
+
+    private function createOrUpdate(array $postData, Manager $manager): stdClass
+    {
+        $postCountries                                  = $postData['land'] ?? [];
+        $languages                                      = LanguageHelper::getInstance()->gibInstallierteSprachen();
+        $this->shippingMethod                           = new stdClass();
+        $this->shippingMethod->cName                    = \htmlspecialchars(
+            $postData['cName'],
+            \ENT_COMPAT | \ENT_HTML401,
+            \JTL_CHARSET
+        );
+        $this->shippingMethod->kVersandberechnung       = Request::postInt('kVersandberechnung');
+        $this->shippingMethod->cAnzeigen                = $postData['cAnzeigen'];
+        $this->shippingMethod->cBild                    = $postData['cBild'];
+        $this->shippingMethod->nSort                    = Request::postInt('nSort');
+        $this->shippingMethod->nMinLiefertage           = Request::postInt('nMinLiefertage');
+        $this->shippingMethod->nMaxLiefertage           = Request::postInt('nMaxLiefertage');
+        $this->shippingMethod->cNurAbhaengigeVersandart = $postData['cNurAbhaengigeVersandart'];
+        $this->shippingMethod->cSendConfirmationMail    = $postData['cSendConfirmationMail'] ?? 'Y';
+        $this->shippingMethod->cIgnoreShippingProposal  = $postData['cIgnoreShippingProposal'] ?? 'N';
+        $this->shippingMethod->eSteuer                  = $postData['eSteuer'];
+        $this->shippingMethod->fPreis                   = (float)\str_replace(',', '.', $postData['fPreis'] ?? '0');
+        // Versandkostenfrei ab X
+        $this->shippingMethod->fVersandkostenfreiAbX = Request::postInt('versandkostenfreiAktiv') === 1
+            ? (float)$postData['fVersandkostenfreiAbX']
+            : 0;
+        // Deckelung
+        $this->shippingMethod->fDeckelung = Request::postInt('versanddeckelungAktiv') === 1
+            ? (float)$postData['fDeckelung']
+            : 0;
+
+        $this->shippingMethod->cLaender = '';
+        foreach (\array_unique($postCountries) as $postIso) {
+            $this->shippingMethod->cLaender .= $postIso . ' ';
+        }
+
+        $VersandartZahlungsarten = [];
+        foreach (Request::verifyGPDataIntegerArray('kZahlungsart') as $kZahlungsart) {
+            $versandartzahlungsart               = new stdClass();
+            $versandartzahlungsart->kZahlungsart = $kZahlungsart;
+            if ($postData['fAufpreis_' . $kZahlungsart] != 0) {
+                $versandartzahlungsart->fAufpreis    = (float)\str_replace(
+                    ',',
+                    '.',
+                    $postData['fAufpreis_' . $kZahlungsart]
+                );
+                $versandartzahlungsart->cAufpreisTyp = $postData['cAufpreisTyp_' . $kZahlungsart];
+            }
+            $VersandartZahlungsarten[] = $versandartzahlungsart;
+        }
+
+        $lastScaleTo        = 0.0;
+        $VersandartStaffeln = [];
+        $upperLimits        = []; // Haelt alle fBis der Staffel
+        $staffelDa          = true;
+        if ($this->shippingType->cModulId === 'vm_versandberechnung_gewicht_jtl'
+            || $this->shippingType->cModulId === 'vm_versandberechnung_warenwert_jtl'
+            || $this->shippingType->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'
+        ) {
+            $staffelDa = false;
+            if (\count($postData['bis']) > 0 && \count($postData['preis']) > 0) {
+                $staffelDa = true;
+            }
+            //preisstaffel beachten
+            if (!isset($postData['bis'][0], $postData['preis'][0])
+                || \mb_strlen($postData['bis'][0]) === 0
+                || \mb_strlen($postData['preis'][0]) === 0
+            ) {
+                $staffelDa = false;
+            }
+            if (\is_array($postData['bis']) && \is_array($postData['preis'])) {
+                foreach ($postData['bis'] as $i => $fBis) {
+                    if (isset($postData['preis'][$i]) && \mb_strlen($fBis) > 0) {
+                        unset($oVersandstaffel);
+                        $oVersandstaffel         = new stdClass();
+                        $oVersandstaffel->fBis   = (float)\str_replace(',', '.', $fBis);
+                        $oVersandstaffel->fPreis = (float)\str_replace(',', '.', $postData['preis'][$i]);
+
+                        $VersandartStaffeln[] = $oVersandstaffel;
+                        $upperLimits[]        = $oVersandstaffel->fBis;
+                        $lastScaleTo          = $oVersandstaffel->fBis;
+                    }
+                }
+            }
+            // Dummy Versandstaffel hinzufuegen,
+            // falls Versandart nach Warenwert und Versandkostenfrei ausgewaehlt wurde
+            if ($this->shippingType->cModulId === 'vm_versandberechnung_warenwert_jtl'
+                && Request::postInt('versandkostenfreiAktiv') === 1
+            ) {
+                $this->shippingMethod->fVersandkostenfreiAbX = $lastScaleTo + 0.01;
+
+                $oVersandstaffel         = new stdClass();
+                $oVersandstaffel->fBis   = 999999999;
+                $oVersandstaffel->fPreis = 0.0;
+                $VersandartStaffeln[]    = $oVersandstaffel;
+            }
+        }
+        // Kundengruppe
+        $this->shippingMethod->cKundengruppen = '';
+        if (!isset($postData['kKundengruppe'])) {
+            $postData['kKundengruppe'] = [-1];
+        }
+        if (\is_array($postData['kKundengruppe'])) {
+            if (\in_array(-1, $postData['kKundengruppe'])) {
+                $this->shippingMethod->cKundengruppen = '-1';
+            } else {
+                $this->shippingMethod->cKundengruppen = ';' . \implode(';', $postData['kKundengruppe']) . ';';
+            }
+        }
+        // Versandklassen
+        $this->shippingMethod->cVersandklassen = !empty($postData['kVersandklasse'])
+        && $postData['kVersandklasse'] !== '-1'
+            ? (' ' . $postData['kVersandklasse'] . ' ')
+            : '-1';
+
+        if (\count($postCountries) >= 1
+            && \count($postData['kZahlungsart'] ?? []) >= 1
+            && $this->shippingMethod->cName
+            && $staffelDa
+        ) {
+            if (Request::postInt('kVersandart') === 0) {
+                $methodID = $this->db->insert('tversandart', $this->shippingMethod);
+                $this->alertService->addSuccess(
+                    \sprintf(\__('successShippingMethodCreate'), $this->shippingMethod->cName),
+                    'successShippingMethodCreate'
+                );
+            } else {
+                //updaten
+                $methodID          = Request::postInt('kVersandart');
+                $oldShippingMethod = $this->db->select('tversandart', 'kVersandart', $methodID);
+                $this->db->update('tversandart', 'kVersandart', $methodID, $this->shippingMethod);
+                $this->db->delete('tversandartzahlungsart', 'kVersandart', $methodID);
+                $this->db->delete('tversandartstaffel', 'kVersandart', $methodID);
+                $this->alertService->addSuccess(
+                    \sprintf(\__('successShippingMethodChange'), $this->shippingMethod->cName),
+                    'successShippingMethodChange'
+                );
+            }
+            $manager->updateRegistrationCountries(
+                \array_diff(
+                    isset($oldShippingMethod->cLaender)
+                        ? \explode(' ', \trim($oldShippingMethod->cLaender))
+                        : [],
+                    $postCountries
+                )
+            );
+            if ($methodID > 0) {
+                foreach ($VersandartZahlungsarten as $versandartzahlungsart) {
+                    $versandartzahlungsart->kVersandart = $methodID;
+                    $this->db->insert('tversandartzahlungsart', $versandartzahlungsart);
+                }
+
+                foreach ($VersandartStaffeln as $versandartstaffel) {
+                    $versandartstaffel->kVersandart = $methodID;
+                    $this->db->insert('tversandartstaffel', $versandartstaffel);
+                }
+                $localized = new stdClass();
+
+                $localized->kVersandart = $methodID;
+                foreach ($languages as $language) {
+                    $code = $language->getCode();
+
+                    $localized->cISOSprache = $code;
+                    $localized->cName       = '';
+                    if (!empty($postData['cName_' . $code])) {
+                        $localized->cName = \htmlspecialchars(
+                            $postData['cName_' . $code],
+                            \ENT_COMPAT | \ENT_HTML401,
+                            \JTL_CHARSET
+                        );
+                    }
+                    $localized->cLieferdauer = '';
+                    if (!empty($postData['cLieferdauer_' . $code])) {
+                        $localized->cLieferdauer = \htmlspecialchars(
+                            $postData['cLieferdauer_' . $code],
+                            \ENT_COMPAT | \ENT_HTML401,
+                            \JTL_CHARSET
+                        );
+                    }
+                    $localized->cHinweistext = '';
+                    if (!empty($postData['cHinweistext_' . $code])) {
+                        $localized->cHinweistext = $postData['cHinweistext_' . $code];
+                    }
+                    $localized->cHinweistextShop = '';
+                    if (!empty($postData['cHinweistextShop_' . $code])) {
+                        $localized->cHinweistextShop = $postData['cHinweistextShop_' . $code];
+                    }
+                    $this->db->delete('tversandartsprache', ['kVersandart', 'cISOSprache'], [$methodID, $code]);
+                    $this->db->insert('tversandartsprache', $localized);
+                }
+                $this->step = 'uebersicht';
+            }
+            $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_ARTICLE]);
+        } else {
+            $this->step = 'neue Versandart';
+            if (!$this->shippingMethod->cName) {
+                $this->alertService->addError(\__('errorShippingMethodNameMissing'), 'errorShippingMethodNameMissing');
+            }
+            if (\count($postCountries) < 1) {
+                $this->alertService->addError(
+                    \__('errorShippingMethodCountryMissing'),
+                    'errorShippingMethodCountryMissing'
+                );
+            }
+            if (\count($postData['kZahlungsart'] ?? []) < 1) {
+                $this->alertService->addError(
+                    \__('errorShippingMethodPaymentMissing'),
+                    'errorShippingMethodPaymentMissing'
+                );
+            }
+            if (!$staffelDa) {
+                $this->alertService->addError(
+                    \__('errorShippingMethodPriceMissing'),
+                    'errorShippingMethodPriceMissing'
+                );
+            }
+            if (Request::postInt('kVersandart') > 0) {
+                $this->shippingMethod = $this->db->select(
+                    'tversandart',
+                    'kVersandart',
+                    Request::postInt('kVersandart')
+                );
+            }
+            $this->smarty->assign(
+                'VersandartZahlungsarten',
+                $this->reorganizeObjectArray($VersandartZahlungsarten, 'kZahlungsart')
+            )
+                ->assign('VersandartStaffeln', $VersandartStaffeln)
+                ->assign('Versandart', $this->shippingMethod)
+                ->assign('gewaehlteLaender', \explode(' ', $this->shippingMethod->cLaender));
+        }
+
+        return $this->shippingMethod;
     }
 }

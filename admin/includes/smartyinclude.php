@@ -11,9 +11,9 @@ use JTL\License\Checker;
 use JTL\License\Manager;
 use JTL\License\Mapper;
 use JTL\Plugin\Admin\StateChanger;
-use JTL\Plugin\Helper as PluginHelper;
-use JTL\Plugin\State;
+use JTL\Router\BackendRouter;
 use JTL\Shop;
+use JTL\Shopsetting;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\Updater;
@@ -25,162 +25,20 @@ require_once __DIR__ . '/admin_menu.php';
 
 $smarty             = JTLSmarty::getInstance(false, ContextType::BACKEND);
 $template           = AdminTemplate::getInstance();
-$config             = Shop::getSettings([CONF_GLOBAL]);
+$config             = Shopsetting::getInstance()->getAll();
 $shopURL            = Shop::getURL();
 $adminURL           = Shop::getAdminURL();
 $db                 = Shop::Container()->getDB();
 $currentTemplateDir = $smarty->getTemplateUrlPath();
 $updates            = new Collection();
 $updater            = new Updater($db);
+$availableLanguages = LanguageHelper::getInstance()->gibInstallierteSprachen();
 $hasPendingUpdates  = $updater->hasPendingUpdates();
-$resourcePaths      = $template->getResources(isset($config['template']['general']['use_minify'])
-    && $config['template']['general']['use_minify'] !== 'N');
-$adminLoginGruppe   = !empty($oAccount->account()->oGroup->kAdminlogingruppe)
-    ? (int)$oAccount->account()->oGroup->kAdminlogingruppe
-    : -1;
-$currentToplevel    = 0;
-$currentSecondLevel = 0;
-$currentThirdLevel  = 0;
-$mainGroups         = [];
-$rootKey            = 0;
+$resourcePaths      = $template->getResources(false);
 $expired            = collect([]);
 $gettext            = Shop::Container()->getGetText();
 if (!$hasPendingUpdates) {
-    $cache                        = Shop::Container()->getCache();
-    $jtlSearch                    = $db->getSingleObject(
-        "SELECT kPlugin, cName
-            FROM tplugin
-            WHERE cPluginID = 'jtl_search'"
-    );
-    $curScriptFileNameWithRequest = basename($_SERVER['REQUEST_URI'] ?? 'index.php');
-    foreach ($adminMenu as $rootName => $rootEntry) {
-        $rootKey   = (string)$rootKey;
-        $mainGroup = (object)[
-            'cName'           => $rootName,
-            'icon'            => $rootEntry->icon,
-            'oLink_arr'       => [],
-            'oLinkGruppe_arr' => [],
-            'key'             => $rootKey,
-        ];
-
-        $secondKey = 0;
-
-        foreach ($rootEntry->items as $secondName => $secondEntry) {
-            $linkGruppe = (object)[
-                'cName'     => $secondName,
-                'oLink_arr' => [],
-                'key'       => $rootKey . $secondKey,
-            ];
-
-            if ($secondEntry === 'DYNAMIC_PLUGINS') {
-                if (!$oAccount->permission('PLUGIN_ADMIN_VIEW') || SAFE_MODE === true) {
-                    continue;
-                }
-                $pluginLinks = $db->getObjects(
-                    'SELECT DISTINCT p.kPlugin, p.cName, p.nPrio
-                        FROM tplugin AS p INNER JOIN tpluginadminmenu AS pam
-                            ON p.kPlugin = pam.kPlugin
-                        WHERE p.nStatus = :state
-                        ORDER BY p.nPrio, p.cName',
-                    ['state' => State::ACTIVATED]
-                );
-
-                foreach ($pluginLinks as $pluginLink) {
-                    $pluginID = (int)$pluginLink->kPlugin;
-                    $gettext->loadPluginLocale(
-                        'base',
-                        PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
-                    );
-
-                    $link = (object)[
-                        'cLinkname' => __($pluginLink->cName),
-                        'cURL'      => $adminURL . '/plugin?kPlugin=' . $pluginID,
-                        'cRecht'    => 'PLUGIN_ADMIN_VIEW',
-                        'key'       => $rootKey . $secondKey . $pluginID,
-                    ];
-
-                    $linkGruppe->oLink_arr[] = $link;
-                    if (Request::getInt('kPlugin') === $pluginID) {
-                        $currentToplevel    = $mainGroup->key;
-                        $currentSecondLevel = $linkGruppe->key;
-                        $currentThirdLevel  = $link->key;
-                    }
-                }
-            } else {
-                $thirdKey = 0;
-
-                if (is_object($secondEntry)) {
-                    if (isset($secondEntry->permissions) && !$oAccount->permission($secondEntry->permissions)) {
-                        continue;
-                    }
-                    $linkGruppe->oLink_arr = (object)[
-                        'cLinkname' => $secondName,
-                        'cURL'      => $secondEntry->link,
-                        'cRecht'    => $secondEntry->permissions ?? null,
-                        'target'    => $secondEntry->target ?? null,
-                    ];
-                    if (Request::urlHasEqualRequestParameter($linkGruppe->oLink_arr->cURL, 'kSektion')
-                        && strpos($curScriptFileNameWithRequest, $linkGruppe->oLink_arr->cURL) === 0
-                    ) {
-                        $currentToplevel    = $mainGroup->key;
-                        $currentSecondLevel = $linkGruppe->key;
-                    }
-                } else {
-                    foreach ($secondEntry as $thirdName => $thirdEntry) {
-                        if ($thirdEntry === 'DYNAMIC_JTL_SEARCH' && ($jtlSearch->kPlugin ?? 0) > 0) {
-                            $link = (object)[
-                                'cLinkname' => 'JTL Search',
-                                'cURL'      => $adminURL . '/plugin?kPlugin=' . $jtlSearch->kPlugin,
-                                'cRecht'    => 'PLUGIN_ADMIN_VIEW',
-                                'key'       => $rootKey . $secondKey . $thirdKey,
-                            ];
-                        } elseif (is_object($thirdEntry)) {
-                            $link = (object)[
-                                'cLinkname' => $thirdName,
-                                'cURL'      => $thirdEntry->link,
-                                'cRecht'    => $thirdEntry->permissions,
-                                'key'       => $rootKey . $secondKey . $thirdKey,
-                            ];
-                        } else {
-                            continue;
-                        }
-                        if (!$oAccount->permission($link->cRecht)) {
-                            continue;
-                        }
-                        $urlParts             = parse_url($link->cURL);
-                        $urlParts['basename'] = basename($urlParts['path']);
-
-                        if (empty($urlParts['query'])) {
-                            $urlParts['query'] = [];
-                        } else {
-                            mb_parse_str($urlParts['query'], $urlParts['query']);
-                        }
-
-                        if (Request::urlHasEqualRequestParameter($link->cURL, 'kSektion')
-                            && strpos($curScriptFileNameWithRequest, explode('#', $link->cURL)[0]) === 0
-                        ) {
-                            $currentToplevel    = $mainGroup->key;
-                            $currentSecondLevel = $linkGruppe->key;
-                            $currentThirdLevel  = $link->key;
-                        }
-
-                        $linkGruppe->oLink_arr[] = $link;
-                        $thirdKey++;
-                    }
-                }
-            }
-
-            if (is_object($linkGruppe->oLink_arr) || count($linkGruppe->oLink_arr) > 0) {
-                $mainGroup->oLinkGruppe_arr[] = $linkGruppe;
-            }
-            $secondKey++;
-        }
-
-        if (count($mainGroup->oLinkGruppe_arr) > 0) {
-            $mainGroups[] = $mainGroup;
-        }
-        $rootKey++;
-    }
+    $cache = Shop::Container()->getCache();
     if (Request::getVar('licensenoticeaccepted') === 'true') {
         $_SESSION['licensenoticeaccepted'] = 0;
     }
@@ -204,7 +62,6 @@ if (!$hasPendingUpdates) {
     }
     $_SESSION['licensenoticeaccepted'] = $licenseNoticeAccepted;
 }
-
 $langTag = $_SESSION['AdminAccount']->language ?? $gettext->getLanguage();
 $smarty->assign('URL_SHOP', $shopURL)
     ->assign('expiredLicenses', $expired)
@@ -212,8 +69,8 @@ $smarty->assign('URL_SHOP', $shopURL)
     ->assign('shopURL', $shopURL)
     ->assign('adminURL', $adminURL)
     ->assign('adminTplVersion', empty($template->version) ? '1.0.0' : $template->version)
-    ->assign('PFAD_ADMIN', PFAD_ADMIN)
-    ->assign('JTL_CHARSET', JTL_CHARSET)
+    ->assignDeprecated('PFAD_ADMIN', PFAD_ADMIN, '5.0.0')
+    ->assignDeprecated('JTL_CHARSET', JTL_CHARSET, '5.0.0')
     ->assign('session_name', session_name())
     ->assign('session_id', session_id())
     ->assign('currentTemplateDir', $currentTemplateDir)
@@ -225,16 +82,14 @@ $smarty->assign('URL_SHOP', $shopURL)
     ->assign('PFAD_CKEDITOR', $shopURL . '/' . PFAD_CKEDITOR)
     ->assign('PFAD_CODEMIRROR', $shopURL . '/' . PFAD_CODEMIRROR)
     ->assign('Einstellungen', $config)
-    ->assign('oLinkOberGruppe_arr', $mainGroups)
-    ->assign('currentMenuPath', [$currentToplevel, $currentSecondLevel, $currentThirdLevel])
     ->assign('notifications', Notification::getInstance($db))
     ->assign('licenseItemUpdates', $updates)
     ->assign('alertList', Shop::Container()->getAlertService())
     ->assign('favorites', $oAccount->favorites())
     ->assign('language', $langTag)
     ->assign('hasPendingUpdates', $hasPendingUpdates)
-    ->assign('sprachen', LanguageHelper::getInstance()->gibInstallierteSprachen())
-    ->assign('availableLanguages', LanguageHelper::getInstance()->gibInstallierteSprachen())
+    ->assign('sprachen', $availableLanguages)
+    ->assign('availableLanguages', $availableLanguages)
     ->assign('languageName', Locale::getDisplayLanguage($langTag, $langTag))
     ->assign('languages', $gettext->getAdminLanguages())
     ->assign('faviconAdminURL', Shop::getFaviconURL(true))
@@ -242,6 +97,6 @@ $smarty->assign('URL_SHOP', $shopURL)
     ->assign(
         'wizardDone',
         (($conf['global']['global_wizard_done'] ?? 'Y') === 'Y'
-            || strpos($_SERVER['SCRIPT_NAME'], 'wizard.php') === false)
+            || !str_contains($_SERVER['REQUEST_URI'], BackendRouter::ROUTE_WIZARD))
         && !Request::getVar('fromWizard')
     );

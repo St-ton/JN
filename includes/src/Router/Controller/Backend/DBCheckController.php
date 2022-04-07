@@ -335,24 +335,15 @@ class DBCheckController extends AbstractBackendController
      */
     private function doDBMaintenance(string $action, array $tables)
     {
-        switch ($action) {
-            case 'optimize':
-                $cmd = 'OPTIMIZE TABLE ';
-                break;
-            case 'analyze':
-                $cmd = 'ANALYZE TABLE ';
-                break;
-            case 'repair':
-                $cmd = 'REPAIR TABLE ';
-                break;
-            case 'check':
-                $cmd = 'CHECK TABLE ';
-                break;
-            default:
-                return false;
-        }
+        $cmd = match ($action) {
+            'optimize' => 'OPTIMIZE TABLE ',
+            'analyze'  => 'ANALYZE TABLE ',
+            'repair'   => 'REPAIR TABLE ',
+            'check'    => 'CHECK TABLE ',
+            default    => false
+        };
 
-        return \count($tables) > 0
+        return \count($tables) > 0 && $cmd !== false
             ? $this->db->getObjects($cmd . \implode(', ', $tables))
             : false;
     }

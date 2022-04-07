@@ -95,9 +95,7 @@ class Date
      */
     public static function localize(string $input, bool $dateOnly = false): string
     {
-        $date = new DateTime($input);
-
-        return $date->format($dateOnly ? 'd.m.Y' : 'd.m.Y H:i');
+        return (new DateTime($input))->format($dateOnly ? 'd.m.Y' : 'd.m.Y H:i');
     }
 
     /**
@@ -117,5 +115,99 @@ class Date
         }
 
         return $convertedDate;
+    }
+
+    /**
+     * Ermittelt den Wochenstart und das Wochenende
+     * eines Datums im Format YYYY-MM-DD
+     * und gibt ein Array mit Start als Timestamp zurück
+     * Array[0] = Start
+     * Array[1] = Ende
+     * @param string $dateString
+     * @return array
+     * @former ermittleDatumWoche()
+     */
+    public static function getWeekStartAndEnd(string $dateString): array
+    {
+        if (\mb_strlen($dateString) < 0) {
+            return [];
+        }
+        [$year, $month, $day] = \explode('-', $dateString);
+        // So = 0, SA = 6
+        $weekDay = (int)\date('w', \mktime(0, 0, 0, (int)$month, (int)$day, (int)$year));
+        // Woche soll Montag starten - also So = 6, Mo = 0
+        if ($weekDay === 0) {
+            $weekDay = 6;
+        } else {
+            $weekDay--;
+        }
+        // Wochenstart ermitteln
+        $dayOld = (int)$day;
+        $day    = $dayOld - $weekDay;
+        $month  = (int)$month;
+        $year   = (int)$year;
+        if ($day <= 0) {
+            --$month;
+            if ($month === 0) {
+                $month = 12;
+                ++$year;
+            }
+
+            $daysPerMonth = (int)\date('t', \mktime(0, 0, 0, $month, 1, $year));
+            $day          = $daysPerMonth - $weekDay + $dayOld;
+        }
+        $stampStart   = \mktime(0, 0, 0, $month, $day, $year);
+        $days         = 6;
+        $daysPerMonth = (int)\date('t', \mktime(0, 0, 0, $month, 1, $year));
+        $day         += $days;
+        if ($day > $daysPerMonth) {
+            $day -= $daysPerMonth;
+            ++$month;
+            if ($month > 12) {
+                $month = 1;
+                ++$year;
+            }
+        }
+
+        $stampEnd = \mktime(23, 59, 59, $month, $day, $year);
+
+        return [$stampStart, $stampEnd];
+    }
+
+    /**
+     * @param int $month
+     * @param int $year
+     * @return false|int
+     * @since 5.2.0
+     * @former firstDayOfMonth()
+     */
+    public static function getFirstDayOfMonth(int $month = -1, int $year = -1)
+    {
+        return \mktime(
+            0,
+            0,
+            0,
+            $month > -1 ? $month : (int)\date('m'),
+            1,
+            $year > -1 ? $year : (int)\date('Y')
+        );
+    }
+    /**
+     * @param int $month
+     * @param int $year
+     * @return false|int
+     * @since 5.2.0
+     * @former lastDayOfMonth()
+     */
+    public static function getLastDayOfMonth(int $month = -1, int $year = -1)
+    {
+        return \mktime(
+            23,
+            59,
+            59,
+            $month > -1 ? $month : (int)\date('m'),
+            (int)\date('t', self::getFirstDayOfMonth($month, $year)),
+            $year > -1 ? $year : (int)\date('Y')
+        );
     }
 }

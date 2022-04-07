@@ -37,102 +37,14 @@ class SliderController extends AbstractBackendController
             ? $_REQUEST['action']
             : 'view';
         $kSlider     = (int)($_REQUEST['id'] ?? 0);
-        switch ($action) {
-            case 'slide_set':
-                $filtered  = Text::filterXSS($_REQUEST);
-                $aSlideKey = \array_keys((array)$filtered['aSlide']);
-                $count     = \count($aSlideKey);
-                for ($i = 0; $i < $count; $i++) {
-                    $slide  = new Slide();
-                    $aSlide = $filtered['aSlide'][$aSlideKey[$i]];
-                    if (\mb_strpos((string)$aSlideKey[$i], 'neu') === false) {
-                        $slide->setID((int)$aSlideKey[$i]);
-                    }
-
-                    $slide->setSliderID($kSlider);
-                    $slide->setTitle(\htmlspecialchars($aSlide['cTitel'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET));
-                    $slide->setImage($aSlide['cBild']);
-                    $slide->setThumbnail($aSlide['cThumbnail']);
-                    $slide->setText($aSlide['cText']);
-                    $slide->setLink($aSlide['cLink']);
-                    $slide->setSort((int)$aSlide['nSort']);
-                    if ((int)$aSlide['delete'] === 1) {
-                        $slide->delete();
-                    } else {
-                        $slide->save();
-                    }
-                    $this->cache->flushTags([\CACHING_GROUP_CORE]);
-                }
-                break;
-            default:
-                $smarty->assign('disabled', '');
-                if ($action !== 'view' && !empty($_POST) && Form::validateToken()) {
-                    $filtered = Text::filterXSS($_POST);
-                    $slider   = new Slider($this->db);
-                    $_kSlider = Request::postInt('kSlider');
-                    $slider->load($kSlider, false);
-                    $slider->set((object)$filtered);
-                    // extensionpoint
-                    $languageID      = Request::postInt('kSprache');
-                    $customerGroupID = Request::postInt('kKundengruppe');
-                    $pageType        = Request::postInt('nSeitenTyp');
-                    $cKey            = Request::postVar('cKey');
-                    $cKeyValue       = '';
-                    $cValue          = '';
-                    if ($pageType === \PAGE_ARTIKEL) {
-                        $cKey      = 'kArtikel';
-                        $cKeyValue = 'article_key';
-                        $cValue    = $filtered[$cKeyValue];
-                    } elseif ($pageType === \PAGE_ARTIKELLISTE) {
-                        $filter = [
-                            'kMerkmalWert' => 'attribute_key',
-                            'kKategorie'   => 'categories_key',
-                            'kHersteller'  => 'manufacturer_key',
-                            'cSuche'       => 'keycSuche'
-                        ];
-
-                        $cKeyValue = $filter[$cKey];
-                        $cValue    = $filtered[$cKeyValue];
-                    } elseif ($pageType === \PAGE_EIGENE) {
-                        $cKey      = 'kLink';
-                        $cKeyValue = 'link_key';
-                        $cValue    = $filtered[$cKeyValue];
-                    }
-                    if (!empty($cKeyValue) && empty($cValue)) {
-                        $this->alertService->addError(\sprintf(\__('errorKeyMissing'), $cKey), 'errorKeyMissing');
-                    } else {
-                        if (empty($slider->getEffects())) {
-                            $slider->setEffects('random');
-                        }
-                        if ($slider->save() === true) {
-                            $this->db->delete(
-                                'textensionpoint',
-                                ['cClass', 'kInitial'],
-                                ['slider', $slider->getID()]
-                            );
-                            $extension                = new stdClass();
-                            $extension->kSprache      = $languageID;
-                            $extension->kKundengruppe = $customerGroupID;
-                            $extension->nSeite        = $pageType;
-                            $extension->cKey          = $cKey;
-                            $extension->cValue        = $cValue;
-                            $extension->cClass        = 'slider';
-                            $extension->kInitial      = $slider->getID();
-                            $this->db->insert('textensionpoint', $extension);
-
-                            $this->alertService->addSuccess(
-                                \__('successSliderSave'),
-                                'successSliderSave',
-                                ['saveInSession' => true]
-                            );
-                            $this->cache->flushTags([\CACHING_GROUP_CORE]);
-                            \header('Location: ' . $redirectUrl);
-                            exit;
-                        }
-                        $this->alertService->addError(\__('errorSliderSave'), 'errorSliderSave');
-                    }
-                }
-                break;
+        if ($action === 'slide_set') {
+            $this->actionSlideSet($kSlider);
+        } else {
+            $smarty->assign('disabled', '');
+            if ($action !== 'view' && !empty($_POST) && Form::validateToken()) {
+                $_kSlider = Request::postInt('kSlider');
+                $this->actionView($kSlider);
+            }
         }
         switch ($action) {
             case 'slides':
@@ -209,6 +121,7 @@ class SliderController extends AbstractBackendController
             ->assign('oSlider_arr', $pagination->getPageItems())
             ->getResponse('slider.tpl');
     }
+
     /**
      * @param int $sliderID
      * @return stdClass|null
@@ -226,5 +139,107 @@ class SliderController extends AbstractBackendController
         }
 
         return $data;
+    }
+
+    /**
+     * @param int $sliderID
+     * @return void
+     */
+    private function actionSlideSet(int $sliderID): void
+    {
+        $filtered = Text::filterXSS($_REQUEST);
+        foreach (\array_keys((array)$filtered['aSlide']) as $item) {
+            $slide  = new Slide();
+            $aSlide = $filtered['aSlide'][$item];
+            if (!\str_contains((string)$item, 'neu')) {
+                $slide->setID((int)$item);
+            }
+
+            $slide->setSliderID($sliderID);
+            $slide->setTitle(\htmlspecialchars($aSlide['cTitel'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET));
+            $slide->setImage($aSlide['cBild']);
+            $slide->setThumbnail($aSlide['cThumbnail']);
+            $slide->setText($aSlide['cText']);
+            $slide->setLink($aSlide['cLink']);
+            $slide->setSort((int)$aSlide['nSort']);
+            if ((int)$aSlide['delete'] === 1) {
+                $slide->delete();
+            } else {
+                $slide->save();
+            }
+        }
+        $this->cache->flushTags([\CACHING_GROUP_CORE]);
+    }
+
+    /**
+     * @param int $sliderID
+     * @return void
+     */
+    private function actionView(int $sliderID): void
+    {
+        $filtered = Text::filterXSS($_POST);
+        $slider   = new Slider($this->db);
+
+        $slider->load($sliderID, false);
+        $slider->set((object)$filtered);
+        // extensionpoint
+        $languageID      = Request::postInt('kSprache');
+        $customerGroupID = Request::postInt('kKundengruppe');
+        $pageType        = Request::postInt('nSeitenTyp');
+        $cKey            = Request::postVar('cKey');
+        $cKeyValue       = '';
+        $cValue          = '';
+        if ($pageType === \PAGE_ARTIKEL) {
+            $cKey      = 'kArtikel';
+            $cKeyValue = 'article_key';
+            $cValue    = $filtered[$cKeyValue];
+        } elseif ($pageType === \PAGE_ARTIKELLISTE) {
+            $filter = [
+                'kMerkmalWert' => 'attribute_key',
+                'kKategorie'   => 'categories_key',
+                'kHersteller'  => 'manufacturer_key',
+                'cSuche'       => 'keycSuche'
+            ];
+
+            $cKeyValue = $filter[$cKey];
+            $cValue    = $filtered[$cKeyValue];
+        } elseif ($pageType === \PAGE_EIGENE) {
+            $cKey      = 'kLink';
+            $cKeyValue = 'link_key';
+            $cValue    = $filtered[$cKeyValue];
+        }
+        if (!empty($cKeyValue) && empty($cValue)) {
+            $this->alertService->addError(\sprintf(\__('errorKeyMissing'), $cKey), 'errorKeyMissing');
+        } else {
+            if (empty($slider->getEffects())) {
+                $slider->setEffects('random');
+            }
+            if ($slider->save() === true) {
+                $this->db->delete(
+                    'textensionpoint',
+                    ['cClass', 'kInitial'],
+                    ['slider', $slider->getID()]
+                );
+                $extension                = new stdClass();
+                $extension->kSprache      = $languageID;
+                $extension->kKundengruppe = $customerGroupID;
+                $extension->nSeite        = $pageType;
+                $extension->cKey          = $cKey;
+                $extension->cValue        = $cValue;
+                $extension->cClass        = 'slider';
+                $extension->kInitial      = $slider->getID();
+                $this->db->insert('textensionpoint', $extension);
+
+                $this->alertService->addSuccess(
+                    \__('successSliderSave'),
+                    'successSliderSave',
+                    ['saveInSession' => true]
+                );
+                $this->cache->flushTags([\CACHING_GROUP_CORE]);
+                \header('Location: ' . Shop::getURL() . $this->route);
+                exit;
+            }
+            $this->alertService->addError(\__('errorSliderSave'), 'errorSliderSave');
+        }
     }
 }

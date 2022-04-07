@@ -6,6 +6,7 @@ use DateTimeImmutable;
 use JTL\Campaign;
 use JTL\Catalog\Product\Preise;
 use JTL\Customer\CustomerGroup;
+use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -127,10 +128,18 @@ class CampaignController extends AbstractBackendController
         } elseif (Request::verifyGPCDataInt('nStamp') === -1 || Request::verifyGPCDataInt('nStamp') === 1) {
             // Vergangenheit
             if (Request::verifyGPCDataInt('nStamp') === -1) {
-                $_SESSION['Kampagne']->cStamp = $this->gibStamp($_SESSION['Kampagne']->cStamp, -1, $_SESSION['Kampagne']->nAnsicht);
+                $_SESSION['Kampagne']->cStamp = $this->gibStamp(
+                    $_SESSION['Kampagne']->cStamp,
+                    -1,
+                    $_SESSION['Kampagne']->nAnsicht
+                );
             } elseif (Request::verifyGPCDataInt('nStamp') === 1) {
                 // Zukunft
-                $_SESSION['Kampagne']->cStamp = $this->gibStamp($_SESSION['Kampagne']->cStamp, 1, $_SESSION['Kampagne']->nAnsicht);
+                $_SESSION['Kampagne']->cStamp = $this->gibStamp(
+                    $_SESSION['Kampagne']->cStamp,
+                    1,
+                    $_SESSION['Kampagne']->nAnsicht
+                );
             }
         } elseif (Request::verifyGPCDataInt('nSort') > 0) { // Sortierung
             // ASC / DESC
@@ -145,7 +154,7 @@ class CampaignController extends AbstractBackendController
             $_SESSION['Kampagne']->nSort = Request::verifyGPCDataInt('nSort');
         }
         if ($step === 'kampagne_uebersicht') {
-            $campaigns   = \holeAlleKampagnen(true, false);
+            $campaigns   = self::getCampaigns(true, false, $this->db);
             $definitions = $this->holeAlleKampagnenDefinitionen();
             $maxKey      = 0;
             if (\count($campaigns) > 0) {
@@ -163,7 +172,7 @@ class CampaignController extends AbstractBackendController
             }
         } elseif ($step === 'kampagne_detail') { // Detailseite
             if ($campaignID > 0) {
-                $campaigns   = \holeAlleKampagnen(true, false);
+                $campaigns   = self::getCampaigns(true, false, $this->db);
                 $definitions = $this->holeAlleKampagnenDefinitionen();
                 if (!isset($_SESSION['Kampagne']->oKampagneDetailGraph)) {
                     $_SESSION['Kampagne']->oKampagneDetailGraph = new stdClass();
@@ -175,10 +184,10 @@ class CampaignController extends AbstractBackendController
                 // Highchart
                 $charts = [];
                 for ($i = 1; $i <= 10; $i++) {
-                    $charts[$i] = $this->PrepareLineChartKamp($stats, $i);
+                    $charts[$i] = $this->getLineChart($stats, $i);
                 }
 
-                $smarty->assign('TypeNames', $this->GetTypes())
+                $smarty->assign('TypeNames', $this->getTypeNames())
                     ->assign('Charts', $charts)
                     ->assign('oKampagne', new Campaign($campaignID))
                     ->assign('oKampagneStat_arr', $stats)
@@ -241,7 +250,7 @@ class CampaignController extends AbstractBackendController
                     ->assign('bGreaterNow', $greaterNow);
                 break;
             case 2:    // Woche
-                $dateParts  = \ermittleDatumWoche(\date_format($date, 'Y-m-d'));
+                $dateParts  = Date::getWeekStartAndEnd(\date_format($date, 'Y-m-d'));
                 $timeSpan   = \date('d.m.Y', $dateParts[0]) . ' - ' . \date('d.m.Y', $dateParts[1]);
                 $greaterNow = \date('Y-m-d', $dateParts[1]) >= $now->format('Y-m-d');
                 $smarty->assign('cZeitraum', $timeSpan)
@@ -269,6 +278,7 @@ class CampaignController extends AbstractBackendController
 
     /**
      * @return stdClass[]
+     * @former holeAlleKampagnenDefinitionen()
      */
     private function holeAlleKampagnenDefinitionen(): array
     {
@@ -287,6 +297,7 @@ class CampaignController extends AbstractBackendController
     /**
      * @param int $definitionID
      * @return stdClass|null
+     * @former holeKampagneDef()
      */
     private function holeKampagneDef(int $definitionID): ?stdClass
     {
@@ -297,6 +308,7 @@ class CampaignController extends AbstractBackendController
      * @param array $campaigns
      * @param array $definitions
      * @return array
+     * @former holeKampagneGesamtStats()
      */
     private function holeKampagneGesamtStats(array $campaigns, array $definitions): array
     {
@@ -308,7 +320,7 @@ class CampaignController extends AbstractBackendController
                 $sql = "WHERE '" . \date_format($date, 'Y-m') . "' = DATE_FORMAT(dErstellt, '%Y-%m')";
                 break;
             case 2:    // Woche
-                $dateParts = \ermittleDatumWoche(\date_format($date, 'Y-m-d'));
+                $dateParts = Date::getWeekStartAndEnd(\date_format($date, 'Y-m-d'));
                 $sql       = 'WHERE dErstellt BETWEEN FROM_UNIXTIME(' .
                     $dateParts[0] . ", '%Y-%m-%d %H:%i:%s') AND FROM_UNIXTIME(" .
                     $dateParts[1] . ", '%Y-%m-%d %H:%i:%s')";
@@ -364,6 +376,7 @@ class CampaignController extends AbstractBackendController
      * @param int $a
      * @param int $b
      * @return int
+     * @former kampagneSortDESC()
      */
     private function kampagneSortDESC($a, $b): int
     {
@@ -392,6 +405,7 @@ class CampaignController extends AbstractBackendController
      * @param int   $campaignID
      * @param array $definitions
      * @return array
+     * @former holeKampagneDetailStats()
      */
     private function holeKampagneDetailStats(int $campaignID, array $definitions): array
     {
@@ -442,8 +456,8 @@ class CampaignController extends AbstractBackendController
                 }
                 break;
             case 3:    // Woche
-                $weekStart = \ermittleDatumWoche($_SESSION['Kampagne']->cFromDate);
-                $weekEnd   = \ermittleDatumWoche($_SESSION['Kampagne']->cToDate);
+                $weekStart = Date::getWeekStartAndEnd($_SESSION['Kampagne']->cFromDate);
+                $weekEnd   = Date::getWeekStartAndEnd($_SESSION['Kampagne']->cToDate);
                 $whereSQL  = " WHERE dErstellt BETWEEN '" .
                     \date('Y-m-d H:i:s', $weekStart[0]) . "' AND '" .
                     \date('Y-m-d H:i:s', $weekEnd[1]) . "'";
@@ -560,6 +574,7 @@ class CampaignController extends AbstractBackendController
      * @param array  $members
      * @param string $sql
      * @return array
+     * @former holeKampagneDefDetailStats()
      */
     private function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$text, &$members, $sql): array
     {
@@ -593,7 +608,7 @@ class CampaignController extends AbstractBackendController
                     $text      = $this->mappeENGMonat($month) . ' ' . $year;
                     break;
                 case 3:    // Woche
-                    $dates = \ermittleDatumWoche($stats[0]->cStampText);
+                    $dates = Date::getWeekStartAndEnd($stats[0]->cStampText);
                     $text  = \date('d.m.Y', $dates[0]) . ' - ' . \date('d.m.Y', $dates[1]);
                     break;
                 case 4:    // Tag
@@ -1127,6 +1142,7 @@ class CampaignController extends AbstractBackendController
      * @param string $select
      * @param string $where
      * @param string $stamp
+     * @former baueDefDetailSELECTWHERE()
      */
     private function baueDefDetailSELECTWHERE(&$select, &$where, $stamp): void
     {
@@ -1155,6 +1171,7 @@ class CampaignController extends AbstractBackendController
 
     /**
      * @return array
+     * @former gibDetailDatumZeitraum()
      */
     private function gibDetailDatumZeitraum(): array
     {
@@ -1247,7 +1264,7 @@ class CampaignController extends AbstractBackendController
                 }
                 break;
             case 3:    // Woche
-                $weekStamp  = \ermittleDatumWoche($_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
+                $weekStamp  = Date::getWeekStartAndEnd($_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
                     $_SESSION['Kampagne']->cFromDate_arr['nMonat'] . '-' .
                     $_SESSION['Kampagne']->cFromDate_arr['nTag']);
                 $nFromStamp = $weekStamp[0];
@@ -1261,7 +1278,7 @@ class CampaignController extends AbstractBackendController
                 );
                 $nTMPStamp  = $nFromStamp;
                 while ($nTMPStamp <= $nToStamp) {
-                    $weekStamp                = \ermittleDatumWoche(\date('Y-m-d', $nTMPStamp));
+                    $weekStamp                = Date::getWeekStartAndEnd(\date('Y-m-d', $nTMPStamp));
                     $timeSpan['cDatum'][]     = \date('Y-W', $nTMPStamp);
                     $timeSpan['cDatumFull'][] = \date('d.m.Y', $weekStamp[0]) .
                         ' - ' . \date('d.m.Y', $weekStamp[1]);
@@ -1337,6 +1354,7 @@ class CampaignController extends AbstractBackendController
      * @param int    $direction - -1 = Vergangenheit, 1 = Zukunft
      * @param int    $view
      * @return string
+     * @former gibStamp()
      */
     private function gibStamp($oldStamp, int $direction, int $view): string
     {
@@ -1367,6 +1385,7 @@ class CampaignController extends AbstractBackendController
     /**
      * @param Campaign $campaign
      * @return int
+     * @former speicherKampagne()
      *
      * Returncodes:
      * 1 = Alles O.K.
@@ -1446,6 +1465,7 @@ class CampaignController extends AbstractBackendController
     /**
      * @param int $code
      * @return string
+     * @former mappeFehlerCodeSpeichern()
      */
     private function mappeFehlerCodeSpeichern(int $code): string
     {
@@ -1479,6 +1499,7 @@ class CampaignController extends AbstractBackendController
     /**
      * @param array $campaignIDs
      * @return int
+     * @former loescheGewaehlteKampagnen()
      */
     private function loescheGewaehlteKampagnen(array $campaignIDs): int
     {
@@ -1499,6 +1520,7 @@ class CampaignController extends AbstractBackendController
 
     /**
      * @param DateTimeImmutable $date
+     * @former setzeDetailZeitraum()
      */
     private function setzeDetailZeitraum(DateTimeImmutable $date): void
     {
@@ -1557,6 +1579,7 @@ class CampaignController extends AbstractBackendController
 
     /**
      * @return false|string
+     * @former checkGesamtStatZeitParam()
      */
     private function checkGesamtStatZeitParam()
     {
@@ -1630,58 +1653,31 @@ class CampaignController extends AbstractBackendController
     /**
      * @param string $month
      * @return string
+     * @former mappeENGMonat()
      */
     private function mappeENGMonat($month): string
     {
-        $translation = '';
-        if (\mb_strlen($month) > 0) {
-            switch ($month) {
-                case '01':
-                    $translation .= Shop::Lang()->get('january', 'news');
-                    break;
-                case '02':
-                    $translation .= Shop::Lang()->get('february', 'news');
-                    break;
-                case '03':
-                    $translation .= Shop::Lang()->get('march', 'news');
-                    break;
-                case '04':
-                    $translation .= Shop::Lang()->get('april', 'news');
-                    break;
-                case '05':
-                    $translation .= Shop::Lang()->get('may', 'news');
-                    break;
-                case '06':
-                    $translation .= Shop::Lang()->get('june', 'news');
-                    break;
-                case '07':
-                    $translation .= Shop::Lang()->get('july', 'news');
-                    break;
-                case '08':
-                    $translation .= Shop::Lang()->get('august', 'news');
-                    break;
-                case '09':
-                    $translation .= Shop::Lang()->get('september', 'news');
-                    break;
-                case '10':
-                    $translation .= Shop::Lang()->get('october', 'news');
-                    break;
-                case '11':
-                    $translation .= Shop::Lang()->get('november', 'news');
-                    break;
-                case '12':
-                    $translation .= Shop::Lang()->get('december', 'news');
-                    break;
-            }
-        }
-
-        return $translation;
+        return match ($month) {
+            '01' => Shop::Lang()->get('january', 'news'),
+            '02' => Shop::Lang()->get('february', 'news'),
+            '03' => Shop::Lang()->get('march', 'news'),
+            '04' => Shop::Lang()->get('april', 'news'),
+            '05' => Shop::Lang()->get('may', 'news'),
+            '06' => Shop::Lang()->get('june', 'news'),
+            '07' => Shop::Lang()->get('july', 'news'),
+            '08' => Shop::Lang()->get('august', 'news'),
+            '09' => Shop::Lang()->get('september', 'news'),
+            '10' => Shop::Lang()->get('october', 'news'),
+            '11' => Shop::Lang()->get('november', 'news'),
+            '12' => Shop::Lang()->get('december', 'news'),
+        };
     }
 
     /**
      * @return array
+     * @former GetTypes()
      */
-    private function GetTypes(): array
+    private function getTypeNames(): array
     {
         return [
             1  => \__('Hit'),
@@ -1700,10 +1696,11 @@ class CampaignController extends AbstractBackendController
     /**
      * @param int $type
      * @return string
+     * @former GetKampTypeName()
      */
-    private function GetKampTypeName(int $type): string
+    private function getNameByType(int $type): string
     {
-        $types = $this->GetTypes();
+        $types = $this->getTypeNames();
 
         return $types[$type] ?? '';
     }
@@ -1712,8 +1709,9 @@ class CampaignController extends AbstractBackendController
      * @param array $stats
      * @param int   $type
      * @return Linechart
+     * @former PrepareLineChartKamp()
      */
-    private function PrepareLineChartKamp(array $stats, int $type): Linechart
+    private function getLineChart(array $stats, int $type): Linechart
     {
         $chart = new Linechart(['active' => false]);
         if (\count($stats) === 0) {
@@ -1738,7 +1736,7 @@ class CampaignController extends AbstractBackendController
                 }
             }
         }
-        $chart->addSerie($this->GetKampTypeName($type), $data);
+        $chart->addSerie($this->getNameByType($type), $data);
         $chart->memberToJSON();
 
         return $chart;

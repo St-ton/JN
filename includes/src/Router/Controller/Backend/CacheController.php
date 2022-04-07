@@ -72,7 +72,7 @@ class CacheController extends AbstractBackendController
             case 'cacheMassAction':
                 //mass action cache flush
                 $this->tab = 'massaction';
-                $this->actionMassaction($cacheAction, $postData, $currentlyDisabled);
+                $this->actionMassAction($cacheAction, $postData, $currentlyDisabled);
                 break;
             case 'flush_object_cache':
                 $this->tab = 'massaction';

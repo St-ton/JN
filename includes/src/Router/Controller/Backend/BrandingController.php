@@ -183,17 +183,11 @@ class BrandingController extends AbstractBackendController
      */
     private function mapFileType(string $ype): string
     {
-        switch ($ype) {
-            case 'image/gif':
-                return '.gif';
-            case 'image/png':
-                return '.png';
-            case 'image/bmp':
-                return '.bmp';
-            case 'image/jpeg':
-            case 'image/pjpeg':
-            default:
-                return '.jpg';
-        }
+        return match ($ype) {
+            'image/gif' => '.gif',
+            'image/png' => '.png',
+            'image/bmp' => '.bmp',
+            default     => '.jpg',
+        };
     }
 }

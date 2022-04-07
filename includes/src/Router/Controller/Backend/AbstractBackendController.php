@@ -7,6 +7,7 @@ use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
 use JTL\Backend\Settings\Sections\Subsection;
 use JTL\Cache\JTLCacheInterface;
+use JTL\Campaign;
 use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Form;
@@ -368,6 +369,43 @@ abstract class AbstractBackendController implements ControllerInterface
         $this->smarty->assign('sections', $sections);
 
         return $sections;
+    }
+
+    /**
+     * @param bool             $getInternal
+     * @param bool             $activeOnly
+     * @param DbInterface|null $db
+     * @return array
+     */
+    public static function getCampaigns(
+        bool $getInternal = false,
+        bool $activeOnly = true,
+        ?DbInterface $db = null
+    ): array {
+        $activeSQL  = $activeOnly ? ' WHERE nAktiv = 1' : '';
+        $interalSQL = '';
+        if (!$getInternal && $activeOnly) {
+            $interalSQL = ' AND nInternal = 0';
+        } elseif (!$getInternal) {
+            $interalSQL = ' WHERE nInternal = 0';
+        }
+        $campaigns = [];
+        $items     = ($db ?? Shop::Container()->getDB())->getInts(
+            'SELECT kKampagne
+                FROM tkampagne
+                ' . $activeSQL . '
+                ' . $interalSQL . '
+                ORDER BY kKampagne',
+            'kKampagne'
+        );
+        foreach ($items as $campaignID) {
+            $campaign = new Campaign($campaignID);
+            if ($campaign->kKampagne > 0) {
+                $campaigns[$campaign->kKampagne] = $campaign;
+            }
+        }
+
+        return $campaigns;
     }
 
     /**

@@ -6,6 +6,7 @@ use JTL\Catalog\ReviewReminder;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\dbeS\Job\JobInterface;
+use JTL\Export\RSS;
 use JTL\Helpers\FileSystem;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
@@ -99,8 +100,8 @@ final class LastJob
                     if ($config['rss']['rss_wawiabgleich'] !== 'Y') {
                         break;
                     }
-                    require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'rss_inc.php';
-                    \generiereRSSXML();
+                    $rss = new RSS($this->db, $this->logger);
+                    $rss->generateXML();
                     $this->restartJob(\LASTJOBS_RSS);
                     break;
                 case \LASTJOBS_GARBAGECOLLECTOR:

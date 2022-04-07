@@ -2,6 +2,7 @@
 
 namespace JTL\Widgets;
 
+use JTL\Helpers\Date;
 use JTL\Linechart;
 use JTL\Statistik;
 
@@ -24,7 +25,7 @@ class Visitors extends AbstractWidget
      */
     public function getVisitorsOfCurrentMonth(): array
     {
-        return (new Statistik(\firstDayOfMonth(), \time()))->holeBesucherStats(2);
+        return (new Statistik(Date::getFirstDayOfMonth(), \time()))->holeBesucherStats(2);
     }
 
     /**
@@ -38,9 +39,9 @@ class Visitors extends AbstractWidget
             $month = 12;
             $year  = \date('Y') - 1;
         }
-        $oStatistik = new Statistik(\firstDayOfMonth($month, $year), \lastDayOfMonth($month, $year));
+        $stats = new Statistik(Date::getFirstDayOfMonth($month, $year), Date::getLastDayOfMonth($month, $year));
 
-        return $oStatistik->holeBesucherStats(2);
+        return $stats->holeBesucherStats(2);
     }
 
     /**
@@ -72,6 +73,6 @@ class Visitors extends AbstractWidget
     public function getContent()
     {
         return $this->oSmarty->assign('linechart', $this->getJSON())
-                             ->fetch('tpl_inc/widgets/visitors.tpl');
+            ->fetch('tpl_inc/widgets/visitors.tpl');
     }
 }

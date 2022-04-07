@@ -2,6 +2,7 @@
 
 namespace JTL\Widgets;
 
+use JTL\Helpers\Date;
 use JTL\Statistik;
 
 /**
@@ -32,7 +33,7 @@ class Bots extends AbstractWidget
      */
     public function getBotsOfMonth(int $year, int $month, int $limit = 10): array
     {
-        return (new Statistik(\firstDayOfMonth($month, $year), \time()))->holeBotStats($limit);
+        return (new Statistik(Date::getFirstDayOfMonth($month, $year), \time()))->holeBotStats($limit);
     }
 
     /**

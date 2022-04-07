@@ -14,6 +14,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Router\BackendRouter;
+use JTL\Router\Controller\Backend\AbstractBackendController;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -204,7 +205,7 @@ class Admin
                     FROM twaehrung 
                     ORDER BY cStandard DESC'
             ))
-            ->assign('oKampagne_arr', \holeAlleKampagnen(true));
+            ->assign('oKampagne_arr', AbstractBackendController::getCampaigns(true, true, $this->db));
 
         if (Request::postInt('kExportformat') > 0) {
             try {

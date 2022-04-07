@@ -12,7 +12,9 @@ use JTL\Backend\TwoFA;
 use JTL\Backend\Wizard\WizardIO;
 use JTL\Catalog\Currency;
 use JTL\Export\SyntaxChecker as ExportSyntaxChecker;
+use JTL\Filter\States\BaseSearchQuery;
 use JTL\Helpers\Form;
+use JTL\Helpers\Text;
 use JTL\IO\IOError;
 use JTL\IO\IOResponse;
 use JTL\Jtllog;
@@ -22,6 +24,7 @@ use JTL\Media\Manager;
 use JTL\Plugin\Helper;
 use JTL\Redirect;
 use JTL\Shop;
+use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\UpdateIO;
 use Psr\Http\Message\ResponseInterface;
@@ -116,10 +119,10 @@ class IOController extends AbstractBackendController
                 ->register('migrateToInnoDB_utf8', 'doMigrateToInnoDB_utf8', $dbcheckInc, 'DBCHECK_VIEW')
                 ->register('redirectCheckAvailability', [Redirect::class, 'checkAvailability'])
                 ->register('updateRedirectState', null, $redirectInc, 'REDIRECT_VIEW')
-                ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
+                ->register('getRandomPassword', [$this, 'getRandomPassword'], null, 'ACCOUNT_VIEW')
                 ->register('saveBannerAreas', [BannerController::class, 'saveBannerAreasIO'], null, 'DISPLAY_BANNER_VIEW')
-                ->register('createSearchIndex', 'createSearchIndex', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
-                ->register('clearSearchCache', 'clearSearchCache', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
+                ->register('createSearchIndex', [$this, 'createSearchIndex'], null, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
+                ->register('clearSearchCache', [$this, 'clearSearchCache'], null, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
                 ->register('adminSearch', [$searchController, 'adminSearch'], $sucheInc, 'SETTINGS_SEARCH_VIEW')
                 ->register('saveShippingSurcharge', [ShippingMethodsController::class, 'saveShippingSurcharge'], null, 'ORDER_SHIPMENT_VIEW')
                 ->register('deleteShippingSurcharge', [ShippingMethodsController::class, 'deleteShippingSurcharge'], null, 'ORDER_SHIPMENT_VIEW')
@@ -209,5 +212,121 @@ class IOController extends AbstractBackendController
             ->fetch('tpl_inc/favs_drop.tpl');
 
         return ['tpl' => $tpl];
+    }
+
+    /**
+     * @return IOResponse
+     * @throws Exception
+     */
+    public function getRandomPassword(): IOResponse
+    {
+        $response = new IOResponse();
+        $password = Shop::Container()->getPasswordService()->generate(\PASSWORD_DEFAULT_LENGTH);
+        $response->assignDom('cPass', 'value', $password);
+
+        return $response;
+    }
+    /**
+     * @param string $idx
+     * @param string $create
+     * @return array|IOError
+     */
+    public function createSearchIndex($idx, $create)
+    {
+        $this->getText->loadAdminLocale('pages/sucheinstellungen');
+        $idx      = mb_convert_case(Text::xssClean($idx), MB_CASE_LOWER);
+        $notice   = '';
+        $errorMsg = '';
+        if (!\in_array($idx, ['tartikel', 'tartikelsprache'], true)) {
+            return new IOError(\__('errorIndexInvalid'), 403);
+        }
+        $keyName = 'idx_' . $idx . '_fulltext';
+        try {
+            if ($this->db->getSingleObject(
+                'SHOW INDEX FROM ' . $idx . ' WHERE KEY_NAME = :keyName',
+                ['keyName' => $keyName]
+            )) {
+                $this->db->query('ALTER TABLE ' . $idx . ' DROP KEY ' . $keyName);
+            }
+        } catch (Exception $e) {
+            // Fehler beim Index löschen ignorieren
+        }
+
+        if ($create === 'Y') {
+            $searchRows = \array_map(static function ($item) {
+                $items = \explode('.', $item, 2);
+
+                return $items[1];
+            }, BaseSearchQuery::getSearchRows());
+
+            switch ($idx) {
+                case 'tartikel':
+                    $rows = \array_intersect(
+                        $searchRows,
+                        [
+                            'cName',
+                            'cSeo',
+                            'cSuchbegriffe',
+                            'cArtNr',
+                            'cKurzBeschreibung',
+                            'cBeschreibung',
+                            'cBarcode',
+                            'cISBN',
+                            'cHAN',
+                            'cAnmerkung'
+                        ]
+                    );
+                    break;
+                case 'tartikelsprache':
+                    $rows = \array_intersect($searchRows, ['cName', 'cSeo', 'cKurzBeschreibung', 'cBeschreibung']);
+                    break;
+                default:
+                    return new IOError(\__('errorIndexInvalid'), 403);
+            }
+
+            /** @noinspection SqlWithoutWhere */
+            $this->db->query('UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)');
+            $res = $this->db->getPDOStatement(
+                'ALTER TABLE ' . $idx . ' ADD FULLTEXT KEY idx_' . $idx . '_fulltext (' . \implode(', ', $rows) . ')'
+            );
+
+            if ($res->queryString === null) {
+                $errorMsg     = \__('errorIndexNotCreatable');
+                $shopSettings = Shopsetting::getInstance();
+                $settings     = $shopSettings[Shopsetting::mapSettingName(\CONF_ARTIKELUEBERSICHT)];
+
+                if ($settings['suche_fulltext'] !== 'N') {
+                    $settings['suche_fulltext'] = 'N';
+                    \saveAdminSectionSettings(\CONF_ARTIKELUEBERSICHT, $settings);
+
+                    $this->cache->flushTags([
+                        \CACHING_GROUP_OPTION,
+                        \CACHING_GROUP_CORE,
+                        \CACHING_GROUP_ARTICLE,
+                        \CACHING_GROUP_CATEGORY
+                    ]);
+                    $shopSettings->reset();
+                }
+            } else {
+                $notice = \sprintf(\__('successIndexCreate'), $idx);
+            }
+        } else {
+            $notice = \sprintf(\__('successIndexDelete'), $idx);
+        }
+
+        return $errorMsg !== '' ? new IOError($errorMsg) : ['hinweis' => $notice];
+    }
+
+    /**
+     * @return array
+     * @noinspection SqlWithoutWhere
+     */
+    public function clearSearchCache(): array
+    {
+        $this->db->query('DELETE FROM tsuchcachetreffer');
+        $this->db->query('DELETE FROM tsuchcache');
+        $this->getText->loadAdminLocale('pages/sucheinstellungen');
+
+        return ['hinweis' => \__('successSearchCacheDelete')];
     }
 }

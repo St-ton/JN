@@ -4,6 +4,7 @@ namespace JTL\Widgets;
 
 use DateTime;
 use JTL\Catalog\Product\Preise;
+use JTL\Helpers\Date;
 use JTL\Linechart;
 
 /**
@@ -37,8 +38,8 @@ class SalesVolume extends AbstractWidget
         $interval = 0;
         $stats    = \gibBackendStatistik(
             \STATS_ADMIN_TYPE_UMSATZ,
-            \firstDayOfMonth($month, $year),
-            \lastDayOfMonth($month, $year),
+            Date::getFirstDayOfMonth($month, $year),
+            Date::getLastDayOfMonth($month, $year),
             $interval
         );
         foreach ($stats as $stat) {

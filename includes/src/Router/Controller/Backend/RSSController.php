@@ -3,8 +3,10 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Alert\Alert;
+use JTL\Export\RSS;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -24,7 +26,8 @@ class RSSController extends AbstractBackendController
         $this->checkPermissions('EXPORT_RSSFEED_VIEW');
         $this->getText->loadAdminLocale('pages/rss');
         if (Request::getInt('f') === 1 && Form::validateToken()) {
-            if (\generiereRSSXML()) {
+            $rss = new RSS($this->db, Shop::Container()->getLogService());
+            if ($rss->generateXML()) {
                 $this->alertService->addSuccess(\__('successRSSCreate'), 'successRSSCreate');
             } else {
                 $this->alertService->addError(\__('errorRSSCreate'), 'errorRSSCreate');

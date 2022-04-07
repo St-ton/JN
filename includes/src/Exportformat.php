@@ -245,7 +245,7 @@ class Exportformat
     private function quit(bool $hasError = false): void
     {
         if (Request::getVar('back') === 'admin') {
-            $location  = 'Location: ' . Shop::getAdminURL() . '/' . BackendRouter::ROUTE_EXPORT
+            $location = 'Location: ' . Shop::getAdminURL() . '/' . BackendRouter::ROUTE_EXPORT
                 . '?action=exported&token=' . $_SESSION['jtl_token']
                 . '&kExportformat=' . (int)$this->queue->foreignKeyID;
             if ($hasError) {

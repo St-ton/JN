@@ -103,7 +103,7 @@ class RSS
                 ['lid' => (int)$_SESSION['kSprache'], 'cgid' => $stdKundengruppe->kKundengruppe, 'ds' => $days]
             );
             foreach ($products as $product) {
-                $url = URL::buildURL($product, \URLART_ARTIKEL, true, $shopURL . '/');
+                $url  = URL::buildURL($product, \URLART_ARTIKEL, true, $shopURL . '/');
                 $xml .= '
                     <item>
                         <title>' . $this->asEntity($product->cName) . '</title>
@@ -128,7 +128,7 @@ class RSS
                 ['ds' => $days]
             );
             foreach ($news as $item) {
-                $url = URL::buildURL($item, \URLART_NEWS, true, $shopURL . '/');
+                $url  = URL::buildURL($item, \URLART_NEWS, true, $shopURL . '/');
                 $xml .= '
                     <item>
                         <title>' . $this->asEntity($item->title) . '</title>
@@ -149,7 +149,7 @@ class RSS
                 ['ds' => $days]
             );
             foreach ($reviews as $review) {
-                $url = URL::buildURL($review, \URLART_ARTIKEL, true, $shopURL . '/');
+                $url  = URL::buildURL($review, \URLART_ARTIKEL, true, $shopURL . '/');
                 $xml .= '
                     <item>
                         <title>Bewertung ' . $this->asEntity($review->cTitel) . ' von ' .

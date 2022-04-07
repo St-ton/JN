@@ -26,6 +26,7 @@
     <script src="{$PFAD_CODEMIRROR}mode/xml/xml.js{$urlPostfix}"></script>
     <script src="{$PFAD_CODEMIRROR}mode/php/php.js{$urlPostfix}"></script>
     <script src="{$PFAD_CODEMIRROR}mode/htmlmixed/htmlmixed.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/sass/sass.js{$urlPostfix}"></script>
     <script src="{$PFAD_CODEMIRROR}mode/smarty/smarty.js{$urlPostfix}"></script>
     <script src="{$PFAD_CODEMIRROR}mode/smartymixed/smartymixed.js{$urlPostfix}"></script>
     <script src="{$PFAD_CODEMIRROR}mode/sql/sql.js{$urlPostfix}"></script>

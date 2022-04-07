@@ -577,6 +577,10 @@
             }
         },
 
+        resetForParallax: function() {
+            $(window).trigger('resize').trigger('scroll');
+        },
+
         addCartBtnAnimation: function() {
             var animating = false;
 

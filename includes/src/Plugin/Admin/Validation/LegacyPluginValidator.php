@@ -64,7 +64,7 @@ final class LegacyPluginValidator extends AbstractValidator
     /**
      * @inheritDoc
      */
-    public function pluginPlausiIntern($xml, bool $forUpdate): int
+    public function pluginPlausiIntern(?array $xml, bool $forUpdate): int
     {
         $isShop4Compatible = false;
         $shopVersion       = Version::parse(\APPLICATION_VERSION);
@@ -95,18 +95,15 @@ final class LegacyPluginValidator extends AbstractValidator
         }
         try {
             if (isset($baseNode['Shop4Version'])) {
-                $parsedXMLShopVersion = Version::parse($baseNode['Shop4Version']);
-                $isShop4Compatible    = true;
+                $parsedShopVersion = Version::parse($baseNode['Shop4Version']);
+                $isShop4Compatible = true;
             } else {
-                $parsedXMLShopVersion = Version::parse($baseNode['MaxShopVersion'] ?? $baseNode['ShopVersion']);
+                $parsedShopVersion = Version::parse($baseNode['MaxShopVersion'] ?? $baseNode['ShopVersion']);
             }
         } catch (InvalidArgumentException $e) {
-            $parsedXMLShopVersion = null;
+            $parsedShopVersion = null;
         }
-        if (empty($shopVersion)
-            || $parsedXMLShopVersion === null
-            || $parsedXMLShopVersion->greaterThan($shopVersion)
-        ) {
+        if ($shopVersion === null || $parsedShopVersion === null || $parsedShopVersion->greaterThan($shopVersion)) {
             return InstallCode::SHOP_VERSION_COMPATIBILITY;
         }
 

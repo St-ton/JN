@@ -1,5 +1,7 @@
 @import '../../base/sass/functions';
 
+//#customVariables#
+
 @import 'variables';
 
 @import 'allstyles';
@@ -11,7 +13,7 @@
 }
 
 #footer, header {
-  .table-striped {
+  .table {
     color: $header-color;
     tbody tr:nth-of-type(odd) {
       background-color: $bg-main;
@@ -84,3 +86,5 @@ header {
     color: $footer-color;
   }
 }
+
+//#customContent#

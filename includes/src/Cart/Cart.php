@@ -1997,6 +1997,34 @@ class Cart
     }
 
     /**
+     * @return int
+     */
+    public function removeParentItems(): int
+    {
+        $deletedItemCount = 0;
+        foreach ($this->PositionenArr as $i => $item) {
+            $delete = false;
+            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
+                && $item->Artikel->nIstVater === 1
+            ) {
+                $delete = true;
+                \executeHook(\HOOK_CART_DELETE_PARENT_CART_ITEM, [
+                    'positionItem' => $item,
+                    'delete'    => &$delete
+                ]);
+            }
+            if ($delete) {
+                $deletedItemCount++;
+                self::addDeletedPosition($item);
+                unset($this->PositionenArr[$i]);
+            }
+        }
+        $this->PositionenArr = \array_values($this->PositionenArr);
+
+        return $deletedItemCount;
+    }
+
+    /**
      * @return array
      */
     public function __debugInfo()

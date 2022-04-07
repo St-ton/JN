@@ -21872,6 +21872,9 @@ label {
 .blog-details .blog-details-content {
   margin-bottom: 1.5rem;
 }
+.blog-details .blog-details-content .img-fluid {
+  height: auto !important;
+}
 .blog-details .blog-details-save {
   margin-left: auto;
 }
@@ -26251,6 +26254,76 @@ header #burger-menu {
   padding-bottom: 0.5rem;
 }
 
+.full-width-mega .main-search-wrapper .twitter-typeahead {
+  flex: 1;
+}
+@media (max-width: 991.98px) {
+  .full-width-mega.sticky-top .main-search-wrapper {
+    padding-right: 0;
+    padding-left: 0;
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 100%;
+  }
+  .full-width-mega.sticky-top .main-search-wrapper + .col, .full-width-mega.sticky-top .main-search-wrapper a {
+    padding-left: 0;
+  }
+  .full-width-mega .secure-checkout-icon {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 100%;
+    margin-left: auto;
+  }
+  .full-width-mega .toggler-logo-wrapper {
+    position: initial;
+  }
+}
+.full-width-mega .nav-icons-wrapper {
+  padding-left: 0;
+}
+.full-width-mega .nav-logo-wrapper {
+  padding-right: 0;
+  margin-right: auto;
+}
+@media (min-width: 992px) {
+  .full-width-mega .navbar-expand-lg .nav-multiple-row .navbar-nav {
+    flex-wrap: wrap;
+  }
+  .full-width-mega #mainNavigation.nav-multiple-row {
+    height: auto;
+    margin-right: 0;
+  }
+  .full-width-mega .nav-multiple-row .nav-scrollbar-inner {
+    padding-bottom: 0;
+  }
+  .full-width-mega .nav-multiple-row .nav-scrollbar-arrow {
+    display: none;
+  }
+  .full-width-mega .menu-search-position-center .main-search-wrapper {
+    margin-right: auto;
+  }
+  .full-width-mega .menu-search-position-left .main-search-wrapper {
+    margin-right: auto;
+  }
+  .full-width-mega .menu-search-position-left .nav-logo-wrapper {
+    margin-right: initial;
+  }
+  .full-width-mega .menu-center-center.menu-multiple-rows-multiple .nav-scrollbar-inner {
+    justify-content: center;
+  }
+  .full-width-mega .menu-center-space-between.menu-multiple-rows-multiple .nav-scrollbar-inner {
+    justify-content: space-between;
+  }
+}
+
+@media (min-width: 992px) {
+  header.full-width-mega .nav-right .dropdown-menu {
+    box-shadow: 0 0 7px #000000;
+  }
+  header .nav-multiple-row .navbar-nav > .nav-item > .nav-link {
+    padding: 1rem 1.5rem;
+  }
+}
 /* footer */
 #footer {
   margin-top: auto;

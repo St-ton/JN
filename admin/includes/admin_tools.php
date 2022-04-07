@@ -1,19 +1,15 @@
 <?php declare(strict_types=1);
 
-use JTL\Backend\AdminFavorite;
 use JTL\Backend\Notification;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
 use JTL\Backend\Settings\Sections\Subsection;
 use JTL\Campaign;
-use JTL\Catalog\Currency;
 use JTL\DB\SqlObject;
 use JTL\Filter\SearchResults;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\IO\IOError;
-use JTL\IO\IOResponse;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;

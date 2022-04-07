@@ -1,9 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Catalog\Separator;
-use JTL\Helpers\Text;
-use JTL\Shop;
-
 /**
  * @param array $post
  * @return bool

@@ -38,7 +38,7 @@ class PremiumPluginController extends AbstractBackendController
         if ($action === 'install') {
             $this->getText->loadAdminLocale('pages/pluginverwaltung');
 
-            $installer = new ExtensionInstaller(Shop::Container()->getDB());
+            $installer = new ExtensionInstaller($this->db);
             $installer->setRecommendations($recommendations->getRecommendations());
             $errorMsg = $installer->onSaveStep([$recommendationID]);
             if ($errorMsg === '') {

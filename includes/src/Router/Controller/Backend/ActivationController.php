@@ -156,30 +156,21 @@ class ActivationController extends AbstractBackendController
                                     );
                                 }
                             } else {
-                                switch ($res) {
-                                    case 2:
-                                        $searchError = \__('errorMapUnknown');
-                                        break;
-                                    case 3:
-                                        $searchError = \__('errorSearchNotFoundDB');
-                                        break;
-                                    case 4:
-                                        $searchError = \__('errorMapDB');
-                                        break;
-                                    case 5:
-                                        $searchError = \__('errorMapToNotExisting');
-                                        break;
-                                    case 6:
-                                        $searchError = \__('errorMapSelf');
-                                        break;
-                                    default:
-                                        $searchError = '';
-                                        break;
-                                }
+                                $searchError = match ($res) {
+                                    2 => \__('errorMapUnknown'),
+                                    3 => \__('errorSearchNotFoundDB'),
+                                    4 => \__('errorMapDB'),
+                                    5 => \__('errorMapToNotExisting'),
+                                    6 => \__('errorMapSelf'),
+                                    default => '',
+                                };
                                 $this->alertService->addError($searchError, 'searchError');
                             }
                         } else {
-                            $this->alertService->addError(\__('errorAtLeastOneLiveSearch'), 'errorAtLeastOneLiveSearch');
+                            $this->alertService->addError(
+                                \__('errorAtLeastOneLiveSearch'),
+                                'errorAtLeastOneLiveSearch'
+                            );
                         }
                     } else {
                         $this->alertService->addError(\__('errorMapNameMissing'), 'errorMapNameMissing');

@@ -37,9 +37,6 @@ class CartController extends PageController
     /**
      * @inheritdoc
      */
-    /**
-     * @inheritdoc
-     */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;

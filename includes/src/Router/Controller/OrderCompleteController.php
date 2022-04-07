@@ -227,7 +227,7 @@ class OrderCompleteController extends CheckoutController
                     exit();
                 }
             } else {
-                $this->smarty->assign('ZahlungsInfo', $this->gibPostZahlungsInfo());
+                $this->smarty->assign('ZahlungsInfo', $this->getPaymentInfo());
             }
         }
         // Zahlungsart als Plugin

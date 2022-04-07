@@ -2,7 +2,6 @@
 
 namespace JTL\Router\Middleware;
 
-use JTL\Backend\AdminAccount;
 use JTL\DB\DbInterface;
 use JTL\Router\BackendRouter;
 use JTL\Shop;

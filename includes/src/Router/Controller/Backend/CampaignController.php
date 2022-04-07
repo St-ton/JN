@@ -1362,18 +1362,11 @@ class CampaignController extends AbstractBackendController
             return $oldStamp;
         }
 
-        switch ($view) {
-            case 1:
-                $interval = 'month';
-                break;
-            case 2:
-                $interval = 'week';
-                break;
-            case 3:
-            default:
-                $interval = 'day';
-                break;
-        }
+        $interval = match ($view) {
+            1 => 'month',
+            2 => 'week',
+            default => 'day',
+        };
         $now     = \date_create();
         $newDate = \date_create($oldStamp)->modify(($direction === 1 ? '+' : '-') . '1 ' . $interval);
 

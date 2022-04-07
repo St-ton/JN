@@ -9,9 +9,9 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\RateLimit\ForgotPassword as Limiter;
+use JTL\Services\JTL\LinkService;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use LinkHelper;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -39,21 +39,18 @@ class ForgotPasswordController extends AbstractController
     /**
      * @inheritdoc
      */
-    /**
-     * @inheritdoc
-     */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
         Shop::setPageType(\PAGE_PASSWORTVERGESSEN);
-        $linkHelper = Shop::Container()->getLinkService();
-        $this->step = 'formular';
-        $valid      = Form::validateToken();
-        $missing    = ['captcha' => false];
+        $linkService = Shop::Container()->getLinkService();
+        $this->step  = 'formular';
+        $valid       = Form::validateToken();
+        $missing     = ['captcha' => false];
         if ($valid && isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
             $missing = $this->initPasswordReset($missing);
         } elseif ($valid && isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpwh'])) {
-            $this->reset($linkHelper);
+            $this->reset($linkService);
         } elseif (isset($_GET['fpwh'])) {
             $resetItem = $this->db->select('tpasswordreset', 'cKey', $_GET['fpwh']);
             if ($resetItem) {
@@ -68,8 +65,8 @@ class ForgotPasswordController extends AbstractController
             }
             $this->step = 'confirm';
         }
-        $this->canonicalURL = $linkHelper->getStaticRoute('pass.php');
-        $link               = $linkHelper->getSpecialPage(\LINKTYP_PASSWORD_VERGESSEN);
+        $this->canonicalURL = $linkService->getStaticRoute('pass.php');
+        $link               = $linkService->getSpecialPage(\LINKTYP_PASSWORD_VERGESSEN);
         if (!$this->alertService->alertTypeExists(Alert::TYPE_ERROR)) {
             $this->alertService->addInfo(
                 Shop::Lang()->get('forgotPasswordDesc', 'forgot password'),
@@ -89,11 +86,11 @@ class ForgotPasswordController extends AbstractController
     }
 
     /**
-     * @param LinkHelper $linkHelper
+     * @param LinkService $linkService
      * @return void
      * @throws \Exception
      */
-    protected function reset(LinkHelper $linkHelper): void
+    protected function reset(LinkService $linkService): void
     {
         if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
             $resetItem = $this->db->select('tpasswordreset', 'cKey', $_POST['fpwh']);
@@ -102,7 +99,7 @@ class ForgotPasswordController extends AbstractController
                 if ($customer->kKunde > 0 && $customer->cSperre !== 'Y') {
                     $customer->updatePassword($_POST['pw_new']);
                     $this->db->delete('tpasswordreset', 'kKunde', $customer->kKunde);
-                    \header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '?updated_pw=true');
+                    \header('Location: ' . $linkService->getStaticRoute('jtl.php') . '?updated_pw=true');
                     exit();
                 }
                 $this->alertService->addError(Shop::Lang()->get('invalidCustomer', 'account data'), 'invalidCustomer');

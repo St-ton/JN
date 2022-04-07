@@ -82,9 +82,8 @@ class DefaultParser
         $slug = $this->checkCharacteristics($slug);
         $slug = $this->checkManufacturers($slug);
         $slug = $this->checkCategories($slug);
-        $slug = $this->checkCharacteristicValues($slug);
 
-        return $slug;
+        return $this->checkCharacteristicValues($slug);
     }
 
     /**

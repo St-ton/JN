@@ -60,14 +60,18 @@ class StatsController extends AbstractBackendController
         $filter->assemble();
         $dateFrom      = \strtotime($dateRange->getStart());
         $dateUntil     = \strtotime($dateRange->getEnd());
-        $stats         = $this->gibBackendStatistik($statsType, $dateFrom, $dateUntil, $interval);
-        $statsTypeName = $this->GetTypeNameStats($statsType);
+        $stats         = $this->getBackendStats($statsType, $dateFrom, $dateUntil, $interval);
+        $statsTypeName = $this->geNameByType($statsType);
         $axisNames     = $this->getAxisNames($statsType);
-        $pie           = [\STATS_ADMIN_TYPE_KUNDENHERKUNFT, \STATS_ADMIN_TYPE_SUCHMASCHINE, \STATS_ADMIN_TYPE_EINSTIEGSSEITEN];
+        $pie           = [
+            \STATS_ADMIN_TYPE_KUNDENHERKUNFT,
+            \STATS_ADMIN_TYPE_SUCHMASCHINE,
+            \STATS_ADMIN_TYPE_EINSTIEGSSEITEN
+        ];
         if (\in_array($statsType, $pie, true)) {
             $smarty->assign('piechart', $this->preparePieChartStats($stats, $statsTypeName, $axisNames));
         } else {
-            $members = $this->gibMappingDaten($statsType);
+            $members = $this->getMappingByType($statsType);
             $smarty->assign('linechart', $this->prepareLineChartStats($stats, $statsTypeName, $axisNames))
                 ->assign('ylabel', $members['nCount'] ?? 0);
         }
@@ -94,10 +98,11 @@ class StatsController extends AbstractBackendController
         $pagination = (new Pagination())
             ->setItemCount(\count($stats))
             ->assemble();
+
         return $smarty->assign('headline', $statsTypeName)
             ->assign('nTyp', $statsType)
             ->assign('oStat_arr', $stats)
-            ->assign('cMember_arr', $this->mappeDatenMember($members, $this->gibMappingDaten($statsType)))
+            ->assign('cMember_arr', $this->mapData($members, $this->getMappingByType($statsType)))
             ->assign('nPosAb', $pagination->getFirstPageItem())
             ->assign('nPosBis', $pagination->getFirstPageItem() + $pagination->getPageItemCount())
             ->assign('pagination', $pagination)
@@ -112,8 +117,9 @@ class StatsController extends AbstractBackendController
      * @param int $to
      * @param int $intervall
      * @return array
+     * @former gibBackendStatistik()
      */
-    private function gibBackendStatistik(int $type, int $from, int $to, &$intervall): array
+    private function getBackendStats(int $type, int $from, int $to, int &$intervall): array
     {
         $data = [];
         if ($type > 0 && $from > 0 && $to > 0) {
@@ -145,7 +151,7 @@ class StatsController extends AbstractBackendController
      * @param int $type
      * @return array
      */
-    private function gibMappingDaten(int $type): array
+    private function getMappingByType(int $type): array
     {
         if (!$type) {
             return [];
@@ -182,8 +188,9 @@ class StatsController extends AbstractBackendController
     /**
      * @param int $type
      * @return string
+     * @former GetTypeNameStats()
      */
-    private function GetTypeNameStats($type): string
+    private function geNameByType(int $type): string
     {
         $names = [
             1 => \__('visitor'),
@@ -200,25 +207,16 @@ class StatsController extends AbstractBackendController
      * @param int $type
      * @return stdClass
      */
-    private function getAxisNames($type): stdClass
+    private function getAxisNames(int $type): stdClass
     {
         $axis    = new stdClass();
         $axis->y = 'nCount';
-        switch ($type) {
-            case \STATS_ADMIN_TYPE_UMSATZ:
-            case \STATS_ADMIN_TYPE_BESUCHER:
-                $axis->x = 'dZeit';
-                break;
-            case \STATS_ADMIN_TYPE_KUNDENHERKUNFT:
-                $axis->x = 'cReferer';
-                break;
-            case \STATS_ADMIN_TYPE_SUCHMASCHINE:
-                $axis->x = 'cUserAgent';
-                break;
-            case \STATS_ADMIN_TYPE_EINSTIEGSSEITEN:
-                $axis->x = 'cEinstiegsseite';
-                break;
-        }
+        $axis->x = match ($type) {
+            \STATS_ADMIN_TYPE_UMSATZ, \STATS_ADMIN_TYPE_BESUCHER => 'dZeit',
+            \STATS_ADMIN_TYPE_KUNDENHERKUNFT => 'cReferer',
+            \STATS_ADMIN_TYPE_SUCHMASCHINE => 'cUserAgent',
+            \STATS_ADMIN_TYPE_EINSTIEGSSEITEN => 'cEinstiegsseite',
+        };
 
         return $axis;
     }
@@ -227,8 +225,9 @@ class StatsController extends AbstractBackendController
      * @param array $members
      * @param array $mapping
      * @return array
+     * @former mappeDatenMember()
      */
-    private function mappeDatenMember(array $members, array $mapping): array
+    private function mapData(array $members, array $mapping): array
     {
         foreach ($members as $i => $data) {
             foreach ($data as $j => $member) {

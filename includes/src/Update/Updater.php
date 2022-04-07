@@ -25,12 +25,12 @@ class Updater
     /**
      * @var bool
      */
-    protected static $isVerified = false;
+    protected static bool $isVerified = false;
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * Updater constructor.

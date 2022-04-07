@@ -2,13 +2,10 @@
 
 namespace JTL\Router\Middleware;
 
-use JTL\Backend\AdminAccount;
-use JTL\DB\DbInterface;
 use JTL\Router\BackendRouter;
 use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Update\Updater;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

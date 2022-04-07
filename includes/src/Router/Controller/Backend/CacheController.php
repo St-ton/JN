@@ -319,7 +319,7 @@ class CacheController extends AbstractBackendController
     private function actionFlushTemplateCache(): void
     {
         $callback     = static function (array $pParameters) {
-            if (\strpos($pParameters['filename'], '.') === 0) {
+            if (\str_starts_with($pParameters['filename'], '.')) {
                 return;
             }
             if (!$pParameters['isdir']) {

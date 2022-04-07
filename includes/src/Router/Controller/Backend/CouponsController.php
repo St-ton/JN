@@ -66,7 +66,7 @@ class CouponsController extends AbstractBackendController
                     })->toArray();
 
                     foreach (\get_object_vars($obj) as $key => $val) {
-                        if (\mb_strpos($key, 'cName_') === 0) {
+                        if (\str_starts_with($key, 'cName_')) {
                             $couponNames[\mb_substr($key, 6)] = Text::filterXSS($val);
                             unset($obj->$key);
                         }

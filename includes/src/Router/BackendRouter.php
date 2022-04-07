@@ -94,7 +94,6 @@ use JTL\Router\Controller\Backend\WishlistController;
 use JTL\Router\Controller\Backend\WizardController;
 use JTL\Router\Controller\Backend\ZipImportController;
 use JTL\Router\Middleware\AuthMiddleware;
-use JTL\Router\Middleware\MenuBuilderMiddleware;
 use JTL\Router\Middleware\UpdateCheckMiddleware;
 use JTL\Router\Middleware\WizardCheckMiddleware;
 use JTL\Router\Strategy\SmartyStrategy;

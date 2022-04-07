@@ -988,7 +988,7 @@ class CheckoutController extends RegistrationController
      * @former gibPostZahlungsInfo()
      * @since 5.2.0
      */
-    public function gibPostZahlungsInfo(): stdClass
+    public function getPaymentInfo(): stdClass
     {
         $info = new stdClass();
 
@@ -1555,7 +1555,7 @@ class CheckoutController extends RegistrationController
         } else {
             $this->setzeFehlendeAngaben($this->checkAdditionalPayment($paymentMethod));
             unset($_SESSION['checkout.fehlendeAngaben']);
-            $this->smarty->assign('ZahlungsInfo', $this->gibPostZahlungsInfo());
+            $this->smarty->assign('ZahlungsInfo', $this->getPaymentInfo());
         }
         $this->smarty->assign('Zahlungsart', $paymentMethod)
             ->assign('Kunde', $this->customer)

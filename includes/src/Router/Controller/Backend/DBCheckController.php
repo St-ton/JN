@@ -98,7 +98,7 @@ class DBCheckController extends AbstractBackendController
      * @param bool $clearCache
      * @return array
      */
-    private function getDBStruct(bool $extended = false, bool $clearCache = false)
+    private function getDBStruct(bool $extended = false, bool $clearCache = false): ?array
     {
         static $dbStruct = [
             'normal'   => null,
@@ -312,13 +312,19 @@ class DBCheckController extends AbstractBackendController
                         break;
                     }
                     if ($dbStruct[$table]->Columns[$column]->DATA_TYPE === 'text') {
-                        $errors[$table] = $this->createDBStructError(\sprintf(\__('errorDataTypeTextInRow'), $column), true);
+                        $errors[$table] = $this->createDBStructError(
+                            \sprintf(\__('errorDataTypeTextInRow'), $column),
+                            true
+                        );
                         break;
                     }
                     if ($dbStruct[$table]->Columns[$column]->DATA_TYPE === 'tinyint'
-                        && \strpos($dbStruct[$table]->Columns[$column]->COLUMN_NAME, 'k') === 0
+                        && \str_starts_with($dbStruct[$table]->Columns[$column]->COLUMN_NAME, 'k')
                     ) {
-                        $errors[$table] = $this->createDBStructError(\sprintf(\__('errorDataTypeTinyInRow'), $column), true);
+                        $errors[$table] = $this->createDBStructError(
+                            \sprintf(\__('errorDataTypeTinyInRow'), $column),
+                            true
+                        );
                         break;
                     }
                 }

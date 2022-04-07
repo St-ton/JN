@@ -6,8 +6,6 @@ use FastRoute\Dispatcher;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher as CoreDispatcher;
 use JTL\Events\Event;
-use JTL\Router\Controller\Backend\BlubbController;
-use JTL\Router\Controller\Backend\FooController;
 use JTL\Router\Controller\ConsentController;
 use JTL\Router\Handler\CategoryHandler;
 use JTL\Router\Handler\DefaultHandler;

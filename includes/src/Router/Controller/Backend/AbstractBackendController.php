@@ -269,7 +269,7 @@ abstract class AbstractBackendController implements ControllerInterface
                 $newConf->cName                 = $valueName;
                 $newConf->kEinstellungenSektion = \CONF_BEWERTUNG;
 
-                $db->insert('teinstellungen', $newConf);
+                $this->db->insert('teinstellungen', $newConf);
             }
         }
     }
@@ -290,7 +290,7 @@ abstract class AbstractBackendController implements ControllerInterface
         }
         $manager = new Manager(
             $this->db,
-            Shop::Smarty(),
+            $this->smarty,
             $this->account,
             $this->getText,
             $this->alertService

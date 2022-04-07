@@ -3,7 +3,7 @@
 namespace JTL\Backend\Settings\Sections;
 
 use JTL\Helpers\Text;
-use Shop;
+use JTL\Shop;
 use stdClass;
 
 /**

@@ -14,9 +14,9 @@ use JTL\IO\IOResponse;
 use JTL\Media\Image;
 use JTL\Pagination\Pagination;
 use JTL\Smarty\JTLSmarty;
+use JTL\Shop;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Shop;
 use stdClass;
 
 /**

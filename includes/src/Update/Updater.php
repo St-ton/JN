@@ -14,7 +14,6 @@ use JTL\Smarty\JTLSmarty;
 use JTLShop\SemVer\Version;
 use JTLShop\SemVer\VersionCollection;
 use PDOException;
-use Shopsetting;
 use stdClass;
 
 /**

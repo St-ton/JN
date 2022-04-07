@@ -29,7 +29,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
 use JTL\Mapper\SortingType;
-use Shop;
+use JTL\Shop;
 use stdClass;
 use function Functional\first;
 use function Functional\flatten;

@@ -10,7 +10,7 @@ use JTL\Helpers\Text;
 use JTL\L10n\GetText;
 use JTL\MagicCompatibilityTrait;
 use JTL\Smarty\JTLSmarty;
-use Shop;
+use JTL\Shop;
 use stdClass;
 use function Functional\filter;
 use function Functional\flatten;

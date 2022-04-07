@@ -76,7 +76,10 @@ class ComparelistController extends AbstractBackendController
                 GROUP BY tvergleichslistepos.kArtikel
                 ORDER BY nAnzahl DESC
                 LIMIT :lmt',
-            ['ds' => (int)$_SESSION['Vergleichsliste']->nZeitFilter, 'lmt' => (int)$_SESSION['Vergleichsliste']->nAnzahl]
+            [
+                'ds' => (int)$_SESSION['Vergleichsliste']->nZeitFilter,
+                'lmt' => (int)$_SESSION['Vergleichsliste']->nAnzahl
+            ]
         );
         if (\count($topComparisons) > 0) {
             $this->createDiagram($topComparisons);

@@ -227,31 +227,31 @@ class CouponsController extends AbstractBackendController
             $this->deactivateOutdatedCoupons();
             $this->deactivateExhaustedCoupons();
 
-            $filterStandard = new Filter(Kupon::TYPE_STANDARD);
-            $filterStandard->addTextfield(\__('name'), 'cName');
-            $filterStandard->addTextfield(\__('code'), 'cCode');
-            $activeSelection = $filterStandard->addSelectfield(\__('status'), 'cAktiv');
+            $filterDefault = new Filter(Kupon::TYPE_STANDARD);
+            $filterDefault->addTextfield(\__('name'), 'cName');
+            $filterDefault->addTextfield(\__('code'), 'cCode');
+            $activeSelection = $filterDefault->addSelectfield(\__('status'), 'cAktiv');
             $activeSelection->addSelectOption(\__('all'), '');
             $activeSelection->addSelectOption(\__('active'), 'Y', Operation::EQUALS);
             $activeSelection->addSelectOption(\__('inactive'), 'N', Operation::EQUALS);
-            $filterStandard->assemble();
+            $filterDefault->assemble();
 
-            $filterVersand = new Filter(Kupon::TYPE_SHIPPING);
-            $filterVersand->addTextfield(\__('name'), 'cName');
-            $filterVersand->addTextfield(\__('code'), 'cCode');
-            $activeSelection = $filterVersand->addSelectfield(\__('status'), 'cAktiv');
+            $filterShipping = new Filter(Kupon::TYPE_SHIPPING);
+            $filterShipping->addTextfield(\__('name'), 'cName');
+            $filterShipping->addTextfield(\__('code'), 'cCode');
+            $activeSelection = $filterShipping->addSelectfield(\__('status'), 'cAktiv');
             $activeSelection->addSelectOption(\__('all'), '');
             $activeSelection->addSelectOption(\__('active'), 'Y', Operation::EQUALS);
             $activeSelection->addSelectOption(\__('inactive'), 'N', Operation::EQUALS);
-            $filterVersand->assemble();
+            $filterShipping->assemble();
 
-            $filterNeukunden = new Filter(Kupon::TYPE_NEWCUSTOMER);
-            $filterNeukunden->addTextfield(\__('name'), 'cName');
-            $activeSelection = $filterNeukunden->addSelectfield(\__('status'), 'cAktiv');
+            $filterCustomers = new Filter(Kupon::TYPE_NEWCUSTOMER);
+            $filterCustomers->addTextfield(\__('name'), 'cName');
+            $activeSelection = $filterCustomers->addSelectfield(\__('status'), 'cAktiv');
             $activeSelection->addSelectOption(\__('all'), '');
             $activeSelection->addSelectOption(\__('active'), 'Y', Operation::EQUALS);
             $activeSelection->addSelectOption(\__('inactive'), 'N', Operation::EQUALS);
-            $filterNeukunden->assemble();
+            $filterCustomers->assemble();
 
             $sortByOptions = [
                 ['cName', \__('name')],
@@ -261,9 +261,9 @@ class CouponsController extends AbstractBackendController
             ];
 
 
-            $nKuponStandardCount  = $this->getCouponCount(Kupon::TYPE_STANDARD, $filterStandard->getWhereSQL());
-            $nKuponVersandCount   = $this->getCouponCount(Kupon::TYPE_SHIPPING, $filterVersand->getWhereSQL());
-            $nKuponNeukundenCount = $this->getCouponCount(Kupon::TYPE_NEWCUSTOMER, $filterNeukunden->getWhereSQL());
+            $nKuponStandardCount  = $this->getCouponCount(Kupon::TYPE_STANDARD, $filterDefault->getWhereSQL());
+            $nKuponVersandCount   = $this->getCouponCount(Kupon::TYPE_SHIPPING, $filterShipping->getWhereSQL());
+            $nKuponNeukundenCount = $this->getCouponCount(Kupon::TYPE_NEWCUSTOMER, $filterCustomers->getWhereSQL());
             $nKuponStandardTotal  = $this->getCouponCount(Kupon::TYPE_STANDARD);
             $nKuponVersandTotal   = $this->getCouponCount(Kupon::TYPE_SHIPPING);
             $nKuponNeukundenTotal = $this->getCouponCount(Kupon::TYPE_NEWCUSTOMER);
@@ -280,8 +280,8 @@ class CouponsController extends AbstractBackendController
                     $export->export(
                         $exportID,
                         $exportID . '.csv',
-                        function () use ($filterStandard) {
-                            return $this->getExportableCoupons(Kupon::TYPE_STANDARD, $filterStandard->getWhereSQL());
+                        function () use ($filterDefault) {
+                            return $this->getExportableCoupons(Kupon::TYPE_STANDARD, $filterDefault->getWhereSQL());
                         },
                         [],
                         ['kKupon']
@@ -290,8 +290,8 @@ class CouponsController extends AbstractBackendController
                     $export->export(
                         $exportID,
                         $exportID . '.csv',
-                        function () use ($filterVersand) {
-                            return $this->getExportableCoupons(Kupon::TYPE_SHIPPING, $filterVersand->getWhereSQL());
+                        function () use ($filterShipping) {
+                            return $this->getExportableCoupons(Kupon::TYPE_SHIPPING, $filterShipping->getWhereSQL());
                         },
                         [],
                         ['kKupon']
@@ -300,8 +300,11 @@ class CouponsController extends AbstractBackendController
                     $export->export(
                         $exportID,
                         $exportID . '.csv',
-                        function () use ($filterNeukunden) {
-                            return $this->getExportableCoupons(Kupon::TYPE_NEWCUSTOMER, $filterNeukunden->getWhereSQL());
+                        function () use ($filterCustomers) {
+                            return $this->getExportableCoupons(
+                                Kupon::TYPE_NEWCUSTOMER,
+                                $filterCustomers->getWhereSQL()
+                            );
                         },
                         [],
                         ['kKupon']
@@ -323,27 +326,27 @@ class CouponsController extends AbstractBackendController
 
             $standardCoupons    = $this->getCoupons(
                 Kupon::TYPE_STANDARD,
-                $filterStandard->getWhereSQL(),
+                $filterDefault->getWhereSQL(),
                 $paginationStandard->getOrderSQL(),
                 $paginationStandard->getLimitSQL()
             );
             $shippingCoupons    = $this->getCoupons(
                 Kupon::TYPE_SHIPPING,
-                $filterVersand->getWhereSQL(),
+                $filterShipping->getWhereSQL(),
                 $paginationVersand->getOrderSQL(),
                 $paginationVersand->getLimitSQL()
             );
             $newCustomerCoupons = $this->getCoupons(
                 Kupon::TYPE_NEWCUSTOMER,
-                $filterNeukunden->getWhereSQL(),
+                $filterCustomers->getWhereSQL(),
                 $paginationNeukunden->getOrderSQL(),
                 $paginationNeukunden->getLimitSQL()
             );
 
             $smarty->assign('tab', $tab)
-                ->assign('oFilterStandard', $filterStandard)
-                ->assign('oFilterVersand', $filterVersand)
-                ->assign('oFilterNeukunden', $filterNeukunden)
+                ->assign('oFilterStandard', $filterDefault)
+                ->assign('oFilterVersand', $filterShipping)
+                ->assign('oFilterNeukunden', $filterCustomers)
                 ->assign('oPaginationStandard', $paginationStandard)
                 ->assign('oPaginationVersandkupon', $paginationVersand)
                 ->assign('oPaginationNeukundenkupon', $paginationNeukunden)
@@ -446,7 +449,10 @@ class CouponsController extends AbstractBackendController
             }
             $item->selected = \in_array($item->kKategorie, $selected, true);
             $arr[]          = $item;
-            $arr            = \array_merge($arr, $this->getCategories($selectedCategories, $item->kKategorie, $depth + 1));
+            $arr            = \array_merge(
+                $arr,
+                $this->getCategories($selectedCategories, $item->kKategorie, $depth + 1)
+            );
         }
 
         return $arr;
@@ -600,7 +606,9 @@ class CouponsController extends AbstractBackendController
         $coupon                        = new Kupon(Request::postInt('kKuponBearbeiten'));
         $coupon->cKuponTyp             = $input['cKuponTyp'];
         $coupon->cName                 = \htmlspecialchars($input['cName'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
-        $coupon->fWert                 = !empty($input['fWert']) ? (float)\str_replace(',', '.', $input['fWert']) : null;
+        $coupon->fWert                 = !empty($input['fWert'])
+            ? (float)\str_replace(',', '.', $input['fWert'])
+            : null;
         $coupon->cWertTyp              = !empty($input['cWertTyp']) ? $input['cWertTyp'] : null;
         $coupon->cZusatzgebuehren      = !empty($input['cZusatzgebuehren']) ? $input['cZusatzgebuehren'] : 'N';
         $coupon->nGanzenWKRabattieren  = Request::postInt('nGanzenWKRabattieren');
@@ -612,13 +620,17 @@ class CouponsController extends AbstractBackendController
             : '';
         $coupon->nVerwendungen         = Request::postInt('nVerwendungen');
         $coupon->nVerwendungenProKunde = Request::postInt('nVerwendungenProKunde');
-        $coupon->cArtikel              = !empty($input['cArtikel']) ? ';' . \trim($input['cArtikel'], ";\t\n\r") . ';' : '';
+        $coupon->cArtikel              = !empty($input['cArtikel'])
+            ? ';' . \trim($input['cArtikel'], ";\t\n\r") . ';'
+            : '';
         $coupon->cHersteller           = '-1';
         $coupon->kKundengruppe         = Request::postInt('kKundengruppe');
         $coupon->dGueltigAb            = $this->normalizeDate(!empty($input['dGueltigAb'])
             ? $input['dGueltigAb']
             : \date_create()->format('Y-m-d H:i') . ':00');
-        $coupon->dGueltigBis           = $this->normalizeDate(!empty($input['dGueltigBis']) ? $input['dGueltigBis'] : '');
+        $coupon->dGueltigBis           = $this->normalizeDate(!empty($input['dGueltigBis'])
+            ? $input['dGueltigBis']
+            : '');
         $coupon->cAktiv                = Request::postVar('cAktiv') === 'Y' ? 'Y' : 'N';
         $coupon->cKategorien           = '-1';
         if ($coupon->cKuponTyp !== Kupon::TYPE_NEWCUSTOMER) {
@@ -645,24 +657,24 @@ class CouponsController extends AbstractBackendController
             $coupon->cKunden = \trim($input['cKunden'], ";\t\n\r") . ';';
         }
         if (isset($input['couponCreation'])) {
-            $massCreationCoupon                  = new stdClass();
-            $massCreationCoupon->cActiv          = Request::postInt('couponCreation');
-            $massCreationCoupon->numberOfCoupons = ($massCreationCoupon->cActiv === 1 && !empty($input['numberOfCoupons']))
+            $massCreation                  = new stdClass();
+            $massCreation->cActiv          = Request::postInt('couponCreation');
+            $massCreation->numberOfCoupons = ($massCreation->cActiv === 1 && !empty($input['numberOfCoupons']))
                 ? (int)$input['numberOfCoupons']
                 : 2;
-            $massCreationCoupon->lowerCase       = ($massCreationCoupon->cActiv === 1 && !empty($input['lowerCase']));
-            $massCreationCoupon->upperCase       = ($massCreationCoupon->cActiv === 1 && !empty($input['upperCase']));
-            $massCreationCoupon->numbersHash     = ($massCreationCoupon->cActiv === 1 && !empty($input['numbersHash']));
-            $massCreationCoupon->hashLength      = ($massCreationCoupon->cActiv === 1 && !empty($input['hashLength']))
+            $massCreation->lowerCase       = ($massCreation->cActiv === 1 && !empty($input['lowerCase']));
+            $massCreation->upperCase       = ($massCreation->cActiv === 1 && !empty($input['upperCase']));
+            $massCreation->numbersHash     = ($massCreation->cActiv === 1 && !empty($input['numbersHash']));
+            $massCreation->hashLength      = ($massCreation->cActiv === 1 && !empty($input['hashLength']))
                 ? (int)$input['hashLength']
                 : 4;
-            $massCreationCoupon->prefixHash      = ($massCreationCoupon->cActiv === 1 && !empty($input['prefixHash']))
+            $massCreation->prefixHash      = ($massCreation->cActiv === 1 && !empty($input['prefixHash']))
                 ? $input['prefixHash']
                 : '';
-            $massCreationCoupon->suffixHash      = ($massCreationCoupon->cActiv === 1 && !empty($input['suffixHash']))
+            $massCreation->suffixHash      = ($massCreation->cActiv === 1 && !empty($input['suffixHash']))
                 ? $input['suffixHash']
                 : '';
-            $coupon->massCreationCoupon          = $massCreationCoupon;
+            $coupon->massCreationCoupon    = $massCreation;
         }
 
         return $coupon;
@@ -787,7 +799,11 @@ class CouponsController extends AbstractBackendController
         $coupon->cLocalizedWert = $coupon->cWertTyp === 'festpreis'
             ? Preise::getLocalizedPriceString($coupon->fWert, $defaultCurrency, false)
             : $coupon->fWert . ' %';
-        $coupon->cLocalizedMBW  = Preise::getLocalizedPriceString($coupon->fMindestbestellwert, $defaultCurrency, false);
+        $coupon->cLocalizedMBW  = Preise::getLocalizedPriceString(
+            $coupon->fMindestbestellwert,
+            $defaultCurrency,
+            false
+        );
         // kKunde-Array aller auserwaehlten Kunden
         $customerIDs     = Text::parseSSKint($coupon->cKunden);
         $customerData    = $this->db->getInts(

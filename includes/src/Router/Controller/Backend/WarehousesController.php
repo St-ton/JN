@@ -33,7 +33,11 @@ class WarehousesController extends AbstractBackendController
             $this->db->query('UPDATE twarenlager SET nAktiv = 0');
             if (GeneralObject::hasCount('kWarenlager', $postData)) {
                 $wl = \array_map('\intval', $postData['kWarenlager']);
-                $this->db->query('UPDATE twarenlager SET nAktiv = 1 WHERE kWarenlager IN (' . \implode(', ', $wl) . ')');
+                $this->db->query(
+                    'UPDATE twarenlager 
+                        SET nAktiv = 1
+                        WHERE kWarenlager IN (' . \implode(', ', $wl) . ')'
+                );
             }
             if (GeneralObject::hasCount('cNameSprache', $postData)) {
                 foreach ($postData['cNameSprache'] as $kWarenlager => $assocLang) {
@@ -43,8 +47,11 @@ class WarehousesController extends AbstractBackendController
                             $data              = new stdClass();
                             $data->kWarenlager = (int)$kWarenlager;
                             $data->kSprache    = (int)$languageID;
-                            $data->cName       = \htmlspecialchars(\trim($name), \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
-
+                            $data->cName       = \htmlspecialchars(
+                                \trim($name),
+                                \ENT_COMPAT | \ENT_HTML401,
+                                \JTL_CHARSET
+                            );
                             $this->db->insert('twarenlagersprache', $data);
                         }
                     }

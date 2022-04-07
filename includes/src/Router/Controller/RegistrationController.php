@@ -58,8 +58,8 @@ class RegistrationController extends PageController
             \header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 301);
         }
 
-        require_once PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
-        require_once PFAD_ROOT . \PFAD_INCLUDES . 'registrieren_inc.php';
+        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
+        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'registrieren_inc.php';
 
         $this->step = 'formular';
         $edit       = Request::getInt('editRechnungsadresse');

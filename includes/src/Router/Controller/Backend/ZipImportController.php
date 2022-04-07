@@ -25,26 +25,29 @@ class ZipImportController extends AbstractBackendController
         $this->checkPermissions('PLZ_ORT_IMPORT_VIEW');
         $this->getText->loadAdminLocale('pages/plz_ort_import');
 
-        $landIsoMap = [];
-        $itemBatch  = [];
-        $service    = Shop::Container()->getCountryService();
+        $isoMap    = [];
+        $itemBatch = [];
+        $service   = Shop::Container()->getCountryService();
         if (Request::verifyGPDataString('importcsv') === 'plz' && Form::validateToken()) {
             $import = new Import($this->db);
             $import->import(
                 'plz',
-                function ($entry, &$importDeleteDone, $importType) use (&$landIsoMap, &$itemBatch) {
+                function ($entry, &$importDeleteDone, $importType) use (&$isoMap, &$itemBatch) {
                     if ($importType === 0 && $importDeleteDone === false) {
                         $this->db->query('TRUNCATE TABLE tplz');
                         $importDeleteDone = true;
                     }
                     $iso = null;
-                    if (\array_key_exists($entry->land, $landIsoMap)) {
-                        $iso = $landIsoMap[$entry->land];
+                    if (\array_key_exists($entry->land, $isoMap)) {
+                        $iso = $isoMap[$entry->land];
                     } else {
-                        $land = $this->db->getSingleObject('SELECT cIso FROM tland WHERE cDeutsch = :land', ['land' => $entry->land]);
-                        if ($land !== null) {
-                            $iso                      = $land->cIso;
-                            $landIsoMap[$entry->land] = $iso;
+                        $country = $this->db->getSingleObject(
+                            'SELECT cIso FROM tland WHERE cDeutsch = :land',
+                            ['land' => $entry->land]
+                        );
+                        if ($country !== null) {
+                            $iso                  = $country->cIso;
+                            $isoMap[$entry->land] = $iso;
                         }
                     }
                     if ($iso !== null) {

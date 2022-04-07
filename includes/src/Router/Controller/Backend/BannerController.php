@@ -90,7 +90,10 @@ class BannerController extends AbstractBackendController
         $bannerPath = Request::postVar('cPath', '') !== '' ? $postData['cPath'] : null;
         if (isset($_FILES['oFile'])
             && Image::isImageUpload($_FILES['oFile'])
-            && \move_uploaded_file($_FILES['oFile']['tmp_name'], PFAD_ROOT . \PFAD_BILDER_BANNER . $_FILES['oFile']['name'])
+            && \move_uploaded_file(
+                $_FILES['oFile']['tmp_name'],
+                \PFAD_ROOT . \PFAD_BILDER_BANNER . $_FILES['oFile']['name']
+            )
         ) {
             $bannerPath = $_FILES['oFile']['name'];
         }
@@ -316,7 +319,7 @@ class BannerController extends AbstractBackendController
     private function getBannerFiles(): array
     {
         $files = [];
-        if (($handle = \opendir(PFAD_ROOT . \PFAD_BILDER_BANNER)) !== false) {
+        if (($handle = \opendir(\PFAD_ROOT . \PFAD_BILDER_BANNER)) !== false) {
             while (($file = \readdir($handle)) !== false) {
                 if ($file !== '.' && $file !== '..' && $file[0] !== '.') {
                     $files[] = $file;

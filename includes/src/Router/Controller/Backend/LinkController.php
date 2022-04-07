@@ -36,7 +36,7 @@ class LinkController extends AbstractBackendController
 
         $step        = 'uebersicht';
         $link        = null;
-        $uploadDir   = PFAD_ROOT . \PFAD_BILDER . \PFAD_LINKBILDER;
+        $uploadDir   = \PFAD_ROOT . \PFAD_BILDER . \PFAD_LINKBILDER;
         $clearCache  = false;
         $linkAdmin   = new LinkAdmin($this->db, $this->cache);
         $action      = Request::verifyGPDataString('action');
@@ -54,9 +54,15 @@ class LinkController extends AbstractBackendController
                 case 'remove-link-from-linkgroup':
                     $res = $linkAdmin->removeLinkFromLinkGroup($linkID, $linkGroupID);
                     if ($res > 0) {
-                        $this->alertService->addSuccess(\__('successLinkFromLinkGroupDelete'), 'successLinkFromLinkGroupDelete');
+                        $this->alertService->addSuccess(
+                            \__('successLinkFromLinkGroupDelete'),
+                            'successLinkFromLinkGroupDelete'
+                        );
                     } else {
-                        $this->alertService->addError(\__('errorLinkFromLinkGroupDelete'), 'errorLinkFromLinkGroupDelete');
+                        $this->alertService->addError(
+                            \__('errorLinkFromLinkGroupDelete'),
+                            'errorLinkFromLinkGroupDelete'
+                        );
                     }
                     unset($_POST['kLinkgruppe']);
                     $step       = 'uebersicht';
@@ -106,21 +112,29 @@ class LinkController extends AbstractBackendController
                             'cTemplatename',
                             $_POST['cTemplatename']
                         );
-                        if ($linkGroupTemplateExists !== null && $linkGroupID !== (int)$linkGroupTemplateExists->kLinkgruppe) {
+                        if ($linkGroupTemplateExists !== null
+                            && $linkGroupID !== (int)$linkGroupTemplateExists->kLinkgruppe
+                        ) {
                             $step      = 'neue Linkgruppe';
                             $linkGroup = null;
                             if ($linkGroupID > 0) {
                                 $linkGroup = new LinkGroup($this->db);
                                 $linkGroup = $linkGroup->load($linkGroupID);
                             }
-                            $this->alertService->addError(\__('errorTemplateNameDuplicate'), 'errorTemplateNameDuplicate');
+                            $this->alertService->addError(
+                                \__('errorTemplateNameDuplicate'),
+                                'errorTemplateNameDuplicate'
+                            );
                             $smarty->assign('xPlausiVar_arr', $checks->getPlausiVar())
                                 ->assign('xPostVar_arr', $checks->getPostVar())
                                 ->assign('linkGroup', $linkGroup);
                         } else {
                             if ($linkGroupID === 0) {
                                 $linkAdmin->createOrUpdateLinkGroup(0, $_POST);
-                                $this->alertService->addSuccess(\__('successLinkGroupCreate'), 'successLinkGroupCreate');
+                                $this->alertService->addSuccess(
+                                    \__('successLinkGroupCreate'),
+                                    'successLinkGroupCreate'
+                                );
                             } else {
                                 $linkgruppe = $linkAdmin->createOrUpdateLinkGroup($linkGroupID, $_POST);
                                 $this->alertService->addSuccess(
@@ -152,7 +166,10 @@ class LinkController extends AbstractBackendController
                     } elseif ($res === LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
                         $this->alertService->addError(\__('errorLinkGroupKeyNotFound'), 'errorLinkGroupKeyNotFound');
                     } elseif ($res instanceof LinkInterface) {
-                        $this->alertService->addSuccess(\sprintf(\__('successLinkMove'), $res->getDisplayName()), 'successLinkMove');
+                        $this->alertService->addSuccess(
+                            \sprintf(\__('successLinkMove'), $res->getDisplayName()),
+                            'successLinkMove'
+                        );
                         $clearCache = true;
                     } else {
                         $this->alertService->addError(\__('errorUnknownLong'), 'errorUnknownLong');
@@ -168,7 +185,10 @@ class LinkController extends AbstractBackendController
                     } elseif ($res === LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
                         $this->alertService->addError(\__('errorLinkGroupKeyNotFound'), 'errorLinkGroupKeyNotFound');
                     } elseif ($res instanceof LinkInterface) {
-                        $this->alertService->addSuccess(\sprintf(\__('successLinkCopy'), $res->getDisplayName()), 'successLinkCopy');
+                        $this->alertService->addSuccess(
+                            \sprintf(\__('successLinkCopy'), $res->getDisplayName()),
+                            'successLinkCopy'
+                        );
                         $step       = 'uebersicht';
                         $clearCache = true;
                     } else {
@@ -178,7 +198,10 @@ class LinkController extends AbstractBackendController
                 case 'change-parent':
                     $parentID = (int)($_POST['kVaterLink'] ?? 0);
                     if ($parentID >= 0 && ($link = $linkAdmin->updateParentID($linkID, $parentID)) !== false) {
-                        $this->alertService->addSuccess(\sprintf(\__('successLinkMove'), $link->cName), 'successLinkMove');
+                        $this->alertService->addSuccess(
+                            \sprintf(\__('successLinkMove'), $link->cName),
+                            'successLinkMove'
+                        );
                         $step       = 'uebersicht';
                         $clearCache = true;
                     } else {

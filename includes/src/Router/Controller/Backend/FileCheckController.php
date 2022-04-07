@@ -33,7 +33,7 @@ class FileCheckController extends AbstractBackendController
         $backupMessage      = '';
         $modifiedFilesError = '';
         $orphanedFilesError = '';
-        $md5basePath        = PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5;
+        $md5basePath        = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5;
         $coreMD5HashFile    = $md5basePath . $fileChecker->getVersionString() . '.csv';
         $orphanedFilesFile  = $md5basePath . 'deleted_files_' . $fileChecker->getVersionString() . '.csv';
         $modifiedFiles      = [];
@@ -66,7 +66,9 @@ class FileCheckController extends AbstractBackendController
                     break;
             }
         } elseif (Request::verifyGPCDataInt('delete-orphans') === 1 && Form::validateToken()) {
-            $backup   = PFAD_ROOT . \PFAD_EXPORT_BACKUP . 'orphans_' . \date_format(\date_create(), 'Y-m-d_H:i:s') . '.zip';
+            $backup   = \PFAD_ROOT . \PFAD_EXPORT_BACKUP
+                . 'orphans_' . \date_format(\date_create(), 'Y-m-d_H:i:s')
+                . '.zip';
             $count    = $fileChecker->deleteOrphanedFiles($orphanedFiles, $backup);
             $newCount = \count($orphanedFiles);
             if ($count === -1) {
@@ -82,7 +84,10 @@ class FileCheckController extends AbstractBackendController
         $hasModifiedFiles = !empty($modifiedFilesError) || \count($modifiedFiles) > 0;
         $hasOrphanedFiles = !empty($orphanedFilesError) || \count($orphanedFiles) > 0;
         if (!$hasModifiedFiles && !$hasOrphanedFiles) {
-            $this->alertService->addNotice(\__('fileCheckNoneModifiedOrphanedFiles'), 'fileCheckNoneModifiedOrphanedFiles');
+            $this->alertService->addNotice(
+                \__('fileCheckNoneModifiedOrphanedFiles'),
+                'fileCheckNoneModifiedOrphanedFiles'
+            );
         }
         $this->alertService->addInfo(
             $backupMessage,

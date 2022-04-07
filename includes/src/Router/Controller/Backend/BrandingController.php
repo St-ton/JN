@@ -154,7 +154,7 @@ class BrandingController extends AbstractBackendController
         if (!Image::isImageUpload($upload)) {
             return false;
         }
-        $newFile = PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . $this->mapFileType($upload['type']);
+        $newFile = \PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . $this->mapFileType($upload['type']);
 
         return \move_uploaded_file($upload['tmp_name'], $newFile);
     }
@@ -165,14 +165,14 @@ class BrandingController extends AbstractBackendController
      */
     private function deleteImage(int $brandingID): void
     {
-        if (\file_exists(PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.jpg')) {
-            @\unlink(PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.jpg');
-        } elseif (\file_exists(PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.png')) {
-            @\unlink(PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.png');
-        } elseif (\file_exists(PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.gif')) {
-            @\unlink(PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.gif');
-        } elseif (\file_exists(PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.bmp')) {
-            @\unlink(PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.bmp');
+        if (\file_exists(\PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.jpg')) {
+            @\unlink(\PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.jpg');
+        } elseif (\file_exists(\PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.png')) {
+            @\unlink(\PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.png');
+        } elseif (\file_exists(\PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.gif')) {
+            @\unlink(\PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.gif');
+        } elseif (\file_exists(\PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.bmp')) {
+            @\unlink(\PFAD_ROOT . \PFAD_BRANDINGBILDER . 'kBranding_' . $brandingID . '.bmp');
         }
     }
 

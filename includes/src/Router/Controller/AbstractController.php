@@ -232,7 +232,9 @@ abstract class AbstractController implements ControllerInterface
             ->assign('KaufabwicklungsURL', $linkHelper->getStaticRoute('bestellvorgang.php'))
             ->assign('WarenkorbArtikelPositionenanzahl', $cart->gibAnzahlPositionenExt([\C_WARENKORBPOS_TYP_ARTIKEL]))
             ->assign('WarenkorbWarensumme', [
-                0 => Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)),
+                0 => Preise::getLocalizedPriceString(
+                    $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
+                ),
                 1 => Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL]))
             ])
             ->assign('WarenkorbGesamtsumme', [

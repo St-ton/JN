@@ -36,12 +36,13 @@ class RSSController extends AbstractBackendController
         if (Request::postInt('einstellungen') > 0) {
             $this->saveAdminSectionSettings(\CONF_RSS, $_POST);
         }
-        if (!\file_exists(PFAD_ROOT . \FILE_RSS_FEED)) {
-            @\touch(PFAD_ROOT . \FILE_RSS_FEED);
+        $rssDir = \PFAD_ROOT . \FILE_RSS_FEED;
+        if (!\file_exists($rssDir)) {
+            @\touch($rssDir);
         }
-        if (!\is_writable(PFAD_ROOT . \FILE_RSS_FEED)) {
+        if (!\is_writable($rssDir)) {
             $this->alertService->addError(
-                \sprintf(\__('errorRSSCreatePermissions'), PFAD_ROOT . \FILE_RSS_FEED),
+                \sprintf(\__('errorRSSCreatePermissions'), $rssDir),
                 'errorRSSCreatePermissions'
             );
         }

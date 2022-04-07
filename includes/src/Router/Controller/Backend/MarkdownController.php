@@ -26,8 +26,8 @@ class MarkdownController extends AbstractBackendController
 
         if (isset($_POST['path']) && Form::validateToken()) {
             $path  = \realpath($_POST['path']);
-            $base1 = \realpath(PFAD_ROOT . \PLUGIN_DIR);
-            $base2 = \realpath(PFAD_ROOT . \PFAD_PLUGIN);
+            $base1 = \realpath(\PFAD_ROOT . \PLUGIN_DIR);
+            $base2 = \realpath(\PFAD_ROOT . \PFAD_PLUGIN);
             if ($path !== false && (\str_starts_with($path, $base1) || \str_starts_with($path, $base2))) {
                 $info = \pathinfo($path);
                 if (\mb_convert_case($info['extension'], \MB_CASE_LOWER) === 'md') {

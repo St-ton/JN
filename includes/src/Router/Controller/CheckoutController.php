@@ -86,8 +86,8 @@ class CheckoutController extends RegistrationController
     {
         $this->smarty = $smarty;
         Shop::setPageType(\PAGE_BESTELLVORGANG);
-        require_once PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
-        require_once PFAD_ROOT . \PFAD_INCLUDES . 'registrieren_inc.php';
+        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
+        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'registrieren_inc.php';
         $this->updateStep('accountwahl');
 
         global $Kunde;

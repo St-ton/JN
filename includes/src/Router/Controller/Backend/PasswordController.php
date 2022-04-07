@@ -30,7 +30,9 @@ class PasswordController extends AbstractBackendController
         $this->alertService->addWarning(\__('warningPasswordResetAuth'), 'warningPasswordResetAuth');
         if (isset($_POST['mail']) && Form::validateToken()) {
             $this->account->prepareResetPassword(Text::filterXSS($_POST['mail']));
-        } elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh']) && Form::validateToken()) {
+        } elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh'])
+            && Form::validateToken()
+        ) {
             if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
                 $verified = $this->account->verifyResetPasswordHash($_POST['fpwh'], $_POST['fpm']);
                 if ($verified === true) {

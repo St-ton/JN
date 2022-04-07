@@ -605,7 +605,7 @@ class CampaignController extends AbstractBackendController
                     $textParts = \explode('.', $stats[0]->cStampText);
                     $month     = $textParts [0] ?? '';
                     $year      = $textParts [1] ?? '';
-                    $text      = $this->mappeENGMonat($month) . ' ' . $year;
+                    $text      = $this->getMonthName($month) . ' ' . $year;
                     break;
                 case 3:    // Woche
                     $dates = Date::getWeekStartAndEnd($stats[0]->cStampText);
@@ -1250,7 +1250,8 @@ class CampaignController extends AbstractBackendController
                 $nTMPStamp   = $nFromStamp;
                 while ($nTMPStamp <= $nToStamp) {
                     $timeSpan['cDatum'][]     = \date('Y-m', $nTMPStamp);
-                    $timeSpan['cDatumFull'][] = $this->mappeENGMonat(\date('m', $nTMPStamp)) . ' ' . \date('Y', $nTMPStamp);
+                    $timeSpan['cDatumFull'][] = $this->getMonthName(\date('m', $nTMPStamp))
+                        . ' ' . \date('Y', $nTMPStamp);
                     $month                    = (int)\date('m', $nTMPStamp) + 1;
                     $year                     = (int)\date('Y', $nTMPStamp);
                     if ($month > 12) {
@@ -1350,16 +1351,16 @@ class CampaignController extends AbstractBackendController
     }
 
     /**
-     * @param string $oldStamp
+     * @param string $stamp
      * @param int    $direction - -1 = Vergangenheit, 1 = Zukunft
      * @param int    $view
      * @return string
      * @former gibStamp()
      */
-    private function gibStamp($oldStamp, int $direction, int $view): string
+    private function gibStamp($stamp, int $direction, int $view): string
     {
-        if (\mb_strlen($oldStamp) === 0 || !\in_array($direction, [1, -1], true) || !\in_array($view, [1, 2, 3], true)) {
-            return $oldStamp;
+        if (\mb_strlen($stamp) === 0 || !\in_array($direction, [1, -1], true) || !\in_array($view, [1, 2, 3], true)) {
+            return $stamp;
         }
 
         $interval = match ($view) {
@@ -1368,7 +1369,7 @@ class CampaignController extends AbstractBackendController
             default => 'day',
         };
         $now     = \date_create();
-        $newDate = \date_create($oldStamp)->modify(($direction === 1 ? '+' : '-') . '1 ' . $interval);
+        $newDate = \date_create($stamp)->modify(($direction === 1 ? '+' : '-') . '1 ' . $interval);
 
         return $newDate > $now
             ? $now->format('Y-m-d')
@@ -1648,7 +1649,7 @@ class CampaignController extends AbstractBackendController
      * @return string
      * @former mappeENGMonat()
      */
-    private function mappeENGMonat($month): string
+    private function getMonthName(string $month): string
     {
         return match ($month) {
             '01' => Shop::Lang()->get('january', 'news'),

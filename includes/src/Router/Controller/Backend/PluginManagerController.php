@@ -91,7 +91,13 @@ class PluginManagerController extends AbstractBackendController
         $extractor             = new Extractor($parser);
         $this->stateChanger    = new StateChanger($this->db, $this->cache, $this->legacyValidator, $this->validator);
         $this->uninstaller     = new Uninstaller($this->db, $this->cache);
-        $this->installer       = new Installer($this->db, $this->uninstaller, $this->legacyValidator, $this->validator, $this->cache);
+        $this->installer       = new Installer(
+            $this->db,
+            $this->uninstaller,
+            $this->legacyValidator,
+            $this->validator,
+            $this->cache
+        );
         $this->minify          = new MinifyService();
 
         if (isset($_SESSION['plugin_msg'])) {

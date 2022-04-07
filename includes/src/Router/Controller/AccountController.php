@@ -31,7 +31,7 @@ class AccountController extends AbstractController
     {
         $this->smarty = $smarty;
         Shop::setPageType($this->state->pageType);
-        require_once PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
+        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
 
         $linkService        = Shop::Container()->getLinkService();
         $controller         = new CustomerAccountController(

@@ -283,7 +283,7 @@ class ProductController extends AbstractController
         \executeHook(\HOOK_ARTIKEL_PAGE, ['oArtikel' => $this->currentProduct]);
 
         if (Request::isAjaxRequest()) {
-            $this->smarty->assign('listStyle', isset($_GET['isListStyle']) ? Text::filterXSS($_GET['isListStyle']) : '');
+            $this->smarty->assign('listStyle', Text::filterXSS($_GET['isListStyle'] ?? ''));
         }
 
         return $this->smarty->getResponse('productdetails/index.tpl');

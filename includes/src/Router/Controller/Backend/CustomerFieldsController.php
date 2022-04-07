@@ -42,7 +42,10 @@ class CustomerFieldsController extends AbstractBackendController
                         $success = $success && $cf->delete((int)$fieldID);
                     }
                     if ($success) {
-                        $this->alertService->addSuccess(\__('successCustomerFieldDelete'), 'successCustomerFieldDelete');
+                        $this->alertService->addSuccess(
+                            \__('successCustomerFieldDelete'),
+                            'successCustomerFieldDelete'
+                        );
                     } else {
                         $this->alertService->addError(\__('errorCustomerFieldDelete'), 'errorCustomerFieldDelete');
                     }
@@ -88,7 +91,10 @@ class CustomerFieldsController extends AbstractBackendController
                 } else {
                     $erroneousFields = $check->getPlausiVar();
                     if (isset($erroneousFields['cName']) && $erroneousFields['cName'] === 2) {
-                        $this->alertService->addError(\__('errorCustomerFieldNameExists'), 'errorCustomerFieldNameExists');
+                        $this->alertService->addError(
+                            \__('errorCustomerFieldNameExists'),
+                            'errorCustomerFieldNameExists'
+                        );
                     } else {
                         $this->alertService->addError(\__('errorFillRequired'), 'errorFillRequired');
                     }

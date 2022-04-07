@@ -243,7 +243,10 @@ class CacheController extends AbstractBackendController
                         $upd
                     );
                     if ($res > 0) {
-                        $this->alertService->addSuccess(\__('successCacheTypeDeactivate'), 'successCacheTypeDeactivate');
+                        $this->alertService->addSuccess(
+                            \__('successCacheTypeDeactivate'),
+                            'successCacheTypeDeactivate'
+                        );
                     }
                 } else {
                     $this->alertService->addError(\__('errorNoCacheType'), 'errorNoCacheType');
@@ -346,8 +349,8 @@ class CacheController extends AbstractBackendController
         ];
         $template     = Shop::Container()->getTemplateService()->getActiveTemplate();
         $dirMan       = new DirManager();
-        $dirMan->getData(PFAD_ROOT . \PFAD_COMPILEDIR . $template->getDir(), $callback, $cbParameters);
-        $dirMan->getData(PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR, $callback, $cbParameters);
+        $dirMan->getData(\PFAD_ROOT . \PFAD_COMPILEDIR . $template->getDir(), $callback, $cbParameters);
+        $dirMan->getData(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR, $callback, $cbParameters);
         $ms = new MinifyService();
         $ms->flushCache();
         $this->alertService->addError($error, 'errorCache');

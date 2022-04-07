@@ -164,7 +164,10 @@ class ContactFormsController extends AbstractBackendController
             } else {
                 $subjectID = Request::postInt('kKontaktBetreff');
                 $this->db->update('tkontaktbetreff', 'kKontaktBetreff', $subjectID, $newSubject);
-                $this->alertService->addSuccess(\sprintf(\__('successSubjectSave'), $newSubject->cName), 'successSubjectSave');
+                $this->alertService->addSuccess(
+                    \sprintf(\__('successSubjectSave'), $newSubject->cName),
+                    'successSubjectSave'
+                );
             }
             $localized                  = new stdClass();
             $localized->kKontaktBetreff = $subjectID;

@@ -58,8 +58,8 @@ class LogoController extends AbstractBackendController
      */
     private function saveShopLogo(array $files): int
     {
-        if (!\file_exists(PFAD_ROOT . \PFAD_SHOPLOGO)
-            && !\mkdir($concurrentDirectory = PFAD_ROOT . \PFAD_SHOPLOGO)
+        if (!\file_exists(\PFAD_ROOT . \PFAD_SHOPLOGO)
+            && !\mkdir($concurrentDirectory = \PFAD_ROOT . \PFAD_SHOPLOGO)
             && !\is_dir($concurrentDirectory)
         ) {
             return self::ERR_PERMISSIONS;
@@ -85,8 +85,10 @@ class LogoController extends AbstractBackendController
         ) {
             return self::ERR_INVALID_FILE_TYPE;
         }
-        $file = PFAD_ROOT . \PFAD_SHOPLOGO . \basename($files['shopLogo']['name']);
-        if ($files['shopLogo']['error'] === \UPLOAD_ERR_OK && \move_uploaded_file($files['shopLogo']['tmp_name'], $file)) {
+        $file = \PFAD_ROOT . \PFAD_SHOPLOGO . \basename($files['shopLogo']['name']);
+        if ($files['shopLogo']['error'] === \UPLOAD_ERR_OK
+            && \move_uploaded_file($files['shopLogo']['tmp_name'], $file)
+        ) {
             $option                        = new stdClass();
             $option->kEinstellungenSektion = \CONF_LOGO;
             $option->cName                 = 'shop_logo';
@@ -106,7 +108,7 @@ class LogoController extends AbstractBackendController
      */
     private function deleteShopLogo(string $logo): bool
     {
-        return \is_file(PFAD_ROOT . $logo) && \unlink(PFAD_ROOT . $logo);
+        return \is_file(\PFAD_ROOT . $logo) && \unlink(\PFAD_ROOT . $logo);
     }
 
     private function actionDelete(): void
@@ -135,7 +137,10 @@ class LogoController extends AbstractBackendController
             if ($delete === true) {
                 $this->alertService->addSuccess(\__('successLogoDelete'), 'successLogoDelete');
             } else {
-                $this->alertService->addError(\sprintf(\__('errorLogoDelete'), PFAD_ROOT . Shop::getLogo()), 'errorLogoDelete');
+                $this->alertService->addError(
+                    \sprintf(\__('errorLogoDelete'), \PFAD_ROOT . Shop::getLogo()),
+                    'errorLogoDelete'
+                );
             }
         }
         $saved = $this->saveShopLogo($_FILES);
@@ -151,7 +156,10 @@ class LogoController extends AbstractBackendController
                     break;
                 case self::ERR_PERMISSIONS:
                     $this->alertService->addError(
-                        \sprintf(\__('errorFileMove'), PFAD_ROOT . \PFAD_SHOPLOGO . \basename($_FILES['shopLogo']['name'])),
+                        \sprintf(
+                            \__('errorFileMove'),
+                            \PFAD_ROOT . \PFAD_SHOPLOGO . \basename($_FILES['shopLogo']['name'])
+                        ),
                         'errorFileMove'
                     );
                     break;

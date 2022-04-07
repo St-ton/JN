@@ -37,19 +37,20 @@ class SitemapExportController extends AbstractBackendController
         if (Request::postVar('action') === 'update') {
             return $this->actionUpdate();
         }
+        $exportDir = \PFAD_ROOT . \PFAD_EXPORT;
 
-        if (!\file_exists(PFAD_ROOT . \PFAD_EXPORT . 'sitemap_index.xml') && \is_writable(PFAD_ROOT . \PFAD_EXPORT)) {
-            @\touch(PFAD_ROOT . \PFAD_EXPORT . 'sitemap_index.xml');
+        if (!\file_exists($exportDir . 'sitemap_index.xml') && \is_writable($exportDir)) {
+            @\touch($exportDir . 'sitemap_index.xml');
         }
 
-        if (!\is_writable(PFAD_ROOT . \PFAD_EXPORT . 'sitemap_index.xml')) {
+        if (!\is_writable($exportDir . 'sitemap_index.xml')) {
             $this->alertService->addError(
-                \sprintf(\__('errorSitemapCreatePermission'), '<i>' . PFAD_ROOT . \PFAD_EXPORT . 'sitemap_index.xml</i>'),
+                \sprintf(\__('errorSitemapCreatePermission'), '<i>' . $exportDir . 'sitemap_index.xml</i>'),
                 'errorSitemapCreatePermission'
             );
         } elseif (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
             $this->alertService->addSuccess(
-                \sprintf(\__('successSave'), '<i>' . PFAD_ROOT . \PFAD_EXPORT . 'sitemap_index.xml</i>'),
+                \sprintf(\__('successSave'), '<i>' . $exportDir . 'sitemap_index.xml</i>'),
                 'successSubjectDelete'
             );
         }
@@ -107,23 +108,23 @@ class SitemapExportController extends AbstractBackendController
             $yearReports = 0;
         }
 
-        $sitemapDownloadsPerYear = $this->db->getObjects(
+        $downloadsPerYear = $this->db->getObjects(
             'SELECT YEAR(dErstellt) AS year, COUNT(*) AS count
                 FROM tsitemaptracker
                 GROUP BY 1
                 ORDER BY 1 DESC'
         );
-        if (\count($sitemapDownloadsPerYear) === 0) {
-            $sitemapDownloadsPerYear[] = (object)[
+        if (\count($downloadsPerYear) === 0) {
+            $downloadsPerYear[] = (object)[
                 'year'  => \date('Y'),
                 'count' => 0,
             ];
         }
         if ($yearDownloads === 0) {
-            $yearDownloads = (int)$sitemapDownloadsPerYear[0]->year;
+            $yearDownloads = (int)$downloadsPerYear[0]->year;
         }
         $downloadPagination = (new Pagination('SitemapDownload'))
-            ->setItemCount(\array_reduce($sitemapDownloadsPerYear, static function ($carry, $item) use ($yearDownloads) {
+            ->setItemCount(\array_reduce($downloadsPerYear, static function ($carry, $item) use ($yearDownloads) {
                 return (int)$item->year === $yearDownloads ? (int)$item->count : $carry;
             }, 0))
             ->assemble();
@@ -181,7 +182,7 @@ class SitemapExportController extends AbstractBackendController
         $this->getAdminSectionSettings(\CONF_SITEMAP);
 
         return $smarty->assign('nSitemapDownloadYear', $yearDownloads)
-            ->assign('oSitemapDownloadYears_arr', $sitemapDownloadsPerYear)
+            ->assign('oSitemapDownloadYears_arr', $downloadsPerYear)
             ->assign('oSitemapDownloadPagination', $downloadPagination)
             ->assign('oSitemapDownload_arr', $sitemapDownloads)
             ->assign('nSitemapReportYear', $yearReports)

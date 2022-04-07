@@ -23,7 +23,7 @@ class PermissionCheckController extends AbstractBackendController
         $this->checkPermissions('PERMISSIONCHECK_VIEW');
         $this->getText->loadAdminLocale('pages/permissioncheck');
         $this->cache->flush(Status::CACHE_ID_FOLDER_PERMISSIONS);
-        $fsCheck = new Filesystem(PFAD_ROOT); // to get all folders which need to be writable
+        $fsCheck = new Filesystem(\PFAD_ROOT); // to get all folders which need to be writable
 
         return $smarty->assign('cDirAssoc_arr', $fsCheck->getFoldersChecked())
             ->assign('oStat', $fsCheck->getFolderStats())

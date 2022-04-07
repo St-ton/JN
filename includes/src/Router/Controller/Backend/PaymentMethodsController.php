@@ -238,7 +238,9 @@ class PaymentMethodsController extends AbstractBackendController
                 $this->db->query(
                     "UPDATE tzahlungseingang
                         SET cAbgeholt = 'N'
-                        WHERE kZahlungseingang IN (" . \implode(',', \array_map('\intval', $filteredPost['kEingang_arr'])) . ')'
+                        WHERE kZahlungseingang IN ("
+                        . \implode(',', \array_map('\intval', $filteredPost['kEingang_arr']))
+                        . ')'
                 );
             }
 

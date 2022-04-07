@@ -72,7 +72,8 @@ class WishlistController extends AbstractBackendController
         $sentWishLists     = $this->db->getObjects(
             "SELECT tkunde.kKunde, tkunde.cNachname, tkunde.cVorname, twunschlisteversand.nAnzahlArtikel, 
                 twunschliste.kWunschliste, twunschliste.cName, twunschliste.cURLID, 
-                twunschlisteversand.nAnzahlEmpfaenger, DATE_FORMAT(twunschlisteversand.dZeit, '%d.%m.%Y  %H:%i') AS Datum
+                twunschlisteversand.nAnzahlEmpfaenger,
+                DATE_FORMAT(twunschlisteversand.dZeit, '%d.%m.%Y  %H:%i') AS Datum
                 FROM twunschliste
                 JOIN twunschlisteversand 
                     ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste
@@ -90,7 +91,8 @@ class WishlistController extends AbstractBackendController
         $wishLists = $this->db->getObjects(
             "SELECT tkunde.kKunde, tkunde.cNachname, tkunde.cVorname, twunschliste.kWunschliste, twunschliste.cName,
                 twunschliste.cURLID, DATE_FORMAT(twunschliste.dErstellt, '%d.%m.%Y %H:%i') AS Datum, 
-                twunschliste.nOeffentlich, COUNT(twunschlistepos.kWunschliste) AS Anzahl, tbesucher.kBesucher AS isOnline
+                twunschliste.nOeffentlich, COUNT(twunschlistepos.kWunschliste) AS Anzahl,
+                tbesucher.kBesucher AS isOnline
                 FROM twunschliste
                 JOIN twunschlistepos 
                     ON twunschliste.kWunschliste = twunschlistepos.kWunschliste

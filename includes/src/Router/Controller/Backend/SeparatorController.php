@@ -70,28 +70,29 @@ class SeparatorController extends AbstractBackendController
     private function save(array $post): bool
     {
         $post = Text::filterXSS($post);
-        foreach ([\JTL_SEPARATOR_WEIGHT, \JTL_SEPARATOR_AMOUNT, \JTL_SEPARATOR_LENGTH] as $unit) {
-            if (!isset($post['nDezimal_' . $unit], $post['cDezZeichen_' . $unit], $post['cTausenderZeichen_' . $unit])) {
+        foreach ([\JTL_SEPARATOR_WEIGHT, \JTL_SEPARATOR_AMOUNT, \JTL_SEPARATOR_LENGTH] as $unt) {
+            if (!isset($post['nDezimal_' . $unt], $post['cDezZeichen_' . $unt], $post['cTausenderZeichen_' . $unt])) {
                 continue;
             }
-            $trennzeichen = new Separator();
-            $trennzeichen->setSprache((int)$_SESSION['editLanguageID'])
-                ->setEinheit($unit)
-                ->setDezimalstellen((int)$post['nDezimal_' . $unit])
-                ->setDezimalZeichen($post['cDezZeichen_' . $unit])
-                ->setTausenderZeichen($post['cTausenderZeichen_' . $unit]);
-            $idx = 'kTrennzeichen_' . $unit;
+            $separator = new Separator();
+            $separator->setSprache((int)$_SESSION['editLanguageID'])
+                ->setEinheit($unt)
+                ->setDezimalstellen((int)$post['nDezimal_' . $unt])
+                ->setDezimalZeichen($post['cDezZeichen_' . $unt])
+                ->setTausenderZeichen($post['cTausenderZeichen_' . $unt]);
+            $idx = 'kTrennzeichen_' . $unt;
             if (isset($post[$idx])) {
-                $trennzeichen->setTrennzeichen((int)$post[$idx])
-                    ->update();
-            } elseif (!$trennzeichen->save()) {
+                $separator->setTrennzeichen((int)$post[$idx])->update();
+            } elseif (!$separator->save()) {
                 return false;
             }
         }
-
-        $this->cache->flushTags(
-            [\CACHING_GROUP_CORE, \CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION, \CACHING_GROUP_ARTICLE]
-        );
+        $this->cache->flushTags([
+            \CACHING_GROUP_CORE,
+            \CACHING_GROUP_CATEGORY,
+            \CACHING_GROUP_OPTION,
+            \CACHING_GROUP_ARTICLE
+        ]);
 
         return true;
     }

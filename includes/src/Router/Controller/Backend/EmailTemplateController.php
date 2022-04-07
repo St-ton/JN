@@ -100,7 +100,12 @@ class EmailTemplateController extends AbstractBackendController
 
             $this->db->delete($settingsTableName, 'kEmailvorlage', $emailTemplateID);
             if (\mb_strlen(Request::verifyGPDataString('cEmailOut')) > 0) {
-                $this->saveEmailSetting($settingsTableName, $emailTemplateID, 'cEmailOut', Request::verifyGPDataString('cEmailOut'));
+                $this->saveEmailSetting(
+                    $settingsTableName,
+                    $emailTemplateID,
+                    'cEmailOut',
+                    Request::verifyGPDataString('cEmailOut')
+                );
             }
             if (\mb_strlen(Request::verifyGPDataString('cEmailSenderName')) > 0) {
                 $this->saveEmailSetting(

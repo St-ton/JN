@@ -36,8 +36,8 @@ class NewsController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/news');
 
 
-        $uploadDir    = PFAD_ROOT . \PFAD_NEWSBILDER;
-        $uploadDirCat = PFAD_ROOT . \PFAD_NEWSKATEGORIEBILDER;
+        $uploadDir    = \PFAD_ROOT . \PFAD_NEWSBILDER;
+        $uploadDirCat = \PFAD_ROOT . \PFAD_NEWSKATEGORIEBILDER;
         $author       = ContentAuthor::getInstance();
         $controller   = new Controller($this->db, $smarty, $this->cache);
         $newsCategory = new Category($this->db);
@@ -69,7 +69,9 @@ class NewsController extends AbstractBackendController
                     break;
             }
         }
-        if ((Request::postInt('einstellungen') === 1 || Request::verifyGPCDataInt('news') === 1) && Form::validateToken()) {
+        if ((Request::postInt('einstellungen') === 1 || Request::verifyGPCDataInt('news') === 1)
+            && Form::validateToken()
+        ) {
             if (Request::postInt('einstellungen') > 0) {
                 $this->saveAdminSectionSettings(\CONF_NEWS, $_POST, [\CACHING_GROUP_OPTION, \CACHING_GROUP_NEWS]);
                 if (\count($languages) > 0) {
@@ -205,10 +207,14 @@ class NewsController extends AbstractBackendController
                             ->assign('files', $controller->getCategoryImages($newsCategory->getID(), $uploadDirCat));
                     } else {
                         $controller->setStep('news_uebersicht');
-                        $controller->setErrorMsg(\sprintf(\__('errorNewsCatNotFound'), Request::getInt('kNewsKategorie')));
+                        $controller->setErrorMsg(
+                            \sprintf(\__('errorNewsCatNotFound'), Request::getInt('kNewsKategorie'))
+                        );
                     }
                 }
-            } elseif (Request::postInt('newskommentar_freischalten') > 0 && !isset($_POST['kommentareloeschenSubmit'])) {
+            } elseif (Request::postInt('newskommentar_freischalten') > 0
+                && !isset($_POST['kommentareloeschenSubmit'])
+            ) {
                 $commentIDs = Request::verifyGPDataIntegerArray('kNewsKommentar');
                 if (\count($commentIDs) > 0) {
                     $controller->activateComments($commentIDs);

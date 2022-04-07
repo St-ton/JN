@@ -61,7 +61,9 @@ class NewsletterController extends AbstractBackendController
                 } else {
                     $this->alertService->addError(\__('errorAtLeastOneNewsletterAbo'), 'errorAtLeastOneNewsletterAbo');
                 }
-            } elseif (isset($postData['abonnentfreischaltenSubmit']) && Request::verifyGPCDataInt('inaktiveabonnenten') === 1) {
+            } elseif (isset($postData['abonnentfreischaltenSubmit'])
+                && Request::verifyGPCDataInt('inaktiveabonnenten') === 1
+            ) {
                 if ($admin->activateSubscribers($postData['kNewsletterEmpfaenger'])) {
                     $this->alertService->addSuccess(\__('successNewsletterAbounlock'), 'successNewsletterAbounlock');
                 } else {
@@ -90,10 +92,10 @@ class NewsletterController extends AbstractBackendController
                     $historyID = (int)$_GET['anzeigen'];
                     $hist      = $this->db->getSingleObject(
                         "SELECT kNewsletterHistory, cBetreff, cHTMLStatic, cKundengruppe,
-                    DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
-                    FROM tnewsletterhistory
-                    WHERE kNewsletterHistory = :hid
-                        AND kSprache = :lid",
+                            DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
+                            FROM tnewsletterhistory
+                            WHERE kNewsletterHistory = :hid
+                                AND kSprache = :lid",
                         ['hid' => $historyID, 'lid' => $languageID]
                     );
                     if ($hist !== null && $hist->kNewsletterHistory > 0) {
@@ -104,8 +106,8 @@ class NewsletterController extends AbstractBackendController
                 $query = Request::verifyGPDataString('cSucheInaktiv');
                 if (\mb_strlen($query) > 0) {
                     $inactiveSearchSQL->setWhere(' AND (tnewsletterempfaenger.cVorname LIKE :qry
-                OR tnewsletterempfaenger.cNachname LIKE :qry
-                OR tnewsletterempfaenger.cEmail LIKE :qry)');
+                        OR tnewsletterempfaenger.cNachname LIKE :qry
+                        OR tnewsletterempfaenger.cEmail LIKE :qry)');
                     $inactiveSearchSQL->addParam('qry', '%' . $query . '%');
                 }
 
@@ -114,8 +116,8 @@ class NewsletterController extends AbstractBackendController
                 $query = Request::verifyGPDataString('cSucheAktiv');
                 if (\mb_strlen($query) > 0) {
                     $activeSearchSQL->setWhere(' AND (tnewsletterempfaenger.cVorname LIKE :qry
-                OR tnewsletterempfaenger.cNachname LIKE :qry
-                OR tnewsletterempfaenger.cEmail LIKE :qry)');
+                        OR tnewsletterempfaenger.cNachname LIKE :qry
+                        OR tnewsletterempfaenger.cEmail LIKE :qry)');
                     $activeSearchSQL->addParam('qry', '%' . $query . '%');
                 }
 
@@ -125,8 +127,8 @@ class NewsletterController extends AbstractBackendController
                 // Infos der Vorlage aus DB holen
                 $newsletterTPL = $this->db->getSingleObject(
                     "SELECT *, DATE_FORMAT(dStartZeit, '%d.%m.%Y %H:%i') AS Datum
-                FROM tnewslettervorlage
-                WHERE kNewsletterVorlage = :tid",
+                        FROM tnewslettervorlage
+                        WHERE kNewsletterVorlage = :tid",
                     ['tid' => $nlTemplateID]
                 );
                 $preview       = null;
@@ -199,8 +201,8 @@ class NewsletterController extends AbstractBackendController
                     // Infos der Vorlage aus DB holen
                     $newsletterTPL = $this->db->getSingleObject(
                         "SELECT *, DATE_FORMAT(dStartZeit, '%d.%m.%Y %H:%i') AS Datum
-                    FROM tnewslettervorlage
-                    WHERE kNewsletterVorlage = :tid",
+                            FROM tnewslettervorlage
+                            WHERE kNewsletterVorlage = :tid",
                         ['tid' => $nlTemplateID]
                     );
                     if ($newsletterTPL !== null && $newsletterTPL->kNewsletterVorlage > 0) {
@@ -259,26 +261,26 @@ class NewsletterController extends AbstractBackendController
         if ($step === 'uebersicht') {
             $recipientsCount   = (int)$this->db->getSingleObject(
                 'SELECT COUNT(*) AS cnt
-            FROM tnewsletterempfaenger
-            WHERE tnewsletterempfaenger.nAktiv = 0' . $inactiveSearchSQL->getWhere(),
+                    FROM tnewsletterempfaenger
+                    WHERE tnewsletterempfaenger.nAktiv = 0' . $inactiveSearchSQL->getWhere(),
                 $inactiveSearchSQL->getParams()
             )->cnt;
             $queueCount        = (int)$this->db->getSingleObject(
                 "SELECT COUNT(*) AS cnt
-             FROM tcron c
-             LEFT JOIN tjobqueue q ON c.cronID = q.cronID
-             WHERE c.jobType = 'newsletter'"
+                     FROM tcron c
+                     LEFT JOIN tjobqueue q ON c.cronID = q.cronID
+                     WHERE c.jobType = 'newsletter'"
             )->cnt;
             $templateCount     = (int)$this->db->getSingleObject(
                 'SELECT COUNT(*) AS cnt
-            FROM tnewslettervorlage
-            WHERE kSprache = :lid',
+                    FROM tnewslettervorlage
+                    WHERE kSprache = :lid',
                 ['lid' => $languageID],
             )->cnt;
             $historyCount      = (int)$this->db->getSingleObject(
                 'SELECT COUNT(*) AS cnt
-            FROM tnewsletterhistory
-            WHERE kSprache = :lid',
+                    FROM tnewsletterhistory
+                    WHERE kSprache = :lid',
                 ['lid' => $languageID]
             )->cnt;
             $pagiInactive      = (new Pagination('inaktive'))
@@ -298,13 +300,13 @@ class NewsletterController extends AbstractBackendController
                 ->assemble();
             $queue             = $this->db->getObjects(
                 "SELECT l.cBetreff, q.tasksExecuted, c.cronID, c.foreignKeyID, c.startDate as 'Datum'
-            FROM tcron c
-                LEFT JOIN tjobqueue q ON c.cronID = q.cronID
-                LEFT JOIN tnewsletter l ON c.foreignKeyID = l.kNewsletter
-            WHERE c.jobType = 'newsletter'
-                AND l.kSprache = :langID
-            ORDER BY c.startDate DESC
-            LIMIT " . $pagiQueue->getLimitSQL(),
+                    FROM tcron c
+                        LEFT JOIN tjobqueue q ON c.cronID = q.cronID
+                        LEFT JOIN tnewsletter l ON c.foreignKeyID = l.kNewsletter
+                    WHERE c.jobType = 'newsletter'
+                        AND l.kSprache = :langID
+                    ORDER BY c.startDate DESC
+                    LIMIT " . $pagiQueue->getLimitSQL(),
                 ['langID' => $languageID]
             );
             if (!($instance instanceof Newsletter)) {
@@ -320,9 +322,9 @@ class NewsletterController extends AbstractBackendController
             }
             $templates = $this->db->getObjects(
                 'SELECT kNewsletterVorlage, kNewslettervorlageStd, cBetreff, cName
-            FROM tnewslettervorlage
-            WHERE kSprache = :lid
-            ORDER BY kNewsletterVorlage DESC LIMIT ' . $pagiTemplates->getLimitSQL(),
+                    FROM tnewslettervorlage
+                    WHERE kSprache = :lid
+                    ORDER BY kNewsletterVorlage DESC LIMIT ' . $pagiTemplates->getLimitSQL(),
                 ['lid' => $languageID]
             );
             foreach ($templates as $template) {
@@ -331,33 +333,34 @@ class NewsletterController extends AbstractBackendController
             }
             $defaultData = $this->db->getObjects(
                 'SELECT *
-            FROM tnewslettervorlagestd
-            WHERE kSprache = :lid
-            ORDER BY cName',
+                    FROM tnewslettervorlagestd
+                    WHERE kSprache = :lid
+                    ORDER BY cName',
                 ['lid' => $languageID]
             );
             foreach ($defaultData as $tpl) {
                 $tpl->oNewsletttervorlageStdVar_arr = $this->db->getObjects(
                     'SELECT *
-                FROM tnewslettervorlagestdvar
-                WHERE kNewslettervorlageStd = :tid',
+                        FROM tnewslettervorlagestdvar
+                        WHERE kNewslettervorlageStd = :tid',
                     ['tid' => (int)$tpl->kNewslettervorlageStd]
                 );
             }
             $inactiveRecipients = $this->db->getObjects(
                 "SELECT tnewsletterempfaenger.kNewsletterEmpfaenger, tnewsletterempfaenger.cVorname AS newsVorname,
-            tnewsletterempfaenger.cNachname AS newsNachname, tkunde.cVorname, tkunde.cNachname,
-            tnewsletterempfaenger.cEmail, tnewsletterempfaenger.nAktiv, tkunde.kKundengruppe, tkundengruppe.cName,
-            DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS Datum
-            FROM tnewsletterempfaenger
-            LEFT JOIN tkunde
-                ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-            LEFT JOIN tkundengruppe
-                ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
-            WHERE tnewsletterempfaenger.nAktiv = 0
-            " . $inactiveSearchSQL->getWhere() . '
-            ORDER BY tnewsletterempfaenger.dEingetragen DESC
-            LIMIT ' . $pagiInactive->getLimitSQL(),
+                    tnewsletterempfaenger.cNachname AS newsNachname, tkunde.cVorname,
+                    tkunde.cNachname, tnewsletterempfaenger.cEmail, tnewsletterempfaenger.nAktiv,
+                    tkunde.kKundengruppe, tkundengruppe.cName,
+                    DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS Datum
+                    FROM tnewsletterempfaenger
+                    LEFT JOIN tkunde
+                        ON tkunde.kKunde = tnewsletterempfaenger.kKunde
+                    LEFT JOIN tkundengruppe
+                        ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
+                    WHERE tnewsletterempfaenger.nAktiv = 0
+                    " . $inactiveSearchSQL->getWhere() . '
+                    ORDER BY tnewsletterempfaenger.dEingetragen DESC
+                    LIMIT ' . $pagiInactive->getLimitSQL(),
                 $inactiveSearchSQL->getParams()
             );
             foreach ($inactiveRecipients as $recipient) {
@@ -372,17 +375,18 @@ class NewsletterController extends AbstractBackendController
             }
 
             $history              = $this->db->getObjects(
-                "SELECT kNewsletterHistory, nAnzahl, cBetreff, cKundengruppe, DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
-            FROM tnewsletterhistory
-            WHERE kSprache = :lid
-            ORDER BY dStart DESC
-            LIMIT " . $pagiHistory->getLimitSQL(),
+                "SELECT kNewsletterHistory, nAnzahl, cBetreff, cKundengruppe,
+                DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
+                    FROM tnewsletterhistory
+                    WHERE kSprache = :lid
+                    ORDER BY dStart DESC
+                    LIMIT " . $pagiHistory->getLimitSQL(),
                 ['lid' => $languageID]
             );
             $customerGroupsByName = $this->db->getObjects(
                 'SELECT *
-            FROM tkundengruppe
-            ORDER BY cName'
+                    FROM tkundengruppe
+                    ORDER BY cName'
             );
             $this->getAdminSectionSettings(\CONF_NEWSLETTER);
             $smarty->assign('kundengruppen', $customerGroupsByName)

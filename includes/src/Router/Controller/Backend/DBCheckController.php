@@ -96,7 +96,7 @@ class DBCheckController extends AbstractBackendController
     /**
      * @param bool $extended
      * @param bool $clearCache
-     * @return array
+     * @return array|null
      */
     private function getDBStruct(bool $extended = false, bool $clearCache = false): ?array
     {
@@ -283,7 +283,9 @@ class DBCheckController extends AbstractBackendController
                 $errors[$table] = $this->createDBStructError(\__('errorNoTable'));
                 continue;
             }
-            if (($dbStruct[$table]->Migration & DBMigrationHelper::MIGRATE_INNODB) === DBMigrationHelper::MIGRATE_INNODB) {
+            if (($dbStruct[$table]->Migration & DBMigrationHelper::MIGRATE_INNODB)
+                === DBMigrationHelper::MIGRATE_INNODB
+            ) {
                 $errors[$table] = $this->createDBStructError(\sprintf(\__('errorNoInnoTable'), $table), true);
                 continue;
             }
@@ -420,7 +422,8 @@ class DBCheckController extends AbstractBackendController
 
                 if ($fulltextIndizes) {
                     $result .= $nl . '--' . $nl;
-                    $result .= '-- remove fulltext indizes because there is no support for innoDB on MySQL < 5.6 ' . $nl;
+                    $result .= '-- remove fulltext indizes because there is no support for innoDB on MySQL < 5.6 '
+                        . $nl;
                     foreach ($fulltextIndizes as $fulltextIndex) {
                         $fulltextSQL[] = /** @lang text */
                             'ALTER TABLE `' . $table->TABLE_NAME . '` DROP KEY `' . $fulltextIndex->INDEX_NAME . '`';

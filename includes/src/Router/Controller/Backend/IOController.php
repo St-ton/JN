@@ -120,18 +120,63 @@ class IOController extends AbstractBackendController
                 ->register('redirectCheckAvailability', [Redirect::class, 'checkAvailability'])
                 ->register('updateRedirectState', null, $redirectInc, 'REDIRECT_VIEW')
                 ->register('getRandomPassword', [$this, 'getRandomPassword'], null, 'ACCOUNT_VIEW')
-                ->register('saveBannerAreas', [BannerController::class, 'saveBannerAreasIO'], null, 'DISPLAY_BANNER_VIEW')
+                ->register(
+                    'saveBannerAreas',
+                    [BannerController::class, 'saveBannerAreasIO'],
+                    null,
+                    'DISPLAY_BANNER_VIEW'
+                )
                 ->register('createSearchIndex', [$this, 'createSearchIndex'], null, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
                 ->register('clearSearchCache', [$this, 'clearSearchCache'], null, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
                 ->register('adminSearch', [$searchController, 'adminSearch'], $sucheInc, 'SETTINGS_SEARCH_VIEW')
-                ->register('saveShippingSurcharge', [ShippingMethodsController::class, 'saveShippingSurcharge'], null, 'ORDER_SHIPMENT_VIEW')
-                ->register('deleteShippingSurcharge', [ShippingMethodsController::class, 'deleteShippingSurcharge'], null, 'ORDER_SHIPMENT_VIEW')
-                ->register('deleteShippingSurchargeZIP', [ShippingMethodsController::class, 'deleteShippingSurchargeZIP'], null, 'ORDER_SHIPMENT_VIEW')
-                ->register('createShippingSurchargeZIP', [ShippingMethodsController::class, 'createShippingSurchargeZIP'], null, 'ORDER_SHIPMENT_VIEW')
-                ->register('getShippingSurcharge', [ShippingMethodsController::class, 'getShippingSurcharge'], null, 'ORDER_SHIPMENT_VIEW')
-                ->register('exportformatSyntaxCheck', [ExportSyntaxChecker::class, 'ioCheckSyntax'], null, 'EXPORT_FORMATS_VIEW')
-                ->register('testExport', [ExportSyntaxChecker::class, 'testExport'], null, 'EXPORT_FORMATS_VIEW')
-                ->register('mailvorlageSyntaxCheck', [SyntaxChecker::class, 'ioCheckSyntax'], null, 'CONTENT_EMAIL_TEMPLATE_VIEW')
+                ->register(
+                    'saveShippingSurcharge',
+                    [ShippingMethodsController::class, 'saveShippingSurcharge'],
+                    null,
+                    'ORDER_SHIPMENT_VIEW'
+                )
+                ->register(
+                    'deleteShippingSurcharge',
+                    [ShippingMethodsController::class, 'deleteShippingSurcharge'],
+                    null,
+                    'ORDER_SHIPMENT_VIEW'
+                )
+                ->register(
+                    'deleteShippingSurchargeZIP',
+                    [ShippingMethodsController::class, 'deleteShippingSurchargeZIP'],
+                    null,
+                    'ORDER_SHIPMENT_VIEW'
+                )
+                ->register(
+                    'createShippingSurchargeZIP',
+                    [ShippingMethodsController::class, 'createShippingSurchargeZIP'],
+                    null,
+                    'ORDER_SHIPMENT_VIEW'
+                )
+                ->register(
+                    'getShippingSurcharge',
+                    [ShippingMethodsController::class, 'getShippingSurcharge'],
+                    null,
+                    'ORDER_SHIPMENT_VIEW'
+                )
+                ->register(
+                    'exportformatSyntaxCheck',
+                    [ExportSyntaxChecker::class, 'ioCheckSyntax'],
+                    null,
+                    'EXPORT_FORMATS_VIEW'
+                )
+                ->register(
+                    'testExport',
+                    [ExportSyntaxChecker::class, 'testExport'],
+                    null,
+                    'EXPORT_FORMATS_VIEW'
+                )
+                ->register(
+                    'mailvorlageSyntaxCheck',
+                    [SyntaxChecker::class, 'ioCheckSyntax'],
+                    null,
+                    'CONTENT_EMAIL_TEMPLATE_VIEW'
+                )
                 ->register('notificationAction', [Notification::class, 'ioNotification'])
                 ->register('pluginTestLoading', [Helper::class, 'ioTestLoading']);
         } catch (Exception $e) {

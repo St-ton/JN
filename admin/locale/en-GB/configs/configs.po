@@ -372,7 +372,7 @@ msgid "email_smtp_pass_name"
 msgstr "SMTP password"
 
 msgid "email_smtp_pass_desc"
-msgstr "If you use SMTP Auth, you can enter the password for the SMTP server here. The password will only be saved when you enter a new password."
+msgstr "If you use SMTP-Auth, you can enter the password for the SMTP server here."
 
 msgid "email_smtp_verschluesselung_name"
 msgstr "SMTP security"
@@ -2304,7 +2304,7 @@ msgid "newsletter_smtp_pass_name"
 msgstr "SMTP password"
 
 msgid "newsletter_smtp_pass_desc"
-msgstr "If you use SMTP Auth, you can enter the password for the SMTP server here. The password will only be saved when you enter a new password."
+msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", enter the port number here."
 
 msgid "newsletter_smtp_verschluesselung_name"
 msgstr "SMTP security"
@@ -2859,7 +2859,7 @@ msgid "caching_redis_pass_name"
 msgstr "Redis password"
 
 msgid "caching_redis_pass_desc"
-msgstr "If you have selected the Redis method and opted for using a password, enter the password here. The password will only be saved when you enter a new password."
+msgstr "If you have selected the Redis method and opted for using a password, enter the password here."
 
 msgid "caching_redis_persistent_name"
 msgstr "Redis persistence"
